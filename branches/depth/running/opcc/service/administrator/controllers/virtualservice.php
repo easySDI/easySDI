@@ -30,8 +30,15 @@ class Easysdi_serviceControllerVirtualService extends JController
     
     function add() {
     	$serviceconnector = JRequest::getVar('serviceconnector',null);
+    	
     	if(isset($serviceconnector))
-    		$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservice&task=add&layout='.$serviceconnector);
+    	{
+    		if($serviceconnector == "WMSC")
+    			$layout = "WMS";
+    		else
+    			$layout = $serviceconnector;
+    		$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservice&task=add&serviceconnector='.$serviceconnector.'&layout='.$layout);
+    	}
     	else
     		$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservice&task=add&layout=add');
     }
@@ -40,7 +47,8 @@ class Easysdi_serviceControllerVirtualService extends JController
     	$params 			= JComponentHelper::getParams('com_easysdi_service');
     	$xml 				= simplexml_load_file($params->get('proxyconfigurationfile'));
     	$cid 				= JRequest::getVar('cid',array(0));
-    	$layout 			= JRequest::getVar('serviceconnector',null);
+    	$layout 			= JRequest::getVar('layout',null);
+    	
     	if(!isset($layout)){
 	    	foreach ($cid as $id ){
 	    		foreach ($xml->config as $config) {
@@ -61,12 +69,34 @@ class Easysdi_serviceControllerVirtualService extends JController
 	    				{
 	    					$layout = "wfs";
 	    				}
+	    				break;
 	    			}
 	    		}
 	    	}
 	    }
+	    $model = JModel::getInstance('virtualservice', 'easysdi_serviceModel');
+    	$service = $model->getItemByServiceAlias($cid[0]);
 
-    	$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservice&task=edit&id='.$cid[0].'&layout='.$layout );
+    	switch ($service->serviceconnector_id){
+    		case 1:
+    			$serviceconnector = "CSW";
+    			break;
+    		case 2:
+    			$serviceconnector = "WMS";
+    			break;
+    		case 3:
+    			$serviceconnector = "WMTS";
+    			break;
+    		case 4:
+    			$serviceconnector = "WFS";
+    			break;
+    		case 11:
+    			$serviceconnector = "WMSC";
+    			break;
+    	}
+	    
+
+    	$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservice&task=edit&id='.$cid[0].'&serviceconnector='.$serviceconnector.'&layout='.$layout );
     }
     
     function delete() {
@@ -185,6 +215,11 @@ class Easysdi_serviceControllerVirtualService extends JController
     			{
     				$servletClass = "org.easysdi.proxy.wms.WMSProxyServlet";
     				$virtualservice->serviceconnector_id = 2; 
+    			}
+    			else if($servletName == "WMSC")
+    			{
+    				$servletClass = "org.easysdi.proxy.wms.WMSProxyServlet";
+    				$virtualservice->serviceconnector_id = 11;
     			}
     			else if($servletName == "WMTS")
     			{

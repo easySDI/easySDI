@@ -104,24 +104,27 @@ class Easysdi_mapModelContext extends JModelForm
 				$physicalserviceTable 	= JTable::getInstance('physicalservice', 'easysdi_serviceTable');
 				$services 		= $physicalserviceTable->GetIdsByContextId($id);
 				$this->_item->physicalservices = array();
-				foreach($services as $service )
-				{
-					$physicalserviceTable 	= JTable::getInstance('physicalservice', 'easysdi_serviceTable');
-					$physicalserviceTable->loadWithAccessInheritance($service, true);
-					if($physicalserviceTable->state == 0)
-						continue;
-					$this->_item->physicalservices[] =$physicalserviceTable;
+				if($services){
+					foreach($services as $service )
+					{
+						$physicalserviceTable 	= JTable::getInstance('physicalservice', 'easysdi_serviceTable');
+						$physicalserviceTable->loadWithAccessInheritance($service, true);
+						if($physicalserviceTable->state == 0)
+							continue;
+						$this->_item->physicalservices[] =$physicalserviceTable;
+					}
 				}
 				$virtualserviceTable 	= JTable::getInstance('virtualservice', 'easysdi_serviceTable');
 				$services 		= $virtualserviceTable->GetIdsByContextId($id);
 				$this->_item->virtualservices = array();
-				foreach($services as $service )
-				{
-					$virtualserviceTable 	= JTable::getInstance('virtualservice', 'easysdi_serviceTable');
-					$virtualserviceTable->load($service, true);
-					$this->_item->virtualservices[] =$virtualserviceTable;
+				if($services){
+					foreach($services as $service )
+					{
+						$virtualserviceTable 	= JTable::getInstance('virtualservice', 'easysdi_serviceTable');
+						$virtualserviceTable->load($service, true);
+						$this->_item->virtualservices[] =$virtualserviceTable;
+					}
 				}
-				
 				//Load the tools
 				$toolTable 	= JTable::getInstance('tool', 'easysdi_mapTable');
 				$tools 		= $toolTable->GetIdsByContextId($id);

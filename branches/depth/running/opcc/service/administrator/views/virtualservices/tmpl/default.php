@@ -54,25 +54,31 @@ $search = JRequest::getVar('search','');
 	foreach ($this->xml->config as $config) {
 		if (!(stripos($config['id'],$search)===False) || !(stripos($config->{'servlet-class'},$search)===False) || strlen($search)==0){
 			if (($i>=$limitstart || $limit==0)&& ($i < $limitstart+$limit || $limit==0)){
-				$policyFile = $config->{'authorization'}->{'policy-file'};
-				
-				if($config->{'servlet-class'} == "org.easysdi.proxy.wms.WMSProxyServlet")
-				{
-					$layout = "wms";
+				$model = JModel::getInstance('virtualservice', 'easysdi_serviceModel');
+				$service = $model->getItemByServiceAlias($config['id']);
+				switch ($service->serviceconnector_id){
+					case 1:
+						$serviceconnector = "CSW";
+						$layout = "csw";
+						break;
+					case 2:
+						$serviceconnector = "WMS";
+						$layout = "wms";
+						break;
+					case 3:
+						$serviceconnector = "WMTS";
+						$layout = "wmts";
+						break;
+					case 4:
+						$serviceconnector = "WFS";
+						$layout = "wfs";
+						break;
+					case 11:
+						$serviceconnector = "WMSC";
+						$layout = "wms";
+						break;
 				}
-				else if($config->{'servlet-class'} == "org.easysdi.proxy.wmts.WMTSProxyServlet")
-				{
-					$layout = "wmts";
-				}
-				else if($config->{'servlet-class'} == "org.easysdi.proxy.csw.CSWProxyServlet")
-				{
-					$layout = "csw";
-				}
-				else if($config->{'servlet-class'} == "org.easysdi.proxy.wfs.WFSProxyServlet")
-				{
-					$layout = "wfs";
-				}
-				
+// 				$policyFile = $config->{'authorization'}->{'policy-file'};
 				?>
 				
 		<tr class="row<?php echo $i%2; ?>">
@@ -80,7 +86,7 @@ $search = JRequest::getVar('search','');
 				<?php echo JHtml::_('grid.id', $i, $config['id']); ?>
 			</td>
 			<td>
-				<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&task=virtualservice.edit&cid[]='.$config['id']).'&layout='.$layout;?>"><?php echo $config['id'];?></a>
+				<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&task=virtualservice.edit&cid[]='.$config['id']).'&serviceconnector='.$serviceconnector.'&layout='.$layout;?>"><?php echo $config['id'];?></a>
 			</td>
 			<td class="center">
 				<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=policies&config='.$config['id'].'&connector='.$layout);?>">
@@ -89,7 +95,7 @@ $search = JRequest::getVar('search','');
 			</td>
 			
 			<td>
-			<?php echo '<b>'.$layout.'</b>'?>
+			<?php echo '<b>'.$serviceconnector.'</b>'?>
 			</td>
 			<td><?php	echo $this->params->get('proxyurl').$config['id'].'?';?></td>
 			<td><?php	echo $config->{'host-translator'};?></td>

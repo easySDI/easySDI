@@ -409,6 +409,14 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                         	 	},
                 		    <?php
                 		    break;
+                		    case 11 :
+                		    ?>
+                		       	"<?php echo $service->alias ?>":
+                        	 	{
+	                	            ptype: "gxp_wmscsource",
+	                	            url: "<?php echo $service->url;?>"
+                        	 	},
+                		    <?php
                 		}
                 		        
                 	}
@@ -460,6 +468,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                      						            url : "<?php echo $layer->serviceurl;?>", 
                      						            layer: "<?php echo $layer->layername;?>", 
                      						            visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
+                     						            transitionEffect: 'resize',
                      						            opacity: <?php echo $layer->opacity;?>
                      						            <?php if(!empty($layer->asOLparams) || !empty($layer->metadatalink)){?>
                     									,
@@ -489,29 +498,21 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 													{
 														
 														layers: "<?php echo $layer->layername;?>", 
-														version: "<?php echo $layer->version;  ?>",
-														tiled: <?php if ($layer->istiled) echo "true"; else echo "false"; ?>,
-														visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
-                     						            opacity: <?php echo $layer->opacity;?>
-													}
-													<?php
-													if(!empty($layer->asOLparams) || !empty($layer->metadatalink))
+														version: "<?php echo $layer->version;  ?>"
+													},
 													{
-														?>
-														 ,{
-															 <?php 
-															 if (!empty($layer->metadatalink)){
-															 ?>
-				   			                     				metadataURL: "<?php echo $layer->metadatalink;  ?>"
-					   			                     		 <?php if(!empty($layer->asOLparams)) echo ',';?>
-				   			                     			 <?php }?>
-				   			                     			 <?php 
-			                     						           echo  $layer->asOLparams;
-			                     						     ?>
-														 }
+														 visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
+														 singleTile: <?php if ($layer->istiled) echo "false"; else echo "true"; ?>,
+														 opacity: <?php echo $layer->opacity;?>,
+														 transitionEffect: 'resize',
 														 <?php 
+														 if (!empty($layer->metadatalink)){
+														 ?>
+			   			                     				metadataURL: "<?php echo $layer->metadatalink;  ?>"
+				   			                     		 <?php if(!empty($layer->asOLparams)) echo ',';?>
+			   			                     			 <?php }?>
+			   			                     			<?php echo  $layer->asOLparams; ?>
 													}
-                     						        ?>
                                 				],
                     						    group: "<?php echo $group->alias;?>"
                      						},
@@ -526,7 +527,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 	                     				case 'WMTS':
 	                     					 break;
 										default :
-	                     			    	?>
+											?>
 											{
 			                     				source: "<?php echo $layer->servicealias;  ?>",
 			                     				<?php if (!empty($layer->version)){?>

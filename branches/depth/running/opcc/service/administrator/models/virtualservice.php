@@ -72,7 +72,7 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	 */
 	public function getItem($pk = null)
 	{
-		//Get Item by User Id
+		//Get Item 
 		if(isset($this->alias)){
 			$table = $this->getTable();
 				

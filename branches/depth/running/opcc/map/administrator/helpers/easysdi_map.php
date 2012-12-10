@@ -114,14 +114,15 @@ class Easysdi_mapHelper
 
 		}
 		
-		$url	= $resource->url;
+		$url		= $resource->url;
+		$connector	= ($resource->connector == "WMSC")? "WMS" : $resource->connector;
 		$pos1 		= stripos($url, "?");
 		$separator 	= "&";
 		if ($pos1 === false) {
 			$separator = "?";
 		}
 		
-		$completeurl = $url.$separator."REQUEST=GetCapabilities&SERVICE=".$resource->connector;
+		$completeurl = $url.$separator."REQUEST=GetCapabilities&SERVICE=".$connector;
 		if($compliance->value){
 			$completeurl .= "&version=".$compliance->value;
 		}
