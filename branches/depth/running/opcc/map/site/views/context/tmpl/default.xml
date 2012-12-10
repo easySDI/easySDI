@@ -5,8 +5,7 @@
 	<state>
         <fields name="request">
             <fieldset name="request">
-                <field name="id" title="Context Id" type="text" default=""/>
-                <field name="tmpl" title="Template" type="text" default="component"/>
+                <field name="id" label="Context id" title="Context Id" type="text" default=""/>
             </fieldset>
         </fields>
     </state>

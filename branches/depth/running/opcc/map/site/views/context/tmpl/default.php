@@ -40,6 +40,8 @@ JHTML::_('stylesheet', 'printpreview.css', 'administrator/components/com_easysdi
 JHTML::_('stylesheet', 'all.css', 'administrator/components/com_easysdi_core/libraries/gxp/theme/');
 JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tmpl/theme/app/');
 ?>
+	<div id="sdimapcontainer" class="cls-sdimapcontainer">
+	</div>
       <script>
       	var app;
       	var loadingMask;
@@ -47,12 +49,14 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
       	Ext.Container.prototype.bufferResize = false;
 		Ext.onReady(function(){
 
-			 loadingMask = new Ext.LoadMask(Ext.getBody(), {
+			loadingMask = new Ext.LoadMask(Ext.getBody(), {
 	                msg: "<?php echo JText::_('COM_EASYSDI_MAP_CONTEXT_LOAD_MESSAGE');?>"
 	            });
+            loadingMask.show();
 
-	            loadingMask.show();
-	            
+            var height = Ext.get("sdimapcontainer").getHeight();
+            if(!height)  height = Ext.get("sdimapcontainer").getWidth() * 2/3;
+            var width = Ext.get("sdimapcontainer").getWidth();
 			OpenLayers.ImgPath = "administrator/components/com_easysdi_core/libraries/openlayers/img/";
 
 			GeoExt.Lang.set("<?php echo $lang->getTag(); ?>");
@@ -74,9 +78,9 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 			    	}, 
             	portalConfig: 
                 {
-            		renderTo:"main",
-            		width: Ext.get("main").getWidth(), 
-            	    height: Ext.get("main").getWidth() * 2/3,
+            		renderTo:"sdimapcontainer",
+            		width: width, 
+            	    height: height,
                     layout: "border",
                     region: "center",
                     items: 

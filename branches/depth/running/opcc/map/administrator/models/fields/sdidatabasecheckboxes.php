@@ -104,7 +104,7 @@ class JFormFieldSdidatabasecheckboxes extends JFormField
 		$options = array();
 
 		$db = JFactory::getDbo();
-		$db->setQuery('SELECT '.$this->element['valuefield'].' as value, '.$this->element['textfield'].' as text FROM '.$this->element['sourcetable']);
+		$db->setQuery('SELECT '.$this->element['valuefield'].' as value, '.$this->element['textfield'].' as text FROM '.$this->element['sourcetable'].' ORDER BY ordering');
 		$tools = $db->loadObjectList();
 		
 		foreach ($tools as $tool)

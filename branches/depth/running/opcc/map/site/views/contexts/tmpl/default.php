@@ -21,7 +21,7 @@ defined('_JEXEC') or die;
             <?php foreach ($this->items as $item) :?>
 
                 
-				<li><a href="<?php echo JRoute::_('index.php?option=com_easysdi_map&tmpl=component&view=context&id=' . (int)$item->id); ?>" target="_blank"><?php echo $item->name; ?></a></li>
+				<li><a href="<?php echo JRoute::_('index.php?option=com_easysdi_map&view=context&id=' . (int)$item->id); ?>" target="_blank"><?php echo $item->name; ?></a></li>
 
             <?php endforeach; ?>
 

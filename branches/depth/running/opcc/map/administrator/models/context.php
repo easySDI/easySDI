@@ -111,7 +111,7 @@ class Easysdi_mapModelcontext extends JModelAdmin
 	{
 		if ($item = parent::getItem($pk)) {
 
-			$item->url = JURI::root().'index.php?option=com_easysdi_map&tmpl=component&view=context&id='.$item->id;
+			$item->url = JURI::root().'index.php?option=com_easysdi_map&view=context&id='.$item->id;
 			
 			$db = JFactory::getDbo();
 			$db->setQuery('SELECT group_id FROM #__sdi_map_context_group WHERE isbackground = 0  AND context_id = '.$item->id);

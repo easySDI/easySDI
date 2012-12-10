@@ -87,3 +87,15 @@ a {
             background-repeat:no-repeat;
             display: none;
         }
+        
+.cls-sdimapcontainer {
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    text-align: left;
+}
+.x-combo-list {
+    text-align: left;
+}

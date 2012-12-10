@@ -41,7 +41,7 @@ class Easysdi_mapViewContext extends JViewLegacy {
         }
         
         if(! $this->item ){
-        	JFactory::getApplication()->enqueueMessage( JText::_('COM_EASYSDI_MAP_RESOURCE_NOT_FOUND'), 'error' );
+        	JFactory::getApplication()->enqueueMessage( JText::_('COM_EASYSDI_MAP_CONTEXT_NOT_FOUND'), 'error' );
         	return;
         }
         
