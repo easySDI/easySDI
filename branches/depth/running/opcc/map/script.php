@@ -72,33 +72,33 @@ class com_easysdi_mapInstallerScript
 			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_map'.DS.'tables');
 
 			//Create a 'background' layer group
-			$row 					= JTable::getInstance('group','easysdi_mapTable');
-			$row->alias				= 'background';
-			$row->state				= 1;
-			$row->name				= 'Background';
-			$row->isdefaultopen		= 1;
-			$row->access			= 1;
-			$row->ordering 			= 1;
-			$result 				= $row->store();
-			if (!(isset($result)) || !$result) {
-				JError::raiseError(42, JText::_('COM_EASYSDI_MAP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR'). $row->getError());
-				return false;
-			}
+// 			$row 					= JTable::getInstance('group','easysdi_mapTable');
+// 			$row->alias				= 'background';
+// 			$row->state				= 1;
+// 			$row->name				= 'Background';
+// 			$row->isdefaultopen		= 1;
+// 			$row->access			= 1;
+// 			$row->ordering 			= 1;
+// 			$result 				= $row->store();
+// 			if (!(isset($result)) || !$result) {
+// 				JError::raiseError(42, JText::_('COM_EASYSDI_MAP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR'). $row->getError());
+// 				return false;
+// 			}
 				
 				
-			//Create a 'background' layer group
-			$row 					= JTable::getInstance('group','easysdi_mapTable');
-			$row->alias				= 'default';
-			$row->state				= 1;
-			$row->name				= 'Default';
-			$row->isdefaultopen		= 1;
-			$row->access			= 1;
-			$row->ordering 			= 2;
-			$result 				= $row->store();
-			if (!(isset($result)) || !$result) {
-				JError::raiseError(42, JText::_('COM_EASYSDI_MAP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR'). $row->getError());
-				return false;
-			}
+// 			//Create a 'background' layer group
+// 			$row 					= JTable::getInstance('group','easysdi_mapTable');
+// 			$row->alias				= 'default';
+// 			$row->state				= 1;
+// 			$row->name				= 'Default';
+// 			$row->isdefaultopen		= 1;
+// 			$row->access			= 1;
+// 			$row->ordering 			= 2;
+// 			$result 				= $row->store();
+// 			if (!(isset($result)) || !$result) {
+// 				JError::raiseError(42, JText::_('COM_EASYSDI_MAP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR'). $row->getError());
+// 				return false;
+// 			}
 				
 				
 			$db = JFactory::getDbo();

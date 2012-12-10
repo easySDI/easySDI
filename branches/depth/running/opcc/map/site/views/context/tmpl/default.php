@@ -48,7 +48,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 		Ext.onReady(function(){
 
 			 loadingMask = new Ext.LoadMask(Ext.getBody(), {
-	                msg: "Loading..."
+	                msg: "<?php echo JText::_('COM_EASYSDI_MAP_CONTEXT_LOAD_MESSAGE');?>"
 	            });
 
 	            loadingMask.show();
@@ -74,19 +74,13 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 			    	}, 
             	portalConfig: 
                 {
+            		renderTo:"main",
+            		width: Ext.get("main").getWidth(), 
+            	    height: Ext.get("main").getWidth() * 2/3,
                     layout: "border",
                     region: "center",
                     items: 
                     [
-                     	{
-                     		id:"portaltbar",
-						    xtype:"toolbar",
-						    border: false,
-						    height:35,
-						    region:"north",
-						    items:[]
-						    
-						},
                         {
 	                        id: "centerpanel",
 	                        xtype: "panel",
@@ -570,7 +564,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 [
 					{
 					    ptype: 'gxp_loadingindicator',
-					    loadingMapMessage: 'loading...'
+					    loadingMapMessage: '<?php echo JText::_('COM_EASYSDI_MAP_LAYER_LOAD_MESSAGE');?>'
 					}
                 ]
             });

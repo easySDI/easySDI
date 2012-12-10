@@ -20,6 +20,12 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 	Joomla.submitbutton = function(task)
 	{
 		if (task == 'group.cancel' || document.formvalidator.isValid(document.id('group-form'))) {
+			if(document.getElementById('jform_alias').value == 'background')
+			{
+				alert('<?php echo $this->escape(JText::_('COM_EASYSDI_MAP_FORM_GROUP_SAVE_ALIAS_ERROR'));?>');
+				return;
+			}
+			
 			Joomla.submitform(task, document.getElementById('group-form'));
 		}
 		else {

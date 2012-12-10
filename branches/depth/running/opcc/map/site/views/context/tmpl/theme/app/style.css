@@ -22,9 +22,6 @@ body.contentpane {
     bottom: 2px;
 }
 
-#main{
-	min-height: 0 !important;
-}
 
 body.contentpane {
     margin: 0px !important;
@@ -49,19 +46,28 @@ div.map-overlay {
 	border-width: 0px !important;
 	
 }
+#main ul {
+	list-style: none outside none !important;
+    margin:  0 !important;
+    padding: 0 !important;
+}
 
-.sdiMDlink a {
-    font-weight: bold !important;
-    color :  #FF0000;
+a {
+	background : none ! important;
+}
+.sdiMDlink a:link {
+    color: #000000 !important;
 }
 .sdiMDlink a:visited {
-    color :  #00FF00;
+   color: #000000 !important;
 }
 .sdiMDlink a:hover {
-    color :  #FF00FF;
+	text-decoration:underline !important;
+	color: #000000 !important;
 }
 .sdiMDlink a:active {
-    color :  #0000FF;
+	text-decoration:underline !important;
+	color: #000000 !important;
 }
 .sdi-gxp-tree-node-root {
     height:0px !important;
