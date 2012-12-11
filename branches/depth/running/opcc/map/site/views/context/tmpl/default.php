@@ -251,6 +251,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                             },
                 			{
                 				ptype: "gxp_measure",
+                				toggleGroup: "measure",
                                 actionTarget: "map.tbar"
                 			},
                 			<?php 
