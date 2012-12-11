@@ -29,6 +29,8 @@ class JFormFieldServicegroupedList extends JFormField
 	 * @since  11.1
 	 */
 	protected $type = 'ServicegroupedList';
+	
+	protected $serviceconnector = array();
 
 	/**
 	 * Method to get the field option groups.
@@ -53,12 +55,7 @@ class JFormFieldServicegroupedList extends JFormField
 		foreach ($physicals as $physical)
 		{
 			$tmp = JHtml::_('select.option', "physical_".$physical->id,	$physical->alias, 'value', 'text');
-			// Set some option attributes.
-// 			$tmp->class = (string) $option['class'];
-			
-// 			// Set some JavaScript option attributes.
-//  			$tmp->onclick = 'clearLayers(this)';
-			
+			$this->serviceconnector [] = json_encode(array("physical_".$physical->id, $physical->serviceconnector_id));
 			// Add the option.
 			$groups['Physical'][] = $tmp;
 		}
@@ -67,12 +64,7 @@ class JFormFieldServicegroupedList extends JFormField
 		foreach ($virtuals as $virtual)
 		{
 			$tmp = JHtml::_('select.option', "virtual_".$virtual->id,	$virtual->alias, 'value', 'text');
-			// 			// Set some option attributes.
-			// 			$tmp->class = (string) $option['class'];
-				
-			// 			// Set some JavaScript option attributes.
-			// 			$tmp->onclick = (string) $option['onclick'];
-				
+			$this->serviceconnector [] = json_encode(array("virtual_".$virtual->id, $virtual->serviceconnector_id));
 			// Add the option.
 			$groups['Virtual'][] = $tmp;
 		}
@@ -121,8 +113,10 @@ class JFormFieldServicegroupedList extends JFormField
 		$attr .= $this->multiple ? ' multiple="multiple"' : '';
 
 		// Initialize JavaScript field attributes.
-		$attr .=  ' onchange="javascript:clearLayers(this)"' ;
-
+		if($this->element['onchange'])
+		{
+			$attr .=  ' onchange="'.$this->element['onchange'].'"' ;
+		}
 		// Get the field groups.
 		$groups = (array) $this->getGroups();
 
@@ -148,6 +142,7 @@ class JFormFieldServicegroupedList extends JFormField
 					'option.text.toHtml' => false
 				)
 			);
+			$html[] = '<input type="hidden" name="serviceconnectorlist"  id="serviceconnectorlist" value="' .htmlentities(json_encode($this->serviceconnector)). '"/>';
 		}
 
 		$html[] = $this->getHiddenLayersNames();

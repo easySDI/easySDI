@@ -111,7 +111,6 @@ class Easysdi_mapHelper
 				
 			);
 			$compliance = $db->loadObject();
-
 		}
 		
 		$url		= $resource->url;
@@ -123,7 +122,7 @@ class Easysdi_mapHelper
 		}
 		
 		$completeurl = $url.$separator."REQUEST=GetCapabilities&SERVICE=".$connector;
-		if($compliance->value){
+		if($compliance && $compliance->value){
 			$completeurl .= "&version=".$compliance->value;
 		}
 		$session 	= curl_init($completeurl);

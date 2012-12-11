@@ -56,27 +56,30 @@ $search = JRequest::getVar('search','');
 			if (($i>=$limitstart || $limit==0)&& ($i < $limitstart+$limit || $limit==0)){
 				$model = JModel::getInstance('virtualservice', 'easysdi_serviceModel');
 				$service = $model->getItemByServiceAlias($config['id']);
-				switch ($service->serviceconnector_id){
-					case 1:
-						$serviceconnector = "CSW";
-						$layout = "csw";
-						break;
-					case 2:
-						$serviceconnector = "WMS";
-						$layout = "wms";
-						break;
-					case 3:
-						$serviceconnector = "WMTS";
-						$layout = "wmts";
-						break;
-					case 4:
-						$serviceconnector = "WFS";
-						$layout = "wfs";
-						break;
-					case 11:
-						$serviceconnector = "WMSC";
-						$layout = "wms";
-						break;
+				if($service)
+				{
+					switch ($service->serviceconnector_id){
+						case 1:
+							$serviceconnector = "CSW";
+							$layout = "csw";
+							break;
+						case 2:
+							$serviceconnector = "WMS";
+							$layout = "wms";
+							break;
+						case 3:
+							$serviceconnector = "WMTS";
+							$layout = "wmts";
+							break;
+						case 4:
+							$serviceconnector = "WFS";
+							$layout = "wfs";
+							break;
+						case 11:
+							$serviceconnector = "WMSC";
+							$layout = "wms";
+							break;
+					}
 				}
 // 				$policyFile = $config->{'authorization'}->{'policy-file'};
 				?>

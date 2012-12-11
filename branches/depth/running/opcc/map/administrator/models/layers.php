@@ -39,8 +39,8 @@ class Easysdi_mapModellayers extends JModelList
 					'state', 'a.state',
 					'name', 'a.name',
 					'group_id', 'a.group_id',
-					'physicalservice_id', 'a.physicalservice_id',
-					'virtualservice_id', 'a.virtualservice_id',
+					'service_id', 'a.service_id',
+					'servicetype', 'a.servicetype',
 					'layername', 'a.layername',
 					'istiled', 'a.istiled',
 					'isdefaultvisible', 'a.isdefaultvisible',
@@ -158,13 +158,13 @@ class Easysdi_mapModellayers extends JModelList
 		$query->select('#__sdi_map_group_277305.name AS groups_name_277305');
 		$query->join('LEFT', '#__sdi_map_group AS #__sdi_map_group_277305 ON #__sdi_map_group_277305.id = a.group_id');
 		
-		// Join over the foreign key 'physicalservice_id'
+// 		// Join over the foreign key 'physicalservice_id'
 		$query->select('#__sdi_physicalservice22.name AS physicalservice_name');
-		$query->join('LEFT', '#__sdi_physicalservice AS #__sdi_physicalservice22 ON #__sdi_physicalservice22.id = a.physicalservice_id');
+		$query->join('LEFT', '#__sdi_physicalservice AS #__sdi_physicalservice22 ON #__sdi_physicalservice22.id = a.service_id');
 		
-		// Join over the foreign key 'virtualservice_id'
+// 		// Join over the foreign key 'virtualservice_id'
 		$query->select('#__sdi_virtualservice22.name AS virtualservice_name');
-		$query->join('LEFT', '#__sdi_virtualservice AS #__sdi_virtualservice22 ON #__sdi_virtualservice22.id = a.virtualservice_id');
+		$query->join('LEFT', '#__sdi_virtualservice AS #__sdi_virtualservice22 ON #__sdi_virtualservice22.id = a.service_id');
 
 		// Join over the access level.
 		$query->select('ag.title AS access_level');
@@ -205,9 +205,6 @@ class Easysdi_mapModellayers extends JModelList
 				$query->where('( a.name LIKE '.$search.'  OR  a.layername LIKE '.$search.' )');
 			}
 		}
-
-
-
 
 		// Add the list ordering clause.
 		$orderCol	= $this->state->get('list.ordering');

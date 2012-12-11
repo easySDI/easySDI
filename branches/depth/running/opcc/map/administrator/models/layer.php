@@ -90,10 +90,8 @@ class Easysdi_mapModellayer extends JModelAdmin
 	public function getItem($pk = null)
 	{
 		if ($item = parent::getItem($pk)) {
-			if(isset($item->physicalservice_id))
-				$item->service_id = 'physical_'.$item->physicalservice_id;
-			if(isset($item->virtualservice_id))
-				$item->service_id = 'virtual_'.$item->virtualservice_id;
+			if(isset($item->service_id))
+				$item->service_id = $item->servicetype.'_'.$item->service_id;
 			if(isset($item->layername))
 				$item->onloadlayername = $item->layername;
 		}
@@ -111,6 +109,7 @@ class Easysdi_mapModellayer extends JModelAdmin
 		jimport('joomla.filter.output');
 
 		$jform = JRequest::getVar('jform');
+		
 		if (!isset($jform['isdefaultvisible'])) { // see if the checkbox has been submitted
 			$table->isdefaultvisible = 0; // if it has not been submitted, mark the field unchecked
 		}
@@ -119,17 +118,20 @@ class Easysdi_mapModellayer extends JModelAdmin
 		}
 		if (!isset($jform['asOL'])) { // see if the checkbox has been submitted
 			$table->asOL = 0; // if it has not been submitted, mark the field unchecked
+			$table->asOLoptions = "";
+			$table->asOLstyle = "";
+			$table->asOLmatrixset = "";
 		}
 		
 		$service_id 	= $jform['service_id'];
 		$pos 			= strstr ($service_id, 'physical_');
 		if($pos){
-			$table->physicalservice_id 	= substr ($service_id, strrpos ($service_id, '_')+1);
-			$table->virtualservice_id 		= null;
+			$table->service_id 	= substr ($service_id, strrpos ($service_id, '_')+1);
+			$table->servicetype 		= 'physical';
 		}
 		else {
-			$table->virtualservice_id		= substr ($service_id, strrpos ($service_id, '_')+1);
-			$table->physicalservice_id		= null;
+			$table->service_id		= substr ($service_id, strrpos ($service_id, '_')+1);
+			$table->servicetype		= 'virtual';
 		}
 		
 		if (empty($table->id)) {

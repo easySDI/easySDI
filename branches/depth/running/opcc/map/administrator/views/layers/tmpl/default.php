@@ -118,7 +118,6 @@ $saveOrder	= $listOrder == 'a.ordering';
 			$canEdit	= $user->authorise('core.edit',			'com_easysdi_map');
 			$canCheckin	= $user->authorise('core.manage',		'com_easysdi_map');
 			$canChange	= $user->authorise('core.edit.state',	'com_easysdi_map');
-			
 			?>
 			<tr class="row<?php echo $i % 2; ?>">
 				<td class="center"><?php echo JHtml::_('grid.id', $i, $item->id); ?>
@@ -139,7 +138,7 @@ $saveOrder	= $listOrder == 'a.ordering';
 				</td>
 
 				
-				<td><?php if( $item->physicalservice_name ) echo $item->physicalservice_name; else echo $item->virtualservice_name; ?>
+				<td><?php if( $item->servicetype == 'physical' ) echo $item->physicalservice_name; else echo $item->virtualservice_name; ?>
 				</td>
 				<td><?php echo $item->layername; ?>
 				</td>

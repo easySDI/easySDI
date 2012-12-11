@@ -15,6 +15,7 @@ JHtml::_('behavior.formvalidation');
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css');
+$document->addScript('components/com_easysdi_map/views/layer/tmpl/edit.js');
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task)
@@ -26,137 +27,6 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 			alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
 		}
 	}
-
-	var request;
-	var selectedservice;
-	var layername_select; 
-
-	function clearLayers (selectObj)
-	{
-		layername_select = document.getElementById('jform_layername');
-		while ( layername_select.options.length > 0 ) layername_select.options[0] = null;
-	}
-	
-	function getLayers (selectObj)
-	{
-		layername_select = document.getElementById('jform_layername');
-		while ( layername_select.options.length > 0 ) layername_select.options[0] = null;
-		
-		var idx = selectObj.selectedIndex; 
-		
-		selectedservice = selectObj.options[idx].value;
-		user = document.getElementById('jform_user').value;
-		password = document.getElementById('jform_password').value;
-		if (document.getElementById(selectedservice))
-		{
-			var jsonalllayers = document.getElementById(selectedservice).value; 
-			var allayers = JSON.parse(jsonalllayers);
-			for(var i=0; i < allayers.length ; i++){
-				addLayerOption(allayers[i], allayers[i]);
-			}
-		} 
-		else
-		{
-			request = false;
-		    if (window.XMLHttpRequest){
-		    	request = new XMLHttpRequest();
-		    } else if (window.ActiveXObject) {
-		        try{
-		        	request = new ActiveXObject("Msxml2.XMLHTTP");
-		        }catch(e){
-		            try{
-		            	request = new ActiveXObject("Microsoft.XMLHTTP");
-		            }catch(e){
-		            	request = false;
-		            }
-		        }
-		    }
-		    if(!request)
-			    return;
-
-		    var query 			= "index.php?option=com_easysdi_map&task=getLayers&service="+selectedservice+"&user="+user+"&password="+password;
-			
-		    document.getElementById("progress").style.visibility = "visible";
-		    request.onreadystatechange = setLayers;
-		    request.open("GET", query, true);
-		    request.send(null);
-		}		
-	}
-
-	function setLayers()
-	{
-	    if(request.readyState == 4){
-	    	layername_select = document.getElementById('jform_layername');
-			while ( layername_select.options.length > 0 ) layername_select.options[0] = null;
-			
-	    	document.getElementById("progress").style.visibility = "hidden";
-			var JSONtext = request.responseText;
-			
-			if(JSONtext == "[]"){
-				return;
-			}
-
-			
-			var ok = true;
-			
-			var JSONobject = JSON.parse(JSONtext, function (key, value) {
-				if(key && typeof key === 'string' && key == 'ERROR'){
-					alert(value);   
-					ok = false;	
-					return;
-			    }
-			    if (value && typeof value === 'string') {
-			    	addLayerOption(value, value);
-			    }
-			});
-
-			if(ok)
-			{
-				var input = document.createElement("input");
-				input.setAttribute("type", "hidden");
-				input.setAttribute("name", selectedservice);
-				input.setAttribute("id", selectedservice);
-				input.setAttribute("value", JSONtext);
-				document.getElementById("layer-form").appendChild(input);
-			}
-	    }
-	}
-
-	function addLayerOption (id, value)
-	{
-		var onloadlayername = document.getElementById('jform_onloadlayername').value;
-		
-		var option = new Option( id,value);
-    	var i = layername_select.length;
-		layername_select.options[layername_select.length] = option;
-		if(onloadlayername && onloadlayername == value)
-			layername_select.options[i].selected = "1";
-	}
-	
-	function init()
-	{
-		if(document.getElementById ('jform_asOL').checked == true)
-			document.getElementById ('jform_asOLparams').disabled = false;
-		
-		var service_select = document.getElementById('jform_service_id');
-		getLayers(service_select);
-	}
-	
-	function enableOlparams()
-	{
-		if(document.getElementById ('jform_asOL').checked == true)
-		{
-			document.getElementById ('jform_asOLparams').disabled = false;
-			document.getElementById ('jform_asOLparams').value = "";
-		}
-		else
-		{
-			document.getElementById ('jform_asOLparams').disabled = true;
-			document.getElementById ('jform_asOLparams').value = "";
-		}
-	}
-	
-	window.addEvent('domready', init);
 </script>
 
 <form
@@ -228,8 +98,11 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 			<ul class="adminformlist">
 				<li><?php echo $this->form->getLabel('asOL'); ?> <?php echo $this->form->getInput('asOL'); ?>
 				</li>
-
-				<li><?php echo $this->form->getLabel('asOLparams'); ?> <?php echo $this->form->getInput('asOLparams'); ?>
+				<li><?php echo $this->form->getLabel('asOLstyle'); ?> <?php echo $this->form->getInput('asOLstyle'); ?>
+				</li>
+				<li><?php echo $this->form->getLabel('asOLmatrixset'); ?> <?php echo $this->form->getInput('asOLmatrixset'); ?>
+				</li>
+				<li><?php echo $this->form->getLabel('asOLoptions'); ?> <?php echo $this->form->getInput('asOLoptions'); ?>
 				</li>
 			</ul>
 		</fieldset>

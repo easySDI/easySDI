@@ -63,6 +63,7 @@
                  
 	   <field 	name="services" 
 				type="ServicegroupedList" 
+				onchange=""
 				multiple ="true"
 				class="inputbox"
 				size="10"

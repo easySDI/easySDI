@@ -469,16 +469,15 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                      						            layer: "<?php echo $layer->layername;?>", 
                      						            visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
                      						            transitionEffect: 'resize',
-                     						            opacity: <?php echo $layer->opacity;?>
-                     						            <?php if(!empty($layer->asOLparams) || !empty($layer->metadatalink)){?>
-                    									,
-                    									<?php if (!empty($layer->metadatalink)){?>
-                    				   			        metadataURL: "<?php echo $layer->metadatalink;  ?>"
-                    					   			    <?php if(!empty($layer->asOLparams)) echo ',';?>
-                    				   			        <?php }?>
+                     						            opacity: <?php echo $layer->opacity;?>,
+                     						           	style: "<?php echo $layer->asOLstyle;  ?>",
+                     						           	matrixSet: "<?php echo $layer->asOLmatrixset;  ?>",
+                     						            <?php if (!empty($layer->metadatalink)){?>
+                    				   			        metadataURL: "<?php echo $layer->metadatalink;  ?>",
+                    					   			    <?php }?>
                     				   			        <?php 
-                    			                     		echo  $layer->asOLparams;
-                    			                     	}?>
+                    			                     	echo  $layer->asOLoptions;
+                    			                     	?>
                      						         }
                      						     ],
                      						     group: "<?php echo $group->alias;?>"
@@ -501,16 +500,16 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 													},
 													{
 														 visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
-														 singleTile: <?php if ($layer->serviceconnector == "WMSC") echo "false"; else echo "true"; ?>,
+														 singleTile: true,
 														 opacity: <?php echo $layer->opacity;?>,
 														 transitionEffect: 'resize',
+														 style: "<?php echo $layer->asOLstyle;  ?>",
 														 <?php 
 														 if (!empty($layer->metadatalink)){
 														 ?>
-			   			                     				metadataURL: "<?php echo $layer->metadatalink;  ?>"
-				   			                     		 <?php if(!empty($layer->asOLparams)) echo ',';?>
-			   			                     			 <?php }?>
-			   			                     			<?php echo  $layer->asOLparams; ?>
+			   			                     				metadataURL: "<?php echo $layer->metadatalink;  ?>",
+				   			                     		 <?php }?>
+			   			                     			<?php echo  $layer->asOLoptions; ?>
 													}
                                 				],
                     						    group: "<?php echo $group->alias;?>"
@@ -533,15 +532,16 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                      								},
                      								{
                      									visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
+                     									singleTile: false,
                      									opacity: <?php echo $layer->opacity;?>,
                      									transitionEffect: 'resize',
+                     									style: "<?php echo $layer->asOLstyle;  ?>",
                      									<?php 
                      									if (!empty($layer->metadatalink)){
                      									?>
-                     									metadataURL: "<?php echo $layer->metadatalink;  ?>"
-                     									<?php if(!empty($layer->asOLparams)) echo ',';?>
+                     									metadataURL: "<?php echo $layer->metadatalink;  ?>",
                      									<?php }?>
-                     									<?php echo  $layer->asOLparams; ?>
+                     									<?php echo  $layer->asOLoptions; ?>
                      									}
                      						     ],
                      						     group: "<?php echo $group->alias;?>"
