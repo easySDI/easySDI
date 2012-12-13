@@ -8,7 +8,6 @@
 		<field name="allowfrom" type="calendar" class="inputbox" default="0000-00-00"  label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWFROM" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWFROM"  filter="safehtml" />
 		<field name="allowto" type="calendar" class="inputbox" default="0000-00-00"  label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWTO" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWTO"  filter="safehtml" />
 		<field name="priority" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_PRIORITY" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_PRIORITY"  filter="safehtml" />
-		<field name="virtualservice_id" type="sql" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_VIRTUALSERVICE_ID" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_VIRTUALSERVICE_ID"  query="SELECT 0 AS `id`, '- Please select -' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_virtualservice`" key_field="id" value_field="name" />
 		<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL" description="JFIELD_ACCESS_DESC" class="inputbox" size="1"/>
 		<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox" size="1" default="1">
 			<option value="1">JPUBLISHED</option>
@@ -19,6 +18,7 @@
 		<field name="id" type="hidden" filter="unset"/>
 		<field name="guid" type="hidden" filter="unset"/>
 		<field name="asset_id" type="hidden" filter="SAFEHTML"/>
+		<field name="virtualservice_id" type="hidden"  filter="unset" />
 	</fieldset>
 	<fieldset name="service_policy">
 		<field name="prefix" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_WFS_SERVER_PREFIXE" description="COM_EASYSDI_SERVICE_WFS_SERVER_PREFIXE"  filter="safehtml" />
@@ -26,9 +26,9 @@
 	</fieldset>
 	<fieldset name="csw_policy">
 		<field name="csw_version" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_VERSION" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_VERSION"  filter="safehtml" />
-		<field name="csw_anystate" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYSTATE" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYSTATE"  default="1"  validate="boolean"  filter="safehtml" />
-		<field name="csw_anycontext" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYCONTEXT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYCONTEXT"  default="1"  validate="boolean"  filter="safehtml" />
-		<field name="csw_anyvisibility" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYVISIBILITY" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYVISIBILITY"  default="1"  validate="boolean"  filter="safehtml" />
+		<field name="csw_anystate" type="checkbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYSTATE" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYSTATE" value="1" default="0"/>
+		<field name="csw_anycontext" type="checkbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYCONTEXT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYCONTEXT" value="1" default="0"/>
+		<field name="csw_anyvisibility" type="checkbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYVISIBILITY" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYVISIBILITY" value="1" default="0"/>
 		<field name="csw_geographicfilter" type="textarea" rows="3"  cols="30" size="40" class="inputbox" filter="safehtml" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_GEOGRAPHICFILTER" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_GEOGRAPHICFILTER"  />
 	</fieldset>
 	<fieldset name="wms_policy">

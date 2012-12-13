@@ -98,6 +98,10 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			$layout = JRequest::getVar('layout',null);
 			$virtualservice_id = JRequest::getVar('virtualservice_id',null);
 			
+			if (!isset($item->virtualservice_id)) {
+				$item->virtualservice_id = (int) $virtualservice_id;
+			}
+			
 			@$physicalService =& JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
 			@$servicePolicy =& JTable::getInstance('servicepolicy', 'Easysdi_serviceTable');
 			@$wmsLayer =& JTable::getInstance('wmslayer', 'Easysdi_serviceTable');
@@ -157,5 +161,22 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 
 		}
 	}
-
+	
+	
+	public function save($data) {
+		var_dump($data);
+		var_dump(JRequest::getVar('jform', null));
+		die();
+		if(parent::save($data)){
+			//Instantiate an address JTable
+			/*$virtualmetadata =& JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
+			//Call the overloaded save function to store the input data
+			$data['id'] = $this->getItem()->get('id');
+			if( !$virtualmetadata->save($data) ){	
+				return false;
+			}*/
+			return true;
+		}
+		return false;
+	}
 }

@@ -15,6 +15,8 @@ JHtml::_('behavior.formvalidation');
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
+
+//var_dump($this);
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task)
@@ -60,7 +62,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 								<input type="text" name="jform[wms_namespace]" id="jform_wms_namespace" value="' . $ps['namespace'] . '" class="inputbox" size="40" aria-invalid="false" />
 							</li>
 							<li>
-								<table class="admintalbe"  id="wms_layers">
+								<table class="admintalbe" id="wms_layers">
 									<tbody>
 										<tr>
 											<th><span style="font-weight: bold;">Name</span></th>

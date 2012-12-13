@@ -32,7 +32,7 @@ class Easysdi_serviceViewPolicy extends JViewLegacy
 		
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
-            throw new Exception(implode("\n", $errors));
+			throw new Exception(implode("\n", $errors));
 		}
 
 		$this->addToolbar();
