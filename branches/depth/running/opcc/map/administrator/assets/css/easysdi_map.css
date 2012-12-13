@@ -34,7 +34,7 @@
 	visibility:hidden; 
 	position:absolute; 
 	background-color: #B8B9BB;
-	height:40%;
+	height:80%;
 	width:95%;
 	opacity:0.3;
 	filter:alpha(opacity=30);
@@ -45,3 +45,16 @@
 	padding-left:60px;
 	padding-top:70px;
 }
+
+#WMTS-info{
+	color: #000000;
+    margin: 10px 0;
+    background: url("../images/notice-note.png") no-repeat scroll 0 0 #FFFFFF;
+    border-bottom: 2px solid #FAA528;
+    border-top: 2px solid #FAA528;
+    padding: 10px 10px 10px 40px;
+        list-style: none outside none;
+        font-weight: bold;
+        text-indent: 0;
+}
+

@@ -46,6 +46,13 @@
                 value=""
                 filter="safehtml" /> 
 
+       <field 	name="istiled" 
+       			type="checkbox" 
+       			value="1"
+       			label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ISTILED"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ISTILED" 
+                filter="intval" /> 
+
 		<field 	name="isdefaultvisible" 
        			type="checkbox" 
        			label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ISDEFAULTVISIBLE"

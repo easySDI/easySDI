@@ -95,6 +95,10 @@ $document->addScript('components/com_easysdi_map/views/layer/tmpl/edit.js');
 		<?php echo JHtml::_('sliders.start', 'user-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
 		<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_MAP_LAYER_FIELDSET_OPENLAYERS'), 'openlayers-options'); ?>
 		<fieldset class="adminform">
+
+		<div  id="WMTS-info">
+			<?php echo JText::_("COM_EASYSDI_MAP_FORM_LBL_LAYER_WMTS_ASOL");?></li>
+		</div>
 			<ul class="adminformlist">
 				<li><?php echo $this->form->getLabel('asOL'); ?> <?php echo $this->form->getInput('asOL'); ?>
 				</li>

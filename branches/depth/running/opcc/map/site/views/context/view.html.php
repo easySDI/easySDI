@@ -46,7 +46,7 @@ class Easysdi_mapViewContext extends JViewLegacy {
         }
         
         if(!in_array($this->item->access, $user->getAuthorisedViewLevels())){
-        	JFactory::getApplication()->enqueueMessage( JText::_('JERROR_ALERTNOAUTHOR'), 'error' );
+        	JFactory::getApplication()->enqueueMessage( JText::_('JERROR_ALERTNOAUTHOR'), 'notice' );
         	return;
         }
         

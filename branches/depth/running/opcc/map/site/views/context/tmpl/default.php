@@ -20,7 +20,7 @@ if( $this->item ) :
 JHTML::script('ext-base.js', 'administrator/components/com_easysdi_core/libraries/ext/adapter/ext/');
 JHTML::script('ext-all.js', 'administrator/components/com_easysdi_core/libraries/ext/');
 JHTML::script('RowExpander.js', 'administrator/components/com_easysdi_core/libraries/ux/ext/');
-JHTML::script('OpenLayers.js', 'administrator/components/com_easysdi_core/libraries/openlayers/');
+JHTML::script('OpenLayers.js', 'administrator/components/com_easysdi_core/libraries/openlayers/lib/');
 JHTML::script('GeoExt.js', 'administrator/components/com_easysdi_core/libraries/geoext/lib/');
 JHTML::script('PrintPreview.js', 'administrator/components/com_easysdi_core/libraries/ux/GeoExt/');
 JHTML::script('loader.js', 'administrator/components/com_easysdi_core/libraries/gxp/script/');
@@ -468,7 +468,9 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                      						        	name:"<?php echo $layer->name;?>", 
                      						            url : "<?php echo $layer->serviceurl;?>", 
                      						            layer: "<?php echo $layer->layername;?>", 
-                     						            visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
+                     						            visibility: <?php  if ($layer->isdefaultvisible == 1) echo "true"; else echo "false"; ?>,
+                     						            requestEncoding:"REST",
+                     						            singleTile: <?php if ($layer->istiled == 1) echo "true"; else echo "false"; ?>,
                      						            transitionEffect: 'resize',
                      						            opacity: <?php echo $layer->opacity;?>,
                      						           	style: "<?php echo $layer->asOLstyle;  ?>",
@@ -500,8 +502,8 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 														version: "<?php echo $layer->version;  ?>"
 													},
 													{
-														 visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
-														 singleTile: true,
+														 visibility: <?php  if ($layer->isdefaultvisible == 1) echo "true"; else echo "false"; ?>,
+														 singleTile: <?php if ($layer->istiled == 1) echo "true"; else echo "false"; ?>,
 														 opacity: <?php echo $layer->opacity;?>,
 														 transitionEffect: 'resize',
 														 style: "<?php echo $layer->asOLstyle;  ?>",
@@ -532,8 +534,8 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                      									tiled: true
                      								},
                      								{
-                     									visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
-                     									singleTile: false,
+                     									visibility: <?php  if ($layer->isdefaultvisible == 1) echo "true"; else echo "false"; ?>,
+                     									singleTile: <?php if ($layer->istiled == 1) echo "true"; else echo "false"; ?>,
                      									opacity: <?php echo $layer->opacity;?>,
                      									transitionEffect: 'resize',
                      									style: "<?php echo $layer->asOLstyle;  ?>",
@@ -562,7 +564,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 											{
 			                     				source: "<?php echo $layer->servicealias;  ?>",
 			                     				//tiled value gives the transitionEffect value see WMSSource.js l.524
-			                     				tiled: <?php if ($layer->serviceconnector == "WMSC") echo "true"; else echo "false"; ?>,
+			                     				tiled: <?php if ($layer->istiled == 1) echo "true"; else echo "false"; ?>,
 			                     				<?php if (!empty($layer->version)){?>
 			                     				version: "<?php echo $layer->version;  ?>",
 												<?php }?>
@@ -572,7 +574,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 			                     				name: "<?php echo $layer->layername;?>",
 			                     				group: "<?php echo $group->alias;?>",
 			                     				<?php if ($group->alias == "background") echo "fixed: true,";?>
-			                     				visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
+			                     				visibility: <?php  if ($layer->isdefaultvisible == 1) echo "true"; else echo "false"; ?>,
 			                     				opacity: <?php echo $layer->opacity;?>
 			                     			},
 			                     			<?php
