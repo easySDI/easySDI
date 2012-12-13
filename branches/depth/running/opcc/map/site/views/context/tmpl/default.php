@@ -469,7 +469,6 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                      						            url : "<?php echo $layer->serviceurl;?>", 
                      						            layer: "<?php echo $layer->layername;?>", 
                      						            visibility: <?php  if ($layer->isdefaultvisible == 1) echo "true"; else echo "false"; ?>,
-                     						            requestEncoding:"REST",
                      						            singleTile: <?php if ($layer->istiled == 1) echo "true"; else echo "false"; ?>,
                      						            transitionEffect: 'resize',
                      						            opacity: <?php echo $layer->opacity;?>,

@@ -227,9 +227,12 @@ class Easysdi_serviceViewVirtualService extends JView
 				if (strcmp($config['id'],$this->id)==0){
 					$this->config = $config;
 					$keywordArray = array();
+					if($config->{"service-metadata"}->{'KeywordList'}->Keyword)
+					{
 					foreach ($config->{"service-metadata"}->{'KeywordList'}->Keyword as $keyword)
 					{
 						array_push($keywordArray, $keyword) ;
+					}
 					}
 					$this->keywordString = implode(',',$keywordArray) ;
 					break;
