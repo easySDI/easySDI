@@ -37,6 +37,13 @@ sdi.gxp.plugins.Print = Ext.extend(gxp.plugins.Print, {
 	/** api: ptype = gxp_print */
     ptype: "sdi_gxp_print",
 
+    /** private: method[constructor]
+     */
+    constructor: function(config) {
+        sdi.gxp.plugins.Print.superclass.constructor.apply(this, arguments);
+    },
+
+    
     /** api: method[addActions]
      */
     addActions: function() {
@@ -205,7 +212,7 @@ sdi.gxp.plugins.Print = Ext.extend(gxp.plugins.Print, {
                     resizable: false,
                     width: 360,
                     items: [
-                        new GeoExt.ux.PrintPreview({
+                        new sdi.geoext.ux.PrintPreview({
                             minWidth: 336,
                             mapTitle: this.target.about && this.target.about["title"],
                             comment: this.target.about && this.target.about["abstract"],

@@ -97,7 +97,7 @@ $document->addScript('components/com_easysdi_map/views/layer/tmpl/edit.js');
 		<fieldset class="adminform">
 
 		<div  id="WMTS-info">
-			<?php echo JText::_("COM_EASYSDI_MAP_FORM_LBL_LAYER_WMTS_ASOL");?></li>
+			<?php echo JText::_("COM_EASYSDI_MAP_FORM_LBL_LAYER_WMTS_ASOL");?>
 		</div>
 			<ul class="adminformlist">
 				<li><?php echo $this->form->getLabel('asOL'); ?> <?php echo $this->form->getInput('asOL'); ?>

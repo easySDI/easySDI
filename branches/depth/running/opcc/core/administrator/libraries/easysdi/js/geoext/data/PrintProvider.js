@@ -20,45 +20,8 @@
  */
 Ext.namespace("sdi.geoext.data");
 
-/** api: example
- *  Minimal code to print as much of the current map extent as possible as
- *  soon as the print service capabilities are loaded, using the first layout
- *  reported by the print service:
- * 
- *  .. code-block:: javascript
- *     
- *      var mapPanel = new GeoExt.MapPanel({
- *          renderTo: "mappanel",
- *          layers: [new OpenLayers.Layer.WMS("wms", "/geoserver/wms",
- *              {layers: "topp:tasmania_state_boundaries"})],
- *          center: [146.56, -41.56],
- *          zoom: 7
- *      });
- *      var printProvider = new GeoExt.data.PrintProvider({
- *          url: "/geoserver/pdf",
- *          listeners: {
- *              "loadcapabilities": function() {
- *                  var printPage = new GeoExt.data.PrintPage({
- *                      printProvider: printProvider
- *                  });
- *                  printPage.fit(mapPanel, true);
- *                  printProvider.print(mapPanel, printPage);
- *              }
- *          }
- *      });
- */
-
-/** api: constructor
- *  .. class:: PrintProvider
- * 
- *  Provides an interface to a Mapfish or GeoServer print module. For printing,
- *  one or more instances of :class:`GeoExt.data.PrintPage` are also required
- *  to tell the PrintProvider about the scale and extent (and optionally
- *  rotation) of the page(s) we want to print. 
- */
-
-/** sdi extension
- * 
+/** 
+ * sdi extension
  */
 sdi.geoext.data.PrintProvider = Ext.extend(GeoExt.data.PrintProvider, {
    

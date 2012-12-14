@@ -29,6 +29,9 @@ JHTML::script('LayerTree.js', 'administrator/components/com_easysdi_core/librari
 JHTML::script('Print.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
 JHTML::script('LayerManager.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
 JHTML::script('PrintProvider.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/geoext/data/');
+JHTML::script('PrintPreview.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/geoext/ux/');
+JHTML::script('PrintMapPanel.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/geoext/widgets/');
+
 
 JHTML::_('stylesheet', 'ext-all.css', 'administrator/components/com_easysdi_core/libraries/ext/resources/css/');
 JHTML::_('stylesheet', 'xtheme-gray.css', 'administrator/components/com_easysdi_core/libraries/ext/resources/css/');
