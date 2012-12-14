@@ -21,16 +21,17 @@ JHTML::script('ext-base.js', 'administrator/components/com_easysdi_core/librarie
 JHTML::script('ext-all.js', 'administrator/components/com_easysdi_core/libraries/ext/');
 JHTML::script('RowExpander.js', 'administrator/components/com_easysdi_core/libraries/ux/ext/');
 JHTML::script('OpenLayers.js', 'administrator/components/com_easysdi_core/libraries/openlayers/');
-JHTML::script('geoextall.min.js', 'administrator/components/com_easysdi_core/libraries/geoext/lib/');
+JHTML::script('geoext.min.js', 'administrator/components/com_easysdi_core/libraries/geoext/lib/');
 JHTML::script('PrintPreview.js', 'administrator/components/com_easysdi_core/libraries/ux/GeoExt/');
 JHTML::script('gxp.min.js', 'administrator/components/com_easysdi_core/libraries/gxp/script/');
 
-JHTML::script('LayerTree.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
-JHTML::script('Print.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
-JHTML::script('LayerManager.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
-JHTML::script('PrintProvider.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/geoext/data/');
-JHTML::script('PrintPreview.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/geoext/ux/');
-JHTML::script('PrintMapPanel.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/geoext/widgets/');
+// JHTML::script('LayerTree.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
+// JHTML::script('Print.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
+// JHTML::script('LayerManager.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
+// JHTML::script('PrintProvider.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/geoext/data/');
+// JHTML::script('PrintPreview.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/geoext/ux/');
+// JHTML::script('PrintMapPanel.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/geoext/widgets/');
+JHTML::script('sdi.min.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/');
 
 
 JHTML::_('stylesheet', 'ext-all.css', 'administrator/components/com_easysdi_core/libraries/ext/resources/css/');

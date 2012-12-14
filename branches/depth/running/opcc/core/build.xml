@@ -83,7 +83,7 @@
 	 </target>
 	
 	<target name="concatenategeoextPrintProvider">
-		 <concat destfile="administrator/libraries/geoext/lib/geoextall.min.js" fixlastline="yes">
+		 <concat destfile="administrator/libraries/geoext/lib/geoext.min.js" fixlastline="yes">
 		 <filelist dir="administrator/libraries/geoext/lib" 
 		 	files="geoextcon.min.js, 
 		        GeoExt/data/PrintProvider.js 
@@ -210,6 +210,23 @@
 				<jsmin srcfile="administrator/libraries/gxp/script/gxp.js" suffix="true">
 				</jsmin>
 		 </target>
+	
+	<target name="concatenatesdi">
+		 <concat destfile="administrator/libraries/easysdi/js/sdi.js" fixlastline="yes">
+		 <filelist dir="administrator/libraries/easysdi/js" 
+		 	files="gxp/plugins/LayerTree.js, 
+		 	gxp/plugins/Print.js,
+		 	gxp/plugins/LayerManager.js,
+		 	geoext/data/PrintProvider.js, 
+		 			geoext/ux/PrintPreview.js, 
+		 			geoext/widgets/PrintMapPanel.js" />
+		 </concat>
+	</target>
+	
+	<target name="minifysdi" >
+			<jsmin srcfile="administrator/libraries/easysdi/js/sdi.js" suffix="true">
+			</jsmin>
+	 </target>
 	
 	<target name="package" depends="create-structure,compression"
 		description="Main target">
