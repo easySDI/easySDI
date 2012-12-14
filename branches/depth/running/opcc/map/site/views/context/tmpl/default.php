@@ -20,10 +20,10 @@ if( $this->item ) :
 JHTML::script('ext-base.js', 'administrator/components/com_easysdi_core/libraries/ext/adapter/ext/');
 JHTML::script('ext-all.js', 'administrator/components/com_easysdi_core/libraries/ext/');
 JHTML::script('RowExpander.js', 'administrator/components/com_easysdi_core/libraries/ux/ext/');
-JHTML::script('OpenLayers.js', 'administrator/components/com_easysdi_core/libraries/openlayers/lib/');
-JHTML::script('GeoExt.js', 'administrator/components/com_easysdi_core/libraries/geoext/lib/');
+JHTML::script('OpenLayers.js', 'administrator/components/com_easysdi_core/libraries/openlayers/');
+JHTML::script('geoextall.min.js', 'administrator/components/com_easysdi_core/libraries/geoext/lib/');
 JHTML::script('PrintPreview.js', 'administrator/components/com_easysdi_core/libraries/ux/GeoExt/');
-JHTML::script('loader.js', 'administrator/components/com_easysdi_core/libraries/gxp/script/');
+JHTML::script('gxp.min.js', 'administrator/components/com_easysdi_core/libraries/gxp/script/');
 
 JHTML::script('LayerTree.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
 JHTML::script('Print.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
