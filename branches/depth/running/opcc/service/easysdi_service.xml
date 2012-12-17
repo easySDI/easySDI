@@ -7,7 +7,7 @@
     <author>EasySDI Community</author>
     <authorEmail>contact@easysdi.org</authorEmail>
     <authorUrl>http://www.easysdi.org</authorUrl>
-    <version>3.1.0</version>
+    <version>3.1.1</version>
     <description></description>
     <scriptfile>script.php</scriptfile>
     <install> <!-- Runs on install -->
@@ -45,10 +45,10 @@
             <folder>views</folder>
         </files>
         <languages folder="administrator">
-            <language tag="en-GB">language/en-GB/en-GB.com_easysdi_service.ini
-            </language>
-            <language tag="en-GB">language/en-GB/en-GB.com_easysdi_service.sys.ini
-            </language>
+            <language tag="en-GB">language/en-GB/en-GB.com_easysdi_service.ini</language>
+            <language tag="en-GB">language/en-GB/en-GB.com_easysdi_service.sys.ini</language>
+            <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_service.ini</language>
+            <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_service.sys.ini</language>
         </languages>
     </administration>
 </extension>

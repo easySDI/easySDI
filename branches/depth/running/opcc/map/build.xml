@@ -18,7 +18,12 @@
 		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi_map.zip"
 			basedir="."
 			excludes=" 
-			        build.xml ; 
+			        site/views/contexts/** ;
+					site/views/group/** ;
+					site/views/groups/** ;
+					site/views/layer/** ;
+					site/views/layers/** ;
+					build.xml ; 
 					out/** ; 
 					.cache/** ; 
 					.svn/** ; 

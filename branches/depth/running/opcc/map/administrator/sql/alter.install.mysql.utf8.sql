@@ -28,11 +28,5 @@ ADD CONSTRAINT `#__sdi_map_context_fk2` FOREIGN KEY (`unit_id`) REFERENCES `#__s
 ALTER TABLE `#__sdi_map_context`
 ADD CONSTRAINT `#__sdi_map_context_fk3` FOREIGN KEY (`defaultserviceconnector_id`) REFERENCES `#__sdi_sys_serviceconnector` (`id`);
 
---ALTER TABLE `#__sdi_map_layer`
---ADD CONSTRAINT `#__sdi_map_layer_fk1` FOREIGN KEY (`physicalservice_id`) REFERENCES `#__sdi_physicalservice` (`id`);
---
---ALTER TABLE `#__sdi_map_layer`
---ADD CONSTRAINT `#__sdi_map_layer_fk2` FOREIGN KEY (`virtualservice_id`) REFERENCES `#__sdi_virtualservice` (`id`);
-
 ALTER TABLE `#__sdi_map_layer`
 ADD CONSTRAINT `#__sdi_map_layer_fk3` FOREIGN KEY (`group_id`) REFERENCES `#__sdi_map_group` (`id`);

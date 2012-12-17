@@ -22,15 +22,9 @@ JHTML::script('ext-all.js', 'administrator/components/com_easysdi_core/libraries
 JHTML::script('RowExpander.js', 'administrator/components/com_easysdi_core/libraries/ux/ext/');
 JHTML::script('OpenLayers.js', 'administrator/components/com_easysdi_core/libraries/openlayers/');
 JHTML::script('geoext.min.js', 'administrator/components/com_easysdi_core/libraries/geoext/lib/');
-JHTML::script('PrintPreview.js', 'administrator/components/com_easysdi_core/libraries/ux/GeoExt/');
+JHTML::script('PrintPreview.js', 'administrator/components/com_easysdi_core/libraries/ux/geoext/');
 JHTML::script('gxp.min.js', 'administrator/components/com_easysdi_core/libraries/gxp/script/');
 
-// JHTML::script('LayerTree.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
-// JHTML::script('Print.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
-// JHTML::script('LayerManager.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
-// JHTML::script('PrintProvider.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/geoext/data/');
-// JHTML::script('PrintPreview.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/geoext/ux/');
-// JHTML::script('PrintMapPanel.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/geoext/widgets/');
 JHTML::script('sdi.min.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/');
 
 
@@ -328,7 +322,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 			    createURL: "<?php if($this->params->get('printservicecreateurl') == '') echo  $this->params->get('printserviceurl').'create.json'; else  echo $this->params->get('printservicecreateurl');?>",
                 			    includeLegend: true, 
                 			    actionTarget: "map.tbar",
-                			    showButtonText: true
+                			    showButtonText: false
                 			},
                 			<?php
                 			break;
@@ -486,7 +480,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                     			                     	?>
                      						         }
                      						     ],
-                     						     group: "<?php echo $group->alias;?>"
+                     						     group: "<?php if($group->isbackground)echo 'background'; else echo $group->alias;?>"
                      						 },
                      						 <?php
                      						break;
@@ -518,7 +512,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 			   			                     			<?php echo  $layer->asOLoptions; ?>
 													}
                                 				],
-                    						    group: "<?php echo $group->alias;?>"
+                                				group: "<?php if($group->isbackground)echo 'background'; else echo $group->alias;?>"
                      						},
                      						<?php 
                      						break;
@@ -550,7 +544,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                      									<?php echo  $layer->asOLoptions; ?>
                      									}
                      						     ],
-                     						     group: "<?php echo $group->alias;?>"
+                     						    group: "<?php if($group->isbackground)echo 'background'; else echo $group->alias;?>"
                      						},
                      						<?php 
                      						break;
@@ -575,7 +569,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 			                     				metadataURL: "<?php echo $layer->metadatalink;  ?>",
 			                     				<?php }?>
 			                     				name: "<?php echo $layer->layername;?>",
-			                     				group: "<?php echo $group->alias;?>",
+			                     				group: "<?php if($group->isbackground)echo 'background'; else echo $group->alias;?>",
 			                     				<?php if ($group->alias == "background") echo "fixed: true,";?>
 			                     				visibility: <?php  if ($layer->isdefaultvisible == 1) echo "true"; else echo "false"; ?>,
 			                     				opacity: <?php echo $layer->opacity;?>

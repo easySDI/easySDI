@@ -1,4 +1,11 @@
 /**
+ * @version     3.0.0
+* @package     com_easysdi_core
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+*/
+/**
  * Copyright (c) 2008-2011 The Open Planning Project
  * 
  * Published under the GPL license.
@@ -30,6 +37,9 @@ Ext.namespace("sdi.gxp.plugins");
  *    Plugin for adding a tree of layers with their legend to a
  *    :class:`gxp.Viewer`. Also provides a context menu on layer nodes.
  */   
+/** 
+ * sdi extension
+ */
 sdi.gxp.plugins.LayerManager = Ext.extend(sdi.gxp.plugins.LayerTree, {
     
     /** api: ptype = gxp_layermanager */

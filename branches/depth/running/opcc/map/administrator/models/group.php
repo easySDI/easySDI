@@ -123,6 +123,10 @@ class Easysdi_mapModelgroup extends JModelAdmin
 			}
 
 		}
+		
+		if (empty($table->alias)){
+			$table->alias = $table->name;
+		}
 	}
 
 }

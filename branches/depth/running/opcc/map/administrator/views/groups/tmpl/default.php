@@ -128,7 +128,7 @@ $saveOrder	= $listOrder == 'a.ordering';
 						<?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($item->alias));?></p>
 				</td>
 
-				<td class="center"><?php echo $item->isdefaultopen; ?>
+				<td class="center"><?php if($item->isdefaultopen == 1 )echo JText::_('JYES'); else echo JText::_('JNO'); ?>
 				</td>
 				<td class="center">
 					<?php echo $this->escape($item->access_level); ?>

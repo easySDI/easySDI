@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS `#__sdi_virtualservice` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR(36)  NOT NULL ,
 `ordering` INT(11)  ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11) NOT NULL  ,
@@ -18,7 +18,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_layer` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR(36)  NOT NULL ,
 `ordering` INT(11)  ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11) NOT NULL  ,
@@ -46,3 +46,28 @@ VALUES
 (9,1,0,11,3,1,1,1,0),
 (10,1,0,11,4,1,1,1,0)
 ;
+
+ALTER TABLE  `#__sdi_physicalservice_servicecompliance` RENAME TO  `#__sdi_service_servicecompliance`;
+ALTER TABLE  `#__sdi_physicalservice_servicecompliance` ADD COLUMN `servicetype` VARCHAR(10) NOT NULL;
+ALTER TABLE  `#__sdi_physicalservice_servicecompliance` CHANGE COLUMN `physicalservice_id` `service_id`;
+
+ ALTER TABLE `#__sdi_sys_serviceconnector` MODIFY   checked_out INT(11) NOT NULL;
+ ALTER TABLE  `#__sdi_sys_serviceversion` MODIFY   checked_out INT(11) NOT NULL;
+ ALTER TABLE `#__sdi_sys_servicecompliance` MODIFY   checked_out INT(11) NOT NULL;
+ ALTER TABLE `#__sdi_sys_serviceoperation` MODIFY   checked_out INT(11) NOT NULL;
+ ALTER TABLE `#__sdi_sys_operationcompliance` MODIFY   checked_out INT(11) NOT NULL;
+ ALTER TABLE `#__sdi_sys_authenticationlevel` MODIFY   checked_out INT(11) NOT NULL;
+ ALTER TABLE `#__sdi_sys_authenticationconnector` MODIFY   checked_out INT(11) NOT NULL;
+ ALTER TABLE `#__sdi_physicalservice` MODIFY   checked_out INT(11) NOT NULL;
+ ALTER TABLE  `#__sdi_service_servicecompliance` MODIFY   checked_out INT(11) NOT NULL;
+ 
+  ALTER TABLE `#__sdi_sys_serviceconnector` MODIFY   checked_out_time DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00';
+ ALTER TABLE  `#__sdi_sys_serviceversion` MODIFY   checked_out_time DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00';
+ ALTER TABLE `#__sdi_sys_servicecompliance` MODIFY   checked_out_time DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00';
+ ALTER TABLE `#__sdi_sys_serviceoperation` MODIFY   checked_out_time DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00';
+ ALTER TABLE `#__sdi_sys_operationcompliance` MODIFY   checked_out_time DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00';
+ ALTER TABLE `#__sdi_sys_authenticationlevel` MODIFY   checked_out_time DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00';
+ ALTER TABLE `#__sdi_sys_authenticationconnector` MODIFY   checked_out_time DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00';
+ ALTER TABLE `#__sdi_physicalservice` MODIFY   checked_out_time DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00';
+ ALTER TABLE  `#__sdi_service_servicecompliance` MODIFY   checked_out_time DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00';
+ 
