@@ -9,16 +9,18 @@
   <author>EasySDI Community</author>
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>3.0.0</version> 
+  <version>3.1.0</version> 
   <description>PKG_EASYSDI_XML_DESCRIPTION</description> 
   <files folder="easysdi"> 
-      <file type="component"  id="com_easysdi_core" >com_easysdi_core.zip</file> 
-	  <file type="component"  id="com_easysdi_user" >com_easysdi_user.zip</file> 
-      <file type="component"  id="com_easysdi_service" >com_easysdi_service.zip</file>
+      <file type="component"  id="com_easysdi_core"     >com_easysdi_core.zip</file> 
+	  <file type="component"  id="com_easysdi_user"     >com_easysdi_user.zip</file> 
+      <file type="component"  id="com_easysdi_service"  >com_easysdi_service.zip</file>
+      <file type="component"  id="com_easysdi_map"      >com_easysdi_map.zip</file>
 	  <file type="plugin"  	  id="easysdi" group="user" >plg_easysdi.zip</file> 
   </files> 
   <languages>
 		<language tag="en-GB">language/en-GB/en-GB.pkg_easysdi.sys.ini</language>
+		<language tag="fr-FR">language/fr-FR/fr-FR.pkg_easysdi.sys.ini</language>
 	</languages>
   <updateservers>
   	<server type="collection">http://deploy.easysdi.org/joomla25/manifest.xml</server>
