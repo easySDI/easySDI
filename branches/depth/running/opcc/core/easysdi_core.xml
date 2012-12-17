@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="1.6.0" method="upgrade">
     <name>com_easysdi_core</name>
-    <creationDate>15 August 2012</creationDate>
+    <creationDate>21 december 2012</creationDate>
     <copyright>Copyright (C) 2012. All rights reserved.</copyright>
     <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
     <author>EasySDI Community</author>
