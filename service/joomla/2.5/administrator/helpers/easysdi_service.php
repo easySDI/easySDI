@@ -103,10 +103,9 @@ class Easysdi_serviceHelper
 		$url 					= $params['resurl'];
 		$user 					= $params['resuser'];
 		$password 				= $params['respassword'];
-	
 		$supported_versions 	= array();
 		$urlWithPassword 		= $url;
-		 
+
 		if(isset($params['serurl']))
 		{
 			//Authentication needed
@@ -132,20 +131,9 @@ class Easysdi_serviceHelper
 			curl_close ($ch);
 			unset($ch);
 		}
-		else
-		{
-			if (strlen($user)!=null && strlen($password)!=null){
-				if (strlen($user)>0 && strlen($password)>0){
-					if (strpos($url,"http:")===False){
-						$urlWithPassword =  "https://".$user.":".$password."@".substr($url,8);
-					}else{
-						$urlWithPassword =  "http://".$user.":".$password."@".substr($url,7);
-					}
-				}
-			}
-		}
+
 	
-		$pos1 		= stripos($urlWithPassword, "?");
+		$pos1 		= stripos($url, "?");
 		$separator 	= "&";
 		if ($pos1 === false) {
 			//"?" Not found then use ? instead of &
@@ -166,10 +154,24 @@ class Easysdi_serviceHelper
 	
 		$completeurl = "";
 		foreach ($implemented_versions as $version){
-			$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=".$service."&VERSION=".$version->value;
+			$completeurl = $url.$separator."REQUEST=GetCapabilities&SERVICE=".$service."&VERSION=".$version->value;
 
-			$xmlCapa = simplexml_load_file($completeurl);
-			if ($xmlCapa === false)
+			$session 	= curl_init($completeurl);
+			if (!empty($user)  && !empty($password))
+			{
+				$httpHeader[]='Authorization: Basic '.base64_encode($user.':'.$password);
+			}
+			if (count($httpHeader)>0)
+			{
+				curl_setopt($session, CURLOPT_HTTPHEADER, $httpHeader);
+			}
+			curl_setopt($session, CURLOPT_HEADER, false);
+			curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+			$response = curl_exec($session);
+			curl_close($session);
+				
+			$xmlCapa = simplexml_load_string($response);
+			if ($xmlCapa === false )
 			{
 				$supported_versions['ERROR']=JText::_('COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION_ERROR');
 				echo json_encode($supported_versions);
@@ -177,6 +179,10 @@ class Easysdi_serviceHelper
 			}
 			else
 			{
+				if($xmlCapa->getName() == "ServiceExceptionReport")
+				{
+					continue;
+				}
 				foreach ($xmlCapa->attributes() as $key => $value){
 					if($key == 'version'){
 						if($value == $version->value)
@@ -184,6 +190,7 @@ class Easysdi_serviceHelper
 					}
 				}
 			}
+			
 		}
 	
 		$encoded = json_encode($supported_versions);

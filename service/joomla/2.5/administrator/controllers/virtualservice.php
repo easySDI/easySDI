@@ -30,8 +30,15 @@ class Easysdi_serviceControllerVirtualService extends JController
     
     function add() {
     	$serviceconnector = JRequest::getVar('serviceconnector',null);
+    	
     	if(isset($serviceconnector))
-    		$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservice&task=add&layout='.$serviceconnector);
+    	{
+    		if($serviceconnector == "WMSC")
+    			$layout = "WMS";
+    		else
+    			$layout = $serviceconnector;
+    		$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservice&task=add&serviceconnector='.$serviceconnector.'&layout='.$layout);
+    	}
     	else
     		$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservice&task=add&layout=add');
     }
@@ -40,7 +47,8 @@ class Easysdi_serviceControllerVirtualService extends JController
     	$params 			= JComponentHelper::getParams('com_easysdi_service');
     	$xml 				= simplexml_load_file($params->get('proxyconfigurationfile'));
     	$cid 				= JRequest::getVar('cid',array(0));
-    	$layout 			= JRequest::getVar('serviceconnector',null);
+    	$layout 			= JRequest::getVar('layout',null);
+    	
     	if(!isset($layout)){
 	    	foreach ($cid as $id ){
 	    		foreach ($xml->config as $config) {
@@ -61,12 +69,34 @@ class Easysdi_serviceControllerVirtualService extends JController
 	    				{
 	    					$layout = "wfs";
 	    				}
+	    				break;
 	    			}
 	    		}
 	    	}
 	    }
+	    $model = JModel::getInstance('virtualservice', 'easysdi_serviceModel');
+    	$service = $model->getItemByServiceAlias($cid[0]);
 
-    	$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservice&task=edit&id='.$cid[0].'&layout='.$layout );
+    	switch ($service->serviceconnector_id){
+    		case 1:
+    			$serviceconnector = "CSW";
+    			break;
+    		case 2:
+    			$serviceconnector = "WMS";
+    			break;
+    		case 3:
+    			$serviceconnector = "WMTS";
+    			break;
+    		case 4:
+    			$serviceconnector = "WFS";
+    			break;
+    		case 11:
+    			$serviceconnector = "WMSC";
+    			break;
+    	}
+	    
+
+    	$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservice&task=edit&id='.$cid[0].'&serviceconnector='.$serviceconnector.'&layout='.$layout );
     }
     
     function delete() {
@@ -133,6 +163,8 @@ class Easysdi_serviceControllerVirtualService extends JController
     	$configId 		= JRequest::getVar("id","New Config");
     	$previoustask 	= JRequest::getVar("previoustask", 'edit');
     	$new			= ($previoustask == 'add')? true : false;
+    	JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_service'.DS.'tables');
+    	$virtualservice = JTable::getInstance('virtualservice', 'easysdi_serviceTable');
     	
     	if ($new){
     		$found = false;
@@ -163,22 +195,47 @@ class Easysdi_serviceControllerVirtualService extends JController
     	
     		$config->addChild("authorization")->addChild("policy-file");	
     	}
+    	else
+    	{
+    		$virtualservice->loadByAlias($configId);
+    	}
     	
     	foreach ($xml->config as $config) {
     		if (strcmp($config['id'],$configId)==0){
     			//Id
     			$config['id']=$configId;
-    	
+    			
+     			//Virtualservice
+    			$virtualservice->name = $configId;
+    			$virtualservice->alias = $configId;
+    			$virtualservice->state = 1;
     			//Servlet class
     			$servletName = JRequest::getVar("serviceconnector");
     			if($servletName == "WMS")
+    			{
     				$servletClass = "org.easysdi.proxy.wms.WMSProxyServlet";
+    				$virtualservice->serviceconnector_id = 2; 
+    			}
+    			else if($servletName == "WMSC")
+    			{
+    				$servletClass = "org.easysdi.proxy.wms.WMSProxyServlet";
+    				$virtualservice->serviceconnector_id = 11;
+    			}
     			else if($servletName == "WMTS")
+    			{
     				$servletClass = "org.easysdi.proxy.wmts.WMTSProxyServlet";
+    				$virtualservice->serviceconnector_id = 3;
+    			}
     			else if($servletName == "CSW")
+    			{	
     				$servletClass = "org.easysdi.proxy.csw.CSWProxyServlet";
+    				$virtualservice->serviceconnector_id = 1;
+    			}
     			else if($servletName== "WFS")
+    			{
     				$servletClass = "org.easysdi.proxy.wfs.WFSProxyServlet";
+    				$virtualservice->serviceconnector_id = 4;
+    			}
     			$config->{'servlet-class'}=$servletClass;
     			
     			//Supported version
@@ -209,6 +266,7 @@ class Easysdi_serviceControllerVirtualService extends JController
     			//Host translator
     			$hostTranslator 				= JRequest::getVar("hostTranslator");
     			$config->{'host-translator'}	= $hostTranslator;
+    			
     	
     			//Remote server
     			$config->{'remote-server-list'} = "";
@@ -266,6 +324,20 @@ class Easysdi_serviceControllerVirtualService extends JController
     			else
     				$config = $this->serviceMetadataWFS($config);
     			$xml->asXML($params->get('proxyconfigurationfile'));
+    			
+    			if($hostTranslator)
+    				$url = $hostTranslator.'?';
+    			else
+    				$url = $params->get('proxyurl').$virtualservice->alias.'?';
+    			
+    			
+    			$virtualservice->url = $url;
+    			$result = $virtualservice->store();
+    			if (!(isset($result)) || !$result) {
+    				JError::raiseError(42, JText::_('COM_EASYSDI_SERVICE_SAVING_VIRTUAL_SERVICE_ERROR'). $virtualservice->getError());
+    				return ;
+    			}
+    			$virtualservice->saveServiceCompliance (JRequest::getVar("supportedVersionsByConfig"));
     		}
     		
     	}

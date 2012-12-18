@@ -206,7 +206,7 @@
 				class="inputbox" 
 				filter="rules"
 				component="com_easysdi_service" 
-				section="service" 
+				section="physicalservice" 
 				validate="rules"
 		/>
 	</fieldset>
