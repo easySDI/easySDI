@@ -11,7 +11,9 @@
 // no direct access
 defined('_JEXEC') or die;
 
-define( 'DS', DIRECTORY_SEPARATOR );
+if(!defined('DS')) {
+	define( 'DS', DIRECTORY_SEPARATOR );
+}
 
 // Access check.
 if (!JFactory::getUser()->authorise('core.manage', 'com_easysdi_core')) {

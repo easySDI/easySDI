@@ -23,5 +23,16 @@
 			component="com_easysdi_service"
 			description="COM_EASYSDI_CORE_CTRLPANEL_DESC_SERVICESLINK" />
 	</fieldset>
+	
+	<fieldset name="service" text="COM_EASYSDI_MAP_LEGEND_EASYSDI" >
+		<field name="mapcontexts" 
+			type="link" 
+			default="0" 
+			label="COM_EASYSDI_CORE_CTRLPANEL_LBL_MAPSLINK"
+			readonly="true" 
+			class="readonly" 
+			component="com_easysdi_map"
+			description="COM_EASYSDI_CORE_CTRLPANEL_DESC_MAPSLINK" />
+	</fieldset>
     </fields>
 </form>

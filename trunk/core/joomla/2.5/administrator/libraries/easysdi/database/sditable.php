@@ -156,6 +156,15 @@ abstract class sdiTable extends JTable
 		if(empty ($this->guid)){
 			$this->guid = Easysdi_coreHelper::uuid();
 		}
+		if(!empty ($this->alias))
+		{
+				
+				$this->alias 	= preg_replace('/\s+/', '-', $this->alias);
+				$this->alias = str_replace( array('à','á','â','ã','ä', 'ç', 'è','é','ê','ë', 'ì','í','î','ï', 'ñ', 'ò','ó','ô','õ','ö', 'ù','ú','û','ü', 'ý','ÿ', 'À','Á','Â','Ã','Ä', 'Ç', 'È','É','Ê','Ë', 'Ì','Í','Î','Ï', 'Ñ', 'Ò','Ó','Ô','Õ','Ö', 'Ù','Ú','Û','Ü', 'Ý'), array('a','a','a','a','a', 'c', 'e','e','e','e', 'i','i','i','i', 'n', 'o','o','o','o','o', 'u','u','u','u', 'y','y', 'A','A','A','A','A', 'C', 'E','E','E','E', 'I','I','I','I', 'N', 'O','O','O','O','O', 'U','U','U','U', 'Y'), $this->alias);
+				$this->alias=str_replace("'", "_",$this->alias);
+				$this->alias 	= strtolower($this->alias);
+				
+		}
 
 		return parent::store($updateNulls);
 	}
@@ -191,7 +200,6 @@ abstract class sdiTable extends JTable
 		// This is a article under a category.
 		if ($this->catid)
 		{
-			
 			// Build the query to get the asset id for the parent category.
 			$query = $this->_db->getQuery(true);
 			$query->select($this->_db->quoteName('asset_id'));
