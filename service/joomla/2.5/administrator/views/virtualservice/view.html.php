@@ -227,9 +227,12 @@ class Easysdi_serviceViewVirtualService extends JView
 				if (strcmp($config['id'],$this->id)==0){
 					$this->config = $config;
 					$keywordArray = array();
+					if($config->{"service-metadata"}->{'KeywordList'}->Keyword)
+					{
 					foreach ($config->{"service-metadata"}->{'KeywordList'}->Keyword as $keyword)
 					{
 						array_push($keywordArray, $keyword) ;
+					}
 					}
 					$this->keywordString = implode(',',$keywordArray) ;
 					break;
@@ -245,11 +248,12 @@ class Easysdi_serviceViewVirtualService extends JView
 		$this->serviceconnectorlist = $db->loadObjectList();
 		
 		$db->setQuery("SELECT 0 AS alias, '- Please select -' AS value UNION SELECT s.alias as alias,CONCAT(s.alias, ' - ', s.resourceurl,' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
-				INNER JOIN #__sdi_physicalservice_servicecompliance sc ON sc.physicalservice_id = s.id
+				INNER JOIN #__sdi_service_servicecompliance sc ON sc.service_id = s.id
 				INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
 				INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id
 				INNER JOIN #__sdi_sys_serviceconnector sycc ON sycc.id = syc.serviceconnector_id
-				WHERE sycc.value = '".JRequest::getVar('layout',null)."'
+				WHERE sc.servicetype = 'physical'
+				AND sycc.value = '".JRequest::getVar('serviceconnector',null)."'
 				AND s.state= 1
 				GROUP BY s.id") ;
 		$this->servicelist = $db->loadObjectList();
@@ -339,7 +343,7 @@ class Easysdi_serviceViewVirtualService extends JView
 				<input type='hidden' name="nbServer" id="nbServer" value="<?php echo $iServer ; ?>" />
 				<script>
 				var nbServer = <?php echo $iServer?>;
-				var service = '<?php echo $serviceType?>';
+				
 				</script>
 			<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_VIRTUALSERVICE_ID' );?></legend>
 				<table class="admintable">
@@ -348,8 +352,8 @@ class Easysdi_serviceViewVirtualService extends JView
 						<?php echo JText::_( 'COM_EASYSDI_SERVICE_VIRTUALSERVICE_ID' );?> :<span class="star">*</span> 
 						</th>
 						<td colspan="4">
-							<input class="inputbox required" type='text' name='id' value='<?php echo $this->id;?>' <?php if(isset($this->id)){ echo "disabled='disabled'";};?>>
-							<?php if(isset($this->id)){ ?> <input type='hidden' name="id" id="id" value="<?php echo $this->id; ?>" /> <?php };?>
+							<input class="inputbox required" type='text' name='id' value='<?php echo $this->id;?>' <?php if(!empty($this->id)){ echo "disabled='disabled'";};?>>
+							<?php if(!empty($this->id)){ ?> <input type='hidden' name="id" id="id" value="<?php echo $this->id; ?>" /> <?php };?>
 						</td>
 					</tr>
 					<tr>
