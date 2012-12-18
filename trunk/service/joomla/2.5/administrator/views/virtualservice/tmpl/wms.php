@@ -18,6 +18,16 @@ $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
 
 ?>
+<script>
+function changeserviceconnector ()
+{
+	if(document.getElementById("serviceconnector").value == "WMSCS")
+		document.getElementById("layout").value="WMS";
+	else
+		document.getElementById("layout").value=document.getElementById("serviceconnector").value;
+	submit();
+}
+</script>
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.JRequest::getVar('id',null)); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
 	<div class="width-60 fltlft">
 		
@@ -26,7 +36,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 					<tr>
 						<td>
 						<?php 
-						echo JHTML::_("select.genericlist",$this->serviceconnectorlist, 'serviceconnector', 'size="1" onChange="document.getElementById(\'layout\').value=document.getElementById(\'serviceconnector\').value;submit()"', 'value', 'value', 'WMS'); ?>
+						echo JHTML::_("select.genericlist",$this->serviceconnectorlist, 'serviceconnector', 'size="1" onChange="javascript:changeserviceconnector()"', 'value', 'value', JRequest::getCmd('serviceconnector')); ?>
 						</td>
 					</tr>
 				</table>
@@ -127,8 +137,9 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 			?>
 		
 	</div>
-	<input type="hidden" name="layout" id="layout" value="" />
+	<input type="hidden" name="layout" id="layout" value="<?php echo JRequest::getCmd('layout');?>" />
 	<input type="hidden" name="task" value="<?php echo JRequest::getCmd('task');?>" />
+	<input type="hidden" name="serviceconnector" value="<?php echo JRequest::getCmd('serviceconnector');?>" />
 	<input type="hidden" name="previoustask" value="<?php echo JRequest::getCmd('task');?>" />
 		
 	<?php echo JHtml::_('form.token'); ?>

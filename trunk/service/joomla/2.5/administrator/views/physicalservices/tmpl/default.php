@@ -23,6 +23,7 @@ $listOrder	= $this->state->get('list.ordering');
 $listDirn	= $this->state->get('list.direction');
 $canOrder	= $user->authorise('core.edit.state', 'com_easysdi_service');
 $saveOrder	= $listOrder == 'a.ordering';
+
 ?>
 
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=physicalservices'); ?>" method="post" name="adminForm" id="adminForm">
@@ -78,6 +79,12 @@ $saveOrder	= $listOrder == 'a.ordering';
 					<?php echo JHtml::_('grid.sort',  'JPUBLISHED', 'a.state', $listDirn, $listOrder); ?>
 				</th>
                 <?php } ?>
+                <?php if (isset($this->items[0]->ordering)) { ?>
+				<th width="10%"><?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ORDERING', 'a.ordering', $listDirn, $listOrder); ?>
+					<?php if ($canOrder && $saveOrder) :?> <?php echo JHtml::_('grid.order',  $this->items, 'filesave.png', 'physicalservices.saveorder'); ?>
+					<?php endif; ?>
+				</th>
+				<?php } ?>
                 <th width="10%">
 					<?php echo JHtml::_('grid.sort', 'JCATEGORY', 'category_title', $listDirn, $listOrder); ?>
 				</th>
@@ -101,19 +108,20 @@ $saveOrder	= $listOrder == 'a.ordering';
 			$canEditOwn 	= $canDo->get('core.edit.own');
 			$canChange 		= $canDo->get('core.edit.state');
 			$canCheckin		= $user->authorise('core.manage',		'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
+			$islocked = ($item->serviceconnector_value == 'Bing' || $item->serviceconnector_value == 'Google' || $item->serviceconnector_value == 'OSM')? true : false;
 			
 			?>
 			<tr class="row<?php echo $i % 2; ?>">
 				<td class="center">
 					<?php // if ($canEdit || $canEditOwn) :  echo JHtml::_('grid.id', $i, $item->id); else : endif; ?>
-					<?php echo JHtml::_('grid.id', $i, $item->id);  ?>
+					<?php if (!$islocked) echo JHtml::_('grid.id', $i, $item->id); else echo '<input type="checkbox" id="cb'.$i.'" name="cid[]" value="'.$item->id.'" disabled="false" onclick="Joomla.isChecked(this.checked);" />'  ?>
 				</td>
 
 				<td>
 				<?php if (isset($item->checked_out) && $item->checked_out) : ?>
 					<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'physicalservices.', $canCheckin); ?>
 				<?php endif; ?>
-				<?php if ($canEdit || $canEditOwn) : ?>
+				<?php if (($canEdit || $canEditOwn) && !$islocked) : ?>
 					<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&task=physicalservice.edit&id='.(int) $item->id); ?>">
 					<?php echo $this->escape($item->alias); ?></a>
 				<?php else : ?>
@@ -134,6 +142,19 @@ $saveOrder	= $listOrder == 'a.ordering';
 					    <?php echo JHtml::_('jgrid.published', $item->state, $i, 'physicalservices.', $canChange, 'cb'); ?>
 				    </td>
                 <?php } ?>
+                <?php if (isset($this->items[0]->ordering)) { ?>
+				<td class="order"><?php if ($canChange) : ?> <?php if ($saveOrder) :?>
+					<?php if ($listDirn == 'asc') : ?> <span><?php echo $this->pagination->orderUpIcon($i, true, 'physicalservices.orderup', 'JLIB_HTML_MOVE_UP', $ordering); ?>
+				</span> <span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, true, 'physicalservices.orderdown', 'JLIB_HTML_MOVE_DOWN', $ordering); ?>
+				</span> <?php elseif ($listDirn == 'desc') : ?> <span><?php echo $this->pagination->orderUpIcon($i, true, 'physicalservices.orderdown', 'JLIB_HTML_MOVE_UP', $ordering); ?>
+				</span> <span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, true, 'physicalservices.orderup', 'JLIB_HTML_MOVE_DOWN', $ordering); ?>
+				</span> <?php endif; ?> <?php endif; ?> <?php $disabled = $saveOrder ?  '' : 'disabled="disabled"'; ?>
+					<input type="text" name="order[]" size="5"
+					value="<?php echo $item->ordering;?>" <?php echo $disabled ?>
+					class="text-area-order" /> <?php else : ?> <?php echo $item->ordering; ?>
+					<?php endif; ?>
+				</td>
+				<?php } ?>
                 <td align="center">
 					<?php echo $item->category_title; ?>
 				</td>
