@@ -10,7 +10,9 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
 
-define( 'DS', DIRECTORY_SEPARATOR );
+if(!defined('DS')) {
+	define( 'DS', DIRECTORY_SEPARATOR );
+}
  
 class com_easysdi_coreInstallerScript
 {
