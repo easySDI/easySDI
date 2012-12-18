@@ -7,8 +7,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_user` (
 `modified` DATETIME ,
 `ordering` INT(11)   ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
-`checked_out` INT(11)  ,
-`checked_out_time` DATETIME ,
+`checked_out` INT(11) NOT NULL  ,
+`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `user_id` INT(11)  NOT NULL ,
 `acronym` VARCHAR(150)   ,
 `logo` VARCHAR(500) ,
@@ -32,8 +32,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_address` (
 `modified` DATETIME ,
 `ordering` INT(11)  ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
-`checked_out` INT(11)  ,
-`checked_out_time` DATETIME ,
+`checked_out` INT(11) NOT NULL ,
+`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' ,
 `user_id` INT(11) UNSIGNED  NOT NULL ,
 `addresstype_id` INT(11) UNSIGNED  NOT NULL ,
 `organismcomplement` VARCHAR(150)   ,
@@ -60,8 +60,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_addresstype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11),
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
-`checked_out` INT(11)   ,
-`checked_out_time` DATETIME ,
+`checked_out` INT(11) NOT NULL  ,
+`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -70,8 +70,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_civility` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  ,
 `state` TINYINT(1)  ,
-`checked_out` INT(11)   ,
-`checked_out_time` DATETIME ,
+`checked_out` INT(11) NOT NULL  ,
+`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' ,
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
