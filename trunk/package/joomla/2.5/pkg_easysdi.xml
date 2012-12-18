@@ -23,6 +23,6 @@
 		<language tag="en-GB">language/en-GB/en-GB.pkg_easysdi.sys.ini</language>
 	</languages>
   <updateservers>
-  	<server type="collection">http://deploy.easysdi.org/joomla25/manifest.xml</server>
+  	<server type="collection">http://update.easysdi.org/packages/easysdi/manifest.xml</server>
   </updateservers>
 </extension> 
