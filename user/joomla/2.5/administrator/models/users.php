@@ -198,7 +198,7 @@ class Easysdi_userModelusers extends JModelList
 			$query->where('a.catid IN ('.$categoryId.')');
 		}
 		
-				// Filter by search in title
+		// Filter by search in title
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {
 			if (stripos($search, 'id:') === 0) {
