@@ -357,43 +357,52 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 		//Acces not allowed
                 		if(!in_array($service->access, $user->getAuthorisedViewLevels()))
                 			continue;
-                		?>
-                		"<?php echo $service->alias ?>":
-                		{
-                    		<?php
-                    		switch ($service->serviceconnector_id)
+                			switch ($service->serviceconnector_id)
                     		{
                     			case 2 :
                     				?>
+                    				"<?php echo $service->alias ?>":
+                    				{
                     				ptype: "gxp_wmssource",
                     				url: "<?php echo $service->resourceurl;?>"
-                        			<?php
+                    				},
+                    				<?php
                     				break;
                     			case 11 :
                     				?>
+                    				"<?php echo $service->alias ?>":
+                    				{
                     				ptype: "gxp_wmscsource",
                     				url: "<?php echo $service->resourceurl;?>"
-                        			<?php
+                    				},
+                    				<?php
                     				break;
                     			case 12 :
                     				?>
+                    				"<?php echo $service->alias ?>":
+                    				{
                     				ptype: "gxp_bingsource"
+                    				},
                     				<?php
                     				break;
                     			case 13 : 
                     				?>
+                    				"<?php echo $service->alias ?>":
+                    				{
                     				ptype: "gxp_googlesource"
+                    				},
                     				<?php
                     				break;
                     			case 14 :
                     				?>
+                    				"<?php echo $service->alias ?>":
+                    				{
                     				ptype: "gxp_osmsource"
+                    				},
                     				<?php
                     				break;
                     		}
-                    		?>
-                		},
-                		<?php
+                    		
                 	}
                 	foreach ($this->item->virtualservices as $service)
                 	{
