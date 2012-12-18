@@ -3,7 +3,8 @@
   <name>EasySDI</name> 
   <packager>EasySDI Community</packager> 
   <packagename>easysdi</packagename>
-  <creationDate>21 december 2012</creationDate>
+  <creationDate>15 August 2012</creationDate>
+  <releaseDate>18 december 2012</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
@@ -20,7 +21,6 @@
   </files> 
   <languages>
 		<language tag="en-GB">language/en-GB/en-GB.pkg_easysdi.sys.ini</language>
-		<language tag="fr-FR">language/fr-FR/fr-FR.pkg_easysdi.sys.ini</language>
 	</languages>
   <updateservers>
   	<server type="collection">http://deploy.easysdi.org/joomla25/manifest.xml</server>

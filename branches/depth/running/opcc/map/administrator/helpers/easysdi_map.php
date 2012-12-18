@@ -21,17 +21,17 @@ class Easysdi_mapHelper
 	public static function addSubmenu($vName = '')
 	{
 		JSubMenuHelper::addEntry(
-				JText::_('COM_EASYSDI_MAP_TITLE_CONTEXTS'),
+				JText::_('COM_EASYSDI_MAP_SUBMENU_TITLE_CONTEXT'),
 				'index.php?option=com_easysdi_map&view=contexts',
 				$vName == 'contexts'
 		);
 		JSubMenuHelper::addEntry(
-				JText::_('COM_EASYSDI_MAP_TITLE_LAYERS'),
+				JText::_('COM_EASYSDI_MAP_SUBMENU_TITLE_LAYERS'),
 				'index.php?option=com_easysdi_map&view=layers',
 				$vName == 'layers'
 		);
 		JSubMenuHelper::addEntry(
-				JText::_('COM_EASYSDI_MAP_TITLE_GROUPS'),
+				JText::_('COM_EASYSDI_MAP_SUBMENU_TITLE_LAYERSGROUPS'),
 				'index.php?option=com_easysdi_map&view=groups',
 				$vName == 'groups'
 		);

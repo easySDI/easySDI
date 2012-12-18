@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="1.6.0" method="upgrade">
     <name>com_easysdi_service</name>
-    <creationDate>21 december 2012</creationDate>
+    <creationDate>15 August 2012</creationDate>
+    <releaseDate>18 december 2012</releaseDate>
     <copyright>Copyright (C) 2012. All rights reserved.</copyright>
     <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
     <author>EasySDI Community</author>
     <authorEmail>contact@easysdi.org</authorEmail>
     <authorUrl>http://www.easysdi.org</authorUrl>
-    <version>3.1.1</version>
+    <version>3.1.0</version>
     <description></description>
     <scriptfile>script.php</scriptfile>
     <install> <!-- Runs on install -->
@@ -47,8 +48,6 @@
         <languages folder="administrator">
             <language tag="en-GB">language/en-GB/en-GB.com_easysdi_service.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.com_easysdi_service.sys.ini</language>
-            <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_service.ini</language>
-            <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_service.sys.ini</language>
         </languages>
     </administration>
 </extension>

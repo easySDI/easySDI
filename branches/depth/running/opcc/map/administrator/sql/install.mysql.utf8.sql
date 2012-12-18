@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_map_group` (
 `isdefaultopen` BOOLEAN NOT NULL DEFAULT '0',
 `access` INT(11)  NOT NULL DEFAULT '1' ,
 `asset_id` INT(10)  ,
-PRIMARY KEY (`id`)
+PRIMARY KEY (`id`), 
+UNIQUE (`alias`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_map_layer` (
@@ -46,7 +47,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_map_layer` (
 `metadatalink` TEXT  ,
 `access` INT(11)  NOT NULL DEFAULT '1',
 `asset_id` INT(10),
-PRIMARY KEY (`id`)
+PRIMARY KEY (`id`), 
+UNIQUE (`alias`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_map_context` (
@@ -74,7 +76,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_map_context` (
 `abstract` TEXT  ,
 `access` INT(11)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) ,
-PRIMARY KEY (`id`)
+PRIMARY KEY (`id`), 
+UNIQUE (`alias`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_map_tool` (
