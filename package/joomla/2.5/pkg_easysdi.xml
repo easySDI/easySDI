@@ -4,17 +4,19 @@
   <packager>EasySDI Community</packager> 
   <packagename>easysdi</packagename>
   <creationDate>15 August 2012</creationDate>
+  <releaseDate>18 december 2012</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>3.0.0</version> 
+  <version>3.1.0</version> 
   <description>PKG_EASYSDI_XML_DESCRIPTION</description> 
   <files folder="easysdi"> 
-      <file type="component"  id="com_easysdi_core" >com_easysdi_core.zip</file> 
-	  <file type="component"  id="com_easysdi_user" >com_easysdi_user.zip</file> 
-      <file type="component"  id="com_easysdi_service" >com_easysdi_service.zip</file>
+      <file type="component"  id="com_easysdi_core"     >com_easysdi_core.zip</file> 
+	  <file type="component"  id="com_easysdi_user"     >com_easysdi_user.zip</file> 
+      <file type="component"  id="com_easysdi_service"  >com_easysdi_service.zip</file>
+      <file type="component"  id="com_easysdi_map"      >com_easysdi_map.zip</file>
 	  <file type="plugin"  	  id="easysdi" group="user" >plg_easysdi.zip</file> 
   </files> 
   <languages>
