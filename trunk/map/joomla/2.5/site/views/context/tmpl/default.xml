@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="Context view" option="View">
+	</layout>
+	<state>
+        <fields name="request">
+            <fieldset name="request">
+                <field name="id" label="Context id" title="Context Id" type="text" default=""/>
+            </fieldset>
+        </fields>
+    </state>
+</metadata>
