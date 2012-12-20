@@ -269,15 +269,13 @@ class displayManager{
 	{	
 		JHTML::_('behavior.modal'); 
 		
-		$database =& JFactory::getDBO();
-		$user =& JFactory::getUser();
-		$lg = &JFactory::getLanguage();
-		$language = $lg->_lang;
-		
-		$type =  JRequest::getVar('type', 'abstract');
-		$xml = "";
-		
-		$id = JRequest::getVar('id');
+		$database 		=& JFactory::getDBO();
+		$user 			=& JFactory::getUser();
+		$lg 			=& JFactory::getLanguage();
+		$language 		= $lg->_lang;
+		$type 			= JRequest::getVar('type', 'abstract');
+		$xml 			= "";
+		$id 			= JRequest::getVar('id');
 		
 		// Répertoire des fichiers xsl, s'il y en a un
 		$context = JRequest::getVar('context');
@@ -299,239 +297,248 @@ class displayManager{
 							 INNER JOIN #__sdi_objecttype ot ON ot.id=o.objecttype_id 
 							 WHERE m.guid='".$id."'");
 		$objecttype = $database->loadResult();
-		if ($type == "abstract")
-		{
-			$style = new DomDocument();
-			// Test des différentes combinaisons possibles pour le nom de fichier, en allant
-			// de la plus restrictive é la plus basique
-			if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract_'.$language.'.xsl'))
-			{
-				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract_'.$language.'.xsl');
-			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract.xsl'))
-			{
-				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract.xsl');
-			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_abstract_'.$language.'.xsl'))
-			{
-				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_abstract_'.$language.'.xsl');
-			}
-			else
-			{
-				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_abstract.xsl');
-			}
-			
-			$xml = displayManager::getCSWresult();
-			displayManager::DisplayMetadata($style,$xml);
-		}
-		else if ($type == "complete")
-		{
-			$style = new DomDocument();
-			
-			// Test des différentes combinaisons possibles pour le nom de fichier, en allant
-			// de la plus restrictive é la plus basique
-			if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete_'.$language.'.xsl'))
-			{
-				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete_'.$language.'.xsl');
-			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete.xsl'))
-			{
-				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete.xsl');
-			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_complete_'.$language.'.xsl')){
-				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_complete_'.$language.'.xsl');
-			}
-			else{
-				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_complete.xsl');
-			}
-			
-			$xml = displayManager::getCSWresult();
-			
-			displayManager::DisplayMetadata($style,$xml);
-		}
-		else if ($type == "diffusion")
-		{
-			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
-			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
-			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
-			
-			$title;
-			
-			$database->setQuery("SELECT id FROM #__sdi_metadata WHERE guid=".$id);
-			$prod_id = $database->loadResult();
-			
-			$titleQuery = "  SELECT o.name 
-						 FROM #__sdi_metadata m
-						 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
-						 INNER JOIN #__sdi_object o ON o.id = ov.object_id 
-						 WHERE m.guid = '".$id."'";
-			$database->setQuery($titleQuery);
-			$title = $database->loadResult();
-			
-			$doc = '';
-			$doc .= '<?xml version="1.0"?>';
-			$doc .= '';
-			$doc .= '<Metadata><Diffusion><fileIdentifier><CharacterString>'.$id.'</CharacterString></fileIdentifier>';
-			$doc .= '<gmd:identificationInfo xmlns:gmd="http://www.isotc211.org/2005/gmd"><gmd:MD_DataIdentification><gmd:citation><gmd:CI_Citation><gmd:title><gmd:LocalisedCharacterString>'.$title.'</gmd:LocalisedCharacterString></gmd:title></gmd:CI_Citation></gmd:citation></gmd:MD_DataIdentification></gmd:identificationInfo>';
-			
-			//select selected properties
-			$selected = array();
-			$query = "SELECT propertyvalue_id as value FROM #__sdi_product_property WHERE product_id=".$prod_id;	
-			$database->setQuery( $query );
-			$selected = $database->loadResultArray();
-			
-			if ($database->getErrorNum()) {						
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
-			}
-			
-			$product = new product( $database );
-			$product->load( $prod_id );
-			
-			//Version
-			$version_id = JRequest::getVar('objectversion_id', 0 );
-			if($version_id == 0)
-			{
-				$version_id = $product->objectversion_id;
-			}
-			$version = new objectversion($database);
-			$version->load($version_id);
-			
-			$supplier = new account($database);
-			$object = new object ($database);
-			$object_id = JRequest::getVar('object_id', 0 );
-			if($object_id==0)
-			{
-				$object_id=$version->object_id;
-			}
-			else
-			{
-				if($object_id <> $version->object_id)
+		
+		switch ($type){
+			case "specific":
+				$style = new DomDocument();
+				if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_'.$type.'_'.$language.'.xsl'))
 				{
-					$version_id=0;
-					$version->load($version_id);
+					$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_'.$type.'_'.$language.'.xsl');
+					$xml = displayManager::getCSWresult();
+					displayManager::DisplayMetadata($style,$xml);
+					break;
 				}
-			}
-			if($object_id<>0)
-			{
-				
-				$object->load($object_id);
-				$supplier->load($object->account_id);
-			}
-			
-			$objecttype_id = JRequest::getVar('objecttype_id', 0 );
-			if($objecttype_id==0)
-			{
+				else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_'.$type.'.xsl'))
+				{
+					$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_'.$type.'.xsl');
+					$xml = displayManager::getCSWresult();
+					displayManager::DisplayMetadata($style,$xml);
+					break;
+				}
+				else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$type.'_'.$language.'.xsl'))
+				{
+					$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$type.'_'.$language.'.xsl');
+					$xml = displayManager::getCSWresult();
+					displayManager::DisplayMetadata($style,$xml);
+					break;
+				}
+				else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$type.'.xsl'))
+				{
+					$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$type.'.xsl');
+					$xml = displayManager::getCSWresult();
+					displayManager::DisplayMetadata($style,$xml);
+					break;
+				}
+				else 
+				{
+					$type = "abstract";
+					//And keep going on with the next case...
+				}	
+			case "abstract":
+			case "complete":
+				$style = new DomDocument();
+				if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_'.$type.'_'.$language.'.xsl'))
+				{
+					$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_'.$type.'_'.$language.'.xsl');
+				}
+				else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_'.$type.'.xsl'))
+				{
+					$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_'.$type.'.xsl');
+				}
+				else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$type.'_'.$language.'.xsl'))
+				{
+					$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$type.'_'.$language.'.xsl');
+				}
+				else
+				{
+					$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$type.'.xsl');
+				}
+					
+				$xml = displayManager::getCSWresult();
+				displayManager::DisplayMetadata($style,$xml);
+				break;
+			case "diffusion":
+				require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
+				require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
+				require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
+					
+				$title;
+					
+				$database->setQuery("SELECT id FROM #__sdi_metadata WHERE guid=".$id);
+				$prod_id = $database->loadResult();
+					
+				$titleQuery = "  SELECT o.name
+				FROM #__sdi_metadata m
+				INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+				INNER JOIN #__sdi_object o ON o.id = ov.object_id
+				WHERE m.guid = '".$id."'";
+				$database->setQuery($titleQuery);
+				$title = $database->loadResult();
+					
+				$doc = '';
+				$doc .= '<?xml version="1.0"?>';
+				$doc .= '';
+				$doc .= '<Metadata><Diffusion><fileIdentifier><CharacterString>'.$id.'</CharacterString></fileIdentifier>';
+				$doc .= '<gmd:identificationInfo xmlns:gmd="http://www.isotc211.org/2005/gmd"><gmd:MD_DataIdentification><gmd:citation><gmd:CI_Citation><gmd:title><gmd:LocalisedCharacterString>'.$title.'</gmd:LocalisedCharacterString></gmd:title></gmd:CI_Citation></gmd:citation></gmd:MD_DataIdentification></gmd:identificationInfo>';
+					
+				//select selected properties
+				$selected = array();
+				$query = "SELECT propertyvalue_id as value FROM #__sdi_product_property WHERE product_id=".$prod_id;
+				$database->setQuery( $query );
+				$selected = $database->loadResultArray();
+					
+				if ($database->getErrorNum()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+					
+				$product = new product( $database );
+				$product->load( $prod_id );
+					
+				//Version
+				$version_id = JRequest::getVar('objectversion_id', 0 );
+				if($version_id == 0)
+				{
+					$version_id = $product->objectversion_id;
+				}
+				$version = new objectversion($database);
+				$version->load($version_id);
+					
+				$supplier = new account($database);
+				$object = new object ($database);
+				$object_id = JRequest::getVar('object_id', 0 );
+				if($object_id==0)
+				{
+					$object_id=$version->object_id;
+				}
+				else
+				{
+					if($object_id <> $version->object_id)
+					{
+						$version_id=0;
+						$version->load($version_id);
+					}
+				}
 				if($object_id<>0)
 				{
-					$objecttype_id=$object->objecttype_id;
-				}
-			}
-			else
-			{
-				if($objecttype_id <>$object->objecttype_id)
-				{
-					$object_id=0;
+				
 					$object->load($object_id);
-					$supplier->load(0);
-					$version_id=0;
-					$version->load($version_id);
+					$supplier->load($object->account_id);
 				}
-			}
-			
-			$lang =& JFactory::getLanguage();
-			$condition="";
-			if($supplier->id)
-			{
-				$condition = " OR p.account_id = $supplier->id ";
-			}
-			
-			$queryProperties = "SELECT p.id as property_id, 
-									   t.label as text,
-									   p.type as type,
-									   p.mandatory as mandatory 
-								FROM #__sdi_language l, 
-									#__sdi_list_codelang cl,
-									#__sdi_property p 
-									LEFT OUTER JOIN #__sdi_translation t ON p.guid=t.element_guid 
-								WHERE t.language_id=l.id AND l.codelang_id=cl.id AND cl.code='".$lang->_lang."' 
-								AND p.published =1 
-								AND (p.account_id = 0 $condition)
-								order by p.ordering";
-			$database->setQuery( $queryProperties);
-			$propertiesList = $database->loadObjectList();
-			if ($database->getErrorNum()) 
-			{						
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
-			}
-			
-			$doc .= '<Properties isProductPublished="'.$product->published.'" count="'.count($propertiesList).'">';
-			foreach ($propertiesList as $curProperty)
-			{
-				$propertiesValueList = array();
-				$query = "SELECT a.id as value, t.label as text 
-							FROM 
-								#__sdi_list_codelang cl,
-								#__sdi_language l,
-								#__sdi_propertyvalue a 
-							LEFT OUTER JOIN #__sdi_translation t ON a.guid=t.element_guid 
-						WHERE t.language_id=l.id AND l.codelang_id=cl.id AND cl.code='".$lang->_lang."' 
-							AND a.property_id =".$curProperty->property_id." 
-							order by a.ordering";				 
-				$database->setQuery( $query );
-				$propertiesValueList = $database->loadObjectList();
-				if ($database->getErrorNum()) 
-				{						
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
+					
+				$objecttype_id = JRequest::getVar('objecttype_id', 0 );
+				if($objecttype_id==0)
+				{
+					if($object_id<>0)
+					{
+						$objecttype_id=$object->objecttype_id;
+					}
 				}
+				else
+				{
+					if($objecttype_id <>$object->objecttype_id)
+					{
+						$object_id=0;
+						$object->load($object_id);
+						$supplier->load(0);
+						$version_id=0;
+						$version->load($version_id);
+					}
+				}
+					
+				$lang =& JFactory::getLanguage();
+				$condition="";
+				if($supplier->id)
+				{
+					$condition = " OR p.account_id = $supplier->id ";
+				}
+					
+				$queryProperties = "SELECT p.id as property_id,
+				t.label as text,
+				p.type as type,
+				p.mandatory as mandatory
+				FROM #__sdi_language l,
+				#__sdi_list_codelang cl,
+				#__sdi_property p
+				LEFT OUTER JOIN #__sdi_translation t ON p.guid=t.element_guid
+				WHERE t.language_id=l.id AND l.codelang_id=cl.id AND cl.code='".$lang->_lang."'
+				AND p.published =1
+				AND (p.account_id = 0 $condition)
+				order by p.ordering";
+				$database->setQuery( $queryProperties);
+				$propertiesList = $database->loadObjectList();
+				if ($database->getErrorNum())
+				{
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					}
+						
+					$doc .= '<Properties isProductPublished="'.$product->published.'" count="'.count($propertiesList).'">';
+					foreach ($propertiesList as $curProperty)
+					{
+						$propertiesValueList = array();
+						$query = "SELECT a.id as value, t.label as text
+						FROM
+					#__sdi_list_codelang cl,
+					#__sdi_language l,
+					#__sdi_propertyvalue a
+					LEFT OUTER JOIN #__sdi_translation t ON a.guid=t.element_guid
+					WHERE t.language_id=l.id AND l.codelang_id=cl.id AND cl.code='".$lang->_lang."'
+					AND a.property_id =".$curProperty->property_id."
+					order by a.ordering";
+					$database->setQuery( $query );
+							$propertiesValueList = $database->loadObjectList();
+							if ($database->getErrorNum())
+					{
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					}
 				
-				$count = 0;
-				foreach($propertiesValueList as $propertyValue){
-				   	if (in_array($propertyValue->value, $selected)){
-				   		$count ++;
-				   	}
-				}
+					$count = 0;
+					foreach($propertiesValueList as $propertyValue){
+					if (in_array($propertyValue->value, $selected)){
+					$count ++;
+					}
+					}
 				
-				if($count > 0){
-				   $doc .= '<Property>';
-				   $doc .= '<PropertyName>'.$curProperty->text.'</PropertyName>';
-				   foreach($propertiesValueList as $propertyValue){
-				   	if (in_array($propertyValue->value, $selected)){
-				   		$doc .= '<PropertyValue>';
-				   		$doc .= '<value>'.$propertyValue->text.'</value>';
-				   		$doc .= '</PropertyValue>';
-				   	}
-				   }
-				   $doc .= '</Property>';
+					if($count > 0){
+					$doc .= '<Property>';
+					$doc .= '<PropertyName>'.$curProperty->text.'</PropertyName>';
+					foreach($propertiesValueList as $propertyValue){
+					if (in_array($propertyValue->value, $selected)){
+					$doc .= '<PropertyValue>';
+					$doc .= '<value>'.$propertyValue->text.'</value>';
+					$doc .= '</PropertyValue>';
+					}
+					}
+					$doc .= '</Property>';
+					}
+					}
+						$doc .= '</Properties>';
+						$doc .= '</Diffusion></Metadata>';
+							
+						$document = new DomDocument();
+						$document->loadXML($doc);
+							
+						$style = new DomDocument();
+						// Test des différentes combinaisons possibles pour le nom de fichier, en allant
+						// de la plus restrictive é la plus basique
+						if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl'))
+					{
+						$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl');
 				}
-			}
-			$doc .= '</Properties>';
-			$doc .= '</Diffusion></Metadata>';
-			
-			$document = new DomDocument();
-			$document->loadXML($doc);
-			
-			$style = new DomDocument();
-			// Test des différentes combinaisons possibles pour le nom de fichier, en allant
-			// de la plus restrictive é la plus basique
-			if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl'))
-			{
-				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl');
-			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion.xsl'))
-			{
-				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion.xsl');
-			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_diffusion_'.$language.'.xsl'))
-			{
-				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_diffusion_'.$language.'.xsl');
-			}
-			else
-			{
-				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_diffusion.xsl');
-			}
-			displayManager::DisplayMetadata($style,$document);
-		}	
-		
+						else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion.xsl'))
+						{
+								$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion.xsl');
+						}
+						else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_diffusion_'.$language.'.xsl'))
+					{
+					$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_diffusion_'.$language.'.xsl');
+						}
+						else
+						{
+						$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_diffusion.xsl');
+				}
+				displayManager::DisplayMetadata($style,$document);
+				break;
+		}
 	}
 	
 	/**
@@ -697,50 +704,9 @@ class displayManager{
 		$doc .= '<?xml version="1.0"?>';
 		$doc .= '<Metadata><Diffusion><fileIdentifier><CharacterString>'.$id.'</CharacterString></fileIdentifier>';
 		$doc .= '<gmd:identificationInfo xmlns:gmd="http://www.isotc211.org/2005/gmd"><gmd:MD_DataIdentification><gmd:citation><gmd:CI_Citation><gmd:title><gmd:LocalisedCharacterString>'.$title.'</gmd:LocalisedCharacterString></gmd:title></gmd:CI_Citation></gmd:citation></gmd:MD_DataIdentification></gmd:identificationInfo>';
-		/*$query = "SELECT DISTINCT #__easysdi_product_properties_definition.text as PropDef 
-					from #__easysdi_product_properties_definition 
-					INNER JOIN 
-					(select property_value_id, #__easysdi_product_properties_values_definition.text,properties_id 
-							from #__easysdi_product_property 
-							INNER JOIN #__easysdi_product_properties_values_definition 
-							ON #__easysdi_product_property.property_value_id=#__easysdi_product_properties_values_definition.id
- 							where product_id IN (select id from #__easysdi_product where metadata_id = '".$id."')) T 
- 					ON #__easysdi_product_properties_definition.id=T.properties_id";
-		
-		$database->setQuery($query);
-		$rows = $database->loadObjectList();		
-		foreach ($rows as $row)
-		{
-			
-			$doc .= "<Property><PropertyName>$row->PropDef</PropertyName>";
-			
-			
-			$subQuery = "SELECT  #__easysdi_product_properties_definition.text as PropDef, T.translation as ValueDef 
-					  from #__easysdi_product_properties_definition 
-					  INNER JOIN 
-					  (select property_value_id, #__easysdi_product_properties_values_definition.text,properties_id 
-					 	from #__easysdi_product_property 
-						INNER JOIN #__easysdi_product_properties_values_definition 
-					 	ON #__easysdi_product_property.property_value_id=#__easysdi_product_properties_values_definition.id
- 						where product_id IN (select id from #__easysdi_product where metadata_id = '".$id."') ) T 
- 					 ON #__easysdi_product_properties_definition.id=T.properties_id 
- 					 Where #__easysdi_product_properties_definition.text = '".addslashes($row->PropDef)."'";
-			
-			$database->setQuery($subQuery);
-			$results = $database->loadObjectList();
-			foreach ($results as $result)
-			{
-				$doc.="<PropertyValue><value>$result->ValueDef</value></PropertyValue>";
-			}
-			
-			$doc.= "</Property>";
-		}
-	*/
 		$doc .= '</Diffusion></Metadata>';
 		
 		$document = new DomDocument();
-		
-		
 		$document->loadXML($doc);
 		
 		$style = new DomDocument();
@@ -1003,7 +969,6 @@ class displayManager{
 	 */
 	function buildXHTML ($xslStyle, $xml)
 	{
-//		$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$type = JRequest::getVar('type', 'abstract');
@@ -1021,21 +986,18 @@ class displayManager{
 		$shopExist=0;
 		
 		// Si la page est appelée depuis un autre environnement que Joomla
-		//print_r($_SERVER);echo "<br>";
 		$notJoomlaCall = 'true';
 		if (array_key_exists('HTTP_REFERER', $_SERVER))
 		{
 			// Emplacement depuis lequel l'adresse a été appelée
 			$httpReferer = parse_url($_SERVER['HTTP_REFERER']);
 			$caller = $httpReferer['scheme']."://".$httpReferer['host'].$httpReferer['path'];
-			//echo $caller."<br>";
 			
 			// Adresse appelée
 			$scheme = "http";
 			if ($_SERVER['HTTPS'] and $_SERVER['HTTPS'] <> "off")
 				$scheme .= "s";
 			$current = $scheme."://".$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
-			//echo $current;
 			
 			// Si l'adresse courante ne fait pas partie du méme site que l'adresse appelante, 
 			// on considére que c'est un appel direct
@@ -1083,7 +1045,6 @@ class displayManager{
 					WHERE m.guid = '".$id."'";
 		$db->setQuery($query);
 		$product_creation_date = $db->loadResult();
-		//$product_creation_date = date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
 		
 		$query = "	SELECT o.updated 
 					FROM #__sdi_metadata m
@@ -1092,7 +1053,6 @@ class displayManager{
 					WHERE m.guid = '".$id."'";
 		$db->setQuery($query);
 		$product_update_date = $db->loadResult();
-		//$product_update_date = $temp == '0000-00-00 00:00:00' ? '-' : date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
 		if ($product_update_date == '0000-00-00 00:00:00')
 			$product_update_date = '-';
 				
@@ -1113,30 +1073,9 @@ class displayManager{
 		//Defines if the corresponding product is orderable.
 		$hasOrderableProduct = false;
 		
-		//load favorites
-//		$optionFavorite;
-//		$metadataListArray = array();
-//		if($current_account->id == 0)
-//			$optionFavorite = false;
-//		else if ($enableFavorites == 1){
-//			$query = "SELECT m.guid FROM #__sdi_metadata m WHERE m.id IN (SELECT metadata_id FROM #__sdi_favorite WHERE account_id = $current_account->id)";
-//			$db->setQuery($query);
-//			$metadataListArray = $db->loadResultArray();
-//			if ($db->getErrorNum()) {						
-//						echo "<div class='alert'>";			
-//						echo 			$db->getErrorMsg();
-//						echo "</div>";
-//			}
-//		}
-//		$isFavorite = 1;
-//		if(!in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
-//			$isFavorite = 0;
-		
 		$context = JRequest::getVar('context');
 		if ($type <> 'diffusion')
 			$xml = displayManager::constructXML($xml, $db, $language, $id, $notJoomlaCall, $type, $context);
-		
-//		echo htmlspecialchars($xml->saveXML())."<br>";break;
 		
 		$processor = new xsltProcessor();
 		$processor->importStylesheet($xslStyle);
@@ -1146,10 +1085,6 @@ class displayManager{
 		// Toolbar build from EasySDIV1
 		if ($toolbar==1){
 			$buttonsHtml .= "<table align=\"right\"><tr align='right'>";
-//			if(!in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
-//				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ADD_TO_FAVORITE")."\" id=\"toggleFavorite\" class=\"addFavorite\" onclick=\"favoriteManagment();\"> </div></td>";
-//			if(in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
-//				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_REMOVE_FAVORITE")."\" id=\"toggleFavorite\" class=\"removeFavorite\" onclick=\"favoriteManagment();\"> </div></td>";
 			$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTPDF")."\" id=\"exportPdf\" onclick=\"window.open('./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id=$id&type=$type', '_self');\"> </div></td>
 					<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTXML")."\" id=\"exportXml\" onclick=\"window.open('./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id=$id&type=$type', '_self');\"> </div></td>
 					<td><div title=\"".JText::_("EASYSDI_ACTION_PRINTMD")."\" id=\"printMetadata\" onclick=\"window.open('./index.php?tmpl=component&option=$option&task=$task&id=$id&type=$type&toolbar=0&print=1','win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no');\"> </div></td>";
@@ -1183,83 +1118,6 @@ class displayManager{
 			
 			//Define links for onclick event
 			$myHtml .= "<script>\n";
-			
-//			$myHtml .="
-//			function favoriteManagment ()
-//			{
-//			  var action = \"addFavorite\";
-//			   var title = Array();
-//			   title['CORE_REMOVE_FAVORITE']='".JText::_("CORE_REMOVE_FAVORITE")."';
-//			   title['CORE_ADD_TO_FAVORITE']='".JText::_("CORE_ADD_TO_FAVORITE")."';
-//				   
-//			   if(document.getElementById('toggleFavorite').className == \"removeFavorite\")
-//			      action = \"removeFavorite\";
-//				   
-//			   var req = new Ajax('./index.php?option=com_easysdi_shop&task='+action+'&view=&metadata_guid=$id', {
-//		           	method: 'get',
-//		           	onSuccess: function(){
-//				        if(document.getElementById('toggleFavorite').className == \"removeFavorite\"){
-//		           		   document.getElementById(\"toggleFavorite\").className = 'addFavorite';
-//			   		   document.getElementById(\"toggleFavorite\").title = title['EASYSDI_ADD_TO_FAVORITE'];
-//					}else{
-//					   document.getElementById(\"toggleFavorite\").className = 'removeFavorite';
-//			   		   document.getElementById(\"toggleFavorite\").title = title['EASYSDI_REMOVE_FAVORITE'];
-//					}
-//		           	},
-//		           	onFailure: function(){
-//		           		
-//		           	}
-//		           }).request();		
-//				
-//			}";
-			
-//			//Manage display class
-//			/* Onglets abstract et complete*/
-//			$myHtml .= "window.addEvent('domready', function() {
-//			
-//			document.getElementById('catalogPanel1').addEvent( 'click' , function() { 
-//				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=abstract', '_self');
-//			});
-//			document.getElementById('catalogPanel2').addEvent( 'click' , function() { 
-//				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=complete', '_self');
-//			});
-//			
-//			task = '$task';
-//			type = '$type';
-//			
-//			";
-//			/* Onglet diffusion, si et seulement si le shop est installé et que l'objet est diffusable*/
-//			if ($shopExist)
-//			{
-//				$myHtml .= "
-//				document.getElementById('catalogPanel3').addEvent( 'click' , function() { 
-//					window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=diffusion', '_self');
-//				});
-//				
-//				document.getElementById('catalogPanel3').className = 'closed';
-//				
-//				if(task == 'showMetadata' & type == 'diffusion'){
-//	        		document.getElementById('catalogPanel3').className = 'open';
-//				}
-//				";
-//			}
-			
-			/* Boutons */
-//			$myHtml .= "
-//
-//			
-//	
-//			document.getElementById('catalogPanel1').className = 'closed';
-//			document.getElementById('catalogPanel2').className = 'closed';
-//			
-//			if(task == 'showMetadata' & type == 'abstract'){
-//	        	document.getElementById('catalogPanel1').className = 'open';
-//			}
-//			if(task == 'showMetadata' & type == 'complete'){
-//	        	document.getElementById('catalogPanel2').className = 'open';
-//			}
-//			});\n"; 
-		
 			$myHtml .= "</script>";
 
 		}
@@ -1801,11 +1659,11 @@ class displayManager{
 		$root = $xml->getElementsByTagName("MD_Metadata");
 		$root = $root->item(0);
 		$gmdRoot = $doc->importNode($root, true);
-		
+
 		$XMLNewRoot = $doc->createElement("Metadata");
 		$doc->appendChild($XMLNewRoot);
 		$XMLNewRoot->appendChild($gmdRoot);
-	
+		
 		$XMLSdi = $doc->createElementNS('http://www.depth.ch/sdi', 'sdi:Metadata');
 		$XMLSdi->setAttribute('user_lang', $language->_lang);
 		$XMLSdi->setAttribute('call_from_joomla', (int)!$notJoomlaCall);
@@ -1945,8 +1803,8 @@ class displayManager{
 							INNER JOIN #__sdi_objectversion ov ON ov.object_id=o.id
 							INNER JOIN #__sdi_metadata m ON m.id=ov.metadata_id
 							INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
-							INNER JOIN jos_sdi_language l ON t.language_id=l.id
-							INNER JOIN jos_sdi_list_codelang cl ON l.codelang_id=cl.id
+							INNER JOIN #__sdi_language l ON t.language_id=l.id
+							INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
 							WHERE m.guid = '".$fileIdentifier."'
 								  AND cl.code = '".$language->_lang."'";
 		$db->setQuery($queryObjecttype);
@@ -2075,14 +1933,14 @@ class displayManager{
 				$user = JFactory::getUser();
 				$account = new accountByUserId( $db );
 				$account->load( $user->id );
-				if($product_object->published && $product_object->available && strlen($productFileName) > 0 && $product_object->isUserAllowedToLoad($account->id)){
+				if($product_object->published && $product_object->available && (strlen($productFileName) > 0 || $product_object->grid_id) && $product_object->isUserAllowedToLoad($account->id)){
 					//Link to download the product 
 					$XMLActionDownloadProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:downloadProduct");
 					$XMLActionDownloadProduct->setAttribute('id', 'downloadProduct');
 					$XMLActionDownloadProductLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_shop&task=downloadAvailableProduct&cid='.$product_object->id.'&toolbar=0&print=1')));
 					$XMLActionDownloadProduct->appendChild($XMLActionDownloadProductLink);
 					$XMLAction->appendChild($XMLActionDownloadProduct);
-				} else if($product_object->published && $product_object->available && strlen($productFileName) > 0 && !$product_object->isUserAllowedToLoad($account->id)){
+				} else if($product_object->published && $product_object->available && (strlen($productFileName) > 0|| $product_object->grid_id) && !$product_object->isUserAllowedToLoad($account->id)){
 					//Contact to extend user rights  
 					$XMLActionDownloadProductRight = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:downloadProductRight");
 					$XMLActionDownloadProductRight->setAttribute('id', 'downloadProductRight');
@@ -2154,32 +2012,39 @@ class displayManager{
 		$rowObjectVersion->load($rowMetadata->id);
 			
 		$childs=array();
-		$query = "SELECT m.guid as metadata_guid, o.name as objectname, ot.code as objecttype
+		$query = "SELECT m.guid as metadata_guid, o.name as objectname, ot.code as objecttype, t.title as metadatatitle
 				 FROM #__sdi_metadata m
 				 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
 				 INNER JOIN #__sdi_object o ON ov.object_id = o.id
 				 INNER JOIN #__sdi_objecttype ot ON o.objecttype_id = ot.id
 				 INNER JOIN #__sdi_objectversionlink ovl ON ov.id = ovl.child_id
+				 LEFT OUTER JOIN #__sdi_translation t on t.element_guid = m.guid
+				 LEFT OUTER JOIN #__sdi_language l ON t.language_id=l.id
+				 RIGHT OUTER JOIN (SELECT * FROM  #__sdi_list_codelang WHERE code='".$language->_lang."') cl ON l.codelang_id=cl.id
 				 WHERE ovl.parent_id=".$rowObjectVersion->id;
 		$db->setQuery($query);
 		$childs = $db->loadObjectList();
 		
 		$parents=array();
-		$query = "SELECT m.guid as metadata_guid, o.name as objectname, ot.code as objecttype
+		$query = "SELECT m.guid as metadata_guid, o.name as objectname, ot.code as objecttype, t.title as metadatatitle
 				 FROM #__sdi_metadata m
 				 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
 				 INNER JOIN #__sdi_object o ON ov.object_id = o.id
 				 INNER JOIN #__sdi_objecttype ot ON o.objecttype_id = ot.id
 				 INNER JOIN #__sdi_objectversionlink ovl ON ov.id = ovl.parent_id
+				 LEFT OUTER JOIN #__sdi_translation t on t.element_guid = m.guid
+				 LEFT OUTER JOIN #__sdi_language l ON t.language_id=l.id
+				 RIGHT OUTER JOIN (SELECT * FROM  #__sdi_list_codelang WHERE code='".$language->_lang."') cl ON l.codelang_id=cl.id
 				 WHERE ovl.child_id=".$rowObjectVersion->id;
 		$db->setQuery($query);
 		$parents = $db->loadObjectList();
-		
+
 		$XMLLinks = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:links");
 		foreach ($childs as $c)
 		{
 			$XMLChild = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:child");
 			$XMLChild->setAttribute('metadata_guid', $c->metadata_guid);
+			$XMLChild->setAttribute('metadata_title', $c->metadatatitle);
 			$XMLChild->setAttribute('object_name', $c->objectname);
 			$XMLChild->setAttribute('objecttype', $c->objecttype);
 			$XMLLinks->appendChild($XMLChild);
@@ -2189,6 +2054,7 @@ class displayManager{
 		{
 			$XMLParent = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:parent");
 			$XMLParent->setAttribute('metadata_guid', $p->metadata_guid);
+			$XMLParent->setAttribute('metadata_title', $p->metadatatitle);
 			$XMLParent->setAttribute('object_name', $p->objectname);
 			$XMLParent->setAttribute('objecttype', $p->objecttype);	
 			$XMLLinks->appendChild($XMLParent);
@@ -2221,7 +2087,7 @@ class displayManager{
 		}
 		$XMLSdi->appendChild($XMLExternalApp);
 			
-		//$doc->save("C:/tmp/temp1.xml");
+//  		$doc->save("C:/tmp/temp1.xml");
 		                     
 		return $doc;
 	}
