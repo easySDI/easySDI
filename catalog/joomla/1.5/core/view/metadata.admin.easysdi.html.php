@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin d�??Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ * Copyright (C) 2008 DEPTH SA, Chemin de??Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,9 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'commo
 if((JRequest::getVar('task') =="editMetadata")||
 (JRequest::getVar('task') =="askForEditMetadata")|| 
 (JRequest::getVar('task') =="importXMLMetadata")|| 
-(JRequest::getVar('task') =="importCSWMetadata") ||(JRequest::getVar('task') =="replicateMetadata")){
+(JRequest::getVar('task') =="importCSWMetadata") ||
+(JRequest::getVar('task') =="resetMetadata") ||
+(JRequest::getVar('task') =="replicateMetadata")){
 ?>
 <script>
 var thesaurusConfig = '<?php echo config_easysdi::getValue("thesaurusUrl");?>';
@@ -171,6 +173,7 @@ class HTML_metadata {
 		
 		$url = 'index.php?option='.$option.'&task=saveMetadata';
 		$preview_url = 'index.php?option='.$option.'&task=previewXMLMetadata';
+		$previewMD_url = '../index.php?option='.$option.'&task=previewMetadata';
 		$update_url = 'index.php?option='.$option.'&task=updateMetadata';
 		
 		$user =& JFactory::getUser();
@@ -260,6 +263,8 @@ class HTML_metadata {
 						HS.Lang['".$userLang."']['CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_TITLE']='".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_TITLE'))."';
 						HS.Lang['".$userLang."']['CORE_METADATA_UPLOADFILE_ERROR']='".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_ERROR'))."';
 						HS.Lang['".$userLang."']['CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_MSG']='".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_MSG'))."';
+						HS.Lang['".$userLang."']['CATALOG_METADATA_ALERT_MINUS_ACTION_CONFIRM_TITLE']='".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_MINUS_ACTION_CONFIRM_TITLE'))."';
+						HS.Lang['".$userLang."']['CATALOG_METADATA_ALERT_MINUS_ACTION_CONFIRM_MSG']='".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_MINUS_ACTION_CONFIRM_MSG'))."';
 						
 						// Create the form that will hold in the structure
 						var form = new Ext.form.FormPanel({
@@ -283,13 +288,13 @@ class HTML_metadata {
 										title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_ALERT'))."',
 										width:500,
 										height:160,
-										closeAction:'hide',
+										closeAction:'close',
 										layout:'fit',
 										border:true,
 										closable:true,
 										renderTo:Ext.getBody(),
 										frame:true,
-										backvalue:'',
+										backvalue:longStartValue,
 										items:[{
 											xtype:'form',
 											fileUpload: true,
@@ -384,8 +389,8 @@ class HTML_metadata {
 												{
 													text: '".html_Metadata::cleanText(JText::_('CATALOG_ALERT_CLOSE'))."',
 													handler: function(){
+														winupload.backvalue = longStartValue;
 														winupload.close();
-														Ext.ComponentMgr.get(caller).setValue (longStartValue);
 													}
 												}
 												
@@ -397,6 +402,7 @@ class HTML_metadata {
 										Ext.ComponentMgr.get(caller).setValue(winupload.backvalue);
 										if(Ext.ComponentMgr.get(caller.concat('_hiddenVal')))
 											Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue(winupload.backvalue);
+										return true;
 									}, this);
 									
 									winupload.show();
@@ -447,7 +453,6 @@ class HTML_metadata {
 										waitMsg: '".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_WAIT'))."',
 										success: function(form,action){
 											winupload.backvalue = JSON.parse (action.response.responseText).url;
-											//Ext.ComponentMgr.get('metadataForm').saveMetadataAfterLinkedFileUpdate();
 											winupload.close();
 										},
 										failure: function(form,action){
@@ -534,9 +539,7 @@ class HTML_metadata {
 														xml = xml.split('<br>').join('\\n');
 														var html = '<pre class=\"brush: xml;gutter: false;\">' + xml + '</pre>';
 														
-														// Create an iframe to host the XML preview
 														mifWin = new Ext.Window({
-						
 														      title         : 'XML Preview',
 														      width         : 845,
 														      height        : 469,
@@ -565,6 +568,34 @@ class HTML_metadata {
 													url:'".$preview_url."'
 												});
 							        	}
+						        },
+						        {
+							                text: '".JText::_('CATALOG_METADATA_PREVIEW_BUTTON_LABEL')."',
+							                handler: function()
+							                {
+							                	myMask.show();
+							                 	var fields = new Array();
+							        			form.cascade(function(cmp)
+							        			{
+								        			if (cmp.xtype=='fieldset')
+							         				{
+							         					if (cmp.clones_count)
+							          					{
+							           						fields.push(cmp.getId()+','+cmp.clones_count);
+							         					}
+							         				}
+							        			});
+							        			var fieldsets = fields.join(' | ');
+							        			
+												form.getForm().setValues({fieldsets: fieldsets});
+							              		form.getForm().setValues({task: 'previewMetadata'});
+							                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
+							                 	form.getForm().setValues({object_id: '".$object_id."'});
+							                 	form.getForm().getEl().dom.target = '_blank';
+												form.getForm().getEl().dom.action = '".$previewMD_url."';
+												form.getForm().getEl().dom.submit();
+												myMask.hide();
+							        	}
 						        }],
 						       	tbar: new Ext.Toolbar({
 						       			toolbarCls: 'x-panel-fbar',
@@ -585,7 +616,7 @@ class HTML_metadata {
 				$node = $xpathResults->query($queryPath."/".$root[0]->isocode);
 				$nodeCount = $node->length;
 				
-				HTML_metadata::buildTree($database, 0, $root[0]->id, $root[0]->id, $fieldsetName, 'form', str_replace(":", "_", $root[0]->isocode), $xpathResults, null, $node->item(0), $queryPath, $root[0]->isocode, $account_id, $profile_id, $option, $child);
+				HTML_metadata::buildTree($database, 0, $root[0]->id, $root[0]->id, $fieldsetName, 'form', str_replace(":", "_", $root[0]->isocode), $xpathResults, null, $node->item(0), $queryPath, $root[0]->isocode, $account_id, $profile_id, $option, $child,$isManager, $isEditor);
 				
 				// Retraverser la structure et autoriser les nulls pour tous les champs cachés
 				$this->javascript .="
@@ -619,6 +650,72 @@ class HTML_metadata {
 					//console.log(hiddenFields);
 				";								
 
+				//Apply button : save and keep the form opened
+				$this->javascript .="
+					var applyButton = new Ext.Button( {
+						text: '".JText::_('CATALOG_APPLY')."',
+						handler: function(){
+							myMask.show();
+							var fields = new Array();
+							form.getForm().fieldInvalid =false;
+							form.cascade(function(cmp){
+								if(cmp.isValid){
+									if(!cmp.isValid()&& Ext.get(cmp.id)){
+										form.getForm().fieldInvalid =true;
+									}
+								}
+								if (cmp.xtype=='fieldset')
+								{
+									if (cmp.clones_count)
+									{
+										fields.push(cmp.getId()+','+cmp.clones_count);
+									}
+								}
+							});
+							
+							if(!form.getForm().fieldInvalid)
+							{
+								var fieldsets = fields.join(' | ');
+								form.getForm().setValues({fieldsets: fieldsets});
+								form.getForm().setValues({task: 'saveMetadata'});
+								form.getForm().setValues({metadata_id: '".$metadata_id."'});
+								form.getForm().setValues({object_id: '".$object_id."'});
+								form.getForm().submit({
+									scope: this,
+									method	: 'POST',
+									clientValidation: false,
+									success: function(form, action)
+									{
+										Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."',
+											'".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
+											function () {
+											}
+										);
+										myMask.hide();
+									},
+									failure: function(form, action)
+									{
+										if (action.result)
+											alert(action.result.errors.xml);
+										else
+											alert('Form save error');
+										myMask.hide();
+									},
+									url:'".$url."'
+								});
+							}
+							else
+							{
+								alert('Please verify whether all required fields are present');
+								myMask.hide();
+							}
+						}
+					})
+					
+					form.fbar.add(applyButton);
+					form.render();
+				";
+				
 				// Ajout du bouton VALIDER seulement si l'utilisateur courant est gestionnaire de la métadonnée
 				if(!$isPublished)
 				{
@@ -700,7 +797,6 @@ class HTML_metadata {
 						form.fbar.add(saveButton);
 							        
 						form.render();";
-					
 				}
 				
 				// Ajout du bouton METTRE A JOUR seulement si l'utilisateur courant est gestionnaire de la métadonnée
@@ -773,8 +869,6 @@ class HTML_metadata {
 							        );
 						form.render();";
 					}
-										
-					
 					
 					$this->javascript .="
 						form.add(createHidden('option', 'option', '".$option."'));
@@ -842,7 +936,7 @@ class HTML_metadata {
 	 * @param unknown_type $profile_id
 	 * @param unknown_type $option
 	 */
-	function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFieldsetName, $ancestorFieldsetName, $parentName, $xpathResults, $parentScope, $scope, $queryPath, $currentIsocode, $account_id, $profile_id, $option,$parent_object)
+	function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFieldsetName, $ancestorFieldsetName, $parentName, $xpathResults, $parentScope, $scope, $queryPath, $currentIsocode, $account_id, $profile_id, $option,$parent_object,$isManager, $isEditor)
 	{
 		// On récupère dans des variables le scope respectivement pour le traitement des classes enfant et
 		// pour le traitement des attributs enfants.
@@ -874,6 +968,7 @@ class HTML_metadata {
 						 rel.classchild_id as child_id, 
 						 rel.objecttypechild_id as objecttype_id, 
 						 rel.editable as editable,
+						 rel.editoraccessibility as editoraccessibility,
 						 CONCAT(relation_namespace.prefix,':',rel.isocode) as rel_isocode, 
 						 rel.relationtype_id as reltype_id, 
 						 rel.classassociation_id as association_id,
@@ -903,7 +998,7 @@ class HTML_metadata {
 						 	 ON a.attributetype_id = t.id 
 					     LEFT OUTER JOIN #__sdi_class as c
 					  		 ON rel.classchild_id=c.id
-					  	 LEFT OUTER JOIN jos_sdi_sys_stereotype as tc
+					  	 LEFT OUTER JOIN #__sdi_sys_stereotype as tc
 			 				ON c.stereotype_id = tc.id 
 					     LEFT OUTER JOIN #__sdi_list_relationtype as reltype
 					  		 ON rel.relationtype_id=reltype.id	 
@@ -943,6 +1038,10 @@ class HTML_metadata {
 			//La visibilité est héréditaire : mise à jour de la valeur du child courant en fonction du parent
 			if(isset($parent_object) && $parent_object->editable > $child->editable)
 				$child->editable = $parent_object->editable;
+			
+			//For editors, visibility can be downgrade by admin configuration
+			if(!$isManager && $isEditor && isset($child->editoraccessibility) && $child->editoraccessibility > $child->editable )
+				$child->editable = $child->editoraccessibility;
 			
 			//Traitement d'une relation vers un attribut
 			if ($child->attribute_id <> null)
@@ -1048,11 +1147,11 @@ class HTML_metadata {
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Si le xpathParentId est d�fini, regarder si on est au xpath souhait�.	
+								// Si le xpathParentId est defini, regarder si on est au xpath souhaite.	
 								if ($this->parentId_attribute <> "")
 								{
 									// Vérification qu'on est bien dans l'attribut choisi. La classe n'a pas d'utilité
-									if ($parentScope <> NULL and $this->parentId_attribute == $child->attribute_id)
+									if ($this->parentId_attribute == $child->attribute_id)
 									{
 										// Stocker le guid du parent
 										$nodeValue = $this->parentGuid;
@@ -1190,7 +1289,7 @@ class HTML_metadata {
 													
 													if($hidden == "false")
 													{
-														// Selon le rendu de l'attribut, on fait des traitements diff�rents
+														// Selon le rendu de l'attribut, on fait des traitements differents
 														switch ($child->rendertype_id)
 														{
 															// Textarea
@@ -1830,7 +1929,7 @@ class HTML_metadata {
 								$nodeDefaultValues = array();
 								if (count($nodeValues) == 0)
 								{
-									// Elements s�lectionn�s par d�faut
+									// Elements selectionnes par defaut
 									$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
 									$database->setQuery( $query );
 									$selectedContent = $database->loadObjectList();
@@ -1958,7 +2057,7 @@ class HTML_metadata {
 																      		    // S'assurer que le mot-clé n'est pas déjé sélectionné
 																      		    if (!target.usedRecords.containsKey(reliableRecord))
 																				{
-																					// Sauvegarde dans le champs SuperBoxSelect des mots-cl�s dans toutes les langues de EasySDI
+																					// Sauvegarde dans le champs SuperBoxSelect des mots-cles dans toutes les langues de EasySDI
 																				    for(l in result.terms) 
 																				    {
 																				    	s += l+': '+result.terms[l]+';';
@@ -2130,7 +2229,7 @@ class HTML_metadata {
 						{
 							// Guid
 							case 1:
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								// Selon le rendu de l'attribut, on fait des traitements differents
 								switch ($child->rendertype_id)
 								{
 									// Textbox
@@ -2433,7 +2532,7 @@ class HTML_metadata {
 											
 										if ($node->length > 0)
 										{
-											// Chercher le titre associ� au texte localis� souhait�, ou s'il n'y a pas de titre le contenu
+											// Chercher le titre associe au texte localise souhaite, ou s'il n'y a pas de titre le contenu
 											$query = "SELECT t.title, t.content, c.guid FROM #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND t.content = '".html_Metadata::cleanText($node->item(0)->nodeValue)."'"." ORDER BY c.ordering";
 											$database->setQuery( $query );
 											$result = $database->loadObject();
@@ -2445,7 +2544,7 @@ class HTML_metadata {
 								$nodeDefaultValues = array();
 								if (count($nodeValues) == 0)
 								{
-									// Elements s�lectionn�s par d�faut
+									// Elements selectionnes par defaut
 									$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
 									$database->setQuery( $query );
 									//echo $database->getQuery()."<br>";
@@ -2559,7 +2658,7 @@ class HTML_metadata {
 					{
 						// Guid
 						case 1:
-							// Selon le rendu de l'attribut, on fait des traitements diff�rents
+							// Selon le rendu de l'attribut, on fait des traitements differents
 							switch ($child->rendertype_id)
 							{
 								// Textbox
@@ -2581,7 +2680,7 @@ class HTML_metadata {
 						case 2:
 							if ($hidden == "false")
 							{
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								// Selon le rendu de l'attribut, on fait des traitements differents
 								switch ($child->rendertype_id)
 								{
 									// Textarea
@@ -2615,7 +2714,7 @@ class HTML_metadata {
 							switch ($child->rendertype_id)
 							{
 								default:
-									/* Traitement sp�cifique aux langues */
+									/* Traitement specifique aux langues */
 									
 									// Stockage du path pour atteindre ce noeud du XML
 									//$queryPath = $child->attribute_isocode."/gmd:LocalisedCharacterString";
@@ -2635,6 +2734,7 @@ class HTML_metadata {
 											$fieldsetName = "fieldset".$child->attribute_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 											$this->javascript .="
 											var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($label))."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', true); 
+												".$parentFieldsetName.".add(".$fieldsetName.");
 											";
 												
 											foreach($this->langList as $row)
@@ -2668,7 +2768,7 @@ class HTML_metadata {
 												}
 												
 												if($hidden == "false"){
-													// Selon le rendu de l'attribut, on fait des traitements diff�rents
+													// Selon le rendu de l'attribut, on fait des traitements differents
 													switch ($child->rendertype_id)
 													{
 														// Textarea
@@ -2999,7 +3099,7 @@ class HTML_metadata {
 						case 7:
 							if ($hidden == "false")
 							{
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								// Selon le rendu de l'attribut, on fait des traitements differents
 								switch ($child->rendertype_id)
 								{
 									// Textarea
@@ -3046,7 +3146,7 @@ class HTML_metadata {
 							break;
 						// TextChoice
 						case 9:
-							// Traitement sp�cifique aux listes
+							// Traitement specifique aux listes
 							//echo $ancestorFieldsetName." - ".$parentName." - ".$child->attribute_isocode. " (1)<br>";					
 							// Traitement des enfants de type list
 							$content = array();
@@ -3058,8 +3158,8 @@ class HTML_metadata {
 						 	$dataValues = array();
 						 	$nodeValues = array();
 					
-						 	// Traitement de la multiplicit�
-						 	// R�cup�ration du path du bloc de champs qui va �tre cr�� pour construire le nom
+						 	// Traitement de la multiplicite
+						 	// Recuperation du path du bloc de champs qui va etre cree pour construire le nom
 						 	$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 						 	 
 						 	// Construction de la liste
@@ -3087,7 +3187,7 @@ class HTML_metadata {
 							
 						 	$relNode = $xpathResults->query($child->attribute_isocode, $scope);
 						 	
-							// Elements s�lectionn�s par d�faut
+							// Elements selectionnes par defaut
 							$nodeDefaultValues = array();
 							$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
 							$database->setQuery( $query );
@@ -3222,7 +3322,7 @@ class HTML_metadata {
 								$langArray = Array();
 								foreach($this->langList as $row)
 								{									
-									if ($row->defaultlang) // Langue par d�faut de la m�tadonn�e
+									if ($row->defaultlang) // Langue par defaut de la metadonnee
 										$defaultLang = $row->gemetlang;
 									
 									if ($row->code_easysdi == $language->_lang) // Langue courante de l'utilisateur
@@ -3257,10 +3357,10 @@ class HTML_metadata {
 												      		    					    
 																      		    var reliableRecord = result.terms[thes.lang];
 																      		    
-																      		    // S'assurer que le mot-cl� n'est pas d�j� s�lectionn�
+																      		    // S'assurer que le mot-cle n'est pas deje selectionne
 																      		    if (!target.usedRecords.containsKey(reliableRecord))
 																				{
-																					// Sauvegarde dans le champs SuperBoxSelect des mots-cl�s dans toutes les langues de EasySDI
+																					// Sauvegarde dans le champs SuperBoxSelect des mots-cles dans toutes les langues de EasySDI
 																				    for(l in result.terms) 
 																				    {
 																				    	s += l+': '+result.terms[l]+';';
@@ -3496,14 +3596,14 @@ class HTML_metadata {
 					}
 					// Test pour le cas d'une relation qui boucle une classe sur elle-même
 					if ($ancestor <> $parent)					
-						HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child);
+						HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child,$isManager, $isEditor);
 		
 					// Classassociation_id contient une classe
 					if ($child->association_id <>0)
 					{
 						// Appel récursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child);
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child,$isManager, $isEditor);
 					}
 				}//end - //$pos==0
 				// Ici on va traiter toutes les occurences trouvées dans le XML
@@ -3605,14 +3705,14 @@ class HTML_metadata {
 					}
 					
 					// Appel récursif de la fonction pour le traitement du prochain niveau
-					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child);
+					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child,$isManager, $isEditor);
 					
 					// Classassociation_id contient une classe
 					if ($child->association_id <>0)
 					{
 						// Appel récursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child);
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child,$isManager, $isEditor);
 					}
 				}//end - else !($pos==0)
 			}// end - for ($pos=0; $pos<=$relCount; $pos++)
@@ -3703,14 +3803,14 @@ class HTML_metadata {
 				
 				// Appel récursif de la fonction pour le traitement du prochain niveau
 				if ($ancestor <> $parent)
-					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child);
+					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child,$isManager, $isEditor);
 					
 				// Classassociation_id contient une classe
 				if ($child->association_id <>0)
 				{
 					// Appel récursif de la fonction pour le traitement du prochain niveau
 					if ($ancestor <> $parent)
-						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child);
+						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child,$isManager, $isEditor);
 				}
 			}
 		}
@@ -3751,7 +3851,7 @@ class HTML_metadata {
 					$results = array();
 					$results = HTML_metadata::array2json($results);
 						
-					// On construit le nom de l'occurence qui a forc�ment l'index 2
+					// On construit le nom de l'occurence qui a forcement l'index 2
 					$name = $parentName."-".str_replace(":", "_", $child->rel_isocode)."__1";
 					
 					// Traitement de la relation entre la classe parent et la classe enfant
@@ -3814,7 +3914,7 @@ class HTML_metadata {
 					{
 						// Appel récursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child);
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child,$isManager, $isEditor);
 					}
 				}
 				else
@@ -3935,7 +4035,7 @@ class HTML_metadata {
 					{
 						// Appel récursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child);
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child,$isManager, $isEditor);
 					}
 				}
 			}
@@ -3999,7 +4099,7 @@ class HTML_metadata {
 				{
 					// Appel récursif de la fonction pour le traitement du prochain niveau
 					if ($ancestor <> $parent)
-						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child);
+						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child,$isManager, $isEditor);
 				}
 			}
 		}
@@ -4037,7 +4137,7 @@ class HTML_metadata {
 
 		if ($simple)
 		{
-			// Entr�e vide
+			// Entree vide
 			$extjsArray .= "['', ''], ";
 		}
 		$id=0;
@@ -4268,7 +4368,7 @@ class HTML_metadata {
 				{
 			       $menu .= "handler: function()
 				                {
-				                	// Cr�er une iframe pour demander � l'utilisateur le type d'import
+				                	// Creer une iframe pour demander e l'utilisateur le type d'import
 									if (!winxml)
 										winxml = new Ext.Window({
 										                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORT_XMLFILE_ALERT'))."',
@@ -4539,12 +4639,12 @@ class HTML_metadata {
 	            }
 			";
 		}
-		// Boutons de r�plication
+		// Boutons de replication
 		if (!$isPublished)
 		{
 			$replicate_url = 'index.php?option='.$option.'&task=replicateMetadata';
 		
-			// R�plication de m�tadonn�e
+			// Replication de metadonnee
 			$objecttypes = array();
 			$listObjecttypes = array();
 			$database->setQuery( "SELECT id as value, name as text FROM #__sdi_objecttype WHERE predefined=0 ORDER BY name" );
@@ -4554,6 +4654,17 @@ class HTML_metadata {
 				$listObjecttypes[$ot->value] = $ot->text;
 			}
 			$listObjecttypes = HTML_metadata::array2extjs($listObjecttypes, true);
+			
+			$objectstatus = array();
+			$listObjectStatus = array();
+			$database->setQuery( "SELECT id as value, label as text FROM #__sdi_list_metadatastate " );
+			$objectstatus= array_merge( $objectstatus, $database->loadObjectList() );
+			foreach($objectstatus as $ot)
+			{
+				$listObjectStatus[$ot->value] = JText::_($ot->text);
+			}
+			$listObjectStatus = HTML_metadata::array2extjs($listObjectStatus, true);
+			
 			
 			$this->javascript .="
 			var replicateDataStore = new Ext.data.Store({
@@ -4580,6 +4691,9 @@ class HTML_metadata {
 							            beforeload: {
 							            				fn:function(store, options) {
 							            					options.params.objecttype_id = Ext.getCmp('objecttype_id').getValue();
+							            					options.params.objectname = Ext.getCmp('objectname').getValue();
+													 		options.params.objectstatus = Ext.getCmp('objectstatus').getValue();
+													 		options.params.objectversion = Ext.getCmp('objectversion').getValue().getGroupValue();
 															return true;		
 											            }
 											         }
@@ -4590,12 +4704,11 @@ class HTML_metadata {
 		            text: '".JText::_('CATALOG_REPLICATE')."',
 					handler: function()
 	                {
-	                	// Cr�er une iframe pour demander � l'utilisateur le type d'import
-						if (!winrct)
+	                	if (!winrct)
 							winrct = new Ext.Window({
 							                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_ALERT'))."',
 							                width:600,
-							                height:430,
+							                height:500,
 							                closeAction:'hide',
 							                layout:'fit', 
 										    border:true, 
@@ -4610,7 +4723,7 @@ class HTML_metadata {
 											     ,method:'post' 
 											     ,url:'".$replicate_url."'
 												 ,standardSubmit: true
-											     //,defaults:{anchor:'95%'} 
+											 
 											     ,items:[ 
 											       { 
 											       	 typeAhead:true,
@@ -4630,20 +4743,65 @@ class HTML_metadata {
 														        data: ".$listObjecttypes."
 														    }),
 													 valueField:'value',
-													 displayField:'text',
-													 listeners: {        
-													 				select: {            
-													 							fn:function(combo, value) {
-													 								var modelDest = Ext.getCmp('objectselector');                
-													 								modelDest.store.removeAll();                
-													 								//reload region store and enable region                 
-													 								modelDest.store.reload({                    
-													 								params: { 
-													 									objecttype_id: combo.getValue() 
-																						}                
-																					});																						}        
-																			}
-																}
+													 displayField:'text'
+											       },
+											       {
+											       		id:'objectname',
+											       		hiddenName:'objectname_hidden',
+											       		xtype:'textfield',
+											       		fieldLabel : '".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTNAME_LABEL'))."'
+											       },
+											        { 
+											         typeAhead:true,
+											       	 triggerAction:'all',
+											       	 mode:'local',
+											       	 fieldLabel:'".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTSTATUS_LABEL'))."', 
+											         id:'objectstatus', 
+											         hiddenName:'objectstatus_hidden', 
+											         xtype: 'combo',
+											         editable: false,
+											         store: new Ext.data.ArrayStore({
+														        id: 0,
+														        fields: [
+														            'value',
+														            'text'
+														        ],
+														        data: ".$listObjectStatus."
+														    }),
+													 valueField:'value',
+													 displayField:'text'
+											       },
+											       {
+											        fieldLabel: '".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTVERSION_LABEL'))."',
+											        xtype: 'radiogroup', 
+        											id:'objectversion', 
+        											cls: 'x-check-group-alt',
+        											columns: [80,80],
+        											vertical:false,
+											        items: [
+											                {boxLabel: '".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTVERSION_ALL_LABEL'))."', name: 'version_grp', inputValue: 'All',checked: true},
+											                {boxLabel: '".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTVERSION_LAST_LABEL'))."', name: 'version_grp', inputValue: 'Last'}
+											        	] 
+											       },
+											       {
+        											xtype: 'panel', 
+        											buttonAlign:'right' ,
+											       	buttons: [{ 
+												       	xtype: 'button', 
+												       	text:'".html_Metadata::cleanText(JText::_('CORE_SEARCH_BUTTON'))."',
+									                    handler: function(){
+									                    	var modelDest = Ext.getCmp('objectselector');                
+												 			modelDest.store.removeAll();                
+												 			modelDest.store.reload({                    
+													 			params: { 
+													 				objecttype_id: Ext.getCmp('objecttype_id').getValue(),
+													 				objectname : Ext.getCmp('objectname').getValue(),
+													 				objectstatus : Ext.getCmp('objectstatus').getValue(),
+													 				objectversion : Ext.getCmp('objectversion').getValue().getGroupValue(),
+																}                
+															});	
+														}
+												       }]
 											       },
 											       {
 											       	 id:'objectselector',
@@ -4751,9 +4909,9 @@ class HTML_metadata {
 								winrct.items.get(0).findById('objectselector').store.removeAll();
 							}
 
-							Ext.getCmp('objectselector').store.load();
+ 							//Ext.getCmp('objectselector').store.load();
 							
-							// Masquer le bouton de rafra�chissement
+							// Masquer le bouton de rafraechissement
 							Ext.getCmp('objectselector').getBottomToolbar().refresh.hide();
 							
 				            winrct.show();
@@ -4770,7 +4928,7 @@ class HTML_metadata {
 				$tbar[] ="{text: '".JText::_('CORE_RESET')."',
 									handler: function()
 					                {
-					                	// Cr�er une iframe pour confirmer la r�initialisation
+					                	// Creer une iframe pour confirmer la reinitialisation
 										if (!winrst)
 											winrst = new Ext.Window({
 											                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CONFIRM_RESET_ALERT'))."',

@@ -168,7 +168,7 @@ function listRelation(&$rows, $lists, $page, $option,  $filter_order_Dir, $filte
 <?php
 	}
 	
-	function newRelation(&$row, &$rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $renderStyle, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype,$fieldpropertylist,$relation_attribute_array, $option)
+	function newRelation(&$row, &$rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $renderStyle, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype,$fieldpropertylist,$fieldpropertyeditorlist,$relation_attribute_array, $option)
 	{
 		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
 		global  $mainframe;
@@ -196,7 +196,12 @@ function listRelation(&$rows, $lists, $page, $option,  $filter_order_Dir, $filte
 				<tr>
 					<td><?php echo JText::_("CATALOG_RELATION_EDITABLE"); ?></td>
 					<?php if ($pageReloaded and array_key_exists('editable', $_POST)) $editablevalue= $_POST['editable']; else $editablevalue= $row->editable;?>
-					<td><?php echo JHTML::_("select.genericlist",$fieldpropertylist, 'editable', 'size="1" class="inputbox" onchange=""', 'value', 'text', $editablevalue ); ?></td>							
+					<td><?php echo JHTML::_("select.genericlist",$fieldpropertylist, 'editable', 'size="1" class="inputbox" onchange="updateAccessibilityList()"', 'value', 'text', $editablevalue ); ?></td>							
+				</tr>
+				<tr>
+					<td><?php echo JText::_("CATALOG_RELATION_EDITOR_EDITABLE"); ?></td>
+					<?php if ($pageReloaded and array_key_exists('editoraccessibility', $_POST)) $editoraccessibilityvalue= $_POST['editoraccessibility']; else $editoraccessibilityvalue= $row->editoraccessibility;?>
+					<td><?php echo JHTML::_("select.genericlist",$fieldpropertyeditorlist, 'editoraccessibility', 'size="1" class="inputbox" onchange=""', 'value', 'text', $editoraccessibilityvalue ); ?></td>							
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CATALOG_PARENT"); ?></td>
@@ -717,7 +722,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<?php 	
 	}
 
-	function editAttributeRelation(&$row, &$rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $searchCriteriaFieldsLength, $searchCriteria, $boundsStyle, $renderStyle, $child_attributetype,$fieldpropertylist, $option)
+	function editAttributeRelation(&$row, &$rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $searchCriteriaFieldsLength, $searchCriteria, $boundsStyle, $renderStyle, $child_attributetype,$fieldpropertylist,$fieldpropertyeditorlist, $option)
 	{
 		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
 		global  $mainframe;
@@ -748,8 +753,15 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CATALOG_RELATION_EDITABLE"); ?></td>
-					<td><?php echo JHTML::_("select.genericlist",$fieldpropertylist, 'editable', 'size="1" class="inputbox" onchange=""', 'value', 'text', $row->editable ); ?></td>							
+					<?php if ($pageReloaded and array_key_exists('editable', $_POST)) $editablevalue= $_POST['editable']; else $editablevalue= $row->editable;?>
+					<td><?php echo JHTML::_("select.genericlist",$fieldpropertylist, 'editable', 'size="1" class="inputbox" onchange="updateAccessibilityList()"', 'value', 'text', $editablevalue ); ?></td>							
 				</tr>
+				<tr>
+					<td><?php echo JText::_("CATALOG_RELATION_EDITOR_EDITABLE"); ?></td>
+					<?php if ($pageReloaded and array_key_exists('editoraccessibility', $_POST)) $editoraccessibilityvalue= $_POST['editoraccessibility']; else $editoraccessibilityvalue= $row->editoraccessibility;?>
+					<td><?php echo JHTML::_("select.genericlist",$fieldpropertyeditorlist, 'editoraccessibility', 'size="1" class="inputbox" onchange=""', 'value', 'text', $editoraccessibilityvalue ); ?></td>							
+				</tr>
+				
 				<tr>
 					<td><?php echo JText::_("CATALOG_CLASS"); ?></td>
 					<?php if ($pageReloaded) $classid = $_POST['parent_id']; else $classid = $row->parent_id; ?>
@@ -1127,7 +1139,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<?php 	
 	}
 	
-	function editClassRelation(&$row, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist, $fieldpropertylist,$relation_attribute_array,$pageReloaded, $option)
+	function editClassRelation(&$row, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist, $fieldpropertylist,$fieldpropertyeditorlist,$relation_attribute_array,$pageReloaded, $option)
 	{
 		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
 		global  $mainframe;
@@ -1155,7 +1167,12 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 				<tr>
 					<td><?php echo JText::_("CATALOG_RELATION_EDITABLE"); ?></td>
 					<?php if ($pageReloaded and array_key_exists('editable', $_POST)) $editablevalue= $_POST['editable']; else $editablevalue= $row->editable;?>
-					<td><?php echo JHTML::_("select.genericlist",$fieldpropertylist, 'editable', 'size="1" class="inputbox" onchange=""', 'value', 'text',$editablevalue ); ?></td>
+					<td><?php echo JHTML::_("select.genericlist",$fieldpropertylist, 'editable', 'size="1" class="inputbox" onchange="updateAccessibilityList()"', 'value', 'text',$editablevalue ); ?></td>
+				</tr>
+				<tr>
+					<td><?php echo JText::_("CATALOG_RELATION_EDITOR_EDITABLE"); ?></td>
+					<?php if ($pageReloaded and array_key_exists('editoraccessibility', $_POST)) $editoraccessibilityvalue= $_POST['editoraccessibility']; else $editoraccessibilityvalue= $row->editoraccessibility;?>
+					<td><?php echo JHTML::_("select.genericlist",$fieldpropertyeditorlist, 'editoraccessibility', 'size="1" class="inputbox" onchange=""', 'value', 'text', $editoraccessibilityvalue ); ?></td>							
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CATALOG_PARENT"); ?></td>
@@ -1414,7 +1431,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<?php 	
 	}
 	
-	function editObjectRelation(&$row, $classes, $objecttypes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist,$fieldpropertylist, $option)
+	function editObjectRelation(&$row, $classes, $objecttypes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist,$fieldpropertylist, $fieldpropertyeditorlist,$option)
 	{
 		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
 		global  $mainframe;
@@ -1438,7 +1455,12 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CATALOG_RELATION_EDITABLE"); ?></td>
-					<td><?php echo JHTML::_("select.genericlist",$fieldpropertylist, 'editable', 'size="1" class="inputbox" onchange=""', 'value', 'text', $row->editable ); ?></td>							
+					<?php if ($pageReloaded and array_key_exists('editable', $_POST)) $editablevalue= $_POST['editable']; else $editablevalue= $row->editable;?>
+					<td><?php echo JHTML::_("select.genericlist",$fieldpropertylist, 'editable', 'size="1" class="inputbox" onchange="updateAccessibilityList()"', 'value', 'text', $editablevalue ); ?></td>							
+				</tr>
+				<tr>
+					<td><?php echo JText::_("CATALOG_RELATION_EDITOR_EDITABLE"); ?></td>
+					<td><?php echo JHTML::_("select.genericlist",$fieldpropertyeditorlist, 'editoraccessibitlity', 'size="1" class="inputbox" onchange=""', 'value', 'text', $row->editoraccessibitlityvalue ); ?></td>							
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CATALOG_PARENT"); ?></td>

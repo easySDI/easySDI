@@ -39,11 +39,57 @@ class objecttypelink extends JTable
 	var $childbound_upper=999;
  	var $class_id=null;
  	var $attribute_id=null;
+ 	var $inheritance=0;
  	
 	// Class constructor
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__sdi_objecttypelink', 'id', $db ) ;
+	}
+	
+	function deleteInheritanceXPath ()
+	{
+		$this->_db->setQuery( "DELETE FROM #__sdi_objecttypelinkinheritance WHERE objecttypelink_id=".$this->id );
+		$this->_db->query();
+		if ($this->_db->getErrorNum()) {
+			$mainframe->enqueueMessage($this->_db->getErrorMsg(),"ERROR");
+			return false;
+		}
+	}
+	
+	function addInheritanceXPath ($value)
+	{
+		if(!isset($value))
+			return false;
+		$this->_db->setQuery( "INSERT INTO #__sdi_objecttypelinkinheritance (objecttypelink_id, xpath) VALUES (".$this->id.",'".$value."')" );
+		$this->_db->query();
+		if ($this->_db->getErrorNum()) {
+			$mainframe->enqueueMessage($this->_db->getErrorMsg(),"ERROR");
+			return false;
+		}
+	}
+	
+	function getXPath()
+	{
+		$this->_db->setQuery( "SELECT * FROM #__sdi_objecttypelinkinheritance WHERE objecttypelink_id=".$this->id );
+		$rows = $this->_db->loadObjectList() ;
+		if ($this->_db->getErrorNum()) {
+			$this->setError($this->_db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		return $rows;
+	}
+}
+class objecttypelinkinheritance extends JTable
+{
+	var $id=null;
+	var $objecttypelink_id=null;
+	var $xpath=null;
+
+	// Class constructor
+	function __construct( &$db )
+	{
+		parent::__construct ( '#__sdi_objecttypelinkinheritance', 'id', $db ) ;
 	}
 }
 ?>

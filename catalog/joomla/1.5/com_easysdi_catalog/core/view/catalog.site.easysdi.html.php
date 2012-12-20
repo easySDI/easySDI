@@ -218,10 +218,10 @@ class HTML_catalog{
 	    	<p class="info"><?php echo $pageNav->getPagesCounter(); ?></p>
 			<p class="select"><?php echo $pageNav->getPagesLinks( ); ?></p>
 	  	</div>
+	  	</div>
 	<?php 
 	} 
 	?>
-	</div>
 	</div>
 	<?php
 	}

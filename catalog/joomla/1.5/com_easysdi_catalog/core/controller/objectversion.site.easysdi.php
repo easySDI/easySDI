@@ -25,8 +25,6 @@ class SITE_objectversion
 		$user = JFactory::getUser();
 		
 		$option=JRequest::getVar("option");
-		//$limit = JRequest::getVar('limit', 20, '', 'int');
-		//$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
 		$context	= $option.'.listObjectVersion';
 		$limit		= $mainframe->getUserStateFromRequest($option.'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
 		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
@@ -81,7 +79,6 @@ class SITE_objectversion
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			//exit();
 		}
 		
 		$rowObject = new object($db);
@@ -109,31 +106,7 @@ class SITE_objectversion
 		}
 		
 		$accounts = array();
-		/*$accounts[] = JHTML::_('select.option','0', JText::_("CORE_OBJECT_LIST_ACCOUNT_SELECT") );
-		
-		if (!$pageReloaded and $rowObject->id <>0)
-		{
-			$database->setQuery( "SELECT a.id AS value, b.name AS text FROM #__sdi_account a, #__users b, #__sdi_account_objecttype c WHERE a.user_id = b.id AND a.id=c.account_id AND a.id IN 
-										(SELECT account_id FROM #__sdi_actor
-								    					 WHERE 
-								    					 role_id = (SELECT id FROM #__sdi_list_role WHERE code ='PRODUCT'))
-									     AND c.objecttype_id=".$rowObject->objecttype_id."
-								ORDER BY b.name" );
-			//echo $database->getQuery();
-			$accounts = array_merge( $accounts, $database->loadObjectList());
-		}
-		else if ($pageReloaded)
-		{
-			$database->setQuery( "SELECT a.id AS value, b.name AS text FROM #__sdi_account a, #__users b, #__sdi_account_objecttype c WHERE a.user_id = b.id AND a.id=c.account_id AND a.id IN 
-										(SELECT account_id FROM #__sdi_actor
-								    					 WHERE 
-								    					 role_id = (SELECT id FROM #__sdi_list_role WHERE code ='PRODUCT'))
-									     AND c.objecttype_id=".$_POST['objecttype_id']."
-								ORDER BY b.name" );
-			//echo $database->getQuery();
-			$accounts = array_merge( $accounts, $database->loadObjectList());
-		}
-		*/
+
 		// Compte racine du gestionnaire
 		$currentAccount = new accountByUserId($database);
 		$currentAccount->load($user->get('id'));
@@ -564,7 +537,7 @@ class SITE_objectversion
 		$rowObject->checkin();
 	}
 
-function deleteObjectVersion($cid, $option)
+	function deleteObjectVersion($cid, $option)
 	{
 		global $mainframe;
 		$database =& JFactory::getDBO();

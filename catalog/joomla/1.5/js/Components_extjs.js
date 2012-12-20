@@ -1,4 +1,4 @@
-function manageObjectLinkFilter(objecttype, id, name, status, manager, editor, from, to) {
+function manageObjectLinkFilter(objecttype, id, name, status,version, manager, editor, from, to) {
 	var objecttypeFilter = new Ext.form.ComboBox( {
 		typeAhead : true,
 		triggerAction : 'all',
@@ -14,107 +14,22 @@ function manageObjectLinkFilter(objecttype, id, name, status, manager, editor, f
 			data : objecttype['list']
 		}),
 		valueField : 'value',
-		displayField : 'text',
-		listeners : {
-			select : {
-				fn : function(combo, value) {
-					var modelDest = Ext.getCmp('unselected');
-					modelDest.store.removeAll();
-
-					var selectedValues = new Array();
-					var grid = Ext.getCmp('selected').store.data;
-					for ( var i = 0; i < grid.length; i++) {
-						selectedValues.push(grid.get(i).get('value'));
-					}
-
-					modelDest.store.reload( {
-						params : {
-							objecttype_id : combo.getValue(),
-							id : Ext.getCmp('id').getValue(),
-							name : Ext.getCmp('name').getValue(),
-							status : Ext.getCmp('status').getValue(),
-							manager : Ext.getCmp('manager').getValue(),
-							editor : Ext.getCmp('editor').getValue(),
-							fromDate : Ext.getCmp('fromDate').getValue(),
-							toDate : Ext.getCmp('toDate').getValue(),
-							selectedObjects : selectedValues.join(', ')
-						}
-					});
-				}
-			}
-		}
+		displayField : 'text'
 	});
 
 	var idFilter = new Ext.form.TextField( {
 		xtype : 'textfield',
 		id : 'id',
 		fieldLabel : id['label'],
-		enableKeyEvents : true,
-		listeners : {
-			keyup : {
-				fn : function(value) {
-					var modelDest = Ext.getCmp('unselected');
-					modelDest.store.removeAll();
-
-					var selectedValues = new Array();
-					var grid = Ext.getCmp('selected').store.data;
-					for ( var i = 0; i < grid.length; i++) {
-						selectedValues.push(grid.get(i).get('value'));
-					}
-
-					modelDest.store.reload( {
-						params : {
-							objecttype_id : Ext.getCmp('objecttype_id')
-									.getValue(),
-							id : Ext.getCmp('id').getValue(),
-							name : Ext.getCmp('name').getValue(),
-							status : Ext.getCmp('status').getValue(),
-							manager : Ext.getCmp('manager').getValue(),
-							editor : Ext.getCmp('editor').getValue(),
-							fromDate : Ext.getCmp('fromDate').getValue(),
-							toDate : Ext.getCmp('toDate').getValue(),
-							selectedObjects : selectedValues.join(', ')
-						}
-					});
-				}
-			}
-		}
+		enableKeyEvents : true
 	});
 
 	var nameFilter = new Ext.form.TextField( {
 		xtype : 'textfield',
 		id : 'name',
 		fieldLabel : name['label'],
-		enableKeyEvents : true,
-		listeners : {
-			keyup : {
-				fn : function(value) {
-					var modelDest = Ext.getCmp('unselected');
-					modelDest.store.removeAll();
-
-					var selectedValues = new Array();
-					var grid = Ext.getCmp('selected').store.data;
-					for ( var i = 0; i < grid.length; i++) {
-						selectedValues.push(grid.get(i).get('value'));
-					}
-
-					modelDest.store.reload( {
-						params : {
-							objecttype_id : Ext.getCmp('objecttype_id')
-									.getValue(),
-							id : Ext.getCmp('id').getValue(),
-							name : Ext.getCmp('name').getValue(),
-							status : Ext.getCmp('status').getValue(),
-							manager : Ext.getCmp('manager').getValue(),
-							editor : Ext.getCmp('editor').getValue(),
-							fromDate : Ext.getCmp('fromDate').getValue(),
-							toDate : Ext.getCmp('toDate').getValue(),
-							selectedObjects : selectedValues.join(', ')
-						}
-					});
-				}
-			}
-		}
+		enableKeyEvents : true
+		
 	});
 
 	var statusFilter = new Ext.form.ComboBox( {
@@ -135,37 +50,18 @@ function manageObjectLinkFilter(objecttype, id, name, status, manager, editor, f
 			        data: status['list']
 			    }),
 		 valueField:'value',
-		 displayField:'text',
-		 listeners: {        
-		 				select: {            
-		 							fn:function(combo, value) {
-		 								var modelDest = Ext.getCmp('unselected');                
-		 								modelDest.store.removeAll();                
-		 								
-		 								var selectedValues = new Array();
-		 								var grid = Ext.getCmp('selected').store.data;
-		 								// console.log(grid.length);
-		 								for (var i = 0 ; i < grid.length ;i++) 
-		 								{
-		 									selectedValues.push(grid.get(i).get('value'));
-										}
-										
-		 								modelDest.store.reload({                    
-		 								params: { 
-		 									objecttype_id: Ext.getCmp('objecttype_id').getValue(),
-		 									id:Ext.getCmp('id').getValue(),
-		 									name:Ext.getCmp('name').getValue(),
-		 									status:Ext.getCmp('status').getValue(),
-		 									manager:Ext.getCmp('manager').getValue(),
-		 									editor:Ext.getCmp('editor').getValue(),
-		 									fromDate:Ext.getCmp('fromDate').getValue(),
-		 									toDate:Ext.getCmp('toDate').getValue(),
-		 									selectedObjects: selectedValues.join(', ')
-											}                
-										});	
-									}        
-								}	
-					}
+		 displayField:'text'
+	});
+	
+	var versionFilter = new Ext.form.RadioGroup( {
+        fieldLabel: version['label'], 
+        id:'version', 
+        cls: 'x-check-group-alt',
+        columns: 1,
+        items: [
+                {boxLabel: version['label_all'], name: 'version_grp', inputValue: 'All',checked: true},
+                {boxLabel: version['label_last'], name: 'version_grp', inputValue: 'Last'}
+        ] 
 	});
 	
 	var managerFilter = new Ext.form.ComboBox( {
@@ -186,37 +82,7 @@ function manageObjectLinkFilter(objecttype, id, name, status, manager, editor, f
 			        data: manager['list']
 			    }),
 		 valueField:'value',
-		 displayField:'text',
-		 listeners: {        
-		 				select: {            
-		 							fn:function(combo, value) {
-		 								var modelDest = Ext.getCmp('unselected');                
-		 								modelDest.store.removeAll();                
-		 								
-		 								var selectedValues = new Array();
-		 								var grid = Ext.getCmp('selected').store.data;
-		 								// console.log(grid.length);
-		 								for (var i = 0 ; i < grid.length ;i++) 
-		 								{
-		 									selectedValues.push(grid.get(i).get('value'));
-										}
-										
-		 								modelDest.store.reload({                    
-		 								params: { 
-		 									objecttype_id: Ext.getCmp('objecttype_id').getValue(),
-		 									id:Ext.getCmp('id').getValue(),
-		 									name:Ext.getCmp('name').getValue(),
-		 									status:Ext.getCmp('status').getValue(),
-		 									manager:Ext.getCmp('manager').getValue(),
-		 									editor:Ext.getCmp('editor').getValue(),
-		 									fromDate:Ext.getCmp('fromDate').getValue(),
-		 									toDate:Ext.getCmp('toDate').getValue(),
-		 									selectedObjects: selectedValues.join(', ')
-											}                
-										});	
-									}        
-								}	
-					}
+		 displayField:'text'
 	});
 	
 	var editorFilter = new Ext.form.ComboBox( {
@@ -237,40 +103,12 @@ function manageObjectLinkFilter(objecttype, id, name, status, manager, editor, f
 			        data: editor['list']
 			    }),
 		 valueField:'value',
-		 displayField:'text',
-		 listeners: {        
-		 				select: {            
-		 							fn:function(combo, value) {
-		 								var modelDest = Ext.getCmp('unselected');                
-		 								modelDest.store.removeAll();                
-		 								
-		 								var selectedValues = new Array();
-		 								var grid = Ext.getCmp('selected').store.data;
-		 								// console.log(grid.length);
-		 								for (var i = 0 ; i < grid.length ;i++) 
-		 								{
-		 									selectedValues.push(grid.get(i).get('value'));
-										}
-										
-		 								modelDest.store.reload({                    
-		 								params: { 
-		 									objecttype_id: Ext.getCmp('objecttype_id').getValue(),
-		 									id:Ext.getCmp('id').getValue(),
-		 									name:Ext.getCmp('name').getValue(),
-		 									status:Ext.getCmp('status').getValue(),
-		 									manager:Ext.getCmp('manager').getValue(),
-		 									editor:Ext.getCmp('editor').getValue(),
-		 									fromDate:Ext.getCmp('fromDate').getValue(),
-		 									toDate:Ext.getCmp('toDate').getValue(),
-		 									selectedObjects: selectedValues.join(', ')
-											}                
-										});	
-									}        
-								}	
-					}
+		 displayField:'text'
 	});
 	
-	var fullFilter = new Array(objecttypeFilter, idFilter, nameFilter, statusFilter, managerFilter, editorFilter, fromtoDateFilter(from, to));
+	
+	
+	var fullFilter = new Array(objecttypeFilter, idFilter, nameFilter, statusFilter,versionFilter, managerFilter, editorFilter, fromtoDateFilter(from, to));
 
 	return fullFilter;
 }
@@ -291,65 +129,7 @@ function fromtoDateFilter(from, to)
 				             xtype: 'datefield',
 							 fieldLabel: from['label'],
 							 format: 'd.m.Y',
-		            		 editable: true,
-		            		 listeners: {        
-							 				select: {            
-							 							fn:function(combo, value) {
-							 								var modelDest = Ext.getCmp('unselected');                
-							 								modelDest.store.removeAll();                
-							 								
-							 								var selectedValues = new Array();
-							 								var grid = Ext.getCmp('selected').store.data;
-							 								//console.log(grid.length);
-							 								for (var i = 0 ; i < grid.length ;i++) 
-							 								{
-							 									selectedValues.push(grid.get(i).get('value'));
-															}
-															
-							 								modelDest.store.reload({                    
-							 								params: { 
-							 									objecttype_id: Ext.getCmp('objecttype_id').getValue(),
-							 									id:Ext.getCmp('id').getValue(),
-							 									name:Ext.getCmp('name').getValue(),
-							 									status:Ext.getCmp('status').getValue(),
-							 									manager:Ext.getCmp('manager').getValue(),
-							 									editor:Ext.getCmp('editor').getValue(),
-							 									fromDate:Ext.getCmp('fromDate').getValue(),
-							 									toDate:Ext.getCmp('toDate').getValue(),
-							 									selectedObjects: selectedValues.join(', ')
-																}                
-															});	
-														}        
-													},
-												change: {            
-							 							fn:function(combo, value) {
-							 								var modelDest = Ext.getCmp('unselected');                
-							 								modelDest.store.removeAll();                
-							 								
-							 								var selectedValues = new Array();
-							 								var grid = Ext.getCmp('selected').store.data;
-							 								//console.log(grid.length);
-							 								for (var i = 0 ; i < grid.length ;i++) 
-							 								{
-							 									selectedValues.push(grid.get(i).get('value'));
-															}
-															
-							 								modelDest.store.reload({                    
-							 								params: { 
-							 									objecttype_id: Ext.getCmp('objecttype_id').getValue(),
-							 									id:Ext.getCmp('id').getValue(),
-							 									name:Ext.getCmp('name').getValue(),
-							 									status:Ext.getCmp('status').getValue(),
-							 									manager:Ext.getCmp('manager').getValue(),
-							 									editor:Ext.getCmp('editor').getValue(),
-							 									fromDate:Ext.getCmp('fromDate').getValue(),
-							 									toDate:Ext.getCmp('toDate').getValue(),
-							 									selectedObjects: selectedValues.join(', ')
-																}                
-															});	
-														}        
-													}
-										}
+		            		 editable: true
 					       }
 					      ]},
 					       {
@@ -363,65 +143,7 @@ function fromtoDateFilter(from, to)
 							 itemCls: 'date_label_to_style',
 							 labelStyle: 'width:20px;',
 							 format: 'd.m.Y',
-		            		 editable: true,
-		            		 listeners: {        
-							 				select: {            
-							 							fn:function(combo, value) {
-							 								var modelDest = Ext.getCmp('unselected');                
-							 								modelDest.store.removeAll();                
-							 								
-							 								var selectedValues = new Array();
-							 								var grid = Ext.getCmp('selected').store.data;
-							 								//console.log(grid.length);
-							 								for (var i = 0 ; i < grid.length ;i++) 
-							 								{
-							 									selectedValues.push(grid.get(i).get('value'));
-															}
-															
-							 								modelDest.store.reload({                    
-							 								params: { 
-							 									objecttype_id: Ext.getCmp('objecttype_id').getValue(),
-							 									id:Ext.getCmp('id').getValue(),
-							 									name:Ext.getCmp('name').getValue(),
-							 									status:Ext.getCmp('status').getValue(),
-							 									manager:Ext.getCmp('manager').getValue(),
-							 									editor:Ext.getCmp('editor').getValue(),
-							 									fromDate:Ext.getCmp('fromDate').getValue(),
-							 									toDate:Ext.getCmp('toDate').getValue(),
-							 									selectedObjects: selectedValues.join(', ')
-																}                
-															});	
-														}        
-													},
-													change: {            
-							 							fn:function(combo, value) {
-							 								var modelDest = Ext.getCmp('unselected');                
-							 								modelDest.store.removeAll();                
-							 								
-							 								var selectedValues = new Array();
-							 								var grid = Ext.getCmp('selected').store.data;
-							 								//console.log(grid.length);
-							 								for (var i = 0 ; i < grid.length ;i++) 
-							 								{
-							 									selectedValues.push(grid.get(i).get('value'));
-															}
-															
-							 								modelDest.store.reload({                    
-							 								params: { 
-							 									objecttype_id: Ext.getCmp('objecttype_id').getValue(),
-							 									id:Ext.getCmp('id').getValue(),
-							 									name:Ext.getCmp('name').getValue(),
-							 									status:Ext.getCmp('status').getValue(),
-							 									manager:Ext.getCmp('manager').getValue(),
-							 									editor:Ext.getCmp('editor').getValue(),
-							 									fromDate:Ext.getCmp('fromDate').getValue(),
-							 									toDate:Ext.getCmp('toDate').getValue(),
-							 									selectedObjects: selectedValues.join(', ')
-																}                
-															});	
-														}        
-													}	
-										}
+		            		 editable: true
 					       }
 					       ]}
 						]

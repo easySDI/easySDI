@@ -23,8 +23,9 @@ class SITE_metadata {
 	function listMetadata($option)
 	{
 		global  $mainframe;
+		jimport('joomla.html.pagination');
 		$database =& JFactory::getDBO(); 
-		$user = JFactory::getUser();
+		$user	  = JFactory::getUser();
 		$language =& JFactory::getLanguage();
 		
 		//Check user's rights
@@ -32,18 +33,14 @@ class SITE_metadata {
 		$allow = userManager::isUserAllowed($user,"PRODUCT");
 		if (!$allow)
 		{
-			$mainframe->_messageQueue=array(); // Seul le message li� au droit d'�dition sera conserv�, s'il y a lieu
+			$mainframe->_messageQueue=array(); // Seul le message lie au droit d'edition sera conserve, s'il y a lieu
 			$allow = userManager::isUserAllowed($user,"METADATA");	
 		}
 		
 		if(!$allow)
-		{
 			return;
-		}
 		
-		$option=JRequest::getVar("option");
-		//$limit = $mainframe->getUserStateFromRequest($option.".limit", 'limit', 20, 'int');
-		//$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
+		$option		= JRequest::getVar("option");
 		$context	= $option.'.listMetadata';
 		$limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
 		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
@@ -51,24 +48,35 @@ class SITE_metadata {
 		// In case limit has been changed, adjust limitstart accordingly
 		$limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
 		
-		// table ordering
-		$filter_order		= $mainframe->getUserStateFromRequest( $option.".filter_order",		'filter_order',		'name',	'word' );
-		$filter_order_Dir	= $mainframe->getUserStateFromRequest( $option.".filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		// Search and ordering
+		$filter_order			= $mainframe->getUserStateFromRequest( $option.".filter_order",		'filter_order',		'name',	'word' );
+		$filter_order_Dir		= $mainframe->getUserStateFromRequest( $option.".filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		$filter_objecttype_id 	= $mainframe->getUserStateFromRequest( $option.'filter_md_objecttype_id',	'filter_md_objecttype_id',	-1,	'int' );
+		$filter_md_state_id 	= $mainframe->getUserStateFromRequest( $option.'filter_md_state_id',	'filter_md_state_id',	-1,	'int' );
+		$filter_md_version 		= $mainframe->getUserStateFromRequest( $option.'filter_md_version',	'filter_md_version',	-1,	'int' );
+		$search 				= $mainframe->getUserStateFromRequest( "searchMetadataName{$option}", 'searchMetadataName', '' );
 		
-		$filter_objecttype_id = $mainframe->getUserStateFromRequest( $option.'filter_md_objecttype_id',	'filter_md_objecttype_id',	-1,	'int' );
-		
-		$search = $mainframe->getUserStateFromRequest( "searchObjectName{$option}", 'searchObjectName', '' );
-		$search = $database->getEscaped( trim( strtolower( $search ) ) );
-
 		$filter = "";
-		if ( $search ) {
-			$filter .= " AND (o.name LIKE '%$search%')";			
+		if ( $search ) 
+		{
+			if(strripos ($search,'"') != FALSE)
+			{
+				$searchcontent = substr($search, 1,strlen($search)-2 );
+				$searchcontent = $database->getEscaped( trim( strtolower( $searchcontent ) ) );
+				$filter .= " AND (o.name = '$searchcontent')";
+			}
+			else
+			{
+				$searchcontent = $database->getEscaped( trim( strtolower( $search ) ) );
+				$filter .= " AND (o.name LIKE '%".$searchcontent."%')";
+			}
 		}
 		
 		// Test si le filtre est valide
 		if ($filter_order <> "name" 
 			and $filter_order <> "version_title"
-			and $filter_order <> "state")
+			and $filter_order <> "state"
+			and $filter_order <> "objecttype")
 		{
 			$filter_order		= "name";
 			$filter_order_Dir	= "ASC";
@@ -80,141 +88,279 @@ class SITE_metadata {
 		$rootAccount = new account($database);
 		$rootAccount->load($account->root_id);		
 		
-		// Si le compte n'a pas de root, c'est qu'il l'est lui-m�me
+		// Si le compte n'a pas de root, c'est qu'il l'est lui-meme
 		if (!$rootAccount->id)
 			$rootAccount = $account;
-			
-		//List only the objects for which metadata manager is the current user
-		/*$queryCount = "	SELECT DISTINCT o.*, ov.name as version_name, s.label as state 
-						FROM 	#__sdi_editor_object e, 
-								#__sdi_metadata m, 
-								#__sdi_list_metadatastate s, 
-								#__sdi_account a, 
-								#__users u,
-								#__sdi_objecttype ot,
-								#__sdi_object o 
-						LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
-						LEFT OUTER JOIN #__sdi_objectversion ov ON ov.object_id=o.id
-						WHERE e.object_id=o.id
-							AND ov.metadata_id=m.id 
-							AND m.metadatastate_id=s.id 
-							AND e.account_id=a.id 
-							AND a.user_id = u.id
-							AND ot.id=o.objecttype_id
-							AND ot.predefined=0
-							AND (e.account_id = ".$account->id."
-								OR (ma.account_id=".$account->id."
-									AND s.id=1)
-								)";*/
 		
 		// Objecttype filter
 		if ($filter_objecttype_id > 0) {
 			$filter .= ' AND o.objecttype_id = ' . (int) $filter_objecttype_id;
 		}
 		
+		// State filter
+		if ($filter_md_state_id > 0) {
+			$filter .= ' AND m.metadatastate_id = ' . (int) $filter_md_state_id;
+		}
+		
+		//Order
 		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
-			
-		$queryCount = "	SELECT DISTINCT o.*, ov.title as version_title, s.label as state, m.guid as metadata_guid 
-						FROM 	#__sdi_metadata m, 
-								#__sdi_list_metadatastate s, 
-								#__sdi_objecttype ot,
+		
+		// Version filter
+		if ($filter_md_version == 0) 
+		{
+			//Return only the last metadata for each object
+			//Get all MD :
+			$query = "	SELECT DISTINCT o.*,
+										t.label as objecttype,
+										ov.id as version_id,
+										ov.title as version_title,
+										s.label as state,
+										m.guid as metadata_guid ,
+										m.lastsynchronization as lastsynchronization,
+										m.synchronizedby as synchronizedby,
+										m.notification as notification
+						FROM 	#__sdi_metadata m,
+								#__sdi_list_metadatastate s,
 								#__sdi_objectversion ov,
 								#__sdi_object o
 						LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
 						LEFT OUTER JOIN #__sdi_editor_object e ON e.object_id=o.id
-						WHERE ov.object_id=o.id
-							AND ov.metadata_id=m.id
-							AND m.metadatastate_id=s.id
-							AND ot.id=o.objecttype_id
-							AND ot.predefined=0
-							AND (e.account_id = ".$account->id."
-								OR (ma.account_id=".$account->id.")
-								)";
-		$queryCount .= $filter;
+						INNER JOIN #__sdi_objecttype ot ON ot.id = o.objecttype_id
+						INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+						INNER JOIN #__sdi_language l ON t.language_id=l.id
+						INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+								WHERE ov.object_id=o.id
+								AND ov.metadata_id=m.id
+								AND m.metadatastate_id=s.id
+								AND ot.id=o.objecttype_id
+								AND ot.predefined=0
+								AND cl.code='".$language->_lang."'
+								AND (e.account_id = ".$account->id."
+								OR (ma.account_id=".$account->id."))";
+			$query .= $filter;
+			$database->setQuery($query);
+			$rows = $database->loadObjectList() ;
+			if ($database->getErrorNum()) {
+				echo "<div class='alert'>";
+				echo 			$database->getErrorMsg();
+				echo "</div>";
+			}
+			
+			$arrVersionMd =array();
+			foreach ($rows as $object)
+			{
+				$query = "SELECT m.id as metadata_id, ms.code, m.published
+							FROM #__sdi_objectversion ov
+							INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+							INNER JOIN #__sdi_list_metadatastate ms ON m.metadatastate_id=ms.id
+							INNER JOIN #__sdi_object o ON ov.object_id=o.id
+							INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+							INNER JOIN (SELECT v.id,v.object_id, max(v.created) as maxcreated from #__sdi_objectversion v group by v.object_id) vv ON vv.object_id = ov.object_id AND vv.maxcreated = ov.created
+							WHERE o.id=".$object->id."
+							GROUP BY ov.object_id
+							ORDER BY m.published DESC
+							LIMIT 0, 1";
+				$database->setQuery( $query);
+				$versionlist = $database->loadObjectList() ;
 		
-		$database->setQuery($queryCount);
-		$total = count($database->loadObjectList());
-		if ($database->getErrorNum()) {
-			echo "<div class='alert'>";			
-			echo 			$database->getErrorMsg();
-			echo "</div>";
-		}	
-		
-		// Si le nombre de r�sultats retourn�s a chang�, adapter la page affich�e
-		if ($limitstart >= $total)
+				if (count($versionlist))
+				{
+					// Si la dernière version est publiée à la date courante, on l'utilise
+					$arrVersionMd[] = $versionlist[0]->metadata_id;
+				}
+			}
+			
+			if(count($arrVersionMd) == 0)
+			{
+				$rows = array();
+			}
+			else
+			{
+				$str_version = implode(",",$arrVersionMd);
+				
+				$queryCount = "	SELECT DISTINCT o.*,
+									t.label as objecttype,
+									ov.id as version_id,
+									ov.title as version_title,
+									s.label as state,
+									m.guid as metadata_guid ,
+									m.lastsynchronization as lastsynchronization,
+									m.notification as notification
+							FROM 	#__sdi_metadata m,
+									#__sdi_list_metadatastate s,
+									#__sdi_objectversion ov,
+									#__sdi_object o
+							LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
+							LEFT OUTER JOIN #__sdi_editor_object e ON e.object_id=o.id
+							INNER JOIN #__sdi_objecttype ot ON ot.id = o.objecttype_id
+							INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+							INNER JOIN #__sdi_language l ON t.language_id=l.id
+							INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+								WHERE ov.object_id=o.id
+									AND ov.metadata_id=m.id
+									AND m.id IN ($str_version)
+									AND m.metadatastate_id=s.id
+									AND ot.id=o.objecttype_id
+									AND ot.predefined=0
+									AND cl.code='".$language->_lang."'
+									AND (e.account_id = ".$account->id."
+									OR (ma.account_id=".$account->id.")
+									)";
+				$queryCount .= $filter;
+				
+				$database->setQuery($queryCount);
+				$total = count($database->loadObjectList());
+				if ($database->getErrorNum()) {
+					echo "<div class='alert'>";
+					echo 			$database->getErrorMsg();
+					echo "</div>";
+				}
+				
+				// Si le nombre de resultats retournes a change, adapter la page affichee
+				if ($limitstart >= $total)
+				{
+					$limitstart = ( $limit != 0 ? ((floor($total / $limit) * $limit)-1) : 0 );
+					$mainframe->setUserState('limitstart', $limitstart);
+				}
+				
+				if ($limitstart < 0)
+					$limitstart = 0;
+				
+				$pageNav = new JPagination($total,$limitstart,$limit);
+				
+				$query = "	SELECT DISTINCT o.*,
+									t.label as objecttype,
+									ov.id as version_id,
+									ov.title as version_title,
+									s.label as state,
+									m.guid as metadata_guid ,
+									m.lastsynchronization as lastsynchronization,
+									m.notification as notification
+							FROM 	#__sdi_metadata m,
+									#__sdi_list_metadatastate s,
+									#__sdi_objectversion ov,
+									#__sdi_object o
+							LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
+							LEFT OUTER JOIN #__sdi_editor_object e ON e.object_id=o.id
+							INNER JOIN #__sdi_objecttype ot ON ot.id = o.objecttype_id
+							INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+							INNER JOIN #__sdi_language l ON t.language_id=l.id
+							INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+								WHERE ov.object_id=o.id
+									AND ov.metadata_id=m.id
+									AND m.id IN ($str_version)
+									AND m.metadatastate_id=s.id
+									AND ot.id=o.objecttype_id
+									AND ot.predefined=0
+									AND cl.code='".$language->_lang."'
+									AND (e.account_id = ".$account->id."
+									OR (ma.account_id=".$account->id.")
+									)";
+
+				$query .= $filter;
+				$query .= $orderby;
+					
+				$database->setQuery($query,$limitstart,$limit);
+				$rows = $database->loadObjectList() ;
+				if ($database->getErrorNum()) {
+					echo "<div class='alert'>";
+					echo 			$database->getErrorMsg();
+					echo "</div>";
+				}
+			}
+		}
+		else 
 		{
-			$limitstart = ( $limit != 0 ? ((floor($total / $limit) * $limit)-1) : 0 );
-			$mainframe->setUserState('limitstart', $limitstart);
-		}	
-		
-		if ($limitstart < 0)
-			$limitstart = 0;
-		
-		jimport('joomla.html.pagination');
-		$pageNav = new JPagination($total,$limitstart,$limit);
-		/*$query = "	SELECT DISTINCT o.*, ov.name as version_name, ov.created as version_created, CONCAT(o.name,' ',ov.name) as full_name, s.label as state, m.guid as metadata_guid 
-						FROM 	#__sdi_editor_object e, 
-								#__sdi_metadata m, 
-								#__sdi_list_metadatastate s, 
-								#__sdi_account a, 
-								#__users u,
-								#__sdi_objecttype ot,
-								#__sdi_object o 
-						LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
-						LEFT OUTER JOIN #__sdi_objectversion ov ON ov.object_id=o.id
-						WHERE e.object_id=o.id
-							AND ov.metadata_id=m.id 
-							AND m.metadatastate_id=s.id 
-							AND e.account_id=a.id 
-							AND a.user_id = u.id
-							AND ot.id=o.objecttype_id
-							AND ot.predefined=0
-							AND (e.account_id = ".$account->id."
-								OR (ma.account_id=".$account->id."
-									AND s.id=1)
-								)";*/
-		$query = "	SELECT DISTINCT o.*, ov.id as version_id, ov.title as version_title, s.label as state, m.guid as metadata_guid 
-						FROM 	#__sdi_metadata m, 
-								#__sdi_list_metadatastate s, 
-								#__sdi_objecttype ot,
+			//No current Md filter : return all
+			$queryCount = "	SELECT DISTINCT o.*,
+											t.label as objecttype,
+											ov.id as version_id,
+											ov.title as version_title,
+											s.label as state,
+											m.guid as metadata_guid ,
+											m.lastsynchronization as lastsynchronization,
+											m.synchronizedby as synchronizedby,
+											m.notification as notification
+							FROM 	#__sdi_metadata m,
+									#__sdi_list_metadatastate s,
+									#__sdi_objectversion ov,
+									#__sdi_object o
+							LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
+							LEFT OUTER JOIN #__sdi_editor_object e ON e.object_id=o.id
+							INNER JOIN #__sdi_objecttype ot ON ot.id = o.objecttype_id
+							INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+							INNER JOIN #__sdi_language l ON t.language_id=l.id
+							INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+									WHERE ov.object_id=o.id
+									AND ov.metadata_id=m.id
+									AND m.metadatastate_id=s.id
+									AND ot.id=o.objecttype_id
+									AND ot.predefined=0
+									AND cl.code='".$language->_lang."'
+									AND (e.account_id = ".$account->id."
+									OR (ma.account_id=".$account->id."))";
+			$queryCount .= $filter;
+				
+			$database->setQuery($queryCount);
+			$total = count($database->loadObjectList());
+			if ($database->getErrorNum()) {
+				echo "<div class='alert'>";
+				echo 			$database->getErrorMsg();
+				echo "</div>";
+			}
+				
+			// Si le nombre de resultats retournes a change, adapter la page affichee
+			if ($limitstart >= $total)
+			{
+				$limitstart = ( $limit != 0 ? ((floor($total / $limit) * $limit)-1) : 0 );
+				$mainframe->setUserState('limitstart', $limitstart);
+			}
+				
+			if ($limitstart < 0)
+				$limitstart = 0;
+				
+			$pageNav = new JPagination($total,$limitstart,$limit);
+				
+			$query = "	SELECT DISTINCT o.*,
+										t.label as objecttype,
+										ov.id as version_id,
+										ov.title as version_title,
+										s.label as state,
+										m.guid as metadata_guid ,
+										m.lastsynchronization as lastsynchronization,
+										m.synchronizedby as synchronizedby,
+										m.notification as notification
+						FROM 	#__sdi_metadata m,
+								#__sdi_list_metadatastate s,
 								#__sdi_objectversion ov,
-								#__sdi_object o 
+								#__sdi_object o
 						LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
 						LEFT OUTER JOIN #__sdi_editor_object e ON e.object_id=o.id
-						WHERE ov.object_id=o.id
+						INNER JOIN #__sdi_objecttype ot ON ot.id = o.objecttype_id
+						INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+						INNER JOIN #__sdi_language l ON t.language_id=l.id
+						INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+							WHERE ov.object_id=o.id
 							AND ov.metadata_id=m.id
 							AND m.metadatastate_id=s.id
 							AND ot.id=o.objecttype_id
 							AND ot.predefined=0
+							AND cl.code='".$language->_lang."'
 							AND (e.account_id = ".$account->id."
-								OR (ma.account_id=".$account->id.")
-								)";
-		$query .= $filter;
-		//$query .= " ORDER BY o.name, ov.name ASC";
-		$query .= $orderby;
+							OR (ma.account_id=".$account->id."))";
+			$query .= $filter;
+			$query .= $orderby;
+			
+			$database->setQuery($query,$limitstart,$limit);
+			$rows = $database->loadObjectList() ;
+			if ($database->getErrorNum()) {
+				echo "<div class='alert'>";
+				echo 			$database->getErrorMsg();
+				echo "</div>";
+			}
+			
+		}
 		
-		
-		$database->setQuery($query,$limitstart,$limit);
-		//echo $database->getQuery();		
-		$rows = $database->loadObjectList() ;
-		if ($database->getErrorNum()) {
-			echo "<div class='alert'>";			
-			echo 			$database->getErrorMsg();
-			echo "</div>";
-		}	
-		
-		$managers = "";
-		$database->setQuery( "SELECT a.object_id FROM #__sdi_manager_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND c.user_id=".$user->id." ORDER BY a.object_id" );
-		$managers = implode(",\r\n", $database->loadResultArray());
-		
-		$editors = "";
-		$database->setQuery( "SELECT a.object_id FROM #__sdi_editor_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND c.user_id=".$user->id." ORDER BY a.object_id" );
-		$editors = implode(",\r\n", $database->loadResultArray());
-		
-		/*$query = 'SELECT id as value, name as text' .
-				' FROM #__sdi_objecttype' .
-				' WHERE predefined=false' .
-				' ORDER BY name';*/
 		$query = "SELECT ot.id AS value, t.label as text 
 				 FROM #__sdi_objecttype ot 
 				 INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
@@ -228,10 +374,24 @@ class SITE_metadata {
 		$database->setQuery($query);
 		$listObjectType = array_merge($listObjectType, $database->loadObjectList());
 		
+		$query = "SELECT 0 as value, 'CATALOG_METADATA_SELECT_OBJECTTYPE' as text UNION 
+					SELECT id AS value, label as text
+					FROM #__sdi_list_metadatastate";
+		$database->setQuery($query);
+		$listState =  $database->loadObjectList();
+		foreach ($listState as $state)
+			$state->text = JText::_($state->text);
+		
+		// Choix radio pour les versions
+		$versions = array(
+			JHTML::_('select.option',  '0', JText::_( 'CATALOG_SEARCH_VERSIONS_CURRENT' ) ),
+			JHTML::_('select.option',  '1', JText::_( 'CATALOG_SEARCH_VERSIONS_ALL' ) )
+		);
+		
 		$lists['order_Dir'] 	= $filter_order_Dir;
 		$lists['order'] 		= $filter_order;
 		
-		HTML_metadata::listMetadata($pageNav,$rows,$option,$rootAccount, $listObjectType, $filter_objecttype_id, $search, $lists);	
+		HTML_metadata::listMetadata($pageNav,$rows,$option,$rootAccount, $listObjectType, $listState, $filter_objecttype_id, $filter_md_state_id, $filter_md_version,$versions, $search, $lists);	
 		
 	}
 	
@@ -251,58 +411,26 @@ class SITE_metadata {
 		if ($id == 0)
 		{
 			$msg = JText::_('CATALOG_OBJECT_SELECTMETADATA_MSG');
-			//$mainframe->redirect("index.php?option=$option&task=listMetadata", $msg);
 			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listMetadata'), false ), $msg);
 			exit;
 		}
 		
-		// R�cup�rer l'objet li� � cette m�tadonn�e
+		// Récupérer l'objet lié à cette métadonnée
 		$rowObjectVersion = new objectversion( $database );
 		$rowObjectVersion->load( $id );
 		
 		$rowObject = new object( $database );
 		$rowObject->load( $rowObjectVersion->object_id );
 		
-		// R�cup�rer la m�tadonn�e choisie par l'utilisateur
+		// Recuperer la metadonnee choisie par l'utilisateur
 		$rowMetadata = new metadata( $database );
 		$rowMetadata->load( $rowObjectVersion->metadata_id );
 		
 		if ($rowMetadata->id == 0)
 		{
 			$msg = JText::_('CATALOG_METADATA_EDIT_NOMETADATA_MSG');
-			//$mainframe->redirect("index.php?option=$option&task=listMetadata", $msg );
 			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listMetadata'), false ), $msg);
 		}
-		
-		/*
-		// R�cup�rer la m�tadonn�e choisie par l'utilisateur
-		if (array_key_exists('version_hidden', $_POST))
-		{
-			$rowVersion = new objectversion($database);
-			$rowVersion->load( $_POST['version_hidden'] );
-			$rowMetadata = new metadata( $database );
-			$rowMetadata->load( $rowVersion->metadata_id );
-		}
-		else if (array_key_exists('metadata_id', $_POST))
-		{
-			$rowMetadata = new metadataByGuid( $database );
-			$rowMetadata->load( $_POST['metadata_id'] );
-		}
-		else
-		{
-			// R�cup�rer la seule et unique version de l'objet
-			$lastVersion = array();
-			$database->setQuery( "SELECT * FROM #__sdi_objectversion WHERE object_id=".$id." ORDER BY created DESC" );
-			$lastVersion = array_merge( $lastVersion, $database->loadObjectList() );
-			
-			// R�cup�rer la m�tadonn�e de la derni�re version de l'objet
-			$rowMetadata = new metadata( $database );
-			if (count($lastVersion) > 0)
-				$rowMetadata->load($lastVersion[0]->metadata_id);
-			else
-			$rowMetadata->load( $rowObject->metadata_id );
-		}
-		*/
 		
 		/*
 		 * If the item is checked out we cannot edit it... unless it was checked
@@ -311,14 +439,12 @@ class SITE_metadata {
 		if ( JTable::isCheckedOut($user->get('id'), $rowObject->checked_out ))
 		{
 			$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('The item'), $rowObject->name);
-			//$mainframe->redirect("index.php?option=$option&task=listObject", $msg );
 			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObject'), false ), $msg);
 		}
 
 		$rowObject->checkout($user->get('id'));
 		
-		
-		// Stocker en m�moire toutes les traductions de label, valeur par d�faut et information pour la langue courante
+		// Stocker en memoire toutes les traductions de label, valeur par defaut et information pour la langue courante
 		$language =& JFactory::getLanguage();
 		
 		$newTraductions = array();
@@ -353,12 +479,12 @@ class SITE_metadata {
 		$database->setQuery( "SELECT id AS value, name as text FROM #__sdi_list_metadatastate ORDER BY name" );
 		$metadatastates = array_merge( $metadatastates, $database->loadObjectList() );
 		
-		// R�cup�rer la classe racine du profile du type d'objet
+		// Recuperer la classe racine du profile du type d'objet
 		$query = "SELECT c.name as name, CONCAT(ns.prefix, ':', c.isocode) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
 		$database->setQuery( $query );
 		$root = $database->loadObjectList();
 		
-		// R�cup�rer le profil li� � cet objet
+		// Recuperer le profil lie e cet objet
 		$query = "SELECT profile_id FROM #__sdi_objecttype WHERE id=".$rowObject->objecttype_id;
 		$database->setQuery( $query );
 		$profile_id = $database->loadResult();
@@ -377,25 +503,25 @@ class SITE_metadata {
 		if ($total == 1)
 			$isEditor = true;
 			
-		// Est-ce que la m�tadonn�e est publi�e?
+		// Est-ce que la metadonnee est publiee?
 		$isPublished = false;
 		if ($rowMetadata->metadatastate_id == 1)
 			$isPublished = true;			
 			
-		// Est-ce que la m�tadonn�e est valid�e?
+		// Est-ce que la metadonnee est validee?
 		$isValidated = false;
 		if ($rowMetadata->metadatastate_id == 3)
 			$isValidated = true;			
 			
-		// R�cup�rer les p�rim�tres administratifs
+		// Recuperer les perimetres administratifs
 		$boundaries = array();
 		$database->setQuery( "SELECT name, guid, northbound, southbound, westbound, eastbound FROM #__sdi_boundary") ;
 		$boundaries = array_merge( $boundaries, $database->loadObjectList() );
 		
-		// R�cup�rer la m�tadonn�e en CSW
+		// Recuperer la metadonnee en CSW
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
-		// Type d'attribut pour les p�rim�tres pr�d�finis 
+		// Type d'attribut pour les perimetres predefinis 
 		//$rowAttributeType = new attributetype($database);
 		//$rowAttributeType->load(config_easysdi::getValue("catalog_boundary_type"));
 		//$type_isocode = $rowAttributeType->isocode;
@@ -406,8 +532,6 @@ class SITE_metadata {
 		
 		$catalogBoundaryIsocode = config_easysdi::getValue("catalog_boundary_isocode");
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		//$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=158_bis"; //.$id;
-		//$catalogUrlGetRecordById = "http://demo.easysdi.org:8080/proxy/ogc/geonetwork?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$rowObject->metadata_id; //.$id;
 		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$rowMetadata->guid;
 		
 		//.$id."
@@ -418,11 +542,9 @@ class SITE_metadata {
 			</csw:GetRecordById>			
 		";
 		
-		//echo "<hr>".htmlspecialchars($xmlBody)."<hr>";break;
-		
-		// Requ�te de type GET pour le login (conserver le token response)
-		// Stocker dans un cookie le r�sultat de la requ�te pr�c�dente
-		// Mettre le cookie dans l'en-t�te de la requ�te insert
+		// Requete de type GET pour le login (conserver le token response)
+		// Stocker dans un cookie le resultat de la requete precedente
+		// Mettre le cookie dans l'en-tete de la requete insert
 		//$xmlResponse = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlBody);
 
 		// En POST
@@ -432,36 +554,21 @@ class SITE_metadata {
 		//$cswResults = DOMDocument::load($catalogUrlGetRecordById);
 		$cswResults = DOMDocument::loadXML(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
 		
-		/*
-		$cswResults = new DOMDocument();
-		echo var_dump($cswResults->load($catalogUrlGetRecordById))."<br>";
-		echo var_dump($cswResults->saveXML())."<br>";
-		echo var_dump($cswResults)."<br>";
-		*/
-		
-		// Construction du DOMXPath � utiliser pour g�n�rer la vue d'�dition
+		// Construction du DOMXPath e utiliser pour generer la vue d'edition
 		$doc = new DOMDocument('1.0', 'UTF-8');
 		
-		/*if ($cswResults <> false)
-			$xpathResults = new DOMXPath($cswResults);
-		else
-			$xpathResults = new DOMXPath($doc);*/
 		if ($cswResults <> false and $cswResults->childNodes->item(0)->hasChildNodes())
 			$xpathResults = new DOMXPath($cswResults);
 		else if ($cswResults->childNodes->item(0)->nodeName == "ows:ExceptionReport")
 		{
 			$rowObject->checkin();
-			//$xpathResults = new DOMXPath($doc);
 			$msg = $cswResults->childNodes->item(0)->nodeValue;
-			//$mainframe->redirect("index.php?option=$option&task=listMetadata", $msg );
 			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listMetadata'), false ), $msg);
 		}
 		else
 		{
 			$rowObject->checkin();
-			//$xpathResults = new DOMXPath($doc);
 			$msg = JText::_('CATALOG_METADATA_EDIT_NOMETADATA_MSG');
-			//$mainframe->redirect("index.php?option=$option&task=listMetadata", $msg );
 			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listMetadata'), false ), $msg);
 		}
 		
@@ -470,9 +577,8 @@ class SITE_metadata {
         $xpathResults->registerNamespace('xlink','http://www.w3.org/1999/xlink');
         $xpathResults->registerNamespace('gts','http://www.isotc211.org/2005/gts');
         
-        // R�cup�ration des namespaces � inclure
+        // Recuperation des namespaces e inclure
 		$namespacelist = array();
-		//$namespacelist[] = JHTML::_('select.option','0', JText::_("CATALOG_ATTRIBUTE_NAMESPACE_LIST") );
 		$database->setQuery( "SELECT prefix, uri FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
 		
@@ -518,12 +624,7 @@ class SITE_metadata {
         	$defaultBBoxConfig = "";
         }
         
-        
-		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $rowObject->name, $rowObjectVersion->title, $option, $defaultBBoxConfig);
-        
-        
-		//HTML_metadata::editMetadata($root, $id, $xpathResults, $option);
-		//HTML_metadata::editMetadata($rowMetadata, $metadatastates, $option);
+		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $rowObject->name, $rowObjectVersion->title, $option, $defaultBBoxConfig,$rowObjectVersion);
 	}
 	
 	function cancelMetadata($option)
@@ -557,8 +658,8 @@ class SITE_metadata {
 		$limit		= $mainframe->getUserStateFromRequest($option.'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
 		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
 		
-		// Probl�me avec le retour au d�but ou � la page une, quand limitstart n'est pas pr�sent dans la session.
-		// La mise � z�ro ne se fait pas, il faut donc la forcer
+		// Probleme avec le retour au debut ou e la page une, quand limitstart n'est pas present dans la session.
+		// La mise e zero ne se fait pas, il faut donc la forcer
 		if (! isset($_REQUEST['limitstart']))
 			$limitstart=0;
 		
@@ -643,6 +744,7 @@ class SITE_metadata {
 		$rowMetadata->updatedby = $account->user_id;
 		$rowMetadata->editor_id = null;
 		$rowMetadata->published = null;
+		$rowMetadata->notification = 0;
 		
 		if (!$rowMetadata->store(true)) 
 		{
@@ -661,6 +763,323 @@ class SITE_metadata {
 			print_r($response);
 			die();
 		}
+	}
+
+	function selectAssignMetadata($option)
+	{
+		global  $mainframe;
+		$database 		=& JFactory::getDBO();
+		$user			=& JFactory::getUser();
+		$user_id 		= $user->get('id');
+		$object_id 		= JRequest::getVar('object_id');
+		$metadata_id 	= JRequest::getVar('metadata_id');
+	
+		$database->setQuery( "	SELECT o.id as object_id, m.guid as metadata_id, o.name as object_name, ov.title as version_title
+								FROM #__sdi_object o
+								INNER JOIN  #__sdi_objectversion ov ON ov.object_id = o.id
+								INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id
+								WHERE m.guid = '$metadata_id'
+								AND o.id = $object_id 
+								" );
+		$sourceobject = $database->loadObject();
+		
+		$database->setQuery( "	SELECT child_id 
+								FROM #__sdi_objectversionlink ovl
+								INNER JOIN  #__sdi_objectversion ov ON ov.id = ovl.parent_id
+								INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id
+								WHERE m.guid = '$metadata_id'
+								" );
+		$children = $database->loadResultArray();
+		
+		$editors = array();
+		$listEditors = array();
+		$database->setQuery( "	SELECT NULL AS value, '".JText::_("CATALOG_METADATA_ASSIGN_EDITOR_SELECTION_MESSAGE")."' AS text UNION
+								SELECT DISTINCT c.id AS value, b.name AS text
+								FROM #__users b, #__sdi_editor_object a
+								LEFT OUTER JOIN #__sdi_account c ON a.account_id = c.id
+								LEFT OUTER JOIN #__sdi_manager_object d ON d.account_id=c.id
+								WHERE c.user_id=b.id AND (a.object_id=".$object_id." OR d.object_id=".$object_id.")
+								AND c.user_id <> ".$user_id."
+								ORDER BY text" );
+		$editors = array_merge( $editors, $database->loadObjectList() );
+	
+		HTML_metadata::selectAssignMetadata($option,$sourceobject,$children,$editors);
+	}
+	
+	function validateAssignMetadata($option)
+	{
+		global  $mainframe;
+		$database 		=& JFactory::getDBO();
+		$metadata_id 	= JRequest::getVar('metadata_id');
+		$object_id 		= JRequest::getVar('object_id');
+		$editor 		= JRequest::getVar('editor');
+		$information 	= JRequest::getVar('information');
+		$assignChildren	= JRequest::getVar('children');
+				
+		$result = SITE_metadata::assignMetadata($option, $metadata_id, $object_id, $editor, $information, $assignChildren);
+		
+		// Send an information email
+		$rowUser = array();
+		$database->setQuery( "SELECT * FROM #__sdi_account a INNER JOIN #__users u ON a.user_id=u.id WHERE a.id=".$editor );
+		$rowUser	= array_merge( $rowUser, $database->loadObjectList() );
+		$body 		= JText::sprintf(	"CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY",
+										$user->username,
+										$result[0]->rowObjectName, 
+										$result[0]->rowObjectVersionTitle)."\n\n".JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY_INFORMATION").":\n".$information;
+		unset($result[0]);
+		if($assignChildren)
+		{
+			$body .= "\n\n".JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY_CHILDREN_LIST").":\n";
+			foreach ($result as $r)
+			{
+				$body .= "\n - ".JText::sprintf("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY_CHILD",$r->rowObjectName,$r->rowObjectVersionTitle);
+			}
+		}
+		if(! ADMIN_metadata::sendMailByEmail($rowUser[0]->email,JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_SUBJECT"),$body))
+		{
+			$mainframe->enqueueMessage(JText::_("CATALOG_ASSIGN_METADATA_SEND_MAIL_ERROR"),"ERROR");
+		}
+		
+		$mainframe->enqueueMessage(JText::_("CATALOG_ASSIGN_METADATA_DONE"));
+		$mainframe->redirect("index.php?option=$option&task=listMetadata" );
+	}
+	
+	function assignMetadata($option, $metadata_id, $object_id, $editor, $information, $assignChildren)
+	{
+		global  $mainframe;
+		$database 		=& JFactory::getDBO();
+		$result 		= array();
+		
+		//Assign the current metadata
+		$object_parent 					= new stdClass();
+		$object_parent->metadata_id 	= $metadata_id;
+		$object_parent->object_id		= $object_id;
+		
+		$result[] = SITE_metadata::assignEachMetadata($option, $object_parent, $editor, $information);
+		
+		//Assign the current metadata children
+		if($assignChildren)
+		{
+			$database->setQuery( "	SELECT ovl.child_id
+					FROM #__sdi_objectversionlink ovl
+					INNER JOIN  #__sdi_objectversion ov ON ov.id = ovl.parent_id
+					INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id
+					WHERE m.guid = '$metadata_id'
+					" );
+			$children = $database->loadResultArray();
+			
+			$object_child_list = array();
+			foreach ($children as $child)
+			{
+				$database->setQuery( "	SELECT m.guid as metadata_id, o.id as object_id
+					FROM #__sdi_object o
+					INNER JOIN #__sdi_objectversion ov ON ov.object_id = o.id
+					INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id
+					WHERE ov.id = $child
+					AND m.metadatastate_id NOT IN (1,3)
+					" );
+				$object_child = $database->loadObject();
+				if($object_child)
+					$object_child_list[] = $object_child;
+			}
+			foreach ($object_child_list as $object)
+			{
+				//$result[] =  SITE_metadata::assignEachMetadata($option, $object, $editor, $information);
+				$result = array_merge($result , SITE_metadata::assignMetadata($option, $object->metadata_id, $object->object_id, $editor, $information, $assignChildren));
+			}
+		}
+		return $result;
+	}
+	
+	function assignEachMetadata($option,$object, $editor, $information)
+	{
+		global  $mainframe;
+		$database 		=& JFactory::getDBO();
+		$rowObject 		= new object($database);
+		$rowObject->load($object->object_id);
+		
+		// Enregistrer l'éditeur auxquel la métadonnée est assignée
+		$rowMetadata = new metadataByGuid($database);
+		$rowMetadata->load($object->metadata_id);
+		$rowMetadata->editor_id=$editor;
+		
+		if (!$rowMetadata->store()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listMetadata" );
+			exit();
+		}
+		
+		// Récupérer la version de l'objet liée
+		$rowObjectVersion = new objectversionByMetadata_id($database);
+		$rowObjectVersion->load($rowMetadata->id);
+		
+		// Remplir l'historique d'assignement
+		$user 			= JFactory::getUser();
+		$rowCurrentUser = new accountByUserId($database);
+		$rowCurrentUser->load($user->get('id'));
+		
+		$rowHistory 					= new historyassign($database);
+		$rowHistory->object_id			= $object->object_id;
+		$rowHistory->objectversion_id	= $rowObjectVersion->id;
+		$rowHistory->account_id			= $editor;
+		$rowHistory->assigned			= date ("Y-m-d H:i:s");
+		$rowHistory->assignedby			= $rowCurrentUser->id;
+		$rowHistory->information		= $information;
+		
+		// Générer un guid
+		$rowHistory->guid = helper_easysdi::getUniqueId();
+		
+		if (!$rowHistory->store()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listMetadata" );
+			exit();
+		}
+		
+		$result = new stdClass();
+		$result->rowObjectName = $rowObject->name;
+		$result->rowObjectVersionTitle = $rowObjectVersion->title;
+
+		return $result;
+	}
+	
+	function notifyMetadata($option)
+	{
+		global  $mainframe;
+		$database 				=& JFactory::getDBO();
+		$user					=& JFactory::getUser();
+		$rowCurrentUser 		= new accountByUserId($database);
+		$rowCurrentUser->load($user->get('id'));
+		$objectversion_id 		= JRequest::getVar('objectversion_id');
+		$includechildren 		= JRequest::getVar('includedesc', '0', 'get', 'int');
+		
+		//Get the current, parent, metadata informations
+		$database->setQuery( "	SELECT o.id as object_id, o.name as object_name, ov.title as version_title, ov.metadata_id as metadata_id
+									FROM #__sdi_object o
+									INNER JOIN  #__sdi_objectversion ov ON ov.object_id = o.id
+									WHERE ov.id = $objectversion_id
+									" );
+		$sourceobject = $database->loadObject();
+
+		if($includechildren == 1)
+		{
+			//Get the children metadata informations
+			$database->setQuery( "	SELECT o.name as object_name, ov.title as version_title
+										FROM #__sdi_object o
+										INNER JOIN  #__sdi_objectversion ov ON ov.object_id = o.id
+										INNER JOIN #__sdi_objectversionlink ovl ON ovl.child_id = ov.id
+										WHERE ovl.parent_id = $objectversion_id
+										" );
+			$children = $database->loadObjectList();
+		}
+		//Get the manager list of the current objet
+		$database->setQuery( "	SELECT a.id as id, u.email as email
+									FROM #__sdi_account a 
+									INNER JOIN #__users u ON a.user_id=u.id
+									INNER JOIN #__sdi_manager_object mo ON mo.account_id = a.id
+									WHERE mo.object_id = $sourceobject->object_id
+							 " );
+		$manager = $database->loadObjectList();
+		
+		// Send an information email
+		$body 		= JText::sprintf(	"CATALOG_NOTIFY_METADATA_MAIL_BODY",
+										$user->username,
+										$sourceobject->object_name, 
+										$sourceobject->version_title);
+		
+		if($includechildren == 1 && count($children) > 0)
+		{
+			$body .= "\n\n".JText::_("CATALOG_NOTIFY_METADATA_MAIL_BODY_CHILDREN_LIST").":\n";
+			foreach ($children as $r)
+			{
+				$body .= "\n - ".JText::sprintf("CATALOG_NOTIFY_METADATA_MAIL_BODY_CHILD",$r->object_name,$r->version_title);
+			}
+		}
+		
+		//Load current metadata object
+		$rowMetadata = new metadata($database);
+		$rowMetadata->load($sourceobject->metadata_id);
+		
+		//Loop on metadata managers
+		foreach ($manager as $m)
+		{
+			if(! ADMIN_metadata::sendMailByEmail($m->email,JText::_("CATALOG_NOTIFY_METADATA_MAIL_SUBJECT"),$body))
+			{
+				$mainframe->enqueueMessage(JText::sprintf("CATALOG_NOTIFY_METADATA_SEND_MAIL_ERROR", $m->email),"ERROR");
+			}
+			else
+			{
+				//Update the notification state of the metadata because at least one notification has been correctly sent
+				$rowMetadata->notification=1;
+				//Store the notification action in the history
+				$rowHistory 					= new historyassign($database);
+				$rowHistory->object_id			= $sourceobject->object_id;
+				$rowHistory->objectversion_id	= $objectversion_id;
+				$rowHistory->account_id			= $m->id;
+				$rowHistory->assigned			= date ("Y-m-d H:i:s");
+				$rowHistory->assignedby			= $rowCurrentUser->id;
+				if($includechildren == 1)
+					$rowHistory->information	= JText::_("CATALOG_NOTIFY_METADATA_HISTORY_NOTIFICATION_WITH_CHILDREN");
+				else
+					$rowHistory->information	= JText::_("CATALOG_NOTIFY_METADATA_HISTORY_NOTIFICATION");
+				$rowHistory->guid 				= helper_easysdi::getUniqueId();
+				
+				if (!$rowHistory->store()) {
+					$mainframe->enqueueMessage(JText::_("CATALOG_METADATA_UPDATE_NOTIFICATION_STATE_ERROR").$database->getErrorMsg(),"ERROR");
+				}
+			}
+		}
+		
+		if($rowMetadata->notification == 1)
+			$mainframe->enqueueMessage(JText::_("CATALOG_NOTIFY_METADATA_SEND_MAIL_DONE"));
+		else
+			$mainframe->enqueueMessage(JText::_("CATALOG_NOTIFY_METADATA_SEND_MAIL_FAIL"));
+		
+		if (!$rowMetadata->store()) {
+			$mainframe->enqueueMessage(JText::_("CATALOG_METADATA_UPDATE_NOTIFICATION_STATE_ERROR").$database->getErrorMsg(),"ERROR");
+		}
+		
+		$mainframe->redirect("index.php?option=$option&task=listMetadata" );
+	}
+	
+	function metadataPublished ($option)
+	{
+		global  $mainframe;
+		$database 				=& JFactory::getDBO();
+		$user					=& JFactory::getUser();
+		$guid	 				= JRequest::getVar('guid');
+	
+		$metadata = new metadataByGuid($database);
+		$metadata->load($guid);
+		
+		$objectversion = new objectversionByMetadata_id($database);
+		$objectversion->load($metadata->id);
+		
+		$object = new object($database);
+		$object->load($objectversion->object_id);
+		
+		$objectversion = new objectversionByMetadata_id($database);
+		$objectversion->load($metadata->id);
+		
+		HTML_metadata::metadataPublished($option,$metadata,$object,$objectversion);
+	}
+	
+	function setMetadataPublished ($option)
+	{
+		global  $mainframe;
+		$database 				=& JFactory::getDBO();
+		$user					=& JFactory::getUser();
+		$guid	 				= JRequest::getVar('guid');
+		$published	 			= JRequest::getVar('published');
+		
+		$metadata = new metadataByGuid($database);
+		$metadata->load($guid);
+		$metadata->published = $published;
+		
+		if (!$metadata->store()) {
+			$mainframe->enqueueMessage(JText::_("CATALOG_METADATA_UPDATE_NOTIFICATION_STATE_ERROR").$database->getErrorMsg(),"ERROR");
+		}
+		
+		$mainframe->redirect("index.php?option=$option&task=listMetadata" );
 	}
 }
 ?>

@@ -376,51 +376,60 @@ Ext.override(Ext.form.FieldSet, {
 					id:'minus', 
 					handler: function(event, toolEl, fieldset)
 					{	
-						var cnt = fieldset.clones().length;
-						var panel = fieldset.ownerCt;
+						Ext.Msg.confirm(
+			    				HS.i18n('CATALOG_METADATA_ALERT_MINUS_ACTION_CONFIRM_TITLE'),
+			    				HS.i18n('CATALOG_METADATA_ALERT_MINUS_ACTION_CONFIRM_MSG'),
+							function(btn, text){
+								if (btn == 'yes'){
+									var cnt = fieldset.clones().length;
+									var panel = fieldset.ownerCt;
 
-						if (!fieldset.clone)
-						{									
-							var listOfClones = fieldset.clones();
-							var firstClone = listOfClones[0];			
-							var name = fieldset.getId();						
-							var oldIndex = name + "_index";
-							var oldCmp = Ext.getCmp(oldIndex);									
-							var newName = firstClone.getId() + "_index";
-							var newValue = oldCmp.getValue();
-							var idx = panel.items.indexOf(oldCmp);
-							panel.remove(oldCmp, true);
-							var newCmp = new Ext.ux.ExtendedHidden({id: newName, name: newName, value: newValue});
+									if (!fieldset.clone)
+									{									
+										var listOfClones = fieldset.clones();
+										var firstClone = listOfClones[0];			
+										var name = fieldset.getId();						
+										var oldIndex = name + "_index";
+										var oldCmp = Ext.getCmp(oldIndex);									
+										var newName = firstClone.getId() + "_index";
+										var newValue = oldCmp.getValue();
+										var idx = panel.items.indexOf(oldCmp);
+										panel.remove(oldCmp, true);
+										var newCmp = new Ext.ux.ExtendedHidden({id: newName, name: newName, value: newValue});
 
-							panel.insert(idx,newCmp);
-							panel.doLayout();
-			
-							firstClone.clone = false;
-							firstClone.template = undefined;
+										panel.insert(idx,newCmp);
+										panel.doLayout();
+						
+										firstClone.clone = false;
+										firstClone.template = undefined;
 
-							
-							panel.remove(fieldset, true);
-							firstClone.doLayout();
-							
-							for (i=1; i < listOfClones.length; i++)
-							{
-								listOfClones[i].template = firstClone;
+										
+										panel.remove(fieldset, true);
+										firstClone.doLayout();
+										
+										for (i=1; i < listOfClones.length; i++)
+										{
+											listOfClones[i].template = firstClone;
+										}
+										firstClone.manageIcons(firstClone); //mise a jour des boutons
+										firstClone.manageTitle(firstClone); //mise a jour des boutons
+									}
+									else
+									{
+										var tmpl = fieldset.template;
+
+										panel.remove(fieldset, true);
+										tmpl.manageIcons(tmpl); //mise a jour des boutons
+										
+										var listOfClones = tmpl.clones();
+										var firstClone = listOfClones[0];									
+										if (firstClone) firstClone.manageIcons(firstClone);									
+										if (firstClone) firstClone.manageTitle(firstClone);
+									}
+								}
 							}
-							firstClone.manageIcons(firstClone); //mise a jour des boutons
-							firstClone.manageTitle(firstClone); //mise a jour des boutons
-						}
-						else
-						{
-							var tmpl = fieldset.template;
-
-							panel.remove(fieldset, true);
-							tmpl.manageIcons(tmpl); //mise a jour des boutons
-							
-							var listOfClones = tmpl.clones();
-							var firstClone = listOfClones[0];									
-							if (firstClone) firstClone.manageIcons(firstClone);									
-							if (firstClone) firstClone.manageTitle(firstClone);
-						}
+						)
+						
 					}
 				}
 			];

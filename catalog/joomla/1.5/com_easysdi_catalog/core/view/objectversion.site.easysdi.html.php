@@ -21,10 +21,12 @@ class HTML_objectversion {
 	
 	function listObjectVersion($pageNav, $rows, $object_id, $object_name, $option, $lists)
 	{
-		$database =& JFactory::getDBO(); 
-		$user	=& JFactory::getUser();
-		$app	= &JFactory::getApplication();
-		$router = &$app->getRouter();
+		$database 		=& JFactory::getDBO(); 
+		$user			=& JFactory::getUser();
+		$app			= &JFactory::getApplication();
+		$previewtype 	= config_easysdi::getValue("CATALOG_METADATA_PREVIEW_TYPE_EDITOR");
+		$previewcontext = config_easysdi::getValue("CATALOG_METADATA_PREVIEW_CONTEXT_EDITOR");
+		$router			= &$app->getRouter();
 		$router->setVars($_REQUEST);
 		
 		?>	
@@ -87,7 +89,7 @@ class HTML_objectversion {
 			
 			?>		
 			<tr>
-			<td ><a class="modal" title="<?php echo addslashes(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->title ;?></a></td>
+			<td ><a class="modal" title="<?php echo addslashes(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&toolbar=1&task=showMetadata&type=<?php echo $previewtype;?>&context=<?php echo $previewcontext;?>&id=<?php echo $row->metadata_guid;?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->title ;?></a></td>
 			<td ><?php echo $row->description; ?></td>
 			<td class="metadataActions">
 			<?php 
@@ -183,21 +185,21 @@ class HTML_objectversion {
 		
 		$object = new object($database);
 		$object->load($object_id);
+		$objectversion_name = "\"".$row->title."\"";
 		$object_name = "\"".$object->name."\"";
-		
 		?>
 		<div id="page">
 <?php 
 if ($row->id == 0)
 {
 ?>
-			<h1 class="contentheading"><?php echo JText::_( 'CATALOG_NEW_OBJECTVERSION' )." ".$object_name ?></h1>
+			<h1 class="contentheading"><?php echo JText::_( 'CATALOG_EDIT_OBJECTVERSION_OBJECT' )." ".$object_name." " ?>[<?php echo JText::_( 'CATALOG_EDIT_OBJECTVERSION_NEW' ) ?>]</h1>
 <?php 
 }
 else
 {
 ?>
-			<h1 class="contentheading"><?php echo JText::_( 'CATALOG_EDIT_OBJECTVERSION' )." ".$row->title ?></h1>
+			<h1 class="contentheading"><?php echo JText::_( 'CATALOG_EDIT_OBJECTVERSION_OBJECT' )." ".$object_name." " ?><?php echo JText::_( 'CATALOG_EDIT_OBJECTVERSION_' )." ".$objectversion_name ?></h1>
 <?php 
 }
 ?>
@@ -275,11 +277,22 @@ else
 	
 		$objectversion = new objectversion($database);
 		$objectversion->load($objectversion_id);
-		$title = "\"".$objectversion->title."\"";
+		
+		$object = new object($database);
+		$object->load($objectversion->object_id);
+		
+		$objectversion_name = "\"".$objectversion->title."\"";
+		$object_name = "\"".$object->name."\"";
+		
+		$metadata = new metadata($database);
+		$metadata->load($objectversion->metadata_id);
+		$query = "SELECT label FROM #__sdi_list_metadatastate WHERE id=" . $metadata->metadatastate_id;
+		$database->setQuery($query);
+		$state = JText::_($database->loadResult());
 		
 		?>
 		<div id="page">
-			<h2 class="contentheading"><?php echo JText::_( 'CATALOG_VIEW_OBJECTVERSIONLINK' )." ".$title ?></h2>
+			<h2 class="contentheading"><?php echo JText::_("CATALOG_VIEW_OBJECTVERSIONLINK")." ".$object_name." ".JText::_("CATALOG_EDIT_OBJECTVERSION_")." ".$objectversion_name." (".$state.")" ?></h2>
 		    <div id="contentin" class="contentin">
 		   <form action="index.php" method="post" name="adminForm" id="adminForm"
 			class="adminForm">
@@ -312,11 +325,13 @@ else
 			// Column Model shortcut array
 			var cols = [
 				{ id : 'value', hidden: true, dataIndex: 'value'},
-				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name', width:350}
+				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name', width:230},
+				{ id : 'objecttype', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_OBJECTTYPE_HEADER"))."', sortable: true, dataIndex: 'objecttype', width:60},
+				{ id : 'status' , header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_PUBLISHED_HEADER"))."', sortable: true, dataIndex: 'status', width:60}
 			];
 			
 			var parentGridStore = new Ext.data.JsonStore({
-		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'}],
+		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'},{name: 'objecttype', mapping : 'objecttype'},{name: 'status', mapping : 'status'}],
 		        data   : ".HTML_metadata::array2json(array ("total"=>count($parent_objectlinks), "links"=>$parent_objectlinks)).",
 				root   : 'links'
 		    });
@@ -336,7 +351,7 @@ else
 		    });
 		
 		    var childGridStore = new Ext.data.JsonStore({
-		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'}],
+		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'},{name: 'objecttype', mapping : 'objecttype'},{name: 'status', mapping : 'status'}],
 		        data   : ".HTML_metadata::array2json(array ("total"=>count($child_objectlinks), "links"=>$child_objectlinks)).",
 				root   : 'links'
 		    });
@@ -419,11 +434,21 @@ else
 	
 		$objectversion = new objectversion($database);
 		$objectversion->load($objectversion_id);
-		$title = "\"".$objectversion->title."\"";
 		
+		$object = new object($database);
+		$object->load($objectversion->object_id);
+		
+		$objectversion_name = "\"".$objectversion->title."\"";
+		$object_name = "\"".$object->name."\"";
+		
+		$metadata = new metadata($database);
+		$metadata->load($objectversion->metadata_id);
+		$query = "SELECT label FROM #__sdi_list_metadatastate WHERE id=" . $metadata->metadatastate_id;
+		$database->setQuery($query);
+		$state = JText::_($database->loadResult());
 		?>
 		<div id="page">
-			<h2 class="contentheading"><?php echo JText::_( 'CATALOG_MANAGE_OBJECTVERSIONLINK' )." ".$title ?></h2>
+			<h2 class="contentheading"><?php echo JText::_("CATALOG_MANAGE_OBJECTVERSIONLINK")." ".$object_name." ".JText::_("CATALOG_EDIT_OBJECTVERSION_")." ".$objectversion_name." (".$state.")" ?></h2>
 		    <div id="contentin" class="contentin">
 		    <form action="index.php" method="post" name="adminForm" id="adminForm"
 			class="adminForm">
@@ -451,8 +476,6 @@ else
 		//$pageSize=10;
 		
 		$javascript .="
-			//var domNode = Ext.DomQuery.selectNode('div#element-box div.m')
-			//Ext.DomHelper.insertHtml('beforeEnd',domNode,'<div id=formContainer></div>');
 			var domNode = Ext.DomQuery.selectNode('div#viewLinksOutput')
 			Ext.DomHelper.insertHtml('afterBegin',domNode,'<div id=formContainer></div>');
 			
@@ -460,11 +483,13 @@ else
 			var cols = [
 				{ id : 'value', hidden: true, dataIndex: 'value', menuDisabled: true},
 				{ id : 'objecttype_id', hidden: true, dataIndex: 'objecttype_id', menuDisabled: true},
-				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name', menuDisabled: true, width:350}
+				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name', menuDisabled: true, width:230},
+				{ id : 'objecttype', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_OBJECTTYPE_HEADER"))."', sortable: true, dataIndex: 'objecttype', width:60},
+				{ id : 'status' , header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_PUBLISHED_HEADER"))."', sortable: true, dataIndex: 'status', width:60}
 			];
 			
 			var unselectedGridStore = new Ext.data.JsonStore({
-		        fields : [{name: 'value', mapping : 'value'}, {name: 'objecttype_id', mapping : 'objecttype_id'}, {name: 'name', mapping : 'name'}],
+		        fields : [{name: 'value', mapping : 'value'}, {name: 'objecttype_id', mapping : 'objecttype_id'}, {name: 'name', mapping : 'name'},{name: 'objecttype', mapping : 'objecttype'},{name: 'status', mapping : 'status'}],
 		        data   : ".HTML_metadata::array2json(array ("total"=>count($objectlinks), "links"=>$objectlinks)).",
 				root   : 'links'
 		    });
@@ -488,25 +513,9 @@ else
 								scrollOffset:0
 							 }
 		    });
-
-		    /*
-		    bbar			 : new Ext.PagingToolbar({
-									pageSize: pagesize,
-									store: getObjectList(),
-									listeners: { 
-											        change: function(data) { 
-											          var unselected = Ext.getCmp('unselected');
-											          lastOptions = this.lastOptions;
-													  
-						                			  //unselected.store.reload(lastOptions);
-											        } 
-											      } 							
-									}),
-				
-		    */
 		    
 		    var selectedGridStore = new Ext.data.JsonStore({
-		        fields : [{name: 'value', mapping : 'value'}, {name: 'objecttype_id', mapping : 'objecttype_id'}, {name: 'name', mapping : 'name'}],
+		        fields : [{name: 'value', mapping : 'value'}, {name: 'objecttype_id', mapping : 'objecttype_id'}, {name: 'name', mapping : 'name'},{name: 'objecttype', mapping : 'objecttype'},{name: 'status', mapping : 'status'}],
 		        data   : ".HTML_metadata::array2json(array ("total"=>count($selected_objectlinks), "links"=>$selected_objectlinks)).",
 				root   : 'links'
 		    });
@@ -557,6 +566,7 @@ else
 				 									id:Ext.getCmp('id').getValue(),
 				 									name:Ext.getCmp('name').getValue(),
 				 									status:Ext.getCmp('status').getValue(),
+				 									version : Ext.getCmp('version').getValue().getGroupValue(),
 				 									manager:Ext.getCmp('manager').getValue(),
 				 									editor:Ext.getCmp('editor').getValue(),
 				 									fromDate:Ext.getCmp('fromDate').getValue(),
@@ -592,6 +602,7 @@ else
 				 									id:Ext.getCmp('id').getValue(),
 				 									name:Ext.getCmp('name').getValue(),
 				 									status:Ext.getCmp('status').getValue(),
+				 									version : Ext.getCmp('version').getValue().getGroupValue(),
 				 									manager:Ext.getCmp('manager').getValue(),
 				 									editor:Ext.getCmp('editor').getValue(),
 				 									fromDate:Ext.getCmp('fromDate').getValue(),
@@ -663,6 +674,11 @@ else
 		    status['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_STATUS_LABEL'))."';
 			status['list'] = $listStatus;
 			
+			var version = new Array();
+		    version['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_VERSION_LABEL'))."';
+		    version['label_all'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_VERSION_LABEL_ALL'))."';
+		    version['label_last'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_VERSION_LABEL_LAST'))."';
+			
 			var manager = new Array();
 		    manager['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_MANAGER_LABEL'))."';
 			manager['list'] = $listManagers;
@@ -693,7 +709,39 @@ else
 			        		xtype:'fieldset',
 			        		title:'".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_FILTERS_LABEL'))."',
 			        		collapsible:false,
-			        		items:[manageObjectLinkFilter(objecttype, id, name, status, manager, editor, fromDate, toDate)]
+			        		items:[
+			        				manageObjectLinkFilter(objecttype, id, name, status,version, manager, editor, fromDate, toDate)
+			        			  ],
+								  buttons: [
+										{
+											text:'".html_Metadata::cleanText(JText::_('CORE_SEARCH_BUTTON'))."',
+						                    handler: function(){
+						                    	var modelDest = Ext.getCmp('unselected');
+						                    	modelDest.store.removeAll();
+
+												var selectedValues = new Array();
+												var grid = Ext.getCmp('selected').store.data;
+												for ( var i = 0; i < grid.length; i++) {
+													selectedValues.push(grid.get(i).get('value'));
+												}
+
+												modelDest.store.reload( {
+													params : {
+														objecttype_id : Ext.getCmp('objecttype_id').getValue(),
+														id : Ext.getCmp('id').getValue(),
+														name : Ext.getCmp('name').getValue(),
+														status : Ext.getCmp('status').getValue(),
+														version : Ext.getCmp('version').getValue().getGroupValue(),
+														manager : Ext.getCmp('manager').getValue(),
+														editor : Ext.getCmp('editor').getValue(),
+														fromDate : Ext.getCmp('fromDate').getValue(),
+														toDate : Ext.getCmp('toDate').getValue(),
+														selectedObjects : selectedValues.join(', ')
+													}
+												})
+											}
+										}
+									]
 						},
 			        	{
 			        		id			: 'gridPanel',
@@ -826,7 +874,9 @@ else
 					        }, [
 					            {name: 'value', mapping: 'value'},
 					            {name: 'objecttype_id', mapping: 'objecttype_id'},
-					           	{name: 'name', mapping: 'name'}
+					           	{name: 'name', mapping: 'name'},
+					           	{name: 'objecttype', mapping : 'objecttype'},
+					           	{name: 'status', mapping : 'status'}
 					        ]),
 					        // turn on remote sorting
 					        remoteSort: true,
