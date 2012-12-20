@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+<project default="sync" basedir=".">
+
+	<property name="projet.out.dir" value="out" />
+
+
+	<target name="com_easysdi" depends="create-structure,compression"
+		description="Main target">
+
+	</target>
+
+	<target name="create-structure">
+		<echo>Creating the working directory structure</echo>
+		<delete>
+			<fileset dir="${projet.out.dir}" includes="*" />
+		</delete>
+		<mkdir dir="${projet.out.dir}" />
+	</target>
+
+	<target name="compression" description="Compression">
+
+		<jar compress="true" jarfile="${projet.out.dir}/mod_easysdi_menu.zip"
+			basedir="." excludes=" com_easysdi_core/**, com_easysdi_shop/**, out/** , .cache/** , .svn/** , .settings/** , .project, .prefs, build.xml" />
+	</target>
+
+	<target name="sync" description="Copy from here to apache">
+		<copy
+			todir="C:\www\Site\sdiv2\modules\mod_easysdi_menu">
+			<fileset dir=".">
+				<include name="**/*.php" />
+				<include name="**/*.xsl" />
+				<include name="**/*.xml" />
+				<include name="**/*.png" />
+				<include name="**/*.txt" />
+				<include name="**/*.css" />
+				<include name="**/*.js" />
+			</fileset>
+		</copy>
+		
+		
+	</target>
+	
+
+</project>
