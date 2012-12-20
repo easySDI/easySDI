@@ -20,18 +20,15 @@ defined('_JEXEC') or die('Restricted access');
 class ADMIN_config {
 
 	function showConfig($option){
-		
-		
 		global  $mainframe;
-		$db =& JFactory::getDBO(); 
-		
-		$coreList=array();
+		$db 		=& JFactory::getDBO(); 
+		$coreList	=array();
 		$catalogList=array();
-		$shopList=array();
-		$proxyList=array();
+		$shopList	=array();
+		$proxyList	=array();
 		$monitorList=array();
 		$publishList=array();
-		$mapList=array();
+		$mapList	=array();
 		
 		$result=array();
 		$query = "SELECT c.* FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='CORE'";
@@ -165,15 +162,26 @@ class ADMIN_config {
 		$db->setQuery( $query );
 		$attributetypelist = $db->loadObjectList();
 		
+		//List of context
+		$metadatapreviewcontextlist = array();
+		$query= "SELECT '' AS value, '-' AS text UNION SELECT code as value, name as text FROM #__sdi_context ORDER BY text";
+		$db->setQuery( $query );
+		$metadatapreviewcontextlist = $db->loadObjectList();
+				
+		//List of type
+		$metadatapreviewtypelist = array(	array(value => 'abstract', 	text => 'abstract'), 
+											array(value => 'complete', 	text => 'complete'), 
+											array(value => 'specific', 	text => 'specific'),
+											array(value => 'diffusion', text => 'diffusion'));
 		
-		HTML_config::showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList,  $monitorItem, $monitorList,$publishItem, $publishList,$mapItem, $mapList, $fieldsLength, $attributetypelist );
+		HTML_config::showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList,  $monitorItem, $monitorList,$publishItem, $publishList,$mapItem, $mapList, $fieldsLength, $attributetypelist, $metadatapreviewtypelist, $metadatapreviewcontextlist );
 	}
 
 	function saveShowConfig($option) {
 		global $mainframe;
 		$database=& JFactory::getDBO(); 
 		
-		// Sauvegarde des cl�s CORE
+		// Sauvegarde des clés CORE
 		$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['description_length'])."\" WHERE code = 'DESCRIPTION_LENGTH'");
 		if (!$database->query()) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -191,7 +199,7 @@ class ADMIN_config {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
 		
-		// Sauvegarde des cl�s CATALOG
+		// Sauvegarde des clés CATALOG
 		if ($_POST['catalog_item'] > 0)
 		{
 			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['catalog_url'])."\" WHERE code = 'CATALOG_URL'");
@@ -303,9 +311,34 @@ class ADMIN_config {
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
+			
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['metadata_linked_file_base_uri']))."\" WHERE code = 'CATALOG_METADATA_LINKED_FILE_BASE_URI'");
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['CATALOG_METADATA_TITLE_XPATH']))."\" WHERE code = 'CATALOG_METADATA_TITLE_XPATH'");
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['metadatapreviewcontextpublic']))."\" WHERE code = 'CATALOG_METADATA_PREVIEW_CONTEXT_PUBLIC'");
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['metadatapreviewtypeeditor']))."\" WHERE code = 'CATALOG_METADATA_PREVIEW_TYPE_EDITOR'");
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['metadatapreviewcontexteditor']))."\" WHERE code = 'CATALOG_METADATA_PREVIEW_CONTEXT_EDITOR'");
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['CATALOG_VERSION_DATETIME_DISPLAY']))."\" WHERE code = 'CATALOG_VERSION_DATETIME_DISPLAY'");
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
 		}
 		
-		// Sauvegarde des cl�s SHOP
+		// Sauvegarde des clés SHOP
 		if ($_POST['shop_item'] > 0)
 		{
 			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['proxyhost'])."\" WHERE code = 'SHOP_CONFIGURATION_PROXYHOST'");
