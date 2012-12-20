@@ -333,10 +333,16 @@ class HTML_proxyWFS {
 			
 				
 				if($servletVersion != ""){
-					$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WFS");
+// 					$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WFS");
+					$ch = curl_init($urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WFS");
 				}else{
-					$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WFS");
+// 					$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WFS");
+					$ch = curl_init($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WFS");
 				}
+				curl_setopt($ch, CURLOPT_HEADER, false);
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+				$xml_raw = curl_exec($ch);
+				$xmlCapa = simplexml_load_string($xml_raw);
 				
 			if ($xmlCapa === false){
 					global $mainframe;		
@@ -413,7 +419,13 @@ class HTML_proxyWFS {
 				
 				$ftnum = 0;
 				foreach ($xmlCapa->{'FeatureTypeList'}->{'FeatureType'} as $featureType){
-						$xmlDescribeFeature = simplexml_load_file($urlWithPassword.$separator."VERSION=1.0.0&REQUEST=DescribeFeatureType&SERVICE=WFS&TYPENAME=".$featureType->{'Name'});
+// 					$xmlDescribeFeature = simplexml_load_file($urlWithPassword.$separator."VERSION=1.0.0&REQUEST=DescribeFeatureType&SERVICE=WFS&TYPENAME=".$featureType->{'Name'});
+					$ch = curl_init($urlWithPassword.$separator."VERSION=1.0.0&REQUEST=DescribeFeatureType&SERVICE=WFS&TYPENAME=".$featureType->{'Name'});
+					curl_setopt($ch, CURLOPT_HEADER, false);
+					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+					$xml_raw = curl_exec($ch);
+					$xmlDescribeFeature = simplexml_load_string($xml_raw);
+					
 					if ($xmlDescribeFeature === false){
 								global $mainframe;		
 								$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO DESCRIBE THE FEATURE TYPE OF THE REMOTE SERVER.' ),'error');

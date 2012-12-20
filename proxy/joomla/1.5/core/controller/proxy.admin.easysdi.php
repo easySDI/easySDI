@@ -1716,7 +1716,7 @@ class ADMIN_proxy
 	}
 	
 	/**
-	 * Service metadata OWS 1.1.0 spécification
+	 * Service metadata OWS 1.1.0 sp�cification
 	 * @param object $config
 	 */
 	function serviceMetadataOWS ($config)
@@ -1898,7 +1898,12 @@ class ADMIN_proxy
 		$completeurl = "";
 		foreach ($versions_array as $version){
 			$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=".$service."&VERSION=".$version;
-			$xmlCapa = simplexml_load_file($completeurl);
+// 			$xmlCapa = simplexml_load_file($completeurl);
+			$ch = curl_init($completeurl);
+			curl_setopt($ch, CURLOPT_HEADER, false);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			$xml_raw = curl_exec($ch);
+			$xmlCapa = simplexml_load_string($xml_raw);
 			
 			if ($xmlCapa === false){
 				global $mainframe;
@@ -1906,6 +1911,7 @@ class ADMIN_proxy
 			}else{
 				foreach ($xmlCapa->attributes() as $key => $value){
 					if($key == 'version'){
+						
 						if($value == $version)
 							$supported_versions[]=$version;
 					}

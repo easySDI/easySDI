@@ -32,8 +32,8 @@ include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php')
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
 include_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 
-JHTML::_('stylesheet', 'com_easysdi_proxy.css', 'administrator/components/com_easysdi_proxy/templates/css/');
-JHTML::_('stylesheet', 'common_easysdi_admin.css', 'administrator/components/com_easysdi_core/templates/css/');
+JHTML::_('stylesheet', 'com_easysdi_proxy.css', 'administrator'.DS.'components'.DS.'com_easysdi_proxy'.DS.'templates'.DS.'css'.DS);
+JHTML::_('stylesheet', 'common_easysdi_admin.css', 'administrator'.DS.'components'.DS.'com_easysdi_core'.DS.'templates'.DS.'css'.DS);
 
 $language =& JFactory::getLanguage();
 $language->load('com_easysdi_core');
