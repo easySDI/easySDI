@@ -19,7 +19,7 @@
 defined('_JEXEC') or die('Restricted access');
 class HTML_product{
 	
-	function editProduct($account,$product,$version,$supplier,$id,$accounts,$object_id, $objecttype_id,$objecttype_list,$object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$accessibility_list,$perimeter_list,$rowsAccount,$rowsUser,$userPreviewSelected,$userDownloadSelected,$option ){
+	function editProduct($account,$product,$version,$supplier,$id,$accounts,$object_id, $objecttype_id,$objecttype_list,$object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$accessibility_list,$perimeter_list,$rowsAccount,$rowsUser,$userPreviewSelected,$userDownloadSelected,$grid_list, $option ){
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		$app	= &JFactory::getApplication();
@@ -52,6 +52,132 @@ class HTML_product{
 		echo $tabs->startPanel(JText::_("SHOP_TEXT_GENERAL"),"productPane");
 		?>
 		<br/>
+		<script>
+	   function toggle_state(obj){
+	   	if(obj.checked){
+			if(obj.name == 'external')
+				$('data_internal').checked = true;
+			if(obj.name == 'metadata_external')
+				$('metadata_internal').checked = true;
+		}
+		else
+		{
+			if(obj.name == 'internal')
+				$('data_external').checked = false;
+			if(obj.name == 'metadata_internal')
+				$('metadata_external').checked = false;
+		}
+	   }
+	   function fieldManagement()
+		{
+			if (document.forms['productForm'].free.value == '0')
+			{
+				document.getElementById('productfile').disabled = true;
+				document.getElementById('pathfile').disabled = true;
+				document.getElementById('available').disabled = true;
+				document.getElementById('available').value = '0';
+				document.getElementById('deleteFileButton').disabled = true;
+				document.getElementById('linkFile').value = true;
+				document.getElementById('surfacemin').disabled = false;
+				document.getElementById('surfacemax').disabled = false;
+				document.getElementById('notification').disabled = false;
+				document.getElementById('treatmenttype_id').disabled = false;
+				document.getElementById('grid_id').disabled = true;
+			}
+			else if (document.forms['productForm'].free.value == '1' && document.forms['productForm'].available.value == '0')
+			{
+				document.getElementById('productfile').disabled = true;
+				document.getElementById('pathfile').disabled = true;
+				document.getElementById('available').disabled = false;
+				document.getElementById('deleteFileButton').disabled = true;
+				document.getElementById('linkFile').disabled = false;
+				document.getElementById('surfacemin').disabled = false;
+				document.getElementById('surfacemax').disabled = false;
+				document.getElementById('notification').disabled = false;
+				document.getElementById('treatmenttype_id').disabled = false;
+				document.getElementById('grid_id').disabled = true;
+			}
+			else
+			{
+				document.getElementById('productfile').disabled = true;
+				document.getElementById('pathfile').disabled = true;
+				document.getElementById('available').disabled = false;
+				document.getElementById('deleteFileButton').disabled = true;
+				document.getElementById('linkFile').disabled = false;
+				document.getElementById('surfacemin').disabled = true;
+				document.getElementById('surfacemax').disabled = true;
+				document.getElementById('notification').disabled = true;
+				document.getElementById('treatmenttype_id').disabled = true;
+				document.getElementById('grid_id').disabled = true;
+			}
+		}
+	   function deleteFile (form){
+			
+			 if (confirm('<?php echo JText::_("SHOP_PRODUCT_MSG_CONFIRM_DELETE_FILE"); ?>')== true)
+			 {
+				 form.task.value='deleteProductFile';
+				 form.submit();
+			 }
+		}
+	   function ServiceFieldManagement(){
+			if (document.forms['productForm'].viewurltype.value == 'WMS')
+			{
+				document.getElementById('viewminresolution').disabled = false;
+				document.getElementById('viewmaxresolution').disabled = false;
+				document.getElementById('viewmatrixset').disabled = true;
+				document.getElementById('viewmatrixset').value = null;
+				document.getElementById('viewmatrix').disabled = true;
+				document.getElementById('viewmatrix').value = null;
+			}else{
+				document.getElementById('viewminresolution').disabled = true;
+				document.getElementById('viewminresolution').value = null;
+				document.getElementById('viewmaxresolution').disabled = true;
+				document.getElementById('viewmaxresolution').value = null;
+				document.getElementById('viewmatrixset').disabled = false;
+				document.getElementById('viewmatrix').disabled = false;
+			}
+		}
+	   function activateFileManagementOption (selected){
+		   if(document.forms['productForm'].available.value == '0')
+				return;
+			switch (selected)
+			{
+				case "repository":
+					document.getElementById('linkFile').style.visibility = "visible";
+					document.getElementById('productfile').disabled = false;
+					document.getElementById('deleteFileButton').disabled = false;
+
+					document.getElementById('pathfile').value ='';
+					document.getElementById('pathfile').disabled = true;
+
+					document.getElementById('grid_id').value = null;
+					document.getElementById('grid_id').disabled = true;
+					break;
+				case "link":
+					document.getElementById('pathfile').value ='';
+					document.getElementById('pathfile').disabled = false;
+
+					document.getElementById('grid_id').value = null;
+					document.getElementById('grid_id').disabled = true;
+
+					document.getElementById('linkFile').style.visibility = "hidden";
+					document.getElementById('productfile').disabled = true;
+					document.getElementById('deleteFileButton').disabled = true;
+					break;
+				case "grid":
+					document.getElementById('grid_id').value = '';
+					document.getElementById('grid_id').disabled = false;
+					
+					document.getElementById('linkFile').style.visibility = "hidden";
+					document.getElementById('productfile').disabled = true;
+					document.getElementById('deleteFileButton').disabled = true;
+
+					document.getElementById('pathfile').value ='';
+					document.getElementById('pathfile').disabled = true;
+					break;
+			}
+		}
+		</script>
 		<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $product->maxFileSize;?>000000">
 		<table width="100%" border="0" cellpadding="0" cellspacing="0">
 			<tr>
@@ -111,90 +237,6 @@ class HTML_product{
 				<td>
 					<fieldset class="fieldset_properties">
 						<legend><?php echo JText::_("SHOP_PRODUCT_FS_DIFFUSION"); ?></legend>
-						
-						<script>
-						   function toggle_state(obj){
-						   	if(obj.checked){
-								if(obj.name == 'external')
-									$('data_internal').checked = true;
-								if(obj.name == 'metadata_external')
-									$('metadata_internal').checked = true;
-							}
-							else
-							{
-								if(obj.name == 'internal')
-									$('data_external').checked = false;
-								if(obj.name == 'metadata_internal')
-									$('metadata_external').checked = false;
-							}
-						   }
-						   function fieldManagement()
-							{
-								if (document.forms['productForm'].free.value == '0')
-								{
-									document.getElementById('productfile').disabled = true;
-									document.getElementById('pathfile').disabled = true;
-									document.getElementById('available').disabled = true;
-									document.getElementById('available').value = '0';
-									document.getElementById('deleteFileButton').disabled = true;
-									document.getElementById('linkFile').value = true;
-									document.getElementById('surfacemin').disabled = false;
-									document.getElementById('surfacemax').disabled = false;
-									document.getElementById('notification').disabled = false;
-									document.getElementById('treatmenttype_id').disabled = false;
-								}
-								else if (document.forms['productForm'].free.value == '1' && document.forms['productForm'].available.value == '0')
-								{
-									document.getElementById('productfile').disabled = true;
-									document.getElementById('pathfile').disabled = true;
-									document.getElementById('available').disabled = false;
-									document.getElementById('deleteFileButton').disabled = true;
-									document.getElementById('linkFile').disabled = false;
-									document.getElementById('surfacemin').disabled = false;
-									document.getElementById('surfacemax').disabled = false;
-									document.getElementById('notification').disabled = false;
-									document.getElementById('treatmenttype_id').disabled = false;
-								}
-								else
-								{
-									document.getElementById('productfile').disabled = false;
-									document.getElementById('pathfile').disabled = false;
-									document.getElementById('available').disabled = false;
-									document.getElementById('deleteFileButton').disabled = false;
-									document.getElementById('linkFile').disabled = false;
-									document.getElementById('surfacemin').disabled = true;
-									document.getElementById('surfacemax').disabled = true;
-									document.getElementById('notification').disabled = true;
-									document.getElementById('treatmenttype_id').disabled = true;
-								}
-							}
-						   function deleteFile (form){
-								
-								 if (confirm('<?php echo JText::_("SHOP_PRODUCT_MSG_CONFIRM_DELETE_FILE"); ?>')== true)
-								 {
-									 form.task.value='deleteProductFile';
-									 form.submit();
-								 }
-							}
-						   function ServiceFieldManagement(){
-								if (document.forms['productForm'].viewurltype.value == 'WMS')
-								{
-									document.getElementById('viewminresolution').disabled = false;
-									document.getElementById('viewmaxresolution').disabled = false;
-									document.getElementById('viewmatrixset').disabled = true;
-									document.getElementById('viewmatrixset').value = null;
-									document.getElementById('viewmatrix').disabled = true;
-									document.getElementById('viewmatrix').value = null;
-								}else{
-									document.getElementById('viewminresolution').disabled = true;
-									document.getElementById('viewminresolution').value = null;
-									document.getElementById('viewmaxresolution').disabled = true;
-									document.getElementById('viewmaxresolution').value = null;
-									document.getElementById('viewmatrixset').disabled = false;
-									document.getElementById('viewmatrix').disabled = false;
-								}
-							}
-						</script>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>							
 								<td class="ptitle"><?php echo JText::_("SHOP_DIFFUSION_NAME"); ?> : </td>
@@ -223,30 +265,16 @@ class HTML_product{
 									</select>
 								</td>
 							</tr>
-							<tr>
-								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_FILE_NAME") ;?></td>
-								<td>
-									<a id="linkFile" target="RAW" href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadFinalProduct&product_id=<?php echo $product->id?>">
-										<?php echo $product->getFileName();?> 
-									</a> 
-								</td>
-								<td align="right">
-									<button type="button" id="deleteFileButton" onCLick="deleteFile(document.getElementById('productForm'));" >
-										<?php echo JText::_("SHOP_PRODUCT_DELETE_FILE"); ?>
-									</button>
-								</td>
-							</tr>
-							<tr>
-								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_UP_FILE") ;?></td>
-								<td colspan="2" >
-									<input type="file" name="productfile" id="productfile" <?php if( $product->available == 0 ) echo "disabled"; ?> >
-									<?php printf( JText::_("SHOP_PRODUCT_FILE_MAX_SIZE"),$product->maxFileSize); ?> 
-								</td>
-							</tr>
-							<tr>
-								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_PATH_FILE") ;?></td>
-								<td colspan="2"><input class="inputbox" type="text" size="50" maxlength="100" name="pathfile"  id="pathfile" <?php  if( $product->available == 0 ) echo "disabled";?> value="<?php echo $product->pathfile; ?>" /></td>
-							</tr>
+						</table>
+					</fieldset>
+				</td>
+				
+			</tr>
+			<tr>
+				<td >
+					<fieldset class="fieldset_properties">
+						<legend><?php echo JText::_("SHOP_PRODUCT_FS_EXTRACTION"); ?></legend>
+						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_TREATMENT"); ?> : </td>
 								<td colspan="2"><?php $disabled=''; if( $product->available == 1 ) $disabled='disabled'; echo JHTML::_("select.genericlist",$treatmentType_list, 'treatmenttype_id', 'size="1" class="inputbox" '.$disabled, 'value',  'text', $product->treatmenttype_id ); ?></td>															
@@ -263,11 +291,51 @@ class HTML_product{
 								<td class="ptitle"><?php echo JText::_("SHOP_NOTIFICATION_EMAIL"); ?> : </td>
 								<td colspan="2"><input class="inputbox" type="text" size="50" maxlength="500" name="notification"  id="notification" <?php if( $product->available == 1 ) echo "disabled"; ?> value="<?php echo $product->notification; ?>" /></td>								
 							</tr>
-							
 						</table>
 					</fieldset>
 				</td>
-				
+			</tr>
+			<tr>
+				<td >
+					<fieldset class="fieldset_properties">
+						<legend><?php echo JText::_("SHOP_PRODUCT_FS_DIFFUSION_MODE"); ?></legend>
+						<table border="0" cellpadding="3" cellspacing="0">
+							<tr>
+								<?php if ($product->getFileName()) $repositorychecked = 'checked="checked"'; ?>
+								<td><input type="radio" name="diffusion_mode" value="repository" onclick="javascript:activateFileManagementOption('repository');"  <?php echo $repositorychecked;?>></td>
+								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_UP_FILE") ;?><br><?php printf( JText::_("SHOP_PRODUCT_FILE_MAX_SIZE"),$product->maxFileSize); ?> </td>
+								<td >
+									<input type="file" name="productfile" id="productfile" <?php if( $product->available == 0 || !$repositorychecked ) echo "disabled"; ?> >
+								</td>
+								<td>
+									<a id="linkFile" target="RAW" href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadFinalProduct&product_id=<?php echo $product->id?>"><?php if( $product->available != 0 || $repositorychecked ) echo $product->getFileName();?> </a> 
+								</td>
+								<td>
+									<button type="button" id="deleteFileButton" onCLick="deleteFile(document.getElementById('productForm'));" <?php if( $product->available == 0 || !$repositorychecked ) echo "disabled"; ?>><?php echo JText::_("SHOP_PRODUCT_DELETE_FILE"); ?></button>
+								</td>
+								
+							</tr>
+							<tr>
+								<?php if ($product->pathfile) $linkchecked = 'checked="checked"'; ?>
+								<td><input type="radio" name="diffusion_mode" value="link" onclick="javascript:activateFileManagementOption('link');" <?php echo $linkchecked;?> ></td>
+								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_PATH_FILE") ;?></td>
+								<td colspan="3"><input class="inputbox" type="text" size="50" maxlength="100" name="pathfile"  id="pathfile" <?php  if( $product->available == 0 || !$linkchecked) echo "disabled";?> value="<?php echo $product->pathfile; ?>" /></td>
+							</tr>
+							<tr>
+								<?php if ($product->grid_id) $gridchecked = 'checked="checked"'; ?>
+								<td><input type="radio" name="diffusion_mode" value="grid" onclick="javascript:activateFileManagementOption('grid');"  <?php echo $gridchecked;?> ></td>
+								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_GRID_SELECTION") ;?></td>
+								<td colspan="3">
+									<?php
+									 if( $product->available == 0 || !$gridchecked)
+									 	$griddisabled = 'disabled';
+									 echo JHTML::_("select.genericlist",$grid_list, 'grid_id', 'size="1" class="inputbox" '.$griddisabled, 'value',  'text', $product->grid_id ); 
+									?>
+								</td>
+							</tr>
+						</table>
+					</fieldset>						
+				</td>
 			</tr>
 			<tr>
 				<td>
@@ -759,7 +827,7 @@ class HTML_product{
 				text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_SURFACEMAX");?>";
 				index = 1;	
 			}
-			if (form.elements['available'].value == '1' && form.elements['productfile'].value == '' && form.elements['pathfile'].value == '' && form.elements['productFileName'].value == '')
+			if (form.elements['available'].value == '1' && form.elements['productfile'].value == '' && form.elements['pathfile'].value == '' && form.elements['productFileName'].value == '' &&  form.elements['grid_id'].value == '')
 			{
 				if(index != 0)text += ", ";
 				text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_PRODUCT_FILE");?>";
@@ -798,6 +866,8 @@ class HTML_product{
 		$app	= &JFactory::getApplication();
 		$router = &$app->getRouter();
 		$router->setVars($_REQUEST);
+		$previewtype 	= config_easysdi::getValue("CATALOG_METADATA_PREVIEW_TYPE_EDITOR");
+		$previewcontext = config_easysdi::getValue("CATALOG_METADATA_PREVIEW_CONTEXT_EDITOR");
 		
 		?>	
 		<div id="page">
@@ -808,7 +878,7 @@ class HTML_product{
 		<div class="row">
 			 <div class="row">
 			 	<label for="searchObjectName"><?php echo JText::_("SHOP_PRODUCT_FILTER_PRODUCTNAME");?></label>
-			 	<input type="text" name="searchProduct" value="<?php echo $search;?>" class="inputboxSearchProduct text full" />
+			 	<input type="text" name="searchProduct" value="<?php echo htmlspecialchars($search, ENT_QUOTES);?>" class="inputboxSearchProduct text full" />
 			 </div>
 			 <div class="row2">
 				<input type="submit" id="search_product" name="search_product" class="submit" value ="<?php echo JText::_("CORE_SEARCH_BUTTON"); ?>" onClick="document.getElementById('productListForm').task.value='listProduct';document.getElementById('productListForm').submit();"/>
@@ -851,7 +921,7 @@ class HTML_product{
 			?>		
 			<tr>
 			<td class="logo2"><div <?php if($row->visibility == 'public' && $row->published == 1) echo 'title="'.JText::_("SHOP_INFOLOGO_ORDERABLE").'" class="easysdi_product_exists"'; else if($row->visibility == 'private' && $row->published == 1) echo 'title="'.JText::_("SHOP_INFOLOGO_ORDERABLE_INTERNAL").'" class="easysdi_product_exists_internal"';?>></div></td>
-			<td><a class="modal" title="<?php echo JText::_("SHOP_PRODUCT_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->name ;?></a></td>
+			<td><a class="modal" title="<?php echo JText::_("SHOP_PRODUCT_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&type=<?php echo $previewtype;  ?>&context=<?php echo $previewcontext;  ?>&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->name ;?></a></td>
 			<td><?php echo $row->object_name ?></td>
 			<td><?php echo $row->version_title ?></td>
 			<td class="productActions">
@@ -951,5 +1021,177 @@ class HTML_product{
    		
    		 return $result;
 	}
-}
+	
+	function gridSelection($product, $option, $task,$view,$step,$row)
+	{
+		$grid 		= $product->getGrid();
+		$proxyhost 	= config_easysdi::getValue("SHOP_CONFIGURATION_PROXYHOST");
+		$urlwfs 	= $proxyhost."&gridid=$grid->id&type=wfs&url=".urlencode  (trim($grid->urlwfs));
+		if(!empty($grid->wmsuser) || !empty($grid->wmsaccount_id)){
+			$urlwms 	= $proxyhost."&gridid=$grid->id&type=wms&url=".urlencode  (trim($grid->urlwms));
+		}else{
+			$urlwms 	= $grid->urlwms;
+		}
+		
+		?>
+			<script type="text/javascript" src="./administrator/components/com_easysdi_shop/lib/openlayers2.11/OpenLayers.js"></script>
+			<script defer="defer" type="text/javascript">
+			var protocol, map, popup;
+
+			function init(){
+            	var options = { 
+                    	<?php if($grid->minscale){?>
+                    	minScale:<?php echo $grid->minscale;?>,
+                    	<?php }?>
+                    	<?php if($grid->maxscale){?>
+                    	maxScale:<?php echo $grid->maxscale;?>,
+                    	<?php }?>
+                    	<?php if($grid->projection){?>
+                        projection : new OpenLayers.Projection("<?php echo $grid->projection;?>"),
+                        <?php }?>
+                        <?php if($grid->extent){?>
+                        maxExtent :new OpenLayers.Bounds(<?php echo $grid->extent;?>),
+                        <?php }?>
+                        units: "<?php echo $grid->unit;?>",
+                        controls :[
+                         new OpenLayers.Control.Navigation(),
+                         new OpenLayers.Control.PanZoomBar(),
+                         new OpenLayers.Control.ScaleLine(),
+                         new OpenLayers.Control.MousePosition(),
+                         new OpenLayers.Control.OverviewMap(),
+                         new OpenLayers.Control.KeyboardDefaults()
+                     ]
+                      };
+               
+            	map = new OpenLayers.Map("map",options);
+
+            	<?php
+            	$n = substr_count ($grid->layername,','); 
+            	$styles = "default";
+            	for ($i = 0 ; $i <$n ; $i++)
+            	{
+            		$styles .= ",default";
+            	}
+            	?>
+            	var baseLayer = new OpenLayers.Layer.WMS(
+            	    "BaseMap",
+            	    "<?php echo $urlwms;?>",
+            	    {layers: "<?php echo $grid->layername;?>", styles:"<?php echo $styles;?>",format:"<?php echo $grid->imgformat;?>", transparent : true},
+            	    {isBaseLayer: true, visibility: true <?php if ($grid->singletile) echo ", singleTile : true, ratio: 1.5"; ?>}
+            	);
+
+            	protocol = new OpenLayers.Protocol.WFS({
+        		    version: "1.0.0",
+        		    srsName:"<?php echo $grid->projection;?>",
+        		    url: "<?php echo $urlwfs;?>",
+        		    featureType: "<?php echo $grid->featuretype;?>",
+        		    featurePrefix: "<?php echo $grid->featureprefix;?>",
+        		    featureNS: "<?php echo $grid->featureNS;?>",
+        		    geometryName: "<?php echo $grid->fieldgeom;?>",
+        		    maxFeatures: 1
+        		});
+
+        		var select = new OpenLayers.Layer.Vector("Selection", {styleMap: 
+                    new OpenLayers.Style(OpenLayers.Feature.Vector.style["select"])
+                });
+
+                var hover = new OpenLayers.Layer.Vector("Hover");
+
+                 <?php if($grid->detailtooltip){?>
+                var control = new OpenLayers.Control.GetFeature({
+                    protocol: protocol,
+                    box: false,
+                    hover: true
+                });
+                <?php }else{?>
+                var control = new OpenLayers.Control.GetFeature({
+                    protocol: protocol,
+                    box: false,
+                    hover: false
+                });
+                <?php }?>
+                
+                control.events.register("featureselected", this, function(e) {
+                	select.addFeatures([e.feature]);
+                    document.getElementById('selected-grid-name').innerHTML = e.feature.attributes.<?php echo $grid->fieldname;?>;
+					<?php if ($grid->fielddetail){?>
+                    document.getElementById('selected-grid-detail').innerHTML = e.feature.attributes.<?php echo $grid->fielddetail;?>;
+                    <?php }?>
+                    document.getElementById('resource').value = e.feature.attributes.<?php echo $grid->fieldresource;?>;
+                    document.getElementById('validateSelectGrid').disabled = false;
+                });
+                
+                control.events.register("featureunselected", this, function(e) {
+                	select.removeFeatures([e.feature]);
+                    document.getElementById('selected-grid-detail').innerHTML = "";
+                    document.getElementById('validateSelectGrid').disabled = true;
+                });
+
+                <?php if($grid->detailtooltip){?>
+                control.events.register("hoverfeature", this, function(e) {
+                    hover.addFeatures([e.feature]);
+                    popup = new OpenLayers.Popup.FramedCloud(
+                            "chicken", 
+                            e.feature.geometry.getBounds().getCenterLonLat(),
+                            null,
+                            e.feature.attributes.<?php echo $grid->fieldname;?> + "<br>" <?php if($grid->fielddetail){?>+ e.feature.attributes.<?php echo $grid->fielddetail;?><?php }?>,
+                            null,
+                            true
+                        )
+                    map.addPopup(popup);
+                });
+                
+                control.events.register("outfeature", this, function(e) {
+                    hover.removeFeatures([e.feature]);
+                    if(popup != null)
+                    	map.removePopup(popup);
+                	popup.destroy();
+                	popup = null;
+                });
+                <?php }?>
+                
+                map.addControl(control);
+                control.activate();
+                
+            	map.addLayers([baseLayer, select, hover]);
+            	map.zoomToMaxExtent();
+            }
+            
+			function validate()
+			{
+				document.getElementById('task').value='downloadAvailableProduct';
+				document.getElementById('selectGridForm').submit();
+			}
+	        </script>
+	        <body onload="init()">
+	       	<form name="selectGridForm" id="selectGridForm" action='index.php' method='GET'>
+	       		<div id="map" class="grid-map" ></div>
+				<div id="selected-grid" class="grid-selection">
+			        <h1><?php echo JText::_('SHOP_GRID_SELECTION_FEATURE_SELECTED_TITLE'); ?></h1>
+			        <div id="selected-grid-name">
+			        </div>
+			        <div id="selected-grid-detail">
+			        </div>
+			        <div>
+			        	<input onClick="document.getElementById('task').value = '<?php echo $task; ?>'; try{ window.parent.document.getElementById('sbox-window').close();}catch(err){javascript:history.back();}"
+										type="button" class="button" value='<?php echo JText::_("SHOP_CANCEL_BUTTON"); ?>'> 
+						<input type="submit" id="validateSelectGrid" name="validateSelectGrid" class="submit" disabled value="<?php echo JText::_("SHOP_VALIDATE_BUTTON"); ?>" 
+							onClick="javascript:validate();"/>	
+			        </div>
+			        
+			    </div>
+			   
+				<input type='hidden' name='option' value='<?php echo $option;?>'> 
+				<input type='hidden' id="task" name='task' value='<?php echo $task; ?>'> 
+				<input type='hidden' id="view" name='view' value='<?php echo $view; ?>'> 
+				<input type='hidden' id="fromStep" name='fromStep' value='1'> 
+				<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'>
+				<input type='hidden' name='tmpl' value='<?php echo JRequest::getVar('tmpl'); ?>'> 
+				<input type='hidden' name='resource' id='resource' value=''> 
+				<input type='hidden' name='cid[]' value='<?php echo $product->id;?>'>
+			</form>
+			</body>
+			<?php
+		}
+	}
 ?>

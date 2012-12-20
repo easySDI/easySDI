@@ -1267,17 +1267,16 @@ function validateForm(toStep, fromStep){
 	
 	function downloadAvailableProduct($id)
 	{
-		$option = JRequest::getVar('option');
-		$task = JRequest::getVar('task');
-		$view = JRequest::getVar('view');
-		$step = JRequest::getVar('step');
-		
 		global  $mainframe;
-		$user = JFactory::getUser();
-		$db=& JFactory::getDBO(); 
-		$account = new accountByUserId( $db );
+		$option 	= JRequest::getVar('option');
+		$task 		= JRequest::getVar('task');
+		$view 		= JRequest::getVar('view');
+		$step 		= JRequest::getVar('step');
+		$user 		= JFactory::getUser();
+		$db			=& JFactory::getDBO(); 
+		$account 	= new accountByUserId( $db );
 		$account->load( $user->id );
-		$product = new product($db);
+		$product 	= new product($db);
 		$product->load ($id);
 		
 		if(!$product->isUserAllowedToLoad($account->id)){
@@ -1286,11 +1285,11 @@ function validateForm(toStep, fromStep){
 		}else{
 			$client_lang = '';
 			$jfcookie = JRequest::getVar('jfcookie', null ,"COOKIE");
-			if (isset($jfcookie["lang"]) && $jfcookie["lang"] != "") 
+			if (isset($jfcookie["lang"]) && $jfcookie["lang"] != "")
 			{
-			   $client_lang = $jfcookie["lang"];
-			   $ar = explode("-",$client_lang);
-			   $client_lang = $ar[0];
+				$client_lang = $jfcookie["lang"];
+				$ar = explode("-",$client_lang);
+				$client_lang = $ar[0];
 			}
 			$key = config_easysdi::getValue("SHOP_CONFIGURATION_ARTICLE_TERMS_OF_USE");
 			$new_key = substr_replace($key, $client_lang." ", 22, 0);
@@ -1300,41 +1299,68 @@ function validateForm(toStep, fromStep){
 			$dispatcher =& JDispatcher::getInstance();
 			$dispatcher->trigger('onPrepareContent', array(&$row,&$params,0));
 			$mainframe->addCustomHeadTag('<meta http-equiv="X-UA-Compatible" content="IE=Edge">');
-			HTML_shop::downloadAvailableProduct($id, $option, $task,$view,$step,$row);
+			if($product->grid_id && !JRequest::getVar('resource'))
+				HTML_product::gridSelection($product, $option, $task,$view,$step,$row);
+			else
+				HTML_shop::termsOfUse($product, $option, $task,$view,$step,$row);
 		}
 	}
-	
-	function doDownloadAvailableProduct(){
 
-		$database =& JFactory::getDBO();
-		$id = JRequest::getVar('product_id');
-		
+	function downloadProduct(){
+
 		global  $mainframe;
-		$user = JFactory::getUser();
-		$account = new accountByUserId( $database );
+		$database 	=& JFactory::getDBO();
+		$id 		= JRequest::getVar('product_id');
+		$user 		= JFactory::getUser();
+		$account 	= new accountByUserId( $database );
 		$account->load( $user->id );
-		$product = new product($database);
+		$product 	= new product($database);
 		$product->load ($id);
 		
 		if(!$product->isUserAllowedToLoad($account->id)){
 			//User is not allowed to download this product
 			JError::raiseWarning( 100, JText::_("SHOP_MSG_NOT_ALLOWED_TO_DOWNLOAD_THIS_PRODUCT") );
 		}else{
-			$file = $product->getFile();
-			$fileName = $product->getFileName();
-	
-			error_reporting(0);
-	
-			ini_set('zlib.output_compression', 0);
-			header('Pragma: public');
-			header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-			header('Content-Transfer-Encoding: none');
-			header("Content-Length: ".strlen($file));
-			header('Content-Type: application/octetstream; name="'.$product->getFileExtension().'"');
-			header('Content-Disposition: attachement; filename="'.$fileName.'"');
-	
-			echo $file;
-			die();
+			$resource = JRequest::getVar('resource');
+			if($resource){
+				$pos = strrpos($resource,("/"),-1);
+				if($pos === false)
+					$fileName = "grid.zip";
+				else
+					$fileName = substr ($resource, $pos+1, strlen($resource)-1);
+				
+				header("Content-Disposition: attachment; filename=" .$fileName ); 
+				header("Content-Type: application/force-download");
+				header("Content-Type: application/octet-stream");
+				header("Content-Type: application/download");
+				header("Content-Description: File Transfer");
+				ob_flush();
+				flush();
+				$fp = fopen($resource, "r");
+				while (!feof($fp)) {
+					echo fread($fp, 65536);
+					ob_flush();
+					flush();
+				}
+				fclose($fp);
+				die();
+				
+			}else{
+			
+				$file = $product->getFile();
+				$fileName = $product->getFileName();
+				error_reporting(0);
+		
+				ini_set('zlib.output_compression', 0);
+				header('Pragma: public');
+				header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+				header('Content-Transfer-Encoding: none');
+				header("Content-Length: ".strlen($file));
+				header('Content-Type: application/octetstream; name="'.$product->getFileExtension().'"');
+				header('Content-Disposition: attachement; filename="'.$fileName.'"');
+				echo $file;
+				die();
+			}
 		}
 	}
 }

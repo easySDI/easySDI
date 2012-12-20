@@ -486,7 +486,7 @@ class SITE_cpanel {
 		$account->load($user->id);
 
 		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
-		$search = $database->getEscaped( trim( strtolower( $search ) ) );
+// 		$search = $database->getEscaped( trim( strtolower( $search ) ) );
 
 		$filter = "";
 
@@ -532,8 +532,19 @@ class SITE_cpanel {
 			$filterList[] = "(o.type_id ='$ordertype')";
 		}
 
-		if ( $search ) {
-			$filterList[]= "(o.name LIKE '%$search%' OR o.id LIKE '%$search%')";
+		if ( $search )
+		{
+			if(strripos ($search,'"') != FALSE)
+			{
+				$searchcontent = substr($search, 1,strlen($search)-2 );
+				$searchcontent = $database->getEscaped( trim( strtolower( $searchcontent ) ) );
+				$filterList[]= " (o.name LIKE '%".$searchcontent."%' OR o.id LIKE '%".$searchcontent."%')";
+			}
+			else
+			{
+				$search = $database->getEscaped( trim( strtolower( $search ) ) );
+				$filterList[]= " (o.name = '$search' OR o.id = '$search')";
+			}
 		}
 
 		if (count($filterList) > 0)
@@ -975,7 +986,7 @@ class SITE_cpanel {
 		}
 
 		$search = $mainframe->getUserStateFromRequest( "searchOrder{$option}", 'searchOrder', '' );
-		$search = $database->getEscaped( trim( strtolower( $search ) ) );
+// 		$search = $database->getEscaped( trim( strtolower( $search ) ) );
 		$filter = "";
 		$queryType = "select * from #__sdi_list_ordertype";
 		$database->setQuery($queryType);
@@ -995,8 +1006,19 @@ class SITE_cpanel {
 			$filterList[]= "(o.type_id ='$ordertype')";
 		}
 
-		if ( $search ) {
-			$filterList[]= "(o.name LIKE '%$search%' OR o.id LIKE '%$search%')";
+		if ( $search )
+		{
+			if(strripos ($search,'"') != FALSE)
+			{
+				$searchcontent = substr($search, 1,strlen($search)-2 );
+				$searchcontent = $database->getEscaped( trim( strtolower( $searchcontent ) ) );
+				$filterList[]= " (o.name LIKE '%".$searchcontent."%' OR o.id LIKE '%".$searchcontent."%')";
+			}
+			else
+			{
+				$search = $database->getEscaped( trim( strtolower( $search ) ) );
+				$filterList[]= " (o.name = '$search' OR o.id = '$search')";
+			}
 		}
 
 		if (count($filterList) > 1)
