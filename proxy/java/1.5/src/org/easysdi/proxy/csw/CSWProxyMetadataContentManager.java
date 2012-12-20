@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.collections.ListUtils;
 import org.easysdi.jdom.filter.AttributeXlinkFilter;
 import org.easysdi.jdom.filter.ElementExceptionReportFilter;
 import org.easysdi.jdom.filter.ElementFragmentFilter;
@@ -100,10 +101,20 @@ public class CSWProxyMetadataContentManager
 	    	//Iterator<?> i= racine.getDescendants(filtre);
 	    	
 	    	//Get only the Metadata which are not harvested : the complete process is only available for the MD manage by the EasySDI solution
-	    	XPath xpa = XPath.newInstance("//gmd:MD_Metadata[sdi:platform/@harvested='false']");   
+	    	//Can't build an XPath expression to get MD_Metadata where node sdi:platform is missing
+	    	//So get all the MD, get the MD harvested and substract second from first to get the MD non harvested
+	    	XPath xpa = XPath.newInstance("//gmd:MD_Metadata");   
 	    	xpa.addNamespace("gmd", "http://www.isotc211.org/2005/gmd");
 	    	xpa.addNamespace("sdi", "http://www.easysdi.org/2011/sdi");
-	    	List<Element> easysdMDList = (List<Element>)xpa.selectNodes(racine);
+	    	List<Element> easysdMDListAll = (List<Element>)xpa.selectNodes(racine);
+	    	
+	    	XPath xpaHarvested = XPath.newInstance("//gmd:MD_Metadata[sdi:platform/@harvested='true']");   
+	    	xpaHarvested.addNamespace("gmd", "http://www.isotc211.org/2005/gmd");
+	    	xpaHarvested.addNamespace("sdi", "http://www.easysdi.org/2011/sdi");
+	    	List<Element> easysdMDListHarvested = (List<Element>)xpaHarvested.selectNodes(racine);
+	    	
+	    	//Substract to get the MD non harvested
+	    	List<Element> easysdMDList  = ListUtils.subtract(easysdMDListAll, easysdMDListHarvested);
 	    	
 	    	for (Element element : easysdMDList) {
 	    		Iterator<?> i = element.getDescendants(filtre);
@@ -114,12 +125,6 @@ public class CSWProxyMetadataContentManager
 		    	   elList.add(courant);
 		    	}
 			} 
-	    	
-	    	/*while(i.hasNext())
-	    	{
-	    	   Element courant = (Element)i.next();
-	    	   elList.add(courant);
-	    	}*/
 	    	
 //	    	proxy.dump("DEBUG","Start - Loop on metadata");
 	    	//Modification of the selected Elements

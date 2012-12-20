@@ -726,14 +726,30 @@ public class CSWProxyDataAccessibilityManager {
 					elementProperty.addContent(elementLiteral);
 				elementLiteral.setText("-1");
 				
+				//Metadata created with old version of EasySDI can not have property 'harvested' include in there content
+				//The request should handle this case by testing :
+				// - harvested = false
+				// - and harvested is not present ==> by using PropertyIsNull
+				//NB : Using PropertyIsNull required Geonetwork configuration (defining PropertyIsNull in filter-to-lucene.xsl)
+				Element subElementOr = new Element("Or", nsOGC);
+				secondElementAnd.addContent(subElementOr);
+				
+				//Harvested = false
 				Element elementHarvestedValueFalse = new Element("PropertyIsEqualTo", nsOGC);
-				secondElementAnd.addContent(elementHarvestedValueFalse);
+				subElementOr.addContent(elementHarvestedValueFalse);
 				Element elementName1 = new Element("PropertyName", nsOGC);
 				elementHarvestedValueFalse.addContent(elementName1);
 				elementName1.setText("harvested");
 				Element elementLiteral1 = new Element("Literal", nsOGC);
 				elementHarvestedValueFalse.addContent(elementLiteral1);
 				elementLiteral1.setText("false");
+				//Harvested is missing
+				Element elementHarvestedMissing = new Element("PropertyIsNull", nsOGC);
+				subElementOr.addContent(elementHarvestedMissing);
+				Element elementNameMissing1 = new Element("PropertyName", nsOGC);
+				elementHarvestedMissing.addContent(elementNameMissing1);
+				elementNameMissing1.setText("harvested");
+				
 				
 				if(policy.getIncludeHarvested()){
 					Element elementHarvestedValueTrue = new Element("PropertyIsEqualTo", nsOGC);
@@ -750,14 +766,23 @@ public class CSWProxyDataAccessibilityManager {
 				
 				//If harvested MD have to be excluded
 				if(!policy.getIncludeHarvested()){
+					Element subElementOr = new Element("Or", nsOGC);
+					elementAnd.addContent(subElementOr);
+					//Harvested = false
 					Element elementHarvestedValueFalse = new Element("PropertyIsEqualTo", nsOGC);
-					elementAnd.addContent(elementHarvestedValueFalse);
+					subElementOr.addContent(elementHarvestedValueFalse);
 					Element elementName = new Element("PropertyName", nsOGC);
 					elementHarvestedValueFalse.addContent(elementName);
 					elementName.setText("harvested");
 					Element elementLiteral = new Element("Literal", nsOGC);
 					elementHarvestedValueFalse.addContent(elementLiteral);
 					elementLiteral.setText("false");
+					//Harvested is missing
+					Element elementHarvestedMissing = new Element("PropertyIsNull", nsOGC);
+					subElementOr.addContent(elementHarvestedMissing);
+					Element elementNameMissing1 = new Element("PropertyName", nsOGC);
+					elementHarvestedMissing.addContent(elementNameMissing1);
+					elementNameMissing1.setText("harvested");
 				}
 			}
 			else{
@@ -787,14 +812,23 @@ public class CSWProxyDataAccessibilityManager {
 					elementLiteral.setText(ids.get(m).get("guid").toString());
 				}
 
+				Element subElementOr = new Element("Or", nsOGC);
+				secondElementAnd.addContent(subElementOr);
+				//Harvested = false
 				Element elementHarvestedValueFalse = new Element("PropertyIsEqualTo", nsOGC);
-				secondElementAnd.addContent(elementHarvestedValueFalse);
+				subElementOr.addContent(elementHarvestedValueFalse);
 				Element elementName = new Element("PropertyName", nsOGC);
 				elementHarvestedValueFalse.addContent(elementName);
 				elementName.setText("harvested");
 				Element elementLiteral = new Element("Literal", nsOGC);
 				elementHarvestedValueFalse.addContent(elementLiteral);
 				elementLiteral.setText("false");
+				//Harvested is missing
+				Element elementHarvestedMissing = new Element("PropertyIsNull", nsOGC);
+				subElementOr.addContent(elementHarvestedMissing);
+				Element elementNameMissing1 = new Element("PropertyName", nsOGC);
+				elementHarvestedMissing.addContent(elementNameMissing1);
+				elementNameMissing1.setText("harvested");
 				
 				if(policy.getIncludeHarvested()){
 					Element elementHarvestedValueTrue = new Element("PropertyIsEqualTo", nsOGC);
