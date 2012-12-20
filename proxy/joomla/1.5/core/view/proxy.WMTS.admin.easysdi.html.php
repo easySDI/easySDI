@@ -415,11 +415,16 @@ class HTML_proxyWMTS {
 			}
 
 			if($servletVersion != ""){
-				$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WMTS");
+// 				$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WMTS");
+				$ch = curl_init($urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WMTS");
 			}else{
-				$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMTS");
+// 				$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMTS");
+				$ch = curl_init($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMTS");
 			}
-			
+			curl_setopt($ch, CURLOPT_HEADER, false);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			$xml_raw = curl_exec($ch);
+			$xmlCapa = simplexml_load_string($xml_raw);
 			
 			if ($xmlCapa === false){
 					global $mainframe;		
