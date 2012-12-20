@@ -1362,6 +1362,36 @@ div#archiveMetadata{
 	background-repeat:no-repeat;
 	height:16px;
 	width:16px;
+	padding-left:2px;
+	padding-right:2px;
+}
+
+div#synchronizeMetadata:hover{
+	cursor:pointer;
+}
+
+div#synchronizeMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/control_equalizer_blue.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;
+}
+
+
+
+div#synchronizedbyMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/control_equalizer.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;
 }
 
 div#invalidateMetadata:hover{
@@ -1375,6 +1405,8 @@ div#invalidateMetadata{
 	background-repeat:no-repeat;
 	height:16px;
 	width:16px;
+	padding-left:2px;
+	padding-right:2px;
 }
 
 div#manageObjectVersionLink{
@@ -2127,19 +2159,6 @@ table#manageMetadata div{
 	background-image:url(../icons/silk/basket.png);
 }
 
-div#editMetadata:hover{
-	cursor:pointer;
-}
-
-div#editMetadata{
-	background-color:transparent;
-	background-image:url(../icons/silk/pencil.png);
-	background-position:0 0;
-	background-repeat:no-repeat;
-	height:16px;
-	width:16px;	
-}
-
 div#historyAssignMetadata:hover{
 	cursor:pointer;
 }
@@ -2495,41 +2514,11 @@ dl.tabs dt span {
 	background:lightgray;
 }
 
-/*
-.publish table.list tbody tr td {
-	background:#FFFFFF none repeat scroll 0 0;
-	border:1px solid #FFFFFF;
-	height:25px;
-}
-*/
 .publish legend {
 	color:#666666;
 	font-size:12px;
 	font-weight:bold;
 }
-
-/*
-.publish .buttonDisabled{
-	background:transparent url(../images/bg_bouton_dis.png) repeat-x scroll center center;
-	border:0 solid #B9B9B9;
-	color:#FFFFFF;
-	font-family:arial;
-	font-size:11px;
-	font-weight:bold;
-	padding:1px 6px;
-}
-*/
-/*
-.publish select{
-	width:160px;
-}
-*/
-/*
-.publish fieldset {
-	width:266px;
-	margin-top:10px;
-}
-*/
 
 .publish .endpointslist{
 	width:512px;
@@ -2690,8 +2679,40 @@ div#editMetadata{
 	padding-right:2px;	
 }
 
+div#assignMetadata:hover{
+	cursor:pointer;
+}
+
+div#assignMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/user_go.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+	border:0px !important;
+}
+
+div#notifyMetadata:hover{
+	cursor:pointer;
+}
+
+div#notifyMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/email_go.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+	border:0px !important;
+}
+
 .box-table .metadataActions{
-	width:80px;
+	width:150px;
 }
 
 .box-table .metadataActions div{
@@ -2788,16 +2809,6 @@ div#viewObjectVersionLink:hover{
 	clear: both;
 	margin-bottom: 5px;
 	}
-
-/*
-label {
-	display: block;
-	float: left;
-	width: 158px;
-	padding-right: 10px;
-	text-align: right;
-}
-*/
 
 /* List Application */
 .box-table .applicationActions{
@@ -2899,9 +2910,33 @@ div#deleteProduct{
 	background-repeat:no-repeat;
 	height:16px;
 	width:20px;
-
 }
 
 .executeXQuery:hover{
 	cursor :pointer;
+}
+
+#selected-grid-name{
+	height:20px;
+	padding-left:20px;
+}
+
+#selected-grid-detail{
+	height:20px;
+	padding-left:20px;
+}
+
+.grid-selection{
+	padding-left:20px;
+}
+
+.grid-map{
+	padding-left:20px;
+	width: 600px; 
+	height: 300px
+}
+
+
+.metadatapublished_calendar{
+	width:100px;
 }
