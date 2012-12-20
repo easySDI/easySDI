@@ -19,7 +19,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_config {
 	
-	function showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList, $monitorItem, $monitorList, $publishItem, $publishList,$mapItem, $mapList,$fieldsLength, $attributetypelist )
+	function showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList, $monitorItem, $monitorList, $publishItem, $publishList,$mapItem, $mapList,$fieldsLength, $attributetypelist, $metadatapreviewtypelist, $metadatapreviewcontextlist)
 	{
 		global $mainframe;
 
@@ -217,6 +217,7 @@ if ($catalogItem > 0){
 											<div  ><?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_QTIPDELAY_NOTE' ); ?></div>
 										</td>
 									</tr>
+									
 									<tr>
 										<td valign="top" class="key">
 											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_ENCODING_CODE' ); ?>">
@@ -237,56 +238,7 @@ if ($catalogItem > 0){
 											<input class="text_area" type="text" size="100" name="catalog_encoding_val" value="<?php echo $catalogList['CATALOG_ENCODING_VAL']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
-									<tr>
-										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_ISOCODE_LABEL' ); ?>">
-												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_ISOCODE_LABEL' ); ?>
-											</span>
-										</td>
-										<td>
-											<input class="text_area" type="text" size="100" name="catalog_boundary_isocode" value="<?php echo $catalogList['CATALOG_BOUNDARY_ISOCODE']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
-										</td>
-									</tr>
-									<tr>
-										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_NORTH_LABEL' ); ?>">
-												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_NORTH_LABEL' ); ?>
-											</span>
-										</td>
-										<td>
-											<input class="text_area" type="text" size="100" name="catalog_boundary_north" value="<?php echo $catalogList['CATALOG_BOUNDARY_NORTH']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
-										</td>
-									</tr>
-									<tr>
-										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_SOUTH_LABEL' ); ?>">
-												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_SOUTH_LABEL' ); ?>
-											</span>
-										</td>
-										<td>
-											<input class="text_area" type="text" size="100" name="catalog_boundary_south" value="<?php echo $catalogList['CATALOG_BOUNDARY_SOUTH']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
-										</td>
-									</tr>
-									<tr>
-										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_EAST_LABEL' ); ?>">
-												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_EAST_LABEL' ); ?>
-											</span>
-										</td>
-										<td>
-											<input class="text_area" type="text" size="100" name="catalog_boundary_east" value="<?php echo $catalogList['CATALOG_BOUNDARY_EAST']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
-										</td>
-									</tr>
-									<tr>
-										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_WEST_LABEL' ); ?>">
-												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_WEST_LABEL' ); ?>
-											</span>
-										</td>
-										<td>
-											<input class="text_area" type="text" size="100" name="catalog_boundary_west" value="<?php echo $catalogList['CATALOG_BOUNDARY_WEST']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
-										</td>
-									</tr>
+									
 									<tr>
 										<td valign="top" class="key">
 											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_TYPE_LABEL' ); ?>">
@@ -319,12 +271,22 @@ if ($catalogItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_TITLE_XPATH' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_TITLE_XPATH' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="CATALOG_METADATA_TITLE_XPATH" value="<?php echo $catalogList['CATALOG_METADATA_TITLE_XPATH']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
 											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_MXQUERYURL' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_MXQUERYURL' ); ?>
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="50" name="catalog_mxqueryurl" value="<?php echo $catalogList['CATALOG_MXQUERYURL']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="catalog_mxqueryurl" value="<?php echo $catalogList['CATALOG_MXQUERYURL']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>									
 									<tr>
@@ -334,7 +296,7 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="50" name="catalog_mxquerypagination" value="<?php echo $catalogList['CATALOG_MXQUERYPAGINATION']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="catalog_mxquerypagination" value="<?php echo $catalogList['CATALOG_MXQUERYPAGINATION']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -344,32 +306,170 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="50" name="thesaurusUrl" value="<?php echo $catalogList['thesaurusUrl']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="thesaurusUrl" value="<?php echo $catalogList['thesaurusUrl']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_LINKED_FILE_REPOSITORY_LABEL' ); ?>">
-												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_LINKED_FILE_REPOSITORY_LABEL' ); ?>
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_VERSION_DATETIME_DISPLAY' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_VERSION_DATETIME_DISPLAY' ); ?>
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="metadata_linked_file_repository" value="<?php echo $catalogList['CATALOG_METADATA_LINKED_FILE_REPOSITORY']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<?php
+												$dateformat = array();
+												$dateformat[] = JHTML::_('select.option','Y-m-d H:i:s', 'Y-m-d H:i:s' );
+												$dateformat[] = JHTML::_('select.option','Y-m-d','Y-m-d' ); 
+											
+												echo JHTML::_("select.genericlist",$dateformat, 'CATALOG_VERSION_DATETIME_DISPLAY', 'size="1" class="inputbox"', 'value', 'text', $catalogList['CATALOG_VERSION_DATETIME_DISPLAY']->value ); ?>
 										</td>
 									</tr>
 									<tr>
-										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_LINKED_FILE_BASE_URI_LABEL' ); ?>">
-												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_LINKED_FILE_BASE_URI_LABEL' ); ?>
-											</span>
+										<td valign="top"  colspan="2">
+										
+													<fieldset class="adminform">
+														<legend>
+														<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW' ); ?>
+														</legend>
+		
+														<table class="admintable" cellspacing="1">
+															<thead>
+															<tr>
+																<th class='title'></th>
+																<th class='title editlinktip hasTip' title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW_PUBLIC_TIP' ); ?>"><?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW_PUBLIC' ); ?></th>
+																<th class='title editlinktip hasTip' title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW_EDITOR_TIP' ); ?>"><?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW_EDITOR' ); ?></th>
+															</tr>
+															</thead>
+															<tbody>
+															<tr>
+																<td valign="top" class="key">
+																	<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW_TYPE_TITLE' ); ?>">
+																		<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW_TYPE_LABEL' ); ?>
+																	</span>
+																</td>
+																<td>
+																	<?php echo JHTML::_("select.genericlist",$metadatapreviewtypelist, 'metadatapreviewtypepublic', 'size="1" class="inputbox"', 'value', 'text',  $catalogList['CATALOG_METADATA_PREVIEW_TYPE_PUBLIC']->value ); ?>
+																</td>
+																<td>
+																	<?php echo JHTML::_("select.genericlist",$metadatapreviewtypelist, 'metadatapreviewtypeeditor', 'size="1" class="inputbox"', 'value', 'text',  $catalogList['CATALOG_METADATA_PREVIEW_TYPE_EDITOR']->value ); ?>
+																</td>
+															</tr>
+															<tr>
+																<td valign="top" class="key">
+																	<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW_CONTEXT_TITLE' ); ?>">
+																		<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW_CONTEXT_LABEL' ); ?>
+																	</span>
+																</td>
+																<td>
+																	<?php echo JHTML::_("select.genericlist",$metadatapreviewcontextlist, 'metadatapreviewcontextpublic', 'size="1" class="inputbox"', 'value', 'text', $catalogList['CATALOG_METADATA_PREVIEW_CONTEXT_PUBLIC']->value ); ?>
+																</td>
+																<td>
+																	<?php echo JHTML::_("select.genericlist",$metadatapreviewcontextlist, 'metadatapreviewcontexteditor', 'size="1" class="inputbox"', 'value', 'text', $catalogList['CATALOG_METADATA_PREVIEW_CONTEXT_EDITOR']->value ); ?>
+																</td>
+															</tr>
+															</tbody>
+														</table>
+													</fieldset>
+										
 										</td>
-										<td>
-											<input class="text_area" type="text" size="100" name="metadata_linked_file_base_uri" value="<?php echo $catalogList['CATALOG_METADATA_LINKED_FILE_BASE_URI']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+									</tr>
+									<tr>
+										<td valign="top"  colspan="2">
+											<fieldset class="adminform">
+												<legend>
+												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_LINKED_FILE' ); ?>
+												</legend>
+
+												<table class="admintable" cellspacing="1">
+													<tr>
+														<td valign="top" class="key">
+															<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_LINKED_FILE_REPOSITORY_LABEL' ); ?>">
+																<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_LINKED_FILE_REPOSITORY_LABEL' ); ?>
+															</span>
+														</td>
+														<td>
+															<input class="text_area" type="text" size="100" name="metadata_linked_file_repository" value="<?php echo $catalogList['CATALOG_METADATA_LINKED_FILE_REPOSITORY']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+														</td>
+													</tr>
+													<tr>
+														<td valign="top" class="key">
+															<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_LINKED_FILE_BASE_URI_LABEL' ); ?>">
+																<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_LINKED_FILE_BASE_URI_LABEL' ); ?>
+															</span>
+														</td>
+														<td>
+															<input class="text_area" type="text" size="100" name="metadata_linked_file_base_uri" value="<?php echo $catalogList['CATALOG_METADATA_LINKED_FILE_BASE_URI']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+														</td>
+													</tr>
+												</table>
+											</fieldset>
 										</td>
 									</tr>
 									
 									<tr>
-										<td valign="top" class="key" colspan="2">
+										<td valign="top"  colspan="2">
+											<fieldset class="adminform">
+												<legend>
+												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY' ); ?>
+												</legend>
+
+											<table class="admintable" cellspacing="1">
+											<tr>
+												<td valign="top" class="key">
+													<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_ISOCODE_LABEL' ); ?>">
+														<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_ISOCODE_LABEL' ); ?>
+													</span>
+												</td>
+												<td>
+													<input class="text_area" type="text" size="100" name="catalog_boundary_isocode" value="<?php echo $catalogList['CATALOG_BOUNDARY_ISOCODE']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+												</td>
+											</tr>
+											<tr>
+												<td valign="top" class="key">
+													<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_NORTH_LABEL' ); ?>">
+														<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_NORTH_LABEL' ); ?>
+													</span>
+												</td>
+												<td>
+													<input class="text_area" type="text" size="100" name="catalog_boundary_north" value="<?php echo $catalogList['CATALOG_BOUNDARY_NORTH']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+												</td>
+											</tr>
+											<tr>
+												<td valign="top" class="key">
+													<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_SOUTH_LABEL' ); ?>">
+														<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_SOUTH_LABEL' ); ?>
+													</span>
+												</td>
+												<td>
+													<input class="text_area" type="text" size="100" name="catalog_boundary_south" value="<?php echo $catalogList['CATALOG_BOUNDARY_SOUTH']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+												</td>
+											</tr>
+											<tr>
+												<td valign="top" class="key">
+													<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_EAST_LABEL' ); ?>">
+														<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_EAST_LABEL' ); ?>
+													</span>
+												</td>
+												<td>
+													<input class="text_area" type="text" size="100" name="catalog_boundary_east" value="<?php echo $catalogList['CATALOG_BOUNDARY_EAST']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+												</td>
+											</tr>
+											<tr>
+												<td valign="top" class="key">
+													<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_WEST_LABEL' ); ?>">
+														<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_BOUNDARY_WEST_LABEL' ); ?>
+													</span>
+												</td>
+												<td>
+													<input class="text_area" type="text" size="100" name="catalog_boundary_west" value="<?php echo $catalogList['CATALOG_BOUNDARY_WEST']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+												</td>
+											</tr>
+											</table>
+										</fieldset>
+										</td>
+									</tr>
+									<tr>
+										<td valign="top"  colspan="2">
 											<fieldset class="adminform">
 												<legend>
 												<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TITLE' ); ?>
