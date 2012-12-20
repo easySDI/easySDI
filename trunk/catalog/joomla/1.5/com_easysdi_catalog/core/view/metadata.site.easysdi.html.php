@@ -25,7 +25,13 @@ defined('_JEXEC') or die('Restricted access');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 ?>
-<?php if((JRequest::getVar('task') =="editMetadata")||(JRequest::getVar('task') =="askForEditMetadata")||(JRequest::getVar('task') =="replicateMetadata")){?>
+<?php 
+if((JRequest::getVar('task') =="editMetadata")||
+(JRequest::getVar('task') =="askForEditMetadata")|| 
+(JRequest::getVar('task') =="importXMLMetadata")|| 
+(JRequest::getVar('task') =="importCSWMetadata") ||
+(JRequest::getVar('task') =="resetMetadata") ||
+(JRequest::getVar('task') =="replicateMetadata")){?>
 <script>
 var thesaurusConfig = '<?php echo config_easysdi::getValue("thesaurusUrl");?>'
 </script>
@@ -56,7 +62,9 @@ JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));
 JHTML::script('BoundaryItemSelector.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('MultiSelect.js', 'administrator/components/com_easysdi_catalog/js/');
 
-JHTML::_('stylesheet', 'MultiSelect.css', 'administrator/components/com_easysdi_catalog/tenplate/css/');
+JHTML::_('behavior.modal');
+JHTML::_('stylesheet', 'MultiSelect.css', 'administrator/components/com_easysdi_catalog/templates/css/');
+
 
 class HTML_metadata {
 	var $javascript = "";
@@ -73,27 +81,31 @@ class HTML_metadata {
 	var $parentGuid="";
 	
 	
-	function listMetadata($pageNav, $rows, $option, $rootAccount, $listObjectType, $filter_objecttype_id, $search, $lists)
+	function listMetadata($pageNav, $rows, $option, $rootAccount, $listObjectType,$listState, $filter_objecttype_id, $filter_md_state_id, $filter_md_version, $versions, $search, $lists)
 	{
-		$database =& JFactory::getDBO(); 
-		$user = JFactory::getUser();
-		
-		$app	= &JFactory::getApplication();
-		$router = &$app->getRouter();
+		$database 		=& JFactory::getDBO(); 
+		$user 			= JFactory::getUser();
+		$app			= &JFactory::getApplication();
+		$previewtype 	= config_easysdi::getValue("CATALOG_METADATA_PREVIEW_TYPE_EDITOR");
+		$previewcontext = config_easysdi::getValue("CATALOG_METADATA_PREVIEW_CONTEXT_EDITOR");
+		$router 		= &$app->getRouter();
 		$router->setVars($_REQUEST);
 		
+		JHTML::script('jquery.js', 'administrator/components/com_easysdi_catalog/libraries/jquery/js/');
+		JHTML::script('bootstrap-modal.js', 'administrator/components/com_easysdi_catalog/libraries/bootstrap/source/js/');
+// 		JHTML::script('bootstrap.min.js', 'administrator/components/com_easysdi_catalog/libraries/bootstrap/js/');
 		?>
 		<script>
+		 jQuery.noConflict();
 		function tableOrdering( order, dir, view )
 		{
 			var form = document.getElementById("metadataListForm");
-			
 			form.filter_order.value 	= order;
 			form.filter_order_Dir.value	= dir;
 			form.submit( view );
 		}
-					
 		</script>
+
 		<div id="page">
 		<h1 class="contentheading"><?php echo JText::_("CATALOG_LIST_METADATA"); ?></h1>
 		<div class="contentin">
@@ -103,17 +115,28 @@ class HTML_metadata {
 		<div class="row">
 			 <div class="row">
 			 	<label for="searchObjectName"><?php echo JText::_("CATALOG_METADATA_FILTER_OBJECTNAME");?></label>
-			 	<input type="text" name="searchObjectName" value="<?php echo $search;?>" class="inputboxSearchProduct text large" />
+			 	<input type="text" name="searchMetadataName" value="<?php echo htmlspecialchars($search, ENT_QUOTES);?>" class="inputboxSearchProduct text large" />
 			 </div>
 			 <div class="row">
 			 	<label for="searchObjectType"><?php echo JText::_("CATALOG_METADATA_FILTER_OBJECTTYPE");?></label>
 			 	<?php echo JHTML::_('select.genericlist',  $listObjectType, 'filter_md_objecttype_id', 'class="inputbox" size="1"', 'value', 'text', $filter_objecttype_id); ?>
 			 </div>
 			 <div class="row">
+			 	<label for="searchState"><?php echo JText::_("CATALOG_METADATA_FILTER_STATE");?></label>
+			 	<?php echo JHTML::_('select.genericlist',  $listState, 'filter_md_state_id', 'class="inputbox" size="1"', 'value', 'text', $filter_md_state_id); ?>
+			 </div>
+			 <div class="row">
+				<label for="searchVersions"><?php echo JText::_("CATALOG_METADATA_FILTER_VERSION");?></label>
+				<div class="checkbox">
+				<?php echo helper_easysdi::radiolist($versions, 'filter_md_version', 'class="checkbox"', 'class="checkbox"', 'value', 'text', $filter_md_version); ?>
+				</div>
+			</div>
+			 <div class="row">
 				<input type="submit" id="simple_search_button" name="simple_search_button" class="easysdi_search_button submit" value ="<?php echo JText::_("CORE_SEARCH_BUTTON"); ?>" onClick="document.getElementById('metadataListForm').task.value='listMetadata';document.getElementById('metadataListForm').submit();"/>
 			</div>	 
 		 </div>
 	<div class="ticker">
+		
 	<h2><?php echo JText::_("CORE_SEARCH_RESULTS_TITLE"); ?></h2>
 	<?php
 	if(count($rows) == 0){
@@ -126,25 +149,86 @@ class HTML_metadata {
 		<tr>
 			<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_METADATA_OBJECTNAME"), 'name', $lists['order_Dir'], $lists['order']); ?></th>
 			<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_METADATA_VERSIONTITLE"), 'version_title', $lists['order_Dir'], $lists['order']); ?></th>
+			<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_METADATA_OBJECTTYPE"), 'objecttype', $lists['order_Dir'], $lists['order']); ?></th>
 			<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_METADATA_STATE"), 'state', $lists['order_Dir'], $lists['order']); ?></th>
-			<th class='title'><?php echo JText::_('CORE_METADATA_MANAGERS'); ?></th>
-			<th class='title'><?php echo JText::_('CORE_METADATA_EDITORS'); ?></th>
 			<th class='title'><?php echo JText::_('CATALOG_METADATA_ACTIONS'); ?></th>
 		</tr>
 	</thead>
 	<?php 
 	} 
 	?>
+
 	<tbody>
+
 	<?php
 		$i=0;
 		$param = array('size'=>array('x'=>800,'y'=>800) );
 		JHTML::_("behavior.modal","a.modal",$param);
 		foreach ($rows as $row)
-		{	$i++;
+		{	
+			$i++;
 			
+			//Inheritance information
+			$database->setQuery ("SELECT count(ot.id) FROM #__sdi_objecttype ot
+					INNER JOIN #__sdi_objecttypelink otl ON otl.parent_id = ot.id
+					INNER JOIN #__sdi_object o ON o.objecttype_id = ot.id
+					INNER JOIN #__sdi_objectversion ov ON ov.object_id = o.id
+					INNER JOIN #__sdi_objectversionlink ovl ON ovl.parent_id = ov.id
+					WHERE o.id = $row->id
+					AND ovl.parent_id = $row->version_id
+					AND otl.inheritance = 1");
+			$row->hasInheritance = $database->loadResult();
+			
+			// Est-ce que cet utilisateur est un manager?
+			$database->setQuery( "SELECT count(*) FROM #__sdi_manager_object m, #__sdi_object o, #__sdi_account a WHERE m.object_id=o.id AND m.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$row->id) ;
+			$total = $database->loadResult();
+			if ($total == 1)
+				$isManager = true;
+			else
+				$isManager = false;
+			
+			// Est-ce que cet utilisateur est un editeur?
+			$database->setQuery( "SELECT count(*) FROM #__sdi_editor_object e, #__sdi_object o, #__sdi_account a WHERE e.object_id=o.id AND e.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$row->id) ;
+			$total = $database->loadResult();
+			if ($total == 1)
+				$isEditor = true;
+			else
+				$isEditor = false;
+		
+			//Metadata 
 			$rowMetadata = new metadataByGuid($database);
 			$rowMetadata->load($row->metadata_guid);
+			
+			//Ready to notify manager?
+			$row->notifyready = 0;
+			if($rowMetadata->notification == 0)//Notification isn't done yet
+			{
+				if($rowMetadata->metadatastate_id == 3)//Metadata is in validate state
+				{
+					$database->setQuery ("SELECT count(ovl.id) FROM #__sdi_objectversionlink ovl
+											WHERE ovl.child_id = $row->version_id");
+					$hasParent = $database->loadResult();
+					if($hasParent == 0)//Metadata doesn't have parent, it is eligible for notification
+					{
+						$database->setQuery ("SELECT m.id FROM #__sdi_metadata m
+												INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+												INNER JOIN #__sdi_objectversionlink ovl ON ovl.child_id = ov.id
+												WHERE ovl.parent_id = $row->version_id
+												AND m.metadatastate_id <> 3");
+						$children = $database->loadResultArray();
+						if ($children)//Some linked metadata are not in a validated state, so notification can not be proposed to the user 
+						{
+							//recursive?
+						}
+						else //No children at all, or children are all in the good state
+						{
+							$row->notifyready = 1;
+						}
+					}
+				}
+			}
+			//Config datetime format
+			$datetimedisplay = config_easysdi::getValue("CATALOG_VERSION_DATETIME_DISPLAY");
 			
 			?>		
 			<tr>
@@ -152,83 +236,153 @@ class HTML_metadata {
 					<?php echo $row->name;  ?>
 				</td>
 				<td >
-					<a class="modal" title="<?php echo addslashes(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&toolbar=1&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->version_title ;?></a>
+					<a class="" title="<?php echo addslashes(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&toolbar=1&task=showMetadata&type=<?php echo $previewtype;  ?>&context=<?php echo $previewcontext;  ?>&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php $date = new DateTime($row->version_title); echo $date->format($datetimedisplay) ;?></a>
+				</td>
+				<td >
+					<?php echo $row->objecttype;  ?>
 				</td>
 				<?php
-if ($row->state == "CORE_PUBLISHED" and date('Y-m-d') < date('Y-m-d', strtotime($rowMetadata->published)))
-{ 
-?>
-				<td ><?php echo JText::_($row->state).JText::sprintf("CATALOG_FE_METADATA_PUBLISHEDSTATE_DATE", date('d.m.Y', strtotime($rowMetadata->published))); ?></td>
-<?php
-}
-else if ($row->state == "CORE_ARCHIVED" and date('Y-m-d') < date('Y-m-d', strtotime($rowMetadata->archived)))
-{ 
-?>
-				<td ><?php echo JText::_($row->state).JText::sprintf("CATALOG_FE_METADATA_PUBLISHEDSTATE_DATE", date('d.m.Y', strtotime($rowMetadata->archived))); ?></td>
-<?php
-}
-else
-{ 
-?>
-				<td ><?php echo JText::_($row->state); ?></td>
-<?php
-}
-?>	
-				<?php 		
-				$managers = "";
-				$database->setQuery( "SELECT b.name FROM #__sdi_manager_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND a.object_id=".$row->id." ORDER BY b.name" );
-				$managers = implode(", ", $database->loadResultArray());
-				
-				$editors = "";
-				$database->setQuery( "SELECT b.name FROM #__sdi_editor_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND a.object_id=".$row->id." ORDER BY b.name" );
-				$editors = implode(", ", $database->loadResultArray());
+				if ($row->state == "CORE_PUBLISHED" and date('Y-m-d') < date('Y-m-d', strtotime($rowMetadata->published)))
+				{ 
 				?>
-				<td ><?php echo $managers; ?></td>
-				<td ><?php echo $editors; ?></td>
+				<td>
+					<?php if ($isManager){?><a href="./index.php?option=<?php echo $option; ?>&task=metadataPublished&guid=<?php echo $row->metadata_guid;?>" title="<?php echo JText::_("CATALOG_FE_METADATA_PUBLISHEDSTATE_UPDATE")?>" ><?php }?>
+					<?php echo JText::_($row->state).JText::sprintf("CATALOG_FE_METADATA_PUBLISHEDSTATE_DATE", date('d.m.Y', strtotime($rowMetadata->published))); ?>
+					<?php if ($isManager){?></a><?php }?>
+				</td>
+				<?php
+				}
+				else if ($row->state == "CORE_ARCHIVED" and date('Y-m-d') < date('Y-m-d', strtotime($rowMetadata->archived)))
+				{ 
+					?>
+					<td ><?php echo JText::_($row->state).JText::sprintf("CATALOG_FE_METADATA_PUBLISHEDSTATE_DATE", date('d.m.Y', strtotime($rowMetadata->archived))); ?></td>
+					<?php
+				}
+				else if ($row->state == "CORE_PUBLISHED")
+				{
+					?>
+					<td>
+					<?php if ($isManager){?><a href="./index.php?option=<?php echo $option; ?>&task=metadataPublished&guid=<?php echo $row->metadata_guid;?>" title="<?php echo JText::_("CATALOG_FE_METADATA_PUBLISHEDSTATE_UPDATE")?>" ><?php }?>
+					<?php echo JText::_($row->state); ?>
+					<?php if ($isManager){?></a><?php }?>
+					</td>
+					<?php
+					}
+				else
+				{ 
+				?>
+				<td ><?php echo JText::_($row->state); ?></td>
+				<?php
+				}
+				?>
 				<td class="metadataActions">
 				<?php 
 				if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
 				{
 					?>
 					<div class="logo" id="emptyPicto"></div>
+					<div class="logo" id="emptyPicto"></div>
+					<div class="logo" id="emptyPicto"></div>
+					<div class="logo" id="emptyPicto"></div>
+					<div class="logo" id="emptyPicto"></div>
+					<div class="logo" id="emptyPicto"></div>
 					<?php 
 				} 
 				else 
 				{
-					// Est-ce que cet utilisateur est un manager?
-					$database->setQuery( "SELECT count(*) FROM #__sdi_manager_object m, #__sdi_object o, #__sdi_account a WHERE m.object_id=o.id AND m.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$row->id) ;
-					$total = $database->loadResult();
-					if ($total == 1)
-						$isManager = true;
-					else
-						$isManager = false;
-					
-					// Est-ce que cet utilisateur est un editeur?
-					$database->setQuery( "SELECT count(*) FROM #__sdi_editor_object e, #__sdi_object o, #__sdi_account a WHERE e.object_id=o.id AND e.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$row->id) ;
-					$total = $database->loadResult();
-					if ($total == 1)
-						$isEditor = true;
-					else
-						$isEditor = false;
-					
-					$rowMetadata = new metadataByGuid($database);
-					$rowMetadata->load($row->metadata_guid);
-					if ($isManager) // Le rele de gestionnaire prime sur celui d'editeur, au cas oe l'utilisateur a les deux
+					if ($isManager) // Le role de gestionnaire prime sur celui d'editeur, au cas ou l'utilisateur a les deux
 					{
-						if ($rowMetadata->metadatastate_id == 4 // En travail
+						if (   $rowMetadata->metadatastate_id == 4 // En travail
 							or $rowMetadata->metadatastate_id == 3 // Valide
 							or ($rowMetadata->metadatastate_id == 2 and $rowMetadata->archived >= date('Y-m-d H:i:s'))// Archive et date du jour <= date d'archivage
-							or ($rowMetadata->metadatastate_id == 1 and $rowMetadata->published <= date('Y-m-d H:i:s') )// Publie et date du jour >= date de publication
-							)
+							or ($rowMetadata->metadatastate_id == 1 ))// Publie quelque soit la date de publication
 						{
 							?>
-								<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=editMetadata&option='.$option.'&cid[]='.$row->version_id)); ?>', '_self');"></div>
+							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" 
+									onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=editMetadata&option='.$option.'&cid[]='.$row->version_id)); ?>', '_self');"></div>
 							<?php
 						}
 						else
 						{
 							?>
-								<div class="logo" id="emptyPicto"></div>
+							<div class="logo" id="emptyPicto"></div>
+							<?php 
+						}
+						if (   $rowMetadata->metadatastate_id == 4 ) // En travail
+						{
+							?>
+							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_ASSIGN_METADATA_ACTION')); ?>" id="assignMetadata" 
+									onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=selectAssignMetadata&option='.$option.'&object_id='.$row->id.'&metadata_id='.$row->metadata_guid)); ?>', '_self');"></div>
+							<?php
+						}
+						else
+						{
+							?>
+							<div class="logo" id="emptyPicto"></div>
+							<?php 
+						}
+						?>
+						<div class="logo" id="emptyPicto"></div>
+						<?php 
+						if ((	$rowMetadata->metadatastate_id == 1 ))// Publie et quelque soit la date de publication
+						{
+							?>
+							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_ARCHIVE_METADATA')); ?>" id="archiveMetadata" onClick="document.getElementById('metadataListForm').task.value='archiveMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('metadataListForm').submit();"></div>
+							<?php
+						}
+						else
+						{
+							?>
+							<div class="logo" id="emptyPicto"></div>
+							<?php 
+						}
+						if (	$rowMetadata->metadatastate_id == 3 
+							or ($rowMetadata->metadatastate_id == 2 ) 
+							or ($rowMetadata->metadatastate_id == 1 ))// Archive, Valide ou Publie quelque soit la date de publication
+						{
+							?>
+							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_INVALIDATE_METADATA')); ?>" id="invalidateMetadata" 
+							onClick="document.getElementById('metadataListForm').task.value='invalidateMetadata';
+							document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;
+							document.getElementById('metadataListForm').submit();"></div>
+							<?php
+						}
+						else
+						{
+							?>
+							<div class="logo" id="emptyPicto"></div>
+							<?php 
+						}
+						if ($row->hasInheritance)//Synchronization on this metadata is possible
+						{
+							if($row->lastsynchronization)
+								$title = addslashes(JText::_('CATALOG_SYNCHRONIZE_METADATA'))."&#013".JTEXT::sprintf("CATALOG_SYNCHRONIZE_METADATA_MESSAGE_LAST", $row->lastsynchronization);
+							else
+								$title = addslashes(JText::_('CATALOG_SYNCHRONIZE_METADATA'));
+							?>
+							<div class="logo" title="<?php echo $title; ?>" id="synchronizeMetadata" 
+							onClick="if (confirm('<?php echo JText::_("CATALOG_METADATA_SYNCHRONIZE_MESSAGE_CONFIRMATION") ;?>')){
+							document.getElementById('metadataListForm').task.value='synchronizeMetadata';
+							document.getElementById('guid').value='<?php echo $row->metadata_guid?>';
+							document.getElementById('metadataListForm').submit();}"></div>
+							<?php
+						}
+						else if ($row->lastsynchronization && $row->synchronizedby)
+						{
+							$database->setQuery ("SELECT ov.title as title, o.name as name
+													FROM #__sdi_objectversion ov
+													INNER JOIN #__sdi_object o ON o.id = ov.object_id
+													WHERE ov.metadata_id = $row->synchronizedby");
+							$synchroby = $database->loadObject();
+							$title = addslashes(JTEXT::sprintf("CATALOG_SYNCHRONIZE_METADATA_MESSAGE_LAST_BY",$synchroby->name, $synchroby->title, $row->lastsynchronization));
+							?>
+							<div class="logo" id="synchronizedbyMetadata" title="<?php echo $title; ?>"></div>
+							<?php 
+						}
+						else
+						{
+							?>
+							<div class="logo" id="emptyPicto"></div>
 							<?php 
 						}
 					}
@@ -237,81 +391,58 @@ else
 						// L'utilisateur courant, si c'est un editeur, doit etre editeur de la metadonnee
 						$rowCurrentUser = new accountByUserId($database);
 						$rowCurrentUser->load($user->get('id'));
-			
 						if ($rowMetadata->metadatastate_id == 4 and $rowMetadata->editor_id == $rowCurrentUser->id) // En travail et teche d'edition assignee
 						{
 							?>
-							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=editMetadata&option='.$option.'&cid[]='.$row->version_id)); ?>', '_self'); "></div>
+							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" 
+									onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=editMetadata&option='.$option.'&cid[]='.$row->version_id)); ?>', '_self'); "></div>
+							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_ASSIGN_METADATA_ACTION')); ?>" id="assignMetadata" 
+									onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=selectAssignMetadata&option='.$option.'&object_id='.$row->id.'&metadata_id='.$row->metadata_guid)); ?>', '_self');"></div>
 							
 							<?php
 						} 
 						else
 						{
 							?>
-								<div class="logo" id="emptyPicto"></div>
-							<?php 
-						}
-					}
-				}
-			?>
-				<?php 
-				if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
-				{
-					?>
-					<div class="logo" id="emptyPicto"></div>
-					<div class="logo" id="emptyPicto"></div>
-					<?php 
-				} 
-				else 
-				{
-					// Est-ce que cet utilisateur est un manager?
-					$database->setQuery( "SELECT count(*) FROM #__sdi_manager_object m, #__sdi_object o, #__sdi_account a WHERE m.object_id=o.id AND m.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$row->id) ;
-					$total = $database->loadResult();
-					if ($total == 1)
-						$isManager = true;
-					else
-						$isManager = false;
-					
-					$rowMetadata = new metadataByGuid($database);
-					$rowMetadata->load($row->metadata_guid);
-					if ($isManager) // Le rele de gestionnaire prime sur celui d'editeur, au cas oe l'utilisateur a les deux
-					{
-						if (($rowMetadata->metadatastate_id == 1 and date('Y-m-d H:i:s') >= $rowMetadata->published )// Publie et date du jour >= date de publication
-							)
-						{
-							?>
-								<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_ARCHIVE_METADATA')); ?>" id="archiveMetadata" onClick="document.getElementById('metadataListForm').task.value='archiveMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('metadataListForm').submit();"></div>
-							<?php
-						}
-						else
-						{
-							?>
-								<div class="logo" id="emptyPicto"></div>
-							<?php 
-						}
-						if ($rowMetadata->metadatastate_id == 3 or ($rowMetadata->metadatastate_id == 2 ) or  ($rowMetadata->metadatastate_id == 1 and date('Y-m-d H:i:s') >= $rowMetadata->published)// Archive, Valide ou Publie
-							)
-						{
-							?>
-								<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_INVALIDATE_METADATA')); ?>" id="invalidateMetadata" onClick="document.getElementById('metadataListForm').task.value='invalidateMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('metadataListForm').submit();"></div>
-							<?php
-						}
-						else
-						{
-							?>
-								<div class="logo" id="emptyPicto"></div>
-							<?php 
-						}
-					}
-					else
-					{
-						?>
 							<div class="logo" id="emptyPicto"></div>
+							<div class="logo" id="emptyPicto"></div>
+							<?php 
+						}
+						if ($row->notifyready == 1)
+						{
+							?>
+							<div id="confirmnotification" class="sdimodal hide fade in" style="display: none; ">
+								<div class="sdimodal-header">
+									<div class="title"><?php echo JText::_('CATALOG_NOTIFY_METADATA_CONFIRM_TITLE'); ?></div>
+								</div>
+					            <div class="sdimodal-body">
+					              <p><?php echo JText::sprintf('CATALOG_NOTIFY_METADATA_CONFIRM_INCLUDE_CHILDREN',$row->name,$row->version_title );?></p>		        
+					            </div>
+					            <div class="sdimodal-footer">
+					              <a href='<?php echo JRoute::_(displayManager::buildUrl('index.php?task=notifyMetadata&option='.$option.'&includedesc=1&objectversion_id='.$row->version_id)); ?>' class="sdibtn"><?php echo JText::_('CORE_YES');?></a>
+					              <a href='<?php echo JRoute::_(displayManager::buildUrl('index.php?task=notifyMetadata&option='.$option.'&includedesc=0&objectversion_id='.$row->version_id)); ?>' class="sdibtn"><?php echo JText::_('CORE_NO');?></a>
+					              <a href="#" class="sdibtn" data-dismiss="modal"><?php echo JText::_('CORE_CANCEL');?></a>
+					            </div>
+					          </div>
+          
+          						<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_NOTIFY_METADATA_ACTION')); ?>" id="notifyMetadata"  data-toggle="modal"  data-target="#confirmnotification" ></div>
+							<?php
+						}
+						else
+						{
+							?>
+							<div class="logo" id="emptyPicto"></div>
+							<?php 
+						}
+						?>
+						<div class="logo" id="emptyPicto"></div>
+						<div class="logo" id="emptyPicto"></div>
+						<div class="logo" id="emptyPicto"></div>
 						<?php
 					}
 				}
-			?>
-				<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_HISTORYASSIGN_METADATA')); ?>" id="historyAssignMetadata" onClick="document.getElementById('metadataListForm').task.value='historyAssignMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('metadataListForm').submit();"></div>
+				?>
+					<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_HISTORYASSIGN_METADATA')); ?>" id="historyAssignMetadata" onClick="document.getElementById('metadataListForm').task.value='historyAssignMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('metadataListForm').submit();"></div>
 				</td>
 			</tr>
 			
@@ -330,6 +461,7 @@ else
 			 
 			<input type="hidden" id="cid[]" name="cid[]" value="">
 			<input type="hidden" id="id" name="id" value="">
+			<input type="hidden" id="guid" name="guid" value="">
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task" name="task" value="listMetadata">
 			<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
@@ -342,7 +474,7 @@ else
 	<?php
 	}
 	
-	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $object_name, $version_title, $option, $defautBBoxConfig="")
+	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $object_name, $version_title, $option, $defautBBoxConfig="",$rowObjectVersion)
 	{
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
@@ -384,7 +516,7 @@ else
 		
 		
 		
-		// Recuperer les infos pour la metadonnee parente pour le lien entre les types d'objet oe cet objet est l'enfant et la borne parent max est egale e 1
+		// Recuperer les infos pour la metadonnee parente pour le lien entre les types d'objet ou cet objet est l'enfant et la borne parent max est egale a 1
 		$database->setQuery( "SELECT otl.class_id, otl.attribute_id, parent_m.guid as parent_guid 
 							  FROM #__sdi_objecttypelink otl
 							  INNER JOIN #__sdi_object child_o ON otl.child_id=child_o.objecttype_id
@@ -396,6 +528,7 @@ else
 							  WHERE otl.parentbound_upper=1
 							  		AND child_o.id=".$object_id);
 		$parentInfos = $database->loadObject();
+		
 		
 		if (count($parentInfos) > 0)
 		{
@@ -422,13 +555,13 @@ else
 		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/shThemeDefault.css');
 		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/mapHelper.css');
 		
-		$url = 'index.php?option='.$option.'&task=saveMetadata';
-		$preview_url = 'index.php?option='.$option.'&task=previewXMLMetadata';
-		$invalidate_url = 'index.php?option='.$option.'&task=invalidateMetadata';
-		$validate_url = 'index.php?option='.$option.'&task=validateMetadata';
-		$update_url = 'index.php?option='.$option.'&task=updateMetadata';
-		$publish_url = 'index.php?option='.$option.'&task=validateForPublishMetadata';
-		$assign_url = 'index.php?option='.$option.'&task=assignMetadata';
+		$url 				= 'index.php?option='.$option.'&task=saveMetadata';
+		$preview_url 		= 'index.php?option='.$option.'&task=previewXMLMetadata';
+		$previewMD_url		= 'index.php?option='.$option.'&task=previewMetadata';
+		$invalidate_url 	= 'index.php?option='.$option.'&task=invalidateMetadata';
+		$validate_url 		= 'index.php?option='.$option.'&task=validateMetadata';
+		$update_url 		= 'index.php?option='.$option.'&task=updateMetadata';
+		$publish_url 		= 'index.php?option='.$option.'&task=validateForPublishMetadata';
 		
 		$user_id = $user->get('id');
 
@@ -452,7 +585,7 @@ else
 							  		AND published=true 
 							  ORDER BY l.ordering" );
 		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
-		
+
 		// Langue de l'utilisateur pour la construction du Thesaurus Gemet
 		$userLang="";
 		foreach($this->langList as $row)
@@ -460,7 +593,7 @@ else
 			if ($row->code_easysdi == $language->_lang) // Langue courante de l'utilisateur
 				$userLang = $row->gemetlang;
 		}
-								
+					
 		// Premier noeud						
 		$fieldsetName = "fieldset".$root[0]->id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 		?>
@@ -525,6 +658,9 @@ else
 						HS.Lang['".$userLang."']['CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_TITLE']='".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_TITLE'))."';
 						HS.Lang['".$userLang."']['CORE_METADATA_UPLOADFILE_ERROR']='".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_ERROR'))."';
 						HS.Lang['".$userLang."']['CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_MSG']='".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_MSG'))."';
+						HS.Lang['".$userLang."']['CATALOG_METADATA_ALERT_MINUS_ACTION_CONFIRM_TITLE']='".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_MINUS_ACTION_CONFIRM_TITLE'))."';
+						HS.Lang['".$userLang."']['CATALOG_METADATA_ALERT_MINUS_ACTION_CONFIRM_MSG']='".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_MINUS_ACTION_CONFIRM_MSG'))."';
+						
 												
 						// Creer le formulaire qui va contenir la structure
 						var form = new Ext.ux.ExtendedFormPanel({
@@ -537,7 +673,7 @@ else
 						       	collapsed:false,
 						        renderTo: document.getElementById('formContainer'),
 						        isInvalid: false,
-						        
+						       						        
 						        showUploadFileWindow : function (caller){
 						        	var longStartValue = Ext.ComponentMgr.get(caller).getValue();
 						        	var shortStartValue = longStartValue.substring(longStartValue.lastIndexOf('/')+1);
@@ -549,13 +685,13 @@ else
 										title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_ALERT'))."',
 										width:500,
 										height:160,
-										closeAction:'hide',
+										closeAction:'close',
 										layout:'fit',
 										border:true,
 										closable:true,
 										renderTo:Ext.getBody(),
 										frame:true,
-										backvalue:'',
+										backvalue:longStartValue,
 										items:[{
 											xtype:'form',
 											fileUpload: true,
@@ -650,8 +786,8 @@ else
 												{
 													text: '".html_Metadata::cleanText(JText::_('CATALOG_ALERT_CLOSE'))."',
 													handler: function(){
+														winupload.backvalue = longStartValue;
 														winupload.close();
-														Ext.ComponentMgr.get(caller).setValue (longStartValue);
 													}
 												}
 												
@@ -663,6 +799,7 @@ else
 										Ext.ComponentMgr.get(caller).setValue(winupload.backvalue);
 										if(Ext.ComponentMgr.get(caller.concat('_hiddenVal')))
 											Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue(winupload.backvalue);
+										return true;
 									}, this);
 									
 									winupload.show();
@@ -713,7 +850,6 @@ else
 										waitMsg: '".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_WAIT'))."',
 										success: function(form,action){
 											winupload.backvalue = JSON.parse (action.response.responseText).url;
-											//Ext.ComponentMgr.get('metadataForm').saveMetadataAfterLinkedFileUpdate();
 											winupload.close();
 										},
 										failure: function(form,action){
@@ -722,7 +858,8 @@ else
 										}
 									});
 								},
-						        buttons: [{
+						        buttons: [
+						        		{
 							                text: '".JText::_('CORE_XML_PREVIEW')."',
 							                handler: function()
 							                {
@@ -792,6 +929,33 @@ else
 													url:'".$preview_url."'
 												});
 							        	}
+						        },
+						        {
+							                text: '".JText::_('CATALOG_METADATA_PREVIEW_BUTTON_LABEL')."',
+							                handler: function()
+							                {
+							                	myMask.show();
+							                 	var fields = new Array();
+							        			form.cascade(function(cmp)
+							        			{
+								        			if (cmp.xtype=='fieldset')
+							         				{
+							         					if (cmp.clones_count)
+							          					{
+							           						fields.push(cmp.getId()+','+cmp.clones_count);
+							         					}
+							         				}
+							        			});
+							        			var fieldsets = fields.join(' | ');
+							        			form.getForm().setValues({fieldsets: fieldsets});
+							        			form.getForm().setValues({task: 'previewMetadata'});
+							                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
+							                 	form.getForm().setValues({object_id: '".$object_id."'});
+							                 	form.getForm().getEl().dom.target = '_blank';
+												form.getForm().getEl().dom.action = '".$previewMD_url."';
+												form.getForm().getEl().dom.submit();
+												myMask.hide();
+							        	}
 						        }
 						       ],
 						       	tbar: new Ext.Toolbar({
@@ -811,8 +975,7 @@ else
 				// Boucle pour construire la structure
 				$node = $xpathResults->query($queryPath."/".$root[0]->isocode);
 				$nodeCount = $node->length;
-				//echo $nodeCount." fois ".$root[0]->isocode;
-				HTML_metadata::buildTree($database, 0, $root[0]->id, $root[0]->id, $fieldsetName, 'form', str_replace(":", "_", $root[0]->isocode), $xpathResults, null, $node->item(0), $queryPath, $root[0]->isocode, $account_id, $profile_id, $option,$child);
+				HTML_metadata::buildTree($database, 0, $root[0]->id, $root[0]->id, $fieldsetName, 'form', str_replace(":", "_", $root[0]->isocode), $xpathResults, null, $node->item(0), $queryPath, $root[0]->isocode, $account_id, $profile_id, $option,$child,$isManager, $isEditor);
 				
 				// Retraverser la structure et autoriser les nulls pour tous les champs caches
 				$this->javascript .="
@@ -908,11 +1071,147 @@ else
 					        })
 						        );
 					form.render();";
+				
+				$this->javascript .="
+					form.fbar.add(new Ext.Button( {
+						text: '".JText::_('CATALOG_APPLY')."',
+						handler: function()
+						{
+							myMask.show();
+							var fields = new Array();
+							form.cascade(function(cmp)
+							{
+								if (cmp.xtype=='fieldset')
+								{
+									if (cmp.clones_count)
+									{
+										fields.push(cmp.getId()+','+cmp.clones_count);
+									}
+								}
+							});
+							var fieldsets = fields.join(' | ');
+								
+							form.getForm().setValues({
+								fieldsets: fieldsets});
+								form.getForm().setValues({
+									task: 'saveMetadata'});
+									form.getForm().setValues({
+										metadata_id: '".$metadata_id."'});
+										form.getForm().setValues({
+											object_id: '".$object_id."'});
+											form.getForm().submit({
+												scope: this,
+												method	: 'POST',
+												clientValidation: false,
+												success: function(form, action)
+												{
+													Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."',
+															'".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
+															function () {
+														//window.open ('./index.php?task=editMetadata&option=".$option."&cid[]=".$rowObjectVersion->id."','_parent');
+													});
+													myMask.hide();
+												},
+												failure: function(form, action)
+												{
+													if (action.result)
+														alert(action.result.errors.xml);
+													else
+														alert('Form save error');
+													myMask.hide();
+												},
+												url:'".$url."'
+											});
+						}
+					})
+					);
+					form.render();";
+					
+					
 				}
 				
 				// Possibilite de valider lorsqu'on est editeur. Contreles ExtJs et passage de l'etat "En travail" e "Valide"
 				if ($isEditor and !$isPublished)
 				{
+
+					$this->javascript .="
+						form.fbar.add(new Ext.Button({text: '".JText::_('CATALOG_CONTROL')."',
+							handler: function()
+								{
+									myMask.show();
+									var fields = new Array();
+									form.getForm().isInvalid=false;
+									form.getForm().fieldInvalid =false;
+									form.getForm().extValidationCorrupt =false;
+									form.cascade(function(cmp){
+										if(cmp.isValid){
+											if(!cmp.isValid()&& Ext.get(cmp.id)){
+												form.getForm().fieldInvalid =true;
+												if(!Ext.getCmp(cmp.id)){
+													form.getForm().extValidationCorrupt =true;
+												}
+											}
+										}
+										if (cmp.xtype=='fieldset')
+										{
+											if (cmp.clones_count)
+											fields.push(cmp.getId()+','+cmp.clones_count);
+										}
+					 					if (cmp.isLanguageFieldset && cmp.rendered == true && cmp.clone == true)
+										{
+											var countFields = cmp.items.length;
+											var countValues = 0;
+												
+											for (var i=0; i < countFields ; i++)
+											{
+												field = cmp.items.get(i);
+												if (field.getValue() != '')
+												{
+													countValues++;
+												}
+											}
+											if (countValues != countFields && countValues != 0)
+											{
+												for (var i=0; i < countFields ; i++)
+												{
+													field = cmp.items.get(i);
+													if (field.getValue() == '')
+														field.markInvalid('".html_Metadata::cleanText(JText::_('CATALOG_VALIDATEMETADATA_LANGUAGEINVALID_MSG'))."');
+												}
+												form.getForm().isInvalid=true;
+											}
+										}
+									});
+									var fieldsets = fields.join(' | ');
+									myMask.hide();
+					
+									if ((!form.getForm().isInvalid) &&(!form.getForm().fieldInvalid) )
+									{
+										Ext.MessageBox.alert('".JText::_('CATALOG_CONTROLMETADATA_MSG_OK_TITLE')."', '".JText::_('CATALOG_CONTROLMETADATA_MSG_OK_TEXT')."');
+										myMask.hide();
+									}
+									else
+									{
+										if(form.getForm().extValidationCorrupt)
+										{
+											Ext.MessageBox.alert('".JText::_('CATALOG_CONTROLMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_CONTROLMETADATA_MSG_EXTCORRUPT')."');
+											myMask.hide();
+										}
+										else if (form.getForm().isInvalid)
+										{
+											Ext.MessageBox.alert('".JText::_('CATALOG_CONTROLMETADATA_LANGUAGE_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_CONTROLMETADATA_LANGUAGE_MSG_FAILURE_TEXT')."');
+											myMask.hide();
+										}
+										else
+										{
+											Ext.MessageBox.alert('".JText::_('CATALOG_CONTROLMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_CONTROLMETADATA_MSG_FAILURE_TEXT')."');
+											myMask.hide();
+										}
+									}
+								}
+						}));
+					form.render();";
+					
 					$this->javascript .="
 						form.fbar.add(new Ext.Button({text: '".JText::_('CORE_VALIDATE')."',
 									handler: function()
@@ -1622,160 +1921,64 @@ else
 							        	}})
 							        );
 						form.render();";
-				}
-					
-				if(!$isPublished and !$isValidated)
-				{
-					// Assignation de metadonnee
-					$editors = array();
-					$listEditors = array();
-					$database->setQuery( "	SELECT DISTINCT c.id AS value, b.name AS text 
-											FROM #__users b, #__sdi_editor_object a 
-											LEFT OUTER JOIN #__sdi_account c ON a.account_id = c.id 
-											LEFT OUTER JOIN #__sdi_manager_object d ON d.account_id=c.id 
-											WHERE c.user_id=b.id AND (a.object_id=".$object_id." OR d.object_id=".$object_id.") 
-													AND c.user_id <> ".$user_id."  
-											ORDER BY b.name" );
-					$editors = array_merge( $editors, $database->loadObjectList() );
-					foreach($editors as $e)
-					{
-						$listEditors[$e->value] = $e->text;
-					}
-					
-					$listEditors = HTML_metadata::array2extjs($listEditors, false);
 					
 					$this->javascript .="
-					form.fbar.add(new Ext.Button({text: '".JText::_('CORE_ASSIGN')."',
-										handler: function()
-						                {
-						                	/*myMask.show();
-						                 	form.getForm().submit({
-										    	scope: this,
-												method	: 'POST',
-												clientValidation: false,
-												success: function(form, action) 
-												{*/
-													// Creer une iframe pour demander e l'utilisateur la date de publication
-													if (!win)
-														win = new Ext.Window({
-														                title:'".addslashes(JText::_('CORE_METADATA_ASSIGN_ALERT'))."',
-														                width:500,
-														                height:200,
-														                closeAction:'hide',
-														                layout:'fit', 
-																	    border:false, 
-																	    closable:false, 
-																	    renderTo:Ext.getBody(), 
-																	    frame:true,
-																	    items:[{ 
-																		     xtype:'form' 
-																		     ,id:'assignform' 
-																		     ,defaultType:'textfield' 
-																		     ,frame:true 
-																		     ,method:'post' 
-																		     ,defaults:{anchor:'95%'} 
-																		     ,items:[ 
-																		       { 
-																		       	 typeAhead:true,
-																		       	 triggerAction:'all',
-																		       	 mode:'local',
-																		         fieldLabel:'".addslashes(JText::_('CORE_METADATA_ASSIGN_ALERT_EDITOR_LABEL'))."', 
-																		         id:'editor', 
-																		         hiddenName:'editor_hidden', 
-																		         xtype: 'combo',
-																		         store: new Ext.data.ArrayStore({
-																					        id: 0,
-																					        fields: [
-																					            'value',
-																					            'text'
-																					        ],
-																					        data: ".$listEditors."
-																					    }),
-																				 valueField:'value',
-																				 displayField:'text'
-																		       },
-																		       { 
-																		         id:'information', 
-																		         xtype: 'textarea',
-																		         fieldLabel:'".addslashes(JText::_('CORE_METADATA_ASSIGN_ALERT_INFORMATION_LABEL'))."', 
-																		         grow: true,
-																		         multiline:true,
-																		         value:'' 
-																		       },
-																		       { 
-																		         id:'metadata_id', 
-																		         xtype: 'hidden',
-																		         value:'".$metadata_id."' 
-																		       },
-																		       { 
-																		         id:'object_id', 
-																		         xtype: 'hidden',
-																		         value:'".$object_id."' 
-																		       }
-																		    ] 
-																		     ,buttonAlign:'right' 
-																		     ,buttons: [{
-																                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
-																                    handler: function(){
-																                    	myMask.show();
-																                    	win.items.get(0).getForm().submit({
-																				    	scope: this,
-																						method	: 'POST',
-																						url:'".$assign_url."',
-																						success: function(form, action) 
-																						{
-										                        							win.hide();
-																	                    	myMask.hide();
-																	                    	
-																	                    	Ext.MessageBox.alert('".JText::_('CATALOG_ASSIGNMETADATA_MSG_SUCCESS_TITLE')."', 
-																				                    						 '".JText::_('CATALOG_ASSIGNMETADATA_MSG_SUCCESS_TEXT')."',
-																				                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."','_parent');});
-																						},
-																						failure: function(form, action) 
-																						{
-										                        							if (action.result)
-																								alert(action.result.errors.xml);
-																							else
-																								alert('Form assign error');
-																								
-																							win.hide();
-																	                    	myMask.hide();
-																						}
-																						});
-																                    }
-																                },
-																                {
-																                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
-																                    handler: function(){
-																                        win.hide();
-																                    }
-																                }]
-																		   }] 
-														                
-														            });
-													else
-													{
-														win.items.get(0).findById('editor').setValue('');
-														win.items.get(0).findById('information').setValue('');
-													}	
-							  						win.show();
-							  						/*myMask.hide();
-								  				},
-												failure: function(form, action) 
-												{
-	                        						if (action.result)
-														alert(action.result.errors.xml);
-													else
-														alert('Form assign error');
-														
-													myMask.hide();
-												},
-												url:'".$assign_url."'
-											});*/
-							        	}})
-							        );
-					form.render();";
+						form.fbar.add(new Ext.Button( {
+							text: '".JText::_('CATALOG_APPLY')."',
+							handler: function()
+							{
+								myMask.show();
+								var fields = new Array();
+								form.cascade(function(cmp)
+								{
+									if (cmp.xtype=='fieldset')
+									{
+										if (cmp.clones_count)
+										{
+											fields.push(cmp.getId()+','+cmp.clones_count);
+										}
+									}
+								});
+								var fieldsets = fields.join(' | ');
+							
+								form.getForm().setValues({
+									fieldsets: fieldsets});
+								form.getForm().setValues({
+									task: 'saveMetadata'});
+								form.getForm().setValues({
+									metadata_id: '".$metadata_id."'});
+								form.getForm().setValues({
+									object_id: '".$object_id."'});
+								form.getForm().submit({
+									scope: this,
+									method	: 'POST',
+									clientValidation: false,
+									success: function(form, action)
+									{
+										Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."',
+										'".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
+										function () {
+									
+										});
+										myMask.hide();
+									},
+									failure: function(form, action)
+									{
+										if (action.result)
+											alert(action.result.errors.xml);
+										else
+											alert('Form save error');
+										myMask.hide();
+									},
+									url:'".$url."'
+								});
+							}
+						})
+						);
+						form.render();";
 				}
+					
+				
 				// Ajout de bouton de retour
 				$this->javascript .="
 				form.fbar.add(new Ext.Button({text: '".JText::_('CORE_CANCEL')."',
@@ -1835,7 +2038,7 @@ else
 		print_r("<script type='text/javascript'>Ext.onReady(function(){".$this->javascript."});</script>");
 	}
 	
-	function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFieldsetName, $ancestorFieldsetName, $parentName, $xpathResults, $parentScope, $scope, $queryPath, $currentIsocode, $account_id, $profile_id, $option,$parent_object)
+	function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFieldsetName, $ancestorFieldsetName, $parentName, $xpathResults, $parentScope, $scope, $queryPath, $currentIsocode, $account_id, $profile_id, $option,$parent_object,$isManager,$isEditor)
 	{
 		// On recupere dans des variables le scope respectivement pour le traitement des classes enfant et
 		// pour le traitement des attributs enfants.
@@ -1868,6 +2071,7 @@ else
 						 rel.classchild_id as child_id, 
 						 rel.objecttypechild_id as objecttype_id, 
 						 rel.editable as editable,
+						 rel.editoraccessibility as editoraccessibility,
 						 CONCAT(relation_namespace.prefix,':',rel.isocode) as rel_isocode, 
 						 rel.relationtype_id as reltype_id, 
 						 rel.classassociation_id as association_id,
@@ -1897,7 +2101,7 @@ else
 						  	 ON a.attributetype_id = t.id 
 					     LEFT OUTER JOIN #__sdi_class as c
 					  		 ON rel.classchild_id=c.id
-					     LEFT OUTER JOIN jos_sdi_sys_stereotype as tc
+					     LEFT OUTER JOIN #__sdi_sys_stereotype as tc
 			 				ON c.stereotype_id = tc.id	 
 			 			 LEFT OUTER JOIN #__sdi_list_relationtype as reltype
 					  		 ON rel.relationtype_id=reltype.id	
@@ -1938,6 +2142,10 @@ else
 			if(isset($parent_object) && $parent_object->editable > $child->editable)
 				$child->editable = $parent_object->editable;
 			
+			//For editors, visibility can be downgrade by admin configuration
+			if(!$isManager && $isEditor && isset($child->editoraccessibility) && $child->editoraccessibility > $child->editable )
+				$child->editable = $child->editoraccessibility;
+						
 			// Traitement d'une relation vers un attribut
 			if ($child->attribute_id <> null)
 			{
@@ -2044,7 +2252,7 @@ else
 								if ($this->parentId_attribute <> "")
 								{
 									// Verification qu'on est bien dans l'attribut choisi. La classe n'a pas d'utilite
-									if ($parentScope <> NULL and $this->parentId_attribute == $child->attribute_id)
+									if ( $this->parentId_attribute == $child->attribute_id)
 									{
 										// Stocker le guid du parent
 										$nodeValue = $this->parentGuid;
@@ -4586,14 +4794,14 @@ else
 					}
 					// Test pour le cas d'une relation qui boucle une classe sur elle-meme
 					if ($ancestor <> $parent)					
-						HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child);
+						HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child, $isManager, $isEditor);
 		
 					// Classassociation_id contient une classe
 					if ($child->association_id <>0)
 					{
 						// Appel recursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child);
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child, $isManager, $isEditor);
 					}
 				}
 				// Ici on va traiter toutes les occurences trouvees dans le XML
@@ -4696,14 +4904,14 @@ else
 						}
 							}
 					// Appel récursif de la fonction pour le traitement du prochain niveau
-					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child);
+					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child, $isManager, $isEditor);
 				
 					// Classassociation_id contient une classe
 					if ($child->association_id <>0)
 					{
 						// Appel recursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child);
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child, $isManager, $isEditor);
 					}
 				}
 			}
@@ -4791,14 +4999,14 @@ else
 				}
 				// Appel recursif de la fonction pour le traitement du prochain niveau
 				if ($ancestor <> $parent)
-					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child);
+					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child, $isManager, $isEditor);
 					
 				// Classassociation_id contient une classe
 				if ($child->association_id <>0)
 				{
 					// Appel recursif de la fonction pour le traitement du prochain niveau
 					if ($ancestor <> $parent)
-						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child);
+						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child, $isManager, $isEditor);
 				}
 			}
 		}
@@ -4900,7 +5108,7 @@ else
 					{
 						// Appel recursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child);
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child, $isManager, $isEditor);
 					}
 				}
 				else
@@ -5022,7 +5230,7 @@ else
 					{
 						// Appel recursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child);
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child, $isManager, $isEditor);
 					}
 				}
 			}
@@ -5088,7 +5296,7 @@ else
 				{
 					// Appel recursif de la fonction pour le traitement du prochain niveau
 					if ($ancestor <> $parent)
-						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child);
+						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child, $isManager, $isEditor);
 				}
 			}
 		}
@@ -5713,6 +5921,16 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 				}
 				$listObjecttypes = HTML_metadata::array2extjs($listObjecttypes, true);
 				
+				$objectstatus = array();
+				$listObjectStatus = array();
+				$database->setQuery( "SELECT id as value, label as text FROM #__sdi_list_metadatastate " );
+				$objectstatus= array_merge( $objectstatus, $database->loadObjectList() );
+				foreach($objectstatus as $ot)
+				{
+					$listObjectStatus[$ot->value] = JText::_($ot->text);
+				}
+				$listObjectStatus = HTML_metadata::array2extjs($listObjectStatus, true);
+				
 				$this->javascript .="
 				var replicateDataStore = new Ext.data.Store({
 								id: 'objectListStore',
@@ -5738,6 +5956,9 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 								            beforeload: {
 								            				fn:function(store, options) {
 								            					options.params.objecttype_id = Ext.getCmp('objecttype_id').getValue();
+								            					options.params.objectname = Ext.getCmp('objectname').getValue();
+													 			options.params.objectstatus = Ext.getCmp('objectstatus').getValue();
+													 			options.params.objectversion = Ext.getCmp('objectversion').getValue().getGroupValue();
 																return true;		
 												            }
 												         }
@@ -5753,7 +5974,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 								winrct = new Ext.Window({
 								                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_ALERT'))."',
 								                width:600,
-								                height:430,
+								                height:500,
 								                closeAction:'hide',
 								                layout:'fit', 
 											    border:true, 
@@ -5768,7 +5989,6 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 												     ,method:'post' 
 												     ,url:'".$replicate_url."'
 													 ,standardSubmit: true
-												     //,defaults:{anchor:'95%'} 
 												     ,items:[ 
 												       { 
 												       	 typeAhead:true,
@@ -5788,21 +6008,66 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 															        data: ".$listObjecttypes."
 															    }),
 														 valueField:'value',
-														 displayField:'text',
-														 listeners: {        
-														 				select: {            
-														 							fn:function(combo, value) {
-														 								var modelDest = Ext.getCmp('objectselector');                
-														 								modelDest.store.removeAll();                
-														 								//reload region store and enable region                 
-														 								modelDest.store.reload({                    
-														 								params: { 
-														 									objecttype_id: combo.getValue() 
-																							}                
-																						});																						}        
-																				}	
-																	}
+														 displayField:'text'
 												       },
+												       {
+											       		id:'objectname',
+											       		hiddenName:'objectname_hidden',
+											       		xtype:'textfield',
+											       		fieldLabel : '".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTNAME_LABEL'))."'
+											       },
+											        { 
+											         typeAhead:true,
+											       	 triggerAction:'all',
+											       	 mode:'local',
+											       	 fieldLabel:'".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTSTATUS_LABEL'))."', 
+											         id:'objectstatus', 
+											         hiddenName:'objectstatus_hidden', 
+											         xtype: 'combo',
+											         editable: false,
+											         store: new Ext.data.ArrayStore({
+														        id: 0,
+														        fields: [
+														            'value',
+														            'text'
+														        ],
+														        data: ".$listObjectStatus."
+														    }),
+													 valueField:'value',
+													 displayField:'text'
+											       },
+											       {
+											        fieldLabel: '".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTVERSION_LABEL'))."',
+											        xtype: 'radiogroup', 
+        											id:'objectversion', 
+        											cls: 'x-check-group-alt',
+        											columns: [80,80],
+        											vertical:false,
+											        items: [
+											                {boxLabel: '".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTVERSION_ALL_LABEL'))."', name: 'version_grp', inputValue: 'All',checked: true},
+											                {boxLabel: '".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTVERSION_LAST_LABEL'))."', name: 'version_grp', inputValue: 'Last'}
+											        	] 
+											       },
+											       {
+        											xtype: 'panel', 
+        											buttonAlign:'right' ,
+											       	buttons: [{ 
+												       	xtype: 'button', 
+												       	text:'".html_Metadata::cleanText(JText::_('CORE_SEARCH_BUTTON'))."',
+									                    handler: function(){
+									                    	var modelDest = Ext.getCmp('objectselector');                
+												 			modelDest.store.removeAll();                
+												 			modelDest.store.reload({                    
+													 			params: { 
+													 				objecttype_id: Ext.getCmp('objecttype_id').getValue(),
+													 				objectname : Ext.getCmp('objectname').getValue(),
+													 				objectstatus : Ext.getCmp('objectstatus').getValue(),
+													 				objectversion : Ext.getCmp('objectversion').getValue().getGroupValue(),
+																}                
+															});	
+														}
+												       }]
+											       },
 												       {
 												       	 id:'objectselector',
 												       	 itemId:'objectselector',
@@ -5908,7 +6173,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 									winrct.items.get(0).findById('objectselector').store.removeAll();
 								}
 	
-								Ext.getCmp('objectselector').store.load();
+								//Ext.getCmp('objectselector').store.load();
 								
 								// Masquer le bouton de rafraîchissement
 								Ext.getCmp('objectselector').getBottomToolbar().refresh.hide();
@@ -6022,5 +6287,94 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 				
 		return implode(', ', $tbar);
 	} 
+	
+	function selectAssignMetadata($option,$sourceobject, $children,$editors )
+	{
+		?>
+		<h1 class="contentheading"><?php echo JText::_("CATALOG_METADATA_ASSIGN_SELECTION"); ?></h1>
+		<h2><?php echo JText::_("CATALOG_METADATA_ASSIGN_SELECTION_OBJECT_NAME");?> <?php echo $sourceobject->object_name; ?>  <?php echo JText::_("CATALOG_METADATA_ASSIGN_SELECTION_VERSION_TITLE"); ?> <?php  echo $sourceobject->version_title;?> </h2>
+		
+		<div class="contentin">
+			<form action="index.php" method="POST" id="selectAssignForm" name="selectAssignForm">
+			<script>
+			function submitForm()
+			{
+				if(document.getElementById('editor').value != "")
+				{
+					document.getElementById('selectAssignForm').task.value='validateAssignMetadata';
+					document.getElementById('selectAssignForm').submit();
+				}
+				else
+				{
+					alert('Please select an editor');
+					return;
+				}
+			}
+			
+			</script>
+			<table id="selectAssignMetadata" class="box-table">
+				<tbody>
+				<tr>
+					<td><?php echo JText::_("CATALOG_METADATA_ASSIGN_SELECTION_EDITOR"); ?></td>
+					<td><?php echo JHTML::_("select.genericlist",$editors, 'editor', 'size="1" class="inputbox" style="width:310px" ', 'value', 'text', '' ); ?></td>
+				</tr>
+				<tr>
+					<td><?php echo JText::_("CATALOG_METADATA_ASSIGN_SELECTION_INFORMATION"); ?></td>
+					<td><textarea cols="35" rows="5" name ="information" ></textarea></td>
+				</tr>
+				<?php
+					if(count($children) > 0){ 
+				?>
+				<tr>
+					<td><?php echo JText::_("CATALOG_METADATA_ASSIGN_SELECTION_CHILDREN"); ?></td>
+					<td><?php echo JHTML::_('select.booleanlist', 'children', '', '', JText::_("CORE_YES"), JText::_("CORE_NO"));?></td>
+				</tr>
+				<?php }?>
+				</tbody>
+			</table>
+			<div id="selectAssignMetadataToolBar" class="row">
+					<input type="button" id="assign_button" name="assign_button"  value ="<?php echo JText::_("CATALOG_ASSIGN_METADATA"); ?>" 
+						onClick="javascript:submitForm();"/>
+					<input type="submit" id="cancel_button" name="cancel_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('selectAssignForm').task.value='listMetadata';document.getElementById('selectAssignForm').submit();"/>
+			</div>
+
+			<input type="hidden" name="option" value="<?php echo $option; ?>">
+			<input type="hidden" name="object_id" value="<?php echo $sourceobject->object_id; ?>">
+			<input type="hidden" name="metadata_id" value="<?php echo $sourceobject->metadata_id; ?>">
+			<input type="hidden" id="task" name="task" value="validateAssignMetadata">
+			</form>
+		</div>
+		<?php
+	}
+	
+	function metadataPublished($option,$metadata,$object,$objectversion)
+	{
+		$app =& JFactory::getApplication();
+		$templateDir = JURI::base() . 'templates/' . $app->getTemplate();
+		?>
+		<h1 class="contentheading"><?php echo JText::_("CATALOG_METADATA_PUBLISHED_DATE_UPDATE"); ?></h1>
+		<h2><?php echo JText::sprintf("CATALOG_METADATA_PUBLISHED_OBJECT", $object->name, $objectversion->title); ?> </h2>
+		<div class="contentin">
+			<form action="index.php" method="POST" id="metadataPublishedForm" name="metadataPublishedForm">
+			<table id="metadataPublished" class="box-table">
+				<tbody>
+				<tr>
+					<td><?php echo JText::_("CATALOG_METADATA_PUBLISHED_DATE"); ?></td>
+					<td><?php echo helper_easysdi::calendar($metadata->published, "published","published","%Y-%m-%d", 'class="metadatapublished_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_METADATA_PUBLISHED_DATE_ALT")); ?></td>
+				</tr>
+				</tbody>
+			</table>
+			<div class="row">
+				<input type="submit" id="validate_button" name="validate_button" class="submit" value ="<?php echo JText::_("CORE_OK"); ?>" onClick="document.getElementById('metadataPublishedForm').task.value='setMetadataPublished';document.getElementById('metadataPublishedForm').submit();"/>
+				<input type="submit" id="cancel_button" name="cancel_button" class="submit" value ="<?php echo JText::_("CORE_BACK"); ?>" onClick="document.getElementById('metadataPublishedForm').task.value='listMetadata';document.getElementById('listMetadata').submit();"/>
+			</div>
+			<input type="hidden" name="option" value="<?php echo $option; ?>">
+			<input type="hidden" id="task" name="task" value="metadataPublished">
+			<input type="hidden" id="guid" name="guid" value="<?php echo $metadata->guid;?>">
+			</form>
+		</div>
+		<?php 
+	}
+		
 }
 ?>

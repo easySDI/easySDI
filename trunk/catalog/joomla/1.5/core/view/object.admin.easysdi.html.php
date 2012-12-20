@@ -32,30 +32,10 @@ class HTML_object {
 		JHTML::_('behavior.calendar');
 
 		$baseMaplist = array();		
-		/*$database->setQuery( "SELECT id AS value,  alias AS text FROM #__CORE_basemap_definition " );
-		$baseMaplist = $database->loadObjectList() ;
-		
-		if ($database->getErrorNum()) {
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}	
-		*/
+
 		jimport("joomla.utilities.date");
 		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
-		/*require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_CORE_core'.DS.'common'.DS.'easysdi.config.php');
 		
-		
-		$catalogUrlBase = config_easysdi::getValue("catalog_url");				
-		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$rowObject->metadata_id;
-
-			
-		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
- 
-		
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_CORE_core'.DS.'core'.DS.'geoMetadata.php');
-		
-		//$geoMD = new geoMetadata($cswResults ->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "MD_Metadata"  )->item(0));
-		$geoMD = new geoMetadata($cswResults);				 
-		*/
 		$database =& JFactory::getDBO(); 
 		
 		?>				

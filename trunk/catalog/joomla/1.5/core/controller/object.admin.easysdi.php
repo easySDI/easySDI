@@ -771,7 +771,7 @@ class ADMIN_object {
 			$database->setQuery( "SELECT * FROM #__sdi_objectversion WHERE object_id=".$object->id." ORDER BY created DESC" );
 			$listVersion = array_merge( $listVersion, $database->loadObjectList() );
 			
-			//S'assurer que toutes les versions sont dans l'�tat archiv� ou en travail
+			//S'assurer que toutes les versions sont dans l'etat archive ou en travail
 			$total=0;
 			$database->setQuery( "SELECT COUNT(*) FROM #__sdi_objectversion v INNER JOIN #__sdi_metadata m ON m.id=v.metadata_id INNER JOIN #__sdi_list_metadatastate s ON s.id=m.metadatastate_id WHERE v.object_id=".$object->id." AND (s.code = 'unpublished' or s.code = 'archived') ORDER BY v.created DESC" );
 			$total = $database->loadResult();
@@ -784,10 +784,45 @@ class ADMIN_object {
 			}
 			
 			// Si la suppression de l'objet est possible, commencer par supprimer toutes les versions et leur m�tadonn�e
+			$hasChild = false;
 			foreach( $listVersion as $version )
 			{
 				$objectversion = new objectversion($database);
 				$objectversion->load($version->id); 
+				
+				$database->setQuery( "SELECT ovlinked.title as title, o.name as name FROM #__sdi_objectversion ov 
+										INNER JOIN #__sdi_objectversionlink ovl ON ovl.parent_id = ov.id 
+										INNER JOIN #__sdi_objectversion ovlinked ON ovlinked.id = ovl.child_id
+										INNER JOIN #__sdi_object o ON ovlinked.object_id = o.id
+										WHERE ov.id=".$version->id );
+				$parents = $database->loadObjectList();
+				$database->setQuery( "SELECT ovlinked.title as title, o.name as name FROM #__sdi_objectversion ov
+						INNER JOIN #__sdi_objectversionlink ovl ON ovl.child_id = ov.id
+						INNER JOIN #__sdi_objectversion ovlinked ON ovlinked.id = ovl.parent_id
+						INNER JOIN #__sdi_object o ON ovlinked.object_id = o.id
+						WHERE ov.id=".$version->id );
+				$children = $database->loadObjectList();
+				if(count($parents) > 0 || count($children) > 0)
+				{
+					if($hasChild == false)
+					{
+						$mainframe->enqueueMessage(JText::sprintf('CATALOG_OBJECT_DELETE_RELATION_PARENT_CHILD_MSG',$object->name),"error");
+						$hasChild = true;
+					}
+					
+					foreach ($parents as $parent)
+					{
+						$mainframe->enqueueMessage(JText::sprintf("CATALOG_OBJECT_DELETE_RELATION_PARENT_MSG",$object->name,$version->title, $parent->name,$parent->title),"error");
+					}
+					foreach ($children as $child)
+					{
+						$mainframe->enqueueMessage(JText::sprintf("CATALOG_OBJECT_DELETE_RELATION_CHILD_MSG",$object->name,$version->title, $child->name,$child->title),"error");
+					}
+					
+					continue;
+				}
+				if($hasChild == true)
+					continue;
 				
 				$metadata = new metadata($database);
 				$metadata->load( $objectversion->metadata_id );
@@ -810,33 +845,24 @@ class ADMIN_object {
 				
 				require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 				$catalogUrlBase = config_easysdi::getValue("catalog_url");
-				//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
 				$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
-				/*
-				$deleteResults = DOMDocument::loadXML($result);
-				
-				$xpathDelete = new DOMXPath($deleteResults);
-				$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-				$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
-				
-				if ($deleted <> 1)
-				{
-					$mainframe->enqueueMessage('Error on metadata delete',"ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listObject" );
-					exit();
-				}*/
 				
 				if (!$objectversion->delete()) {
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					$mainframe->redirect("index.php?option=$option&task=listObject" );
 					exit;
 				}
-				
 				if (!$metadata->delete()) {
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					$mainframe->redirect("index.php?option=$option&task=listObject" );
 					exit;
 				}
+			}
+			if($hasChild == true)
+			{
+				//At least one version has children or parent, object can not be deleted
+				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				exit;
 			}
 			
 			//Supprimer tous les liens vers des editeurs ou des managers
