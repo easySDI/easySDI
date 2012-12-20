@@ -171,16 +171,20 @@ class SITE_object {
 		$pagination = new JPagination($total, $limitstart, $limit);
 		
 		// Recherche des enregistrements selon les limites
-		$query = "	SELECT o.*, ot.name as objecttype 
+		$query = "	SELECT o.*, t.label as objecttype 
 						FROM 	#__sdi_manager_object e,  
 								#__sdi_account a, 
 								#__users u,
 								#__sdi_object o
 						INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id  
+						INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+				 		INNER JOIN #__sdi_language l ON t.language_id=l.id
+						INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
 					WHERE e.object_id=o.id  
 						AND e.account_id=a.id 
 						AND a.user_id = u.id
 						AND ot.predefined=false
+						AND cl.code='".$language->_lang."'
 						AND e.account_id = ".$account->id;
 		$query .= $filter;
 		$query .= $orderby;
