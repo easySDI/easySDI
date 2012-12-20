@@ -24,6 +24,8 @@ class HTML_shop
 	{
 		
 		$db =& JFactory::getDBO();
+		$previewtype 	= config_easysdi::getValue("CATALOG_METADATA_PREVIEW_TYPE_PUBLIC");
+		$previewcontext = config_easysdi::getValue("CATALOG_METADATA_PREVIEW_CONTEXT_PUBLIC");
 		?>
 		<div class="contentin">
 		<script>
@@ -152,13 +154,21 @@ class HTML_shop
 				if ($db->getErrorNum()) {
 					$hasPreview = 0;
 				}
-				$query = "select count(*) from #__sdi_product p 
-										INNER JOIN #__sdi_product_file pf ON p.id=pf.product_id 
-										where  p.id = $row->id";
-				$db->setQuery( $query);
-				$hasProductFile = $db->loadResult();
-				if ($db->getErrorNum()) {
-					$hasProductFile = 0;
+				
+				if($row->pathfile || $row->grid_id)
+				{
+					$hasProductFile = 1;
+				}
+				else 
+				{
+					$query = "select count(*) from #__sdi_product p 
+											INNER JOIN #__sdi_product_file pf ON p.id=pf.product_id 
+											where  p.id = $row->id";
+					$db->setQuery( $query);
+					$hasProductFile = $db->loadResult();
+					if ($db->getErrorNum()) {
+						$hasProductFile = 0;
+					}
 				}
 				$product = new product($db);
 				$product->load($row->id);
@@ -193,7 +203,7 @@ class HTML_shop
 		     	<td class="mdActionViewFile"><span class="mdviewfile">
 			  	<a class="modal"
 						title="<?php echo JText::_("SHOP_SHOP_VIEW_MD_FILE"); ?>"
-						href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>"
+						href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&type=<?php echo $previewtype;  ?>&context=<?php echo $previewcontext;  ?>&id=<?php echo $row->metadata_guid;  ?>"
 						rel="{handler:'iframe',size:{x:650,y:600}}"><?php echo JText::_("SHOP_SHOP_VIEW_MD_FILE"); ?>
 					</a></span>
 			  </td>
@@ -641,7 +651,7 @@ class HTML_shop
 						                perimUrl,
 						                {typename: featureTypeName}, {
 						                    typename: featureTypeName,                                    
-						                    extractAttributes: false
+						                    extractAttributes: true
 						                       
 						                },
 					                { featureClass: OpenLayers.Feature.WFS}
@@ -1987,56 +1997,93 @@ class HTML_shop
 		<?php 
 	}
 	
-	function downloadAvailableProduct($id, $option, $task,$view,$step,$row)
+	function termsOfUse($product, $option, $task,$view,$step,$row)
 	{
 		?>
+		<script>
+		function acceptTerms ()
+		{
+			document.getElementById('denyTerm-button').disabled='disabled';
+			document.getElementById('acceptTerm-button').disabled='disabled';
+			document.getElementById('product_id').value = '<?php echo $product->id; ?>';
+			document.getElementById('task').value = 'downloadProduct';
+			<?php 
+			if( JRequest::getVar('resource')){
+				?>
+				location.href='<?php echo JRequest::getVar('resource');?>'
+				<?php 
+			}
+			else if ($product->pathfile != null){
+				?>
+				location.href='<?php echo $product->pathfile;?>'
+				<?php 
+			}
+			else {
+				?>
+				document.getElementById('dlProductForm').submit();
+				<?php 
+			}
+			?>
+			try{ window.parent.document.getElementById('sbox-window').close();}catch(err){};
+		}
+		</script>
 		<form name="dlProductForm" id="dlProductForm" 	 action='index.php' method='GET'>
-		<table>
-		<tr>
-		<td >
-		<table width="100%" >
-		<tr>
-		<td colspan ="2" >
-		<?php
-		echo $row->text;
-		?>
-		</td>
-		</tr>
-		</table>
-		</td></tr>
-		<tr>
-		<td>
-		<table>
-		<tr>
-		<td width="50%" align="right" >    
-		<input
-		onClick="document.getElementById('task').value = 'shop'; try{ window.parent.document.getElementById('sbox-window').close();}catch(err){javascript:history.back();}"
-		type="button"
-		class="button"
-		value='<?php echo JText::_("SHOP_SHOP_PRODUCT_TERMS_DENY"); ?>'> 
-		</td>
-		<td width="50%" align="left">
-		<input 
-		onClick="document.getElementById('task').value = 'doDownloadAvailableProduct';document.getElementById('product_id').value = '<?php echo $id; ?>';document.getElementById('dlProductForm').submit();try{ window.parent.document.getElementById('sbox-window').close();}catch(err){}"
-		type="button"
-		class="button"
-		value='<?php echo JText::_("SHOP_SHOP_PRODUCT_TERMS_ACCEPT"); ?>'> 
-		</td>
-		</tr>
-		</table>
-		</td></tr>
-		</table>
-		<input type='hidden' name='option' value='<?php echo $option;?>'> 
-		<input type='hidden' id="task" name='task' value='<?php echo $task; ?>'> 
-		<input type='hidden' id="view" name='view' value='<?php echo $view; ?>'> 
-		<input type='hidden' id="fromStep" name='fromStep' value='1'> 
-		<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'>
-		<input type='hidden' id="product_id" name='product_id' value=''>
-	
+			<table>
+				<tr>
+					<td >
+						<table width="100%" >
+							<tr>
+								<td colspan ="2" >
+									<?php
+									echo $row->text;
+									?>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<table>
+							<tr>
+								<td width="50%" align="right" >    
+									<input
+										onClick="document.getElementById('task').value = 'shop'; try{ window.parent.document.getElementById('sbox-window').close();}catch(err){javascript:history.back();}"
+										type="button"
+										id="denyTerm-button"
+										class="button"
+										value='<?php echo JText::_("SHOP_SHOP_PRODUCT_TERMS_DENY"); ?>'> 
+								</td>
+								<td width="50%" align="left">
+									<input 
+									onClick="acceptTerms();"
+									type="button"
+									id="acceptTerm-button"
+									class="button"
+									value='<?php echo JText::_("SHOP_SHOP_PRODUCT_TERMS_ACCEPT"); ?>'> 
+								</td>
+								<td width="50%" align="left">
+									<input 
+									onClick="try{ window.parent.document.getElementById('sbox-window').close();}catch(err){javascript:history.go(<?php if( JRequest::getVar('resource') ) echo -2 ; else echo -1;?>);}"
+									type="button"
+									class="button"
+									value='<?php echo JText::_("SHOP_RETURN_BUTTON"); ?>'> 
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+			<input type='hidden' name='option' value='<?php echo $option;?>'> 
+			<input type='hidden' id="task" name='task' value='<?php echo $task; ?>'> 
+			<input type='hidden' id="view" name='view' value='<?php echo $view; ?>'> 
+			<input type='hidden' id="fromStep" name='fromStep' value='1'> 
+			<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'>
+			<input type='hidden' id="product_id" name='product_id' value=''>
+			<input type='hidden' id="resource" name='resource' value='<?php echo JRequest::getVar('resource');?>'>
 		</form>
 		
 		<?php
 	}
-	
 }
 ?>

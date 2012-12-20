@@ -210,7 +210,7 @@ defined('_JEXEC') or die('Restricted access');
 					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_SURFACEMAX");?>";
 					index = 1;	
 				}
-				if (form.elements['available'].value == '1' && form.elements['productfile'].value == '' && form.elements['pathfile'].value == '' && form.elements['productFileName'].value == '' )
+				if (form.elements['available'].value == '1' && form.elements['productfile'].value == '' && form.elements['pathfile'].value == '' && form.elements['productFileName'].value == ''&&  form.elements['grid_id'].value == '' )
 				{
 					if(index != 0)text += ", ";
 					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_PRODUCT_FILE");?>";
