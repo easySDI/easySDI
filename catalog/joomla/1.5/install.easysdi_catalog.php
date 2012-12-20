@@ -1175,13 +1175,6 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 
-			$query="ALTER TABLE `#__sdi_translation`
-  				ADD CONSTRAINT `#__sdi_translation_ibfk_1` FOREIGN KEY (`language_id`) REFERENCES `#__sdi_language` (`id`);";
-			$db->setQuery( $query);
-			if (!$db->query()) {
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
-
 			$query="ALTER TABLE `#__sdi_defaultvalue`
 				ADD CONSTRAINT `#__sdi_defaultvalue_ibfk_1` FOREIGN KEY (`attribute_id`) REFERENCES `#__sdi_attribute` (`id`),
 				ADD CONSTRAINT `#__sdi_defaultvalue_ibfk_2` FOREIGN KEY (`codevalue_id`) REFERENCES `#__sdi_codevalue` (`id`);
@@ -2317,6 +2310,123 @@ function com_install(){
 			$db->setQuery( $query);
 			if (!$db->query()){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
+		
+		if($version == "2.4.2"){
+			
+			//ALTER __sdi_metadata
+			$query="ALTER TABLE `#__sdi_metadata` ADD lastsynchronization datetime";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//ALTER __sdi_metadata
+			$query="ALTER TABLE `#__sdi_metadata` ADD synchronizedby BIGINT(20)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//ALTER __sdi_metadata
+			$query="ALTER TABLE `#__sdi_metadata` ADD notification TINYINT(1) NOT NULL DEFAULT '0'";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//ALTER __sdi_relation
+			$query="ALTER TABLE `#__sdi_relation` ADD editoraccessibility BIGINT(20)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//ALTER __sdi_relation
+			$query="ALTER TABLE `#__sdi_relation` ADD istitle TINYINT(1) NOT NULL DEFAULT '0'";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query = "SELECT id FROM `#__sdi_list_module` where code = 'CATALOG'";
+			$db->setQuery( $query);
+			$id = $db->loadResult();
+			
+			$query = "INSERT INTO #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) VALUES
+					('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_PREVIEW_CONTEXT_PUBLIC', 'CATALOG_METADATA_PREVIEW_CONTEXT_PUBLIC', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '', '".$id."'),
+					('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_PREVIEW_TYPE_PUBLIC', 'CATALOG_METADATA_PREVIEW_TYPE_PUBLIC', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '', '".$id."'),
+					('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_PREVIEW_CONTEXT_EDITOR', 'CATALOG_METADATA_PREVIEW_CONTEXT_EDITOR', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '', '".$id."'),
+					('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_PREVIEW_TYPE_EDITOR', 'CATALOG_METADATA_PREVIEW_TYPE_EDITOR', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '', '".$id."'),
+					('".helper_easysdi::getUniqueId()."', 'CATALOG_VERSION_DATETIME_DISPLAY', 'CATALOG_VERSION_DATETIME_DISPLAY', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, 'Y-m-d', '".$id."')
+					";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+			
+			//ALTER __sdi_objecttypelink
+			$query="ALTER TABLE `#__sdi_objecttypelink` ADD inheritance TINYINT(1) NOT NULL DEFAULT '0'";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//CREATE #__sdi_objecttypelinkinheritance
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_objecttypelinkinheritance` (
+					`id` bigint(20) NOT NULL AUTO_INCREMENT,
+					`objecttypelink_id` bigint(20) NOT NULL,
+					`xpath` varchar(500) NOT NULL,
+					PRIMARY KEY (`id`)
+					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+			
+			$query="ALTER TABLE `#__sdi_objecttypelinkinheritance` ADD CONSTRAINT `#__sdi_objecttypelinkinheritance_fk_1` FOREIGN KEY (`objecttypelink_id`) REFERENCES `#__sdi_objecttypelink` (`id`)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$version="2.5.0";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
+		if($version == "2.5.0")
+		{
+			$query = "SELECT id FROM `#__sdi_list_module` where code = 'CATALOG'";
+			$db->setQuery( $query);
+			$id = $db->loadResult();
+			
+			$query = "SELECT COUNT(*) FROM #__sdi_configuration WHERE code ='CATALOG_METADATA_TITLE_XPATH'";
+			$db->setQuery( $query);
+			$count = $db->loadResult();
+			
+			if($count == 0)
+			{
+				$query = "ALTER TABLE #__sdi_configuration MODIFY value varchar(500)";
+				$db->setQuery( $query);
+				if (!$db->query()){
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+					return false;
+				}
+				
+				$query = "INSERT INTO #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) VALUES
+				('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_TITLE_XPATH', 'CATALOG_METADATA_TITLE_XPATH', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title', '".$id."')
+				";
+				$db->setQuery( $query);
+				if (!$db->query()){
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+					return false;
+				}
 			}
 		}
         

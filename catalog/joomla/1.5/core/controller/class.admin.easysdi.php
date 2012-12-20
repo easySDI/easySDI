@@ -153,14 +153,14 @@ class ADMIN_class {
 		$unselected_accounts=array();
 		$unselected_accounts=helper_easysdi::array_obj_diff($accounts, $selected_accounts);
 		
-		// R�cup�ration des types mysql pour les champs
+		// Recuperation des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_class", false);
 		$tableFields = array_merge( $tableFields, $database->getTableFields("#__sdi_translation", false) );
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caract�res
+		// - sa longueur en caracteres
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -217,7 +217,7 @@ class ADMIN_class {
 			exit();
 		}		
 		
-		// G�n�rer un guid
+		// Generer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowClass->guid == null)
 			$rowClass->guid = helper_easysdi::getUniqueId();
@@ -228,7 +228,7 @@ class ADMIN_class {
 			exit();
 		}
 
-		// Langues � g�rer
+		// Langues e gerer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -261,7 +261,7 @@ class ADMIN_class {
 			}
 		}
 		
-		// R�cup�rer toutes les relations avec les utilisateurs existantes
+		// Recuperer toutes les relations avec les utilisateurs existantes
 		$query = "SELECT * FROM #__sdi_account_class WHERE class_id=".$rowClass->id;
 		$database->setQuery($query);
 		$rows = $database->loadObjectList();
@@ -271,10 +271,10 @@ class ADMIN_class {
 			return false;
 		}
 		
-		// D�stockage des relations avec les utilisateurs
+		// Destockage des relations avec les utilisateurs
 		foreach ($rows as $row)
 		{
-			// Si la cl� existante n'est pas dans le tableau des relations, on la supprime
+			// Si la cle existante n'est pas dans le tableau des relations, on la supprime
 			if (!in_array($row->id, $_POST['selected']))
 			{
 				$rowAccountClass= new account_class($database);
@@ -293,7 +293,7 @@ class ADMIN_class {
 			// Stockage des relations avec les utilisateurs
 			foreach($_POST['selected'] as $selected)
 			{
-				// Si la cl� du tableau des relations n'est pas encore dans la base, on l'ajoute
+				// Si la cle du tableau des relations n'est pas encore dans la base, on l'ajoute
 				if (!in_array($selected, $rows))
 				{
 					$rowAccountClass= new account_class($database);
@@ -311,12 +311,12 @@ class ADMIN_class {
 		
 		$rowClass->checkin();
 		
-		// Au cas o� on sauve avec Apply, recharger la page 
+		// Au cas oe on sauve avec Apply, recharger la page 
 		$task = JRequest::getCmd( 'task' );
 		switch ($task)
 		{
 			case 'applyClass' :
-				// Reprendre en �dition l'objet
+				// Reprendre en edition l'objet
 				TOOLBAR_class::_EDIT();
 				ADMIN_class::editClass($rowClass->id,$option);
 				break;
@@ -334,8 +334,8 @@ class ADMIN_class {
 		$database=& JFactory::getDBO(); 
 
 		if (!is_array( $id ) || count( $id ) < 1) {
-			//echo "<script> alert('S�lectionnez un enregistrement � supprimer'); window.history.go(-1);</script>\n";
-			$mainframe->enqueueMessage("S�lectionnez un enregistrement � supprimer","error");
+			//echo "<script> alert('Selectionnez un enregistrement e supprimer'); window.history.go(-1);</script>\n";
+			$mainframe->enqueueMessage("Selectionnez un enregistrement à supprimer","error");
 			$mainframe->redirect("index.php?option=$option&task=listAttribute" );
 			exit;
 		}

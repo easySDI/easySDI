@@ -22,9 +22,9 @@ class HTML_objectversion {
 	
 	function listObjectVersion($rows, $object_id, $page, $filter_order_Dir, $filter_order, $option)
 	{
-		$database =& JFactory::getDBO();
-		$user	=& JFactory::getUser();
-		$ordering = ($filter_order == 'ordering');
+		$database 	=& JFactory::getDBO();
+		$user		=& JFactory::getUser();
+		$ordering 	= ($filter_order == 'ordering');
 		
 		$partners =	array(); ?>
 		<form action="index.php" method="post" name="adminForm">
@@ -40,6 +40,7 @@ class HTML_objectversion {
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'title', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_METADATA_STATE"), 'state', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JText::_("CATALOG_METADATA_SYNCHRONIZE");?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>
 				</tr>
 			</thead>
@@ -50,9 +51,20 @@ class HTML_objectversion {
 			foreach ($rows as $row)
 			{			
 				$checked 	= JHTML::_('grid.checkedout',   $row, $i );
-					  				
+								
+				$query = "SELECT count(ot.id) FROM #__sdi_objecttype ot 
+							INNER JOIN #__sdi_objecttypelink otl ON otl.parent_id = ot.id
+							INNER JOIN #__sdi_object o ON o.objecttype_id = ot.id 
+							INNER JOIN #__sdi_objectversion ov ON ov.object_id = o.id
+							INNER JOIN #__sdi_objectversionlink ovl ON ovl.parent_id = ov.id
+							WHERE o.id = $row->object_id
+							AND ovl.parent_id = $row->id
+							AND otl.inheritance = 1";
+				$database->setQuery ($query);
+				$row->hasInheritance = $database->loadResult();
+
 	?>
-				<tr> <!-- class="<?php //echo "row$k"; ?>" -->
+				<tr> 
 					<td align="center" width="10px"><?php echo $page->getRowOffset( $i );//echo $i+$page->limitstart+1;?></td>
 					<td align="center">
 					<?php echo $checked; ?>
@@ -111,6 +123,22 @@ class HTML_objectversion {
 					</td>
 					<td><?php echo JText::_($row->description); ?></td>		
 					<td><?php echo JText::_($row->state); ?></td>
+					<td align="center">
+					<?php if ($row->hasInheritance)
+					{
+						if($row->lastsynchronization)
+							$title = addslashes(JText::_('CATALOG_SYNCHRONIZE_METADATA'))."&#013".JTEXT::sprintf("CATALOG_SYNCHRONIZE_METADATA_MESSAGE_LAST", $row->lastsynchronization);
+						else
+							$title = addslashes(JText::_('CATALOG_SYNCHRONIZE_METADATA'));
+					?>
+						<a onclick="return confirm('<?php echo JText::_("CATALOG_METADATA_SYNCHRONIZE_MESSAGE_CONFIRMATION") ;?>')"  href="<?php echo "index.php?option=$option&task=synchronizeMetadata&metadata_id=$row->metadata_id&object_id=$object_id"; ?>" 
+						title="<?php echo $title; ?>">
+							<img src="<?php echo JURI::root(true); ?>/includes/js/ThemeOffice/mainmenu.png" border="0" />
+						</a>
+					<?php 
+					}
+					?>
+					</td>
 					<td width="100px"><?php if ($row->updated and $row->updated<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td>
 				</tr>
 	<?php
@@ -138,47 +166,6 @@ class HTML_objectversion {
 			
 	}	
 
-	/*function newObjectVersion($object_id, $fieldsLength, $metadata_guid, $listVersionNames, $option)
-	{
-		global  $mainframe;
-		
-		$database =& JFactory::getDBO(); 
-		$user =& JFactory::getUser();
-		
-		?>
-		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
-			<table class="adminTable" border="0" cellpadding="0" cellspacing="0">	
-				<tr>
-					<td class="key"><?php echo JText::_("CORE_OBJECT_METADATAID_LABEL"); ?> : </td>
-					<td><input class="inputbox" type="text" size="50" name="metadata_guid" value="<?php echo $metadata_guid; ?>" disabled="disabled" /></td>								
-				</tr>
-				<!-- <tr>
-					<td class="key"><?php //echo JText::_("CORE_NAME"); ?> : </td>
-					<td><input class="inputbox" type="text" size="50" maxlength="<?php //echo $fieldsLength['name'];?>" name="name"/></td>								
-				</tr>
-				 -->
-				<tr>
-					<td class="key"><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
-					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"></textarea></td>								
-				</tr>
-				<tr>
-					<td class="key"><?php echo JText::_("CORE_CREATED"); ?> : </td>
-					<td><?php echo date('d.m.Y h:i:s'); ?></td>
-				</tr>
-			</table>
-			<input type="hidden" name="object_id" value="<?php echo $object_id?>" />
-			<input type="hidden" name="metadata_guid" value="<?php echo $metadata_guid?>" />
-			<input type="hidden" name="created" value="<?php echo date ('Y-m-d H:i:s');?>" />
-			<input type="hidden" name="createdby" value="<?php echo $user->id; ?>" /> 
-			
-			<input type="hidden" name="option" value="<?php echo $option; ?>" />
-			<input type="hidden" name="task" value="newObjectVersion" />
-			
-			<input type="hidden" name="versionNames" value="<?php echo implode(", ", $listVersionNames);?>" />
-		</form>
-			<?php 	
-	}*/
-	
 	function editObjectVersion($row, $object_id, $fieldsLength, $metadata_guid, $option)
 	{
 		global  $mainframe;
@@ -279,7 +266,7 @@ if ($row->updated)
 			<?php 	
 	}
 	
-function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectversion_id, $object_id, $option)
+	function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectversion_id, $object_id, $option)
 	{
 		JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
 		JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
@@ -289,7 +276,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 		$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/ext/resources/css/ext-all.css');
 		
 		$javascript = "";
-	
+		
 		?>
 			<form action="index.php" method="post" name="adminForm" id="adminForm"
 			class="adminForm">
@@ -297,6 +284,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 			<input type="hidden" name="task" value="" />
 			<input type="hidden" name="object_id" value="<?php echo $object_id;?>" />
 			</form>
+			
 		<?php
 		
 		$javascript .="
@@ -306,11 +294,13 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 			// Column Model shortcut array
 			var cols = [
 				{ id : 'value', hidden: true, dataIndex: 'value'},
-				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name', width:400}
+				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name', width:200},
+				{ id : 'objecttype', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_OBJECTTYPE_HEADER"))."', sortable: true, dataIndex: 'objecttype', width:100},
+				{ id : 'status' , header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_PUBLISHED_HEADER"))."', sortable: true, dataIndex: 'status', width:100}
 			];
 			
 			var parentGridStore = new Ext.data.JsonStore({
-		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'}],
+		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'},{name: 'objecttype', mapping : 'objecttype'},{name: 'status', mapping : 'status'}],
 		        data   : ".HTML_metadata::array2json(array ("total"=>count($parent_objectlinks), "links"=>$parent_objectlinks)).",
 				root   : 'links'
 		    });
@@ -330,7 +320,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 		    });
 		
 		    var childGridStore = new Ext.data.JsonStore({
-		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'}],
+		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'},{name: 'objecttype', mapping : 'objecttype'},{name: 'status', mapping : 'status'}],
 		        data   : ".HTML_metadata::array2json(array ("total"=>count($child_objectlinks), "links"=>$child_objectlinks)).",
 				root   : 'links'
 		    });
@@ -349,7 +339,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 							 }
 		    });
 		    
-			// Cr�er le formulaire qui va contenir la structure
+			// Créer le formulaire qui va contenir la structure
 			var form = new Ext.form.FormPanel(
 				{
 					id:'linksForm',
@@ -392,7 +382,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 		$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/ext/resources/css/ext-all.css');
 
 		$javascript = "";
-	
+
 		?>
 			<form action="index.php" method="post" name="adminForm" id="adminForm"
 			class="adminForm">
@@ -410,11 +400,13 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 			var cols = [
 				{ id : 'value', hidden: true, dataIndex: 'value', menuDisabled: true},
 				{ id : 'objecttype_id', hidden: true, dataIndex: 'objecttype_id', menuDisabled: true},
-				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name', menuDisabled: true, width:400}
+				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name', menuDisabled: true, width:400},
+				{ id : 'objecttype', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_OBJECTTYPE_HEADER"))."', sortable: true, dataIndex: 'objecttype', width:100},
+				{ id : 'status' , header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_PUBLISHED_HEADER"))."', sortable: true, dataIndex: 'status', width:100}
 			];
 			
 			var unselectedGridStore = new Ext.data.JsonStore({
-		        fields : [{name: 'value', mapping : 'value'}, {name: 'objecttype_id', mapping : 'objecttype_id'}, {name: 'name', mapping : 'name'}],
+		        fields : [{name: 'value', mapping : 'value'}, {name: 'objecttype_id', mapping : 'objecttype_id'}, {name: 'name', mapping : 'name'},{name: 'objecttype', mapping : 'objecttype'},{name: 'status', mapping : 'status'}],
 		        data   : ".HTML_metadata::array2json(array ("total"=>count($objectlinks), "links"=>$objectlinks)).",
 				root   : 'links'
 		    });
@@ -440,7 +432,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 		    });
 			    
 		    var selectedGridStore = new Ext.data.JsonStore({
-		        fields : [{name: 'value', mapping : 'value'}, {name: 'objecttype_id', mapping : 'objecttype_id'}, {name: 'name', mapping : 'name'}],
+		        fields : [{name: 'value', mapping : 'value'}, {name: 'objecttype_id', mapping : 'objecttype_id'}, {name: 'name', mapping : 'name'},{name: 'objecttype', mapping : 'objecttype'},{name: 'status', mapping : 'status'}],
 		        data   : ".HTML_metadata::array2json(array ("total"=>count($selected_objectlinks), "links"=>$selected_objectlinks)).",
 				root   : 'links'
 		    });
@@ -473,8 +465,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 				flex			 : 1,
 				layoutConfig	 : { align : 'center', pack:'center'},
 				defaults		 : {margins:'0 0 5 0'},
-                items			 : [
-									{
+                items			 : [{
 										xtype: 'button',
 										text: ' << ',
 										width:30,
@@ -491,6 +482,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 				 									id:Ext.getCmp('id').getValue(),
 				 									name:Ext.getCmp('name').getValue(),
 				 									status:Ext.getCmp('status').getValue(),
+				 									version : Ext.getCmp('version').getValue().getGroupValue(),
 				 									manager:Ext.getCmp('manager').getValue(),
 				 									editor:Ext.getCmp('editor').getValue(),
 				 									fromDate:Ext.getCmp('fromDate').getValue(),
@@ -526,6 +518,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 				 									id:Ext.getCmp('id').getValue(),
 				 									name:Ext.getCmp('name').getValue(),
 				 									status:Ext.getCmp('status').getValue(),
+				 									version : Ext.getCmp('version').getValue().getGroupValue(),
 				 									manager:Ext.getCmp('manager').getValue(),
 				 									editor:Ext.getCmp('editor').getValue(),
 				 									fromDate:Ext.getCmp('fromDate').getValue(),
@@ -545,7 +538,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 						                	var selected = Ext.getCmp('selected');                
 			 								var records = unselected.selModel.getSelections();
 			 								
-                        					// Traiter chaque objet � ajouter
+                        					// Traiter chaque objet a ajouter
 											for (i=0;i<records.length;i++)
 											{
 												if (!childbound_upper_reached(records[i]))
@@ -596,6 +589,11 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 		    status['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_STATUS_LABEL'))."';
 			status['list'] = $listStatus;
 			
+			var version = new Array();
+		    version['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_VERSION_LABEL'))."';
+		    version['label_all'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_VERSION_LABEL_ALL'))."';
+		    version['label_last'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_VERSION_LABEL_LAST'))."';
+		    
 			var manager = new Array();
 		    manager['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_MANAGER_LABEL'))."';
 			manager['list'] = $listManagers;
@@ -609,8 +607,9 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 			
 		    var toDate = new Array();
 		    toDate['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_TODATE_LABEL'))."';
+		    
 			
-		    // Cr�er le formulaire qui va contenir la structure
+		    // Creer le formulaire qui va contenir la structure
 			var form = new Ext.form.FormPanel(
 				{
 					id:'linksForm',
@@ -626,7 +625,39 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 			        		xtype:'fieldset',
 			        		title:'".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_FILTERS_LABEL'))."',
 			        		collapsible:false,
-			        		items:[manageObjectLinkFilter(objecttype, id, name, status, manager, editor, fromDate, toDate)]
+			        		items:[
+			        				manageObjectLinkFilter(objecttype, id, name, status, version,manager, editor, fromDate, toDate)
+					        	  ],
+								  buttons: [
+										{
+											text:'".html_Metadata::cleanText(JText::_('CORE_SEARCH_BUTTON'))."',
+						                    handler: function(){
+						                    	var modelDest = Ext.getCmp('unselected');
+						                    	modelDest.store.removeAll();
+
+												var selectedValues = new Array();
+												var grid = Ext.getCmp('selected').store.data;
+												for ( var i = 0; i < grid.length; i++) {
+													selectedValues.push(grid.get(i).get('value'));
+												}
+
+												modelDest.store.reload( {
+													params : {
+														objecttype_id : Ext.getCmp('objecttype_id').getValue(),
+														id : Ext.getCmp('id').getValue(),
+														name : Ext.getCmp('name').getValue(),
+														status : Ext.getCmp('status').getValue(),
+														version : Ext.getCmp('version').getValue().getGroupValue(),
+														manager : Ext.getCmp('manager').getValue(),
+														editor : Ext.getCmp('editor').getValue(),
+														fromDate : Ext.getCmp('fromDate').getValue(),
+														toDate : Ext.getCmp('toDate').getValue(),
+														selectedObjects : selectedValues.join(', ')
+													}
+												})
+											}
+										}
+									]
 						},
 			        	{
 			        		id			 : 'gridPanel',
@@ -687,19 +718,14 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 			    }
 			);
 
-			/****
-	        * Setup Drop Targets
-	        ***/
+
 	        // This will make sure we only drop to the  view scroller element
 	        var unselectedGridDropTargetEl =  unselectedGrid.getView().scroller.dom;
 	        var unselectedGridDropTarget = new Ext.dd.DropTarget(unselectedGridDropTargetEl, {
 	                ddGroup    : 'unselectedGridDDGroup',
 	                notifyDrop : function(ddSource, e, data){
-	                       var records =  ddSource.dragData.selections;
-	                       Ext.each(records, ddSource.grid.store.remove, ddSource.grid.store);
-	                        //unselectedGrid.store.add(records);
-	                        //unselectedGrid.store.sort('name', 'ASC');
-	                        
+	                        var records =  ddSource.dragData.selections;
+	                        Ext.each(records, ddSource.grid.store.remove, ddSource.grid.store);
 	                        var selectedValues = new Array();
 				 			var grid = Ext.getCmp('selected').store.data;
 						 	for (var i = 0 ; i < grid.length ;i++) 
@@ -757,7 +783,9 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 					        }, [
 					            {name: 'value', mapping: 'value'},
 					            {name: 'objecttype_id', mapping: 'objecttype_id'},
-					           	{name: 'name', mapping: 'name'}
+					           	{name: 'name', mapping: 'name'},
+					           	{name: 'objecttype', mapping : 'objecttype'},
+					           	{name: 'status', mapping : 'status'}
 					        ]),
 					        // turn on remote sorting
 					        remoteSort: true,
@@ -840,6 +868,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 					<th class='title' width="10px"><?php echo JText::_("CATALOG_HISTORYASSIGN_ASSIGNEDBY"); ?></th>
 					<th class='title' width="10px"><?php echo JText::_("CATALOG_HISTORYASSIGN_ASSIGNEDTO"); ?></th>
 					<th class='title' width="10px"><?php echo JText::_("CATALOG_HISTORYASSIGN_DATE"); ?></th>
+					<th class='title' width="10px"><?php echo JText::_("CATALOG_HISTORYASSIGN_INFORMATION"); ?></th>
 				</tr>
 			</thead>
 			<tbody>		
@@ -853,6 +882,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 					<td><?php echo $row->assignedby; ?></td>						
 					<td><?php echo $row->assignedto; ?></td>						
 					<td><?php echo date('d.m.Y h:i:s',strtotime($row->date)); ?></td>
+					<td><?php echo $row->information; ?></td>	
 				</tr>
 	<?php
 				$k = 1 - $k;
