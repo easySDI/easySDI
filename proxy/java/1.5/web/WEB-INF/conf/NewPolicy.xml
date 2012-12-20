@@ -1,35 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PolicySet>
-	<Policy Id="metacarta_open_all" ConfigId="metacarta_open">
-		<Servers All="false">
-			<Server>
-				<url>http://labs.metacarta.com/wms/vmap0</url>
-				<Prefix>topp</Prefix>
-				<Namespace>topp</Namespace>
-				<Layers All="false">
-					<Layer>
-						<Name>Vmap0</Name>
-					</Layer>
-					<Layer>
-						<Name>basic</Name>
-					</Layer>
-					<Layer>
-						<Name>coastline_01</Name>
-					</Layer>
-					<Layer>
-						<Name>coastline_02</Name>
-					</Layer>
-					<Layer>
-						<Name>depthcontour</Name>
-					</Layer>
-					<Layer>
-						<Name>trail</Name>
-					</Layer>
-				</Layers>
-			</Server>
-		</Servers>
-		<Subjects All="true"/>
-		<Operations All="true"/>
+	<Policy Id="metacarta_open_hvh" ConfigId="metacarta_open">
+		<Servers All="false"><Server><url>http://labs.metacarta.com/wms/vmap0</url><Prefix>topp</Prefix><Namespace>topp</Namespace><Layers All="false"><Layer><Name>Vmap0</Name></Layer><Layer><Name>basic</Name></Layer><Layer><Name>coastline_01</Name></Layer><Layer><Name>coastline_02</Name></Layer><Layer><Name>depthcontour</Name></Layer><Layer><Name>trail</Name></Layer></Layers></Server></Servers>
+		<Subjects All="false"><User>hvanhoecke</User></Subjects>
+		<Operations All="true"></Operations>
 		<AvailabilityPeriod>
 			<Mask>d-mm-yyyy</Mask>
 			<From>
@@ -39,7 +13,7 @@
 				<Date>28-01-2108</Date>
 			</To>
 		</AvailabilityPeriod>
-		<ImageSize/>
+		<ImageSize></ImageSize>
 	</Policy>
 	<Policy Id="gmap_all" ConfigId="gmap">
 		<Servers All="false">
