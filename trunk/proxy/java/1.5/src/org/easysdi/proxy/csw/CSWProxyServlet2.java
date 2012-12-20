@@ -888,7 +888,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		            Namespace nsSDI = Namespace.getNamespace("sdi","http://www.easysdi.org/2011/sdi") ;
 		            while (resultStorageIterator.hasNext()){
 		            	result = resultStorageIterator.next();
-		            	if(result.getChild("harvested", nsSDI) == null){
+		            	if(result.getChild("platform", nsSDI) == null){
 			            	Element e = new Element("platform", nsSDI);
 			            	e.setAttribute("harvested", "false");
 			            	result.addContent(e);

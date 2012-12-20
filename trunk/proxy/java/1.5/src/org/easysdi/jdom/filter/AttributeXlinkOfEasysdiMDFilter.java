@@ -49,26 +49,6 @@ public class AttributeXlinkOfEasysdiMDFilter implements Filter{
 	     {
 	    	 return false;
 	     }
-/*	     if(element.getName().equals("MD_Metadata"))
-	     {
-	    	 Element platformElement = element.getChild("platform", nssdi);
-	    	 if(platformElement != null){
-	    		 Attribute harvestedAttribute = platformElement.getAttribute("harvested");
-	    		 if(harvestedAttribute.getValue().equalsIgnoreCase("true")){
-	    			 return false;
-	    		 }else{
-	    			 return true;
-	    		 }
-	    	 }else{
-	    		 //Metadata is not up to date with the current version of EasySDI 
-	    		 //TODO check what we have to do in this case
-	    		 return false;
-	    	 }
-	     }
-	     else
-	     {
-	    	 return false;
-	     }*/
 	  }
 
 }
