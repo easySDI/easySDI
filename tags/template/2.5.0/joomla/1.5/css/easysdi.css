@@ -1,0 +1,2942 @@
+@CHARSET "ISO-8859-1";
+
+/********************************************************/
+/*** EasySDI Metadata                                 ***/
+/********************************************************/
+.imgHolder{
+	 vertical-align:top;
+	 width:100px;
+}
+
+.mdActionOrder{
+	width:95px;
+}
+
+.mdActionViewFile
+{
+	width:95px;
+}
+
+.mdActionViewProduct
+{
+	width:145px;
+}
+
+.mdActionAddToCart
+{
+	width:125px;
+}
+
+#metadata .furnisherTitle{
+	font-weight:bold;
+	font-size:14px;
+}
+/* metadata separator in result view */
+.separator{
+	background-color:transparent;
+	background-image:url(../images/dashed.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	margin-top: 5px;
+	height:1px;
+	width:100%;
+}
+
+/* Info logos in the summary  */
+
+table#info_md div{
+	background-color:transparent;
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+div .privateMd{
+	background-image:url(../icons/silk/lock.png);
+}
+
+#manageMetadata .publicMd{
+	background-image:url(../icons/silk/lock_open.png);
+}
+
+div .easysdi_product_exists{
+	height:16px;
+	width:16px;
+	background-image:url(../icons/silk/cart.png);
+}
+
+div .easysdi_product_exists_internal{
+	height:16px;
+	width:16px;
+	background-image:url(../icons/silk_extended/cart_private.png);
+}
+
+div .freeMd{
+	background-image:url(../images/money_dollar_disabled.png);
+}
+
+div .easysdi_product_does_not_exist{
+	background-image:url(../images/cart_disabled.png);
+}
+
+/* Buttons in the metadata view  */
+
+.addFavorite{
+	background-color:transparent;
+	background-image:url(../icons/silk/star.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	/* for IE */
+	filter:alpha(opacity=20);
+	/* CSS3 standard */
+	opacity:0.2;
+	height:16px;
+	width:16px;
+}
+
+.addToFavorite{
+	background-color:transparent;
+	background-image:url(../icons/silk/star.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	/* for IE */
+	filter:alpha(opacity=20);
+	/* CSS3 standard */
+	opacity:0.2;
+	height:16px;
+	width:16px;
+}
+
+.removeFavorite{
+	background-color:transparent;
+	background-image:url(../icons/silk/star.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+.addToFavorite:hover{ 
+	background-image:url(../icons/silk/star.png);
+}
+
+
+
+div#exportPdf{
+	background-color:transparent;
+	/*background-image:url(../../../components/com_easysdi_core/img/pdfButton.png);*/
+	background-image:url(../icons/silk/page_white_acrobat.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+/*background-image:url(../../../components/com_easysdi_core/img/printButton.png);*/
+div#printMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/printer.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+/*background-image:url(../../../components/com_easysdi_core/img/xmlButton.png);*/
+div#exportXml{
+	background-color:transparent;
+	background-image:url(../icons/silk/page_white_code.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+/*background-image:url(../../../components/com_easysdi_core/img/orderProduct.png);*/
+div#orderProduct{
+	background-color:transparent;
+	background-image:url(../icons/silk/cart.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+
+/********************************************************/
+/***           EasySDI Catalog                        ***/
+/********************************************************/
+
+#sbox-btn-close
+{
+	background:url(../images/closebox.png) no-repeat top left;
+}
+
+.mdsearchresult .mdtitle{
+	font-weight: bold;
+}
+
+.mdsearchresult .mddescr{
+
+}
+
+.mdsearchresult .mdviewfile, .orderInfo .mdviewfile {
+	padding: 1px 3px;
+	border:1px solid #b9b9b9;
+	font-weight: bold;
+}
+
+.mdsearchresult .mdviewproduct{
+	padding: 1px 3px;
+	border:1px solid #b9b9b9;
+	font-weight: bold;
+}
+
+.searchCriteria .mdtitle{
+	font-weight: bold;
+}
+
+.mdPanSelected { 
+	float: left;
+	padding: 4px 10px;
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+	margin-left: 3px;
+	background: #f0f0d0;
+	color: #666;
+}
+
+.mdPanSelectable { 
+	float: left;
+	padding: 4px 10px;
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+	margin-left: 3px;
+	background: #f0f0f0;
+	color: #666;
+}
+
+.mdCatContent{
+	vertical-align: top;
+}
+
+/* only for titles*/
+.mdCatContent tr td:first-child{
+	width:110px;
+}
+
+.mdCatContent select{
+	width:240px;
+}
+
+.mdCatContent #simple_filterfreetextcriteria{
+	width:239px;
+}
+
+.searchTabs_date{
+	vertical-align: top;
+}
+.searchTabs_date tr td:first-child{
+	width:20px;
+}
+
+.searchTabs_date_bounds{
+	width:20px;
+}
+.searchTabs_date_field{
+	width:110px;
+}
+.searchTabs_calendar{
+	width:80px;
+}
+	
+.olmdControlEditingToolbar  {
+     float:left;
+     right: 0px;
+     height: 30px; 
+     width: 150px;
+}
+
+#advSearchRadio, #filter_visible, #filter_orderable{
+	width:15px;
+}
+
+#divAdvancedSearch{
+	padding:1px;
+}
+
+.bodyShop #freetextcriteria{
+	width:239px;
+}
+
+.bodyShop #partner_id{
+	width:240px;
+}
+
+/* the calendar */
+.calendar, .calendar table {
+	border:0px solid #CCCCCC;
+	vertical-align:top;
+	height:18px;
+	width:18px;
+}
+
+#create_select{
+	width:140px;
+}
+
+#create_cal{
+	width:79px;
+}
+
+#update_select{
+	width:140px;
+}
+
+#update_cal{
+	width:79px;
+}
+/********************************************************/
+/***     EasySDI Shop                                 ***/
+/********************************************************/
+.mdtyProperty{
+	margin-left:5px;
+	color:red;
+	font-weight:bold;
+	font-size:16px;
+}
+
+.olControlLoadingPanel {
+        background-image:url(../images/loading.gif);
+        background-position:center;
+        background-repeat:no-repeat;
+	width:16px;
+	}
+
+.infoShop{
+	border:0px;
+	border-collapse:collapse;
+}
+	
+.infoShop .shopHeader, .infoShop .shopFooter{
+	font-size:0.92em;
+	line-height:13px;
+	/*background-color:#ddd;*/
+}
+
+.infoShop .shopHeader td, .infoShop .shopFooter td{
+	line-height:16px;
+	padding-left:5px;
+	padding-right:5px;
+	/*border: 1px dashed #747373;*/
+}
+
+.infoShop .shopHeader div, .infoShop .shopFooter div{
+	height:15px;
+}
+
+
+.shopInfoLogo{
+	background:url(../images/fff/silk/information.png);
+	width:16px;
+	height:16px;
+	background-color:transparent;
+	background-position:0 0;
+	background-repeat:no-repeat;
+}
+
+.shopWarnLogoContainer{
+	width:16px;
+}
+
+.scaleStatusContainer{
+	font-size:0.92em;
+	line-height:13px;
+	color:red;
+}
+
+.shopWarnLogoInactive{
+	background:url(../images/pixel.png);
+	width:16px;
+	height:16px;
+	background-color:transparent;
+	background-position:0 0;
+	background-repeat:no-repeat;
+}
+
+.shopWarnLogoActive{
+	background:url(../icons/silk/error.png);
+	width:16px;
+	height:16px;
+	background-color:transparent;
+	background-position:0 0;
+	background-repeat:no-repeat;
+}
+
+
+.shopInfoLogoContainer{
+	width:16px;
+}
+
+.shopInfoMessageContainer{
+	width:429px;
+}
+
+.toolsStatusContainer{
+	width:120px;
+	text-align:right;
+}
+
+/*coordinate container*/
+.coordinateTextHolder{
+	width:75px;
+	text-align:left;
+}
+
+.beforeCoordinateTextHolder{
+	width:220px;
+}
+
+.coordinateContainer{
+	width:120px;
+	text-align:right;
+}
+
+/*scaleContainer container*/
+.scaleContainer{
+	width:150px;
+	text-align:left;
+}
+
+#myProducts .logo{
+	width:14px;
+}
+
+#myProducts .logo2{
+	width:28px;
+}
+
+.favoritePanContent .inputbox{
+	width:239px;
+}
+
+div.info {
+    background: #F8FAFC url('../icons/silk/information.png') center no-repeat;
+    background-position: 15px 50%; /* x-pos y-pos */
+    text-align: left;
+    padding: 5px 20px 5px 45px;
+    border-top: 2px solid #B5D4FE;
+    border-bottom: 2px solid #B5D4FE;
+}
+div.warn {
+    background: #FBEEF1 url('../icons/silk/bullet_error.png') center no-repeat;
+    background-position: 15px 50%; /* x-pos y-pos */
+    text-align: left;
+    padding: 5px 20px 5px 45px;
+    border-top: 2px solid #FEABB9;
+    border-bottom: 2px solid #FEABB9;
+}
+div.alert {
+    background: #FFF7C0 url('../icons/silk/exclamation.png') center no-repeat;
+    background-position: 15px 50%; /* x-pos y-pos */
+    text-align: left;
+    padding: 5px 20px 5px 45px;
+    border-top: 2px solid #F7D229;
+    border-bottom: 2px solid #F7D229;
+}
+.alertheader
+{
+	font-weight: bold; 
+}
+
+.alerthighlight
+{
+	font-weight: bold;
+	font-style:italic; 
+}
+
+.headerShop{
+
+}
+.bodyShop{
+
+}
+.previousStep { 
+	float: left;
+	padding: 4px 10px;
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+	margin-left: 3px;
+	background: #f0f0d0;
+	color: #666;
+}
+.selectableStep { 
+	float: left;
+	padding: 4px 10px;
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+	margin-left: 3px;
+	background: #f0f0d0;
+	color: #666;
+}
+.currentStep {
+	float: left;
+	padding: 4px 10px;
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+	margin-left: 3px;
+	background: #dddddd;
+	color: #666;
+	
+	}
+
+.unselectableStep {
+	float: left;
+	padding: 4px 10px;
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+	margin-left: 3px;
+	background: #f0f0f0;
+	color: #666;
+
+}
+
+
+
+.tinymap {
+	width: 256px;
+	height: 256px;
+	border: 1px solid #ccc;
+}
+
+.smallmap {
+    width: 512px;
+    height: 512px;
+    border: 1px solid #ccc;
+}
+
+#controls {
+            float: right;
+            text-align: right;
+        }
+        
+ 
+       
+/* Control container panel div */
+.olControlPanel div {
+	display:block;
+	float:left;
+	margin:0 2px;
+	width:16px;
+	height:16px;
+}
+
+/* Control container panel */
+.olControlPanel {
+	background-color:#c2defd;
+	right:0px;
+	margin:0;
+	padding:2px 0;
+	right:5px;
+	top:5px;
+}
+
+/* Zoom Full Extends */
+.olControlPanel .olControlZoomToMaxExtentItemInactive {
+border:1px outset #D4DEFF;
+background-image:url(../icons/silk/arrow_out.png);
+background-color:#FFFFFF;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
+
+.olControlPanel .olControlZoomToMaxExtentItemActive {
+border:1px inset #D4DEFF;
+background-image:url(../icons/silk/arrow_out.png);
+background-color:#FFFFFF;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
+
+/* Search boundaries selection */
+.olControlPanel .olControlDrawFeatureRectangleItemInactive {
+background-image:url(../images/openlayers/btn_rectangle_1.png);
+background-color:transparent;
+background-position:0 0;
+background-repeat:no-repeat;
+width:28px;
+height:26px;
+}
+
+.olControlPanel .olControlDrawFeatureRectangleItemActive {
+background-image:url(../images/openlayers/btn_rectangle_2.png);
+background-color:transparent;
+background-position:0 0;
+background-repeat:no-repeat;
+width:28px;
+height:26px;
+}
+
+/* Zoom in */
+.olControlPanel .olControlZoomBoxItemInactive  {
+border:1px outset #D4DEFF;
+background-image:url(../icons/silk/zoom_in.png);
+background-color:#FFFFFF;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
+
+.olControlPanel .olControlZoomBoxItemActive  {
+border:1px inset #D4DEFF;
+background-image:url(../icons/silk/zoom_in.png);
+background-color:#FFFFFF;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
+
+/* Zoom out */
+.olControlPanel .olControlZoomBoxOutItemInactive  {
+border:1px outset #D4DEFF;
+background-image:url(../icons/silk/zoom_out.png);
+background-color:#FFFFFF;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
+
+.olControlPanel .olControlZoomBoxOutItemActive  {
+border:1px inset #D4DEFF;
+background-image:url(../icons/silk/zoom_out.png);
+background-color:#FFFFFF;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
+
+/* Pan */
+.olControlPanel .olControlDragPanItemInactive  {
+border:1px outset #D4DEFF;
+background-image:url(../icons/geosilk/pan.png);
+background-color:#FFFFFF;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
+
+.olControlPanel .olControlDragPanItemActive  {
+border:1px inset #D4DEFF;
+background-image:url(../icons/geosilk/pan.png);
+background-color:#FFFFFF;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
+
+
+fieldset {
+	margin-bottom: 10px;
+	border: 1px #ccc solid;
+	padding: 5px;
+	text-align: left;
+}
+
+fieldset p {  margin: 10px 0px;  }
+
+legend    {
+	color: #0B55C4;
+	font-size: 12px;
+	font-weight: bold;
+}
+
+
+dl.tabs {
+	border-bottom: 1px solid #ABABAB;
+	margin: 10px 0 -1px;
+	padding: 4px 10px;
+	z-index: 50;
+}
+
+dl.tabs dt {
+	display:inline;
+	padding: 4px 10px;
+	border-left: 1px solid #ABABAB;
+	border-right: 1px solid #ABABAB;
+	border-top: 1px solid #ABABAB;
+	margin-left: 3px;
+	-moz-background-clip:border;
+	-moz-background-inline-policy:continuous;
+	-moz-background-origin:padding;
+	background:#D3D8DC none repeat scroll 0 0;
+}
+
+dl.tabs dt span {
+	font-weight:bold;
+}
+
+dl.tabs dt.open {
+	background: #F9F9F9;
+	border-bottom: 1px solid #F9F9F9;
+	z-index: 100;
+	color: #000;
+}
+
+
+div.olMap {
+	z-index: 0;
+    padding: 0px!important;
+    margin: 0px!important;
+}
+
+div.olMapViewport {
+    text-align: left;
+}
+
+div.olLayerDiv {
+   -moz-user-select: none;
+}
+
+.olLayerGoogleCopyright {
+    left: 2px;
+    bottom: 2px;  
+}
+.olLayerGooglePoweredBy {
+    left: 2px;
+    bottom: 15px;   
+}
+.olControlAttribution {
+    bottom:4.5em;
+    display:block;
+    font-size:smaller;
+    font-weight:bold;
+    left:3px;
+    position:absolute;
+    text-shadow:-1px -1px #FFFFFF, 1px 1px #FFFFFF;
+    top:3px;
+    width:150px;
+    height:20px;
+}
+.olControlScale {
+    right: 3px;
+    bottom: 3em;
+    display: block;
+    position: absolute;
+    font-size: smaller;
+}
+.olControlScaleLine {
+   left: 10px;
+   bottom: 15px;
+   font-size: xx-small;
+}
+.olControlScaleLineBottom {
+   border: solid 2px black;
+   border-bottom: none;
+   margin-top:-2px;
+   text-align: center;
+}
+.olControlScaleLineTop {
+   border: solid 2px black;
+   border-top: none;
+   text-align: center;
+}
+
+.olControlPermalink {
+    right: 3px;
+    bottom: 1.5em;
+    display: block;
+    position: absolute;
+    font-size: smaller;
+} 
+
+div.olControlMousePosition {
+    bottom: 0em;
+    right: 3px;
+    display: block;
+    position: absolute;
+    font-family: Arial;
+    font-size: smaller;
+}
+
+.olControlOverviewMapContainer {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+}
+
+.olControlOverviewMapElement {
+    padding: 10px 18px 10px 10px;
+    background-color: #00008B;
+    -moz-border-radius: 1em 0 0 0;
+}
+
+.olControlOverviewMapMinimizeButton {
+    right: 0px;
+    bottom: 80px;
+}    
+
+.olControlOverviewMapMaximizeButton {
+    right: 0px;
+    bottom: 80px;
+}
+
+.olControlOverviewMapExtentRectangle {
+    overflow: hidden;
+    background-image: url("../images/blank.gif");
+    cursor: move;
+    border: 2px dotted red;
+}
+.olControlOverviewMapRectReplacement {
+    overflow: hidden;
+    cursor: move;
+    background-image: url("../images/overview_replacement.gif");
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.olLayerGeoRSSDescription {
+    float:left;
+    width:100%;
+    overflow:auto;
+    font-size:1.0em;
+}
+.olLayerGeoRSSClose {
+    float:right;
+    color:gray;
+    font-size:1.2em;
+    margin-right:6px;
+    font-family:sans-serif;
+}
+.olLayerGeoRSSTitle {
+    float:left;font-size:1.2em;
+}
+
+.olPopupContent {
+    padding:5px;
+    overflow: auto;
+}    
+.olControlNavToolbarExt { 
+    width:0px;
+    height:0px;
+}    
+.olControlNavToolbarExt div { 
+  display:block;
+  width:  28px;
+  height: 280px;
+  top: 0px;
+  left: 6px;
+  position: relative;
+}
+
+.olControlNavigationHistory.olControlNavigationHistoryPreviousItemInactive {
+background-image:url(../icons/silk/arrow_left.png);
+border:1px outset #D4DEFF;
+background-color: #DDDDDD;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
+
+.olControlNavigationHistory.olControlNavigationHistoryPreviousItemActive {
+background-image:url(../icons/silk/arrow_left.png);
+border:1px outset #D4DEFF;
+background-color:#FFFFFF;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
+
+.olControlNavigationHistory.olControlNavigationHistoryNextItemInactive {
+border:1px outset #D4DEFF;
+background-image:url(../icons/silk/arrow_right.png);
+background-color:#DDDDDD;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
+
+.olControlNavigationHistory.olControlNavigationHistoryNextItemActive {
+border:1px outset #D4DEFF;
+background-image:url(../icons/silk/arrow_right.png);
+background-color:#FFFFFF;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
+
+.olControlNavToolbar .olControlNavigationItemActive { 
+  background-image: url("../images/panning-hand-on.png");
+  background-repeat: no-repeat;
+}
+.olControlNavToolbar .olControlNavigationItemInactive { 
+  background-image: url("../images/panning-hand-off.png");
+  background-repeat: no-repeat;
+}
+.olControlNavToolbar .olControlZoomBoxItemActive { 
+  background-image: url("../images/drag-rectangle-on.png");
+  background-color: blue;
+  background-repeat: no-repeat;
+}
+.olControlNavToolbar .olControlZoomBoxItemInactive { 
+  background-image: url("../images/drag-rectangle-off.png");
+  background-repeat: no-repeat;
+}
+.olControlEditingToolbar  {
+    float:right;
+    right: 0px;
+    height: 30px; 
+    width: 200px;
+}
+.olControlEditingToolbar div { 
+  background-image: url("../images/editing_tool_bar.png");
+  background-repeat: no-repeat;
+  float:left;
+  width:  25px;
+  height: 24px;
+  margin: 5px;
+}
+
+
+
+.olControlSaveFeaturesItemActive { 
+    background-image: url(../images/save_features_on.png);
+    background-repeat: no-repeat;
+    background-position: 0px 1px;
+}
+.olControlSaveFeaturesItemInactive { 
+    background-image: url(../images/save_features_off.png);
+    background-repeat: no-repeat;
+    background-position: 0px 1px;
+}
+
+.olHandlerBoxZoomBox {
+    border: 2px solid red;
+    position: absolute;
+    background-color: white;
+    opacity: 0.50;
+    font-size: 1px;
+    filter: alpha(opacity=50);
+}
+.olHandlerBoxSelectFeature {
+    border: 2px solid blue;
+    position: absolute;
+    background-color: white;
+    opacity: 0.50;
+    font-size: 1px;
+    filter: alpha(opacity=50);
+}   
+
+.olControlPanPanel {
+    top: 10px;
+    left: 5px;
+}  
+
+.olControlPanPanel div {
+    background-image: url(../images/pan-panel.png);
+    height: 18px;
+    width: 18px;
+    cursor: pointer;
+    position: absolute;
+}
+
+.olControlPanPanel .olControlPanNorthItemInactive {
+    top: 0px;
+    left: 9px;
+    background-position: 0px 0px;
+}
+.olControlPanPanel .olControlPanSouthItemInactive {
+    top: 36px;
+    left: 9px;
+    background-position: 18px 0px;
+}
+.olControlPanPanel .olControlPanWestItemInactive {
+    position: absolute;
+    top: 18px;
+    left: 0px;
+    background-position: 0px 18px;
+}
+.olControlPanPanel .olControlPanEastItemInactive {
+    top: 18px;
+    left: 18px;
+    background-position: 18px 18px;
+}
+
+.olControlZoomPanel {
+    top: 71px;
+    left: 14px;
+} 
+
+
+.olControlZoomPanel div {
+    background-image: url(../images/zoom-panel.png);
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    cursor: pointer;
+}
+
+
+.olControlZoomPanel .olControlZoomInItemInactive {
+    top: 0px;
+    left: 0px;
+    background-position: 0px 0px;
+}
+					
+.olControlZoomPanel .olControlZoomToMaxExtentItemInactive {
+    top: 18px;
+    left: 0px;
+    background-position: 0px -18px;
+}
+
+/*
+.olControlZoomPanel .olControlZoomOutItemInactive {
+    top: 36px;
+    left: 0px;
+    background-position: 0px 18px;
+    background: url("../images/logo.jpg") no-repeat;
+}
+*/
+
+.olPopupCloseBox {
+  background: url("../images/close.gif") no-repeat;
+  cursor: pointer;
+}
+
+.olControlNoSelect {
+ -moz-user-select: none;
+}
+
+.olControlPanel .olControlMouseDefaultsItemActive { 
+          background-color: blue;
+          background-image: url("../images/pan_on.png");
+        }
+
+.olControlPanel .olControlMouseDefaultsItemInactive { 
+          background-color: orange;
+          background-image: url("../images/pan_off.png");
+        }
+.olControlPanel .olControlDrawFeatureItemActive { 
+          width:  22px;  
+          height: 22px;
+          background-image: url("../images/pan_off.png");
+        }
+.olControlPanel .olControlDrawFeatureItemInactive { 
+          width:  22px;  
+          height: 22px;
+			background-image: url("../images/pan_off.png");
+        }
+
+.contentheading, .componentheading 
+{
+font-weight: bold;
+font-size: 22px;
+
+}
+
+h1, h2, h3, h5, h6 
+
+{
+
+font-family: Arial,Helvetica,sans-serif;
+
+font-weight: bold;
+
+padding-bottom: 0px;
+
+margin-bottom: 5px;
+
+line-height: 100%;
+
+}
+
+h4
+{
+
+font-family: Arial,Helvetica,sans-serif;
+
+padding-bottom: 0px;
+
+margin-bottom: 5px;
+
+line-height: 100%;
+
+}
+
+
+h2 
+{
+font-size: 18px;
+}
+h3 
+{
+font-size: 15px;
+}
+div.article_row h2.contentheading, .contentin h3, #contentbottom h3 
+
+{
+
+position: relative;
+
+left: -10px;
+
+font-size: 15px;
+
+line-height: 18px;
+
+padding-top: 3px;
+
+padding-right: 3px;
+
+padding-bottom: 3px;
+
+padding-left: 10px;
+
+margin-bottom: 10px;
+
+width: 545px;
+
+background-color: #e4e4e4;
+
+}
+
+.fieldset_properties
+{
+  -moz-background-clip:border;
+  -moz-background-inline-policy:continuous;
+  -moz-background-origin:padding;
+  background:#EEEEEE none repeat scroll 0 0;
+  border: 1px solid #9f9f9f;
+  margin-top:5px;
+  * position: relative;
+  * margin-top:1em;
+  * padding-top:2em;
+
+
+}
+
+.fieldset_properties legend {
+  -moz-background-clip:border;
+  -moz-background-inline-policy:continuous;
+  -moz-background-origin:padding;
+  background:#D3D8DC none repeat scroll 0 0;
+  border:1px solid #ababab;
+  padding-left:3px;
+  padding-right:3px;
+  font-weight:bold;
+  * position:absolute;
+  * top: -.6em;
+  * left: .5em;
+
+}
+
+.product_proprety_row
+{
+	border:1px solid #9f9f9f;
+}
+
+.product_proprety_row legend {
+  background-color: transparent;
+  border:0px;
+  color:#9f9f9f;
+}
+ 
+/* Width of the lists */
+.product_proprety_row_list{
+	width: 250px;
+  	padding-left: 10px;
+	display:inline;
+	/* Holly Hack for IE */
+	* display:inline-block !important;
+}
+
+.product_proprety_row_list textarea,
+.product_proprety_row_list .msgProperty{
+	width: 250px;
+}
+
+.product_proprety_row_list li{
+	 list-style-type: decimal;
+	 margin-left:1.5em;
+	 margin-bottom: 5px;
+	 font-weight:bold;
+}
+
+
+.product_proprety_message_title{
+	font-weight:normal;
+	width:500px;
+}
+
+.product_proprety_cbox_group{
+	font-weight:normal;
+	width:500px;
+}
+
+.ordersteps{
+	width:100%;
+}
+.orderstepsTitle{
+	width:25%;
+}
+
+.thirdPartySelect{
+	width: 400px;
+}
+
+.ordersteps .infoClient{
+	width: 150px;
+}
+
+/* PageNav */
+/*.pagenav span{
+	color:#00000;
+	font-weight:bold;
+}
+
+.pagenav a:link, .pageNav a:visited{
+	color:#993300;
+}*/
+
+/*--------------------------------------------------|
+| dTree 2.05 | www.destroydrop.com/javascript/tree/ |
+|---------------------------------------------------|
+| Copyright (c) 2002-2003 Geir Landry               |
+|--------------------------------------------------*/
+
+.dtree {
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #666;
+	white-space: nowrap;
+	margin-top: 5px;
+	margin-left: 5px;
+	
+}
+.dtree img {
+	border: 0px;
+	vertical-align: middle;
+}
+.dtree a {
+	color: #333;
+	text-decoration: none;
+}
+.dtree a.node, .dtree a.nodeSel {
+	white-space: nowrap;
+	padding: 1px 2px 1px 2px;
+	
+}
+.dtree a.node:hover, .dtree a.nodeSel:hover {
+	color: #333;
+	text-decoration: underline;
+}
+.dtree a.nodeSel {
+	background-color: #c0d2ec;
+}
+.dtree .clip {
+	overflow: hidden;
+}
+
+/********************************************************/
+/***     EasySDI Product                              ***/
+/********************************************************/
+
+.editProductPane td{
+	padding:2px;
+}
+
+.editProductPane .inputbox{
+	width:350px;
+}
+
+.editProductPane .ProductPropreties .inputbox {
+	width:520px;
+}
+
+.ptitle{
+	font-weight:bold;
+	width:170px;
+}
+
+.editProductPane fieldset{
+	margin-top:10px;
+}
+
+.editProductPane #perimeter_id{
+	width:520px;
+}
+
+div#editObject:hover, div#deleteProduct:hover{
+	cursor:pointer;
+}
+
+div#editObject{
+	background-color:transparent;
+	background-image:url(../icons/silk/pencil.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+}
+
+div#editObjectCheckedOut:hover{
+	cursor:pointer;
+}
+
+div#editObjectCheckedOut{
+	background-color:transparent;
+	background-image:url(../icons/silk/lock_edit.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+}
+
+div#deleteObject:hover{
+	cursor:pointer;
+}
+
+div#deleteObject{
+	background-color:transparent;
+	background-image:url(../icons/silk/page_delete.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+div#listObjectVersion:hover{
+	cursor:pointer;
+}
+
+div#listObjectVersion{
+	background-color:transparent;
+	background-image:url(../icons/silk/page_white_stack.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+}
+
+div#listApplication:hover{
+	cursor:pointer;
+}
+
+div#listApplication{
+	background-color:transparent;
+	background-image:url(../icons/silk/monitor.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+}
+
+div#archiveMetadata:hover{
+	cursor:pointer;
+}
+
+div#archiveMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/folder_database.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;
+}
+
+div#synchronizeMetadata:hover{
+	cursor:pointer;
+}
+
+div#synchronizeMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/control_equalizer_blue.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;
+}
+
+
+
+div#synchronizedbyMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/control_equalizer.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;
+}
+
+div#invalidateMetadata:hover{
+	cursor:pointer;
+}
+
+div#invalidateMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/arrow_undo.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;
+}
+
+div#manageObjectVersionLink{
+	background-color:transparent;
+	background-image:url(../icons/silk/link_edit.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+div#viewObjectVersionLink{
+	background-color:transparent;
+	background-image:url(../icons/silk/link.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+div#newObjectVersion{
+	background-color:transparent;
+	background-image:url(../icons/silk/page_copy.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+	
+.box-table {
+	border-collapse:collapse;
+	width:100%;
+}
+
+.box-table tr:hover td {
+	-moz-background-clip:border;
+	-moz-background-inline-policy:continuous;
+	-moz-background-origin:padding;
+	background:#a2c4ea none repeat scroll 0 0;
+}
+
+.box-table td {
+	-moz-background-clip:border;
+	-moz-background-inline-policy:continuous;
+	-moz-background-origin:padding;
+	padding:1px;
+}
+
+.inputboxSearchProduct{
+	width:239px;
+}
+
+.productPreview{
+	width:100%; 
+}
+
+.productPreview .smallmap{
+	background-color:transparent;
+	border:1px solid #CCCCCC;
+	height:300px;
+	width:400px;
+}
+
+.productPreviewTitle{
+	background-color:#E4E4E4;
+	font-size:15px;
+	line-height:18px;
+	margin-bottom:10px;
+	padding:3px 3px 3px 10px;
+	position:relative;
+}
+
+#productPreview{
+	clear:both;
+	width:auto;	
+	padding-left:0px;
+	padding-right:0px;
+}
+
+.pdFavorite:hover, .pdNotFavorite:hover {
+	cursor:pointer;
+}
+
+.pdFavorite, .pdNotFavorite{
+	background-color:transparent;
+	background-image:url(../icons/silk/star.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+.pdNotFavorite{
+	/* for IE */
+	filter:alpha(opacity=20);
+	/* CSS3 standard */
+	opacity:0.2;
+}
+
+.pdNotificated:hover, .pdNotNotificated:hover {
+	cursor:pointer;
+}
+
+.pdNotificated, .pdNotNotificated{
+	background-color:transparent;
+	background-image:url(../icons/silk/bell.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+.pdNotNotificated{
+	/* for IE */
+	filter:alpha(opacity=20);
+	/* CSS3 standard */
+	opacity:0.2;
+}
+
+#newQuery, #newProductBtn{
+	width:120px;
+}
+
+.treatRequest:hover {
+	cursor:pointer;
+}
+
+.treatRequest{
+	background-color:transparent;
+	background-image:url(../icons/silk/pencil.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+div .reqDevis{
+	background-color:transparent;
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	background-image:url(../icons/silk_extended/question.png);
+}
+
+div .reqOrder{
+	background-color:transparent;
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	background-image:url(../icons/silk/basket_go.png);
+}
+
+div .reqUser{
+	background-color:transparent;
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	background-image:url(../icons/silk/user.png);
+}
+
+.particular-view-product-link a {display: block; /* or inline-block; I think IE would respect it since a link is an inline-element */
+                   background: transparent url(../icons/silk/page.png) no-repeat scroll center center; 
+                   text-align: center;
+                   line-height: 16px; } 
+
+.particular-link a {display: block; /* or inline-block; I think IE would respect it since a link is an inline-element */
+                   background: transparent url(../icons/silk/user.png) top left no-repeat; 
+                   text-align: center;
+                   line-height: 16px; } 
+
+.particular-link-tierce a {display: block; /* or inline-block; I think IE would respect it since a link is an inline-element */
+                   background: transparent url(../images/picto_tiers.png) top left no-repeat; 
+                   text-align: center;
+                   line-height: 16px; }
+		   
+
+.particular-order-link a {display: block; /* or inline-block; I think IE would respect it since a link is an inline-element */
+                   background: transparent url(../icons/silk/cart.png) no-repeat scroll center center; 
+                   text-align: center;
+                   line-height: 16px;
+}
+		   
+.particular-view-product-link, .particular-link, .particular-link-tierce, .particular-order-link{
+	height:18px;
+	width:18px;
+}
+
+#reqTreatTable .infoLogo, #orderList .infoLogo{
+	width:38px;
+}
+
+#reqTreatTable .logo, #orderList .logo{
+	width:16px;
+}
+
+#reqTreatTable .reqName{
+	width:80px;
+	text-align:left;
+}
+
+#treatmentSearch{
+	width:256px;
+}
+
+.listOrdersForProvider .treatment select{
+	width:125px;
+}
+
+.listOrdersForProvider .treatment .longInputBox{
+	width:340px;
+}
+
+#searchOrder{
+	width:252px;
+}
+
+.listOrdersContainer select{
+	width:125px;
+}
+/********************************************************/
+/***     EasySDI Order                                ***/
+/********************************************************/
+
+div .orderDate{
+	background-image:url(../icons/silk/date.png);
+	background-position:center;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+div .savedOrderArchive:hover, div .savedOrderOrder:hover, div .savedOrderSuppress:hover, div .savedOrderCopy:hover{
+	background-color:transparent;
+	background-position:center;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	cursor:pointer;
+}
+
+div .savedOrderArchive{
+	background-color:transparent;
+	background-position:center;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	background-image:url(../icons/silk/bin.png);
+}
+
+div .savedOrderSuppress{
+	background-color:transparent;
+	background-position:center;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	background-image:url(../icons/silk/cross.png);
+}
+
+div .noLogo{
+	background-color:transparent;
+	background-position:center;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	background:url(../images/pixel.gif);
+}
+
+div .savedOrderOrder{
+	background-color:transparent;
+	background-position:center;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	background-image:url(../icons/silk/basket_put.png);
+}
+
+div .savedOrderCopy{
+	background-color:transparent;
+	background-position:center;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	background-image:url(../icons/silk/page_copy.png);
+}
+
+/********************************************************/
+/***      EasySDI Process Order                       ***/
+/********************************************************/
+.orderInfo{
+	width:100%;
+}
+.orderInfo a.modal{
+	padding:0px;
+	font-weight:bold;
+}
+
+.orderInfo th{
+	text-align:left;
+}
+
+.orderInfoTitle
+{
+	width:150px;
+	font-weight:bold;
+	text-align:left;
+}
+
+.processTreatmentPage input, .processTreatmentPage textarea{
+	width:350px;
+}
+
+/********************************************************/
+/***      EasySDI Order Recap                         ***/
+/********************************************************/
+#divOrderRecap{
+	clear:both;
+	width:auto;	
+	padding-left:0px;
+	padding-right:0px;
+}
+.orderRecap
+{
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+.orderRecapTitle{
+	font-size:22px;
+	font-weight:bold;
+	padding:5px 5px 12px 10px;
+	background-color:#d4deff none repeat scroll 0 0;
+	color:#000000;
+}
+.orderRecap .ortitle2{
+	font-weight: bold;
+	font-size : 15px;
+	background-color:  rgb( 240, 240, 240);
+	padding:3px 3px 3px 5px;
+	margin: 5px 0px 0px 0px;
+}
+.orderRecap .ortitle3{
+	font-weight: bold;
+	font-size : 12px;
+	vertical-align: top;
+	padding-left:5px;
+}
+.orderRecap .ortitle4{
+	vertical-align: top;
+	font-weight: bold;
+	padding-left:5px;
+}
+.orderRecap .ornum{
+	font-style: italic ;
+	vertical-align: top;
+}
+div#printOrderRecap{
+	border: 1px outset #d4deff;
+	background-color:transparent;
+	background-image:url(../icons/silk/printer.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	right:5px;
+	top:10px;
+	position: absolute;
+}
+div#printOrderRecap:hover{ 
+	cursor : pointer;
+	border-style: inset;
+}
+
+.orderRecapTreatment
+{
+  border: 2px solid #CCCCCC;
+  margin-bottom: 15px;
+}
+
+.orderRecapTreatment legend {
+  padding: 0.2em 0.5em;
+  color:black;
+}
+
+.orderRecapResultTable{
+  margin-top: 10px;
+}
+
+.orderRecapResult{
+  background-color:#993300;
+  width:2px;
+}
+
+.orderRecap a{
+  font-weight:bold;
+}
+
+.orderRecap td, .orderRecap th {
+padding:0;
+}
+
+.orderList{
+	width:100%;
+}
+
+.orderList th, .orderList td{
+	text-align:left;
+}
+
+.ordersListForm table{
+	width:100%;
+}
+
+.ordersListForm th, .ordersListForm td{
+	text-align:left;
+}
+/********************************************************/
+/***              EasySDI Caddy                       ***/
+/********************************************************/
+.caddyError{
+	color:red;
+}
+
+.deleteProductCaddy { 
+	cursor:pointer;
+	background-image:url(../icons/silk/bin.png);
+	background-position:center;
+	background-color:transparent;
+	height:28px;
+	width:28px;
+	background-repeat:no-repeat;
+}
+.previewActivableProductCaddy { 
+	cursor:pointer;
+	background-image:url(../images/btn_visualiser_1.png);
+	background-position:center;
+	height:28px;
+	width:28px;
+	background-repeat:no-repeat;
+}
+.previewActivateProductCaddy { 
+	cursor:pointer;
+	background-image:url(../images/btn_visualiser_2.png);
+	background-position:center;
+	height:28px;
+	width:28px;
+	background-repeat:no-repeat;
+}
+.previewDisableProductCaddy { 
+	cursor:pointer;
+	background-image:url(../images/btn_visualiser_0.png);
+	background-position:center;
+	height:28px;
+	width:28px;
+	background-repeat:no-repeat;
+}
+
+/***********************/
+/*** EasySDI Perimeter */
+/***********************/
+.inmodule table{
+	width:100%;
+}
+
+#totalSurfaceDisplayed {
+	width:160px;
+}
+
+.inmodule fieldset{
+	margin-left:3px;
+	margin-right: 3px;
+	margin-top: 3px;
+	border: 1px solid #ABABAB;
+}
+
+.inmodule select{
+	font-size:1.1em;
+	width:160px;
+}
+
+.inmodule h4{
+	font-size:1.2em;
+	width:100%;
+}
+
+.inmodule h5{
+	margin-top:10px;
+	width:100%;
+	font-size:1em;
+	line-height:13px;
+	font-weight:bold;
+}
+
+.locFilter{
+	width:55px;
+}
+
+.addPerimeterButton{
+	margin-top:3px;
+	width:125px !important;
+}
+
+.addCoordinateButton{
+	background-color:transparent !important;
+	background-image:url(../icons/silk/add.png) !important;
+	background-position:center center !important;
+	background-repeat:no-repeat !important;
+	height:16px !important;
+	width:20px !important;
+	border: 0px;
+}
+
+.editCoordinateButton{
+	background-color:transparent !important;
+	background-image:url(../icons/silk/pencil.png) !important;
+	background-position:center center !important;
+	background-repeat:no-repeat !important;
+	height:16px !important;
+	width:20px !important;
+	border: 0px;
+}
+
+.particular-loadperim-link a {
+	           display: block !important; /* or inline-block; I think IE would respect it since a link is an inline-element */
+                   background: transparent url(../icons/silk/page.png) no-repeat scroll center center !important;
+                   text-align: center !important;
+                   line-height: 16px !important;
+		   width:20px !important;
+}
+
+.olControlDrawFeaturePointDisableItemInactive{
+	background-image:url(../images/openlayers/btn_pointeur_0.png) !important;
+	background-color: transparent !important;
+	background-position: 0 0 !important;
+	background-repeat: no-repeat !important;
+	height: 26px !important;
+	width: 28px !important;
+}
+
+.olControlDrawFeaturePointDisableItemActive{
+	background-image:url(../images/openlayers/btn_pointeur_0.png) !important;
+	background-color: transparent !important;
+	background-position: 0 0 !important;
+	background-repeat: no-repeat !important;
+	height: 26px !important;
+	width: 28px !important;
+}
+
+.olControlModifyFeatureDisableItemInactive{
+	background-image:url(../images/openlayers/btn_deplsommet_0.png) !important;
+	background-color: transparent !important;
+	background-position: 0 0 !important;
+	background-repeat: no-repeat !important;
+	height: 26px !important;
+	width: 28px !important;
+}
+
+.olControlModifyFeatureDisableItemActive{
+	background-image:url(../images/openlayers/btn_deplsommet_0.png) !important;
+	background-color: transparent !important;
+	background-position: 0 0 !important;
+	background-repeat: no-repeat !important;
+	height: 26px !important;
+	width: 28px !important;
+}
+
+#selectedSurface{
+	width:130px;
+}
+
+.deletePerimeterButton{
+	background-color:transparent !important;
+	background-image:url(../icons/silk/delete.png) !important;
+	background-position:0 0 !important;
+	background-repeat:no-repeat !important;
+	height:16px !important;
+	width:16px !important;
+	border: 0px;
+}
+
+.perimeterActionSpaceHolder{
+	width:51px !important;
+}
+
+.graphSelHint{
+	padding-left: 7px;
+	padding-right: 7px;
+	width: 156px;
+	text-align:justify;
+}
+
+.olControlEditingToolbar {
+    padding-top:5px;
+    padding-bottom:5px;
+    float: none !important;
+    height: 30px !important;
+    right: 0 !important;
+    margin-left: 4px;
+    width: 160px !important;
+}
+
+.current dd{
+    border-bottom: 1px solid #ABABAB;
+    border-left: 1px solid #ABABAB;
+    border-right: 1px solid #ABABAB;
+    margin-left:0px;
+}
+
+#manualAddGeometry{
+   padding-top:5px;
+}
+
+#manualPerimHint{
+	padding-top:5px;
+	margin-bottom:5px;
+}
+
+
+/***********************/
+/*** EasySDI Mod-menu */
+/***********************/
+.easysdi_disconnect_button{
+	margin-top:0px;
+	margin-right:10px;
+}
+.easysdi_disconnect_table td{
+	text-align: center
+}
+
+/***********************/
+/*** EasySDI Partner   */
+/***********************/
+
+.inputboxEditAffiliates{
+	width:240px;
+}
+
+div#editAffiliate:hover, .deletableAccount:hover{
+	cursor:pointer;
+}
+
+div#editAffiliate{
+	background-color:transparent;
+	background-image:url(../icons/silk/pencil.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#deleteAffiliate:hover{
+	cursor:pointer;
+}
+
+div#deleteAffiliate{
+	background-color:transparent;
+	background-image:url(../icons/silk/page_delete.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+.box-table .affiliateActions{
+	width:40px;
+}
+
+.box-table .affiliateActions div{
+	float:left;
+}
+		
+.deletableAccount{
+	background-color:transparent;
+	background-image:url(../icons/silk/page_delete.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+
+.unDeletableAccount{
+	background-color:transparent;
+	/* for IE */
+	filter:alpha(opacity=20);
+	/* CSS3 standard */
+	opacity:0.2;
+	background-image:url(../icons/silk/page_delete.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+div#printPartnerRecap{
+	background-color:transparent;
+	background-image:url(../icons/silk/printer.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	right:5px;
+	top:10px;
+	position: absolute;
+}
+div#printPartnerRecap:hover{ 
+	cursor : pointer;
+}
+
+.partnerList .ptitle{
+	width:100px;
+}
+
+.partnerList table{
+	margin-top:20px;
+}
+
+.partnerSummaryContent{
+	padding-left:10px;
+	padding-right:10px;
+	padding-bottom:10px;
+	width:100%;
+}
+
+.partnerList h3{
+	padding-left:17px;
+}
+
+/*******************************/
+/*** EasySDI manage metadata   */
+/*******************************/
+
+table#manageMetadata div{
+	background-color:transparent;
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:28px;
+}
+
+#manageMetadata .internalOrderable{
+	background-image:url(../icons/silk/lock.png);
+}
+
+#manageMetadata .publicOrderable{
+	background-image:url(../icons/silk/basket.png);
+}
+
+div#historyAssignMetadata:hover{
+	cursor:pointer;
+}
+
+div#historyAssignMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/calendar.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+}
+
+#manageMetadata .logo{
+	width:16px;
+}
+
+#manageMetadata .logo2{
+	width:16px;
+}
+
+/*******************************/
+/*** EasySDI metadata edition  */
+/*******************************/
+
+/* Text in boxes, beside title */
+#formContainer .x-form-field {
+	font-size:11px;
+}
+
+/* Title text, spacing beetween lines */
+#formContainer .x-form-item{
+	margin-bottom:3px !important;
+	font-size:11px;
+}
+
+/* Titles */
+#formContainer .x-form-item-label{
+	width:150px !important;
+}
+
+/* Boxes, beside title */
+#formContainer .x-form-element{
+	padding-left:150px !important;
+}
+
+
+/* form */
+.easysdi_shop_backend_form {
+	width: 520px;
+}
+
+#formContainer .x-panel-body {
+	background-color:transparent;
+	border-color:#99BBE8;
+}
+
+.easysdi_shop_backend_fieldset {
+	width: auto;
+}
+
+/* root fieldset */
+#gmd_MD_Metadata
+{
+	border: 0px solid #9f9f9f !important;
+}
+#gmd_MD_Metadata legend
+{
+	  padding: 0px 3px !important;
+	  border: 0px solid #9f9f9f !important;
+	  background-color: transparent !important;
+	  color:transparent !important;
+}
+
+#gmd_MD_Metadata legend span{
+	padding-left:5px;
+	padding-right:5px;
+}
+
+
+/*first fieldset floor */
+#gmd_MD_Metadata div div fieldset
+{
+	border: 2px solid #9f9f9f !important;
+}
+#gmd_MD_Metadata div div fieldset legend
+{
+	  padding: 0px 3px !important;
+	  border: 0px solid #9f9f9f !important;
+	  background-color: #9f9f9f !important;
+	  color:white !important;
+}
+
+#gmd_MD_Metadata div div .x-panel-collapsed{
+	  border-left: 0px !important;
+	  border-right: 0px !important;
+	  border-bottom: 0px !important;
+	  border-top: 2px solid #9f9f9f !important;
+}
+
+/*second fieldset floor and followings */
+#gmd_MD_Metadata div div fieldset div div fieldset
+{
+	border: 1px solid #B5B8C8 !important;
+}
+
+#gmd_MD_Metadata div div fieldset div div fieldset legend
+{
+	  padding: 0px 3px !important;
+	  border: 0px solid #B5B8C8 !important;
+	  background-color: transparent !important;
+	  color:#333333 !important;
+}
+
+#gmd_MD_Metadata div div fieldset div div .x-panel-collapsed{
+	  border-left: 0px !important;
+	  border-right: 0px !important;
+	  border-bottom: 0px !important;
+	  border-top: 1px solid #9f9f9f !important;
+}
+
+#gmd_MD_Metadata div div fieldset legend{
+  padding: 0px 3px;
+  border: 0px solid #9f9f9f;
+  background-color: #9f9f9f;
+  color:white;
+}
+
+.easysdi_shop_backend_textarea {
+	margin-bottom:3px;
+	margin-top:3px;
+	width: 292px !important;
+	height: 80px !important;
+}
+
+/* Fieldset in general */
+#formContainer .x-fieldset {
+	border:1px solid #ccc;
+	display:block;
+	margin-bottom:5px;
+	padding:5px;
+	width:auto !important; //for the multiselect box
+}
+
+#formContainer .x-fieldset-body{
+	width:auto !important; //for the multiselect box
+}
+
+#formContainer .x-fieldset-header  {
+	color: #333333;
+	font-size: 11px;
+	font-weight: bold;
+}
+
+#formContainer .x-form-field-wrap #formContainer .x-form-trigger {
+	background-image:url(../images/default/form/trigger.gif);
+	border-bottom-color:#B5B8C8;
+}
+
+.easysdi_shop_backend_multiselect {
+	width:300px !important;
+	height:100px !important;
+}
+
+.easysdi_shop_backend_combobox {
+	width:281px !important;
+}
+
+.easysdi_shop_backend_textfield {
+	width:298px !important;
+}
+
+
+.easysdi_shop_backend_numberfield {
+	width:292px !important;
+}
+
+
+.easysdi_shop_backend_datetimefield {
+	width:281px !important;
+}
+
+.easysdi_shop_backend_datefield {
+	width:281px !important;
+}
+
+
+/***********************/
+/*** EasySDI Publish ***/
+/***********************/
+#excReport{
+	width:650px !important;
+}
+
+#excMessage{
+		background-color:#CCCCCC;
+		font-size:9px;
+		border:1px solid #AAAAAA;
+}
+
+#titleTextImg {
+    float: left;
+    font-size: 9px;
+    margin: 5px 10px;
+    width:550px;
+}
+
+#headerDivImg {
+    background-color: #CCCCCC;
+}
+
+#headerDivImg, #contentDivImg, #contentDivImg_ {
+    float: left;
+    width: 610px;
+    font-size: 9px;
+    margin: 5px 10px;
+}
+
+#contentDivImg, #contentDivImg_ {
+    background-color: #EEEEEE;
+}
+
+.publish .errorMsg{
+	background:#FBE3E4 url(../../../components/com_easysdi_publish/img/fancyupload/failed.png) no-repeat scroll 4px 4px;
+	border-bottom:1px solid #FBC2C4;
+	text-align:left;
+	#clear:left;
+	color:#8A1F11;
+	#cursor:pointer;
+	display:none;
+	line-height:25px;
+	padding-left:44px;
+}
+
+.upload-icon {
+    background: url("../../../components/com_easysdi_publish/img/application_get.png") no-repeat scroll 0 0 transparent !important;
+}
+
+#errorMsgCode{
+	font-weight:bold;
+}
+
+#errorMsgDescr{
+	font-style: italic;
+}
+
+.publish .edit:hover, .publish .delete:hover, .publish .deleteDis:hover{
+	cursor:pointer;
+}
+
+.publish .info {
+    background: url("../icons/silk/information.png") no-repeat scroll 5px 50% #F8FAFC;
+    padding: 5px 20px 5px 30px;
+    text-align: left;
+}
+
+#layerListTable .copy, #featureListTable .copy{
+	background-color:transparent;
+	background-image:url(../icons/silk/page_copy.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:14px;	
+}
+
+#layerListTable .edit, #featureListTable .edit{
+	background-color:transparent;
+	background-image:url(../icons/silk/pencil.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:14px;	
+}
+
+#layerListTable .deleteDis, #featureListTable .deleteDis{
+	background-color:transparent;
+	background-image:url(../icons/silk/delete.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:14px;
+	/* for IE */
+	filter:alpha(opacity=20);
+	/* CSS3 standard */
+	opacity:0.2;
+}
+
+#layerListTable .delete, #featureListTable .delete{
+	background-color:transparent;
+	background-image:url(../icons/silk/delete.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:14px;
+}
+
+.publish .title{
+	width:200px;
+}
+
+.publish .titlel{
+	width:150px;
+}
+
+.publish .descr{
+	width:80px;
+}
+
+
+#layerListTable .logo, #featureListTable .logo{
+	width:16px;
+	height:16px;
+}
+
+
+.publish a:hover, a.hover {
+	color:#000000;
+}
+
+.publish a:link, .publish a:visited {
+	/*color:#135CAE;*/
+	font-weight:bold;
+	text-decoration:underline;
+}
+
+.publish .fileActionDisabled {
+	color:#CCCCCC;
+	font-weight:bold;
+	text-decoration:underline;
+}
+
+dl.tabs dt span {
+    font-weight: bold;
+}
+
+.publish dd {
+	margin-left:0;
+}
+
+.publish dl.tabs dt {
+	color:#666666;
+	font-weight:bold;
+	font-size:12px;
+}
+
+.publish dl.tabs dt.open {
+	color:#000000;
+	font-weight:bold;
+	font-size:14px;
+}
+
+.publish table.list th{
+	background:lightgray;
+}
+
+.publish legend {
+	color:#666666;
+	font-size:12px;
+	font-weight:bold;
+}
+
+.publish .endpointslist{
+	width:512px;
+}
+
+#fieldsNameTab .inputbox, #descriptionTab .inputbox{
+	width:231px;
+}
+
+.publish .layerGeneralInfo{
+	width:410px;
+}
+
+.demoPurpose{
+	border-bottom:2px solid #110000;
+}
+
+/* Publish quick view */
+
+.viewmap {
+    width: 502px;
+    height: 251px;
+    border: 1px solid #ccc;
+}
+#tags {
+    display: none;
+}
+
+/* Pour �tre compatible avec GeodbMeta*/
+div#divSimpleSearch.row div.checkbox {
+	float:left;
+	/*display: inline-block;*/
+	width: 521px;
+	margin-top: -1px;
+}
+
+div#divSimpleSearch  div.label {
+display:block;
+float:left;
+padding-right:10px;
+text-align:right;
+width:163px;
+}
+
+div#divSimpleSearch  label {
+display:block;
+float:left;
+padding-right:10px;
+text-align:right;
+width:163px;
+}
+
+
+div#divSimpleSearch  input.text {
+	width:310px;
+}
+
+div#divSimpleSearch select.inputbox{
+	width:239px;
+}
+
+div#divAdvancedSearch.row div.checkbox {
+	float:left;
+	display: inline-block;
+	width: 521px;
+	margin-top: -1px;
+}
+
+div#divAdvancedSearch  label {
+display:block;
+float:left;
+padding-right:10px;
+text-align:right;
+width:163px;
+}
+
+div#divAdvancedSearch  input.text {
+	width:310px;
+}
+
+div#divAdvancedSearch select.inputbox{
+	width:310px;
+}
+
+/* Frontend table lists */
+.tableList {
+	border: 0;
+	margin-bottom: 20px;
+	line-height: 16px;
+	padding-top:5px;
+}
+
+.tableList .col {
+	padding: 5px 0;
+}
+
+.tableList .col {
+	margin: 0 !important;
+}
+
+.tableList .col .title {
+	font-size: 0.8em;
+	color: #515151;
+}
+
+.tableList .col .logo {
+	width:14px;
+}
+
+.tableList .col .logo2 {
+	width:28px;
+}
+
+.box-table {
+	border: 0;
+	border-collapse:collapse;
+	width:100%;
+}
+
+.box-table tr:hover td {
+	-moz-background-clip:border;
+	-moz-background-inline-policy:continuous;
+	-moz-background-origin:padding;
+	background:#a2c4ea none repeat scroll 0 0;
+}
+
+.box-table td {
+	-moz-background-clip:border;
+	-moz-background-inline-policy:continuous;
+	-moz-background-origin:padding;
+	padding:1px;
+}
+
+div#emptyPicto{
+	background-color:transparent;
+	background-image:url(../images/blank.gif);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+/* List Metadata Screen*/	
+div#editMetadata:hover{
+	cursor:pointer;
+}
+
+div#editMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/pencil.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#assignMetadata:hover{
+	cursor:pointer;
+}
+
+div#assignMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/user_go.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+	border:0px !important;
+}
+
+div#notifyMetadata:hover{
+	cursor:pointer;
+}
+
+div#notifyMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/email_go.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+	border:0px !important;
+}
+
+.box-table .metadataActions{
+	width:150px;
+}
+
+.box-table .metadataActions div{
+	float:left;
+}
+
+/* List Object screen */
+div#listObjectVersion:hover{
+	cursor:pointer;
+}
+div#listObjectVersion{
+	background-color:transparent;
+	background-image:url(../icons/silk/page_white_stack.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#editObject:hover{
+	cursor:pointer;
+}
+
+div#editObject{
+	background-color:transparent;
+	background-image:url(../icons/silk/pencil.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#deleteObject:hover{
+	cursor:pointer;
+}
+
+div#deleteObject{
+	background-color:transparent;
+	background-image:url(../icons/silk/page_delete.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+.box-table .objectActions{
+	width:80px;
+}
+
+.box-table .objectActions div{
+	float:left;
+}
+
+/* List ObjectVersion screen */
+div#editObjectVersion:hover{
+	cursor:pointer;
+}
+
+div#editObjectVersion{
+	background-color:transparent;
+	background-image:url(../icons/silk/pencil.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#manageObjectVersionLink:hover{
+	cursor:pointer;
+}
+
+
+div#viewObjectVersionLink:hover{
+	cursor:pointer;
+}
+
+.box-table .objectversionActions{
+	width:80px;
+}
+
+.box-table .objectversionActions div{
+	float:left;
+}
+
+.row{
+	clear: both;
+	margin-bottom: 5px;
+	}
+
+/* List Application */
+.box-table .applicationActions{
+	width:40px;
+}
+
+.box-table .applicationActions div{
+	float:left;
+}
+
+div#editApplication:hover{
+	cursor:pointer;
+}
+
+div#editApplication{
+	background-color:transparent;
+	background-image:url(../icons/silk/pencil.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#deleteApplication:hover{
+	cursor:pointer;
+}
+
+div#deleteApplication{
+	background-color:transparent;
+	background-image:url(../icons/silk/page_delete.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+/* List Product */
+div#editProduct:hover{
+	cursor:pointer;
+}
+
+div#editProduct{
+	background-color:transparent;
+	background-image:url(../icons/silk/pencil.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#editProductCheckedOut:hover{
+	cursor:pointer;
+}
+
+div#editProductCheckedOut{
+	background-color:transparent;
+	background-image:url(../icons/silk/lock_edit.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#deleteProduct:hover{
+	cursor:pointer;
+}
+
+div#deleteProduct{
+	background-color:transparent;
+	background-image:url(../icons/silk/page_delete.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+.box-table .productActions{
+	width:40px;
+}
+
+.box-table .productActions div{
+	float:left;
+}
+
+.executeXQuery{
+	background-color:transparent;
+	background-image:url(../icons/silk/asterisk_orange.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:20px;
+}
+
+.executeXQuery:hover{
+	cursor :pointer;
+}
+
+#selected-grid-name{
+	height:20px;
+	padding-left:20px;
+}
+
+#selected-grid-detail{
+	height:20px;
+	padding-left:20px;
+}
+
+.grid-selection{
+	padding-left:20px;
+}
+
+.grid-map{
+	padding-left:20px;
+	width: 600px; 
+	height: 300px
+}
+
+
+.metadatapublished_calendar{
+	width:100px;
+}
