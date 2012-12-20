@@ -461,11 +461,12 @@ class ADMIN_object {
 		}
 		
 		$visibilities=array();
-		$database->setQuery( "SELECT id AS value,  name AS text FROM #__sdi_list_visibility " );
+		$database->setQuery( "SELECT id AS value,  label AS text FROM #__sdi_list_visibility " );
 		$visibilities = $database->loadObjectList() ;
 		if ($database->getErrorNum()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
+		helper_easysdi::alter_array_value_with_JTEXT_($visibilities);
 		
 				
 		HTML_object::editObject($rowObject, $rowMetadata, $id, $accounts, $objecttypes, $visibilities, $projections, $fieldsLength, $languages, $labels, $unselected_editors, $selected_editors, $unselected_managers, $selected_managers, $rowObjectType->hasVersioning, $pageReloaded, $option );
