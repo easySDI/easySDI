@@ -1,9 +1,9 @@
 <?xml version="1.0"  ?>
 <install version="1.5" type="component">
 	<name>EasySDI_catalog</name>
-	<version>2.5.0</version>
-	<releaseDate>2012-10-15</releaseDate>
-    <releaseType>Major update</releaseType>
+	<version>2.5.1</version>
+	<releaseDate>2012-12-20</releaseDate>
+    <releaseType>Minor update</releaseType>
 	<creationDate>January 2011</creationDate>
 	<author>Depth.ch</author>
 	<authorEmail>easysdi@depth.ch</authorEmail>
