@@ -2429,6 +2429,31 @@ function com_install(){
 				}
 			}
 		}
+		if($version == "2.5.0")
+		{
+			$query="UPDATE #__sdi_list_visibility SET label ='CATALOG_PUBLIC' WHERE code='public'";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			$query="UPDATE #__sdi_list_visibility SET label ='CATALOG_PRIVATE' WHERE code='private'";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			$query="UPDATE #__sdi_list_visibility SET label ='CATALOG_PROTECTED' WHERE code='protected'";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$version="2.5.1";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
         
 		$query = "DELETE FROM #__components where `option`= 'com_easysdi_catalog' ";
 		$db->setQuery( $query);
