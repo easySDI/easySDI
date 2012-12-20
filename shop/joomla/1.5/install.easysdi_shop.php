@@ -1058,7 +1058,92 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
+	if($version == "2.1.0")
+	{
+		$query = "CREATE TABLE IF NOT EXISTS `#__sdi_grid`  (
+			`id`  bigint(20) NOT NULL AUTO_INCREMENT ,
+			`guid`  varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+			`code`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+			`name`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+			`description`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+			`created`  datetime NOT NULL ,
+			`updated`  datetime NULL DEFAULT NULL ,
+			`createdby`  bigint(20) NOT NULL ,
+			`updatedby`  bigint(20) NULL DEFAULT NULL ,
+			`label`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+			`ordering`  bigint(20) NULL DEFAULT NULL ,
+			`checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
+			`checked_out_time`  datetime NULL DEFAULT NULL ,
+			`urlwms`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+			`projection`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+			`unit`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+			`extent`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+			`minscale`  double NOT NULL ,
+			`maxscale`  double NOT NULL ,
+			`imgformat`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+			`layername`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+			`urlwfs`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+			`featuretype`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+			`featureprefix`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+			`featureNS`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+			`fieldname`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+			`fielddetail`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+			`fieldgeom`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+			`fieldresource`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+			`detailtooltip` tinyint(1) NULL DEFAULT NULL ,
+			`wmsuser`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+			`wmspassword`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+			`wmsaccount_id`  bigint(20) NULL DEFAULT NULL ,
+			`wfsuser`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+			`wfspassword`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+			`wfsaccount_id`  bigint(20) NULL DEFAULT NULL ,
+			PRIMARY KEY (`id`),
+			UNIQUE INDEX `guid` USING BTREE (`guid`) 
+		)
+		ENGINE=InnoDB
+		DEFAULT CHARACTER SET=utf8";
+		$db->setQuery( $query);
+		if (!$db->query()){
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE  `#__sdi_product` ADD grid_id bigint (20)";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE `#__sdi_product` ADD CONSTRAINT `#__sdi_product_grid_pk2` FOREIGN KEY (`grid_id`) REFERENCES `#__sdi_grid` (`id`);";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		// Update component version
+		$version="2.2.0";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='SHOP'";
+		$db->setQuery( $query);
+		if (!$db->query()){
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
+	if($version == "2.2.0")
+	{
+		$query="ALTER TABLE `#__sdi_grid` ADD `singletile` tinyint (1) NOT NULL default 0";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
 	
+		// Update component version
+		$version="2.2.0.1";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='SHOP'";
+		$db->setQuery( $query);
+		if (!$db->query()){
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
 	 
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_shop' ";
 	$db->setQuery( $query);

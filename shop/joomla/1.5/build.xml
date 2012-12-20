@@ -2,15 +2,13 @@
 <project default="sync" basedir=".">
 
 	<property name="projet.out.dir" value="out" />
+	<property name="projet.sync.dir" value="C:\www\agi250" />
 
 	<target name="package" depends="create-structure,compression"
 		description="Main target">
 	</target>
 
 	<target name="create-structure" description="Creating the working directory structure">
-		<delete>
-			<fileset dir="${projet.out.dir}" includes="*" />
-		</delete>
 		<mkdir dir="${projet.out.dir}" />
 	</target>
 
@@ -54,7 +52,7 @@
 
 	<target name="sync" description="Copy from here to apache">
 		<copy
-			todir="C:\www\Server\crigeos\administrator\components\com_easysdi_shop">
+			todir="${projet.sync.dir}\administrator\components\com_easysdi_shop">
 			<fileset dir=".">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -69,7 +67,7 @@
 			</fileset>
 		</copy>
 		<copy
-			todir="C:\www\Server\crigeos\components\com_easysdi_shop">
+			todir="${projet.sync.dir}\components\com_easysdi_shop">
 			<fileset dir="./com_easysdi_shop">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -83,23 +81,23 @@
 			</fileset>
 		</copy>
 		<copy
-			todir="C:\www\Server\crigeos\components\com_easysdi_shop\views">
+			todir="${projet.sync.dir}\components\com_easysdi_shop\views">
 			<fileset dir="./com_easysdi_shop/views">
 				<include name="**/*.php" />
 				<include name="**/*.xml" />
 			</fileset>
 		</copy>
 		<copy		   
-		   todir="C:\www\Server\crigeos\administrator\language\fr-FR">
+		   todir="${projet.sync.dir}\administrator\language\fr-FR">
 		     <fileset dir="./language/admin">
 		      <include name="**/fr-FR.com_easysdi_shop.ini" />
 		     </fileset>
 		    </copy>
 		<copy		   
-				   todir="C:\www\Server\crigeos\administrator\language\en-GB">
-				     <fileset dir="./language/admin">
-				      <include name="**/en-GB.com_easysdi_shop.ini" />
-				     </fileset>
-				    </copy>
+		   todir="${projet.sync.dir}\administrator\language\en-GB">
+		     <fileset dir="./language/admin">
+		      <include name="**/en-GB.com_easysdi_shop.ini" />
+		     </fileset>
+		    </copy>
 	</target>
 </project>

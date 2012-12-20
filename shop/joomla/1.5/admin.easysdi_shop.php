@@ -727,7 +727,85 @@ switch($task){
 		TOOLBAR_product::_LISTPRODUCT();
 		ADMIN_product::listProduct($option);		
 		break;
+
+	/*****************************************************************************************************************************
+	 * Grid
+	*****************************************************************************************************************************/
+	case "saveGrid":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'grid.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'grid.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'grid.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'grid.easysdi.class.php');
 	
+		ADMIN_grid::saveGrid(true,$option);
+		$mainframe->redirect("index.php?option=$option&task=listGrid" );
+		break;
+	
+	case "applyGrid":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'grid.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'grid.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'grid.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'grid.easysdi.class.php');
+		
+		$id = ADMIN_grid::saveGrid(false,$option);
+		$mainframe->redirect("index.php?option=$option&task=editGrid&cid[]=".$id );
+		break;
+	case "copyGrid":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'grid.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'grid.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'grid.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'grid.easysdi.class.php');
+	
+		ADMIN_grid::copyGrid($cid,$option);
+		break;
+	
+	case "deleteGrid":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'grid.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'grid.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'grid.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'grid.easysdi.class.php');
+	
+		ADMIN_grid::deleteGrid($cid,$option);
+		break;
+	
+	case "editGrid":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'grid.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'grid.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'grid.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'grid.easysdi.class.php');
+		require_once (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'submit.admin.easysdi.php');
+		
+		TOOLBAR_grid::_EDITGRID();
+		ADMIN_grid::editGrid($cid[0],$option);
+		break;
+	
+	case "newGrid":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'grid.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'grid.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'grid.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'grid.easysdi.class.php');
+		require_once (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'submit.admin.easysdi.php');
+	
+		TOOLBAR_grid::_EDITGRID();
+		ADMIN_grid::editGrid(0,$option);
+		break;
+	
+	case "cancelGrid":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'grid.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'grid.easysdi.class.php');
+	
+		ADMIN_grid::cancelGrid($option);
+		break;
+	
+	case "listGrid":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'grid.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'grid.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'grid.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'grid.easysdi.class.php');
+	
+		TOOLBAR_grid::_LISTGRID();
+		ADMIN_grid::listGrid($option);
+		break;
 			
 	case "ctrlPanelShop":
 	default:
