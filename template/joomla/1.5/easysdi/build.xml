@@ -11,9 +11,6 @@
 
 	<target name="create-structure">
 		<echo>Creating the working directory structure</echo>
-		<delete>
-			<fileset dir="${projet.out.dir}" includes="*" />
-		</delete>
 		<mkdir dir="${projet.out.dir}" />
 	</target>
 
@@ -25,7 +22,7 @@
 
 	<target name="sync" description="Copy from here to apache">
 		<copy
-			todir="C:\www\Server\sdiv2\templates\easysdi">
+			todir="C:\www\agi250\templates\easysdi">
 			<fileset dir=".">
 				<include name="**/*.*" />
 				

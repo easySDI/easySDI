@@ -8,8 +8,8 @@
 	<authorUrl>http://www.depth.ch</authorUrl>
     <copyright></copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-   	<version>2.2.0</version>
-	<releaseDate>2012-01-20</releaseDate>
+   	<version>2.5.0</version>
+	<releaseDate>2012-10-15</releaseDate>
 	<releaseType>Major update</releaseType>
 	<description>EASYSDI Template</description>
 	<files>
