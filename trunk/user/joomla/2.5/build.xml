@@ -4,7 +4,8 @@
 	<property name="projet.install.admin.dir" value="C:\www\sdi25\administrator\components\com_easysdi_user" />
 	<property name="projet.install.site.dir" value="C:\www\sdi25\components\com_easysdi_user" />
 	<property name="projet.install.langEN.dir" value="C:\www\sdi25\administrator\language\en-GB" />
-
+	<property name="projet.install.langFR.dir" value="C:\www\opcc\administrator\language\fr-FR" />
+	
 	<target name="package" depends="create-structure,compression"
 		description="Main target">
 	</target>
@@ -51,5 +52,11 @@
 		       <include name="**/en-GB.com_easysdi_user.sys.ini" />
 		     </fileset>
 		    </copy>
+		<copy todir="${projet.install.langFR.dir}">
+	     <fileset dir="./administrator/language/fr-FR">
+	      <include name="**/fr-FR.com_easysdi_user.ini" />
+	       <include name="**/fr-FR.com_easysdi_user.sys.ini" />
+	     </fileset>
+	    </copy>
 	</target>
 </project>
