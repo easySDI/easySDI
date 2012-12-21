@@ -114,11 +114,11 @@ class com_easysdi_userInstallerScript
 			$params['serviceaccount'] 		= $user->id;
 			
 			$this->setParams( $params );
-			
-			$db = JFactory::getDbo();
-			$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_user'");
-			$db->query();
 		}
+		
+		$db = JFactory::getDbo();
+		$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_user'");
+		$db->query();
 	}
 
 	/*
