@@ -13,4 +13,18 @@
 		<maintainerurl>http://www.easysdi.org</maintainerurl>
 		<targetplatform name="joomla" version="2.5" />
      </update>
+     <update>
+		<name>EasySDI</name>
+   		<description>EasySDI package</description>
+   		<element>pkg_easysdi</element>
+   		<type>package</type>
+   		<version>3.1.1</version>
+   		<infourl title="EasySDI Deployment Site">http://www.easysdi.org</infourl>
+   		<downloads>
+       		<downloadurl type="full" format="zip">http://update.easysdi.org/packages/easysdi/easysdi-3.1.1-stable-full.zip</downloadurl>
+   		</downloads>
+   		<maintainer>EasySDI Community</maintainer>
+		<maintainerurl>http://www.easysdi.org</maintainerurl>
+		<targetplatform name="joomla" version="2.5" />
+     </update>
 </updates>
