@@ -1,0 +1,113 @@
+/* setting font fixes combobox rendering issues in IE. See
+ * http://extjs.com/forum/showthread.php?t=72505 */
+ 
+body {
+    font-family:helvetica,tahoma,verdana,sans-serif;
+    text-align: left !important;
+}
+
+body.contentpane {
+    background-color: #F0F0F0 !important;
+}
+
+.x-window{
+	text-align: left !important;
+}
+.x-window .x-tab-strip-top .x-tab-right {
+    margin-left: 0px !important;
+    padding-left: 0 !important;
+   
+}
+ span.x-tab-strip-text {
+     padding-left: 10px !important;
+}
+/* don't wrap lines on any tooltips */
+.x-tip {
+    white-space: nowrap;
+}
+
+/* application css goes here */
+
+.olControlAttribution {
+    text-align: right;
+    font-size: 9px;
+    bottom: 2px;
+}
+
+
+body.contentpane {
+    margin: 0px !important;
+}
+
+tr, td {
+    border: 0px solid #DDDDDD !important;
+}
+
+div.map-overlay {
+    left: 10px !important;
+    right :auto !important
+}
+
+.gxp-icon-getfeatureinfo{
+	height: 0px !important;
+	width: 0px !important;
+}
+
+#hiddentbar{
+	padding: 0px !important;
+	border-width: 0px !important;
+	
+}
+#main ul {
+	list-style: none outside none !important;
+    margin:  0 !important;
+    padding: 0 !important;
+}
+
+a {
+	background : none ! important;
+}
+.sdiMDlink a:link {
+    color: #000000 !important;
+}
+.sdiMDlink a:visited {
+   color: #000000 !important;
+}
+.sdiMDlink a:hover {
+	text-decoration:underline !important;
+	color: #000000 !important;
+}
+.sdiMDlink a:active {
+	text-decoration:underline !important;
+	color: #000000 !important;
+}
+.sdi-gxp-tree-node-root {
+    height:0px !important;
+    width:0px !important;
+}
+.gxp-layermanager-tree .legend img, .gxp-layermanager-tree .legend .x-panel {
+    padding-left: 60px !important;
+}
+.olControlLoadingPanel {
+            background-image:url(../theme/default/img/loading.gif);
+            margin-left: 30%;
+            margin-top: 50%;
+            position: relative;
+            width: 195px;
+            height: 11px;
+            background-position:center;
+            background-repeat:no-repeat;
+            display: none;
+        }
+        
+.cls-sdimapcontainer {
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    text-align: left;
+}
+.x-combo-list {
+    text-align: left;
+}
