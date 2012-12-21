@@ -618,6 +618,11 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
             	loadingMask.hide();
             });
 
+            Ext.QuickTips.init();
+
+            Ext.apply(Ext.QuickTips.getQuickTip(), {
+                maxWidth: 1000
+            });
     	});
         </script>
 <?php else: ?>
