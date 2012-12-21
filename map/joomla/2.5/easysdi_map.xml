@@ -2,13 +2,13 @@
 <extension type="component" version="1.6.0" method="upgrade">
 	<name>com_easysdi_map</name>
 	<creationDate>18 december 2012</creationDate>
-    <releaseDate>18 december 2012</releaseDate>
+    <releaseDate>21 december 2012</releaseDate>
 	<copyright>Copyright (C) 2012. All rights reserved.</copyright>
 	<license>GNU General Public License version 3 or later; see LICENSE.txt</license>
 	<author>EasySDI Community</author>
 	<authorEmail>contact@easysdi.org</authorEmail>
 	<authorUrl>http://www.easysdi.org</authorUrl>
-	<version>3.1.0</version>
+	<version>3.1.1</version>
 	<description></description>
 	<scriptfile>script.php</scriptfile>
 	<install> <!-- Runs on install -->
@@ -41,7 +41,7 @@
 	</files>
 	<languages folder="site">
 		<language tag="en-GB">language/en-GB/en-GB.com_easysdi_map.ini</language>
-		<language tag="en-GB">language/fr-FR/fr-FR.com_easysdi_map.ini</language>
+		<language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_map.ini</language>
 	</languages>
 	<administration>
 		<files folder="administrator">
@@ -61,6 +61,8 @@
 		<languages folder="administrator">
 			<language tag="en-GB">language/en-GB/en-GB.com_easysdi_map.ini</language>
 			<language tag="en-GB">language/en-GB/en-GB.com_easysdi_map.sys.ini</language>
+			<language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_map.ini</language>
+			<language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_map.sys.ini</language>
 		</languages>
 	</administration>
 </extension>
