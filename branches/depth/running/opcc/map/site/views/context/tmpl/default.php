@@ -47,6 +47,13 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
       	Ext.Container.prototype.bufferResize = false;
 		Ext.onReady(function(){
 
+			Ext.apply(Ext.QuickTips.getQuickTip(), {
+			    maxWidth: 200,
+			    minWidth: 100,
+			    showDelay: 50,      // Show 50ms after entering target
+			    trackMouse: true
+			});
+
 			loadingMask = new Ext.LoadMask(Ext.getBody(), {
 	                msg: "<?php echo JText::_('COM_EASYSDI_MAP_CONTEXT_LOAD_MESSAGE');?>"
 	            });
@@ -616,6 +623,12 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
             
             app.on("ready", function (){
             	loadingMask.hide();
+            });
+
+            Ext.QuickTips.init();
+
+            Ext.apply(Ext.QuickTips.getQuickTip(), {
+                maxWidth: 1000
             });
 
     	});
