@@ -33,7 +33,7 @@ class com_easysdi_serviceInstallerScript
 			return false;
 		}
 		
-		$db->setQuery('SELECT s.version_id FROM #__extensions e INNER JOIN #__schemas s ON e.id = s.extension_id  WHERE e.name = "com_easysdi_core"');
+		$db->setQuery('SELECT s.version_id FROM #__extensions e INNER JOIN #__schemas s ON e.extension_id = s.extension_id  WHERE e.name = "com_easysdi_service"');
 		$this->previousrelease = $db->loadResult();
 		
 		// Installing component manifest file version
@@ -97,9 +97,7 @@ class com_easysdi_serviceInstallerScript
 			}
 			$row->moveByReference(0, 'last-child', $row->id);
 			
-			$db = JFactory::getDbo();
-			$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_service'");
-			$db->query();
+			
 		}
 		if(($type == 'update' && strcmp ($this->previousrelease,'3.1.0') < 0) || $type == 'install')
 		{
@@ -236,6 +234,10 @@ class com_easysdi_serviceInstallerScript
 				return false;
 			}
 		}
+		
+		$db = JFactory::getDbo();
+		$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_service'");
+		$db->query();
 	}
 
 	/*
