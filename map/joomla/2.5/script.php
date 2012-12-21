@@ -100,12 +100,10 @@ class com_easysdi_mapInstallerScript
 // 				return false;
 // 			}
 				
-				
-			$db = JFactory::getDbo();
-			$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_map'");
-			$db->query();
-				
 		}
+		$db = JFactory::getDbo();
+		$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_map'");
+		$db->query();
 
 	}
 

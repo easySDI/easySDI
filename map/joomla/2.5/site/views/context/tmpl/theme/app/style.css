@@ -3,12 +3,24 @@
  
 body {
     font-family:helvetica,tahoma,verdana,sans-serif;
+    text-align: left !important;
 }
 
 body.contentpane {
     background-color: #F0F0F0 !important;
 }
 
+.x-window{
+	text-align: left !important;
+}
+.x-window .x-tab-strip-top .x-tab-right {
+    margin-left: 0px !important;
+    padding-left: 0 !important;
+   
+}
+ span.x-tab-strip-text {
+     padding-left: 10px !important;
+}
 /* don't wrap lines on any tooltips */
 .x-tip {
     white-space: nowrap;

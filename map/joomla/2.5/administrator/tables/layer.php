@@ -92,7 +92,7 @@ class Easysdi_mapTablelayer extends sdiTable {
 			$query->from($this->_tbl.' AS l');
 			$query->where('l.group_id = ' . (int) $key);
 			$query->where('l.state = 1' );
-			$query->order('l.ordering ASC' );
+			$query->order('l.ordering DESC' );
 			$this->_db->setQuery($query);
 			$rows = $this->_db->loadObjectList();
 			
