@@ -4,6 +4,7 @@
 	<property name="projet.install.admin.dir" value="C:\www\opcc\administrator\components\com_easysdi_service" />
 	<property name="projet.install.site.dir" value="C:\www\opcc\components\com_easysdi_service" />
 	<property name="projet.install.langEN.dir" value="C:\www\opcc\administrator\language\en-GB" />
+	<property name="projet.install.langFR.dir" value="C:\www\opcc\administrator\language\fr-FR" />
 
 	<target name="package" depends="create-structure,compression"
 		description="Main target">
@@ -47,5 +48,11 @@
 		       <include name="**/en-GB.com_easysdi_service.sys.ini" />
 		     </fileset>
 		    </copy>
+		<copy todir="${projet.install.langFR.dir}">
+	     <fileset dir="./administrator/language/fr-FR">
+	      <include name="**/fr-FR.com_easysdi_service.ini" />
+	       <include name="**/fr-FR.com_easysdi_service.sys.ini" />
+	     </fileset>
+	    </copy>
 	</target>
 </project>
