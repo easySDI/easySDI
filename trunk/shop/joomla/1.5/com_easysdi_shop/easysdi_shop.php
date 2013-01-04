@@ -31,6 +31,7 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'commo
 global $mainframe;
 $language=&JFactory::getLanguage();
 $language->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
+$language->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
 $language->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 $option = JRequest::getVar('option');
 $task = JRequest::getVar('task');
