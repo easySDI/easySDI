@@ -5913,7 +5913,15 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 				// Replication de metadonnee
 				$objecttypes = array();
 				$listObjecttypes = array();
-				$database->setQuery( "SELECT id as value, name as text FROM #__sdi_objecttype WHERE predefined=0 ORDER BY name" );
+				$language 	=& JFactory::getLanguage();
+				$database->setQuery("SELECT ot.id AS value, t.label AS text
+						FROM #__sdi_objecttype ot
+						INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+						INNER JOIN #__sdi_language l ON t.language_id=l.id
+						INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+						WHERE ot.predefined = false
+						AND cl.code='".$language->_lang."'
+						ORDER BY t.label");
 				$objecttypes= array_merge( $objecttypes, $database->loadObjectList() );
 				foreach($objecttypes as $ot)
 				{
