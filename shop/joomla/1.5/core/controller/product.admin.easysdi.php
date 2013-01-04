@@ -196,12 +196,17 @@ class ADMIN_product {
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 
 		//List of objecttype
+		$language 	=& JFactory::getLanguage();
 		$objecttype_list = array();
 		$objecttype_list[] = JHTML::_('select.option','0', JText::_("SHOP_OBJECT_LIST") );
-		$database->setQuery("SELECT id AS value, name AS text 
-							   FROM #__sdi_objecttype
-							   WHERE predefined = 0 
-							   ORDER BY name");
+		$database->setQuery("SELECT ot.id AS value, t.label AS text 
+								FROM #__sdi_objecttype ot
+								INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+				 				INNER JOIN #__sdi_language l ON t.language_id=l.id
+								INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+							   WHERE ot.predefined = false 
+								AND cl.code='".$language->_lang."'
+							   ORDER BY t.label");
 		if ($database->getErrorNum()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
