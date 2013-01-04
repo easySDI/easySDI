@@ -53,8 +53,8 @@
 				translate_label="true" 
 				class="inputbox" 
 				filter="rules"
-				component="com_easysdi_core" 
-				section="user" 
+				component="com_easysdi_service" 
+				section="virtualservice" 
 				validate="rules"
 		/>
 	</fieldset>

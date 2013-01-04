@@ -162,11 +162,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		}
 	}
 	
-	
+	/*
 	public function save($data) {
-		var_dump($data);
-		var_dump(JRequest::getVar('jform', null));
-		die();
 		if(parent::save($data)){
 			//Instantiate an address JTable
 			/*$virtualmetadata =& JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
@@ -174,9 +171,9 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			$data['id'] = $this->getItem()->get('id');
 			if( !$virtualmetadata->save($data) ){	
 				return false;
-			}*/
+			}
 			return true;
 		}
 		return false;
-	}
+	}*/
 }

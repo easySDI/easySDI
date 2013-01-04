@@ -68,7 +68,7 @@ class Easysdi_serviceTablepolicy extends sdiTable {
 		$virtualservice_id = $db->loadResult();
 		
 		$asset = JTable::getInstance('Asset');
-		$asset->loadByName('com_easysdi_service.virtualservice.' . $virtualservice_id);
+		$asset->loadByName('com_easysdi_service.policy.' . $id);
 		return $asset->id;
 	}
 }

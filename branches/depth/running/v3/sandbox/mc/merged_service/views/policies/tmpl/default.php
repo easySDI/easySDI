@@ -56,7 +56,7 @@ $saveOrder	= $listOrder == 'a.ordering';
 				</th>
 
 				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_POLICY_ID', 'a.identifier', $listDirn, $listOrder); ?>
+				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_POLICY_ID', 'a.name', $listDirn, $listOrder); ?>
 				</th>
                 <?php if (isset($this->items[0]->state)) { ?>
 				<th width="5%">
@@ -99,9 +99,20 @@ $saveOrder	= $listOrder == 'a.ordering';
 				</td>
 
 				<td>
+					<?php 
+						$db = JFactory::getDbo();
+						$db->setQuery('
+							SELECT sc.value
+							FROM #__sdi_sys_serviceconnector sc
+							JOIN #__sdi_virtualservice vs
+							ON sc.id = vs.sys_serviceconnector_id
+							WHERE vs.id = '.$item->virtualservice_id.'
+						');
+						$layout = $db->loadResult();
+					?>
 					<?php if ($canEdit) : ?>
-						<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.(int) $item->id).'&layout='.$layout; ?>">
-						<?php echo $this->escape($item->identifier); ?></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=policy&id='.(int) $item->id).'&layout='.$layout; ?>">
+						<?php echo $this->escape($item->name); ?></a>
 					<?php else : ?>
 						<?php echo $this->escape($item->identifier); ?>
 					<?php endif; ?>
