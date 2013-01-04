@@ -381,7 +381,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                     				?>
                     				"<?php echo $service->alias ?>":
                     				{
-                    				ptype: "gxp_bingsource"
+                    				ptype: "sdi_gxp_bingsource"
                     				},
                     				<?php
                     				break;
@@ -389,7 +389,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                     				?>
                     				"<?php echo $service->alias ?>":
                     				{
-                    				ptype: "gxp_googlesource"
+                    				ptype: "sdi_gxp_googlesource"
                     				},
                     				<?php
                     				break;
@@ -397,7 +397,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                     				?>
                     				"<?php echo $service->alias ?>":
                     				{
-                    				ptype: "gxp_osmsource"
+                    				ptype: "sdi_gxp_osmsource"
                     				},
                     				<?php
                     				break;
