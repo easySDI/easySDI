@@ -40,6 +40,7 @@ JHTML::_('stylesheet', 'easysdi.css', 'templates/easysdi/css/');
 
 $language =& JFactory::getLanguage();
 $language->load('com_easysdi_core', JPATH_ADMINISTRATOR);
+$language->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
 $language->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
 
 global $mainframe;
