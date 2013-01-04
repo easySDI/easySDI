@@ -1,4 +1,11 @@
 /**
+ * @version     3.0.0
+* @package     com_easysdi_core
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+*/
+/**
  * Copyright (c) 2008-2011 The Open Planning Project
  * 
  * Published under the GPL license.
@@ -31,6 +38,9 @@ Ext.namespace("sdi.gxp.plugins");
  *    Plugin for adding a tree of layers to a :class:`gxp.Viewer`. Also
  *    provides a context menu on layer nodes.
  */   
+/** 
+ * sdi extension
+ */
 sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
     
 	/** api: ptype = gxp_layertree */
@@ -157,6 +167,15 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
                         attr.cls="sdiMDlink";
                 	}	
                 }
+                if(record.data)
+                {
+                	if(record.data.metadataURL)
+                	{
+                		attr.href = record.data.metadataURL;
+                        attr.hrefTarget = "_blank";
+                        attr.cls="sdiMDlink";
+                	}	
+                }
                 if(layer.metadataURL)
                 {
                 	attr.href = layer.metadataURL;
@@ -186,6 +205,13 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
 
 Ext.preg(sdi.gxp.plugins.LayerTree.prototype.ptype,sdi.gxp.plugins.LayerTree);
 
+/**
+ * @version     3.0.0
+* @package     com_easysdi_core
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+*/
 /**
  * Copyright (c) 2008-2011 The Open Planning Project
  * 
@@ -217,8 +243,8 @@ Ext.namespace("sdi.gxp.plugins");
  *    which is currently mirrored at git://github.com/GeoNode/PrintPreview.git.
  */
 
-/** sdi extension
- * 
+/** 
+ * sdi extension
  */
 sdi.gxp.plugins.Print = Ext.extend(gxp.plugins.Print, {
     
@@ -478,6 +504,13 @@ sdi.gxp.plugins.Print = Ext.extend(gxp.plugins.Print, {
 Ext.preg(sdi.gxp.plugins.Print.prototype.ptype, sdi.gxp.plugins.Print);
 
 /**
+ * @version     3.0.0
+* @package     com_easysdi_core
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+*/
+/**
  * Copyright (c) 2008-2011 The Open Planning Project
  * 
  * Published under the GPL license.
@@ -509,6 +542,9 @@ Ext.namespace("sdi.gxp.plugins");
  *    Plugin for adding a tree of layers with their legend to a
  *    :class:`gxp.Viewer`. Also provides a context menu on layer nodes.
  */   
+/** 
+ * sdi extension
+ */
 sdi.gxp.plugins.LayerManager = Ext.extend(sdi.gxp.plugins.LayerTree, {
     
     /** api: ptype = gxp_layermanager */
@@ -590,6 +626,194 @@ sdi.gxp.plugins.LayerManager = Ext.extend(sdi.gxp.plugins.LayerTree, {
 Ext.preg(sdi.gxp.plugins.LayerManager.prototype.ptype, sdi.gxp.plugins.LayerManager);
 
 /**
+ * @version     3.0.0
+* @package     com_easysdi_core
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+*/
+Ext.namespace("sdi.gxp.plugins");
+
+/** api: constructor
+ *  .. class:: BingSource(config)
+ *
+ *    Plugin for using Bing layers with :class:`gxp.Viewer` instances.
+ *
+ *    Available layer names are "Road", "Aerial" and "AerialWithLabels"
+ */
+/** api: example
+ *  The configuration in the ``sources`` property of the :class:`gxp.Viewer` is
+ *  straightforward:
+ *
+ *  .. code-block:: javascript
+ *
+ *    "bing": {
+ *        ptype: "gxp_bingsource"
+ *    }
+ *
+ *  A typical configuration for a layer from this source (in the ``layers``
+ *  array of the viewer's ``map`` config option would look like this:
+ *
+ *  .. code-block:: javascript
+ *
+ *    {
+ *        source: "bing",
+ *        title: "Bing Road Map",
+ *        name: "Road"
+ *    }
+ *
+ */
+sdi.gxp.plugins.BingSource = Ext.extend(gxp.plugins.BingSource, {
+
+	 /** api: ptype = gxp_bingsource */
+    ptype: "sdi_gxp_bingsource",
+    
+    /** api: method[createLayerRecord]
+     *  :arg config:  ``Object``  The application config for this layer.
+     *  :returns: ``GeoExt.data.LayerRecord``
+     *
+     *  Create a layer record given the config.
+     */
+    createLayerRecord: function(config) {
+    	var record = sdi.gxp.plugins.BingSource.superclass.createLayerRecord.apply(this, arguments);
+        
+        record.set("metadataURL", config.metadataURL);
+        record.commit();
+        
+        return record;
+    }
+});
+
+Ext.preg(sdi.gxp.plugins.BingSource.prototype.ptype, sdi.gxp.plugins.BingSource);
+/**
+ * @version     3.0.0
+* @package     com_easysdi_core
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+*/
+Ext.namespace("sdi.gxp.plugins");
+
+/** api: constructor
+ *  .. class:: GoolgeSource(config)
+ *
+ *    Plugin for using Google layers with :class:`gxp.Viewer` instances. The
+ *    plugin uses the GMaps v3 API and also takes care of loading the
+ *    required Google resources.
+ *
+ *    Available layer names for this source are "ROADMAP", "SATELLITE",
+ *    "HYBRID" and "TERRAIN"
+ */   
+/** api: example
+ *  The configuration in the ``sources`` property of the :class:`gxp.Viewer` is
+ *  straightforward:
+ *
+ *  .. code-block:: javascript
+ *
+ *    "google": {
+ *        ptype: "gxp_google"
+ *    }
+ *
+ *  A typical configuration for a layer from this source (in the ``layers``
+ *  array of the viewer's ``map`` config option would look like this:
+ *
+ *  .. code-block:: javascript
+ *
+ *    {
+ *        source: "google",
+ *        name: "TERRAIN"
+ *    }
+ *
+ */
+sdi.gxp.plugins.GoogleSource = Ext.extend(gxp.plugins.GoogleSource, {
+	
+	/** api: ptype = gxp_googlesource */
+    ptype: "sdi_gxp_googlesource",
+    
+	 /** api: method[createLayerRecord]
+     *  :arg config:  ``Object``  The application config for this layer.
+     *  :returns: ``GeoExt.data.LayerRecord``
+     *
+     *  Create a layer record given the config.
+     */
+    createLayerRecord: function(config) {
+    	var record = sdi.gxp.plugins.GoogleSource.superclass.createLayerRecord.apply(this, arguments);
+        
+        record.set("metadataURL", config.metadataURL);
+        record.commit();
+        
+        return record;
+    }
+});
+
+Ext.preg(sdi.gxp.plugins.GoogleSource.prototype.ptype, sdi.gxp.plugins.GoogleSource);
+/**
+ * @version     3.0.0
+* @package     com_easysdi_core
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+*/
+Ext.namespace("sdi.gxp.plugins");
+
+/** api: constructor
+ *  .. class:: OSMSource(config)
+ *
+ *    Plugin for using OpenStreetMap layers with :class:`gxp.Viewer` instances.
+ *
+ *    Available layer names are "mapnik" and "osmarender"
+ */
+/** api: example
+ *  The configuration in the ``sources`` property of the :class:`gxp.Viewer` is
+ *  straightforward:
+ *
+ *  .. code-block:: javascript
+ *
+ *    "osm": {
+ *        ptype: "gxp_osmsource"
+ *    }
+ *
+ *  A typical configuration for a layer from this source (in the ``layers``
+ *  array of the viewer's ``map`` config option would look like this:
+ *
+ *  .. code-block:: javascript
+ *
+ *    {
+ *        source: "osm",
+ *        name: "osmarander"
+ *    }
+ *
+ */
+sdi.gxp.plugins.OSMSource = Ext.extend(gxp.plugins.OSMSource, {
+	
+	/** api: ptype = gxp_googlesource */
+    ptype: "sdi_gxp_osmsource",
+    
+	 /** api: method[createLayerRecord]
+     *  :arg config:  ``Object``  The application config for this layer.
+     *  :returns: ``GeoExt.data.LayerRecord``
+     *
+     *  Create a layer record given the config.
+     */
+    createLayerRecord: function(config) {
+    	var record = sdi.gxp.plugins.OSMSource.superclass.createLayerRecord.apply(this, arguments);
+        
+        record.set("metadataURL", config.metadataURL);
+        record.commit();
+        
+        return record;
+    }
+});
+
+Ext.preg(sdi.gxp.plugins.OSMSource.prototype.ptype, sdi.gxp.plugins.OSMSource);
+/**
+ * @version     3.0.0
+* @package     com_easysdi_core
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+*/
+/**
  * Copyright (c) 2008-2012 The Open Source Geospatial Foundation
  * 
  * Published under the BSD license.
@@ -649,6 +873,14 @@ sdi.geoext.data.PrintProvider = Ext.extend(GeoExt.data.PrintProvider, {
 });
 
 /**
+ * @version     3.0.0
+* @package     com_easysdi_core
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+*/
+/**
+
  * Copyright (c) 2008-2009 The Open Source Geospatial Foundation
  * 
  * Published under the BSD license.
@@ -657,7 +889,9 @@ sdi.geoext.data.PrintProvider = Ext.extend(GeoExt.data.PrintProvider, {
  */
 Ext.namespace("sdi.geoext.ux");
 
-
+/** 
+ * sdi extension
+ */
 sdi.geoext.ux.PrintPreview = Ext.extend(GeoExt.ux.PrintPreview, {
     
   
@@ -725,6 +959,13 @@ sdi.geoext.ux.PrintPreview = Ext.extend(GeoExt.ux.PrintPreview, {
 });
 
 
+/**
+ * @version     3.0.0
+* @package     com_easysdi_core
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+*/
 /**
  * Copyright (c) 2008-2012 The Open Source Geospatial Foundation
  * 

@@ -218,9 +218,12 @@
 		 	files="gxp/plugins/LayerTree.js, 
 		 	gxp/plugins/Print.js,
 		 	gxp/plugins/LayerManager.js,
+		 	gxp/plugins/BingSource.js,
+		 	gxp/plugins/GoogleSource.js,
+		 	gxp/plugins/OSMSource.js,
 		 	geoext/data/PrintProvider.js, 
-		 			geoext/ux/PrintPreview.js, 
-		 			geoext/widgets/PrintMapPanel.js" />
+		 	geoext/ux/PrintPreview.js, 
+		 	geoext/widgets/PrintMapPanel.js" />
 		 </concat>
 	</target>
 	
