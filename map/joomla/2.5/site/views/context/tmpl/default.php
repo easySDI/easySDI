@@ -66,7 +66,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
             	if (!empty($proxyhost))
             	{
             	?> 
-            	proxy:"/cgi-bin/proxy.cgi?url=",
+            	proxy:"<?php echo $proxyhost;?>",
                 <?php
 				}
                 ?>
