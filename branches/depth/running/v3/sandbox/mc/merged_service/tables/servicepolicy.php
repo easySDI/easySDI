@@ -25,15 +25,45 @@ class Easysdi_serviceTableservicepolicy extends sdiTable {
 	}
 	
 	public function save($src, $orderingFilter = '', $ignore = '') {
-		$data = array();
-		$data['guid'] 								= $src['guid'];
-		$data['prefix'] 							= $src['prefix'];
-		$data['namespace'] 					= $src['namespace'];
-		$data['anyitem'] 						= $src['anyitem'];
-		$data['physicalservice_id']	= $src['physicalservice_id'];
-		$data['policy_id'] 					= $src['id'];
+		$db = JFactory::getDbo();
 		
-		return parent::save($data, $orderingFilter , $ignore );
+		$servicepolicy = $_POST['servicepolicy'];
+		$modif = Array();
+		
+		foreach ($servicepolicy as $key => $value) {
+			$infos = explode('_', $key);
+			$modif[$infos[2]][$infos[1]] = $value;
+		}
+		var_dump($modif);
+		foreach ($modif as $id => $value) {
+			$db = JFactory::getDbo();
+			$db->setQuery('
+				SELECT COUNT(*) FROM #__sdi_servicepolicy WHERE physicalservice_id = ' . $id . '
+				AND policy_id = ' . $src['id'] . ';
+			');
+			$num = $db->loadResult();
+			
+			if (0 < $num) {
+				$query = '
+					UPDATE #__sdi_servicepolicy
+					SET prefix = "' . $value['prefix'] . '",
+					namespace = "' . $value['namespace'] . '"
+					WHERE physicalservice_id = ' . $id . '
+					AND policy_id = ' . $src['id'] . ';
+				';
+			}
+			else {
+				$query = '
+					INSERT #__sdi_servicepolicy
+					(prefix, namespace, physicalservice_id, policy_id)
+					VALUES ("' . $value['prefix'] . '","' . $value['namespace'] . '",' . $id . ',' . $src['id'] . ');
+				';
+			}
+			
+			$db->setQuery($query);
+			$db->execute();
+		}
+		return true;
 	}
 	
 	/**

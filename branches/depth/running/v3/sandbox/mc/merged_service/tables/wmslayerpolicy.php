@@ -25,15 +25,47 @@ class Easysdi_serviceTablewmslayerpolicy extends sdiTable {
 	}
 	
 	public function save($src, $orderingFilter = '', $ignore = '') {
-		$data = array();
-		$data['guid'] 								= $src['guid'];
-		$data['minimumscale']				= $src['minimumscale'];
-		$data['maximumscale'] 			= $src['maximumscale'];
-		$data['geographicfilter']		= $src['geographicfilter'];
-		$data['policy_id'] 					= $src['id'];
-		$data['wmslayer_id']					= $src['wmslayer_id'];
+		$db = JFactory::getDbo();
 		
-		return parent::save($data, $orderingFilter , $ignore );
+		$wmslayerpolicy = $_POST['wmslayerpolicy'];
+		$modif = Array();
+		
+		foreach ($wmslayerpolicy as $key => $value) {
+			$infos = explode('_', $key);
+			$modif[$infos[3]][$infos[1]] = $value;
+		}
+		
+		foreach ($modif as $id => $value) {
+			$db = JFactory::getDbo();
+			$db->setQuery('
+				SELECT COUNT(*) FROM #__sdi_wmslayerpolicy WHERE wmslayer_id = ' . $id . '
+				AND policy_id = ' . $src['id'] . ';
+			');
+			$num = $db->loadResult();
+			
+			if (0 < $num) {
+				$query = '
+					UPDATE #__sdi_wmslayerpolicy
+					SET minimumScale = "' . $value['minimumscale'] . '",
+					maximumScale = "' . $value['maximumscale'] . '",
+					geographicFilter = "' . $value['geographicfilter'] . '"
+					WHERE wmslayer_id = ' . $id . '
+					AND policy_id = ' . $src['id'] . ';
+				';
+			}
+			else {
+				$query = '
+					INSERT #__sdi_wmslayerpolicy
+					(minimumScale, maximumScale, geographicFilter, wmslayer_id, policy_id)
+					VALUES ("' . $value['minimumscale'] . '","' . $value['maximumscale'] . '","' . $value['geographicfilter'] . '",' . $id . ',' . $src['id'] . ');
+				';
+			}
+			
+			$db->setQuery($query);
+			$db->execute();
+		}
+		
+		return true;
 	}
 	
 	/**
@@ -52,7 +84,7 @@ class Easysdi_serviceTablewmslayerpolicy extends sdiTable {
 		');
 		
 		try {
-			$resultSet = $db->loadObjectList();
+			$resultSet = $db->loadObject();
 		}
 		catch (JDatabaseException $e) {
 			$je = new JException($e->getMessage());

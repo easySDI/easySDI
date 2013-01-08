@@ -15,8 +15,6 @@ JHtml::_('behavior.formvalidation');
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
-
-//var_dump($this);
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task)
@@ -55,11 +53,11 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 					<ul class="adminformlist">
 							<li>
 								<label id="jform_wms_prefix-lbl" for="jform_wms_prefix" title aria-invalid="false">' . JText::_('COM_EASYSDI_SERVICE_WMS_SERVER_PREFIXE') . '</label>
-								<input type="text" name="jform[wms_prefix]" id="jform_wms_prefix" value="' . $ps['prefix'] . '" class="inputbox" size="40" aria-invalid="false" />
+								<input type="text" name="servicepolicy[wms_prefix_' . $ps['id'] . ']" id="servicepolicy_wms_prefix_' . $ps['id'] . '" value="' . $ps['prefix'] . '" class="inputbox" size="40" aria-invalid="false" />
 							</li>
 							<li>
 								<label id="jform_wms_namespace-lbl" for="jform_wms_namespace" title aria-invalid="false">' . JText::_('COM_EASYSDI_SERVICE_WMS_SERVER_NAMESPACE') . '</label>
-								<input type="text" name="jform[wms_namespace]" id="jform_wms_namespace" value="' . $ps['namespace'] . '" class="inputbox" size="40" aria-invalid="false" />
+								<input type="text" name="servicepolicy[wms_namespace_' . $ps['id'] . ']" id="servicepolicy_wms_namespace_' . $ps['id'] . '" value="' . $ps['namespace'] . '" class="inputbox" size="40" aria-invalid="false" />
 							</li>
 							<li>
 								<table class="admintalbe" id="wms_layers">
@@ -83,13 +81,13 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 														' . $layer['name'] . '<br />"' . $layer['description'] . '"
 													</td>
 													<td>
-														<input type="text" size="10" id="wms_minimumscale_' . $ps['id'] . '_' . $layer['id'] . '" name="wms_minimumscale_' . $ps['id'] . '_' . $layer['id'] . '" value="' . $layer['minimumscale'] . '"/>
+														<input type="text" size="10" id="jform_wms_minimumscale_' . $ps['id'] . '_' . $layer['id'] . '" name="wmslayerpolicy[wms_minimumscale_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['minimumscale'] . '"/>
 													</td>
 													<td>
-														<input type="text" size="10" id="wms_maximumscale_' . $ps['id'] . '_' . $layer['id'] . '" name="wms_maximumscale_' . $ps['id'] . '_' . $layer['id'] . '" value="' . $layer['maximumscale'] . '"/>
+														<input type="text" size="10" id="jform_wms_maximumscale_' . $ps['id'] . '_' . $layer['id'] . '" name="wmslayerpolicy[wms_maximumscale_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['maximumscale'] . '"/>
 													</td>
 													<td>
-														<input type="textarea" rows="3"  cols="30" size="40" id="wms_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . '" name="wms_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . '" value="' . $layer['geographicfilter'] . '"/>
+														<input type="textarea" rows="3"  cols="30" size="40" id="jform_wms_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . '" name="wmslayerpolicy[wms_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['geographicfilter'] . '"/>
 													</td>
 												</tr>
 											';

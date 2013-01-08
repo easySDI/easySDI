@@ -90,10 +90,11 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	public function getItem($pk = null)
 	{
 		if ($item = parent::getItem($pk)) {
-
 			//Do any procesing on fields here if needed
 			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'tables');
 			
+			var_dump($pk);
+			$pk = 60;
 			$pk = (null == $pk) ? 0 : $pk;
 			$layout = JRequest::getVar('layout',null);
 			$virtualservice_id = JRequest::getVar('virtualservice_id',null);
@@ -122,14 +123,14 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				$wmsLayerList = $wmsLayer->getListByPhysicalService($ps->id);
 				$ps_arr['layers'] = Array();
 				foreach ($wmsLayerList as $layer) {
-					$wmsLayerPolicy->getByIDs($layer->id, $pk);
+					$wlp = $wmsLayerPolicy->getByIDs($layer->id, $pk);
 					@$ps_arr['layers'][] = Array(
 						'id' => $layer->id,
 						'name' => $layer->name,
 						'description' => $layer->description,
-						'minimumscale' => $layer->minimumscale,
-						'maximumscale' => $layer->maximumscale,
-						'geographicfilter' => $layer->geographicfilter
+						'minimumscale' => $wlp->minimumscale,
+						'maximumscale' => $wlp->maximumscale,
+						'geographicfilter' => $wlp->geographicfilter
 					);
 				}
 				$item->physicalservice[] = $ps_arr;
@@ -162,18 +163,20 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		}
 	}
 	
-	/*
+	
 	public function save($data) {
 		if(parent::save($data)){
-			//Instantiate an address JTable
-			/*$virtualmetadata =& JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
-			//Call the overloaded save function to store the input data
+			$wmslayerpolicy =& JTable::getInstance('wmslayerpolicy', 'Easysdi_serviceTable');
+			$servicepolicy =& JTable::getInstance('servicepolicy', 'Easysdi_serviceTable');
 			$data['id'] = $this->getItem()->get('id');
-			if( !$virtualmetadata->save($data) ){	
+			if( !$wmslayerpolicy->save($data) ){	
+				return false;
+			}
+			if( !$servicepolicy->save($data) ){	
 				return false;
 			}
 			return true;
 		}
 		return false;
-	}*/
+	}
 }
