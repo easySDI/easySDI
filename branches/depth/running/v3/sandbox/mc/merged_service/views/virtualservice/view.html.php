@@ -184,14 +184,6 @@ class Easysdi_serviceViewVirtualservice extends JViewLegacy
 		$params 			= JComponentHelper::getParams('com_easysdi_service');
 		$this->id 			= JRequest::getVar('id',null);
 		
-		if(!isset($layout)){
-			if(isset($cid)){
-				foreach ($cid as $id ){
-					$layout = "wms";
-				}
-			}
-		}
-		
 		$db 			= JFactory::getDBO();
 		$db->setQuery("SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector WHERE state = 1") ;
 		$this->serviceconnectorlist = $db->loadObjectList();

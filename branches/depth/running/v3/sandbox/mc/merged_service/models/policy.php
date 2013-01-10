@@ -93,9 +93,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			//Do any procesing on fields here if needed
 			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'tables');
 			
-			var_dump($pk);
-			$pk = 60;
-			$pk = (null == $pk) ? 0 : $pk;
+			$pk = $item->id;
 			$layout = JRequest::getVar('layout',null);
 			$virtualservice_id = JRequest::getVar('virtualservice_id',null);
 			
@@ -103,37 +101,74 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				$item->virtualservice_id = (int) $virtualservice_id;
 			}
 			
+			$db = JFactory::getDbo();
+			$db->setQuery('
+				SELECT sc.value
+				FROM #__sdi_virtualservice vs
+				JOIN #__sdi_sys_serviceconnector sc
+				ON sc.id = vs.sys_serviceconnector_id
+				WHERE vs.id = ' . $item->virtualservice_id . ';
+			');
+			
+			try {
+				$serviceconnector_name = $db->loadResult();
+			}
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
+			
 			@$physicalService =& JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
 			@$servicePolicy =& JTable::getInstance('servicepolicy', 'Easysdi_serviceTable');
-			@$wmsLayer =& JTable::getInstance('wmslayer', 'Easysdi_serviceTable');
-			@$wmsLayerPolicy =& JTable::getInstance('wmslayerpolicy', 'Easysdi_serviceTable');
 			
-			$item->physicalservice = Array();
-			$ps_list = $physicalService->getListByConnectorType($layout);
-			foreach ($ps_list as $ps) {
-				$ps_arr = Array();
-				$ps_arr['id'] = $ps->id;
-				$ps_arr['name'] = $ps->name;
-				$ps_arr['resourceurl'] = $ps->resourceurl;
-				
-				$sp = $servicePolicy->getByIDs($ps->id, $pk);
-				@$ps_arr['prefix'] = $sp->prefix;
-				@$ps_arr['namespace'] = $sp->namespace;
-				
-				$wmsLayerList = $wmsLayer->getListByPhysicalService($ps->id);
-				$ps_arr['layers'] = Array();
-				foreach ($wmsLayerList as $layer) {
-					$wlp = $wmsLayerPolicy->getByIDs($layer->id, $pk);
-					@$ps_arr['layers'][] = Array(
-						'id' => $layer->id,
-						'name' => $layer->name,
-						'description' => $layer->description,
-						'minimumscale' => $wlp->minimumscale,
-						'maximumscale' => $wlp->maximumscale,
-						'geographicfilter' => $wlp->geographicfilter
-					);
+			if ('WMS' == $serviceconnector_name) {
+				@$layer =& JTable::getInstance('wmslayer', 'Easysdi_serviceTable');
+				@$layerPolicy =& JTable::getInstance('wmslayerpolicy', 'Easysdi_serviceTable');
+			}
+			else if ('WFS' == $serviceconnector_name) {
+				@$layer =& JTable::getInstance('featureclass', 'Easysdi_serviceTable');
+				@$layerPolicy =& JTable::getInstance('featureclasspolicy', 'Easysdi_serviceTable');
+			}
+			
+			if ('WMS' == $serviceconnector_name || 'WFS' == $serviceconnector_name) {
+				$item->physicalservice = Array();
+				$ps_list = $physicalService->getListByConnectorType($layout);
+				foreach ($ps_list as $ps) {
+					$ps_arr = Array();
+					$ps_arr['id'] = $ps->id;
+					$ps_arr['name'] = $ps->name;
+					$ps_arr['resourceurl'] = $ps->resourceurl;
+					
+					$sp = $servicePolicy->getByIDs($ps->id, $pk);
+					@$ps_arr['prefix'] = $sp->prefix;
+					@$ps_arr['namespace'] = $sp->namespace;
+					
+					$layerList = $layer->getListByPhysicalService($ps->id);
+					$ps_arr['layers'] = Array();
+					foreach ($layerList as $layer) {
+						$lp = $layerPolicy->getByIDs($layer->id, $pk);
+						$layer_infos = Array(
+							'id' => $layer->id,
+							'name' => $layer->name,
+							'description' => $layer->description
+						);
+						
+						if ('WMS' == $serviceconnector_name) {
+							$layer_infos['minimumscale'] = $lp->minimumscale;
+							$layer_infos['maximumscale'] = $lp->maximumscale;
+							$layer_infos['geographicfilter'] = $lp->geographicfilter;
+						}
+						else if ('WFS' == $serviceconnector_name) {
+							$layer_infos['attributerestriction'] = $lp->attributerestriction;
+							$layer_infos['boundingboxfilter'] = $lp->boundingboxfilter;
+							$layer_infos['geographicfilter'] = $lp->geographicfilter;
+						}
+						
+						@$ps_arr['layers'][] = $layer_infos;
+					}
+					$item->physicalservice[] = $ps_arr;
 				}
-				$item->physicalservice[] = $ps_arr;
 			}
 			
 		}
@@ -165,16 +200,46 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	
 	
 	public function save($data) {
+		$db = JFactory::getDbo();
+		$db->setQuery('
+			SELECT sc.value
+			FROM #__sdi_virtualservice vs
+			JOIN #__sdi_sys_serviceconnector sc
+			ON sc.id = vs.sys_serviceconnector_id
+			WHERE vs.id = ' . $data['virtualservice_id'] . ';
+		');
+		
+		try {
+			$serviceconnector_name = $db->loadResult();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
 		if(parent::save($data)){
-			$wmslayerpolicy =& JTable::getInstance('wmslayerpolicy', 'Easysdi_serviceTable');
-			$servicepolicy =& JTable::getInstance('servicepolicy', 'Easysdi_serviceTable');
 			$data['id'] = $this->getItem()->get('id');
-			if( !$wmslayerpolicy->save($data) ){	
-				return false;
+			if ('WMS' == $serviceconnector_name) {
+				$wmslayerpolicy =& JTable::getInstance('wmslayerpolicy', 'Easysdi_serviceTable');
+				if( !$wmslayerpolicy->save($data) ){
+					return false;
+				}
 			}
-			if( !$servicepolicy->save($data) ){	
-				return false;
+			else if ('WFS' == $serviceconnector_name) {
+				$featureclasspolicy =& JTable::getInstance('featureclasspolicy', 'Easysdi_serviceTable');
+				if( !$featureclasspolicy->save($data) ){
+					return false;
+				}
 			}
+			
+			if ('WMS' == $serviceconnector_name || 'WFS' == $serviceconnector_name) {
+				$servicepolicy =& JTable::getInstance('servicepolicy', 'Easysdi_serviceTable');
+				if( !$servicepolicy->save($data) ){
+					return false;
+				}
+			}
+			
 			return true;
 		}
 		return false;

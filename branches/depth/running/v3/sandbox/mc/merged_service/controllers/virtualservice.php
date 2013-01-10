@@ -25,10 +25,10 @@ class Easysdi_serviceControllerVirtualservice extends JControllerForm {
 		$serviceconnector = JRequest::getVar('serviceconnector',null);
 		
 		if(isset($serviceconnector)) {
-			$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservice&task=add&layout='.$serviceconnector);
+			$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservice&task=add&layout='.$serviceconnector.'&mco_debug=1');
 		}
 		else {
-			$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservice&task=add&layout=add');
+			$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservice&task=add&layout=add'.'&mco_debug=2');
 		}
 	}
 
@@ -42,6 +42,6 @@ class Easysdi_serviceControllerVirtualservice extends JControllerForm {
 			}
 		}
 		
-		$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservice&task=edit&id='.$cid[0].'&layout='.$layout );
+		$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservice&task=edit&id='.$cid[0].'&layout='.$layout.'&mco_debug=3');
 	}
 }

@@ -38,56 +38,48 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 				<?php endforeach; ?>
 			</ul>
 		</fieldset>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_IMAGE_SIZE' );?></legend>
-			<ul class="adminformlist">
-				<?php foreach($this->form->getFieldset('wms_policy') as $field): ?>
-					
-					<li><?php echo $field->label;echo $field->input;?></li>
-				<?php endforeach; ?>
-			</ul>
-		</fieldset>
 		
 		<?php
 			foreach ($this->item->physicalservice as $ps) {
-				echo '<fieldset class="adminform"><legend>' . JText::_( 'COM_EASYSDI_SERVICE_WMS_SERVER' ) . $ps['name'] . ' (' . $ps['resourceurl'] . ')</legend>
+				echo '<fieldset class="adminform"><legend>' . JText::_( 'COM_EASYSDI_SERVICE_WFS_SERVER' ) . $ps['name'] . ' (' . $ps['resourceurl'] . ')</legend>
 					<ul class="adminformlist">
 							<li>
-								<label id="jform_wms_prefix-lbl" for="jform_wms_prefix" title aria-invalid="false">' . JText::_('COM_EASYSDI_SERVICE_WMS_SERVER_PREFIXE') . '</label>
-								<input type="text" name="servicepolicy[wms_prefix_' . $ps['id'] . ']" id="servicepolicy_wms_prefix_' . $ps['id'] . '" value="' . $ps['prefix'] . '" class="inputbox" size="40" aria-invalid="false" />
+								<label id="jform_wfs_prefix-lbl" for="jform_wfs_prefix" title aria-invalid="false">' . JText::_('COM_EASYSDI_SERVICE_WFS_SERVER_PREFIXE') . '</label>
+								<input type="text" name="servicepolicy[wfs_prefix_' . $ps['id'] . ']" id="servicepolicy_wfs_prefix_' . $ps['id'] . '" value="' . $ps['prefix'] . '" class="inputbox" size="40" aria-invalid="false" />
 							</li>
 							<li>
-								<label id="jform_wms_namespace-lbl" for="jform_wms_namespace" title aria-invalid="false">' . JText::_('COM_EASYSDI_SERVICE_WMS_SERVER_NAMESPACE') . '</label>
-								<input type="text" name="servicepolicy[wms_namespace_' . $ps['id'] . ']" id="servicepolicy_wms_namespace_' . $ps['id'] . '" value="' . $ps['namespace'] . '" class="inputbox" size="40" aria-invalid="false" />
+								<label id="jform_wfs_namespace-lbl" for="jform_wfs_namespace" title aria-invalid="false">' . JText::_('COM_EASYSDI_SERVICE_WFS_SERVER_NAMESPACE') . '</label>
+								<input type="text" name="servicepolicy[wfs_namespace_' . $ps['id'] . ']" id="servicepolicy_wfs_namespace_' . $ps['id'] . '" value="' . $ps['namespace'] . '" class="inputbox" size="40" aria-invalid="false" />
 							</li>
 							<li>
-								<table class="admintable" id="wms_layers">
+								<table class="admintable" id="wfs_layers">
 									<tbody>
 										<tr>
-											<th><span style="font-weight: bold;">Name</span></th>
-											<th><span style="font-weight: bold;">Min scale</span></th>
-											<th><span style="font-weight: bold;">Max scale</span></th>
-											<th><span style="font-weight: bold;">Geographic filter</span></th>
+											<th><span style="font-weight: bold;">Feature Type name</span></th>
+											<th><span style="font-weight: bold;">Filtered attributes</span></th>
+											<th><span style="font-weight: bold;">Query filter</span></th>
+											<th><span style="font-weight: bold;">Response filter</span></th>
 										</tr>
 										<tr>
 											<td colspan="4">
-												<input type="checkbox" name="wms_anyItem" id="wms_anyItem_' . $ps['id'] . '"/>All
+												<input type="checkbox" name="wfs_anyItem" id="wfs_anyItem_' . $ps['id'] . '"/>All
 											</td>
 										</tr>';
 										foreach ($ps['layers'] as $layer) {
 											echo '
 												<tr>
 													<td>
-														<input type="checkbox" name="wms_layer_' . $ps['id'] . '_' . $layer['id'] . '" id="wms_layer_' . $ps['id'] . '_' . $layer['id'] . '"/>
+														<input type="checkbox" name="wfs_layer_' . $ps['id'] . '_' . $layer['id'] . '" id="wfs_layer_' . $ps['id'] . '_' . $layer['id'] . '"/>
 														' . $layer['name'] . '<br />"' . $layer['description'] . '"
 													</td>
 													<td>
-														<input type="text" size="10" id="jform_wms_minimumscale_' . $ps['id'] . '_' . $layer['id'] . '" name="wmslayerpolicy[wms_minimumscale_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['minimumscale'] . '"/>
+														<input type="text" size="10" id="jform_wfs_attributerestriction_' . $ps['id'] . '_' . $layer['id'] . '" name="featureclasspolicy[wfs_attributerestriction_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['attributerestriction'] . '"/>
 													</td>
 													<td>
-														<input type="text" size="10" id="jform_wms_maximumscale_' . $ps['id'] . '_' . $layer['id'] . '" name="wmslayerpolicy[wms_maximumscale_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['maximumscale'] . '"/>
+														<input type="text" size="10" id="jform_wfs_boundingboxfilter_' . $ps['id'] . '_' . $layer['id'] . '" name="featureclasspolicy[wfs_boundingboxfilter_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['boundingboxfilter'] . '"/>
 													</td>
 													<td>
-														<input type="textarea" rows="3"  cols="30" size="40" id="jform_wms_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . '" name="wmslayerpolicy[wms_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['geographicfilter'] . '"/>
+														<input type="textarea" rows="3"  cols="30" size="40" id="jform_wfs_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . '" name="wfslayerpolicy[wfs_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['geographicfilter'] . '"/>
 													</td>
 												</tr>
 											';

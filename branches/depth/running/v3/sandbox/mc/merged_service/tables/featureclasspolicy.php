@@ -13,7 +13,7 @@ require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'libra
 /**
  * virtualmetadata Table class
  */
-class Easysdi_serviceTableservicepolicy extends sdiTable {
+class Easysdi_serviceTablefeatureclasspolicy extends sdiTable {
 
 	/**
 	* Constructor
@@ -21,48 +21,50 @@ class Easysdi_serviceTableservicepolicy extends sdiTable {
 	* @param JDatabase A database connector object
 	*/
 	public function __construct(&$db) {
-		parent::__construct('#__sdi_servicepolicy', 'id', $db);
+		parent::__construct('#__sdi_featureclasspolicy', 'id', $db);
 	}
 	
 	public function save($src, $orderingFilter = '', $ignore = '') {
 		$db = JFactory::getDbo();
 		
-		$servicepolicy = $_POST['servicepolicy'];
+		$featureclasspolicy = $_POST['featureclasspolicy'];
 		$modif = Array();
 		
-		foreach ($servicepolicy as $key => $value) {
+		foreach ($featureclasspolicy as $key => $value) {
 			$infos = explode('_', $key);
-			$modif[$infos[2]][$infos[1]] = $value;
+			$modif[$infos[3]][$infos[1]] = $value;
 		}
 		
 		foreach ($modif as $id => $value) {
 			$db = JFactory::getDbo();
 			$db->setQuery('
-				SELECT COUNT(*) FROM #__sdi_servicepolicy WHERE physicalservice_id = ' . $id . '
+				SELECT COUNT(*) FROM #__sdi_featureclasspolicy WHERE featureclass_id = ' . $id . '
 				AND policy_id = ' . $src['id'] . ';
 			');
 			$num = $db->loadResult();
 			
 			if (0 < $num) {
 				$query = '
-					UPDATE #__sdi_servicepolicy
-					SET prefix = "' . $value['prefix'] . '",
-					namespace = "' . $value['namespace'] . '"
-					WHERE physicalservice_id = ' . $id . '
+					UPDATE #__sdi_featureclasspolicy
+					SET attributeRestriction = "' . $value['attributerestriction'] . '",
+					boundingBoxFilter = "' . $value['boundingboxfilter'] . '",
+					geographicFilter = "' . $value['geographicfilter'] . '"
+					WHERE featureclass_id = ' . $id . '
 					AND policy_id = ' . $src['id'] . ';
 				';
 			}
 			else {
 				$query = '
-					INSERT #__sdi_servicepolicy
-					(prefix, namespace, physicalservice_id, policy_id)
-					VALUES ("' . $value['prefix'] . '","' . $value['namespace'] . '",' . $id . ',' . $src['id'] . ');
+					INSERT #__sdi_featureclasspolicy
+					(attributeRestriction, boundingBoxFilter, geographicFilter, featureclass_id, policy_id)
+					VALUES ("' . $value['attributerestriction'] . '","' . $value['boundingboxfilter'] . '","' . $value['geographicfilter'] . '",' . $id . ',' . $src['id'] . ');
 				';
 			}
 			
 			$db->setQuery($query);
 			$db->execute();
 		}
+		
 		return true;
 	}
 	
@@ -72,12 +74,12 @@ class Easysdi_serviceTableservicepolicy extends sdiTable {
 	 * @param Int A physicalService ID
 	 * @param Int A policy ID
 	 */
-	public function getByIDs ($physicalservice_id, $policy_id) {
+	public function getByIDs ($featureclass_id, $policy_id) {
 		$db = JFactory::getDbo();
 		$db->setQuery('
 			SELECT *
-			FROM #__sdi_servicepolicy
-			WHERE physicalservice_id = ' . $physicalservice_id . '
+			FROM #__sdi_featureclasspolicy
+			WHERE featureclass_id = ' . $featureclass_id . '
 			AND policy_id = ' . $policy_id . ';
 		');
 		
@@ -89,7 +91,7 @@ class Easysdi_serviceTableservicepolicy extends sdiTable {
 			$this->setError($je);
 			return false;
 		}
-
+		
 		// Legacy error handling switch based on the JError::$legacy switch.
 		// @deprecated  12.1
 		if (JError::$legacy && $this->_db->getErrorNum())	{
