@@ -1,8 +1,8 @@
 <?xml version="1.0"  ?>
 <install version="1.5" type="component">
 	<name>EasySDI_shop</name>
-	<version>2.2.1</version>
-	<releaseDate>2013-01-04</releaseDate>
+	<version>2.2.2</version>
+	<releaseDate>2013-01-11</releaseDate>
     <releaseType>Minor update</releaseType>
 	<creationDate>January 2011</creationDate>
 	<author>Depth.ch</author>
