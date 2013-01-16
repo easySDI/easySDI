@@ -614,7 +614,7 @@ class HTML_metadata {
 			</form>
 		</div>
 		</div>
-		<?php $document->addScriptDeclaration( $defautBBoxConfig )?>;
+		<?php $document->addScriptDeclaration( $defautBBoxConfig )?>
 				<?php
 				$this->javascript .="
 						var domNode = Ext.DomQuery.selectNode('div#editMdOutput')
