@@ -28,19 +28,11 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 	}
 </script>
 
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&layout=wms&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="policy-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&layout=wmts&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="policy-form" class="form-validate">
 	<div class="width-60 fltlft">
 		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_INFOS' );?></legend>
 			<ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('policy') as $field): ?>
-					
-					<li><?php echo $field->label;echo $field->input;?></li>
-				<?php endforeach; ?>
-			</ul>
-		</fieldset>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_IMAGE_SIZE' );?></legend>
-			<ul class="adminformlist">
-				<?php foreach($this->form->getFieldset('wms_policy') as $field): ?>
 					
 					<li><?php echo $field->label;echo $field->input;?></li>
 				<?php endforeach; ?>

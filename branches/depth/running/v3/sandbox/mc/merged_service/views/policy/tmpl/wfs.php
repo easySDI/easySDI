@@ -15,6 +15,8 @@ JHtml::_('behavior.formvalidation');
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
+
+//var_dump($this->item->physicalservice[0]['layers']);
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task)
@@ -28,7 +30,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 	}
 </script>
 
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&layout=edit&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="policy-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&layout=wfs&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="policy-form" class="form-validate">
 	<div class="width-60 fltlft">
 		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_INFOS' );?></legend>
 			<ul class="adminformlist">
@@ -79,7 +81,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 														<input type="text" size="10" id="jform_wfs_boundingboxfilter_' . $ps['id'] . '_' . $layer['id'] . '" name="featureclasspolicy[wfs_boundingboxfilter_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['boundingboxfilter'] . '"/>
 													</td>
 													<td>
-														<input type="textarea" rows="3"  cols="30" size="40" id="jform_wfs_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . '" name="wfslayerpolicy[wfs_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['geographicfilter'] . '"/>
+														<input type="textarea" rows="3"  cols="30" size="40" id="jform_wfs_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . '" name="featureclasspolicy[wfs_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['geographicfilter'] . '"/>
 													</td>
 												</tr>
 											';
