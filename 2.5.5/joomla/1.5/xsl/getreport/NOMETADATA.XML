@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<errorHandler>
+	<errorName>MISSINGPARAMETER</errorName>
+	<errorDescription>
+		<fr>
+			Aucune m&#233;tadonn&#233;e publique ne correspond aux guids demand&#233;s
+		</fr>
+		<de>
+			Aucune m&#233;tadonn&#233;e publique ne correspond aux guids demand&#233;s
+		</de>
+		<en>
+			Aucune m&#233;tadonn&#233;e publique ne correspond aux guids demand&#233;s
+		</en>		
+	</errorDescription>
+</errorHandler>
