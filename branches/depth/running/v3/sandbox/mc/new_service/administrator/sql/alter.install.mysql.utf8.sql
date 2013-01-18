@@ -85,10 +85,12 @@ ADD CONSTRAINT `#__sdi_scalepolicy_fk_wmtslayerpolicy` FOREIGN KEY (`wmtslayerpo
 ALTER TABLE `#__sdi_scalepolicy`
 ADD CONSTRAINT `#__sdi_scalepolicy_fk_tilematrixset` FOREIGN KEY (`tilematrixset_id`) REFERENCES `#__sdi_tilematrixset` (`id`);
 
+ALTER TABLE `#__sdi_scalepolicy`
+ADD CONSTRAINT `#__sdi_scalepolicy_fk_denominator` FOREIGN KEY (`denominator_id`) REFERENCES `#__sdi_denominator` (`id`);
+
 
 ALTER TABLE `#__sdi_tilematrixset`
 ADD CONSTRAINT `#__sdi_tilematrixset_fk_denominator` FOREIGN KEY (`denominator_id`) REFERENCES `#__sdi_denominator` (`id`);
-
 
 
 

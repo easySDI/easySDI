@@ -506,12 +506,12 @@ CREATE TABLE IF NOT EXISTS `#__sdi_scalepolicy` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
-`minscaledenominator` VARCHAR(255)  NOT NULL ,
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
 `modified` DATETIME NOT NULL ,
 `wmtslayerpolicy_id` INT(11)  NOT NULL ,
 `tilematrixset_id` INT(11)  NOT NULL ,
+`denominator_id` INT(11)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -589,4 +589,5 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_proxytype` (
 `modified` DATETIME NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
 
