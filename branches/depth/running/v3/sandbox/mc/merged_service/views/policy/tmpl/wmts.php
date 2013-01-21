@@ -15,6 +15,7 @@ JHtml::_('behavior.formvalidation');
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
+var_dump($this->item->physicalservice[0]['layers']);
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task)
@@ -41,51 +42,50 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 		
 		<?php
 			foreach ($this->item->physicalservice as $ps) {
-				echo '<fieldset class="adminform"><legend>' . JText::_( 'COM_EASYSDI_SERVICE_WMS_SERVER' ) . $ps['name'] . ' (' . $ps['resourceurl'] . ')</legend>
+				echo '<fieldset class="adminform"><legend>' . JText::_( 'COM_EASYSDI_SERVICE_WMTS_SERVER' ) . $ps['name'] . ' (' . $ps['resourceurl'] . ')</legend>
 					<ul class="adminformlist">
-							<li>
-								<label id="jform_wms_prefix-lbl" for="jform_wms_prefix" title aria-invalid="false">' . JText::_('COM_EASYSDI_SERVICE_WMS_SERVER_PREFIXE') . '</label>
-								<input type="text" name="servicepolicy[wms_prefix_' . $ps['id'] . ']" id="servicepolicy_wms_prefix_' . $ps['id'] . '" value="' . $ps['prefix'] . '" class="inputbox" size="40" aria-invalid="false" />
-							</li>
-							<li>
-								<label id="jform_wms_namespace-lbl" for="jform_wms_namespace" title aria-invalid="false">' . JText::_('COM_EASYSDI_SERVICE_WMS_SERVER_NAMESPACE') . '</label>
-								<input type="text" name="servicepolicy[wms_namespace_' . $ps['id'] . ']" id="servicepolicy_wms_namespace_' . $ps['id'] . '" value="' . $ps['namespace'] . '" class="inputbox" size="40" aria-invalid="false" />
-							</li>
-							<li>
-								<table class="admintable" id="wms_layers">
-									<tbody>
-										<tr>
-											<th><span style="font-weight: bold;">Name</span></th>
-											<th><span style="font-weight: bold;">Min scale</span></th>
-											<th><span style="font-weight: bold;">Max scale</span></th>
-											<th><span style="font-weight: bold;">Geographic filter</span></th>
-										</tr>
-										<tr>
-											<td colspan="4">
-												<input type="checkbox" name="wms_anyItem" id="wms_anyItem_' . $ps['id'] . '"/>All
-											</td>
-										</tr>';
-										foreach ($ps['layers'] as $layer) {
-											echo '
+						<li>
+							<input type="checkbox" name="wmts_anyItem" id="wmts_anyItem_' . $ps['id'] . '"/>All
+						</li>
+						<li>';
+							foreach ($ps['layers'] as $layer) {
+								echo '
+									<fieldset class="adminform">
+										<legend>
+											<input type="checkbox" name="wmts_layer_' . $ps['id'] . '_' . $layer['id'] . '" id="wmts_layer_' . $ps['id'] . '_' . $layer['id'] . '"/>
+											' . JText::_( 'COM_EASYSDI_SERVICE_WMTS_SERVER' ) . $layer['name'] . ' (' . $layer['description'] . ')
+										</legend>
+										<table class="admintable" id="wmts_layers">
+											<tbody>
+												<tr>
+													<th><span style="font-weight: bold;">Geographic filter</span></th>
+													<th><span style="font-weight: bold;">TileMatrixSet Id</span></th>
+													<th><span style="font-weight: bold;">TileMatrix min scale denominator</span></th>
+												</tr>
 												<tr>
 													<td>
-														<input type="checkbox" name="wms_layer_' . $ps['id'] . '_' . $layer['id'] . '" id="wms_layer_' . $ps['id'] . '_' . $layer['id'] . '"/>
-														' . $layer['name'] . '<br />"' . $layer['description'] . '"
+														<label for="jform_wmts_bbox_minimumx_' . $ps['id'] . '_' . $layer['id'] . '" >Min X </label>
+														<input type="text" size="10" id="jform_wmts_bbox_minimumx_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_bbox_minimumx_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['bbox_minimumx'] . '"/><br />
+														<label for="jform_wmts_bbox_minimumy_' . $ps['id'] . '_' . $layer['id'] . '" >Min Y </label>
+														<input type="text" size="10" id="jform_wmts_bbox_minimumy_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_bbox_minimumy_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['bbox_minimumy'] . '"/><br />
+														<label for="jform_wmts_bbox_maximumx_' . $ps['id'] . '_' . $layer['id'] . '" >Max X </label>
+														<input type="text" size="10" id="jform_wmts_bbox_maximumx_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_bbox_maximumx_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['bbox_maximumx'] . '"/><br />
+														<label for="jform_wmts_bbox_maximumx_' . $ps['id'] . '_' . $layer['id'] . '" >Max Y </label>
+														<input type="text" size="10" id="jform_wmts_bbox_maximumy_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_bbox_maximumy_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['bbox_maximumy'] . '"/>
 													</td>
 													<td>
-														<input type="text" size="10" id="jform_wms_minimumscale_' . $ps['id'] . '_' . $layer['id'] . '" name="wmslayerpolicy[wms_minimumscale_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['minimumscale'] . '"/>
+														<input type="text" size="10" id="jform_wmts_minimumscale_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_minimumscale_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['minimumscale'] . '"/>
 													</td>
 													<td>
-														<input type="text" size="10" id="jform_wms_maximumscale_' . $ps['id'] . '_' . $layer['id'] . '" name="wmslayerpolicy[wms_maximumscale_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['maximumscale'] . '"/>
-													</td>
-													<td>
-														<input type="textarea" rows="3"  cols="30" size="40" id="jform_wms_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . '" name="wmslayerpolicy[wms_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['geographicfilter'] . '"/>
+														<input type="text" size="10" id="jform_wmts_maximumscale_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_maximumscale_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['maximumscale'] . '"/>
 													</td>
 												</tr>
-											';
-										}
-						echo '</tbody>
-								</table>
+											</tbody>
+										</table>
+									</fieldset>
+								';
+							}
+						echo '
 						</li>
 					</ul>
 				</fieldset>';

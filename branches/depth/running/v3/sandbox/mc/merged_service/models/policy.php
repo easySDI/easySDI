@@ -167,9 +167,11 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					'description' => $layer->description
 				);
 				
-				$layer_infos['minimumscale'] = $lp->minimumscale;
-				$layer_infos['maximumscale'] = $lp->maximumscale;
-				$layer_infos['geographicfilter'] = $lp->geographicfilter;
+				if (!empty($lp)) {
+					$layer_infos['minimumscale'] = $lp->minimumscale;
+					$layer_infos['maximumscale'] = $lp->maximumscale;
+					$layer_infos['geographicfilter'] = $lp->geographicfilter;
+				}
 				
 				@$ps_arr['layers'][] = $layer_infos;
 			}
@@ -211,9 +213,11 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					'description' => $layer->description
 				);
 				
-				$layer_infos['attributerestriction'] = $lp->attributerestriction;
-				$layer_infos['boundingboxfilter'] = $lp->boundingboxfilter;
-				$layer_infos['geographicfilter'] = $lp->geographicfilter;
+				if (!empty($lp)) {
+					$layer_infos['attributerestriction'] = $lp->attributerestriction;
+					$layer_infos['boundingboxfilter'] = $lp->boundingboxfilter;
+					$layer_infos['geographicfilter'] = $lp->geographicfilter;
+				}
 				
 				@$ps_arr['layers'][] = $layer_infos;
 			}
@@ -232,8 +236,6 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		@$tab_layer =& JTable::getInstance('wmtslayer', 'Easysdi_serviceTable');
 		@$tab_layerPolicy =& JTable::getInstance('wmtslayerpolicy', 'Easysdi_serviceTable');
 		@$tab_scalePolicy =& JTable::getInstance('scalepolicy', 'Easysdi_serviceTable');
-		@$tab_tileMatrixSet =& JTable::getInstance('tilematrixset', 'Easysdi_serviceTable');
-		@$tab_denominator =& JTable::getInstance('denominator', 'Easysdi_serviceTable');
 		
 		$physicalservice = Array();
 		$ps_list = $tab_physicalService->getListByConnectorType($layout);
@@ -253,19 +255,20 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					'description' => $layer->description
 				);
 				
-				$layer_infos['geographicfilter'] = $lp->geographicfilter;
-				$layer_infos['spatialoperator'] = $lp->spatialoperator;
-				$layer_infos['bbox_minimumx'] = $lp->bbox_minimumx;
-				$layer_infos['bbox_minimumy'] = $lp->bbox_minimumy;
-				$layer_infos['bbox_maximumx'] = $lp->bbox_maximumx;
-				$layer_infos['bbox_maximumy'] = $lp->bbox_maximumy;
-				
-				
-				$scalePolicyList = $tab_scalePolicy->getListByWMTSLayerPolicy($lp->id);
-				foreach ($scalePolicyList as $scalePolicy) {
-					$layer_infos['scalepolicy'][] = $tab_scalePolicy->getProperties($scalePolicy->id);
+				if (!empty($lp)) {
+					$layer_infos['geographicfilter'] = $lp->geographicfilter;
+					$layer_infos['spatialoperator'] = $lp->spatialoperator;
+					$layer_infos['bbox_minimumx'] = $lp->bbox_minimumx;
+					$layer_infos['bbox_minimumy'] = $lp->bbox_minimumy;
+					$layer_infos['bbox_maximumx'] = $lp->bbox_maximumx;
+					$layer_infos['bbox_maximumy'] = $lp->bbox_maximumy;
+					
+					$scalePolicyList = $tab_scalePolicy->getListByWMTSLayerPolicy($lp->id);
+					
+					foreach ($scalePolicyList as $scalePolicy) {
+						$layer_infos['scalepolicy'][] = $tab_scalePolicy->getProperties($scalePolicy->id);
+					}
 				}
-				
 				@$ps_arr['layers'][] = $layer_infos;
 				
 			}

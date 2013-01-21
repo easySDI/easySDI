@@ -160,10 +160,9 @@ class Easysdi_serviceModelpolicies extends JModelList
                 
 			}
 		}
-        
-        
-        
-        
+		
+		$query->where('a.virtualservice_id = ' . JRequest::getVar('virtualservice_id'));
+		
 		// Add the list ordering clause.
         $orderCol	= $this->state->get('list.ordering');
         $orderDirn	= $this->state->get('list.direction');
