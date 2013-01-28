@@ -396,7 +396,8 @@ foreach ($this->xml->config as $config) {
 					<td colspan="4"><input type="checkBox" name="AllFeatureTypes@<?php echo $iServer; ?>" id="AllFeatureTypes@<?php echo $iServer; ?>" value="All" <?php if (strcasecmp($theServer->FeatureTypes['All'],'True')==0 ) echo ' checked '; ?> onclick="disableFeatureTypes(<?php echo $iServer; ?>);"><?php echo JText::_( 'COM_EASYSDI_SERVICE_FEATURES_ALL'); ?></td>
 				</tr>
 				<?php
-				$pos1 = stripos($urlWithPassword, "?");
+				$url = $remoteServer->url;
+				$pos1 = stripos($url, "?");
 						$separator = "&";
 						if ($pos1 === false) {
 				    		//"?" Not found then use ? instead of &
@@ -405,7 +406,7 @@ foreach ($this->xml->config as $config) {
 				
 				$ftnum = 0;
 				foreach ($xmlCapa->{'FeatureTypeList'}->{'FeatureType'} as $featureType){
-						$xmlDescribeFeature = simplexml_load_file($urlWithPassword.$separator."VERSION=1.0.0&REQUEST=DescribeFeatureType&SERVICE=WFS&TYPENAME=".$featureType->{'Name'});
+						$xmlDescribeFeature = simplexml_load_file($url.$separator."VERSION=1.0.0&REQUEST=DescribeFeatureType&SERVICE=WFS&TYPENAME=".$featureType->{'Name'});
 					if ($xmlDescribeFeature === false){
 								global $mainframe;		
 								$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO DESCRIBE THE FEATURE TYPE OF THE REMOTE SERVER.' ),'error');

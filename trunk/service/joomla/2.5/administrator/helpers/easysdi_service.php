@@ -142,7 +142,7 @@ class Easysdi_serviceHelper
 		}
 	
 		//Get the implemented version of the requested ServiceConnector
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = "SELECT c.id as id, sv.value as value
 		FROM #__sdi_sys_serviceconnector sc
 		INNER JOIN #__sdi_sys_servicecompliance c ON c.serviceconnector_id = sc.id
