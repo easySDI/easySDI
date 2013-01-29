@@ -78,8 +78,6 @@
 		if (max == 999) max = Number.MAX_VALUE;
 		//collapsible = true;
 		// Créer un nouveau fieldset
-		// keephidden : paramètre ajouté pour permettre à la fonction ExtendedFieldSet.clone de différencier des champs hidden car ils sont clonés depuis un master caché, 
-		// des champs hidden car ils sont cachés selon la configuration de la relation (visibility = hidden sur la relation)
 		var f = new Ext.form.FieldSet(
 				{
 					xtype: 'fieldset',
@@ -94,7 +92,6 @@
 					clone: clone,
 					clones_count: clones_count,
 					hidden: true,
-					keephidden : true,
 			        collapsible: collapsible,
 			        collapsed: collapsed,
 				    relation: relation,

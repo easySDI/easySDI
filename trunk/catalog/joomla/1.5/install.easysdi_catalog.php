@@ -2490,6 +2490,15 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 		}
+		if($version == "2.5.5")
+		{
+			$version="2.5.6";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
         
 		$query = "DELETE FROM #__components where `option`= 'com_easysdi_catalog' ";
 		$db->setQuery( $query);
