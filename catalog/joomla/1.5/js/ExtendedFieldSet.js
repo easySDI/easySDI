@@ -75,7 +75,7 @@ Ext.override(Ext.form.FieldSet, {
 				if (master.relation && !isClone) coll=true;
 			    
 			    hidden = master.hidden;
-			    if (isClone) hidden=false;
+			    if (isClone && !master.keephidden) hidden=false;
 			    
 				var clone = master.cloneConfig({
 					id : newName,
