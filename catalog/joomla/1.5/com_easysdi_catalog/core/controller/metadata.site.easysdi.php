@@ -173,6 +173,7 @@ class SITE_metadata {
 			if(count($arrVersionMd) == 0)
 			{
 				$rows = array();
+				$pageNav = new JPagination(0,$limitstart,$limit);
 			}
 			else
 			{
