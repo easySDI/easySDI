@@ -26,7 +26,7 @@ class Easysdi_serviceTablewmslayer extends sdiTable {
 	
 	public function save($src, $orderingFilter = '', $ignore = '') {
 		$data = array();
-		$data['guid'] 								= $src['guid'];
+		//$data['guid'] 								= $src['guid'];
 		$data['name'] 								= $src['name'];
 		$data['description'] 				= $src['description'];
 		$data['physicalservice_id']	= $src['physicalservice_id'];
@@ -60,5 +60,19 @@ class Easysdi_serviceTablewmslayer extends sdiTable {
 		}
 		
 		return $resultSet;
+	}
+	
+	/**
+	 * Delete all occurences of wmsLayer based on their physicalservice_id
+	 * 
+	 * @param Int A physical service ID
+	*/
+	function wipeByPhysicalId($physicalservice_id) {
+		$db = JFactory::getDbo();
+		$db->setQuery('
+			DELETE FROM #__sdi_wmslayer
+			WHERE physicalservice_id = ' . $physicalservice_id . ';
+		');
+		$db->execute();
 	}
 }

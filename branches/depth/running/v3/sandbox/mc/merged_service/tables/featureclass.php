@@ -26,11 +26,10 @@ class Easysdi_serviceTablefeatureclass extends sdiTable {
 	
 	public function save($src, $orderingFilter = '', $ignore = '') {
 		$data = array();
-		$data['guid'] 								= $src['guid'];
-		$data['name'] 								= $src['name'];
+		//$data['guid'] 							= $src['guid'];
+		$data['name'] 							= $src['name'];
 		$data['description'] 				= $src['description'];
 		$data['physicalservice_id']	= $src['physicalservice_id'];
-		
 		return parent::save($data, $orderingFilter , $ignore );
 	}
 	
@@ -60,5 +59,19 @@ class Easysdi_serviceTablefeatureclass extends sdiTable {
 		}
 		
 		return $resultSet;
+	}
+	
+	/**
+	 * Delete all occurences of feature class based on their physicalservice_id
+	 * 
+	 * @param Int A physical service ID
+	*/
+	function wipeByPhysicalId($physicalservice_id) {
+		$db = JFactory::getDbo();
+		$db->setQuery('
+			DELETE FROM #__sdi_featureclass
+			WHERE physicalservice_id = ' . $physicalservice_id . ';
+		');
+		$db->execute();
 	}
 }

@@ -90,6 +90,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	public function getItem($pk = null)
 	{
 		if ($item = parent::getItem($pk)) {
+			
+			
 			//Do any procesing on fields here if needed
 			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'tables');
 			
@@ -118,6 +120,9 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				$this->setError($je);
 				return false;
 			}
+			
+			//we first update layers via a getCapabilities
+			Easysdi_serviceHelper::getLayers(Array('service' => 'virtual_' . $item->virtualservice_id, 'user' => '', 'password' => ''));
 			
 			if ('WMS' == $serviceconnector_name) {
 				$item->physicalservice = $this->_getItemWMS($pk, $layout);

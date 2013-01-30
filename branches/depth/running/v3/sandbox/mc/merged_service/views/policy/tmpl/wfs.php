@@ -75,13 +75,14 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 														' . $layer['name'] . '<br />"' . $layer['description'] . '"
 													</td>
 													<td>
-														<input type="text" size="10" id="jform_wfs_attributerestriction_' . $ps['id'] . '_' . $layer['id'] . '" name="featureclasspolicy[wfs_attributerestriction_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['attributerestriction'] . '"/>
+														<input type="text" size="10" id="jform_wfs_attributerestriction_' . $ps['id'] . '_' . $layer['id'] . '" name="featureclasspolicy[wfs_attributerestriction_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . ((isset($layer['attributerestriction']))?$layer['attributerestriction']:'') . '"/>
 													</td>
 													<td>
-														<input type="text" size="10" id="jform_wfs_boundingboxfilter_' . $ps['id'] . '_' . $layer['id'] . '" name="featureclasspolicy[wfs_boundingboxfilter_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['boundingboxfilter'] . '"/>
+														<input type="text" size="10" id="jform_wfs_boundingboxfilter_' . $ps['id'] . '_' . $layer['id'] . '" name="featureclasspolicy[wfs_boundingboxfilter_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . ((isset($layer['boundingboxfilter']))?$layer['boundingboxfilter']:'') . '"/>
 													</td>
 													<td>
-														<input type="textarea" rows="3"  cols="30" size="40" id="jform_wfs_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . '" name="featureclasspolicy[wfs_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['geographicfilter'] . '"/>
+														<input type="textarea" rows="3"  cols="30" size="40" id="jform_wfs_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . '" name="featureclasspolicy[wfs_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . ((isset($layer['geographicfilter']))?$layer['geographicfilter']:'') . '"/>
+														<br /><br /><br />
 													</td>
 												</tr>
 											';

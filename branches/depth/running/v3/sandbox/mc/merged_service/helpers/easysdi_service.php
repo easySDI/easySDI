@@ -153,7 +153,7 @@ class Easysdi_serviceHelper
 		}
 	
 		//Get the implemented version of the requested ServiceConnector
-		$db =& JFactory::getDBO();
+		@$db =& JFactory::getDBO();
 		$query = "SELECT c.id as id, sv.value as value
 		FROM #__sdi_sys_serviceconnector sc
 		INNER JOIN #__sdi_sys_servicecompliance c ON c.serviceconnector_id = sc.id
@@ -167,7 +167,7 @@ class Easysdi_serviceHelper
 		$completeurl = "";
 		foreach ($implemented_versions as $version){
 			$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=".$service."&VERSION=".$version->value;
-
+			
 			$xmlCapa = simplexml_load_file($completeurl);
 			if ($xmlCapa === false)
 			{
@@ -189,5 +189,197 @@ class Easysdi_serviceHelper
 		$encoded = json_encode($supported_versions);
 		echo $encoded;
 		die();
+	}
+	
+	/**
+	 * Execute a GetCapabilities to return queriable layers.
+	 * @param string $service : prefixed id of the service
+	 */
+	public static function getLayers ($params){
+		$service 				= $params['service'];
+		$user 					= $params['user'];
+		$password 				= $params['password'];
+		
+		$physical_id = -1;
+		
+		$db = JFactory::getDbo();
+		$pos 					= strstr ($service, 'physical_');
+		if($pos){
+			$id = substr ($service, strrpos ($service, '_')+1);
+			$query = 'SELECT s.resourceurl as url, sc.value as connector FROM #__sdi_physicalservice s 
+								INNER JOIN #__sdi_sys_serviceconnector sc  ON sc.id = s.serviceconnector_id
+								WHERE s.id='.$id ;
+			$db->setQuery($query);
+			$resource 			= $db->loadObject();
+			$db->setQuery(
+								'SELECT sv.value as value, sc.id as id FROM #__sdi_service_servicecompliance ssc ' .
+								' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id '.
+								' INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id'.
+								' WHERE ssc.service_id ='.$id.
+								' AND ssc.servicetype = "physical"'.
+								' LIMIT 1'
+			);
+			$compliance = $db->loadObject();
+			$physical_id = $id;
+		}
+		else {
+			$id = substr ($service, strrpos ($service, '_')+1);
+			$query = 'SELECT ps.id as physicalservice_id, ps.resourceurl as url, sc.value as connector FROM #__sdi_virtualservice vs
+								INNER JOIN #__sdi_physicalservice ps ON ps.id = vs.physicalservice_id
+								INNER JOIN #__sdi_sys_serviceconnector sc  ON sc.id = ps.serviceconnector_id
+								WHERE vs.id='.$id;
+			$db->setQuery($query);
+			$resource 			= $db->loadObject();
+			$query = 'SELECT sv.value as value, sc.id as id FROM #__sdi_physicalservice_servicecompliance pssc
+							INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = pssc.servicecompliance_id
+							INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id
+							WHERE pssc.physicalservice_id ='.$resource->physicalservice_id.'
+							LIMIT 1';
+			
+			$db->setQuery($query);
+			$compliance = $db->loadObject();
+			$physical_id = $resource->physicalservice_id;
+		}
+		
+		$url		= $resource->url;
+		$connector	= ($resource->connector == "WMSC")? "WMS" : $resource->connector;
+		$pos1 		= stripos($url, "?");
+		$separator 	= "&";
+		if ($pos1 === false) {
+			$separator = "?";
+		}
+		
+		$completeurl = $url.$separator."REQUEST=GetCapabilities&SERVICE=".$connector;
+		if($compliance && $compliance->value){
+			$completeurl .= "&version=".$compliance->value;
+		}
+		
+		$session 	= curl_init($completeurl);
+		$httpHeader = array();
+		if (!empty($user)  && !empty($password)) {
+			$httpHeader[]='Authorization: Basic '.base64_encode($user.':'.$password);
+		}
+		if (count($httpHeader)>0)
+		{
+			curl_setopt($session, CURLOPT_HTTPHEADER, $httpHeader);
+		}
+		curl_setopt($session, CURLOPT_HEADER, false);
+		curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+		$response = curl_exec($session);
+		$http_status = curl_getinfo($session, CURLINFO_HTTP_CODE);
+		curl_close($session);
+		
+		//HTTP status error
+		if($http_status != '200') {
+			$result['ERROR']=JText::_('COM_EASYSDI_MAP_GET_CAPABILITIES_HTTP_ERROR').$http_status;
+			echo json_encode($result);
+			die();
+		}
+		
+		$xmlCapa = simplexml_load_string($response);
+		$result = array();
+		
+		//Response empty
+		if ($xmlCapa === false) {
+			$result['ERROR']=JText::_('COM_EASYSDI_MAP_GET_CAPABILITIES_ERROR');
+			echo json_encode($result);
+			die();
+		}
+		
+		//OGC exception returned
+		if($xmlCapa->getName() == "ServiceExceptionReport") {
+			foreach ($xmlCapa->children() as $exception) {
+				$ogccode = $exception['code'];
+				break;
+			}
+			$result['ERROR']=JText::_('COM_EASYSDI_MAP_GET_CAPABILITIES_OGC_ERROR').$ogccode;
+			echo json_encode($result);
+			die();
+		}
+		
+		//Parse capabilities to get layers
+		$namespaces = $xmlCapa->getNamespaces(true);
+		foreach ($namespaces as $key => $value) {
+			if($key == '') {
+				$xmlCapa->registerXPathNamespace ("dflt",$value);
+			}
+			else {
+				$xmlCapa->registerXPathNamespace ($key,$value);
+			}
+			var_dump($key . ' - ' . $value);
+		}
+		$version = $xmlCapa->xpath ('@version');
+		$version = (string)$version[0];
+		
+		switch ($resource->connector) {
+			case "WMS":
+			case "WMSC":
+				switch ($version) {
+					case "1.3.0":
+						$wmsLayerList = $xmlCapa->xpath('//dflt:Layer');
+						break;
+					default:
+						$wmsLayerList = $xmlCapa->xpath('/Capability/Layer/Layer');
+						break;
+				}
+				
+				//flushing the wmslayer table
+				//@$tab_layer =& JTable::getInstance('wmslayer', 'Easysdi_serviceTable');
+				$tab_layer = JTable::getInstance('wmslayer', 'Easysdi_serviceTable');
+				$tab_layer->wipeByPhysicalId($physical_id);
+				unset($tab_layer);
+				
+				//inserting each wmslayer
+				foreach ($wmsLayerList as $wmsLayer) {
+					//@$tab_layer =& JTable::getInstance('wmslayer', 'Easysdi_serviceTable');
+					$tab_layer->save(Array(
+						'name' => (String) $wmsLayer->Name,
+						'description' => (String) $wmsLayer->Title,
+						'physicalservice_id' => $physical_id
+					));
+					unset($tab_layer);
+				}
+				break;
+			case "WMTS": 
+				$wmtsLayerList = $xmlCapa->xpath('/dflt:Contents/dflt:Layer');
+				var_dump($wmtsLayerList);
+				//flushing the wmtslayer table
+				@$tab_layer =& JTable::getInstance('wmtslayer', 'Easysdi_serviceTable');
+				$tab_layer->wipeByPhysicalId($physical_id);
+				unset($tab_layer);
+				
+				//inserting each wmtslayer
+				foreach ($wmtsLayerList as $wmtsLayer) {
+					var_dump($wmtsLayer);
+					@$tab_layer =& JTable::getInstance('wmtslayer', 'Easysdi_serviceTable');
+					$tab_layer->save(Array(
+						'name' => (String) $wmtsLayer->Title,
+						'description' => (String) $wmtsLayer->Title,
+						'physicalservice_id' => $physical_id
+					));
+					unset($tab_layer);
+				}
+				//die();
+				break;
+			case "WFS":
+				$featureTypeList = $xmlCapa->xpath('//dflt:FeatureType');
+				
+				//flushing the featureClass table
+				@$tab_layer =& JTable::getInstance('featureclass', 'Easysdi_serviceTable');
+				$tab_layer->wipeByPhysicalId($physical_id);
+				unset($tab_layer);
+				
+				//inserting each featureClass
+				foreach ($featureTypeList as $featureType) {
+					@$tab_layer =& JTable::getInstance('featureclass', 'Easysdi_serviceTable');
+					$tab_layer->save(Array(
+						'name' => (String) $featureType->Name,
+						'description' => (String) $featureType->Title,
+						'physicalservice_id' => $physical_id
+					));
+					unset($tab_layer);
+				}
+				break;
+		}
 	}
 }

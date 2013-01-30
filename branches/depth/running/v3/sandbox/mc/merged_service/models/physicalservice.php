@@ -153,7 +153,7 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 				$item->compliance = json_encode($compliance_ids);
 			else 
 				$item->compliance = '';
-			$item->supportedversions = json_encode($compliance_values);
+			@$item->supportedversions = json_encode($compliance_values);
 
 		}
 

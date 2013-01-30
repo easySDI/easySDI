@@ -81,13 +81,14 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 														' . $layer['name'] . '<br />"' . $layer['description'] . '"
 													</td>
 													<td>
-														<input type="text" size="10" id="jform_wms_minimumscale_' . $ps['id'] . '_' . $layer['id'] . '" name="wmslayerpolicy[wms_minimumscale_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['minimumscale'] . '"/>
+														<input type="text" size="10" id="jform_wms_minimumscale_' . $ps['id'] . '_' . $layer['id'] . '" name="wmslayerpolicy[wms_minimumscale_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . ((isset($layer['minimumscale']))?$layer['minimumscale']:'') . '"/>
 													</td>
 													<td>
-														<input type="text" size="10" id="jform_wms_maximumscale_' . $ps['id'] . '_' . $layer['id'] . '" name="wmslayerpolicy[wms_maximumscale_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['maximumscale'] . '"/>
+														<input type="text" size="10" id="jform_wms_maximumscale_' . $ps['id'] . '_' . $layer['id'] . '" name="wmslayerpolicy[wms_maximumscale_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . ((isset($layer['maximumscale']))?$layer['maximumscale']:'') . '"/>
 													</td>
 													<td>
-														<input type="textarea" rows="3"  cols="30" size="40" id="jform_wms_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . '" name="wmslayerpolicy[wms_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['geographicfilter'] . '"/>
+														<input type="textarea" rows="3"  cols="30" size="40" id="jform_wms_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . '" name="wmslayerpolicy[wms_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . ((isset($layer['geographicfilter']))?$layer['geographicfilter']:'') . '"/>
+														<br /><br /><br />
 													</td>
 												</tr>
 											';
