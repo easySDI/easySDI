@@ -19,10 +19,11 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 
 $user	= JFactory::getUser();
 $userId	= $user->get('id');
+$filter_group = $this->state->get('filter.group');
 $listOrder	= $this->state->get('list.ordering');
 $listDirn	= $this->state->get('list.direction');
 $canOrder	= $user->authorise('core.edit.state', 'com_easysdi_map');
-$saveOrder	= $listOrder == 'a.ordering';
+$saveOrder	= $listOrder == 'a.ordering' && !empty($filter_group);
 ?>
 
 <form
@@ -80,11 +81,11 @@ $saveOrder	= $listOrder == 'a.ordering';
 
 				<th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_MAP_LAYERS_NAME', 'a.name', $listDirn, $listOrder); ?>
 				</th>
-				<th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_MAP_LAYERS_SERVICE_NAME', 'a.physicalservice_id', $listDirn, $listOrder); ?>
+				<th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_MAP_LAYERS_SERVICE_NAME', 'physicalservice_name', $listDirn, $listOrder); ?>
 				</th>
 				<th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_MAP_LAYERS_LAYERNAME', 'a.layername', $listDirn, $listOrder); ?>
 				</th>
-				<th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_MAP_LAYERS_GROUP_ID', 'a.group_id', $listDirn, $listOrder); ?>
+				<th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_MAP_LAYERS_GROUP_ID', 'group_name', $listDirn, $listOrder); ?>
 				</th>
 				<th width="10%">
 					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'access_level', $listDirn, $listOrder); ?>
@@ -93,12 +94,14 @@ $saveOrder	= $listOrder == 'a.ordering';
 				<th width="5%"><?php echo JHtml::_('grid.sort',  'JPUBLISHED', 'a.state', $listDirn, $listOrder); ?>
 				</th>
 				<?php } ?>
-				<?php if (isset($this->items[0]->ordering)) { ?>
+				<?php if (isset($this->items[0]->ordering)) { 
+				?>
 				<th width="10%"><?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ORDERING', 'a.ordering', $listDirn, $listOrder); ?>
 					<?php if ($canOrder && $saveOrder) :?> <?php echo JHtml::_('grid.order',  $this->items, 'filesave.png', 'layers.saveorder'); ?>
 					<?php endif; ?>
 				</th>
-				<?php } ?>
+				<?php 
+				} ?>
 				<?php if (isset($this->items[0]->id)) { ?>
 				<th width="1%" class="nowrap"><?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
 				</th>
@@ -142,7 +145,7 @@ $saveOrder	= $listOrder == 'a.ordering';
 				</td>
 				<td><?php echo $item->layername; ?>
 				</td>
-				<td><?php echo $item->groups_name_277305; ?>
+				<td><?php echo $item->group_name; ?>
 				</td>
 				<td class="center">
 					<?php echo $this->escape($item->access_level); ?>

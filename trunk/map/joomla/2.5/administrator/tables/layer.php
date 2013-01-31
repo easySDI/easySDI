@@ -27,6 +27,76 @@ class Easysdi_mapTablelayer extends sdiTable {
 	}
 
 	/**
+	 * Overloaded check function
+	 */
+	public function check() {
+		//If there is an ordering column and this is a new row then get the next ordering value
+		if (property_exists($this, 'ordering') && $this->id == 0) 
+		{
+			$this->ordering = self::getNextOrder('group_id = '.$this->group_id);
+		}
+	
+		return true;
+	}
+	
+	/**
+	 * Method to provide a shortcut to binding, checking and storing a JTable
+	 * instance to the database table.  The method will check a row in once the
+	 * data has been stored and if an ordering filter is present will attempt to
+	 * reorder the table rows based on the filter.  The ordering filter is an instance
+	 * property name.  The rows that will be reordered are those whose value matches
+	 * the JTable instance for the property specified.
+	 *
+	 * @param   mixed   $src             An associative array or object to bind to the JTable instance.
+	 * @param   string  $orderingFilter  Filter for the order updating
+	 * @param   mixed   $ignore          An optional array or space separated list of properties
+	 * to ignore while binding.
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @link	http://docs.joomla.org/JTable/save
+	 * @since   11.1
+	 */
+	public function save($src, $orderingFilter = '', $ignore = '')
+	{
+		return parent::save($src, "group_id = ".$this->group_id);
+	}
+	
+	/**
+	 * Method to compact the ordering values of rows in a group of rows
+	 * defined by an SQL WHERE clause.
+	 *
+	 * @param   string  $where  WHERE clause to use for limiting the selection of rows to compact the ordering values.
+	 *
+	 * @return  mixed  Boolean true on success.
+	 *
+	 * @link    http://docs.joomla.org/JTable/reorder
+	 * @since   11.1
+	 */
+	public function reorder($where = '')
+	{
+		return parent::reorder("group_id = ".$this->group_id);
+	}
+	
+	/**
+	 * Method to move a row in the ordering sequence of a group of rows defined by an SQL WHERE clause.
+	 * Negative numbers move the row up in the sequence and positive numbers move it down.
+	 *
+	 * @param   integer  $delta  The direction and magnitude to move the row in the ordering sequence.
+	 * @param   string   $where  WHERE clause to use for limiting the selection of rows to compact the
+	 * ordering values.
+	 *
+	 * @return  mixed    Boolean true on success.
+	 *
+	 * @link    http://docs.joomla.org/JTable/move
+	 * @since   11.1
+	 */
+	public function move($delta, $where = '')
+	{
+		return parent::move($delta,"group_id = ".$this->group_id);
+	}
+	
+	/**
 	 * Method to compute the default name of the asset.
 	 * The default name is in the form table_name.id
 	 * where id is the value of the primary key of the table.
