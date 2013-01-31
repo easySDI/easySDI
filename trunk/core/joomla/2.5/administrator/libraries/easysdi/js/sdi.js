@@ -118,6 +118,7 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
             root: treeRoot,
             rootVisible: true,
             shortTitle: this.shortTitle,
+            autoScroll : true,
             border: false,
             enableDD: true,
             selModel: new Ext.tree.DefaultSelectionModel({
@@ -1047,3 +1048,13 @@ sdi.geoext.widgets.PrintMapPanel = Ext.extend(GeoExt.PrintMapPanel, {
 });
 
 
+GeoExt.Lang.add("fr", { 
+"sdi.gxp.plugins.Print.prototype": {
+        buttonText:"Imprimer",
+        menuText: "Imprimer la carte",
+        tooltip: "Imprimer la carte",
+        previewText: "Aperçu avant impression",
+        notAllNotPrintableText: "Aucune couche ne peut être imprimée.",
+        nonePrintableText: "Aucune des couches sélectionnées ne peut être imprimée pour des raisons de copyright."
+    }
+});
