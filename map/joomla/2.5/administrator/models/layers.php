@@ -38,7 +38,7 @@ class Easysdi_mapModellayers extends JModelList
 					'ordering', 'a.ordering',
 					'state', 'a.state',
 					'name', 'a.name',
-					'group_id', 'a.group_id',
+					'group_id', 'a.group_id','group_name',
 					'service_id', 'a.service_id',
 					'servicetype', 'a.servicetype',
 					'layername', 'a.layername',
@@ -155,14 +155,14 @@ class Easysdi_mapModellayers extends JModelList
 		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
 
 		// Join over the foreign key 'group_id'
-		$query->select('#__sdi_map_group_277305.name AS groups_name_277305');
+		$query->select('#__sdi_map_group_277305.name AS group_name');
 		$query->join('LEFT', '#__sdi_map_group AS #__sdi_map_group_277305 ON #__sdi_map_group_277305.id = a.group_id');
 		
-// 		// Join over the foreign key 'physicalservice_id'
+ 		// Join over the foreign key 'physicalservice_id'
 		$query->select('#__sdi_physicalservice22.name AS physicalservice_name');
 		$query->join('LEFT', '#__sdi_physicalservice AS #__sdi_physicalservice22 ON #__sdi_physicalservice22.id = a.service_id');
 		
-// 		// Join over the foreign key 'virtualservice_id'
+ 		// Join over the foreign key 'virtualservice_id'
 		$query->select('#__sdi_virtualservice22.name AS virtualservice_name');
 		$query->join('LEFT', '#__sdi_virtualservice AS #__sdi_virtualservice22 ON #__sdi_virtualservice22.id = a.service_id');
 
@@ -194,7 +194,7 @@ class Easysdi_mapModellayers extends JModelList
 		if ($group = $this->getState('filter.group')) {
 			$query->where('#__sdi_map_group_277305.id = ' . (int) $group);
 		}
-		
+				
 		// Filter by search in title
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {
@@ -207,11 +207,21 @@ class Easysdi_mapModellayers extends JModelList
 		}
 
 		// Add the list ordering clause.
+		
 		$orderCol	= $this->state->get('list.ordering');
 		$orderDirn	= $this->state->get('list.direction');
+		
 		if ($orderCol && $orderDirn) {
 			$query->order($db->getEscaped($orderCol.' '.$orderDirn));
 		}
+		if (!$this->getState('filter.group')) {
+			$query->order('group_name');
+		}
+		if(strcmp($orderCol, 'a.ordering') != 0)
+		{
+			$query->order('a.ordering');
+		}
+		
 
 		return $query;
 	}
