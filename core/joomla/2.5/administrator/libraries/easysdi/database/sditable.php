@@ -160,20 +160,65 @@ abstract class sdiTable extends JTable
 		{
 				
 				$this->alias 	= preg_replace('/\s+/', '-', $this->alias);
-				$this->alias = str_replace( array('à','á','â','ã','ä', 'ç', 'è','é','ê','ë', 'ì','í','î','ï', 'ñ', 'ò','ó','ô','õ','ö', 'ù','ú','û','ü', 'ý','ÿ', 'À','Á','Â','Ã','Ä', 'Ç', 'È','É','Ê','Ë', 'Ì','Í','Î','Ï', 'Ñ', 'Ò','Ó','Ô','Õ','Ö', 'Ù','Ú','Û','Ü', 'Ý'), array('a','a','a','a','a', 'c', 'e','e','e','e', 'i','i','i','i', 'n', 'o','o','o','o','o', 'u','u','u','u', 'y','y', 'A','A','A','A','A', 'C', 'E','E','E','E', 'I','I','I','I', 'N', 'O','O','O','O','O', 'U','U','U','U', 'Y'), $this->alias);
-				$this->alias=str_replace("'", "_",$this->alias);
+				$this->alias 	= str_replace( array('à','á','â','ã','ä', 'ç', 'è','é','ê','ë', 'ì','í','î','ï', 'ñ', 'ò','ó','ô','õ','ö', 'ù','ú','û','ü', 'ý','ÿ', 'À','Á','Â','Ã','Ä', 'Ç', 'È','É','Ê','Ë', 'Ì','Í','Î','Ï', 'Ñ', 'Ò','Ó','Ô','Õ','Ö', 'Ù','Ú','Û','Ü', 'Ý'), array('a','a','a','a','a', 'c', 'e','e','e','e', 'i','i','i','i', 'n', 'o','o','o','o','o', 'u','u','u','u', 'y','y', 'A','A','A','A','A', 'C', 'E','E','E','E', 'I','I','I','I', 'N', 'O','O','O','O','O', 'U','U','U','U', 'Y'), $this->alias);
+				$this->alias	=str_replace("'", "_",$this->alias);
 				$this->alias 	= strtolower($this->alias);
-				
+				$this->alias 	= $this::getUniqueAlias($this->alias);
 		}
 
 		return parent::store($updateNulls);
+	}
+	
+	
+	private function getUniqueAlias ($alias)
+	{
+		$query = $this->_db->getQuery(true);
+		$query->select('count(*)');
+		$query->from('`'.$this->_tbl.'`');
+		$query->where('alias = "'.$alias.'"');
+		if($this->id)
+			$query->where('id <> '.$this->id);
+		$this->_db->setQuery($query);
+		
+		// Check for a database error.
+		if ($this->_db->getErrorNum()) {
+			$this->setError($this->_db->getErrorMsg());
+			return "";
+		}
+		
+		if( $this->_db->loadResult() == 1)
+		{
+			//alias is already used
+			$pos = strrpos ($alias ,"_");	
+			if($pos === false)
+			{
+				return $this::getUniqueAlias($alias."_1");
+			}
+			else
+			{
+				//Increment alias
+				if(is_numeric(substr ($alias, $pos+1)))
+				{
+					$i = (int) substr ($alias, $pos+1);
+					$i ++;
+					$alias = substr ($alias, 0, $pos);
+					return $this::getUniqueAlias($alias."_".$i);
+				}
+				else
+				{
+					return $this::getUniqueAlias($alias."_1");
+				}
+				
+			}
+		}
+		else 
+			return $alias;
 	}
 	
 	/**
 	 * Overloaded check function
 	 */
 	public function check() {
-	
 		//If there is an ordering column and this is a new row then get the next ordering value
 		if (property_exists($this, 'ordering') && $this->id == 0) {
 			$this->ordering = self::getNextOrder();

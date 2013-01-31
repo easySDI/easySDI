@@ -118,6 +118,7 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
             root: treeRoot,
             rootVisible: true,
             shortTitle: this.shortTitle,
+            autoScroll : true,
             border: false,
             enableDD: true,
             selModel: new Ext.tree.DefaultSelectionModel({

@@ -223,7 +223,8 @@
 		 	gxp/plugins/OSMSource.js,
 		 	geoext/data/PrintProvider.js, 
 		 	geoext/ux/PrintPreview.js, 
-		 	geoext/widgets/PrintMapPanel.js" />
+		 	geoext/widgets/PrintMapPanel.js, 
+		 	gxp/locale/fr.js" />
 		 </concat>
 	</target>
 	
