@@ -1046,7 +1046,7 @@ class Easysdi_serviceControllerPolicy extends JController
 										$tileMatrixSetSupportedCRS = $tileMatrixSet->getElementsByTagNameNS($namespaces['ows'],'SupportedCRS')->item(0)->nodeValue;
 											
 										if($tileMatrixSetIdentifier == $key){
-											$theTileMatrixSet = $theLayer->addChild(TileMatrixSet);
+											$theTileMatrixSet = $theLayer->addChild('TileMatrixSet');
 											$theTileMatrixSet['id'] =$key;
 											$tileMatrices = $tileMatrixSet->getElementsByTagName('TileMatrix');
 
@@ -1184,15 +1184,15 @@ class Easysdi_serviceControllerPolicy extends JController
 
 		//Calculate the range of tileset indexes included in the BBOX filter
 		if($spatialoperator == "touch"){
-			$tileMinCol = floor(($bboxCRS[minx] - $topLeftCornerX)/$tileSpanX + $epsilon);
-			$tileMaxCol = floor(($bboxCRS[maxx] - $topLeftCornerX)/$tileSpanX - $epsilon);
-			$tileMinRow = floor(($topLeftCornerY - $bboxCRS[maxy])/$tileSpanY + $epsilon);
-			$tileMaxRow = floor(($topLeftCornerY - $bboxCRS[miny])/$tileSpanY - $epsilon);
+			$tileMinCol = floor(($bboxCRS['minx'] - $topLeftCornerX)/$tileSpanX + $epsilon);
+			$tileMaxCol = floor(($bboxCRS['maxx'] - $topLeftCornerX)/$tileSpanX - $epsilon);
+			$tileMinRow = floor(($topLeftCornerY - $bboxCRS['maxy'])/$tileSpanY + $epsilon);
+			$tileMaxRow = floor(($topLeftCornerY - $bboxCRS['miny'])/$tileSpanY - $epsilon);
 		}else{
-			$tileMinCol = ceil(($bboxCRS[minx] - $topLeftCornerX)/$tileSpanX + $epsilon);
-			$tileMaxCol = floor(($bboxCRS[maxx] - $topLeftCornerX)/$tileSpanX - $epsilon) -1;
-			$tileMinRow = ceil(($topLeftCornerY - $bboxCRS[maxy])/$tileSpanY + $epsilon) ;
-			$tileMaxRow = floor(($topLeftCornerY - $bboxCRS[miny])/$tileSpanY - $epsilon) -1;
+			$tileMinCol = ceil(($bboxCRS['minx'] - $topLeftCornerX)/$tileSpanX + $epsilon);
+			$tileMaxCol = floor(($bboxCRS['maxx'] - $topLeftCornerX)/$tileSpanX - $epsilon) -1;
+			$tileMinRow = ceil(($topLeftCornerY - $bboxCRS['maxy'])/$tileSpanY + $epsilon) ;
+			$tileMaxRow = floor(($topLeftCornerY - $bboxCRS['miny'])/$tileSpanY - $epsilon) -1;
 		}
 
 		//Error control to avoid requesting empty tiles
@@ -1245,6 +1245,7 @@ class Easysdi_serviceControllerPolicy extends JController
 			$theTileMatrix->TileMinRow = $tileMinRow;
 			$theTileMatrix->TileMaxRow = $tileMaxRow;
 		}
+		
 	}
 
 	/**
@@ -1261,7 +1262,7 @@ class Easysdi_serviceControllerPolicy extends JController
 			{
 				$attributesArray[] = substr ($attributes,0,$index);
 				$em = substr($attributes,$index + 1);
-				$this->getAttributesList($em, &$attributesArray);
+				$this->getAttributesList($em, $attributesArray);
 			}
 			else
 			{
