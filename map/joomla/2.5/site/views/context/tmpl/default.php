@@ -27,9 +27,6 @@ JHTML::script('gxp.min.js', 'administrator/components/com_easysdi_core/libraries
 
 JHTML::script('sdi.min.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/');
 
-JHTML::script('overrides-ext-ajax.js', 'administrator/components/com_easysdi_core/libraries/geoext/lib/overrides/');
-
-
 JHTML::_('stylesheet', 'ext-all.css', 'administrator/components/com_easysdi_core/libraries/ext/resources/css/');
 JHTML::_('stylesheet', 'xtheme-gray.css', 'administrator/components/com_easysdi_core/libraries/ext/resources/css/');
 JHTML::_('stylesheet', 'style.css', 'administrator/components/com_easysdi_core/libraries/openlayers/theme/default/');
