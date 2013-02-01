@@ -94,7 +94,7 @@ $document->addStyleSheet('components/com_easysdi_user/assets/css/easysdi_user.cs
 					else if($property == 'user_id')
 						$defaultvalue = $this->item->id;
 					else{
-						if (isset($this->contactitem))
+						if (isset($this->contactitem) && !empty($this->contactitem))
 							$defaultvalue = $this->contactitem->$property;
 					}
 					?>
@@ -115,7 +115,7 @@ $document->addStyleSheet('components/com_easysdi_user/assets/css/easysdi_user.cs
 					else if($property == 'user_id')
 						$defaultvalue = $this->item->id;
 					else{
-						if (isset($this->billingitem))
+						if (isset($this->billingitem) && !empty($this->billingitem))
 							$defaultvalue = $this->billingitem->$property;
 					}
 					?>
@@ -136,7 +136,7 @@ $document->addStyleSheet('components/com_easysdi_user/assets/css/easysdi_user.cs
 					else if($property == 'user_id')
 						$defaultvalue = $this->item->id;
 					else{
-						if (isset($this->delivryitem))
+						if (isset($this->delivryitem) && !empty($this->delivryitem))
 							$defaultvalue = $this->delivryitem->$property;
 					}	
 					?>
