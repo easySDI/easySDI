@@ -15,7 +15,7 @@ JHtml::_('behavior.formvalidation');
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
-var_dump($this->item->physicalservice[0]['layers']);
+//var_dump($this->item->physicalservice[0]['layers']);
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task)
@@ -56,9 +56,10 @@ var_dump($this->item->physicalservice[0]['layers']);
 								<table class="admintable" id="wmts_layers">
 									<tbody>
 										<tr>
-													<th><span style="font-weight: bold;">Geographic filter</span></th>
-													<th><span style="font-weight: bold;">TileMatrixSet Id</span></th>
-													<th><span style="font-weight: bold;">TileMatrix min scale denominator</span></th>
+											<th><span style="font-weight: bold;">Name</span></th>
+											<th><span style="font-weight: bold;">Geographic filter</span></th>
+											<th><span style="font-weight: bold;">TileMatrixSet Id</span></th>
+											<th><span style="font-weight: bold;">TileMatrix min scale denominator</span></th>
 										</tr>
 										<tr>
 											<td colspan="4">
@@ -68,6 +69,10 @@ var_dump($this->item->physicalservice[0]['layers']);
 										foreach ($ps['layers'] as $layer) {
 											echo '
 												<tr>
+													<td>
+														<input type="checkbox" name="wmts_layer_' . $ps['id'] . '_' . $layer['id'] . '" id="wmts_layer_' . $ps['id'] . '_' . $layer['id'] . '"/>
+														' . $layer['name'] . '<br />"' . $layer['description'] . '"
+													</td>
 													<td>
 														<label for="jform_wmts_bbox_minimumx_' . $ps['id'] . '_' . $layer['id'] . '" >Min X </label>
 														<input type="text" size="10" id="jform_wmts_bbox_minimumx_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_bbox_minimumx_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . ((isset($layer['bbox_minimumx']))?$layer['bbox_minimumx']:'') . '"/><br />

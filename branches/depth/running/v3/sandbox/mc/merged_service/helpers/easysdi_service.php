@@ -306,7 +306,6 @@ class Easysdi_serviceHelper
 			else {
 				$xmlCapa->registerXPathNamespace ($key,$value);
 			}
-			var_dump($key . ' - ' . $value);
 		}
 		$version = $xmlCapa->xpath ('@version');
 		$version = (string)$version[0];
@@ -319,19 +318,19 @@ class Easysdi_serviceHelper
 						$wmsLayerList = $xmlCapa->xpath('//dflt:Layer');
 						break;
 					default:
-						$wmsLayerList = $xmlCapa->xpath('/Capability/Layer/Layer');
+						$wmsLayerList = $xmlCapa->xpath('/Capability//Layer[Name]');
 						break;
 				}
 				
 				//flushing the wmslayer table
-				//@$tab_layer =& JTable::getInstance('wmslayer', 'Easysdi_serviceTable');
+				@$tab_layer =& JTable::getInstance('wmslayer', 'Easysdi_serviceTable');
 				$tab_layer = JTable::getInstance('wmslayer', 'Easysdi_serviceTable');
 				$tab_layer->wipeByPhysicalId($physical_id);
 				unset($tab_layer);
 				
 				//inserting each wmslayer
 				foreach ($wmsLayerList as $wmsLayer) {
-					//@$tab_layer =& JTable::getInstance('wmslayer', 'Easysdi_serviceTable');
+					@$tab_layer =& JTable::getInstance('wmslayer', 'Easysdi_serviceTable');
 					$tab_layer->save(Array(
 						'name' => (String) $wmsLayer->Name,
 						'description' => (String) $wmsLayer->Title,
@@ -341,8 +340,7 @@ class Easysdi_serviceHelper
 				}
 				break;
 			case "WMTS": 
-				$wmtsLayerList = $xmlCapa->xpath('/dflt:Contents/dflt:Layer');
-				var_dump($wmtsLayerList);
+				$wmtsLayerList = $xmlCapa->xpath('/dflt:Capabilities/dflt:Contents/dflt:Layer');
 				//flushing the wmtslayer table
 				@$tab_layer =& JTable::getInstance('wmtslayer', 'Easysdi_serviceTable');
 				$tab_layer->wipeByPhysicalId($physical_id);
@@ -350,16 +348,67 @@ class Easysdi_serviceHelper
 				
 				//inserting each wmtslayer
 				foreach ($wmtsLayerList as $wmtsLayer) {
-					var_dump($wmtsLayer);
 					@$tab_layer =& JTable::getInstance('wmtslayer', 'Easysdi_serviceTable');
 					$tab_layer->save(Array(
-						'name' => (String) $wmtsLayer->Title,
-						'description' => (String) $wmtsLayer->Title,
+						'name' => (String) $wmtsLayer->children('ows', true)->Identifier,
+						'description' => (String) $wmtsLayer->children('ows', true)->Title,
 						'physicalservice_id' => $physical_id
 					));
+					
+					echo '<h2>' . (String) $wmtsLayer->children('ows', true)->Identifier . '</h2>';
+					
+					foreach ($wmtsLayer->TileMatrixSetLink as $tileMatrixSet) {
+						$tileMatrixSetIdentifier = (String) $tileMatrixSet->TileMatrixSet;
+						echo '<h3>' . $tileMatrixSetIdentifier . '</h3>';
+						
+						//TODO : save tileMatrixSet
+						//RETURN : insert_id
+						
+						
+						//we probe if the tilematrixset has limits
+						$hasLimits = isset($tileMatrixSet->TileMatrixSetLimits);
+						var_dump($hasLimits);
+						//we get the list of authorized tilematrix for this tilematrixset
+						if ($hasLimits) {
+							$authorized_tiles = Array();
+							foreach ($tileMatrixSet->TileMatrixSetLimits->TileMatrixLimits as $limits) {
+								$tileMatrixIdentifier = (String) $limits->TileMatrix;
+								$authorized_tiles[] = $tileMatrixIdentifier;
+							}
+						}
+						
+						//we get the list of all the tilematrix for this tilematrixset
+						$tileMatrixList = $xmlCapa->xpath("/dflt:Capabilities/dflt:Contents/dflt:TileMatrixSet[ows:Identifier = '" . $tileMatrixSetIdentifier . "']/dflt:TileMatrix");
+						//we sanitize the output of the xpath
+						$temp = Array();
+						foreach ($tileMatrixList as $tileMatrix) {
+							$identifier = (String) $tileMatrix->children('ows', true)->Identifier;
+							//if there are limits on the tilematrixset we filter the list of tilematrix with authorized tilematrixes
+							if (!$hasLimits || in_array($identifier, $authorized_tiles)) {
+								$temp[] = Array(
+									'Identifier' => $identifier,
+									'ScaleDenominator' => (String) $tileMatrix->ScaleDenominator,
+									'TopLeftCorner' => (String) $tileMatrix->TopLeftCorner,
+									'TileWidth' => (String) $tileMatrix->TileWidth,
+									'TileHeight' => (String) $tileMatrix->TileHeight,
+									'MatrixWidth' => (String) $tileMatrix->MatrixWidth,
+									'MatrixHeight' => (String) $tileMatrix->MatrixHeight
+								);
+							}
+						}
+						$tileMatrixList = $temp;
+						unset($temp);
+						
+						
+						//TODO : save all the tilematrix
+						//PARAM : tilematrixset pk
+						
+					}
+					echo '<hr />';
+					
 					unset($tab_layer);
 				}
-				//die();
+				die();
 				break;
 			case "WFS":
 				$featureTypeList = $xmlCapa->xpath('//dflt:FeatureType');
