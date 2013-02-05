@@ -13,7 +13,7 @@ require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'libra
 /**
  * virtualmetadata Table class
  */
-class Easysdi_serviceTabletilematrixset extends sdiTable {
+class Easysdi_serviceTabletilematrix extends sdiTable {
 
 	/**
 	* Constructor
@@ -21,15 +21,20 @@ class Easysdi_serviceTabletilematrixset extends sdiTable {
 	* @param JDatabase A database connector object
 	*/
 	public function __construct(&$db) {
-		parent::__construct('#__sdi_tilematrixset', 'id', $db);
+		parent::__construct('#__sdi_tilematrix', 'id', $db);
 	}
 	
 	public function save($src, $orderingFilter = '', $ignore = '') {
 		$data = array();
-		//$data['guid'] 							= $src['guid'];
-		$data['identifier'] 			= $src['identifier'];
-		$data['supported_crs'] 		= $src['supported_crs'];
-		$data['wmtslayer_id'] 		= $src['wmtslayer_id'];
+		//$data['guid'] 						= $src['guid'];
+		$data['identifier'] 				= $src['Identifier'];
+		$data['scaledenominator'] 	= $src['ScaleDenominator'];
+		$data['topleftcorner'] 			= $src['TopLeftCorner'];
+		$data['tilewidth'] 					= $src['TileWidth'];
+		$data['tileheight'] 				= $src['TileHeight'];
+		$data['matrixwidth'] 				= $src['MatrixWidth'];
+		$data['matrixheight'] 			= $src['MatrixHeight'];
+		$data['tilematrixset_id'] 	= $src['tilematrixset_id'];
 		return parent::save($data, $orderingFilter , $ignore );
 	}
 }
