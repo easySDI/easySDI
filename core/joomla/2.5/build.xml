@@ -74,16 +74,17 @@
 	        GeoExt/plugins/AttributeForm.js, 
 	        GeoExt/widgets/PrintMapPanel.js, 
 	        GeoExt/state/PermalinkProvider.js, 
-	        GeoExt/Lang.js" />
+	        GeoExt/Lang.js,
+	 		overrides/override-ext-ajax.js" />
 	 </concat>
 	 </target>
 	
-	<target name="minifyGeoExt" >
+	<target name="minifyGeoExt" depends="concatenategeoext">
 			<jsmin srcfile="administrator/libraries/geoext/lib/geoextcon.js" suffix="true">
 			</jsmin>
 	 </target>
 	
-	<target name="concatenategeoextPrintProvider">
+	<target name="concatenategeoextPrintProvider" depends="minifyGeoExt">
 		 <concat destfile="administrator/libraries/geoext/lib/geoext.min.js" fixlastline="yes">
 		 <filelist dir="administrator/libraries/geoext/lib" 
 		 	files="geoextcon.min.js, 
@@ -200,14 +201,11 @@
 	        plugins/Legend.js, 
 	        plugins/Print.js, 
 	        plugins/LoadingIndicator.js, 
-	        plugins/Playback.js, 
-	        locale/es.js, 
-	        locale/ca.js, 
-	        locale/fr.js"  />
+	        plugins/Playback.js"  />
 		 </concat>
 	</target>
 	
-	<target name="minifyGxp" >
+	<target name="minifyGxp" depends="concatenategxp" >
 				<jsmin srcfile="administrator/libraries/gxp/script/gxp.js" suffix="true">
 				</jsmin>
 		 </target>
@@ -221,19 +219,19 @@
 		 	gxp/plugins/BingSource.js,
 		 	gxp/plugins/GoogleSource.js,
 		 	gxp/plugins/OSMSource.js,
+		 	gxp/plugins/LoadingIndicator.js,
 		 	geoext/data/PrintProvider.js, 
 		 	geoext/ux/PrintPreview.js, 
-		 	geoext/widgets/PrintMapPanel.js, 
-		 	gxp/locale/fr.js" />
+		 	geoext/widgets/PrintMapPanel.js" />
 		 </concat>
 	</target>
 	
-	<target name="minifysdi" >
+	<target name="minifysdi" depends="concatenatesdi" >
 			<jsmin srcfile="administrator/libraries/easysdi/js/sdi.js" suffix="true">
 			</jsmin>
 	 </target>
 	
-	<target name="package" depends="create-structure,compression"
+	<target name="package" depends="minifysdi,minifyGxp,concatenategeoextPrintProvider,create-structure,compression"
 		description="Main target">
 	</target>
 
@@ -260,7 +258,7 @@
 					.buildpath" />
 	</target>
 
-	<target name="sync" description="Copy from here to apache">
+	<target name="sync" depends="minifysdi,minifyGxp,concatenategeoextPrintProvider" description="Copy from here to apache">
 		<copy todir="${projet.install.admin.dir}">
 			<fileset dir="./administrator">
 				<include name="**/*.*" />
