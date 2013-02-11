@@ -24,8 +24,12 @@ JHTML::script('OpenLayers.js', 'administrator/components/com_easysdi_core/librar
 JHTML::script('geoext.min.js', 'administrator/components/com_easysdi_core/libraries/geoext/lib/');
 JHTML::script('PrintPreview.js', 'administrator/components/com_easysdi_core/libraries/ux/geoext/');
 JHTML::script('gxp.min.js', 'administrator/components/com_easysdi_core/libraries/gxp/script/');
-
 JHTML::script('sdi.min.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/');
+
+$files = glob('administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.{js}', GLOB_BRACE);
+foreach($files as $file) {
+  JHTML::script($file);
+}
 
 JHTML::_('stylesheet', 'ext-all.css', 'administrator/components/com_easysdi_core/libraries/ext/resources/css/');
 JHTML::_('stylesheet', 'xtheme-gray.css', 'administrator/components/com_easysdi_core/libraries/ext/resources/css/');
@@ -608,7 +612,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 mapPlugins:
                 [
 					{
-					    ptype: 'gxp_loadingindicator',
+					    ptype: 'sdi_gxp_loadingindicator',
 					    loadingMapMessage: '<?php echo JText::_('COM_EASYSDI_MAP_LAYER_LOAD_MESSAGE');?>'
 					}
                 ]
