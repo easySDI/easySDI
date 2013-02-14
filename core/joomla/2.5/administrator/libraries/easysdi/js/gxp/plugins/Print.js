@@ -131,15 +131,62 @@ sdi.gxp.plugins.Print = Ext.extend(gxp.plugins.Print, {
                 handler: function() {
                     var supported = getPrintableLayers();
                     if (supported.length > 0) {
-                        var printWindow = createPrintWindow.call(this);
-                        showPrintWindow.call(this);
-                        return printWindow;
+                    	//If Google and Bing layers were discarded, notify the user
+                    	if(isGoogleLayerSelected() || isBingLayerSelected())
+                    	{
+                    		var mes = "";
+                    		if(isGoogleLayerSelected())
+                    		{
+                    			mes = mes + this.googleLayerCanNotBePrinted;
+                    		}
+                    		if(isBingLayerSelected())
+                    		{
+                    			mes = mes + this.bingLayerCanNotBePrinted;
+                    		}
+                    		Ext.Msg.alert(
+                                this.someLayersNotPrintableText,
+                                mes, 
+                                function () {
+                                	 var printWindow = createPrintWindow.call(this);
+                                     showPrintWindow.call(this);
+                                     return printWindow;
+                                },
+                                this
+                            );
+                    	}
+                    	else
+                    	{
+                    		var printWindow = createPrintWindow.call(this);
+                            showPrintWindow.call(this);
+                            return printWindow;
+                    	}
+                       
                     } else {
-                        // no layers supported
-                        Ext.Msg.alert(
-                            this.notAllNotPrintableText,
-                            this.nonePrintableText
-                        );
+                    	// no layers supported
+                    	//If Google and Bing layers were discarded, notify the user
+                    	if(isGoogleLayerSelected() || isBingLayerSelected())
+                    	{
+                    		var mes = "";
+                    		if(isGoogleLayerSelected())
+                    		{
+                    			mes = mes + this.googleLayerCanNotBePrinted;
+                    		}
+                    		if(isBingLayerSelected())
+                    		{
+                    			mes = mes + this.bingLayerCanNotBePrinted;
+                    		}
+                    		Ext.Msg.alert(
+                    			this.notAllNotPrintableText,
+                                mes
+                            );
+                    	}
+                    	else
+                    	{
+	                        Ext.Msg.alert(
+	                            this.notAllNotPrintableText,
+	                            this.nonePrintableText
+	                        );
+                    	}
                     }
                 },
                 scope: this,
@@ -180,7 +227,27 @@ sdi.gxp.plugins.Print = Ext.extend(gxp.plugins.Print, {
                 });
                 return supported;
             }
-
+            
+            function isGoogleLayerSelected() {
+            	var is = false;
+            	mapPanel.layers.each(function(record) {
+            		var layer = record.getLayer();
+                    if(layer.getVisibility() === true && layer instanceof OpenLayers.Layer.Google)
+                    	is = true;
+                });
+            	return is;
+            }
+            
+            function isBingLayerSelected() {
+            	var is = false;
+            	mapPanel.layers.each(function(record) {
+            		var layer = record.getLayer();
+                    if(layer.getVisibility() === true && layer instanceof OpenLayers.Layer.Bing)
+                    	is = true;
+                });
+            	return is;
+            }
+            
             function isPrintable(layer) {
                 return layer.getVisibility() === true && (
                     layer instanceof OpenLayers.Layer.WMS ||

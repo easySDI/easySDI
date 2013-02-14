@@ -35,7 +35,7 @@ Ext.namespace("sdi.gxp.plugins");
  *
  *    Static plugin for show a loading indicator on the map.
  */   
-sdi.gxp.plugins.LoadingIndicator = Ext.extend(gxp.plugins.Tool, {
+sdi.gxp.plugins.LoadingIndicator = Ext.extend(gxp.plugins.LoadingIndicator, {
 
     /** api: ptype = gxp_loadingindicator */
     ptype: "sdi_gxp_loadingindicator",

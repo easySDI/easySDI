@@ -127,6 +127,9 @@ GeoExt.Lang.add("fr", {
         menuText: "Imprimer la carte",
         tooltip: "Imprimer la carte",
         previewText: "Aperçu avant impression",
+        googleLayerCanNotBePrinted: "La couche Google ne peut être imprimée pour des raisons de copyright.",
+        bingLayerCanNotBePrinted: "La couche Bing ne peut être imprimée pour des raisons de copyright.",
+        someLayersNotPrintableText: "Certaines couches ne peuvent être imprimées.",
         notAllNotPrintableText: "Aucune couche ne peut être imprimée.",
         nonePrintableText: "Aucune des couches sélectionnées ne peut être imprimée pour des raisons de copyright."
     },
