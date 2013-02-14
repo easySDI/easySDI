@@ -71,7 +71,11 @@ sdi.geoext.widgets.PrintMapPanel = Ext.extend(GeoExt.PrintMapPanel, {
                 } else {
                 	//clone function seems to not correctly handle visibility for WMTS layer. 
                 	var l = layer.clone();
-    				l.setVisibility ( layer.getVisibility());
+                	try{
+                		//This fails with a Google layer but it doesn't matter because Google layer can't be printed
+                		l.setVisibility ( layer.getVisibility());
+                	}catch (err)
+                	{}
                     this.layers.push(l);
                 }
             }
