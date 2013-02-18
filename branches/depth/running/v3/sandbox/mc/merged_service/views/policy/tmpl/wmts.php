@@ -60,35 +60,43 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 											<th><span style="font-weight: bold;">Geographic filter</span></th>
 											<th><span style="font-weight: bold;">TileMatrixSet Id</span></th>
 											<th><span style="font-weight: bold;">TileMatrix min scale denominator</span></th>
+											<th><span style="font-weight: bold;">Spatial operator</span></th>
 										</tr>
 										<tr>
 											<td colspan="4">
-												<input type="checkbox" name="wmts_anyItem" id="wmts_anyItem_' . $ps['id'] . '"/>All
+												<input type="checkbox" name="wmts_anyItem_' . $ps['id'] . '" id="wmts_anyItem_' . $ps['id'] . '"/>All
 											</td>
 										</tr>';
 										foreach ($ps['layers'] as $layer) {
 											echo '
 												<tr>
 													<td>
-														<input type="checkbox" name="wmts_layer_' . $ps['id'] . '_' . $layer['id'] . '" id="wmts_layer_' . $ps['id'] . '_' . $layer['id'] . '"/>
+														<input type="checkbox" name="wmtslayerpolicy[wmts_enable_' . $ps['id'] . '_' . $layer['id'] . ']" id="wmts_layer_' . $ps['id'] . '_' . $layer['id'] . '"/>
 														' . $layer['name'] . '<br />"' . $layer['description'] . '"
 													</td>
 													<td>
 														<label for="jform_wmts_bbox_minimumx_' . $ps['id'] . '_' . $layer['id'] . '" >Min X </label>
-														<input type="text" size="10" id="jform_wmts_bbox_minimumx_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_bbox_minimumx_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . ((isset($layer['bbox_minimumx']))?$layer['bbox_minimumx']:'') . '"/><br />
+														<input type="text" size="10" id="jform_wmts_bboxminimumx_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_bboxminimumx_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . ((isset($layer['bbox_minimumx']))?$layer['bbox_minimumx']:'') . '"/><br />
 														<label for="jform_wmts_bbox_minimumy_' . $ps['id'] . '_' . $layer['id'] . '" >Min Y </label>
-														<input type="text" size="10" id="jform_wmts_bbox_minimumy_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_bbox_minimumy_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . ((isset($layer['bbox_minimumy']))?$layer['bbox_minimumy']:'') . '"/><br />
+														<input type="text" size="10" id="jform_wmts_bboxminimumy_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_bboxminimumy_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . ((isset($layer['bbox_minimumy']))?$layer['bbox_minimumy']:'') . '"/><br />
 														<label for="jform_wmts_bbox_maximumx_' . $ps['id'] . '_' . $layer['id'] . '" >Max X </label>
-														<input type="text" size="10" id="jform_wmts_bbox_maximumx_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_bbox_maximumx_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . ((isset($layer['bbox_maximumx']))?$layer['bbox_maximumx']:'') . '"/><br />
+														<input type="text" size="10" id="jform_wmts_bboxmaximumx_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_bboxmaximumx_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . ((isset($layer['bbox_maximumx']))?$layer['bbox_maximumx']:'') . '"/><br />
 														<label for="jform_wmts_bbox_maximumx_' . $ps['id'] . '_' . $layer['id'] . '" >Max Y </label>
-														<input type="text" size="10" id="jform_wmts_bbox_maximumy_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_bbox_maximumy_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . ((isset($layer['bbox_maximumy']))?$layer['bbox_maximumy']:'') . '"/>
-													</td>
+														<input type="text" size="10" id="jform_wmts_bboxmaximumy_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_bboxmaximumy_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . ((isset($layer['bbox_maximumy']))?$layer['bbox_maximumy']:'') . '"/>
+													<hr /></td>
+													<td colspan="2">';
+														foreach ($layer['tileMatrixSetList'] as $tileMatrixSet) {
+															echo '<div><label for="jform_wmts_tilematrixsetpolicy_' . $ps['id'] . '_' . $layer['id'] . '_' . $tileMatrixSet['id']. '">' . $tileMatrixSet['identifier'] . '</label>';
+															echo '<select id="jform_wmts_tilematrixsetpolicy_' . $ps['id'] . '_' . $layer['id'] . '_' . $tileMatrixSet['id']. '" name="wmtslayerpolicy[wmts_tilematrixsetpolicy_' . $ps['id'] . '_' . $layer['id'] . '_' . $tileMatrixSet['id']. ']">';
+															foreach ($tileMatrixSet['tileMatrixList'] as $tileMatrix) {
+																$selected = ('selected' == $tileMatrix['selected'])?' selected="selected" ':'';
+																echo '<option value="' . $tileMatrix['id'] . '"' . $selected . '>' . $tileMatrix['identifier'] . '</option>';
+															}
+															echo '</select></div>';
+														}
+													echo '</td>
 													<td>
 														
-													</td>
-													<td>
-														<input type="text" size="10" id="jform_wmts_minimumscale_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_minimumscale_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . ((isset($layer['minimumscale']))?$layer['minimumscale']:'') . '"/>
-														<br /><br /><br />
 													</td>
 												</tr>
 											';

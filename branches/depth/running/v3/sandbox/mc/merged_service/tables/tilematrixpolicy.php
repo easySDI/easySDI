@@ -13,7 +13,7 @@ require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'libra
 /**
  * virtualmetadata Table class
  */
-class Easysdi_serviceTablescalepolicy extends sdiTable {
+class Easysdi_serviceTabletilematrixpolicy extends sdiTable {
 
 	/**
 	* Constructor
@@ -21,83 +21,51 @@ class Easysdi_serviceTablescalepolicy extends sdiTable {
 	* @param JDatabase A database connector object
 	*/
 	public function __construct(&$db) {
-		parent::__construct('#__sdi_scalepolicy', 'id', $db);
+		parent::__construct('#__sdi_tilematrixpolicy', 'id', $db);
 	}
 	
-	public function save($src, $orderingFilter = '', $ignore = '') {
-		$db = JFactory::getDbo();
+	public function save ($src) {
 		
-		$wmtslayerpolicy = $_POST['wmtslayerpolicy'];
-		$modif = Array();
-		
-		foreach ($wmtslayerpolicy as $key => $value) {
-			$infos = explode('_', $key);
-			$modif[$infos[3]][$infos[1]] = $value;
-		}
-		
-		foreach ($modif as $id => $value) {
-			$db = JFactory::getDbo();
-			$db->setQuery('
-				SELECT COUNT(*) FROM #__sdi_wmtslayerpolicy WHERE wmtslayer_id = ' . $id . '
-				AND policy_id = ' . $src['id'] . ';
-			');
-			$num = $db->loadResult();
-			
-			if (0 < $num) {
-				$query = '
-					UPDATE #__sdi_wmtslayerpolicy
-					SET minimumScale = "' . $value['minimumscale'] . '",
-					maximumScale = "' . $value['maximumscale'] . '",
-					geographicFilter = "' . $value['geographicfilter'] . '"
-					WHERE wmtslayer_id = ' . $id . '
-					AND policy_id = ' . $src['id'] . ';
-				';
-			}
-			else {
-				$query = '
-					INSERT #__sdi_wmtslayerpolicy
-					(minimumScale, maximumScale, geographicFilter, wmtslayer_id, policy_id)
-					VALUES ("' . $value['minimumscale'] . '","' . $value['maximumscale'] . '","' . $value['geographicfilter'] . '",' . $id . ',' . $src['id'] . ');
-				';
-			}
-			
-			$db->setQuery($query);
-			$db->execute();
-		}
-		
-		return true;
 	}
 	
 	/**
-	 * Return a servicepolicy
+	 * Check if a tilematrixpolicy exists
 	 *
-	 * @param Int A physicalService ID
+	 * @param Array An array containing the foreign keys on which to search
 	 */
-	public function getListByWMTSLayerPolicy ($wmtslayerpolicy_id) {
+	public function exist ($param) {
+		$exist = false;
+		$query = 'SELECT * FROM #__sdi_tilematrixpolicy';
+		
+		$separator = ' WHERE ';
+		if (isset($param['wmtslayerpolicy_id'])) {
+			$query .= $separator . 'wmtslayerpolicy_id = ' . $param['wmtslayerpolicy_id'];
+			$separator = ' AND ';
+		}
+		if (isset($param['tilematrixset_id'])) {
+			$query .= $separator . 'tilematrixset_id = ' . $param['tilematrixset_id'];
+			$separator = ' AND ';
+		}
+		if (isset($param['tilematrix_id'])) {
+			$query .= $separator . 'tilematrix_id = ' . $param['tilematrix_id'];
+			$separator = ' AND ';
+		}
+		
 		$db = JFactory::getDbo();
-		$db->setQuery('
-			SELECT *
-			FROM #__sdi_scalepolicy
-			WHERE wmtslayerpolicy_id = ' . $wmtslayerpolicy_id . ';
-		');
+		$db->setQuery($query);
 		
 		try {
-			$resultSet = $db->loadObject();
+			$db->execute();
+			if (0 < $db->getNumRows()) {
+				$exist = true;
+			}
 		}
 		catch (JDatabaseException $e) {
 			$je = new JException($e->getMessage());
 			$this->setError($je);
 			return false;
 		}
-
-		// Legacy error handling switch based on the JError::$legacy switch.
-		// @deprecated  12.1
-		if (JError::$legacy && $this->_db->getErrorNum())	{
-			$e = new JException($this->_db->getErrorMsg());
-			$this->setError($e);
-			return false;
-		}
 		
-		return $resultSet;
+		return $exist;
 	}
 }

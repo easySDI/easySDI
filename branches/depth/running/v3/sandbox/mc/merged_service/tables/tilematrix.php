@@ -24,17 +24,42 @@ class Easysdi_serviceTabletilematrix extends sdiTable {
 		parent::__construct('#__sdi_tilematrix', 'id', $db);
 	}
 	
-	public function save($src, $orderingFilter = '', $ignore = '') {
-		$data = array();
-		//$data['guid'] 						= $src['guid'];
-		$data['identifier'] 				= $src['Identifier'];
-		$data['scaledenominator'] 	= $src['ScaleDenominator'];
-		$data['topleftcorner'] 			= $src['TopLeftCorner'];
-		$data['tilewidth'] 					= $src['TileWidth'];
-		$data['tileheight'] 				= $src['TileHeight'];
-		$data['matrixwidth'] 				= $src['MatrixWidth'];
-		$data['matrixheight'] 			= $src['MatrixHeight'];
-		$data['tilematrixset_id'] 	= $src['tilematrixset_id'];
-		return parent::save($data, $orderingFilter , $ignore );
+	public function getListByTileMatrixSet($tileMatrixSetID) {
+		$db = JFactory::getDbo();
+		$db->setQuery('
+			SELECT *
+			FROM #__sdi_tilematrix
+			WHERE tilematrixset_id = ' . $tileMatrixSetID . ';
+		');
+		
+		try {
+			$resultSet = $db->loadObjectList();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+
+		// Legacy error handling switch based on the JError::$legacy switch.
+		// @deprecated  12.1
+		if (JError::$legacy && $this->_db->getErrorNum())	{
+			$e = new JException($this->_db->getErrorMsg());
+			$this->setError($e);
+			return false;
+		}
+		
+		return $resultSet;
+	}
+	
+	public function saveBatch ($src) {
+		$query = 'INSERT INTO #__sdi_tilematrix (identifier, scaledenominator, topleftcorner, tilewidth, tileheight, matrixwidth, matrixheight, tilematrixset_id) VALUES ';
+		foreach ($src as $tileMatrix) {
+			$query .= '(\'' . $tileMatrix['identifier'] . '\', \'' . $tileMatrix['scaledenominator'] . '\', \'' . $tileMatrix['topleftcorner'] . '\', \'' . $tileMatrix['tilewidth'] . '\', \'' . $tileMatrix['tileheight'] . '\', \'' . $tileMatrix['matrixwidth'] . '\', \'' . $tileMatrix['matrixheight'] . '\', \'' . $tileMatrix['tilematrixset_id'] . '\'),';
+		}
+		$query = substr($query, 0, -1) . ';';
+		$db = JFactory::getDbo();
+		$db->setQuery($query);
+		$db->execute();
 	}
 }

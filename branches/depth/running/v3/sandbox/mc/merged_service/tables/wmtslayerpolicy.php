@@ -28,41 +28,47 @@ class Easysdi_serviceTablewmtslayerpolicy extends sdiTable {
 		$db = JFactory::getDbo();
 		
 		$wmtslayerpolicy = $_POST['wmtslayerpolicy'];
-		$modif = Array();
+		$formated_data = Array();
 		
 		foreach ($wmtslayerpolicy as $key => $value) {
 			$infos = explode('_', $key);
-			$modif[$infos[3]][$infos[1]] = $value;
-		}
-		
-		foreach ($modif as $id => $value) {
-			$db = JFactory::getDbo();
-			$db->setQuery('
-				SELECT COUNT(*) FROM #__sdi_wmtslayerpolicy WHERE wmtslayer_id = ' . $id . '
-				AND policy_id = ' . $src['id'] . ';
-			');
-			$num = $db->loadResult();
-			
-			if (0 < $num) {
-				$query = '
-					UPDATE #__sdi_wmtslayerpolicy
-					SET minimumScale = "' . $value['minimumscale'] . '",
-					maximumScale = "' . $value['maximumscale'] . '",
-					geographicFilter = "' . $value['geographicfilter'] . '"
-					WHERE wmtslayer_id = ' . $id . '
-					AND policy_id = ' . $src['id'] . ';
-				';
+			$physicalService_id = $infos[2];
+			$layer_id = $infos[3];
+			if ('tilematrixsetpolicy' == $infos[1]) {
+				$tileMatrixSet_id = $infos[4];
+				$formated_data[$physicalService_id][$layer_id][$infos[1]][$tileMatrixSet_id] = $value;
 			}
 			else {
-				$query = '
-					INSERT #__sdi_wmtslayerpolicy
-					(minimumScale, maximumScale, geographicFilter, wmtslayer_id, policy_id)
-					VALUES ("' . $value['minimumscale'] . '","' . $value['maximumscale'] . '","' . $value['geographicfilter'] . '",' . $id . ',' . $src['id'] . ');
-				';
+				$formated_data[$physicalService_id][$layer_id][$infos[1]] = $value;
 			}
-			
-			$db->setQuery($query);
-			$db->execute();
+		}
+		//var_dump($formated_data);
+		
+		foreach ($formated_data as $ps_id => $ps_data) {
+			foreach ($ps_data as $layer_id => $layer_data) {
+				var_dump($layer_data);
+				$enabled = 0;
+				if (isset($layer_data['enabled'])) {
+					$enabled = ('on' == $layer_data['enabled'])?1:0;
+				}
+				$data = Array(
+					'enabled' => $enabled,
+					'bbox_minimumx' => $layer_data['bbox_minimumx'],
+					'bbox_minimumy' => $layer_data['bbox_minimumy'],
+					'bbox_maximumx' => $layer_data['bbox_maximumx'],
+					'bbox_maximumy' => $layer_data['bbox_maximumy'],
+					'geographicfilter' => $layer_data['geographicfilter'],
+					'spatialoperator' => $layer_data['spatialoperator'],
+				);
+				parent::save($data, $orderingFilter , $ignore );
+				foreach ($layer_data['tilematrixsetpolicy'] as $tms_id => $tm_id) {
+					@$tilematrixpolicy =& JTable::getInstance('tilematrixpolicy', 'Easysdi_serviceTable');
+					$data = Array(
+						'wmtslayerpolicy_id' => 
+					);
+					$tilematrixpolicy->save($data);
+				}
+			}
 		}
 		
 		return true;

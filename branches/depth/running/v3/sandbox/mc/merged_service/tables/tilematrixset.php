@@ -32,4 +32,32 @@ class Easysdi_serviceTabletilematrixset extends sdiTable {
 		$data['wmtslayer_id'] 		= $src['wmtslayer_id'];
 		return parent::save($data, $orderingFilter , $ignore );
 	}
+	
+	public function getListByWMTSLayer($wmtsLayerID) {
+		$db = JFactory::getDbo();
+		$db->setQuery('
+			SELECT *
+			FROM #__sdi_tilematrixset
+			WHERE wmtslayer_id = ' . $wmtsLayerID . ';
+		');
+		
+		try {
+			$resultSet = $db->loadObjectList();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+
+		// Legacy error handling switch based on the JError::$legacy switch.
+		// @deprecated  12.1
+		if (JError::$legacy && $this->_db->getErrorNum())	{
+			$e = new JException($this->_db->getErrorMsg());
+			$this->setError($e);
+			return false;
+		}
+		
+		return $resultSet;
+	}
 }

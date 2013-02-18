@@ -133,7 +133,6 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			else if ('WMTS' == $serviceconnector_name) {
 				$item->physicalservice = $this->_getItemWMTS($pk, $layout);
 			}
-			
 		}
 
 		return $item;
@@ -240,7 +239,9 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		@$tab_physicalService =& JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
 		@$tab_layer =& JTable::getInstance('wmtslayer', 'Easysdi_serviceTable');
 		@$tab_layerPolicy =& JTable::getInstance('wmtslayerpolicy', 'Easysdi_serviceTable');
-		@$tab_scalePolicy =& JTable::getInstance('scalepolicy', 'Easysdi_serviceTable');
+		@$tab_tilematrixset =& JTable::getInstance('tilematrixset', 'Easysdi_serviceTable');
+		@$tab_tilematrix =& JTable::getInstance('tilematrix', 'Easysdi_serviceTable');
+		@$tab_tileMatrixPolicy =& JTable::getInstance('tilematrixpolicy', 'Easysdi_serviceTable');
 		
 		$physicalservice = Array();
 		$ps_list = $tab_physicalService->getListByConnectorType($layout);
@@ -253,13 +254,13 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			$layerList = $tab_layer->getListByPhysicalService($ps->id);
 			$ps_arr['layers'] = Array();
 			foreach ($layerList as $layer) {
-				$lp = $tab_layerPolicy->getByIDs($layer->id, $pk);
 				$layer_infos = Array(
 					'id' => $layer->id,
 					'name' => $layer->name,
 					'description' => $layer->description
 				);
 				
+				$lp = $tab_layerPolicy->getByIDs($layer->id, $pk);
 				if (!empty($lp)) {
 					$layer_infos['geographicfilter'] = $lp->geographicfilter;
 					$layer_infos['spatialoperator'] = $lp->spatialoperator;
@@ -267,18 +268,47 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					$layer_infos['bbox_minimumy'] = $lp->bbox_minimumy;
 					$layer_infos['bbox_maximumx'] = $lp->bbox_maximumx;
 					$layer_infos['bbox_maximumy'] = $lp->bbox_maximumy;
-					
-					$scalePolicyList = $tab_scalePolicy->getListByWMTSLayerPolicy($lp->id);
-					
-					foreach ($scalePolicyList as $scalePolicy) {
-						$layer_infos['scalepolicy'][] = $tab_scalePolicy->getProperties($scalePolicy->id);
-					}
 				}
-				@$ps_arr['layers'][] = $layer_infos;
 				
+				$layer_infos['tileMatrixSetList'] = Array();
+				$tileMatrixSetList = $tab_tilematrixset->getListByWMTSLayer($layer->id);
+				foreach ($tileMatrixSetList as $tileMatrixSet) {
+					$tileMatrixSet_arr = Array(
+						'id' => $tileMatrixSet->id,
+						'identifier' => $tileMatrixSet->identifier,
+						'supported_crs' => $tileMatrixSet->supported_crs,
+						'tileMatrixList' => Array(),
+					);
+					
+					$tileMatrixList = $tab_tilematrix->getListByTileMatrixSet($tileMatrixSet->id);
+					foreach ($tileMatrixList as $tileMatrix) {
+						$policy_exists = $tab_tileMatrixPolicy->exist(Array(
+							'wmtslayerpolicy_id' => $layer->id,
+							'tilematrixset_id' => $tileMatrixSet->id,
+							'tilematrix_id' => $tileMatrix->id,
+						));
+						
+						$tileMatrixSet_arr['tileMatrixList'][] = Array(
+							'id' => $tileMatrix->id,
+							'identifier' => $tileMatrix->identifier,
+							'scaledenominator' => $tileMatrix->scaledenominator,
+							'topleftcorner' => $tileMatrix->topleftcorner,
+							'tilewidth' => $tileMatrix->tilewidth,
+							'tileheight' => $tileMatrix->tileheight,
+							'matrixwidth' => $tileMatrix->matrixwidth,
+							'matrixheight' => $tileMatrix->matrixheight,
+							'selected' => ($policy_exists)?'selected':'',
+						);
+					}
+					$layer_infos['tileMatrixSetList'][] = $tileMatrixSet_arr;
+				}
+				
+				
+				$ps_arr['layers'][] = $layer_infos;
 			}
 			$physicalservice[] = $ps_arr;
 		}
+		
 		return $physicalservice;
 	}
 
@@ -325,25 +355,31 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		if(parent::save($data)){
 			$data['id'] = $this->getItem()->get('id');
 			if ('WMS' == $serviceconnector_name) {
-				$wmslayerpolicy =& JTable::getInstance('wmslayerpolicy', 'Easysdi_serviceTable');
+				@$wmslayerpolicy =& JTable::getInstance('wmslayerpolicy', 'Easysdi_serviceTable');
 				if( !$wmslayerpolicy->save($data) ){
 					return false;
 				}
 			}
 			else if ('WFS' == $serviceconnector_name) {
-				$featureclasspolicy =& JTable::getInstance('featureclasspolicy', 'Easysdi_serviceTable');
+				@$featureclasspolicy =& JTable::getInstance('featureclasspolicy', 'Easysdi_serviceTable');
 				if( !$featureclasspolicy->save($data) ){
+					return false;
+				}
+			}
+			else if ('WMTS' == $serviceconnector_name) {
+				@$wmtslayerpolicy =& JTable::getInstance('wmtslayerpolicy', 'Easysdi_serviceTable');
+				if( !$wmtslayerpolicy->save($data) ){
 					return false;
 				}
 			}
 			
 			if ('WMS' == $serviceconnector_name || 'WFS' == $serviceconnector_name) {
-				$servicepolicy =& JTable::getInstance('servicepolicy', 'Easysdi_serviceTable');
+				@$servicepolicy =& JTable::getInstance('servicepolicy', 'Easysdi_serviceTable');
 				if( !$servicepolicy->save($data) ){
 					return false;
 				}
 			}
-			
+			die();
 			return true;
 		}
 		return false;

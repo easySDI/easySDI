@@ -340,6 +340,7 @@ class Easysdi_serviceHelper
 				}
 				break;
 			case "WMTS": 
+				$time_stack = 0;
 				$wmtsLayerList = $xmlCapa->xpath('/dflt:Capabilities/dflt:Contents/dflt:Layer');
 				//flushing the wmtslayer table
 				@$tab_layer =& JTable::getInstance('wmtslayer', 'Easysdi_serviceTable');
@@ -364,6 +365,7 @@ class Easysdi_serviceHelper
 						//we save the tilematrixset
 						$supported_CRS = $xmlCapa->xpath("/dflt:Capabilities/dflt:Contents/dflt:TileMatrixSet[ows:Identifier = '" . $tileMatrixSetIdentifier . "']");
 						$supported_CRS = (String) $supported_CRS[0]->children('ows', true)->SupportedCRS;
+						
 						@$tab_tileMatrixSet =& JTable::getInstance('tileMatrixSet', 'Easysdi_serviceTable');
 						$tab_tileMatrixSet->save(Array(
 							'identifier' => $tileMatrixSetIdentifier,
@@ -387,30 +389,30 @@ class Easysdi_serviceHelper
 						$tileMatrixList = $xmlCapa->xpath("/dflt:Capabilities/dflt:Contents/dflt:TileMatrixSet[ows:Identifier = '" . $tileMatrixSetIdentifier . "']/dflt:TileMatrix");
 						
 						//we sanitize the output of the xpath
+						$tileMatrixArray = Array();
 						foreach ($tileMatrixList as $tileMatrix) {
 							$identifier = (String) $tileMatrix->children('ows', true)->Identifier;
 							//if there are limits on the tilematrixset we filter the list of tilematrix with authorized tilematrixes and we save
 							if (!$hasLimits || in_array($identifier, $authorized_tiles)) {
-								@$tab_tileMatrix =& JTable::getInstance('tileMatrix', 'Easysdi_serviceTable');
-								$tab_tileMatrix->save(Array(
-									'Identifier' => $identifier,
-									'ScaleDenominator' => (String) $tileMatrix->ScaleDenominator,
-									'TopLeftCorner' => (String) $tileMatrix->TopLeftCorner,
-									'TileWidth' => (String) $tileMatrix->TileWidth,
-									'TileHeight' => (String) $tileMatrix->TileHeight,
-									'MatrixWidth' => (String) $tileMatrix->MatrixWidth,
-									'MatrixHeight' => (String) $tileMatrix->MatrixHeight,
+								$tileMatrixArray[] = Array(
+									'identifier' => $identifier,
+									'scaledenominator' => (String) $tileMatrix->ScaleDenominator,
+									'topleftcorner' => (String) $tileMatrix->TopLeftCorner,
+									'tilewidth' => (String) $tileMatrix->TileWidth,
+									'tileheight' => (String) $tileMatrix->TileHeight,
+									'matrixwidth' => (String) $tileMatrix->MatrixWidth,
+									'matrixheight' => (String) $tileMatrix->MatrixHeight,
 									'tilematrixset_id' => $tab_tileMatrixSet->id,
-								));
-								unset($tab_tileMatrix);
+								);
 							}
 						}
-						
-						unset($tab_tileMatrixSet);
+						@$tab_tileMatrix =& JTable::getInstance('tileMatrix', 'Easysdi_serviceTable');
+						$tab_tileMatrix->saveBatch($tileMatrixArray);
+						unset($tab_tileMatrixSet, $tab_tileMatrix, $tileMatrixArray);
 					}
-					
 					unset($tab_layer);
 				}
+				
 				break;
 			case "WFS":
 				$featureTypeList = $xmlCapa->xpath('//dflt:FeatureType');
