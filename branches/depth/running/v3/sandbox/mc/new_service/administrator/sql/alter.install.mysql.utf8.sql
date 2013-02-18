@@ -83,14 +83,18 @@ ALTER TABLE `#__sdi_tilematrixset`
 ADD CONSTRAINT `#__sdi_tilematrixset_fk_wmtslayer` FOREIGN KEY (`wmtslayer_id`) REFERENCES `#__sdi_wmtslayer` (`id`);
 
 
-ALTER TABLE `#__sdi_scalepolicy`
-ADD CONSTRAINT `#__sdi_scalepolicy_fk_wmtslayerpolicy` FOREIGN KEY (`wmtslayerpolicy_id`) REFERENCES `#__sdi_wmtslayerpolicy` (`id`);
+ALTER TABLE `#__sdi_tilematrix`
+ADD CONSTRAINT `#__sdi_tilematrix_fk_tilematrixset` FOREIGN KEY (`tilematrixset_id`) REFERENCES `#__sdi_tilematrixset` (`id`);
 
-ALTER TABLE `#__sdi_scalepolicy`
-ADD CONSTRAINT `#__sdi_scalepolicy_fk_tilematrixset` FOREIGN KEY (`tilematrixset_id`) REFERENCES `#__sdi_tilematrixset` (`id`);
 
-ALTER TABLE `#__sdi_scalepolicy`
-ADD CONSTRAINT `#__sdi_scalepolicy_fk_tilematrix` FOREIGN KEY (`tilematrix_id`) REFERENCES `#__sdi_tilematrix` (`id`);
+ALTER TABLE `#__sdi_tilematrixpolicy`
+ADD CONSTRAINT `#__sdi_tilematrixpolicy_fk_wmtslayerpolicy` FOREIGN KEY (`wmtslayerpolicy_id`) REFERENCES `#__sdi_wmtslayerpolicy` (`id`);
+
+ALTER TABLE `#__sdi_tilematrixpolicy`
+ADD CONSTRAINT `#__sdi_tilematrixpolicy_fk_tilematrixset` FOREIGN KEY (`tilematrixset_id`) REFERENCES `#__sdi_tilematrixset` (`id`);
+
+ALTER TABLE `#__sdi_tilematrixpolicy`
+ADD CONSTRAINT `#__sdi_tilematrixpolicy_fk_tilematrix` FOREIGN KEY (`tilematrix_id`) REFERENCES `#__sdi_tilematrix` (`id`);
 
 
 

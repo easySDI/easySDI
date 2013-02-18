@@ -504,6 +504,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_wmtslayerpolicy` (
 `bbox_minimumy` INT(11)  NOT NULL ,
 `bbox_maximumx` INT(11)  NOT NULL ,
 `bbox_maximumy` INT(11)  NOT NULL ,
+`enabled` TINYINT(1)  NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -525,37 +526,28 @@ CREATE TABLE IF NOT EXISTS `#__sdi_tilematrixset` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_scalepolicy` (
+CREATE TABLE IF NOT EXISTS `#__sdi_tilematrixpolicy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-
-`ordering` INT(11)  NOT NULL ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
-`checked_out` INT(11)  NOT NULL ,
-`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-`created_by` INT(11)  NOT NULL ,
-`guid` INT(36)  NOT NULL ,
-`modified_by` INT(11)  NOT NULL ,
-`modified` DATETIME NOT NULL ,
 `wmtslayerpolicy_id` INT(11)  NOT NULL ,
 `tilematrixset_id` INT(11)  NOT NULL ,
 `tilematrix_id` INT(11)  NOT NULL ,
+`tile_minrow` INT(11)  NOT NULL  DEFAULT '0',
+`tile_maxrow` INT(11)  NOT NULL  DEFAULT '0' ,
+`tile_mincol` INT(11)  NOT NULL   DEFAULT '0',
+`tile_maxcol` INT(11)  NOT NULL   DEFAULT '0',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_tilematrix` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-
-`ordering` INT(11)  NOT NULL ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
-`checked_out` INT(11)  NOT NULL ,
-`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-`created_by` INT(11)  NOT NULL ,
-`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `identifier` VARCHAR(255)  NOT NULL ,
 `scaledenominator` VARCHAR(255)  NOT NULL ,
-`guid` INT(36)  NOT NULL ,
-`modified_by` INT(11)  NOT NULL ,
-`modified` DATETIME NOT NULL ,
+`topleftcorner` VARCHAR(255)  NOT NULL ,
+`tilewidth` INT(11)  NOT NULL ,
+`tileheight` INT(11)  NOT NULL ,
+`matrixwidth` INT(11)  NOT NULL ,
+`matrixheight` INT(11)  NOT NULL ,
+`tilematrixset_id` INT(11) UNSIGNED NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
