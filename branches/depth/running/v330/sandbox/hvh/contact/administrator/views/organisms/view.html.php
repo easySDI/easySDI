@@ -117,15 +117,17 @@ class Easysdi_contactViewOrganisms extends JViewLegacy
         $this->extra_sidebar = '';
         
 		JHtmlSidebar::addFilter(
-
 			JText::_('JOPTION_SELECT_PUBLISHED'),
-
 			'filter_published',
-
 			JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), "value", "text", $this->state->get('filter.state'), true)
 
 		);
 
+		JHtmlSidebar::addFilter(
+				JText::_('JOPTION_SELECT_ACCESS'),
+				'filter_access',
+				JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'))
+		);
         
 	}
     

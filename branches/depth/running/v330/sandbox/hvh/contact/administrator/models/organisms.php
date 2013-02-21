@@ -68,7 +68,8 @@ class Easysdi_contactModelorganisms extends JModelList
 		$published = $app->getUserStateFromRequest($this->context.'.filter.state', 'filter_published', '', 'string');
 		$this->setState('filter.state', $published);
         
-        
+		$access = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', 0, 'int');
+		$this->setState('filter.access', $access);
         
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_easysdi_contact');
@@ -94,6 +95,7 @@ class Easysdi_contactModelorganisms extends JModelList
 		// Compile the store id.
 		$id.= ':' . $this->getState('filter.search');
 		$id.= ':' . $this->getState('filter.state');
+		$id	.= ':'. $this->getState('filter.access');
 
 		return parent::getStoreId($id);
 	}
@@ -124,6 +126,10 @@ class Easysdi_contactModelorganisms extends JModelList
     $query->select('uc.name AS editor');
     $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
     
+    // Join over the asset groups.
+    $query->select('ag.title AS access_level');
+    $query->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
+    
 		// Join over the user field 'created_by'
 		$query->select('created_by.name AS created_by');
 		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
@@ -141,6 +147,10 @@ class Easysdi_contactModelorganisms extends JModelList
     }
     
 
+    // Filter by access level.
+    if ($access = $this->getState('filter.access')) {
+    	$query->where('a.access = ' . (int) $access);
+    }
 		// Filter by search in title
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {
