@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="sync" basedir=".">
+	<property name="projet.out.dir" value="out" />
+	<property name="projet.install.admin.dir" value="C:\www\sdi330\administrator\components\com_easysdi_core" />
+	<property name="projet.install.site.dir" value="C:\www\sdi330\components\com_easysdi_core" />
+	<property name="projet.install.langEN.dir" value="C:\www\sdi330\administrator\language\en-GB" />
+	<property name="projet.install.langFR.dir" value="C:\www\sdi330\administrator\language\fr-FR" />
+
+	<taskdef name="jscomp" classname="com.google.javascript.jscomp.ant.CompileTask"   classpath="js_minifier/compiler.jar"/>
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="js_minifier/ant-contrib-1.0b3.jar"/>
+	<taskdef resource="net/sf/antcontrib/antlib.xml" classpath="js_minifier/ant-contrib-1.0b3.jar"/>
+	<taskdef name="jsmin"   classname="net.matthaynes.jsmin.JSMin_Task"  classpath="js_minifier/jsmin.0.2.4.jar"/>
+	
+	<target name="concatenategeoext">
+	 <concat destfile="administrator/libraries/geoext/lib/geoextcon.js" fixlastline="yes">
+	 <filelist dir="administrator/libraries/geoext/lib" 
+	 	files="GeoExt/data/AttributeReader.js, 
+	        GeoExt/data/AttributeStore.js, 
+	        GeoExt/data/FeatureRecord.js, 
+	        GeoExt/data/FeatureReader.js, 
+	        GeoExt/data/FeatureStore.js, 
+	        GeoExt/data/LayerRecord.js, 
+	        GeoExt/data/LayerReader.js, 
+	        GeoExt/data/LayerStore.js, 
+	        GeoExt/data/ScaleStore.js, 
+	        GeoExt/data/StyleReader.js, 
+	        GeoExt/data/WMSCapabilitiesReader.js, 
+	        GeoExt/data/WMSCapabilitiesStore.js, 
+	        GeoExt/data/WFSCapabilitiesReader.js, 
+	        GeoExt/data/WFSCapabilitiesStore.js, 
+	        GeoExt/data/WMSDescribeLayerReader.js, 
+	        GeoExt/data/WMSDescribeLayerStore.js, 
+	        GeoExt/data/WMCReader.js, 
+	        GeoExt/data/CSWRecordsReader.js, 
+	        GeoExt/widgets/Action.js, 
+	        GeoExt/data/ProtocolProxy.js, 
+	        GeoExt/widgets/FeatureRenderer.js, 
+	        GeoExt/widgets/MapPanel.js, 
+	        GeoExt/widgets/Popup.js, 
+	        GeoExt/widgets/form.js, 
+	        GeoExt/widgets/form/SearchAction.js, 
+	        GeoExt/widgets/form/BasicForm.js, 
+	        GeoExt/widgets/form/GeocoderComboBox.js, 
+	        GeoExt/widgets/form/FormPanel.js, 
+	        GeoExt/widgets/grid/SymbolizerColumn.js, 
+	        GeoExt/widgets/tips/SliderTip.js, 
+	        GeoExt/widgets/tips/LayerOpacitySliderTip.js, 
+	        GeoExt/widgets/tips/ZoomSliderTip.js, 
+	        GeoExt/widgets/tree/LayerNode.js, 
+	        GeoExt/widgets/tree/TreeNodeUIEventMixin.js, 
+	        GeoExt/plugins/TreeNodeComponent.js, 
+	        GeoExt/plugins/TreeNodeRadioButton.js, 
+	        GeoExt/plugins/TreeNodeActions.js, 
+	        GeoExt/widgets/tree/LayerLoader.js, 
+	        GeoExt/widgets/tree/LayerContainer.js, 
+	        GeoExt/widgets/tree/BaseLayerContainer.js, 
+	        GeoExt/widgets/tree/OverlayLayerContainer.js, 
+	        GeoExt/widgets/tree/LayerParamNode.js, 
+	        GeoExt/widgets/tree/LayerParamLoader.js, 
+	        GeoExt/widgets/tree/WMSCapabilitiesLoader.js, 
+	        GeoExt/widgets/LayerOpacitySlider.js, 
+	        GeoExt/widgets/LayerLegend.js, 
+	        GeoExt/widgets/LegendImage.js, 
+	        GeoExt/widgets/UrlLegend.js, 
+	        GeoExt/widgets/WMSLegend.js, 
+	        GeoExt/widgets/VectorLegend.js, 
+	        GeoExt/widgets/LegendPanel.js, 
+	        GeoExt/widgets/ZoomSlider.js, 
+	        GeoExt/widgets/grid/FeatureSelectionModel.js, 
+	        GeoExt/data/PrintPage.js, 
+	        GeoExt/plugins/PrintPageField.js, 
+	        GeoExt/plugins/PrintProviderField.js, 
+	        GeoExt/plugins/PrintExtent.js, 
+	        GeoExt/plugins/AttributeForm.js, 
+	        GeoExt/widgets/PrintMapPanel.js, 
+	        GeoExt/state/PermalinkProvider.js, 
+	        GeoExt/Lang.js,
+	 		overrides/override-ext-ajax.js" />
+	 </concat>
+	 </target>
+	
+	<target name="minifyGeoExt" depends="concatenategeoext">
+			<jsmin srcfile="administrator/libraries/geoext/lib/geoextcon.js" suffix="true">
+			</jsmin>
+	 </target>
+	
+	<target name="concatenategeoextPrintProvider" depends="minifyGeoExt">
+		 <concat destfile="administrator/libraries/geoext/lib/geoext.min.js" fixlastline="yes">
+		 <filelist dir="administrator/libraries/geoext/lib" 
+		 	files="geoextcon.min.js, 
+		        GeoExt/data/PrintProvider.js 
+		        " />
+		 </concat>
+	 </target>
+	
+	<target name="concatenategxp">
+		 <concat destfile="administrator/libraries/gxp/script/gxp.js" fixlastline="yes">
+		 <filelist dir="administrator/libraries/gxp/script" 
+		 	files="util.js, 
+	        util/color.js, 
+	        util/style.js, 
+	        data/AutoCompleteProxy.js, 
+	        data/AutoCompleteReader.js, 
+	        data/GroupStyleReader.js, 
+	        data/RuleGroupReader.js, 
+	        data/FeatureTypeClassifier.js, 
+	        data/WFSFeatureStore.js, 
+	        data/WFSProtocolProxy.js, 
+	        menu/LayerMenu.js, 
+	        widgets/CrumbPanel.js, 
+	        widgets/EmbedMapDialog.js, 
+	        widgets/FeatureEditPopup.js, 
+	        widgets/FilterBuilder.js, 
+	        widgets/QueryPanel.js, 
+	        widgets/StylePropertiesDialog.js, 
+	        widgets/WMSLayerPanel.js, 
+	        widgets/WMSStylesDialog.js, 
+	        widgets/NewSourceDialog.js, 
+	        widgets/NewSourceWindow.js, 
+	        widgets/FillSymbolizer.js, 
+	        widgets/StrokeSymbolizer.js, 
+	        widgets/PointSymbolizer.js, 
+	        widgets/LayerUploadPanel.js, 
+	        widgets/LineSymbolizer.js, 
+	        widgets/PolygonSymbolizer.js, 
+	        widgets/RulePanel.js, 
+	        widgets/ScaleOverlay.js, 
+	        widgets/ScaleLimitPanel.js, 
+	        widgets/TextSymbolizer.js, 
+	        widgets/Viewer.js, 
+	        widgets/tree/TreeGridNodeUI.js, 
+	        widgets/tree/SymbolizerLoader.js, 
+	        widgets/grid/SymbolizerGrid.js, 
+	        widgets/form/AutoCompleteComboBox.js, 
+	        widgets/form/ComparisonComboBox.js, 
+	        widgets/form/ColorField.js, 
+	        widgets/form/FilterField.js, 
+	        widgets/form/FontComboBox.js, 
+	        widgets/form/GoogleGeocoderComboBox.js, 
+	        widgets/form/ViewerField.js, 
+	        widgets/grid/CapabilitiesGrid.js, 
+	        widgets/grid/FeatureGrid.js, 
+	        widgets/GoogleEarthPanel.js, 
+	        widgets/GoogleStreetViewPanel.js, 
+	        widgets/Histogram.js, 
+	        widgets/tips/SliderTip.js, 
+	        widgets/PlaybackToolbar.js, 
+	        widgets/form/PlaybackModeComboBox.js, 
+	        widgets/PlaybackOptionsPanel.js, 
+	        widgets/slider/ClassBreakSlider.js, 
+	        widgets/tips/RangeSliderTip.js, 
+	        widgets/TimelinePanel.js, 
+	        widgets/form/CSWFilterField.js, 
+	        widgets/CatalogueSearchPanel.js, 
+	        plugins/LayerSource.js, 
+	        plugins/BingSource.js, 
+	        plugins/WMSSource.js, 
+	        plugins/WMSCSource.js, 
+	        plugins/OSMSource.js, 
+	        plugins/GoogleSource.js, 
+	        plugins/OLSource.js, 
+	        plugins/MapBoxSource.js, 
+	        plugins/MapQuestSource.js, 
+	        plugins/CatalogueSource.js, 
+	        plugins/CSWCatalogueSource.js, 
+	        plugins/GeoNodeCatalogueSource.js, 
+	        plugins/StyleWriter.js, 
+	        plugins/GeoServerStyleWriter.js, 
+	        plugins/Tool.js, 
+	        plugins/ClickableFeatures.js, 
+	        plugins/DeleteSelectedFeatures.js, 
+	        plugins/GoogleGeocoder.js, 
+	        plugins/GoogleEarth.js, 
+	        plugins/WMSFilterView.js, 
+	        plugins/WMSRasterStylesDialog.js, 
+	        plugins/WMSGetFeatureInfo.js, 
+	        plugins/FeatureEditorGrid.js, 
+	        plugins/FeatureEditorForm.js, 
+	        plugins/FeatureEditor.js, 
+	        plugins/FeatureGrid.js, 
+	        plugins/FeatureManager.js, 
+	        plugins/FeatureToField.js, 
+	        plugins/QueryForm.js, 
+	        plugins/LayerTree.js, 
+	        plugins/LayerManager.js, 
+	        plugins/AddLayers.js, 
+	        plugins/RemoveLayer.js, 
+	        plugins/SelectedFeatureActions.js, 
+	        plugins/SnappingAgent.js, 
+	        plugins/Styler.js, 
+	        plugins/NavigationHistory.js, 
+	        plugins/Zoom.js, 
+	        plugins/ZoomToExtent.js, 
+	        plugins/ZoomToDataExtent.js, 
+	        plugins/ZoomToLayerExtent.js, 
+	        plugins/ZoomToSelectedFeatures.js, 
+	        plugins/Measure.js, 
+	        plugins/Navigation.js, 
+	        plugins/LayerProperties.js, 
+	        plugins/MapProperties.js, 
+	        plugins/Legend.js, 
+	        plugins/Print.js, 
+	        plugins/LoadingIndicator.js, 
+	        plugins/Playback.js"  />
+		 </concat>
+	</target>
+	
+	<target name="minifyGxp" depends="concatenategxp" >
+				<jsmin srcfile="administrator/libraries/gxp/script/gxp.js" suffix="true">
+				</jsmin>
+		 </target>
+	
+	<target name="concatenatesdi">
+		 <concat destfile="administrator/libraries/easysdi/js/sdi.js" fixlastline="yes">
+		 <filelist dir="administrator/libraries/easysdi/js" 
+		 	files="gxp/plugins/LayerTree.js, 
+		 	gxp/plugins/Print.js,
+		 	gxp/plugins/LayerManager.js,
+		 	gxp/plugins/BingSource.js,
+		 	gxp/plugins/GoogleSource.js,
+		 	gxp/plugins/OSMSource.js,
+		 	gxp/plugins/LoadingIndicator.js,
+		 	geoext/data/PrintProvider.js, 
+		 	geoext/ux/PrintPreview.js, 
+		 	geoext/widgets/PrintMapPanel.js" />
+		 </concat>
+	</target>
+	
+	<target name="minifysdi" depends="concatenatesdi" >
+			<jsmin srcfile="administrator/libraries/easysdi/js/sdi.js" suffix="true">
+			</jsmin>
+	 </target>
+	
+	<target name="package" depends="minifysdi,minifyGxp,concatenategeoextPrintProvider,create-structure,compression"
+		description="Main target">
+	</target>
+
+	<target name="create-structure" description="Creating the working directory structure">
+		<mkdir dir="${projet.out.dir}" />
+	</target>
+
+	
+    <target name="compression" description="Compression" depends="create-structure">
+		<jar compress="true" 
+		    jarfile="${projet.out.dir}/com_easysdi_core.zip"
+			basedir="." 
+			excludes=" 
+			        build.xml ; 
+			        easysdi.xml ;
+			        manifest.xml ;
+					site/** ;
+					out/** ; 
+					.cache/** ; 
+					.svn/** ; 
+					.settings/** ; 
+					.project; 
+			 		.prefs; 
+					.buildpath" />
+	</target>
+
+	<target name="sync" depends="minifysdi,minifyGxp,concatenategeoextPrintProvider" description="Copy from here to apache">
+		<copy todir="${projet.install.admin.dir}">
+			<fileset dir="./administrator">
+				<include name="**/*.*" />
+				<exclude name="language/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${projet.install.site.dir}">
+			<fileset dir="./site">
+				<include name="**/*.*" />
+				<exclude name="language/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${projet.install.langEN.dir}">
+		     <fileset dir="./administrator/language/en-GB">
+		      <include name="**/en-GB.com_easysdi_core.ini" />
+		       <include name="**/en-GB.com_easysdi_core.sys.ini" />
+		     </fileset>
+		    </copy>
+		<copy todir="${projet.install.langFR.dir}">
+				     <fileset dir="./administrator/language/fr-FR">
+				      <include name="**/fr-FR.com_easysdi_core.ini" />
+				       <include name="**/fr-FR.com_easysdi_core.sys.ini" />
+				     </fileset>
+				    </copy>
+	</target>
+</project>

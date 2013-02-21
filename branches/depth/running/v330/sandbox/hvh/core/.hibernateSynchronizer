@@ -1,0 +1,14 @@
+DAOEnabled=true
+GenerationEnabled=true
+DAOPackageName=dao
+BaseDAOPackageName=base
+BasePackageName=base
+UseCustomRootDAO=false
+ContextObject=
+BasePackageStyle=Relative
+BOEnabled=true
+BaseDAOPackageStyle=Same
+CustomRootDAOClass=
+DAOPackageStyle=Relative
+BaseDAOUseBasePackage=true
+BaseDAOException=net.sf.hibernate.HibernateException
