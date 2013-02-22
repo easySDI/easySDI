@@ -13,11 +13,12 @@ defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
+JHtml::_('dropdown.init');
 JHtml::_('formbehavior.chosen', 'select');
 
 // Import CSS
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_user.css');
+$document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_contact.css');
 
 $user	= JFactory::getUser();
 $userId	= $user->get('id');

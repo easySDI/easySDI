@@ -53,7 +53,7 @@ class Easysdi_contactViewOrganisms extends JViewLegacy
 		require_once JPATH_COMPONENT.'/helpers/easysdi_contact.php';
 
 		$state	= $this->get('State');
-		$canDo	= Easysdi_contactHelper::getActions($state->get('filter.category_id'));
+		$canDo	= Easysdi_contactHelper::getActions();
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_CONTACT_TITLE_ORGANISMS'), 'organisms.png');
 

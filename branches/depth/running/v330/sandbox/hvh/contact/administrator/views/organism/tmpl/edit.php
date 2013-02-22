@@ -51,19 +51,6 @@ $document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_cont
 					<!-- Begin Tabs -->
 					<div class="tab-pane active" id="details">
 						<?php foreach($this->form->getFieldset('details') as $field): ?>
-							<?php
-							if($field->name=="jform[state]"){
-								if($this->canDo->get('core.edit.state'))
-								{
-									?>
-									<div class="control-group">
-										<div class="control-label"><?php echo $field->label; ?></div>
-										<div class="controls"><?php echo $field->input; ?></div>
-									</div>
-									<?php 
-								}
-								continue;
-							} ?>
 							<div class="control-group">
 								<div class="control-label"><?php echo $field->label; ?></div>
 								<div class="controls"><?php echo $field->input; ?></div>
@@ -185,12 +172,19 @@ $document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_cont
 							<?php echo $this->form->getValue('name'); ?>
 						</div>
 					</div>
-					<div class="control-label">
-						<?php echo $this->form->getLabel('state'); ?>
-					</div>
-					<div class="controls">
-						<?php echo $this->form->getInput('state'); ?>
-					</div>
+					<?php
+					if($this->canDo->get('core.edit.state'))
+					{
+						?>
+						<div class="control-label">
+							<?php echo $this->form->getLabel('state'); ?>
+						</div>
+						<div class="controls">
+							<?php echo $this->form->getInput('state'); ?>
+						</div>
+						<?php 
+					}
+					?>
 				</div>
 	
 				<div class="control-group">

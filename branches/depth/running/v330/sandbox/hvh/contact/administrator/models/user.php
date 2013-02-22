@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.modeladmin');
 
 /**
- * Easysdi_core model.
+ * Easysdi_contact model.
  */
 class Easysdi_contactModeluser extends JModelAdmin
 {
@@ -21,7 +21,7 @@ class Easysdi_contactModeluser extends JModelAdmin
 	 * @var		string	The prefix to use with controller messages.
 	 * @since	1.6
 	 */
-	protected $text_prefix = 'com_easysdi_contact';
+	protected $text_prefix = 'COM_EASYSDI_CONTACT';
 
 
 	/**
@@ -179,7 +179,9 @@ class Easysdi_contactModeluser extends JModelAdmin
 			$addresstable =& JTable::getInstance('address', 'Easysdi_contactTable');
 
 			//Call the overloaded save function to store the input data
-			$data['id'] = $this->getItem()->get('id');
+			$data['id'] 			= $this->getItem()->get('id');
+			$data['user_id'] 		= $src['id'];
+			$data['organism_id']	= null;
 			if(!$addresstable->saveByType($data, 'contact' ))
 			{	
 				return false;

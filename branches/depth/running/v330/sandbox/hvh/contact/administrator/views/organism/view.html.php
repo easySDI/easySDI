@@ -62,7 +62,7 @@ class Easysdi_contactViewOrganism extends JViewLegacy
         } else {
             $checkedOut = false;
         }
-		$this->canDo		= Easysdi_contactHelper::getActions();
+		$this->canDo		= Easysdi_contactHelper::getActions('organism',null,$this->item->id);
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_CONTACT_TITLE_ORGANISM'), 'organism.png');
 

@@ -52,7 +52,7 @@ class Easysdi_contactViewUsers extends JViewLegacy
 	protected function addToolbar()
 	{
 		$state	= $this->get('State');
-		$canDo	= Easysdi_contactHelper::getActions($state->get('filter.category_id'),null);
+		$canDo	= Easysdi_contactHelper::getActions('user',$state->get('filter.category_id'),null);
 		
 		JToolBarHelper::title(JText::_('com_easysdi_contact_TITLE_USERS'), 'user.png');
 

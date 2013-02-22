@@ -137,8 +137,8 @@ class Easysdi_contactTableaddress extends sdiTable
     	$data['id'] =$src[$type.'_id'];
     	$data['guid'] =$src[$type.'_guid'];
     	$data['addresstype_id'] =$src[$type.'_addresstype_id'];
-    	$data['user_id'] =$src['id'];
-    	$data['organism_id'] =$src['id'];
+    	$data['user_id'] =$src['user_id'];
+    	$data['organism_id'] =$src['organism_id'];
     	$data['civility'] = $src[$type.'_civility'];
     	$data['firstname'] =$src[$type.'_firstname'];
     	$data['lastname'] =$src[$type.'_lastname'];

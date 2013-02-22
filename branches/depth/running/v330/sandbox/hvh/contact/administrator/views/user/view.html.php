@@ -71,7 +71,7 @@ class Easysdi_contactViewUser extends JViewLegacy
         }
         
         $state	= $this->get('State');
-		$this->canDo	= Easysdi_contactHelper::getActions($state->get('filter.category_id'),$this->item->id, null);
+		$this->canDo	= Easysdi_contactHelper::getActions('user',$state->get('filter.category_id'),$this->item->id);
 		
 		JToolBarHelper::title(JText::_('COM_EASYSDI_CONTACT_TITLE_USER'), 'user-profile.png');
 
