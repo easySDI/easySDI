@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_unit` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
-`checked_out` INT(11)  NOT NULL ,
+`checked_out` INT(11) NOT NULL DEFAULT '0'  ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
 `created` DATETIME NOT NULL ,
@@ -20,30 +20,26 @@ VALUES
 
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_role` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)  NOT NULL ,
+`guid` VARCHAR (36) NOT NULL ,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL ,
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_country` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` VARCHAR (36) NOT NULL ,
-`ordering` INT(11)  NOT NULL ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
-`created_by` INT(11)  NOT NULL ,
-`created` DATETIME NOT NULL ,
-`code` VARCHAR(150)  NOT NULL ,
-`name` VARCHAR(250)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+INSERT INTO `#__sdi_sys_role` VALUES ('1','643001fc-a3fb-11e0-9e98-00163e30bbbb','1','1', '1',NOW(),'resourcemanager' );
+INSERT INTO `#__sdi_sys_role` VALUES ('2','643001fc-a3fb-11e0-9e98-00163e30bbbb','2','1', '1',NOW(),'metadatamanager' );
+INSERT INTO `#__sdi_sys_role` VALUES ('3','643001fc-a3fb-11e0-9e98-00163e30bbbb','3','1', '1',NOW(),'metadataeditor' );
+INSERT INTO `#__sdi_sys_role` VALUES ('4','643001fc-a3fb-11e0-9e98-00163e30bbbb','4','1', '1',NOW(),'productmanager' );
+INSERT INTO `#__sdi_sys_role` VALUES ('5','643001fc-a3fb-11e0-9e98-00163e30bbbb','5','1', '1',NOW(),'previewmanager' );
 
 CREATE TABLE `#__sdi_sys_country` (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `guid` varchar(36) NOT NULL,
-  `ordering` bigint(20) NOT NULL DEFAULT '0',
-  `state` tinyint(4) NOT NULL DEFAULT '0',
+  `ordering` bigint(20) NOT NULL DEFAULT '1',
+  `state` tinyint(4) NOT NULL DEFAULT '1',
   `created` datetime NOT NULL,
   `created_by` bigint(20) NOT NULL,
   `name` varchar(50) NOT NULL,
@@ -52,8 +48,8 @@ CREATE TABLE `#__sdi_sys_country` (
   UNIQUE KEY `guid` (`guid`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-INSERT INTO `#__sdi_sys_country` VALUES ('1', '643001fc-a3fb-11e0-9e98-00163e3098aa', '1', '1', '2011-07-01 18:01:33', '1', 'AFGHANISTAN', 'AF');
-INSERT INTO `#__sdi_sys_country` VALUES ('2', '6430153e-a3fb-11e0-9e98-00163e3098aa', '2', '1', '2011-07-01 18:01:33', '1', 'SOUTH AFRICA', 'ZA');
+INSERT INTO `#__sdi_sys_country` VALUES ('1', '643001fc-a3fb-11e0-9e98-00163e3098aa', '1', '1', NOW(), '1', 'AFGHANISTAN', 'AF');
+INSERT INTO `#__sdi_sys_country` VALUES ('2', '6430153e-a3fb-11e0-9e98-00163e3098aa', '2', '1', NOW(), '1', 'SOUTH AFRICA', 'ZA');
 INSERT INTO `#__sdi_sys_country` VALUES ('3', 'ed15733e-0c26-11e0-81e4-001f29c92132', '3', '1', '2010-12-20 11:50:14', '1', 'ALBANIA', 'AL');
 INSERT INTO `#__sdi_sys_country` VALUES ('4', '64302f6a-a3fb-11e0-9e98-00163e3098aa', '4', '1', '2011-07-01 18:01:33', '1', 'Algérie', 'DZ');
 INSERT INTO `#__sdi_sys_country` VALUES ('5', '667798a0-0c28-11e0-81e4-001f29c92132', '5', '1', '2010-12-20 12:00:47', '1', 'GERMANY', 'DE');
@@ -290,6 +286,6 @@ INSERT INTO `#__sdi_sys_country` VALUES ('235', '643aac74-a3fb-11e0-9e98-00163e3
 INSERT INTO `#__sdi_sys_country` VALUES ('236', '643ab6f6-a3fb-11e0-9e98-00163e3098aa', '236', '1', '2011-07-01 18:01:33', '1', 'Zaïre', 'ZR');
 INSERT INTO `#__sdi_sys_country` VALUES ('237', '643ac0ce-a3fb-11e0-9e98-00163e3098aa', '237', '1', '2011-07-01 18:01:33', '1', 'Zambie', 'ZM');
 INSERT INTO `#__sdi_sys_country` VALUES ('238', '643ac9d4-a3fb-11e0-9e98-00163e3098aa', '238', '1', '2011-07-01 18:01:33', '1', 'Zimbabwe', 'ZW');
-INSERT INTO `#__sdi_sys_country` VALUES ('239', 'e0452b78-75d3-11e1-bb00-00163e3098aa', '239', '1', '2012-03-24 18:07:45', '7', 'Non Connu', 'UNK');
+INSERT INTO `#__sdi_sys_country` VALUES ('239', 'e0452b78-75d3-11e1-bb00-00163e3098aa', '239', '1', NOW(), '7', 'Non Connu', 'UNK');
 
 

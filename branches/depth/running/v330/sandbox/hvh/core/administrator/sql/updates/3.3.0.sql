@@ -1,11 +1,19 @@
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_role` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)  NOT NULL ,
+`guid` VARCHAR (36) NOT NULL ,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL ,
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+INSERT INTO `#__sdi_sys_role` VALUES ('1','643001fc-a3fb-11e0-9e98-00163e30bbbb','1','1', '1',NOW(),'resourcemanager' );
+INSERT INTO `#__sdi_sys_role` VALUES ('2','643001fc-a3fb-11e0-9e98-00163e30bbbb','2','1', '1',NOW(),'metadatamanager' );
+INSERT INTO `#__sdi_sys_role` VALUES ('3','643001fc-a3fb-11e0-9e98-00163e30bbbb','3','1', '1',NOW(),'metadataeditor' );
+INSERT INTO `#__sdi_sys_role` VALUES ('4','643001fc-a3fb-11e0-9e98-00163e30bbbb','4','1', '1',NOW(),'productmanager' );
+INSERT INTO `#__sdi_sys_role` VALUES ('5','643001fc-a3fb-11e0-9e98-00163e30bbbb','5','1', '1',NOW(),'previewmanager' );
 
 CREATE TABLE `#__sdi_sys_country` (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
