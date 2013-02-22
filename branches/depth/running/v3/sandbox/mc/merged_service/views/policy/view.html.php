@@ -26,9 +26,13 @@ class Easysdi_serviceViewPolicy extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
+		//we first update layers via a getCapabilities
+		Easysdi_serviceHelper::getLayers(Array('service' => 'virtual_' . JRequest::getVar('virtualservice_id',null), 'user' => '', 'password' => ''));
+		
 		$this->state	= $this->get('State');
 		$this->item		= $this->get('Item');
 		$this->form		= $this->get('Form');
+		
 		
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {

@@ -26,15 +26,17 @@ class Easysdi_serviceTablewmtslayerpolicy extends sdiTable {
 	
 	public function save($src, $orderingFilter = '', $ignore = '') {
 		$db = JFactory::getDbo();
-		
 		$wmtslayerpolicy = $_POST['wmtslayerpolicy'];
+		$policy_id = $src['id'];
+		$virtualservice_id = $src['virtualservice_id'];
+		$wmtslayerpolicy_id = null;
 		$formated_data = Array();
 		
 		foreach ($wmtslayerpolicy as $key => $value) {
 			$infos = explode('_', $key);
 			$physicalService_id = $infos[2];
 			$layer_id = $infos[3];
-			if ('tilematrixsetpolicy' == $infos[1]) {
+			if ('tilematrixpolicy' == $infos[1]) {
 				$tileMatrixSet_id = $infos[4];
 				$formated_data[$physicalService_id][$layer_id][$infos[1]][$tileMatrixSet_id] = $value;
 			}
@@ -51,23 +53,81 @@ class Easysdi_serviceTablewmtslayerpolicy extends sdiTable {
 				if (isset($layer_data['enabled'])) {
 					$enabled = ('on' == $layer_data['enabled'])?1:0;
 				}
-				$data = Array(
-					'enabled' => $enabled,
-					'bbox_minimumx' => $layer_data['bbox_minimumx'],
-					'bbox_minimumy' => $layer_data['bbox_minimumy'],
-					'bbox_maximumx' => $layer_data['bbox_maximumx'],
-					'bbox_maximumy' => $layer_data['bbox_maximumy'],
-					'geographicfilter' => $layer_data['geographicfilter'],
-					'spatialoperator' => $layer_data['spatialoperator'],
-				);
-				parent::save($data, $orderingFilter , $ignore );
-				foreach ($layer_data['tilematrixsetpolicy'] as $tms_id => $tm_id) {
-					@$tilematrixpolicy =& JTable::getInstance('tilematrixpolicy', 'Easysdi_serviceTable');
-					$data = Array(
-						'wmtslayerpolicy_id' => 
-					);
-					$tilematrixpolicy->save($data);
+				$db->setQuery('
+					SELECT id
+					FROM #__sdi_wmtslayerpolicy
+					WHERE policy_id = ' . $policy_id . '
+					AND wmtslayer_id = ' . $layer_id . ';
+				');
+				$db->execute();
+				$query = $db->getQuery(true);
+				if (0 != $db->getNumRows()) {
+					$wmtslayerpolicy_id = $db->loadResult();
+					$query->update('#__sdi_wmtslayerpolicy')->set(Array(
+						'enabled = ' . $enabled,
+						'bbox_minimumx = ' . $layer_data['bboxminimumx'],
+						'bbox_minimumy = ' . $layer_data['bboxminimumy'],
+						'bbox_maximumx = ' . $layer_data['bboxmaximumx'],
+						'bbox_maximumy = ' . $layer_data['bboxmaximumy'],
+						'geographicfilter = ' . $layer_data['geographicfilter'],
+						'spatialoperator = ' . ((isset($layer_data['spatialoperator']))?$layer_data['spatialoperator']:''),
+					))->where(Array(
+						'policy_id = ' . $policy_id,
+						'wmtslayer_id = ' . $layer_id
+					));
+					$db->setQuery($query);
+					$db->execute();
 				}
+				else {
+					$query->insert('#__sdi_wmtslayerpolicy');
+					$query->columns(
+						'policy_id, wmtslayer_id, enabled, bbox_minimumx, bbox_minimumy, bbox_maximumx, bbox_maximumy, geographicfilter, spatialoperator'
+					);
+					$query->values(
+						$policy_id . ', ' . $layer_id . ', \'' . $enabled . '\', \'' . $layer_data['bboxminimumx'] . '\', \'' . $layer_data['bboxminimumy'] . '\', \'' . $layer_data['bboxmaximumx'] . '\', \'' . $layer_data['bboxmaximumy'] . '\', \'' . $layer_data['geographicfilter'] . '\', \'' . ((isset($layer_data['spatialoperator']))?$layer_data['spatialoperator']:'') . '\''
+					);
+					$db->setQuery($query);
+					$db->execute();
+					$wmtslayerpolicy_id = $db->insertid();
+				}
+				
+				var_dump((String) $query);
+				
+				foreach ($layer_data['tilematrixpolicy'] as $tms_id => $tm_id) {
+					$db->setQuery('
+						SELECT identifier
+						FROM #__sdi_tilematrix
+						WHERE id = ' . $tm_id . ';
+					');
+					$db->execute();
+					$tm_identifier = $db->loadResult();
+					var_dump($tm_id);
+					var_dump($tm_identifier);
+					
+					//TODO : translate the query in multi DB language
+					$db->setQuery('
+						SELECT id, CAST(SUBSTRING_INDEX(identifier,\':\',-1) AS UNSIGNED) as num, identifier
+						FROM #__sdi_tilematrix
+						WHERE CAST(SUBSTRING_INDEX(identifier,\':\',-1) AS UNSIGNED) <= CAST(SUBSTRING_INDEX(\'' . $tm_identifier . '\', \':\', -1) AS UNSIGNED)
+						AND tilematrixset_id = ' . $tms_id . '
+						ORDER BY num ASC;
+					');
+					$db->excute();
+					foreach ($db->loadObjectList() as $row) {
+						var_dump($row);
+						
+					}
+					
+					$query = $db->getQuery(true);
+					$query->delete('#__sdi_wmtslayerpolicy')->where(Array(
+						'wmtslayerpolicy_id = ' . $wmtslayerpolicy_id,
+						'tilematrixset_id = ' . $tms_id,
+					));
+					$db->setQuery($query);
+					$db->execute();
+					
+				}
+				echo '<hr />';
 			}
 		}
 		

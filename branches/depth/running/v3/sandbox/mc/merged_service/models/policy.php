@@ -122,7 +122,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			}
 			
 			//we first update layers via a getCapabilities
-			Easysdi_serviceHelper::getLayers(Array('service' => 'virtual_' . $item->virtualservice_id, 'user' => '', 'password' => ''));
+			//Easysdi_serviceHelper::getLayers(Array('service' => 'virtual_' . $item->virtualservice_id, 'user' => '', 'password' => ''));
 			
 			if ('WMS' == $serviceconnector_name) {
 				$item->physicalservice = $this->_getItemWMS($pk, $layout);
@@ -269,6 +269,14 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					$layer_infos['bbox_maximumx'] = $lp->bbox_maximumx;
 					$layer_infos['bbox_maximumy'] = $lp->bbox_maximumy;
 				}
+				else {
+					$layer_infos['geographicfilter'] = '';
+					$layer_infos['spatialoperator'] = '';
+					$layer_infos['bbox_minimumx'] = '';
+					$layer_infos['bbox_minimumy'] = '';
+					$layer_infos['bbox_maximumx'] = '';
+					$layer_infos['bbox_maximumy'] = '';
+				}
 				
 				$layer_infos['tileMatrixSetList'] = Array();
 				$tileMatrixSetList = $tab_tilematrixset->getListByWMTSLayer($layer->id);
@@ -379,7 +387,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					return false;
 				}
 			}
-			die();
+			//die();
 			return true;
 		}
 		return false;
