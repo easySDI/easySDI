@@ -112,6 +112,13 @@ abstract class sdiTable extends JTable
 	 */
 	public function bind($array, $ignore = '')
 	{
+		if(isset($array['created_by']) || $array['created_by'] == 0){
+			$array['created_by'] = JFactory::getUser()->id;
+		}
+		if(!JFactory::getUser()->authorise('core.edit.state','com_easysdi_contact') && $array['state'] == 1){
+			$array['state'] = 0;
+		}
+		
 		if (isset($array['params']) && is_array($array['params'])) {
 			$registry = new JRegistry();
 			$registry->loadArray($array['params']);
@@ -124,11 +131,10 @@ abstract class sdiTable extends JTable
 			$array['metadata'] = (string)$registry;
 		}
 		
-		// Bind the rules.
-		if (isset($array['rules']) && is_array($array['rules']))
-		{
-			$rules = new JAccessRules($array['rules']);
-			$this->setRules($rules);
+	
+		//Bind the rules for ACL where supported.
+		if (isset($array['rules']) && is_array($array['rules'])) {
+			$this->setRules($array['rules']);
 		}
 	
 		return parent::bind($array, $ignore);
@@ -138,7 +144,7 @@ abstract class sdiTable extends JTable
 	 * This function convert an array of JAccessRule objects into an rules array.
 	 * @param type $jaccessrules an arrao of JAccessRule objects.
 	 */
-	private function JAccessRulestoArray($jaccessrules){
+	protected function JAccessRulestoArray($jaccessrules){
 		$rules = array();
 		foreach($jaccessrules as $action => $jaccess){
 			$actions = array();
