@@ -1,164 +1,40 @@
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_serviceconnector` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)  ,
-`state` TINYINT(1)  ,
-`checked_out` INT(11)   ,
-`checked_out_time` DATETIME,
+
+`ordering` INT(11)  NOT NULL ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`checked_out` INT(11)  NOT NULL ,
+`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_serviceversion` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)   ,
-`state` TINYINT(1)  ,
-`checked_out` INT(11) ,
-`checked_out_time` DATETIME ,
+
+`ordering` INT(11)  NOT NULL ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`checked_out` INT(11)  NOT NULL ,
+`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_servicecompliance` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11) ,
-`state` TINYINT(1)  ,
-`checked_out` INT(11) ,
-`checked_out_time` DATETIME,
+
+`ordering` INT(11)  NOT NULL ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`checked_out` INT(11)  NOT NULL ,
+`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `serviceconnector_id` INT(11) UNSIGNED  NOT NULL ,
 `serviceversion_id` INT(11) UNSIGNED  NOT NULL ,
-`implemented` TINYINT(1)  NOT NULL DEFAULT '0',
-`relayable` TINYINT(1)  NOT NULL DEFAULT '0',
-`aggregatable` TINYINT(1)  NOT NULL DEFAULT '0',
-`harvestable` TINYINT(1)  NOT NULL DEFAULT '0',
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_serviceoperation` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)   ,
-`state` TINYINT(1)  ,
-`checked_out` INT(11)  ,
-`checked_out_time` DATETIME ,
-`value` VARCHAR(150)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_operationcompliance` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)  ,
-`state` TINYINT(1)  ,
-`checked_out` INT(11)  ,
-`checked_out_time` DATETIME ,
-`servicecompliance_id` INT(11) UNSIGNED  NOT NULL ,
-`serviceoperation_id` INT(11) UNSIGNED  NOT NULL ,
-`implemented` TINYINT(1)  NOT NULL DEFAULT '0',
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_authenticationlevel` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)  ,
-`state` TINYINT(1)  ,
-`checked_out` INT(11)  ,
-`checked_out_time` DATETIME,
-`value` VARCHAR(150)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_authenticationconnector` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11) ,
-`state` TINYINT(1) ,
-`checked_out` INT(11)  ,
-`checked_out_time` DATETIME,
-`authenticationlevel_id` INT(11) UNSIGNED  NOT NULL ,
-`value` VARCHAR(150)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_physicalservice` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` VARCHAR(36)  NOT NULL ,
-`alias` VARCHAR(20)  NOT NULL ,
-`created_by` INT(11)  NOT NULL ,
-`created` DATETIME NOT NULL ,
-`modified_by` INT(11)  ,
-`modified` DATETIME ,
-`ordering` INT(11)  ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
-`checked_out` INT(11)   ,
-`checked_out_time` DATETIME ,
-`name` VARCHAR(150)   ,
-`serviceconnector_id` INT(11) UNSIGNED  NOT NULL ,
-`resourceauthentication_id` INT(11) UNSIGNED   ,
-`resourceurl` VARCHAR(500)   ,
-`resourceusername` VARCHAR(150)  ,
-`resourcepassword` VARCHAR(150)  ,
-`serviceauthentication_id` INT(11) UNSIGNED ,
-`serviceurl` VARCHAR(500)  ,
-`serviceusername` VARCHAR(150)   ,
-`servicepassword` VARCHAR(150)   ,
-`catid` INT(11)  NOT NULL ,
-`params` VARCHAR(1024)   ,
-`access` INT(10)  NOT NULL DEFAULT '1',
-`asset_id` INT(10)   ,
-
-PRIMARY KEY (`id`),
-UNIQUE (`name`) 
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_physicalservice_servicecompliance` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`physicalservice_id` INT(11) UNSIGNED  NOT NULL ,
-`servicecompliance_id` INT(11) UNSIGNED  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_servicecon_authenticationcon` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`serviceconnector_id` INT(11) UNSIGNED NOT NULL ,
-`authenticationconnector_id` INT(11) UNSIGNED NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-
-
-
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_serviceconnector` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-
-`ordering` INT(11)  NOT NULL ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
-`checked_out` INT(11)  NOT NULL ,
-`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-`created_by` INT(11)  NOT NULL ,
-`value` VARCHAR(150)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_serviceversion` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-
-`ordering` INT(11)  NOT NULL ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
-`checked_out` INT(11)  NOT NULL ,
-`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-`created_by` INT(11)  NOT NULL ,
-`value` VARCHAR(150)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_servicecompliance` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-
-`ordering` INT(11)  NOT NULL ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
-`checked_out` INT(11)  NOT NULL ,
-`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-`created_by` INT(11)  NOT NULL ,
-`serviceconnector_id` INT(11)  NOT NULL ,
-`serviceversion_id` INT(11)  NOT NULL ,
 `implemented` TINYINT(4)  NOT NULL ,
 `relayable` TINYINT(4)  NOT NULL ,
 `aggregatable` TINYINT(4)  NOT NULL ,
@@ -174,6 +50,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_serviceoperation` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -186,8 +63,9 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_operationcompliance` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
-`servicecompliance_id` INT(11) UNSIGNED NOT NULL ,
-`serviceoperation_id` INT(11) UNSIGNED NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`servicecompliance_id` INT(11) UNSIGNED  NOT NULL ,
+`serviceoperation_id` INT(11) UNSIGNED  NOT NULL ,
 `implemented` TINYINT(4)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -200,6 +78,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_authenticationlevel` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -212,11 +91,69 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_authenticationconnector` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
-`authenticationlevel_id` INT(11) UNSIGNED NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`authenticationlevel_id` INT(11) UNSIGNED  NOT NULL ,
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
+CREATE TABLE IF NOT EXISTS `#__sdi_service` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+
+`guid` VARCHAR(36)  NOT NULL ,
+`alias` VARCHAR(20)  NOT NULL ,
+`ordering` INT(11)  NOT NULL ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`checked_out` INT(11)  NOT NULL ,
+`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`modified_by` INT(11)  NOT NULL ,
+`modified` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`name` CHAR(150)  NOT NULL ,
+`serviceconnector_id` INT(11) UNSIGNED  NOT NULL ,
+`resourceauthentication_id` INT(11) UNSIGNED  NOT NULL ,
+`resourceurl` VARCHAR(500)  NOT NULL ,
+`resourceusername` VARCHAR(150)  NOT NULL ,
+`resourcepassword` VARCHAR(150)  NOT NULL ,
+`serviceauthentication_id` INT(11) UNSIGNED  NOT NULL ,
+`serviceurl` VARCHAR(500)  NOT NULL ,
+`serviceusername` VARCHAR(150)  NOT NULL ,
+`servicepassword` VARCHAR(150)  NOT NULL ,
+`catid` INT(11)  NOT NULL ,
+`params` VARCHAR(1024)  NOT NULL ,
+`access` INT(11)  NOT NULL ,
+`asset_id` INT(10)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_service_servicecompliance` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+
+`ordering` INT(11)  NOT NULL ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`checked_out` INT(11)  NOT NULL ,
+`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`service_id` INT(11) UNSIGNED  NOT NULL ,
+`servicecompliance_id` INT(11) UNSIGNED  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_servicecon_authenticationcon` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+
+`ordering` INT(11)  NOT NULL ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`checked_out` INT(11)  NOT NULL ,
+`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`serviceconnector_id` INT(11) UNSIGNED  NOT NULL ,
+`authenticationconnector_id` INT(11) UNSIGNED  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_virtualservice` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -244,14 +181,10 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualservice` (
 `harvester` BOOLEAN NOT NULL ,
 `maximumrecords` INT(10)  NOT NULL ,
 `identifiersearchattribute` VARCHAR(255)  NOT NULL ,
-`proxytype_id` INT(11) UNSIGNED NOT NULL ,
-`sys_serviceconnector_id` INT(11) UNSIGNED NOT NULL ,
-`exceptionlevel_id` INT(11) UNSIGNED NOT NULL ,
-`loglevel_id` INT(11) UNSIGNED NOT NULL ,
-`logroll_id` INT(11) UNSIGNED NOT NULL ,
-`physicalservice_id` INT(11) UNSIGNED NOT NULL ,
-`access` INT(10)  NOT NULL DEFAULT '1',
-`asset_id` INT(10)  ,
+`proxytype_id` INT(11) UNSIGNED  NOT NULL ,
+`exceptionlevel_id` INT(11) UNSIGNED  NOT NULL ,
+`loglevel_id` INT(11) UNSIGNED  NOT NULL ,
+`logroll_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -263,6 +196,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualmetadata` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `title` VARCHAR(255)  NOT NULL ,
 `inheritedtitle` BOOLEAN NOT NULL DEFAULT '1',
 `summary` VARCHAR(255)  NOT NULL ,
@@ -304,9 +238,37 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualmetadata` (
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
 `modified` DATETIME NOT NULL ,
-`virtualservice_id` INT(11) UNSIGNED NOT NULL ,
+`virtualservice_id` INT(11) UNSIGNED  NOT NULL,
 PRIMARY KEY (`id`)
 ) DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_physicalservice` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+
+`ordering` INT(11)  NOT NULL ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`checked_out` INT(11)  NOT NULL ,
+`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`name` VARCHAR(255)  NOT NULL ,
+`alias` VARCHAR(255)  NOT NULL ,
+`connector` VARCHAR(255)  NOT NULL ,
+`negociatedversion` VARCHAR(255)  NOT NULL ,
+`resourceurl` VARCHAR(255)  NOT NULL ,
+`resourceauthentication` VARCHAR(255)  NOT NULL ,
+`resourceusername` VARCHAR(255)  NOT NULL ,
+`resourcepassword` VARCHAR(255)  NOT NULL ,
+`serviceauthentication` VARCHAR(255)  NOT NULL ,
+`serviceurl` VARCHAR(255)  NOT NULL ,
+`serviceusername` VARCHAR(255)  NOT NULL ,
+`servicepassword` VARCHAR(255)  NOT NULL ,
+`guid` INT(36)  NOT NULL ,
+`modified_by` INT(11)  NOT NULL ,
+`modified` DATETIME NOT NULL ,
+`virtualservice_id` INT(11) UNSIGNED  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_policy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -317,8 +279,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_policy` (
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
 `created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-`alias` VARCHAR(20)  NOT NULL ,
-`name` VARCHAR(150)  NOT NULL ,
+`anonymousaccess` BOOLEAN NOT NULL DEFAULT '1',
+`anygroup` BOOLEAN NOT NULL DEFAULT '1',
 `anyoperation` BOOLEAN NOT NULL DEFAULT '1',
 `anyservice` BOOLEAN NOT NULL DEFAULT '1',
 `allowfrom` DATE NOT NULL DEFAULT '0000-00-00',
@@ -327,7 +289,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_policy` (
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
 `modified` DATETIME NOT NULL ,
-`virtualservice_id` INT(11) UNSIGNED NOT NULL ,
+`virtualservice_id` INT(11) UNSIGNED  NOT NULL ,
 `csw_version` INT(11)  NOT NULL ,
 `csw_anystate` BOOLEAN NOT NULL DEFAULT '1',
 `csw_anycontext` BOOLEAN NOT NULL DEFAULT '1',
@@ -337,8 +299,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_policy` (
 `wms_minimumheight` INT(11)  NOT NULL ,
 `wms_maximumwidth` INT(11)  NOT NULL ,
 `wms_maximumheight` INT(11)  NOT NULL ,
-`access` INT(10)  NOT NULL DEFAULT '1',
-`asset_id` INT(10)  ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -350,11 +310,12 @@ CREATE TABLE IF NOT EXISTS `#__sdi_servicepolicy` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `prefix` VARCHAR(255)  NOT NULL ,
 `namespace` VARCHAR(255)  NOT NULL ,
 `anyitem` BOOLEAN NOT NULL DEFAULT '1',
 `physicalservice_id` INT(11) UNSIGNED  NOT NULL ,
-`policy_id` INT(11) UNSIGNED NOT NULL ,
+`policy_id` INT(11) UNSIGNED  NOT NULL ,
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
 `modified` DATETIME NOT NULL ,
@@ -369,12 +330,13 @@ CREATE TABLE IF NOT EXISTS `#__sdi_wmslayer` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `name` VARCHAR(255)  NOT NULL ,
 `description` VARCHAR(255)  NOT NULL ,
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
 `modified` DATETIME NOT NULL ,
-`physicalservice_id` INT(11) UNSIGNED NOT NULL ,
+`physicalservice_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -386,14 +348,15 @@ CREATE TABLE IF NOT EXISTS `#__sdi_wmslayerpolicy` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `minimumscale` INT(11)  NOT NULL ,
 `maximumscale` INT(11)  NOT NULL ,
 `geographicfilter` TEXT NOT NULL ,
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
 `modified` DATETIME NOT NULL ,
-`policy_id` INT(11) UNSIGNED NOT NULL ,
-`wmslayer_id` INT(11) UNSIGNED NOT NULL ,
+`policy_id` INT(11) UNSIGNED  NOT NULL ,
+`wmslayer_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -405,11 +368,12 @@ CREATE TABLE IF NOT EXISTS `#__sdi_allowedoperation` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
 `modified` DATETIME NOT NULL ,
-`policy_id` INT(11) UNSIGNED NOT NULL ,
-`serviceoperation_id` INT(11) UNSIGNED NOT NULL ,
+`policy_id` INT(11) UNSIGNED  NOT NULL ,
+`serviceoperation_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -421,11 +385,12 @@ CREATE TABLE IF NOT EXISTS `#__sdi_versiontype` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `versiontype` ENUM('all','lastPublishedVersion')  NOT NULL ,
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
 `modified` DATETIME NOT NULL ,
-`policy_id` INT(11) UNSIGNED NOT NULL ,
+`policy_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -437,11 +402,12 @@ CREATE TABLE IF NOT EXISTS `#__sdi_visibilitytype` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `visibilitytype` ENUM('public','protected','private')  NOT NULL ,
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
 `modified` DATETIME NOT NULL ,
-`policy_id` INT(11) UNSIGNED NOT NULL ,
+`policy_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -453,11 +419,12 @@ CREATE TABLE IF NOT EXISTS `#__sdi_elementrestriction` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `metadatanode` TEXT NOT NULL ,
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
 `modified` DATETIME NOT NULL ,
-`policy_id` INT(11) UNSIGNED NOT NULL ,
+`policy_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -469,12 +436,13 @@ CREATE TABLE IF NOT EXISTS `#__sdi_featureclass` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `name` VARCHAR(255)  NOT NULL ,
 `description` VARCHAR(255)  NOT NULL ,
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
 `modified` DATETIME NOT NULL ,
-`physicalservice_id` INT(11) UNSIGNED NOT NULL ,
+`physicalservice_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -486,14 +454,15 @@ CREATE TABLE IF NOT EXISTS `#__sdi_featureclasspolicy` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `attributerestriction` VARCHAR(255)  NOT NULL ,
 `boundingboxfilter` VARCHAR(255)  NOT NULL ,
 `geographicfilter` VARCHAR(255)  NOT NULL ,
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
 `modified` DATETIME NOT NULL ,
-`policy_id` INT(11) UNSIGNED NOT NULL ,
-`featureclass_id` INT(11) UNSIGNED NOT NULL ,
+`policy_id` INT(11) UNSIGNED  NOT NULL ,
+`featureclass_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -505,12 +474,13 @@ CREATE TABLE IF NOT EXISTS `#__sdi_wmtslayer` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `name` VARCHAR(255)  NOT NULL ,
 `description` VARCHAR(255)  NOT NULL ,
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
 `modified` DATETIME NOT NULL ,
-`physicalservice_id` INT(11) UNSIGNED NOT NULL ,
+`physicalservice_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -522,17 +492,19 @@ CREATE TABLE IF NOT EXISTS `#__sdi_wmtslayerpolicy` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `geographicfilter` VARCHAR(255)  NOT NULL ,
 `spatialoperator` VARCHAR(255)  NOT NULL ,
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
 `modified` DATETIME NOT NULL ,
-`policy_id` INT(11) UNSIGNED NOT NULL ,
-`wmtslayer_id` INT(11) UNSIGNED NOT NULL ,
+`policy_id` INT(11) UNSIGNED  NOT NULL ,
+`wmtslayer_id` INT(11) UNSIGNED  NOT NULL ,
 `bbox_minimumx` INT(11)  NOT NULL ,
 `bbox_minimumy` INT(11)  NOT NULL ,
 `bbox_maximumx` INT(11)  NOT NULL ,
 `bbox_maximumy` INT(11)  NOT NULL ,
+`enabled` TINYINT(1)  NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -544,42 +516,38 @@ CREATE TABLE IF NOT EXISTS `#__sdi_tilematrixset` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
 `modified` DATETIME NOT NULL ,
-`denominator_id` INT(11) UNSIGNED NOT NULL ,
+`identifier` VARCHAR(255)  NOT NULL ,
+`supported_crs` VARCHAR(255)  NOT NULL ,
+`wmtslayer_id` INT(11) UNSIGNED NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_scalepolicy` (
+CREATE TABLE IF NOT EXISTS `#__sdi_tilematrixpolicy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`wmtslayerpolicy_id` INT(11) UNSIGNED  NOT NULL ,
+`tilematrixset_id` INT(11) UNSIGNED  NOT NULL ,
+`tilematrix_id` INT(11) UNSIGNED  NOT NULL ,
+`tile_minrow` INT(11)  NOT NULL  DEFAULT '0',
+`tile_maxrow` INT(11)  NOT NULL  DEFAULT '0' ,
+`tile_mincol` INT(11)  NOT NULL   DEFAULT '0',
+`tile_maxcol` INT(11)  NOT NULL   DEFAULT '0',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-`ordering` INT(11)  NOT NULL ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
-`checked_out` INT(11)  NOT NULL ,
-`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-`created_by` INT(11)  NOT NULL ,
-`minscaledenominator` VARCHAR(255)  NOT NULL ,
-`guid` INT(36)  NOT NULL ,
-`modified_by` INT(11)  NOT NULL ,
-`modified` DATETIME NOT NULL ,
-`wmtslayerpolicy_id` INT(11) UNSIGNED NOT NULL ,
+CREATE TABLE IF NOT EXISTS `#__sdi_tilematrix` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`identifier` VARCHAR(255)  NOT NULL ,
+`scaledenominator` VARCHAR(255)  NOT NULL ,
+`topleftcorner` VARCHAR(255)  NOT NULL ,
+`tilewidth` INT(11)  NOT NULL ,
+`tileheight` INT(11)  NOT NULL ,
+`matrixwidth` INT(11)  NOT NULL ,
+`matrixheight` INT(11)  NOT NULL ,
 `tilematrixset_id` INT(11) UNSIGNED NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_denominator` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-
-`ordering` INT(11)  NOT NULL ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
-`checked_out` INT(11)  NOT NULL ,
-`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-`created_by` INT(11)  NOT NULL ,
-`denominator` VARCHAR(255)  NOT NULL ,
-`guid` INT(36)  NOT NULL ,
-`modified_by` INT(11)  NOT NULL ,
-`modified` DATETIME NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -591,6 +559,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_logroll` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `logroll` VARCHAR(255)  NOT NULL ,
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
@@ -606,6 +575,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_loglevel` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `loglevel` VARCHAR(255)  NOT NULL ,
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
@@ -621,6 +591,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_exceptionlevel` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `exceptionlevel` VARCHAR(255)  NOT NULL ,
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
@@ -636,10 +607,12 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_proxytype` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `proxytype` VARCHAR(255)  NOT NULL ,
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
 `modified` DATETIME NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
 
