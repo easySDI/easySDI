@@ -46,11 +46,11 @@ ADD CONSTRAINT `#__sdi_allowedoperation_fk_policy` FOREIGN KEY (`policy_id`) REF
 
 
 ALTER TABLE `#__sdi_versiontype`
-ADD CONSTRAINT `#__sdi_versiontype_fk_cswpolicy` FOREIGN KEY (`cswpolicy_id`) REFERENCES `#__sdi_cswpolicy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ADD CONSTRAINT `#__sdi_versiontype_fk_policy` FOREIGN KEY (`policy_id`) REFERENCES `#__sdi_policy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 
 ALTER TABLE `#__sdi_visibilitytype`
-ADD CONSTRAINT `#__sdi_visibilitytype_fk_cswpolicy` FOREIGN KEY (`cswpolicy_id`) REFERENCES `#__sdi_cswpolicy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ADD CONSTRAINT `#__sdi_visibilitytype_fk_policy` FOREIGN KEY (`policy_id`) REFERENCES `#__sdi_policy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 
 ALTER TABLE `#__sdi_elementrestriction`

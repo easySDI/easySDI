@@ -390,7 +390,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_versiontype` (
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
 `modified` DATETIME NOT NULL ,
-`cswpolicy_id` INT(11) UNSIGNED  NOT NULL ,
+`policy_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -407,7 +407,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_visibilitytype` (
 `guid` INT(36)  NOT NULL ,
 `modified_by` INT(11)  NOT NULL ,
 `modified` DATETIME NOT NULL ,
-`cswpolicy_id` INT(11) UNSIGNED  NOT NULL ,
+`policy_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
