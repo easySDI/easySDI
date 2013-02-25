@@ -1,12 +1,12 @@
 <?php
-
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
+
 // No direct access
 defined('_JEXEC') or die;
 
@@ -54,24 +54,23 @@ class Easysdi_mapTabletool extends sdiTable {
 	}
 
 	/**
-	 * Method to get the parent asset under which to register this one.
-	 * By default, all assets are registered to the ROOT node with ID 1.
-	 * The extended class can define a table and id to lookup.  If the
-	 * asset does not exist it will be created.
-	 *
-	 * @param   JTable   $table  A JTable object for the asset parent.
-	 * @param   integer  $id     Id to look up
-	 *
-	 * @return  integer
-	 *
-	 * @since   11.1
-	 */
-	protected function _getAssetParentId($table = null, $id = null)
-	{
-		$asset = JTable::getInstance('Asset');
-		$asset->loadByName('com_easysdi_map');
-		return $asset->id;
-	}
+      * Returns the parrent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
+      *
+      * @see JTable::_getAssetParentId 
+    */
+    protected function _getAssetParentId($table = null, $id = null){
+        // We will retrieve the parent-asset from the Asset-table
+        $assetParent = JTable::getInstance('Asset');
+        // Default: if no asset-parent can be found we take the global asset
+        $assetParentId = $assetParent->getRootId();
+        // The item has the component as asset-parent
+        $assetParent->loadByName('com_easysdi_map');
+        // Return the found asset-parent-id
+        if ($assetParent->id){
+            $assetParentId=$assetParent->id;
+        }
+        return $assetParentId;
+    }
 	
 	/**
 	 * Method to return the list of tools ids used by the specified context id
@@ -94,8 +93,8 @@ class Easysdi_mapTabletool extends sdiTable {
 		$query = $this->_db->getQuery(true);
 		$query->select('t.id');
 		$query->from($this->_tbl.'  AS t ');
-		$query->join('LEFT', '#__sdi_map_context_tool AS ct ON ct.tool_id=t.id');
-		$query->where('ct.context_id = ' . (int) $context_id);
+		$query->join('LEFT', '#__sdi_map_tool AS ct ON ct.tool_id=t.id');
+		$query->where('ct.map_id = ' . (int) $context_id);
 		$query->where('t.state = 1' );
 		$query->order('t.ordering ASC' );
 		$this->_db->setQuery($query);

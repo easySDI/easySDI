@@ -1,34 +1,39 @@
 <?php
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 
-
 // no direct access
 defined('_JEXEC') or die;
 
-JHtml::_('behavior.tooltip');
-JHTML::_('script','system/multiselect.js',false,true);
+JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
+JHtml::_('bootstrap.tooltip');
+JHtml::_('behavior.multiselect');
+JHtml::_('formbehavior.chosen', 'select');
+
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css');
 
 $user	= JFactory::getUser();
 $userId	= $user->get('id');
-$filter_group = $this->state->get('filter.group');
 $listOrder	= $this->state->get('list.ordering');
 $listDirn	= $this->state->get('list.direction');
 $canOrder	= $user->authorise('core.edit.state', 'com_easysdi_map');
-$saveOrder	= $listOrder == 'a.ordering' && !empty($filter_group);
+$saveOrder	= $listOrder == 'a.ordering';
+if ($saveOrder)
+{
+	$saveOrderingUrl = 'index.php?option=com_easysdi_map&task=layers.saveOrderAjax&tmpl=component';
+	JHtml::_('sortablelist.sortable', 'layerList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
+}
+$sortFields = $this->getSortFields();
 ?>
 
-<form
-	action="<?php echo JRoute::_('index.php?option=com_easysdi_map&view=layers'); ?>"
-	method="post" name="adminForm" id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_map&view=layers'); ?>" method="post" name="adminForm" id="adminForm">
 	<fieldset id="filter-bar">
 		<div class="filter-search fltlft">
 			<label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?>
@@ -177,11 +182,10 @@ $saveOrder	= $listOrder == 'a.ordering' && !empty($filter_group);
 	</table>
 
 	<div>
-		<input type="hidden" name="task" value="" /> <input type="hidden"
-			name="boxchecked" value="0" /> <input type="hidden"
-			name="filter_order" value="<?php echo $listOrder; ?>" /> <input
-			type="hidden" name="filter_order_Dir"
-			value="<?php echo $listDirn; ?>" />
+		<input type="hidden" name="task" value="" /> 
+		<input type="hidden" name="boxchecked" value="0" /> 
+		<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" /> 
+		<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 	</div>
 </form>

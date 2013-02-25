@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `#__sdi_map_group` (
+CREATE TABLE IF NOT EXISTS `#__sdi_layergroup` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(20)  NOT NULL ,
@@ -18,7 +18,7 @@ PRIMARY KEY (`id`),
 UNIQUE (`alias`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_map_layer` (
+CREATE TABLE IF NOT EXISTS `#__sdi_layer` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(20)  NOT NULL ,
@@ -51,7 +51,7 @@ PRIMARY KEY (`id`),
 UNIQUE (`alias`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_map_context` (
+CREATE TABLE IF NOT EXISTS `#__sdi_map` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(20)  NOT NULL ,
@@ -92,32 +92,32 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_map_tool` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_map_context_tool` (
+CREATE TABLE IF NOT EXISTS `#__sdi_map_tool` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`context_id` INT(11) UNSIGNED  NOT NULL ,
+`map_id` INT(11) UNSIGNED  NOT NULL ,
 `tool_id` INT(11) UNSIGNED NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_map_context_group` (
+CREATE TABLE IF NOT EXISTS `#__sdi_map_layergroup` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`context_id` INT(11) UNSIGNED NOT NULL ,
+`map_id` INT(11) UNSIGNED NOT NULL ,
 `group_id` INT(11) UNSIGNED  NOT NULL ,
 `isbackground` TINYINT(1)  NOT NULL DEFAULT '0',
 `isdefault` TINYINT(1)  NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_map_context_physicalservice` (
+CREATE TABLE IF NOT EXISTS `#__sdi_map_physicalservice` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`context_id` INT(11) UNSIGNED  NOT NULL ,
+`map_id` INT(11) UNSIGNED  NOT NULL ,
 `physicalservice_id` INT(11) UNSIGNED NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_map_context_virtualservice` (
+CREATE TABLE IF NOT EXISTS `#__sdi_map_virtualservice` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`context_id` INT(11) UNSIGNED NOT NULL ,
+`map_id` INT(11) UNSIGNED NOT NULL ,
 `virtualservice_id` INT(11) UNSIGNED NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;

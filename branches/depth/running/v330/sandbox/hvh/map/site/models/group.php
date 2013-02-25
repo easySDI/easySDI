@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -20,7 +20,6 @@ class Easysdi_mapModelGroup extends JModelForm
 {
     
     var $_item = null;
-    var $_ids  = null;
     
 	/**
 	 * Method to auto-populate the model state.
@@ -44,6 +43,10 @@ class Easysdi_mapModelGroup extends JModelForm
 
 		// Load the parameters.
 		$params = $app->getParams();
+        $params_array = $params->toArray();
+        if(isset($params_array['item_id'])){
+            $this->setState('group.id', $params_array['item_id']);
+        }
 		$this->setState('params', $params);
 
 	}
@@ -90,35 +93,7 @@ class Easysdi_mapModelGroup extends JModelForm
 
 		return $this->_item;
 	}
-	
-	/**
-		* Method to get an ojbect.
-		*
-		* @param	integer	The id of the context .
-		*
-		* @return	mixed	Object on success, false on failure.
-		*/
-	public function &getIdsByContext($context_id = null)
-	{
-		if ($this->_ids === null)
-		{
-			$this->_ids = false;
-			// Get a level row instance.
-			$table = $this->getTable();
-			$this->_ids = $table->GetIdsByContextId($context_id);
-			
-			// Attempt to load the result.
-			if ($this->_ids)
-			{
-				
-			} elseif ($error = $table->getError()) {
-				$this->setError($error);
-			}
-		}
-		return $this->_ids;
-	}
     
-	
 	public function getTable($type = 'Group', $prefix = 'Easysdi_mapTable', $config = array())
 	{   
         $this->addTablePath(JPATH_COMPONENT_ADMINISTRATOR.'/tables');
@@ -231,28 +206,52 @@ class Easysdi_mapModelGroup extends JModelForm
 	public function save($data)
 	{
 		$id = (!empty($data['id'])) ? $data['id'] : (int)$this->getState('group.id');
+        $state = (!empty($data['state'])) ? 1 : 0;
         $user = JFactory::getUser();
 
         if($id) {
             //Check the user can edit this item
-            $authorised = $user->authorise('core.edit', 'group.'.$id);
+            $authorised = $user->authorise('core.edit', 'com_easysdi_map') || $authorised = $user->authorise('core.edit.own', 'com_easysdi_map');
+            if($user->authorise('core.edit.state', 'com_easysdi_map') !== true && $state == 1){ //The user cannot edit the state of the item.
+                $data['state'] = 0;
+            }
         } else {
             //Check the user can create new items in this section
             $authorised = $user->authorise('core.create', 'com_easysdi_map');
+            if($user->authorise('core.edit.state', 'com_easysdi_map') !== true && $state == 1){ //The user cannot edit the state of the item.
+                $data['state'] = 0;
+            }
         }
 
         if ($authorised !== true) {
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return false;
         }
-
-		$table = $this->getTable();
+        
+        $table = $this->getTable();
         if ($table->save($data) === true) {
             return $id;
         } else {
             return false;
         }
         
-	}    
+	}
+    
+     function delete($data)
+    {
+        $id = (!empty($data['id'])) ? $data['id'] : (int)$this->getState('group.id');
+        if(JFactory::getUser()->authorise('core.delete', 'com_easysdi_map') !== true){
+            JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+            return false;
+        }
+        $table = $this->getTable();
+        if ($table->delete($data['id']) === true) {
+            return $id;
+        } else {
+            return false;
+        }
+        
+        return true;
+    }
     
 }

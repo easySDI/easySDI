@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -73,7 +73,7 @@ class Easysdi_mapModelGroups extends JModelList {
                 )
         );
         
-        $query->from('`#__sdi_map_group` AS a');
+        $query->from('`#__sdi_layergroup` AS a');
         
 
     // Join over the users for the checked out user.
@@ -84,14 +84,6 @@ class Easysdi_mapModelGroups extends JModelList {
 		$query->select('created_by.name AS created_by');
 		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
 
-    // Filter by published state
-    $published = $this->getState('filter.state');
-    if (is_numeric($published)) {
-        $query->where('a.state = '.(int) $published);
-    } else {
-        $query->where('(a.state = 1)');
-    }
-    
 
 		// Filter by search in title
 		$search = $this->getState('filter.search');

@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -15,7 +15,7 @@ jimport('joomla.application.component.view');
 /**
  * View to edit
  */
-class Easysdi_mapViewLayer extends JView {
+class Easysdi_mapViewLayer extends JViewLegacy {
 
     protected $state;
     protected $item;

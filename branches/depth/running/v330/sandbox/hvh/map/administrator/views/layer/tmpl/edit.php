@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -10,12 +10,15 @@
 // no direct access
 defined('_JEXEC') or die;
 
+JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
+JHtml::_('formbehavior.chosen', 'select');
+JHtml::_('behavior.keepalive');
+
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css');
-$document->addScript('components/com_easysdi_map/views/layer/tmpl/edit.js');
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task)
@@ -29,9 +32,7 @@ $document->addScript('components/com_easysdi_map/views/layer/tmpl/edit.js');
 	}
 </script>
 
-<form
-	action="<?php echo JRoute::_('index.php?option=com_easysdi_map&layout=edit&id='.(int) $this->item->id); ?>"
-	method="post" name="adminForm" id="layer-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_map&layout=edit&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="layer-form" class="form-validate">
 	<div id="progress">
 		<img id="progress_image"  src="components/com_easysdi_service/assets/images/loader.gif" alt="">
 	</div>
@@ -150,12 +151,5 @@ $document->addScript('components/com_easysdi_map/views/layer/tmpl/edit.js');
 
 	<input type="hidden" name="task" value="" />
 	<?php echo JHtml::_('form.token'); ?>
-	<div class="clr"></div>
 
-	<style type="text/css">
-/* Temporary fix for drifting editor fields */
-.adminformlist li {
-	clear: both;
-}
-</style>
 </form>

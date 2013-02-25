@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -20,20 +20,20 @@ class Easysdi_mapHelper
 	 */
 	public static function addSubmenu($vName = '')
 	{
-		JSubMenuHelper::addEntry(
-				JText::_('COM_EASYSDI_MAP_SUBMENU_TITLE_CONTEXT'),
-				'index.php?option=com_easysdi_map&view=contexts',
-				$vName == 'contexts'
+		JHtmlSidebar::addEntry(
+			JText::_('COM_EASYSDI_MAP_TITLE_GROUPS'),
+			'index.php?option=com_easysdi_map&view=groups',
+			$vName == 'groups'
 		);
-		JSubMenuHelper::addEntry(
-				JText::_('COM_EASYSDI_MAP_SUBMENU_TITLE_LAYERS'),
-				'index.php?option=com_easysdi_map&view=layers',
-				$vName == 'layers'
+		JHtmlSidebar::addEntry(
+			JText::_('COM_EASYSDI_MAP_TITLE_LAYERS'),
+			'index.php?option=com_easysdi_map&view=layers',
+			$vName == 'layers'
 		);
-		JSubMenuHelper::addEntry(
-				JText::_('COM_EASYSDI_MAP_SUBMENU_TITLE_LAYERSGROUPS'),
-				'index.php?option=com_easysdi_map&view=groups',
-				$vName == 'groups'
+		JHtmlSidebar::addEntry(
+			JText::_('COM_EASYSDI_MAP_TITLE_MAPS'),
+			'index.php?option=com_easysdi_map&view=maps',
+			$vName == 'maps'
 		);
 	}
 

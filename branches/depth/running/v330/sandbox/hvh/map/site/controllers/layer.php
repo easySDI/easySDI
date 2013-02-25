@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -48,7 +48,7 @@ class Easysdi_mapControllerLayer extends Easysdi_mapController
 		}
 
 		// Redirect to the edit screen.
-		$this->setRedirect(JRoute::_('index.php?option=com_easysdi_map&view=layer&layout=edit', false));
+		$this->setRedirect(JRoute::_('index.php?option=com_easysdi_map&view=layerform&layout=edit', false));
 	}
 
 	/**
@@ -128,7 +128,9 @@ class Easysdi_mapControllerLayer extends Easysdi_mapController
 
         // Redirect to the list screen.
         $this->setMessage(JText::_('Item saved successfully'));
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_map&view=layers', false));
+        $menu = & JSite::getMenu();
+        $item = $menu->getActive();
+        $this->setRedirect(JRoute::_($item->link, false));
 
 		// Flush the data from the session.
 		$app->setUserState('com_easysdi_map.edit.layer.data', null);
@@ -136,21 +138,89 @@ class Easysdi_mapControllerLayer extends Easysdi_mapController
     
     
     function cancel() {
-        
-		$app			= JFactory::getApplication();
+		$menu = & JSite::getMenu();
+        $item = $menu->getActive();
+        $this->setRedirect(JRoute::_($item->link, false));
+    }
+    
+	public function remove()
+	{
+		// Check for request forgeries.
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-		//Get the edit id (if any)
-		$id = (int) $app->getUserState('com_easysdi_map.edit.layer.id');
-        if ($id) {
-            //Redirect back to details
-            $app->setUserState('com_easysdi_map.edit.layer.id', null);
-			$this->setRedirect(JRoute::_('index.php?option=com_easysdi_map&view=layer&id='.$id, false));
-        } else {
-            //Redirect back to list
-			$this->setRedirect(JRoute::_('index.php?option=com_easysdi_map&view=layers', false));
+		// Initialise variables.
+		$app	= JFactory::getApplication();
+		$model = $this->getModel('Layer', 'Easysdi_mapModel');
+
+		// Get the user data.
+		$data = JFactory::getApplication()->input->get('jform', array(), 'array');
+
+		// Validate the posted data.
+		$form = $model->getForm();
+		if (!$form) {
+			JError::raiseError(500, $model->getError());
+			return false;
+		}
+
+		// Validate the posted data.
+		$data = $model->validate($form, $data);
+
+		// Check for errors.
+		if ($data === false) {
+			// Get the validation messages.
+			$errors	= $model->getErrors();
+
+			// Push up to three validation messages out to the user.
+			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
+				if ($errors[$i] instanceof Exception) {
+					$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
+				} else {
+					$app->enqueueMessage($errors[$i], 'warning');
+				}
+			}
+
+			// Save the data in the session.
+			$app->setUserState('com_easysdi_map.edit.layer.data', $data);
+
+			// Redirect back to the edit screen.
+			$id = (int) $app->getUserState('com_easysdi_map.edit.layer.id');
+			$this->setRedirect(JRoute::_('index.php?option=com_easysdi_map&view=layer&layout=edit&id='.$id, false));
+			return false;
+		}
+
+		// Attempt to save the data.
+		$return	= $model->delete($data);
+
+		// Check for errors.
+		if ($return === false) {
+			// Save the data in the session.
+			$app->setUserState('com_easysdi_map.edit.layer.data', $data);
+
+			// Redirect back to the edit screen.
+			$id = (int)$app->getUserState('com_easysdi_map.edit.layer.id');
+			$this->setMessage(JText::sprintf('Delete failed', $model->getError()), 'warning');
+			$this->setRedirect(JRoute::_('index.php?option=com_easysdi_map&view=layer&layout=edit&id='.$id, false));
+			return false;
+		}
+
+            
+        // Check in the profile.
+        if ($return) {
+            $model->checkin($return);
         }
         
-    }
+        // Clear the profile id from the session.
+        $app->setUserState('com_easysdi_map.edit.layer.id', null);
+
+        // Redirect to the list screen.
+        $this->setMessage(JText::_('Item deleted successfully'));
+        $menu = & JSite::getMenu();
+        $item = $menu->getActive();
+        $this->setRedirect(JRoute::_($item->link, false));
+
+		// Flush the data from the session.
+		$app->setUserState('com_easysdi_map.edit.layer.data', null);
+	}
     
     
 }

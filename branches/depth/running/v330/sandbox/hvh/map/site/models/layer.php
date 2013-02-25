@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -43,6 +43,10 @@ class Easysdi_mapModelLayer extends JModelForm
 
 		// Load the parameters.
 		$params = $app->getParams();
+        $params_array = $params->toArray();
+        if(isset($params_array['item_id'])){
+            $this->setState('layer.id', $params_array['item_id']);
+        }
 		$this->setState('params', $params);
 
 	}
@@ -202,28 +206,52 @@ class Easysdi_mapModelLayer extends JModelForm
 	public function save($data)
 	{
 		$id = (!empty($data['id'])) ? $data['id'] : (int)$this->getState('layer.id');
+        $state = (!empty($data['state'])) ? 1 : 0;
         $user = JFactory::getUser();
 
         if($id) {
             //Check the user can edit this item
-            $authorised = $user->authorise('core.edit', 'layer.'.$id);
+            $authorised = $user->authorise('core.edit', 'com_easysdi_map') || $authorised = $user->authorise('core.edit.own', 'com_easysdi_map');
+            if($user->authorise('core.edit.state', 'com_easysdi_map') !== true && $state == 1){ //The user cannot edit the state of the item.
+                $data['state'] = 0;
+            }
         } else {
             //Check the user can create new items in this section
             $authorised = $user->authorise('core.create', 'com_easysdi_map');
+            if($user->authorise('core.edit.state', 'com_easysdi_map') !== true && $state == 1){ //The user cannot edit the state of the item.
+                $data['state'] = 0;
+            }
         }
 
         if ($authorised !== true) {
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return false;
         }
-
-		$table = $this->getTable();
+        
+        $table = $this->getTable();
         if ($table->save($data) === true) {
             return $id;
         } else {
             return false;
         }
         
-	}    
+	}
+    
+     function delete($data)
+    {
+        $id = (!empty($data['id'])) ? $data['id'] : (int)$this->getState('layer.id');
+        if(JFactory::getUser()->authorise('core.delete', 'com_easysdi_map') !== true){
+            JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+            return false;
+        }
+        $table = $this->getTable();
+        if ($table->delete($data['id']) === true) {
+            return $id;
+        } else {
+            return false;
+        }
+        
+        return true;
+    }
     
 }

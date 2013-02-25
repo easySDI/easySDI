@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -15,7 +15,7 @@ jimport('joomla.application.component.view');
 /**
  * View class for a list of Easysdi_map.
  */
-class Easysdi_mapViewLayers extends JView
+class Easysdi_mapViewLayers extends JViewLegacy
 {
 	protected $items;
 	protected $pagination;
@@ -33,8 +33,7 @@ class Easysdi_mapViewLayers extends JView
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
-			JError::raiseError(500, implode("\n", $errors));
-			return false;
+			throw new Exception(implode("\n", $errors));
 		}
 		
 		$this->addToolbar();
@@ -107,5 +106,25 @@ class Easysdi_mapViewLayers extends JView
 
 		JToolBarHelper::divider();
 		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_core');
+		
+		//Set sidebar action - New in 3.0
+		JHtmlSidebar::setAction('index.php?option=com_easysdi_map&view=layers');
+		$this->extra_sidebar = '';
+		JHtmlSidebar::addFilter(
+				JText::_('JOPTION_SELECT_PUBLISHED'),
+				'filter_published',
+				JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), "value", "text", $this->state->get('filter.state'), true)
+		);
+	}
+	
+	protected function getSortFields()
+	{
+		return array(
+				'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
+				'a.state' => JText::_('JSTATUS'),
+				'a.name' => JText::_('COM_EASYSDI_MAP_LAYERS_NAME'),
+				'a.group_id' => JText::_('COM_EASYSDI_MAP_LAYERS_GROUP_ID'),
+				'a.layername' => JText::_('COM_EASYSDI_MAP_LAYERS_LAYERNAME'),
+		);
 	}
 }

@@ -1,12 +1,12 @@
 <?php
-
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
+
 // No direct access
 defined('_JEXEC') or die;
 
@@ -23,7 +23,7 @@ class Easysdi_mapTablelayer extends sdiTable {
 	 * @param JDatabase A database connector object
 	 */
 	public function __construct(&$db) {
-		parent::__construct('#__sdi_map_layer', 'id', $db);
+		parent::__construct('#__sdi_layer', 'id', $db);
 	}
 
 	/**
@@ -125,24 +125,23 @@ class Easysdi_mapTablelayer extends sdiTable {
 
 
 	/**
-	 * Method to get the parent asset under which to register this one.
-	 * By default, all assets are registered to the ROOT node with ID 1.
-	 * The extended class can define a table and id to lookup.  If the
-	 * asset does not exist it will be created.
-	 *
-	 * @param   JTable   $table  A JTable object for the asset parent.
-	 * @param   integer  $id     Id to look up
-	 *
-	 * @return  integer
-	 *
-	 * @since   11.1
-	 */
-	protected function _getAssetParentId($table = null, $id = null)
-	{
-		$asset = JTable::getInstance('Asset');
-		$asset->loadByName('com_easysdi_map');
-		return $asset->id;
-	}
+      * Returns the parrent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
+      *
+      * @see JTable::_getAssetParentId 
+    */
+    protected function _getAssetParentId($table = null, $id = null){
+        // We will retrieve the parent-asset from the Asset-table
+        $assetParent = JTable::getInstance('Asset');
+        // Default: if no asset-parent can be found we take the global asset
+        $assetParentId = $assetParent->getRootId();
+        // The item has the component as asset-parent
+        $assetParent->loadByName('com_easysdi_map');
+        // Return the found asset-parent-id
+        if ($assetParent->id){
+            $assetParentId=$assetParent->id;
+        }
+        return $assetParentId;
+    }
 	
 	/**
 	 * Method to load Items from the database by group key 

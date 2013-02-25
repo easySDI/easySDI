@@ -1,12 +1,12 @@
 <?php
-
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
+
 // No direct access
 defined('_JEXEC') or die;
 
@@ -24,7 +24,7 @@ class Easysdi_mapTablegroup extends sdiTable {
 	 * @param JDatabase A database connector object
 	 */
 	public function __construct(&$db) {
-		parent::__construct('#__sdi_map_group', 'id', $db);
+		parent::__construct('#__sdi_layergroup', 'id', $db);
 	}
 
 	/**
@@ -55,23 +55,23 @@ class Easysdi_mapTablegroup extends sdiTable {
 	}
 
 	/**
-	 * Method to get the parent asset under which to register this one.
-	 * By default, all assets are registered to the ROOT node with ID 1.
-	 * The extended class can define a table and id to lookup.  If the
-	 * asset does not exist it will be created.
-	 *
-	 * @param   JTable   $table  A JTable object for the asset parent.
-	 * @param   integer  $id     Id to look up
-	 *
-	 * @return  integer
-	 *
-	 * @since   11.1
-	 */
+      * Returns the parrent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
+      *
+      * @see JTable::_getAssetParentId 
+    */
 	protected function _getAssetParentId($table = null, $id = null)
 	{
-		$asset = JTable::getInstance('Asset');
-		$asset->loadByName('com_easysdi_map');
-		return $asset->id;
+		// We will retrieve the parent-asset from the Asset-table
+        $assetParent = JTable::getInstance('Asset');
+        // Default: if no asset-parent can be found we take the global asset
+        $assetParentId = $assetParent->getRootId();
+        // The item has the component as asset-parent
+        $assetParent->loadByName('com_easysdi_map');
+        // Return the found asset-parent-id
+        if ($assetParent->id){
+            $assetParentId=$assetParent->id;
+        }
+        return $assetParentId;
 	}
 	
 	/**
@@ -119,8 +119,8 @@ class Easysdi_mapTablegroup extends sdiTable {
 		$query = $this->_db->getQuery(true);
 		$query->select('g.id, cg.isbackground, cg.isdefault');
 		$query->from($this->_tbl.'  AS g ');
-		$query->join('LEFT', '#__sdi_map_context_group AS cg ON cg.group_id=g.id');
-		$query->where('cg.context_id = ' . (int) $context_id);
+		$query->join('LEFT', '#__sdi_map_group AS cg ON cg.group_id=g.id');
+		$query->where('cg.map_id = ' . (int) $context_id);
 		$query->where('g.state = 1' );
 		$query->order('g.ordering ASC' );
 		$this->_db->setQuery($query);

@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -11,8 +11,11 @@
 // no direct access
 defined('_JEXEC') or die;
 
-JHtml::_('behavior.tooltip');
-JHTML::_('script','system/multiselect.js',false,true);
+JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
+JHtml::_('bootstrap.tooltip');
+JHtml::_('behavior.multiselect');
+JHtml::_('formbehavior.chosen', 'select');
+
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css');
@@ -23,11 +26,44 @@ $listOrder	= $this->state->get('list.ordering');
 $listDirn	= $this->state->get('list.direction');
 $canOrder	= $user->authorise('core.edit.state', 'com_easysdi_map');
 $saveOrder	= $listOrder == 'a.ordering';
+if ($saveOrder)
+{
+	$saveOrderingUrl = 'index.php?option=com_easysdi_map&task=groups.saveOrderAjax&tmpl=component';
+	JHtml::_('sortablelist.sortable', 'groupList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
+}
+$sortFields = $this->getSortFields();
+?>
+<script type="text/javascript">
+	Joomla.orderTable = function() {
+		table = document.getElementById("sortTable");
+		direction = document.getElementById("directionTable");
+		order = table.options[table.selectedIndex].value;
+		if (order != '<?php echo $listOrder; ?>') {
+			dirn = 'asc';
+		} else {
+			dirn = direction.options[direction.selectedIndex].value;
+		}
+		Joomla.tableOrdering(order, dirn, '');
+	}
+</script>
+
+<?php
+//Joomla Component Creator code to allow adding non select list filters
+if (!empty($this->extra_sidebar)) {
+    $this->sidebar .= $this->extra_sidebar;
+}
 ?>
 
-<form
-	action="<?php echo JRoute::_('index.php?option=com_easysdi_map&view=groups'); ?>"
-	method="post" name="adminForm" id="adminForm">
+<form 	action="<?php echo JRoute::_('index.php?option=com_easysdi_map&view=groups'); ?>" 	method="post" name="adminForm" id="adminForm">
+<?php if(!empty($this->sidebar)): ?>
+	<div id="j-sidebar-container" class="span2">
+		<?php echo $this->sidebar; ?>
+	</div>
+	<div id="j-main-container" class="span10">
+<?php else : ?>
+	<div id="j-main-container">
+<?php endif;?>
+
 	<fieldset id="filter-bar">
 		<div class="filter-search fltlft">
 			<label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?>
@@ -160,11 +196,10 @@ $saveOrder	= $listOrder == 'a.ordering';
 	</table>
 
 	<div>
-		<input type="hidden" name="task" value="" /> <input type="hidden"
-			name="boxchecked" value="0" /> <input type="hidden"
-			name="filter_order" value="<?php echo $listOrder; ?>" /> <input
-			type="hidden" name="filter_order_Dir"
-			value="<?php echo $listDirn; ?>" />
+		<input type="hidden" name="task" value="" /> 
+		<input type="hidden" name="boxchecked" value="0" /> 
+		<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" /> 
+		<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 	</div>
 </form>
