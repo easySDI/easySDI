@@ -49,7 +49,7 @@
 				label="com_easysdi_contact_FORM_LBL_USER_ORGANISMS_RM"
 				description="com_easysdi_contact_FORM_DESC_USER_ORGANISMS_RM" 
 				translate="true" 
-                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, name FROM #__sdi_organism" key_field="id" value_field="value"
+                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, name FROM #__sdi_organism WHERE state=1" key_field="id" value_field="value"
                  /> 
         <field 	name="organismsMM" 
 				type="sql" 
@@ -58,7 +58,7 @@
 				label="com_easysdi_contact_FORM_LBL_USER_ORGANISMS_MM"
 				description="com_easysdi_contact_FORM_DESC_USER_ORGANISMS_MM" 
 				translate="true" 
-                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, name FROM #__sdi_organism" key_field="id" value_field="value"
+                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, name FROM #__sdi_organism WHERE state=1" key_field="id" value_field="value"
                  />   
         <field 	name="organismsME" 
 				type="sql" 
@@ -67,7 +67,7 @@
 				label="com_easysdi_contact_FORM_LBL_USER_ORGANISMS_ME"
 				description="com_easysdi_contact_FORM_DESC_USER_ORGANISMS_ME" 
 				translate="true" 
-                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, name FROM #__sdi_organism" key_field="id" value_field="value"
+                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, name FROM #__sdi_organism WHERE state=1" key_field="id" value_field="value"
                  /> 
         <field name="organismsPM" 
 				type="sql" 
@@ -76,7 +76,7 @@
 				label="com_easysdi_contact_FORM_LBL_USER_ORGANISMS_PM"
 				description="com_easysdi_contact_FORM_DESC_USER_ORGANISMS_PM" 
 				translate="true" 
-                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, name FROM #__sdi_organism" key_field="id" value_field="value"
+                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, name FROM #__sdi_organism WHERE state=1" key_field="id" value_field="value"
                  /> 
         <field 	name="organismsVM" 
 				type="sql" 
@@ -85,7 +85,7 @@
 				label="com_easysdi_contact_FORM_LBL_USER_ORGANISMS_VM"
 				description="com_easysdi_contact_FORM_DESC_USER_ORGANISMS_VM" 
 				translate="true" 
-                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, name FROM #__sdi_organism" key_field="id" value_field="value"
+                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, name FROM #__sdi_organism WHERE state=1" key_field="id" value_field="value"
                  /> 
 	</fieldset>
                 
