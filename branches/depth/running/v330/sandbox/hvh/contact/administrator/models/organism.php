@@ -134,8 +134,8 @@ class Easysdi_contactModelorganism extends JModelAdmin
 			$addresstable =& JTable::getInstance('address', 'Easysdi_contactTable');
 	
 			//Call the overloaded save function to store the input data
-			$data['id'] 			= $this->getItem()->get('id');
-			$data['organism_id'] 	= $src['id'];
+			//$data['id'] 			= $this->getItem()->get('id');
+			$data['organism_id'] 	= $this->getItem()->get('id');
 			$data['user_id'] 		= null;
 			if(!$addresstable->saveByType($data, 'contact' ))
 			{

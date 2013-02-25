@@ -188,41 +188,41 @@ class Easysdi_contactModeluser extends JModelAdmin
 			//Insert new role attribution
 			foreach ($data['organismsRM'] as $organism){
 				$array = array();
-				$array['user_id'] = $data['id'] ;
-				$array['role_id'] = 1;
-				$array['organism_id'] = $organism;
+				$array['user_id'] 		= $this->getItem()->get('id');
+				$array['role_id'] 		= 1;
+				$array['organism_id'] 	= $organism;
 				$role =& JTable::getInstance('role', 'Easysdi_contactTable');
 				$role->save($array);
 			}
 			foreach ($data['organismsMM'] as $organism){
 				$array = array();
-				$array['user_id'] = $data['id'] ;
-				$array['role_id'] = 2;
-				$array['organism_id'] = $organism;
+				$array['user_id'] 		= $this->getItem()->get('id');
+				$array['role_id'] 		= 2;
+				$array['organism_id'] 	= $organism;
 				$role =& JTable::getInstance('role', 'Easysdi_contactTable');
 				$role->save($array);
 			}
 			foreach ($data['organismsME'] as $organism){
 				$array = array();
-				$array['user_id'] = $data['id'] ;
-				$array['role_id'] = 3;
-				$array['organism_id'] = $organism;
+				$array['user_id'] 		= $this->getItem()->get('id');
+				$array['role_id'] 		= 3;
+				$array['organism_id'] 	= $organism;
 				$role =& JTable::getInstance('role', 'Easysdi_contactTable');
 				$role->save($array);
 			}
 			foreach ($data['organismsPM'] as $organism){
 				$array = array();
-				$array['user_id'] = $data['id'] ;
-				$array['role_id'] = 4;
-				$array['organism_id'] = $organism;
+				$array['user_id'] 		= $this->getItem()->get('id');
+				$array['role_id'] 		= 4;
+				$array['organism_id'] 	= $organism;
 				$role =& JTable::getInstance('role', 'Easysdi_contactTable');
 				$role->save($array);
 			}
 			foreach ($data['organismsVM'] as $organism){
 				$array = array();
-				$array['user_id'] = $data['id'] ;
-				$array['role_id'] = 5;
-				$array['organism_id'] = $organism;
+				$array['user_id'] 		= $this->getItem()->get('id');
+				$array['role_id'] 		= 5;
+				$array['organism_id'] 	= $organism;
 				$role =& JTable::getInstance('role', 'Easysdi_contactTable');
 				$role->save($array);
 			}
@@ -231,8 +231,8 @@ class Easysdi_contactModeluser extends JModelAdmin
 			$addresstable =& JTable::getInstance('address', 'Easysdi_contactTable');
 
 			//Call the overloaded save function to store the input data
-			$data['id'] 			= $this->getItem()->get('id');
-			$data['user_id'] 		= $src['id'];
+			//$data['id'] 			= $this->getItem()->get('id');
+			$data['user_id'] 		= $this->getItem()->get('id');
 			$data['organism_id']	= null;
 			if(!$addresstable->saveByType($data, 'contact' ))
 			{	
