@@ -67,11 +67,8 @@ $document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_cont
 </script>
 
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_contact&layout=edit&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="user-form" class="form-validate">
-	
-	
 	<div class="row-fluid">
 		<div class="span10 form-horizontal">
-            
             	<ul class="nav nav-tabs">
 					<li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_CONTACT_TAB_NEW_USER') : JText::sprintf('COM_EASYSDI_CONTACT_TAB_EDIT_USER', $this->item->id); ?></a></li>
 					<li><a href="#roles" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CONTACT_TAB_ROLES');?></a></li>
