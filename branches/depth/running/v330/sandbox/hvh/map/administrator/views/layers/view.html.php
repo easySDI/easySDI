@@ -36,7 +36,11 @@ class Easysdi_mapViewLayers extends JViewLegacy
 			throw new Exception(implode("\n", $errors));
 		}
 		
+		Easysdi_mapHelper::addSubmenu('layers');
+        
 		$this->addToolbar();
+        
+        $this->sidebar = JHtmlSidebar::render();
 		parent::display($tpl);
 	}
 

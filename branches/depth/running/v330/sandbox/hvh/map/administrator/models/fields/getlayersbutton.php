@@ -21,7 +21,7 @@ class JFormFieldGetlayersbutton extends JFormField {
 		
 		// Start the action field output.
 		$html[] = '<a title="'.JText::_($this->description).'" href="#" onclick="javascript:getLayers(document.getElementById(\'jform_service_id\'));" >
-						<img class="helpTemplate" src="templates/bluestork/images/menu/icon-16-maintenance.png" alt=""/>
+						<img class="helpTemplate" src="../administrator/components/com_easysdi_map/assets/images/featured.png" alt=""/>
 					</a>';
 		
 		return implode($html);

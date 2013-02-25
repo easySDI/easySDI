@@ -78,24 +78,6 @@
                 label="COM_EASYSDI_MAP_FORM_LBL_LAYER_METADATALINK"
             	description="COM_EASYSDI_MAP_FORM_DESC_LAYER_METADATALINK"  /> 
 
-		<field 	name="access"
-				type="accesslevel"
-				label="JFIELD_ACCESS_LABEL"
-				description="JFIELD_ACCESS_DESC"
-				class="inputbox"
-				size="1" />
-				
-         <field name="state"
-                type="list"
-                label="JSTATUS"
-                description="JFIELD_PUBLISHED_DESC"
-                class="inputbox"
-                size="1"
-                default="1">
-                <option value="1">JPUBLISHED</option>
-                <option value="0">JUNPUBLISHED</option>
-            </field> 
-
 		<field name="id" type="hidden" filter="SAFEHTML" />
 		<field name="serviceconnector" id="serviceconnector" type="hidden" filter="SAFEHTML" />
 		<field name="onloadlayername" type="hidden" filter="SAFEHTML" />
@@ -105,6 +87,24 @@
         <field name="asset_id" type="hidden" filter="SAFEHTML" />
 	</fieldset>
 
+	<field 	name="access"
+			type="accesslevel"
+			label="JFIELD_ACCESS_LABEL"
+			description="JFIELD_ACCESS_DESC"
+			class="inputbox"
+			size="1" />
+				
+    <field name="state"
+           type="list"
+           label="JSTATUS"
+           description="JFIELD_PUBLISHED_DESC"
+           class="inputbox"
+           size="1"
+           default="1">
+           <option value="1">JPUBLISHED</option>
+           <option value="0">JUNPUBLISHED</option>
+       </field> 
+            
  	<field 	name="getlayers" 
 				type="getlayersbutton" 
 				label="COM_EASYSDI_MAP_FORM_LBL_GETLAYERS"
