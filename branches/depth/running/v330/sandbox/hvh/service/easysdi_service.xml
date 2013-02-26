@@ -2,6 +2,7 @@
 <extension type="component" version="1.6.0" method="upgrade">
     <name>com_easysdi_service</name>
     <creationDate>15 August 2012</creationDate>
+    <releaseDate>14 february 2013</releaseDate>
     <copyright>Copyright (C) 2012. All rights reserved.</copyright>
     <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
     <author>EasySDI Community</author>
@@ -45,10 +46,10 @@
             <folder>views</folder>
         </files>
         <languages folder="administrator">
-            <language tag="en-GB">language/en-GB/en-GB.com_easysdi_service.ini
-            </language>
-            <language tag="en-GB">language/en-GB/en-GB.com_easysdi_service.sys.ini
-            </language>
+            <language tag="en-GB">language/en-GB/en-GB.com_easysdi_service.ini</language>
+            <language tag="en-GB">language/en-GB/en-GB.com_easysdi_service.sys.ini</language>
+            <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_service.ini</language>
+            <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_service.sys.ini</language>
         </languages>
     </administration>
 </extension>
