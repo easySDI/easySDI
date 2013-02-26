@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="sync" basedir=".">
 	<property name="projet.out.dir" value="out" />
-	<property name="projet.install.admin.dir" value="C:\www\opcc\administrator\components\com_easysdi_service" />
-	<property name="projet.install.site.dir" value="C:\www\opcc\components\com_easysdi_service" />
-	<property name="projet.install.langEN.dir" value="C:\www\opcc\administrator\language\en-GB" />
-	<property name="projet.install.langFR.dir" value="C:\www\opcc\administrator\language\fr-FR" />
+	<property name="projet.install.admin.dir" value="C:\www\sdi330\administrator\components\com_easysdi_service" />
+	<property name="projet.install.site.dir" value="C:\www\sdi330\components\com_easysdi_service" />
+	<property name="projet.install.langEN.dir" value="C:\www\sdi330\administrator\language\en-GB" />
+	<property name="projet.install.langFR.dir" value="C:\www\sdi330\administrator\language\fr-FR" />
 
 	<target name="package" depends="create-structure,compression"
 		description="Main target">
@@ -13,7 +13,6 @@
 	<target name="create-structure" description="Creating the working directory structure">
 		<mkdir dir="${projet.out.dir}" />
 	</target>
-
 	
     <target name="compression" description="Compression" depends="create-structure">
 		<jar compress="true" 
