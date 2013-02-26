@@ -1,7 +1,6 @@
 ALTER TABLE `#__sdi_virtualmetadata`
 ADD CONSTRAINT `#__sdi_virtualmetadata_fk_virtualservice` FOREIGN KEY (`virtualservice_id`) REFERENCES `#__sdi_virtualservice` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
-
 ALTER TABLE `#__sdi_virtualservice`
 ADD CONSTRAINT `#__sdi_virtualservice_fk_proxytype` FOREIGN KEY (`proxytype_id`) REFERENCES `#__sdi_sys_proxytype` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -16,9 +15,6 @@ ADD CONSTRAINT `#__sdi_virtualservice_fk_loglevel` FOREIGN KEY (`loglevel_id`) R
 
 ALTER TABLE `#__sdi_virtualservice`
 ADD CONSTRAINT `#__sdi_virtualservice_fk_logroll` FOREIGN KEY (`logroll_id`) REFERENCES `#__sdi_sys_logroll` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
-ALTER TABLE `#__sdi_service_servicecompliance`
-ADD CONSTRAINT `#__sdi_service_servicecompliance_fk1` FOREIGN KEY (`service_id`) REFERENCES `#__sdi_service` (`id`) ON DELETE CASCADE ;
 
 ALTER TABLE `#__sdi_service_servicecompliance`
 ADD CONSTRAINT `#__sdi_service_servicecompliance_fk2` FOREIGN KEY (`servicecompliance_id`) REFERENCES `#__sdi_sys_servicecompliance` (`id`) ON DELETE CASCADE ;
@@ -47,10 +43,8 @@ ADD CONSTRAINT `#__sdi_servicepolicy_fk_physicalservice` FOREIGN KEY (`physicals
 ALTER TABLE `#__sdi_servicepolicy`
 ADD CONSTRAINT `#__sdi_servicepolicy_fk_policy` FOREIGN KEY (`policy_id`) REFERENCES `#__sdi_policy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
-
 ALTER TABLE `#__sdi_wmslayer`
 ADD CONSTRAINT `#__sdi_wmslayer_fk_physicalservice` FOREIGN KEY (`physicalservice_id`) REFERENCES `#__sdi_physicalservice` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
 
 ALTER TABLE `#__sdi_wmslayerpolicy`
 ADD CONSTRAINT `#__sdi_wmslayerpolicy_fk_policy` FOREIGN KEY (`policy_id`) REFERENCES `#__sdi_policy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -58,26 +52,20 @@ ADD CONSTRAINT `#__sdi_wmslayerpolicy_fk_policy` FOREIGN KEY (`policy_id`) REFER
 ALTER TABLE `#__sdi_wmslayerpolicy`
 ADD CONSTRAINT `#__sdi_wmslayerpolicy_fk_wmslayer` FOREIGN KEY (`wmslayer_id`) REFERENCES `#__sdi_wmslayer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
-
 ALTER TABLE `#__sdi_allowedoperation`
 ADD CONSTRAINT `#__sdi_allowedoperation_fk_policy` FOREIGN KEY (`policy_id`) REFERENCES `#__sdi_policy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
 
 ALTER TABLE `#__sdi_versiontype`
 ADD CONSTRAINT `#__sdi_versiontype_fk_policy` FOREIGN KEY (`policy_id`) REFERENCES `#__sdi_policy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
-
 ALTER TABLE `#__sdi_visibilitytype`
 ADD CONSTRAINT `#__sdi_visibilitytype_fk_policy` FOREIGN KEY (`policy_id`) REFERENCES `#__sdi_policy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
 
 ALTER TABLE `#__sdi_elementrestriction`
 ADD CONSTRAINT `#__sdi_elementrestriction_fk_policy` FOREIGN KEY (`policy_id`) REFERENCES `#__sdi_policy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
-
 ALTER TABLE `#__sdi_featureclass`
 ADD CONSTRAINT `#__sdi_featureclass_fk_physicalservice` FOREIGN KEY (`physicalservice_id`) REFERENCES `#__sdi_physicalservice` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
 
 ALTER TABLE `#__sdi_featureclasspolicy`
 ADD CONSTRAINT `#__sdi_featureclasspolicy_fk_policy` FOREIGN KEY (`policy_id`) REFERENCES `#__sdi_policy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;

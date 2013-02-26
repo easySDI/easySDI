@@ -28,24 +28,24 @@ class Easysdi_serviceController extends JControllerLegacy
 		// Load the submenu.
 		Easysdi_serviceHelper::addSubmenu(JRequest::getCmd('view', 'physicalservices'));
 		
-		$layout 	= JFactory::getApplication()->input->getCmd('layout', 'edit');
-		$id			= JFactory::getApplication()->input->getInt('id');
+// 		$layout 	= JFactory::getApplication()->input->getCmd('layout', 'edit');
+// 		$id			= JFactory::getApplication()->input->getInt('id');
 		$view		= JFactory::getApplication()->input->getCmd('view', 'physicalservices');
 		JFactory::getApplication()->input->set('view', $view);
-		
+	
         //TODO correct with physicalservice and/or virtualservice
         // Check for edit form.
-        if ($view == 'physicalservice' && $layout == 'edit' && !$this->checkEditId('com_easysdi_service.edit.physicalservice', $id)) {
-        	// Somehow the person just went to the form - we don't allow that.
-        	$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));
-        	$this->setMessage($this->getError(), 'error');
-        	$this->setRedirect(JRoute::_('index.php?option=com_easysdi_service&view=physicalservices', false));
+//         if ($view == 'physicalservice' && $layout == 'edit' && !$this->checkEditId('com_easysdi_service.edit.physicalservice', $id)) {
+//         	// Somehow the person just went to the form - we don't allow that.
+//         	$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));
+//         	$this->setMessage($this->getError(), 'error');
+//         	$this->setRedirect(JRoute::_('index.php?option=com_easysdi_service&view=physicalservices', false));
         
-        	return false;
-        }
+//         	return false;
+//         }
 
 		parent::display($cachable, $urlparams);
-
+		
 		return $this;
 	}
 	

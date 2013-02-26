@@ -59,6 +59,7 @@ class Easysdi_serviceViewPhysicalServices extends JViewLegacy
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
 		
 		$state	= $this->get('State');
+		
 		$canDo	= Easysdi_serviceHelper::getActions('physical',$state->get('filter.category_id'));
 		
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_PHYSICALSERVICES'), 'links-cat.png');
@@ -123,5 +124,6 @@ class Easysdi_serviceViewPhysicalServices extends JViewLegacy
 			'filter_published',
 			JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), "value", "text", $this->state->get('filter.state'), true)
 		);
+		
 	}
 }
