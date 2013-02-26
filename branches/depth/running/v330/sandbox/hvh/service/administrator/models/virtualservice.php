@@ -1,9 +1,9 @@
 <?php
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_service
- * @copyright   Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
- * @license     Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 
@@ -73,6 +73,42 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 
 		if (empty($data)) {
 			$data = $this->getItem();
+			
+			//Support for multiple or not foreign key field: proxytype_id
+			$array = array();
+			foreach((array)$data->proxytype_id as $value):
+			if(!is_array($value)):
+			$array[] = $value;
+			endif;
+			endforeach;
+			$data->proxytype_id = implode(',',$array);
+			
+			//Support for multiple or not foreign key field: exceptionlevel_id
+			$array = array();
+			foreach((array)$data->exceptionlevel_id as $value):
+			if(!is_array($value)):
+			$array[] = $value;
+			endif;
+			endforeach;
+			$data->exceptionlevel_id = implode(',',$array);
+			
+			//Support for multiple or not foreign key field: loglevel_id
+			$array = array();
+			foreach((array)$data->loglevel_id as $value):
+			if(!is_array($value)):
+			$array[] = $value;
+			endif;
+			endforeach;
+			$data->loglevel_id = implode(',',$array);
+			
+			//Support for multiple or not foreign key field: logroll_id
+			$array = array();
+			foreach((array)$data->logroll_id as $value):
+			if(!is_array($value)):
+			$array[] = $value;
+			endif;
+			endforeach;
+			$data->logroll_id = implode(',',$array);
             
 		}
 

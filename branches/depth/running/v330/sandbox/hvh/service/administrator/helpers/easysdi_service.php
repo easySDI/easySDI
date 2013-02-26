@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_service
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -20,29 +20,33 @@ class Easysdi_serviceHelper
 	 */
 	public static function addSubmenu($vName = '')
 	{
-		JSubMenuHelper::addEntry(
-			JText::_('COM_EASYSDI_SERVICE_SUBMENU_TITLE_PHYSICALSERVICES'),
-			'index.php?option=com_easysdi_service&view=physicalservices',
-			$vName == 'physicalservices'
+		JHtmlSidebar::addEntry(
+				JText::_('COM_EASYSDI_SERVICE_TITLE_PHYSICALSERVICES'),
+				'index.php?option=com_easysdi_service&view=physicalservices',
+				$vName == 'physicalservices'
 		);
 		
-		JSubMenuHelper::addEntry(
-				JText::_('COM_EASYSDI_SERVICE_SUBMENU_CATEGORIES'),
-				'index.php?option=com_categories&extension=com_easysdi_service',
+		JHtmlSidebar::addEntry(
+				'Categories (Catid)',
+				"index.php?option=com_categories&extension=com_easysdi_service.catid",
 				$vName == 'categories'
 		);
 		
-		if ($vName=='categories') {
-			JToolBarHelper::title(
-					JText::_('COM_EASYSDI_SERVICE_TITLE_CATEGORIES'),
-					'easysdi_service-categories');		}
+		if ($vName=='categories.catid') {
+			JToolBarHelper::title('Easysdi Service: Categories (Catid)');
+		}		
 		
-		JSubMenuHelper::addEntry(
-				JText::_('COM_EASYSDI_SERVICE_SUBMENU_TITLE_VIRTUALSERVICES'),
+		JHtmlSidebar::addEntry(
+				JText::_('COM_EASYSDI_SERVICE_TITLE_VIRTUALSERVICES'),
 				'index.php?option=com_easysdi_service&view=virtualservices',
 				$vName == 'virtualservices'
 		);
-
+		
+		JHtmlSidebar::addEntry(
+				JText::_('COM_EASYSDI_SERVICE_TITLE_POLICIES'),
+				'index.php?option=com_easysdi_service&view=policies',
+				$vName == 'policies'
+		);
 	}
 
 	/**

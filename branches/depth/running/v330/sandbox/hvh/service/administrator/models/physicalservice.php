@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_service
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -121,6 +121,15 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 
 		if (empty($data)) {
 			$data = $this->getItem();
+			
+			//Support for multiple or not foreign key field: virtualservice_id
+			$array = array();
+			foreach((array)$data->virtualservice_id as $value):
+			if(!is_array($value)):
+			$array[] = $value;
+			endif;
+			endforeach;
+			$data->virtualservice_id = implode(',',$array);
 		}
 
 		return $data;
@@ -222,9 +231,9 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 		//Delete previously saved compliance
 		$db = $this->getDbo();
 		$db->setQuery(
-				'DELETE FROM #__sdi_physicalservice_servicecompliance WHERE physicalservice_id = '.$id
+				'DELETE FROM #__sdi_service_servicecompliance WHERE servicetype= "physical" AND service_id = '.$id
 		);
-//'DELETE FROM #__sdi_service_servicecompliance WHERE servicetype= "physical" AND service_id = '.$id
+//'DELETE FROM #__sdi_physicalservice_servicecompliance WHERE physicalservice_id = '.$id
 		$db->query();
 		
 		$arr_pks = json_decode ($pks);
@@ -232,12 +241,13 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 		{
 			try {
 				$db->setQuery(
-						'INSERT INTO #__sdi_physicalservice_servicecompliance (physicalservice_id, servicecompliance_id) ' .
-						' VALUES ('.$id.','.$pk.')'
+						'INSERT INTO #__sdi_service_servicecompliance (service_id, servicecompliance_id,servicetype) ' .
+						' VALUES ('.$id.','.$pk.',"physical")'
 				);
 /*
-			'INSERT INTO #__sdi_service_servicecompliance (service_id, servicecompliance_id,servicetype) ' .
-						' VALUES ('.$id.','.$pk.',"physical")'
+ * 'INSERT INTO #__sdi_physicalservice_servicecompliance (physicalservice_id, servicecompliance_id) ' .
+						' VALUES ('.$id.','.$pk.')'
+			
 			*/
 				if (!$db->query()) {
 					throw new Exception($db->getErrorMsg());
@@ -267,19 +277,20 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 		try {
 			$db = $this->getDbo();
 			$db->setQuery(
-					'SELECT sv.value as value, sc.id as id FROM #__sdi_physicalservice_servicecompliance ssc ' .
-					' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id '.
-					' INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id'.
-					' WHERE ssc.physicalservice_id ='.$id
-	
-			);
-
-/*
 					'SELECT sv.value as value, sc.id as id FROM #__sdi_service_servicecompliance ssc ' .
 					' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id '.
 					' INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id'.
 					' WHERE ssc.service_id ='.$id.
 					' AND ssc.servicetype = "physical"'
+					
+	
+			);
+
+/*
+					'SELECT sv.value as value, sc.id as id FROM #__sdi_physicalservice_servicecompliance ssc ' .
+					' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id '.
+					' INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id'.
+					' WHERE ssc.physicalservice_id ='.$id
 
 */
 			$compliance = $db->loadObjectList();

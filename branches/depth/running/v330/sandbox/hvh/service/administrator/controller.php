@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_service
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -10,7 +10,7 @@
 // No direct access
 defined('_JEXEC') or die;
 
-class Easysdi_serviceController extends JController
+class Easysdi_serviceController extends JControllerLegacy
 {
 	/**
 	 * Method to display a view.
@@ -27,12 +27,12 @@ class Easysdi_serviceController extends JController
 
 		// Load the submenu.
 		Easysdi_serviceHelper::addSubmenu(JRequest::getCmd('view', 'physicalservices'));
-
-		$view		= JRequest::getCmd('view', 'physicalservices');
-		$layout 	= JRequest::getCmd('layout', 'edit');
-		$id			= JRequest::getInt('id');
-        JRequest::setVar('view', $view);
-        
+		
+		$layout 	= JFactory::getApplication()->input->getCmd('layout', 'edit');
+		$id			= JFactory::getApplication()->input->getInt('id');
+		$view		= JFactory::getApplication()->input->getCmd('view', 'physicalservices');
+		JFactory::getApplication()->input->set('view', $view);
+		
         //TODO correct with physicalservice and/or virtualservice
         // Check for edit form.
         if ($view == 'physicalservice' && $layout == 'edit' && !$this->checkEditId('com_easysdi_service.edit.physicalservice', $id)) {
@@ -44,14 +44,14 @@ class Easysdi_serviceController extends JController
         	return false;
         }
 
-		parent::display();
+		parent::display($cachable, $urlparams);
 
 		return $this;
 	}
 	
 	public function negotiation ()
 	{
-		require_once JPATH_COMPONENT.'/helpers/easysdi_service.php';
+		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
 		Easysdi_serviceHelper::negotiation(JRequest::get( 'get' ));
 	}
 }

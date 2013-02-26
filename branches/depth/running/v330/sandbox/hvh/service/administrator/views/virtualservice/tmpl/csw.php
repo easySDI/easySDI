@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_service
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -11,12 +11,15 @@
 // no direct access
 defined('_JEXEC') or die;
 
+JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
 JHtml::_('behavior.tooltip');
-JHTML::_('script','system/multiselect.js',false,true);
+JHtml::_('behavior.formvalidation');
+JHtml::_('formbehavior.chosen', 'select');
+JHtml::_('behavior.keepalive');
+
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
-
 
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.JRequest::getVar('id',null)); ?>" method="post" name="adminForm" id="item-form" class="form-validate">

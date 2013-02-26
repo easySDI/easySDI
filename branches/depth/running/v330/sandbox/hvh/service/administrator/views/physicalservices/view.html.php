@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_service
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -15,7 +15,7 @@ jimport('joomla.application.component.view');
 /**
  * View class for a list of Easysdi_service.
  */
-class Easysdi_serviceViewPhysicalServices extends JView
+class Easysdi_serviceViewPhysicalServices extends JViewLegacy
 {
 	protected $items;
 	protected $pagination;
@@ -34,15 +34,17 @@ class Easysdi_serviceViewPhysicalServices extends JView
 		
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
-			JError::raiseError(500, implode("\n", $errors));
-			return false;
+			throw new Exception(implode("\n", $errors));
 		}
+		
 		$db 				= JFactory::getDBO();
 		$query				= "SELECT id as value, value as text FROM #__sdi_sys_serviceconnector WHERE state=1" ;
 		$db->setQuery($query);
 		$this->connectorlist = $db->loadObjectList();
 		
+		Easysdi_serviceHelper::addSubmenu('physicalservices');
 		$this->addToolbar();
+		$this->sidebar = JHtmlSidebar::render();
 		
 		parent::display($tpl);
 	}
@@ -112,5 +114,14 @@ class Easysdi_serviceViewPhysicalServices extends JView
         
 		JToolBarHelper::divider();
 		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_core');
+		
+		//Set sidebar action - New in 3.0
+		JHtmlSidebar::setAction('index.php?option=com_easysdi_service&view=physicalservices');
+		$this->extra_sidebar = '';
+		JHtmlSidebar::addFilter(
+			JText::_('JOPTION_SELECT_PUBLISHED'),
+			'filter_published',
+			JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), "value", "text", $this->state->get('filter.state'), true)
+		);
 	}
 }

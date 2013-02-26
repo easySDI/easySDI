@@ -55,25 +55,7 @@
                 validate="url" 
                 filter="safehtml" /> 
                 
-		<field 	name="access"
-				type="accesslevel"
-				label="JFIELD_ACCESS_LABEL"
-				description="JFIELD_ACCESS_DESC"
-				class="inputbox"
-				size="1" />
-				        
-		<field  name="state"
-                type="list"
-                label="JSTATUS"
-                description="JFIELD_PUBLISHED_DESC"
-                class="inputbox"
-                size="1"
-                default="0">
-				<option value="1">JPUBLISHED</option>
-				<option value="0">JUNPUBLISHED</option>
-				<option value="2">JARCHIVED</option>
-                <option value="-2">JTRASHED</option>
-		</field> 
+		
 		
 		<field name="asset_id" type="hidden" filter="SAFEHTML" />
 		<field name="checked_out" type="hidden" filter="SAFEHTML" />
@@ -82,6 +64,26 @@
 		<field name="compliance" id="compliance" type="hidden" required="true"  filter="SAFEHTML" />
 	</fieldset>
 
+	<field 	name="access"
+			type="accesslevel"
+			label="JFIELD_ACCESS_LABEL"
+			description="JFIELD_ACCESS_DESC"
+			class="inputbox"
+			size="1" />
+				        
+	<field  name="state"
+               type="list"
+               label="JSTATUS"
+               description="JFIELD_PUBLISHED_DESC"
+               class="inputbox"
+               size="1"
+               default="0">
+			<option value="1">JPUBLISHED</option>
+			<option value="0">JUNPUBLISHED</option>
+			<option value="2">JARCHIVED</option>
+               <option value="-2">JTRASHED</option>
+	</field> 
+		
 	<fieldset name="authenticationoptions" text="COM_EASYSDI_SERVICE_LEGEND_AUTHENTICATION_OPTIONS">
 		<field 	name="resourceauthentication_id" 
 				type="sql" 

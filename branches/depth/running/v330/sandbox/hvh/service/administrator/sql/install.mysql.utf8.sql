@@ -90,8 +90,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_authenticationconnector` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-
-
 CREATE TABLE IF NOT EXISTS `#__sdi_service_servicecompliance` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `service_id` INT(11) UNSIGNED  NOT NULL ,

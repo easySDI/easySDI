@@ -10,8 +10,12 @@
 // no direct access
 defined('_JEXEC') or die;
 
+JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
+JHtml::_('formbehavior.chosen', 'select');
+JHtml::_('behavior.keepalive');
+
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
@@ -19,8 +23,8 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 <script type="text/javascript">
 	Joomla.submitbutton = function(task)
 	{
-		if (task == 'physicalservice.cancel' || document.formvalidator.isValid(document.id('service-form'))) {
-			Joomla.submitform(task, document.getElementById('service-form'));
+		if (task == 'physicalservice.cancel' || document.formvalidator.isValid(document.id('physicalservice-form'))) {
+			Joomla.submitform(task, document.getElementById('physicalservice-form'));
 		}
 		else {
 			alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
@@ -137,132 +141,159 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 	}
 </script>
 
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=physicalservice&layout=edit&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="service-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=physicalservice&layout=edit&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="physicalservice-form" class="form-validate">
 	<div id="progress">
 		<img id="progress_image"  src="components/com_easysdi_service/assets/images/loader.gif" alt="">
 	</div>
-	<div class="width-60 fltlft">
-		<fieldset class="adminform">
-			<legend><?php echo JText::_('COM_EASYSDI_SERVICE_LEGEND_PHYSICALSERVICE'); ?></legend>
-		   <ul class="adminformlist">
-				<?php foreach($this->form->getFieldset('details') as $field): ?>
-				<?php
-					if($field->name=="jform[state]"){
-						if($this->canDo->get('core.edit.state'))
-						{
-							?><li><?php echo $field->label;echo $field->input;?></li><?php 
-						}
-						continue;
-					} ?>
-					<li><?php echo $field->label;echo $field->input;?></li>
-				<?php endforeach; ?>
-			</ul>
-		</fieldset>
-	</div>
-
-	<div class="width-40 fltrt">
-		<?php echo JHtml::_('sliders.start', 'service-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
-			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_SERVICE_LEGEND_AUTHENTICATION_OPTIONS'), 'authenticationoptions-details'); ?>
-			<fieldset class="adminform">
-				<ul class="adminformlist">
-				<?php foreach($this->form->getFieldset('authenticationoptions') as $field): ?>
-					<?php 
-					$property = substr($field->id,6);
-					if($property == 'resourceauthentication_id')
-					{
-						?>
-						<li><?php echo $field->label;
-						echo JHTML::_("select.genericlist",$this->currentresourceauthenticationconnectorlist, 'jform[resourceauthentication_id]', 'size="1 class="inputbox"" ', 'id', 'value', $this->item->resourceauthentication_id );
-						?></li>
-						<?php
-					}
-					else {
-					?>
-					<li><?php echo $field->label;echo $field->input;?></li>
-					<?php
-					} 
-				endforeach; ?>
-			</ul>
-			</fieldset>
-			
-			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_SERVICE_LEGEND_PROVIDER_OPTIONS'), 'provideroptions-details'); ?>
-			<fieldset class="adminform">
-				<ul class="adminformlist">
-				<?php foreach($this->form->getFieldset('provideroptions') as $field): ?>
-					<?php 
-					$property = substr($field->id,6);
-					if($property == 'serviceauthentication_id')
-					{
-						?>
-						<li><?php echo $field->label;
-						echo JHTML::_("select.genericlist",$this->currentserviceauthenticationconnectorlist, 'jform[serviceauthentication_id]', 'size="1" ', 'id', 'value', $this->item->serviceauthentication_id );
-						?></li>
-						
-						<?php
-					}
-					else {
-					?>
-					<li><?php echo $field->label;echo $field->input;?></li>
-					<?php
-					} 
-				endforeach; ?>
-				
-			</ul>
-			</fieldset>
-			
-			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_SERVICE_LEGEND_PHYSICALSERVICE_NEGOTIATION'), 'negotiation-details'); ?>
-			<fieldset class="adminform">
-				<ul class="adminformlist">
-				<?php foreach($this->form->getFieldset('negotiation') as $field): ?>
-					<li><?php echo $field->label;echo $field->input;?></li>
-				<?php endforeach; ?>
-			</ul>
-			</fieldset>
-		
-			<?php echo JHtml::_('sliders.panel', JText::_('JGLOBAL_FIELDSET_PUBLISHING'), 'publishing-details'); ?>
-			<fieldset class="adminform">
-				<ul class="adminformlist">
-					<li><?php echo $this->form->getLabel('created_by'); ?>
-					<?php echo $this->form->getInput('created_by'); ?></li>
-		            
-					<li><?php echo $this->form->getLabel('created'); ?>
-					<?php echo $this->form->getInput('created'); ?></li>
-		
-		            <?php if ($this->item->modified_by) : ?>
-						<li><?php echo $this->form->getLabel('modified_by'); ?>
-						<?php echo $this->form->getInput('modified_by'); ?></li>
-			            
-						<li><?php echo $this->form->getLabel('modified'); ?>
-						<?php echo $this->form->getInput('modified'); ?></li>
-					<?php endif; ?>
+	<div class="row-fluid">
+		<div class="span10 form-horizontal">
+            	<ul class="nav nav-tabs">
+					<li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_SERVICE_TAB_NEW_SERVICE') : JText::sprintf('COM_EASYSDI_SERVICE_TAB_EDIT_SERVICE', $this->item->id); ?></a></li>
+					<li><a href="#authentication" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_AUTHENTICATION');?></a></li>
+					<li><a href="#provider" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_PROVIDER');?></a></li>
+					<li><a href="#negotiation" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_NEGOTIATION');?></a></li>
+					<li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CONTACT_TAB_PUBLISHING');?></a></li>
+					<?php if ($this->canDo->get('core.admin')): ?>
+					<li><a href="#permissions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CONTACT_TAB_RULES');?></a></li>
+				<?php endif ?>
 				</ul>
+				
+				<div class="tab-content">
+					<!-- Begin Tabs -->
+					<div class="tab-pane active" id="details">
+						<?php foreach($this->form->getFieldset('details') as $field): ?>
+							<div class="control-group">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+						<?php endforeach; ?>
+					</div>
+					<div class="tab-pane" id="authentication">
+						<?php foreach($this->form->getFieldset('authenticationoptions') as $field):
+							$property = substr($field->id,6);
+							if($property == 'resourceauthentication_id')
+							{
+								?>
+								<div class="control-group">
+									<div class="control-label"><?php echo $field->label; ?></div>
+									<div class="controls"><?php echo JHTML::_("select.genericlist",$this->currentresourceauthenticationconnectorlist, 'jform[resourceauthentication_id]', 'size="1 class="inputbox"" ', 'id', 'value', $this->item->resourceauthentication_id ); ?></div>
+								</div>
+								<?php
+							}
+							else {
+							?>
+							<div class="control-group">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+							<?php }?>
+						<?php endforeach; ?>
+					</div>
+					<div class="tab-pane" id="provider">
+						<?php foreach($this->form->getFieldset('provideroptions') as $field):
+							$property = substr($field->id,6);
+							if($property == 'serviceauthentication_id')
+							{
+								?>
+								<div class="control-group">
+									<div class="control-label"><?php echo $field->label; ?></div>
+									<div class="controls"><?php echo JHTML::_("select.genericlist",$this->currentserviceauthenticationconnectorlist, 'jform[serviceauthentication_id]', 'size="1" ', 'id', 'value', $this->item->serviceauthentication_id ); ?></div>
+								</div>
+								<?php
+							}
+							else {
+							?>
+							<div class="control-group">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+							<?php }?>
+						<?php endforeach; ?>
+					</div>
+					
+					<div class="tab-pane active" id="negotiation">
+						<?php foreach($this->form->getFieldset('negotiation') as $field): ?>
+							<div class="control-group">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+						<?php endforeach; ?>
+					</div>
+					
+					<div class="tab-pane" id="publishing">
+						<div class="control-group">
+							<div class="control-label"><?php echo $this->form->getLabel('created_by'); ?></div>
+							<div class="controls"><?php echo $this->form->getInput('created_by'); ?></div>
+						</div>
+						<div class="control-group">
+							<div class="control-label"><?php echo $this->form->getLabel('created'); ?></div>
+							<div class="controls"><?php echo $this->form->getInput('created'); ?></div>
+						</div>
+						<?php if ($this->item->modified_by) : ?>
+						<div class="control-group">
+							<div class="control-label"><?php echo $this->form->getLabel('modified_by'); ?></div>
+							<div class="controls"><?php echo $this->form->getInput('modified_by'); ?></div>
+						</div>
+						<div class="control-group">
+							<div class="control-label"><?php echo $this->form->getLabel('modified'); ?></div>
+							<div class="controls"><?php echo $this->form->getInput('modified'); ?></div>
+						</div>
+						<?php endif; ?>
+					</div>
+				
+					<?php if ($this->canDo->get('core.admin')): ?>
+					<div class="tab-pane" id="permissions">
+						<fieldset>
+							<?php echo $this->form->getInput('rules'); ?>
+						</fieldset>
+					</div>
+					<?php endif; ?>
+				</div>
+            	<!-- End Tabs -->
+    	</div>
+    	
+	    <input type="hidden" name="task" value="" />
+		<?php echo JHtml::_('form.token'); ?>
+	
+		<!-- Begin Sidebar -->
+		<div class="span2">
+			<h4><?php echo JText::_('JDETAILS');?></h4>
+			<hr />
+			<fieldset class="form-vertical">
+				<div class="control-group">
+					<div class="control-group">
+						<div class="controls">
+							<?php echo $this->form->getValue('user'); ?>
+						</div>
+					</div>
+					<?php
+					if($this->canDo->get('core.edit.state'))
+					{
+						?>
+						<div class="control-label">
+							<?php echo $this->form->getLabel('state'); ?>
+						</div>
+						<div class="controls">
+							<?php echo $this->form->getInput('state'); ?>
+						</div>
+						<?php 
+					}
+					?>
+				</div>
+	
+				<div class="control-group">
+					<div class="control-label">
+						<?php echo $this->form->getLabel('access'); ?>
+					</div>
+					<div class="controls">
+						<?php echo $this->form->getInput('access'); ?>
+					</div>
+				</div>
 			</fieldset>
-		<?php echo JHtml::_('sliders.end'); ?>
+		</div>
+		<!-- End Sidebar -->
 	</div>
 
-	<input type="hidden" name="task" value="" />
-	<?php echo JHtml::_('form.token'); ?>
-	<div class="clr"></div>
-
-	<div class="clr"></div>
-	<div class="width-100 fltlft">
-		<?php echo JHtml::_('sliders.start', 'permissions-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
-
-			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_SERVICE_FIELDSET_RULES'), 'access-rules'); ?>
-			<fieldset class="panelform">
-				<?php echo $this->form->getLabel('rules'); ?>
-				<?php echo $this->form->getInput('rules'); ?>
-			</fieldset>
-
-		<?php echo JHtml::_('sliders.end'); ?>
-	</div>
-		
-    <style type="text/css">
-        /* Temporary fix for drifting editor fields */
-        .adminformlist li {
-            clear: both;
-        }
-    </style>
     <input type="hidden" name="authenticationconnectorlist" id="authenticationconnectorlist" value='<?php echo json_encode($this->authenticationconnectorlist);?>' />
     
 </form>
