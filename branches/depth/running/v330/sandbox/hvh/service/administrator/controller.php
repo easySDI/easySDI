@@ -33,8 +33,9 @@ class Easysdi_serviceController extends JController
 		$id			= JRequest::getInt('id');
         JRequest::setVar('view', $view);
         
+        //TODO correct with physicalservice and/or virtualservice
         // Check for edit form.
-        if ($view == 'service' && $layout == 'edit' && !$this->checkEditId('com_easysdi_service.edit.physicalservice', $id)) {
+        if ($view == 'physicalservice' && $layout == 'edit' && !$this->checkEditId('com_easysdi_service.edit.physicalservice', $id)) {
         	// Somehow the person just went to the form - we don't allow that.
         	$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));
         	$this->setMessage($this->getError(), 'error');

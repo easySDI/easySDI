@@ -42,18 +42,7 @@ class Easysdi_serviceHelper
 				'index.php?option=com_easysdi_service&view=virtualservices',
 				$vName == 'virtualservices'
 		);
-		
-// 		JSubMenuHelper::addEntry(
-// 				JText::_('COM_EASYSDI_SERVICE_SUBMENU_CATEGORIES'),
-// 				'index.php?option=com_categories&extension=com_easysdi_service.virtualservice',
-// 				$vName == 'virtualservicecategories'
-// 		);
-		
-// 		if ($vName=='virtualservicecategories') {
-// 			JToolBarHelper::title(
-// 					JText::_('COM_EASYSDI_SERVICE_TITLE_CATEGORIES'),
-// 					'easysdi_virtualservice-categories');
-// 		}
+
 	}
 
 	/**
@@ -103,10 +92,10 @@ class Easysdi_serviceHelper
 		$url 					= $params['resurl'];
 		$user 					= $params['resuser'];
 		$password 				= $params['respassword'];
-	
 		$supported_versions 	= array();
 		$urlWithPassword 		= $url;
-		 
+		$httpHeader				= array();
+
 		if(isset($params['serurl']))
 		{
 			//Authentication needed
@@ -132,20 +121,9 @@ class Easysdi_serviceHelper
 			curl_close ($ch);
 			unset($ch);
 		}
-		else
-		{
-			if (strlen($user)!=null && strlen($password)!=null){
-				if (strlen($user)>0 && strlen($password)>0){
-					if (strpos($url,"http:")===False){
-						$urlWithPassword =  "https://".$user.":".$password."@".substr($url,8);
-					}else{
-						$urlWithPassword =  "http://".$user.":".$password."@".substr($url,7);
-					}
-				}
-			}
-		}
+
 	
-		$pos1 		= stripos($urlWithPassword, "?");
+		$pos1 		= stripos($url, "?");
 		$separator 	= "&";
 		if ($pos1 === false) {
 			//"?" Not found then use ? instead of &
@@ -153,7 +131,7 @@ class Easysdi_serviceHelper
 		}
 	
 		//Get the implemented version of the requested ServiceConnector
-		@$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$query = "SELECT c.id as id, sv.value as value
 		FROM #__sdi_sys_serviceconnector sc
 		INNER JOIN #__sdi_sys_servicecompliance c ON c.serviceconnector_id = sc.id
@@ -166,10 +144,24 @@ class Easysdi_serviceHelper
 	
 		$completeurl = "";
 		foreach ($implemented_versions as $version){
-			$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=".$service."&VERSION=".$version->value;
+			$completeurl = $url.$separator."REQUEST=GetCapabilities&SERVICE=".$service."&VERSION=".$version->value;
 			
-			$xmlCapa = simplexml_load_file($completeurl);
-			if ($xmlCapa === false)
+			$session 	= curl_init($completeurl);
+			if (!empty($user)  && !empty($password))
+			{
+				$httpHeader[]='Authorization: Basic '.base64_encode($user.':'.$password);
+			}
+			if (count($httpHeader)>0)
+			{
+				curl_setopt($session, CURLOPT_HTTPHEADER, $httpHeader);
+			}
+			curl_setopt($session, CURLOPT_HEADER, false);
+			curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+			$response = curl_exec($session);
+			curl_close($session);
+				
+			$xmlCapa = simplexml_load_string($response);
+			if ($xmlCapa === false )
 			{
 				$supported_versions['ERROR']=JText::_('COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION_ERROR');
 				echo json_encode($supported_versions);
@@ -177,6 +169,10 @@ class Easysdi_serviceHelper
 			}
 			else
 			{
+				if($xmlCapa->getName() == "ServiceExceptionReport")
+				{
+					continue;
+				}
 				foreach ($xmlCapa->attributes() as $key => $value){
 					if($key == 'version'){
 						if($value == $version->value)
@@ -184,6 +180,7 @@ class Easysdi_serviceHelper
 					}
 				}
 			}
+			
 		}
 	
 		$encoded = json_encode($supported_versions);
@@ -323,14 +320,13 @@ class Easysdi_serviceHelper
 				}
 				
 				//flushing the wmslayer table
-				@$tab_layer =& JTable::getInstance('wmslayer', 'Easysdi_serviceTable');
 				$tab_layer = JTable::getInstance('wmslayer', 'Easysdi_serviceTable');
 				$tab_layer->wipeByPhysicalId($physical_id);
 				unset($tab_layer);
 				
 				//inserting each wmslayer
 				foreach ($wmsLayerList as $wmsLayer) {
-					@$tab_layer =& JTable::getInstance('wmslayer', 'Easysdi_serviceTable');
+					$tab_layer = JTable::getInstance('wmslayer', 'Easysdi_serviceTable');
 					$tab_layer->save(Array(
 						'name' => (String) $wmsLayer->Name,
 						'description' => (String) $wmsLayer->Title,
@@ -343,14 +339,14 @@ class Easysdi_serviceHelper
 				$time_stack = 0;
 				$wmtsLayerList = $xmlCapa->xpath('/dflt:Capabilities/dflt:Contents/dflt:Layer');
 				//flushing the wmtslayer table
-				@$tab_layer =& JTable::getInstance('wmtslayer', 'Easysdi_serviceTable');
+				$tab_layer = JTable::getInstance('wmtslayer', 'Easysdi_serviceTable');
 				$tab_layer->wipeByPhysicalId($physical_id);
 				unset($tab_layer);
 				
 				//inserting each wmtslayer
 				foreach ($wmtsLayerList as $wmtsLayer) {
 					
-					@$tab_layer =& JTable::getInstance('wmtslayer', 'Easysdi_serviceTable');
+					$tab_layer = JTable::getInstance('wmtslayer', 'Easysdi_serviceTable');
 					$tab_layer->save(Array(
 						'name' => (String) $wmtsLayer->children('ows', true)->Identifier,
 						'description' => (String) $wmtsLayer->children('ows', true)->Title,
@@ -366,7 +362,7 @@ class Easysdi_serviceHelper
 						$supported_CRS = $xmlCapa->xpath("/dflt:Capabilities/dflt:Contents/dflt:TileMatrixSet[ows:Identifier = '" . $tileMatrixSetIdentifier . "']");
 						$supported_CRS = (String) $supported_CRS[0]->children('ows', true)->SupportedCRS;
 						
-						@$tab_tileMatrixSet =& JTable::getInstance('tileMatrixSet', 'Easysdi_serviceTable');
+						$tab_tileMatrixSet = JTable::getInstance('tileMatrixSet', 'Easysdi_serviceTable');
 						$tab_tileMatrixSet->save(Array(
 							'identifier' => $tileMatrixSetIdentifier,
 							'supported_crs' => $supported_CRS,
@@ -406,7 +402,7 @@ class Easysdi_serviceHelper
 								);
 							}
 						}
-						@$tab_tileMatrix =& JTable::getInstance('tileMatrix', 'Easysdi_serviceTable');
+						$tab_tileMatrix = JTable::getInstance('tileMatrix', 'Easysdi_serviceTable');
 						$tab_tileMatrix->saveBatch($tileMatrixArray);
 						unset($tab_tileMatrixSet, $tab_tileMatrix, $tileMatrixArray);
 					}
@@ -418,13 +414,13 @@ class Easysdi_serviceHelper
 				$featureTypeList = $xmlCapa->xpath('//dflt:FeatureType');
 				
 				//flushing the featureClass table
-				@$tab_layer =& JTable::getInstance('featureclass', 'Easysdi_serviceTable');
+				$tab_layer = JTable::getInstance('featureclass', 'Easysdi_serviceTable');
 				$tab_layer->wipeByPhysicalId($physical_id);
 				unset($tab_layer);
 				
 				//inserting each featureClass
 				foreach ($featureTypeList as $featureType) {
-					@$tab_layer =& JTable::getInstance('featureclass', 'Easysdi_serviceTable');
+					$tab_layer = JTable::getInstance('featureclass', 'Easysdi_serviceTable');
 					$tab_layer->save(Array(
 						'name' => (String) $featureType->Name,
 						'description' => (String) $featureType->Title,

@@ -5,6 +5,9 @@ ADD CONSTRAINT `#__sdi_virtualmetadata_fk_virtualservice` FOREIGN KEY (`virtuals
 ALTER TABLE `#__sdi_virtualservice`
 ADD CONSTRAINT `#__sdi_virtualservice_fk_proxytype` FOREIGN KEY (`proxytype_id`) REFERENCES `#__sdi_sys_proxytype` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
+ALTER TABLE `#__sdi_sys_servicecon_authenticationcon`
+ADD CONSTRAINT `#__sdi_sys_servicecon_authenticationcon_fk2` FOREIGN KEY (`serviceconnector_id`) REFERENCES `#__sdi_sys_serviceconnector` (`id`);
+
 ALTER TABLE `#__sdi_virtualservice`
 ADD CONSTRAINT `#__sdi_virtualservice_fk_exceptionlevel` FOREIGN KEY (`exceptionlevel_id`) REFERENCES `#__sdi_sys_exceptionlevel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -14,14 +17,29 @@ ADD CONSTRAINT `#__sdi_virtualservice_fk_loglevel` FOREIGN KEY (`loglevel_id`) R
 ALTER TABLE `#__sdi_virtualservice`
 ADD CONSTRAINT `#__sdi_virtualservice_fk_logroll` FOREIGN KEY (`logroll_id`) REFERENCES `#__sdi_sys_logroll` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
+ALTER TABLE `#__sdi_service_servicecompliance`
+ADD CONSTRAINT `#__sdi_service_servicecompliance_fk1` FOREIGN KEY (`service_id`) REFERENCES `#__sdi_service` (`id`) ON DELETE CASCADE ;
+
+ALTER TABLE `#__sdi_service_servicecompliance`
+ADD CONSTRAINT `#__sdi_service_servicecompliance_fk2` FOREIGN KEY (`servicecompliance_id`) REFERENCES `#__sdi_sys_servicecompliance` (`id`) ON DELETE CASCADE ;
+
+ALTER TABLE `#__sdi_sys_operationcompliance`
+ADD CONSTRAINT `#__sdi_sys_operationcompliance_fk1` FOREIGN KEY (`servicecompliance_id`) REFERENCES `#__sdi_sys_servicecompliance` (`id`);
+
+ALTER TABLE `#__sdi_sys_operationcompliance`
+ADD CONSTRAINT `#__sdi_sys_operationcompliance_fk2` FOREIGN KEY (`serviceoperation_id`) REFERENCES `#__sdi_sys_serviceoperation` (`id`);
 
 ALTER TABLE `#__sdi_physicalservice`
-ADD CONSTRAINT `#__sdi_physicalservice_fk_virtualservice` FOREIGN KEY (`virtualservice_id`) REFERENCES `#__sdi_virtualservice` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ADD CONSTRAINT `#__sdi_physicalservice_fk1` FOREIGN KEY (`resourceauthentication_id`) REFERENCES `#__sdi_sys_authenticationconnector` (`id`);
 
+ALTER TABLE `#__sdi_physicalservice`
+ADD CONSTRAINT `#__sdi_physicalservice_fk2` FOREIGN KEY (`serviceauthentication_id`) REFERENCES `#__sdi_sys_authenticationconnector` (`id`);
 
 ALTER TABLE `#__sdi_policy`
 ADD CONSTRAINT `#__sdi_policy_fk_virtualservice` FOREIGN KEY (`virtualservice_id`) REFERENCES `#__sdi_virtualservice` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
+ALTER TABLE `#__sdi_physicalservice`
+ADD CONSTRAINT `#__sdi_physicalservice_fk3` FOREIGN KEY (`serviceconnector_id`) REFERENCES `#__sdi_sys_serviceconnector` (`id`);
 
 ALTER TABLE `#__sdi_servicepolicy`
 ADD CONSTRAINT `#__sdi_servicepolicy_fk_physicalservice` FOREIGN KEY (`physicalservice_id`) REFERENCES `#__sdi_physicalservice` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -95,7 +113,6 @@ ADD CONSTRAINT `#__sdi_tilematrixpolicy_fk_tilematrixset` FOREIGN KEY (`tilematr
 
 ALTER TABLE `#__sdi_tilematrixpolicy`
 ADD CONSTRAINT `#__sdi_tilematrixpolicy_fk_tilematrix` FOREIGN KEY (`tilematrix_id`) REFERENCES `#__sdi_tilematrix` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
 
 
 

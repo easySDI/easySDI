@@ -25,6 +25,10 @@ class Easysdi_serviceControllerVirtualservice extends JControllerForm {
 		$serviceconnector = JRequest::getVar('serviceconnector',null);
 		
 		if(isset($serviceconnector)) {
+			if($serviceconnector == "WMSC")
+    			$layout = "WMS";
+    		else
+    			$layout = $serviceconnector;
 			$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservice&task=add&layout='.$serviceconnector.'&mco_debug=1');
 		}
 		else {

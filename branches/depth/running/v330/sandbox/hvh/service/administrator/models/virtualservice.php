@@ -109,6 +109,47 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 
 		return $item;
 	}
+/*
+public function getItem($pk = null)
+	{
+		//Get Item 
+		if(isset($this->alias)){
+			$table = $this->getTable();
+				
+			$return = $table->loadByAlias($this->alias);
+		
+			if ($return === false && $table->getError())
+			{
+				$this->setError($table->getError());
+				return false;
+			}
+				
+			return $table;
+		}else{//Get item by Id
+			if ($item = parent::getItem($pk)) {
+				//Do any procesing on fields here if needed
+			}
+		}
+		
+		return $item;
+	}
+*/
+
+	/**
+	 * Method to get a single record.
+	 *
+	 * @param	$alias 			string		Alias of the service.
+	 *
+	 * @return	mixed	Object on success, false on failure.
+	 * @since	EasySDI 3.0.0
+	 */
+	public function getItemByServiceAlias($alias)
+	{
+		$this->alias = $alias;
+		$item = $this->getItem(null);
+	
+		return $item;
+	}
 
 	/**
 	 * Prepare and sanitise the table prior to saving.
@@ -152,6 +193,40 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Method to get the service compliance deducted from the agregation process and saved into database
+	 *
+	 * @param int		$id		primary key of the current service to get.
+	 *
+	 * @return boolean 	Object list on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	public function getServiceCompliance ( $id=null)
+	{
+		if(!isset($id))
+			return null;
+	
+		try {
+			$db = JFactory::getDbo();
+			$db->setQuery(
+					'SELECT sv.value as value, sc.id as id FROM #__sdi_service_servicecompliance ssc ' .
+					' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id '.
+					' INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id'.
+					' WHERE ssc.service_id ='.$id.
+					' AND ssc.servicetype = "virtual"'
+	
+			);
+			$compliance = $db->loadObjectList();
+			return $compliance;
+	
+		} catch (Exception $e) {
+			$this->setError($e->getMessage());
+			return false;
+		}
+	
 	}
 
 }
