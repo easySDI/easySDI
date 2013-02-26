@@ -187,7 +187,7 @@ class Easysdi_mapModelcontext extends JModelAdmin
 				$db->setQuery('INSERT INTO #__sdi_map_tool (map_id, tool_id) VALUES ('.$this->getItem()->get('id').', '.$tool.')');
 				if(!$db->query())
 				{
-					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_CONTEXT_SAVE_FAIL_TOOL_ERROR" ) );
+					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR" ) );
 					return false;
 				}
 					
@@ -208,7 +208,7 @@ class Easysdi_mapModelcontext extends JModelAdmin
 				}
 				if(!$db->query())
 				{
-					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_CONTEXT_SAVE_FAIL_SERVICE_ERROR" ) );
+					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_SERVICE_ERROR" ) );
 					return false;
 				}
 					
@@ -221,7 +221,7 @@ class Easysdi_mapModelcontext extends JModelAdmin
 				$db->setQuery('INSERT INTO #__sdi_map_layergroup (map_id, group_id, isbackground, isdefault) VALUES ('.$this->getItem()->get('id').', '.$background.',1 ,0)');
 				if(!$db->query())
 				{
-					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_CONTEXT_SAVE_FAIL_GROUP_ERROR" ) );
+					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR" ) );
 					return false;
 				}
 			}
@@ -239,7 +239,7 @@ class Easysdi_mapModelcontext extends JModelAdmin
 				$db->setQuery('INSERT INTO #__sdi_map_layergroup (map_id, group_id, isbackground, isdefault) VALUES ('.$this->getItem()->get('id').', '.$group.',0 ,'.$isdefault.')');
 				if(!$db->query())
 				{
-					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_CONTEXT_SAVE_FAIL_GROUP_ERROR" ) );
+					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR" ) );
 					return false;
 				}
 					
@@ -269,25 +269,25 @@ class Easysdi_mapModelcontext extends JModelAdmin
 			$db->setQuery('DELETE FROM #__sdi_map_tool WHERE map_id = '.$pk);
 			if(!$db->query())
 			{
-				$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_CONTEXT_DELETE_FAIL_TOOL_ERROR" ) );
+				$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_DELETE_FAIL_TOOL_ERROR" ) );
 				return false;
 			}
 			$db->setQuery('DELETE FROM #__sdi_map_layergroup WHERE map_id = '.$pk);
 			if(!$db->query())
 			{
-				$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_CONTEXT_DELETE_FAIL_GROUP_ERROR" ) );
+				$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_DELETE_FAIL_GROUP_ERROR" ) );
 				return false;
 			}
 			$db->setQuery('DELETE FROM #__sdi_map_physicalservice WHERE map_id = '.$pk);
 			if(!$db->query())
 			{
-				$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_CONTEXT_DELETE_FAIL_SERVICE_ERROR" ) );
+				$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_DELETE_FAIL_SERVICE_ERROR" ) );
 				return false;
 			}
 			$db->setQuery('DELETE FROM #__sdi_map_virtualservice WHERE map_id = '.$pk);
 			if(!$db->query())
 			{
-				$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_CONTEXT_DELETE_FAIL_SERVICE_ERROR" ) );
+				$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_DELETE_FAIL_SERVICE_ERROR" ) );
 				return false;
 			}
 		}
