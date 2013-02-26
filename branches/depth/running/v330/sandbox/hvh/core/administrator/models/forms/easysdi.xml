@@ -10,7 +10,6 @@
 	         	class="readonly" 
 	          	component="com_easysdi_user"
 	          	description="COM_EASYSDI_CORE_CTRLPANEL_DESC_USERSLINK" />
-	     
 	</fieldset>
 	
 	<fieldset name="service" text="COM_EASYSDI_SERVICE_LEGEND_EASYSDI" >
@@ -24,7 +23,7 @@
 			description="COM_EASYSDI_CORE_CTRLPANEL_DESC_SERVICESLINK" />
 	</fieldset>
 	
-	<fieldset name="service" text="COM_EASYSDI_MAP_LEGEND_EASYSDI" >
+	<fieldset name="map" text="COM_EASYSDI_MAP_LEGEND_EASYSDI" >
 		<field name="mapcontexts" 
 			type="link" 
 			default="0" 

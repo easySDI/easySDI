@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     3.0.0
+ \* @version     3.3.0
   * @package     com_easysdi_user
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -36,7 +36,7 @@ class Easysdi_coreViewEasysdi extends JViewLegacy
 		if($app->getUserState( 'com_easysdi_contact-installed')){
 			array_push($this->buttons,array(
 											'link' 		=> JRoute::_('index.php?option=com_easysdi_contact'),
-											'image'		=> '../../../templates/bluestork/images/header/icon-48-user.png',
+											'image'		=> '48-easysdi-contact',
 											'text'		=> JText::_('COM_EASYSDI_CORE_ICON_SDI_CONTACT'),
 											'access'	=> array(	'core.manage'		 , 'com_easysdi_contact')
 											));
@@ -46,7 +46,7 @@ class Easysdi_coreViewEasysdi extends JViewLegacy
 		if($app->getUserState( 'com_easysdi_service-installed')){
 			array_push($this->buttons,array(
 											'link' 		=> JRoute::_('index.php?option=com_easysdi_service'),
-											'image' 	=> '../../../templates/bluestork/images/header/icon-48-links.png',
+											'image' 	=> '../../../templates/hathor/images/header/icon-48-links.png',
 											'text' 		=> JText::_('COM_EASYSDI_CORE_ICON_SDI_SERVICE'),
 											'access' 	=> array(	'core.manage'		 , 'com_easysdi_service')
 			));
@@ -56,7 +56,7 @@ class Easysdi_coreViewEasysdi extends JViewLegacy
 		if($app->getUserState( 'com_easysdi_map-installed')){
 			array_push($this->buttons,array(
 					'link' 		=> JRoute::_('index.php?option=com_easysdi_map'),
-					'image' 	=> '../../../templates/bluestork/images/header/icon-48-language.png',
+					'image' 	=> '../../../templates/hathor/images/header/icon-48-language.png',
 					'text' 		=> JText::_('COM_EASYSDI_CORE_ICON_SDI_MAP'),
 					'access' 	=> array(	'core.manage'		 , 'com_easysdi_map')
 			));
