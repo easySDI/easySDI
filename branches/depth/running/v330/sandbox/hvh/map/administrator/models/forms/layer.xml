@@ -173,8 +173,8 @@
        			type="user" 
 				class="readonly"
        			readonly="true"
-            	label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_CREATED_BY"
-            	description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_CREATED_BY"  
+            	label="COM_EASYSDI_MAP_FORM_LBL_MAP_CREATED_BY"
+            	description="COM_EASYSDI_MAP_FORM_DESC_MAP_CREATED_BY"  
             	filter="unset" /> 
             	
 		<field 	name="created" 
@@ -182,16 +182,16 @@
        			class="readonly"
        			readonly="true"
                 default="0000-00-00 00:00:00" 
-            	label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_CREATED"
-            	description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_CREATED"  
+            	label="COM_EASYSDI_MAP_FORM_LBL_MAP_CREATED"
+            	description="COM_EASYSDI_MAP_FORM_DESC_MAP_CREATED"  
             	filter="safehtml" /> 
 
        <field 	name="modified_by" 
        			type="user" 
 				class="readonly"
        			readonly="true"
-       			label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_MODIFIED_BY"
-    	        description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_MODIFIED_BY" 
+       			label="COM_EASYSDI_MAP_FORM_LBL_MAP_MODIFIED_BY"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_MAP_MODIFIED_BY" 
                 filter="unset" /> 
 
        <field 	name="modified" 
@@ -199,8 +199,8 @@
        			class="readonly"
        			readonly="true"
                 default="0000-00-00 00:00:00"  
-            	label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_MODIFIED"
-            	description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_MODIFIED"  
+            	label="COM_EASYSDI_MAP_FORM_LBL_MAP_MODIFIED"
+            	description="COM_EASYSDI_MAP_FORM_DESC_MAP_MODIFIED"  
             	filter="safehtml" />
 	</fieldset>
 	
