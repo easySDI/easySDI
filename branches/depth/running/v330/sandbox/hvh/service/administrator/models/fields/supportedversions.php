@@ -30,9 +30,9 @@ class JFormFieldSupportedVersions extends JFormField {
 			$html[] .= '<span class="star">*</span>';
 			foreach($supportedversions as $supportedversion)
 			{
-				$html[] .= '<div class="supportedversion">';
+				$html[] .= '<span class="label label-info">';
 				$html[] .= $supportedversion;
-				$html[] .= '</div>';
+				$html[] .= '</span>';
 			}
 		}
 		$html[] .= '</div>';

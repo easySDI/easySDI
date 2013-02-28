@@ -90,10 +90,17 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_authenticationconnector` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_service_servicecompliance` (
+CREATE TABLE IF NOT EXISTS `#__sdi_physicalservice_servicecompliance` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `service_id` INT(11) UNSIGNED  NOT NULL ,
-`servicetype` VARCHAR(10) NOT NULL,
+`servicecompliance_id` INT(11) UNSIGNED  NOT NULL ,
+`capabilities` TEXT,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_virtualservice_servicecompliance` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`service_id` INT(11) UNSIGNED  NOT NULL ,
 `servicecompliance_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -107,7 +114,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_virtualservice` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR (36)  NOT NULL ,
 `ordering` INT(11)   ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL ,
@@ -140,7 +147,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_virtualmetadata` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR(36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL ,
@@ -224,7 +231,7 @@ UNIQUE (`name`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_policy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR (36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL ,
@@ -255,7 +262,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_servicepolicy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR (36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL ,
@@ -274,7 +281,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_wmslayer` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR (36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL ,
@@ -291,7 +298,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_wmslayerpolicy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR (36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL ,
@@ -310,7 +317,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_allowedoperation` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR (36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL ,
@@ -326,7 +333,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_versiontype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR(36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL ,
@@ -342,7 +349,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_visibilitytype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR(36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL ,
@@ -358,7 +365,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_elementrestriction` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR(36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL ,
@@ -374,7 +381,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_featureclass` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR(36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL ,
@@ -391,7 +398,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_featureclasspolicy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR(36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL ,
@@ -410,7 +417,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_wmtslayer` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR(36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL ,
@@ -427,7 +434,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_wmtslayerpolicy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR(36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL ,
@@ -450,7 +457,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_tilematrixset` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR(36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL ,
@@ -492,7 +499,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_logroll` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR(36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL ,
@@ -507,7 +514,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_loglevel` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR(36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL ,
@@ -522,7 +529,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_exceptionlevel` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR(36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL ,
@@ -537,7 +544,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_proxytype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR(36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL ,

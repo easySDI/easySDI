@@ -87,6 +87,23 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 		// List state information.
 		parent::populateState('a.id', 'asc');
 	}
+	
+	/**
+	 * 
+	 */
+	public function getConnector()
+	{
+		// Create a new query object.
+		$db		= $this->getDbo();
+		$query	= $db->getQuery(true);
+		$query->select('id');
+		$query->select('value');
+		$query->from('`#__sdi_sys_serviceconnector`');
+		$query->where('state=1');
+		$query->order('value');
+		$db->setQuery($query);
+		return $db->loadObjectList();
+	}
 
 	/**
 	 * Method to get a store id based on model configuration state.
@@ -170,8 +187,6 @@ class Easysdi_serviceModelvirtualservices extends JModelList
                 
 			}
 		}
-        
-        
         
         
 		// Add the list ordering clause.

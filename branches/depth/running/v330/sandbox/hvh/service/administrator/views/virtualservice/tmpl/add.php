@@ -26,14 +26,13 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 	<div class="row-fluid">
 		<div class="span10 form-horizontal">
 			<ul class="nav nav-tabs">
-					<li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_SERVICE_TAB_NEW_SERVICE') : JText::sprintf('COM_EASYSDI_SERVICE_TAB_EDIT_SERVICE', $this->item->id); ?></a></li>
-					<li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CONTACT_TAB_PUBLISHING');?></a></li>
-					<?php if ($this->canDo->get('core.admin')): ?>
-					<li><a href="#permissions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CONTACT_TAB_RULES');?></a></li>
+				<li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_SERVICE_TAB_NEW_SERVICE') : JText::sprintf('COM_EASYSDI_SERVICE_TAB_EDIT_SERVICE', $this->item->id); ?></a></li>
+				<li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_PUBLISHING');?></a></li>
+				<?php if ($this->canDo->get('core.admin')): ?>
+					<li><a href="#permissions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_RULES');?></a></li>
 				<?php endif ?>
-				</ul>
+			</ul>
 			<div class="tab-content">
-				<!-- Begin Tabs -->
 				<div class="tab-pane active" id="details">
 					<?php foreach($this->form->getFieldset('connector_type') as $field): ?>
 						<div class="control-group">
@@ -42,11 +41,11 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 						</div>
 					<?php endforeach; ?>
 					<script>
-					var obj = document.getElementById('jform_sys_serviceconnector_id');
-					obj.onchange = function () {
-						window.location = "<?php echo html_entity_decode(JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&layout=')); ?>" + obj.options[obj.selectedIndex].text;
-					};
-				</script>
+						var obj = document.getElementById('jform_sys_serviceconnector_id');
+						obj.onchange = function () {
+							window.location = "<?php echo html_entity_decode(JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&layout=')); ?>" + obj.options[obj.selectedIndex].text;
+						};
+					</script>
 				</div>
 			</div>
 		</div>

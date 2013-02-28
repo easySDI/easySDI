@@ -29,13 +29,14 @@ class Easysdi_serviceViewVirtualservices extends JViewLegacy
 		$this->state		= $this->get('State');
 		$this->items		= $this->get('Items');
 		$this->pagination	= $this->get('Pagination');
-
+		$this->connector 	= $this->get('Connector');
+		
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $errors));
 		}
 
-		Easysdi_serviceHelper::addSubmenu('physicalservices');
+		Easysdi_serviceHelper::addSubmenu('virtualservices');
 		$this->addToolbar();
 		$this->sidebar = JHtmlSidebar::render();
 		
@@ -56,12 +57,25 @@ class Easysdi_serviceViewVirtualservices extends JViewLegacy
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_VIRTUALSERVICES'), 'virtualservices.png');
 
+		
+		
         //Check if the form exists before showing the add/edit buttons
         $formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'virtualservice';
         if (file_exists($formPath)) {
 
             if ($canDo->get('core.create')) {
-			    JToolBarHelper::addNew('virtualservice.add','JTOOLBAR_NEW');
+			    //JToolBarHelper::addNew('virtualservice.add','JTOOLBAR_NEW');
+            	
+			    //Create custom button with a dropdown list allowing connector type selection for new virtualservice action
+            	$dropdown = '<button class="btn dropdown-toggle btn-small btn-success" data-toggle="dropdown"><i class="icon-new icon-white"> '.JText::_('JTOOLBAR_NEW').'</i></button>
+            	<ul class="dropdown-menu">';
+            	foreach ($this->connector as $connector){
+            		$dropdown .= '<li><a href="index.php?option=com_easysdi_service&view=virtualservice&layout='.$connector->value.'">'.$connector->value.'</a></li>';
+            	}
+            	$dropdown .= '</ul>';
+            	
+            	$bar = JToolbar::getInstance('toolbar');
+            	$bar->appendButton('Custom',$dropdown, 'new');
 		    }
 
 		    if ($canDo->get('core.edit')) {
@@ -69,7 +83,7 @@ class Easysdi_serviceViewVirtualservices extends JViewLegacy
 		    }
 
         }
-
+       
 		if ($canDo->get('core.edit.state')) {
 
             if (isset($this->items[0]->state)) {

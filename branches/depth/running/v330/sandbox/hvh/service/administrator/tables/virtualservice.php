@@ -199,8 +199,7 @@ class Easysdi_serviceTablevirtualservice extends sdiTable {
 		
 		//Delete previously saved compliance
 		$query = $this->_db->getQuery(true);
-		$query->delete(' #__sdi_service_servicecompliance');
-		$query->where('servicetype= "virtual"');
+		$query->delete(' #__sdi_virtualservice_servicecompliance');
 		$query->where('service_id = '.(int) $this->id);
 		$this->_db->setQuery($query);
 		$this->_db->query();
@@ -224,10 +223,9 @@ class Easysdi_serviceTablevirtualservice extends sdiTable {
 					continue;
 				
 				$query = $this->_db->getQuery(true);
-				$query->insert('#__sdi_service_servicecompliance');
+				$query->insert('#__sdi_virtualservice_servicecompliance');
 				$query->set('service_id='.(int) $this->id);
 				$query->set('servicecompliance_id='.(int) $servicecompliance);
-				$query->set('servicetype="virtual"');
 				$this->_db->setQuery($query);
 				if (!$this->_db->query()) {
 					throw new Exception($this->_db->getErrorMsg());

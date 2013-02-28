@@ -189,7 +189,7 @@ class Easysdi_serviceViewVirtualservice extends JViewLegacy
 		$this->serviceconnectorlist = $db->loadObjectList();
 		
 		$db->setQuery("SELECT 0 AS alias, '- Please select -' AS value UNION SELECT s.alias as alias,CONCAT(s.alias, ' - ', s.resourceurl,' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
-				INNER JOIN #__sdi_physicalservice_servicecompliance sc ON sc.physicalservice_id = s.id
+				INNER JOIN #__sdi_physicalservice_servicecompliance sc ON sc.service_id = s.id
 				INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
 				INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id
 				INNER JOIN #__sdi_sys_serviceconnector sycc ON sycc.id = syc.serviceconnector_id
@@ -221,25 +221,25 @@ class Easysdi_serviceViewVirtualservice extends JViewLegacy
         } else {
             $checkedOut = false;
         }
-		$canDo		= Easysdi_serviceHelper::getActions();
+		$this->canDo		= Easysdi_serviceHelper::getActions();
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_VIRTUALSERVICE'), 'virtualservice.png');
 		
-		if(JRequest::getVar('layout',null)!='CSW' &&  $canDo->get('core.edit'))
+		if(JRequest::getVar('layout',null)!='CSW' &&  $this->canDo->get('core.edit'))
 			JToolBarHelper::addNew('virtualservice.addserver',JText::_( 'COM_EASYSDI_SERVICE_NEW_SERVER'));
 		
 		// If not checked out, can save the item.
-		if (!$checkedOut && ($canDo->get('core.edit')||($canDo->get('core.create'))))
+		if (!$checkedOut && ($this->canDo->get('core.edit')||($this->canDo->get('core.create'))))
 		{
 
 			JToolBarHelper::apply('virtualservice.apply', 'JTOOLBAR_APPLY');
 			JToolBarHelper::save('virtualservice.save', 'JTOOLBAR_SAVE');
 		}
-		if (!$checkedOut && ($canDo->get('core.create'))){
+		if (!$checkedOut && ($this->canDo->get('core.create'))){
 			JToolBarHelper::custom('virtualservice.save2new', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);
 		}
 		// If an existing item, can save to a copy.
-		if (!$isNew && $canDo->get('core.create')) {
+		if (!$isNew && $this->canDo->get('core.create')) {
 			JToolBarHelper::custom('virtualservice.save2copy', 'save-copy.png', 'save-copy_f2.png', 'JTOOLBAR_SAVE_AS_COPY', false);
 		}
 		if (empty($this->item->id)) {

@@ -248,12 +248,10 @@ public function getItem($pk = null)
 		try {
 			$db = JFactory::getDbo();
 			$db->setQuery(
-					'SELECT sv.value as value, sc.id as id FROM #__sdi_service_servicecompliance ssc ' .
+					'SELECT sv.value as value, sc.id as id FROM #__sdi_virtualservice_servicecompliance ssc ' .
 					' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id '.
 					' INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id'.
-					' WHERE ssc.service_id ='.$id.
-					' AND ssc.servicetype = "virtual"'
-	
+					' WHERE ssc.service_id ='.$id
 			);
 			$compliance = $db->loadObjectList();
 			return $compliance;

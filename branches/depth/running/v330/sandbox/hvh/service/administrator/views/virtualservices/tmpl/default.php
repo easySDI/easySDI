@@ -94,7 +94,7 @@ $sortFields = $this->getSortFields();
                 <?php endif; ?>
                     
 				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_VIRTUALSERVICE_NAME', 'a.name', $listDirn, $listOrder); ?>
+				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_VIRTUALSERVICES_NAME', 'a.name', $listDirn, $listOrder); ?>
 			</th>
 			<th class='left'>
 			<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>

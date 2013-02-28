@@ -57,11 +57,9 @@ class Easysdi_serviceHelper
 			$assetName = 'com_easysdi_core';
 		}
 		elseif (empty($serviceId) ) {
-// 			$assetName = 'com_easysdi_service.'.$servicetype.'service.category.'.(int) $categoryId;
 			$assetName = 'com_easysdi_service.category.'.(int) $categoryId;
 		}
 		else{
-// 			$assetName = 'com_easysdi_service.'.$servicetype.'service.'.(int) $serviceId;
 			$assetName = 'com_easysdi_service.physicalservice.'.(int) $serviceId;
 		}
 
@@ -205,11 +203,10 @@ class Easysdi_serviceHelper
 			$db->setQuery($query);
 			$resource 			= $db->loadObject();
 			$db->setQuery(
-								'SELECT sv.value as value, sc.id as id FROM #__sdi_service_servicecompliance ssc ' .
+								'SELECT sv.value as value, sc.id as id FROM #__sdi_physicalservice_servicecompliance ssc ' .
 								' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id '.
 								' INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id'.
 								' WHERE ssc.service_id ='.$id.
-								' AND ssc.servicetype = "physical"'.
 								' LIMIT 1'
 			);
 			$compliance = $db->loadObject();
@@ -226,7 +223,7 @@ class Easysdi_serviceHelper
 			$query = 'SELECT sv.value as value, sc.id as id FROM #__sdi_physicalservice_servicecompliance pssc
 							INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = pssc.servicecompliance_id
 							INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id
-							WHERE pssc.physicalservice_id ='.$resource->physicalservice_id.'
+							WHERE pssc.service_id ='.$resource->physicalservice_id.'
 							LIMIT 1';
 			
 			$db->setQuery($query);
