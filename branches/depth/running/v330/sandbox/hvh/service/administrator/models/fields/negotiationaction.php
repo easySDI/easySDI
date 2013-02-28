@@ -18,14 +18,8 @@ class JFormFieldNegotiationAction extends JFormField {
 	public function getInput() {
 		// Initialize variables.
 		$html = array();
-		
-		// Start the action field output.
-		$html[] = '<a href="#" onclick="javascript:negoVersionService();" >
-						<img class="helpTemplate" src="templates/bluestork/images/menu/icon-16-maintenance.png" alt=""/>
-					</a>';
+		$html[] = '	<button class="btn btn-small btn-success" onclick="javascript:negoVersionService();"><i class="icon-white icon-refresh"></i> Negotiation</button>';
 		
 		return implode($html);
-
-		//if(isset($this->element['extension']))
 	}
 }

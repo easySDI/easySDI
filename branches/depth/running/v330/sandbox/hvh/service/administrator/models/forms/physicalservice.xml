@@ -54,9 +54,47 @@
 				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_RESOURCEURL" 
                 validate="url" 
                 filter="safehtml" /> 
-                
 		
-		
+		<field 	name="resourceauthentication_id" 
+				type="sql" 
+				class="inputbox"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_RESOURCEAUTHENTICATION_ID"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_RESOURCEAUTHENTICATION_ID" 
+                query="SELECT 0 AS id, '- None -' AS value UNION SELECT id, value FROM #__sdi_sys_authenticationconnector" 
+                key_field="id" 
+                value_field="value"
+                 /> 
+                 
+ 		<field 	name="resourceusername" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_RESOURCEUSERNAME"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_RESOURCEUSERNAME" 
+                filter="safehtml" /> 
+
+		<field 	name="resourcepassword" 
+				type="password"
+				autocomplete="off"
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_RESOURCEPASSWORD"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_RESOURCEPASSWORD" 
+                filter="safehtml" /> 
+        
+        <field 	name="negotiation" 
+				type="negotiationaction" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_NEGOTIATION"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_NEGOTIATION" 
+				filter="safehtml" />
+				 
+		<field 	name="supportedversions" 
+				type="supportedversions" 
+				class="readonly"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SUPPORTEDVERSIONS"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SUPPORTEDVERSIONS"
+				filter="unset" /> 
+				
 		<field name="asset_id" type="hidden" filter="SAFEHTML" />
 		<field name="checked_out" type="hidden" filter="SAFEHTML" />
 		<field name="checked_out_time" type="hidden" filter="SAFEHTML" />
@@ -85,32 +123,7 @@
 	</field> 
 		
 	<fieldset name="authenticationoptions" text="COM_EASYSDI_SERVICE_LEGEND_AUTHENTICATION_OPTIONS">
-		<field 	name="resourceauthentication_id" 
-				type="sql" 
-				class="inputbox"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_RESOURCEAUTHENTICATION_ID"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_RESOURCEAUTHENTICATION_ID" 
-                query="SELECT 0 AS id, '- None -' AS value UNION SELECT id, value FROM #__sdi_sys_authenticationconnector" 
-                key_field="id" 
-                value_field="value"
-                 /> 
-                 
- 		<field 	name="resourceusername" 
-				type="text" 
-				size="40" 
-				class="inputbox"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_RESOURCEUSERNAME"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_RESOURCEUSERNAME" 
-                filter="safehtml" /> 
-
-		<field 	name="resourcepassword" 
-				type="password"
-				autocomplete="off"
-				size="40" 
-				class="inputbox"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_RESOURCEPASSWORD"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_RESOURCEPASSWORD" 
-                filter="safehtml" /> 
+		
 	</fieldset>
 
 	<fieldset name="provideroptions" text="COM_EASYSDI_SERVICE_LEGEND_PROVIDER_OPTIONS">
@@ -152,18 +165,7 @@
 	</fieldset>
 
 	<fieldset name="negotiation" text="COM_EASYSDI_SERVICE_LEGEND_PHYSICALSERVICE_NEGOTIATION">
- 		<field 	name="negotiation" 
-				type="negotiationaction" 
-				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_NEGOTIATION"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_NEGOTIATION" 
-				filter="safehtml" />
-				 
-		<field 	name="supportedversions" 
-				type="supportedversions" 
-				class="readonly"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SUPPORTEDVERSIONS"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SUPPORTEDVERSIONS"
-				filter="unset" /> 
+ 		
 	</fieldset>
 
 	<fieldset name="publishing">
@@ -208,7 +210,7 @@
 				class="inputbox" 
 				filter="rules"
 				component="com_easysdi_service" 
-				section="service" 
+				section="physicalservice" 
 				validate="rules"
 		/>
 	</fieldset>

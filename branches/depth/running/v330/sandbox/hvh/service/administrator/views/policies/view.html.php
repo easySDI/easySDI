@@ -106,8 +106,29 @@ class Easysdi_serviceViewPolicies extends JView
 			JToolBarHelper::preferences('com_easysdi_service');
 		}
 		JToolBarHelper::divider();
-		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_service&view=virtualservices');
-
-
+		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_service&view=virtualservices');	
+	}
+	
+	protected function getSortFields()
+	{
+		return array(
+				'a.id' => JText::_('JGRID_HEADING_ID'),
+				'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
+				'a.state' => JText::_('JSTATUS'),
+				'a.checked_out' => JText::_('COM_EASYSDI_SERVICE_POLICIES_CHECKED_OUT'),
+				'a.checked_out_time' => JText::_('COM_EASYSDI_SERVICE_POLICIES_CHECKED_OUT_TIME'),
+				'a.created_by' => JText::_('COM_EASYSDI_SERVICE_POLICIES_CREATED_BY'),
+				'a.anonymousaccess' => JText::_('COM_EASYSDI_SERVICE_POLICIES_ANONYMOUSACCESS'),
+				'a.anygroup' => JText::_('COM_EASYSDI_SERVICE_POLICIES_ANYGROUP'),
+				'a.anyoperation' => JText::_('COM_EASYSDI_SERVICE_POLICIES_ANYOPERATION'),
+				'a.anyservice' => JText::_('COM_EASYSDI_SERVICE_POLICIES_ANYSERVICE'),
+				'a.allowfrom' => JText::_('COM_EASYSDI_SERVICE_POLICIES_ALLOWFROM'),
+				'a.allowto' => JText::_('COM_EASYSDI_SERVICE_POLICIES_ALLOWTO'),
+				'a.priority' => JText::_('COM_EASYSDI_SERVICE_POLICIES_PRIORITY'),
+				'a.guid' => JText::_('COM_EASYSDI_SERVICE_POLICIES_GUID'),
+				'a.modified_by' => JText::_('COM_EASYSDI_SERVICE_POLICIES_MODIFIED_BY'),
+				'a.modified' => JText::_('COM_EASYSDI_SERVICE_POLICIES_MODIFIED'),
+				'a.virtualservice_id' => JText::_('COM_EASYSDI_SERVICE_POLICIES_VIRTUALSERVICE_ID'),
+		);
 	}
 }

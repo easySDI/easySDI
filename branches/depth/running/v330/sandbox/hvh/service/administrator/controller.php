@@ -26,7 +26,7 @@ class Easysdi_serviceController extends JControllerLegacy
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
 
 		// Load the submenu.
-		Easysdi_serviceHelper::addSubmenu(JRequest::getCmd('view', 'physicalservices'));
+// 		Easysdi_serviceHelper::addSubmenu(JRequest::getCmd('view', 'physicalservices'));
 		
 // 		$layout 	= JFactory::getApplication()->input->getCmd('layout', 'edit');
 // 		$id			= JFactory::getApplication()->input->getInt('id');

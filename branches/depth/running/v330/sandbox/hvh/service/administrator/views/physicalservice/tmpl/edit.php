@@ -115,8 +115,8 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 				var type;
 
 			    if(key && typeof key === 'string' && key == 'ERROR'){
-			    	dv=document.createElement('div');
-			    	dv.className = "errornegotiation";
+			    	dv=document.createElement('span');
+			    	dv.className = "label label-important";
 			    	txt=document.createTextNode(value);
 			    	dv.appendChild(txt);
 			    	document.getElementById('div-supportedversions').appendChild(dv);
@@ -124,8 +124,8 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 					return;
 			    }
 			    if (value && typeof value === 'string') {
-			    	dv=document.createElement('div');
-			    	dv.className = "supportedversion";
+			    	dv=document.createElement('span');
+			    	dv.className = "label label-info";
 			    	txt=document.createTextNode(value);
 			    	dv.appendChild(txt);
 			    	document.getElementById('div-supportedversions').appendChild(dv);
@@ -149,27 +149,17 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 		<div class="span10 form-horizontal">
             	<ul class="nav nav-tabs">
 					<li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_SERVICE_TAB_NEW_SERVICE') : JText::sprintf('COM_EASYSDI_SERVICE_TAB_EDIT_SERVICE', $this->item->id); ?></a></li>
-					<li><a href="#authentication" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_AUTHENTICATION');?></a></li>
 					<li><a href="#provider" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_PROVIDER');?></a></li>
-					<li><a href="#negotiation" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_NEGOTIATION');?></a></li>
-					<li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CONTACT_TAB_PUBLISHING');?></a></li>
+					<li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_PUBLISHING');?></a></li>
 					<?php if ($this->canDo->get('core.admin')): ?>
-					<li><a href="#permissions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CONTACT_TAB_RULES');?></a></li>
+					<li><a href="#permissions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_RULES');?></a></li>
 				<?php endif ?>
 				</ul>
 				
 				<div class="tab-content">
 					<!-- Begin Tabs -->
 					<div class="tab-pane active" id="details">
-						<?php foreach($this->form->getFieldset('details') as $field): ?>
-							<div class="control-group">
-								<div class="control-label"><?php echo $field->label; ?></div>
-								<div class="controls"><?php echo $field->input; ?></div>
-							</div>
-						<?php endforeach; ?>
-					</div>
-					<div class="tab-pane" id="authentication">
-						<?php foreach($this->form->getFieldset('authenticationoptions') as $field):
+						<?php foreach($this->form->getFieldset('details') as $field): 
 							$property = substr($field->id,6);
 							if($property == 'resourceauthentication_id')
 							{
@@ -189,6 +179,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 							<?php }?>
 						<?php endforeach; ?>
 					</div>
+
 					<div class="tab-pane" id="provider">
 						<?php foreach($this->form->getFieldset('provideroptions') as $field):
 							$property = substr($field->id,6);
@@ -210,16 +201,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 							<?php }?>
 						<?php endforeach; ?>
 					</div>
-					
-					<div class="tab-pane active" id="negotiation">
-						<?php foreach($this->form->getFieldset('negotiation') as $field): ?>
-							<div class="control-group">
-								<div class="control-label"><?php echo $field->label; ?></div>
-								<div class="controls"><?php echo $field->input; ?></div>
-							</div>
-						<?php endforeach; ?>
-					</div>
-					
+
 					<div class="tab-pane" id="publishing">
 						<div class="control-group">
 							<div class="control-label"><?php echo $this->form->getLabel('created_by'); ?></div>
@@ -263,7 +245,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 				<div class="control-group">
 					<div class="control-group">
 						<div class="controls">
-							<?php echo $this->form->getValue('user'); ?>
+							<?php echo $this->form->getValue('name'); ?>
 						</div>
 					</div>
 					<?php

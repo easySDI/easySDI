@@ -124,6 +124,43 @@ class Easysdi_serviceViewPhysicalServices extends JViewLegacy
 			'filter_published',
 			JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), "value", "text", $this->state->get('filter.state'), true)
 		);
+		JHtmlSidebar::addFilter(
+				JText::_('JOPTION_SELECT_CATEGORY'),
+				'filter_category_id',
+				JHtml::_('select.options', JHtml::_('category.options', 'com_easysdi_service'), 'value', 'text', $this->state->get('filter.category_id'))
+		);
+		JHtmlSidebar::addFilter(
+				JText::_('JOPTION_SELECT_ACCESS'),
+				'filter_access',
+				JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'))
+		);
 		
+	}
+	
+	protected function getSortFields()
+	{
+		return array(
+				'a.id' => JText::_('JGRID_HEADING_ID'),
+				'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
+				'a.state' => JText::_('JSTATUS'),
+				'a.checked_out' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_CHECKED_OUT'),
+				'a.checked_out_time' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_CHECKED_OUT_TIME'),
+				'a.created_by' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_CREATED_BY'),
+				'a.name' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_NAME'),
+				'a.alias' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_ALIAS'),
+				'a.connector' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_CONNECTOR'),
+				'a.negociatedversion' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_NEGOCIATEDVERSION'),
+				'a.resourceurl' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_RESOURCEURL'),
+				'a.resourceauthentication' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_RESOURCEAUTHENTICATION'),
+				'a.resourceusername' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_RESOURCEUSERNAME'),
+				'a.resourcepassword' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_RESOURCEPASSWORD'),
+				'a.serviceauthentication' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_SERVICEAUTHENTICATION'),
+				'a.serviceurl' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_SERVICEURL'),
+				'a.serviceusername' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_SERVICEUSERNAME'),
+				'a.servicepassword' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_SERVICEPASSWORD'),
+				'a.modified_by' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_MODIFIED_BY'),
+				'a.modified' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_MODIFIED'),
+				'a.virtualservice_id' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_VIRTUALSERVICE_ID'),
+		);
 	}
 }

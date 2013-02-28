@@ -25,27 +25,20 @@ class Easysdi_serviceHelper
 				'index.php?option=com_easysdi_service&view=physicalservices',
 				$vName == 'physicalservices'
 		);
-		
 		JHtmlSidebar::addEntry(
-				'Categories (Catid)',
-				"index.php?option=com_categories&extension=com_easysdi_service.catid",
+				JText::_('COM_EASYSDI_SERVICE_TITLE_CATEGORIES'),
+				"index.php?option=com_categories&extension=com_easysdi_service",
 				$vName == 'categories'
 		);
 		
 		if ($vName=='categories.catid') {
-			JToolBarHelper::title('Easysdi Service: Categories (Catid)');
+			JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_CATEGORIES'));
 		}		
 		
 		JHtmlSidebar::addEntry(
 				JText::_('COM_EASYSDI_SERVICE_TITLE_VIRTUALSERVICES'),
 				'index.php?option=com_easysdi_service&view=virtualservices',
 				$vName == 'virtualservices'
-		);
-		
-		JHtmlSidebar::addEntry(
-				JText::_('COM_EASYSDI_SERVICE_TITLE_POLICIES'),
-				'index.php?option=com_easysdi_service&view=policies',
-				$vName == 'policies'
 		);
 	}
 
@@ -97,7 +90,6 @@ class Easysdi_serviceHelper
 		$user 					= $params['resuser'];
 		$password 				= $params['respassword'];
 		$supported_versions 	= array();
-		$urlWithPassword 		= $url;
 		$httpHeader				= array();
 
 		if(isset($params['serurl']))

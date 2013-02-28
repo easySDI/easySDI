@@ -22,12 +22,14 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 
 $user	= JFactory::getUser();
 $userId	= $user->get('id');
+
 $listOrder	= $this->state->get('list.ordering');
 $listDirn	= $this->state->get('list.direction');
 $archived	= $this->state->get('filter.published') == 2 ? true : false;
 $trashed	= $this->state->get('filter.published') == -2 ? true : false;
 $canOrder	= $user->authorise('core.edit.state', 'com_easysdi_service');
 $saveOrder	= $listOrder == 'a.ordering';
+
 if ($saveOrder)
 {
 	$saveOrderingUrl = 'index.php?option=com_easysdi_service&task=physicalservices.saveOrderAjax&tmpl=component';
@@ -78,31 +80,36 @@ $sortFields = $this->getSortFields();
 		<table class="table table-striped" id="organismList">
 			<thead>
 				<tr>
-                <?php if (isset($this->items[0]->ordering)): ?>
-				<th width="1%" class="nowrap center hidden-phone">
-					<?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'a.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
+	                <?php if (isset($this->items[0]->ordering)): ?>
+					<th width="1%" class="nowrap center hidden-phone">
+						<?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'a.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
 					</th>
-                <?php endif; ?>
-				<th width="1%" class="hidden-phone">
-					<input type="checkbox" name="checkall-toggle" value="" title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
+	                <?php endif; ?>
+					<th width="1%" class="hidden-phone">
+						<input type="checkbox" name="checkall-toggle" value="" title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
 					</th>
-                <?php if (isset($this->items[0]->state)): ?>
-				<th width="1%" class="nowrap center">
-					<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
+	                <?php if (isset($this->items[0]->state)): ?>
+					<th width="1%" class="nowrap center">
+						<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
 					</th>
-                <?php endif; ?>
-                    
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_PHYSICALSERVICE_NAME', 'a.name', $listDirn, $listOrder); ?>
-			</th>
-			<th class='left'>
-			<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
-			</th>
-		     <?php if (isset($this->items[0]->id)): ?>
-				<th width="1%" class="nowrap center hidden-phone">
-					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
+	                <?php endif; ?>
+	                <th class='left'>
+						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_PHYSICALSERVICES_NAME', 'a.name', $listDirn, $listOrder); ?>
 					</th>
-                <?php endif; ?>
+					<th class='left hidden-phone'>
+						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_SERVICES_CONNECTOR', 'a.serviceconnector_value', $listDirn, $listOrder); ?>
+					</th>
+					<th class='left hidden-phone'>
+						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_SERVICES_URL', 'a.resourceurl', $listDirn, $listOrder); ?>
+					</th>
+					<th class='left'>
+						<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
+					</th>
+			     	<?php if (isset($this->items[0]->id)): ?>
+					<th width="1%" class="nowrap center hidden-phone">
+						<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
+					</th>
+	                <?php endif; ?>
 				</tr>
 			</thead>
 			<tfoot>
@@ -213,13 +220,19 @@ $sortFields = $this->getSortFields();
 				</div>
 			</td>
 			<td align="small hidden-phone">
+				<?php echo $item->serviceconnector_value; ?>
+			</td>
+			<td align="small hidden-phone">
+				<?php echo $item->resourceurl; ?>
+			</td>
+			<td align="small hidden-phone">
 				<?php echo $item->access_level; ?>
-				</td>
-                <?php if (isset($this->items[0]->id)): ?>
-				<td class="center hidden-phone">
-					<?php echo (int) $item->id; ?>
-					</td>
-                <?php endif; ?>
+			</td>
+            <?php if (isset($this->items[0]->id)): ?>
+			<td class="center hidden-phone">
+				<?php echo (int) $item->id; ?>
+			</td>
+            <?php endif; ?>
 			</tr>
 			<?php endforeach; ?>
 		</tbody>

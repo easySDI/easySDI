@@ -115,6 +115,21 @@ class Easysdi_serviceViewVirtualservices extends JViewLegacy
 				'filter_published',
 				JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), "value", "text", $this->state->get('filter.state'), true)
 		);
+		JHtmlSidebar::addFilter(
+				JText::_('JOPTION_SELECT_ACCESS'),
+				'filter_access',
+				JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'))
+		);
 
+	}
+	
+	protected function getSortFields()
+	{
+		return array(
+				'a.name' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_NAME'),
+				'a.alias' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_ALIAS'),
+				'a.connector' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_CONNECTOR'),
+				'a.reflectedurl' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_REFLECTEDURL'),
+		);
 	}
 }
