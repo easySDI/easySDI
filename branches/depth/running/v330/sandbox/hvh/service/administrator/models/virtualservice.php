@@ -141,6 +141,24 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 					$item->{$field->Field} = $metadata->{$field->Field};
 				}
 			}
+			
+			$compliances = $this->getServiceCompliance($item->id);
+			$compliance_ids =array();
+			$compliance_values =array();
+				
+			if(isset($compliances))
+			{
+				foreach ($compliances as $compliance)
+				{
+					$compliance_ids[] =$compliance->id;
+					$compliance_values[] =$compliance->value;
+				}
+			}
+			if(count($compliance_ids)>0)
+				$item->compliance = json_encode($compliance_ids);
+			else
+				$item->compliance = '';
+			$item->supportedversions = json_encode($compliance_values);
 		}
 
 		return $item;
@@ -218,6 +236,7 @@ public function getItem($pk = null)
 	 * @since   11.1
 	 */
 	public function save($data) {
+		
 		if(parent::save($data)){
 			//Instantiate an address JTable
 			$virtualmetadata =& JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
@@ -226,9 +245,52 @@ public function getItem($pk = null)
 			if( !$virtualmetadata->save($data) ){	
 				return false;
 			}
+			
+			if(isset($data['compliance']))
+			{
+				return $this->saveServiceCompliance($data['compliance'],$data['serviceconnector_id'], $this->getState($this->getName().'.id'));
+			}
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * Method to save the service compliance deducted from the agregation process
+	 *
+	 * @param array 	$pks	array of the #__sdi_sys_servicecompliance ids to link with the current service
+	 * @param int		$id		primary key of the current service to save.
+	 *
+	 * @return boolean 	True on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	public function saveServiceCompliance ($pks, $connector, $id)
+	{
+		//Delete previously saved compliance
+		$db = $this->getDbo();
+		$db->setQuery(
+				'DELETE FROM #__sdi_virtualservice_servicecompliance WHERE service_id = '.$id
+		);
+		$db->query();
+	
+		$arr_pks = json_decode ($pks);
+		foreach ($arr_pks as $pk)
+		{
+			try {
+				$db->setQuery(
+						'INSERT INTO #__sdi_virtualservice_servicecompliance (service_id, servicecompliance_id) ' .
+						' VALUES ('.$id.',(SELECT c.id FROM #__sdi_sys_servicecompliance c INNER JOIN #__sdi_sys_serviceversion v ON c.serviceversion_id = v.id WHERE c.serviceconnector_id = '.$connector.' AND v.value="'.$pk.'"))'
+				);
+				if (!$db->query()) {
+					throw new Exception($db->getErrorMsg());
+				}
+			} catch (Exception $e) {
+				$this->setError($e->getMessage());
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

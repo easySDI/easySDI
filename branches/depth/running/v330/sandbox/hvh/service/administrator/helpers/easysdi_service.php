@@ -139,7 +139,6 @@ class Easysdi_serviceHelper
 		$completeurl = "";
 		foreach ($implemented_versions as $version){
 			$completeurl = $url.$separator."REQUEST=GetCapabilities&SERVICE=".$service."&VERSION=".$version->value;
-			
 			$session 	= curl_init($completeurl);
 			if (!empty($user)  && !empty($password))
 			{

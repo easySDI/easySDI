@@ -255,7 +255,7 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 	}
 	
 	/**
-	 * Method to get the service compliance deducted from the negotiation process and saved into database
+	 * Method to get the service compliance 
 	 *
 	 * @param int		$id		primary key of the current service to get.
 	 *

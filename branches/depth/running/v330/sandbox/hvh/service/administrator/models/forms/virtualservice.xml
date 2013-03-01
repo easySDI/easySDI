@@ -9,15 +9,7 @@
 				query="SELECT 0 AS `id`, '- Please select -' AS `value` UNION SELECT `id`, `value` FROM `#__sdi_sys_serviceconnector` WHERE `state` = 1 ORDER BY `value`"
 				key_field="id" 
 				value_field="value"/>
-		<field 	name="physicalservice_id" 
-				type="sql" 
-				class="inputbox" 
-				label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" 
-				description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST_DESC"
-				query="SELECT 0 AS `id`, '- Please select -' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_physicalservice`"
-				key_field="id" 
-				value_field="name" 
-				required="true"/>
+		
 		<field 	name="exceptionlevel_id" 
 				type="sql" 
 				class="inputbox" 
@@ -69,14 +61,67 @@
 
 
 	<fieldset name="wms">
+		<field  name="serviceconnector_id" 
+				type="sql" 
+				class="inputbox"
+				label="COM_EASYSDI_SERVICE_CONNECTOR_CHOICE" 
+				description="COM_EASYSDI_SERVICE_CONNECTOR_CHOICE_DESC"
+				query="SELECT `id`, `value` FROM `#__sdi_sys_serviceconnector` WHERE `state` = 1 AND `value`='WMS' ORDER BY `value`"
+				key_field="id" 
+				value_field="value"/>
+				
+		<field 	name="physicalservice_id" 
+				type="sql" 
+				class="multiselect"
+				multiple="true"
+				onchange="updateAgregatedVersion();"
+				label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" 
+				description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST_DESC"
+				query="SELECT s.id as id,CONCAT(s.alias, ' - ', s.resourceurl,' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
+				INNER JOIN #__sdi_physicalservice_servicecompliance sc ON sc.service_id = s.id
+				INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
+				INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id
+				INNER JOIN #__sdi_sys_serviceconnector sycc ON sycc.id = syc.serviceconnector_id
+				WHERE sycc.value = 'WMS'
+				AND s.state= 1
+				GROUP BY s.id"
+				key_field="id" 
+				value_field="value" 
+				required="true"
+				/>
+		<field 	name="supportedversions" 
+				type="supportedversions" 
+				class="readonly"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_VERSION" 
+				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_VERSION" 
+				filter="unset" 
+				/>
+				
 		<field name="name" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_NAME" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_NAME" filter="safehtml" required="true"/>
 		<field name="alias" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_ALIAS" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_ALIAS" filter="safehtml"/>
 		<field name="connector" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONNECTOR" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONNECTOR" filter="safehtml"/>
 		<field name="reflectedurl" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDURL" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDURL" filter="safehtml"/>
 		<field name="reflectedmetadata" type="checkbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDMETADATA" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDMETADATA" value="1" default="0"/>
 		<field name="identifiersearchattribute" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_IDENTIFIERSEARCHATTRIBUTE" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_IDENTIFIERSEARCHATTRIBUTE" filter="safehtml"/>
-		<!--field name="proxytype_id" type="sql" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_PROXYTYPE_ID" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_PROXYTYPE_ID" query="SELECT 0 AS `id`, '- Please select -' AS `proxytype` UNION SELECT `id`, `proxytype` FROM `#__sdi_sys_proxytype`" key_field="id" value_field="proxytype"/-->
-
+		
+		<field 	name="exceptionlevel_id" 
+				type="sql" 
+				class="inputbox" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_EXCEPTIONLEVEL_ID" 
+				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_EXCEPTIONLEVEL_ID" 
+				query="SELECT 0 AS `id`, '- Please select -' AS `value` UNION SELECT `id`, `value` FROM `#__sdi_sys_exceptionlevel`" 
+				key_field="id" 
+				value_field="value"/>
+		<field 	name="xsltfilename" 
+				type="text" 
+				size="40" 
+				class="inputbox" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_XSLTFILENAME" 
+				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_XSLTFILENAME" 
+				filter="safehtml"/>
+		
+		<field name="compliance" id="compliance" type="hidden" filter="SAFEHTML" />
+		<field name="proxytype_id" type="hidden" default="1"/>
 		<field name="checked_out" type="hidden" filter="unset"/>
 		<field name="checked_out_time" type="hidden" filter="unset"/>
 		<field name="id" type="hidden" filter="unset"/>

@@ -97,12 +97,12 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 
 	function getSupportedVersions()
 	{
-	    if(request.readyState == 4){
+		if(request.readyState == 4){
 	    	document.getElementById("progress").style.visibility = "hidden";
 			var JSONtext = request.responseText;
 			if(JSONtext == "[]"){
-				dv=document.createElement('div');
-		    	dv.className = "errornegotiation";
+				dv=document.createElement('span');
+		    	dv.className = "label label-important";
 		    	txt=document.createTextNode('<?php echo JText::_('COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION_ERROR'); ?>');
 		    	dv.appendChild(txt);
 		    	document.getElementById('div-supportedversions').appendChild(dv);

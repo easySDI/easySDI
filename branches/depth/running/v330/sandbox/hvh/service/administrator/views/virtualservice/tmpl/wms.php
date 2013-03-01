@@ -21,19 +21,7 @@ JHtml::_('behavior.keepalive');
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
 ?>
-<script>
-	var obj = document.getElementById('jform_sys_serviceconnector_id');
-	var servicetype = '<?php echo JRequest::getVar('layout', null); ?>';
-	for (var i = 0; i < obj.options.length; i++) {
-		if (servicetype == obj.options[i].text) {
-			obj.selectedIndex = i;
-			break;
-		}
-	}
-	obj.onchange = function () {
-		window.location = "<?php echo html_entity_decode(JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.JRequest::getVar('id',null).'&layout=')); ?>" + obj.options[obj.selectedIndex].text;
-	};
-</script>
+
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.JRequest::getVar('id',null)); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
 	<div class="row-fluid">
 		<div class="span10 form-horizontal">
@@ -51,22 +39,15 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 				<div class="tab-pane active" id="details">
 					<fieldset>
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_DETAILS' );?></legend>
-					<?php foreach($this->form->getFieldset('details') as $field):?> 
+					<?php foreach($this->form->getFieldset('wms') as $field): 
+					?> 
 						<div class="control-group">
 							<div class="control-label"><?php echo $field->label; ?></div>
 							<div class="controls"><?php echo $field->input; ?></div>
 						</div>
 					<?php endforeach; ?>
 					</fieldset>
-					<fieldset>
-					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_INFOS' );?></legend>
-					<?php foreach($this->form->getFieldset('wms') as $field):?> 
-						<div class="control-group">
-							<div class="control-label"><?php echo $field->label; ?></div>
-							<div class="controls"><?php echo $field->input; ?></div>
-						</div>
-					<?php endforeach; ?>
-					</fieldset>
+					
 					<fieldset>
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_LOG_CONFIGURATION' );?></legend>
 					<?php foreach($this->form->getFieldset('log_config') as $field):

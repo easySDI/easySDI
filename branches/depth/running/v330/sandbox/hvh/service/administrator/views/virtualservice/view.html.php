@@ -26,6 +26,8 @@ class Easysdi_serviceViewVirtualservice extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
+		JHtml::_('bootstrap.framework');
+		
 		$this->state	= $this->get('State');
 		$this->item		= $this->get('Item');
 		$this->form		= $this->get('Form');
@@ -73,58 +75,14 @@ class Easysdi_serviceViewVirtualservice extends JViewLegacy
 			}
 		}
 		
-		function addNewServer()
+		function updateAgregatedVersion ()
 		{
-			var tr = document.createElement('tr');	
-			tr.id = "remoteServerTableRow"+nbServer;
-			
-			var tdservice = document.createElement('td');
-			var service = document.getElementById('service_0').cloneNode(true);
-			service.name = 'service_'+nbServer;
-			service.id = 'service_'+nbServer;
-			service.options[0].selected= true;
-			tdservice.appendChild(service);
-			tr.appendChild(tdservice);
-			
-			var tdRemove = document.createElement('td');	
-			var aButton = document.createElement('input');
-			aButton.type="button";
-			aButton.value="<?php echo JText::_( 'COM_EASYSDI_SERVICE_SERVICE_REMOVE' ); ?>";
-			aButton.setAttribute("onClick","removeServer("+nbServer+");");
-			tdRemove.appendChild(aButton);
-			tr.appendChild(tdRemove);
-			
-			document.getElementById("remoteServerTable").appendChild(tr);
-			nbServer = nbServer + 1;
-			document.getElementById("nbServer").value = nbServer;	
-		}
-		
-		function removeServer(servNo)
-		{
-			noeud = document.getElementById("remoteServerTable");
-			var fils = document.getElementById("remoteServerTableRow"+servNo);
-			noeud.removeChild(fils);	
-			nbServer = nbServer - 1;	
-			document.getElementById("nbServer").value = nbServer;
-			serviceSelection(servNo);
-		}
-		function serviceSelection(servNo)
-		{
-			//Mettre � jour la liste des versions support�es par la config
 			var supportedVersionsArray ;
-			for(i = 0 ; i < nbServer ; i++)
-			{
-				var selectBoxName = 'service_'+i;
-				var server = document.getElementById(selectBoxName);
-				if(server.getSelected()[0].value == 0 ){
-					if(nbServer == 1){
-						document.getElementById("supportedVersionsByConfig").value=JSON.stringify(supportedVersionsArray);
-						removeAllElementChild( document.getElementById("supportedVersionsByConfigText"));
-						return;
-					}
-					continue;
-				}
-				var selected = server.getSelected()[0].text;
+			
+			jQuery('#div-supportedversions').html("");
+			jQuery('#jform_compliance').val("");
+			jQuery('#jform_physicalservice_id :selected').each(function(i, selected){ 
+				var selected = jQuery(selected).text();
 				var versions = selected.split(' - ')[2];
 				var versionsArray = versions.substring(1, versions.length -1).split('-');
 
@@ -135,14 +93,19 @@ class Easysdi_serviceViewVirtualservice extends JViewLegacy
 							supportedVersionsArray.splice(1,j);
 						}
 					}
+					
 				}else{
 					supportedVersionsArray = versionsArray;
 				}
+				 
+			});
+			
+			jQuery('#jform_compliance').val(JSON.stringify(supportedVersionsArray));
+
+			if(supportedVersionsArray && supportedVersionsArray.length > 0)
+			{
+				jQuery('#div-supportedversions').html(createSupportedVersionLabel(supportedVersionsArray)) ;
 			}
-			document.getElementById("supportedVersionsByConfig").value=JSON.stringify(supportedVersionsArray);
-			removeAllElementChild( document.getElementById("supportedVersionsByConfigText"));
-			if(supportedVersionsArray.length > 0)
-				document.getElementById("supportedVersionsByConfigText").appendChild(createSupportedVersionByConfigTable(supportedVersionsArray)) ; 
 		}
 
 		function contains(arr, findValue) {
@@ -153,29 +116,15 @@ class Easysdi_serviceViewVirtualservice extends JViewLegacy
 		    }
 		    return false;
 		}
-		function removeAllElementChild (cell){
-			if ( cell.hasChildNodes() )
-			{
-			    while ( cell.childNodes.length >= 1 )
-			    {
-			        cell.removeChild( cell.firstChild );       
-			    } 
-			}
-		}
-		function createSupportedVersionByConfigTable(aNupportedVersionByConfig){
-			var table = document.createElement('table');
-			var tr = document.createElement('tr');
-			table.appendChild(tr);
-			
-			for( var i = 0 ; i < aNupportedVersionByConfig.length ; i++ ){
-				var td = document.createElement('td');
-				var text = document.createTextNode(aNupportedVersionByConfig[i]);
-				td.setAttribute("class","supportedversion");
-				td.appendChild(text);
-				tr.appendChild(td);
-			}
 
-			return table;
+		function createSupportedVersionLabel(versions){
+			var html = '';
+			for( var i = 0 ; i < versions.length ; i++ ){
+				html += '<span class="label label-info">';
+				html += versions[i];
+				html += '</span>';
+			}
+			return html;
 		}
 		</script>
 		
@@ -183,20 +132,6 @@ class Easysdi_serviceViewVirtualservice extends JViewLegacy
 		
 		$params 			= JComponentHelper::getParams('com_easysdi_service');
 		$this->id 			= JRequest::getVar('id',null);
-		
-		$db 			= JFactory::getDBO();
-		$db->setQuery("SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector WHERE state = 1") ;
-		$this->serviceconnectorlist = $db->loadObjectList();
-		
-		$db->setQuery("SELECT 0 AS alias, '- Please select -' AS value UNION SELECT s.alias as alias,CONCAT(s.alias, ' - ', s.resourceurl,' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
-				INNER JOIN #__sdi_physicalservice_servicecompliance sc ON sc.service_id = s.id
-				INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
-				INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id
-				INNER JOIN #__sdi_sys_serviceconnector sycc ON sycc.id = syc.serviceconnector_id
-				WHERE sycc.value = '".JRequest::getVar('layout',null)."'
-				AND s.state= 1
-				GROUP BY s.id") ;
-		$this->servicelist = $db->loadObjectList();
 		
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
