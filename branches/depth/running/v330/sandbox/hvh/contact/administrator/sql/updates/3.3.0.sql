@@ -58,3 +58,6 @@ ADD CONSTRAINT `#__sdi_user_role_organism_fk2` FOREIGN KEY (`role_id`) REFERENCE
 
 ALTER TABLE `#__sdi_user_role_organism`
 ADD CONSTRAINT `#__sdi_user_role_organism_fk3` FOREIGN KEY (`organism_id`) REFERENCES `#__sdi_organism` (`id`) ON DELETE CASCADE ;
+
+ALTER TABLE `#__sdi_sys_addresstype` DROP COLUMN checked_out;
+ALTER TABLE `#__sdi_sys_addresstype` DROP COLUMN checked_out_time;

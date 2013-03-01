@@ -100,8 +100,8 @@ class com_easysdi_contactInstallerScript
 				return false;
 			}
 			$newaccount->user_id 	= $user->id;
-			$newaccount->acronym	= $user->username;
 			$newaccount->catid 		= $row->id;
+			$newaccount->ordering	= 1;
 			$result 				= $newaccount->store();
 			if (!(isset($result)) || !$result) {
 				JError::raiseError(42, JText::_('COM_EASYSDI_CONTACT_POSTFLIGHT_SCRIPT_USER_ERROR_STORE'). $newaccount->getError());
