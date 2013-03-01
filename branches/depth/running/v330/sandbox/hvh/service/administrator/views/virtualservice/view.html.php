@@ -110,7 +110,7 @@ class Easysdi_serviceViewVirtualservice extends JViewLegacy
 		}
 		function serviceSelection(servNo)
 		{
-			//Mettre à jour la liste des versions supportées par la config
+			//Mettre ï¿½ jour la liste des versions supportï¿½es par la config
 			var supportedVersionsArray ;
 			for(i = 0 ; i < nbServer ; i++)
 			{

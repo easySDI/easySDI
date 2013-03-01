@@ -64,10 +64,10 @@ ADD CONSTRAINT `#__sdi_wmslayerpolicy_fk_wmslayer` FOREIGN KEY (`wmslayer_id`) R
 ALTER TABLE `#__sdi_allowedoperation`
 ADD CONSTRAINT `#__sdi_allowedoperation_fk_policy` FOREIGN KEY (`policy_id`) REFERENCES `#__sdi_policy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE `#__sdi_versiontype`
+ALTER TABLE `#__sdi_policy_versiontype`
 ADD CONSTRAINT `#__sdi_versiontype_fk_policy` FOREIGN KEY (`policy_id`) REFERENCES `#__sdi_policy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE `#__sdi_visibilitytype`
+ALTER TABLE `#__sdi_policy_accessscope`
 ADD CONSTRAINT `#__sdi_visibilitytype_fk_policy` FOREIGN KEY (`policy_id`) REFERENCES `#__sdi_policy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `#__sdi_elementrestriction`

@@ -231,9 +231,8 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 		//Delete previously saved compliance
 		$db = $this->getDbo();
 		$db->setQuery(
-				'DELETE FROM #__sdi_physicalservice_servicecompliance WHERE AND service_id = '.$id
+				'DELETE FROM #__sdi_physicalservice_servicecompliance WHERE service_id = '.$id
 		);
-//'DELETE FROM #__sdi_physicalservice_servicecompliance WHERE physicalservice_id = '.$id
 		$db->query();
 		
 		$arr_pks = json_decode ($pks);
@@ -244,11 +243,6 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 						'INSERT INTO #__sdi_physicalservice_servicecompliance (service_id, servicecompliance_id) ' .
 						' VALUES ('.$id.','.$pk.')'
 				);
-/*
- * 'INSERT INTO #__sdi_physicalservice_servicecompliance (physicalservice_id, servicecompliance_id) ' .
-						' VALUES ('.$id.','.$pk.')'
-			
-			*/
 				if (!$db->query()) {
 					throw new Exception($db->getErrorMsg());
 				}

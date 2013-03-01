@@ -155,16 +155,16 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 		$query->select('created_by.name AS created_by');
 		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
 		// Join over the foreign key 'proxytype_id'
-		$query->select('#__sdi_sys_proxytype_278358.proxytype AS sysproxytypes_proxytype_278358');
+		$query->select('#__sdi_sys_proxytype_278358.value AS sysproxytypes_proxytype_278358');
 		$query->join('LEFT', '#__sdi_sys_proxytype AS #__sdi_sys_proxytype_278358 ON #__sdi_sys_proxytype_278358.id = a.proxytype_id');
 		// Join over the foreign key 'exceptionlevel_id'
-		$query->select('#__sdi_sys_exceptionlevel_278360.exceptionlevel AS sysexceptionlevels_exceptionlevel_278360');
+		$query->select('#__sdi_sys_exceptionlevel_278360.value AS sysexceptionlevels_exceptionlevel_278360');
 		$query->join('LEFT', '#__sdi_sys_exceptionlevel AS #__sdi_sys_exceptionlevel_278360 ON #__sdi_sys_exceptionlevel_278360.id = a.exceptionlevel_id');
 		// Join over the foreign key 'loglevel_id'
-		$query->select('#__sdi_sys_loglevel_278362.loglevel AS sysloglevels_loglevel_278362');
+		$query->select('#__sdi_sys_loglevel_278362.value AS sysloglevels_loglevel_278362');
 		$query->join('LEFT', '#__sdi_sys_loglevel AS #__sdi_sys_loglevel_278362 ON #__sdi_sys_loglevel_278362.id = a.loglevel_id');
 		// Join over the foreign key 'logroll_id'
-		$query->select('#__sdi_sys_logroll_278363.logroll AS __sdi_sys_logroll5937s_logroll_278363');
+		$query->select('#__sdi_sys_logroll_278363.value AS __sdi_sys_logroll5937s_logroll_278363');
 		$query->join('LEFT', '#__sdi_sys_logroll AS #__sdi_sys_logroll_278363 ON #__sdi_sys_logroll_278363.id = a.logroll_id');
 
 

@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="details">
-		<field name="sys_serviceconnector_id" type="sql" class="inputbox" label="COM_EASYSDI_SERVICE_CONNECTOR_CHOICE" description=""
-		query="SELECT 0 AS `id`, '- Please select -' AS `value` UNION SELECT `id`, `value` FROM `#__sdi_sys_serviceconnector` WHERE `state` = 1 ORDER BY `value`"
-		key_field="id" value_field="value"/>
-		<field name="physicalservice_id" type="sql" class="inputbox" label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" description=""
-		query="SELECT 0 AS `id`, '- Please select -' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_physicalservice`"
-		key_field="id" value_field="name" required="true"/>
-		<field name="exceptionlevel_id" type="sql" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_EXCEPTIONLEVEL_ID" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_EXCEPTIONLEVEL_ID" query="SELECT 0 AS `id`, '- Please select -' AS `exceptionlevel` UNION SELECT `id`, `exceptionlevel` FROM `#__sdi_sys_exceptionlevel`" key_field="id" value_field="exceptionlevel"/>
-		<field name="xsltfilename" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_XSLTFILENAME" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_XSLTFILENAME" filter="safehtml"/>
-
+		<field  name="serviceconnector_id" 
+				type="sql" 
+				class="inputbox" 
+				label="COM_EASYSDI_SERVICE_CONNECTOR_CHOICE" 
+				description="COM_EASYSDI_SERVICE_CONNECTOR_CHOICE_DESC"
+				query="SELECT 0 AS `id`, '- Please select -' AS `value` UNION SELECT `id`, `value` FROM `#__sdi_sys_serviceconnector` WHERE `state` = 1 ORDER BY `value`"
+				key_field="id" 
+				value_field="value"/>
+		<field 	name="physicalservice_id" 
+				type="sql" 
+				class="inputbox" 
+				label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" 
+				description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST_DESC"
+				query="SELECT 0 AS `id`, '- Please select -' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_physicalservice`"
+				key_field="id" 
+				value_field="name" 
+				required="true"/>
+		<field 	name="exceptionlevel_id" 
+				type="sql" 
+				class="inputbox" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_EXCEPTIONLEVEL_ID" 
+				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_EXCEPTIONLEVEL_ID" 
+				query="SELECT 0 AS `id`, '- Please select -' AS `value` UNION SELECT `id`, `value` FROM `#__sdi_sys_exceptionlevel`" 
+				key_field="id" 
+				value_field="value"/>
+		<field 	name="xsltfilename" 
+				type="text" 
+				size="40" 
+				class="inputbox" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_XSLTFILENAME" 
+				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_XSLTFILENAME" 
+				filter="safehtml"/>
 		<field name="proxytype_id" type="hidden" default="1"/>
 	</fieldset>
 
@@ -19,10 +42,10 @@
 		<field name="logprefixfilename" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_LOGPREFIXFILENAME" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_LOGPREFIXFILENAME" filter="safehtml" required="true"/>
 		<field name="logsuffixfilename" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_LOGSUFFIXFILENAME" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_LOGSUFFIXFILENAME" filter="safehtml" required="true"/>
 		<field name="logextensionfilename" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_LOGEXTENSIONFILENAME" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_LOGEXTENSIONFILENAME" filter="safehtml" required="true"/>
-		<field name="loglevel_id" type="sql" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_LOGLEVEL_ID" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_LOGLEVEL_ID" query="SELECT 0 AS `id`, '- Please select -' AS `loglevel` UNION SELECT `id`, `loglevel` FROM `#__sdi_sys_loglevel`" key_field="id" value_field="loglevel" required="true"/>
-		<field name="logroll_id" type="sql" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_LOGROLL_ID" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_LOGROLL_ID" query="SELECT 0 AS `id`, '- Please select -' AS `logroll` UNION SELECT `id`, `logroll` FROM `#__sdi_sys_logroll`" key_field="id" value_field="logroll" required="true"/>
+		<field name="loglevel_id" type="sql" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_LOGLEVEL_ID" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_LOGLEVEL_ID" query="SELECT 0 AS `id`, '- Please select -' AS `value` UNION SELECT `id`, `value` FROM `#__sdi_sys_loglevel`" key_field="id" value_field="value" required="true"/>
+		<field name="logroll_id" type="sql" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_LOGROLL_ID" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_LOGROLL_ID" query="SELECT 0 AS `id`, '- Please select -' AS `value` UNION SELECT `id`, `value` FROM `#__sdi_sys_logroll`" key_field="id" value_field="value" required="true"/>
 	</fieldset>
-	
+
 	<fieldset name="contact">
 		<field name="contactOrganization" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_CONTACT_ORGANIZATION" description="" filter="safehtml"/>
 		<field name="contactPerson" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_CONTACT_PERSON" description="" filter="safehtml"/>
@@ -43,8 +66,8 @@
 		<field name="fee" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_FEES" description="" filter="safehtml"/>
 		<field name="accessconstraint" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_CONSTRAINTS" description="" filter="safehtml"/>
 	</fieldset>
-	
-	
+
+
 	<fieldset name="wms">
 		<field name="name" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_NAME" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_NAME" filter="safehtml" required="true"/>
 		<field name="alias" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_ALIAS" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_ALIAS" filter="safehtml"/>
@@ -53,7 +76,7 @@
 		<field name="reflectedmetadata" type="checkbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDMETADATA" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDMETADATA" value="1" default="0"/>
 		<field name="identifiersearchattribute" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_IDENTIFIERSEARCHATTRIBUTE" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_IDENTIFIERSEARCHATTRIBUTE" filter="safehtml"/>
 		<!--field name="proxytype_id" type="sql" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_PROXYTYPE_ID" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_PROXYTYPE_ID" query="SELECT 0 AS `id`, '- Please select -' AS `proxytype` UNION SELECT `id`, `proxytype` FROM `#__sdi_sys_proxytype`" key_field="id" value_field="proxytype"/-->
-		
+
 		<field name="checked_out" type="hidden" filter="unset"/>
 		<field name="checked_out_time" type="hidden" filter="unset"/>
 		<field name="id" type="hidden" filter="unset"/>
@@ -68,7 +91,7 @@
 		<field name="reflectedurl" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDURL" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDURL" filter="safehtml"/>
 		<field name="reflectedmetadata" type="checkbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDMETADATA" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDMETADATA" value="1" default="0"/>
 		<field name="identifiersearchattribute" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_IDENTIFIERSEARCHATTRIBUTE" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_IDENTIFIERSEARCHATTRIBUTE" filter="safehtml"/>
-		
+
 		<field name="checked_out" type="hidden" filter="unset"/>
 		<field name="checked_out_time" type="hidden" filter="unset"/>
 		<field name="id" type="hidden" filter="unset"/>
@@ -85,7 +108,7 @@
 		<field name="reflectedurl" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDURL" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDURL" filter="safehtml"/>
 		<field name="reflectedmetadata" type="checkbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDMETADATA" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDMETADATA" value="1" default="0"/>
 		<field name="identifiersearchattribute" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_IDENTIFIERSEARCHATTRIBUTE" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_IDENTIFIERSEARCHATTRIBUTE" filter="safehtml"/>
-		
+
 		<field name="checked_out" type="hidden" filter="unset"/>
 		<field name="checked_out_time" type="hidden" filter="unset"/>
 		<field name="id" type="hidden" filter="unset"/>
@@ -104,7 +127,7 @@
 		<field name="reflectedurl" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDURL" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDURL" filter="safehtml"/>
 		<field name="reflectedmetadata" type="checkbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDMETADATA" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDMETADATA" value="1" default="0"/>
 		<field name="identifiersearchattribute" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_IDENTIFIERSEARCHATTRIBUTE" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_IDENTIFIERSEARCHATTRIBUTE" filter="safehtml"/>
-		
+
 		<field name="checked_out" type="hidden" filter="unset"/>
 		<field name="checked_out_time" type="hidden" filter="unset"/>
 		<field name="id" type="hidden" filter="unset"/>
@@ -117,7 +140,7 @@
 		<field name="contactAvailability" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_CONTACT_HOURS" description="" filter="safehtml"/>
 		<field name="contactInstruction" type="textarea" rows="3"  cols="30" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_CONTACT_INSTRUCTIONS" description="" filter="safehtml"/>
 	</fieldset>
-	
+
 	<fieldset name="publishing">
 		<field 	name="created_by" 
 				type="user" 
@@ -150,15 +173,15 @@
 				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_MODIFIED"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_MODIFIED" 
                 filter="safehtml" /> 
-     </fieldset>
-     
-     <field 	name="access"
+	</fieldset>
+
+	<field 	name="access"
 			type="accesslevel"
 			label="JFIELD_ACCESS_LABEL"
 			description="JFIELD_ACCESS_DESC"
 			class="inputbox"
 			size="1" />
-				        
+
 	<field  name="state"
                type="list"
                label="JSTATUS"
@@ -166,13 +189,13 @@
                class="inputbox"
                size="1"
                default="0">
-			<option value="1">JPUBLISHED</option>
-			<option value="0">JUNPUBLISHED</option>
-			<option value="2">JARCHIVED</option>
-               <option value="-2">JTRASHED</option>
+		<option value="1">JPUBLISHED</option>
+		<option value="0">JUNPUBLISHED</option>
+		<option value="2">JARCHIVED</option>
+		<option value="-2">JTRASHED</option>
 	</field> 
-	
-     <fieldset name="rulesdefinition">
+
+	<fieldset name="rulesdefinition">
 		<field 	name="rules" 
 				type="rules" 
 				label="JFIELD_RULES_LABEL"

@@ -21,12 +21,25 @@ JHtml::_('behavior.keepalive');
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
 ?>
+<script>
+	var obj = document.getElementById('jform_sys_serviceconnector_id');
+	var servicetype = '<?php echo JRequest::getVar('layout', null); ?>';
+	for (var i = 0; i < obj.options.length; i++) {
+		if (servicetype == obj.options[i].text) {
+			obj.selectedIndex = i;
+			break;
+		}
+	}
+	obj.onchange = function () {
+		window.location = "<?php echo html_entity_decode(JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.JRequest::getVar('id',null).'&layout=')); ?>" + obj.options[obj.selectedIndex].text;
+	};
+</script>
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.JRequest::getVar('id',null)); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
 	<div class="row-fluid">
 		<div class="span10 form-horizontal">
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_SERVICE_TAB_NEW_SERVICE') : JText::sprintf('COM_EASYSDI_SERVICE_TAB_EDIT_SERVICE', $this->item->id); ?></a></li>
-				<li><a href="#metadata" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_PROVIDER');?></a></li>
+				<li><a href="#metadata" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_METADATA');?></a></li>
 				<li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_PUBLISHING');?></a></li>
 				<?php if ($this->canDo->get('core.admin')): ?>
 					<li><a href="#permissions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_RULES');?></a></li>
@@ -37,7 +50,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 				<!-- Begin Tabs -->
 				<div class="tab-pane active" id="details">
 					<fieldset>
-					<legend>Legend</legend>
+					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_DETAILS' );?></legend>
 					<?php foreach($this->form->getFieldset('details') as $field):?> 
 						<div class="control-group">
 							<div class="control-label"><?php echo $field->label; ?></div>
@@ -45,22 +58,19 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 						</div>
 					<?php endforeach; ?>
 					</fieldset>
-					<script>
-						var obj = document.getElementById('jform_sys_serviceconnector_id');
-						var servicetype = '<?php echo JRequest::getVar('layout', null); ?>';
-						for (var i = 0; i < obj.options.length; i++) {
-							if (servicetype == obj.options[i].text) {
-								obj.selectedIndex = i;
-								break;
-							}
-						}
-						obj.onchange = function () {
-							window.location = "<?php echo html_entity_decode(JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.JRequest::getVar('id',null).'&layout=')); ?>" + obj.options[obj.selectedIndex].text;
-						};
-					</script>
 					<fieldset>
-					<legend>Legend</legend>
-					<?php foreach($this->form->getFieldset('log_config') as $field):?> 
+					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_INFOS' );?></legend>
+					<?php foreach($this->form->getFieldset('wms') as $field):?> 
+						<div class="control-group">
+							<div class="control-label"><?php echo $field->label; ?></div>
+							<div class="controls"><?php echo $field->input; ?></div>
+						</div>
+					<?php endforeach; ?>
+					</fieldset>
+					<fieldset>
+					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_LOG_CONFIGURATION' );?></legend>
+					<?php foreach($this->form->getFieldset('log_config') as $field):
+					?> 
 						<div class="control-group">
 							<div class="control-label"><?php echo $field->label; ?></div>
 							<div class="controls"><?php echo $field->input; ?></div>
@@ -70,15 +80,9 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 				</div>
 				
 				<div class="tab-pane" id="metadata">
+					
 					<fieldset>
-					<?php foreach($this->form->getFieldset('wms') as $field):?> 
-						<div class="control-group">
-							<div class="control-label"><?php echo $field->label; ?></div>
-							<div class="controls"><?php echo $field->input; ?></div>
-						</div>
-					<?php endforeach; ?>
-					</fieldset>
-					<fieldset>
+					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_METADATA' );?></legend>
 					<?php foreach($this->form->getFieldset('metadata') as $field):?> 
 						<div class="control-group">
 							<div class="control-label"><?php echo $field->label; ?></div>
@@ -87,6 +91,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 					<?php endforeach; ?>
 					</fieldset>
 					<fieldset>
+					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_METADATA_CONTACT' );?></legend>
 					<?php foreach($this->form->getFieldset('contact') as $field):?> 
 						<div class="control-group">
 							<?php if ('jform[city]' != $field->name) :?>
