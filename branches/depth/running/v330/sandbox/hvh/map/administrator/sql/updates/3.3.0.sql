@@ -10,3 +10,7 @@ ALTER TABLE `#__sdi_layergroup` CHANGE `context_id` `map_id` UNSIGNED NOT NULL;
 ALTER TABLE `#__sdi_map_physicalservice` CHANGE `context_id` `map_id` UNSIGNED NOT NULL;
 ALTER TABLE `#__sdi_map_tool` CHANGE `context_id` `map_id` UNSIGNED NOT NULL;
 ALTER TABLE `#__sdi_map_virtualservice` CHANGE `context_id` `map_id` UNSIGNED NOT NULL;
+
+ALTER TABLE `#__sdi_sys_map_tool` DROP COLUMN checked_out;
+ALTER TABLE `#__sdi_sys_map_tool` DROP COLUMN checked_out_time;
+ALTER TABLE `#__sdi_sys_map_tool` DROP COLUMN created_by;
