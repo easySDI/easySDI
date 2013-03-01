@@ -133,10 +133,12 @@ class Easysdi_serviceViewVirtualservice extends JViewLegacy
 		$params 			= JComponentHelper::getParams('com_easysdi_service');
 		$this->id 			= JRequest::getVar('id',null);
 		
+		
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $errors));
 		}
+		
 		
 		$this->addToolbar();
 		parent::display($tpl);

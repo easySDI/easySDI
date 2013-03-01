@@ -155,10 +155,12 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 				}
 			}
 			if(count($compliance_ids)>0)
-				$item->compliance = json_encode($compliance_ids);
+				$item->compliance = json_encode($compliance_values);
 			else
 				$item->compliance = '';
 			$item->supportedversions = json_encode($compliance_values);
+			
+			$item->physicalservice_id = $this->getPhysicalServiceAggregation($item->id);
 		}
 
 		return $item;
@@ -236,7 +238,6 @@ public function getItem($pk = null)
 	 * @since   11.1
 	 */
 	public function save($data) {
-		
 		if(parent::save($data)){
 			//Instantiate an address JTable
 			$virtualmetadata =& JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
@@ -245,14 +246,72 @@ public function getItem($pk = null)
 			if( !$virtualmetadata->save($data) ){	
 				return false;
 			}
-			
+			if(isset($data['physicalservice_id']))
+			{
+				 if(!$this->savePhysicalServiceAggregation($data, $this->getState($this->getName().'.id')))
+				 	return false;
+			}
 			if(isset($data['compliance']))
 			{
-				return $this->saveServiceCompliance($data['compliance'],$data['serviceconnector_id'], $this->getState($this->getName().'.id'));
+				 if(!$this->saveServiceCompliance($data['compliance'],$data['serviceconnector_id'], $this->getState($this->getName().'.id')))
+				 	return false;
 			}
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * 
+	 */
+	protected function savePhysicalServiceAggregation ($data, $id)
+	{
+		$db = $this->getDbo();
+		$db->setQuery(
+				'DELETE FROM #__sdi_virtual_physical WHERE virtualservice_id = '.$id
+		);
+		$db->query();
+		
+		$arr_pks = $data['physicalservice_id'];
+		foreach ($arr_pks as $pk)
+		{
+			try {
+				$db->setQuery(
+						'INSERT INTO #__sdi_virtual_physical (virtualservice_id, physicalservice_id) ' .
+						' VALUES ('.$id.','.$pk.')'
+				);
+				if (!$db->query()) {
+					throw new Exception($db->getErrorMsg());
+				}
+			} catch (Exception $e) {
+				$this->setError($e->getMessage());
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * 
+	 */
+	public function getPhysicalServiceAggregation ( $id=null)
+	{
+		if(!isset($id))
+			return null;
+	
+		try {
+			$db = JFactory::getDbo();
+			$db->setQuery(
+					'SELECT physicalservice_id FROM #__sdi_virtual_physical  ' .
+					' WHERE virtualservice_id ='.$id
+			);
+			return  $db->loadColumn();
+	
+		} catch (Exception $e) {
+			$this->setError($e->getMessage());
+			return false;
+		}
+	
 	}
 	
 	/**

@@ -488,3 +488,11 @@ CREATE TABLE IF NOT EXISTS `#__sdi_layer` (
 `physicalservice_id` INT(11)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_virtual_physical` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`virtualservice_id` INT(11)  NOT NULL ,
+`physicalservice_id` INT(11)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
