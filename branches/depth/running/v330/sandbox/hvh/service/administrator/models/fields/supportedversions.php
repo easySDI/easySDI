@@ -22,12 +22,8 @@ class JFormFieldSupportedVersions extends JFormField {
 		$supportedversions = json_decode($this->form->getValue('supportedversions'));
 		// Start the action field output.
 		$html[]  = '<div id="div-supportedversions" class="' . (string) $this->element['class'] . ' ">';
-		if(!$supportedversions){
-			$html[] .= '<span class="star">*</span>';
-		}
-		else 
+		if($supportedversions)
 		{
-			$html[] .= '<span class="star">*</span>';
 			foreach($supportedversions as $supportedversion)
 			{
 				$html[] .= '<span class="label label-info">';

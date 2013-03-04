@@ -35,9 +35,6 @@ class Easysdi_serviceViewVirtualservice extends JViewLegacy
 		if($this->item->layout)
 			$this->setLayout($this->item->layout);
 		
-		if($this->getLayout() == "WMSC")
-			$this->setLayout("WMS");
-		
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $errors));

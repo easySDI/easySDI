@@ -26,26 +26,25 @@ class Easysdi_serviceTablevirtualmetadata extends sdiTable {
 	
 	public function save($src, $orderingFilter = '', $ignore = '') {
 		$data = array();
-		$data['guid'] 										= $src['guid'];
-		$data['title'] 										= $src['title'];
-		$data['summary'] 								= $src['summary'];
-		$data['keyword'] 								= $src['keyword'];
-		$data['contactOrganization'] 	= $src['contactOrganization'];
-		$data['contactName'] 						= $src['contactName'];
-		$data['contactPosition'] 				= $src['contactPosition'];
-		$data['contactAdress'] 					= $src['contactAdress'];
-		$data['contactPostalCode'] 			= $src['contactPostalCode'];
-		$data['contactLocality'] 				= $src['contactLocality'];
-		$data['contactState'] 					= $src['contactState'];
-		$data['contactCountry'] 				= $src['contactCountry'];
-		$data['contactPhone'] 					= $src['contactPhone'];
-		$data['contactFax'] 							= $src['contactFax'];
-		$data['contactEmail'] 					= $src['contactEmail'];
-		$data['contactURL'] 							= $src['contactURL'];
-		$data['contactAvailability'] 	= $src['contactAvailability'];
-		$data['contactInstruction'] 		= $src['contactInstruction'];
-		$data['fee'] 											= $src['fee'];
-		$data['accessConstraint'] 			= $src['accessConstraint'];
+		$data['title'] 						= $src['title'];
+		$data['summary'] 					= $src['summary'];
+		$data['keyword'] 					= $src['keyword'];
+		$data['contactorganization'] 		= $src['contactorganization'];
+		$data['contactname'] 				= $src['contactname'];
+		$data['contactposition'] 			= $src['contactposition'];
+		$data['contactadress'] 				= $src['contactadress'];
+		$data['contactpostalcode'] 			= $src['contactpostalcode'];
+		$data['contactlocality'] 			= $src['contactlocality'];
+		$data['contactstate'] 				= $src['contactstate'];
+		$data['contactcountry'] 			= $src['contactcountry'];
+		$data['contactphone'] 				= $src['contactphone'];
+		$data['contactfax'] 				= $src['contactfax'];
+		$data['contactemail'] 				= $src['contactemail'];
+		$data['contacturl'] 				= $src['contacturl'];
+		$data['contactavailability'] 		= $src['contactavailability'];
+		$data['contactinstruction'] 		= $src['contactinstruction'];
+		$data['fee'] 						= $src['fee'];
+		$data['accessconstraint'] 			= $src['accessconstraint'];
 		$data['virtualservice_id'] 			= $src['id'];
 		
 		return parent::save($data, $orderingFilter , $ignore );

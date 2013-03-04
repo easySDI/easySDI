@@ -42,7 +42,6 @@
 				readonly="true"
 				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SERVICECONNECTOR_ID"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SERVICECONNECTOR_ID"
-				required="true"  
 				filter="safehtml" /> 
 				
 		<field 	name="resourceurl" 

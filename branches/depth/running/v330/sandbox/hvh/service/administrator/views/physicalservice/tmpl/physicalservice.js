@@ -63,7 +63,7 @@ Joomla.submitbutton = function(task)
 				return;
 			}
 			var arrcompliance=new Array();
-			document.getElementById('div-supportedversions').innerHTML = '<span class="star">*</span>';
+			document.getElementById('div-supportedversions').innerHTML = '';
 			var JSONobject = JSON.parse(JSONtext, function (key, value) {
 				var type;
 

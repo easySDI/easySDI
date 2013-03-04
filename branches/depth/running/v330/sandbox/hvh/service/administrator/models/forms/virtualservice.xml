@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="details">
+		<field 	name="serviceconnector" 
+				type="text" 
+				size="70" 
+				class="inputbox"
+				readonly="true"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SERVICECONNECTOR_ID"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SERVICECONNECTOR_ID"
+				filter="safehtml" /> 
         <field name="supportedversions" type="supportedversions" class="readonly"
 			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_VERSION"
 			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_VERSION"
@@ -39,11 +47,6 @@
 	</fieldset>
 	
 	<fieldset name="wms">
-		<field name="serviceconnector_id" type="sql" class="inputbox"
-			label="COM_EASYSDI_SERVICE_CONNECTOR_CHOICE" description="COM_EASYSDI_SERVICE_CONNECTOR_CHOICE_DESC"
-			query="SELECT `id`, `value` FROM `#__sdi_sys_serviceconnector` WHERE `state` = 1 AND `value`='WMS' ORDER BY `value`"
-			key_field="id" value_field="value" />
-
 		<field name="physicalservice_id" type="sql" class="multiselect"
 			multiple="true" onchange="updateAgregatedVersion();"
 			label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST_DESC"
@@ -59,11 +62,6 @@
 	</fieldset>
 
 	<fieldset name="wfs">
-		<field name="serviceconnector_id" type="sql" class="inputbox"
-			label="COM_EASYSDI_SERVICE_CONNECTOR_CHOICE" description="COM_EASYSDI_SERVICE_CONNECTOR_CHOICE_DESC"
-			query="SELECT `id`, `value` FROM `#__sdi_sys_serviceconnector` WHERE `state` = 1 AND `value`='WFS' ORDER BY `value`"
-			key_field="id" value_field="value" />
-
 		<field name="physicalservice_id" type="sql" class="multiselect"
 			multiple="true" onchange="updateAgregatedVersion();"
 			label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST_DESC"
@@ -79,11 +77,6 @@
 	</fieldset>
 	
 	<fieldset name="csw">
-		<field name="serviceconnector_id" type="sql" class="inputbox"
-			label="COM_EASYSDI_SERVICE_CONNECTOR_CHOICE" description="COM_EASYSDI_SERVICE_CONNECTOR_CHOICE_DESC"
-			query="SELECT `id`, `value` FROM `#__sdi_sys_serviceconnector` WHERE `state` = 1 AND `value`='CSW' ORDER BY `value`"
-			key_field="id" value_field="value" />
-
 		<field name="physicalservice_id" type="sql" class="multiselect"
 			multiple="true" onchange="updateAgregatedVersion();"
 			label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST_DESC"
@@ -125,11 +118,6 @@
 	</fieldset>
 	
 	<fieldset name="wmts">
-		<field name="serviceconnector_id" type="sql" class="inputbox"
-			label="COM_EASYSDI_SERVICE_CONNECTOR_CHOICE" description="COM_EASYSDI_SERVICE_CONNECTOR_CHOICE_DESC"
-			query="SELECT `id`, `value` FROM `#__sdi_sys_serviceconnector` WHERE `state` = 1 AND `value`='WMTS' ORDER BY `value`"
-			key_field="id" value_field="value" />
-
 		<field name="physicalservice_id" type="sql" class="multiselect"
 			multiple="true" onchange="updateAgregatedVersion();"
 			label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST_DESC"
@@ -190,37 +178,37 @@
 	</fieldset>
 
 	<fieldset name="contact">
-		<field name="contactOrganization" type="text" size="40" class="inputbox"
+		<field name="contactorganization" type="text" size="40" class="inputbox"
 			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_ORGANIZATION"
 			description="" filter="safehtml" />
-		<field name="contactPerson" type="text" size="40" class="inputbox"
+		<field name="contactperson" type="text" size="40" class="inputbox"
 			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_PERSON" description=""
 			filter="safehtml" />
-		<field name="contactPosition" type="text" size="40" class="inputbox"
+		<field name="contactposition" type="text" size="40" class="inputbox"
 			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_POSITION" description=""
 			filter="safehtml" />
-		<field name="contactAddress" type="text" size="40" class="inputbox"
+		<field name="contactaddress" type="text" size="40" class="inputbox"
 			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_ADRESS" description=""
 			filter="safehtml" />
-		<field name="contactPostalCode" type="text" size="10" class="inputbox"
+		<field name="contactpostalcode" type="text" size="10" class="inputbox"
 			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_CITY" description=""
 			filter="safehtml" />
-		<field name="contactCity" type="text" size="40" class="inputbox"
+		<field name="contactcity" type="text" size="40" class="inputbox"
 			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_CITY" description=""
 			filter="safehtml" />
-		<field name="contactState" type="text" size="40" class="inputbox"
+		<field name="contactstate" type="text" size="40" class="inputbox"
 			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_STATE" description=""
 			filter="safehtml" />
-		<field name="contactCountry" type="text" size="40" class="inputbox"
+		<field name="contactcountry" type="text" size="40" class="inputbox"
 			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_COUNTRY" description=""
 			filter="safehtml" />
-		<field name="contactPhone" type="text" size="40" class="inputbox"
+		<field name="contactphone" type="text" size="40" class="inputbox"
 			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_PHONE" description=""
 			filter="safehtml" />
-		<field name="contactFax" type="text" size="40" class="inputbox"
+		<field name="contactfax" type="text" size="40" class="inputbox"
 			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_FAX" description=""
 			filter="safehtml" />
-		<field name="contactEmail" type="text" size="40" class="inputbox"
+		<field name="contactemail" type="text" size="40" class="inputbox"
 			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_MAIL" description=""
 			filter="safehtml" />
 	</fieldset>
@@ -241,6 +229,7 @@
 	</fieldset>
 	
 	<fieldset name="hidden">
+		<field name="serviceconnector_id" type="hidden" filter="SAFEHTML" />
 		<field name="compliance" id="compliance" type="hidden" filter="SAFEHTML" />
 		<field name="proxytype_id" type="hidden" default="1" />
 		<field name="checked_out" type="hidden" filter="unset" />

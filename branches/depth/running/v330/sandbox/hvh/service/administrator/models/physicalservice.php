@@ -169,7 +169,7 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 			//Get the authentication connectors (depend on connector type)
 			if(!$item->serviceconnector_id)
 			{
-				$item->serviceconnector_id = JRequest::getVar( 'connector' );
+				$item->serviceconnector_id = JRequest::getVar( 'serviceconnector_id' );
 			}
 			
 			$db = JFactory::getDbo();

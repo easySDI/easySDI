@@ -163,10 +163,15 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 			$item->physicalservice_id = $this->getPhysicalServiceAggregation($item->id);
 			
 			//SetLayout
+			if(!$item->serviceconnector_id)
+			{
+				$item->serviceconnector_id = JRequest::getVar( 'connector' );
+			}
 			$serviceconnector =& JTable::getInstance('serviceconnector', 'Easysdi_serviceTable');
 			$serviceconnector->load($item->serviceconnector_id);
+			$item->serviceconnector = $serviceconnector->value;
 			
-			$item->layout = $serviceconnector->value;
+			$item->layout = ($serviceconnector->value == "WMSC")? "WMS" : $serviceconnector->value;
 		}
 
 		return $item;
@@ -249,10 +254,11 @@ public function getItem($pk = null)
 	 */
 	public function save($data) {
 		if(parent::save($data)){
+			$data['id'] = $this->getItem()->get('id');
 			//Instantiate an address JTable
 			$virtualmetadata =& JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
+			$virtualmetadata->loadByVirtualServiceID($data['id']);
 			//Call the overloaded save function to store the input data
-			$data['id'] = $this->getItem()->get('id');
 			if( !$virtualmetadata->save($data) ){	
 				return false;
 			}
