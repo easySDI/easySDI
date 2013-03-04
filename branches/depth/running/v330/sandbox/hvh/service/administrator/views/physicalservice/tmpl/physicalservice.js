@@ -17,8 +17,7 @@ Joomla.submitbutton = function(task)
 		var serurl 			= document.getElementById("jform_serviceurl").value;
 		var seruser 		= document.getElementById("jform_serviceusername").value;
 		var serpassword 	= document.getElementById("jform_servicepassword").value;
-		var serviceSelector = document.getElementById("jform_serviceconnector_id");
-		var service 		= serviceSelector.options[serviceSelector.selectedIndex].text;
+		var service 		= document.getElementById("jform_serviceconnector").value;
 		var query 			= "index.php?option=com_easysdi_service&task=negotiation&resurl="+url+"&resuser="+user+"&respassword="+password+"&service="+service;
 		if(serurl.length > 0)
 		{
