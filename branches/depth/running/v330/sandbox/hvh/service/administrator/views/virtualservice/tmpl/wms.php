@@ -1,12 +1,11 @@
 <?php
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_service
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
-
 
 // no direct access
 defined('_JEXEC') or die;
@@ -20,9 +19,11 @@ JHtml::_('behavior.keepalive');
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
+$document->addScript('components/com_easysdi_service/views/virtualservice/tmpl/virtualservice.js');
+JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.JRequest::getVar('id',null)); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.JRequest::getVar('id',null)); ?>" method="post" name="adminForm" id="virtualservice-form" class="form-validate">
 	<div class="row-fluid">
 		<div class="span10 form-horizontal">
 			<ul class="nav nav-tabs">
@@ -39,7 +40,15 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 				<div class="tab-pane active" id="details">
 					<fieldset>
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_DETAILS' );?></legend>
+					
 					<?php foreach($this->form->getFieldset('wms') as $field): 
+					?> 
+						<div class="control-group">
+							<div class="control-label"><?php echo $field->label; ?></div>
+							<div class="controls"><?php echo $field->input; ?></div>
+						</div>
+					<?php endforeach; ?>
+					<?php foreach($this->form->getFieldset('details') as $field): 
 					?> 
 						<div class="control-group">
 							<div class="control-label"><?php echo $field->label; ?></div>
@@ -58,6 +67,14 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 						</div>
 					<?php endforeach; ?>
 					</fieldset>
+					
+					<?php foreach($this->form->getFieldset('hidden') as $field):
+					?> 
+						<div class="control-group">
+							<div class="control-label"><?php echo $field->label; ?></div>
+							<div class="controls"><?php echo $field->input; ?></div>
+						</div>
+					<?php endforeach; ?>
 				</div>
 				
 				<div class="tab-pane" id="metadata">
@@ -160,5 +177,4 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 	<input type="hidden" name="task" value="<?php echo JRequest::getCmd('task');?>" />
 	<input type="hidden" name="previoustask" value="<?php echo JRequest::getCmd('task');?>" />
 	<?php echo JHtml::_('form.token'); ?>
-	
 </form>

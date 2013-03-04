@@ -161,6 +161,12 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 			$item->supportedversions = json_encode($compliance_values);
 			
 			$item->physicalservice_id = $this->getPhysicalServiceAggregation($item->id);
+			
+			//SetLayout
+			$serviceconnector =& JTable::getInstance('serviceconnector', 'Easysdi_serviceTable');
+			$serviceconnector->load($item->serviceconnector_id);
+			
+			$item->layout = $serviceconnector->value;
 		}
 
 		return $item;
@@ -225,6 +231,10 @@ public function getItem($pk = null)
 				$max = $db->loadResult();
 				$table->ordering = $max+1;
 			}
+		}
+		
+		if (empty($table->alias)){
+			$table->alias = $table->name;
 		}
 	}
 	

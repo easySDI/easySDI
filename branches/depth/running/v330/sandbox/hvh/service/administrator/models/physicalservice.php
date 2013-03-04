@@ -188,6 +188,11 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 				$table->ordering = $max+1;
 			}
 		}
+		
+		if (empty($table->alias)){
+			$table->alias = $table->name;
+		}
+		
 		if($table->resourceauthentication_id == 0)
 			$table->resourceauthentication_id = null;
 		if($table->serviceauthentication_id == 0)
