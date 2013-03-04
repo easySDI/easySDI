@@ -35,16 +35,16 @@
 				required="true"  
 				filter="safehtml" /> 
 
-		<field 	name="serviceconnector_id" 
-				type="sql" 
+		<field 	name="serviceconnector" 
+				type="text" 
+				size="70" 
 				class="inputbox"
+				readonly="true"
 				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SERVICECONNECTOR_ID"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SERVICECONNECTOR_ID" 
-                required="true" 
-                onchange="javascript:getAuthenticationConnector();"
-                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector WHERE state=1" key_field="id" value_field="value"
-                 /> 
-
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SERVICECONNECTOR_ID"
+				required="true"  
+				filter="safehtml" /> 
+				
 		<field 	name="resourceurl" 
 				type="text" 
 				size="70" 
@@ -95,6 +95,7 @@
 				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SUPPORTEDVERSIONS"
 				filter="unset" /> 
 				
+		<field name="serviceconnector_id" type="hidden" filter="SAFEHTML" />
 		<field name="asset_id" type="hidden" filter="SAFEHTML" />
 		<field name="checked_out" type="hidden" filter="SAFEHTML" />
 		<field name="checked_out_time" type="hidden" filter="SAFEHTML" />

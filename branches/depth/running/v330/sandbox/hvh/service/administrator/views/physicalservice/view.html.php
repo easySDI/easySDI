@@ -30,56 +30,7 @@ class Easysdi_serviceViewPhysicalService extends JViewLegacy
 		$this->state	= $this->get('State');
 		$this->item		= $this->get('Item');
 		$this->form		= $this->get('Form');
-		
-		$db 					= JFactory::getDBO();
-		$query 	= "SELECT ac.id as id, ac.value as value, al.id as level, c.id as service
-		FROM #__sdi_sys_authenticationconnector ac
-		INNER JOIN #__sdi_sys_servicecon_authenticationcon sc ON sc.authenticationconnector_id = ac.id
-		INNER JOIN #__sdi_sys_serviceconnector c ON c.id = sc.serviceconnector_id
-		INNER JOIN #__sdi_sys_authenticationlevel al ON ac.authenticationlevel_id = al.id
-		WHERE c.state = 1";
-		$db->setQuery($query);
-		$this->authenticationconnectorlist = $db->loadObjectList();
-		
-		if($this->item && $this->item->serviceconnector_id){
-			$query	= "SELECT 0 AS id, '- None -' AS value UNION SELECT ac.id, ac.value FROM #__sdi_sys_authenticationconnector ac 
-			INNER JOIN #__sdi_sys_servicecon_authenticationcon sc ON sc.authenticationconnector_id = ac.id
-			INNER JOIN #__sdi_sys_serviceconnector c ON c.id = sc.serviceconnector_id
-			INNER JOIN #__sdi_sys_authenticationlevel al ON ac.authenticationlevel_id = al.id
-			WHERE c.state = 1 AND al.id = 1
-			AND c.id = ".$this->item->serviceconnector_id;
-			$db->setQuery($query);
-			$this->currentresourceauthenticationconnectorlist = $db->loadObjectList();
-			
-			$query	= "SELECT 0 AS id, '- None -' AS value UNION SELECT ac.id, ac.value FROM #__sdi_sys_authenticationconnector ac
-			INNER JOIN #__sdi_sys_servicecon_authenticationcon sc ON sc.authenticationconnector_id = ac.id
-			INNER JOIN #__sdi_sys_serviceconnector c ON c.id = sc.serviceconnector_id
-			INNER JOIN #__sdi_sys_authenticationlevel al ON ac.authenticationlevel_id = al.id
-			WHERE c.state = 1 AND al.id = 2
-			AND c.id = ".$this->item->serviceconnector_id;
-			$db->setQuery($query);
-			$this->currentserviceauthenticationconnectorlist = $db->loadObjectList();
-			
-		}else{
-			$query	= "SELECT 0 AS id, '- None -' AS value UNION SELECT ac.id, ac.value FROM #__sdi_sys_authenticationconnector ac
-			INNER JOIN #__sdi_sys_servicecon_authenticationcon sc ON sc.authenticationconnector_id = ac.id
-			INNER JOIN #__sdi_sys_serviceconnector c ON c.id = sc.serviceconnector_id
-			INNER JOIN #__sdi_sys_authenticationlevel al ON ac.authenticationlevel_id = al.id
-			WHERE c.state = 1 AND al.id = 1
-			";
-			$db->setQuery($query);
-			$this->currentresourceauthenticationconnectorlist = $db->loadObjectList();
-			
-			$query	= "SELECT 0 AS id, '- None -' AS value UNION SELECT ac.id, ac.value FROM #__sdi_sys_authenticationconnector ac
-			INNER JOIN #__sdi_sys_servicecon_authenticationcon sc ON sc.authenticationconnector_id = ac.id
-			INNER JOIN #__sdi_sys_serviceconnector c ON c.id = sc.serviceconnector_id
-			INNER JOIN #__sdi_sys_authenticationlevel al ON ac.authenticationlevel_id = al.id
-			WHERE c.state = 1 AND al.id = 2
-			";
-			$db->setQuery($query);
-			$this->currentserviceauthenticationconnectorlist = $db->loadObjectList();
-		}
-		
+
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
 			throw new Exception(implode("\n", $errors));
@@ -123,11 +74,7 @@ class Easysdi_serviceViewPhysicalService extends JViewLegacy
 		if (!$checkedOut && $this->canDo->get('core.edit')&& $this->canDo->get('core.create')){
 			JToolBarHelper::custom('physicalservice.save2new', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);
 		}
-		// If an existing item, can save to a copy.
-		//Alias must be change before saving (unique index) 
-// 		if (!$isNew && $canDo->get('core.create')) {
-// 			JToolBarHelper::custom('service.save2copy', 'save-copy.png', 'save-copy_f2.png', 'JTOOLBAR_SAVE_AS_COPY', false);
-// 		}
+
 		if (empty($this->item->id)) {
 			JToolBarHelper::cancel('physicalservice.cancel', 'JTOOLBAR_CANCEL');
 		}

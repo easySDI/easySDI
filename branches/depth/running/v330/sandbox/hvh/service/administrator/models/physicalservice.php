@@ -146,6 +146,8 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 	public function getItem($pk = null)
 	{
 		if ($item = parent::getItem($pk)) {
+			
+			//Get the service supported versions 
 			$compliances = $this->getServiceCompliance($item->id);
 			$compliance_ids =array();
 			$compliance_values =array();
@@ -161,11 +163,39 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 			if(count($compliance_ids)>0)
 				$item->compliance = json_encode($compliance_ids);
 			else 
-				$item->compliance = '';
+				$item->compliance = '';			
 			$item->supportedversions = json_encode($compliance_values);
 
+			//Get the authentication connectors (depend on connector type)
+			if(!$item->serviceconnector_id)
+			{
+				$item->serviceconnector_id = JRequest::getVar( 'connector' );
+			}
+			
+			$db = JFactory::getDbo();
+			$query	= "SELECT 0 AS id, '- None -' AS value UNION SELECT ac.id, ac.value FROM #__sdi_sys_authenticationconnector ac
+			INNER JOIN #__sdi_sys_servicecon_authenticationcon sc ON sc.authenticationconnector_id = ac.id
+			INNER JOIN #__sdi_sys_serviceconnector c ON c.id = sc.serviceconnector_id
+			INNER JOIN #__sdi_sys_authenticationlevel al ON ac.authenticationlevel_id = al.id
+			WHERE c.state = 1 AND al.id = 1
+			AND c.id = ".$item->serviceconnector_id;
+			$db->setQuery($query);
+			$item->currentresourceauthenticationconnectorlist = $db->loadObjectList();
+				
+			$query	= "SELECT 0 AS id, '- None -' AS value UNION SELECT ac.id, ac.value FROM #__sdi_sys_authenticationconnector ac
+			INNER JOIN #__sdi_sys_servicecon_authenticationcon sc ON sc.authenticationconnector_id = ac.id
+			INNER JOIN #__sdi_sys_serviceconnector c ON c.id = sc.serviceconnector_id
+			INNER JOIN #__sdi_sys_authenticationlevel al ON ac.authenticationlevel_id = al.id
+			WHERE c.state = 1 AND al.id = 2
+			AND c.id = ".$item->serviceconnector_id;
+			$db->setQuery($query);
+			$item->currentserviceauthenticationconnectorlist = $db->loadObjectList();
+			
+			$query = "SELECT value FROM #__sdi_sys_serviceconnector WHERE id=".$item->serviceconnector_id;
+			$db->setQuery($query);
+			$item->serviceconnector = $db->loadResult();
 		}
-
+		
 		return $item;
 	}
 
@@ -274,13 +304,14 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 			return null;
 	
 		try {
-			$db = $this->getDbo();
-			$db->setQuery(
-					'SELECT sv.value as value, sc.id as id FROM #__sdi_physicalservice_servicecompliance ssc ' .
-					' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id '.
-					' INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id'.
-					' WHERE ssc.service_id ='.$id
-			);
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query->select('sv.value as value, sc.id as id');
+			$query->from('#__sdi_physicalservice_servicecompliance ssc');
+			$query->join('INNER', '#__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id ');
+			$query->join('INNER', '#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id ');
+			$query->where('ssc.service_id = ' . (int) $id);
+			$db->setQuery($query);
 
 			$compliance = $db->loadObjectList();
 			return $compliance;

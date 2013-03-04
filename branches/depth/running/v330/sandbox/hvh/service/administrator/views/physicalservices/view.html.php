@@ -31,6 +31,7 @@ class Easysdi_serviceViewPhysicalServices extends JViewLegacy
 		$this->state		= $this->get('State');
 		$this->items		= $this->get('Items');
 		$this->pagination	= $this->get('Pagination');
+		$this->connector 	= $this->get('Connector');
 		
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
@@ -70,7 +71,17 @@ class Easysdi_serviceViewPhysicalServices extends JViewLegacy
         if (file_exists($formPath)) {
 
             if ($canDo->get('core.create')) {
-			    JToolBarHelper::addNew('physicalservice.add','JTOOLBAR_NEW');
+			   // JToolBarHelper::addNew('physicalservice.add','JTOOLBAR_NEW');
+            	//Create custom button with a dropdown list allowing connector type selection for new virtualservice action
+            	$dropdown = '<button class="btn dropdown-toggle btn-small btn-success" data-toggle="dropdown"><i class="icon-new icon-white"> '.JText::_('JTOOLBAR_NEW').'</i></button>
+            	<ul class="dropdown-menu">';
+            	foreach ($this->connector as $connector){
+            		$dropdown .= '<li><a href="index.php?option=com_easysdi_service&view=physicalservice&connector='.$connector->id.'">'.$connector->value.'</a></li>';
+            	}
+            	$dropdown .= '</ul>';
+            	 
+            	$bar = JToolbar::getInstance('toolbar');
+            	$bar->appendButton('Custom',$dropdown, 'new');
 		    }
 
 		    if ($canDo->get('core.edit')) {
