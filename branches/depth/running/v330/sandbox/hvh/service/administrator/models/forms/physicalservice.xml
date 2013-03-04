@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="details" addfieldpath="/administrator/components/com_categories/models/fields">
-		<field 	name="id" 
-				type="text" 
-				default="0" 
-				label="JGLOBAL_FIELD_ID_LABEL"
-                readonly="true" 
-				class="readonly"
-                description="JGLOBAL_FIELD_ID_DESC" /> 
-		
 		<field 	name="catid"
 				type="categoryedit"
 				extension="com_easysdi_service"
@@ -94,6 +86,14 @@
 				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SUPPORTEDVERSIONS"
 				filter="unset" /> 
 				
+		<field 	name="id" 
+				type="text" 
+				default="0" 
+				label="JGLOBAL_FIELD_ID_LABEL"
+                readonly="true" 
+				class="readonly"
+                description="JGLOBAL_FIELD_ID_DESC" /> 
+                
 		<field name="serviceconnector_id" type="hidden" filter="SAFEHTML" />
 		<field name="asset_id" type="hidden" filter="SAFEHTML" />
 		<field name="checked_out" type="hidden" filter="SAFEHTML" />

@@ -103,7 +103,7 @@ class Easysdi_serviceViewPhysicalServices extends JViewLegacy
 
             if (isset($this->items[0]->state)) {
 			    JToolBarHelper::divider();
-			    JToolBarHelper::archiveList('physicalservice.archive','JTOOLBAR_ARCHIVE');
+			    JToolBarHelper::archiveList('physicalservices.archive','JTOOLBAR_ARCHIVE');
             }
             if (isset($this->items[0]->checked_out)) {
             	JToolBarHelper::custom('physicalservices.checkin', 'checkin.png', 'checkin_f2.png', 'JTOOLBAR_CHECKIN', true);

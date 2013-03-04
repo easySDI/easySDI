@@ -93,20 +93,20 @@ $sortFields = $this->getSortFields();
 						<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
 					</th>
 	                <?php endif; ?>
-	                <th class='left'>
+	                <th>
 						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_PHYSICALSERVICES_NAME', 'a.name', $listDirn, $listOrder); ?>
 					</th>
-					<th class='left hidden-phone'>
+					<th class='nowrap hidden-phone'>
 						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_SERVICES_CONNECTOR', 'a.serviceconnector_value', $listDirn, $listOrder); ?>
 					</th>
-					<th class='left hidden-phone'>
+					<th class='nowrap hidden-phone'>
 						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_SERVICES_URL', 'a.resourceurl', $listDirn, $listOrder); ?>
 					</th>
-					<th class='left'>
+					<th class='nowrap hidden-phone'>
 						<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
 					</th>
 			     	<?php if (isset($this->items[0]->id)): ?>
-					<th width="1%" class="nowrap center hidden-phone">
+					<th width="1%" class="nowrap hidden-phone">
 						<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
 					</th>
 	                <?php endif; ?>
@@ -160,7 +160,8 @@ $sortFields = $this->getSortFields();
 					</td>
                 <?php endif; ?>
 				<td class="center hidden-phone">
-					<?php echo JHtml::_('grid.id', $i, $item->id); ?>
+					<?php if ($canEdit && !$islocked) echo JHtml::_('grid.id', $i, $item->id); 
+					else echo '<input type="checkbox" id="cb'.$i.'" name="cid[]" value="'.$item->id.'" disabled="disabled" onclick="Joomla.isChecked(this.checked);" />'  ?>
 					</td>
                 <?php if (isset($this->items[0]->state)): ?>
 				<td class="center">
@@ -173,15 +174,12 @@ $sortFields = $this->getSortFields();
 						<?php if (isset($item->checked_out) && $item->checked_out) : ?>
 						<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'physicalservices.', $canCheckin); ?>
 					<?php endif; ?>
-					<?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>
+					<?php if (($canEdit) && $canCheckin && !$islocked) : ?>
 						<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&task=physicalservice.edit&id='.(int) $item->id); ?>">
 						<?php echo $this->escape($item->name); ?></a>
 					<?php else : ?>
 						<?php echo $this->escape($item->name); ?>
 					<?php endif; ?>
-					<span class="small">
-						
-					</span>
 					<div class="small">
 						<?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($item->alias));?>
 					</div>
@@ -189,33 +187,44 @@ $sortFields = $this->getSortFields();
 				<div class="pull-left">
 					<?php
 						// Create dropdown items
-						JHtml::_('dropdown.edit', $item->id, 'physicalservice.');
-						JHtml::_('dropdown.divider');
-						if ($item->state) :
-							JHtml::_('dropdown.unpublish', 'cb' . $i, 'physicalservices.');
-						else :
-							JHtml::_('dropdown.publish', 'cb' . $i, 'physicalservices.');
-						endif;
-						JHtml::_('dropdown.divider');
-
-						if ($archived) :
-							JHtml::_('dropdown.unarchive', 'cb' . $i, 'physicalservices.');
-						else :
-							JHtml::_('dropdown.archive', 'cb' . $i, 'physicalservices.');
-						endif;
-
-						if ($item->checked_out) :
-							JHtml::_('dropdown.checkin', 'cb' . $i, 'physicalservices.');
-						endif;
-
-						if ($trashed) :
-							JHtml::_('dropdown.untrash', 'cb' . $i, 'physicalservices.');
-						else :
-							JHtml::_('dropdown.trash', 'cb' . $i, 'physicalservices.');
-						endif;
-
-						// render dropdown list
-						echo JHtml::_('dropdown.render');
+						if(!$islocked){
+							// Create dropdown items
+							if ($canEdit) :
+								JHtml::_('dropdown.edit', $item->id, 'physicalservice.');
+								JHtml::_('dropdown.divider');
+							endif;
+							
+							if($canChange){
+								if ($item->state) :
+									JHtml::_('dropdown.unpublish', 'cb' . $i, 'physicalservices.');
+								else :
+									JHtml::_('dropdown.publish', 'cb' . $i, 'physicalservices.');
+								endif;
+								JHtml::_('dropdown.divider');
+							
+							
+								if ($archived) :
+									JHtml::_('dropdown.unarchive', 'cb' . $i, 'physicalservices.');
+								else :
+									JHtml::_('dropdown.archive', 'cb' . $i, 'physicalservices.');
+								endif;
+							}
+							
+							if ($item->checked_out  && $canCheckin) :
+								JHtml::_('dropdown.checkin', 'cb' . $i, 'physicalservices.');
+							endif;
+							
+							if($canChange){
+								if ($trashed ) :
+									JHtml::_('dropdown.untrash', 'cb' . $i, 'physicalservices.');
+								else :
+									JHtml::_('dropdown.trash', 'cb' . $i, 'physicalservices.');
+								endif;
+							}
+							
+							// render dropdown list
+							echo JHtml::_('dropdown.render');
+						}
 					?>
 				</div>
 			</td>

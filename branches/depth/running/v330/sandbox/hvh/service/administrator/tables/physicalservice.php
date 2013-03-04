@@ -243,11 +243,3 @@ class Easysdi_serviceTablephysicalservice extends sdiTable
 	}
 	
 }
-
-
-
-
-
-
-
-

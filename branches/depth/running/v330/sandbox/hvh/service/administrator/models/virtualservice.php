@@ -176,31 +176,6 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 
 		return $item;
 	}
-/*
-public function getItem($pk = null)
-	{
-		//Get Item 
-		if(isset($this->alias)){
-			$table = $this->getTable();
-				
-			$return = $table->loadByAlias($this->alias);
-		
-			if ($return === false && $table->getError())
-			{
-				$this->setError($table->getError());
-				return false;
-			}
-				
-			return $table;
-		}else{//Get item by Id
-			if ($item = parent::getItem($pk)) {
-				//Do any procesing on fields here if needed
-			}
-		}
-		
-		return $item;
-	}
-*/
 
 	/**
 	 * Method to get a single record.
