@@ -146,6 +146,9 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualservice` (
 `exceptionlevel_id` INT(11) UNSIGNED  NOT NULL ,
 `loglevel_id` INT(11) UNSIGNED  NOT NULL ,
 `logroll_id` INT(11) UNSIGNED  NOT NULL ,
+`params` VARCHAR(1024)   ,
+`access` INT(10)  NOT NULL DEFAULT '1',
+`asset_id` INT(10)   ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -491,8 +494,8 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_virtual_physical` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`virtualservice_id` INT(11)  NOT NULL ,
-`physicalservice_id` INT(11)  NOT NULL ,
+`virtualservice_id` INT(11) UNSIGNED  NOT NULL ,
+`physicalservice_id` INT(11) UNSIGNED NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 

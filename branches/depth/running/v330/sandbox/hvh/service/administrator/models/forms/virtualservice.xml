@@ -35,7 +35,7 @@
 			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDMETADATA"
 			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDMETADATA"
 			value="1" default="0" />
-		<field name="exceptionlevel_id" type="sql" class="inputbox"
+		<field name="exceptionlevel_id" type="sql" class="inputbox"  required="true"
 			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_EXCEPTIONLEVEL_ID"
 			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_EXCEPTIONLEVEL_ID"
 			query="SELECT 0 AS `id`, '- Please select -' AS `value` UNION SELECT `id`, `value` FROM `#__sdi_sys_exceptionlevel`"
@@ -50,7 +50,7 @@
 		<field name="physicalservice_id" type="sql" class="multiselect"
 			multiple="true" onchange="updateAgregatedVersion();"
 			label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST_DESC"
-			query="SELECT s.id as id,CONCAT(s.alias, ' - ', s.resourceurl,' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
+			query="SELECT s.id as id,CONCAT(s.alias, ' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
 						INNER JOIN #__sdi_physicalservice_servicecompliance sc ON sc.service_id = s.id
 						INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
 						INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id
@@ -65,7 +65,7 @@
 		<field name="physicalservice_id" type="sql" class="multiselect"
 			multiple="true" onchange="updateAgregatedVersion();"
 			label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST_DESC"
-			query="SELECT s.id as id,CONCAT(s.alias, ' - ', s.resourceurl,' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
+			query="SELECT s.id as id,CONCAT(s.alias, ' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
 						INNER JOIN #__sdi_physicalservice_servicecompliance sc ON sc.service_id = s.id
 						INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
 						INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id
@@ -80,7 +80,7 @@
 		<field name="physicalservice_id" type="sql" class="multiselect"
 			multiple="true" onchange="updateAgregatedVersion();"
 			label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST_DESC"
-			query="SELECT s.id as id,CONCAT(s.alias, ' - ', s.resourceurl,' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
+			query="SELECT s.id as id,CONCAT(s.alias, ' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
 						INNER JOIN #__sdi_physicalservice_servicecompliance sc ON sc.service_id = s.id
 						INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
 						INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id
@@ -121,7 +121,7 @@
 		<field name="physicalservice_id" type="sql" class="multiselect"
 			multiple="true" onchange="updateAgregatedVersion();"
 			label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST_DESC"
-			query="SELECT s.id as id,CONCAT(s.alias, ' - ', s.resourceurl,' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
+			query="SELECT s.id as id,CONCAT(s.alias, ' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
 						INNER JOIN #__sdi_physicalservice_servicecompliance sc ON sc.service_id = s.id
 						INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
 						INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id

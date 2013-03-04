@@ -106,7 +106,11 @@ ADD CONSTRAINT `#__sdi_tilematrixpolicy_fk_tilematrixset` FOREIGN KEY (`tilematr
 ALTER TABLE `#__sdi_tilematrixpolicy`
 ADD CONSTRAINT `#__sdi_tilematrixpolicy_fk_tilematrix` FOREIGN KEY (`tilematrix_id`) REFERENCES `#__sdi_tilematrix` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
+ALTER TABLE `#__sdi_virtual_physical`
+ADD CONSTRAINT `#__sdi_virtual_physical_fk1` FOREIGN KEY (`virtualservice_id`) REFERENCES `#__sdi_virtualservice` (`id`) ON DELETE CASCADE ;
 
+ALTER TABLE `#__sdi_virtual_physical`
+ADD CONSTRAINT `#__sdi_virtual_physical_fk2` FOREIGN KEY (`physicalservice_id`) REFERENCES `#__sdi_physicalservice` (`id`) ON DELETE CASCADE ;
 
 
 

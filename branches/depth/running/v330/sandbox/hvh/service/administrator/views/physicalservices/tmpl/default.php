@@ -183,7 +183,7 @@ $sortFields = $this->getSortFields();
 						
 					</span>
 					<div class="small">
-						<?php echo JText::sprintf( $this->escape($item->alias));?>
+						<?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($item->alias));?>
 					</div>
 				</div>
 				<div class="pull-left">

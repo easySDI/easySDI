@@ -176,7 +176,7 @@ $sortFields = $this->getSortFields();
 						
 					</span>
 					<div class="small">
-						<?php echo JText::sprintf( $this->escape($item->alias));?>
+						<?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($item->alias));?>
 					</div>
 				</div>
 				<div class="pull-left">
@@ -214,11 +214,11 @@ $sortFields = $this->getSortFields();
 			</td>
 			<td align="small hidden-phone">
 				<?php echo $item->access_level; ?>
-				</td>
+			</td>
                 <?php if (isset($this->items[0]->id)): ?>
 				<td class="center hidden-phone">
 					<?php echo (int) $item->id; ?>
-					</td>
+				</td>
                 <?php endif; ?>
 			</tr>
 			<?php endforeach; ?>

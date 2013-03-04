@@ -147,36 +147,42 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 		$query->from('`#__sdi_virtualservice` AS a');
 
 
-    // Join over the users for the checked out user.
-    $query->select('uc.name AS editor');
-    $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
-    
+	    // Join over the users for the checked out user.
+	    $query->select('uc.name AS editor');
+	    $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
+	    
+	    // Join over the asset groups.
+	    $query->select('ag.title AS access_level');
+	    $query->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
+	    
 		// Join over the created by field 'created_by'
 		$query->select('created_by.name AS created_by');
 		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
+			
 		// Join over the foreign key 'proxytype_id'
 		$query->select('#__sdi_sys_proxytype_278358.value AS sysproxytypes_proxytype_278358');
 		$query->join('LEFT', '#__sdi_sys_proxytype AS #__sdi_sys_proxytype_278358 ON #__sdi_sys_proxytype_278358.id = a.proxytype_id');
+		
 		// Join over the foreign key 'exceptionlevel_id'
 		$query->select('#__sdi_sys_exceptionlevel_278360.value AS sysexceptionlevels_exceptionlevel_278360');
 		$query->join('LEFT', '#__sdi_sys_exceptionlevel AS #__sdi_sys_exceptionlevel_278360 ON #__sdi_sys_exceptionlevel_278360.id = a.exceptionlevel_id');
+		
 		// Join over the foreign key 'loglevel_id'
 		$query->select('#__sdi_sys_loglevel_278362.value AS sysloglevels_loglevel_278362');
 		$query->join('LEFT', '#__sdi_sys_loglevel AS #__sdi_sys_loglevel_278362 ON #__sdi_sys_loglevel_278362.id = a.loglevel_id');
+		
 		// Join over the foreign key 'logroll_id'
 		$query->select('#__sdi_sys_logroll_278363.value AS __sdi_sys_logroll5937s_logroll_278363');
 		$query->join('LEFT', '#__sdi_sys_logroll AS #__sdi_sys_logroll_278363 ON #__sdi_sys_logroll_278363.id = a.logroll_id');
-
-
-    // Filter by published state
-    $published = $this->getState('filter.state');
-    if (is_numeric($published)) {
-        $query->where('a.state = '.(int) $published);
-    } else if ($published === '') {
-        $query->where('(a.state IN (0, 1))');
-    }
-    
-
+	
+	    // Filter by published state
+	    $published = $this->getState('filter.state');
+	    if (is_numeric($published)) {
+	        $query->where('a.state = '.(int) $published);
+	    } else if ($published === '') {
+	        $query->where('(a.state IN (0, 1))');
+	    }
+	
 		// Filter by search in title
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {
@@ -184,12 +190,10 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 				$query->where('a.id = '.(int) substr($search, 3));
 			} else {
 				$search = $db->Quote('%'.$db->escape($search, true).'%');
-                
-			}
+	    	}
 		}
         
-        
-		// Add the list ordering clause.
+    	// Add the list ordering clause.
         $orderCol	= $this->state->get('list.ordering');
         $orderDirn	= $this->state->get('list.direction');
         if ($orderCol && $orderDirn) {

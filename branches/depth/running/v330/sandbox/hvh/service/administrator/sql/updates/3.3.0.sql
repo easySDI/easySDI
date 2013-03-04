@@ -98,6 +98,9 @@ ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `proxytype_id` INT(11) UNSIGNED  
 ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `exceptionlevel_id` INT(11) UNSIGNED  NOT NULL;
 ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `loglevel_id` INT(11) UNSIGNED  NOT NULL;
 ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `logroll_id` INT(11) UNSIGNED  NOT NULL;
+ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `params` VARCHAR(1024);
+ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `access` INT(10)  NOT NULL DEFAULT '1';
+ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `asset_id` INT(10);
 
 CREATE TABLE IF NOT EXISTS `#__sdi_virtualmetadata` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -317,7 +320,13 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_virtual_physical` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`virtualservice_id` INT(11)  NOT NULL ,
-`physicalservice_id` INT(11)  NOT NULL ,
+`virtualservice_id` INT(11) UNSIGNED NOT NULL ,
+`physicalservice_id` INT(11) UNSIGNED NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+ALTER TABLE `#__sdi_virtual_physical`
+ADD CONSTRAINT `#__sdi_virtual_physical_fk1` FOREIGN KEY (`virtualservice_id`) REFERENCES `#__sdi_virtualservice` (`id`) ON DELETE CASCADE ;
+
+ALTER TABLE `#__sdi_virtual_physical`
+ADD CONSTRAINT `#__sdi_virtual_physical_fk2` FOREIGN KEY (`physicalservice_id`) REFERENCES `#__sdi_physicalservice` (`id`) ON DELETE CASCADE ;
