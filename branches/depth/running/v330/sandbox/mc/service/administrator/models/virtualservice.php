@@ -374,5 +374,23 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 		}
 	
 	}
-
+	
+	/**
+	 * 
+	 */
+	public function getPolicies ($vs_id =1) {
+		try {
+			$db = JFactory::getDbo();
+			$db->setQuery('
+			SELECT *
+			FROM #__sdi_policy
+			WHERE virtualservice_id = ' . $vs_id . '
+			');
+			return $db->loadObjectList();
+	
+		} catch (Exception $e) {
+			$this->setError($e->getMessage());
+			return false;
+		}
+	}
 }

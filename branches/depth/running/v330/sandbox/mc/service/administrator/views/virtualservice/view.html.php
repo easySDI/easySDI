@@ -28,9 +28,10 @@ class Easysdi_serviceViewVirtualservice extends JViewLegacy
 	{
 		JHtml::_('bootstrap.framework');
 		
-		$this->state	= $this->get('State');
-		$this->item		= $this->get('Item');
-		$this->form		= $this->get('Form');
+		$this->state		= $this->get('State');
+		$this->item			= $this->get('Item');
+		$this->form			= $this->get('Form');
+		$this->policies	= $this->get('Policies');
 		
 		if($this->item->layout)
 			$this->setLayout($this->item->layout);
