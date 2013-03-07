@@ -28,7 +28,7 @@ class Easysdi_serviceModelphysicalservices extends JModelList
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                                'id', 'a.id',
+                'id', 'a.id',
                 'guid', 'a.guid',
                 'alias', 'a.alias',
                 'created_by', 'a.created_by',
@@ -51,6 +51,7 @@ class Easysdi_serviceModelphysicalservices extends JModelList
                 'params', 'a.params',
                 'asset_id', 'a.asset_id',
             	'access', 'a.access', 'access_level',
+            	'serviceconnector_value',
             );
         }
 

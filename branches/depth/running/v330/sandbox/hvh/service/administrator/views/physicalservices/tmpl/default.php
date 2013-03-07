@@ -37,7 +37,19 @@ if ($saveOrder)
 }
 $sortFields = $this->getSortFields();
 ?>
-
+<script type="text/javascript">
+	Joomla.orderTable = function() {
+		table = document.getElementById("sortTable");
+		direction = document.getElementById("directionTable");
+		order = table.options[table.selectedIndex].value;
+		if (order != '<?php echo $listOrder; ?>') {
+			dirn = 'asc';
+		} else {
+			dirn = direction.options[direction.selectedIndex].value;
+		}
+		Joomla.tableOrdering(order, dirn, '');
+	}
+</script>
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=physicalservices'); ?>" method="post" name="adminForm" id="adminForm">
 	<?php if(!empty($this->sidebar)): ?>
 	<div id="j-sidebar-container" class="span2">
@@ -97,10 +109,10 @@ $sortFields = $this->getSortFields();
 						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_PHYSICALSERVICES_NAME', 'a.name', $listDirn, $listOrder); ?>
 					</th>
 					<th class='nowrap hidden-phone'>
-						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_SERVICES_CONNECTOR', 'a.serviceconnector_value', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_SERVICES_CONNECTOR', 'serviceconnector_value', $listDirn, $listOrder); ?>
 					</th>
-					<th class='nowrap hidden-phone'>
-						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_SERVICES_URL', 'a.resourceurl', $listDirn, $listOrder); ?>
+					<th class='left'>
+						<?php echo JHtml::_('grid.sort', 'JCATEGORY', 'category_title', $listDirn, $listOrder); ?>
 					</th>
 					<th class='nowrap hidden-phone'>
 						<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
@@ -129,7 +141,7 @@ $sortFields = $this->getSortFields();
 		</tfoot>
 		<tbody>
 		<?php foreach ($this->items as $i => $item) :
-				$canDo			= Easysdi_serviceHelper::getActions('physical',null,$item->id);
+				$canDo			= Easysdi_serviceHelper::getActionsPhysicalService(null,$item->id);
 				$ordering		= ($listOrder == 'a.ordering');
 				$canEdit 		= $canDo->get('core.edit');
 				$canEditOwn 	= $canDo->get('core.edit.own');
@@ -232,7 +244,7 @@ $sortFields = $this->getSortFields();
 				<?php echo $item->serviceconnector_value; ?>
 			</td>
 			<td align="small hidden-phone">
-				<?php echo $item->resourceurl; ?>
+				<?php echo $item->category_title; ?>
 			</td>
 			<td align="small hidden-phone">
 				<?php echo $item->access_level; ?>

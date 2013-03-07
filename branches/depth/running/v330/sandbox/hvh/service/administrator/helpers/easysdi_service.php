@@ -48,19 +48,16 @@ class Easysdi_serviceHelper
 	 * @return	JObject
 	 * @since	1.6
 	 */
-	public static function getActions($servicetype = null, $categoryId = 0, $serviceId = 0)
+	public static function getActionsVirtualService($id = null)
 	{
 		$user	= JFactory::getUser();
 		$result	= new JObject;
 
-		if (empty($serviceId) && empty($categoryId)) {
-			$assetName = 'com_easysdi_core';
-		}
-		elseif (empty($serviceId) ) {
-			$assetName = 'com_easysdi_service.category.'.(int) $categoryId;
+		if (empty($id) ) {
+			$assetName = 'com_easysdi_service';
 		}
 		else{
-			$assetName = 'com_easysdi_service.physicalservice.'.(int) $serviceId;
+			$assetName = 'com_easysdi_service.virtualservice.'.(int) $id;
 		}
 
 		$actions = array(
@@ -71,6 +68,38 @@ class Easysdi_serviceHelper
 			$result->set($action,	$user->authorise($action, $assetName));
 		}
 
+		return $result;
+	}
+	
+	/**
+	 * Gets a list of the actions that can be performed on physicalservice object.
+	 *
+	 * @return	JObject
+	 * @since	1.6
+	 */
+	public static function getActionsPhysicalService( $categoryId = null, $id = null)
+	{
+		$user	= JFactory::getUser();
+		$result	= new JObject;
+	
+		if (empty($id) && empty($categoryId)) {
+			$assetName = 'com_easysdi_service';
+		}
+		elseif (empty($id) ) {
+			$assetName = 'com_easysdi_service.category.'.(int) $categoryId;
+		}
+		else{
+			$assetName = 'com_easysdi_service.physicalservice.'.(int) $id;
+		}
+	
+		$actions = array(
+				'core.admin', 'core.manage', 'core.create', 'core.edit', 'core.edit.own', 'core.edit.state', 'core.delete'
+		);
+	
+		foreach ($actions as $action) {
+			$result->set($action,	$user->authorise($action, $assetName));
+		}
+	
 		return $result;
 	}
 	

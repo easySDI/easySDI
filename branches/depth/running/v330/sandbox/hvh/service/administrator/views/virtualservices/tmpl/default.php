@@ -35,7 +35,19 @@ if ($saveOrder)
 }
 $sortFields = $this->getSortFields();
 ?>
-
+<script type="text/javascript">
+	Joomla.orderTable = function() {
+		table = document.getElementById("sortTable");
+		direction = document.getElementById("directionTable");
+		order = table.options[table.selectedIndex].value;
+		if (order != '<?php echo $listOrder; ?>') {
+			dirn = 'asc';
+		} else {
+			dirn = direction.options[direction.selectedIndex].value;
+		}
+		Joomla.tableOrdering(order, dirn, '');
+	}
+</script>
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=virtualservices'); ?>" method="post" name="adminForm" id="adminForm">
 	<?php if(!empty($this->sidebar)): ?>
 	<div id="j-sidebar-container" class="span2">
@@ -123,7 +135,7 @@ $sortFields = $this->getSortFields();
 		</tfoot>
 		<tbody>
 		<?php foreach ($this->items as $i => $item) :
-				$canDo			= Easysdi_serviceHelper::getActions('virtual',null,$item->id);
+				$canDo			= Easysdi_serviceHelper::getActionsVirtualService($item->id);
 				$ordering		= ($listOrder == 'a.ordering');
 				$canEdit 		= $canDo->get('core.edit');
 				$canEditOwn 	= $canDo->get('core.edit.own');

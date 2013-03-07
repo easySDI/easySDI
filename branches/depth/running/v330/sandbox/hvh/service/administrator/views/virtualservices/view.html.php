@@ -53,7 +53,7 @@ class Easysdi_serviceViewVirtualservices extends JViewLegacy
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
 
 		$state	= $this->get('State');
-		$canDo	= Easysdi_serviceHelper::getActions('virtual');
+		$canDo	= Easysdi_serviceHelper::getActionsVirtualService();
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_VIRTUALSERVICES'), 'virtualservices.png');
 
@@ -140,10 +140,11 @@ class Easysdi_serviceViewVirtualservices extends JViewLegacy
 	protected function getSortFields()
 	{
 		return array(
+				'a.id' => JText::_('JGRID_HEADING_ID'),
+				'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
+				'a.state' => JText::_('JSTATUS'),
 				'a.name' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_NAME'),
-				'a.alias' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_ALIAS'),
-				'a.connector' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_CONNECTOR'),
-				'a.reflectedurl' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_REFLECTEDURL'),
+				'a.access' => JText::_('JGRID_HEADING_ACCESS'),
 		);
 	}
 }

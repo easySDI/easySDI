@@ -53,6 +53,7 @@ class Easysdi_serviceModelvirtualservices extends JModelList
                 'exceptionlevel_id', 'a.exceptionlevel_id',
                 'loglevel_id', 'a.loglevel_id',
                 'logroll_id', 'a.logroll_id',
+            	'access', 'a.access', 'access_level',
 
             );
         }
