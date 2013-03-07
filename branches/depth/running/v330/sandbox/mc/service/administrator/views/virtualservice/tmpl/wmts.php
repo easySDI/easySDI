@@ -21,7 +21,6 @@ $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
 $document->addScript('components/com_easysdi_service/views/virtualservice/tmpl/virtualservice.js');
 JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
-var_dump($this->policies);
 ?>
 
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.JRequest::getVar('id',null)); ?>" method="post" name="adminForm" id="virtualservice-form" class="form-validate">

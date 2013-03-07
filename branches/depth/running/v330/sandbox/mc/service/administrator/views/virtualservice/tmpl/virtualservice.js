@@ -17,7 +17,7 @@
 			jQuery('#jform_compliance').val("");
 			jQuery('#jform_physicalservice_id :selected').each(function(i, selected){ 
 				var selected = jQuery(selected).text();
-				var versions = selected.split(' - ')[2];
+				var versions = selected.split(' - ')[1];
 				var versionsArray = versions.substring(1, versions.length -1).split('-');
 
 				if(supportedVersionsArray){

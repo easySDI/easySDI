@@ -14,13 +14,11 @@ if(!defined('DS')) {
 	define( 'DS', DIRECTORY_SEPARATOR );
 }
 
-require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'libraries'.DS.'easysdi'.DS.'database'.DS.'sditable.php';
-
 
 /**
  * user Table class
  */
-class Easysdi_serviceTableserviceconnector extends sdiTable
+class Easysdi_serviceTableserviceconnector extends JTable
 {
 	/**
 	 * Constructor

@@ -130,7 +130,7 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 			//Do any procesing on fields here if needed
 			//inserting virtualmetadata content in virtualservice for display of edit form
 			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'tables');
-			$metadata =& JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
+			$metadata = JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
 			$metadata->loadByVirtualServiceID(JRequest::getVar('id',null));
 			$item_fields = Array();
 			foreach ($item as $key => $value) {
@@ -167,7 +167,7 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 			{
 				$item->serviceconnector_id = JRequest::getVar( 'connector' );
 			}
-			$serviceconnector =& JTable::getInstance('serviceconnector', 'Easysdi_serviceTable');
+			$serviceconnector = JTable::getInstance('serviceconnector', 'Easysdi_serviceTable');
 			$serviceconnector->load($item->serviceconnector_id);
 			$item->serviceconnector = $serviceconnector->value;
 			
@@ -198,7 +198,7 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	 *
 	 * @since	1.6
 	 */
-	protected function prepareTable(&$table)
+	protected function prepareTable($table)
 	{
 		jimport('joomla.filter.output');
 
@@ -378,7 +378,8 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	/**
 	 * 
 	 */
-	public function getPolicies ($vs_id =1) {
+	public function getPolicies () {
+		$vs_id = JRequest::getVar('id', -1);
 		try {
 			$db = JFactory::getDbo();
 			$db->setQuery('
