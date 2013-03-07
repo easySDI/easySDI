@@ -134,26 +134,26 @@ class Easysdi_contactTableaddress extends sdiTable
     public function saveByType($src,$type, $orderingFilter = '', $ignore = '')
     {
     	$data =array();
-    	$data['id'] =$src[$type.'_id'];
-    	$data['guid'] =$src[$type.'_guid'];
-    	$data['addresstype_id'] =$src[$type.'_addresstype_id'];
-    	$data['user_id'] =$src['user_id'];
-    	$data['organism_id'] =$src['organism_id'];
-    	$data['civility'] = $src[$type.'_civility'];
-    	$data['firstname'] =$src[$type.'_firstname'];
-    	$data['lastname'] =$src[$type.'_lastname'];
-    	$data['function'] =$src[$type.'_function'];
-    	$data['address'] =$src[$type.'_address'];
-    	$data['addresscomplement'] =$src[$type.'_addresscomplement'];
-    	$data['postalcode'] =$src[$type.'_postalcode'];
-    	$data['postalbox'] =$src[$type.'_postalbox'];
-    	$data['locality'] =$src[$type.'_locality'];
-    	$data['country_id'] =$src[$type.'_country'];
-    	$data['phone'] =$src[$type.'_phone'];
-    	$data['mobile'] =$src[$type.'_mobile'];
-    	$data['fax'] =$src[$type.'_fax'];
-    	$data['email'] =$src[$type.'_email'];
-    	$data['sameascontact'] =$src[$type.'_sameascontact'];
+    	$data['id'] 				=$src[$type.'_id'];
+    	$data['guid'] 				=$src[$type.'_guid'];
+    	$data['addresstype_id'] 	=$src[$type.'_addresstype_id'];
+    	$data['user_id'] 			=$src['user_id'];
+    	$data['organism_id']		=$src['organism_id'];
+    	$data['civility'] 			=$src[$type.'_civility'];
+    	$data['firstname'] 			=$src[$type.'_firstname'];
+    	$data['lastname'] 			=$src[$type.'_lastname'];
+    	$data['function'] 			=$src[$type.'_function'];
+    	$data['address'] 			=$src[$type.'_address'];
+    	$data['addresscomplement'] 	=$src[$type.'_addresscomplement'];
+    	$data['postalcode'] 		=$src[$type.'_postalcode'];
+    	$data['postalbox'] 			=$src[$type.'_postalbox'];
+    	$data['locality'] 			=$src[$type.'_locality'];
+    	$data['country_id'] 		=$src[$type.'_country'];
+    	$data['phone'] 				=$src[$type.'_phone'];
+    	$data['mobile'] 			=$src[$type.'_mobile'];
+    	$data['fax'] 				=$src[$type.'_fax'];
+    	$data['email'] 				=$src[$type.'_email'];
+    	$data['sameascontact'] 		=$src[$type.'_sameascontact'];
     	
     	 
     	return parent::save($data, $orderingFilter , $ignore );
