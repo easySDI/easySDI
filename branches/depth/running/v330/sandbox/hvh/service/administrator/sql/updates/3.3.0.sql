@@ -86,7 +86,6 @@ ADD CONSTRAINT `#__sdi_virtualservice_servicecompliance_fk2` FOREIGN KEY (`servi
 ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `reflectedurl` VARCHAR(255);
 ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `reflectedmetadata` BOOLEAN NOT NULL DEFAULT '0';
 ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `xsltfilename` VARCHAR(255);
-ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `logautodriven` BOOLEAN NOT NULL DEFAULT '1';
 ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `logpath` VARCHAR(255) NOT NULL;
 ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `harvester` BOOLEAN NOT NULL DEFAULT '0';
 ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `maximumrecords` INT(10);

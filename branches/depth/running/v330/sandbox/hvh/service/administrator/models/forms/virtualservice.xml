@@ -42,7 +42,7 @@
 			filter="safehtml" />
 	</fieldset>
 	
-	<fieldset name="wms">
+	<fieldset name="WMS">
 		<field name="physicalservice_id" type="sql" class="multiselect"
 			multiple="true" onchange="updateAgregatedVersion();"
 			label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST_DESC"
@@ -57,6 +57,21 @@
 			key_field="id" value_field="value" required="true" />
 	</fieldset>
 
+	<fieldset name="WMSC">
+		<field name="physicalservice_id" type="sql" class="multiselect"
+			multiple="true" onchange="updateAgregatedVersion();"
+			label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST_DESC"
+			query="SELECT s.id as id,CONCAT(s.alias, ' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
+						INNER JOIN #__sdi_physicalservice_servicecompliance sc ON sc.service_id = s.id
+						INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
+						INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id
+						INNER JOIN #__sdi_sys_serviceconnector sycc ON sycc.id = syc.serviceconnector_id
+						WHERE sycc.value = 'WMSC'
+						AND s.state= 1
+						GROUP BY s.id"
+			key_field="id" value_field="value" required="true" />
+	</fieldset>
+	
 	<fieldset name="wfs">
 		<field name="physicalservice_id" type="sql" class="multiselect"
 			multiple="true" onchange="updateAgregatedVersion();"
@@ -73,7 +88,7 @@
 	</fieldset>
 	
 	<fieldset name="csw">
-		<field name="physicalservice_id" type="sql" class="multiselect"
+		<field name="physicalservice_id" type="sql" 
 			multiple="true" onchange="updateAgregatedVersion();"
 			label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST_DESC"
 			query="SELECT s.id as id,CONCAT(s.alias, ' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
@@ -141,10 +156,6 @@
 	</fieldset>
 
 	<fieldset name="log_config">
-		<field name="logautodriven" type="checkbox"
-			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_LOGAUTODRIVEN"
-			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_LOGAUTODRIVEN"
-			value="1" default="0" />
 		<field name="logpath" type="text" size="40" class="inputbox"
 			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_LOGPATH"
 			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_LOGPATH"

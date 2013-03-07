@@ -134,7 +134,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualservice` (
 `reflectedurl` VARCHAR(255) ,
 `reflectedmetadata` BOOLEAN NOT NULL DEFAULT '0' ,
 `xsltfilename` VARCHAR(255)  ,
-`logautodriven` BOOLEAN NOT NULL DEFAULT '1',
 `logpath` VARCHAR(255)  NOT NULL ,
 `harvester` BOOLEAN NOT NULL  DEFAULT '0',
 `maximumrecords` INT(10)  ,

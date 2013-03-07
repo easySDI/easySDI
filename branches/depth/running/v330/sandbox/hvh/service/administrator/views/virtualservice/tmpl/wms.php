@@ -42,7 +42,7 @@ JText::script('COM_EASYSDI_SERVICE_FORM_SERVICE_METADATA_ERROR');
 					<fieldset>
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_DETAILS' );?></legend>
 					
-					<?php foreach($this->form->getFieldset('wms') as $field): 
+					<?php foreach($this->form->getFieldset($this->item->serviceconnector) as $field): 
 					?> 
 						<div class="control-group">
 							<div class="control-label"><?php echo $field->label; ?></div>

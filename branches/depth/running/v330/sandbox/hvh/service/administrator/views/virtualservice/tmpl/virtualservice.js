@@ -1,10 +1,18 @@
 		jQuery(document).ready(function (){
 			changeReflectedMetadata();
+			var nserver = jQuery('#jform_physicalservice_id :selected').length;
+			if(nserver > 1){
+				jQuery('#jform_reflectedmetadata').attr("disabled", true);
+				jQuery('#jform_reflectedmetadata').attr('checked', false);
+			}
 		});
 
 		Joomla.submitbutton = function(task)
 		{
-			if (task == 'virtualservice.cancel' || document.formvalidator.isValid(document.id('virtualservice-form'))) {
+			if (task == 'virtualservice.cancel'){
+				Joomla.submitform(task, document.getElementById('virtualservice-form'));
+			}
+			else if (document.formvalidator.isValid(document.id('virtualservice-form'))) {
 				if(!jQuery('#jform_reflectedmetadata').is(":checked") && !jQuery('#jform_title').val()){
 					alert(Joomla.JText._('COM_EASYSDI_SERVICE_FORM_SERVICE_METADATA_ERROR', 'At least a title must be given for the service metadata.'));
 					return;

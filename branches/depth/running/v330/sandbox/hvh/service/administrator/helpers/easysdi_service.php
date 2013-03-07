@@ -89,7 +89,7 @@ class Easysdi_serviceHelper
 		$password 				= $params['respassword'];
 		$supported_versions 	= array();
 		$httpHeader				= array();
-
+		
 		if(isset($params['serurl']))
 		{
 			//Authentication needed
@@ -138,6 +138,7 @@ class Easysdi_serviceHelper
 	
 		$completeurl = "";
 		foreach ($implemented_versions as $version){
+			$service = $service == 'WMSC'? 'WMS': $service;
 			$completeurl = $url.$separator."REQUEST=GetCapabilities&SERVICE=".$service."&VERSION=".$version->value;
 			$session 	= curl_init($completeurl);
 			if (!empty($user)  && !empty($password))
