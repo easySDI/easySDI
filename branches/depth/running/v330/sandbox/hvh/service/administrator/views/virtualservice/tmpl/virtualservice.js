@@ -1,6 +1,14 @@
+		jQuery(document).ready(function (){
+			changeReflectedMetadata();
+		});
+
 		Joomla.submitbutton = function(task)
 		{
 			if (task == 'virtualservice.cancel' || document.formvalidator.isValid(document.id('virtualservice-form'))) {
+				if(!jQuery('#jform_reflectedmetadata').is(":checked") && !jQuery('#jform_title').val()){
+					alert(Joomla.JText._('COM_EASYSDI_SERVICE_FORM_SERVICE_METADATA_ERROR', 'At least a title must be given for the service metadata.'));
+					return;
+				}
 				Joomla.submitform(task, document.getElementById('virtualservice-form'));
 			}
 			else {
@@ -8,11 +16,36 @@
 			}
 		}
 		
+		function changeReflectedMetadata()
+		{
+			if(jQuery('#jform_reflectedmetadata').is(":checked")){
+				jQuery("#metadata :input").val("");
+				jQuery("#metadata :input").attr("disabled", true);
+				jQuery('#jform_reflectedmetadata').removeAttr("disabled");
+			}else{
+				jQuery('#metadata :input').removeAttr("disabled");
+			}
+		}
+		
+		function enableMetadata (){
+			var nserver = jQuery('#jform_physicalservice_id :selected').length;
+			if(nserver > 1){
+				jQuery('#metadata :input').removeAttr("disabled");
+				jQuery('#jform_reflectedmetadata').attr("disabled", true);
+				jQuery('#jform_reflectedmetadata').attr('checked', false);
+			}else{
+				jQuery('#metadata :input').removeAttr("disabled");
+				jQuery('#jform_reflectedmetadata').removeAttr("disabled");
+			}
+		}
 		
 		function updateAgregatedVersion ()
 		{
-			var supportedVersionsArray ;
+			//Metadata handling
+			enableMetadata();
 			
+			//Supported version handling
+			var supportedVersionsArray ;			
 			jQuery('#div-supportedversions').html("");
 			jQuery('#jform_compliance').val("");
 			jQuery('#jform_physicalservice_id option:selected').each(function(){ 

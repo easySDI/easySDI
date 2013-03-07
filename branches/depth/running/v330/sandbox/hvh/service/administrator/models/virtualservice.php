@@ -201,6 +201,7 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	protected function prepareTable(&$table)
 	{
 		jimport('joomla.filter.output');
+		$jform = JRequest::getVar('jform');
 
 		if (empty($table->id)) {
 
@@ -212,7 +213,12 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 				$table->ordering = $max+1;
 			}
 		}
-		
+		if (!isset($jform['reflectedmetadata'])) { // see if the checkbox has been submitted
+			$table->reflectedmetadata = 0; // if it has not been submitted, mark the field unchecked
+		}
+		else{
+			$table->reflectedmetadata = 1;
+		}
 		if (empty($table->alias)){
 			$table->alias = $table->name;
 		}
@@ -228,15 +234,23 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	 * @since   11.1
 	 */
 	public function save($data) {
+		
 		if(parent::save($data)){
 			$data['id'] = $this->getItem()->get('id');
 			//Instantiate an address JTable
 			$virtualmetadata =& JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
 			$virtualmetadata->loadByVirtualServiceID($data['id']);
-			//Call the overloaded save function to store the input data
-			if( !$virtualmetadata->save($data) ){	
-				return false;
+			//If reflectedmetadata option is checked, delete existing metadata
+			if(isset($data['reflectedmetadata'])){
+				if(isset($virtualmetadata->id))
+					$virtualmetadata->delete($virtualmetadata->id);
+			}else{
+				//Call the overloaded save function to store the input data
+				if( !$virtualmetadata->save($data) ){
+					return false;
+				}
 			}
+						
 			if(isset($data['physicalservice_id']))
 			{
 				 if(!$this->savePhysicalServiceAggregation($data, $this->getState($this->getName().'.id')))
@@ -359,12 +373,14 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	
 		try {
 			$db = JFactory::getDbo();
-			$db->setQuery(
-					'SELECT sv.value as value, sc.id as id FROM #__sdi_virtualservice_servicecompliance ssc ' .
-					' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id '.
-					' INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id'.
-					' WHERE ssc.service_id ='.$id
-			);
+			$query = $db->getQuery(true);
+			$query->select('sv.value as value, sc.id as id');
+			$query->from('#__sdi_virtualservice_servicecompliance ssc');
+			$query->join('INNER', '#__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id ');
+			$query->join('INNER', '#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id ');
+			$query->where('ssc.service_id = ' . (int) $id);
+			$db->setQuery($query);
+
 			$compliance = $db->loadObjectList();
 			return $compliance;
 	

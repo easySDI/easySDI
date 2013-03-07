@@ -88,9 +88,6 @@ ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `reflectedmetadata` BOOLEAN NOT N
 ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `xsltfilename` VARCHAR(255);
 ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `logautodriven` BOOLEAN NOT NULL DEFAULT '1';
 ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `logpath` VARCHAR(255) NOT NULL;
-ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `logprefixfilename` VARCHAR(255) NOT NULL;
-ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `logsuffixfilename` VARCHAR(255) NOT NULL;
-ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `logextensionfilename` VARCHAR(255) NOT NULL;
 ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `harvester` BOOLEAN NOT NULL DEFAULT '0';
 ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `maximumrecords` INT(10);
 ALTER TABLE `#__sdi_virtualservice` ADD COLUMN `identifiersearchattribute` VARCHAR(255);

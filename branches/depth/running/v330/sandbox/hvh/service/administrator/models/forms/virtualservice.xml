@@ -31,14 +31,10 @@
 			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDURL"
 			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDURL"
 			filter="safehtml" />
-		<field name="reflectedmetadata" type="checkbox"
-			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDMETADATA"
-			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDMETADATA"
-			value="1" default="0" />
 		<field name="exceptionlevel_id" type="sql" class="inputbox"  required="true"
 			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_EXCEPTIONLEVEL_ID"
 			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_EXCEPTIONLEVEL_ID"
-			query="SELECT 0 AS `id`, '- Please select -' AS `value` UNION SELECT `id`, `value` FROM `#__sdi_sys_exceptionlevel`"
+			query="SELECT `id`, `value` FROM `#__sdi_sys_exceptionlevel`"
 			key_field="id" value_field="value" />
 		<field name="xsltfilename" type="text" size="40" class="inputbox"
 			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_XSLTFILENAME"
@@ -153,27 +149,15 @@
 			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_LOGPATH"
 			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_LOGPATH"
 			filter="safehtml" required="true" />
-		<field name="logprefixfilename" type="text" size="40" class="inputbox"
-			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_LOGPREFIXFILENAME"
-			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_LOGPREFIXFILENAME"
-			filter="safehtml" required="true" />
-		<field name="logsuffixfilename" type="text" size="40" class="inputbox"
-			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_LOGSUFFIXFILENAME"
-			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_LOGSUFFIXFILENAME"
-			filter="safehtml" required="true" />
-		<field name="logextensionfilename" type="text" size="40" class="inputbox"
-			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_LOGEXTENSIONFILENAME"
-			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_LOGEXTENSIONFILENAME"
-			filter="safehtml" required="true" />
-		<field name="loglevel_id" type="sql" class="inputbox"
+		<field name="loglevel_id" type="sql" class="inputbox" default="3"
 			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_LOGLEVEL_ID"
 			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_LOGLEVEL_ID"
-			query="SELECT 0 AS `id`, '- Please select -' AS `value` UNION SELECT `id`, `value` FROM `#__sdi_sys_loglevel`"
+			query="SELECT `id`, `value` FROM `#__sdi_sys_loglevel`"
 			key_field="id" value_field="value" required="true" />
 		<field name="logroll_id" type="sql" class="inputbox"
 			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_LOGROLL_ID"
 			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_LOGROLL_ID"
-			query="SELECT 0 AS `id`, '- Please select -' AS `value` UNION SELECT `id`, `value` FROM `#__sdi_sys_logroll`"
+			query="SELECT `id`, `value` FROM `#__sdi_sys_logroll`"
 			key_field="id" value_field="value" required="true" />
 	</fieldset>
 
@@ -214,9 +198,16 @@
 	</fieldset>
 
 	<fieldset name="metadata">
+		<field 	name="reflectedmetadata" 
+				type="checkbox" 
+				onclick="changeReflectedMetadata()"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDMETADATA"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDMETADATA"
+				value="1" 
+				filter="intval"/>
 		<field name="title" type="text" size="40" class="inputbox"
 			label="COM_EASYSDI_SERVICE_METADATA_TITLE" description="" filter="safehtml"
-			required="true" />
+			required="false" />
 		<field name="summary" type="text" size="40" class="inputbox"
 			label="COM_EASYSDI_SERVICE_METADATA_ABSTRACT" description="" filter="safehtml" />
 		<field name="keyword" type="text" size="40" class="inputbox"

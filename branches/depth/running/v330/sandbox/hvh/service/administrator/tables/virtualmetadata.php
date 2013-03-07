@@ -26,6 +26,7 @@ class Easysdi_serviceTablevirtualmetadata extends sdiTable {
 	
 	public function save($src, $orderingFilter = '', $ignore = '') {
 		$data = array();
+		
 		$data['title'] 						= $src['title'];
 		$data['summary'] 					= $src['summary'];
 		$data['keyword'] 					= $src['keyword'];
