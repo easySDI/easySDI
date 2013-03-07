@@ -15,9 +15,9 @@
 			
 			jQuery('#div-supportedversions').html("");
 			jQuery('#jform_compliance').val("");
-			jQuery('#jform_physicalservice_id :selected').each(function(i, selected){ 
-				var selected = jQuery(selected).text();
-				var versions = selected.split(' - ')[2];
+			jQuery('#jform_physicalservice_id option:selected').each(function(){ 
+				var selected = jQuery(this).text();
+				var versions = selected.split(' - ')[1];
 				var versionsArray = versions.substring(1, versions.length -1).split('-');
 
 				if(supportedVersionsArray){
