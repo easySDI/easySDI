@@ -164,7 +164,7 @@ class Easysdi_serviceTablevirtualservice extends sdiTable {
 	
 		try
 		{
-			$rows = $this->_db->loadResultArray();
+			$rows = $this->_db->loadColumn();
 	
 		}
 		catch (JDatabaseException $e)

@@ -326,3 +326,6 @@ ADD CONSTRAINT `#__sdi_virtual_physical_fk1` FOREIGN KEY (`virtualservice_id`) R
 
 ALTER TABLE `#__sdi_virtual_physical`
 ADD CONSTRAINT `#__sdi_virtual_physical_fk2` FOREIGN KEY (`physicalservice_id`) REFERENCES `#__sdi_physicalservice` (`id`) ON DELETE CASCADE ;
+
+ALTER TABLE `#__sdi_layer` MODIFY   checked_out INT(11) NOT NULL;
+ALTER TABLE `#__sdi_layer` MODIFY   checked_out_time DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00';

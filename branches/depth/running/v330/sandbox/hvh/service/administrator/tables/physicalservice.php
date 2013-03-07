@@ -102,7 +102,7 @@ class Easysdi_serviceTablephysicalservice extends sdiTable
 			$this->_db->setQuery($query);
 	
 		
-			$rows = $this->_db->loadResultArray();
+			$rows = $this->_db->loadColumn();
 		}
 		catch (JDatabaseException $e)
 		{
