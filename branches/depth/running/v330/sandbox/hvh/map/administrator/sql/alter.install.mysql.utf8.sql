@@ -2,12 +2,12 @@ ALTER TABLE `#__sdi_map_tool`
 ADD CONSTRAINT `#__sdi_map_tool_fk1` FOREIGN KEY (`map_id`) REFERENCES `#__sdi_map` (`id`);
 
 ALTER TABLE `#__sdi_map_tool`
-ADD CONSTRAINT `#__sdi_map_tool_fk2` FOREIGN KEY (`tool_id`) REFERENCES `#__sdi_sys_map_tool` (`id`);
+ADD CONSTRAINT `#__sdi_map_tool_fk2` FOREIGN KEY (`tool_id`) REFERENCES `#__sdi_sys_maptool` (`id`);
 
-ALTER TABLE `#__sdi_layergroup`
-ADD CONSTRAINT `#__sdi_layergroup_fk1` FOREIGN KEY (`map_id`) REFERENCES `#__sdi_map` (`id`);
+ALTER TABLE `#__sdi_map_layergroup`
+ADD CONSTRAINT `#__sdi_map_layergroup_fk1` FOREIGN KEY (`map_id`) REFERENCES `#__sdi_map` (`id`);
 
-ALTER TABLE `#__sdi_layergroup`
+ALTER TABLE `#__sdi_map_layergroup`
 ADD CONSTRAINT `#__sdi_map_layergroup_fk2` FOREIGN KEY (`group_id`) REFERENCES `#__sdi_layergroup` (`id`);
 
 ALTER TABLE `#__sdi_map_physicalservice`
@@ -28,5 +28,5 @@ ADD CONSTRAINT `#__sdi_map_fk2` FOREIGN KEY (`unit_id`) REFERENCES `#__sdi_sys_u
 ALTER TABLE `#__sdi_map`
 ADD CONSTRAINT `#__sdi_map_fk3` FOREIGN KEY (`defaultserviceconnector_id`) REFERENCES `#__sdi_sys_serviceconnector` (`id`);
 
-ALTER TABLE `#__sdi_layer`
-ADD CONSTRAINT `#__sdi_layer_fk3` FOREIGN KEY (`group_id`) REFERENCES `#__sdi_layergroup` (`id`);
+ALTER TABLE `#__sdi_maplayer`
+ADD CONSTRAINT `#__sdi_maplayer_fk3` FOREIGN KEY (`group_id`) REFERENCES `#__sdi_layergroup` (`id`);

@@ -19,6 +19,7 @@ JHtml::_('behavior.keepalive');
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css');
+$document->addScript('components/com_easysdi_map/views/layer/tmpl/edit.js');
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task)

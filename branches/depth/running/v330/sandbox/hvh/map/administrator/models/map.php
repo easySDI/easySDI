@@ -109,13 +109,13 @@ class Easysdi_mapModelmap extends JModelAdmin
 	 */
 	public function getItem($pk = null)
 	{
-		if ($item = parent::getItem($pk) && !is_null($pk)) {
+		if ($item = parent::getItem($pk)) {
 
 			$item->url = JURI::root().'index.php?option=com_easysdi_map&view=map&id='.$item->id;
 			
 			$db = JFactory::getDbo();
 			$db->setQuery('SELECT group_id FROM #__sdi_map_layergroup WHERE isbackground = 0  AND map_id = '.$item->id);
-			$item->groups = $db->loadResultArray();
+			$item->groups = $db->loadColumn();
 			
 			$db->setQuery('SELECT group_id FROM #__sdi_map_layergroup WHERE isbackground = 1 AND map_id = '.$item->id);
 			$item->background = $db->loadResult();
@@ -124,13 +124,13 @@ class Easysdi_mapModelmap extends JModelAdmin
 			$item->default = $db->loadResult();
 			
 			$db->setQuery('SELECT tool_id FROM #__sdi_map_tool WHERE map_id = '.$item->id);
-			$item->tools = $db->loadResultArray();
+			$item->tools = $db->loadColumn();
 			
 			$db->setQuery('SELECT CONCAT ("physical_",physicalservice_id) FROM #__sdi_map_physicalservice WHERE map_id = '.$item->id.' 
 							UNION SELECT CONCAT ("virtual_",virtualservice_id) FROM #__sdi_map_virtualservice WHERE map_id = '.$item->id);
-			$item->services = $db->loadResultArray();
+			$item->services = $db->loadColumn();
 		}
-
+		
 		return $item;
 	}
 
@@ -213,12 +213,22 @@ class Easysdi_mapModelmap extends JModelAdmin
 				}
 					
 			}
-			//Groups
 			
+			//Default adding  group
+			$default 	= $data['default'];
+			
+			//Background group
 			$background = $data['background'];
 			if(!empty($background))
 			{
-				$db->setQuery('INSERT INTO #__sdi_layergroup (map_id, group_id, isbackground, isdefault) VALUES ('.$this->getItem()->get('id').', '.$background.',1 ,0)');
+				//Check if the current background group is also the default adding group
+				if($background == $default){
+					$isdefault = 1;
+					$default = null;
+				}else{
+					$isdefault = 0;
+				}
+				$db->setQuery('INSERT INTO #__sdi_map_layergroup (map_id, group_id, isbackground, isdefault) VALUES ('.$this->getItem()->get('id').', '.$background.',1 ,'.$isdefault.')');
 				if(!$db->query())
 				{
 					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR" ) );
@@ -226,23 +236,36 @@ class Easysdi_mapModelmap extends JModelAdmin
 				}
 			}
 			
-			$default = $data['default'];
-			$groups = $data['groups'];
+			//Overlay groups and default adding group
+			$groups 	= $data['groups'];
 			foreach ($groups as $group)
 			{
 				if($group == $background)
 					continue;
 				
-				$isdefault = 0;
-				if($group == $default)
-					$isdefault = 1;
-				$db->setQuery('INSERT INTO #____sdi_map_layergroup (map_id, group_id, isbackground, isdefault) VALUES ('.$this->getItem()->get('id').', '.$group.',0 ,'.$isdefault.')');
+				//Check if the current overlay group is also the default adding group
+				if($group == $default){
+					$isdefault = 1; 
+					$default = null;
+				}else{
+					$isdefault = 0;
+				}
+				//Store map group				
+				$db->setQuery('INSERT INTO #__sdi_map_layergroup (map_id, group_id, isbackground, isdefault) VALUES ('.$this->getItem()->get('id').', '.$group.',0 ,'.$isdefault.')');
+				if(!$db->query())
+				{
+					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR" ) );
+					return false;
+				}	
+			}
+			//Default adding group was not selected in the overlay groups, have to store it now
+			if($default){
+				$db->setQuery('INSERT INTO #__sdi_map_layergroup (map_id, group_id, isbackground, isdefault) VALUES ('.$this->getItem()->get('id').', '.$default.',0 ,1)');
 				if(!$db->query())
 				{
 					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR" ) );
 					return false;
 				}
-					
 			}
 			
 			return true;

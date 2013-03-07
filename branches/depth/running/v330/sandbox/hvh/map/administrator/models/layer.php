@@ -149,7 +149,7 @@ class Easysdi_mapModellayer extends JModelAdmin
 			// Set ordering to the last item if not set
 			if (@$table->ordering === '') {
 				$db = JFactory::getDbo();
-				$db->setQuery('SELECT MAX(ordering) FROM #__sdi_layer');
+				$db->setQuery('SELECT MAX(ordering) FROM #__sdi_maplayer');
 				$max = $db->loadResult();
 				$table->ordering = $max+1;
 			}

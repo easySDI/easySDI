@@ -21,19 +21,19 @@ class Easysdi_mapHelper
 	public static function addSubmenu($vName = '')
 	{
 		JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_MAP_TITLE_GROUPS'),
-			'index.php?option=com_easysdi_map&view=groups',
-			$vName == 'groups'
-		);
-		JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_MAP_TITLE_LAYERS'),
-			'index.php?option=com_easysdi_map&view=layers',
-			$vName == 'layers'
-		);
-		JHtmlSidebar::addEntry(
 			JText::_('COM_EASYSDI_MAP_TITLE_MAPS'),
 			'index.php?option=com_easysdi_map&view=maps',
 			$vName == 'maps'
+		);
+		JHtmlSidebar::addEntry(
+				JText::_('COM_EASYSDI_MAP_TITLE_LAYERS'),
+				'index.php?option=com_easysdi_map&view=layers',
+				$vName == 'layers'
+		);
+		JHtmlSidebar::addEntry(
+				JText::_('COM_EASYSDI_MAP_TITLE_GROUPS'),
+				'index.php?option=com_easysdi_map&view=groups',
+				$vName == 'groups'
 		);
 	}
 
@@ -85,11 +85,10 @@ class Easysdi_mapHelper
 			$db->setQuery($query);
 			$resource 			= $db->loadObject();
 			$db->setQuery(
-								'SELECT sv.value as value, sc.id as id FROM #__sdi_service_servicecompliance ssc ' .
+								'SELECT sv.value as value, sc.id as id FROM #__sdi_physicalservice_servicecompliance ssc ' .
 								' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id '.
 								' INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id'.
 								' WHERE ssc.service_id ='.$id.
-								' AND ssc.servicetype = "physical"'.
 								' LIMIT 1'
 			);
 			$compliance = $db->loadObject();
@@ -102,11 +101,10 @@ class Easysdi_mapHelper
 			$db->setQuery($query);
 			$resource 			= $db->loadObject();
 			$db->setQuery(
-								'SELECT sv.value as value, sc.id as id FROM #__sdi_service_servicecompliance ssc ' .
+								'SELECT sv.value as value, sc.id as id FROM #__sdi_virtualservice_servicecompliance ssc ' .
 								' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id '.
 								' INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id'.
 								' WHERE ssc.service_id ='.$id.
-								' AND ssc.servicetype = "virtual"'.
 								' LIMIT 1'
 				
 			);

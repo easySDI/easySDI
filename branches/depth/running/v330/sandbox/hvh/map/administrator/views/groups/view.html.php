@@ -133,8 +133,7 @@ class Easysdi_mapViewGroups extends JViewLegacy
 				'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
 				'a.state' => JText::_('JSTATUS'),
 				'a.name' => JText::_('COM_EASYSDI_MAP_GROUPS_NAME'),
-				'a.isdefaultopen' => JText::_('COM_EASYSDI_MAP_GROUPS_ISDEFAULTOPEN'),
-				'a.access_level' => JText::_('JGRID_HEADING_ACCESS'),
+				'a.access' => JText::_('JGRID_HEADING_ACCESS'),
 		);
 	}
 }

@@ -83,8 +83,9 @@ class JFormFieldServicegroupedList extends JFormField
 		{
 			if($physical->serviceconnector_id == 12 || $physical->serviceconnector_id == 13 || $physical->serviceconnector_id == 14)
 			{
+				
 				$db->setQuery('SELECT name FROM #__sdi_layer WHERE physicalservice_id='.$physical->id);
-				$layers = $db->loadResultArray();
+				$layers = $db->loadColumn();				
 				$text .= '<input type="hidden" name="physical_'.$physical->id.'" id="physical_'.$physical->id.'" value="'.htmlentities(json_encode($layers)).'" />';
 			}
 		}

@@ -2,6 +2,19 @@
 	var request;
 	var selectedservice;
 	var layername_select; 
+	
+	function init()
+	{
+		if(document.getElementById ('jform_asOL').checked == true)
+		{
+			document.getElementById ('jform_asOLstyle').disabled = false;
+			document.getElementById ('jform_asOLmatrixset').disabled = false;
+			document.getElementById ('jform_asOLoptions').disabled = false;
+		}
+		var service_select = document.getElementById('jform_service_id');
+		getLayers(service_select);
+		setServiceConnector(service_select);
+	}
 
 	function clearLayers (selectObj)
 	{
@@ -105,18 +118,7 @@
 			layername_select.options[i].selected = "1";
 	}
 	
-	function init()
-	{
-		if(document.getElementById ('jform_asOL').checked == true)
-		{
-			document.getElementById ('jform_asOLstyle').disabled = false;
-			document.getElementById ('jform_asOLmatrixset').disabled = false;
-			document.getElementById ('jform_asOLoptions').disabled = false;
-		}
-		var service_select = document.getElementById('jform_service_id');
-		getLayers(service_select);
-		setServiceConnector(service_select);
-	}
+	
 	
 	function enableOlparams()
 	{

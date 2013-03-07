@@ -23,7 +23,7 @@ class Easysdi_mapTablelayer extends sdiTable {
 	 * @param JDatabase A database connector object
 	 */
 	public function __construct(&$db) {
-		parent::__construct('#__sdi_layer', 'id', $db);
+		parent::__construct('#__sdi_maplayer', 'id', $db);
 	}
 
 	/**

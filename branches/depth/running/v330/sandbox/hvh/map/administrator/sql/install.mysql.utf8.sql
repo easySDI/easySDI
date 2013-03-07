@@ -18,7 +18,7 @@ PRIMARY KEY (`id`),
 UNIQUE (`alias`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_layer` (
+CREATE TABLE IF NOT EXISTS `#__sdi_maplayer` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(20)  NOT NULL ,
@@ -80,7 +80,7 @@ PRIMARY KEY (`id`),
 UNIQUE (`alias`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_map_tool` (
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_maptool` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `alias` VARCHAR(20)  NOT NULL ,
 `ordering` INT(11)  ,
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_map_tool` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_layergroup` (
+CREATE TABLE IF NOT EXISTS `#__sdi_map_layergroup` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `map_id` INT(11) UNSIGNED NOT NULL ,
 `group_id` INT(11) UNSIGNED  NOT NULL ,

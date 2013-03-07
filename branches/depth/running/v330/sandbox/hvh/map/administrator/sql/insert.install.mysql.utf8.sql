@@ -1,4 +1,4 @@
-INSERT INTO `#__sdi_sys_map_tool` (alias,ordering,state,name) 
+INSERT INTO `#__sdi_sys_maptool` (alias,ordering,state,name) 
 VALUES 
 ('googleearth',1,1,'Google Earth'),
 ('navigation',2,1,'Navigation'),

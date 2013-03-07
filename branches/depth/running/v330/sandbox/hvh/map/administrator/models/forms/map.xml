@@ -169,7 +169,7 @@
    				valuefield="id"
    				textfield="name"
    				disable = "false"
-   				sourcetable="#__sdi_sys_map_tool"
+   				sourcetable="#__sdi_sys_maptool"
    				label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS"
    				description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS" />
 	</fieldset>

@@ -73,7 +73,7 @@ class Easysdi_mapModelLayers extends JModelList {
                 )
         );
         
-        $query->from('`#__sdi_layer` AS a');
+        $query->from('`#__sdi_maplayer` AS a');
         
 
     // Join over the users for the checked out user.

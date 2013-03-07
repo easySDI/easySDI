@@ -23,7 +23,7 @@ class Easysdi_mapTabletool extends sdiTable {
 	 * @param JDatabase A database connector object
 	 */
 	public function __construct(&$db) {
-		parent::__construct('#__sdi_sys_map_tool', 'id', $db);
+		parent::__construct('#__sdi_sys_maptool', 'id', $db);
 	}
 
 	/**
@@ -101,7 +101,7 @@ class Easysdi_mapTabletool extends sdiTable {
 	
 		try
 		{
-			$rows = $this->_db->loadResultArray();
+			$rows = $this->_db->loadColumn();
 	
 		}
 		catch (JDatabaseException $e)
