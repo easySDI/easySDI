@@ -104,6 +104,9 @@ class Easysdi_mapModellayer extends JModelAdmin
 				$item->service_id = $item->servicetype.'_'.$item->service_id;
 			if(isset($item->layername))
 				$item->onloadlayername = $item->layername;
+			
+			$groupTable 	= JTable::getInstance('group', 'easysdi_mapTable');
+			$item->groups 	= $groupTable->loadItemsByLayer($item->id);
 		}
 
 		return $item;
@@ -157,6 +160,40 @@ class Easysdi_mapModellayer extends JModelAdmin
 		
 		if (empty($table->alias)){
 			$table->alias = $table->name;
+		}
+	}
+	
+	/**
+	 * Method to save the form data.
+	 *
+	 * @param   array  $data  The form data.
+	 *
+	 * @return  boolean  True on success, False on error.
+	 *
+	 * @since   11.1
+	 */
+	public function save($data)
+	{
+		if(parent::save($data))
+		{
+			$db = JFactory::getDbo();
+			//Save groups
+			$db->query();
+			$db->setQuery('DELETE FROM #__sdi_layer_layergroup WHERE layer_id = '.$this->getItem()->get('id'));
+			$db->query();
+			
+			$groups 	= $data['groups'];
+			foreach ($groups as $group)
+			{
+				//Store layer group
+				$db->setQuery('INSERT INTO #__sdi_layer_layergroup (layer_id, group_id) VALUES ('.$this->getItem()->get('id').', '.$group.')');
+				if(!$db->query())
+				{
+					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR" ) );
+					return false;
+				}
+			}
+			return true;
 		}
 	}
 

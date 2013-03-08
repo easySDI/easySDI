@@ -16,4 +16,17 @@ ALTER TABLE `#__sdi_sys_maptool` DROP COLUMN checked_out;
 ALTER TABLE `#__sdi_sys_maptool` DROP COLUMN checked_out_time;
 ALTER TABLE `#__sdi_sys_maptool` DROP COLUMN created_by;
 
+CREATE TABLE IF NOT EXISTS `#__sdi_layer_layergroup` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`layer_id` INT(11) UNSIGNED NOT NULL ,
+`group_id` INT(11) UNSIGNED NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+ALTER TABLE `#__sdi_layer_layergroup`
+ADD CONSTRAINT `#__sdi_layer_layergroup_fk1` FOREIGN KEY (`layer_id`) REFERENCES `#__sdi_maplayer` (`id`) ON DELETE CASCADE;
+
+ALTER TABLE `#__sdi_layer_layergroup`
+ADD CONSTRAINT `#__sdi_layer_layergroup_fk2` FOREIGN KEY (`group_id`) REFERENCES `#__sdi_layergroup` (`id`) ON DELETE CASCADE;
+
 

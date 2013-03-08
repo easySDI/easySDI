@@ -5,39 +5,38 @@
 	
 	function init()
 	{
-		if(document.getElementById ('jform_asOL').checked == true)
-		{
-			document.getElementById ('jform_asOLstyle').disabled = false;
-			document.getElementById ('jform_asOLmatrixset').disabled = false;
-			document.getElementById ('jform_asOLoptions').disabled = false;
-		}
-		var service_select = document.getElementById('jform_service_id');
-		getLayers(service_select);
-		setServiceConnector(service_select);
+		if(jQuery('#jform_asOL').is(':checked'))
+			jQuery('#asOL :input').removeAttr("disabled");
+		
+		getLayers();
+		setServiceConnector();
 	}
 
-	function clearLayers (selectObj)
+	function clearLayers ()
 	{
-		layername_select = document.getElementById('jform_layername');
-		while ( layername_select.options.length > 0 ) layername_select.options[0] = null;
+		jQuery("#jform_layername").empty();
+		jQuery("#jform_layername").trigger("liszt:updated");
 	}
 	
-	function getLayers (selectObj)
+	function getLayers ()
 	{
-		layername_select = document.getElementById('jform_layername');
-		while ( layername_select.options.length > 0 ) layername_select.options[0] = null;
+		clearLayers();
 		
-		var idx = selectObj.selectedIndex; 
+		selectedservice = jQuery('#jform_service_id').find(":selected").val();
+		user = jQuery("#jform_user").val();
+		password = jQuery("#jform_password").val();
 		
-		selectedservice = selectObj.options[idx].value;
-		user = document.getElementById('jform_user').value;
-		password = document.getElementById('jform_password').value;
-		if (document.getElementById(selectedservice))
+		var layers = jQuery("#"+selectedservice).val();
+		if (layers)
 		{
-			var jsonalllayers = document.getElementById(selectedservice).value; 
+			var jsonalllayers = jQuery("#"+selectedservice).val();
 			var allayers = JSON.parse(jsonalllayers);
 			for(var i=0; i < allayers.length ; i++){
 				addLayerOption(allayers[i], allayers[i]);
+			}
+			if(jQuery("#jform_onloadlayername").val()){
+				jQuery("#jform_layername option[value='" + jQuery("#jform_onloadlayername").val() +"']").attr("selected","selected") ;
+				jQuery("#jform_layername").trigger("liszt:updated");
 			}
 		} 
 		else
@@ -61,20 +60,25 @@
 
 		    var query 			= "index.php?option=com_easysdi_map&task=getLayers&service="+selectedservice+"&user="+user+"&password="+password;
 			
-		    document.getElementById("progress").style.visibility = "visible";
+		    jQuery("#progress").css('visibility', 'visible');
 		    request.onreadystatechange = setLayers;
 		    request.open("GET", query, true);
 		    request.send(null);
 		}		
 	}
+	
+	function addLayerOption (id, value)
+	{
+		jQuery("#jform_layername").append('<option value="'+id+'">'+value+'</option>');
+		jQuery("#jform_layername").trigger("liszt:updated");	
+	}
 
 	function setLayers()
 	{
 	    if(request.readyState == 4){
-	    	layername_select = document.getElementById('jform_layername');
-			while ( layername_select.options.length > 0 ) layername_select.options[0] = null;
-			
-	    	document.getElementById("progress").style.visibility = "hidden";
+	    	clearLayers();
+	    	
+	    	jQuery("#progress").css('visibility', 'hidden');
 			var JSONtext = request.responseText;
 			
 			if(JSONtext == "[]"){
@@ -97,73 +101,56 @@
 
 			if(ok)
 			{
-				var input = document.createElement("input");
-				input.setAttribute("type", "hidden");
-				input.setAttribute("name", selectedservice);
-				input.setAttribute("id", selectedservice);
-				input.setAttribute("value", JSONtext);
-				document.getElementById("layer-form").appendChild(input);
+				if(jQuery("#jform_onloadlayername").val()){
+					jQuery("#jform_layername option[value='" + jQuery("#jform_onloadlayername").val() +"']").attr("selected","selected") ;
+					jQuery("#jform_layername").trigger("liszt:updated");
+				}
+				
+				jQuery('<input type="hidden">').attr({
+				    id: selectedservice,
+				    name: selectedservice,
+				    value: JSONtext
+				}).appendTo('layer-form');
 			}
 	    }
 	}
-
-	function addLayerOption (id, value)
-	{
-		var onloadlayername = document.getElementById('jform_onloadlayername').value;
-		
-		var option = new Option( id,value);
-    	var i = layername_select.length;
-		layername_select.options[layername_select.length] = option;
-		if(onloadlayername && onloadlayername == value)
-			layername_select.options[i].selected = "1";
-	}
-	
-	
 	
 	function enableOlparams()
 	{
-		if(document.getElementById ('jform_asOL').checked == true)
+		if(jQuery('#jform_asOL').is(':checked'))
 		{
-			document.getElementById ('jform_asOLoptions').disabled = false;
-			document.getElementById ('jform_asOLoptions').value = "";
-			document.getElementById ('jform_asOLstyle').disabled = false;
-			document.getElementById ('jform_asOLstyle').value = ""
-			document.getElementById ('jform_asOLmatrixset').disabled = false;
-			document.getElementById ('jform_asOLmatrixset').value="";
+			jQuery('#asOL :input').removeAttr("disabled");
 		}
 		else
 		{
-			document.getElementById ('jform_asOLoptions').disabled = true;
-			document.getElementById ('jform_asOLoptions').value = "";
-			document.getElementById ('jform_asOLstyle').disabled = true;
-			document.getElementById ('jform_asOLstyle').value = ""
-			document.getElementById ('jform_asOLmatrixset').disabled = true;
-			document.getElementById ('jform_asOLmatrixset').value="";
+			jQuery("#asOL :input").val("");
+			jQuery("#asOL :input").attr("disabled", true);
 		}
 	}
 	
-	function setServiceConnector (selectObj)
+	function setServiceConnector ()
 	{
-		var serviceconnectorlist = JSON.parse(document.getElementById('serviceconnectorlist').value);
-		var idx = selectObj.selectedIndex; 
-		var service = selectObj.options[idx].value;
+		var serviceconnectorlist = JSON.parse(jQuery("#serviceconnectorlist").val());
+		var  service = jQuery('#jform_service_id').find(":selected").val();
+		
 		for(var i=0; i < serviceconnectorlist.length ; i++){
 			var serviceconnector = JSON.parse(serviceconnectorlist[i]);
 			if(serviceconnector[0] == service)
 			{
 				var connector =  serviceconnector[1];
-				document.getElementById('jform_serviceconnector').value = connector;
+				jQuery('#jform_serviceconnector').val(connector);
+				
 				if (connector == 2){
-					document.getElementById ('WMTS-info').style.display = "none";
 					document.getElementById ('jform_asOL').disabled = false;
-					document.getElementById ('jform_asOLoptions').style.display = "block";
-					document.getElementById ('jform_asOLoptions-lbl').style.display = "block";
-					document.getElementById ('jform_asOLstyle').style.display = "block";
-					document.getElementById ('jform_asOLstyle-lbl').style.display = "block";
-					document.getElementById ('jform_asOLmatrixset').style.display = "none";
-					document.getElementById ('jform_asOLmatrixset-lbl').style.display = "none";
-					document.getElementById ('jform_asOLstyle').className += " required";
-					document.getElementById ('jform_asOLstyle-lbl').className += " required";
+					jQuery("#jform_asOLoptions").css("display", "block");
+					jQuery("#jform_asOLoptions-lbl").css("display", "block");
+					jQuery("#jform_asOLstyle").css("display", "block");
+					jQuery("#jform_asOLstyle-lbl").css("display", "block");
+					jQuery("#WMTS-info").css("display", "none");
+					jQuery("#jform_asOLmatrixset").css("display", "none");
+					jQuery("#jform_asOLmatrixset-lbl").css("display", "none");
+					jQuery("#jform_asOLstyle").addClass("required");
+					jQuery("#jform_asOLstyle-lbl").addClass("required");
 				}
 				else if (connector == 11){
 					document.getElementById ('WMTS-info').style.display = "none";

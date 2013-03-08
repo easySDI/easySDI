@@ -34,12 +34,13 @@
 	visibility:hidden; 
 	position:absolute; 
 	background-color: #B8B9BB;
-	height:80%;
-	width:95%;
+	height:100%;
+	width:100%;
 	opacity:0.3;
 	filter:alpha(opacity=30);
 	text-align : center; 
 	vertical-align:middle;
+	z-index:99;
 }
 #progress_image{
 	padding-left:60px;

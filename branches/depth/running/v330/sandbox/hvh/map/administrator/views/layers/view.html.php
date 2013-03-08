@@ -56,7 +56,7 @@ class Easysdi_mapViewLayers extends JViewLegacy
 		$state	= $this->get('State');
 		$canDo	= Easysdi_mapHelper::getActions();
 
-		JToolBarHelper::title(JText::_('COM_EASYSDI_MAP_TITLE_LAYERS'), 'layers.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_MAP_HEADER_LAYERS'), 'layers.png');
 
 		//Check if the form exists before showing the add/edit buttons
 		$formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'layer';

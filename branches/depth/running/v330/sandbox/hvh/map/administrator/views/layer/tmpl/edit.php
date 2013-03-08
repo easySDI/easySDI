@@ -34,7 +34,11 @@ $document->addScript('components/com_easysdi_map/views/layer/tmpl/edit.js');
 </script>
 
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_map&layout=edit&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="layer-form" class="form-validate">
+	<div id="progress">
+		<img id="progress_image"  src="components/com_easysdi_service/assets/images/loader.gif" alt="">
+	</div>
 	<div class="row-fluid">
+	
 	<div class="span10 form-horizontal">
             <ul class="nav nav-tabs">
 				<li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_MAP_TAB_NEW_GROUP') : JText::sprintf('COM_EASYSDI_MAP_TAB_EDIT_GROUP', $this->item->id); ?></a></li>
@@ -178,9 +182,7 @@ $document->addScript('components/com_easysdi_map/views/layer/tmpl/edit.js');
 		</div>
 		<!-- End Sidebar -->
 	</div>
-	<div id="progress">
-		<img id="progress_image"  src="components/com_easysdi_service/assets/images/loader.gif" alt="">
-	</div>
+	
 
 
 </form>

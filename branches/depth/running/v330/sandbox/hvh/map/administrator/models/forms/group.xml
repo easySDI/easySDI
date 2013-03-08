@@ -3,7 +3,7 @@
 	<fieldset name="details">
       <field 	name="name" 
        			type="text" 
-       			size="40" 
+       			size="255" 
        			class="inputbox"
             	label="COM_EASYSDI_MAP_FORM_LBL_GROUP_NAME"
             	description="COM_EASYSDI_MAP_FORM_DESC_GROUP_NAME" 
@@ -12,7 +12,7 @@
        
        <field 	name="alias" 
        			type="text" 
-       			size="40" 
+       			size="20" 
        			class="inputbox"
             	label="COM_EASYSDI_MAP_FORM_LBL_GROUP_ALIAS"
             	description="COM_EASYSDI_MAP_FORM_DESC_GROUP_ALIAS" 

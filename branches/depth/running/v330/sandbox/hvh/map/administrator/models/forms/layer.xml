@@ -4,7 +4,7 @@
 	   
        <field 	name="name" 
        			type="text" 
-       			size="40" 
+       			size="255" 
        			class="inputbox"
 	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_NAME"
             	description="COM_EASYSDI_MAP_FORM_DESC_LAYER_NAME" 
@@ -13,24 +13,24 @@
 
  	<field 	name="alias" 
        			type="text" 
-       			size="40" class="inputbox"
+       			size="20" class="inputbox"
        			label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ALIAS"
     	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ALIAS" 
                 filter="safehtml" /> 
 
-	   <field 	name="group_id" 
+	   <field 	name="groups" 
 				type="sql" 
-				class="inputbox"
+				class="multiselect"
+				multiple="true"
 				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_GROUP_ID"
 				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_GROUP_ID" 
-                translate="true" 
                 required="true"
-                query="SELECT null AS id, '- Please select -' AS name UNION SELECT id, name FROM #__sdi_layergroup WHERE state=1" key_field="id" value_field="name"
+                query="SELECT id, name FROM #__sdi_layergroup WHERE state=1" key_field="id" value_field="name"
                  />
 
 	   <field 	name="service_id" 
 				type="ServicegroupedList" 
-				onchange="javascript:clearLayers(this);javascript:setServiceConnector(this);"
+				onchange="clearLayers();setServiceConnector();"
 				class="inputbox"
 				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_SERVICE_ID"
 				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_SERVICE_ID" 
@@ -43,7 +43,6 @@
 	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_LAYERNAME"
     	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_LAYERNAME" 
                 required="true" 
-                value=""
                 filter="safehtml" /> 
 
        <field 	name="istiled" 
@@ -79,7 +78,7 @@
             	description="COM_EASYSDI_MAP_FORM_DESC_LAYER_METADATALINK"  /> 
 
 		<field name="id" type="hidden" filter="SAFEHTML" />
-		<field name="serviceconnector" id="serviceconnector" type="hidden" filter="SAFEHTML" />
+		<field name="serviceconnector" type="hidden" />
 		<field name="onloadlayername" type="hidden" filter="SAFEHTML" />
 		<field name="guid" type="hidden" filter="SAFEHTML" />
 		<field name="checked_out" type="hidden" filter="unset" />
@@ -115,7 +114,7 @@
 		 <field 	
 		 		name="user" 
        			type="text" 
-       			size="40" class="inputbox"
+       			size="255" class="inputbox"
        			required="false" 
 	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_USER"
     	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_USER" 
@@ -123,7 +122,7 @@
                 
        <field 	name="password" 
        			type="text" 
-       			size="40" class="inputbox"
+       			size="255" class="inputbox"
        			required="false" 
 	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_PASSWORD"
     	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_PASSWORD" 
@@ -141,7 +140,7 @@
                 
        <field 	name="asOLstyle" 
        			type="text" 
-       			size="40" 
+       			size="255" 
        			class="inputbox"
        			required="false" 
 	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ASOL_STYLE"
@@ -150,7 +149,7 @@
        
        <field 	name="asOLmatrixset" 
        			type="text" 
-       			size="40" 
+       			size="255" 
        			class="inputbox"
        			required="false" 
 	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ASOL_MATRIXSET"

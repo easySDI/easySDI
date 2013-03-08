@@ -55,7 +55,7 @@ class Easysdi_mapViewGroups extends JViewLegacy
 		$state	= $this->get('State');
 		$canDo	= Easysdi_mapHelper::getActions();
 
-		JToolBarHelper::title(JText::_('COM_EASYSDI_MAP_TITLE_GROUPS'), 'layergroups.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_MAP_HEADER_GROUPS'), 'layergroups.png');
 
 		//Check if the form exists before showing the add/edit buttons
 		$formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'group';

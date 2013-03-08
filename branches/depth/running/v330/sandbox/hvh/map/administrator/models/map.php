@@ -295,7 +295,7 @@ class Easysdi_mapModelmap extends JModelAdmin
 				$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_DELETE_FAIL_TOOL_ERROR" ) );
 				return false;
 			}
-			$db->setQuery('DELETE FROM #____sdi_map_layergroup WHERE map_id = '.$pk);
+			$db->setQuery('DELETE FROM #__sdi_map_layergroup WHERE map_id = '.$pk);
 			if(!$db->query())
 			{
 				$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_DELETE_FAIL_GROUP_ERROR" ) );

@@ -48,6 +48,7 @@ class Easysdi_mapModelgroups extends JModelList
 	}
 
 
+	
 	/**
 	 * Method to auto-populate the model state.
 	 *

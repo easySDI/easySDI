@@ -55,7 +55,7 @@ class Easysdi_mapViewLayer extends JViewLegacy
 		}
 		$this->canDo		= Easysdi_mapHelper::getActions('layer',$this->item->id);
 
-		JToolBarHelper::title(JText::_('COM_EASYSDI_MAP_TITLE_LAYER'), 'layer.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_MAP_HEADER_LAYER'), 'layer.png');
 
 		// If not checked out, can save the item.
 		if (!$checkedOut && ($this->canDo->get('core.edit')||($this->canDo->get('core.create'))))

@@ -119,3 +119,10 @@ CREATE TABLE IF NOT EXISTS `#__sdi_map_virtualservice` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
+CREATE TABLE IF NOT EXISTS `#__sdi_layer_layergroup` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`layer_id` INT(11) UNSIGNED NOT NULL ,
+`group_id` INT(11) UNSIGNED NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+

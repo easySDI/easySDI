@@ -54,7 +54,7 @@ class Easysdi_mapViewMaps extends JViewLegacy
 		$state	= $this->get('State');
 		$canDo	= Easysdi_mapHelper::getActions();
 
-		JToolBarHelper::title(JText::_('COM_EASYSDI_MAP_TITLE_MAPS'), 'maps.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_MAP_HEADER_MAPS'), 'maps.png');
 
 		//Check if the form exists before showing the add/edit buttons
 		$formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'map';

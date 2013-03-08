@@ -137,15 +137,6 @@ class Easysdi_mapTablegroup extends sdiTable {
 			return false;
 		}
 	
-		// Legacy error handling switch based on the JError::$legacy switch.
-		// @deprecated  12.1
-		if (JError::$legacy && $this->_db->getErrorNum())
-		{
-			$e = new JException($this->_db->getErrorMsg());
-			$this->setError($e);
-			return false;
-		}
-	
 		// Check that we have a result.
 		if (empty($rows))
 		{
@@ -153,6 +144,41 @@ class Easysdi_mapTablegroup extends sdiTable {
 		}
 		
 		return $rows;
+	}
+	
+	/**
+	 * Method to return the list of group linked to the specified layer
+	 *
+	 * @param   integer    	$layer   			layer identifier
+	 *
+	 * @return  false if request failed, the list of group if succeed
+	 *
+	 * @since   EasySDI 3.3.0
+	 */
+	public function loadItemsByLayer ($layer)
+	{
+		$query	= $this->_db->getQuery(true);
+		$query->select('g.id');
+		$query->from('#__sdi_layer_layergroup as lg');
+		$query->join('inner', '#__sdi_layergroup as g ON g.id = lg.group_id');
+		$query->where('lg.layer_id = ' . (int) $layer);
+		$this->_db->setQuery($query);
+		try
+		{
+			$items = $this->_db->loadColumn();
+		}
+		catch (JDatabaseException $e)
+		{
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		// Check that we have a result.
+		if (empty($items))
+		{
+			return false;
+		}
+		return $items;
 	}
 
 }
