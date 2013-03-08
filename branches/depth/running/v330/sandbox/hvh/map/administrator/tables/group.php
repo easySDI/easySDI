@@ -10,6 +10,10 @@
 // No direct access
 defined('_JEXEC') or die;
 
+if(!defined('DS')) {
+	define( 'DS', DIRECTORY_SEPARATOR );
+}
+
 require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'libraries'.DS.'easysdi'.DS.'database'.DS.'sditable.php';
 require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_map'.DS.'tables'.DS.'layer.php';
 
@@ -93,7 +97,7 @@ class Easysdi_mapTablegroup extends sdiTable {
 			return false;
 		
 		$layertable 	= JTable::getInstance('layer', 'easysdi_mapTable');
-		$layers 		= $layertable->getItemsByGroup($this->id);
+		$layers 		= $layertable->loadItemsByGroup($this->id);
 		$this->layers = $layers;
 		return true;
 	}
@@ -108,18 +112,21 @@ class Easysdi_mapTablegroup extends sdiTable {
 	 * @link    http://docs.joomla.org/JTable/load
 	 * @since   EasySDI 3.0.0
 	 */
-	public function GetIdsByContextId($map_id = null, $reset = true)
+	public function loadIdsByMapId($map_id = null, $reset = true)
 	{
 		if ($reset)
 		{
 			$this->reset();
 		}
 		
+		if(empty($map_id))
+			return false;
+		
 		// Initialise the query.
 		$query = $this->_db->getQuery(true);
 		$query->select('g.id, cg.isbackground, cg.isdefault');
 		$query->from($this->_tbl.'  AS g ');
-		$query->join('LEFT', '#__sdi_layergroup AS cg ON cg.group_id=g.id');
+		$query->join('LEFT', '#__sdi_map_layergroup AS cg ON cg.group_id=g.id');
 		$query->where('cg.map_id = ' . (int) $map_id);
 		$query->where('g.state = 1' );
 		$query->order('g.ordering ASC' );

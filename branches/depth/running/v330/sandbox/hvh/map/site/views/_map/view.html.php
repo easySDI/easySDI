@@ -1,9 +1,9 @@
 <?php
 
 /**
- \* @version     3.3.0
+ * @version     3.3.0
  * @package     com_easysdi_map
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -15,7 +15,7 @@ jimport('joomla.application.component.view');
 /**
  * View to edit
  */
-class Easysdi_mapViewContext extends JViewLegacy {
+class Easysdi_mapViewMap extends JViewLegacy {
 
     protected $state;
     protected $item;
@@ -27,36 +27,32 @@ class Easysdi_mapViewContext extends JViewLegacy {
      */
     public function display($tpl = null) {
         
-		$app			= JFactory::getApplication();
-        $user			= JFactory::getUser();
+		$app	= JFactory::getApplication();
+        $user		= JFactory::getUser();
         
-        $this->state 	= $this->get('State');
-        $this->item 	= $this->get('Data');
-        $this->params 	= $app->getParams('com_easysdi_map');
+        $this->state = $this->get('State');
+        $this->item = $this->get('Data');
+        $this->params = $app->getParams('com_easysdi_map');
    		$this->form		= $this->get('Form');
-   	
+
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
         
-        if(! $this->item ){
-        	JFactory::getApplication()->enqueueMessage( JText::_('COM_EASYSDI_MAP_CONTEXT_NOT_FOUND'), 'error' );
-        	return;
-        }
-        
         if(!in_array($this->item->access, $user->getAuthorisedViewLevels())){
-        	JFactory::getApplication()->enqueueMessage( JText::_('JERROR_ALERTNOAUTHOR'), 'notice' );
-        	return;
+                return JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+            }
+        
+        
+        if($this->_layout == 'edit') {
+            
+            $authorised = $user->authorise('core.create', 'com_easysdi_map');
+
+            if ($authorised !== true) {
+                throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'));
+            }
         }
-        
-        
-//         if($this->_layout == 'edit') {
-//             $authorised = $user->authorise('core.create', 'com_easysdi_map');
-//             if ($authorised !== true) {
-//                 throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'));
-//             }
-//         }
         
         $this->_prepareDocument();
 
@@ -82,9 +78,7 @@ class Easysdi_mapViewContext extends JViewLegacy {
 		} else {
 			$this->params->def('page_heading', JText::_('com_easysdi_map_DEFAULT_PAGE_TITLE'));
 		}
-		
-		//$title = $this->params->get('page_title', '');
-		$title = $this->item->name;
+		$title = $this->params->get('page_title', '');
 		if (empty($title)) {
 			$title = $app->getCfg('sitename');
 		}

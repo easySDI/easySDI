@@ -13,92 +13,623 @@ defined('_JEXEC') or die;
 //Load admin language file
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_map', JPATH_ADMINISTRATOR);
+$user = JFactory::getUser();
+$document = JFactory::getDocument();
+
+if( $this->item ) : 
+
+$document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/ux/ext/RowExpander.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/geoext/lib/geoext.min.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/ux/geoext/PrintPreview.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/gxp/script/gxp.min.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.min.js');
+
+$files = glob('administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.{js}', GLOB_BRACE);
+foreach($files as $file) {
+  $document->addScript($file);
+}
+
+$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/ext/resources/css/ext-all.css');
+$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/ext/resources/css/xtheme-gray.css');
+$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/openlayers/theme/default/style.css');
+$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/geoext/resources/css/popup.css');
+$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/geoext/resources/css/layerlegend.css');
+$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/geoext/resources/css/gxtheme-gray.css');
+$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/ux/geoext/resources/css/printpreview.css');
+$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/gxp/theme/all.css');
+$document->addStyleSheet('components/com_easysdi_map/views/map/tmpl/theme/app/style.css');
 ?>
-<?php if( $this->item ) : ?>
+	<div id="sdimapcontainer" class="cls-sdimapcontainer">
+	</div>
+      <script>
+      	var app;
+      	var loadingMask;
+      	
+      	Ext.Container.prototype.bufferResize = false;
+		Ext.onReady(function(){
 
-    <div class="item_fields">
-        
-        <ul class="fields_list">
+			loadingMask = new Ext.LoadMask(Ext.getBody(), {
+	                msg: "<?php echo JText::_('COM_EASYSDI_MAP_MAP_LOAD_MESSAGE');?>"
+	            });
+            loadingMask.show();
 
-			<li><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_ID'); ?>:
-			<?php echo $this->item->id; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_GUID'); ?>:
-			<?php echo $this->item->guid; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_ALIAS'); ?>:
-			<?php echo $this->item->alias; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_CREATED'); ?>:
-			<?php echo $this->item->created; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_CREATED_BY'); ?>:
-			<?php echo $this->item->created_by; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_MODIFIED_BY'); ?>:
-			<?php echo $this->item->modified_by; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_MODIFIED'); ?>:
-			<?php echo $this->item->modified; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_ORDERING'); ?>:
-			<?php echo $this->item->ordering; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_STATE'); ?>:
-			<?php echo $this->item->state; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_CHECKED_OUT'); ?>:
-			<?php echo $this->item->checked_out; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_CHECKED_OUT_TIME'); ?>:
-			<?php echo $this->item->checked_out_time; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_NAME'); ?>:
-			<?php echo $this->item->name; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_SRS'); ?>:
-			<?php echo $this->item->srs; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_UNIT_ID'); ?>:
-			<?php echo $this->item->unit_id; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_CENTERCOORDINATES'); ?>:
-			<?php echo $this->item->centercoordinates; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_MAXRESOLUTION'); ?>:
-			<?php echo $this->item->maxresolution; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_MAXEXTENT'); ?>:
-			<?php echo $this->item->maxextent; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_ABSTRACT'); ?>:
-			<?php echo $this->item->abstract; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_ACCESS'); ?>:
-			<?php echo $this->item->access; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_ASSET_ID'); ?>:
-			<?php echo $this->item->asset_id; ?></li>
+            var height = Ext.get("sdimapcontainer").getHeight();
+            if(!height)  height = Ext.get("sdimapcontainer").getWidth() * 2/3;
+            var width = Ext.get("sdimapcontainer").getWidth();
+			OpenLayers.ImgPath = "administrator/components/com_easysdi_core/libraries/openlayers/img/";
 
+			GeoExt.Lang.set("<?php echo $lang->getTag(); ?>");
+			
+            app = new gxp.Viewer(
+            {
+            	<?php
+            	$proxyhost = $this->params->get('proxyhost');
+            	if (!empty($proxyhost))
+            	{
+            	?> 
+            	proxy:"<?php echo $proxyhost;?>",
+                <?php
+				}
+                ?>
+            	about: { 
+			    	title: "<?php echo $this->item->title;?>", 
+			    	"abstract": "<?php echo $this->item->abstract;?>" 
+			    	}, 
+            	portalConfig: 
+                {
+            		renderTo:"sdimapcontainer",
+            		width: width, 
+            	    height: height,
+                    layout: "border",
+                    region: "center",
+                    items: 
+                    [
+                        {
+	                        id: "centerpanel",
+	                        xtype: "panel",
+	                        layout: "card",
+	                        region: "center",
+	                        border: false,
+	                        activeItem: 0, 
+	                        items: [
+			    	                    "sdimap",
+			                            {
+				                            xtype: 'gxp_googleearthpanel',
+				                            id: "globe",
+				                            tbar: [],
+				                            mapPanel: "sdimap"
+		                        		}
+	                  				]
+                    	}, 
+                    	{
+	                    	id: "westpanel",
+	                        xtype: "panel",
+	                        header: false,
+	                        split: true,
+	                        collapsible: true,
+	                        collapseMode: "mini",
+	                        hideCollapseTool: true,
+	                        
+	                        layout: "fit",
+	                        region: "west",
+	                        width: 200
+                    	},
+                    	{
+                     		id:"hiddentbar",
+						    xtype:"toolbar",
+						    border: false,
+						    height:0,
+						    region:"south",
+						    items:[]
+						    
+						}
+                    ],
+                    
+                },
+                
+                // Tools
+                tools: 
+                [
+                 {
+					    ptype: "sdi_gxp_layermanager",
+					    rootNodeText: "<?php echo $this->item->rootnodetext;?>",
+					    <?php
+					    foreach ($this->item->groups as $group)
+					    {
+					    	if($group->isdefault)
+					    	{
+					    		//Acces not allowed
+					    		if(!in_array($group->access, $user->getAuthorisedViewLevels()))
+					    			break;
+					    		?>
+					    		defaultGroup: "<?php echo $group->alias; ?>",
+					    		<?php
+					    		break;
+					    	}
+					    	
+					    } 
+					    ?>        
+					    outputConfig: {
+					        id: "tree",
+					        border: true,
+					        tbar: [] 
+					    },
+					    groups: {
+						    <?php
+						    foreach ($this->item->groups as $group)
+						    {
+						    	//Acces not allowed
+						    	if(!in_array($group->access, $user->getAuthorisedViewLevels()))
+						    		continue;
+						    
+						    	if($group->isbackground)
+						    	{
+						    		?>
+						    		"background": {
+							            title: "<?php echo $group->name; ?>", 
+							            exclusive: true,
+							            expanded: <?php if ($group->isdefaultopen) echo "true"; else echo "false";?>
+							        },
+						    		<?php
+						    	}
+						    	else
+						    	{
+							    	?>
+							    	"<?php echo $group->alias; ?>" : {
+								    	title : "<?php echo $group->name; ?>",
+								    	expanded: <?php if ($group->isdefaultopen) echo "true"; else echo "false";?> 
+							    	},
+							    	<?php
+								}
+						    } 
+						    ?>        
+					    },
+					    outputTarget: "westpanel"
+					},
+                <?php 
+                foreach ($this->item->tools as $tool)
+                {
+                	switch ($tool->alias)
+                	{
+                		case 'googleearth':
+                			?>
+                		    {
+                		    	ptype: "gxp_googleearth",
+                		        actionTarget: ["map.tbar", "globe.tbar"]
+                		    },
+                		    {
+                                actions: ["-"],
+                                actionTarget: "map.tbar"
+                            },
+                		    <?php
+                		    break;
+                		case 'navigationhistory':
+                			?>
+                			{
+                                ptype: "gxp_navigationhistory",
+                                actionTarget: "map.tbar"
+                            },
+                			<?php 
+                			break;
+                		case 'navigation':
+                			?>
+                				{
+                    				ptype: "gxp_navigation",
+                			    	actionTarget: "map.tbar", 
+                			        toggleGroup: "navigation"
+                			    },
+                			    <?php 
+                			    break;
+                		case 'zoom':
+                			?>
+                			 {
+                                 ptype: "gxp_zoom",
+                                 actionTarget: "map.tbar",
+                                 toggleGroup: "navigation",
+                                 showZoomBoxAction: true,
+                                 controlOptions: {zoomOnClick: false}
+                             },
+                			<?php 
+                			break;
+                		case 'zoomtoextent':
+                			?>
+                			{
+                                ptype: "gxp_zoomtoextent",
+                                actionTarget: "map.tbar"
+                            },
+                            {
+                                ptype: "gxp_zoomtolayerextent",
+                                actionTarget: {target: "tree.contextMenu", index: 0}
+                            },
+                			<?php 
+                			break;
+                		case 'measure':
+                			?>
+                			{
+                                actions: ["-"],
+                                actionTarget: "map.tbar"
+                            },
+                			{
+                				ptype: "gxp_measure",
+                				toggleGroup: "measure",
+                                actionTarget: "map.tbar"
+                			},
+                			<?php 
+                			break;
+                		case 'addlayer':
+                			?>
+                			{
+                                ptype: "gxp_addlayers",
+                                actionTarget: "tree.tbar"
+                            },
+                			<?php 
+                			break;
+                		case 'removelayer':
+                			?>
+                            {
+                               ptype: "gxp_removelayer",
+                               actionTarget: ["tree.tbar", "tree.contextMenu"]
+                            },
+                			<?php 
+                			break;
+                		
+                		case 'layerproperties':
+                			?>
+                			{
+                				ptype: "gxp_layerproperties",
+                				id: "layerproperties",
+                				actionTarget: ["tree.tbar", "tree.contextMenu"]
+                			},
+                			<?php 
+                			break;
+                		
+                		case 'getfeatureinfo':
+                			?>
+                			
+                			{
+                				ptype: "gxp_wmsgetfeatureinfo",
+                				toggleGroup: "interaction", 
+                				format: "grid", 
+                				actionTarget: "hiddentbar",
+                				defaultAction: 0
+                			},
+                			<?php 
+                			break;
+                		case 'googlegeocoder':
+                			?>
+                			{
+                                actions: ["-"],
+                                actionTarget: "map.tbar"
+                            },
+                			{
+                				ptype: "gxp_googlegeocoder",
+                				outputTarget: "map.tbar"
+                			},
+                			<?php
+                			break;
+                		case 'print':
+                			if(!$this->params->get('printserviceurl'))
+                				continue;
+                			else 
+                			?>
+                			{
+                                actions: ["-"],
+                                actionTarget: "map.tbar"
+                            },
+                			{
+                				ptype: "sdi_gxp_print",
+                				customParams: {outputFilename: 'GeoExplorer-print'},
+                			    printService: "<?php echo $this->params->get('printserviceurl');?>",
+                			    printURL: "<?php if($this->params->get('printserviceprinturl')=='') echo $this->params->get('printserviceurl').'print.pdf'; else  echo $this->params->get('printserviceprinturl');?>",
+                			    createURL: "<?php if($this->params->get('printservicecreateurl') == '') echo  $this->params->get('printserviceurl').'create.json'; else  echo $this->params->get('printservicecreateurl');?>",
+                			    includeLegend: true, 
+                			    actionTarget: "map.tbar",
+                			    showButtonText: false
+                			},
+                			<?php
+                			break;
+                	}
+                }
+                ?>
+                ],
+                
+                // layer sources
+                <?php
+				switch ($this->item->defaultserviceconnector_id)
+                {
+                	case 2 :
+                    	?>
+                    	defaultSourceType: "gxp_wmssource",
+                        <?php
+                    	break;
+                    case 11 :
+                    	?>
+                    	defaultSourceType: "gxp_wmscsource",
+                        <?php
+                    	break;
+                }
+                ?>
+                
+                sources: 
+                {
+                	"ol": { ptype: "gxp_olsource" }, 
+                	<?php
+                    foreach ($this->item->physicalservices as $service)
+                	{
+                		//Acces not allowed
+                		if(!in_array($service->access, $user->getAuthorisedViewLevels()))
+                			continue;
+                			switch ($service->serviceconnector_id)
+                    		{
+                    			case 2 :
+                    				?>
+                    				"<?php echo $service->alias ?>":
+                    				{
+                    				ptype: "gxp_wmssource",
+                    				url: "<?php echo $service->resourceurl;?>"
+                    				},
+                    				<?php
+                    				break;
+                    			case 11 :
+                    				?>
+                    				"<?php echo $service->alias ?>":
+                    				{
+                    				ptype: "gxp_wmscsource",
+                    				url: "<?php echo $service->resourceurl;?>"
+                    				},
+                    				<?php
+                    				break;
+                    			case 12 :
+                    				?>
+                    				"<?php echo $service->alias ?>":
+                    				{
+                    				ptype: "sdi_gxp_bingsource"
+                    				},
+                    				<?php
+                    				break;
+                    			case 13 : 
+                    				?>
+                    				"<?php echo $service->alias ?>":
+                    				{
+                    				ptype: "sdi_gxp_googlesource"
+                    				},
+                    				<?php
+                    				break;
+                    			case 14 :
+                    				?>
+                    				"<?php echo $service->alias ?>":
+                    				{
+                    				ptype: "sdi_gxp_osmsource"
+                    				},
+                    				<?php
+                    				break;
+                    		}
+                    		
+                	}
+                	foreach ($this->item->virtualservices as $service)
+                	{
+                		switch ($service->serviceconnector_id)
+                		{
+                		  	case 2 :
+                		   	?>
+                		       	"<?php echo $service->alias ?>":
+                        	 	{
+	                	            ptype: "gxp_wmssource",
+	                	            url: "<?php echo $service->url;?>"
+                        	 	},
+                		    <?php
+                		    break;
+                		    case 11 :
+                		    ?>
+                		       	"<?php echo $service->alias ?>":
+                        	 	{
+	                	            ptype: "gxp_wmscsource",
+	                	            url: "<?php echo $service->url;?>"
+                        	 	},
+                		    <?php
+                		}
+                		        
+                	}
+                	?>
+                   
+                },
+                
+                // map and layers
+                map: 
+                {
+                    id: "sdimap", // id needed to reference map in portalConfig above
+                    title: "Map",
+                    header:false,
+                    projection: "<?php echo $this->item->srs;?>",
+                    center: [<?php echo $this->item->centercoordinates;?>],
+                    maxExtent : [<?php echo $this->item->maxextent;?>],
+                    restrictedExtent: [<?php echo $this->item->maxextent;?>],
+                	maxResolution: <?php echo $this->item->maxresolution;?>,
+                	units: "<?php echo $this->item->unit;?>",
+                    layers: 
+                    [
+                     <?php
+                     foreach ($this->item->groups as $group)
+                     {
+                     	//Acces not allowed
+                     	if(!in_array($group->access, $user->getAuthorisedViewLevels()))
+                     		continue;
+                     
+                     	if(!empty ($group->layers) )
+                     	{
+                     		foreach ($group->layers as $layer)
+                     		{
+                     			//Acces not allowed
+                     			if(!in_array($layer->access, $user->getAuthorisedViewLevels()))
+                     				continue;
+                     		
+                     			if($layer->asOL || $layer->serviceconnector == 'WMTS')
+                     			{
+                     				switch ($layer->serviceconnector)
+                     				{
+                     					case 'WMTS' :
+                     						?>
+                     						{
+                     							source: "ol",
+                     						    type: "OpenLayers.Layer.WMTS",
+                     						    args: [
+                     						    	{
+                     						        	name:"<?php echo $layer->name;?>", 
+                     						            url : "<?php echo $layer->serviceurl;?>", 
+                     						            layer: "<?php echo $layer->layername;?>", 
+                     						            visibility: <?php  if ($layer->isdefaultvisible == 1) echo "true"; else echo "false"; ?>,
+                     						            singleTile: <?php if ($layer->istiled == 1) echo "true"; else echo "false"; ?>,
+                     						            transitionEffect: 'resize',
+                     						            opacity: <?php echo $layer->opacity;?>,
+                     						           	style: "<?php echo $layer->asOLstyle;  ?>",
+                     						           	matrixSet: "<?php echo $layer->asOLmatrixset;  ?>",
+                     						            <?php if (!empty($layer->metadatalink)){?>
+                    				   			        metadataURL: "<?php echo $layer->metadatalink;  ?>",
+                    					   			    <?php }?>
+                    				   			        <?php 
+                    			                     	echo  $layer->asOLoptions;
+                    			                     	?>
+                     						         }
+                     						     ],
+                     						     group: "<?php if($group->isbackground)echo 'background'; else echo $group->alias;?>"
+                     						 },
+                     						 <?php
+                     						break;
+                     					case 'WMS' : 
+                     						?>
+                     						{
+                         						source : "ol",
+                         						type : "OpenLayers.Layer.WMS",
+                         						args: 
+                             					[
+													"<?php echo $layer->name;?>",
+													"<?php echo $layer->serviceurl;?>",
+													{
+														
+														layers: "<?php echo $layer->layername;?>", 
+														version: "<?php echo $layer->version;  ?>"
+													},
+													{
+														 visibility: <?php  if ($layer->isdefaultvisible == 1) echo "true"; else echo "false"; ?>,
+														 singleTile: <?php if ($layer->istiled == 1) echo "true"; else echo "false"; ?>,
+														 opacity: <?php echo $layer->opacity;?>,
+														 transitionEffect: 'resize',
+														 style: "<?php echo $layer->asOLstyle;  ?>",
+														 <?php 
+														 if (!empty($layer->metadatalink)){
+														 ?>
+			   			                     				metadataURL: "<?php echo $layer->metadatalink;  ?>",
+				   			                     		 <?php }?>
+			   			                     			<?php echo  $layer->asOLoptions; ?>
+													}
+                                				],
+                                				group: "<?php if($group->isbackground)echo 'background'; else echo $group->alias;?>"
+                     						},
+                     						<?php 
+                     						break;
+                     					case 'WMSC' :
+                     						?>
+                     						{
+                     							source : "ol",
+                     						    type : "OpenLayers.Layer.WMS",
+                     						    args: 
+                     						    [
+                     								"<?php echo $layer->name;?>",
+                     								"<?php echo $layer->serviceurl;?>",
+                     								{
+                     									layers: "<?php echo $layer->layername;?>", 
+                     									version: "<?php echo $layer->version;  ?>",
+                     									tiled: true
+                     								},
+                     								{
+                     									visibility: <?php  if ($layer->isdefaultvisible == 1) echo "true"; else echo "false"; ?>,
+                     									singleTile: <?php if ($layer->istiled == 1) echo "true"; else echo "false"; ?>,
+                     									opacity: <?php echo $layer->opacity;?>,
+                     									transitionEffect: 'resize',
+                     									style: "<?php echo $layer->asOLstyle;  ?>",
+                     									<?php 
+                     									if (!empty($layer->metadatalink)){
+                     									?>
+                     									metadataURL: "<?php echo $layer->metadatalink;  ?>",
+                     									<?php }?>
+                     									<?php echo  $layer->asOLoptions; ?>
+                     									}
+                     						     ],
+                     						    group: "<?php if($group->isbackground)echo 'background'; else echo $group->alias;?>"
+                     						},
+                     						<?php 
+                     						break;
+                     				}
+                     			}
+                     			else 
+                     			{
+	                     			switch ($layer->serviceconnector)
+	                     			{
+	                     				case 'WMTS':
+	                     					 break;
+										default :
+											?>
+											{
+			                     				source: "<?php echo $layer->servicealias;  ?>",
+			                     				//tiled value gives the transitionEffect value see WMSSource.js l.524
+			                     				tiled: <?php if ($layer->istiled == 1) echo "true"; else echo "false"; ?>,
+			                     				<?php if (!empty($layer->version)){?>
+			                     				version: "<?php echo $layer->version;  ?>",
+												<?php }?>
+			                     				<?php if (!empty($layer->metadatalink)){?>
+			                     				metadataURL: "<?php echo $layer->metadatalink;  ?>",
+			                     				<?php }?>
+			                     				name: "<?php echo $layer->layername;?>",
+			                     				group: "<?php if($group->isbackground)echo 'background'; else echo $group->alias;?>",
+			                     				<?php if ($group->alias == "background") echo "fixed: true,";?>
+			                     				visibility: <?php  if ($layer->isdefaultvisible == 1) echo "true"; else echo "false"; ?>,
+			                     				opacity: <?php echo $layer->opacity;?>
+			                     			},
+			                     			<?php
+			                     			break;
+									}
+								}	
+							}
+                     	}
+                     } 
+                     ?>
+                    ]
+                }
+                ,
+                mapItems: 
+                [
+                 	{
+                        xtype: "gx_zoomslider",
+                        vertical: true,
+                        height: 100
+                	},
+                	{
+                	 	xtype: "gxp_scaleoverlay"
+                    }
+                ],
+                mapPlugins:
+                [
+					{
+					    ptype: 'sdi_gxp_loadingindicator',
+					    loadingMapMessage: '<?php echo JText::_('COM_EASYSDI_MAP_LAYER_LOAD_MESSAGE');?>'
+					}
+                ]
+            });
+            
+            app.on("ready", function (){
+            	loadingMask.hide();
+            });
 
-        </ul>
-        
-    </div>
-    <?php if(JFactory::getUser()->authorise('core.edit.own', 'com_easysdi_map')): ?>
-		<a href="<?php echo JRoute::_('index.php?option=com_easysdi_map&task=map.edit&id='.$this->item->id); ?>">Edit</a>
-	<?php endif; ?>
-								<?php if(JFactory::getUser()->authorise('core.delete','com_easysdi_map')):
-								?>
-									<a href="javascript:document.getElementById('form-map-delete-<?php echo $this->item->id ?>').submit()">Delete</a>
-									<form id="form-map-delete-<?php echo $this->item->id; ?>" style="display:inline" action="<?php echo JRoute::_('index.php?option=com_easysdi_map&task=map.remove'); ?>" method="post" class="form-validate" enctype="multipart/form-data">
-										<input type="hidden" name="jform[id]" value="<?php echo $this->item->id; ?>" />
-										<input type="hidden" name="jform[guid]" value="<?php echo $this->item->guid; ?>" />
-										<input type="hidden" name="jform[alias]" value="<?php echo $this->item->alias; ?>" />
-										<input type="hidden" name="jform[created]" value="<?php echo $this->item->created; ?>" />
-										<input type="hidden" name="jform[created_by]" value="<?php echo $this->item->created_by; ?>" />
-										<input type="hidden" name="jform[modified_by]" value="<?php echo $this->item->modified_by; ?>" />
-										<input type="hidden" name="jform[modified]" value="<?php echo $this->item->modified; ?>" />
-										<input type="hidden" name="jform[ordering]" value="<?php echo $this->item->ordering; ?>" />
-										<input type="hidden" name="jform[state]" value="<?php echo $this->item->state; ?>" />
-										<input type="hidden" name="jform[checked_out]" value="<?php echo $this->item->checked_out; ?>" />
-										<input type="hidden" name="jform[checked_out_time]" value="<?php echo $this->item->checked_out_time; ?>" />
-										<input type="hidden" name="jform[name]" value="<?php echo $this->item->name; ?>" />
-										<input type="hidden" name="jform[srs]" value="<?php echo $this->item->srs; ?>" />
-										<input type="hidden" name="jform[unit_id]" value="<?php echo $this->item->unit_id; ?>" />
-										<input type="hidden" name="jform[centercoordinates]" value="<?php echo $this->item->centercoordinates; ?>" />
-										<input type="hidden" name="jform[maxresolution]" value="<?php echo $this->item->maxresolution; ?>" />
-										<input type="hidden" name="jform[maxextent]" value="<?php echo $this->item->maxextent; ?>" />
-										<input type="hidden" name="jform[abstract]" value="<?php echo $this->item->abstract; ?>" />
-										<input type="hidden" name="jform[access]" value="<?php echo $this->item->access; ?>" />
-										<input type="hidden" name="jform[asset_id]" value="<?php echo $this->item->asset_id; ?>" />
-										<input type="hidden" name="option" value="com_easysdi_map" />
-										<input type="hidden" name="task" value="map.remove" />
-										<?php echo JHtml::_('form.token'); ?>
-									</form>
-								<?php
-								endif;
-							?>
+            Ext.QuickTips.init();
+
+            Ext.apply(Ext.QuickTips.getQuickTip(), {
+                maxWidth: 1000
+            });
+    	});
+        </script>
 <?php else: ?>
     Could not load the item
 <?php endif; ?>

@@ -22,8 +22,8 @@
 				type="sql" 
 				class="multiselect"
 				multiple="true"
-				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_GROUP_ID"
-				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_GROUP_ID" 
+				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_GROUPS"
+				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_GROUPS" 
                 required="true"
                 query="SELECT id, name FROM #__sdi_layergroup WHERE state=1" key_field="id" value_field="name"
                  />

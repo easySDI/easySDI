@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @version     3.3.0
  * @package     com_easysdi_map
@@ -26,34 +25,29 @@ class Easysdi_mapViewMap extends JViewLegacy {
      * Display the view
      */
     public function display($tpl = null) {
+        $app			= JFactory::getApplication();
+        $user			= JFactory::getUser();
         
-		$app	= JFactory::getApplication();
-        $user		= JFactory::getUser();
-        
-        $this->state = $this->get('State');
-        $this->item = $this->get('Data');
-        $this->params = $app->getParams('com_easysdi_map');
+        $this->state 	= $this->get('State');
+        $this->item 	= $this->get('Data');
+        $this->params 	= $app->getParams('com_easysdi_map');
    		$this->form		= $this->get('Form');
-
+   	
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
         
-        if(!in_array($this->item->access, $user->getAuthorisedViewLevels())){
-                return JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
-            }
-        
-        
-        if($this->_layout == 'edit') {
-            
-            $authorised = $user->authorise('core.create', 'com_easysdi_map');
-
-            if ($authorised !== true) {
-                throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'));
-            }
+        if(! $this->item ){
+        	JFactory::getApplication()->enqueueMessage( JText::_('COM_EASYSDI_MAP_MAP_NOT_FOUND'), 'error' );
+        	return;
         }
         
+        if(!in_array($this->item->access, $user->getAuthorisedViewLevels())){
+        	JFactory::getApplication()->enqueueMessage( JText::_('JERROR_ALERTNOAUTHOR'), 'notice' );
+        	return;
+        }
+                
         $this->_prepareDocument();
 
         parent::display($tpl);
@@ -76,9 +70,11 @@ class Easysdi_mapViewMap extends JViewLegacy {
 		{
 			$this->params->def('page_heading', $this->params->get('page_title', $menu->title));
 		} else {
-			$this->params->def('page_heading', JText::_('com_easysdi_map_DEFAULT_PAGE_TITLE'));
+			$this->params->def('page_heading', JText::_('COM_EASYSDI_MAP_DEFAULT_PAGE_TITLE'));
 		}
-		$title = $this->params->get('page_title', '');
+		
+		//$title = $this->params->get('page_title', '');
+		$title = $this->item->name;
 		if (empty($title)) {
 			$title = $app->getCfg('sitename');
 		}

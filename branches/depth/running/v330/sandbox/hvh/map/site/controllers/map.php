@@ -48,7 +48,7 @@ class Easysdi_mapControllerMap extends Easysdi_mapController
 		}
 
 		// Redirect to the edit screen.
-		$this->setRedirect(JRoute::_('index.php?option=com_easysdi_map&view=mapform&layout=edit', false));
+		$this->setRedirect(JRoute::_('index.php?option=com_easysdi_map&view=map&layout=edit', false));
 	}
 
 	/**

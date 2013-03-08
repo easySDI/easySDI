@@ -10,6 +10,10 @@
 // No direct access
 defined('_JEXEC') or die;
 
+if(!defined('DS')) {
+	define( 'DS', DIRECTORY_SEPARATOR );
+}
+
 require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'libraries'.DS.'easysdi'.DS.'database'.DS.'sditable.php';
 
 /**
@@ -152,19 +156,19 @@ class Easysdi_mapTablelayer extends sdiTable {
 	 *
 	 * @since   EasySDI v3
 	 */
-	public function getItemsByGroup($key = null)
+	public function loadItemsByGroup($key = null)
 	{
 		try
 		{
 			$query = $this->_db->getQuery(true);
 			$query->select('l.*');
 			$query->from($this->_tbl.' AS l');
-			$query->where('l.group_id = ' . (int) $key);
+			$query->join('INNER', '#__sdi_layer_layergroup AS lg ON lg.layer_id=l.id');
+			$query->where('lg.group_id = '. (int) $key );
 			$query->where('l.state = 1' );
 			$query->order('l.ordering DESC' );
 			$this->_db->setQuery($query);
 			$rows = $this->_db->loadObjectList();
-			
 			foreach ($rows as $row)
 			{
 				if($row->servicetype == 'virtual')
@@ -210,11 +214,10 @@ class Easysdi_mapTablelayer extends sdiTable {
 					$query = $this->_db->getQuery(true);
 					$query->select('max(sv.value)');
 					$query->from('#__sdi_physicalservice AS ps');
-					$query->join('LEFT', '#__sdi_service_servicecompliance ssc ON ssc.service_id = ps.id');
+					$query->join('LEFT', '#__sdi_physicalservice_servicecompliance ssc ON ssc.service_id = ps.id');
 					$query->join('LEFT', '#__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id');
 					$query->join('LEFT', '#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id');
 					$query->where('ps.id = '.(int) $row->service_id);
-					$query->where('ssc.servicetype = "physical"');
 					$this->_db->setQuery($query);
 				}
 				if(!empty($row->servicetype) && $row->servicetype == 'virtual' )
@@ -222,11 +225,10 @@ class Easysdi_mapTablelayer extends sdiTable {
 					$query = $this->_db->getQuery(true);
 					$query->select('max(sv.value)');
 					$query->from('#__sdi_virtualservice AS vs');
-					$query->join('LEFT', '#__sdi_service_servicecompliance ssc ON ssc.service_id = vs.id');
+					$query->join('LEFT', '#__sdi_virtualservice_servicecompliance ssc ON ssc.service_id = vs.id');
 					$query->join('LEFT', '#__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id');
 					$query->join('LEFT', '#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id');
 					$query->where('vs.id = '.(int) $row->service_id);
-					$query->where('ssc.servicetype = "virtual"');
 					$this->_db->setQuery($query);
 				}
 				

@@ -16,7 +16,7 @@ jimport('joomla.event.dispatcher');
 /**
  * Easysdi_map model.
  */
-class Easysdi_mapModel__sdi_sys_map_tool3011 extends JModelForm
+class Easysdi_mapModelMap extends JModelForm
 {
     
     var $_item = null;
@@ -34,18 +34,18 @@ class Easysdi_mapModel__sdi_sys_map_tool3011 extends JModelForm
 
 		// Load state from the request userState on edit or from the passed variable on default
         if (JFactory::getApplication()->input->get('layout') == 'edit') {
-            $id = JFactory::getApplication()->getUserState('com_easysdi_map.edit.__sdi_sys_map_tool3011.id');
+            $id = JFactory::getApplication()->getUserState('com_easysdi_map.edit.map.id');
         } else {
             $id = JFactory::getApplication()->input->get('id');
-            JFactory::getApplication()->setUserState('com_easysdi_map.edit.__sdi_sys_map_tool3011.id', $id);
+            JFactory::getApplication()->setUserState('com_easysdi_map.edit.map.id', $id);
         }
-		$this->setState('__sdi_sys_map_tool3011.id', $id);
+		$this->setState('map.id', $id);
 
 		// Load the parameters.
 		$params = $app->getParams();
         $params_array = $params->toArray();
         if(isset($params_array['item_id'])){
-            $this->setState('__sdi_sys_map_tool3011.id', $params_array['item_id']);
+            $this->setState('map.id', $params_array['item_id']);
         }
 		$this->setState('params', $params);
 
@@ -66,7 +66,7 @@ class Easysdi_mapModel__sdi_sys_map_tool3011 extends JModelForm
 			$this->_item = false;
 
 			if (empty($id)) {
-				$id = $this->getState('__sdi_sys_map_tool3011.id');
+				$id = $this->getState('map.id');
 			}
 
 			// Get a level row instance.
@@ -94,7 +94,7 @@ class Easysdi_mapModel__sdi_sys_map_tool3011 extends JModelForm
 		return $this->_item;
 	}
     
-	public function getTable($type = '__sdi_sys_map_tool3011', $prefix = 'Easysdi_mapTable', $config = array())
+	public function getTable($type = 'Map', $prefix = 'Easysdi_mapTable', $config = array())
 	{   
         $this->addTablePath(JPATH_COMPONENT_ADMINISTRATOR.'/tables');
         return JTable::getInstance($type, $prefix, $config);
@@ -111,7 +111,7 @@ class Easysdi_mapModel__sdi_sys_map_tool3011 extends JModelForm
 	public function checkin($id = null)
 	{
 		// Get the id.
-		$id = (!empty($id)) ? $id : (int)$this->getState('__sdi_sys_map_tool3011.id');
+		$id = (!empty($id)) ? $id : (int)$this->getState('map.id');
 
 		if ($id) {
             
@@ -140,7 +140,7 @@ class Easysdi_mapModel__sdi_sys_map_tool3011 extends JModelForm
 	public function checkout($id = null)
 	{
 		// Get the user id.
-		$id = (!empty($id)) ? $id : (int)$this->getState('__sdi_sys_map_tool3011.id');
+		$id = (!empty($id)) ? $id : (int)$this->getState('map.id');
 
 		if ($id) {
             
@@ -175,7 +175,7 @@ class Easysdi_mapModel__sdi_sys_map_tool3011 extends JModelForm
 	public function getForm($data = array(), $loadData = true)
 	{
 		// Get the form.
-		$form = $this->loadForm('com_easysdi_map.__sdi_sys_map_tool3011', '__sdi_sys_map_tool3011', array('control' => 'jform', 'load_data' => $loadData));
+		$form = $this->loadForm('com_easysdi_map.map', 'map', array('control' => 'jform', 'load_data' => $loadData));
 		if (empty($form)) {
 			return false;
 		}
@@ -205,7 +205,7 @@ class Easysdi_mapModel__sdi_sys_map_tool3011 extends JModelForm
 	 */
 	public function save($data)
 	{
-		$id = (!empty($data['id'])) ? $data['id'] : (int)$this->getState('__sdi_sys_map_tool3011.id');
+		$id = (!empty($data['id'])) ? $data['id'] : (int)$this->getState('map.id');
         $state = (!empty($data['state'])) ? 1 : 0;
         $user = JFactory::getUser();
 
@@ -239,7 +239,7 @@ class Easysdi_mapModel__sdi_sys_map_tool3011 extends JModelForm
     
      function delete($data)
     {
-        $id = (!empty($data['id'])) ? $data['id'] : (int)$this->getState('__sdi_sys_map_tool3011.id');
+        $id = (!empty($data['id'])) ? $data['id'] : (int)$this->getState('map.id');
         if(JFactory::getUser()->authorise('core.delete', 'com_easysdi_map') !== true){
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return false;

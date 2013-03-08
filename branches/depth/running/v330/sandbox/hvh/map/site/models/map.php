@@ -12,6 +12,8 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
+require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_service'.DS.'tables'.DS.'physicalservice.php';
+require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_service'.DS.'tables'.DS.'virtualservice.php';
 
 /**
  * Easysdi_map model.
@@ -20,6 +22,7 @@ class Easysdi_mapModelMap extends JModelForm
 {
     
     var $_item = null;
+    
     
 	/**
 	 * Method to auto-populate the model state.
@@ -43,10 +46,6 @@ class Easysdi_mapModelMap extends JModelForm
 
 		// Load the parameters.
 		$params = $app->getParams();
-        $params_array = $params->toArray();
-        if(isset($params_array['item_id'])){
-            $this->setState('map.id', $params_array['item_id']);
-        }
 		$this->setState('params', $params);
 
 	}
@@ -75,18 +74,89 @@ class Easysdi_mapModelMap extends JModelForm
 			// Attempt to load the row.
 			if ($table->load($id))
 			{
-				// Check published state.
-				if ($published = $this->getState('filter.published'))
-				{
-					if ($table->state != $published) {
-						return $this->_item;
-					}
-				}
-
+				
+				if ($table->state != 1) 
+					return $this->_item;
+				
 				// Convert the JTable to a clean JObject.
 				$properties = $table->getProperties(1);
 				$this->_item = JArrayHelper::toObject($properties, 'JObject');
-			} elseif ($error = $table->getError()) {
+				
+				//Get the unit value
+				$db = JFactory::getDbo();
+				$db->setQuery('SELECT alias FROM #__sdi_sys_unit WHERE id='.$this->_item->unit_id);
+				try
+				{
+					$unit = $db->loadResult();
+					$this->_item->unit = $unit;
+				
+				}
+				catch (JDatabaseException $e)
+				{
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}				
+				
+				//Load the groups
+				$groupTable 	= JTable::getInstance('group', 'easysdi_mapTable');
+				if($groups 		= $groupTable->loadIdsByMapId($id))
+				{
+					$this->_item->groups = array();
+					foreach($groups as $group )
+					{
+						$groupTable 	= JTable::getInstance('group', 'easysdi_mapTable');
+						$groupTable->load($group->id, true);
+						$groupTable->isbackground = $group->isbackground;
+						$groupTable->isdefault = $group->isdefault;
+						$this->_item->groups[] =$groupTable;
+					}
+				}
+				
+				//Load the services
+				$physicalserviceTable 	= JTable::getInstance('physicalservice', 'easysdi_serviceTable');
+				if($services 		= $physicalserviceTable->loadIdsByMapId($id))
+				{
+					$this->_item->physicalservices = array();
+					if($services){
+						foreach($services as $service )
+						{
+							$physicalserviceTable 	= JTable::getInstance('physicalservice', 'easysdi_serviceTable');
+							$physicalserviceTable->loadWithAccessInheritance($service, true);
+							if($physicalserviceTable->state == 0)
+								continue;
+							$this->_item->physicalservices[] =$physicalserviceTable;
+						}
+					}
+				}
+				$virtualserviceTable 	= JTable::getInstance('virtualservice', 'easysdi_serviceTable');
+				if($services 		= $virtualserviceTable->loadIdsByMapId($id))
+				{
+					$this->_item->virtualservices = array();
+					if($services){
+						foreach($services as $service )
+						{
+							$virtualserviceTable 	= JTable::getInstance('virtualservice', 'easysdi_serviceTable');
+							$virtualserviceTable->load($service, true);
+							$this->_item->virtualservices[] =$virtualserviceTable;
+						}
+					}
+				}
+				//Load the tools
+				$toolTable 	= JTable::getInstance('tool', 'easysdi_mapTable');
+				if($tools 		= $toolTable->loadIdsByMapId($id))
+				{
+					$this->_item->tools = array();
+					foreach($tools as $tool )
+					{
+						$toolTable 	= JTable::getInstance('tool', 'easysdi_mapTable');
+						$toolTable->load($tool, true);
+						$this->_item->tools[]  =$toolTable;
+					}
+				}
+			} 
+			elseif ($error = $table->getError()) 
+			{
 				$this->setError($error);
 			}
 		}
@@ -94,6 +164,9 @@ class Easysdi_mapModelMap extends JModelForm
 		return $this->_item;
 	}
     
+	
+	
+	
 	public function getTable($type = 'Map', $prefix = 'Easysdi_mapTable', $config = array())
 	{   
         $this->addTablePath(JPATH_COMPONENT_ADMINISTRATOR.'/tables');
@@ -206,52 +279,28 @@ class Easysdi_mapModelMap extends JModelForm
 	public function save($data)
 	{
 		$id = (!empty($data['id'])) ? $data['id'] : (int)$this->getState('map.id');
-        $state = (!empty($data['state'])) ? 1 : 0;
         $user = JFactory::getUser();
 
         if($id) {
             //Check the user can edit this item
-            $authorised = $user->authorise('core.edit', 'com_easysdi_map') || $authorised = $user->authorise('core.edit.own', 'com_easysdi_map');
-            if($user->authorise('core.edit.state', 'com_easysdi_map') !== true && $state == 1){ //The user cannot edit the state of the item.
-                $data['state'] = 0;
-            }
+            $authorised = $user->authorise('core.edit', 'map.'.$id);
         } else {
             //Check the user can create new items in this section
             $authorised = $user->authorise('core.create', 'com_easysdi_map');
-            if($user->authorise('core.edit.state', 'com_easysdi_map') !== true && $state == 1){ //The user cannot edit the state of the item.
-                $data['state'] = 0;
-            }
         }
 
         if ($authorised !== true) {
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return false;
         }
-        
-        $table = $this->getTable();
+
+		$table = $this->getTable();
         if ($table->save($data) === true) {
             return $id;
         } else {
             return false;
         }
         
-	}
-    
-     function delete($data)
-    {
-        $id = (!empty($data['id'])) ? $data['id'] : (int)$this->getState('map.id');
-        if(JFactory::getUser()->authorise('core.delete', 'com_easysdi_map') !== true){
-            JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
-            return false;
-        }
-        $table = $this->getTable();
-        if ($table->delete($data['id']) === true) {
-            return $id;
-        } else {
-            return false;
-        }
-        
-        return true;
-    }
+	}    
     
 }

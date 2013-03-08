@@ -43,8 +43,7 @@ function Easysdi_mapBuildRoute(&$query)
 function Easysdi_mapParseRoute($segments)
 {
 	$vars = array();
-    
-	// view is always the first element of the array
+    // view is always the first element of the array
 	$count = count($segments);
     
     if ($count)

@@ -10,6 +10,10 @@
 // No direct access
 defined('_JEXEC') or die;
 
+if(!defined('DS')) {
+	define( 'DS', DIRECTORY_SEPARATOR );
+}
+
 require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'libraries'.DS.'easysdi'.DS.'database'.DS.'sditable.php';
 
 /**
@@ -82,7 +86,7 @@ class Easysdi_mapTabletool extends sdiTable {
 	 * @link    http://docs.joomla.org/JTable/load
 	 * @since   EasySDI 3.0.0
 	 */
-	public function GetIdsByContextId($map_id = null, $reset = true)
+	public function loadIdsByMapId($map_id = null, $reset = true)
 	{
 		if ($reset)
 		{
