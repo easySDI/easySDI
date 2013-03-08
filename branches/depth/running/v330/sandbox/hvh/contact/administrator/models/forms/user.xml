@@ -21,7 +21,7 @@
        			type="textarea" 
        			rows="3"
        			cols="30"
-       			class="inputbox"
+       			class="input-xxlarge"
             	label="com_easysdi_contact_FORM_LBL_USER_DESCRIPTION"
             	description="com_easysdi_contact_FORM_DESC_USER_DESCRIPTION" 
                  /> 
@@ -44,7 +44,7 @@
 	<fieldset name="roles">
 		<field 	name="organismsRM" 
 				type="sql" 
-				class="multiselect"
+				class="multiselect input-xxlarge"
 				multiple="true"
 				label="com_easysdi_contact_FORM_LBL_USER_ORGANISMS_RM"
 				description="com_easysdi_contact_FORM_DESC_USER_ORGANISMS_RM" 
@@ -53,7 +53,7 @@
                  /> 
         <field 	name="organismsMM" 
 				type="sql" 
-				class="multiselect"
+				class="multiselect input-xxlarge"
 				multiple="true"
 				label="com_easysdi_contact_FORM_LBL_USER_ORGANISMS_MM"
 				description="com_easysdi_contact_FORM_DESC_USER_ORGANISMS_MM" 
@@ -62,7 +62,7 @@
                  />   
         <field 	name="organismsME" 
 				type="sql" 
-				class="multiselect"
+				class="multiselect input-xxlarge"
 				multiple="true"
 				label="com_easysdi_contact_FORM_LBL_USER_ORGANISMS_ME"
 				description="com_easysdi_contact_FORM_DESC_USER_ORGANISMS_ME" 
@@ -71,7 +71,7 @@
                  /> 
         <field name="organismsPM" 
 				type="sql" 
-				class="multiselect"
+				class="multiselect input-xxlarge"
 				multiple="true"
 				label="com_easysdi_contact_FORM_LBL_USER_ORGANISMS_PM"
 				description="com_easysdi_contact_FORM_DESC_USER_ORGANISMS_PM" 
@@ -80,7 +80,7 @@
                  /> 
         <field 	name="organismsVM" 
 				type="sql" 
-				class="multiselect"
+				class="multiselect input-xxlarge"
 				multiple="true"
 				label="com_easysdi_contact_FORM_LBL_USER_ORGANISMS_VM"
 				description="com_easysdi_contact_FORM_DESC_USER_ORGANISMS_VM" 

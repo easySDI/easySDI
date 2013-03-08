@@ -19,9 +19,9 @@
 	        filter="safehtml" /> 
 
        <field name="description" 
-       		type="editor" 
+       		type="textarea" 
        		buttons="false"
-        	class="inputbox"
+        	class="input-xxlarge"
         	filter="safehtml"
             label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_DESCRIPTION"
             description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_DESCRIPTION"  /> 
