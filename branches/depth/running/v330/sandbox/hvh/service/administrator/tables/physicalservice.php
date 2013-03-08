@@ -83,13 +83,16 @@ class Easysdi_serviceTablephysicalservice extends sdiTable
 	 * @link    http://docs.joomla.org/JTable/load
 	 * @since   EasySDI 3.0.0
 	 */
-	public function GetIdsByContextId($context_id = null, $reset = true)
+	public function loadIdsByMapId($map_id = null, $reset = true)
 	{
 		if ($reset)
 		{
 			$this->reset();
 		}
 	
+		if(empty($map_id))
+			return false;
+		
 		try
 		{
 			// Initialise the query.
@@ -97,11 +100,10 @@ class Easysdi_serviceTablephysicalservice extends sdiTable
 			$query->select('ps.id');
 			$query->from($this->_tbl.'  AS ps ');
 			$query->join('LEFT', '#__sdi_map_physicalservice AS cps ON cps.physicalservice_id=ps.id');
-			$query->where('cps.context_id = ' . (int) $context_id);
+			$query->where('cps.map_id = ' . (int) $map_id);
 			$query->where('ps.state = 1' );
 			$this->_db->setQuery($query);
-	
-		
+			
 			$rows = $this->_db->loadColumn();
 		}
 		catch (JDatabaseException $e)
@@ -151,8 +153,7 @@ class Easysdi_serviceTablephysicalservice extends sdiTable
 	protected function getAccessFromInheritance ()
 	{
 		$access = $this->access;
-		$state = $this->state;
-		 
+		$state = $this->state;		 
 		
 		$query = $this->_db->getQuery(true);
 		$query->select('v.*');

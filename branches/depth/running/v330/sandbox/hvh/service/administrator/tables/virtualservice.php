@@ -146,19 +146,22 @@ class Easysdi_serviceTablevirtualservice extends sdiTable {
 	 * @link    http://docs.joomla.org/JTable/load
 	 * @since   EasySDI 3.0.0
 	 */
-	public function GetIdsByContextId($context_id = null, $reset = true)
+	public function loadIdsByMapId($map_id = null, $reset = true)
 	{
 		if ($reset)
 		{
 			$this->reset();
 		}
+		
+		if(empty($map_id))
+			return false;
 	
 		// Initialise the query.
 		$query = $this->_db->getQuery(true);
 		$query->select('vs.id');
 		$query->from($this->_tbl.'  AS vs ');
 		$query->join('LEFT', '#__sdi_map_virtualservice AS cvs ON cvs.virtualservice_id=vs.id');
-		$query->where('cvs.context_id = ' . (int) $context_id);
+		$query->where('cvs.map_id = ' . (int) $map_id);
 		$query->where('vs.state = 1' );
 		$this->_db->setQuery($query);
 	
@@ -188,7 +191,7 @@ class Easysdi_serviceTablevirtualservice extends sdiTable {
 		{
 			return false;
 		}
-	
+			
 		return $rows;
 	}
 	
