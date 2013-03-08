@@ -63,7 +63,7 @@ class Easysdi_serviceViewPhysicalServices extends JViewLegacy
 		
 		$canDo	= Easysdi_serviceHelper::getActionsPhysicalService($state->get('filter.category_id'));
 		
-		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_PHYSICALSERVICES'), 'links-cat.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_HEADER_PHYSICALSERVICES'), 'links-cat.png');
 
         //Check if the form exists before showing the add/edit buttons
 		$formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'physicalservice';

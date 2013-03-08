@@ -55,7 +55,7 @@ class Easysdi_serviceViewVirtualservices extends JViewLegacy
 		$state	= $this->get('State');
 		$canDo	= Easysdi_serviceHelper::getActionsVirtualService();
 
-		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_VIRTUALSERVICES'), 'virtualservices.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_HEADER_VIRTUALSERVICES'), 'virtualservices.png');
 
 		
 		

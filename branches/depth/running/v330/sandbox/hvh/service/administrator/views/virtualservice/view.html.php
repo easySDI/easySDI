@@ -60,7 +60,7 @@ class Easysdi_serviceViewVirtualservice extends JViewLegacy
         }
 		$this->canDo		= Easysdi_serviceHelper::getActionsVirtualService();
 
-		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_VIRTUALSERVICE'), 'virtualservice.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_HEADER_VIRTUALSERVICE'), 'virtualservice.png');
 		
 		// If not checked out, can save the item.
 		if (!$checkedOut && ($this->canDo->get('core.edit')||($this->canDo->get('core.create'))))

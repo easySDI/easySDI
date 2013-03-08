@@ -58,7 +58,7 @@ class Easysdi_serviceViewPhysicalService extends JViewLegacy
         $state	= $this->get('State');
 		$this->canDo		= Easysdi_serviceHelper::getActionsPhysicalService($state->get('filter.category_id'), $this->item->id);
 
-		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_PHYSICALSERVICE'), 'links.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_HEADER_PHYSICALSERVICE'), 'links.png');
 		
 		// If not checked out, can save the item.
 		if (!$checkedOut && ( 		($this->canDo->get('core.edit') && !$isNew)
