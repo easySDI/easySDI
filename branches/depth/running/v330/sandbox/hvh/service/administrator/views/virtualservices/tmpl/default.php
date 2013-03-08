@@ -34,6 +34,7 @@ if ($saveOrder)
 	JHtml::_('sortablelist.sortable', 'virtualserviceList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
 }
 $sortFields = $this->getSortFields();
+$params = JComponentHelper::getParams('com_easysdi_service');
 ?>
 <script type="text/javascript">
 	Joomla.orderTable = function() {
@@ -91,31 +92,36 @@ $sortFields = $this->getSortFields();
 		<table class="table table-striped" id="organismList">
 			<thead>
 				<tr>
-                <?php if (isset($this->items[0]->ordering)): ?>
-				<th width="1%" class="nowrap center hidden-phone">
-					<?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'a.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
+	                <?php if (isset($this->items[0]->ordering)): ?>
+					<th width="1%" class="nowrap center hidden-phone">
+						<?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'a.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
+						</th>
+	                <?php endif; ?>
+					<th width="1%" class="hidden-phone">
+						<input type="checkbox" name="checkall-toggle" value="" title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
+						</th>
+	                <?php if (isset($this->items[0]->state)): ?>
+					<th width="1%" class="nowrap center">
+						<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
+						</th>
+	                <?php endif; ?>
+	                <th class='left'>
+						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_VIRTUALSERVICES_NAME', 'a.name', $listDirn, $listOrder); ?>
 					</th>
-                <?php endif; ?>
-				<th width="1%" class="hidden-phone">
-					<input type="checkbox" name="checkall-toggle" value="" title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
+					<th class='left'>
+						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_VIRTUALSERVICES_URL', 'a.url', $listDirn, $listOrder); ?>
 					</th>
-                <?php if (isset($this->items[0]->state)): ?>
-				<th width="1%" class="nowrap center">
-					<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
+					<th class='left'>
+						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_VIRTUALSERVICES_REFLECTEDURL', 'a.reflectedurl', $listDirn, $listOrder); ?>
 					</th>
-                <?php endif; ?>
-                    
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_VIRTUALSERVICES_NAME', 'a.name', $listDirn, $listOrder); ?>
-			</th>
-			<th class='left'>
-			<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
-			</th>
-		     <?php if (isset($this->items[0]->id)): ?>
-				<th width="1%" class="nowrap center hidden-phone">
-					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
+					<th class='left'>
+						<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
 					</th>
-                <?php endif; ?>
+				     <?php if (isset($this->items[0]->id)): ?>
+					<th width="1%" class="nowrap center hidden-phone">
+						<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
+					</th>
+		            <?php endif; ?>
 				</tr>
 			</thead>
 			<tfoot>
@@ -223,6 +229,12 @@ $sortFields = $this->getSortFields();
 						echo JHtml::_('dropdown.render');
 					?>
 				</div>
+			</td>
+			<td align="small hidden-phone">
+				<?php echo $params->get('proxyurl').$item->alias;; ?>
+			</td>
+			<td align="small hidden-phone">
+				<?php echo $item->reflectedurl; ?>
 			</td>
 			<td align="small hidden-phone">
 				<?php echo $item->access_level; ?>

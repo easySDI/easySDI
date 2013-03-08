@@ -157,7 +157,7 @@ class Easysdi_serviceTablevirtualservice extends sdiTable {
 		$query = $this->_db->getQuery(true);
 		$query->select('vs.id');
 		$query->from($this->_tbl.'  AS vs ');
-		$query->join('LEFT', '#__sdi_map_context_virtualservice AS cvs ON cvs.virtualservice_id=vs.id');
+		$query->join('LEFT', '#__sdi_map_virtualservice AS cvs ON cvs.virtualservice_id=vs.id');
 		$query->where('cvs.context_id = ' . (int) $context_id);
 		$query->where('vs.state = 1' );
 		$this->_db->setQuery($query);

@@ -181,7 +181,6 @@ JText::script('COM_EASYSDI_SERVICE_FORM_SERVICE_METADATA_ERROR');
 	</div>
 	
 	<input type="hidden" name="layout" id="layout" value="csw" />
-	<input type="hidden" name="task" value="<?php echo JRequest::getCmd('task');?>" />
-	<input type="hidden" name="previoustask" value="<?php echo JRequest::getCmd('task');?>" />
+	 <input type="hidden" name="task" value="" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

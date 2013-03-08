@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualservice` (
 `modified` DATETIME ,
 `name` VARCHAR(255)  NOT NULL ,
 `alias` VARCHAR(255)  NOT NULL ,
-`url` VARCHAR(500)   ,
+`url` VARCHAR(500) ,
 `serviceconnector_id` INT(11) UNSIGNED  NOT NULL ,
 `reflectedurl` VARCHAR(255) ,
 `reflectedmetadata` BOOLEAN NOT NULL DEFAULT '0' ,

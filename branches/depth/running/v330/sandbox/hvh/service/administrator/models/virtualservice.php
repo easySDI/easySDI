@@ -125,54 +125,66 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	 */
 	public function getItem($pk = null)
 	{
-		if ($item = parent::getItem($pk)) {
-
-			//Do any procesing on fields here if needed
-			//inserting virtualmetadata content in virtualservice for display of edit form
-			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'tables');
-			$metadata =& JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
-			$metadata->loadByVirtualServiceID(JRequest::getVar('id',null));
-			$item_fields = Array();
-			foreach ($item as $key => $value) {
-				$item_fields[] = $key;
-			}
-			foreach ($metadata->getFields() as $field) {
-				if (!in_array($field->Field, $item_fields)) {
-					$item->{$field->Field} = $metadata->{$field->Field};
-				}
-			}
-			
-			$compliances = $this->getServiceCompliance($item->id);
-			$compliance_ids =array();
-			$compliance_values =array();
-				
-			if(isset($compliances))
+		if(isset($this->alias)){//Get Item by alias
+			$item = $this->getTable();
+			$return = $item->loadByAlias($this->alias);
+			if ($return === false && $item->getError())
 			{
-				foreach ($compliances as $compliance)
-				{
-					$compliance_ids[] =$compliance->id;
-					$compliance_values[] =$compliance->value;
-				}
+				$this->setError($item->getError());
+				return false;
 			}
-			if(count($compliance_ids)>0)
-				$item->compliance = json_encode($compliance_values);
-			else
-				$item->compliance = '';
-			$item->supportedversions = json_encode($compliance_values);
-			
-			$item->physicalservice_id = $this->getPhysicalServiceAggregation($item->id);
-			
-			//SetLayout
-			if(!$item->serviceconnector_id)
-			{
-				$item->serviceconnector_id = JRequest::getVar( 'connector' );
+		
+		}else{//Get item by Id
+			$item = parent::getItem($pk);
+			if(!$item){
+				return false;
 			}
-			$serviceconnector =& JTable::getInstance('serviceconnector', 'Easysdi_serviceTable');
-			$serviceconnector->load($item->serviceconnector_id);
-			$item->serviceconnector = $serviceconnector->value;
-			
-			$item->layout = ($serviceconnector->value == "WMSC")? "WMS" : $serviceconnector->value;
 		}
+				
+		//inserting virtualmetadata content in virtualservice for display of edit form
+		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'tables');
+		$metadata =& JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
+		$metadata->loadByVirtualServiceID(JRequest::getVar('id',null));
+		$item_fields = Array();
+		foreach ($item as $key => $value) {
+			$item_fields[] = $key;
+		}
+		foreach ($metadata->getFields() as $field) {
+			if (!in_array($field->Field, $item_fields)) {
+				$item->{$field->Field} = $metadata->{$field->Field};
+			}
+		}
+		
+		$compliances = $this->getServiceCompliance($item->id);
+		$compliance_ids =array();
+		$compliance_values =array();
+			
+		if(isset($compliances))
+		{
+			foreach ($compliances as $compliance)
+			{
+				$compliance_ids[] =$compliance->id;
+				$compliance_values[] =$compliance->value;
+			}
+		}
+		if(count($compliance_ids)>0)
+			$item->compliance = json_encode($compliance_values);
+		else
+			$item->compliance = '';
+		$item->supportedversions = json_encode($compliance_values);
+		
+		$item->physicalservice_id = $this->getPhysicalServiceAggregation($item->id);
+		
+		//SetLayout
+		if(!$item->serviceconnector_id)
+		{
+			$item->serviceconnector_id = JRequest::getVar( 'connector' );
+		}
+		$serviceconnector =& JTable::getInstance('serviceconnector', 'Easysdi_serviceTable');
+		$serviceconnector->load($item->serviceconnector_id);
+		$item->serviceconnector = $serviceconnector->value;
+		
+		$item->layout = ($serviceconnector->value == "WMSC")? "WMS" : $serviceconnector->value;
 
 		return $item;
 	}
@@ -217,11 +229,17 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 			$table->reflectedmetadata = 0; // if it has not been submitted, mark the field unchecked
 		}
 		else{
-			$table->reflectedmetadata = 1;
+			$table->reflectedmetadata = 1; //else mark the field checked
 		}
+		
+		//Alias is a mandatory field, if not set, use the name
 		if (empty($table->alias)){
 			$table->alias = $table->name;
 		}
+		
+// 		//Load component parameters
+// 		$params = JComponentHelper::getParams('com_easysdi_service');
+// 		$table->url = $params->get('proxyurl').$table->alias;
 	}
 	
 	/**
