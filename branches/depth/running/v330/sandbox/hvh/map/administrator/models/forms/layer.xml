@@ -20,7 +20,7 @@
 
 	   <field 	name="groups" 
 				type="sql" 
-				class="multiselect"
+				class="multiselect input-xxlarge"
 				multiple="true"
 				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_GROUPS"
 				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_GROUPS" 
