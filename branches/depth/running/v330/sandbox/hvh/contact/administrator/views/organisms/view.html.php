@@ -55,7 +55,7 @@ class Easysdi_contactViewOrganisms extends JViewLegacy
 		$state	= $this->get('State');
 		$canDo	= Easysdi_contactHelper::getActions();
 
-		JToolBarHelper::title(JText::_('COM_EASYSDI_CONTACT_TITLE_ORGANISMS'), 'organisms.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_CONTACT_HEADER_ORGANISMS'), 'organisms.png');
 
         //Check if the form exists before showing the add/edit buttons
         $formPath = JPATH_COMPONENT_ADMINISTRATOR.'/views/organism';

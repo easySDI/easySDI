@@ -64,7 +64,7 @@ class Easysdi_contactViewOrganism extends JViewLegacy
         }
 		$this->canDo		= Easysdi_contactHelper::getActions('organism',null,$this->item->id);
 
-		JToolBarHelper::title(JText::_('COM_EASYSDI_CONTACT_TITLE_ORGANISM'), 'organism.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_CONTACT_HEADER_ORGANISM'), 'organism.png');
 
 		// If not checked out, can save the item.
 		if (!$checkedOut && ($this->canDo->get('core.edit')||($this->canDo->get('core.create'))))

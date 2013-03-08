@@ -54,7 +54,7 @@ class Easysdi_contactViewUsers extends JViewLegacy
 		$state	= $this->get('State');
 		$canDo	= Easysdi_contactHelper::getActions('user',$state->get('filter.category_id'),null);
 		
-		JToolBarHelper::title(JText::_('com_easysdi_contact_TITLE_USERS'), 'user.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_CONTACT_HEADER_USERS'), 'user.png');
 
         //Check if the form exists before showing the add/edit buttons
         $formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'user';

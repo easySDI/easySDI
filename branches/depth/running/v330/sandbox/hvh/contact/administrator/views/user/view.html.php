@@ -73,7 +73,7 @@ class Easysdi_contactViewUser extends JViewLegacy
         $state	= $this->get('State');
 		$this->canDo	= Easysdi_contactHelper::getActions('user',$state->get('filter.category_id'),$this->item->id);
 		
-		JToolBarHelper::title(JText::_('COM_EASYSDI_CONTACT_TITLE_USER'), 'user-profile.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_CONTACT_HEADER_USER'), 'user-profile.png');
 
 		// If not checked out, can save the item.
 		if (!$checkedOut && ( 		($this->canDo->get('core.edit') && !$isNew)

@@ -175,7 +175,7 @@
 	
 		<field 	name="contact_civility" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_CIVILITY"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_CIVILITY" 
@@ -184,7 +184,7 @@
                  
 		<field 	name="contact_firstname" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_FIRSTNAME"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_FIRSTNAME" 
@@ -192,7 +192,7 @@
 
 		<field 	name="contact_lastname" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_LASTNAME"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_LASTNAME" 
@@ -200,7 +200,7 @@
 
 		<field 	name="contact_function" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_FUNCTION"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_FUNCTION" 
@@ -208,7 +208,7 @@
 
 		<field 	name="contact_address" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_ADDRESS"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_ADDRESS" 
@@ -216,7 +216,7 @@
 
 		<field 	name="contact_addresscomplement" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_ADDRESSCOMPLEMENT"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_ADDRESSCOMPLEMENT" 
@@ -224,7 +224,7 @@
 
 		<field 	name="contact_postalcode" 
 				type="text" 
-				size="40" 
+				size="10" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_POSTALCODE"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_POSTALCODE" 
@@ -232,7 +232,7 @@
 
 		<field 	name="contact_postalbox" 
 				type="text" 
-				size="40" 
+				size="10" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_POSTALBOX"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_POSTALBOX" 
@@ -240,7 +240,7 @@
 
 		<field 	name="contact_locality" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_LOCALITY"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_LOCALITY" 
@@ -257,7 +257,7 @@
 
 		<field 	name="contact_phone" 
 				type="text" 
-				size="40" 
+				size="20" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_PHONE"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_PHONE" 
@@ -265,7 +265,7 @@
 
 		<field 	name="contact_mobile" 
 				type="text" 
-				size="40" 
+				size="20" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_MOBILE"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_MOBILE" 
@@ -273,7 +273,7 @@
 
 		<field 	name="contact_fax" 
 				type="text" 
-				size="40" 
+				size="20" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_FAX"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_FAX" 
@@ -281,7 +281,7 @@
 
 		<field 	name="contact_email" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_EMAIL"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_EMAIL" 
@@ -311,7 +311,7 @@
 		
 			<field 	name="billing_civility" 
 				type="text" 
-				size="40"
+				size="100"
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_CIVILITY"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_CIVILITY" 
@@ -321,7 +321,7 @@
 
 		<field 	name="billing_firstname" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_FIRSTNAME"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_FIRSTNAME" 
@@ -329,7 +329,7 @@
 
 		<field 	name="billing_lastname" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_LASTNAME"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_LASTNAME" 
@@ -337,7 +337,7 @@
 
 		<field 	name="billing_function" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_FUNCTION"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_FUNCTION" 
@@ -345,7 +345,7 @@
 
 		<field 	name="billing_address" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_ADDRESS"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_ADDRESS" 
@@ -353,7 +353,7 @@
 
 		<field 	name="billing_addresscomplement" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_ADDRESSCOMPLEMENT"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_ADDRESSCOMPLEMENT" 
@@ -361,7 +361,7 @@
 
 		<field 	name="billing_postalcode" 
 				type="text" 
-				size="40" 
+				size="10" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_POSTALCODE"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_POSTALCODE" 
@@ -369,7 +369,7 @@
 
 		<field 	name="billing_postalbox" 
 				type="text" 
-				size="40" 
+				size="10" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_POSTALBOX"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_POSTALBOX" 
@@ -377,7 +377,7 @@
 
 		<field 	name="billing_locality" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_LOCALITY"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_LOCALITY" 
@@ -393,7 +393,7 @@
 
 		<field 	name="billing_phone" 
 				type="text" 
-				size="40" 
+				size="20" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_PHONE"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_PHONE" 
@@ -401,7 +401,7 @@
 
 		<field 	name="billing_mobile" 
 				type="text" 
-				size="40" 
+				size="20" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_MOBILE"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_MOBILE" 
@@ -409,7 +409,7 @@
 
 		<field 	name="billing_fax" 
 				type="text" 
-				size="40" 
+				size="20" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_FAX"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_FAX" 
@@ -417,7 +417,7 @@
 
 		<field 	name="billing_email" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_EMAIL"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_EMAIL" 
@@ -445,7 +445,7 @@
 		
 		<field 	name="delivry_civility" 
 				type="text" 
-				size="40"
+				size="100"
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_CIVILITY"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_CIVILITY" 
@@ -455,7 +455,7 @@
 
 		<field 	name="delivry_firstname" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_FIRSTNAME"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_FIRSTNAME" 
@@ -463,7 +463,7 @@
 
 		<field 	name="delivry_lastname" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_LASTNAME"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_LASTNAME" 
@@ -471,7 +471,7 @@
 
 		<field 	name="delivry_function" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_FUNCTION"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_FUNCTION" 
@@ -479,7 +479,7 @@
 
 		<field 	name="delivry_address" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_ADDRESS"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_ADDRESS" 
@@ -487,7 +487,7 @@
 
 		<field 	name="delivry_addresscomplement" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_ADDRESSCOMPLEMENT"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_ADDRESSCOMPLEMENT" 
@@ -495,7 +495,7 @@
 
 		<field 	name="delivry_postalcode" 
 				type="text" 
-				size="40" 
+				size="10" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_POSTALCODE"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_POSTALCODE" 
@@ -503,7 +503,7 @@
 
 		<field 	name="delivry_postalbox" 
 				type="text" 
-				size="40" 
+				size="10" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_POSTALBOX"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_POSTALBOX" 
@@ -511,7 +511,7 @@
 
 		<field 	name="delivry_locality" 
 				type="text" 
-				size="40" 
+				size="10" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_LOCALITY"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_LOCALITY" 
@@ -527,7 +527,7 @@
 
 		<field 	name="delivry_phone" 
 				type="text" 
-				size="40" 
+				size="20" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_PHONE"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_PHONE" 
@@ -535,7 +535,7 @@
 
 		<field 	name="delivry_mobile" 
 				type="text" 
-				size="40" 
+				size="20" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_MOBILE"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_MOBILE" 
@@ -543,7 +543,7 @@
 
 		<field 	name="delivry_fax" 
 				type="text" 
-				size="40" 
+				size="20" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_FAX"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_FAX" 
@@ -551,7 +551,7 @@
 
 		<field 	name="delivry_email" 
 				type="text" 
-				size="40" 
+				size="100" 
 				class="inputbox"
 				label="com_easysdi_contact_FORM_LBL_ADDRESS_EMAIL"
 				description="com_easysdi_contact_FORM_DESC_ADDRESS_EMAIL" 
