@@ -115,9 +115,6 @@ abstract class sdiTable extends JTable
 		if(isset($array['created_by']) || $array['created_by'] == 0){
 			$array['created_by'] = JFactory::getUser()->id;
 		}
-		if(!JFactory::getUser()->authorise('core.edit.state','com_easysdi_contact') && $array['state'] == 1){
-			$array['state'] = 0;
-		}
 		
 		if (isset($array['params']) && is_array($array['params'])) {
 			$registry = new JRegistry();
