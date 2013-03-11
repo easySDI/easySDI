@@ -27,7 +27,79 @@ class WmtsWebservice {
 			$physicalServiceID,
 			$layerID
 		);
-		var_dump($layerObj);
+		
+		echo '
+			<div class="row-fluid">
+			<div class="span12">
+			<table>
+				<tr>
+					<td></td>
+					<td>
+						<input type="text" name="northBoundLatitude" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_NORTH_BOUND_LATITUDE') . '" value="' . $layerObj->northBoundLatitude . '"/>
+					</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>
+						<input type="text" name="westBoundLongitude" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_WEST_BOUND_LONGITUDE') . '" value="' . $layerObj->westBoundLongitude . '"/>
+					</td>
+					<td></td>
+					<td>
+						<input type="text" name="eastBoundLongitude" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_EAST_BOUND_LONGITUDE') . '" value="' . $layerObj->eastBoundLongitude . '"/>
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td>
+						<input type="text" name="southBoundLatitude" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_SOUTH_BOUND_LATITUDE') . '" value="' . $layerObj->southBoundLatitude . '"/>
+					</td>
+					<td></td>
+				</tr>
+			</table>
+			<hr />
+			<select name="spatial_operator">
+				<option value="">' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_SPATIAL_OPERATOR_LABEL') . '</option>
+				<option value="touch" ' . (('touch' == $layerObj->spatialOperator)?'selected="selected"':'') . '>Touch</option>
+				<option value="within" ' . (('within' == $layerObj->spatialOperator)?'selected="selected"':'') . '>Within</option>
+			</select>
+			<hr />
+		';
+		
+		echo '
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Tile matrix set</th>
+						<th>Min scale denominator</th>
+					</tr>
+				</thead>
+				<tbody>
+		';
+		foreach ($layerObj->getTileMatrixSetList() as $tms) {
+			echo'
+				<tr>
+					<td>' . $tms->identifier . '</td>
+					<td>
+						<select name="select_' . $tms->identifier . '">
+							<option value="">' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_TILE_MATRIX_LABEL') . '</option>
+			';
+			foreach ($tms->getTileMatrixList() as $tm) {
+				echo '
+					<option value="' . $tm->identifier . '">' . $tm->identifier . '</option>
+				';
+			}
+			echo '
+						</select>
+					</td>
+				</tr>
+			';
+		}
+		echo '
+				</tbody>
+			</table>
+			</div>
+			</div>
+		';
 	}
 	
 	private static function getWmtsLayerSettings ($physicalServiceID, $layerID) {
