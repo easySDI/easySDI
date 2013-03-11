@@ -27,13 +27,13 @@
             description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_DESCRIPTION"  /> 
 
        <field name="logo" 
-       		type="text" 
+       		type="media" 
        		size="40" 
-       		class="inputbox"
+       		class="input-xxlarge"
+       		preview="tooltip"
             label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_LOGO"
             description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_LOGO" 
-         	validate="url" 
-	        filter="safehtml" /> 
+         	filter="safehtml" /> 
 
        <field name="website" 
        		type="text" 

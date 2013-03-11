@@ -60,7 +60,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_addresstype` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-
 CREATE TABLE IF NOT EXISTS `#__sdi_organism` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
