@@ -121,12 +121,9 @@
 			<option value="2">JARCHIVED</option>
                <option value="-2">JTRASHED</option>
 	</field> 
-		
-	<fieldset name="authenticationoptions" text="COM_EASYSDI_SERVICE_LEGEND_AUTHENTICATION_OPTIONS">
-		
-	</fieldset>
 
-	<fieldset name="provideroptions" text="COM_EASYSDI_SERVICE_LEGEND_PROVIDER_OPTIONS">
+
+	<fieldset name="provideroptions" >
 		<field 	name="serviceauthentication_id" 
 				type="sql" 
 				class="inputbox"
@@ -162,10 +159,6 @@
 				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SERVICEPASSWORD"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SERVICEPASSWORD" 
                 filter="safehtml" /> 
-	</fieldset>
-
-	<fieldset name="negotiation" text="COM_EASYSDI_SERVICE_LEGEND_PHYSICALSERVICE_NEGOTIATION">
- 		
 	</fieldset>
 
 	<fieldset name="publishing">

@@ -46,7 +46,7 @@
 	<fieldset name="WMS">
 		<field name="physicalservice_id" type="sql" class="multiselect input-xxlarge"
 			multiple="true" onchange="updateAgregatedVersion();"
-			label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST_DESC"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_SERVICE_LIST_DESC"
 			query="SELECT s.id as id,CONCAT(s.alias, ' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
 						INNER JOIN #__sdi_physicalservice_servicecompliance sc ON sc.service_id = s.id
 						INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
@@ -61,7 +61,7 @@
 	<fieldset name="WMSC">
 		<field name="physicalservice_id" type="sql" class="multiselect input-xxlarge"
 			multiple="true" onchange="updateAgregatedVersion();"
-			label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST_DESC"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_SERVICE_LIST_DESC"
 			query="SELECT s.id as id,CONCAT(s.alias, ' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
 						INNER JOIN #__sdi_physicalservice_servicecompliance sc ON sc.service_id = s.id
 						INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
@@ -76,7 +76,7 @@
 	<fieldset name="wfs">
 		<field name="physicalservice_id" type="sql" class="multiselect input-xxlarge"
 			multiple="true" onchange="updateAgregatedVersion();"
-			label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST_DESC"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_SERVICE_LIST_DESC"
 			query="SELECT s.id as id,CONCAT(s.alias, ' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
 						INNER JOIN #__sdi_physicalservice_servicecompliance sc ON sc.service_id = s.id
 						INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
@@ -91,7 +91,7 @@
 	<fieldset name="csw">
 		<field name="physicalservice_id" type="sql"  class="multiselect input-xxlarge"
 			multiple="true" onchange="updateAgregatedVersion();"
-			label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST_DESC"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_SERVICE_LIST_DESC"
 			query="SELECT s.id as id,CONCAT(s.alias, ' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
 						INNER JOIN #__sdi_physicalservice_servicecompliance sc ON sc.service_id = s.id
 						INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id

@@ -109,7 +109,7 @@ $sortFields = $this->getSortFields();
 						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_PHYSICALSERVICES_NAME', 'a.name', $listDirn, $listOrder); ?>
 					</th>
 					<th class='nowrap hidden-phone'>
-						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_SERVICES_CONNECTOR', 'serviceconnector_value', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_PHYSICALSERVICES_CONNECTOR', 'serviceconnector_value', $listDirn, $listOrder); ?>
 					</th>
 					<th class='left'>
 						<?php echo JHtml::_('grid.sort', 'JCATEGORY', 'category_title', $listDirn, $listOrder); ?>
