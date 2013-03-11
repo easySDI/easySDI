@@ -328,3 +328,17 @@ VALUES
 (3,1,'trashed'),
 (3,1,'validated')
 ;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_spatialoperator` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+INSERT INTO `#__sdi_sys_spatialoperator` (ordering,state,value) 
+VALUES 
+(1,1,'within'),
+(3,1,'touch')
+;
