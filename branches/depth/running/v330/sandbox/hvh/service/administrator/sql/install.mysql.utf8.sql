@@ -201,7 +201,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualmetadata` (
 PRIMARY KEY (`id`)
 ) DEFAULT COLLATE=utf8_general_ci;
 
-
 CREATE TABLE IF NOT EXISTS `#__sdi_physicalservice` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
@@ -241,6 +240,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_policy` (
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
 `created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`name` VARCHAR (140) NOT NULL,
 `anonymousaccess` BOOLEAN NOT NULL DEFAULT '1',
 `anygroup` BOOLEAN NOT NULL DEFAULT '1',
 `anyoperation` BOOLEAN NOT NULL DEFAULT '1',
