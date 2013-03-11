@@ -30,6 +30,39 @@ $document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_cont
 			alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
 		}
 	}
+
+	function disableAddressType(disable, type)
+	{
+		var elem = document.getElementById('organism-form').elements;
+        for(var i = 0; i < elem.length; i++)
+        {
+        	var tofind = 'jform['+type+'_';
+        	if(elem[i].getAttribute('name') != null ){
+	            if(		   elem[i].getAttribute('name').indexOf(tofind) != -1 
+	    	            && elem[i].getAttribute('name').indexOf('sameascontact') == -1 
+	    	            && elem[i].getAttribute('type') != 'hidden' )
+	            {
+		            elem[i].disabled = disable;
+		            elem[i].value = ''; 
+	            }
+            }
+        } 
+	}
+
+	window.addEvent('domready', function() 
+	{
+		initAddressByType ('billing');
+		initAddressByType ('delivry');
+	})
+
+	function initAddressByType (type)
+	{
+		var elem = document.getElementById('jform_'+type+'_sameascontact1');
+		if(elem.checked == true )
+		{
+			disableAddressType(true, type);
+		}
+	}
 </script>
 
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_contact&layout=edit&id='.(int) $this->item->id); ?>" method="post" enctype="multipart/form-data" name="adminForm" id="organism-form" class="form-validate">
