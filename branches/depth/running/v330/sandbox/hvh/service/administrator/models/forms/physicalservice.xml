@@ -74,13 +74,7 @@
 				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_RESOURCEPASSWORD"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_RESOURCEPASSWORD" 
                 filter="safehtml" /> 
-        
-        <field 	name="negotiation" 
-				type="negotiationaction" 
-				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_NEGOTIATION"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_NEGOTIATION" 
-				filter="safehtml" />
-				 
+        		 
 		<field 	name="supportedversions" 
 				type="supportedversions" 
 				class="readonly"
@@ -104,6 +98,13 @@
 		<field name="compliance" id="compliance" type="hidden" required="true"  filter="SAFEHTML" />
 	</fieldset>
 
+	<field 	name="negotiation" 
+			id="negotiation" 
+        	type="negotiationaction" 
+			label=""
+			description="" 
+			filter="safehtml" />
+					
 	<field 	name="access"
 			type="accesslevel"
 			label="JFIELD_ACCESS_LABEL"

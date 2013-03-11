@@ -18,7 +18,7 @@ class JFormFieldNegotiationAction extends JFormField {
 	public function getInput() {
 		// Initialize variables.
 		$html = array();
-		$html[] = '	<span class="label label-info" onclick="javascript:negoVersionService();"><i class="icon-white icon-refresh"></i> Negotiation</span>';
+		$html[] = '	<span class="btn" name="'.$this->name.'" id="'.$this->id.'" onclick="javascript:negoVersionService();"><i class="icon-white icon-refresh"></i> Negotiation</span>';
 		
 		return implode($html);
 	}
