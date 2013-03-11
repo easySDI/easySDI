@@ -51,6 +51,13 @@ class JFormFieldServicegroupedList extends JFormField
 		$db->setQuery('SELECT id, alias,serviceconnector_id FROM #__sdi_virtualservice WHERE state=1 AND serviceconnector_id IN (2,3,11,12,13,14)');
 		$virtuals = $db->loadObjectList();
 		
+		//Javascript Chosen library :
+		// "on single selects, the first element is assumed to be selected by the browser. 
+		// To take advantage of the default text support, you will need to include a blank option as the first element of your select list."
+		$groups[''] = array();
+		$tmp = JHtml::_('select.option', null,	'', 'value', 'text');
+		$groups[''][] = $tmp;
+		
 		$groups['Physical'] = array();
 		foreach ($physicals as $physical)
 		{
@@ -112,7 +119,7 @@ class JFormFieldServicegroupedList extends JFormField
 		$attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
 		$attr .= $this->element['size'] ? ' size="' . (int) $this->element['size'] . '"' : '';
 		$attr .= $this->multiple ? ' multiple="multiple"' : '';
-		$attr .= "data-placeholder='Choose a Country'";
+		$attr .= "data-placeholder='".JText::_('JGLOBAL_SELECT_AN_OPTION')."'";
 
 		// Initialize JavaScript field attributes.
 		if($this->element['onchange'])
