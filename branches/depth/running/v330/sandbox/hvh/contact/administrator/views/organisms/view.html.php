@@ -108,7 +108,7 @@ class Easysdi_contactViewOrganisms extends JViewLegacy
         }
         
 		JToolBarHelper::divider();
-		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_core');
+		JToolBarHelper::custom('easySDIHome', 'home.png', 'home_f2.png', 'COM_EASYSDI_CONTACT_TOOLBAR_HOME', false);
 		
         
         //Set sidebar action - New in 3.0
