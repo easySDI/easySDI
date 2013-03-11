@@ -57,18 +57,20 @@
                  /> 
                  
  		<field 	name="resourceusername" 
-				type="text" 
+				type="usernamewithplaceholder" 
+				placeholder="COM_EASYSDI_SERVICE_FORM_PLCHLD_PHYSICALSERVICE_RESOURCEUSERNAME"
 				size="150" 
-				class="inputbox"
+				class="inputbox input-medium"
 				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_RESOURCEUSERNAME"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_RESOURCEUSERNAME" 
                 filter="safehtml" /> 
 
 		<field 	name="resourcepassword" 
-				type="password"
+				type="passwordwithplaceholder"
+				placeholder="COM_EASYSDI_SERVICE_FORM_PLCHLD_PHYSICALSERVICE_RESOURCEPASSWORD"
 				autocomplete="off"
 				size="150" 
-				class="inputbox"
+				class="inputbox input-medium"
 				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_RESOURCEPASSWORD"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_RESOURCEPASSWORD" 
                 filter="safehtml" /> 
@@ -144,15 +146,17 @@
                 filter="safehtml" /> 
 
 		<field 	name="serviceusername" 
-				type="text" 
+				type="usernamewithplaceholder" 
+				placeholder="COM_EASYSDI_SERVICE_FORM_PLCHLD_PHYSICALSERVICE_RESOURCEUSERNAME"
 				size="150" 
-				class="inputbox"
+				class="inputbox input-medium"
 				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SERVICEUSERNAME"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SERVICEUSERNAME" 
                 filter="safehtml" /> 
 
 		<field 	name="servicepassword" 
-				type="password"
+				type="passwordwithplaceholder"
+				placeholder="COM_EASYSDI_SERVICE_FORM_PLCHLD_PHYSICALSERVICE_RESOURCEPASSWORD"
 				autocomplete="off"
 				size="150" 
 				class="inputbox"
