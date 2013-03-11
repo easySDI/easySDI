@@ -52,37 +52,6 @@ $document->addScript('components/com_easysdi_map/views/layer/tmpl/edit.js');
 				<!-- Begin Tabs -->
 				<div class="tab-pane active" id="details">
 					<?php foreach($this->form->getFieldset('details') as $field): ?>
-						<?php
-						if($field->name=="jform[service_id]"){
-							?>
-							<div class="control-group">
-								<div class="control-label"><?php  echo $field->label; ?></div>
-								<div class="controls"><?php echo $field->input; ?></div>
-							</div>
-							<fieldset class="adminform">
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('user'); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('user'); ?></div>
-									</div>
-									<div class="control-group">
-										<div class="control-label"><?php echo $this->form->getLabel('password'); ?></div>
-										<div class="controls"><?php echo $this->form->getInput('password'); ?></div>
-									</div>
-								
-							</fieldset>
-							<?php 
-							continue;
-						}
-						if($field->name=="jform[layername]"){
-							?>
-							<div class="control-group">
-								<div class="control-label"><?php echo $field->label; ?></div>
-								<div class="controls"><?php echo $field->input;  echo $this->form->getField('getlayers')->input;?></div>
-							</div>
-							<?php 
-							continue;
-						}
-						?>
 						<div class="control-group">
 							<div class="control-label"><?php echo $field->label; ?></div>
 							<div class="controls"><?php echo $field->input; ?></div>

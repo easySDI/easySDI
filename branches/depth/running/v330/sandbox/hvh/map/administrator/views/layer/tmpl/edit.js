@@ -23,8 +23,6 @@
 		clearLayers();
 		
 		selectedservice = jQuery('#jform_service_id').find(":selected").val();
-		user = jQuery("#jform_user").val();
-		password = jQuery("#jform_password").val();
 		
 		var layers = jQuery("#"+selectedservice).val();
 		if (layers)
@@ -58,7 +56,7 @@
 		    if(!request)
 			    return;
 
-		    var query 			= "index.php?option=com_easysdi_map&task=getLayers&service="+selectedservice+"&user="+user+"&password="+password;
+		    var query 			= "index.php?option=com_easysdi_map&task=getLayers&service="+selectedservice;
 			
 		    jQuery("#progress").css('visibility', 'visible');
 		    request.onreadystatechange = setLayers;

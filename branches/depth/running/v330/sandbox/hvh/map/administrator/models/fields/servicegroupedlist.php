@@ -112,6 +112,7 @@ class JFormFieldServicegroupedList extends JFormField
 		$attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
 		$attr .= $this->element['size'] ? ' size="' . (int) $this->element['size'] . '"' : '';
 		$attr .= $this->multiple ? ' multiple="multiple"' : '';
+		$attr .= "data-placeholder='Choose a Country'";
 
 		// Initialize JavaScript field attributes.
 		if($this->element['onchange'])

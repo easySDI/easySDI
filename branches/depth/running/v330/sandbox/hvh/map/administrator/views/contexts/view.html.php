@@ -105,6 +105,6 @@ class Easysdi_mapViewContexts extends JView
 		}
 
 		JToolBarHelper::divider();
-		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_core');
+		JToolBarHelper::custom('easySDIHome', 'home.png', 'home_f2.png', 'COM_EASYSDI_MAP_TOOLBAR_HOME', false);
 	}
 }

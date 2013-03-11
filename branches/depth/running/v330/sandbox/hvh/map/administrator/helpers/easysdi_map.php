@@ -72,18 +72,21 @@ class Easysdi_mapHelper
 	 */
 	public static function getLayers ($params){
 		$service 				= $params['service'];
-		$user 					= $params['user'];
-		$password 				= $params['password'];
-
+		
 		$db = JFactory::getDbo();
 		$pos 					= strstr ($service, 'physical_');
 		if($pos){
 			$id = substr ($service, strrpos ($service, '_')+1);
-			$query = 'SELECT s.resourceurl as url, sc.value as connector FROM #__sdi_physicalservice s 
+			$query = 'SELECT s.resourceurl as url, sc.value as connector, s.resourceusername as username, s.resourcepassword as password FROM #__sdi_physicalservice s 
 								INNER JOIN #__sdi_sys_serviceconnector sc  ON sc.id = s.serviceconnector_id
 								WHERE s.id='.substr ($service, strrpos ($service, '_')+1) ;
 			$db->setQuery($query);
 			$resource 			= $db->loadObject();
+			if($resource->username){
+				$user = $resource->username; 
+				$password=$resource->password; 
+			}
+			
 			$db->setQuery(
 								'SELECT sv.value as value, sc.id as id FROM #__sdi_physicalservice_servicecompliance ssc ' .
 								' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id '.
@@ -100,6 +103,10 @@ class Easysdi_mapHelper
 								WHERE s.id='.substr ($service, strrpos ($service, '_')+1);
 			$db->setQuery($query);
 			$resource 			= $db->loadObject();
+			$Juser	= JFactory::getUser();
+			$user = $Juser->username;
+			$password=$Juser->password;
+			
 			$db->setQuery(
 								'SELECT sv.value as value, sc.id as id FROM #__sdi_virtualservice_servicecompliance ssc ' .
 								' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id '.

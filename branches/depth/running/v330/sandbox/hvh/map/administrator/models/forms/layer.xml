@@ -30,7 +30,7 @@
 
 	   <field 	name="service_id" 
 				type="ServicegroupedList" 
-				onchange="clearLayers();setServiceConnector();"
+				onchange="clearLayers();setServiceConnector();getLayers();"
 				class="inputbox"
 				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_SERVICE_ID"
 				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_SERVICE_ID" 
@@ -103,31 +103,6 @@
            <option value="1">JPUBLISHED</option>
            <option value="0">JUNPUBLISHED</option>
        </field> 
-            
- 	<field 	name="getlayers" 
-				type="getlayersbutton" 
-				label="COM_EASYSDI_MAP_FORM_LBL_GETLAYERS"
-				description="COM_EASYSDI_MAP_FORM_DESC_GETLAYERS" 
-				filter="safehtml" />
-	
-	<fieldset name="service_authentication">
-		 <field 	
-		 		name="user" 
-       			type="text" 
-       			size="255" class="inputbox"
-       			required="false" 
-	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_USER"
-    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_USER" 
-                filter="safehtml" />
-                
-       <field 	name="password" 
-       			type="text" 
-       			size="255" class="inputbox"
-       			required="false" 
-	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_PASSWORD"
-    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_PASSWORD" 
-                filter="safehtml"  />
-	</fieldset>      
 	
 	<fieldset name="openlayers">
 		 <field name="asOL" 
