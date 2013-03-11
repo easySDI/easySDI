@@ -37,4 +37,15 @@ class WmtsLayer extends Layer{
 			$this->tileMatrixSetList[$key]->loadData($value);
 		}
 	}
+	
+	public function toArray() {
+		$layer = get_object_vars($this);
+		$layer['tileMatrixSetList'] = Array();
+		
+		foreach ($this->tileMatrixSetList as $tms) {
+			array_push($layer['tileMatrixSetList'], Array($tms->identifier => $tms->toArray()));
+		}
+		
+		return $layer;
+	}
 }

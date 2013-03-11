@@ -114,7 +114,7 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 						<table class="table" >
 							<?php foreach($this->policies as $policy):?> 
 								<tr>
-									<td><?php echo $policy->id; ?></td>
+									<td><?php echo $policy->name; ?></td>
 									<td><a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=policy&layout=wmts&id='.$policy->id.'&virtualservice_id='.JRequest::getVar('id',null)); ?>" class="btn"><?php echo JText::_('COM_EASYSDI_SERVICE_BTN_MODIFY_POLICY');?></a></td>
 								</tr>
 							<?php endforeach; ?>

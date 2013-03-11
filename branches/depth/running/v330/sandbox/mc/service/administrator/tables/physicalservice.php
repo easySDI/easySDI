@@ -208,18 +208,20 @@ class Easysdi_serviceTablephysicalservice extends sdiTable
 	}
 
 	/**
-	 * Return a list of physical service according to the connector type
+	 * Return a list of physical service belonging to a specific virtual service
 	 *
-	 * @param String A name of connector type
+	 * @param Int A pk of a virtual service
+	 * 
+	 * @return Array A resultset containing physical services
 	 */
-	public function getListByConnectorType ($connectorType) {
+	public function getListByVirtualService ($vs_id) {
 		$db = JFactory::getDbo();
 		$db->setQuery('
 			SELECT ps.*
 			FROM #__sdi_physicalservice ps
-			JOIN #__sdi_sys_serviceconnector sc
-			ON sc.id = ps.serviceconnector_id
-			WHERE sc.value = "' . $connectorType . '";
+			JOIN #__sdi_virtual_physical vp
+			ON vp.physicalservice_id = ps.id
+			WHERE vp.virtualservice_id = "' . $vs_id . '";
 		');
 		
 		try {

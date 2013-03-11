@@ -13,6 +13,10 @@ class WmtsPhysicalService extends PhysicalService{
 		return $this->layerList;
 	}
 	
+	public function getLayerByName ($name) {
+		return $this->layerList[$name];
+	}
+	
 	public function addLayer ($layer) {
 		$this->layerList[$layer->name] = $layer;
 	}

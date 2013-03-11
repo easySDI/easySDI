@@ -38,4 +38,8 @@ class TileMatrix {
 		}
 		return ($al > $bl) ? +1 : -1;
 	}
+	
+	public function toArray() {
+		return get_object_vars($this);
+	}
 }

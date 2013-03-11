@@ -10,122 +10,181 @@
 // no direct access
 defined('_JEXEC') or die;
 
+JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
+JHtml::_('formbehavior.chosen', 'select');
+JHtml::_('behavior.keepalive');
+
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
-//var_dump($this->item->physicalservice[0]['layers']);
+$document->addScript('components/com_easysdi_service/views/policy/tmpl/policy.js');
+JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
+
+function ajaxURL ($physicalServiceID, $layerID) {
+	return 'index.php?option=com_easysdi_service&task=wmtsWebservice&method=getWmtsLayerForm&physicalServiceID=' . $physicalServiceID . '&layerID=' . $layerID;
+}
+
 ?>
-<script type="text/javascript">
-	Joomla.submitbutton = function(task)
-	{
-		if (task == 'policy.cancel' || document.formvalidator.isValid(document.id('policy-form'))) {
-			Joomla.submitform(task, document.getElementById('policy-form'));
-		}
-		else {
-			alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
-		}
-	}
-</script>
 
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&layout=wmts&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="policy-form" class="form-validate">
-	<div class="width-60 fltlft">
-		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_INFOS' );?></legend>
-			<ul class="adminformlist">
-				<?php foreach($this->form->getFieldset('policy') as $field): ?>
-					
-					<li><?php echo $field->label;echo $field->input;?></li>
-				<?php endforeach; ?>
+	<div class="row-fluid">
+		<div class="span10 form-horizontal">
+			<ul class="nav nav-tabs">
+				<li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_SERVICE_TAB_NEW_POLICY') : JText::sprintf('COM_EASYSDI_SERVICE_TAB_EDIT_POLICY', $this->item->id); ?></a></li>
+				<li><a href="#layers" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_LAYERS');?></a></li>
+				<li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_PUBLISHING');?></a></li>
+				<?php if ($this->canDo->get('core.admin')): ?>
+					<li><a href="#permissions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_RULES');?></a></li>
+				<?php endif ?>
 			</ul>
-		</fieldset>
-		
-		<?php
-			foreach ($this->item->physicalservice as $ps) {
-				echo '<fieldset class="adminform"><legend>' . JText::_( 'COM_EASYSDI_SERVICE_WMTS_SERVER' ) . $ps['name'] . ' (' . $ps['resourceurl'] . ')</legend>
-					<ul class="adminformlist">
-							<li>
-								<table class="admintable" id="wmts_layers">
-									<tbody>
-										<tr>
-											<th><span style="font-weight: bold;">Name</span></th>
-											<th><span style="font-weight: bold;">Geographic filter</span></th>
-											<th><span style="font-weight: bold;">TileMatrixSet Id</span></th>
-											<th><span style="font-weight: bold;">TileMatrix min scale denominator</span></th>
-											<th><span style="font-weight: bold;">Spatial operator</span></th>
-										</tr>
-										<tr>
-											<td colspan="4">
-												<input type="checkbox" name="wmts_anyItem_' . $ps['id'] . '" id="wmts_anyItem_' . $ps['id'] . '"/>All
-											</td>
-										</tr>';
-										foreach ($ps['layers'] as $layer) {
-											echo '
+			<div class="tab-content">
+				<!-- Begin Tabs -->
+				<div class="tab-pane active" id="details">
+					<fieldset>
+					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_DETAILS' );?></legend>
+					<?php foreach($this->form->getFieldset('policy') as $field): 
+					?> 
+						<div class="control-group">
+							<div class="control-label"><?php echo $field->label; ?></div>
+							<div class="controls"><?php echo $field->input; ?></div>
+						</div>
+					<?php endforeach; ?>
+					</fieldset>
+					
+					<?php foreach($this->form->getFieldset('hidden') as $field):
+					?> 
+						<div class="control-group">
+							<div class="control-label"><?php echo $field->label; ?></div>
+							<div class="controls"><?php echo $field->input; ?></div>
+						</div>
+					<?php endforeach; ?>
+				</div>
+				
+				<div class="tab-pane" id="layers">
+					<fieldset>
+						<div class="accordion" id="ps_accordion">
+							<?php foreach($this->item->physicalService as $ps):?>
+								<div class="accordion-group">
+								<div class="accordion-heading">
+								  <a class="accordion-toggle" data-toggle="collapse" data-parent="#ps_accordion" href="#collapse_<?php echo $ps->id; ?>">
+										<?php echo $ps->name . ' &mdash; ' . $ps->url; ?>
+								  </a>
+								</div>
+								<div class="accordion-body collapse" id="collapse_<?php echo $ps->id; ?>">
+								  <div class="accordion-inner">
+										<table class="table" >
+											<thead>
 												<tr>
-													<td>
-														<input type="checkbox" name="wmtslayerpolicy[wmts_enable_' . $ps['id'] . '_' . $layer['id'] . ']" id="wmts_layer_' . $ps['id'] . '_' . $layer['id'] . '"/>
-														' . $layer['name'] . '<br />"' . $layer['description'] . '"
-													</td>
-													<td>
-														<label for="jform_wmts_bbox_minimumx_' . $ps['id'] . '_' . $layer['id'] . '" >Min X </label>
-														<input type="text" size="10" id="jform_wmts_bboxminimumx_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_bboxminimumx_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['bbox_minimumx'] . '"/><br />
-														<label for="jform_wmts_bbox_minimumy_' . $ps['id'] . '_' . $layer['id'] . '" >Min Y </label>
-														<input type="text" size="10" id="jform_wmts_bboxminimumy_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_bboxminimumy_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['bbox_minimumy'] . '"/><br />
-														<label for="jform_wmts_bbox_maximumx_' . $ps['id'] . '_' . $layer['id'] . '" >Max X </label>
-														<input type="text" size="10" id="jform_wmts_bboxmaximumx_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_bboxmaximumx_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['bbox_maximumx'] . '"/><br />
-														<label for="jform_wmts_bbox_maximumx_' . $ps['id'] . '_' . $layer['id'] . '" >Max Y </label>
-														<input type="text" size="10" id="jform_wmts_bboxmaximumy_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_bboxmaximumy_' . $ps['id'] . '_' . $layer['id'] . ']" value="' . $layer['bbox_maximumy'] . '"/>
-														<input type="hidden" id="jform_wmts_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . ']"/>
-													<hr /></td>
-													<td colspan="2">';
-														foreach ($layer['tileMatrixSetList'] as $tileMatrixSet) {
-															echo '<div><label for="jform_wmts_tilematrixpolicy_' . $ps['id'] . '_' . $layer['id'] . '_' . $tileMatrixSet['id']. '">' . $tileMatrixSet['identifier'] . '</label>';
-															echo '<select id="jform_wmts_tilematrixpolicy_' . $ps['id'] . '_' . $layer['id'] . '_' . $tileMatrixSet['id']. '" name="wmtslayerpolicy[wmts_tilematrixpolicy_' . $ps['id'] . '_' . $layer['id'] . '_' . $tileMatrixSet['id']. ']">';
-															foreach ($tileMatrixSet['tileMatrixList'] as $tileMatrix) {
-																$selected = ('selected' == $tileMatrix['selected'])?' selected="selected" ':'';
-																echo '<option value="' . $tileMatrix['id'] . '"' . $selected . '>' . $tileMatrix['identifier'] . '</option>';
-															}
-															echo '</select></div>';
-														}
-													echo '</td>
-													<td>
-														<label for="jform_wmts_spatialoperator_touch_' . $ps['id'] . '_' . $layer['id'] . '" >Touch</label>
-														<input type="radio" id="jform_wmts_spatialoperator_touch_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_spatialoperator_' . $ps['id'] . '_' . $layer['id'] . ']" value="touch" ' . (('touch' == $layer['spatialoperator'])?'checked="checked"':'') . ' />
-														<label for="jform_wmts_spatialoperator_within_' . $ps['id'] . '_' . $layer['id'] . '" >Within</label>
-														<input type="radio" id="jform_wmts_spatialoperator_within_' . $ps['id'] . '_' . $layer['id'] . '" name="wmtslayerpolicy[wmts_spatialoperator_' . $ps['id'] . '_' . $layer['id'] . ']" value="within" ' . (('within' == $layer['spatialoperator'])?'checked="checked"':'') . ' />
-													</td>
+													<th>name</th>
+													<th>description</th>
+													<th></th>
 												</tr>
-											';
-										}
-						echo '</tbody>
-								</table>
-						</li>
-					</ul>
-				</fieldset>';
-			}
-		?>
-	</div>
-	<div class="width-100 fltlft">
-		<?php echo JHtml::_('sliders.start', 'permissions-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
-
-			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_SERVICE_FIELDSET_RULES'), 'access-rules'); ?>
-			<fieldset class="panelform">
-				<?php echo $this->form->getLabel('rules'); ?>
-				<?php echo $this->form->getInput('rules'); ?>
+											</thead>
+											<tbody>
+											<?php foreach($ps->getLayerList() as $layer):?>
+												<tr>
+													<td><?php echo $layer->name; ?></td>
+													<td><?php echo $layer->description; ?></td>
+													<td><a href="<?php echo ajaxURL($ps->id, $layer->name); ?>" class="btn" data-target="#layer_settings_modal" data-toggle="modal"><?php echo JText::_('COM_EASYSDI_SERVICE_BTN_SETTINGS');?></a></td>
+												</tr>
+											<?php endforeach; ?>
+											</tbody>
+										</table>
+								  </div>
+								</div>
+						  </div>
+							<?php endforeach; ?>
+						</div>
+					</fieldset>
+				</div>
+				
+				<div class="tab-pane" id="publishing">
+					<div class="control-group">
+						<div class="control-label"><?php echo $this->form->getLabel('created_by'); ?></div>
+						<div class="controls"><?php echo $this->form->getInput('created_by'); ?></div>
+					</div>
+					<div class="control-group">
+						<div class="control-label"><?php echo $this->form->getLabel('created'); ?></div>
+						<div class="controls"><?php echo $this->form->getInput('created'); ?></div>
+					</div>
+					<?php if ($this->item->modified_by) : ?>
+					<div class="control-group">
+						<div class="control-label"><?php echo $this->form->getLabel('modified_by'); ?></div>
+						<div class="controls"><?php echo $this->form->getInput('modified_by'); ?></div>
+					</div>
+					<div class="control-group">
+						<div class="control-label"><?php echo $this->form->getLabel('modified'); ?></div>
+						<div class="controls"><?php echo $this->form->getInput('modified'); ?></div>
+					</div>
+					<?php endif; ?>
+				</div>
+				
+				<?php if ($this->canDo->get('core.admin')): ?>
+				<div class="tab-pane" id="permissions">
+					<fieldset>
+						<?php echo $this->form->getInput('rules'); ?>
+					</fieldset>
+				</div>
+				<?php endif; ?>
+			</div>
+			
+		</div>
+		<!-- Begin Sidebar -->
+		<div class="span2">
+			<h4><?php echo JText::_('JDETAILS');?></h4>
+			<hr />
+			<fieldset class="form-vertical">
+				<div class="control-group">
+					<div class="control-group">
+						<div class="controls">
+							<?php echo $this->form->getValue('name'); ?>
+						</div>
+					</div>
+					<?php
+					if($this->canDo->get('core.edit.state'))
+					{
+						?>
+						<div class="control-label">
+							<?php echo $this->form->getLabel('state'); ?>
+						</div>
+						<div class="controls">
+							<?php echo $this->form->getInput('state'); ?>
+						</div>
+						<?php 
+					}
+					?>
+				</div>
+	
+				<div class="control-group">
+					<div class="control-label">
+						<?php echo $this->form->getLabel('access'); ?>
+					</div>
+					<div class="controls">
+						<?php echo $this->form->getInput('access'); ?>
+					</div>
+				</div>
 			</fieldset>
-
-		<?php echo JHtml::_('sliders.end'); ?>
+		</div>
+		<!-- End Sidebar -->
 	</div>
-
-
+	
+	<input type="hidden" name="layout" id="layout" value="wmts" />
 	<input type="hidden" name="task" value="" />
 	<?php echo JHtml::_('form.token'); ?>
-	<div class="clr"></div>
-
-    <style type="text/css">
-        /* Temporary fix for drifting editor fields */
-        .adminformlist li {
-            clear: both;
-        }
-    </style>
 </form>
+
+<div id="layer_settings_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3 id="myModalLabel"><?php echo JText::_('COM_EASYSDI_SERVICE_WMTS_MODAL_TITLE');?></h3>
+	</div>
+	<div class="modal-body">
+		<img src="<?php echo JURI::base(true).DS.'components'.DS.'com_easysdi_service'.DS.'assets'.DS.'images'.DS.'loader.gif'; ?>" />
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo JText::_('COM_EASYSDI_SERVICE_WMTS_MODAL_CANCEL');?></button>
+		<button class="btn btn-primary"><?php echo JText::_('COM_EASYSDI_SERVICE_WMTS_MODAL_SAVE');?></button>
+	</div>
+</div>

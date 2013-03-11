@@ -42,4 +42,15 @@ class TileMatrixSet {
 		}
 		return ($al > $bl) ? +1 : -1;
 	}
+	
+	public function toArray() {
+		$tms = get_object_vars($this);
+		$tms['tileMatrixList'] = Array();
+		
+		foreach ($this->tileMatrixList as $tm) {
+			array_push($tms['tileMatrixList'], Array($tm->identifier => $tm->toArray()));
+		}
+		
+		return $tms;
+	}
 }
