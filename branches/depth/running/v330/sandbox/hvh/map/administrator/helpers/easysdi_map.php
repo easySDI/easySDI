@@ -73,6 +73,12 @@ class Easysdi_mapHelper
 	public static function getLayers ($params){
 		$service 				= $params['service'];
 		
+		if(empty($service))
+		{
+			echo json_encode(array());
+			die();
+		}
+			
 		$db = JFactory::getDbo();
 		$pos 					= strstr ($service, 'physical_');
 		if($pos){

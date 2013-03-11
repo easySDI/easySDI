@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_maplayer` (
 `password` VARCHAR(255)  ,
 `istiled` BOOLEAN NOT NULL DEFAULT '0',
 `isdefaultvisible` BOOLEAN NOT NULL DEFAULT '0' ,
-`opacity` DECIMAL (10,5) NOT NULL DEFAULT '1',
+`opacity` DECIMAL (3,2) NOT NULL DEFAULT '1',
 `asOL` TINYINT(1)  NOT NULL DEFAULT '0',
 `asOLstyle` TEXT,
 `asOLmatrixset` TEXT,

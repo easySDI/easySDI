@@ -38,7 +38,6 @@ class Easysdi_mapModellayers extends JModelList
 					'ordering', 'a.ordering',
 					'state', 'a.state',
 					'name', 'a.name',
-					'group_id', 'a.group_id','group_name',
 					'service_id', 'a.service_id',
 					'servicetype', 'a.servicetype',
 					'layername', 'a.layername',

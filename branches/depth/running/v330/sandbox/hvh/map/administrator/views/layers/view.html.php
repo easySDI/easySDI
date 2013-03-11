@@ -133,7 +133,6 @@ class Easysdi_mapViewLayers extends JViewLegacy
 				'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
 				'a.state' => JText::_('JSTATUS'),
 				'a.name' => JText::_('COM_EASYSDI_MAP_LAYERS_NAME'),
-				'a.group_id' => JText::_('COM_EASYSDI_MAP_LAYERS_GROUP_ID'),
 				'a.layername' => JText::_('COM_EASYSDI_MAP_LAYERS_LAYERNAME'),
 				'a.access_level' => JText::_('JGRID_HEADING_ACCESS'),
 		);

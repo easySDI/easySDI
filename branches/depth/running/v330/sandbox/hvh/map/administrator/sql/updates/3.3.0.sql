@@ -11,6 +11,8 @@ ALTER TABLE `#__sdi_layergroup` CHANGE `context_id` `map_id` UNSIGNED NOT NULL;
 ALTER TABLE `#__sdi_map_physicalservice` CHANGE `context_id` `map_id` UNSIGNED NOT NULL;
 ALTER TABLE `#__sdi_map_tool` CHANGE `context_id` `map_id` UNSIGNED NOT NULL;
 ALTER TABLE `#__sdi_map_virtualservice` CHANGE `context_id` `map_id` UNSIGNED NOT NULL;
+ALTER TABLE `#__sdi_maplayer` MODIFY `opacity` DECIMAL (3,2) NOT NULL DEFAULT '1';
+,
 
 ALTER TABLE `#__sdi_sys_maptool` DROP COLUMN checked_out;
 ALTER TABLE `#__sdi_sys_maptool` DROP COLUMN checked_out_time;

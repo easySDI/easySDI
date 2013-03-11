@@ -61,10 +61,10 @@ class Easysdi_mapTablelayer extends sdiTable {
 	 * @link	http://docs.joomla.org/JTable/save
 	 * @since   11.1
 	 */
-	public function save($src, $orderingFilter = '', $ignore = '')
-	{
-		return parent::save($src, "group_id = ".$this->group_id);
-	}
+// 	public function save($src, $orderingFilter = '', $ignore = '')
+// 	{
+// 		return parent::save($src, "group_id = ".$this->group_id);
+// 	}
 	
 	/**
 	 * Method to compact the ordering values of rows in a group of rows
@@ -77,10 +77,10 @@ class Easysdi_mapTablelayer extends sdiTable {
 	 * @link    http://docs.joomla.org/JTable/reorder
 	 * @since   11.1
 	 */
-	public function reorder($where = '')
-	{
-		return parent::reorder("group_id = ".$this->group_id);
-	}
+// 	public function reorder($where = '')
+// 	{
+// 		return parent::reorder("group_id = ".$this->group_id);
+// 	}
 	
 	/**
 	 * Method to move a row in the ordering sequence of a group of rows defined by an SQL WHERE clause.
@@ -95,10 +95,10 @@ class Easysdi_mapTablelayer extends sdiTable {
 	 * @link    http://docs.joomla.org/JTable/move
 	 * @since   11.1
 	 */
-	public function move($delta, $where = '')
-	{
-		return parent::move($delta,"group_id = ".$this->group_id);
-	}
+// 	public function move($delta, $where = '')
+// 	{
+// 		return parent::move($delta,"group_id = ".$this->group_id);
+// 	}
 	
 	/**
 	 * Method to compute the default name of the asset.
