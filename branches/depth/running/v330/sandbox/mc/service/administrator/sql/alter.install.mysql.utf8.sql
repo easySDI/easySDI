@@ -88,8 +88,11 @@ ADD CONSTRAINT `#__sdi_wmtslayerpolicy_fk_policy` FOREIGN KEY (`policy_id`) REFE
 ALTER TABLE `#__sdi_wmtslayerpolicy`
 ADD CONSTRAINT `#__sdi_wmtslayerpolicy_fk_physicalservice` FOREIGN KEY (`physicalservice_id`) REFERENCES `#__sdi_physicalservice` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
+ALTER TABLE `#__sdi_tilematrixsetpolicy`
+ADD CONSTRAINT `#__sdi_tilematrixsetpolicy_fk_wmtslayerpolicy` FOREIGN KEY (`wmtslayerpolicy_id`) REFERENCES `#__sdi_wmtslayerpolicy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
 ALTER TABLE `#__sdi_tilematrixpolicy`
-ADD CONSTRAINT `#__sdi_tilematrixpolicy_fk_wmtslayerpolicy` FOREIGN KEY (`wmtslayerpolicy_id`) REFERENCES `#__sdi_wmtslayerpolicy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ADD CONSTRAINT `#__sdi_tilematrixpolicy_fk_tilematrixsetpolicy` FOREIGN KEY (`tilematrixsetpolicy_id`) REFERENCES `#__sdi_tilematrixsetpolicy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `#__sdi_virtual_physical`
 ADD CONSTRAINT `#__sdi_virtual_physical_fk1` FOREIGN KEY (`virtualservice_id`) REFERENCES `#__sdi_virtualservice` (`id`) ON DELETE CASCADE ;

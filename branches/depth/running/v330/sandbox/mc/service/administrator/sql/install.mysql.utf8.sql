@@ -420,9 +420,8 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_tilematrixpolicy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`wmtslayerpolicy_id` INT(11) UNSIGNED  NOT NULL ,
-`tilematrixset_identifier` INT(11) UNSIGNED  NOT NULL ,
-`tilematrix_identifier` INT(11) UNSIGNED  NOT NULL ,
+`tilematrixsetpolicy_id` INT(11) UNSIGNED  NOT NULL ,
+`tilematrix_identifier` varchar(255)  NOT NULL ,
 `tile_minrow` INT(11)  NOT NULL  DEFAULT '0',
 `tile_maxrow` INT(11)  NOT NULL  DEFAULT '0' ,
 `tile_mincol` INT(11)  NOT NULL   DEFAULT '0',

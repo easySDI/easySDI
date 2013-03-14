@@ -230,11 +230,70 @@ class WmtsWebservice {
 			return false;
 		}
 		
-		return WmtsWebservice::setTileMatrixSettings($physicalServiceID, $policyID, $layerID);
+		return WmtsWebservice::setTileMatrixSettings($wmtslayerpolicy_id, $raw_GET);
 	}
 	
-	private static function setTileMatrixSettings ($physicalServiceID, $policyID, $layerID){
+	private static function setTileMatrixSettings ($wmtslayerpolicy_id, $raw_GET){
+		var_dump($raw_GET);
+		$physicalServiceID = $raw_GET['psID'];
+		$policyID = $raw_GET['policyID'];
+		$layerID = $raw_GET['layerID'];
+		$tileMatrixSet_arr = $raw_GET['select'];
 		
+		
+		$db = JFactory::getDbo();
+		$db->setQuery('
+			SELECT *
+			FROM #__sdi_tilematrixsetpolicy
+			WHERE physicalservice_id = ' . $physicalServiceID . '
+			AND policy_id = ' . $policyID . '
+			AND layer_identifier = \'' . $layerID . '\';
+		');
+		
+		try {
+			$db->execute();
+			$num_result = $db->getNumRows();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
+		if (0 == $num_result) {
+			$query = $db->getQuery(true);
+			$query->insert('#__sdi_wmtslayerpolicy')->columns('
+				layer_identifier, enabled, spatialoperator, westboundlongitude, eastboundlongitude, northboundlatitude, southboundlatitude, policy_id, physicalservice_id
+			')->values('
+				\'' . $layerID . '\', \'' . $enabled . '\', \'' . $raw_GET['spatial_operator'] . '\', \'' . $raw_GET['westBoundLongitude'] . '\', \'' . $raw_GET['eastBoundLongitude'] . '\', \'' . $raw_GET['northBoundLatitude'] . '\', \'' . $raw_GET['southBoundLatitude'] . '\', \'' . $policyID . '\', \'' . $physicalServiceID . '\'
+			');
+		}
+		else {
+			$query = $db->getQuery(true);
+			$query->update('#__sdi_wmtslayerpolicy')->set(Array(
+				'enabled = \'' . $enabled . '\'',
+				'spatialoperator = \'' . $raw_GET['spatial_operator'] . '\'',
+				'westboundlongitude = \'' . $raw_GET['westBoundLongitude'] . '\'',
+				'eastboundlongitude = \'' . $raw_GET['eastBoundLongitude'] . '\'',
+				'northboundlatitude = \'' . $raw_GET['northBoundLatitude'] . '\'',
+				'southboundlatitude = \'' . $raw_GET['southBoundLatitude'] . '\'',
+			))->where(Array(
+				'physicalservice_id = \'' . $physicalServiceID . '\'',
+				'policy_id = \'' . $policyID . '\'',
+				'layer_identifier = \'' . $layerID . '\'',
+			));
+		}
+		
+		$db->setQuery($query);
+		
+		try {
+			$db->execute();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
 		
 		
 		return true;
