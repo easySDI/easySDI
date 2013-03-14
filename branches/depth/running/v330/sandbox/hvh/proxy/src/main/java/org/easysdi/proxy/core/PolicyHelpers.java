@@ -97,7 +97,7 @@ public class PolicyHelpers {
 			if ((principal == null)) {
 			 return null;
 	        }
-	        Collection<GrantedAuthority> authorities = principal.getAuthorities();
+	        Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>)principal.getAuthorities();
 	        if (authorities != null) 
 	        {
 	        	for (int i=0 ; i<policyList.size();i++)

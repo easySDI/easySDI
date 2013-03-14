@@ -201,7 +201,7 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 			if ((principal == null)) {
 				cacheAllowed = false;
 			}
-			Collection<GrantedAuthority> authorities = principal.getAuthorities();
+			Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>)principal.getAuthorities();
 			if (authorities == null) {
 				cacheAllowed = false;
 			}

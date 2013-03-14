@@ -10,6 +10,7 @@
 		<config>src/main/webapp/WEB-INF/spring/app-config.xml</config>
 		<config>src/main/webapp/WEB-INF/spring/ehcache-spring.xml</config>
 		<config>src/main/webapp/WEB-INF/spring/security-config.xml</config>
+		<config>src/main/webapp/WEB-INF/spring/hibernate-config.xml</config>
 	</configs>
 	<configSets>
 	</configSets>

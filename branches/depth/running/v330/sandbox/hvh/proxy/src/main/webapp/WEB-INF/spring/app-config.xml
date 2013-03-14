@@ -11,7 +11,7 @@
 	<context:annotation-config />
 	<context:component-scan base-package="org.easysdi.proxy" />
 
-	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+	<!-- <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url" value="jdbc:mysql://localhost:3306/opcc" />
 		<property name="username" value="root" />
@@ -26,6 +26,8 @@
 		<property name="minEvictableIdleTimeMillis" value="1800000" />
 		<property name="numTestsPerEvictionRun" value="5" />
 		<property name="defaultAutoCommit" value="false" />
-	</bean>
+	</bean>-->
+	
+	
 
 </beans>
