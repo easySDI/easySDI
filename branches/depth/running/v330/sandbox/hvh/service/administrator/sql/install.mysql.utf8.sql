@@ -222,15 +222,15 @@ PRIMARY KEY (`id`)
 -- SpatialPolicy
 CREATE TABLE IF NOT EXISTS `#__sdi_csw_spatialpolicy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`csw_eastboundlongitude` DECIMAL(10,6) ,
-`csw_westboundlongitude` DECIMAL(10,6) ,
-`csw_northboundlatitude` DECIMAL(10,6) ,
-`csw_southboundlatitude` DECIMAL(10,6) ,
-`csw_maxx` DECIMAL(18,6) ,
-`csw_maxy` DECIMAL(18,6) ,
-`csw_minx` DECIMAL(18,6) ,
-`csw_miny` DECIMAL(18,6) ,
-`csw_srssource` VARCHAR (255) ,
+`eastboundlongitude` DECIMAL(10,6) ,
+`westboundlongitude` DECIMAL(10,6) ,
+`northboundlatitude` DECIMAL(10,6) ,
+`southboundlatitude` DECIMAL(10,6) ,
+`maxx` DECIMAL(18,6) ,
+`maxy` DECIMAL(18,6) ,
+`minx` DECIMAL(18,6) ,
+`miny` DECIMAL(18,6) ,
+`srssource` VARCHAR (255) ,
 PRIMARY KEY (`id`)
 ) DEFAULT COLLATE=utf8_general_ci;
 
