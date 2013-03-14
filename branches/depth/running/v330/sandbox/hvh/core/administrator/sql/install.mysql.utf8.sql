@@ -38,6 +38,186 @@ CREATE TABLE `#__sdi_sys_country` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_versiontype` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+INSERT INTO `#__sdi_sys_versiontype` (ordering,state,value) 
+VALUES 
+(1,1,'all'),
+(2,1,'lastPublishedVersion')
+;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_accessscope` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+
+INSERT INTO `#__sdi_sys_accessscope` (ordering,state,value) 
+VALUES 
+(1,1,'public'),
+(2,1,'organism'),
+(3,1,'user')
+;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_metadatastate` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+INSERT INTO `#__sdi_sys_metadatastate` (ordering,state,value) 
+VALUES 
+(1,1,'archived'),
+(2,1,'inprogress'),
+(3,1,'published'),
+(3,1,'trashed'),
+(3,1,'validated')
+;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_spatialoperator` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+INSERT INTO `#__sdi_sys_spatialoperator` (ordering,state,value) 
+VALUES 
+(1,1,'within'),
+(3,1,'touch')
+;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_serviceconnector` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11) ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_serviceversion` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_servicecompliance` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`serviceconnector_id` INT(11) UNSIGNED  NOT NULL ,
+`serviceversion_id` INT(11) UNSIGNED  NOT NULL ,
+`implemented` TINYINT(1)  NOT NULL DEFAULT '0',
+`relayable` TINYINT(1)  NOT NULL DEFAULT '0',
+`aggregatable` TINYINT(1)  NOT NULL DEFAULT '0',
+`harvestable` TINYINT(1)  NOT NULL DEFAULT '0',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_serviceoperation` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_operationcompliance` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`servicecompliance_id` INT(11) UNSIGNED  NOT NULL ,
+`serviceoperation_id` INT(11) UNSIGNED  NOT NULL ,
+`implemented` TINYINT(1)  NOT NULL DEFAULT '0',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_authenticationlevel` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_authenticationconnector` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`authenticationlevel_id` INT(11) UNSIGNED  NOT NULL ,
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_logroll` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`value` VARCHAR(255)  NOT NULL ,
+PRIMARY KEY (`id`)
+) DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_loglevel` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`value` VARCHAR(255)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_exceptionlevel` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`value` VARCHAR(255)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_proxytype` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`value` VARCHAR(255)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_servicecon_authenticationcon` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`serviceconnector_id` INT(11) UNSIGNED NOT NULL ,
+`authenticationconnector_id` INT(11) UNSIGNED NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_servicescope` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+INSERT INTO `#__sdi_sys_servicescope` (ordering,state,value) 
+VALUES 
+(1,1,'all'),
+(2,1,'organism'),
+(3,1,'none')
+;
+
 INSERT INTO `#__sdi_sys_country` VALUES ('1', '1', '1', 'Afghanistan', 'AF', 'AFG');
 INSERT INTO `#__sdi_sys_country` VALUES ('2', '2', '1', 'Åland Islands', 'AX', 'ALA');
 INSERT INTO `#__sdi_sys_country` VALUES ('3', '3', '1', 'Albania', 'AL', 'ALB');
@@ -279,66 +459,3 @@ INSERT INTO `#__sdi_sys_country` VALUES ('238', '238', '1', 'Western Sahara (for
 INSERT INTO `#__sdi_sys_country` VALUES ('239', '239', '1', 'Yemen (Arab Republic)', 'YE', 'YEM');
 INSERT INTO `#__sdi_sys_country` VALUES ('240', '240', '1', 'Zambia', 'ZM', 'ZMB');
 INSERT INTO `#__sdi_sys_country` VALUES ('241', '241', '1', 'Zimbabwe', 'ZW', 'ZWE');
-
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_versiontype` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)  NOT NULL DEFAULT '1' ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
-`value` VARCHAR(150)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-
-INSERT INTO `#__sdi_sys_versiontype` (ordering,state,value) 
-VALUES 
-(1,1,'all'),
-(2,1,'lastPublishedVersion')
-;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_accessscope` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)  NOT NULL DEFAULT '1' ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
-`value` VARCHAR(150)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-
-INSERT INTO `#__sdi_sys_accessscope` (ordering,state,value) 
-VALUES 
-(1,1,'public'),
-(2,1,'organism'),
-(3,1,'user')
-;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_metadatastate` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)  NOT NULL DEFAULT '1' ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
-`value` VARCHAR(150)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-INSERT INTO `#__sdi_sys_metadatastate` (ordering,state,value) 
-VALUES 
-(1,1,'archived'),
-(2,1,'inprogress'),
-(3,1,'published'),
-(3,1,'trashed'),
-(3,1,'validated')
-;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_spatialoperator` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)  NOT NULL DEFAULT '1' ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
-`value` VARCHAR(150)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-INSERT INTO `#__sdi_sys_spatialoperator` (ordering,state,value) 
-VALUES 
-(1,1,'within'),
-(3,1,'touch')
-;
