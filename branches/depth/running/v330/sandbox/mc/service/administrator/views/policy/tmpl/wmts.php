@@ -21,11 +21,6 @@ $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/policy.js');
 JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
-
-function ajaxURL ($physicalServiceID, $layerID) {
-	return 'index.php?option=com_easysdi_service&task=wmtsWebservice&method=getWmtsLayerForm&physicalServiceID=' . $physicalServiceID . '&layerID=' . $layerID;
-}
-
 ?>
 
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&layout=wmts&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="policy-form" class="form-validate">
@@ -87,7 +82,11 @@ function ajaxURL ($physicalServiceID, $layerID) {
 												<tr>
 													<td><?php echo $layer->name; ?></td>
 													<td><?php echo $layer->description; ?></td>
-													<td><a href="<?php echo ajaxURL($ps->id, $layer->name); ?>" class="btn" data-target="#layer_settings_modal" data-toggle="modal"><?php echo JText::_('COM_EASYSDI_SERVICE_BTN_SETTINGS');?></a></td>
+													<td>
+														<button type="button" class="btn btn_modify_layer" data-toggle="modal" data-target="#layer_settings_modal" data-psid="<?php echo $ps->id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>">
+															<?php echo JText::_('COM_EASYSDI_SERVICE_BTN_SETTINGS');?>
+														</button>
+													</td>
 												</tr>
 											<?php endforeach; ?>
 											</tbody>
@@ -175,13 +174,14 @@ function ajaxURL ($physicalServiceID, $layerID) {
 	<?php echo JHtml::_('form.token'); ?>
 </form>
 
-<div id="layer_settings_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="layer_settings_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 712px;">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3 id="myModalLabel"><?php echo JText::_('COM_EASYSDI_SERVICE_WMTS_MODAL_TITLE');?></h3>
+		<h3 id="myModalLabel"><?php echo JText::_('COM_EASYSDI_SERVICE_WMTS_MODAL_TITLE');?> : <span id="layer_name"></span></h3>
 	</div>
 	<div class="modal-body">
-		<img src="<?php echo JURI::base(true).DS.'components'.DS.'com_easysdi_service'.DS.'assets'.DS.'images'.DS.'loader.gif'; ?>" />
+		<img class="loaderImg" src="<?php echo JURI::base(true).DS.'components'.DS.'com_easysdi_service'.DS.'assets'.DS.'images'.DS.'loader.gif'; ?>" />
+		<form id="modal_layer_form"></form>
 	</div>
 	<div class="modal-footer">
 		<button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo JText::_('COM_EASYSDI_SERVICE_WMTS_MODAL_CANCEL');?></button>

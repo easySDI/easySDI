@@ -5,10 +5,11 @@ require_once('TileMatrixSet.php');
 class WmtsLayer extends Layer{
 	private $tileMatrixSetList = Array();
 	
+	public $enabled;
 	public $westBoundLongitude;
 	public $eastBoundLongitude;
-	public $southBoundLatitude;
 	public $northBoundLatitude;
+	public $southBoundLatitude;
 	public $spatialOperator;
 	public $allTileMatrixSet;
 	

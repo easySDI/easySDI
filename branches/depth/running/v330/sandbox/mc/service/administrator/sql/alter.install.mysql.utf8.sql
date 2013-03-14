@@ -82,29 +82,14 @@ ADD CONSTRAINT `#__sdi_featureclasspolicy_fk_policy` FOREIGN KEY (`policy_id`) R
 ALTER TABLE `#__sdi_featureclasspolicy`
 ADD CONSTRAINT `#__sdi_featureclasspolicy_fk_featureclass` FOREIGN KEY (`featureclass_id`) REFERENCES `#__sdi_featureclass` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE `#__sdi_wmtslayer`
-ADD CONSTRAINT `#__sdi_wmtslayer_fk_physicalservice` FOREIGN KEY (`physicalservice_id`) REFERENCES `#__sdi_physicalservice` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
 ALTER TABLE `#__sdi_wmtslayerpolicy`
 ADD CONSTRAINT `#__sdi_wmtslayerpolicy_fk_policy` FOREIGN KEY (`policy_id`) REFERENCES `#__sdi_policy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `#__sdi_wmtslayerpolicy`
-ADD CONSTRAINT `#__sdi_wmtslayerpolicy_fk_wmtslayer` FOREIGN KEY (`wmtslayer_id`) REFERENCES `#__sdi_wmtslayer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
-ALTER TABLE `#__sdi_tilematrixset`
-ADD CONSTRAINT `#__sdi_tilematrixset_fk_wmtslayer` FOREIGN KEY (`wmtslayer_id`) REFERENCES `#__sdi_wmtslayer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
-ALTER TABLE `#__sdi_tilematrix`
-ADD CONSTRAINT `#__sdi_tilematrix_fk_tilematrixset` FOREIGN KEY (`tilematrixset_id`) REFERENCES `#__sdi_tilematrixset` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ADD CONSTRAINT `#__sdi_wmtslayerpolicy_fk_physicalservice` FOREIGN KEY (`physicalservice_id`) REFERENCES `#__sdi_physicalservice` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `#__sdi_tilematrixpolicy`
 ADD CONSTRAINT `#__sdi_tilematrixpolicy_fk_wmtslayerpolicy` FOREIGN KEY (`wmtslayerpolicy_id`) REFERENCES `#__sdi_wmtslayerpolicy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
-ALTER TABLE `#__sdi_tilematrixpolicy`
-ADD CONSTRAINT `#__sdi_tilematrixpolicy_fk_tilematrixset` FOREIGN KEY (`tilematrixset_id`) REFERENCES `#__sdi_tilematrixset` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
-ALTER TABLE `#__sdi_tilematrixpolicy`
-ADD CONSTRAINT `#__sdi_tilematrixpolicy_fk_tilematrix` FOREIGN KEY (`tilematrix_id`) REFERENCES `#__sdi_tilematrix` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `#__sdi_virtual_physical`
 ADD CONSTRAINT `#__sdi_virtual_physical_fk1` FOREIGN KEY (`virtualservice_id`) REFERENCES `#__sdi_virtualservice` (`id`) ON DELETE CASCADE ;

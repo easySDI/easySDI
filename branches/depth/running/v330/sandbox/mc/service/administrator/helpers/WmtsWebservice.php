@@ -10,10 +10,10 @@ class WmtsWebservice {
 	public static function request ($params) {
 		switch ($params['method']) {
 			case 'getWmtsLayerForm':
-				WmtsWebservice::getWmtsLayerForm(
-					$params['physicalServiceID'],
-					$params['layerID']
-				);
+				WmtsWebservice::getWmtsLayerForm($params);
+				break;
+			case 'setWmtsLayerSettings':
+				WmtsWebservice::setWmtsLayerSettings($params);
 				break;
 			default:
 				echo 'Unknown method.';
@@ -22,15 +22,22 @@ class WmtsWebservice {
 		die();
 	}
 	
-	private static function getWmtsLayerForm ($physicalServiceID, $layerID) {
+	private static function getWmtsLayerForm ($raw_GET) {
+		$physicalServiceID = $raw_GET['physicalServiceID'];
+		$policyID = $raw_GET['policyID'];
+		$layerID = $raw_GET['layerID'];
+		
 		$layerObj = WmtsWebservice::getWmtsLayerSettings(
 			$physicalServiceID,
+			$policyID,
 			$layerID
 		);
 		
 		echo '
-			<div class="row-fluid">
-			<div class="span12">
+			<label class="checkbox">
+				<input type="checkbox" name="enabled" value="1" ' . ((1 == $layerObj->enabled)?'checked="checked"':'') . ' /> ' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_ENABLED') . '
+			</label>
+			<hr />
 			<table>
 				<tr>
 					<td></td>
@@ -80,7 +87,7 @@ class WmtsWebservice {
 				<tr>
 					<td>' . $tms->identifier . '</td>
 					<td>
-						<select name="select_' . $tms->identifier . '">
+						<select name="select[' . $tms->identifier . ']">
 							<option value="">' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_TILE_MATRIX_LABEL') . '</option>
 			';
 			foreach ($tms->getTileMatrixList() as $tm) {
@@ -97,12 +104,13 @@ class WmtsWebservice {
 		echo '
 				</tbody>
 			</table>
-			</div>
-			</div>
+			<input type="hidden" name="psID" value="' . $physicalServiceID . '"/>
+			<input type="hidden" name="policyID" value="' . $policyID . '"/>
+			<input type="hidden" name="layerID" value="' . $layerID . '"/>
 		';
 	}
 	
-	private static function getWmtsLayerSettings ($physicalServiceID, $layerID) {
+	private static function getWmtsLayerSettings ($physicalServiceID, $policyID, $layerID) {
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmtsPhysicalService.php');
 		
 		$db = JFactory::getDbo();
@@ -121,15 +129,115 @@ class WmtsWebservice {
 			return false;
 		}
 		
-		//TODO : retrieve data to load it in the object
+		$db = JFactory::getDbo();
+		$db->setQuery('
+			SELECT *
+			FROM #__sdi_wmtslayerpolicy
+			WHERE physicalservice_id = ' . $physicalServiceID . '
+			AND policy_id = ' . $policyID . '
+			AND layer_identifier = \'' . $layerID . '\';
+		');
+		
+		try {
+			$db->execute();
+			$wmtslayerpolicy = $db->loadObject();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
+		$data = Array();
+		if (isset($wmtslayerpolicy)) {
+			$data[$layerID] = Array(
+				'enabled' => $wmtslayerpolicy->enabled,
+				'spatialOperator' => $wmtslayerpolicy->spatialoperator,
+				'westBoundLongitude' => $wmtslayerpolicy->westboundlongitude,
+				'eastBoundLongitude' => $wmtslayerpolicy->eastboundlongitude,
+				'northBoundLatitude' => $wmtslayerpolicy->northboundlatitude,
+				'southBoundLatitude' => $wmtslayerpolicy->southboundlatitude,
+				'tileMatrixSetList' => Array(),
+			);
+		}
 		
 		$wmtsObj = new WmtsPhysicalService($physicalServiceID, $url);
 		$wmtsObj->getCapabilities();
 		$wmtsObj->populate();
-		$wmtsObj->loadData(Array());
+		$wmtsObj->loadData($data);
 		$layerObj = $wmtsObj->getLayerByName($layerID);
 		
 		return $layerObj;
+	}
+	
+	private static function setWmtsLayerSettings ($raw_GET) {
+		$enabled = (isset($raw_GET['enabled']))?1:0;
+		$physicalServiceID = $raw_GET['psID'];
+		$policyID = $raw_GET['policyID'];
+		$layerID = $raw_GET['layerID'];
+		
+		$db = JFactory::getDbo();
+		$db->setQuery('
+			SELECT *
+			FROM #__sdi_wmtslayerpolicy
+			WHERE physicalservice_id = ' . $physicalServiceID . '
+			AND policy_id = ' . $policyID . '
+			AND layer_identifier = \'' . $layerID . '\';
+		');
+		
+		try {
+			$db->execute();
+			$num_result = $db->getNumRows();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
+		if (0 == $num_result) {
+			$query = $db->getQuery(true);
+			$query->insert('#__sdi_wmtslayerpolicy')->columns('
+				layer_identifier, enabled, spatialoperator, westboundlongitude, eastboundlongitude, northboundlatitude, southboundlatitude, policy_id, physicalservice_id
+			')->values('
+				\'' . $layerID . '\', \'' . $enabled . '\', \'' . $raw_GET['spatial_operator'] . '\', \'' . $raw_GET['westBoundLongitude'] . '\', \'' . $raw_GET['eastBoundLongitude'] . '\', \'' . $raw_GET['northBoundLatitude'] . '\', \'' . $raw_GET['southBoundLatitude'] . '\', \'' . $policyID . '\', \'' . $physicalServiceID . '\'
+			');
+		}
+		else {
+			$query = $db->getQuery(true);
+			$query->update('#__sdi_wmtslayerpolicy')->set(Array(
+				'enabled = \'' . $enabled . '\'',
+				'spatialoperator = \'' . $raw_GET['spatial_operator'] . '\'',
+				'westboundlongitude = \'' . $raw_GET['westBoundLongitude'] . '\'',
+				'eastboundlongitude = \'' . $raw_GET['eastBoundLongitude'] . '\'',
+				'northboundlatitude = \'' . $raw_GET['northBoundLatitude'] . '\'',
+				'southboundlatitude = \'' . $raw_GET['southBoundLatitude'] . '\'',
+			))->where(Array(
+				'physicalservice_id = \'' . $physicalServiceID . '\'',
+				'policy_id = \'' . $policyID . '\'',
+				'layer_identifier = \'' . $layerID . '\'',
+			));
+		}
+		
+		$db->setQuery($query);
+		
+		try {
+			$db->execute();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
+		return WmtsWebservice::setTileMatrixSettings($physicalServiceID, $policyID, $layerID);
+	}
+	
+	private static function setTileMatrixSettings ($physicalServiceID, $policyID, $layerID){
+		
+		
+		
+		return true;
 	}
 	
 }

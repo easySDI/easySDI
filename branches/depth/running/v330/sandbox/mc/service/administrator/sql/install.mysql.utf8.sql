@@ -394,85 +394,39 @@ CREATE TABLE IF NOT EXISTS `#__sdi_featureclasspolicy` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_wmtslayer` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` VARCHAR(36)  NOT NULL ,
-`ordering` INT(11)  NOT NULL ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
-`checked_out` INT(11)  NOT NULL DEFAULT '0',
-`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-`created_by` INT(11)  NOT NULL ,
-`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-`name` VARCHAR(255)  NOT NULL ,
-`description` VARCHAR(255)  NOT NULL ,
-`modified_by` INT(11)  NOT NULL ,
-`modified` DATETIME NOT NULL ,
-`physicalservice_id` INT(11) UNSIGNED  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
 CREATE TABLE IF NOT EXISTS `#__sdi_wmtslayerpolicy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` VARCHAR(36)  NOT NULL ,
-`ordering` INT(11)  NOT NULL ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
-`checked_out` INT(11)  NOT NULL DEFAULT '0',
-`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-`created_by` INT(11)  NOT NULL ,
-`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-`geographicfilter` VARCHAR(255)  NOT NULL ,
-`spatialoperator` VARCHAR(255)  NOT NULL ,
-`modified_by` INT(11)  ,
-`modified` DATETIME ,
-`policy_id` INT(11) UNSIGNED  NOT NULL ,
-`wmtslayer_id` INT(11) UNSIGNED  NOT NULL ,
-`bbox_minimumx` INT(11)  ,
-`bbox_minimumy` INT(11)  ,
-`bbox_maximumx` INT(11)  ,
-`bbox_maximumy` INT(11)  ,
+`layer_identifier` varchar(255)  NOT NULL ,
 `enabled` TINYINT(1)  NOT NULL DEFAULT '0',
+`spatialoperator` VARCHAR(255)  NOT NULL ,
+`westboundlongitude` INT(11) ,
+`eastboundlongitude` INT(11) ,
+`northboundlatitude` INT(11) ,
+`southboundlatitude` INT(11) ,
+`geographicfilter` VARCHAR(255)  NOT NULL ,
+`physicalservice_id` INT(11) UNSIGNED  NOT NULL ,
+`policy_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_tilematrixset` (
+CREATE TABLE IF NOT EXISTS `#__sdi_tilematrixsetpolicy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` VARCHAR(36)  NOT NULL ,
-`ordering` INT(11)  NOT NULL ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
-`checked_out` INT(11)  NOT NULL DEFAULT '0',
-`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-`created_by` INT(11)  NOT NULL ,
-`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-`modified_by` INT(11)  NOT NULL ,
-`modified` DATETIME NOT NULL ,
-`identifier` VARCHAR(255)  NOT NULL ,
-`supported_crs` VARCHAR(255)  NOT NULL ,
-`wmtslayer_id` INT(11) UNSIGNED NOT NULL ,
+`wmtslayerpolicy_id` INT(11) UNSIGNED  NOT NULL ,
+`tilematrixset_identifier` varchar(255)  NOT NULL ,
+`allTileMatrix` TINYINT(1)  NOT NULL DEFAULT '0',
+`SRS` VARCHAR(255)  ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_tilematrixpolicy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `wmtslayerpolicy_id` INT(11) UNSIGNED  NOT NULL ,
-`tilematrixset_id` INT(11) UNSIGNED  NOT NULL ,
-`tilematrix_id` INT(11) UNSIGNED  NOT NULL ,
+`tilematrixset_identifier` INT(11) UNSIGNED  NOT NULL ,
+`tilematrix_identifier` INT(11) UNSIGNED  NOT NULL ,
 `tile_minrow` INT(11)  NOT NULL  DEFAULT '0',
 `tile_maxrow` INT(11)  NOT NULL  DEFAULT '0' ,
 `tile_mincol` INT(11)  NOT NULL   DEFAULT '0',
 `tile_maxcol` INT(11)  NOT NULL   DEFAULT '0',
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_tilematrix` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`identifier` VARCHAR(255)  NOT NULL ,
-`scaledenominator` VARCHAR(255)  NOT NULL ,
-`topleftcorner` VARCHAR(255)  NOT NULL ,
-`tilewidth` INT(11)  NOT NULL ,
-`tileheight` INT(11)  NOT NULL ,
-`matrixwidth` INT(11)  NOT NULL ,
-`matrixheight` INT(11)  NOT NULL ,
-`tilematrixset_id` INT(11) UNSIGNED NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
