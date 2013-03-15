@@ -19,6 +19,7 @@ package org.easysdi.xml.documents;
 import java.io.Serializable;
 import java.util.List;
 
+@Deprecated
 public class OWSServiceMetadata implements Serializable{
 	
 	private static final long serialVersionUID = -1522579526391545420L;

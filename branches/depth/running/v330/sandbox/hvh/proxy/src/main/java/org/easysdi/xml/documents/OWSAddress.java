@@ -17,7 +17,7 @@
 package org.easysdi.xml.documents;
 
 import java.io.Serializable;
-
+@Deprecated
 public class OWSAddress implements Serializable{
 	
 	private static final long serialVersionUID = -1522579526391545420L;

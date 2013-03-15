@@ -24,7 +24,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-
+@Deprecated
 public class PolicyHandler extends DefaultHandler {
 
     private String remoteServer;
@@ -391,21 +391,21 @@ public class PolicyHandler extends DefaultHandler {
     }
 
     /**
-     * Actions à réaliser au début du document.
+     * Actions ï¿½ rï¿½aliser au dï¿½but du document.
      */
     public void startDocument() {
 
     }
 
     /**
-     * Actions à réaliser lors de la fin du document XML.
+     * Actions ï¿½ rï¿½aliser lors de la fin du document XML.
      */
     public void endDocument() {
 
     }
 
     /**
-     * Actions à réaliser sur les données
+     * Actions ï¿½ rï¿½aliser sur les donnï¿½es
      */
     public void characters(char[] caracteres, int debut, 
 	    int longueur) throws SAXException {

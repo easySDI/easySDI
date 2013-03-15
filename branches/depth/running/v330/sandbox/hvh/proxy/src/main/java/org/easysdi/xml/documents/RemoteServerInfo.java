@@ -22,6 +22,7 @@ import java.io.Serializable;
  * @author Administrateur
  *
  */
+@Deprecated
 public class RemoteServerInfo implements Serializable{
 	/**
 	 * 

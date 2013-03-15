@@ -198,7 +198,7 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 			policyE = null;
 
 		if (policyE == null) { 
-			JAXBContext jc = JAXBContext.newInstance("org.easysdi.proxy.policy.PolicySet.class");
+			JAXBContext jc = JAXBContext.newInstance(org.easysdi.proxy.policy.PolicySet.class);
 			Unmarshaller u = jc.createUnmarshaller();
 			PolicySet policySet = null;
 			policySet = (PolicySet) u.unmarshal(new FileInputStream(filePath));

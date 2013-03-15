@@ -29,7 +29,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-
+@Deprecated
 public class ConfigFileHandler extends DefaultHandler {
 	private org.easysdi.xml.documents.Config config;
 	private String data = "";

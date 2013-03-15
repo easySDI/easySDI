@@ -17,6 +17,7 @@
 
 package org.easysdi.xml.documents;
 
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Iterator;
@@ -26,6 +27,7 @@ import java.util.List;
  * @author Depth SA
  * 
  */
+@Deprecated
 public class Config implements Serializable{
 	/**
 	 * 

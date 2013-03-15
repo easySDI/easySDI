@@ -65,6 +65,13 @@
 		</dependency>
 
 
+		<!-- JAXB -->
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.1.4</version>
+		</dependency>
+
 		<!-- GeoTools -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -86,6 +93,20 @@
 			<groupId>org.geotools</groupId>
 			<artifactId>gt2-wms</artifactId>
 			<version>${geotools.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jaxb-api</artifactId>
+					<groupId>jaxb</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jaxb-impl</artifactId>
+					<groupId>jaxb</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jaxb-libs</artifactId>
+					<groupId>jaxb</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
@@ -114,16 +135,7 @@
 			<artifactId>google-collections</artifactId>
 			<version>1.0</version>
 		</dependency>
-		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-			<version>2.1.4</version>
-		</dependency>
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
