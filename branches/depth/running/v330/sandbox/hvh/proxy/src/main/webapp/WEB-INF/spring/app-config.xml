@@ -9,25 +9,6 @@
           http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	<context:annotation-config />
-	<context:component-scan base-package="org.easysdi.proxy" />
-
-	<!-- <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://localhost:3306/opcc" />
-		<property name="username" value="root" />
-		<property name="password" value="invulsion" />
-		<property name="maxIdle" value="10" />
-		<property name="maxActive" value="100" />
-		<property name="maxWait" value="10000" />
-		<property name="validationQuery" value="select 1" />
-		<property name="testOnBorrow" value="false" />
-		<property name="testWhileIdle" value="true" />
-		<property name="timeBetweenEvictionRunsMillis" value="1200000" />
-		<property name="minEvictableIdleTimeMillis" value="1800000" />
-		<property name="numTestsPerEvictionRun" value="5" />
-		<property name="defaultAutoCommit" value="false" />
-	</bean>-->
-	
-	
+	<context:component-scan base-package="org.easysdi.proxy" />	
 
 </beans>

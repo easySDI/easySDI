@@ -22,7 +22,7 @@
 		<property name="dataSource" ref="dataSource" />
 		<property name="packagesToScan">
 			<list>
-				<value>org.easysdi.domain</value>
+				<value>org.easysdi.proxy.domain</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">
@@ -32,6 +32,13 @@
 				<prop key="hibernate.hbm2ddl.auto">update</prop>
 			</props>
 		</property>
+		<property name="namingStrategy"><ref bean="namingStrategy" /></property>
+	</bean>
+	
+	<bean id="namingStrategy" class="org.easysdi.proxy.namingStrategy.CustomNamingStrategy">
+		<property name="prefix">
+			<value>proxy_</value>
+		</property>
 	</bean>
 
 	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
@@ -40,8 +47,10 @@
 
 	<tx:annotation-driven transaction-manager="transactionManager" />
 	
-	<bean id="proxySdiUser" class="org.easysdi.domain.ProxySdiUserDao">
-		<property name="sessionFactory" ref="sessionFactory"></property>
+	<bean id="abstractDao" abstract="true">
+		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
+	
+	<bean id="proxySdiUser" class="org.easysdi.proxy.domain.SdiUserHome" parent="abstractDao"/>
 
 </beans>
