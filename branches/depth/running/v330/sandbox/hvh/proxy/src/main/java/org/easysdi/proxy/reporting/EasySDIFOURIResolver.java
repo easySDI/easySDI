@@ -4,7 +4,8 @@ import java.net.URLConnection;
 
 import org.apache.fop.apps.FOURIResolver;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.codec.Base64;
+import org.springframework.security.core.codec.Base64;
+
 
 public class EasySDIFOURIResolver extends FOURIResolver {
 
