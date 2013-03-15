@@ -43,7 +43,6 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
-import ch.interlis.interlis2.GM03V18.GM03ComprehensiveComprehensiveDQAbsoluteExternalPositionalAccuracy.DateTime;
 
 /**
  * Access the database to retreive accessible metadatas
