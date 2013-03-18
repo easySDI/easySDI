@@ -363,18 +363,15 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				if( !$wmtslayerpolicy->save($data) ){
 					return false;
 				}
-			}
-			
-			if ('WMS' == $serviceconnector_name || 'WFS' == $serviceconnector_name) {
-				$servicepolicy = JTable::getInstance('servicepolicy', 'Easysdi_serviceTable');
-				if( !$servicepolicy->save($data) ){
-					return false;
-				}
 			}*/
 			
+			if ('WMS' == $serviceconnector_name || 'WFS' == $serviceconnector_name || 'WMTS' == $serviceconnector_name) {
+				$physicalservicepolicy = JTable::getInstance('physicalservice_policy', 'Easysdi_serviceTable');
+				if( !$physicalservicepolicy->save($data) ){
+					return false;
+				}
+			}
 			
-			
-			//die();
 			return true;
 		}
 		return false;
