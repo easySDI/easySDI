@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualmetadata` (
 `contactpostalcode` VARCHAR(255)   ,
 `contactlocality` VARCHAR(255)  ,
 `contactstate` VARCHAR(255)  ,
-`contactcountry` VARCHAR(255)   ,
+`country_id` INT(11) UNSIGNED   ,
 `contactphone` VARCHAR(255)   ,
 `contactfax` VARCHAR(255)   ,
 `contactemail` VARCHAR(255)  ,

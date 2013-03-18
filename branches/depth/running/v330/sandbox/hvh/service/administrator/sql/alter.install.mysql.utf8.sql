@@ -53,6 +53,9 @@ ADD CONSTRAINT `#__sdi_virtualservice_fk5` FOREIGN KEY (`logroll_id`) REFERENCES
 ALTER TABLE `#__sdi_virtualmetadata`
 ADD CONSTRAINT `#__sdi_virtualmetadata_fk1` FOREIGN KEY (`virtualservice_id`) REFERENCES `#__sdi_virtualservice` (`id`) ON DELETE CASCADE;
 
+ALTER TABLE `#__sdi_virtualmetadata`
+ADD CONSTRAINT `#__sdi_virtualmetadata_fk2` FOREIGN KEY (`country_id`) REFERENCES `#__sdi_sys_country` (`id`) ;
+
 ALTER TABLE `#__sdi_virtual_physical`
 ADD CONSTRAINT `#__sdi_virtual_physical_fk1` FOREIGN KEY (`virtualservice_id`) REFERENCES `#__sdi_virtualservice` (`id`) ON DELETE CASCADE;
 

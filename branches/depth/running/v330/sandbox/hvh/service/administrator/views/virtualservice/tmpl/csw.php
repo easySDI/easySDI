@@ -80,9 +80,9 @@ JText::script('COM_EASYSDI_SERVICE_FORM_SERVICE_METADATA_ERROR');
 				
 				<div class="tab-pane" id="metadata">
 					<div class="control-group">
-							<div class="control-label"><?php echo $this->form->getLabel('reflectedmetadata'); ?></div>
-							<div class="controls"><?php echo $this->form->getInput('reflectedmetadata'); ?></div>
-						</div>
+						<div class="control-label"><?php echo $this->form->getLabel('reflectedmetadata'); ?></div>
+						<div class="controls"><?php echo $this->form->getInput('reflectedmetadata'); ?></div>
+					</div>
 					<fieldset id="servicemetadata">					
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_METADATA' );?></legend>
 					<?php foreach($this->form->getFieldset('metadata') as $field):?> 
@@ -98,12 +98,18 @@ JText::script('COM_EASYSDI_SERVICE_FORM_SERVICE_METADATA_ERROR');
 					<fieldset id=contact>
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_METADATA_CONTACT' );?></legend>
 					<?php foreach($this->form->getFieldset('contact') as $field):?> 
+						<?php if ('contactlocality' == $field->fieldname) : ?>
+							<div class="control-group">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls form-inline"><?php echo $this->form->getInput('contactpostalcode'); echo $field->input; ?></div>
+							</div>
+						<?php else :?>
 						<div class="control-group">
-							<?php if ('jform[city]' != $field->name) :?>
 							<div class="control-label"><?php echo $field->label; ?></div>
-							<?php endif;?>
-							<div class="controls"><?php echo $field->input; ?></div>
+							<div class="controls"><?php echo $field->input;  ?></div>
 						</div>
+						<?php endif;?>
+						
 					<?php endforeach; ?>
 					<?php foreach($this->form->getFieldset('contact_csw') as $field):?> 
 						<div class="control-group">

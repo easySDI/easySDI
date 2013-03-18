@@ -79,7 +79,11 @@ JText::script('COM_EASYSDI_SERVICE_FORM_SERVICE_METADATA_ERROR');
 				</div>
 				
 				<div class="tab-pane" id="metadata">
-					<fieldset>
+					<div class="control-group">
+						<div class="control-label"><?php echo $this->form->getLabel('reflectedmetadata'); ?></div>
+						<div class="controls"><?php echo $this->form->getInput('reflectedmetadata'); ?></div>
+					</div>
+					<fieldset id="servicemetadata">
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_METADATA' );?></legend>
 					<?php foreach($this->form->getFieldset('metadata') as $field):?> 
 						<div class="control-group">

@@ -37,7 +37,7 @@ class Easysdi_serviceTablevirtualmetadata extends sdiTable {
 		$data['contactpostalcode'] 			= $src['contactpostalcode'];
 		$data['contactlocality'] 			= $src['contactlocality'];
 		$data['contactstate'] 				= $src['contactstate'];
-		$data['contactcountry'] 			= $src['contactcountry'];
+		$data['country_id'] 				= $src['country_id'];
 		$data['contactphone'] 				= $src['contactphone'];
 		$data['contactfax'] 				= $src['contactfax'];
 		$data['contactemail'] 				= $src['contactemail'];
@@ -47,6 +47,8 @@ class Easysdi_serviceTablevirtualmetadata extends sdiTable {
 		$data['fee'] 						= $src['fee'];
 		$data['accessconstraint'] 			= $src['accessconstraint'];
 		$data['virtualservice_id'] 			= $src['id'];
+		$data['contacturl'] 				= $src['contacturl'];
+	
 		
 		if (!isset($src['inheritedcontact'])) { // see if the checkbox has been submitted
 			$data['inheritedcontact'] = 0; // if it has not been submitted, mark the field unchecked

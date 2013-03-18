@@ -130,13 +130,13 @@
 	</fieldset>
 	
 	<fieldset name="contact_csw">
-		<field name="contactURL" type="text" size="255" class="inputbox"
+		<field name="contacturl" type="text" size="255" class="inputbox"
 			label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_LINKAGE" description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_LINKAGE"
 			filter="safehtml" />
-		<field name="contactAvailability" type="text" size="255" class="inputbox"
+		<field name="contactavailability" type="text" size="255" class="inputbox"
 			label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_HOURS" description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_HOURS"
 			filter="safehtml" />
-		<field name="contactInstruction" type="textarea" rows="3" cols="30"
+		<field name="contactinstruction" type="textarea" rows="3" cols="30"
 			size="255" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_INSTRUCTIONS"
 			description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_INSTRUCTIONS" filter="safehtml" />
 	</fieldset>
@@ -144,7 +144,7 @@
 	<fieldset name="wmts">
 		<field name="physicalservice_id" type="sql" class="multiselect input-xxlarge"
 			multiple="true" onchange="updateAgregatedVersion();"
-			label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST_DESC"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_SERVICE_LIST" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_SERVICE_LIST_DESC"
 			query="SELECT s.id as id,CONCAT(s.alias, ' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
 						INNER JOIN #__sdi_physicalservice_servicecompliance sc ON sc.service_id = s.id
 						INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
@@ -156,17 +156,7 @@
 			key_field="id" value_field="value" required="true" />
 	</fieldset>
 	
-	<fieldset name="contact_wmts">
-		<field name="contactURL" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_LINKAGE" description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_LINKAGE"
-			filter="safehtml" />
-		<field name="contactAvailability" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_HOURS" description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_HOURS"
-			filter="safehtml" />
-		<field name="contactInstruction" type="textarea" rows="3" cols="30"
-			size="255" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_INSTRUCTIONS"
-			description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_INSTRUCTIONS" filter="safehtml" />
-	</fieldset>
+	
 
 	<fieldset name="log_config">
 		<field name="logpath" type="text" size="255" class="input-xxlarge"
@@ -185,6 +175,18 @@
 			key_field="id" value_field="value" required="true" />
 	</fieldset>
 
+	<fieldset name="contact_wmts">
+		<field name="contacturl" type="text" size="255" class="inputbox"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_LINKAGE" description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_LINKAGE"
+			filter="safehtml" />
+		<field name="contactavailability" type="text" size="255" class="inputbox"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_HOURS" description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_HOURS"
+			filter="safehtml" />
+		<field name="contactinstruction" type="textarea" rows="3" cols="30"
+			size="255" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_INSTRUCTIONS"
+			description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_INSTRUCTIONS" filter="safehtml" />
+	</fieldset>
+	
 	<fieldset name="contact">
 		<field 	name="inheritedcontact" 
 				type="checkbox" 
@@ -194,41 +196,74 @@
 				value="1" 
 				default="0"
 				filter="intval"/>
-		<field name="contactorganization" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_ORGANIZATION"
-			description="" filter="safehtml" />
-		<field name="contactperson" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_PERSON" description=""
-			filter="safehtml" />
-		<field name="contactposition" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_POSITION" description=""
-			filter="safehtml" />
-		<field name="contactaddress" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_ADRESS" description=""
-			filter="safehtml" />
-		<field name="contactpostalcode" type="text" size="10" class="inputbox"
-			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_CITY" description=""
-			filter="safehtml" />
-		<field name="contactcity" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_CITY" description=""
-			filter="safehtml" />
-		<field name="contactstate" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_STATE" description=""
-			filter="safehtml" />
-		<field name="contactcountry" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_COUNTRY" description=""
-			filter="safehtml" />
+		<field 	name="contactorganization" 
+				type="text" 
+				size="255" 
+				class="inputbox"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_ORGANIZATION"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONTACT_ORGANIZATION" 
+				filter="safehtml" />
+		<field 	name="contactname" 
+				type="text" 
+				size="255" 
+				class="inputbox"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_PERSON" 
+				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONTACT_PERSON"
+				filter="safehtml" />
+		<field 	name="contactposition" 
+				type="text" 
+				size="255" 
+				class="inputbox"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_POSITION" 
+				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONTACT_POSITION"
+				filter="safehtml" />
+		<field 	name="contactadress" 
+				type="text" 
+				size="255" 
+				class="inputbox"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_ADRESS" 
+				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONTACT_ADRESS"
+				filter="safehtml" />
+		<field 	name="contactlocality" 
+				type="text" 
+				size="255" 
+				class="input-medium"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_CITY" 
+				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONTACT_CITY"
+				filter="safehtml" />
+		<field 	name="contactstate" 
+				type="text" 
+				size="255" 
+				class="inputbox"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_STATE" 
+				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONTACT_STATE"
+				filter="safehtml" />
+		<field 	name="country_id" 
+				type="sql" 
+				class="inputbox"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_COUNTRY"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONTACT_COUNTRY" 
+				translate="true" 
+                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, name FROM #__sdi_sys_country" key_field="id" value_field="value"
+        />
 		<field name="contactphone" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_PHONE" description=""
+		validate="tel"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_PHONE" description=""
 			filter="safehtml" />
 		<field name="contactfax" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_FAX" description=""
+		validate="tel"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_FAX" description=""
 			filter="safehtml" />
 		<field name="contactemail" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_MAIL" description=""
+			validate="email"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_MAIL" description=""
 			filter="safehtml" />
 	</fieldset>
 
+	<field name="contactpostalcode" type="text" size="10" class="input-mini"
+			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_CITY" description=""
+			filter="safehtml" />
+			
 	<field 	name="reflectedmetadata" 
 			type="checkbox" 
 			onclick="changeReflectedMetadata()"
@@ -247,9 +282,9 @@
 		<field name="keyword" type="text" size="255" class="inputbox"
 			label="COM_EASYSDI_SERVICE_METADATA_KEYWORD" description="" filter="safehtml" />
 		<field name="fee" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_METADATA_FEES" description="" filter="safehtml" />
+			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_FEES" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_FEES" filter="safehtml" />
 		<field name="accessconstraint" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_METADATA_CONSTRAINTS" description=""
+			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONSTRAINTS" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONSTRAINTS"
 			filter="safehtml" />
 	</fieldset>
 	
@@ -269,7 +304,7 @@
 			filter="intval"/>
 	<field 	name="inheritedkeyword" 
 			type="checkbox" 
-			onclick="changeMetadataServiceField('kexword')"
+			onclick="changeMetadataServiceField('keyword')"
 			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_INHERITEDKEYWORD"
 			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_INHERITEDKEYWORD"
 			value="1" 
