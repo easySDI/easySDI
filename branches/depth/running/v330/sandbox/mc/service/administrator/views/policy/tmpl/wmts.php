@@ -28,11 +28,13 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 		<div class="span10 form-horizontal">
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_SERVICE_TAB_NEW_POLICY') : JText::sprintf('COM_EASYSDI_SERVICE_TAB_EDIT_POLICY', $this->item->id); ?></a></li>
-				<li><a href="#layers" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_LAYERS');?></a></li>
+				<?php if (!empty($this->item->id)): ?>
+					<li><a href="#layers" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_LAYERS');?></a></li>
+				<?php endif; ?>
 				<li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_PUBLISHING');?></a></li>
 				<?php if ($this->canDo->get('core.admin')): ?>
 					<li><a href="#permissions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_RULES');?></a></li>
-				<?php endif ?>
+				<?php endif; ?>
 			</ul>
 			<div class="tab-content">
 				<!-- Begin Tabs -->
@@ -59,6 +61,13 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 				
 				<div class="tab-pane" id="layers">
 					<fieldset>
+						<!-- TODO : form with Policy lvl herited bbox and operator -->
+					</fieldset>
+					<fieldset>
+					<?php if (empty($this->item->id)): ?>
+						<?php echo JText::_('COM_EASYSDI_SERVICE_LAYER_NOT_DISPLAYABLE');?>
+					<?php endif; ?>
+					<?php if (!empty($this->item->id)): ?>
 						<div class="accordion" id="ps_accordion">
 							<?php foreach($this->item->physicalService as $ps):?>
 								<div class="accordion-group">
@@ -69,6 +78,7 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 								</div>
 								<div class="accordion-body collapse" id="collapse_<?php echo $ps->id; ?>">
 								  <div class="accordion-inner">
+										<!-- TODO : form with PS lvl herited bbox and operator -->
 										<table class="table" >
 											<thead>
 												<tr>
@@ -96,6 +106,7 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 						  </div>
 							<?php endforeach; ?>
 						</div>
+					<?php endif; ?>
 					</fieldset>
 				</div>
 				

@@ -34,6 +34,12 @@ ADD CONSTRAINT `#__sdi_physicalservice_servicecompliance_fk2` FOREIGN KEY (`serv
 ALTER TABLE `#__sdi_physicalservice`
 ADD CONSTRAINT `#__sdi_physicalservice_fk4` FOREIGN KEY (`servicescope_id`) REFERENCES `#__sdi_sys_servicescope` (`id`) ;
 
+ALTER TABLE `#__sdi_physicalservice_policy`
+ADD CONSTRAINT `#__sdi_physicalservice_policy_fk1` FOREIGN KEY (`physicalservice_id`) REFERENCES `#__sdi_physicalservice` (`id`) ON DELETE CASCADE ;
+
+ALTER TABLE `#__sdi_physicalservice_policy`
+ADD CONSTRAINT `#__sdi_physicalservice_policy_fk2` FOREIGN KEY (`policy_id`) REFERENCES `#__sdi_policy` (`id`) ON DELETE CASCADE ;
+
 -- Virtual Service
 ALTER TABLE `#__sdi_virtualservice`
 ADD CONSTRAINT `#__sdi_virtualservice_fk1` FOREIGN KEY (`serviceconnector_id`) REFERENCES `#__sdi_sys_serviceconnector` (`id`) ;

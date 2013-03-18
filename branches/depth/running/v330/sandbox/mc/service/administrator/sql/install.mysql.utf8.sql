@@ -276,6 +276,7 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__sdi_wmtslayer_policy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `identifier` varchar(255)  NOT NULL ,
+`enabled` TINYINT(1)  NOT NULL DEFAULT '0',
 `inheritedspatialpolicy` BOOLEAN NOT NULL DEFAULT '1',
 `spatialpolicy_id` INT(11) UNSIGNED ,
 `anytilematrixset` TINYINT(1)  NOT NULL DEFAULT '1',

@@ -55,7 +55,7 @@ class Easysdi_serviceTablewmtslayerpolicy extends sdiTable {
 				}
 				$db->setQuery('
 					SELECT id
-					FROM #__sdi_wmtslayerpolicy
+					FROM #__sdi_wmtslayer_policy
 					WHERE policy_id = ' . $policy_id . '
 					AND wmtslayer_id = ' . $layer_id . ';
 				');
@@ -63,7 +63,7 @@ class Easysdi_serviceTablewmtslayerpolicy extends sdiTable {
 				$query = $db->getQuery(true);
 				if (0 != $db->getNumRows()) {
 					$wmtslayerpolicy_id = $db->loadResult();
-					$query->update('#__sdi_wmtslayerpolicy')->set(Array(
+					$query->update('#__sdi_wmtslayer_policy')->set(Array(
 						'enabled = ' . $enabled,
 						'bbox_minimumx = ' . $layer_data['bboxminimumx'],
 						'bbox_minimumy = ' . $layer_data['bboxminimumy'],
