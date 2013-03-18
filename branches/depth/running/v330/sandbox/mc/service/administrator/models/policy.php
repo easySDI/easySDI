@@ -346,7 +346,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		
 		if(parent::save($data)){
 			$data['id'] = $this->getItem()->get('id');
-			if ('WMS' == $serviceconnector_name) {
+			/*if ('WMS' == $serviceconnector_name) {
 				$wmslayerpolicy = JTable::getInstance('wmslayerpolicy', 'Easysdi_serviceTable');
 				if( !$wmslayerpolicy->save($data) ){
 					return false;
@@ -370,7 +370,10 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				if( !$servicepolicy->save($data) ){
 					return false;
 				}
-			}
+			}*/
+			
+			
+			
 			//die();
 			return true;
 		}
