@@ -85,11 +85,13 @@ JText::script('COM_EASYSDI_SERVICE_FORM_SERVICE_METADATA_ERROR');
 					<?php foreach($this->form->getFieldset('metadata') as $field):?> 
 						<div class="control-group">
 							<div class="control-label"><?php echo $field->label; ?></div>
-							<div class="controls"><?php echo $field->input; ?></div>
+							<div class="controls form-inline"><?php echo $field->input;?>
+							<?php echo $this->form->getInput('inherited'.$field->fieldname);?>
+							<?php echo $this->form->getLabel('inherited'.$field->fieldname);?></div>
 						</div>
 					<?php endforeach; ?>
 					</fieldset>
-					<fieldset>
+					<fieldset id=contact>
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_METADATA_CONTACT' );?></legend>
 					<?php foreach($this->form->getFieldset('contact') as $field):?> 
 						<div class="control-group">

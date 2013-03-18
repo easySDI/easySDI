@@ -145,6 +145,7 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'tables');
 		$metadata =& JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
 		$metadata->loadByVirtualServiceID(JRequest::getVar('id',null));
+		//Merging metadata object fields into virtualservice object 
 		$item_fields = Array();
 		foreach ($item as $key => $value) {
 			$item_fields[] = $key;
@@ -155,10 +156,10 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 			}
 		}
 		
+		//Get service compliance
 		$compliances = $this->getServiceCompliance($item->id);
 		$compliance_ids =array();
 		$compliance_values =array();
-			
 		if(isset($compliances))
 		{
 			foreach ($compliances as $compliance)
@@ -175,7 +176,7 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 		
 		$item->physicalservice_id = $this->getPhysicalServiceAggregation($item->id);
 		
-		//SetLayout
+		//SetLayout : layout is the connector type
 		if(!$item->serviceconnector_id)
 		{
 			$item->serviceconnector_id = JRequest::getVar( 'connector' );
@@ -231,7 +232,7 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 		else{
 			$table->reflectedmetadata = 1; //else mark the field checked
 		}
-		
+						
 		//Alias is a mandatory field, if not set, use the name
 		if (empty($table->alias)){
 			$table->alias = $table->name;
@@ -254,6 +255,7 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	public function save($data) {
 		
 		if(parent::save($data)){
+			
 			$data['id'] = $this->getItem()->get('id');
 			//Instantiate an address JTable
 			$virtualmetadata =& JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');

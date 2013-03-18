@@ -1,5 +1,18 @@
 		jQuery(document).ready(function (){
-			changeReflectedMetadata();
+			if(jQuery('#jform_reflectedmetadata').is(":checked")){
+				jQuery("#metadata :input").val("");
+				jQuery("#metadata :input").attr("disabled", true);
+				jQuery('#jform_reflectedmetadata').removeAttr("disabled");
+				jQuery("#metadata :checkbox").attr('checked', 'checked');
+			}
+			if(jQuery('#jform_inheritedcontact').is(":checked") && !jQuery('#jform_reflectedmetadata').is(":checked") ){
+				jQuery("#contact :input").val("");
+				jQuery("#contact :input").attr("disabled", true);
+				jQuery('#jform_inheritedcontact').removeAttr("disabled");
+			}
+			jQuery('#servicemetadata input:checked').each(function() {
+				jQuery('#'+jQuery(this).attr('id').replace('inherited', '')).attr("disabled", true);
+			});
 			var nserver = jQuery('#jform_physicalservice_id :selected').length;
 			if(nserver > 1){
 				jQuery('#jform_reflectedmetadata').attr("disabled", true);
@@ -13,7 +26,7 @@
 				Joomla.submitform(task, document.getElementById('virtualservice-form'));
 			}
 			else if (document.formvalidator.isValid(document.id('virtualservice-form'))) {
-				if(!jQuery('#jform_reflectedmetadata').is(":checked") && !jQuery('#jform_title').val()){
+				if((!jQuery('#jform_reflectedmetadata').is(":checked") && !jQuery('#jform_inheritedtitle').is(":checked") ) && !jQuery('#jform_title').val()){
 					alert(Joomla.JText._('COM_EASYSDI_SERVICE_FORM_SERVICE_METADATA_ERROR', 'At least a title must be given for the service metadata.'));
 					return;
 				}
@@ -30,8 +43,31 @@
 				jQuery("#metadata :input").val("");
 				jQuery("#metadata :input").attr("disabled", true);
 				jQuery('#jform_reflectedmetadata').removeAttr("disabled");
+				jQuery("#metadata :checkbox").attr('checked', 'checked');
 			}else{
 				jQuery('#metadata :input').removeAttr("disabled");
+				jQuery("#metadata :checkbox").removeAttr('checked');
+			}
+		}
+		
+		function changeInheritedContact()
+		{
+			if(jQuery('#jform_inheritedcontact').is(":checked")){
+				jQuery("#contact :input").val("");
+				jQuery("#contact :input").attr("disabled", true);
+				jQuery('#jform_inheritedcontact').removeAttr("disabled");
+			}else{
+				jQuery('#contact :input').removeAttr("disabled");
+			}
+		}
+		
+		function changeMetadataServiceField(fieldname)
+		{
+			if(jQuery('#jform_inherited'+fieldname).is(":checked")){
+				jQuery("#jform_"+fieldname).val("");
+				jQuery("#jform_"+fieldname).attr("disabled", true);
+			}else{
+				jQuery('#jform_'+fieldname).removeAttr("disabled");
 			}
 		}
 		

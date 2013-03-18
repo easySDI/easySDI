@@ -79,17 +79,23 @@ JText::script('COM_EASYSDI_SERVICE_FORM_SERVICE_METADATA_ERROR');
 				</div>
 				
 				<div class="tab-pane" id="metadata">
-					
-					<fieldset>
+					<div class="control-group">
+							<div class="control-label"><?php echo $this->form->getLabel('reflectedmetadata'); ?></div>
+							<div class="controls"><?php echo $this->form->getInput('reflectedmetadata'); ?></div>
+						</div>
+					<fieldset id="servicemetadata">					
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_METADATA' );?></legend>
 					<?php foreach($this->form->getFieldset('metadata') as $field):?> 
 						<div class="control-group">
 							<div class="control-label"><?php echo $field->label; ?></div>
-							<div class="controls"><?php echo $field->input; ?></div>
+							<div class="controls form-inline"><?php echo $field->input;?>
+							<?php echo $this->form->getInput('inherited'.$field->fieldname);?>
+							<?php echo $this->form->getLabel('inherited'.$field->fieldname);?></div>
+							
 						</div>
 					<?php endforeach; ?>
 					</fieldset>
-					<fieldset>
+					<fieldset id=contact>
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_METADATA_CONTACT' );?></legend>
 					<?php foreach($this->form->getFieldset('contact') as $field):?> 
 						<div class="control-group">
@@ -102,7 +108,7 @@ JText::script('COM_EASYSDI_SERVICE_FORM_SERVICE_METADATA_ERROR');
 					<?php foreach($this->form->getFieldset('contact_csw') as $field):?> 
 						<div class="control-group">
 							<div class="control-label"><?php echo $field->label; ?></div>
-							<div class="controls"><?php echo $field->input; ?></div>
+							<div class="controls"><?php echo $field->input;  ?></div>
 						</div>
 					<?php endforeach; ?>
 					</fieldset>

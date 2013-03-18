@@ -45,8 +45,7 @@ JText::script('COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION_ERROR');
 					<!-- Begin Tabs -->
 					<div class="tab-pane active" id="details">
 						<?php foreach($this->form->getFieldset('details') as $field): 
-							$property = substr($field->id,6);
-							if($property == 'resourceauthentication_id')
+							if($field->fieldname == 'resourceauthentication_id')
 							{
 								?>
 								<div class="control-group">
@@ -55,12 +54,12 @@ JText::script('COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION_ERROR');
 								</div>
 								<?php
 							}
-							else if ($property == 'supportedversions')
+							else if ($field->fieldname == 'supportedversions')
 							{
 								?>
 								<div class="control-group">
 									<div class="control-label"><?php echo $field->label; ?></div>
-									<div class="controls"><?php echo $this->form->getInput('negotiation'); ?><?php  echo $field->input; ?></div>
+									<div class="controls form-inline"><?php echo $this->form->getInput('negotiation'); ?><?php  echo $field->input; ?></div>
 								</div>
 								<?php
 							}
@@ -76,8 +75,7 @@ JText::script('COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION_ERROR');
 					<?php if(count ($this->item->currentserviceauthenticationconnectorlist) > 1 ):?>
 					<div class="tab-pane" id="provider">
 						<?php foreach($this->form->getFieldset('provideroptions') as $field):
-							$property = substr($field->id,6);
-							if($property == 'serviceauthentication_id')
+							if($field->fieldname == 'serviceauthentication_id')
 							{
 								?>
 								<div class="control-group">

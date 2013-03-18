@@ -131,14 +131,14 @@
 	
 	<fieldset name="contact_csw">
 		<field name="contactURL" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_LINKAGE" description=""
+			label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_LINKAGE" description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_LINKAGE"
 			filter="safehtml" />
 		<field name="contactAvailability" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_HOURS" description=""
+			label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_HOURS" description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_HOURS"
 			filter="safehtml" />
 		<field name="contactInstruction" type="textarea" rows="3" cols="30"
-			size="255" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_CONTACT_INSTRUCTIONS"
-			description="" filter="safehtml" />
+			size="255" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_INSTRUCTIONS"
+			description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_INSTRUCTIONS" filter="safehtml" />
 	</fieldset>
 	
 	<fieldset name="wmts">
@@ -158,14 +158,14 @@
 	
 	<fieldset name="contact_wmts">
 		<field name="contactURL" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_LINKAGE" description=""
+			label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_LINKAGE" description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_LINKAGE"
 			filter="safehtml" />
 		<field name="contactAvailability" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_HOURS" description=""
+			label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_HOURS" description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_HOURS"
 			filter="safehtml" />
 		<field name="contactInstruction" type="textarea" rows="3" cols="30"
-			size="255" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_CONTACT_INSTRUCTIONS"
-			description="" filter="safehtml" />
+			size="255" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_INSTRUCTIONS"
+			description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_INSTRUCTIONS" filter="safehtml" />
 	</fieldset>
 
 	<fieldset name="log_config">
@@ -186,6 +186,14 @@
 	</fieldset>
 
 	<fieldset name="contact">
+		<field 	name="inheritedcontact" 
+				type="checkbox" 
+				onclick="changeInheritedContact()"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDCONTACT"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDCONTACT"
+				value="1" 
+				default="0"
+				filter="intval"/>
 		<field name="contactorganization" type="text" size="255" class="inputbox"
 			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_ORGANIZATION"
 			description="" filter="safehtml" />
@@ -221,14 +229,16 @@
 			filter="safehtml" />
 	</fieldset>
 
+	<field 	name="reflectedmetadata" 
+			type="checkbox" 
+			onclick="changeReflectedMetadata()"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDMETADATA"
+			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDMETADATA"
+			value="1" 
+			default="1" 
+			filter="intval"/>
+				
 	<fieldset name="metadata">
-		<field 	name="reflectedmetadata" 
-				type="checkbox" 
-				onclick="changeReflectedMetadata()"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDMETADATA"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDMETADATA"
-				value="1" 
-				filter="intval"/>
 		<field name="title" type="text" size="255" class="inputbox"
 			label="COM_EASYSDI_SERVICE_METADATA_TITLE" description="" filter="safehtml"
 			required="false" />
@@ -242,6 +252,42 @@
 			label="COM_EASYSDI_SERVICE_METADATA_CONSTRAINTS" description=""
 			filter="safehtml" />
 	</fieldset>
+	
+	<field 	name="inheritedtitle" 
+			type="checkbox" 
+			onclick="changeMetadataServiceField('title')"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_INHERITEDTITLE"
+			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_INHERITEDTITLE"
+			value="1" 
+			filter="intval"/>
+	<field 	name="inheritedsummary" 
+			type="checkbox" 
+			onclick="changeMetadataServiceField('summary')"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_INHERITEDABSTRACT"
+			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_INHERITEDABSTRACT"
+			value="1" 
+			filter="intval"/>
+	<field 	name="inheritedkeyword" 
+			type="checkbox" 
+			onclick="changeMetadataServiceField('kexword')"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_INHERITEDKEYWORD"
+			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_INHERITEDKEYWORD"
+			value="1" 
+			filter="intval"/>
+	<field 	name="inheritedfee" 
+			type="checkbox" 
+			onclick="changeMetadataServiceField('fee')"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_INHERITEDFEE"
+			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_INHERITEDFEE"
+			value="1" 
+			filter="intval"/>
+	<field 	name="inheritedaccessconstraint" 
+			type="checkbox" 
+			onclick="changeMetadataServiceField('accessconstraint')"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_INHERITEDACCESSCONSTRAINT"
+			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_INHERITEDACCESSCONSTRAINT"
+			value="1" 
+			filter="intval"/>
 	
 	<fieldset name="hidden">
 		<field name="serviceconnector_id" type="hidden" filter="SAFEHTML" />
