@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="details" addfieldpath="/administrator/components/com_categories/models/fields">
-		<field 	name="catid"
-				type="categoryedit"
-				extension="com_easysdi_service"
-				label="JCATEGORY"
-				description="JFIELD_CATEGORY_DESC"
-				class="inputbox"
-				required="true" />
-				
 		<field 	name="alias" 
 				type="text" 
 				size="255" 
@@ -26,6 +18,24 @@
 				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_NAME"
 				required="true"  
 				filter="safehtml" /> 
+		
+		<field 	name="catid"
+				type="categoryedit"
+				extension="com_easysdi_service"
+				label="JCATEGORY"
+				description="JFIELD_CATEGORY_DESC"
+				class="inputbox"
+				required="true" />
+				
+		<field 	name="servicescope_id" 
+				type="sql" 
+				class="inputbox"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SERVICESCOPE_ID"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SERVICESCOPE_ID" 
+                query="SELECT id, value FROM #__sdi_sys_servicescope" 
+                key_field="id" 
+                value_field="value"
+                 /> 
 
 		<field 	name="serviceconnector" 
 				type="text" 

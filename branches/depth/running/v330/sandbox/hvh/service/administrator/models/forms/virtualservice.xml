@@ -1,7 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="details">
-		<field 	name="serviceconnector" 
+		
+		
+		<field name="name" type="text" size="255" class="inputbox"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_NAME" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_NAME"
+			filter="safehtml" required="true" />
+		<field name="alias" type="text" size="255" class="inputbox"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_ALIAS"
+			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_ALIAS"
+			filter="safehtml" />
+			
+		<field 	name="servicescope_id" 
+				type="sql" 
+				class="inputbox"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_SERVICESCOPE_ID"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_SERVICESCOPE_ID" 
+                query="SELECT id, value FROM #__sdi_sys_servicescope" 
+                key_field="id" 
+                value_field="value"
+                 /> 
+                 
+        <field 	name="serviceconnector" 
 				type="text" 
 				size="70" 
 				class="inputbox"
@@ -13,14 +33,6 @@
 			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_VERSION"
 			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_VERSION"
 			filter="unset" />
-		
-		<field name="name" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_NAME" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_NAME"
-			filter="safehtml" required="true" />
-		<field name="alias" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_ALIAS"
-			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_ALIAS"
-			filter="safehtml" />
 		<field name="reflectedurl" type="text" size="255" class="input-xxlarge"
 			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDURL"
 			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDURL"
