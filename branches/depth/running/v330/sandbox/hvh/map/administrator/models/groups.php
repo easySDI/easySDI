@@ -171,6 +171,10 @@ class Easysdi_mapModelgroups extends JModelList
 		if ($orderCol && $orderDirn) {
 			$query->order($db->escape($orderCol.' '.$orderDirn));
 		}
+		if(strcmp($orderCol, 'a.ordering') != 0)
+		{
+			$query->order('a.ordering');
+		}
 
 		return $query;
 	}

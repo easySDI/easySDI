@@ -90,7 +90,7 @@ if (!empty($this->extra_sidebar)) {
 		</div>
 	</div>
 	<div class="clearfix"> </div>
-	<table class="table table-striped" id="userList">
+	<table class="table table-striped" id="layerList">
 			<thead>
 				<tr>
                 <?php if (isset($this->items[0]->ordering)): ?>

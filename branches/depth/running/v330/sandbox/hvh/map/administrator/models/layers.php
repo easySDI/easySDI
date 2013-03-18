@@ -216,6 +216,7 @@ class Easysdi_mapModellayers extends JModelList
 		if (!$this->getState('filter.group')) {
 			$query->order('group_name');
 		}
+		
 		if(strcmp($orderCol, 'a.ordering') != 0)
 		{
 			$query->order('a.ordering');
