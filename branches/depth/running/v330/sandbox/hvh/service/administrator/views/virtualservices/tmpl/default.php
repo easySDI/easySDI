@@ -89,7 +89,7 @@ $params = JComponentHelper::getParams('com_easysdi_service');
 		</div>
 	</div>        
 	<div class="clearfix"> </div>
-		<table class="table table-striped" id="organismList">
+		<table class="table table-striped" id="virtualserviceList">
 			<thead>
 				<tr>
 	                <?php if (isset($this->items[0]->ordering)): ?>

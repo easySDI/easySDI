@@ -89,7 +89,7 @@ $params = JComponentHelper::getParams('com_easysdi_service');
 		</div>
 	</div>        
 	<div class="clearfix"> </div>
-		<table class="table table-striped" id="organismList">
+		<table class="table table-striped" id="policyList">
 			<thead>
 				<tr>
 	                <?php if (isset($this->items[0]->ordering)): ?>
@@ -106,7 +106,7 @@ $params = JComponentHelper::getParams('com_easysdi_service');
 						</th>
 	                <?php endif; ?>
 	                <th class='left'>
-						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_POLICIES_NAME', 'a.name', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_FORM_LBL_POLICY_NAME', 'a.name', $listDirn, $listOrder); ?>
 					</th>
 					<th class='left'>
 						<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
@@ -141,8 +141,6 @@ $params = JComponentHelper::getParams('com_easysdi_service');
 				$canEditOwn 	= $canDo->get('core.edit.own');
 				$canChange 		= $canDo->get('core.edit.state');
 				$canCheckin		= $user->authorise('core.manage',		'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
-			
-				print_r($item);
 				?>
 			<tr class="row<?php echo $i % 2; ?>">
                     

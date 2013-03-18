@@ -89,7 +89,7 @@ $sortFields = $this->getSortFields();
 		</div>
 	</div>        
 	<div class="clearfix"> </div>
-		<table class="table table-striped" id="organismList">
+		<table class="table table-striped" id="physicalserviceList">
 			<thead>
 				<tr>
 	                <?php if (isset($this->items[0]->ordering)): ?>
@@ -172,9 +172,10 @@ $sortFields = $this->getSortFields();
 					</td>
                 <?php endif; ?>
 				<td class="center hidden-phone">
-					<?php if ($canEdit && !$islocked) echo JHtml::_('grid.id', $i, $item->id); 
-					else echo '<input type="checkbox" id="cb'.$i.'" name="cid[]" value="'.$item->id.'" disabled="disabled" onclick="Joomla.isChecked(this.checked);" />'  ?>
-					</td>
+					<?php 
+						echo JHtml::_('grid.id', $i, $item->id); 
+					?>
+				</td>
                 <?php if (isset($this->items[0]->state)): ?>
 				<td class="center">
 					<?php echo JHtml::_('jgrid.published', $item->state, $i, 'physicalservices.', $canChange, 'cb'); ?>
