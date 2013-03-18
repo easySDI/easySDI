@@ -90,6 +90,51 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 	}
 	
 	/**
+	 * Method to get an array of data items. Fields are restricted to id and name.
+	 *
+	 * @return  mixed  An array of data items on success, false on failure.
+	 *
+	 * @since   EasySDI 3.3.0
+	 */
+	public function getItemsRestricted ()
+	{
+		// Get a storage key.
+		$store = $this->getStoreId();
+		
+		// Try to load the data from internal storage.
+		if (isset($this->cache[$store]))
+		{
+			return $this->cache[$store];
+		}
+		
+		// Load the list items.
+		$db		= $this->getDbo();
+		$query	= $db->getQuery(true);
+
+		// Select the required fields from the table.
+		$query->select('a.id as id, a.name as name, c.value as connector');
+		$query->from('`#__sdi_virtualservice` AS a');
+		$query->join('LEFT', '#__sdi_sys_serviceconnector AS c ON a.serviceconnector_id = c.id' );
+		$query->where('a.state = 1');
+		$query->order('a.ordering');
+		
+		try
+		{
+			$items = $this->_getList($query, $this->getStart(), $this->getState('list.limit'));
+		}
+		catch (RuntimeException $e)
+		{
+			$this->setError($e->getMessage());
+			return false;
+		}
+		
+		// Add the items to the internal cache.
+		$this->cache[$store] = $items;
+		
+		return $this->cache[$store];
+	}
+	
+	/**
 	 * 
 	 */
 	public function getConnector()

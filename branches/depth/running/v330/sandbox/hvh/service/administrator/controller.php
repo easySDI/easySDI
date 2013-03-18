@@ -23,6 +23,7 @@ class Easysdi_serviceController extends JControllerLegacy
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{
+		
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
 
 		// Load the submenu.

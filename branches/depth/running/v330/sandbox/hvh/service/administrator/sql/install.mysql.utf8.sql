@@ -169,7 +169,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_policy` (
 `wms_spatialpolicy_id` INT(11) UNSIGNED ,
 `wmts_spatialpolicy_id` INT(11) UNSIGNED ,
 `wfs_spatialpolicy_id` INT(11) UNSIGNED ,
-`csw_version_id` INT(11) UNSIGNED  NOT NULL ,
+`csw_version_id` INT(11) UNSIGNED  NOT NULL DEFAULT '1' ,
 `csw_anyattribute` BOOLEAN NOT NULL DEFAULT '1',
 `csw_anycontext` BOOLEAN NOT NULL DEFAULT '1',
 `csw_anystate` BOOLEAN NOT NULL DEFAULT '1',
@@ -178,6 +178,9 @@ CREATE TABLE IF NOT EXISTS `#__sdi_policy` (
 `wms_minimumheight` INT(11) ,
 `wms_maximumwidth` INT(11)  ,
 `wms_maximumheight` INT(11) ,
+`params` VARCHAR(1024)   ,
+`access` INT(10)  NOT NULL DEFAULT '1',
+`asset_id` INT(10)   ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 

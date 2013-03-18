@@ -40,6 +40,12 @@ class Easysdi_serviceHelper
 				'index.php?option=com_easysdi_service&view=virtualservices',
 				$vName == 'virtualservices'
 		);
+		
+		JHtmlSidebar::addEntry(
+				JText::_('COM_EASYSDI_SERVICE_TITLE_POLICIES'),
+				'index.php?option=com_easysdi_service&view=policies',
+				$vName == 'policies'
+		);
 	}
 
 	/**
@@ -90,6 +96,35 @@ class Easysdi_serviceHelper
 		}
 		else{
 			$assetName = 'com_easysdi_service.physicalservice.'.(int) $id;
+		}
+	
+		$actions = array(
+				'core.admin', 'core.manage', 'core.create', 'core.edit', 'core.edit.own', 'core.edit.state', 'core.delete'
+		);
+	
+		foreach ($actions as $action) {
+			$result->set($action,	$user->authorise($action, $assetName));
+		}
+	
+		return $result;
+	}
+	
+	/**
+	 * Gets a list of the actions that can be performed.
+	 *
+	 * @return	JObject
+	 * @since	1.6
+	 */
+	public static function getActionsPolicy($id = null)
+	{
+		$user	= JFactory::getUser();
+		$result	= new JObject;
+	
+		if (empty($id) ) {
+			$assetName = 'com_easysdi_service';
+		}
+		else{
+			$assetName = 'com_easysdi_service.policy.'.(int) $id;
 		}
 	
 		$actions = array(

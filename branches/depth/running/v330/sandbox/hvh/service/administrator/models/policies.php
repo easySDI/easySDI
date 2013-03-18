@@ -76,8 +76,10 @@ class Easysdi_serviceModelpolicies extends JModelList
 
 		$published = $app->getUserStateFromRequest($this->context.'.filter.state', 'filter_published', '', 'string');
 		$this->setState('filter.state', $published);
-        
-        
+		
+		$virtualservice = $app->getUserStateFromRequest($this->context.'.filter.virtualservice', 'filter_virtualservice', '', 'string');
+		$this->setState('filter.virtualservice', $virtualservice);
+                
         
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_easysdi_service');
@@ -103,6 +105,7 @@ class Easysdi_serviceModelpolicies extends JModelList
 		// Compile the store id.
 		$id.= ':' . $this->getState('filter.search');
 		$id.= ':' . $this->getState('filter.state');
+		$id.= ':' . $this->getState('filter.virtualservice');
 
 		return parent::getStoreId($id);
 	}
@@ -115,6 +118,7 @@ class Easysdi_serviceModelpolicies extends JModelList
 	 */
 	protected function getListQuery()
 	{
+		
 		// Create a new query object.
 		$db		= $this->getDbo();
 		$query	= $db->getQuery(true);
@@ -129,27 +133,28 @@ class Easysdi_serviceModelpolicies extends JModelList
 		$query->from('`#__sdi_policy` AS a');
 
 
-    // Join over the users for the checked out user.
-    $query->select('uc.name AS editor');
-    $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
-    
+	    // Join over the users for the checked out user.
+	    $query->select('uc.name AS editor');
+	    $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
+	    
 		// Join over the created by field 'created_by'
 		$query->select('created_by.name AS created_by');
 		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
+		
 		// Join over the foreign key 'virtualservice_id'
-		$query->select('#__sdi_virtualservice_261251.name AS virtualservices_name_261251');
+		$query->select('#__sdi_virtualservice_261251.name AS virtualservices_name, sc.value as connector');
 		$query->join('LEFT', '#__sdi_virtualservice AS #__sdi_virtualservice_261251 ON #__sdi_virtualservice_261251.id = a.virtualservice_id');
-
-
-    // Filter by published state
-    $published = $this->getState('filter.state');
-    if (is_numeric($published)) {
-        $query->where('a.state = '.(int) $published);
-    } else if ($published === '') {
-        $query->where('(a.state IN (0, 1))');
-    }
-    
-
+		$query->join('LEFT', '#__sdi_sys_serviceconnector AS sc ON sc.id = #__sdi_virtualservice_261251.serviceconnector_id');
+		
+		
+	    // Filter by published state
+	    $published = $this->getState('filter.state');
+	    if (is_numeric($published)) {
+	        $query->where('a.state = '.(int) $published);
+	    } else if ($published === '') {
+	        $query->where('(a.state IN (0, 1))');
+	    }
+	    	
 		// Filter by search in title
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {
@@ -157,18 +162,23 @@ class Easysdi_serviceModelpolicies extends JModelList
 				$query->where('a.id = '.(int) substr($search, 3));
 			} else {
 				$search = $db->Quote('%'.$db->escape($search, true).'%');
-                
 			}
 		}
-		
-		$query->where('a.virtualservice_id = ' . JRequest::getVar('virtualservice_id'));
-		
+	
+		// Filter by virtualservice 
+		$virtualservice = $this->getState('filter.virtualservice');
+		if (!empty($virtualservice)) {
+			$query->where('a.virtualservice_id = ' .$virtualservice);
+		}
+			
+			//$query->where('a.virtualservice_id = ' . JRequest::getVar('virtualservice_id'));
+			
 		// Add the list ordering clause.
-        $orderCol	= $this->state->get('list.ordering');
-        $orderDirn	= $this->state->get('list.direction');
-        if ($orderCol && $orderDirn) {
-            $query->order($db->escape($orderCol.' '.$orderDirn));
-        }
+	    $orderCol	= $this->state->get('list.ordering');
+	    $orderDirn	= $this->state->get('list.direction');
+	    if ($orderCol && $orderDirn) {
+	         $query->order($db->escape($orderCol.' '.$orderDirn));
+	    }
 
 		return $query;
 	}

@@ -56,8 +56,6 @@ class Easysdi_serviceViewVirtualservices extends JViewLegacy
 		$canDo	= Easysdi_serviceHelper::getActionsVirtualService();
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_HEADER_VIRTUALSERVICES'), 'virtualservices.png');
-
-		
 		
         //Check if the form exists before showing the add/edit buttons
         $formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'virtualservice';
