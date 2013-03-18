@@ -31,6 +31,9 @@ class Easysdi_serviceModelpolicies extends JModelList
                                 'id', 'a.id',
                 'ordering', 'a.ordering',
                 'state', 'a.state',
+            		'params', 'a.params',
+            		'asset_id', 'a.asset_id',
+            		'access', 'a.access', 'access_level',
                 'created_by', 'a.created_by',
                 'anonymousaccess', 'a.anonymousaccess',
                 'anygroup', 'a.anygroup',
@@ -136,6 +139,10 @@ class Easysdi_serviceModelpolicies extends JModelList
 	    // Join over the users for the checked out user.
 	    $query->select('uc.name AS editor');
 	    $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
+	    
+	    // Join over the asset groups.
+	    $query->select('ag.title AS access_level');
+	    $query->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
 	    
 		// Join over the created by field 'created_by'
 		$query->select('created_by.name AS created_by');

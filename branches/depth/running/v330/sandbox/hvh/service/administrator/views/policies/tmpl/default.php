@@ -31,7 +31,7 @@ $saveOrder	= $listOrder == 'a.ordering';
 if ($saveOrder)
 {
 	$saveOrderingUrl = 'index.php?option=com_easysdi_service&task=policies.saveOrderAjax&tmpl=component';
-	JHtml::_('sortablelist.sortable', 'policiesList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
+	JHtml::_('sortablelist.sortable', 'policyList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
 }
 $sortFields = $this->getSortFields();
 $params = JComponentHelper::getParams('com_easysdi_service');
