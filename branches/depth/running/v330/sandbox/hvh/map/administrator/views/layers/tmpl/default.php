@@ -24,7 +24,6 @@ $userId			= $user->get('id');
 $listOrder		= $this->state->get('list.ordering');
 $listDirn		= $this->state->get('list.direction');
 $canOrder		= $user->authorise('core.edit.state', 'com_easysdi_map');
-$groupfilter 	= $this->state->get('filter.group');
 $saveOrder		= $listOrder == 'groupordering';
 if ($saveOrder)
 {
@@ -102,7 +101,9 @@ if (!empty($this->extra_sidebar)) {
 					</th>
 				<?php else : ?>
 					<th width="1%" class="nowrap center hidden-phone">
-						<a class="hasTip" title="<?php echo JText::_('COM_EASYSDI_MAP_LAYERS_JGRID_HEADING_ORDERING'); ?>" onclick="" ><?php echo JText::_('JGRID_HEADING_ORDERING'); ?></a>
+						<span class="hasTip" title="<?php echo JText::_('COM_EASYSDI_MAP_LAYERS_JGRID_HEADING_ORDERING'); ?>" >
+							<i class="icon-menu-2" ></i>
+						</span>
 						
 					</th>
                 <?php endif; ?>
@@ -155,7 +156,7 @@ if (!empty($this->extra_sidebar)) {
                 
 				<td class="order nowrap center hidden-phone">
 				<?php if (isset($item->groupordering)): ?>
-					<?php if ($canChange && !empty($groupfilter)) :
+					<?php if ($canChange) :
 						$disableClassName = '';
 						$disabledLabel	  = '';
 						if (!$saveOrder ) :

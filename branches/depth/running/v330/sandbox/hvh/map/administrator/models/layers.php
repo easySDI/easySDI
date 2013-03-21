@@ -205,17 +205,22 @@ class Easysdi_mapModellayers extends JModelList
 			}
 		}
 
+		//If no filter on group were set, change the 'list.ordering' user state value to be sure the list will not be ordered by the 'groupordering' field
+		// (which is not existing without a filter on group)
+		if(empty ($group) && $this->state->get('list.ordering') == 'groupordering')
+			$this->state->set('list.ordering','a.name');
+		
 		// Add the list ordering clause.
-		$orderCol	= $this->state->get('list.ordering');
+		$orderCol	= $this->state->get('list.ordering') ;
 		$orderDirn	= $this->state->get('list.direction');
 		
 		if ($orderCol && $orderDirn) {
 			$query->order($db->escape($orderCol.' '.$orderDirn));
 		}
 		
-		if(strcmp($orderCol, 'groupordering') != 0)
+		if(strcmp($orderCol, 'a.name') != 0)
 		{
-			$query->order('groupordering');
+			$query->order('a.name');
 		}
 		
 

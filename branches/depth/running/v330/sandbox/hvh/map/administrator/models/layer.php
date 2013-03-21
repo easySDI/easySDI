@@ -178,9 +178,6 @@ class Easysdi_mapModellayer extends JModelAdmin
 	 */
 	public function saveorder($pks = null, $order = null)
 	{
-		$table = $this->getTable();
-		$conditions = array();
-	
 		if (empty($pks))
 		{
 			return JError::raiseWarning(500, JText::_($this->text_prefix . '_ERROR_NO_ITEMS_SELECTED'));
@@ -189,76 +186,34 @@ class Easysdi_mapModellayer extends JModelAdmin
 		//Get if a filter on group was set.
 		$app = JFactory::getApplication('administrator');
 		$group = $app->getUserStateFromRequest('com_easysdi_map.layers.filter.group', 'filter_group', null, 'int');
-	
+		//No filter : standard saving process
 		if(empty($group))
 		{
-			//Update global ordering
-			foreach ($pks as $i => $pk)
-			{
-				$table->load((int) $pk);
-			
-				// Access checks.
-				if (!$this->canEditState($table))
-				{
-					// Prune items that you can't change.
-					unset($pks[$i]);
-					JLog::add(JText::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'), JLog::WARNING, 'jerror');
-				}
-				elseif ($table->ordering != $order[$i])
-				{
-					$table->ordering = $order[$i];
-			
-					if (!$table->store())
-					{
-						$this->setError($table->getError());
-						return false;
-					}
-			
-					// Remember to reorder within position and client_id
-					$condition = $this->getReorderConditions($table);
-					$found = false;
-			
-					foreach ($conditions as $cond)
-					{
-						if ($cond[1] == $condition)
-						{
-							$found = true;
-							break;
-						}
-					}
-			
-					if (!$found)
-					{
-						$key = $table->getKeyName();
-						$conditions[] = array($table->$key, $condition);
-					}
-				}
-			}
-		}
-		else 
-		{
-			//Update ordering inside a group
-			foreach ($pks as $i => $pk)
-			{
-				$table->load((int) $pk);
-				
-				// Access checks.
-				if (!$this->canEditState($table))
-				{
-					// Prune items that you can't change.
-					unset($pks[$i]);
-					JLog::add(JText::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'), JLog::WARNING, 'jerror');
-				}
-				else 
-				{
-					$order = (int) $i + 1;
-					$db = JFactory::getDbo();
-					$db->setQuery('UPDATE #__sdi_layer_layergroup SET ordering = '. $order .' WHERE layer_id = '.(int) $pks[$i].' AND group_id = '.(int) $group);
-					$db->query();
-				}
-			}
+			parent::saveorder($pks, $order);
 		}
 		
+		$table = $this->getTable();
+		$conditions = array();
+	
+		//A filter on group is set : Update ordering inside this group
+		foreach ($pks as $i => $pk)
+		{
+			$table->load((int) $pk);
+			
+			// Access checks.
+			if (!$this->canEditState($table))
+			{
+				// Prune items that you can't change.
+				unset($pks[$i]);
+				JLog::add(JText::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'), JLog::WARNING, 'jerror');
+			}
+			else 
+			{
+				$db = JFactory::getDbo();
+				$db->setQuery('UPDATE #__sdi_layer_layergroup SET ordering = '. $order[$i] .' WHERE layer_id = '. $pks[$i].' AND group_id = '. $group);
+				$db->query();
+			}
+		}
 	
 		// Execute reorder for each category.
 		foreach ($conditions as $cond)
