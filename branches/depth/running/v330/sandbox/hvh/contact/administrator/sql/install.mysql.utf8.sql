@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_user` (
 `modified_by` INT(11) ,
 `modified` DATETIME ,
 `ordering` INT(11)   ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `checked_out` INT(11) NOT NULL DEFAULT '0'  ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `user_id` INT(11)  NOT NULL ,
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_address` (
 `modified_by` INT(11)   ,
 `modified` DATETIME ,
 `ordering` INT(11)  ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `checked_out` INT(11) NOT NULL DEFAULT '0'  ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `user_id` INT(11) UNSIGNED ,
@@ -55,7 +55,7 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_addresstype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11),
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_organism` (
 `modified_by` INT(11)   ,
 `modified` DATETIME  ,
 `ordering` INT(11)  NOT NULL ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `checked_out` INT(11) NOT NULL DEFAULT '0'  ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `acronym` VARCHAR(150)   ,
