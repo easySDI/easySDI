@@ -110,9 +110,18 @@ class Easysdi_mapViewGroups extends JViewLegacy
 		JToolBarHelper::divider();
 		JToolBarHelper::custom('easySDIHome', 'home.png', 'home_f2.png', 'COM_EASYSDI_MAP_TOOLBAR_HOME', false);
 
+		//Maps list for filtering action
+		$mapModel 	= JModelLegacy::getInstance('maps', 'Easysdi_mapModel', array());
+		$mapList 	= $mapModel->getItemsRestricted();
+		
 		//Set sidebar action - New in 3.0
 		JHtmlSidebar::setAction('index.php?option=com_easysdi_map&view=groups');
 		$this->extra_sidebar = '';
+		JHtmlSidebar::addFilter(
+				JText::_('COM_EASYSDI_MAP_SELECT_MAP'),
+				'filter_map',
+				JHtml::_('select.options', $mapList, "id", "name", $this->state->get('filter.map'), true)
+		);
 		JHtmlSidebar::addFilter(
 				JText::_('JOPTION_SELECT_PUBLISHED'),
 				'filter_published',
@@ -130,9 +139,8 @@ class Easysdi_mapViewGroups extends JViewLegacy
 	{
 		return array(
 				'a.id' => JText::_('JGRID_HEADING_ID'),
-				'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
 				'a.state' => JText::_('JSTATUS'),
-				'a.name' => JText::_('COM_EASYSDI_MAP_GROUPS_NAME'),
+				'a.name' => JText::_('COM_EASYSDI_MAP_FORM_LBL_LAYER_NAME'),
 				'a.access' => JText::_('JGRID_HEADING_ACCESS'),
 		);
 	}

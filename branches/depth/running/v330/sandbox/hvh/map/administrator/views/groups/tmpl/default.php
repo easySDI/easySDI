@@ -19,12 +19,12 @@ JHtml::_('formbehavior.chosen', 'select');
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css');
 
-$user	= JFactory::getUser();
-$userId	= $user->get('id');
+$user		= JFactory::getUser();
+$userId		= $user->get('id');
 $listOrder	= $this->state->get('list.ordering');
 $listDirn	= $this->state->get('list.direction');
 $canOrder	= $user->authorise('core.edit.state', 'com_easysdi_map');
-$saveOrder	= $listOrder == 'a.ordering';
+$saveOrder	= $listOrder == 'mapordering';
 if ($saveOrder)
 {
 	$saveOrderingUrl = 'index.php?option=com_easysdi_map&task=groups.saveOrderAjax&tmpl=component';
@@ -95,16 +95,22 @@ if (!empty($this->extra_sidebar)) {
 	<table class="table table-striped" id="groupList">
 		<thead>
 			<tr>
-                <?php if (isset($this->items[0]->ordering)): ?>
-			<th width="1%" class="nowrap center hidden-phone">
-				<?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'a.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
-					</th>
+				<?php if (isset($this->items[0]->mapordering)): ?>
+				<th width="1%" class="nowrap center hidden-phone">
+					<?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'mapordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
+				</th>
+				<?php else : ?>
+				<th width="1%" class="nowrap center hidden-phone">
+					<span class="hasTip" title="<?php echo JText::_('COM_EASYSDI_MAP_GROUPS_JGRID_HEADING_ORDERING'); ?>" >
+						<i class="icon-menu-2" ></i>
+					</span>
+				</th>
                 <?php endif; ?>
-			<th width="1%" class="hidden-phone">
+				<th width="1%" class="hidden-phone">
 				<input type="checkbox" name="checkall-toggle" value="" title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
 					</th>
                 <?php if (isset($this->items[0]->state)): ?>
-			<th width="1%" class="nowrap center">
+				<th width="1%" class="nowrap center">
 				<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
 					</th>
                 <?php endif; ?>
@@ -145,9 +151,9 @@ if (!empty($this->extra_sidebar)) {
 			$canChange	= $user->authorise('core.edit.state',	'com_easysdi_map');
 			?>
 			<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->catid?>">
-			<?php if (isset($item->ordering)): ?>
-				<td class="order nowrap center hidden-phone">
-				<?php if ($canChange) :
+			<td class="order nowrap center hidden-phone">
+				<?php if (isset($item->mapordering)): ?>
+					<?php if ($canChange) :
 					$disableClassName = '';
 					$disabledLabel	  = '';
 					if (!$saveOrder) :
@@ -158,13 +164,17 @@ if (!empty($this->extra_sidebar)) {
 						<i class="icon-menu"></i>
 					</span>
 					<input type="text" style="display:none" name="order[]" size="5" value="<?php echo $item->ordering;?>" class="width-20 text-area-order " />
-				<?php else : ?>
+					<?php else : ?>
 					<span class="sortable-handler inactive" >
 						<i class="icon-menu"></i>
 					</span>
+					<?php endif; ?>
+				<?php else : ?>
+				<span class="sortable-handler inactive" >
+					<i class="icon-menu"></i>
+				</span>
 				<?php endif; ?>
 				</td>
-                <?php endif; ?>
 				<td class="center hidden-phone">
 					<?php echo JHtml::_('grid.id', $i, $item->id); ?>
 				</td>

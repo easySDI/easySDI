@@ -31,8 +31,6 @@ if ($saveOrder)
 	JHtml::_('sortablelist.sortable', 'layerList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
 }
 $sortFields = $this->getSortFields();
-
-
 ?>
 <script type="text/javascript">
 	Joomla.orderTable = function() {

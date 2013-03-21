@@ -83,6 +83,37 @@ class Easysdi_mapModelmaps extends JModelList
 	}
 
 	/**
+	 * Method to get an array of data items. Fields are restricted to id and name.
+	 *
+	 * @return  mixed  An array of data items on success, false on failure.
+	 *
+	 * @since   EasySDI 3.3.0
+	 */
+	public function getItemsRestricted ()
+	{
+		// Load the list items.
+		$db		= $this->getDbo();
+		$query	= $db->getQuery(true);
+	
+		// Select the required fields from the table.
+		$query->select('m.id as id, m.name as name');
+		$query->from('`#__sdi_map` AS m');
+		$query->where('m.state = 1');
+		$query->order('m.ordering');
+	
+		try
+		{
+			$items = $this->_getList($query);
+		}
+		catch (RuntimeException $e)
+		{
+			$this->setError($e->getMessage());
+			return false;
+		}
+		return $items;
+	}
+	
+	/**
 	 * Method to get a store id based on model configuration state.
 	 *
 	 * This is necessary because the model is used by the component and

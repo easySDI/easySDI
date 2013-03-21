@@ -36,6 +36,7 @@ class Easysdi_mapModelgroups extends JModelList
 					'modified_by', 'a.modified_by',
 					'modified', 'a.modified',
 					'ordering', 'a.ordering',
+					'mapordering',
 					'state', 'a.state',
 					'name', 'a.name',
 					'isdefaultopen', 'a.isdefaultopen',
@@ -68,6 +69,9 @@ class Easysdi_mapModelgroups extends JModelList
 		
 		$published = $app->getUserStateFromRequest($this->context.'.filter.state', 'filter_published', '', 'string');
 		$this->setState('filter.state', $published);
+		
+		$map = $app->getUserStateFromRequest($this->context.'.filter.map', 'filter_map', '', 'string');
+		$this->setState('filter.map', $map);
 		
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_easysdi_map');
@@ -107,7 +111,7 @@ class Easysdi_mapModelgroups extends JModelList
 	
 		try
 		{
-			$items = $this->_getList($query, $this->getStart(), $this->getState('list.limit'));
+			$items = $this->_getList($query);
 		}
 		catch (RuntimeException $e)
 		{
@@ -139,6 +143,7 @@ class Easysdi_mapModelgroups extends JModelList
 		$id.= ':' . $this->getState('filter.state');
 		$id.= ':' . $this->getState('filter.access');
 		$id.= ':' . $this->getState('filter.published');
+		$id.= ':' . $this->getState('filter.map');
 		
 		return parent::getStoreId($id);
 	}
@@ -197,6 +202,15 @@ class Easysdi_mapModelgroups extends JModelList
 		} else if ($published === '') {
 			$query->where('(a.state IN (0, 1))');
 		}
+		
+		// Filter by map
+		$map = $this->getState('filter.map');
+		if (!empty($map)) {
+			// Join over the groups.
+			$query->select('mlg.ordering as mapordering');
+			$query->join('LEFT', '#__sdi_map_layergroup  AS mlg ON mlg.group_id = a.id');
+			$query->where('mlg.map_id = '.(int) $map);
+		}
 
 		// Filter by search in title
 		$search = $this->getState('filter.search');
@@ -209,6 +223,11 @@ class Easysdi_mapModelgroups extends JModelList
 			}
 		}
 
+		//If no filter on map was set, change the 'list.ordering' user state value to be sure the list will not be ordered by the 'mapordering' field
+		// (which is not existing without a filter on map)
+		if(empty ($map) && $this->state->get('list.ordering') == 'mapordering')
+			$this->state->set('list.ordering','a.name');
+		
 		// Add the list ordering clause.
 		$orderCol	= $this->state->get('list.ordering');
 		$orderDirn	= $this->state->get('list.direction');
