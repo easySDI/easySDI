@@ -41,7 +41,7 @@ $document->addScript('components/com_easysdi_map/views/layer/tmpl/edit.js');
 	
 	<div class="span10 form-horizontal">
             <ul class="nav nav-tabs">
-				<li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_MAP_TAB_NEW_GROUP') : JText::sprintf('COM_EASYSDI_MAP_TAB_EDIT_GROUP', $this->item->id); ?></a></li>
+				<li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_MAP_TAB_NEW_LAYER') : JText::sprintf('COM_EASYSDI_MAP_TAB_EDIT_LAYER', $this->item->id); ?></a></li>
 				<li><a href="#asOL" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_ASOL');?></a></li>
 				<li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_MAP_TAB_PUBLISHING');?></a></li>
 				<?php if ($this->canDo->get('core.admin')): ?>
