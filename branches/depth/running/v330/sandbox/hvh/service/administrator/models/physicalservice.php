@@ -208,6 +208,10 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 	{
 		jimport('joomla.filter.output');
 
+		//Service id is set to default value '0' in case of creation.
+		//So this section of code is never executed.
+		//Ordering is set in sdiTable->check() function.
+		//However, We keep this section in case of default id was not set to '0' anymore (changes in form xml)
 		if (empty($table->id)) {
 			$table->serviceauthentication_id = null;
 			// Set ordering to the last item if not set

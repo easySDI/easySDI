@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="details">
-		
-		
-		<field name="name" type="text" size="255" class="inputbox"
-			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_NAME" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_NAME"
-			filter="safehtml" required="true" />
+		<field 	name="name" 
+				type="text" 
+				size="255" 
+				class="inputbox"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_NAME" 
+				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_NAME"
+				filter="safehtml" 
+				required="true" />
+				
 		<field name="alias" type="text" size="255" class="inputbox"
 			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_ALIAS"
 			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_ALIAS"
@@ -29,30 +33,38 @@
 				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SERVICECONNECTOR_ID"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SERVICECONNECTOR_ID"
 				filter="safehtml" /> 
+				
         <field name="supportedversions" type="supportedversions" class="readonly"
 			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_VERSION"
 			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_VERSION"
 			filter="unset" />
+			
 		<field name="reflectedurl" type="text" size="255" class="input-xxlarge"
 			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_REFLECTEDURL"
 			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_REFLECTEDURL"
 			filter="safehtml" />
+			
 		<field name="exceptionlevel_id" type="sql" class="inputbox"  required="true"
 			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_EXCEPTIONLEVEL_ID"
 			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_EXCEPTIONLEVEL_ID"
 			query="SELECT `id`, `value` FROM `#__sdi_sys_exceptionlevel`"
 			key_field="id" value_field="value" />
-		<field name="xsltfilename" type="text" size="255" class="input-xxlarge"
+			
+		<field name="xsltfilename" 
+			type="text" 
+			size="255" 
+			class="input-xxlarge"
 			label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_XSLTFILENAME"
 			description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_XSLTFILENAME"
 			filter="safehtml" />
+			
 		<field 	name="id" 
 			type="text" 
 			default="0" 
 			label="JGLOBAL_FIELD_ID_LABEL"
-               readonly="true" 
+            readonly="true" 
 			class="readonly"
-               description="JGLOBAL_FIELD_ID_DESC" /> 
+            description="JGLOBAL_FIELD_ID_DESC" /> 
 	</fieldset>
 	
 	<fieldset name="WMS">
