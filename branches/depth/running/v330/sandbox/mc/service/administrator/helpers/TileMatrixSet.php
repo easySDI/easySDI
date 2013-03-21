@@ -4,6 +4,7 @@ require_once('TileMatrix.php');
 class TileMatrixSet {
 	public $identifier;
 	public $srs;
+	public $maxTileMatrix;
 	private $tileMatrixList = Array();
 	
 	public $allTileMatrix;
@@ -30,7 +31,9 @@ class TileMatrixSet {
 			if (property_exists('TileMatrixSet', $key)) {
 				$this->{$key} = $value;
 			}
-			$this->tileMatrixList[$key]->loadData($value);
+			else {
+				$this->tileMatrixList[$key]->loadData($value);
+			}
 		}
 	}
 	

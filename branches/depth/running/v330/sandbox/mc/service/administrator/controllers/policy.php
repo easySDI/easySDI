@@ -39,7 +39,7 @@ class Easysdi_serviceControllerPolicy extends JControllerForm {
 		$this->setRedirect('index.php?option=com_easysdi_service&view=policy&layout=' . $layout . '&virtualservice_id=' . $virtualservice_id );
 	}
 	
-	function cancel() {
+	function cancel($key = null) {
 		$jform = JRequest::getVar('jform', null, 'POST');
 		$layout = JRequest::getVar('layout',null);
 		$virtualservice_id = $jform['virtualservice_id'];

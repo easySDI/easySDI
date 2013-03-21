@@ -17,8 +17,69 @@ class Easysdi_serviceTablephysicalservice_policy extends sdiTable {
 		parent::__construct('#__sdi_policy', 'id', $db);
 	}
 	
-	public function save ($data) {
-		var_dump($data);
-		//die();
+	public function save ($src, $orderingFilter = '', $ignore = '') {
+		$virtualservice_id = $src['virtualservice_id'];
+		$policy_id = $src['id'];
+		
+		$db = JFactory::getDbo();
+		
+		// save each Physical Service Policy
+		$db->setQuery('
+			SELECT ps.id AS physicalservice_id, psp.id AS physicalservicepolicy_id
+			FROM #__sdi_virtualservice vs
+			JOIN #__sdi_virtual_physical vp
+			ON vs.id = vp.virtualservice_id
+			JOIN #__sdi_physicalservice ps
+			ON ps.id = vp.physicalservice_id
+			LEFT JOIN #__sdi_physicalservice_policy psp
+			ON ps.id = psp.physicalservice_id
+			WHERE vs.id = ' . $virtualservice_id . '
+			AND (
+				psp.policy_id = ' . $policy_id . '
+				OR psp.policy_id IS NULL
+			);
+		');
+		
+		try {
+			$db->execute();
+			$resultset = $db->loadObjectList();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
+		foreach ($resultset as $result) {
+			$query = $db->getQuery(true);
+			if (empty($result->physicalservicepolicy_id)) {
+				$query->insert('#__sdi_physicalservice_policy')->columns('
+					physicalservice_id, policy_id
+				')->values('
+					\'' . $result->physicalservice_id . '\', \'' . $policy_id . '\'
+				');
+			}
+			else {
+				//TODO save PS-wide settings here
+				/*
+				$query->update('#__sdi_physicalservice_policy')->set(Array(
+					'physicalservice_id = \'' . $raw_GET['spatial_operator_id'] . '\'',
+				))->where(Array(
+					'id = \'' . $spatial_policy_id . '\'',
+				));
+				*/
+			}
+			
+			$db->setQuery($query);
+			
+			try {
+				$db->execute();
+			}
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
+		}
 	}
 }
