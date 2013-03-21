@@ -178,12 +178,11 @@ class Easysdi_mapModelmap extends JModelAdmin
 			$db = JFactory::getDbo();
 			$db->setQuery('DELETE FROM #__sdi_map_tool WHERE map_id = '.$this->getItem()->get('id'));
 			$db->query();
-			$db->setQuery('DELETE FROM #__sdi_map_layergroup WHERE map_id = '.$this->getItem()->get('id'));
-			$db->query();
 			$db->setQuery('DELETE FROM #__sdi_map_physicalservice WHERE map_id = '.$this->getItem()->get('id'));
 			$db->query();
 			$db->setQuery('DELETE FROM #__sdi_map_virtualservice WHERE map_id = '.$this->getItem()->get('id'));
 			$db->query();
+			
 			//Tools
 			$tools = $data['tools'];
 			foreach ($tools as $tool)
@@ -196,6 +195,7 @@ class Easysdi_mapModelmap extends JModelAdmin
 				}
 					
 			}
+			
 			//Service
 			$services = $data['services'];
 			foreach ($services as $service)
@@ -223,56 +223,163 @@ class Easysdi_mapModelmap extends JModelAdmin
 			
 			//Background group
 			$background = $data['background'];
-			if(!empty($background))
+			
+			//Overlay groups and default adding group
+			$groups 	= $data['groups'];
+			if(!empty($default) && array_search($default, $groups) === false) 
+				$groups[]	= $default;
+			if(!empty($background) && array_search($background, $groups) === false)
+				$groups[]	= $background;
+			
+			
+			
+			//Get existing relations for the current map
+			try {
+				$query = $db->getQuery(true);
+				$query
+				->select('group_id')
+				->from('#__sdi_map_layergroup ')
+				->where('map_id= '.$this->getItem()->get('id'));
+				$db->setQuery($query);
+				$pks = $db->loadColumn();
+			} catch (Exception $e) {
+				$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR" ) );
+				return false;
+			}
+			
+			//Clean up the database from groups no more selected
+			foreach ($pks as $pk)
 			{
-				//Check if the current background group is also the default adding group
-				if($background == $default){
-					$isdefault = 1;
-					$default = null;
-				}else{
-					$isdefault = 0;
-				}
-				$db->setQuery('INSERT INTO #__sdi_map_layergroup (map_id, group_id, isbackground, isdefault, ordering) VALUES ('.$this->getItem()->get('id').', '.$background.',1 ,'.$isdefault.',1)');
-				if(!$db->query())
+				if(in_array($pk,$groups))//Existing group
 				{
-					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR" ) );
+					//Remove this layer from the selected list, because it doesn't have to be changed in the database
+					if(($key = array_search($pk, $groups)) !== false) {
+						unset($groups[$key]);
+					}
+				}
+				else //Group is no more selected, delete the relation
+				{
+					$query = $db->getQuery(true);
+					$query
+					->delete('#__sdi_map_layergroup')
+					->where('map_id= '.$this->getItem()->get('id'))
+					->where('group_id =' .$pk);
+					$db->setQuery($query);
+					try {
+						// Execute the query in Joomla 3.0.
+						$result = $db->execute();
+					} catch (Exception $e) {
+						$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_DELETE_FAIL_GROUP_ERROR" ) );
+						return false;
+					}
+				}
+			}
+			
+			//Select max ordering for the groups of the current map
+			try{
+				$query = $db->getQuery(true);
+				$query
+				->select('MAX(ordering)')
+				->from('#__sdi_map_layergroup ')
+				->where('map_id= '.$this->getItem()->get('id'));
+				$db->setQuery($query);
+				$ordering = $db->loadResult();
+			} catch (Exception $e) {
+				// catch any database errors.
+				$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_MAXORDERING_FAIL_GROUP_ERROR" ) );
+				return false;
+			}
+			if(!$ordering)
+				$ordering = 0;
+				
+			//Insert the new relation
+			foreach ($groups as $group)
+			{
+				if(empty($group))
+					continue;
+				$ordering ++;
+				//Store map-group relation
+				$columns = array('map_id', 'group_id', 'isbackground','isdefault','ordering');
+				$values = array($this->getItem()->get('id'), $group, '0' ,'0', $ordering);
+				$query = $db->getQuery(true);
+				$query
+				->insert($db->quoteName('#__sdi_map_layergroup'))
+				->columns($db->quoteName($columns))
+				->values(implode(',', $values));
+				$db->setQuery($query);
+				try {
+					$result = $db->execute();
+				} catch (Exception $e) {
+					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_INSERT_FAIL_GROUP_ERROR" ) );
 					return false;
 				}
 			}
 			
-			//Overlay groups and default adding group
-			$groups 	= $data['groups'];
-			$i = 2;
-			foreach ($groups as $group)
+			//Clean up isBackground boolean state
+			$query = $db->getQuery(true);
+			$query
+			->update($db->quoteName('#__sdi_map_layergroup'))
+			->set('isbackground=0')
+			->where('map_id= '.$this->getItem()->get('id'));
+			$db->setQuery($query);
+			try {
+				$result = $db->execute();
+			} catch (Exception $e) {
+				$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_DELBACKGROUND_FAIL_GROUP_ERROR" ) );
+				return false;
+			}
+			
+			//Clean up isdefault boolean state
+			$query = $db->getQuery(true);
+			$query
+			->update($db->quoteName('#__sdi_map_layergroup'))
+			->set('isdefault=0')
+			->where('map_id= '.$this->getItem()->get('id'));
+			$db->setQuery($query);
+			try {
+				$result = $db->execute();
+			} catch (Exception $e) {
+				$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_DELDEFAULT_FAIL_GROUP_ERROR" ) );
+				return false;
+			}
+
+			
+			//Set background group if needed
+			if(!empty($background))
 			{
-				if($group == $background)
-					continue;
-				
-				//Check if the current overlay group is also the default adding group
-				if($group == $default){
-					$isdefault = 1; 
-					$default = null;
-				}else{
-					$isdefault = 0;
-				}
-				//Store map group				
-				$db->setQuery('INSERT INTO #__sdi_map_layergroup (map_id, group_id, isbackground, isdefault, ordering) VALUES ('.$this->getItem()->get('id').', '.$group.',0 ,'.$isdefault.', '.$i.')');
-				if(!$db->query())
-				{
-					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR" ) );
-					return false;
-				}	
-				$i++;
-			}
-			//Default adding group was not selected in the overlay groups, have to store it now
-			if($default){
-				$db->setQuery('INSERT INTO #__sdi_map_layergroup (map_id, group_id, isbackground, isdefault, ordering) VALUES ('.$this->getItem()->get('id').', '.$default.',0 ,1,'.$i.')');
-				if(!$db->query())
-				{
-					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR" ) );
+				$query = $db->getQuery(true);
+				$query
+				->update($db->quoteName('#__sdi_map_layergroup'))
+				->set('isbackground=1')
+				->where('map_id= '.$this->getItem()->get('id'))
+				->where('group_id= '.$background);
+				$db->setQuery($query);
+				try {
+					$result = $db->execute();
+				} catch (Exception $e) {
+					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SETBACKGROUND_FAIL_GROUP_ERROR" ) );
 					return false;
 				}
 			}
+			
+			//Set default adding group if needed
+			if(!empty($default))
+			{
+				$query = $db->getQuery(true);
+				$query
+				->update($db->quoteName('#__sdi_map_layergroup'))
+				->set('isdefault=1')
+				->where('map_id= '.$this->getItem()->get('id'))
+				->where('group_id= '.$default);
+				$db->setQuery($query);
+				try {
+					$result = $db->execute();
+				} catch (Exception $e) {
+					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SETDEFAULT_FAIL_GROUP_ERROR" ) );
+					return false;
+				}
+			}
+			
 			
 			return true;
 		}

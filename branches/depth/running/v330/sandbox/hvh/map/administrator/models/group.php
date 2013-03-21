@@ -166,6 +166,7 @@ class Easysdi_mapModelgroup extends JModelAdmin
 				return false;
 			}			
 			
+			//Clean up the database from layers no more selected
 			foreach ($pks as $pk)
 			{
 				if(in_array($pk,$layers))//Existing layer
@@ -213,6 +214,8 @@ class Easysdi_mapModelgroup extends JModelAdmin
 			//Insert the new relation
 			foreach ($layers as $layer)
 			{
+				if(empty($layer))
+					continue;
 				$ordering ++;
 				//Store layer-group relation
 				$columns = array('group_id', 'layer_id', 'ordering');
