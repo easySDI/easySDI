@@ -148,23 +148,88 @@ class Easysdi_mapModelgroup extends JModelAdmin
 		if(parent::save($data))
 		{
 			$db = JFactory::getDbo();
-			//Delete previous layers relations
-			$db->setQuery('DELETE FROM #__sdi_layer_layergroup WHERE group_id = '.$this->getItem()->get('id'));
-			$db->query();
-						
-			//Save new layers relations
+			
+			//Save relations for the selected layer
 			$layers 	= $data['layersselected'];
-			$i = 1;
+			
+			//Get existing relations for the current group
+			$query = $db->getQuery(true);
+			try {
+				$query
+				->select('layer_id')
+				->from('#__sdi_layer_layergroup ')
+				->where('group_id= '.$this->getItem()->get('id'));
+				$db->setQuery($query);
+				$pks = $db->loadColumn();
+			} catch (Exception $e) {
+				$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR" ) );
+				return false;
+			}			
+			
+			foreach ($pks as $pk)
+			{
+				if(in_array($pk,$layers))//Existing layer
+				{
+					//Remove this layer from the selected list, because it doesn't have to be changed in the database
+					if(($key = array_search($pk, $layers)) !== false) {
+					    unset($layers[$key]);
+					}
+				}
+				else //Layer is no more selected, delete the relation
+				{
+					$query = $db->getQuery(true);
+					$query
+					->delete('#__sdi_layer_layergroup')
+					->where('group_id= '.$this->getItem()->get('id'))
+					->where('layer_id =' .$pk);
+					$db->setQuery($query);
+					try {
+						// Execute the query in Joomla 3.0.
+						$result = $db->execute();
+					} catch (Exception $e) {
+						$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR" ) );
+						return false;
+					}
+				}
+			}
+			
+			//Select max ordering for the layers of the current group
+			$query = $db->getQuery(true);
+			try{
+				$query
+				->select('MAX(ordering)')
+				->from('#__sdi_layer_layergroup ')
+				->where('group_id= '.$this->getItem()->get('id'));
+				$db->setQuery($query);
+				$ordering = $db->loadResult();
+			} catch (Exception $e) {
+				// catch any database errors.
+				$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR" ) );
+				return false;
+			}
+			if(!$ordering)
+				$ordering = 0;
+			
+			//Insert the new relation
 			foreach ($layers as $layer)
 			{
-				//Store layer group relation
-				$db->setQuery('INSERT INTO #__sdi_layer_layergroup ( group_id, layer_id, ordering) VALUES ('.$this->getItem()->get('id').', '.$layer.', '.$i.')');
-				if(!$db->query())
-				{
+				$ordering ++;
+				//Store layer-group relation
+				$columns = array('group_id', 'layer_id', 'ordering');
+				$values = array($this->getItem()->get('id'), $layer, $ordering);
+				$query = $db->getQuery(true);
+				$query
+				->insert($db->quoteName('#__sdi_layer_layergroup'))
+				->columns($db->quoteName($columns))
+				->values(implode(',', $values));
+				$db->setQuery($query);
+				try {
+					// Execute the query in Joomla 3.0.
+					$result = $db->execute();
+				} catch (Exception $e) {
 					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR" ) );
 					return false;
 				}
-				$i ++;
 			}
 			return true;
 		}
