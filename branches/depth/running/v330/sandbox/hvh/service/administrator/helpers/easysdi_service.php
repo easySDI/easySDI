@@ -241,6 +241,13 @@ class Easysdi_serviceHelper
 			
 		}
 	
+		if(count($supported_versions) == 0){
+			$supported_versions['ERROR']=JText::_('COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION_NO_VERSION');
+			$encoded = json_encode($supported_versions);
+			echo $encoded;
+			die();
+		}
+			
 		$encoded = json_encode($supported_versions);
 		echo $encoded;
 		die();
