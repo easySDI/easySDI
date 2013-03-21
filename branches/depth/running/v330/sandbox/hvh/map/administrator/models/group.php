@@ -92,7 +92,6 @@ class Easysdi_mapModelgroup extends JModelAdmin
 		if ($item = parent::getItem($pk)) {
 									
 			$layertable 			= JTable::getInstance('layer', 'easysdi_mapTable');
-			$item->layers 			= $layertable->loadItemsByGroup($item->id);
 			$item->layersselected 	= $layertable->loadItemsIdByGroup($item->id);
 			
 		}

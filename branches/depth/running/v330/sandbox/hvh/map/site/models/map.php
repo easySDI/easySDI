@@ -106,7 +106,7 @@ class Easysdi_mapModelMap extends JModelForm
 					foreach($groups as $group )
 					{
 						$groupTable 	= JTable::getInstance('group', 'easysdi_mapTable');
-						$groupTable->load($group->id, true);
+						$groupTable->loadWithLayers($group->id, true);
 						$groupTable->isbackground = $group->isbackground;
 						$groupTable->isdefault = $group->isdefault;
 						$this->_item->groups[] =$groupTable;
@@ -130,7 +130,7 @@ class Easysdi_mapModelMap extends JModelForm
 					}
 				}
 				$virtualserviceTable 	= JTable::getInstance('virtualservice', 'easysdi_serviceTable');
-				if($services 		= $virtualserviceTable->loadIdsByMapId($id))
+				if($services 			= $virtualserviceTable->loadIdsByMapId($id))
 				{
 					$this->_item->virtualservices = array();
 					if($services){

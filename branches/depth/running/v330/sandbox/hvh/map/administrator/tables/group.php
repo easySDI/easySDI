@@ -78,6 +78,28 @@ class Easysdi_mapTablegroup extends sdiTable {
         return $assetParentId;
 	}
 	
+	/**
+	 * Method to load a group from the database and his associated layers full objects
+	 *
+	 * @param   mixed    $keys   An optional primary key value to load the row by, or an array of fields to match.  If not
+	 * set the instance property value is used.
+	 * @param   boolean  $reset  True to reset the default values before loading the new row.
+	 *
+	 * @return  boolean  True if successful. False if row not found or on error (internal error state set in that case).
+	 *
+	 * @link    http://docs.joomla.org/JTable/load
+	 * @since   EasySDI 3.3.0
+	 */
+	public function loadWithLayers($keys = null, $reset = true)
+	{
+		if(!parent::load($keys,$reset))
+			return false;
+	
+				$layertable 	= JTable::getInstance('layer', 'easysdi_mapTable');
+				$this->layers 	= $layertable->loadItemsByGroup($this->id);
+	
+		return true;
+	}
 	
 	/**
 	 * Method to return the list of group ids used by the specified map id
@@ -101,12 +123,12 @@ class Easysdi_mapTablegroup extends sdiTable {
 		
 		// Initialise the query.
 		$query = $this->_db->getQuery(true);
-		$query->select('g.id, cg.isbackground, cg.isdefault');
+		$query->select('g.id, mg.isbackground, mg.isdefault');
 		$query->from($this->_tbl.'  AS g ');
-		$query->join('LEFT', '#__sdi_map_layergroup AS cg ON cg.group_id=g.id');
-		$query->where('cg.map_id = ' . (int) $map_id);
+		$query->join('LEFT', '#__sdi_map_layergroup AS mg ON mg.group_id=g.id');
+		$query->where('mg.map_id = ' . (int) $map_id);
 		$query->where('g.state = 1' );
-		$query->order('g.ordering ASC' );
+		$query->order('mg.ordering DESC' );
 		$this->_db->setQuery($query);
 	
 		try
