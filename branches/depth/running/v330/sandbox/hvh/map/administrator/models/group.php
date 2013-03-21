@@ -90,11 +90,12 @@ class Easysdi_mapModelgroup extends JModelAdmin
 	public function getItem($pk = null)
 	{
 		if ($item = parent::getItem($pk)) {
-
-			//Do any procesing on fields here if needed
-
+									
+			$layertable 			= JTable::getInstance('layer', 'easysdi_mapTable');
+			$item->layers 			= $layertable->loadItemsByGroup($item->id);
+			$item->layersselected 	= $layertable->loadItemsIdByGroup($item->id);
+			
 		}
-
 		return $item;
 	}
 
@@ -112,6 +113,10 @@ class Easysdi_mapModelgroup extends JModelAdmin
 			$table->isdefaultopen = 0; // if it has not been submitted, mark the field unchecked
 		}
 
+		//Group id is set to default value '0' in case of creation.
+		//So this section of code is never executed.
+		//Ordering is set in sdiTable->check() function.
+		//However, We keep this section in case of default id was not set to '0' anymore (changes in form xml)
 		if (empty($table->id)) {
 
 			// Set ordering to the last item if not set
@@ -126,6 +131,42 @@ class Easysdi_mapModelgroup extends JModelAdmin
 		
 		if (empty($table->alias)){
 			$table->alias = $table->name;
+		}
+	}
+	
+	/**
+	 * Method to save the form data.
+	 *
+	 * @param   array  $data  The form data.
+	 *
+	 * @return  boolean  True on success, False on error.
+	 *
+	 * @since   11.1
+	 */
+	public function save($data)
+	{
+		if(parent::save($data))
+		{
+			$db = JFactory::getDbo();
+			//Delete previous layers relations
+			$db->setQuery('DELETE FROM #__sdi_layer_layergroup WHERE group_id = '.$this->getItem()->get('id'));
+			$db->query();
+						
+			//Save new layers relations
+			$layers 	= $data['layersselected'];
+			$i = 1;
+			foreach ($layers as $layer)
+			{
+				//Store layer group relation
+				$db->setQuery('INSERT INTO #__sdi_layer_layergroup ( group_id, layer_id, ordering) VALUES ('.$this->getItem()->get('id').', '.$layer.', '.$i.')');
+				if(!$db->query())
+				{
+					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR" ) );
+					return false;
+				}
+				$i ++;
+			}
+			return true;
 		}
 	}
 

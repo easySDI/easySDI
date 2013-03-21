@@ -151,7 +151,4 @@ $document->addScript('components/com_easysdi_map/views/layer/tmpl/edit.js');
 		</div>
 		<!-- End Sidebar -->
 	</div>
-	
-
-
 </form>

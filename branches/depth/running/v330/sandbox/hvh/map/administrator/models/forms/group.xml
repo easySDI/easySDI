@@ -18,14 +18,31 @@
             	description="COM_EASYSDI_MAP_FORM_DESC_GROUP_ALIAS" 
             	filter="safehtml" /> 
 
+		<field 	name="layersselected" 
+				type="sql" 
+				class="multiselect input-xxlarge"
+				multiple="true"
+				label="COM_EASYSDI_MAP_FORM_LBL_GROUP_LAYERS"
+				description="COM_EASYSDI_MAP_FORM_DESC_GROUP_LAYERS" 
+                required="true"
+                query="SELECT id, name FROM #__sdi_maplayer WHERE state=1" key_field="id" value_field="name"
+                 />
+                 
        <field 	name="isdefaultopen" 
        			type="checkbox" 
        			label="COM_EASYSDI_MAP_FORM_LBL_GROUP_ISDEFAULTOPEN"
             	description="COM_EASYSDI_MAP_FORM_DESC_GROUP_ISDEFAULTOPEN" 
             	value="1"
                 filter="intval" /> 
+                
+        <field 	name="id" 
+				type="text" 
+				default="0" 
+				label="JGLOBAL_FIELD_ID_LABEL"
+                readonly="true" 
+				class="readonly"
+                description="JGLOBAL_FIELD_ID_DESC" /> 
 
-		<field name="id" type="hidden" filter="SAFEHTML" />
 		<field name="guid" type="hidden" filter="SAFEHTML" />
 		<field name="checked_out" type="hidden" filter="unset" />
         <field name="checked_out_time" type="hidden" filter="unset" />

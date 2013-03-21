@@ -17,18 +17,8 @@
        			label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ALIAS"
     	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ALIAS" 
                 filter="safehtml" /> 
-
-	   <field 	name="groups" 
-				type="sql" 
-				class="multiselect input-xxlarge"
-				multiple="true"
-				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_GROUPS"
-				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_GROUPS" 
-                required="true"
-                query="SELECT id, name FROM #__sdi_layergroup WHERE state=1" key_field="id" value_field="name"
-                 />
-
-	   <field 	name="service_id" 
+                
+      <field 	name="service_id" 
 				type="ServicegroupedList" 
 				onchange="clearLayers();setServiceConnector();getLayers();"
 				class="inputbox"
@@ -77,7 +67,14 @@
                 label="COM_EASYSDI_MAP_FORM_LBL_LAYER_METADATALINK"
             	description="COM_EASYSDI_MAP_FORM_DESC_LAYER_METADATALINK"  /> 
 
-		<field name="id" type="hidden" filter="SAFEHTML" />
+		<field 	name="id" 
+				type="text" 
+				default="0" 
+				label="JGLOBAL_FIELD_ID_LABEL"
+                readonly="true" 
+				class="readonly"
+                description="JGLOBAL_FIELD_ID_DESC" /> 
+                
 		<field name="serviceconnector" type="hidden" />
 		<field name="onloadlayername" type="hidden" filter="SAFEHTML" />
 		<field name="guid" type="hidden" filter="SAFEHTML" />

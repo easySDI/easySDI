@@ -146,8 +146,11 @@ class Easysdi_mapModellayer extends JModelAdmin
 			$table->servicetype		= 'virtual';
 		}
 		
+		//Layer id is set to default value '0' in case of creation.
+		//So this section of code is never executed.
+		//Ordering is set in sdiTable->check() function.
+		//However, We keep this section in case of default id was not set to '0' anymore (changes in form xml) 
 		if (empty($table->id)) {
-
 			// Set ordering to the last item if not set
 			if (@$table->ordering === '') {
 				$db = JFactory::getDbo();
@@ -160,40 +163,114 @@ class Easysdi_mapModellayer extends JModelAdmin
 		if (empty($table->alias)){
 			$table->alias = $table->name;
 		}
+
 	}
 	
 	/**
-	 * Method to save the form data.
+	 * Saves the manually set order of records.
 	 *
-	 * @param   array  $data  The form data.
+	 * @param   array    $pks    An array of primary key ids.
+	 * @param   integer  $order  +1 or -1
 	 *
-	 * @return  boolean  True on success, False on error.
+	 * @return  mixed
 	 *
-	 * @since   11.1
+	 * @since   12.2
 	 */
-	public function save($data)
+	public function saveorder($pks = null, $order = null)
 	{
-		if(parent::save($data))
+		$table = $this->getTable();
+		$conditions = array();
+	
+		if (empty($pks))
 		{
-			$db = JFactory::getDbo();
-			//Save groups
-			$db->query();
-			$db->setQuery('DELETE FROM #__sdi_layer_layergroup WHERE layer_id = '.$this->getItem()->get('id'));
-			$db->query();
-			
-			$groups 	= $data['groups'];
-			foreach ($groups as $group)
+			return JError::raiseWarning(500, JText::_($this->text_prefix . '_ERROR_NO_ITEMS_SELECTED'));
+		}
+		
+		//Get if a filter on group was set.
+		$app = JFactory::getApplication('administrator');
+		$group = $app->getUserStateFromRequest('com_easysdi_map.layers.filter.group', 'filter_group', null, 'int');
+	
+		if(empty($group))
+		{
+			//Update global ordering
+			foreach ($pks as $i => $pk)
 			{
-				//Store layer group
-				$db->setQuery('INSERT INTO #__sdi_layer_layergroup (layer_id, group_id) VALUES ('.$this->getItem()->get('id').', '.$group.')');
-				if(!$db->query())
+				$table->load((int) $pk);
+			
+				// Access checks.
+				if (!$this->canEditState($table))
 				{
-					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR" ) );
-					return false;
+					// Prune items that you can't change.
+					unset($pks[$i]);
+					JLog::add(JText::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'), JLog::WARNING, 'jerror');
+				}
+				elseif ($table->ordering != $order[$i])
+				{
+					$table->ordering = $order[$i];
+			
+					if (!$table->store())
+					{
+						$this->setError($table->getError());
+						return false;
+					}
+			
+					// Remember to reorder within position and client_id
+					$condition = $this->getReorderConditions($table);
+					$found = false;
+			
+					foreach ($conditions as $cond)
+					{
+						if ($cond[1] == $condition)
+						{
+							$found = true;
+							break;
+						}
+					}
+			
+					if (!$found)
+					{
+						$key = $table->getKeyName();
+						$conditions[] = array($table->$key, $condition);
+					}
 				}
 			}
-			return true;
 		}
+		else 
+		{
+			//Update ordering inside a group
+			foreach ($pks as $i => $pk)
+			{
+				$table->load((int) $pk);
+				
+				// Access checks.
+				if (!$this->canEditState($table))
+				{
+					// Prune items that you can't change.
+					unset($pks[$i]);
+					JLog::add(JText::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'), JLog::WARNING, 'jerror');
+				}
+				else 
+				{
+					$order = (int) $i + 1;
+					$db = JFactory::getDbo();
+					$db->setQuery('UPDATE #__sdi_layer_layergroup SET ordering = '. $order .' WHERE layer_id = '.(int) $pks[$i].' AND group_id = '.(int) $group);
+					$db->query();
+				}
+			}
+		}
+		
+	
+		// Execute reorder for each category.
+		foreach ($conditions as $cond)
+		{
+			$table->load($cond[0]);
+			$table->reorder($cond[1]);
+		}
+	
+		// Clear the component's cache
+		$this->cleanCache();
+	
+		return true;
 	}
 
 }

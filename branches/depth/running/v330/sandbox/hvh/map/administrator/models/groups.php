@@ -68,13 +68,57 @@ class Easysdi_mapModelgroups extends JModelList
 		
 		$published = $app->getUserStateFromRequest($this->context.'.filter.state', 'filter_published', '', 'string');
 		$this->setState('filter.state', $published);
-
+		
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_easysdi_map');
 		$this->setState('params', $params);
 
 		// List state information.
 		parent::populateState('a.name', 'asc');
+	}
+	
+	/**
+	 * Method to get an array of data items. Fields are restricted to id and name.
+	 *
+	 * @return  mixed  An array of data items on success, false on failure.
+	 *
+	 * @since   EasySDI 3.3.0
+	 */
+	public function getItemsRestricted ()
+	{
+		// Get a storage key.
+		$store = $this->getStoreId();
+	
+		// Try to load the data from internal storage.
+		if (isset($this->cache[$store]))
+		{
+			return $this->cache[$store];
+		}
+	
+		// Load the list items.
+		$db		= $this->getDbo();
+		$query	= $db->getQuery(true);
+	
+		// Select the required fields from the table.
+		$query->select('g.id as id, g.name as name');
+		$query->from('`#__sdi_layergroup` AS g');
+		$query->where('g.state = 1');
+		$query->order('g.ordering');
+	
+		try
+		{
+			$items = $this->_getList($query, $this->getStart(), $this->getState('list.limit'));
+		}
+		catch (RuntimeException $e)
+		{
+			$this->setError($e->getMessage());
+			return false;
+		}
+	
+		// Add the items to the internal cache.
+		$this->cache[$store] = $items;
+	
+		return $this->cache[$store];
 	}
 
 	/**
@@ -94,8 +138,8 @@ class Easysdi_mapModelgroups extends JModelList
 		$id.= ':' . $this->getState('filter.search');
 		$id.= ':' . $this->getState('filter.state');
 		$id.= ':' . $this->getState('filter.access');
-		$id	.= ':'. $this->getState('filter.published');
-
+		$id.= ':' . $this->getState('filter.published');
+		
 		return parent::getStoreId($id);
 	}
 

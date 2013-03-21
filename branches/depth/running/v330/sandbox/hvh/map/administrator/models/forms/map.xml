@@ -154,8 +154,14 @@
 	            label="COM_EASYSDI_MAP_FORM_LBL_MAP_ABSTRACT"
     	        description="COM_EASYSDI_MAP_FORM_DESC_MAP_ABSTRACT"  /> 
 
+		<field 	name="id" 
+				type="text" 
+				default="0" 
+				label="JGLOBAL_FIELD_ID_LABEL"
+                readonly="true" 
+				class="readonly"
+                description="JGLOBAL_FIELD_ID_DESC" /> 
 		
-		<field name="id" type="hidden" filter="SAFEHTML" />
 		<field name="guid" type="hidden" filter="SAFEHTML" />
 		<field name="checked_out" type="hidden" filter="unset" />
 		<field name="checked_out" type="hidden" filter="unset" />

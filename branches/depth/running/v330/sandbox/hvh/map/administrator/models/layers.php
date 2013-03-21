@@ -36,6 +36,7 @@ class Easysdi_mapModellayers extends JModelList
 					'modified_by', 'a.modified_by',
 					'modified', 'a.modified',
 					'ordering', 'a.ordering',
+					'groupordering', 
 					'state', 'a.state',
 					'name', 'a.name',
 					'service_id', 'a.service_id',
@@ -64,7 +65,7 @@ class Easysdi_mapModellayers extends JModelList
 	{
 		// Initialise variables.
 		$app = JFactory::getApplication('administrator');
-
+		
 		// Load the filter state.
 		$search = $app->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
@@ -75,7 +76,7 @@ class Easysdi_mapModellayers extends JModelList
 		$published = $app->getUserStateFromRequest($this->context.'.filter.state', 'filter_published', '', 'string');
 		$this->setState('filter.state', $published);
 		
-		$group = $app->getUserStateFromRequest($this->context.'.filter.group', 'filter_group', '');
+		$group = $app->getUserStateFromRequest($this->context.'.filter.group', 'filter_group', '', 'string');
 		$this->setState('filter.group', $group);
 
 		// Load the parameters.
@@ -102,8 +103,8 @@ class Easysdi_mapModellayers extends JModelList
 		// Compile the store id.
 		$id .= ':' . $this->getState('filter.search');
 		$id .= ':' . $this->getState('filter.state');
-		$id	.= ':'. $this->getState('filter.access');
-		$id	.= ':'. $this->getState('filter.published');
+		$id	.= ':' . $this->getState('filter.access');
+		$id	.= ':' . $this->getState('filter.published');
 		$id .= ':' . $this->getState('filter.group');
 
 		return parent::getStoreId($id);
@@ -111,14 +112,14 @@ class Easysdi_mapModellayers extends JModelList
 	
 	
 	
-	public function getGroups()
-	{
-		$db 				= JFactory::getDBO();
-		$query				= "SELECT id as value, name as text FROM #__sdi_layergroup WHERE state=1" ;
-		$db->setQuery($query);
+// 	public function getGroups()
+// 	{
+// 		$db 				= JFactory::getDBO();
+// 		$query				= "SELECT id as value, name as text FROM #__sdi_layergroup WHERE state=1" ;
+// 		$db->setQuery($query);
 		
-		return $db->loadObjectList();
-	}
+// 		return $db->loadObjectList();
+// 	}
 	
 
 	/**
@@ -148,15 +149,10 @@ class Easysdi_mapModellayers extends JModelList
 		$query->select('uc.name AS editor');
 		$query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
 
-
 		// Join over the created by field 'created_by'
 		$query->select('created_by.name AS created_by');
 		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
 
-		// Join over the foreign key 'group_id'
-		$query->select('#__sdi_layergroup_277305.name AS group_name');
-		$query->join('LEFT', '#__sdi_layergroup AS #__sdi_layergroup_277305 ON #__sdi_layergroup_277305.id = a.group_id');
-		
  		// Join over the foreign key 'physicalservice_id'
 		$query->select('#__sdi_physicalservice22.name AS physicalservice_name');
 		$query->join('LEFT', '#__sdi_physicalservice AS #__sdi_physicalservice22 ON #__sdi_physicalservice22.id = a.service_id');
@@ -189,9 +185,13 @@ class Easysdi_mapModellayers extends JModelList
 			$query->where('(a.state IN (0, 1))');
 		}
 
-		// Filter by group.
-		if ($group = $this->getState('filter.group')) {
-			$query->where('#__sdi_layergroup_277305.id = ' . (int) $group);
+		// Filter by group
+		$group = $this->getState('filter.group');
+		if (!empty($group)) {
+			// Join over the groups.
+			$query->select('llg.ordering as groupordering');
+			$query->join('LEFT', '#__sdi_layer_layergroup  AS llg ON llg.layer_id = a.id');
+			$query->where('llg.group_id = '.(int) $group);
 		}
 				
 		// Filter by search in title
@@ -206,20 +206,16 @@ class Easysdi_mapModellayers extends JModelList
 		}
 
 		// Add the list ordering clause.
-		
 		$orderCol	= $this->state->get('list.ordering');
 		$orderDirn	= $this->state->get('list.direction');
 		
 		if ($orderCol && $orderDirn) {
 			$query->order($db->escape($orderCol.' '.$orderDirn));
 		}
-		if (!$this->getState('filter.group')) {
-			$query->order('group_name');
-		}
 		
-		if(strcmp($orderCol, 'a.ordering') != 0)
+		if(strcmp($orderCol, 'groupordering') != 0)
 		{
-			$query->order('a.ordering');
+			$query->order('groupordering');
 		}
 		
 

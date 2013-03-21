@@ -143,6 +143,10 @@ class Easysdi_mapModelmap extends JModelAdmin
 	{
 		jimport('joomla.filter.output');
 
+		//Map id is set to default value '0' in case of creation.
+		//So this section of code is never executed.
+		//Ordering is set in sdiTable->check() function.
+		//However, We keep this section in case of default id was not set to '0' anymore (changes in form xml)
 		if (empty($table->id)) {
 
 			// Set ordering to the last item if not set
@@ -228,7 +232,7 @@ class Easysdi_mapModelmap extends JModelAdmin
 				}else{
 					$isdefault = 0;
 				}
-				$db->setQuery('INSERT INTO #__sdi_map_layergroup (map_id, group_id, isbackground, isdefault) VALUES ('.$this->getItem()->get('id').', '.$background.',1 ,'.$isdefault.')');
+				$db->setQuery('INSERT INTO #__sdi_map_layergroup (map_id, group_id, isbackground, isdefault, ordering) VALUES ('.$this->getItem()->get('id').', '.$background.',1 ,'.$isdefault.',1)');
 				if(!$db->query())
 				{
 					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR" ) );
@@ -238,6 +242,7 @@ class Easysdi_mapModelmap extends JModelAdmin
 			
 			//Overlay groups and default adding group
 			$groups 	= $data['groups'];
+			$i = 2;
 			foreach ($groups as $group)
 			{
 				if($group == $background)
@@ -251,16 +256,17 @@ class Easysdi_mapModelmap extends JModelAdmin
 					$isdefault = 0;
 				}
 				//Store map group				
-				$db->setQuery('INSERT INTO #__sdi_map_layergroup (map_id, group_id, isbackground, isdefault) VALUES ('.$this->getItem()->get('id').', '.$group.',0 ,'.$isdefault.')');
+				$db->setQuery('INSERT INTO #__sdi_map_layergroup (map_id, group_id, isbackground, isdefault, ordering) VALUES ('.$this->getItem()->get('id').', '.$group.',0 ,'.$isdefault.', '.$i.')');
 				if(!$db->query())
 				{
 					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR" ) );
 					return false;
 				}	
+				$i++;
 			}
 			//Default adding group was not selected in the overlay groups, have to store it now
 			if($default){
-				$db->setQuery('INSERT INTO #__sdi_map_layergroup (map_id, group_id, isbackground, isdefault) VALUES ('.$this->getItem()->get('id').', '.$default.',0 ,1)');
+				$db->setQuery('INSERT INTO #__sdi_map_layergroup (map_id, group_id, isbackground, isdefault, ordering) VALUES ('.$this->getItem()->get('id').', '.$default.',0 ,1,'.$i.')');
 				if(!$db->query())
 				{
 					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_GROUP_ERROR" ) );

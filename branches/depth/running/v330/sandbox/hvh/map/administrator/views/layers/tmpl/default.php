@@ -19,18 +19,21 @@ JHtml::_('formbehavior.chosen', 'select');
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css');
 
-$user	= JFactory::getUser();
-$userId	= $user->get('id');
-$listOrder	= $this->state->get('list.ordering');
-$listDirn	= $this->state->get('list.direction');
-$canOrder	= $user->authorise('core.edit.state', 'com_easysdi_map');
-$saveOrder	= $listOrder == 'a.ordering';
+$user			= JFactory::getUser();
+$userId			= $user->get('id');
+$listOrder		= $this->state->get('list.ordering');
+$listDirn		= $this->state->get('list.direction');
+$canOrder		= $user->authorise('core.edit.state', 'com_easysdi_map');
+$groupfilter 	= $this->state->get('filter.group');
+$saveOrder		= $listOrder == 'groupordering';
 if ($saveOrder)
 {
 	$saveOrderingUrl = 'index.php?option=com_easysdi_map&task=layers.saveOrderAjax&tmpl=component';
 	JHtml::_('sortablelist.sortable', 'layerList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
 }
 $sortFields = $this->getSortFields();
+
+
 ?>
 <script type="text/javascript">
 	Joomla.orderTable = function() {
@@ -62,8 +65,8 @@ if (!empty($this->extra_sidebar)) {
 	<?php endif;?>
 	<div id="filter-bar" class="btn-toolbar">
 		<div class="filter-search btn-group pull-left">
-			<label for="filter_search" class="element-invisible"><?php echo JText::_('COM_EASYSDI_MAP_FILTER_SEARCH_DESC');?></label>
-			<input type="text" name="filter_search" id="filter_search" placeholder="<?php echo JText::_('COM_EASYSDI_MAP_SEARCH_IN_LAYER'); ?>" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" title="<?php echo JText::_('COM_EASYSDI_SEARCH_IN_LAYER'); ?>" />
+			<label for="filter_search" class="element-invisible"><?php echo JText::_('JSEARCH_FILTER');?></label>
+			<input type="text" name="filter_search" id="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" title="<?php echo JText::_('COM_EASYSDI_SEARCH_IN_LAYER'); ?>" />
 		</div>
 		<div class="btn-group pull-left hidden-phone">
 			<button class="btn hasTooltip" type="submit" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
@@ -93,9 +96,14 @@ if (!empty($this->extra_sidebar)) {
 	<table class="table table-striped" id="layerList">
 			<thead>
 				<tr>
-                <?php if (isset($this->items[0]->ordering)): ?>
+                <?php if (isset($this->items[0]->groupordering)): ?>
 					<th width="1%" class="nowrap center hidden-phone">
-						<?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'a.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
+						<?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'groupordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
+					</th>
+				<?php else : ?>
+					<th width="1%" class="nowrap center hidden-phone">
+						<a class="hasTip" title="<?php echo JText::_('COM_EASYSDI_MAP_LAYERS_JGRID_HEADING_ORDERING'); ?>" onclick="" ><?php echo JText::_('JGRID_HEADING_ORDERING'); ?></a>
+						
 					</th>
                 <?php endif; ?>
 					<th width="1%" class="hidden-phone">
@@ -136,7 +144,7 @@ if (!empty($this->extra_sidebar)) {
 			</tfoot>
 			<tbody>
 			<?php foreach ($this->items as $i => $item) :
-				$ordering	= ($listOrder == 'a.ordering');
+				$ordering	= ($listOrder == 'groupordering');
 				$canCreate	= $user->authorise('core.create',		'com_easysdi_map');
 				$canEdit	= $user->authorise('core.edit',			'com_easysdi_map');
 				$canCheckin	= $user->authorise('core.manage',		'com_easysdi_map');
@@ -144,26 +152,32 @@ if (!empty($this->extra_sidebar)) {
 			 ?>
 				<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->catid?>">
                     
-                <?php if (isset($item->ordering)): ?>
+                
 				<td class="order nowrap center hidden-phone">
-				<?php if ($canChange) :
-					$disableClassName = '';
-					$disabledLabel	  = '';
-					if (!$saveOrder) :
-						$disabledLabel    = JText::_('JORDERINGDISABLED');
-						$disableClassName = 'inactive tip-top';
-					endif; ?>
-					<span class="sortable-handler hasTooltip <?php echo $disableClassName?>" title="<?php echo $disabledLabel?>">
-						<i class="icon-menu"></i>
-					</span>
-					<input type="text" style="display:none" name="order[]" size="5" value="<?php echo $item->ordering;?>" class="width-20 text-area-order " />
+				<?php if (isset($item->groupordering)): ?>
+					<?php if ($canChange && !empty($groupfilter)) :
+						$disableClassName = '';
+						$disabledLabel	  = '';
+						if (!$saveOrder ) :
+							$disabledLabel    = JText::_('JORDERINGDISABLED');
+							$disableClassName = 'inactive tip-top';
+						endif; ?>
+						<span class="sortable-handler hasTooltip <?php echo $disableClassName?>" title="<?php echo $disabledLabel?>">
+							<i class="icon-menu"></i>
+						</span>
+						<input type="text" style="display:none" name="order[]" size="5" value="<?php echo $item->groupordering;?>" class="width-20 text-area-order " />
+					<?php else : ?>
+						<span class="sortable-handler inactive" >
+							<i class="icon-menu"></i>
+						</span>
+					<?php endif; ?>
 				<?php else : ?>
 					<span class="sortable-handler inactive" >
 						<i class="icon-menu"></i>
 					</span>
 				<?php endif; ?>
 				</td>
-                <?php endif; ?>
+                
 				<td class="center hidden-phone">
 					<?php echo JHtml::_('grid.id', $i, $item->id); ?>
 				</td>

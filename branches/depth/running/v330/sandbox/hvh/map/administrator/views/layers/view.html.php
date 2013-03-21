@@ -28,7 +28,6 @@ class Easysdi_mapViewLayers extends JViewLegacy
 	{
 		$this->state		= $this->get('State');
 		$this->items		= $this->get('Items');
-		$this->groups		= $this->get('Groups');
 		$this->pagination	= $this->get('Pagination');
 
 		// Check for errors.
@@ -57,7 +56,7 @@ class Easysdi_mapViewLayers extends JViewLegacy
 		$canDo	= Easysdi_mapHelper::getActions();
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_MAP_HEADER_LAYERS'), 'layers.png');
-
+		
 		//Check if the form exists before showing the add/edit buttons
 		$formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'layer';
 		if (file_exists($formPath)) {
@@ -111,9 +110,18 @@ class Easysdi_mapViewLayers extends JViewLegacy
 		JToolBarHelper::divider();
 		JToolBarHelper::custom('easySDIHome', 'home.png', 'home_f2.png', 'COM_EASYSDI_MAP_TOOLBAR_HOME', false);
 		
+		//Groups list for filtering action
+		$groupModel 	= JModelLegacy::getInstance('groups', 'Easysdi_mapModel', array());
+		$groupList 		= $groupModel->getItemsRestricted();
+		
 		//Set sidebar action - New in 3.0
 		JHtmlSidebar::setAction('index.php?option=com_easysdi_map&view=layers');
 		$this->extra_sidebar = '';
+		JHtmlSidebar::addFilter(
+				JText::_('COM_EASYSDI_MAP_SELECT_GROUP'),
+				'filter_group',
+				JHtml::_('select.options', $groupList, "id", "name", $this->state->get('filter.group'), true)
+		);
 		JHtmlSidebar::addFilter(
 				JText::_('JOPTION_SELECT_PUBLISHED'),
 				'filter_published',
@@ -130,10 +138,8 @@ class Easysdi_mapViewLayers extends JViewLegacy
 	{
 		return array(
 				'a.id' => JText::_('JGRID_HEADING_ID'),
-				'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
 				'a.state' => JText::_('JSTATUS'),
-				'a.name' => JText::_('COM_EASYSDI_MAP_LAYERS_NAME'),
-				'a.layername' => JText::_('COM_EASYSDI_MAP_LAYERS_LAYERNAME'),
+				'a.name' => JText::_('COM_EASYSDI_MAP_FORM_LBL_LAYER_NAME'),
 				'a.access_level' => JText::_('JGRID_HEADING_ACCESS'),
 		);
 	}
