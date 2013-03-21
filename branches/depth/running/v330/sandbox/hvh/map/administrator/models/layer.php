@@ -211,8 +211,19 @@ class Easysdi_mapModellayer extends JModelAdmin
 			{
 				$order = $i + 1;
 				$db = JFactory::getDbo();
-				$db->setQuery('UPDATE #__sdi_layer_layergroup SET ordering = '. $order .' WHERE layer_id = '. $pks[$i].' AND group_id = '. $group);
-				$db->query();
+				$query = $db->getQuery(true);
+				$query
+				->update($db->quoteName('#__sdi_layer_layergroup'))
+				->set('ordering='.$order)
+				->where('layer_id= '.$pks[$i])
+				->where('group_id= '.$group);
+				$db->setQuery($query);
+				try {
+					$result = $db->execute();
+				} catch (Exception $e) {
+					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_MAP_DELBACKGROUND_FAIL_GROUP_ERROR" ) );
+					return false;
+				}
 			}
 		}
 	
