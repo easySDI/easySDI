@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_unit` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `alias` VARCHAR(20)  NOT NULL ,
 `name` VARCHAR(255)  NOT NULL ,
 PRIMARY KEY (`id`),
@@ -17,7 +17,7 @@ VALUES
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_role` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -31,7 +31,7 @@ INSERT INTO `#__sdi_sys_role` VALUES ('5','5','1','previewmanager' );
 CREATE TABLE `#__sdi_sys_country` (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `ordering` bigint(20) NOT NULL DEFAULT '1',
-  `state` tinyint(1) NOT NULL DEFAULT '1',
+  `state` TINYINT(3) NOT NULL DEFAULT '1',
   `name` varchar(100) NOT NULL,
   `iso2` varchar(2) DEFAULT NULL,
   `iso3` varchar(3) DEFAULT NULL,
@@ -41,7 +41,7 @@ CREATE TABLE `#__sdi_sys_country` (
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_versiontype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -55,7 +55,7 @@ VALUES
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_accessscope` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -71,7 +71,7 @@ VALUES
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_metadatastate` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -88,7 +88,7 @@ VALUES
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_spatialoperator` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -102,7 +102,7 @@ VALUES
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_serviceconnector` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11) ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -110,7 +110,7 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_serviceversion` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -118,7 +118,7 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_servicecompliance` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `serviceconnector_id` INT(11) UNSIGNED  NOT NULL ,
 `serviceversion_id` INT(11) UNSIGNED  NOT NULL ,
 `implemented` TINYINT(1)  NOT NULL DEFAULT '0',
@@ -131,7 +131,7 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_serviceoperation` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -139,7 +139,7 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_operationcompliance` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `servicecompliance_id` INT(11) UNSIGNED  NOT NULL ,
 `serviceoperation_id` INT(11) UNSIGNED  NOT NULL ,
 `implemented` TINYINT(1)  NOT NULL DEFAULT '0',
@@ -149,7 +149,7 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_authenticationlevel` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -157,7 +157,7 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_authenticationconnector` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `authenticationlevel_id` INT(11) UNSIGNED  NOT NULL ,
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
@@ -166,7 +166,7 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_logroll` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `value` VARCHAR(255)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) DEFAULT COLLATE=utf8_general_ci;
@@ -174,7 +174,7 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_loglevel` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `value` VARCHAR(255)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -182,7 +182,7 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_exceptionlevel` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `value` VARCHAR(255)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -190,7 +190,7 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_proxytype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `value` VARCHAR(255)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -206,7 +206,7 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_servicescope` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` TINYINT(3)  NOT NULL DEFAULT '1',
 `value` VARCHAR(150)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
