@@ -5,5 +5,6 @@ class WfsFeatureType extends Layer{
 	public $remoteFilterGML;
 	public $localFilterGML;
 	public $allAttributes;
+	public $enabled;
 	
 }

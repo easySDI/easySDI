@@ -29,6 +29,7 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_SERVICE_TAB_NEW_SERVICE') : JText::sprintf('COM_EASYSDI_SERVICE_TAB_EDIT_SERVICE', $this->item->id); ?></a></li>
 				<li><a href="#metadata" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_METADATA');?></a></li>
+				<li><a href="#policies" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_POLICIES');?></a></li>
 				<li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_PUBLISHING');?></a></li>
 				<?php if ($this->canDo->get('core.admin')): ?>
 					<li><a href="#permissions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_RULES');?></a></li>
@@ -87,6 +88,20 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 							<div class="controls"><?php echo $field->input; ?></div>
 						</div>
 					<?php endforeach; ?>
+					</fieldset>
+				</div>
+				
+				<div class="tab-pane" id="policies">
+					<fieldset>
+						<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=policy&layout=wfs&virtualservice_id='.JRequest::getVar('id',null)); ?>" class="btn"><?php echo JText::_('COM_EASYSDI_SERVICE_BTN_CREATE_POLICY');?></a>
+						<table class="table" >
+							<?php foreach($this->policies as $policy):?> 
+								<tr>
+									<td><?php echo $policy->name; ?></td>
+									<td><a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=policy&layout=wfs&id='.$policy->id.'&virtualservice_id='.JRequest::getVar('id',null)); ?>" class="btn"><?php echo JText::_('COM_EASYSDI_SERVICE_BTN_MODIFY_POLICY');?></a></td>
+								</tr>
+							<?php endforeach; ?>
+						</table>
 					</fieldset>
 				</div>
 				

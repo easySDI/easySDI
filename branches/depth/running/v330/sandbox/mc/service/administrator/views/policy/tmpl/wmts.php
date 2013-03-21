@@ -22,6 +22,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/policy.js');
 JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 
+//TODO: use this fct to implement inherited forms
 function printSpatialPolicyForm ($suffix, $data) {
 	$db = JFactory::getDbo();
 	$db->setQuery('
