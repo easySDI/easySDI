@@ -128,7 +128,7 @@ class Easysdi_mapTablegroup extends sdiTable {
 		$query->join('LEFT', '#__sdi_map_layergroup AS mg ON mg.group_id=g.id');
 		$query->where('mg.map_id = ' . (int) $map_id);
 		$query->where('g.state = 1' );
-		$query->order('mg.ordering DESC' );
+		$query->order('mg.ordering ASC' );
 		$this->_db->setQuery($query);
 	
 		try

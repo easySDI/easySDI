@@ -134,10 +134,19 @@ class Easysdi_mapModelMap extends JModelForm
 				{
 					$this->_item->virtualservices = array();
 					if($services){
+						$params 		= JComponentHelper::getParams('com_easysdi_service');
 						foreach($services as $service )
 						{
-							$virtualserviceTable 	= JTable::getInstance('virtualservice', 'easysdi_serviceTable');
+							$virtualserviceTable 			= JTable::getInstance('virtualservice', 'easysdi_serviceTable');
 							$virtualserviceTable->load($service, true);
+							if(empty ($virtualserviceTable->reflectedurl))
+							{
+								$virtualserviceTable->url = $params->get('proxyurl').$virtualserviceTable->alias;
+							}
+							else
+							{
+								$virtualserviceTable->url = $virtualserviceTable->reflectedurl;
+							}
 							$this->_item->virtualservices[] =$virtualserviceTable;
 						}
 					}

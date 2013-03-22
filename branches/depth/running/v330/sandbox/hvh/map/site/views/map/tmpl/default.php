@@ -159,6 +159,7 @@ $document->addStyleSheet('components/com_easysdi_map/views/map/tmpl/theme/app/st
 					    },
 					    groups: {
 						    <?php
+						    //Groups are added in the order saved in the database
 						    foreach ($this->item->groups as $group)
 						    {
 						    	//Acces not allowed
@@ -452,7 +453,10 @@ $document->addStyleSheet('components/com_easysdi_map/views/map/tmpl/theme/app/st
                     layers: 
                     [
                      <?php
-                     foreach ($this->item->groups as $group)
+                     //Layers have to be added the lowest before the highest
+                     //To do that, the groups have to be loop in reverse order
+                     $groups_reverse = array_reverse($this->item->groups);
+                     foreach ($groups_reverse as $group)
                      {
                      	//Acces not allowed
                      	if(!in_array($group->access, $user->getAuthorisedViewLevels()))

@@ -97,6 +97,7 @@ class Easysdi_mapTablelayer extends sdiTable {
     	$query->from('#__sdi_layer_layergroup as lg');
     	$query->join('LEFT', '#__sdi_maplayer as l ON l.id = lg.layer_id');
     	$query->where('lg.group_id = ' . (int) $key);
+    	$query->order('lg.ordering DESC' );
     	$this->_db->setQuery($query);
     	try 
     	{

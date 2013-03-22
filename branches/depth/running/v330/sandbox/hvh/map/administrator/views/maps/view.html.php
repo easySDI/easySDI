@@ -131,7 +131,7 @@ class Easysdi_mapViewMaps extends JViewLegacy
 				'a.id' => JText::_('JGRID_HEADING_ID'),
 				'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
 				'a.state' => JText::_('JSTATUS'),
-				'a.name' => JText::_('COM_EASYSDI_MAP_MAPS_NAME'),
+				'a.name' => JText::_('COM_EASYSDI_MAP_FORM_LBL_MAP_NAME'),
 				'a.access_level' => JText::_('JGRID_HEADING_ACCESS'),
 		);
 	}

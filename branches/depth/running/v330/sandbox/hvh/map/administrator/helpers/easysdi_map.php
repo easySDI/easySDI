@@ -104,14 +104,18 @@ class Easysdi_mapHelper
 		}
 		else{
 			$id = substr ($service, strrpos ($service, '_')+1);
-			$query = 'SELECT s.url as url,  sc.value as connector FROM #__sdi_virtualservice s
+			$query = 'SELECT s.url as url,  sc.value as connector, s.alias as alias FROM #__sdi_virtualservice s
 								INNER JOIN #__sdi_sys_serviceconnector sc  ON sc.id = s.serviceconnector_id
 								WHERE s.id='.substr ($service, strrpos ($service, '_')+1);
 			$db->setQuery($query);
-			$resource 			= $db->loadObject();
-			$Juser	= JFactory::getUser();
-			$user = $Juser->username;
-			$password=$Juser->password;
+			$resource 		= $db->loadObject();
+			$Juser			= JFactory::getUser();
+			$user 			= $Juser->username;
+			$password		= $Juser->password;
+$password = "0924130db8ca6180a07ad12bcd534a6f:PZJMUuYk1YJ0vvMbLsmcLjTR42s8q10k";
+			//Url is deducted from the component Service config
+			$params = JComponentHelper::getParams('com_easysdi_service');
+			$resource->url = $params->get('proxyurl').$resource->alias;
 			
 			$db->setQuery(
 								'SELECT sv.value as value, sc.id as id FROM #__sdi_virtualservice_servicecompliance ssc ' .
@@ -172,7 +176,7 @@ class Easysdi_mapHelper
 		}
 		
 		//OGC exception returned
-		if($xmlCapa->getName() == "ServiceExceptionReport")
+		if($xmlCapa->getName() == "ServiceExceptionReport" || $xmlCapa->getName() == "ExceptionReport")
 		{
 			foreach ($xmlCapa->children() as $exception) {
 				$ogccode = $exception['code'];

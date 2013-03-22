@@ -40,7 +40,7 @@
                  
         <field 	name="groups" 
 				type="sql" 
-				class="inputbox"
+				class="input-xxlarge"
 				size="10"
 				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_GROUP_ID"
 				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_GROUP_ID" 
@@ -66,7 +66,7 @@
 				type="ServicegroupedList" 
 				onchange=""
 				multiple ="true"
-				class="inputbox"
+				class="input-xxlarge"
 				size="10"
 				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_SERVICE_ID"
 				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_SERVICE_ID" 
