@@ -23,7 +23,6 @@ $document->addScript('components/com_easysdi_service/views/virtualservice/tmpl/v
 JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 JText::script('COM_EASYSDI_SERVICE_FORM_SERVICE_METADATA_ERROR');
 ?>
-
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.JRequest::getVar('id',null)); ?>" method="post" name="adminForm" id="virtualservice-form" class="form-validate">
 	<div class="row-fluid">
 		<div class="span10 form-horizontal">
@@ -42,15 +41,13 @@ JText::script('COM_EASYSDI_SERVICE_FORM_SERVICE_METADATA_ERROR');
 					<fieldset>
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_DETAILS' );?></legend>
 					
-					<?php foreach($this->form->getFieldset('wmts') as $field): 
-					?> 
+					<?php foreach($this->form->getFieldset('wmts') as $field): ?> 
 						<div class="control-group">
 							<div class="control-label"><?php echo $field->label; ?></div>
 							<div class="controls"><?php echo $field->input; ?></div>
 						</div>
 					<?php endforeach; ?>
-					<?php foreach($this->form->getFieldset('details') as $field): 
-					?> 
+					<?php foreach($this->form->getFieldset('details') as $field): ?> 
 						<div class="control-group">
 							<div class="control-label"><?php echo $field->label; ?></div>
 							<div class="controls"><?php echo $field->input; ?></div>
@@ -60,8 +57,7 @@ JText::script('COM_EASYSDI_SERVICE_FORM_SERVICE_METADATA_ERROR');
 					
 					<fieldset>
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_LOG_CONFIGURATION' );?></legend>
-					<?php foreach($this->form->getFieldset('log_config') as $field):
-					?> 
+					<?php foreach($this->form->getFieldset('log_config') as $field): ?> 
 						<div class="control-group">
 							<div class="control-label"><?php echo $field->label; ?></div>
 							<div class="controls"><?php echo $field->input; ?></div>
@@ -69,8 +65,7 @@ JText::script('COM_EASYSDI_SERVICE_FORM_SERVICE_METADATA_ERROR');
 					<?php endforeach; ?>
 					</fieldset>
 					
-					<?php foreach($this->form->getFieldset('hidden') as $field):
-					?> 
+					<?php foreach($this->form->getFieldset('hidden') as $field): ?> 
 						<div class="control-group">
 							<div class="control-label"><?php echo $field->label; ?></div>
 							<div class="controls"><?php echo $field->input; ?></div>
@@ -98,7 +93,7 @@ JText::script('COM_EASYSDI_SERVICE_FORM_SERVICE_METADATA_ERROR');
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_METADATA_CONTACT' );?></legend>
 					<?php foreach($this->form->getFieldset('contact') as $field):?> 
 						<div class="control-group">
-							<?php if ('jform["contactlocality"]'=!= $field->name) :?>
+							<?php if ('jform["contactlocality"]'!= $field->name) :?>
 							<div class="control-label"><?php echo $field->label; ?></div>
 							<?php endif;?>
 							<div class="controls"><?php echo $field->input; ?></div>
