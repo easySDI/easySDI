@@ -2,12 +2,14 @@
 			if(jQuery('#jform_reflectedmetadata').is(":checked")){
 				jQuery("#metadata :input").val("");
 				jQuery("#metadata :input").attr("disabled", true);
+				jQuery("#jform_country_id").attr("disabled", true);
 				jQuery('#jform_reflectedmetadata').removeAttr("disabled");
 				jQuery("#metadata :checkbox").attr('checked', 'checked');
 			}
 			if(jQuery('#jform_inheritedcontact').is(":checked") && !jQuery('#jform_reflectedmetadata').is(":checked") ){
 				jQuery("#contact :input").val("");
 				jQuery("#contact :input").attr("disabled", true);
+				jQuery("#jform_country_id").attr("disabled", true);
 				jQuery('#jform_inheritedcontact').removeAttr("disabled");
 			}
 			jQuery('#servicemetadata input:checked').each(function() {
@@ -18,6 +20,7 @@
 				jQuery('#jform_reflectedmetadata').attr("disabled", true);
 				jQuery('#jform_reflectedmetadata').attr('checked', false);
 			}
+			jQuery("#metadata").trigger("liszt:updated");
 		});
 
 		Joomla.submitbutton = function(task)
@@ -42,12 +45,15 @@
 			if(jQuery('#jform_reflectedmetadata').is(":checked")){
 				jQuery("#metadata :input").val("");
 				jQuery("#metadata :input").attr("disabled", true);
+				jQuery("#jform_country_id").attr("disabled", true);
 				jQuery('#jform_reflectedmetadata').removeAttr("disabled");
 				jQuery("#metadata :checkbox").attr('checked', 'checked');
 			}else{
 				jQuery('#metadata :input').removeAttr("disabled");
+				jQuery('#jform_country_id').removeAttr("disabled");
 				jQuery("#metadata :checkbox").removeAttr('checked');
 			}
+			jQuery("#metadata").trigger("liszt:updated");
 		}
 		
 		function changeInheritedContact()
@@ -55,10 +61,13 @@
 			if(jQuery('#jform_inheritedcontact').is(":checked")){
 				jQuery("#contact :input").val("");
 				jQuery("#contact :input").attr("disabled", true);
+				jQuery("#jform_country_id").attr("disabled", true);
 				jQuery('#jform_inheritedcontact').removeAttr("disabled");
 			}else{
 				jQuery('#contact :input').removeAttr("disabled");
+				jQuery('#jform_country_id').removeAttr("disabled");
 			}
+			jQuery("#contact").trigger("liszt:updated");
 		}
 		
 		function changeMetadataServiceField(fieldname)
