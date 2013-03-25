@@ -1,4 +1,21 @@
-Joomla.submitbutton = function(task)
+	jQuery(document).ready(function (){
+		enableOrganism();
+	});
+
+	function enableOrganism(){
+		if(jQuery('#jform_servicescope_id').val() != 2){
+			jQuery("#jform_organisms").val("");
+			jQuery("#jform_organisms").css("visibility", "hidden");
+		}
+		else
+		{
+			jQuery("#jform_organisms").css("visibility", "visible");
+		}
+		
+		jQuery("#jform_organisms").trigger("liszt:updated");
+	}
+	
+	Joomla.submitbutton = function(task)
 	{
 		if (task == 'physicalservice.cancel' || document.formvalidator.isValid(document.id('physicalservice-form'))) {
 			Joomla.submitform(task, document.getElementById('physicalservice-form'));

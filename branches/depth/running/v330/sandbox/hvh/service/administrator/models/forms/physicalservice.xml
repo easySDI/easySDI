@@ -28,6 +28,7 @@
 				required="true" />
 				
 		<field 	name="servicescope_id" 
+				onchange="enableOrganism();"
 				type="sql" 
 				class="inputbox"
 				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SERVICESCOPE_ID"
@@ -35,6 +36,17 @@
                 query="SELECT id, value FROM #__sdi_sys_servicescope" 
                 key_field="id" 
                 value_field="value"
+                 /> 
+       
+       <field 	name="organisms" 
+				type="sql" 
+				class="multiselect input-xxlarge"
+				multiple="true"
+				label=""
+				description="" 
+                query="SELECT id, name FROM #__sdi_organism WHERE state=1" 
+                key_field="id" 
+                value_field="name"
                  /> 
 
 		<field 	name="serviceconnector" 

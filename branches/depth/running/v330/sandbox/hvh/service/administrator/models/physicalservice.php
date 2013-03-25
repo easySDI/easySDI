@@ -294,6 +294,44 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 	}
 	
 	/**
+	 * Method to save the organisms allowed by the service scope
+	 *
+	 * @param array 	$pks	array of the #__sdi_organism ids to link with the current service
+	 * @param int		$id		primary key of the current service to save.
+	 *
+	 * @return boolean 	True on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	public function saveServiceScopeOrganism ($pks, $id)
+	{
+		//Delete previously saved compliance
+		$db = $this->getDbo();
+		$db->setQuery(
+				'DELETE FROM #__sdi_physicalservice_organism WHERE physicalservice_id = '.$id
+		);
+		$db->query();
+	
+		$arr_pks = json_decode ($pks);
+		foreach ($arr_pks as $pk)
+		{
+			try {
+				$db->setQuery(
+						'INSERT INTO #__sdi_physicalservice_organism (physicalservice_id, servicecompliance_id) ' .
+						' VALUES ('.$id.','.$pk.')'
+				);
+				if (!$db->query()) {
+					throw new Exception($db->getErrorMsg());
+				}
+			} catch (Exception $e) {
+				$this->setError($e->getMessage());
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
 	 * Method to get the service compliance 
 	 *
 	 * @param int		$id		primary key of the current service to get.
