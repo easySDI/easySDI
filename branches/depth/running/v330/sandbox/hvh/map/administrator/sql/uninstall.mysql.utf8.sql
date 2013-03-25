@@ -8,5 +8,6 @@ DROP TABLE IF EXISTS `#__sdi_map_tool`;
 DROP TABLE IF EXISTS `#__sdi_map_layergroup`;
 DROP TABLE IF EXISTS `#__sdi_map_physicalservice`;
 DROP TABLE IF EXISTS `#__sdi_map_virtualservice`;
+DROP TABLE IF EXISTS `#__sdi_layer_layergroup`;
 
 SET foreign_key_checks = 1;
