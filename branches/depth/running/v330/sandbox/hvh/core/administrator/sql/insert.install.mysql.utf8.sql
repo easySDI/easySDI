@@ -9,6 +9,7 @@ INSERT INTO `#__sdi_sys_role` VALUES ('2','2','1','metadatamanager' );
 INSERT INTO `#__sdi_sys_role` VALUES ('3','3','1','metadataeditor' );
 INSERT INTO `#__sdi_sys_role` VALUES ('4','4','1','productmanager' );
 INSERT INTO `#__sdi_sys_role` VALUES ('5','5','1','previewmanager' );
+INSERT INTO `#__sdi_sys_role` VALUES ('6','6','1','member' );
 
 INSERT INTO `#__sdi_sys_versiontype` (ordering,state,value) 
 VALUES 
