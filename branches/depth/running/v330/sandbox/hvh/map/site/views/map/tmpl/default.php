@@ -19,7 +19,7 @@ $document = JFactory::getDocument();
 if( $this->item ) : 
 
 $document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/ux/ext/RowExpander.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/geoext/lib/geoext.min.js');
@@ -32,15 +32,7 @@ foreach($files as $file) {
   $document->addScript($file);
 }
 
-$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/ext/resources/css/ext-all.css');
-$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/ext/resources/css/xtheme-gray.css');
-$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/openlayers/theme/default/style.css');
-$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/geoext/resources/css/popup.css');
-$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/geoext/resources/css/layerlegend.css');
-$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/geoext/resources/css/gxtheme-gray.css');
-$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/ux/geoext/resources/css/printpreview.css');
-$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/gxp/theme/all.css');
-$document->addStyleSheet('components/com_easysdi_map/views/map/tmpl/theme/app/style.css');
+
 ?>
 	<div id="sdimapcontainer" class="cls-sdimapcontainer">
 	</div>
