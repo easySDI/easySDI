@@ -14,7 +14,7 @@ class WmsPhysicalService extends PhysicalService{
 	}
 	
 	public function getLayerByName ($name) {
-		return $this->featureTypeList[$name];
+		return $this->layerList[$name];
 	}
 	
 	public function addLayer ($layer) {

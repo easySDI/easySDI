@@ -29,7 +29,7 @@ class WmsWebservice {
 		$policyID = ('' == $raw_GET['policyID'])?0:$raw_GET['policyID'];
 		$layerID = $raw_GET['layerID'];
 		
-		$layerObj = WfsWebservice::getFeatureTypeSettings(
+		$layerObj = WmsWebservice::getWmsLayerSettings(
 			$physicalServiceID,
 			$policyID,
 			$layerID
@@ -58,11 +58,14 @@ class WmsWebservice {
 				<input type="checkbox" name="enabled" value="1" ' . ((1 == $layerObj->enabled)?'checked="checked"':'') . ' /> ' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_ENABLED') . '
 			</label>
 			<hr />
-			<label for="localgeographicfilter">' . JText::_('COM_EASYSDI_SERVICE_WFS_LAYER_LOCAL_FILTER') . '</label>
-			<textarea name="localgeographicfilter" rows="5" class="span12">' . $layerObj->localFilterGML . '</textarea>
+			<label for="minimumscale">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MINIMUM_SCALE') . '</label>
+			<input type="text" name="minimumscale" value="' . $layerObj->minimumScale . '" />
 			<br />
-			<label for="remotegeographicfilter">' . JText::_('COM_EASYSDI_SERVICE_WFS_LAYER_REMOTE_FILTER') . '</label>
-			<textarea name="remotegeographicfilter" rows="5" class="span12">' . $layerObj->remoteFilterGML . '</textarea>
+			<label for="maximumscale">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MAXIMUM_SCALE') . '</label>
+			<input type="text" name="maximumscale" value="' . $layerObj->maximumScale . '" />
+			<br />
+			<label for="geographicfilter">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_FILTER') . '</label>
+			<textarea name="geographicfilter" rows="5" class="span12">' . $layerObj->geographicFilter . '</textarea>
 			<input type="hidden" name="psID" value="' . $physicalServiceID . '"/>
 			<input type="hidden" name="policyID" value="' . $policyID . '"/>
 			<input type="hidden" name="layerID" value="' . $layerID . '"/>
@@ -71,7 +74,7 @@ class WmsWebservice {
 	}
 	
 	private static function getWmsLayerSettings ($physicalServiceID, $policyID, $layerID) {
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WfsPhysicalService.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmsPhysicalService.php');
 		
 		$db = JFactory::getDbo();
 		
@@ -143,14 +146,14 @@ class WmsWebservice {
 		//save Spatial Policy
 		$db->setQuery('
 			SELECT sp.id
-			FROM #__sdi_wfs_spatialpolicy sp
-			JOIN #__sdi_featuretype_policy ftp
-			ON sp.id = ftp.spatialpolicy_id
+			FROM #__sdi_wms_spatialpolicy sp
+			JOIN #__sdi_wmslayer_policy wlp
+			ON sp.id = wlp.spatialpolicy_id
 			JOIN #__sdi_physicalservice_policy psp
-			ON psp.id = ftp.physicalservicepolicy_id
+			ON psp.id = wlp.physicalservicepolicy_id
 			WHERE psp.physicalservice_id = ' . $physicalServiceID . '
 			AND psp.policy_id = ' . $policyID . '
-			AND ftp.name = \'' . $layerID . '\';
+			AND wlp.name = \'' . $layerID . '\';
 		');
 		
 		try {
@@ -164,19 +167,21 @@ class WmsWebservice {
 			return false;
 		}
 		
+		//TODO: add values calculated by the JS
 		if (0 == $num_result) {
 			$query = $db->getQuery(true);
-			$query->insert('#__sdi_wfs_spatialpolicy')->columns('
-				localgeographicfilter, remotegeographicfilter
+			$query->insert('#__sdi_wms_spatialpolicy')->columns('
+				geographicfilter, minimumscale, maximumscale
 			')->values('
-				\'' . $raw_GET['localgeographicfilter'] . '\', \'' . $raw_GET['remotegeographicfilter'] . '\'
+				\'' . $raw_GET['geographicfilter'] . '\', \'' . $raw_GET['minimumscale'] . '\', \'' . $raw_GET['maximumscale'] . '\'
 			');
 		}
 		else {
 			$query = $db->getQuery(true);
-			$query->update('#__sdi_wfs_spatialpolicy')->set(Array(
-				'localgeographicfilter = \'' . $raw_GET['localgeographicfilter'] . '\'',
-				'remotegeographicfilter = \'' . $raw_GET['remotegeographicfilter'] . '\'',
+			$query->update('#__sdi_wms_spatialpolicy')->set(Array(
+				'geographicfilter = \'' . $raw_GET['geographicfilter'] . '\'',
+				'minimumscale = \'' . $raw_GET['minimumscale'] . '\'',
+				'maximumscale = \'' . $raw_GET['maximumscale'] . '\'',
 			))->where(Array(
 				'id = \'' . $spatial_policy_id . '\'',
 			));
@@ -198,19 +203,19 @@ class WmsWebservice {
 		
 		//save Feature Type Policy
 		$db->setQuery('
-			SELECT ftp.id
-			FROM #__sdi_featuretype_policy ftp
+			SELECT wlp.id
+			FROM #__sdi_wmslayer_policy wlp
 			JOIN #__sdi_physicalservice_policy psp
-			ON psp.id = ftp.physicalservicepolicy_id
+			ON psp.id = wlp.physicalservicepolicy_id
 			WHERE psp.physicalservice_id = ' . $physicalServiceID . '
 			AND psp.policy_id = ' . $policyID . '
-			AND ftp.name = \'' . $layerID . '\';
+			AND wlp.name = \'' . $layerID . '\';
 		');
 		
 		try {
 			$db->execute();
 			$num_result = $db->getNumRows();
-			$featuretypepolicy_id = $db->loadResult();
+			$wmslayerpolicy_id = $db->loadResult();
 		}
 		catch (JDatabaseException $e) {
 			$je = new JException($e->getMessage());
@@ -238,7 +243,7 @@ class WmsWebservice {
 			}
 			
 			$query = $db->getQuery(true);
-			$query->insert('#__sdi_featuretype_policy')->columns('
+			$query->insert('#__sdi_wmslayer_policy')->columns('
 				name, enabled, spatialpolicy_id, physicalservicepolicy_id
 			')->values('
 				\'' . $layerID . '\', \'' . $enabled . '\', \'' . $spatial_policy_id . '\', \'' . $physicalservice_policy_id . '\'
@@ -246,10 +251,10 @@ class WmsWebservice {
 		}
 		else {
 			$query = $db->getQuery(true);
-			$query->update('#__sdi_featuretype_policy')->set(Array(
+			$query->update('#__sdi_wmslayer_policy')->set(Array(
 				'enabled = \'' . $enabled . '\'',
 			))->where(Array(
-				'id = \'' . $featuretypepolicy_id . '\'',
+				'id = \'' . $wmslayerpolicy_id . '\'',
 			));
 		}
 		
@@ -258,7 +263,7 @@ class WmsWebservice {
 		try {
 			$db->execute();
 			if (0 == $num_result) {
-				$featuretypepolicy_id = $db->insertid();
+				$wmslayerpolicy_id = $db->insertid();
 			}
 		}
 		catch (JDatabaseException $e) {
