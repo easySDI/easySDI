@@ -109,7 +109,7 @@ $sortFields = $this->getSortFields();
 						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_PHYSICALSERVICES_NAME', 'a.name', $listDirn, $listOrder); ?>
 					</th>
 					<th class='nowrap hidden-phone'>
-						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_PHYSICALSERVICES_CONNECTOR', 'serviceconnector_value', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_PHYSICALSERVICES_CONNECTOR', 'serviceconnector', $listDirn, $listOrder); ?>
 					</th>
 					<th class='left'>
 						<?php echo JHtml::_('grid.sort', 'JCATEGORY', 'category_title', $listDirn, $listOrder); ?>
@@ -147,10 +147,10 @@ $sortFields = $this->getSortFields();
 				$canEditOwn 	= $canDo->get('core.edit.own');
 				$canChange 		= $canDo->get('core.edit.state');
 				$canCheckin		= $user->authorise('core.manage',		'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
-				$islocked = ($item->serviceconnector_value == 'Bing' || $item->serviceconnector_value == 'Google' || $item->serviceconnector_value == 'OSM')? true : false;
+				$islocked = ($item->serviceconnector == 'Bing' || $item->serviceconnector == 'Google' || $item->serviceconnector == 'OSM')? true : false;
 			?>
-			<tr class="row<?php echo $i % 2; ?>">
-                    
+<!--  			<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->catid?>"> -->
+                <tr class="row<?php echo $i % 2; ?>" >
                 <?php if (isset($this->items[0]->ordering)): ?>
 				<td class="order nowrap center hidden-phone">
 				<?php if ($canChange) :
@@ -242,7 +242,7 @@ $sortFields = $this->getSortFields();
 				</div>
 			</td>
 			<td align="small hidden-phone">
-				<?php echo $item->serviceconnector_value; ?>
+				<?php echo $item->serviceconnector; ?>
 			</td>
 			<td align="small hidden-phone">
 				<?php echo $item->category_title; ?>

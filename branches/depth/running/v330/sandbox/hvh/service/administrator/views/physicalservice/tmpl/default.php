@@ -59,7 +59,7 @@ JText::script('COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION_ERROR');
 								?>
 								<div class="control-group">
 									<div class="control-label"><?php echo $field->label; ?></div>
-									<div class="controls form-inline"><?php echo $this->form->getInput('negotiation'); ?><?php  echo $field->input; ?></div>
+									<div class="row controls form-inline"><?php echo $this->form->getInput('negotiation'); ?><?php  echo $field->input; ?></div>
 								</div>
 								<?php
 							}

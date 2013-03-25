@@ -21,7 +21,7 @@ class JFormFieldSupportedVersions extends JFormField {
 		
 		$supportedversions = json_decode($this->form->getValue('supportedversions'));
 		// Start the action field output.
-		$html[]  = '<span id="div-supportedversions" class="' . (string) $this->element['class'] . ' ">';
+		$html[]  = '<span id="div-supportedversions" class="span5 ' . (string) $this->element['class'] . ' ">';
 		if($supportedversions)
 		{
 			foreach($supportedversions as $supportedversion)
@@ -31,6 +31,9 @@ class JFormFieldSupportedVersions extends JFormField {
 				$html[] .= '</span>';
 			}
 		}
+		$html[] .= '</span>';
+
+		
 		$html[] .= '</span>';
 		
 		return implode($html);

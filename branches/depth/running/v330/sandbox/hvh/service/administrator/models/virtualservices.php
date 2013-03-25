@@ -55,7 +55,7 @@ class Easysdi_serviceModelvirtualservices extends JModelList
                 'loglevel_id', 'a.loglevel_id',
                 'logroll_id', 'a.logroll_id',
             	'access', 'a.access', 'access_level',
-
+            	'serviceconnector',
             );
         }
 
@@ -80,7 +80,8 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 		$published = $app->getUserStateFromRequest($this->context.'.filter.state', 'filter_published', '', 'string');
 		$this->setState('filter.state', $published);
         
-        
+		$connector = $app->getUserStateFromRequest($this->context.'.filter.connector', 'filter_connector', '', 'string');
+		$this->setState('filter.connector', $connector);
         
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_easysdi_service');
@@ -168,6 +169,7 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 		// Compile the store id.
 		$id.= ':' . $this->getState('filter.search');
 		$id.= ':' . $this->getState('filter.state');
+		$id.= ':' . $this->getState('filter.connector');
 
 		return parent::getStoreId($id);
 	}
@@ -205,6 +207,10 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 		// Join over the created by field 'created_by'
 		$query->select('created_by.name AS created_by');
 		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
+		
+		// Join over the foreign key serviceconnector_id
+		$query->select('ssc.value AS serviceconnector');
+		$query->join('LEFT', '#__sdi_sys_serviceconnector AS ssc ON ssc.id = a.serviceconnector_id');
 			
 		// Join over the foreign key 'proxytype_id'
 		$query->select('#__sdi_sys_proxytype_278358.value AS sysproxytypes_proxytype_278358');
@@ -222,6 +228,12 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 		$query->select('#__sdi_sys_logroll_278363.value AS __sdi_sys_logroll5937s_logroll_278363');
 		$query->join('LEFT', '#__sdi_sys_logroll AS #__sdi_sys_logroll_278363 ON #__sdi_sys_logroll_278363.id = a.logroll_id');
 	
+		// Filter by connector state
+		$connector = $this->getState('filter.connector');
+		if (is_numeric($connector)) {
+			$query->where('ssc.id = '.(int) $connector);
+		} 
+		
 	    // Filter by published state
 	    $published = $this->getState('filter.state');
 	    if (is_numeric($published)) {

@@ -145,8 +145,7 @@ $params = JComponentHelper::getParams('com_easysdi_service');
 				$canChange 		= $canDo->get('core.edit.state');
 				$canCheckin		= $user->authorise('core.manage',		'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
 				?>
-			<tr class="row<?php echo $i % 2; ?>">
-                    
+			<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->virtualservice_id?>">
                 <?php if (isset($item->ordering)): ?>
                 <td class="order nowrap center hidden-phone">
 					<?php if ($canChange) :

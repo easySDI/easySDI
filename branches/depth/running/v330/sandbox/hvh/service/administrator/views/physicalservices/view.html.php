@@ -131,6 +131,11 @@ class Easysdi_serviceViewPhysicalServices extends JViewLegacy
 		JHtmlSidebar::setAction('index.php?option=com_easysdi_service&view=physicalservices');
 		$this->extra_sidebar = '';
 		JHtmlSidebar::addFilter(
+				JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_SELECT_CONNECTOR'),
+				'filter_connector',
+				JHtml::_('select.options', $this->connector, "id", "value", $this->state->get('filter.connector'), true)
+		);
+		JHtmlSidebar::addFilter(
 			JText::_('JOPTION_SELECT_PUBLISHED'),
 			'filter_published',
 			JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), "value", "text", $this->state->get('filter.state'), true)
@@ -154,7 +159,7 @@ class Easysdi_serviceViewPhysicalServices extends JViewLegacy
 			'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
 			'a.state' => JText::_('JSTATUS'),
 			'a.name' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_NAME'),
-			'serviceconnector_value' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_CONNECTOR'),
+			'serviceconnector' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_CONNECTOR'),
 			'category_title' => JText::_('JCATEGORY'),
 			'a.access' => JText::_('JGRID_HEADING_ACCESS'),
 			'a.id' => JText::_('JGRID_HEADING_ID'),

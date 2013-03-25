@@ -105,16 +105,19 @@ $params = JComponentHelper::getParams('com_easysdi_service');
 						<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
 						</th>
 	                <?php endif; ?>
-	                <th class='left'>
+	                <th class='left hidden-phone'>
 						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_VIRTUALSERVICES_NAME', 'a.name', $listDirn, $listOrder); ?>
 					</th>
-					<th class='left'>
+					<th class='left hidden-phone'>
+						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_VIRTUALSERVICES_SERVICECONNECTOR', 'serviceconnector', $listDirn, $listOrder); ?>
+					</th>
+					<th class='left hidden-phone'>
 						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_VIRTUALSERVICES_URL', 'a.url', $listDirn, $listOrder); ?>
 					</th>
-					<th class='left'>
+					<th class='left hidden-phone'>
 						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_VIRTUALSERVICES_REFLECTEDURL', 'a.reflectedurl', $listDirn, $listOrder); ?>
 					</th>
-					<th class='left'>
+					<th class='left hidden-phone'>
 						<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
 					</th>
 				     <?php if (isset($this->items[0]->id)): ?>
@@ -229,6 +232,9 @@ $params = JComponentHelper::getParams('com_easysdi_service');
 						echo JHtml::_('dropdown.render');
 					?>
 				</div>
+			</td>
+			<td align="small hidden-phone">
+				<?php echo $item->serviceconnector; ?>
 			</td>
 			<td align="small hidden-phone">
 				<?php echo $params->get('proxyurl').$item->alias;; ?>
