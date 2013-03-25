@@ -134,12 +134,11 @@ class Easysdi_contactViewOrganisms extends JViewLegacy
 	protected function getSortFields()
 	{
 		return array(
-		'a.id' => JText::_('JGRID_HEADING_ID'),
-		'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
-		'a.state' => JText::_('JSTATUS'),
-		'a.name' => JText::_('COM_EASYSDI_CONTACT_USERS_USER_NAME'),
-		'a.category_title' => JText::_('JCATEGORY'),
-		'a.access_level' => JText::_('JGRID_HEADING_ACCESS'),
+			'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
+			'a.state' => JText::_('JSTATUS'),
+			'a.name' => JText::_('COM_EASYSDI_CONTACT_USERS_USER_NAME'),
+			'a.access_level' => JText::_('JGRID_HEADING_ACCESS'),
+			'a.id' => JText::_('JGRID_HEADING_ID'),
 		);
 	}
 

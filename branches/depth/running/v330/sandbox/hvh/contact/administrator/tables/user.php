@@ -87,4 +87,17 @@ class Easysdi_contactTableuser extends sdiTable
     	
     	return parent::bind($array, $ignore);
     }
+    
+    /**
+     * Overloaded check function
+     */
+    public function check() {
+    	//If there is an ordering column and this is a new row then get the next ordering value
+    	if (property_exists($this, 'ordering') && $this->id == 0)
+    	{
+    		$this->ordering = self::getNextOrder('catid = '.$this->catid);
+    	}
+    
+    	return true;
+    }
 }
