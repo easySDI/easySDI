@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="1.6.0" method="upgrade">
     <name>com_easysdi_contact</name>
-    <creationDate>15 August 2012</creationDate>
+    <creationDate>14 february 2013</creationDate>
     <releaseDate>14 february 2013</releaseDate>
     <copyright>Copyright (C) 2013. All rights reserved.</copyright>
     <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
