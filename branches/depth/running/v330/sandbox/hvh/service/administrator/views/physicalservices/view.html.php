@@ -151,13 +151,13 @@ class Easysdi_serviceViewPhysicalServices extends JViewLegacy
 	protected function getSortFields()
 	{
 		return array(
-			'a.id' => JText::_('JGRID_HEADING_ID'),
 			'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
 			'a.state' => JText::_('JSTATUS'),
 			'a.name' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_NAME'),
-			'a.access' => JText::_('JGRID_HEADING_ACCESS'),
-			'category_title' => JText::_('JCATEGORY'),
 			'serviceconnector_value' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_CONNECTOR'),
+			'category_title' => JText::_('JCATEGORY'),
+			'a.access' => JText::_('JGRID_HEADING_ACCESS'),
+			'a.id' => JText::_('JGRID_HEADING_ID'),
 		);
 	}
 }

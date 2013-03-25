@@ -66,7 +66,7 @@ class Easysdi_serviceViewPolicies extends JViewLegacy
 
             if ($canDo->get('core.create')) {
 		    	//Create custom button with a dropdown list allowing virtual service selection for new policy action
-		    	$dropdown = '<button class="btn dropdown-toggle btn-small btn-success" data-toggle="dropdown"><i class="icon-new icon-white"> '.JText::_('JTOOLBAR_NEW').'</i></button>
+		    	$dropdown = '<button class="btn dropdown-toggle btn-small btn-success" data-toggle="dropdown"><i class="icon-new icon-white"> '.JText::_('COM_EASYSDI_SERVICE_TOOLBAR_POLICY_NEW').'</i></button>
 		    	<ul class="dropdown-menu">';
 		    	foreach ($virtualserviceList as $virtualservice){
 		    		$dropdown .= '<li><a href="index.php?option=com_easysdi_service&view=policy&layout='.$virtualservice->connector.'&virtualservice_id='.$virtualservice->id.'">'.$virtualservice->name.'</a></li>';
@@ -145,12 +145,12 @@ class Easysdi_serviceViewPolicies extends JViewLegacy
 	protected function getSortFields()
 	{
 		return array(
-				'a.id' => JText::_('JGRID_HEADING_ID'),
 				'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
 				'a.state' => JText::_('JSTATUS'),
-				'a.name' => JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_NAME'),
-				'a.virtualservice_id' => JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_VIRTUALSERVICE'),
+				'a.name' => JText::_('COM_EASYSDI_SERVICE_POLICIES_NAME'),
+				'virtualservice_name' => JText::_('COM_EASYSDI_SERVICE_POLICIES_VIRTUALSERVICE'),
 				'a.access' => JText::_('JGRID_HEADING_ACCESS'),
+				'a.id' => JText::_('JGRID_HEADING_ID'),
 		);
 	}
 }

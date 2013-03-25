@@ -28,12 +28,12 @@ class Easysdi_serviceModelpolicies extends JModelList
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                                'id', 'a.id',
+                'id', 'a.id',
                 'ordering', 'a.ordering',
                 'state', 'a.state',
-            		'params', 'a.params',
-            		'asset_id', 'a.asset_id',
-            		'access', 'a.access', 'access_level',
+            	'params', 'a.params',
+            	'asset_id', 'a.asset_id',
+            	'access', 'a.access', 'access_level',
                 'created_by', 'a.created_by',
                 'anonymousaccess', 'a.anonymousaccess',
                 'anygroup', 'a.anygroup',
@@ -46,6 +46,8 @@ class Easysdi_serviceModelpolicies extends JModelList
                 'modified_by', 'a.modified_by',
                 'modified', 'a.modified',
                 'virtualservice_id', 'a.virtualservice_id',
+            	'virtualservice_name', 
+            	'connector',
                 'csw_version', 'a.csw_version',
                 'csw_anystate', 'a.csw_anystate',
                 'csw_anycontext', 'a.csw_anycontext',
@@ -82,7 +84,6 @@ class Easysdi_serviceModelpolicies extends JModelList
 		
 		$virtualservice = $app->getUserStateFromRequest($this->context.'.filter.virtualservice', 'filter_virtualservice', '', 'string');
 		$this->setState('filter.virtualservice', $virtualservice);
-                
         
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_easysdi_service');
@@ -149,9 +150,9 @@ class Easysdi_serviceModelpolicies extends JModelList
 		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
 		
 		// Join over the foreign key 'virtualservice_id'
-		$query->select('#__sdi_virtualservice_261251.name AS virtualservices_name, sc.value as connector');
-		$query->join('LEFT', '#__sdi_virtualservice AS #__sdi_virtualservice_261251 ON #__sdi_virtualservice_261251.id = a.virtualservice_id');
-		$query->join('LEFT', '#__sdi_sys_serviceconnector AS sc ON sc.id = #__sdi_virtualservice_261251.serviceconnector_id');
+		$query->select('vs.name AS virtualservice_name, sc.value as connector');
+		$query->join('LEFT', '#__sdi_virtualservice AS vs ON vs.id = a.virtualservice_id');
+		$query->join('LEFT', '#__sdi_sys_serviceconnector AS sc ON sc.id = vs.serviceconnector_id');
 		
 		
 	    // Filter by published state
@@ -178,8 +179,6 @@ class Easysdi_serviceModelpolicies extends JModelList
 		if (!empty($virtualservice)) {
 			$query->where('a.virtualservice_id = ' .$virtualservice);
 		}
-			
-			//$query->where('a.virtualservice_id = ' . JRequest::getVar('virtualservice_id'));
 			
 		// Add the list ordering clause.
 	    $orderCol	= $this->state->get('list.ordering');

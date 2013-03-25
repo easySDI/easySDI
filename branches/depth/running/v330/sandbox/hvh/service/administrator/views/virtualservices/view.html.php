@@ -138,11 +138,13 @@ class Easysdi_serviceViewVirtualservices extends JViewLegacy
 	protected function getSortFields()
 	{
 		return array(
-				'a.id' => JText::_('JGRID_HEADING_ID'),
 				'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
 				'a.state' => JText::_('JSTATUS'),
 				'a.name' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_NAME'),
+				'a.url' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_URL'),
+				'a.reflectedurl' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_REFLECTEDURL'),
 				'a.access' => JText::_('JGRID_HEADING_ACCESS'),
+				'a.id' => JText::_('JGRID_HEADING_ID'),
 		);
 	}
 }

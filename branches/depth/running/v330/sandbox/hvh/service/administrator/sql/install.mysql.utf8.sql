@@ -310,6 +310,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_tilematrix_policy` (
 `tilemaxrow` INT(11) ,
 `tilemincol` INT(11) ,
 `tilemaxcol` INT(11) ,
+`anytile` TINYINT(1)  NOT NULL DEFAULT '1',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 

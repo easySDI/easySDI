@@ -35,6 +35,7 @@ class Easysdi_serviceModelvirtualservices extends JModelList
                 'name', 'a.name',
                 'alias', 'a.alias',
                 'connector', 'a.connector',
+            	'url', 'a.url',
                 'reflectedurl', 'a.reflectedurl',
                 'reflectedmetadata', 'a.reflectedmetadata',
                 'xsltfilename', 'a.xsltfilename',
