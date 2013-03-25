@@ -13,6 +13,10 @@ class WmsPhysicalService extends PhysicalService{
 		return $this->layerList;
 	}
 	
+	public function getLayerByName ($name) {
+		return $this->featureTypeList[$name];
+	}
+	
 	public function addLayer ($layer) {
 		$this->layerList[$layer->name] = $layer;
 	}
@@ -43,7 +47,7 @@ class WmsPhysicalService extends PhysicalService{
 	 * 
 	 */
 	public function sortLists () {
-		uasort($this->tileMatrixSetList, array("WmsLayer", "compareNames"));
+		uasort($this->layerList, array("WmsLayer", "compareNames"));
 	}
 	
 	public function loadData ($data) {

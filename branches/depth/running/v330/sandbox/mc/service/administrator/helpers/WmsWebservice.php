@@ -6,14 +6,14 @@ defined('_JEXEC') or die;
 /**
  * Easysdi_service helper.
  */
-class WfsWebservice {
+class WmsWebservice {
 	public static function request ($params) {
 		switch ($params['method']) {
-			case 'getFeatureTypeForm':
-				echo WfsWebservice::getFeatureTypeForm($params);
+			case 'getWmsLayerForm':
+				echo WmsWebservice::getWmsLayerForm($params);
 				break;
-			case 'setFeatureTypeSettings':
-				if (WfsWebservice::setFeatureTypeSettings($params)) {
+			case 'setWmsLayerSettings':
+				if (WmsWebservice::setWmsLayerSettings($params)) {
 					echo 'OK';
 				}
 				break;
@@ -24,7 +24,7 @@ class WfsWebservice {
 		die();
 	}
 	
-	private static function getFeatureTypeForm ($raw_GET) {
+	private static function getWmsLayerForm ($raw_GET) {
 		$physicalServiceID = $raw_GET['physicalServiceID'];
 		$policyID = ('' == $raw_GET['policyID'])?0:$raw_GET['policyID'];
 		$layerID = $raw_GET['layerID'];
@@ -70,7 +70,7 @@ class WfsWebservice {
 		return $html;
 	}
 	
-	private static function getFeatureTypeSettings ($physicalServiceID, $policyID, $layerID) {
+	private static function getWmsLayerSettings ($physicalServiceID, $policyID, $layerID) {
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WfsPhysicalService.php');
 		
 		$db = JFactory::getDbo();
@@ -91,20 +91,20 @@ class WfsWebservice {
 		}
 		
 		$db->setQuery('
-			SELECT ftp.*, wsp.*, ftp.id AS featuretypepolicy_id
-			FROM #__sdi_featuretype_policy ftp
+			SELECT wlp.*, wsp.*, wlp.id AS wmslayerpolicy_id
+			FROM #__sdi_wmslayer_policy wlp
 			JOIN #__sdi_physicalservice_policy pp
-			ON ftp.physicalservicepolicy_id = pp.id
-			JOIN #__sdi_wfs_spatialpolicy wsp
-			ON ftp.spatialpolicy_id = wsp.id
+			ON wlp.physicalservicepolicy_id = pp.id
+			JOIN #__sdi_wms_spatialpolicy wsp
+			ON wlp.spatialpolicy_id = wsp.id
 			WHERE pp.physicalservice_id = ' . $physicalServiceID . '
 			AND pp.policy_id = ' . $policyID . '
-			AND ftp.name = \'' . $layerID . '\';
+			AND wlp.name = \'' . $layerID . '\';
 		');
 		
 		try {
 			$db->execute();
-			$featuretypepolicy = $db->loadObject();
+			$wmslayerpolicy = $db->loadObject();
 		}
 		catch (JDatabaseException $e) {
 			$je = new JException($e->getMessage());
@@ -114,24 +114,25 @@ class WfsWebservice {
 		
 		//preparing the object to be returned
 		$data = Array();
-		if (isset($featuretypepolicy)) {
+		if (isset($wmslayerpolicy)) {
 			$data[$layerID] = Array(
-				'enabled' => $featuretypepolicy->enabled,
-				'remoteFilterGML' => $featuretypepolicy->localgeographicfilter,
-				'localFilterGML' => $featuretypepolicy->remotegeographicfilter,
+				'enabled' => $wmslayerpolicy->enabled,
+				'geographicFilter' => $wmslayerpolicy->geographicfilter,
+				'maximumScale' => $wmslayerpolicy->maximumscale,
+				'minimumScale' => $wmslayerpolicy->minimumscale,
 			);
 		}
 		
-		$wfsObj = new WfsPhysicalService($physicalServiceID, $url);
-		$wfsObj->getCapabilities();
-		$wfsObj->populate();
-		$wfsObj->loadData($data);
-		$layerObj = $wfsObj->getLayerByName($layerID);
+		$wmsObj = new WmsPhysicalService($physicalServiceID, $url);
+		$wmsObj->getCapabilities();
+		$wmsObj->populate();
+		$wmsObj->loadData($data);
+		$layerObj = $wmsObj->getLayerByName($layerID);
 		
 		return $layerObj;
 	}
 	
-	private static function setFeatureTypeSettings ($raw_GET) {
+	private static function setWmsLayerSettings ($raw_GET) {
 		$enabled = (isset($raw_GET['enabled']))?1:0;
 		$physicalServiceID = $raw_GET['psID'];
 		$policyID = $raw_GET['policyID'];

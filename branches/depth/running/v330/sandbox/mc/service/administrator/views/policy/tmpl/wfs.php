@@ -20,6 +20,7 @@ JHtml::_('behavior.keepalive');
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/policy.js');
+$document->addScript('components/com_easysdi_service/views/policy/tmpl/wfs.js');
 JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 
 //TODO: use this fct to implement inherited forms
@@ -34,52 +35,13 @@ function printSpatialPolicyForm ($suffix, $data) {
 	$db->execute();
 	$resultset = $db->loadObjectList();
 	
-	$html = '
-		<label class="checkbox">
-			<input type="checkbox" name="anyitem" value="1" ' . ((1 == $data->anyitem)?'checked="checked"':'') . ' /> ' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMTS_ANYITEM') . '
-			<input type="checkbox" name="inheritedspatialpolicy" value="1" ' . ((1 == $data->inheritedspatialpolicy)?'checked="checked"':'') . ' /> ' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMTS_INHERITEDSPATIALPOLICY') . '
-		</label>
-		<hr />
-		<table>
-			<tr>
-				<td></td>
-				<td>
-					<input type="text" name="northBoundLatitude_' . $suffix . '" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_NORTH_BOUND_LATITUDE') . '" value="' . $data->northBoundLatitude . '"/>
-				</td>
-				<td></td>
-			</tr>
-			<tr>
-				<td>
-					<input type="text" name="westBoundLongitude_' . $suffix . '" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_WEST_BOUND_LONGITUDE') . '" value="' . $data->westBoundLongitude . '"/>
-				</td>
-				<td></td>
-				<td>
-					<input type="text" name="eastBoundLongitude_' . $suffix . '" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_EAST_BOUND_LONGITUDE') . '" value="' . $data->eastBoundLongitude . '"/>
-				</td>
-			</tr>
-			<tr>
-				<td></td>
-				<td>
-					<input type="text" name="southBoundLatitude_' . $suffix . '" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_SOUTH_BOUND_LATITUDE') . '" value="' . $data->southBoundLatitude . '"/>
-				</td>
-				<td></td>
-			</tr>
-		</table>
-		<hr />
-		<select name="spatial_operator_id_' . $suffix . '">
-			<option value="">' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_SPATIAL_OPERATOR_LABEL') . '</option>';
-			foreach ($resultset as $spatialOperator) {
-				$html .= '<option value="' . $spatialOperator->id . '" ' . (($spatialOperator->id == $data->spatialOperator)?'selected="selected"':'') . '>' . $spatialOperator->value . '</option>';
-			}
-	$html .= '</select>
-		<hr />
-	';
+	$html = '';
 	return $html;
 }
 
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&layout=wmts&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="policy-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&layout=wfs&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="policy-form" class="form-validate">
 	<div class="row-fluid">
 		<div class="span10 form-horizontal">
 			<ul class="nav nav-tabs">
@@ -105,7 +67,7 @@ function printSpatialPolicyForm ($suffix, $data) {
 					</fieldset>
 					
 					<div class="control-group">
-					<?php foreach($this->form->getFieldset('wmts_policy_hidden') as $field):?> 
+					<?php foreach($this->form->getFieldset('wfs_policy_hidden') as $field):?> 
 						<div class="controls"><?php echo $field->input; ?></div>
 					<?php
 					endforeach;
@@ -228,7 +190,7 @@ function printSpatialPolicyForm ($suffix, $data) {
 					}
 					?>
 				</div>
-	
+				
 				<div class="control-group">
 					<div class="control-label">
 						<?php echo $this->form->getLabel('access'); ?>
@@ -242,7 +204,8 @@ function printSpatialPolicyForm ($suffix, $data) {
 		<!-- End Sidebar -->
 	</div>
 	
-	<input type="hidden" name="layout" id="layout" value="wmts" />
+	<input type="hidden" name="layout" id="layout" value="wfs" />
+	<input type="hidden" name="vs_id" id="vs_id" value="<?php echo JRequest::getVar('virtualservice_id',null); ?>" />
 	<input type="hidden" name="task" value="" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>
@@ -250,14 +213,14 @@ function printSpatialPolicyForm ($suffix, $data) {
 <div id="layer_settings_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 712px;">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3 id="myModalLabel"><?php echo JText::_('COM_EASYSDI_SERVICE_WMTS_MODAL_TITLE');?> : <span id="layer_name"></span></h3>
+		<h3 id="myModalLabel"><?php echo JText::_('COM_EASYSDI_SERVICE_WFS_MODAL_TITLE');?> : <span id="layer_name"></span></h3>
 	</div>
 	<div class="modal-body">
 		<img class="loaderImg" src="<?php echo JURI::base(true).DS.'components'.DS.'com_easysdi_service'.DS.'assets'.DS.'images'.DS.'loader.gif'; ?>" />
 		<form id="modal_layer_form"></form>
 	</div>
 	<div class="modal-footer">
-		<button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo JText::_('COM_EASYSDI_SERVICE_WMTS_MODAL_CANCEL');?></button>
-		<button class="btn btn-primary"><?php echo JText::_('COM_EASYSDI_SERVICE_WMTS_MODAL_SAVE');?></button>
+		<button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo JText::_('COM_EASYSDI_SERVICE_MODAL_CANCEL');?></button>
+		<button class="btn btn-primary"><?php echo JText::_('COM_EASYSDI_SERVICE_MODAL_SAVE');?></button>
 	</div>
 </div>

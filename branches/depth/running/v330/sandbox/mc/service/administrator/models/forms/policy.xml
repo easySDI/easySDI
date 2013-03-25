@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="policy">
-		<field name="id" type="text" default="0" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ID" readonly="true" class="readonly" description="JGLOBAL_FIELD_ID_DESC" />
 		<field name="name" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_POLICY_ID" description="COM_EASYSDI_SERVICE_POLICY_ID"  filter="safehtml" />
 		<field name="anyoperation" type="checkbox" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ANYOPERATION" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ANYOPERATION"  value="1" default="0" />
 		<field name="anyservice" type="checkbox" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ANYSERVICE" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ANYSERVICE"  value="1" default="0" />
@@ -19,6 +18,8 @@
 	</fieldset>
 	
 	<fieldset name="wms_policy">
+		<field name="prefix" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_PREFIX" filter="safehtml" />
+		<field name="namespace" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_NAMESPACE" filter="safehtml" />
 		<field name="wms_minimumwidth" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MINIMUMWIDTH" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MINIMUMWIDTH"  filter="safehtml" />
 		<field name="wms_minimumheight" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MINIMUMHEIGHT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MINIMUMHEIGHT"  filter="safehtml" />
 		<field name="wms_maximumwidth" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MAXIMUMWIDTH" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MAXIMUMWIDTH"  filter="safehtml" />
@@ -30,9 +31,13 @@
 		<field name="namespace" type="hidden"  filter="SAFEHTML" />
 	</fieldset>
 	
+	<fieldset name="wfs_policy_hidden">
+		<field name="prefix" type="hidden"  filter="SAFEHTML" />
+		<field name="namespace" type="hidden"  filter="SAFEHTML" />
+	</fieldset>
+	
 	<fieldset name="hidden">
 		<field name="id" type="hidden" filter="unset"/>
-		<field name="virtualservice_id" type="hidden"  filter="SAFEHTML" />
 		<field name="serviceconnector_id" type="hidden" filter="SAFEHTML" />
 		<field name="compliance" id="compliance" type="hidden" filter="SAFEHTML" />
 		<field name="proxytype_id" type="hidden" default="1" />

@@ -13,6 +13,10 @@ class WfsPhysicalService extends PhysicalService{
 		return $this->featureTypeList;
 	}
 	
+	public function getLayerByName ($name) {
+		return $this->featureTypeList[$name];
+	}
+	
 	public function addFeatureType ($featureType) {
 		$this->featureTypeList[$featureType->name] = $featureType;
 	}
@@ -35,7 +39,7 @@ class WfsPhysicalService extends PhysicalService{
 	 * 
 	 */
 	public function sortLists () {
-		uasort($this->tileMatrixSetList, array("WfsFeatureType", "compareNames"));
+		uasort($this->featureTypeList, array("WfsFeatureType", "compareNames"));
 	}
 	
 	public function loadData ($data) {

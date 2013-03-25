@@ -20,6 +20,7 @@ JHtml::_('behavior.keepalive');
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/policy.js');
+$document->addScript('components/com_easysdi_service/views/policy/tmpl/wmts.js');
 JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 
 //TODO: use this fct to implement inherited forms
@@ -243,6 +244,7 @@ function printSpatialPolicyForm ($suffix, $data) {
 	</div>
 	
 	<input type="hidden" name="layout" id="layout" value="wmts" />
+	<input type="hidden" name="vs_id" id="vs_id" value="<?php echo JRequest::getVar('virtualservice_id',null); ?>" />
 	<input type="hidden" name="task" value="" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>
@@ -257,7 +259,7 @@ function printSpatialPolicyForm ($suffix, $data) {
 		<form id="modal_layer_form"></form>
 	</div>
 	<div class="modal-footer">
-		<button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo JText::_('COM_EASYSDI_SERVICE_WMTS_MODAL_CANCEL');?></button>
-		<button class="btn btn-primary"><?php echo JText::_('COM_EASYSDI_SERVICE_WMTS_MODAL_SAVE');?></button>
+		<button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo JText::_('COM_EASYSDI_SERVICE_MODAL_CANCEL');?></button>
+		<button class="btn btn-primary"><?php echo JText::_('COM_EASYSDI_SERVICE_MODAL_SAVE');?></button>
 	</div>
 </div>

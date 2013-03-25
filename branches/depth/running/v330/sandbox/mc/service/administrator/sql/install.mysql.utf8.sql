@@ -321,7 +321,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_featuretype_policy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `name` VARCHAR(255)  NOT NULL ,
 `description` VARCHAR(255)  ,
-`authorized` TINYINT(1)  NOT NULL DEFAULT '1',
+`enabled` TINYINT(1)  NOT NULL DEFAULT '1',
 `inheritedspatialpolicy` BOOLEAN NOT NULL DEFAULT '1',
 `spatialpolicy_id` INT(11) UNSIGNED ,
 `physicalservicepolicy_id` INT(11) UNSIGNED  NOT NULL ,
