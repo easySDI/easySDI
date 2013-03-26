@@ -34,8 +34,7 @@ class Easysdi_serviceModelvirtualservices extends JModelList
                 'created_by', 'a.created_by',
                 'name', 'a.name',
                 'alias', 'a.alias',
-                'connector', 'a.connector',
-            	'url', 'a.url',
+                'url', 'a.url',
                 'reflectedurl', 'a.reflectedurl',
                 'reflectedmetadata', 'a.reflectedmetadata',
                 'xsltfilename', 'a.xsltfilename',
@@ -197,7 +196,6 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 			)
 		);
 		$query->from('`#__sdi_virtualservice` AS a');
-
 
 	    // Join over the users for the checked out user.
 	    $query->select('uc.name AS editor');
