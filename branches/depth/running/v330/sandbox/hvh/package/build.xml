@@ -4,9 +4,10 @@
 	<property name="projet.easysdi.dir" value="easysdi" />
 	<property name="projet.core.dir" value="../core/out" />
 	<property name="projet.service.dir" value="../service/out" />
-	<property name="projet.user.dir" value="../user/out" />
+	<property name="projet.contact.dir" value="../contact/out" />
 	<property name="projet.map.dir" value="../map/out" />
-	<property name="projet.plg-user.dir" value="../plugin/out" />
+	<property name="projet.plg-user.dir" value="../plugin_user/out" />
+	<property name="projet.template.dir" value="../easysdi_template/out" />
 
 
 	<target name="package" depends="create-structure,include-component,compression"
@@ -30,7 +31,7 @@
 			</fileset>
 		</copy>
 		<copy todir="${projet.easysdi.dir}">
-			<fileset dir="${projet.user.dir}">
+			<fileset dir="${projet.contact.dir}">
 				<include name="**/*.*" />
 			</fileset>
 		</copy>
@@ -41,6 +42,11 @@
 				</copy>
 		<copy todir="${projet.easysdi.dir}">
 			<fileset dir="${projet.plg-user.dir}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${projet.easysdi.dir}">
+			<fileset dir="${projet.template.dir}">
 				<include name="**/*.*" />
 			</fileset>
 		</copy>
