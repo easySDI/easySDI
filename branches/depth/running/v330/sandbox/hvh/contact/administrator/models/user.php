@@ -142,6 +142,7 @@ class Easysdi_contactModeluser extends JModelAdmin
 			$item->organismsME = $role->loadByUserID($item->id, 3);
 			$item->organismsPM = $role->loadByUserID($item->id, 4);
 			$item->organismsVM = $role->loadByUserID($item->id, 5);
+			$item->organismsMember = $role->loadByUserID($item->id, 6);
 		}
 
 		return $item;
@@ -222,6 +223,14 @@ class Easysdi_contactModeluser extends JModelAdmin
 				$array = array();
 				$array['user_id'] 		= $this->getItem()->get('id');
 				$array['role_id'] 		= 5;
+				$array['organism_id'] 	= $organism;
+				$role =& JTable::getInstance('role', 'Easysdi_contactTable');
+				$role->save($array);
+			}
+			foreach ($data['organismsMember'] as $organism){
+				$array = array();
+				$array['user_id'] 		= $this->getItem()->get('id');
+				$array['role_id'] 		= 6;
 				$array['organism_id'] 	= $organism;
 				$role =& JTable::getInstance('role', 'Easysdi_contactTable');
 				$role->save($array);

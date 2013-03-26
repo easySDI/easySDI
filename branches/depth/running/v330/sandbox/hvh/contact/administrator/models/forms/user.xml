@@ -42,6 +42,16 @@
 	</fieldset>
 
 	<fieldset name="roles">
+		<field 	name="organismsMember" 
+				type="sql" 
+				class="multiselect input-xxlarge"
+				multiple="true"
+				label="com_easysdi_contact_FORM_LBL_USER_ORGANISMS_MEMBER"
+				description="com_easysdi_contact_FORM_DESC_USER_ORGANISMS_MEMBER" 
+				translate="true" 
+                query="SELECT id, name as value FROM #__sdi_organism WHERE state=1" key_field="id" value_field="value"
+                 />
+                 
 		<field 	name="organismsRM" 
 				type="sql" 
 				class="multiselect input-xxlarge"

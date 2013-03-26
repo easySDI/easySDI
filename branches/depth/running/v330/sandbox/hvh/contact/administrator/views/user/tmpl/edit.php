@@ -100,6 +100,7 @@ $document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_cont
 								<div class="control-label"><?php echo $field->label; ?></div>
 								<div class="controls"><?php echo $field->input; ?></div>
 							</div>
+							<?php if($field->fieldname == 'organismsMember') echo '<hr>';?>
 						<?php endforeach; ?>
 					</div>
 					<div class="tab-pane" id="contactaddress">
