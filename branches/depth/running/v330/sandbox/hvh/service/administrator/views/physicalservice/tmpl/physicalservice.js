@@ -4,15 +4,13 @@
 
 	function enableOrganism(){
 		if(jQuery('#jform_servicescope_id').val() != 2){
-			jQuery("#jform_organisms").val("");
-			jQuery("#jform_organisms").css("visibility", "hidden");
+			jQuery("#jform_organisms").val("").trigger('liszt:updated');
+			jQuery("#organisms").hide();
 		}
 		else
 		{
-			jQuery("#jform_organisms").css("visibility", "visible");
+			jQuery("#organisms").show();
 		}
-		
-		jQuery("#jform_organisms").trigger("liszt:updated");
 	}
 	
 	Joomla.submitbutton = function(task)

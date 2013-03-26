@@ -65,7 +65,7 @@ JText::script('COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION_ERROR');
 							}
 							else {
 							?>
-							<div class="control-group">
+							<div class="control-group" id="<?php echo $field->fieldname;?>">
 								<div class="control-label"><?php echo $field->label; ?></div>
 								<div class="controls"><?php echo $field->input; ?></div>
 							</div>

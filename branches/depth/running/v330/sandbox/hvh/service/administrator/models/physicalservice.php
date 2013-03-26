@@ -194,6 +194,9 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 			$query = "SELECT value FROM #__sdi_sys_serviceconnector WHERE id=".$item->serviceconnector_id;
 			$db->setQuery($query);
 			$item->serviceconnector = $db->loadResult();
+			
+			// Get the service scope
+			$item->organisms = $this->getServiceScopeOrganism($item->id);
 		}
 		
 		return $item;
@@ -246,10 +249,10 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 	{
 		if(parent::save($data))
 		{
-			if(isset($data['compliance']))
-			{
-				return $this->saveServiceCompliance($data['compliance'], $this->getState($this->getName().'.id'));
-			}
+			if(! $this->saveServiceCompliance($data['compliance'], $this->getState($this->getName().'.id')))
+				return false;
+			if(! $this->saveServiceScopeOrganism($data['organisms'], $this->getState($this->getName().'.id')))
+					return false;
 			return true;
 		}
 		return false;
@@ -293,43 +296,7 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 		return true;
 	}
 	
-	/**
-	 * Method to save the organisms allowed by the service scope
-	 *
-	 * @param array 	$pks	array of the #__sdi_organism ids to link with the current service
-	 * @param int		$id		primary key of the current service to save.
-	 *
-	 * @return boolean 	True on success, False on error
-	 *
-	 * @since EasySDI 3.0.0
-	 */
-	public function saveServiceScopeOrganism ($pks, $id)
-	{
-		//Delete previously saved compliance
-		$db = $this->getDbo();
-		$db->setQuery(
-				'DELETE FROM #__sdi_physicalservice_organism WHERE physicalservice_id = '.$id
-		);
-		$db->query();
 	
-		$arr_pks = json_decode ($pks);
-		foreach ($arr_pks as $pk)
-		{
-			try {
-				$db->setQuery(
-						'INSERT INTO #__sdi_physicalservice_organism (physicalservice_id, servicecompliance_id) ' .
-						' VALUES ('.$id.','.$pk.')'
-				);
-				if (!$db->query()) {
-					throw new Exception($db->getErrorMsg());
-				}
-			} catch (Exception $e) {
-				$this->setError($e->getMessage());
-				return false;
-			}
-		}
-		return true;
-	}
 	
 	/**
 	 * Method to get the service compliance 
@@ -357,6 +324,75 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 
 			$compliance = $db->loadObjectList();
 			return $compliance;
+	
+		} catch (Exception $e) {
+			$this->setError($e->getMessage());
+			return false;
+		}
+	
+	}
+	
+	/**
+	 * Method to save the organisms allowed by the service scope
+	 *
+	 * @param array 	$pks	array of the #__sdi_organism ids to link with the current service
+	 * @param int		$id		primary key of the current service to save.
+	 *
+	 * @return boolean 	True on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	public function saveServiceScopeOrganism ($pks, $id)
+	{
+		//Delete previously saved compliance
+		$db = $this->getDbo();
+		$db->setQuery(
+				'DELETE FROM #__sdi_physicalservice_organism WHERE physicalservice_id = '.$id
+		);
+		$db->query();
+	
+		foreach ($pks as $pk)
+		{
+			try {
+				$db->setQuery(
+						'INSERT INTO #__sdi_physicalservice_organism (physicalservice_id, organism_id) ' .
+						' VALUES ('.$id.','.$pk.')'
+				);
+				if (!$db->query()) {
+					throw new Exception($db->getErrorMsg());
+				}
+			} catch (Exception $e) {
+				$this->setError($e->getMessage());
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Method to get the organisms authorized to access this service
+	 *
+	 * @param int		$id		primary key of the current service to get.
+	 *
+	 * @return boolean 	Object list on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	public function getServiceScopeOrganism  ( $id=null)
+	{
+		if(!isset($id))
+			return null;
+	
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query->select('so.organism_id as id');
+			$query->from('#__sdi_physicalservice_organism so');
+			$query->where('so.physicalservice_id = ' . (int) $id);
+			$db->setQuery($query);
+	
+			$scope = $db->loadColumn();
+			return $scope;
 	
 		} catch (Exception $e) {
 			$this->setError($e->getMessage());

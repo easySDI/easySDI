@@ -176,6 +176,9 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 		
 		$item->physicalservice_id = $this->getPhysicalServiceAggregation($item->id);
 		
+		// Get the service scope
+		$item->organisms = $this->getServiceScopeOrganism($item->id);
+		
 		//SetLayout : layout is the connector type
 		if(!$item->serviceconnector_id)
 		{
@@ -285,6 +288,8 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 				 if(!$this->saveServiceCompliance($data['compliance'],$data['serviceconnector_id'], $this->getState($this->getName().'.id')))
 				 	return false;
 			}
+			if(! $this->saveServiceScopeOrganism($data['organisms'], $this->getState($this->getName().'.id')))
+				return false;
 			return true;
 		}
 		return false;
@@ -407,6 +412,75 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 
 			$compliance = $db->loadObjectList();
 			return $compliance;
+	
+		} catch (Exception $e) {
+			$this->setError($e->getMessage());
+			return false;
+		}
+	
+	}
+	
+	/**
+	 * Method to save the organisms allowed by the service scope
+	 *
+	 * @param array 	$pks	array of the #__sdi_organism ids to link with the current service
+	 * @param int		$id		primary key of the current service to save.
+	 *
+	 * @return boolean 	True on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	public function saveServiceScopeOrganism ($pks, $id)
+	{
+		//Delete previously saved compliance
+		$db = $this->getDbo();
+		$db->setQuery(
+				'DELETE FROM #__sdi_virtualservice_organism WHERE virtualservice_id = '.$id
+		);
+		$db->query();
+	
+		foreach ($pks as $pk)
+		{
+			try {
+				$db->setQuery(
+						'INSERT INTO #__sdi_virtualservice_organism (virtualservice_id, organism_id) ' .
+						' VALUES ('.$id.','.$pk.')'
+				);
+				if (!$db->query()) {
+					throw new Exception($db->getErrorMsg());
+				}
+			} catch (Exception $e) {
+				$this->setError($e->getMessage());
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Method to get the organisms authorized to access this service
+	 *
+	 * @param int		$id		primary key of the current service to get.
+	 *
+	 * @return boolean 	Object list on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	public function getServiceScopeOrganism  ( $id=null)
+	{
+		if(!isset($id))
+			return null;
+	
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query->select('so.organism_id as id');
+			$query->from('#__sdi_virtualservice_organism so');
+			$query->where('so.virtualservice_id = ' . (int) $id);
+			$db->setQuery($query);
+	
+			$scope = $db->loadColumn();
+			return $scope;
 	
 		} catch (Exception $e) {
 			$this->setError($e->getMessage());

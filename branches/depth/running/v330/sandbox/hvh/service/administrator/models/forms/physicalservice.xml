@@ -26,29 +26,7 @@
 				description="JFIELD_CATEGORY_DESC"
 				class="inputbox"
 				required="true" />
-				
-		<field 	name="servicescope_id" 
-				onchange="enableOrganism();"
-				type="sql" 
-				class="inputbox"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SERVICESCOPE_ID"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SERVICESCOPE_ID" 
-                query="SELECT id, value FROM #__sdi_sys_servicescope" 
-                key_field="id" 
-                value_field="value"
-                 /> 
-       
-       <field 	name="organisms" 
-				type="sql" 
-				class="multiselect input-xxlarge"
-				multiple="true"
-				label=""
-				description="" 
-                query="SELECT id, name FROM #__sdi_organism WHERE state=1" 
-                key_field="id" 
-                value_field="name"
-                 /> 
-
+		
 		<field 	name="serviceconnector" 
 				type="text" 
 				size="70" 
@@ -68,12 +46,34 @@
                 validate="url" 
                 filter="safehtml" /> 
 		
+		<field 	name="servicescope_id" 
+				onchange="enableOrganism();"
+				type="sql" 
+				class="inputbox"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SERVICESCOPE_ID"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SERVICESCOPE_ID" 
+                query="SELECT id, value FROM #__sdi_sys_servicescope WHERE state=1 ORDER BY ordering" 
+                key_field="id" 
+                value_field="value"
+                 /> 
+       
+       <field 	name="organisms" 
+				type="sql" 
+				class="multiselect input-xxlarge"
+				multiple="true"
+				label=""
+				description="" 
+                query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY ordering" 
+                key_field="id" 
+                value_field="name"
+                 /> 
+                 
 		<field 	name="resourceauthentication_id" 
 				type="sql" 
 				class="inputbox"
 				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_RESOURCEAUTHENTICATION_ID"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_RESOURCEAUTHENTICATION_ID" 
-                query="SELECT 0 AS id, '- None -' AS value UNION SELECT id, value FROM #__sdi_sys_authenticationconnector" 
+                query="SELECT 0 AS id, '- None -' AS value UNION SELECT id, value FROM #__sdi_sys_authenticationconnector WHERE state=1 ORDER BY ordering" 
                 key_field="id" 
                 value_field="value"
                  /> 
@@ -154,7 +154,7 @@
 				class="inputbox"
 				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SERVICEAUTHENTICATION_ID"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SERVICEAUTHENTICATION_ID" 
-                query="SELECT 0 AS id, '- None -' AS value UNION SELECT id, value FROM #__sdi_sys_authenticationconnector" 
+                query="SELECT 0 AS id, '- None -' AS value UNION SELECT id, value FROM #__sdi_sys_authenticationconnector WHERE state=1 ORDER BY ordering" 
                 key_field="id" 
                 value_field="value"
                  /> 

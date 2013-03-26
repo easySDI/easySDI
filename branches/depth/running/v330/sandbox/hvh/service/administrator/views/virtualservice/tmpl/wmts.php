@@ -48,7 +48,7 @@ JText::script('COM_EASYSDI_SERVICE_FORM_SERVICE_METADATA_ERROR');
 						</div>
 					<?php endforeach; ?>
 					<?php foreach($this->form->getFieldset('details') as $field): ?> 
-						<div class="control-group">
+						<div class="control-group" id="<?php echo $field->fieldname;?>">
 							<div class="control-label"><?php echo $field->label; ?></div>
 							<div class="controls"><?php echo $field->input; ?></div>
 						</div>

@@ -34,6 +34,12 @@ ADD CONSTRAINT `#__sdi_physicalservice_servicecompliance_fk2` FOREIGN KEY (`serv
 ALTER TABLE `#__sdi_physicalservice`
 ADD CONSTRAINT `#__sdi_physicalservice_fk4` FOREIGN KEY (`servicescope_id`) REFERENCES `#__sdi_sys_servicescope` (`id`) ;
 
+ALTER TABLE `#__sdi_physicalservice_organism`
+ADD CONSTRAINT `#__sdi_physicalservice_organism_fk1` FOREIGN KEY (`organism_id`) REFERENCES `#__sdi_organism` (`id`) ON DELETE CASCADE;
+
+ALTER TABLE `#__sdi_physicalservice_organism`
+ADD CONSTRAINT `#__sdi_physicalservice_organism_fk2` FOREIGN KEY (`physicalservice_id`) REFERENCES `#__sdi_physicalservice` (`id`) ON DELETE CASCADE;
+
 -- Virtual Service
 ALTER TABLE `#__sdi_virtualservice`
 ADD CONSTRAINT `#__sdi_virtualservice_fk1` FOREIGN KEY (`serviceconnector_id`) REFERENCES `#__sdi_sys_serviceconnector` (`id`) ;
@@ -70,6 +76,12 @@ ADD CONSTRAINT `#__sdi_virtualservice_servicecompliance_fk2` FOREIGN KEY (`servi
 
 ALTER TABLE `#__sdi_virtualservice`
 ADD CONSTRAINT `#__sdi_virtualservice_fk6` FOREIGN KEY (`servicescope_id`) REFERENCES `#__sdi_sys_servicescope` (`id`) ;
+
+ALTER TABLE `#__sdi_virtualservice_organism`
+ADD CONSTRAINT `#__sdi_virtualservice_organism_fk1` FOREIGN KEY (`organism_id`) REFERENCES `#__sdi_organism` (`id`) ON DELETE CASCADE;
+
+ALTER TABLE `#__sdi_virtualservice_organism`
+ADD CONSTRAINT `#__sdi_virtualservice_organism_fk2` FOREIGN KEY (`virtualservice_id`) REFERENCES `#__sdi_virtualservice` (`id`) ON DELETE CASCADE;
 
 -- Policy
 ALTER TABLE `#__sdi_policy`

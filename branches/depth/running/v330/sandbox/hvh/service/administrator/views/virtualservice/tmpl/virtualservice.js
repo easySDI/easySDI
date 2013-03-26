@@ -21,8 +21,20 @@
 				jQuery('#jform_reflectedmetadata').attr('checked', false);
 			}
 			jQuery("#metadata").trigger("liszt:updated");
+			
+			enableOrganism();
 		});
 
+		function enableOrganism(){
+			if(jQuery('#jform_servicescope_id').val() != 2){
+				jQuery("#jform_organisms").val("").trigger('liszt:updated');
+				jQuery("#organisms").hide();
+			}
+			else
+			{
+				jQuery("#organisms").show();
+			}
+		}
 		Joomla.submitbutton = function(task)
 		{
 			if (task == 'virtualservice.cancel'){
