@@ -24,7 +24,7 @@
 				multiple="true"
 				label="COM_EASYSDI_MAP_FORM_LBL_GROUP_LAYERS"
 				description="COM_EASYSDI_MAP_FORM_DESC_GROUP_LAYERS" 
-                required="true"
+                required="false"
                 query="SELECT id, name FROM #__sdi_maplayer WHERE state=1" key_field="id" value_field="name"
                  />
                  
