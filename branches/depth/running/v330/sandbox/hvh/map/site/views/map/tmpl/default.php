@@ -446,7 +446,7 @@ foreach($files as $file) {
                     [
                      <?php
                      //Layers have to be added the lowest before the highest
-                     //To do that, the groups have to be loop in reverse order
+                     //To do that, the groups have to be looped in reverse order
                      $groups_reverse = array_reverse($this->item->groups);
                      foreach ($groups_reverse as $group)
                      {
