@@ -97,7 +97,6 @@ class Easysdi_contactTableuser extends sdiTable
     	{
     		$this->ordering = self::getNextOrder('catid = '.$this->catid);
     	}
-    
     	return true;
     }
 }
