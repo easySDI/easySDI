@@ -128,46 +128,6 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		}
 		
 		return $wmsObjList;
-		
-		/*@$tab_physicalService =& JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
-		@$tab_servicePolicy =& JTable::getInstance('servicepolicy', 'Easysdi_serviceTable');
-		@$tab_layer =& JTable::getInstance('wmslayer', 'Easysdi_serviceTable');
-		@$tab_layerPolicy =& JTable::getInstance('wmslayerpolicy', 'Easysdi_serviceTable');
-		
-		$physicalservice = Array();
-		$ps_list = $tab_physicalService->getListByConnectorType($layout);
-		foreach ($ps_list as $ps) {
-			$ps_arr = Array();
-			$ps_arr['id'] = $ps->id;
-			$ps_arr['name'] = $ps->name;
-			$ps_arr['resourceurl'] = $ps->resourceurl;
-			
-			$sp = $tab_servicePolicy->getByIDs($ps->id, $pk);
-			@$ps_arr['prefix'] = $sp->prefix;
-			@$ps_arr['namespace'] = $sp->namespace;
-			
-			$layerList = $tab_layer->getListByPhysicalService($ps->id);
-			$ps_arr['layers'] = Array();
-			foreach ($layerList as $layer) {
-				$lp = $tab_layerPolicy->getByIDs($layer->id, $pk);
-				$layer_infos = Array(
-					'id' => $layer->id,
-					'name' => $layer->name,
-					'description' => $layer->description
-				);
-				
-				if (!empty($lp)) {
-					$layer_infos['minimumscale'] = $lp->minimumscale;
-					$layer_infos['maximumscale'] = $lp->maximumscale;
-					$layer_infos['geographicfilter'] = $lp->geographicfilter;
-				}
-				
-				@$ps_arr['layers'][] = $layer_infos;
-			}
-			$physicalservice[] = $ps_arr;
-		}
-		return $physicalservice;
-		*/
 	}
 	
 	/**
@@ -257,24 +217,6 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		
 		if(parent::save($data)){
 			$data['id'] = $this->getItem()->get('id');
-			/*if ('WMS' == $serviceconnector_name) {
-				$wmslayerpolicy = JTable::getInstance('wmslayerpolicy', 'Easysdi_serviceTable');
-				if( !$wmslayerpolicy->save($data) ){
-					return false;
-				}
-			}
-			else if ('WFS' == $serviceconnector_name) {
-				$featureclasspolicy = JTable::getInstance('featureclasspolicy', 'Easysdi_serviceTable');
-				if( !$featureclasspolicy->save($data) ){
-					return false;
-				}
-			}
-			else if ('WMTS' == $serviceconnector_name) {
-				$wmtslayerpolicy = JTable::getInstance('wmtslayerpolicy', 'Easysdi_serviceTable');
-				if( !$wmtslayerpolicy->save($data) ){
-					return false;
-				}
-			}*/
 			
 			if ('WMS' == $serviceconnector_name || 'WFS' == $serviceconnector_name || 'WMTS' == $serviceconnector_name) {
 				$physicalservicepolicy = JTable::getInstance('physicalservice_policy', 'Easysdi_serviceTable');
@@ -282,6 +224,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					return false;
 				}
 			}
+			
+			//TODO: if new WMS save all layers
 			
 			return true;
 		}

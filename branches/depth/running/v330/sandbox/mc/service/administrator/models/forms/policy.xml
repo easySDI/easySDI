@@ -14,7 +14,7 @@
 		<field name="csw_anystate" type="checkbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYSTATE" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYSTATE" value="1" default="0"/>
 		<field name="csw_anycontext" type="checkbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYCONTEXT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYCONTEXT" value="1" default="0"/>
 		<field name="csw_anyvisibility" type="checkbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYVISIBILITY" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYVISIBILITY" value="1" default="0"/>
-		<field name="csw_geographicfilter" type="textarea" rows="3"  cols="30" size="40" class="inputbox" filter="safehtml" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_GEOGRAPHICFILTER" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_GEOGRAPHICFILTER"  />
+		<field name="csw_geographicfilter" type="textarea" rows="5" class="inputbox span12" filter="safehtml" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_GEOGRAPHICFILTER" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_GEOGRAPHICFILTER"  />
 	</fieldset>
 	
 	<fieldset name="wms_policy">
@@ -32,6 +32,11 @@
 	</fieldset>
 	
 	<fieldset name="wfs_policy_hidden">
+		<field name="prefix" type="hidden"  filter="SAFEHTML" />
+		<field name="namespace" type="hidden"  filter="SAFEHTML" />
+	</fieldset>
+	
+	<fieldset name="csw_policy_hidden">
 		<field name="prefix" type="hidden"  filter="SAFEHTML" />
 		<field name="namespace" type="hidden"  filter="SAFEHTML" />
 	</fieldset>
