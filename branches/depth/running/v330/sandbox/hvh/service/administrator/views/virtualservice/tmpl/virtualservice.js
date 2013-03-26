@@ -2,25 +2,21 @@
 			if(jQuery('#jform_reflectedmetadata').is(":checked")){
 				jQuery("#metadata :input").val("");
 				jQuery("#metadata :input").attr("disabled", true);
-				jQuery("#jform_country_id").attr("disabled", true);
+				jQuery("#jform_country_id").attr("disabled", true).trigger('liszt:updated');
 				jQuery('#jform_reflectedmetadata').removeAttr("disabled");
 				jQuery("#metadata :checkbox").attr('checked', 'checked');
 			}
 			if(jQuery('#jform_inheritedcontact').is(":checked") && !jQuery('#jform_reflectedmetadata').is(":checked") ){
 				jQuery("#contact :input").val("");
 				jQuery("#contact :input").attr("disabled", true);
-				jQuery("#jform_country_id").attr("disabled", true);
+				jQuery("#jform_country_id").attr("disabled", true).trigger('liszt:updated');
 				jQuery('#jform_inheritedcontact').removeAttr("disabled");
 			}
 			jQuery('#servicemetadata input:checked').each(function() {
 				jQuery('#'+jQuery(this).attr('id').replace('inherited', '')).attr("disabled", true);
 			});
-			var nserver = jQuery('#jform_physicalservice_id :selected').length;
-			if(nserver > 1){
-				jQuery('#jform_reflectedmetadata').attr("disabled", true);
-				jQuery('#jform_reflectedmetadata').attr('checked', false);
-			}
-			jQuery("#metadata").trigger("liszt:updated");
+			
+			enableMetadata ();
 			
 			enableOrganism();
 		});
@@ -57,12 +53,12 @@
 			if(jQuery('#jform_reflectedmetadata').is(":checked")){
 				jQuery("#metadata :input").val("");
 				jQuery("#metadata :input").attr("disabled", true);
-				jQuery("#jform_country_id").attr("disabled", true);
+				jQuery("#jform_country_id").attr("disabled", true).trigger('liszt:updated');
 				jQuery('#jform_reflectedmetadata').removeAttr("disabled");
 				jQuery("#metadata :checkbox").attr('checked', 'checked');
 			}else{
 				jQuery('#metadata :input').removeAttr("disabled");
-				jQuery('#jform_country_id').removeAttr("disabled");
+				jQuery('#jform_country_id').removeAttr("disabled").trigger('liszt:updated');
 				jQuery("#metadata :checkbox").removeAttr('checked');
 			}
 			jQuery("#metadata").trigger("liszt:updated");
@@ -73,13 +69,12 @@
 			if(jQuery('#jform_inheritedcontact').is(":checked")){
 				jQuery("#contact :input").val("");
 				jQuery("#contact :input").attr("disabled", true);
-				jQuery("#jform_country_id").attr("disabled", true);
+				jQuery("#jform_country_id").attr("disabled", true).trigger('liszt:updated');
 				jQuery('#jform_inheritedcontact').removeAttr("disabled");
 			}else{
 				jQuery('#contact :input').removeAttr("disabled");
-				jQuery('#jform_country_id').removeAttr("disabled");
+				jQuery('#jform_country_id').removeAttr("disabled").trigger('liszt:updated');
 			}
-			jQuery("#contact").trigger("liszt:updated");
 		}
 		
 		function changeMetadataServiceField(fieldname)
@@ -98,8 +93,10 @@
 				jQuery('#metadata :input').removeAttr("disabled");
 				jQuery('#jform_reflectedmetadata').attr("disabled", true);
 				jQuery('#jform_reflectedmetadata').attr('checked', false);
+				jQuery("#metadata :checkbox").removeAttr('checked');
+				jQuery('#metadata :checkbox').attr("disabled", true);
+				jQuery("#jform_country_id").removeAttr("disabled").trigger('liszt:updated');
 			}else{
-				jQuery('#metadata :input').removeAttr("disabled");
 				jQuery('#jform_reflectedmetadata').removeAttr("disabled");
 			}
 		}
