@@ -23,6 +23,8 @@
 		clearLayers();
 		
 		selectedservice = jQuery('#jform_service_id').find(":selected").val();
+		if(!selectedservice)
+			return;
 		
 		var layers = jQuery("#"+selectedservice).val();
 		if (layers)

@@ -54,10 +54,13 @@ class JFormFieldServicegroupedList extends JFormField
 		//Javascript Chosen library :
 		// "on single selects, the first element is assumed to be selected by the browser. 
 		// To take advantage of the default text support, you will need to include a blank option as the first element of your select list."
-		$groups[''] = array();
-		$tmp = JHtml::_('select.option', null,	'', 'value', 'text');
-		$groups[''][] = $tmp;
-		
+		//In case of multiple selection, adding this blank option leads to a form validation error. So, we don't add it.
+		if(!$this->multiple)
+		{
+			$groups[''] = array();
+			$tmp = JHtml::_('select.option', null,	'', 'value', 'text');
+			$groups[''][] = $tmp;
+		}
 		$groups['Physical'] = array();
 		foreach ($physicals as $physical)
 		{
@@ -119,7 +122,7 @@ class JFormFieldServicegroupedList extends JFormField
 		$attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
 		$attr .= $this->element['size'] ? ' size="' . (int) $this->element['size'] . '"' : '';
 		$attr .= $this->multiple ? ' multiple="multiple"' : '';
-		$attr .= "data-placeholder='".JText::_('JGLOBAL_SELECT_AN_OPTION')."'";
+		$attr .= "data-placeholder='".JText::_('JGLOBAL_SELECT_SOME_OPTIONS')."'";
 
 		// Initialize JavaScript field attributes.
 		if($this->element['onchange'])

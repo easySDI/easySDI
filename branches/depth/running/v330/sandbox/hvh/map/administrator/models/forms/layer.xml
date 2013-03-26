@@ -20,6 +20,7 @@
                 
       <field 	name="service_id" 
 				type="ServicegroupedList" 
+				multiple ="false"
 				onchange="clearLayers();setServiceConnector();getLayers();"
 				class="inputbox"
 				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_SERVICE_ID"

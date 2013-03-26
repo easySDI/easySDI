@@ -113,22 +113,24 @@ class Easysdi_mapModelmap extends JModelAdmin
 
 			$item->url = JURI::root().'index.php?option=com_easysdi_map&view=map&id='.$item->id;
 			
-			$db = JFactory::getDbo();
-			$db->setQuery('SELECT group_id FROM #__sdi_map_layergroup WHERE isbackground = 0  AND map_id = '.$item->id);
-			$item->groups = $db->loadColumn();
-			
-			$db->setQuery('SELECT group_id FROM #__sdi_map_layergroup WHERE isbackground = 1 AND map_id = '.$item->id);
-			$item->background = $db->loadResult();
-			
-			$db->setQuery('SELECT group_id FROM #__sdi_map_layergroup WHERE isdefault = 1 AND map_id = '.$item->id);
-			$item->default = $db->loadResult();
-			
-			$db->setQuery('SELECT tool_id FROM #__sdi_map_tool WHERE map_id = '.$item->id);
-			$item->tools = $db->loadColumn();
-			
-			$db->setQuery('SELECT CONCAT ("physical_",physicalservice_id) FROM #__sdi_map_physicalservice WHERE map_id = '.$item->id.' 
-							UNION SELECT CONCAT ("virtual_",virtualservice_id) FROM #__sdi_map_virtualservice WHERE map_id = '.$item->id);
-			$item->services = $db->loadColumn();
+			if($item->id){
+				$db = JFactory::getDbo();
+				$db->setQuery('SELECT group_id FROM #__sdi_map_layergroup WHERE isbackground = 0  AND map_id = '.$item->id);
+				$item->groups = $db->loadColumn();
+				
+				$db->setQuery('SELECT group_id FROM #__sdi_map_layergroup WHERE isbackground = 1 AND map_id = '.$item->id);
+				$item->background = $db->loadResult();
+				
+				$db->setQuery('SELECT group_id FROM #__sdi_map_layergroup WHERE isdefault = 1 AND map_id = '.$item->id);
+				$item->default = $db->loadResult();
+				
+				$db->setQuery('SELECT tool_id FROM #__sdi_map_tool WHERE map_id = '.$item->id);
+				$item->tools = $db->loadColumn();
+				
+				$db->setQuery('SELECT CONCAT ("physical_",physicalservice_id) FROM #__sdi_map_physicalservice WHERE map_id = '.$item->id.' 
+								UNION SELECT CONCAT ("virtual_",virtualservice_id) FROM #__sdi_map_virtualservice WHERE map_id = '.$item->id);
+				$item->services = $db->loadColumn();
+			}
 		}
 		
 		return $item;
