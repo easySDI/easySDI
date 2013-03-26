@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="details" addfieldpath="/administrator/components/com_categories/models/fields">
-		<field 	name="alias" 
-				type="text" 
-				size="255" 
-				class="inputbox"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_ALIAS"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_ALIAS"
-				required="true"  
-                filter="safehtml" /> 
-
 		<field 	name="name" 
 				type="text" 
 				size="255" 
@@ -18,6 +9,15 @@
 				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_NAME"
 				required="true"  
 				filter="safehtml" /> 
+				
+		<field 	name="alias" 
+				type="text" 
+				size="255" 
+				class="inputbox"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_ALIAS"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_ALIAS"
+				required="true"  
+                filter="safehtml" /> 
 		
 		<field 	name="catid"
 				type="categoryedit"
