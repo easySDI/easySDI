@@ -155,6 +155,7 @@ class Easysdi_serviceViewPolicies extends JViewLegacy
 				'a.state' => JText::_('JSTATUS'),
 				'a.name' => JText::_('COM_EASYSDI_SERVICE_POLICIES_NAME'),
 				'virtualservice_name' => JText::_('COM_EASYSDI_SERVICE_POLICIES_VIRTUALSERVICE'),
+				'connector' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_SERVICECONNECTOR'),
 				'a.access' => JText::_('JGRID_HEADING_ACCESS'),
 				'a.id' => JText::_('JGRID_HEADING_ID'),
 		);

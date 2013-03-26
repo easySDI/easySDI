@@ -245,7 +245,7 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 			$table->alias = $table->name;
 		}
 		
-// 		//Load component parameters
+ 		//Load component parameters
 		$params = JComponentHelper::getParams('com_easysdi_service');
 		$table->url = $params->get('proxyurl').$table->alias;
 	}
