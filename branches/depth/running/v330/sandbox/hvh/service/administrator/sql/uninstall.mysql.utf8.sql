@@ -24,5 +24,7 @@ DROP TABLE IF EXISTS `#__sdi_tilematrix_policy`;
 DROP TABLE IF EXISTS `#__sdi_wmslayer_policy`;
 DROP TABLE IF EXISTS `#__sdi_featuretype_policy`;
 DROP TABLE IF EXISTS `#__sdi_includedattribute`;
+DROP TABLE IF EXISTS `#__sdi_virtualservice_organism`;
+DROP TABLE IF EXISTS `#__sdi_physicalservice_organism`;
 
 SET foreign_key_checks = 1;
