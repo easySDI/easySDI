@@ -220,12 +220,20 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			
 			if ('WMS' == $serviceconnector_name || 'WFS' == $serviceconnector_name || 'WMTS' == $serviceconnector_name) {
 				$physicalservicepolicy = JTable::getInstance('physicalservice_policy', 'Easysdi_serviceTable');
-				if( !$physicalservicepolicy->save($data) ){
+				if(!$physicalservicepolicy->save($data)){
 					return false;
 				}
 			}
 			
-			//TODO: if new WMS save all layers
+			if ('WMS' == $serviceconnector_name) {
+				$params = Array(
+					'virtualServiceID' => $data['virtualservice_id'],
+					'policyID' => $data['id'],
+				);
+				if (!WmsWebservice::saveAllLayers($params, true)) {
+					return false;
+				}
+			}
 			
 			return true;
 		}

@@ -2,26 +2,39 @@
 
 // No direct access
 defined('_JEXEC') or die;
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmsPhysicalService.php');
 
-/**
- * Easysdi_service helper.
- */
 class WmsWebservice {
-	public static function request ($params) {
+	/*
+	 * Entry point of the class
+	 * 
+	 * @param Array Usually the $_GET, or any associative array
+	 * @param Boolean Set to true to force a return value, results are echoed otherwise
+	*/
+	public static function request ($params, $returnHTML = false) {
+		$return = false;
 		switch ($params['method']) {
 			case 'getWmsLayerForm':
 				echo WmsWebservice::getWmsLayerForm($params);
 				break;
 			case 'setWmsLayerSettings':
-				if (WmsWebservice::setWmsLayerSettings($params)) {
-					echo 'OK';
-				}
+				$return = WmsWebservice::setWmsLayerSettings($params);
+				break;
+			case 'saveAllLayers':
+				$return = WmsWebservice::saveAllLayers($params['virtualServiceID'], $params['policyID']);
 				break;
 			default:
-				echo 'Unknown method.';
+				$return = 'Unknown method.';
 				break;
 		}
-		die();
+		
+		if (!$returnHTML) {
+			echo (true === $return)?'OK':$return;
+			die();
+		}
+		else {
+			return $return;
+		}
 	}
 	
 	private static function getWmsLayerForm ($raw_GET) {
@@ -74,7 +87,6 @@ class WmsWebservice {
 	}
 	
 	private static function getWmsLayerSettings ($physicalServiceID, $policyID, $layerID) {
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmsPhysicalService.php');
 		
 		$db = JFactory::getDbo();
 		
@@ -201,7 +213,7 @@ class WmsWebservice {
 			return false;
 		}
 		
-		//save Feature Type Policy
+		//save Wms Layer Policy
 		$db->setQuery('
 			SELECT wlp.id
 			FROM #__sdi_wmslayer_policy wlp
@@ -275,4 +287,110 @@ class WmsWebservice {
 		return true;
 	}
 	
+	/*
+	 * Save all layers of a given virtual service
+	 * 
+	 * @param Int virtual service ID
+	 * @param Int policy ID
+	*/
+	private static function saveAllLayers($virtualServiceID, $policyID) {
+		$db = JFactory::getDbo();
+		$db->setQuery('
+			SELECT ps.id, ps.resourceurl AS url, psp.id AS psp_id
+			FROM #__sdi_virtualservice vs
+			JOIN #__sdi_virtual_physical vp
+			ON vs.id = vp.virtualservice_id
+			JOIN #__sdi_physicalservice ps
+			ON ps.id = vp.physicalservice_id
+			JOIN #__sdi_physicalservice_policy psp
+			ON ps.id = psp.physicalservice_id
+			WHERE vs.id = ' . $virtualServiceID . '
+			AND psp.policy_id = ' . $policyID . ';
+		');
+		
+		try {
+			$db->execute();
+			$resultset = $db->loadObjectList();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
+		foreach ($resultset as $result) {
+			$physicalServiceID = $result->id;
+			$wmsObj = new WmsPhysicalService($result->id, $result->url);
+			$wmsObj->getCapabilities();
+			$wmsObj->populate();
+			$layerList = $wmsObj->getLayerList();
+			
+			foreach ($layerList as $layer) {
+				//we check if the layer already exists
+				$db->setQuery('
+					SELECT wlp.id
+					FROM #__sdi_wmslayer_policy wlp
+					JOIN #__sdi_physicalservice_policy psp
+					ON psp.id = wlp.physicalservicepolicy_id
+					WHERE psp.physicalservice_id = ' . $physicalServiceID . '
+					AND psp.policy_id = ' . $policyID . '
+					AND wlp.name = \'' . $layer->name . '\';
+				');
+				
+				try {
+					$db->execute();
+					$layer_exists = (0 == $db->getNumRows())?false:true;
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
+				
+				if ($layer_exists) {
+					//if the layer already exists, we do nothing and we skip to the next layer
+					break;
+				}
+				else {
+					//we retrieve the physicalservice_policy id to link the layer policy with
+					$db->setQuery('
+						SELECT id
+						FROM #__sdi_physicalservice_policy
+						WHERE physicalservice_id = ' . $physicalServiceID . '
+						AND policy_id = ' . $policyID . ';
+					');
+					
+					try {
+						$db->execute();
+						$physicalservice_policy_id = $db->loadResult();
+					}
+					catch (JDatabaseException $e) {
+						$je = new JException($e->getMessage());
+						$this->setError($je);
+						return false;
+					}
+					
+					//we save the layer policy
+					$query = $db->getQuery(true);
+					$query->insert('#__sdi_wmslayer_policy')->columns('
+						name, description, physicalservicepolicy_id
+					')->values('
+						\'' . $layer->name . '\', \'' . $layer->description . '\', \'' . $physicalservice_policy_id . '\'
+					');
+					
+					$db->setQuery($query);
+					
+					try {
+						$db->execute();
+					}
+					catch (JDatabaseException $e) {
+						$je = new JException($e->getMessage());
+						$this->setError($je);
+						return false;
+					}
+				}
+				echo '<hr />';
+			}
+		}
+	}
 }
