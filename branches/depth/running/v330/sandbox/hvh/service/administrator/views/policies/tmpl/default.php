@@ -111,6 +111,9 @@ $params = JComponentHelper::getParams('com_easysdi_service');
 					<th class='left'>
 						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_POLICIES_VIRTUALSERVICE', 'virtualservice_name', $listDirn, $listOrder); ?>
 					</th>
+					<th class='left hidden-phone'>
+						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_VIRTUALSERVICES_SERVICECONNECTOR', 'connector', $listDirn, $listOrder); ?>
+					</th>
 					<th class='left'>
 						<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
 					</th>
@@ -228,6 +231,9 @@ $params = JComponentHelper::getParams('com_easysdi_service');
 			</td>
 			<td align="small hidden-phone">
 				<?php echo $item->virtualservice_name; ?>
+			</td>
+			<td align="small hidden-phone">
+				<?php echo $item->connector; ?>
 			</td>
 			<td align="small hidden-phone">
 				<?php echo $item->access_level; ?>

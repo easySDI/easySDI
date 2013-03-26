@@ -84,6 +84,9 @@ class Easysdi_serviceModelpolicies extends JModelList
 		
 		$virtualservice = $app->getUserStateFromRequest($this->context.'.filter.virtualservice', 'filter_virtualservice', '', 'string');
 		$this->setState('filter.virtualservice', $virtualservice);
+		
+		$connector = $app->getUserStateFromRequest($this->context.'.filter.connector', 'filter_connector', '', 'string');
+		$this->setState('filter.connector', $connector);
         
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_easysdi_service');
@@ -110,10 +113,11 @@ class Easysdi_serviceModelpolicies extends JModelList
 		$id.= ':' . $this->getState('filter.search');
 		$id.= ':' . $this->getState('filter.state');
 		$id.= ':' . $this->getState('filter.virtualservice');
+		$id.= ':' . $this->getState('filter.connector');
 
 		return parent::getStoreId($id);
 	}
-
+	
 	/**
 	 * Build an SQL query to load the list data.
 	 *
@@ -135,7 +139,6 @@ class Easysdi_serviceModelpolicies extends JModelList
 			)
 		);
 		$query->from('`#__sdi_policy` AS a');
-
 
 	    // Join over the users for the checked out user.
 	    $query->select('uc.name AS editor');
@@ -162,6 +165,12 @@ class Easysdi_serviceModelpolicies extends JModelList
 	    } else if ($published === '') {
 	        $query->where('(a.state IN (0, 1))');
 	    }
+	    
+	    // Filter by connector
+	    $connector = $this->getState('filter.connector');
+	    if (is_numeric($connector)) {
+	    	$query->where('sc.id = '.(int) $connector);
+	    } 
 	    	
 		// Filter by search in title
 		$search = $this->getState('filter.search');

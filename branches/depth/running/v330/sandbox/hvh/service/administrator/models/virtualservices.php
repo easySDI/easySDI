@@ -98,7 +98,7 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 	 *
 	 * @since   EasySDI 3.3.0
 	 */
-	public function getItemsRestricted ()
+	public function getItemsRestricted ($connector = null, $pk = null)
 	{
 		// Get a storage key.
 		$store = $this->getStoreId();
@@ -117,9 +117,12 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 		$query->select('a.id as id, a.name as name, c.value as connector');
 		$query->from('`#__sdi_virtualservice` AS a');
 		$query->join('LEFT', '#__sdi_sys_serviceconnector AS c ON a.serviceconnector_id = c.id' );
+		if(!empty ($connector))
+			$query->where('c.id = '.$connector);
+		if(!empty ($pk))
+			$query->where('a.id = '.$pk);
 		$query->where('a.state = 1');
 		$query->order('a.ordering');
-		
 		try
 		{
 			$items = $this->_getList($query, $this->getStart(), $this->getState('list.limit'));

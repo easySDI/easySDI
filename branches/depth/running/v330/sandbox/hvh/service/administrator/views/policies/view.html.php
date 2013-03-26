@@ -53,9 +53,9 @@ class Easysdi_serviceViewPolicies extends JViewLegacy
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
 		
 		$virtualserviceModel 	= JModelLegacy::getInstance('virtualservices', 'Easysdi_serviceModel', array());
-		$virtualserviceList 	= $virtualserviceModel->getItemsRestricted();
+		$virtualserviceList 	= $virtualserviceModel->getItemsRestricted($this->state->get('filter.connector'),$this->state->get('filter.virtualservice'));
+		$this->connector 		= $virtualserviceModel->getConnector();
 		
-		$state	= $this->get('State');
 		$canDo	= Easysdi_serviceHelper::getActionsPolicy();
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_HEADER_POLICIES'), 'policies.png');
@@ -105,7 +105,7 @@ class Easysdi_serviceViewPolicies extends JViewLegacy
         
         //Show trash and delete for components that uses the state field
         if (isset($this->items[0]->state)) {
-		    if ($state->get('filter.state') == -2 && $canDo->get('core.delete')) {
+		    if ($this->state->get('filter.state') == -2 && $canDo->get('core.delete')) {
 			    JToolBarHelper::deleteList('', 'policies.delete','JTOOLBAR_EMPTY_TRASH');
 			    JToolBarHelper::divider();
 		    } else if ($canDo->get('core.edit.state')) {
@@ -122,13 +122,19 @@ class Easysdi_serviceViewPolicies extends JViewLegacy
 		JToolBarHelper::custom('easySDIHome', 'home.png', 'home_f2.png', 'COM_EASYSDI_SERVICE_TOOLBAR_HOME', false);
 		
 		//Set sidebar action - New in 3.0
+		$virtualserviceModel 	= JModelLegacy::getInstance('virtualservices', 'Easysdi_serviceModel', array());
+		$virtualserviceList 	= $virtualserviceModel->getItemsRestricted();
 		JHtmlSidebar::setAction('index.php?option=com_easysdi_service&view=policies');
 		$this->extra_sidebar = '';
-		
 		JHtmlSidebar::addFilter(
 				JText::_('COM_EASYSDI_SERVICE_POLICIES_SELECT_VIRTUALSERVICE'),
 				'filter_virtualservice',
 				JHtml::_('select.options', $virtualserviceList, "id", "name", $this->state->get('filter.virtualservice'), true)
+		);
+		JHtmlSidebar::addFilter(
+				JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_SELECT_CONNECTOR'),
+				'filter_connector',
+				JHtml::_('select.options', $this->connector, "id", "value", $this->state->get('filter.connector'), true)
 		);
 		JHtmlSidebar::addFilter(
 				JText::_('JOPTION_SELECT_PUBLISHED'),
