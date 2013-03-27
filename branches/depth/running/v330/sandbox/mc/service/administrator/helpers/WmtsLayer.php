@@ -49,4 +49,23 @@ class WmtsLayer extends Layer{
 		
 		return $layer;
 	}
+	
+	public function calculateAuthorizedTiles ($providedData = null) {
+		if (empty($providedData)) {
+			$bboxSRS = Array(
+				'minX' => $this->westBoundLongitude,
+				'maxX' => $this->eastBoundLongitude,
+				'minY' => $this->northBoundLatitude,
+				'maxY' => $this->southBoundLatitude,
+			);
+			$spatialOperator = $this->spatialOperator;
+		}
+		else {
+			$bboxSRS = $providedData['bboxSRS'];
+			$spatialOperator = $providedData['spatialOperator'];
+		}
+		foreach ($this->tileMatrixSetList as $tmsObj) {
+			$tmsObj->calculateAuthorizedTiles($bboxSRS, $spatialOperator);
+		}
+	}
 }

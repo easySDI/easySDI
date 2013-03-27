@@ -41,6 +41,7 @@ class WmtsPhysicalService extends PhysicalService{
 				//we save the tilematrixset
 				$supported_SRS = $this->xmlCapabilities->xpath("/dflt:Capabilities/dflt:Contents/dflt:TileMatrixSet[ows:Identifier = '" . $tileMatrixSetIdentifier . "']");
 				$supported_SRS = (String) $supported_SRS[0]->children('ows', true)->SupportedCRS;
+				
 				$objTileMatrixSet = new TileMatrixSet(
 					$tileMatrixSetIdentifier,
 					$supported_SRS
@@ -65,13 +66,14 @@ class WmtsPhysicalService extends PhysicalService{
 					$identifier = (String) $tileMatrix->children('ows', true)->Identifier;
 					//if there are limits on the tilematrixset we filter the list of tilematrix with authorized tilematrixes and we save
 					if (!$hasLimits || in_array($identifier, $authorized_tiles)) {
+					
 						$objTileMatrix = new TileMatrix($identifier, Array(
-							'scaledenominator' => (String) $tileMatrix->ScaleDenominator,
-							'topleftcorner' => (String) $tileMatrix->TopLeftCorner,
-							'tilewidth' => (String) $tileMatrix->TileWidth,
-							'tileheight' => (String) $tileMatrix->TileHeight,
-							'matrixwidth' => (String) $tileMatrix->MatrixWidth,
-							'matrixheight' => (String) $tileMatrix->MatrixHeight,
+							'scaleDenominator' => (String) $tileMatrix->ScaleDenominator,
+							'topLeftCorner' => (String) $tileMatrix->TopLeftCorner,
+							'tileWidth' => (String) $tileMatrix->TileWidth,
+							'tileHeight' => (String) $tileMatrix->TileHeight,
+							'matrixWidth' => (String) $tileMatrix->MatrixWidth,
+							'matrixHeight' => (String) $tileMatrix->MatrixHeight,
 						));
 						$objTileMatrixSet->addTileMatrix($objTileMatrix);
 					}

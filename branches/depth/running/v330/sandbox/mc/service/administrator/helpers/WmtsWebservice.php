@@ -3,6 +3,8 @@
 // No direct access
 defined('_JEXEC') or die;
 
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmtsPhysicalService.php');
+
 /**
  * Easysdi_service helper.
  */
@@ -117,7 +119,7 @@ class WmtsWebservice {
 					$selected = 'selected="selected"';
 				}
 				$html .= '
-					<option value="' . $tm->identifier . '" ' . $selected . '>' . $tm->identifier . '</option>
+					<option value="' . $tm->identifier . '" ' . $selected . '>' . $tm->identifier . ' [' . number_format($tm->scaleDenominator, 3, '.', ' ') . ']</option>
 				';
 			}
 			$html .= '
@@ -137,8 +139,6 @@ class WmtsWebservice {
 	}
 	
 	private static function getWmtsLayerSettings ($physicalServiceID, $policyID, $layerID) {
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmtsPhysicalService.php');
-		
 		$db = JFactory::getDbo();
 		
 		$db->setQuery('
@@ -206,6 +206,7 @@ class WmtsWebservice {
 		$wmtsObj = new WmtsPhysicalService($physicalServiceID, $url);
 		$wmtsObj->getCapabilities();
 		$wmtsObj->populate();
+		$wmtsObj->sortLists();
 		$wmtsObj->loadData($data);
 		$layerObj = $wmtsObj->getLayerByName($layerID);
 		
@@ -361,6 +362,57 @@ class WmtsWebservice {
 		
 		$db = JFactory::getDbo();
 		
+		$db->setQuery('
+			SELECT *
+			FROM #__sdi_sys_spatialoperator
+			WHERE state = 1;
+		');
+		
+		try {
+			$db->execute();
+			$resultset = $db->loadObjectList();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		$spatialOperators = Array();
+		foreach ($resultset as $result) {
+			$spatialOperators[$result->id] = $result->value;
+		}
+		
+		$db->setQuery('
+			SELECT resourceurl
+			FROM #__sdi_physicalservice
+			WHERE id = ' . $physicalServiceID . ';
+		');
+		
+		try {
+			$db->execute();
+			$ps_url = $db->loadResult();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
+		$wmtsObj = new WmtsPhysicalService($physicalServiceID, $ps_url);
+		$wmtsObj->getCapabilities();
+		$wmtsObj->populate();
+		$layerObj = $wmtsObj->getLayerByName($layerID);
+		$data = Array(
+			'bboxSRS' => Array(
+				'minX' => $raw_GET['westBoundLongitude'],
+				'maxX' => $raw_GET['eastBoundLongitude'],
+				'minY' => $raw_GET['northBoundLatitude'],
+				'maxY' => $raw_GET['southBoundLatitude'],
+			),
+			'spatialOperator' => $spatialOperators[$raw_GET['spatial_operator_id']],
+		);
+		$layerObj->calculateAuthorizedTiles($data);
+		
 		foreach ($raw_GET['select'] as $tms => $tm) {
 			//save Tile Matrix Set
 			$db->setQuery('
@@ -432,6 +484,7 @@ class WmtsWebservice {
 			}
 			
 			$query = $db->getQuery(true);
+			
 			if (0 == $num_result) {
 				$query->insert('#__sdi_tilematrix_policy')->columns('
 					tilematrixsetpolicy_id, identifier

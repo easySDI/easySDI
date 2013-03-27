@@ -297,6 +297,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_tilematrix_policy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `tilematrixsetpolicy_id` INT(11) UNSIGNED  NOT NULL ,
 `identifier` varchar(255)  NOT NULL ,
+`anytile` BOOLEAN  NOT NULL DEFAULT '0',
 `tileminrow` INT(11) ,
 `tilemaxrow` INT(11) ,
 `tilemincol` INT(11) ,
