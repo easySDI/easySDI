@@ -1,13 +1,16 @@
 package org.easysdi.proxy.domain;
 
-// Generated Mar 28, 2013 4:35:10 PM by Hibernate Tools 3.4.0.CR1
+// Generated Mar 28, 2013 6:08:16 PM by Hibernate Tools 3.4.0.CR1
 
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -18,6 +21,8 @@ import javax.persistence.TemporalType;
 public class SdiVirtualmetadata implements java.io.Serializable {
 
 	private Integer Id;
+	private SdiVirtualservice sdiVirtualservice;
+	private SdiSysCountry sdiSysCountry;
 	private String Guid;
 	private int Ordering;
 	private int State;
@@ -45,24 +50,23 @@ public class SdiVirtualmetadata implements java.io.Serializable {
 	private String Contactpostalcode;
 	private String Contactlocality;
 	private String Contactstate;
-	private Integer Country_id;
 	private String Contactphone;
 	private String Contactfax;
 	private String Contactemail;
 	private String Contacturl;
 	private String Contactavailability;
 	private String Contactinstruction;
-	private int Virtualservice_id;
 
 	public SdiVirtualmetadata() {
 	}
 
-	public SdiVirtualmetadata(String Guid, int Ordering, int State,
-			int Checked_out, Date Checked_out_time, int Created_by,
-			Date Created, boolean Inheritedtitle, boolean Inheritedsummary,
-			boolean Inheritedkeyword, boolean Inheritedfee,
-			boolean Inheritedaccessconstraint, boolean Inheritedcontact,
-			int Virtualservice_id) {
+	public SdiVirtualmetadata(SdiVirtualservice sdiVirtualservice, String Guid,
+			int Ordering, int State, int Checked_out, Date Checked_out_time,
+			int Created_by, Date Created, boolean Inheritedtitle,
+			boolean Inheritedsummary, boolean Inheritedkeyword,
+			boolean Inheritedfee, boolean Inheritedaccessconstraint,
+			boolean Inheritedcontact) {
+		this.sdiVirtualservice = sdiVirtualservice;
 		this.Guid = Guid;
 		this.Ordering = Ordering;
 		this.State = State;
@@ -76,10 +80,10 @@ public class SdiVirtualmetadata implements java.io.Serializable {
 		this.Inheritedfee = Inheritedfee;
 		this.Inheritedaccessconstraint = Inheritedaccessconstraint;
 		this.Inheritedcontact = Inheritedcontact;
-		this.Virtualservice_id = Virtualservice_id;
 	}
 
-	public SdiVirtualmetadata(String Guid, int Ordering, int State,
+	public SdiVirtualmetadata(SdiVirtualservice sdiVirtualservice,
+			SdiSysCountry sdiSysCountry, String Guid, int Ordering, int State,
 			int Checked_out, Date Checked_out_time, int Created_by,
 			Date Created, Integer Modified_by, Date Modified, String Title,
 			boolean Inheritedtitle, String Summary, boolean Inheritedsummary,
@@ -89,10 +93,11 @@ public class SdiVirtualmetadata implements java.io.Serializable {
 			String Contactorganization, String Contactname,
 			String Contactposition, String Contactadress,
 			String Contactpostalcode, String Contactlocality,
-			String Contactstate, Integer Country_id, String Contactphone,
-			String Contactfax, String Contactemail, String Contacturl,
-			String Contactavailability, String Contactinstruction,
-			int Virtualservice_id) {
+			String Contactstate, String Contactphone, String Contactfax,
+			String Contactemail, String Contacturl, String Contactavailability,
+			String Contactinstruction) {
+		this.sdiVirtualservice = sdiVirtualservice;
+		this.sdiSysCountry = sdiSysCountry;
 		this.Guid = Guid;
 		this.Ordering = Ordering;
 		this.State = State;
@@ -120,14 +125,12 @@ public class SdiVirtualmetadata implements java.io.Serializable {
 		this.Contactpostalcode = Contactpostalcode;
 		this.Contactlocality = Contactlocality;
 		this.Contactstate = Contactstate;
-		this.Country_id = Country_id;
 		this.Contactphone = Contactphone;
 		this.Contactfax = Contactfax;
 		this.Contactemail = Contactemail;
 		this.Contacturl = Contacturl;
 		this.Contactavailability = Contactavailability;
 		this.Contactinstruction = Contactinstruction;
-		this.Virtualservice_id = Virtualservice_id;
 	}
 
 	@Id
@@ -139,6 +142,26 @@ public class SdiVirtualmetadata implements java.io.Serializable {
 
 	public void setId(Integer Id) {
 		this.Id = Id;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "virtualservice_id", nullable = false)
+	public SdiVirtualservice getSdiVirtualservice() {
+		return this.sdiVirtualservice;
+	}
+
+	public void setSdiVirtualservice(SdiVirtualservice sdiVirtualservice) {
+		this.sdiVirtualservice = sdiVirtualservice;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "country_id")
+	public SdiSysCountry getSdiSysCountry() {
+		return this.sdiSysCountry;
+	}
+
+	public void setSdiSysCountry(SdiSysCountry sdiSysCountry) {
+		this.sdiSysCountry = sdiSysCountry;
 	}
 
 	@Column(name = "guid", nullable = false, length = 36)
@@ -387,15 +410,6 @@ public class SdiVirtualmetadata implements java.io.Serializable {
 		this.Contactstate = Contactstate;
 	}
 
-	@Column(name = "country_id")
-	public Integer getCountry_id() {
-		return this.Country_id;
-	}
-
-	public void setCountry_id(Integer Country_id) {
-		this.Country_id = Country_id;
-	}
-
 	@Column(name = "contactphone")
 	public String getContactphone() {
 		return this.Contactphone;
@@ -448,15 +462,6 @@ public class SdiVirtualmetadata implements java.io.Serializable {
 
 	public void setContactinstruction(String Contactinstruction) {
 		this.Contactinstruction = Contactinstruction;
-	}
-
-	@Column(name = "virtualservice_id", nullable = false)
-	public int getVirtualservice_id() {
-		return this.Virtualservice_id;
-	}
-
-	public void setVirtualservice_id(int Virtualservice_id) {
-		this.Virtualservice_id = Virtualservice_id;
 	}
 
 }

@@ -25,10 +25,12 @@ public class CustomNamingStrategy extends ImprovedNamingStrategy {
 		this.prefix = prefix;
 	}
     
+	@Override
 	public String propertyToColumnName(String propertyName) {
 		return StringHelper.unqualify(propertyName).toLowerCase() ;
 	}
 	
+	@Override
 	public String columnName(String columnName) {
 		return columnName.toLowerCase();
 	}

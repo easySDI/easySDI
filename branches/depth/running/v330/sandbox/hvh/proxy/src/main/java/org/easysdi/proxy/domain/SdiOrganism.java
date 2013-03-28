@@ -1,6 +1,6 @@
 package org.easysdi.proxy.domain;
 
-// Generated Mar 28, 2013 4:35:10 PM by Hibernate Tools 3.4.0.CR1
+// Generated Mar 28, 2013 6:08:16 PM by Hibernate Tools 3.4.0.CR1
 
 import java.util.Date;
 import java.util.HashSet;
@@ -38,7 +38,13 @@ public class SdiOrganism implements java.io.Serializable {
 	private String Website;
 	private int Access;
 	private int Asset_id;
+	private Set<SdiPolicyOrganism> sdiPolicyOrganisms = new HashSet<SdiPolicyOrganism>(
+			0);
+	private Set<SdiVirtualserviceOrganism> sdiVirtualserviceOrganisms = new HashSet<SdiVirtualserviceOrganism>(
+			0);
 	private Set<SdiUserRoleOrganism> sdiUserRoleOrganisms = new HashSet<SdiUserRoleOrganism>(
+			0);
+	private Set<SdiPhysicalserviceOrganism> sdiPhysicalserviceOrganisms = new HashSet<SdiPhysicalserviceOrganism>(
 			0);
 
 	public SdiOrganism() {
@@ -64,7 +70,10 @@ public class SdiOrganism implements java.io.Serializable {
 			int Checked_out, Date Checked_out_time, String Acronym,
 			String Description, String Logo, String Name, String Website,
 			int Access, int Asset_id,
-			Set<SdiUserRoleOrganism> sdiUserRoleOrganisms) {
+			Set<SdiPolicyOrganism> sdiPolicyOrganisms,
+			Set<SdiVirtualserviceOrganism> sdiVirtualserviceOrganisms,
+			Set<SdiUserRoleOrganism> sdiUserRoleOrganisms,
+			Set<SdiPhysicalserviceOrganism> sdiPhysicalserviceOrganisms) {
 		this.Guid = Guid;
 		this.Created_by = Created_by;
 		this.Created = Created;
@@ -81,7 +90,10 @@ public class SdiOrganism implements java.io.Serializable {
 		this.Website = Website;
 		this.Access = Access;
 		this.Asset_id = Asset_id;
+		this.sdiPolicyOrganisms = sdiPolicyOrganisms;
+		this.sdiVirtualserviceOrganisms = sdiVirtualserviceOrganisms;
 		this.sdiUserRoleOrganisms = sdiUserRoleOrganisms;
+		this.sdiPhysicalserviceOrganisms = sdiPhysicalserviceOrganisms;
 	}
 
 	@Id
@@ -243,6 +255,25 @@ public class SdiOrganism implements java.io.Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiOrganism")
+	public Set<SdiPolicyOrganism> getSdiPolicyOrganisms() {
+		return this.sdiPolicyOrganisms;
+	}
+
+	public void setSdiPolicyOrganisms(Set<SdiPolicyOrganism> sdiPolicyOrganisms) {
+		this.sdiPolicyOrganisms = sdiPolicyOrganisms;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiOrganism")
+	public Set<SdiVirtualserviceOrganism> getSdiVirtualserviceOrganisms() {
+		return this.sdiVirtualserviceOrganisms;
+	}
+
+	public void setSdiVirtualserviceOrganisms(
+			Set<SdiVirtualserviceOrganism> sdiVirtualserviceOrganisms) {
+		this.sdiVirtualserviceOrganisms = sdiVirtualserviceOrganisms;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiOrganism")
 	public Set<SdiUserRoleOrganism> getSdiUserRoleOrganisms() {
 		return this.sdiUserRoleOrganisms;
 	}
@@ -250,6 +281,16 @@ public class SdiOrganism implements java.io.Serializable {
 	public void setSdiUserRoleOrganisms(
 			Set<SdiUserRoleOrganism> sdiUserRoleOrganisms) {
 		this.sdiUserRoleOrganisms = sdiUserRoleOrganisms;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiOrganism")
+	public Set<SdiPhysicalserviceOrganism> getSdiPhysicalserviceOrganisms() {
+		return this.sdiPhysicalserviceOrganisms;
+	}
+
+	public void setSdiPhysicalserviceOrganisms(
+			Set<SdiPhysicalserviceOrganism> sdiPhysicalserviceOrganisms) {
+		this.sdiPhysicalserviceOrganisms = sdiPhysicalserviceOrganisms;
 	}
 
 }

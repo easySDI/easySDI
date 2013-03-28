@@ -4,18 +4,22 @@ import org.easysdi.proxy.domain.SdiUser;
 import org.easysdi.proxy.domain.SdiUserHome;
 import org.easysdi.proxy.domain.Users;
 import org.easysdi.proxy.domain.UsersHome;
+import org.hibernate.SessionFactory;
+import org.hibernate.Cache;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
 public class Main {
 
+	
+	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-
+		
 		ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"file:C:/Sources/Proxy330/proxy/src/main/webapp/WEB-INF/spring/hibernate-config.xml"});
 		
 		SdiUserHome pdao = (SdiUserHome)context.getBean("SdiUser");
@@ -42,6 +46,8 @@ public class Main {
 		
 		System.out.println(u.getId());
 		
+		
+		Cache ch = ((SessionFactory)context.getBean("sessionFactory")).getCache();
 	}
 
 }

@@ -1,6 +1,6 @@
 package org.easysdi.proxy.domain;
 
-// Generated Mar 28, 2013 4:35:10 PM by Hibernate Tools 3.4.0.CR1
+// Generated Mar 28, 2013 6:08:16 PM by Hibernate Tools 3.4.0.CR1
 
 import java.util.Date;
 import javax.persistence.Column;

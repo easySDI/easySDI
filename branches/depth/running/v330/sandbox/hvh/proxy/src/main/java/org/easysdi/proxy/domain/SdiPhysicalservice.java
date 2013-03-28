@@ -1,13 +1,19 @@
 package org.easysdi.proxy.domain;
 
-// Generated Mar 28, 2013 4:35:10 PM by Hibernate Tools 3.4.0.CR1
+// Generated Mar 28, 2013 6:08:16 PM by Hibernate Tools 3.4.0.CR1
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -18,6 +24,10 @@ import javax.persistence.TemporalType;
 public class SdiPhysicalservice implements java.io.Serializable {
 
 	private Integer Id;
+	private SdiSysServicescope sdiSysServicescope;
+	private SdiSysAuthenticationconnector sdiSysAuthenticationconnectorByResourceauthenticationId;
+	private SdiSysAuthenticationconnector sdiSysAuthenticationconnectorByServiceauthenticationId;
+	private SdiSysServiceconnector sdiSysServiceconnector;
 	private String Guid;
 	private String Alias;
 	private int Created_by;
@@ -29,13 +39,9 @@ public class SdiPhysicalservice implements java.io.Serializable {
 	private int Checked_out;
 	private Date Checked_out_time;
 	private String Name;
-	private int Servicescope_id;
-	private int Serviceconnector_id;
-	private Integer Resourceauthentication_id;
 	private String Resourceurl;
 	private String Resourceusername;
 	private String Resourcepassword;
-	private Integer Serviceauthentication_id;
 	private String Serviceurl;
 	private String Serviceusername;
 	private String Servicepassword;
@@ -43,13 +49,24 @@ public class SdiPhysicalservice implements java.io.Serializable {
 	private String Params;
 	private int Access;
 	private Integer Asset_id;
+	private Set<SdiVirtualPhysical> sdiVirtualPhysicals = new HashSet<SdiVirtualPhysical>(
+			0);
+	private Set<SdiPhysicalservicePolicy> sdiPhysicalservicePolicies = new HashSet<SdiPhysicalservicePolicy>(
+			0);
+	private Set<SdiPhysicalserviceServicecompliance> sdiPhysicalserviceServicecompliances = new HashSet<SdiPhysicalserviceServicecompliance>(
+			0);
+	private Set<SdiPhysicalserviceOrganism> sdiPhysicalserviceOrganisms = new HashSet<SdiPhysicalserviceOrganism>(
+			0);
 
 	public SdiPhysicalservice() {
 	}
 
-	public SdiPhysicalservice(String Guid, String Alias, int Created_by,
-			Date Created, int State, int Checked_out, Date Checked_out_time,
-			int Servicescope_id, int Serviceconnector_id, int Catid, int Access) {
+	public SdiPhysicalservice(SdiSysServicescope sdiSysServicescope,
+			SdiSysServiceconnector sdiSysServiceconnector, String Guid,
+			String Alias, int Created_by, Date Created, int State,
+			int Checked_out, Date Checked_out_time, int Catid, int Access) {
+		this.sdiSysServicescope = sdiSysServicescope;
+		this.sdiSysServiceconnector = sdiSysServiceconnector;
 		this.Guid = Guid;
 		this.Alias = Alias;
 		this.Created_by = Created_by;
@@ -57,21 +74,44 @@ public class SdiPhysicalservice implements java.io.Serializable {
 		this.State = State;
 		this.Checked_out = Checked_out;
 		this.Checked_out_time = Checked_out_time;
-		this.Servicescope_id = Servicescope_id;
-		this.Serviceconnector_id = Serviceconnector_id;
 		this.Catid = Catid;
 		this.Access = Access;
 	}
 
-	public SdiPhysicalservice(String Guid, String Alias, int Created_by,
-			Date Created, Integer Modified_by, Date Modified, Integer Ordering,
-			int State, int Checked_out, Date Checked_out_time, String Name,
-			int Servicescope_id, int Serviceconnector_id,
-			Integer Resourceauthentication_id, String Resourceurl,
-			String Resourceusername, String Resourcepassword,
-			Integer Serviceauthentication_id, String Serviceurl,
-			String Serviceusername, String Servicepassword, int Catid,
-			String Params, int Access, Integer Asset_id) {
+	public SdiPhysicalservice(
+			SdiSysServicescope sdiSysServicescope,
+			SdiSysAuthenticationconnector sdiSysAuthenticationconnectorByResourceauthenticationId,
+			SdiSysAuthenticationconnector sdiSysAuthenticationconnectorByServiceauthenticationId,
+			SdiSysServiceconnector sdiSysServiceconnector,
+			String Guid,
+			String Alias,
+			int Created_by,
+			Date Created,
+			Integer Modified_by,
+			Date Modified,
+			Integer Ordering,
+			int State,
+			int Checked_out,
+			Date Checked_out_time,
+			String Name,
+			String Resourceurl,
+			String Resourceusername,
+			String Resourcepassword,
+			String Serviceurl,
+			String Serviceusername,
+			String Servicepassword,
+			int Catid,
+			String Params,
+			int Access,
+			Integer Asset_id,
+			Set<SdiVirtualPhysical> sdiVirtualPhysicals,
+			Set<SdiPhysicalservicePolicy> sdiPhysicalservicePolicies,
+			Set<SdiPhysicalserviceServicecompliance> sdiPhysicalserviceServicecompliances,
+			Set<SdiPhysicalserviceOrganism> sdiPhysicalserviceOrganisms) {
+		this.sdiSysServicescope = sdiSysServicescope;
+		this.sdiSysAuthenticationconnectorByResourceauthenticationId = sdiSysAuthenticationconnectorByResourceauthenticationId;
+		this.sdiSysAuthenticationconnectorByServiceauthenticationId = sdiSysAuthenticationconnectorByServiceauthenticationId;
+		this.sdiSysServiceconnector = sdiSysServiceconnector;
 		this.Guid = Guid;
 		this.Alias = Alias;
 		this.Created_by = Created_by;
@@ -83,13 +123,9 @@ public class SdiPhysicalservice implements java.io.Serializable {
 		this.Checked_out = Checked_out;
 		this.Checked_out_time = Checked_out_time;
 		this.Name = Name;
-		this.Servicescope_id = Servicescope_id;
-		this.Serviceconnector_id = Serviceconnector_id;
-		this.Resourceauthentication_id = Resourceauthentication_id;
 		this.Resourceurl = Resourceurl;
 		this.Resourceusername = Resourceusername;
 		this.Resourcepassword = Resourcepassword;
-		this.Serviceauthentication_id = Serviceauthentication_id;
 		this.Serviceurl = Serviceurl;
 		this.Serviceusername = Serviceusername;
 		this.Servicepassword = Servicepassword;
@@ -97,6 +133,10 @@ public class SdiPhysicalservice implements java.io.Serializable {
 		this.Params = Params;
 		this.Access = Access;
 		this.Asset_id = Asset_id;
+		this.sdiVirtualPhysicals = sdiVirtualPhysicals;
+		this.sdiPhysicalservicePolicies = sdiPhysicalservicePolicies;
+		this.sdiPhysicalserviceServicecompliances = sdiPhysicalserviceServicecompliances;
+		this.sdiPhysicalserviceOrganisms = sdiPhysicalserviceOrganisms;
 	}
 
 	@Id
@@ -108,6 +148,49 @@ public class SdiPhysicalservice implements java.io.Serializable {
 
 	public void setId(Integer Id) {
 		this.Id = Id;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "servicescope_id", nullable = false)
+	public SdiSysServicescope getSdiSysServicescope() {
+		return this.sdiSysServicescope;
+	}
+
+	public void setSdiSysServicescope(SdiSysServicescope sdiSysServicescope) {
+		this.sdiSysServicescope = sdiSysServicescope;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "resourceauthentication_id")
+	public SdiSysAuthenticationconnector getSdiSysAuthenticationconnectorByResourceauthenticationId() {
+		return this.sdiSysAuthenticationconnectorByResourceauthenticationId;
+	}
+
+	public void setSdiSysAuthenticationconnectorByResourceauthenticationId(
+			SdiSysAuthenticationconnector sdiSysAuthenticationconnectorByResourceauthenticationId) {
+		this.sdiSysAuthenticationconnectorByResourceauthenticationId = sdiSysAuthenticationconnectorByResourceauthenticationId;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "serviceauthentication_id")
+	public SdiSysAuthenticationconnector getSdiSysAuthenticationconnectorByServiceauthenticationId() {
+		return this.sdiSysAuthenticationconnectorByServiceauthenticationId;
+	}
+
+	public void setSdiSysAuthenticationconnectorByServiceauthenticationId(
+			SdiSysAuthenticationconnector sdiSysAuthenticationconnectorByServiceauthenticationId) {
+		this.sdiSysAuthenticationconnectorByServiceauthenticationId = sdiSysAuthenticationconnectorByServiceauthenticationId;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "serviceconnector_id", nullable = false)
+	public SdiSysServiceconnector getSdiSysServiceconnector() {
+		return this.sdiSysServiceconnector;
+	}
+
+	public void setSdiSysServiceconnector(
+			SdiSysServiceconnector sdiSysServiceconnector) {
+		this.sdiSysServiceconnector = sdiSysServiceconnector;
 	}
 
 	@Column(name = "guid", nullable = false, length = 36)
@@ -212,33 +295,6 @@ public class SdiPhysicalservice implements java.io.Serializable {
 		this.Name = Name;
 	}
 
-	@Column(name = "servicescope_id", nullable = false)
-	public int getServicescope_id() {
-		return this.Servicescope_id;
-	}
-
-	public void setServicescope_id(int Servicescope_id) {
-		this.Servicescope_id = Servicescope_id;
-	}
-
-	@Column(name = "serviceconnector_id", nullable = false)
-	public int getServiceconnector_id() {
-		return this.Serviceconnector_id;
-	}
-
-	public void setServiceconnector_id(int Serviceconnector_id) {
-		this.Serviceconnector_id = Serviceconnector_id;
-	}
-
-	@Column(name = "resourceauthentication_id")
-	public Integer getResourceauthentication_id() {
-		return this.Resourceauthentication_id;
-	}
-
-	public void setResourceauthentication_id(Integer Resourceauthentication_id) {
-		this.Resourceauthentication_id = Resourceauthentication_id;
-	}
-
 	@Column(name = "resourceurl", length = 500)
 	public String getResourceurl() {
 		return this.Resourceurl;
@@ -264,15 +320,6 @@ public class SdiPhysicalservice implements java.io.Serializable {
 
 	public void setResourcepassword(String Resourcepassword) {
 		this.Resourcepassword = Resourcepassword;
-	}
-
-	@Column(name = "serviceauthentication_id")
-	public Integer getServiceauthentication_id() {
-		return this.Serviceauthentication_id;
-	}
-
-	public void setServiceauthentication_id(Integer Serviceauthentication_id) {
-		this.Serviceauthentication_id = Serviceauthentication_id;
 	}
 
 	@Column(name = "serviceurl", length = 500)
@@ -336,6 +383,46 @@ public class SdiPhysicalservice implements java.io.Serializable {
 
 	public void setAsset_id(Integer Asset_id) {
 		this.Asset_id = Asset_id;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiPhysicalservice")
+	public Set<SdiVirtualPhysical> getSdiVirtualPhysicals() {
+		return this.sdiVirtualPhysicals;
+	}
+
+	public void setSdiVirtualPhysicals(
+			Set<SdiVirtualPhysical> sdiVirtualPhysicals) {
+		this.sdiVirtualPhysicals = sdiVirtualPhysicals;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiPhysicalservice")
+	public Set<SdiPhysicalservicePolicy> getSdiPhysicalservicePolicies() {
+		return this.sdiPhysicalservicePolicies;
+	}
+
+	public void setSdiPhysicalservicePolicies(
+			Set<SdiPhysicalservicePolicy> sdiPhysicalservicePolicies) {
+		this.sdiPhysicalservicePolicies = sdiPhysicalservicePolicies;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiPhysicalservice")
+	public Set<SdiPhysicalserviceServicecompliance> getSdiPhysicalserviceServicecompliances() {
+		return this.sdiPhysicalserviceServicecompliances;
+	}
+
+	public void setSdiPhysicalserviceServicecompliances(
+			Set<SdiPhysicalserviceServicecompliance> sdiPhysicalserviceServicecompliances) {
+		this.sdiPhysicalserviceServicecompliances = sdiPhysicalserviceServicecompliances;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiPhysicalservice")
+	public Set<SdiPhysicalserviceOrganism> getSdiPhysicalserviceOrganisms() {
+		return this.sdiPhysicalserviceOrganisms;
+	}
+
+	public void setSdiPhysicalserviceOrganisms(
+			Set<SdiPhysicalserviceOrganism> sdiPhysicalserviceOrganisms) {
+		this.sdiPhysicalserviceOrganisms = sdiPhysicalserviceOrganisms;
 	}
 
 }
