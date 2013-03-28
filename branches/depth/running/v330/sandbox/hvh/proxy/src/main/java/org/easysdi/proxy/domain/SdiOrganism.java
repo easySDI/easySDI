@@ -1,6 +1,6 @@
 package org.easysdi.proxy.domain;
 
-// Generated Mar 28, 2013 3:02:09 PM by Hibernate Tools 3.4.0.CR1
+// Generated Mar 28, 2013 4:35:10 PM by Hibernate Tools 3.4.0.CR1
 
 import java.util.Date;
 import java.util.HashSet;
@@ -21,66 +21,66 @@ import javax.persistence.TemporalType;
 @Entity
 public class SdiOrganism implements java.io.Serializable {
 
-	private Integer id;
-	private String guid;
-	private int createdBy;
-	private Date created;
-	private Integer modifiedBy;
-	private Date modified;
-	private int ordering;
-	private int state;
-	private int checkedOut;
-	private Date checkedOutTime;
-	private String acronym;
-	private String description;
-	private String logo;
-	private String name;
-	private String website;
-	private int access;
-	private int assetId;
+	private Integer Id;
+	private String Guid;
+	private int Created_by;
+	private Date Created;
+	private Integer Modified_by;
+	private Date Modified;
+	private int Ordering;
+	private int State;
+	private int Checked_out;
+	private Date Checked_out_time;
+	private String Acronym;
+	private String Description;
+	private String Logo;
+	private String Name;
+	private String Website;
+	private int Access;
+	private int Asset_id;
 	private Set<SdiUserRoleOrganism> sdiUserRoleOrganisms = new HashSet<SdiUserRoleOrganism>(
 			0);
 
 	public SdiOrganism() {
 	}
 
-	public SdiOrganism(String guid, int createdBy, Date created, int ordering,
-			int state, int checkedOut, Date checkedOutTime, String name,
-			int access, int assetId) {
-		this.guid = guid;
-		this.createdBy = createdBy;
-		this.created = created;
-		this.ordering = ordering;
-		this.state = state;
-		this.checkedOut = checkedOut;
-		this.checkedOutTime = checkedOutTime;
-		this.name = name;
-		this.access = access;
-		this.assetId = assetId;
+	public SdiOrganism(String Guid, int Created_by, Date Created, int Ordering,
+			int State, int Checked_out, Date Checked_out_time, String Name,
+			int Access, int Asset_id) {
+		this.Guid = Guid;
+		this.Created_by = Created_by;
+		this.Created = Created;
+		this.Ordering = Ordering;
+		this.State = State;
+		this.Checked_out = Checked_out;
+		this.Checked_out_time = Checked_out_time;
+		this.Name = Name;
+		this.Access = Access;
+		this.Asset_id = Asset_id;
 	}
 
-	public SdiOrganism(String guid, int createdBy, Date created,
-			Integer modifiedBy, Date modified, int ordering, int state,
-			int checkedOut, Date checkedOutTime, String acronym,
-			String description, String logo, String name, String website,
-			int access, int assetId,
+	public SdiOrganism(String Guid, int Created_by, Date Created,
+			Integer Modified_by, Date Modified, int Ordering, int State,
+			int Checked_out, Date Checked_out_time, String Acronym,
+			String Description, String Logo, String Name, String Website,
+			int Access, int Asset_id,
 			Set<SdiUserRoleOrganism> sdiUserRoleOrganisms) {
-		this.guid = guid;
-		this.createdBy = createdBy;
-		this.created = created;
-		this.modifiedBy = modifiedBy;
-		this.modified = modified;
-		this.ordering = ordering;
-		this.state = state;
-		this.checkedOut = checkedOut;
-		this.checkedOutTime = checkedOutTime;
-		this.acronym = acronym;
-		this.description = description;
-		this.logo = logo;
-		this.name = name;
-		this.website = website;
-		this.access = access;
-		this.assetId = assetId;
+		this.Guid = Guid;
+		this.Created_by = Created_by;
+		this.Created = Created;
+		this.Modified_by = Modified_by;
+		this.Modified = Modified;
+		this.Ordering = Ordering;
+		this.State = State;
+		this.Checked_out = Checked_out;
+		this.Checked_out_time = Checked_out_time;
+		this.Acronym = Acronym;
+		this.Description = Description;
+		this.Logo = Logo;
+		this.Name = Name;
+		this.Website = Website;
+		this.Access = Access;
+		this.Asset_id = Asset_id;
 		this.sdiUserRoleOrganisms = sdiUserRoleOrganisms;
 	}
 
@@ -88,158 +88,158 @@ public class SdiOrganism implements java.io.Serializable {
 	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
 	public Integer getId() {
-		return this.id;
+		return this.Id;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public void setId(Integer Id) {
+		this.Id = Id;
 	}
 
 	@Column(name = "guid", nullable = false, length = 36)
 	public String getGuid() {
-		return this.guid;
+		return this.Guid;
 	}
 
-	public void setGuid(String guid) {
-		this.guid = guid;
+	public void setGuid(String Guid) {
+		this.Guid = Guid;
 	}
 
 	@Column(name = "created_by", nullable = false)
-	public int getCreatedBy() {
-		return this.createdBy;
+	public int getCreated_by() {
+		return this.Created_by;
 	}
 
-	public void setCreatedBy(int createdBy) {
-		this.createdBy = createdBy;
+	public void setCreated_by(int Created_by) {
+		this.Created_by = Created_by;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created", nullable = false, length = 19)
 	public Date getCreated() {
-		return this.created;
+		return this.Created;
 	}
 
-	public void setCreated(Date created) {
-		this.created = created;
+	public void setCreated(Date Created) {
+		this.Created = Created;
 	}
 
 	@Column(name = "modified_by")
-	public Integer getModifiedBy() {
-		return this.modifiedBy;
+	public Integer getModified_by() {
+		return this.Modified_by;
 	}
 
-	public void setModifiedBy(Integer modifiedBy) {
-		this.modifiedBy = modifiedBy;
+	public void setModified_by(Integer Modified_by) {
+		this.Modified_by = Modified_by;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "modified", length = 19)
 	public Date getModified() {
-		return this.modified;
+		return this.Modified;
 	}
 
-	public void setModified(Date modified) {
-		this.modified = modified;
+	public void setModified(Date Modified) {
+		this.Modified = Modified;
 	}
 
 	@Column(name = "ordering", nullable = false)
 	public int getOrdering() {
-		return this.ordering;
+		return this.Ordering;
 	}
 
-	public void setOrdering(int ordering) {
-		this.ordering = ordering;
+	public void setOrdering(int Ordering) {
+		this.Ordering = Ordering;
 	}
 
 	@Column(name = "state", nullable = false)
 	public int getState() {
-		return this.state;
+		return this.State;
 	}
 
-	public void setState(int state) {
-		this.state = state;
+	public void setState(int State) {
+		this.State = State;
 	}
 
 	@Column(name = "checked_out", nullable = false)
-	public int getCheckedOut() {
-		return this.checkedOut;
+	public int getChecked_out() {
+		return this.Checked_out;
 	}
 
-	public void setCheckedOut(int checkedOut) {
-		this.checkedOut = checkedOut;
+	public void setChecked_out(int Checked_out) {
+		this.Checked_out = Checked_out;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "checked_out_time", nullable = false, length = 19)
-	public Date getCheckedOutTime() {
-		return this.checkedOutTime;
+	public Date getChecked_out_time() {
+		return this.Checked_out_time;
 	}
 
-	public void setCheckedOutTime(Date checkedOutTime) {
-		this.checkedOutTime = checkedOutTime;
+	public void setChecked_out_time(Date Checked_out_time) {
+		this.Checked_out_time = Checked_out_time;
 	}
 
 	@Column(name = "acronym", length = 150)
 	public String getAcronym() {
-		return this.acronym;
+		return this.Acronym;
 	}
 
-	public void setAcronym(String acronym) {
-		this.acronym = acronym;
+	public void setAcronym(String Acronym) {
+		this.Acronym = Acronym;
 	}
 
 	@Column(name = "description", length = 65535)
 	public String getDescription() {
-		return this.description;
+		return this.Description;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setDescription(String Description) {
+		this.Description = Description;
 	}
 
 	@Column(name = "logo", length = 500)
 	public String getLogo() {
-		return this.logo;
+		return this.Logo;
 	}
 
-	public void setLogo(String logo) {
-		this.logo = logo;
+	public void setLogo(String Logo) {
+		this.Logo = Logo;
 	}
 
 	@Column(name = "name", nullable = false)
 	public String getName() {
-		return this.name;
+		return this.Name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String Name) {
+		this.Name = Name;
 	}
 
 	@Column(name = "website", length = 500)
 	public String getWebsite() {
-		return this.website;
+		return this.Website;
 	}
 
-	public void setWebsite(String website) {
-		this.website = website;
+	public void setWebsite(String Website) {
+		this.Website = Website;
 	}
 
 	@Column(name = "access", nullable = false)
 	public int getAccess() {
-		return this.access;
+		return this.Access;
 	}
 
-	public void setAccess(int access) {
-		this.access = access;
+	public void setAccess(int Access) {
+		this.Access = Access;
 	}
 
 	@Column(name = "asset_id", nullable = false)
-	public int getAssetId() {
-		return this.assetId;
+	public int getAsset_id() {
+		return this.Asset_id;
 	}
 
-	public void setAssetId(int assetId) {
-		this.assetId = assetId;
+	public void setAsset_id(int Asset_id) {
+		this.Asset_id = Asset_id;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiOrganism")

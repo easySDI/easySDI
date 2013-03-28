@@ -1,6 +1,6 @@
 package org.easysdi.proxy.domain;
 
-// Generated Mar 28, 2013 3:02:09 PM by Hibernate Tools 3.4.0.CR1
+// Generated Mar 28, 2013 4:35:10 PM by Hibernate Tools 3.4.0.CR1
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,27 +18,27 @@ import javax.persistence.OneToMany;
 @Entity
 public class SdiSysRole implements java.io.Serializable {
 
-	private Integer id;
-	private int ordering;
-	private int state;
-	private String value;
+	private Integer Id;
+	private int Ordering;
+	private int State;
+	private String Value;
 	private Set<SdiUserRoleOrganism> sdiUserRoleOrganisms = new HashSet<SdiUserRoleOrganism>(
 			0);
 
 	public SdiSysRole() {
 	}
 
-	public SdiSysRole(int ordering, int state, String value) {
-		this.ordering = ordering;
-		this.state = state;
-		this.value = value;
+	public SdiSysRole(int Ordering, int State, String Value) {
+		this.Ordering = Ordering;
+		this.State = State;
+		this.Value = Value;
 	}
 
-	public SdiSysRole(int ordering, int state, String value,
+	public SdiSysRole(int Ordering, int State, String Value,
 			Set<SdiUserRoleOrganism> sdiUserRoleOrganisms) {
-		this.ordering = ordering;
-		this.state = state;
-		this.value = value;
+		this.Ordering = Ordering;
+		this.State = State;
+		this.Value = Value;
 		this.sdiUserRoleOrganisms = sdiUserRoleOrganisms;
 	}
 
@@ -46,38 +46,38 @@ public class SdiSysRole implements java.io.Serializable {
 	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
 	public Integer getId() {
-		return this.id;
+		return this.Id;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public void setId(Integer Id) {
+		this.Id = Id;
 	}
 
 	@Column(name = "ordering", nullable = false)
 	public int getOrdering() {
-		return this.ordering;
+		return this.Ordering;
 	}
 
-	public void setOrdering(int ordering) {
-		this.ordering = ordering;
+	public void setOrdering(int Ordering) {
+		this.Ordering = Ordering;
 	}
 
 	@Column(name = "state", nullable = false)
 	public int getState() {
-		return this.state;
+		return this.State;
 	}
 
-	public void setState(int state) {
-		this.state = state;
+	public void setState(int State) {
+		this.State = State;
 	}
 
 	@Column(name = "value", nullable = false, length = 150)
 	public String getValue() {
-		return this.value;
+		return this.Value;
 	}
 
-	public void setValue(String value) {
-		this.value = value;
+	public void setValue(String Value) {
+		this.Value = Value;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiSysRole")

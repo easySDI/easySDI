@@ -12,7 +12,7 @@
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://localhost:3306/install" />
+		<property name="url" value="jdbc:mysql://localhost:3306/install?zeroDateTimeBehavior=convertToNull" />
 		<property name="username" value="root" />
 		<property name="password" value="invulsion" />
 	</bean>
@@ -29,7 +29,7 @@
 			<props>
 				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
 				<prop key="hibernate.show_sql">true</prop>
-				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.hbm2ddl.auto"></prop>
 			</props>
 		</property>
 		<property name="namingStrategy"><ref bean="namingStrategy" /></property>
@@ -51,6 +51,7 @@
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 	
-	<bean id="proxySdiUser" class="org.easysdi.proxy.domain.SdiUserHome" parent="abstractDao"/>
+	<bean id="SdiUser" class="org.easysdi.proxy.domain.SdiUserHome" parent="abstractDao"/>
+	<bean id="Users" class="org.easysdi.proxy.domain.UsersHome" parent="abstractDao"/>
 
 </beans>

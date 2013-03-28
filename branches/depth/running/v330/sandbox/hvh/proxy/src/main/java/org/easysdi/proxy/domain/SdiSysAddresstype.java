@@ -1,6 +1,6 @@
 package org.easysdi.proxy.domain;
 
-// Generated Mar 28, 2013 3:02:09 PM by Hibernate Tools 3.4.0.CR1
+// Generated Mar 28, 2013 4:35:10 PM by Hibernate Tools 3.4.0.CR1
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,61 +14,61 @@ import javax.persistence.Id;
 @Entity
 public class SdiSysAddresstype implements java.io.Serializable {
 
-	private Integer id;
-	private Integer ordering;
-	private int state;
-	private String value;
+	private Integer Id;
+	private Integer Ordering;
+	private int State;
+	private String Value;
 
 	public SdiSysAddresstype() {
 	}
 
-	public SdiSysAddresstype(int state, String value) {
-		this.state = state;
-		this.value = value;
+	public SdiSysAddresstype(int State, String Value) {
+		this.State = State;
+		this.Value = Value;
 	}
 
-	public SdiSysAddresstype(Integer ordering, int state, String value) {
-		this.ordering = ordering;
-		this.state = state;
-		this.value = value;
+	public SdiSysAddresstype(Integer Ordering, int State, String Value) {
+		this.Ordering = Ordering;
+		this.State = State;
+		this.Value = Value;
 	}
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
 	public Integer getId() {
-		return this.id;
+		return this.Id;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public void setId(Integer Id) {
+		this.Id = Id;
 	}
 
 	@Column(name = "ordering")
 	public Integer getOrdering() {
-		return this.ordering;
+		return this.Ordering;
 	}
 
-	public void setOrdering(Integer ordering) {
-		this.ordering = ordering;
+	public void setOrdering(Integer Ordering) {
+		this.Ordering = Ordering;
 	}
 
 	@Column(name = "state", nullable = false)
 	public int getState() {
-		return this.state;
+		return this.State;
 	}
 
-	public void setState(int state) {
-		this.state = state;
+	public void setState(int State) {
+		this.State = State;
 	}
 
 	@Column(name = "value", nullable = false, length = 150)
 	public String getValue() {
-		return this.value;
+		return this.Value;
 	}
 
-	public void setValue(String value) {
-		this.value = value;
+	public void setValue(String Value) {
+		this.Value = Value;
 	}
 
 }

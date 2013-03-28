@@ -1,6 +1,7 @@
 package org.easysdi.proxy.namingStrategy;
 
 import org.hibernate.cfg.ImprovedNamingStrategy;
+import org.hibernate.util.StringHelper;
 
 public class CustomNamingStrategy extends ImprovedNamingStrategy {
 
@@ -13,9 +14,7 @@ public class CustomNamingStrategy extends ImprovedNamingStrategy {
     }
 
     private String addPrefix(final String composedTableName) {
-
         return prefix + composedTableName;
-
     }
 
 	public String getPrefix() {
@@ -26,6 +25,12 @@ public class CustomNamingStrategy extends ImprovedNamingStrategy {
 		this.prefix = prefix;
 	}
     
-    
+	public String propertyToColumnName(String propertyName) {
+		return StringHelper.unqualify(propertyName).toLowerCase() ;
+	}
+	
+	public String columnName(String columnName) {
+		return columnName.toLowerCase();
+	}
 
 }

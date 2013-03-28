@@ -9,5 +9,6 @@
   <property name="hibernate.connection.username">root</property>
   <property name="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</property>
   <property name="hibernate.ejb.naming_strategy">org.easysdi.proxy.namingStrategy.CustomNamingStrategy</property>
+  
  </session-factory>
 </hibernate-configuration>

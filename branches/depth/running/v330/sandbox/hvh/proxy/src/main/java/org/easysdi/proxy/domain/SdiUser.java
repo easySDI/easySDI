@@ -1,6 +1,6 @@
 package org.easysdi.proxy.domain;
 
-// Generated Mar 28, 2013 3:02:09 PM by Hibernate Tools 3.4.0.CR1
+// Generated Mar 28, 2013 4:35:10 PM by Hibernate Tools 3.4.0.CR1
 
 import java.util.Date;
 import java.util.HashSet;
@@ -11,6 +11,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -21,65 +23,65 @@ import javax.persistence.TemporalType;
 @Entity
 public class SdiUser implements java.io.Serializable {
 
-	private Integer id;
-	private String guid;
-	private int createdBy;
-	private Date created;
-	private Integer modifiedBy;
-	private Date modified;
-	private Integer ordering;
-	private int state;
-	private int checkedOut;
-	private Date checkedOutTime;
-	private int userId;
-	private String description;
-	private boolean notificationrequesttreatment;
-	private Integer catid;
-	private String params;
-	private int access;
-	private Integer assetId;
+	private Integer Id;
+	private Users users;
+	private String Guid;
+	private int Created_by;
+	private Date Created;
+	private Integer Modified_by;
+	private Date Modified;
+	private Integer Ordering;
+	private int State;
+	private int Checked_out;
+	private Date Checked_out_time;
+	private String Description;
+	private boolean Notificationrequesttreatment;
+	private Integer Catid;
+	private String Params;
+	private int Access;
+	private Integer Asset_id;
 	private Set<SdiUserRoleOrganism> sdiUserRoleOrganisms = new HashSet<SdiUserRoleOrganism>(
 			0);
 
 	public SdiUser() {
 	}
 
-	public SdiUser(String guid, int createdBy, Date created, int state,
-			int checkedOut, Date checkedOutTime, int userId,
-			boolean notificationrequesttreatment, int access) {
-		this.guid = guid;
-		this.createdBy = createdBy;
-		this.created = created;
-		this.state = state;
-		this.checkedOut = checkedOut;
-		this.checkedOutTime = checkedOutTime;
-		this.userId = userId;
-		this.notificationrequesttreatment = notificationrequesttreatment;
-		this.access = access;
+	public SdiUser(Users users, String Guid, int Created_by, Date Created,
+			int State, int Checked_out, Date Checked_out_time,
+			boolean Notificationrequesttreatment, int Access) {
+		this.users = users;
+		this.Guid = Guid;
+		this.Created_by = Created_by;
+		this.Created = Created;
+		this.State = State;
+		this.Checked_out = Checked_out;
+		this.Checked_out_time = Checked_out_time;
+		this.Notificationrequesttreatment = Notificationrequesttreatment;
+		this.Access = Access;
 	}
 
-	public SdiUser(String guid, int createdBy, Date created,
-			Integer modifiedBy, Date modified, Integer ordering, int state,
-			int checkedOut, Date checkedOutTime, int userId,
-			String description, boolean notificationrequesttreatment,
-			Integer catid, String params, int access, Integer assetId,
+	public SdiUser(Users users, String Guid, int Created_by, Date Created,
+			Integer Modified_by, Date Modified, Integer Ordering, int State,
+			int Checked_out, Date Checked_out_time, String Description,
+			boolean Notificationrequesttreatment, Integer Catid, String Params,
+			int Access, Integer Asset_id,
 			Set<SdiUserRoleOrganism> sdiUserRoleOrganisms) {
-		this.guid = guid;
-		this.createdBy = createdBy;
-		this.created = created;
-		this.modifiedBy = modifiedBy;
-		this.modified = modified;
-		this.ordering = ordering;
-		this.state = state;
-		this.checkedOut = checkedOut;
-		this.checkedOutTime = checkedOutTime;
-		this.userId = userId;
-		this.description = description;
-		this.notificationrequesttreatment = notificationrequesttreatment;
-		this.catid = catid;
-		this.params = params;
-		this.access = access;
-		this.assetId = assetId;
+		this.users = users;
+		this.Guid = Guid;
+		this.Created_by = Created_by;
+		this.Created = Created;
+		this.Modified_by = Modified_by;
+		this.Modified = Modified;
+		this.Ordering = Ordering;
+		this.State = State;
+		this.Checked_out = Checked_out;
+		this.Checked_out_time = Checked_out_time;
+		this.Description = Description;
+		this.Notificationrequesttreatment = Notificationrequesttreatment;
+		this.Catid = Catid;
+		this.Params = Params;
+		this.Access = Access;
+		this.Asset_id = Asset_id;
 		this.sdiUserRoleOrganisms = sdiUserRoleOrganisms;
 	}
 
@@ -87,159 +89,160 @@ public class SdiUser implements java.io.Serializable {
 	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
 	public Integer getId() {
-		return this.id;
+		return this.Id;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public void setId(Integer Id) {
+		this.Id = Id;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
+	public Users getUsers() {
+		return this.users;
+	}
+
+	public void setUsers(Users users) {
+		this.users = users;
 	}
 
 	@Column(name = "guid", nullable = false, length = 36)
 	public String getGuid() {
-		return this.guid;
+		return this.Guid;
 	}
 
-	public void setGuid(String guid) {
-		this.guid = guid;
+	public void setGuid(String Guid) {
+		this.Guid = Guid;
 	}
 
 	@Column(name = "created_by", nullable = false)
-	public int getCreatedBy() {
-		return this.createdBy;
+	public int getCreated_by() {
+		return this.Created_by;
 	}
 
-	public void setCreatedBy(int createdBy) {
-		this.createdBy = createdBy;
+	public void setCreated_by(int Created_by) {
+		this.Created_by = Created_by;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created", nullable = false, length = 19)
 	public Date getCreated() {
-		return this.created;
+		return this.Created;
 	}
 
-	public void setCreated(Date created) {
-		this.created = created;
+	public void setCreated(Date Created) {
+		this.Created = Created;
 	}
 
 	@Column(name = "modified_by")
-	public Integer getModifiedBy() {
-		return this.modifiedBy;
+	public Integer getModified_by() {
+		return this.Modified_by;
 	}
 
-	public void setModifiedBy(Integer modifiedBy) {
-		this.modifiedBy = modifiedBy;
+	public void setModified_by(Integer Modified_by) {
+		this.Modified_by = Modified_by;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "modified", length = 19)
 	public Date getModified() {
-		return this.modified;
+		return this.Modified;
 	}
 
-	public void setModified(Date modified) {
-		this.modified = modified;
+	public void setModified(Date Modified) {
+		this.Modified = Modified;
 	}
 
 	@Column(name = "ordering")
 	public Integer getOrdering() {
-		return this.ordering;
+		return this.Ordering;
 	}
 
-	public void setOrdering(Integer ordering) {
-		this.ordering = ordering;
+	public void setOrdering(Integer Ordering) {
+		this.Ordering = Ordering;
 	}
 
 	@Column(name = "state", nullable = false)
 	public int getState() {
-		return this.state;
+		return this.State;
 	}
 
-	public void setState(int state) {
-		this.state = state;
+	public void setState(int State) {
+		this.State = State;
 	}
 
 	@Column(name = "checked_out", nullable = false)
-	public int getCheckedOut() {
-		return this.checkedOut;
+	public int getChecked_out() {
+		return this.Checked_out;
 	}
 
-	public void setCheckedOut(int checkedOut) {
-		this.checkedOut = checkedOut;
+	public void setChecked_out(int Checked_out) {
+		this.Checked_out = Checked_out;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "checked_out_time", nullable = false, length = 19)
-	public Date getCheckedOutTime() {
-		return this.checkedOutTime;
+	public Date getChecked_out_time() {
+		return this.Checked_out_time;
 	}
 
-	public void setCheckedOutTime(Date checkedOutTime) {
-		this.checkedOutTime = checkedOutTime;
-	}
-
-	@Column(name = "user_id", nullable = false)
-	public int getUserId() {
-		return this.userId;
-	}
-
-	public void setUserId(int userId) {
-		this.userId = userId;
+	public void setChecked_out_time(Date Checked_out_time) {
+		this.Checked_out_time = Checked_out_time;
 	}
 
 	@Column(name = "description", length = 65535)
 	public String getDescription() {
-		return this.description;
+		return this.Description;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setDescription(String Description) {
+		this.Description = Description;
 	}
 
 	@Column(name = "notificationrequesttreatment", nullable = false)
 	public boolean isNotificationrequesttreatment() {
-		return this.notificationrequesttreatment;
+		return this.Notificationrequesttreatment;
 	}
 
 	public void setNotificationrequesttreatment(
-			boolean notificationrequesttreatment) {
-		this.notificationrequesttreatment = notificationrequesttreatment;
+			boolean Notificationrequesttreatment) {
+		this.Notificationrequesttreatment = Notificationrequesttreatment;
 	}
 
 	@Column(name = "catid")
 	public Integer getCatid() {
-		return this.catid;
+		return this.Catid;
 	}
 
-	public void setCatid(Integer catid) {
-		this.catid = catid;
+	public void setCatid(Integer Catid) {
+		this.Catid = Catid;
 	}
 
 	@Column(name = "params", length = 1024)
 	public String getParams() {
-		return this.params;
+		return this.Params;
 	}
 
-	public void setParams(String params) {
-		this.params = params;
+	public void setParams(String Params) {
+		this.Params = Params;
 	}
 
 	@Column(name = "access", nullable = false)
 	public int getAccess() {
-		return this.access;
+		return this.Access;
 	}
 
-	public void setAccess(int access) {
-		this.access = access;
+	public void setAccess(int Access) {
+		this.Access = Access;
 	}
 
 	@Column(name = "asset_id")
-	public Integer getAssetId() {
-		return this.assetId;
+	public Integer getAsset_id() {
+		return this.Asset_id;
 	}
 
-	public void setAssetId(Integer assetId) {
-		this.assetId = assetId;
+	public void setAsset_id(Integer Asset_id) {
+		this.Asset_id = Asset_id;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiUser")

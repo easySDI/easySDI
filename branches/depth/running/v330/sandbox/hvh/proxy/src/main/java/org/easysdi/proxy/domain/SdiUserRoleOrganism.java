@@ -1,6 +1,6 @@
 package org.easysdi.proxy.domain;
 
-// Generated Mar 28, 2013 3:02:09 PM by Hibernate Tools 3.4.0.CR1
+// Generated Mar 28, 2013 4:35:10 PM by Hibernate Tools 3.4.0.CR1
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,7 +17,7 @@ import javax.persistence.ManyToOne;
 @Entity
 public class SdiUserRoleOrganism implements java.io.Serializable {
 
-	private Integer id;
+	private Integer Id;
 	private SdiUser sdiUser;
 	private SdiOrganism sdiOrganism;
 	private SdiSysRole sdiSysRole;
@@ -36,11 +36,11 @@ public class SdiUserRoleOrganism implements java.io.Serializable {
 	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
 	public Integer getId() {
-		return this.id;
+		return this.Id;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public void setId(Integer Id) {
+		this.Id = Id;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)

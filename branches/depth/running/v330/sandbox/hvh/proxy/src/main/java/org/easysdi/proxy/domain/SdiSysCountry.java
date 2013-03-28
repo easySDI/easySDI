@@ -1,6 +1,6 @@
 package org.easysdi.proxy.domain;
 
-// Generated Mar 28, 2013 3:02:09 PM by Hibernate Tools 3.4.0.CR1
+// Generated Mar 28, 2013 4:35:10 PM by Hibernate Tools 3.4.0.CR1
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,85 +14,85 @@ import javax.persistence.Id;
 @Entity
 public class SdiSysCountry implements java.io.Serializable {
 
-	private Integer id;
-	private long ordering;
-	private int state;
-	private String name;
-	private String iso2;
-	private String iso3;
+	private Integer Id;
+	private long Ordering;
+	private int State;
+	private String Name;
+	private String Iso2;
+	private String Iso3;
 
 	public SdiSysCountry() {
 	}
 
-	public SdiSysCountry(long ordering, int state, String name) {
-		this.ordering = ordering;
-		this.state = state;
-		this.name = name;
+	public SdiSysCountry(long Ordering, int State, String Name) {
+		this.Ordering = Ordering;
+		this.State = State;
+		this.Name = Name;
 	}
 
-	public SdiSysCountry(long ordering, int state, String name, String iso2,
-			String iso3) {
-		this.ordering = ordering;
-		this.state = state;
-		this.name = name;
-		this.iso2 = iso2;
-		this.iso3 = iso3;
+	public SdiSysCountry(long Ordering, int State, String Name, String Iso2,
+			String Iso3) {
+		this.Ordering = Ordering;
+		this.State = State;
+		this.Name = Name;
+		this.Iso2 = Iso2;
+		this.Iso3 = Iso3;
 	}
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
 	public Integer getId() {
-		return this.id;
+		return this.Id;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public void setId(Integer Id) {
+		this.Id = Id;
 	}
 
 	@Column(name = "ordering", nullable = false)
 	public long getOrdering() {
-		return this.ordering;
+		return this.Ordering;
 	}
 
-	public void setOrdering(long ordering) {
-		this.ordering = ordering;
+	public void setOrdering(long Ordering) {
+		this.Ordering = Ordering;
 	}
 
 	@Column(name = "state", nullable = false)
 	public int getState() {
-		return this.state;
+		return this.State;
 	}
 
-	public void setState(int state) {
-		this.state = state;
+	public void setState(int State) {
+		this.State = State;
 	}
 
 	@Column(name = "name", nullable = false, length = 100)
 	public String getName() {
-		return this.name;
+		return this.Name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String Name) {
+		this.Name = Name;
 	}
 
 	@Column(name = "iso2", length = 2)
 	public String getIso2() {
-		return this.iso2;
+		return this.Iso2;
 	}
 
-	public void setIso2(String iso2) {
-		this.iso2 = iso2;
+	public void setIso2(String Iso2) {
+		this.Iso2 = Iso2;
 	}
 
 	@Column(name = "iso3", length = 3)
 	public String getIso3() {
-		return this.iso3;
+		return this.Iso3;
 	}
 
-	public void setIso3(String iso3) {
-		this.iso3 = iso3;
+	public void setIso3(String Iso3) {
+		this.Iso3 = Iso3;
 	}
 
 }
