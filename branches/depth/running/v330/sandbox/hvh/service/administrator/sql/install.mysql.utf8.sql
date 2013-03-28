@@ -260,8 +260,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_wms_spatialpolicy` (
 `minx` DECIMAL(18,6) ,
 `miny` DECIMAL(18,6) ,
 `geographicfilter` TEXT,
-`maximumcale` INT(11),
-`minimumcale` INT(11),
+`maximumscale` INT(11),
+`minimumscale` INT(11),
 `srssource` VARCHAR (255) ,
 PRIMARY KEY (`id`)
 ) DEFAULT COLLATE=utf8_general_ci;
