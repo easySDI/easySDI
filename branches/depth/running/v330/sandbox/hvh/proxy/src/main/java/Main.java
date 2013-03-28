@@ -26,7 +26,7 @@ public class Main {
 		u.setCreated(new Date());
 		u.setNotificationrequesttreatment(true);
 		u.setOrdering(1);
-		u.setState(true);
+		u.setState(1);
 		u.setCheckedOutTime(new Date());
 		u.setCheckedOut(1);
 		

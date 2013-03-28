@@ -12,7 +12,7 @@
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://localhost:3306/opcc" />
+		<property name="url" value="jdbc:mysql://localhost:3306/install" />
 		<property name="username" value="root" />
 		<property name="password" value="invulsion" />
 	</bean>
@@ -37,7 +37,7 @@
 	
 	<bean id="namingStrategy" class="org.easysdi.proxy.namingStrategy.CustomNamingStrategy">
 		<property name="prefix">
-			<value>proxy_</value>
+			<value>b6svl_</value>
 		</property>
 	</bean>
 

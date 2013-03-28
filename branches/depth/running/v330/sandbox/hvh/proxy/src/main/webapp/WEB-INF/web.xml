@@ -26,12 +26,6 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
-	<servlet>
-		<servlet-name>mapToFop</servlet-name>
-		<servlet-class>org.easysdi.proxy.reporting.MapToFopServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-
 	<context-param>
 		<param-name>configFile</param-name>
 		<param-value>C:\Resources\Config\opcc\config.xml</param-value>
@@ -39,9 +33,7 @@
 
 	<context-param>
 		<param-name>log4jConfigLocation</param-name>
-		<param-value>
-            /WEB-INF/log4j.xml
-        </param-value>
+		<param-value>/WEB-INF/log4j.xml</param-value>
 	</context-param>
 
 	<context-param>
@@ -58,7 +50,6 @@
 		</init-param>
 	</filter>
 
-
 	<listener>
 		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
 	</listener>
@@ -72,17 +63,10 @@
 		<url-pattern>/ogc/*</url-pattern>
 	</servlet-mapping>
 
-	<servlet-mapping>
-		<servlet-name>mapToFop</servlet-name>
-		<url-pattern>/maptofop</url-pattern>
-	</servlet-mapping>
-
 	<filter-mapping>
 		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>/ogc/*</url-pattern>
 	</filter-mapping>
-
-	
 
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>

@@ -2,23 +2,159 @@
 <!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd" >
 
 <hibernate-reverse-engineering>
-	<table-filter match-catalog="proxy330" match-name="proxy_sdi_user" />
-	<table-filter match-name="proxy_sdi_address"
-		match-catalog="proxy330">
+	<table-filter match-name="b6svl_extensions"
+		match-catalog="install">
 	</table-filter>
-	<table-filter match-name="proxy_sdi_organism"
-		match-catalog="proxy330">
+	<table-filter match-name="b6svl_sdi_allowedoperation"
+		match-catalog="install">
 	</table-filter>
-	<table-filter match-name="proxy_sdi_user_role_organism"
-		match-catalog="proxy330">
+	<table-filter match-name="b6svl_sdi_csw_spatialpolicy"
+		match-catalog="install">
 	</table-filter>
-	<table-filter match-name="proxy_sdi_sys_role"
-		match-catalog="proxy330">
+	<table-filter match-name="b6svl_sdi_excludedattribute"
+		match-catalog="install">
 	</table-filter>
-	<table-filter match-name="proxy_sdi_sys_addresstype"
-		match-catalog="proxy330">
+	<table-filter match-name="b6svl_sdi_featuretype_policy"
+		match-catalog="install">
 	</table-filter>
-	<table-filter match-name="proxy_sdi_sys_country"
-		match-catalog="proxy330">
+	<table-filter match-name="b6svl_sdi_includedattribute"
+		match-catalog="install">
 	</table-filter>
+	<table-filter match-name="b6svl_sdi_organism"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_physicalservice"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_physicalservice_organism"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_physicalservice_policy"
+		match-catalog="install">
+	</table-filter>
+	<table-filter
+		match-name="b6svl_sdi_physicalservice_servicecompliance"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_policy"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_policy_metadatastate"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_policy_organism"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_policy_user"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_accessscope"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_addresstype"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_authenticationconnector"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_authenticationlevel"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_country"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_exceptionlevel"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_loglevel"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_logroll"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_maptool"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_metadatastate"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_operationcompliance"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_proxytype"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_role"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_servicecompliance"
+		match-catalog="install">
+	</table-filter>
+	<table-filter
+		match-name="b6svl_sdi_sys_servicecon_authenticationcon"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_serviceconnector"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_serviceoperation"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_servicescope"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_serviceversion"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_spatialoperator"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_unit"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_sys_versiontype"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_tilematrix_policy"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_tilematrixset_policy"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_user" match-catalog="install"></table-filter>
+	<table-filter match-name="b6svl_sdi_user_role_organism"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_virtual_physical"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_virtualmetadata"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_virtualservice"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_virtualservice_organism"
+		match-catalog="install">
+	</table-filter>
+	<table-filter
+		match-name="b6svl_sdi_virtualservice_servicecompliance"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_wfs_spatialpolicy"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_wms_spatialpolicy"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_wmslayer_policy"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_wmts_spatialpolicy"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_sdi_wmtslayer_policy"
+		match-catalog="install">
+	</table-filter>
+	<table-filter match-name="b6svl_users" match-catalog="install"></table-filter>
 </hibernate-reverse-engineering>
