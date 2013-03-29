@@ -21,6 +21,10 @@ class WmtsLayer extends Layer{
 		$this->tileMatrixSetList[$tileMatrixSet->identifier] = $tileMatrixSet;
 	}
 	
+	public function getTileMatrixSetByName ($name) {
+		return $this->tileMatrixSetList[$name];
+	}
+	
 	public function sortLists () {
 		foreach ($this->tileMatrixSetList as $tileMatrixSet) {
 			$tileMatrixSet->sortLists();
@@ -32,6 +36,7 @@ class WmtsLayer extends Layer{
 		foreach ($data as $key => $value) {
 			if (property_exists('WmtsLayer', $key) && 'tileMatrixSetList' != $key) {
 				$this->{$key} = $value;
+				$this->hasConfig = true;
 			}
 		}
 		foreach ($data['tileMatrixSetList'] as $key => $value) {
@@ -50,22 +55,9 @@ class WmtsLayer extends Layer{
 		return $layer;
 	}
 	
-	public function calculateAuthorizedTiles ($providedData = null) {
-		if (empty($providedData)) {
-			$bboxSRS = Array(
-				'minX' => $this->westBoundLongitude,
-				'maxX' => $this->eastBoundLongitude,
-				'minY' => $this->northBoundLatitude,
-				'maxY' => $this->southBoundLatitude,
-			);
-			$spatialOperator = $this->spatialOperator;
-		}
-		else {
-			$bboxSRS = $providedData['bboxSRS'];
-			$spatialOperator = $providedData['spatialOperator'];
-		}
+	public function calculateAuthorizedTiles () {
 		foreach ($this->tileMatrixSetList as $tmsObj) {
-			$tmsObj->calculateAuthorizedTiles($bboxSRS, $spatialOperator);
+			$tmsObj->calculateAuthorizedTiles($this->spatialOperator);
 		}
 	}
 }

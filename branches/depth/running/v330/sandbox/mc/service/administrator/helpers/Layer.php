@@ -3,6 +3,8 @@ abstract class Layer {
 	public $name;
 	public $description;
 	
+	protected $hasConfig = false;
+	
 	public function __construct($name, $description) {
 		$this->name = $name;
 		$this->description = $description;
@@ -21,7 +23,18 @@ abstract class Layer {
 		foreach ($data as $key => $value) {
 			if (property_exists('Layer', $key)) {
 				$this->{$key} = $value;
+				$this->hasConfig = true;
 			}
+		}
+	}
+	
+	public function hasConfig () {
+		return $this->hasConfig;
+	}
+	
+	public function setHasConfig($value) {
+		if (is_bool($value)) {
+			$this->hasConfig = $value;
 		}
 	}
 	

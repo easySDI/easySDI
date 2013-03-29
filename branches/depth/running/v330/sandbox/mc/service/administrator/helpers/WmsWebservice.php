@@ -87,7 +87,6 @@ class WmsWebservice {
 	}
 	
 	private static function getWmsLayerSettings ($physicalServiceID, $policyID, $layerID) {
-		
 		$db = JFactory::getDbo();
 		
 		$db->setQuery('
@@ -143,7 +142,6 @@ class WmsWebservice {
 		$wmsObj->populate();
 		$wmsObj->loadData($data);
 		$layerObj = $wmsObj->getLayerByName($layerID);
-		
 		return $layerObj;
 	}
 	
@@ -265,6 +263,7 @@ class WmsWebservice {
 			$query = $db->getQuery(true);
 			$query->update('#__sdi_wmslayer_policy')->set(Array(
 				'enabled = \'' . $enabled . '\'',
+				'spatialpolicy_id = \'' . $spatial_policy_id . '\'',
 			))->where(Array(
 				'id = \'' . $wmslayerpolicy_id . '\'',
 			));

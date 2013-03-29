@@ -14,6 +14,7 @@ abstract class PhysicalService {
 	abstract public function populate();
 	abstract public function sortLists();
 	abstract public function loadData($data);
+	abstract public function setLayerAsConfigured($layerList);
 	
 	public function __construct ($id, $url, $connector) {
 		$this->id = $id;

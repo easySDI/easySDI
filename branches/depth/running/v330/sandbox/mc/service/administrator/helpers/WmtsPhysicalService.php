@@ -100,4 +100,10 @@ class WmtsPhysicalService extends PhysicalService{
 			$this->layerList[$key]->loadData($value);
 		}
 	}
+	
+	public function setLayerAsConfigured ($layerList) {
+		foreach ($layerList as $layerIdentifier) {
+			$this->getLayerByName($layerIdentifier)->setHasConfig(true);
+		}
+	}
 }

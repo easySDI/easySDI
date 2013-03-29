@@ -48,4 +48,10 @@ class WfsPhysicalService extends PhysicalService{
 		}
 	}
 	
+	public function setLayerAsConfigured ($layerList) {
+		foreach ($layerList as $layerIdentifier) {
+			$this->getLayerByName($layerIdentifier)->setHasConfig(true);
+		}
+	}
+	
 }

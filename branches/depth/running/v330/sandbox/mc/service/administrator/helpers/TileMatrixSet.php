@@ -5,6 +5,10 @@ class TileMatrixSet {
 	public $identifier;
 	public $srs;
 	public $srsUnit;
+	public $minX;
+	public $maxX;
+	public $minY;
+	public $maxY;
 	public $maxTileMatrix;
 	private $tileMatrixList = Array();
 	
@@ -21,6 +25,10 @@ class TileMatrixSet {
 	
 	public function addTileMatrix ($tileMatrix) {
 		$this->tileMatrixList[$tileMatrix->identifier] = $tileMatrix;
+	}
+	
+	public function getTileMatrixByName ($name) {
+		return $this->tileMatrixList[$name];
 	}
 	
 	public function sortLists () {
@@ -61,10 +69,9 @@ class TileMatrixSet {
 	/**
 	 * Calculate the range of tiles allowed by the BBOX filter
 	 * Algorithm given by OGC 07-057r2 document (page 9).
-	 * @param Array $bboxSRS : Associative array (keys : minX maxX minY maxY) containing the bounding box
 	 * @param String $spatialOperator : The spatial operator to use
 	 */
-	public function calculateAuthorizedTiles($bboxSRS, $spatialOperator){
+	public function calculateAuthorizedTiles($spatialOperator){
 		//Calculate the meterPerUnit parameter
 		if ($this->srsUnit == "m" || $this->srsUnit == "metre") {
 			$meterPerUnit = 1;
@@ -91,10 +98,11 @@ class TileMatrixSet {
 			//OGC authority SRS defnition (see : OGC 07-057r7 document)
 			//- all SRS give the topLeftCorner as <TopLeftCorner>East North</TopLeftCorner>
 			//Others authorities are not supported.
-			if(!strpos($this->srsUnit,'m') && strpos($this->srs,'EPSG')){
+			if (!strpos($this->srsUnit,'m') && strpos($this->srs,'EPSG')) {
 				$topLeftCornerY = substr($tileMatrixObj->topLeftCorner, 0, strpos($tileMatrixObj->topLeftCorner," "));
 				$topLeftCornerX = substr($tileMatrixObj->topLeftCorner, strpos($tileMatrixObj->topLeftCorner," ")+1);
-			}else{
+			}
+			else {
 				$topLeftCornerX = substr($tileMatrixObj->topLeftCorner, 0, strpos($tileMatrixObj->topLeftCorner," "));
 				$topLeftCornerY = substr($tileMatrixObj->topLeftCorner, strpos($tileMatrixObj->topLeftCorner," ")+1);
 			}
@@ -108,55 +116,56 @@ class TileMatrixSet {
 			$epsilon = 0.000001;
 			
 			//Calculate the range of tileset indexes included in the BBOX filter
-			if($spatialOperator == "touch"){
-				$tileMinCol = floor(($bboxSRS['minX'] - $topLeftCornerX)/$tileSpanX + $epsilon);
-				$tileMaxCol = floor(($bboxSRS['maxX'] - $topLeftCornerX)/$tileSpanX - $epsilon);
-				$tileMinRow = floor(($topLeftCornerY - $bboxSRS['maxY'])/$tileSpanY + $epsilon);
-				$tileMaxRow = floor(($topLeftCornerY - $bboxSRS['minY'])/$tileSpanY - $epsilon);
-			}else{
-				$tileMinCol = ceil(($bboxSRS['minX'] - $topLeftCornerX)/$tileSpanX + $epsilon);
-				$tileMaxCol = floor(($bboxSRS['maxX'] - $topLeftCornerX)/$tileSpanX - $epsilon) -1;
-				$tileMinRow = ceil(($topLeftCornerY - $bboxSRS['maxY'])/$tileSpanY + $epsilon) ;
-				$tileMaxRow = floor(($topLeftCornerY - $bboxSRS['minY'])/$tileSpanY - $epsilon) -1;
+			if ($spatialOperator == "touch") {
+				$tileMinCol = floor(($this->minX - $topLeftCornerX)/$tileSpanX + $epsilon);
+				$tileMaxCol = floor(($this->maxX - $topLeftCornerX)/$tileSpanX - $epsilon);
+				$tileMinRow = floor(($topLeftCornerY - $this->maxY)/$tileSpanY + $epsilon);
+				$tileMaxRow = floor(($topLeftCornerY - $this->minY)/$tileSpanY - $epsilon);
+			}
+			else {
+				$tileMinCol = ceil(($this->minX - $topLeftCornerX)/$tileSpanX + $epsilon);
+				$tileMaxCol = floor(($this->maxX - $topLeftCornerX)/$tileSpanX - $epsilon) -1;
+				$tileMinRow = ceil(($topLeftCornerY - $this->maxY)/$tileSpanY + $epsilon) ;
+				$tileMaxRow = floor(($topLeftCornerY - $this->minY)/$tileSpanY - $epsilon) -1;
 			}
 			
 			//Error control to avoid requesting empty tiles
-			if($tileMinCol < 0){
+			if ($tileMinCol < 0) {
 				$tileMinCol = 0;
 			}
-			if($tileMaxCol < 0){
-				return;
+			if ($tileMaxCol < 0) {
+				continue;
 			}
-			if($tileMinCol > $tileMaxCol){
-				return;
+			if ($tileMinCol > $tileMaxCol) {
+				continue;
 			}
-			if($tileMinCol >= $tileMatrixObj->matrixWidth){
-				return;
+			if ($tileMinCol >= $tileMatrixObj->matrixWidth) {
+				continue;
 			}
-			if($tileMaxCol >= $tileMatrixObj->matrixWidth){
+			if ($tileMaxCol >= $tileMatrixObj->matrixWidth) {
 				$tileMaxCol = $tileMatrixObj->matrixWidth -1;
 			}
-			if($tileMinRow < 0){
+			if ($tileMinRow < 0) {
 				$tileMinRow = 0;
 			}
-			if($tileMaxRow < 0){
-				return;
+			if ($tileMaxRow < 0) {
+				continue;
 			}
-			if($tileMinRow > $tileMaxRow){
-				return;
+			if ($tileMinRow > $tileMaxRow) {
+				continue;
 			}
-			if($tileMinRow >= $tileMatrixObj->matrixHeight){
-				return;
+			if ($tileMinRow >= $tileMatrixObj->matrixHeight) {
+				continue;
 			}
-			if($tileMaxRow >= $tileMatrixObj->matrixHeight){
+			if ($tileMaxRow >= $tileMatrixObj->matrixHeight) {
 				$tileMaxRow = $tileMatrixObj->matrixHeight -1;
 			}
 			
 			//Control if the BBOX filter and the TileMatrix extent intersect each other
-			if($tileMatrixMaxX < $bboxSRS['minX']
-					|| $tileMatrixMinY > $bboxSRS['maxY']
-					|| $topLeftCornerY < $bboxSRS['minY']
-					|| $topLeftCornerX > $bboxSRS['maxX']){
+			if($tileMatrixMaxX < $this->minX
+					|| $tileMatrixMinY > $this->maxY
+					|| $topLeftCornerY < $this->minY
+					|| $topLeftCornerX > $this->maxX){
 				//No intersection : none of the Tile is allowed
 				$tileMatrixObj->minTileRow = null;
 				$tileMatrixObj->maxTileRow = null;
@@ -167,10 +176,10 @@ class TileMatrixSet {
 			}
 			else{
 				//Intersection
-				$tileMatrixObj->minTileRow = $tileMinCol;
-				$tileMatrixObj->maxTileRow = $tileMaxCol;
-				$tileMatrixObj->minTileCol = $tileMinRow;
-				$tileMatrixObj->maxTileCol = $tileMaxRow;
+				$tileMatrixObj->minTileRow = $tileMinRow;
+				$tileMatrixObj->maxTileRow = $tileMaxRow;
+				$tileMatrixObj->minTileCol = $tileMinCol;
+				$tileMatrixObj->maxTileCol = $tileMaxCol;
 				$tileMatrixObj->anyTile = false;
 			}
 		}

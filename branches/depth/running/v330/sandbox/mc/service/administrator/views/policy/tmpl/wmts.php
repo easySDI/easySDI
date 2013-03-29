@@ -19,6 +19,7 @@ JHtml::_('behavior.keepalive');
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
+$document->addScript('components/com_easysdi_service/libraries/proj4js/lib/proj4js-combined.js' );
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/policy.js');
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/wmts.js');
 JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
@@ -153,7 +154,15 @@ function printSpatialPolicyForm ($suffix, $data) {
 											<tbody>
 											<?php foreach($ps->getLayerList() as $layer):?>
 												<tr>
-													<td><?php echo $layer->name; ?></td>
+													<td>
+														<?php echo $layer->name; ?>
+														&nbsp;
+														<?php
+															if ($layer->hasConfig()) {
+																echo '<span class="label label-info">' . JText::_('COM_EASYSDI_SERVICE_LAYER_HAS_CONFIG') . '</span>';
+															}
+														?>
+													</td>
 													<td><?php echo $layer->description; ?></td>
 													<td>
 														<button type="button" class="btn btn_modify_layer" data-toggle="modal" data-target="#layer_settings_modal" data-psid="<?php echo $ps->id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>">

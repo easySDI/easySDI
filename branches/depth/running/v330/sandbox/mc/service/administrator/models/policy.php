@@ -116,14 +116,46 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	protected function _getItemWMS($pk, $virtualservice_id) {
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmsPhysicalService.php');
 		$tab_physicalService = JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
+		$db = JFactory::getDbo();
 		
 		$ps_list = $tab_physicalService->getListByVirtualService($virtualservice_id);
 		$wmsObjList = Array();
 		foreach ($ps_list as $ps) {
+			//check layers that have settings
+			if (!empty($pk)) {
+				$db->setQuery('
+					SELECT wlp.name
+					FROM #__sdi_policy p
+					JOIN #__sdi_physicalservice_policy psp
+					ON p.id = psp.policy_id
+					JOIN #__sdi_wmslayer_policy wlp
+					ON psp.id = wlp.physicalservicepolicy_id
+					WHERE p.id = ' . $pk . '
+					AND psp.physicalservice_id = ' . $ps->id . '
+					AND wlp.spatialpolicy_id IS NOT NULL;
+				');
+				
+				try {
+					$db->execute();
+					$resultset = $db->loadObjectList();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
+				
+				$layerList = Array();
+				foreach ($resultset as $row) {
+					$layerList[] = $row->name;
+				}
+			}
+			
 			$wmsObj = new WmsPhysicalService($ps->id, $ps->resourceurl);
 			$wmsObj->getCapabilities();
 			$wmsObj->populate();
 			$wmsObj->sortLists();
+			$wmsObj->setLayerAsConfigured($layerList);
 			$wmsObjList[] = $wmsObj;
 		}
 		
@@ -138,14 +170,45 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	protected function _getItemWFS($pk, $virtualservice_id) {
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WfsPhysicalService.php');
 		$tab_physicalService = JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
+		$db = JFactory::getDbo();
 		
 		$ps_list = $tab_physicalService->getListByVirtualService($virtualservice_id);
 		$wfsObjList = Array();
 		foreach ($ps_list as $ps) {
+			//check layers that have settings
+			if (!empty($pk)) {
+				$db->setQuery('
+					SELECT wlp.name
+					FROM #__sdi_policy p
+					JOIN #__sdi_physicalservice_policy psp
+					ON p.id = psp.policy_id
+					JOIN #__sdi_wfslayer_policy wlp
+					ON psp.id = wlp.physicalservicepolicy_id
+					WHERE p.id = ' . $pk . '
+					AND psp.physicalservice_id = ' . $ps->id . ';
+				');
+				
+				try {
+					$db->execute();
+					$resultset = $db->loadObjectList();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
+				
+				$layerList = Array();
+				foreach ($resultset as $row) {
+					$layerList[] = $row->name;
+				}
+			}
+			
 			$wfsObj = new WfsPhysicalService($ps->id, $ps->resourceurl);
 			$wfsObj->getCapabilities();
 			$wfsObj->populate();
 			$wfsObj->sortLists();
+			$wfsObj->setLayerAsConfigured($layerList);
 			$wfsObjList[] = $wfsObj;
 		}
 		
@@ -160,14 +223,45 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	protected function _getItemWMTS($pk, $virtualservice_id) {
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmtsPhysicalService.php');
 		$tab_physicalService = JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
+		$db = JFactory::getDbo();
 		
 		$ps_list = $tab_physicalService->getListByVirtualService($virtualservice_id);
 		$wmtsObjList = Array();
 		foreach ($ps_list as $ps) {
+			//check layers that have settings
+			if (!empty($pk)) {
+				$db->setQuery('
+					SELECT wlp.identifier
+					FROM #__sdi_policy p
+					JOIN #__sdi_physicalservice_policy psp
+					ON p.id = psp.policy_id
+					JOIN #__sdi_wmtslayer_policy wlp
+					ON psp.id = wlp.physicalservicepolicy_id
+					WHERE p.id = ' . $pk . '
+					AND psp.physicalservice_id = ' . $ps->id . ';
+				');
+				
+				try {
+					$db->execute();
+					$resultset = $db->loadObjectList();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
+				
+				$layerList = Array();
+				foreach ($resultset as $row) {
+					$layerList[] = $row->identifier;
+				}
+			}
+			
 			$wmtsObj = new WmtsPhysicalService($ps->id, $ps->resourceurl);
 			$wmtsObj->getCapabilities();
 			$wmtsObj->populate();
 			$wmtsObj->sortLists();
+			$wmtsObj->setLayerAsConfigured($layerList);
 			$wmtsObjList[] = $wmtsObj;
 		}
 		

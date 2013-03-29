@@ -14,7 +14,7 @@ class WmsLayer extends Layer{
 	
 	public function loadData ($data) {
 		foreach ($data as $key => $value) {
-			if (property_exists('WfsFeatureType', $key)) {
+			if (property_exists('WmsLayer', $key)) {
 				$this->{$key} = $value;
 			}
 		}

@@ -6,16 +6,9 @@ class CswPhysicalService extends PhysicalService{
 		parent::__construct($id, $url, 'CSW');
 	}
 	
-	/**
-	 * Populate the physical service with its stored capabilites
-	 * 
-	 */
-	public function populate () {
-		
-	}
-	
+	public function populate () {}
 	public function sortLists () {}
-	
 	public function loadData ($data) {}
+	public function setLayerAsConfigured ($layerList) {}
 	
 }

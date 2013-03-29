@@ -38,9 +38,22 @@ jQuery(document).ready(function () {
 	
 	//on submission of the modal
 	jQuery('#layer_settings_modal .modal-footer .btn-primary').click(function () {
-		var get_query = '?option=com_easysdi_service&task=wmsWebservice&method=setWmsLayerSettings&' + jQuery('#modal_layer_form').serialize();
+		//we pre-calculate the bbox
+		var raw_form_array = jQuery('#modal_layer_form').serializeArray();
+		var form_values = {};
+		for (var i = 0; i < raw_form_array.length; i++) {
+			form_values[raw_form_array[i].name] = raw_form_array[i].value;
+		}
 		
 		//TODO: get SRS, calculate and set max/min X/Y
+		
+		
+		var get_str = '';
+		for (key in form_values) {
+			get_str += '&' + key + '=' + form_values[key];
+		}
+		
+		var get_query = '?option=com_easysdi_service&task=wmsWebservice&method=setWmsLayerSettings&' + get_str;
 		
 		jQuery.ajax({
 			dataType: 'html',

@@ -105,7 +105,9 @@ class WmtsWebservice {
 				</thead>
 				<tbody>
 		';
+		$tms_identifier_list = Array();
 		foreach ($layerObj->getTileMatrixSetList() as $tms) {
+			$tms_identifier_list[] = $tms->identifier;
 			$html .= '
 				<tr>
 					<td>' . $tms->identifier . '</td>
@@ -124,16 +126,19 @@ class WmtsWebservice {
 			}
 			$html .= '
 						</select>
+						<input type="hidden" name="srs[' . $tms->identifier . ']" value="' . $tms->srs . '"/>
 					</td>
 				</tr>
 			';
 		}
+		
 		$html .= '
 				</tbody>
 			</table>
 			<input type="hidden" name="psID" value="' . $physicalServiceID . '"/>
 			<input type="hidden" name="policyID" value="' . $policyID . '"/>
 			<input type="hidden" name="layerID" value="' . $layerID . '"/>
+			<input type="hidden" name="tms_list" value="' . implode(';', $tms_identifier_list) . '"/>
 		';
 		return $html;
 	}
@@ -183,7 +188,6 @@ class WmtsWebservice {
 			return false;
 		}
 		
-		//TODO : get tilematrixset settings
 		$tms_arr = Array();
 		foreach ($resultset as $tilematrixset) {
 			$tms_arr[$tilematrixset->tmsp_identifier] = Array('maxTileMatrix' => $tilematrixset->tmp_identifier);
@@ -401,19 +405,33 @@ class WmtsWebservice {
 		$wmtsObj = new WmtsPhysicalService($physicalServiceID, $ps_url);
 		$wmtsObj->getCapabilities();
 		$wmtsObj->populate();
-		$layerObj = $wmtsObj->getLayerByName($layerID);
-		$data = Array(
-			'bboxSRS' => Array(
-				'minX' => $raw_GET['westBoundLongitude'],
-				'maxX' => $raw_GET['eastBoundLongitude'],
-				'minY' => $raw_GET['northBoundLatitude'],
-				'maxY' => $raw_GET['southBoundLatitude'],
-			),
+		
+		$form_values[$layerID] = Array(
+			'enabled' => $raw_GET['enabled'],
 			'spatialOperator' => $spatialOperators[$raw_GET['spatial_operator_id']],
+			'westBoundLongitude' => $raw_GET['westBoundLongitude'],
+			'eastBoundLongitude' => $raw_GET['eastBoundLongitude'],
+			'northBoundLatitude' => $raw_GET['northBoundLatitude'],
+			'southBoundLatitude' => $raw_GET['southBoundLatitude'],
+			'tileMatrixSetList' => Array(),
 		);
-		$layerObj->calculateAuthorizedTiles($data);
+		foreach ($raw_GET['select'] as $tms => $tm) {
+			$form_values[$layerID]['tileMatrixSetList'][$tms] = Array(
+				'maxTileMatrix' => $tm,
+				'minX' => $raw_GET['minX'][$tms],
+				'maxX' => $raw_GET['maxX'][$tms],
+				'minY' => $raw_GET['minY'][$tms],
+				'maxY' => $raw_GET['maxY'][$tms],
+				'srsUnit' => $raw_GET['srsUnit'][$tms],
+			);
+		}
+		$wmtsObj->loadData($form_values);
+		$layerObj = $wmtsObj->getLayerByName($layerID);
+		$layerObj->calculateAuthorizedTiles();
 		
 		foreach ($raw_GET['select'] as $tms => $tm) {
+			$tmsObj = $layerObj->getTileMatrixSetByName($tms);
+			$tmObj = $tmsObj->getTileMatrixByName($tm);
 			//save Tile Matrix Set
 			$db->setQuery('
 				SELECT id
@@ -487,15 +505,20 @@ class WmtsWebservice {
 			
 			if (0 == $num_result) {
 				$query->insert('#__sdi_tilematrix_policy')->columns('
-					tilematrixsetpolicy_id, identifier
+					tilematrixsetpolicy_id, identifier, anytile, tileminrow, tilemaxrow, tilemincol, tilemaxcol
 				')->values('
-					\'' . $tilematrixsetpolicy_id . '\', \'' . $tm . '\'
+					\'' . $tilematrixsetpolicy_id . '\', \'' . $tm . '\', \'' . $tmObj->anyTile . '\', \'' . $tmObj->minTileRow . '\', \'' . $tmObj->maxTileRow . '\', \'' . $tmObj->minTileCol . '\', \'' . $tmObj->maxTileCol . '\'
 				');
 			}
 			else {
 				//TODO: set BBox
 				$query->update('#__sdi_tilematrix_policy')->set(Array(
 					'identifier = \'' . $tm . '\'',
+					'anytile = \'' . $tmObj->anyTile . '\'',
+					'tileminrow = \'' . $tmObj->minTileRow . '\'',
+					'tilemaxrow = \'' . $tmObj->maxTileRow . '\'',
+					'tilemincol = \'' . $tmObj->minTileCol . '\'',
+					'tilemaxcol = \'' . $tmObj->maxTileCol . '\'',
 				))->where(Array(
 					'id = \'' . $tmp_id . '\'',
 				));
