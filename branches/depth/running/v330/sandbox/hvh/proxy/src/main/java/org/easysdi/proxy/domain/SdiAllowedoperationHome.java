@@ -1,10 +1,11 @@
 package org.easysdi.proxy.domain;
 
-// Generated Mar 28, 2013 6:08:17 PM by Hibernate Tools 3.4.0.CR1
+// Generated Mar 29, 2013 9:59:28 AM by Hibernate Tools 3.4.0.CR1
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ public class SdiAllowedoperationHome {
 	private static final Log log = LogFactory
 			.getLog(SdiAllowedoperationHome.class);
 
+	@Autowired
 	private SessionFactory sessionFactory;
 
 	public SdiAllowedoperation findById(Integer id) {

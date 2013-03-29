@@ -1,10 +1,13 @@
 package org.easysdi.proxy.domain;
 
-// Generated Mar 28, 2013 6:08:17 PM by Hibernate Tools 3.4.0.CR1
+// Generated Mar 29, 2013 9:59:28 AM by Hibernate Tools 3.4.0.CR1
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,17 +24,40 @@ public class SdiVirtualserviceHome {
 	private static final Log log = LogFactory
 			.getLog(SdiVirtualserviceHome.class);
 
+	@Autowired
 	private SessionFactory sessionFactory;
 
+	@SuppressWarnings("unused")
 	public SdiVirtualservice findById(Integer id) {
 		log.debug("getting SdiVirtualservice instance with id: " + id);
 		try {
 			SdiVirtualservice instance = (SdiVirtualservice) sessionFactory
 					.getCurrentSession().get(SdiVirtualservice.class, id);
 			log.debug("get successful");
+			
 			return instance;
 		} catch (RuntimeException re) {
 			log.error("get failed", re);
+			throw re;
+		}
+	}
+	
+	public SdiVirtualservice findByAlias(String alias) {
+		try {
+			Query query = sessionFactory.getCurrentSession().createQuery("from SdiVirtualservice where alias= :alias");
+			query.setParameter("alias", alias);
+			SdiVirtualservice instance = (SdiVirtualservice) query.setCacheable(true).list().get(0);
+			
+			
+			long oldMissCount = sessionFactory.getStatistics().getSecondLevelCacheHitCount();
+			long oldHitCount = sessionFactory.getStatistics().getSecondLevelCacheMissCount();
+
+//			Map cacheEntries = sessionFactory.getStatistics()
+//			        .getSecondLevelCacheStatistics("SdiVirtualservice")
+//			        .getEntries();
+			
+			return instance;
+		} catch (RuntimeException re) {
 			throw re;
 		}
 	}

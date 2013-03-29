@@ -15,6 +15,7 @@ public class ${declarationName}Home {
     private static final ${pojo.importType("org.apache.commons.logging.Log")} log = ${pojo.importType("org.apache.commons.logging.LogFactory")}.getLog(${pojo.getDeclarationName()}Home.class);
 
 <#if ejb3>
+	@${pojo.importType("org.springframework.beans.factory.annotation.Autowired")}
     private ${pojo.importType("org.hibernate.SessionFactory")} sessionFactory;
     
    	<#if clazz.identifierProperty?has_content>    
@@ -99,6 +100,7 @@ public class ${declarationName}Home {
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
+	
     
 <#else>    
     private final ${pojo.importType("org.hibernate.SessionFactory")} sessionFactory = getSessionFactory();

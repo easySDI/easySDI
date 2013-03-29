@@ -26,7 +26,7 @@
   	</logger>
   	
   	<logger name="EasySdiConfigFilter" additivity="false">
-    	<level value="INFO" />
+    	<level value="DEBUG" />
     	<appender-ref ref="rootAppender"/>
   	</logger>
   	

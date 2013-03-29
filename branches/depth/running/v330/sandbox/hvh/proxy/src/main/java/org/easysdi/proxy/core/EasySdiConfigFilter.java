@@ -19,6 +19,10 @@ import javax.xml.bind.Unmarshaller;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
+
+import org.easysdi.proxy.domain.SdiUserHome;
+import org.easysdi.proxy.domain.SdiVirtualservice;
+import org.easysdi.proxy.domain.SdiVirtualserviceHome;
 import org.easysdi.proxy.exception.NoAnonymousPolicyFoundException;
 import org.easysdi.proxy.exception.PolicyNotFoundException;
 import org.easysdi.proxy.ows.OWSExceptionReport;
@@ -27,15 +31,21 @@ import org.easysdi.proxy.policy.Policy;
 import org.easysdi.proxy.policy.PolicySet;
 import org.easysdi.xml.documents.Config;
 import org.easysdi.xml.handler.ConfigFileHandler;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.filter.GenericFilterBean;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+@Transactional
 public class EasySdiConfigFilter extends GenericFilterBean {
 
 	private Cache configCache;
@@ -149,6 +159,23 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 	}
 
 	private Config setConfig(String servletName) throws SAXException, IOException {
+		
+		//Get Service Virtual DAO Bean
+		WebApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+		SdiVirtualserviceHome serviceDAO = (SdiVirtualserviceHome)springContext.getBean("SdiVirtualserviceHome");
+		
+		@SuppressWarnings("unused")
+		SdiVirtualservice vs3 =  serviceDAO.findById(1);
+		
+		@SuppressWarnings("unused")
+		SdiVirtualservice vs4 =  serviceDAO.findById(1);
+		
+		@SuppressWarnings("unused")
+		SdiVirtualservice vs =  serviceDAO.findByAlias(servletName);
+		
+		@SuppressWarnings("unused")
+		SdiVirtualservice vs2 =  serviceDAO.findByAlias(servletName);
+		
 		Config configuration = null;
 		String configFile = getServletContext().getInitParameter("configFile");
 		logger.debug("Config file " + configFile);
