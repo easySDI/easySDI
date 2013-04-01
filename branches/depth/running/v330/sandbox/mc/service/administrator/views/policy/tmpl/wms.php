@@ -19,6 +19,8 @@ JHtml::_('behavior.keepalive');
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
+$document->addScript('components/com_easysdi_service/libraries/openlayers/OpenLayers.js' );
+$document->addScript('components/com_easysdi_service/libraries/proj4js/lib/proj4js-combined.js' );
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/policy.js');
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/wms.js');
 JText::script('JGLOBAL_VALIDATION_FORM_FAILED');

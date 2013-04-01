@@ -1,4 +1,3 @@
-var debug = {};
 jQuery(document).ready(function () {
 	//onClick on a layer configuration btn, we fill the modal with an ajax request
 	jQuery('.btn_modify_layer').click(function () {

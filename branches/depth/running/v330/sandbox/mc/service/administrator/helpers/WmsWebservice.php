@@ -78,7 +78,7 @@ class WmsWebservice {
 			<input type="text" name="maximumscale" value="' . $layerObj->maximumScale . '" />
 			<br />
 			<label for="geographicfilter">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_FILTER') . '</label>
-			<textarea name="geographicfilter" rows="5" class="span12">' . $layerObj->geographicFilter . '</textarea>
+			<textarea name="geographicfilter" rows="10" class="span12">' . $layerObj->geographicFilter . '</textarea>
 			<input type="hidden" name="psID" value="' . $physicalServiceID . '"/>
 			<input type="hidden" name="policyID" value="' . $policyID . '"/>
 			<input type="hidden" name="layerID" value="' . $layerID . '"/>
@@ -150,7 +150,7 @@ class WmsWebservice {
 		$physicalServiceID = $raw_GET['psID'];
 		$policyID = $raw_GET['policyID'];
 		$layerID = $raw_GET['layerID'];
-		
+		var_dump($raw_GET);
 		$db = JFactory::getDbo();
 		
 		//save Spatial Policy
@@ -181,17 +181,22 @@ class WmsWebservice {
 		if (0 == $num_result) {
 			$query = $db->getQuery(true);
 			$query->insert('#__sdi_wms_spatialpolicy')->columns('
-				geographicfilter, minimumscale, maximumscale
+				geographicfilter, maxx, maxy, minx, miny, minimumscale, maximumscale, srssource
 			')->values('
-				\'' . $raw_GET['geographicfilter'] . '\', \'' . $raw_GET['minimumscale'] . '\', \'' . $raw_GET['maximumscale'] . '\'
+				\'' . $raw_GET['geographicfilter'] . '\', \'' . $raw_GET['maxX'] . '\', \'' . $raw_GET['maxY'] . '\', \'' . $raw_GET['minX'] . '\', \'' . $raw_GET['minY'] . '\', \'' . $raw_GET['minimumscale'] . '\', \'' . $raw_GET['maximumscale'] . '\', \'' . $raw_GET['srs'] . '\'
 			');
 		}
 		else {
 			$query = $db->getQuery(true);
 			$query->update('#__sdi_wms_spatialpolicy')->set(Array(
 				'geographicfilter = \'' . $raw_GET['geographicfilter'] . '\'',
+				'maxx = \'' . $raw_GET['maxX'] . '\'',
+				'maxy = \'' . $raw_GET['maxY'] . '\'',
+				'minx = \'' . $raw_GET['minX'] . '\'',
+				'miny = \'' . $raw_GET['minY'] . '\'',
 				'minimumscale = \'' . $raw_GET['minimumscale'] . '\'',
 				'maximumscale = \'' . $raw_GET['maximumscale'] . '\'',
+				'srssource = \'' . $raw_GET['srs'] . '\'',
 			))->where(Array(
 				'id = \'' . $spatial_policy_id . '\'',
 			));

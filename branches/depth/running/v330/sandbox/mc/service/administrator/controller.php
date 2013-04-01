@@ -41,16 +41,16 @@ class Easysdi_serviceController extends JControllerLegacy
 	
 	public function wmtsWebservice () {
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'WmtsWebservice.php';
-		WmtsWebservice::request(JRequest::get( 'get' ));
+		WmtsWebservice::request($_GET);
 	}
 	
 	public function wfsWebservice () {
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'WfsWebservice.php';
-		WfsWebservice::request(JRequest::get( 'get' ));
+		WfsWebservice::request($_GET);
 	}
 	
 	public function wmsWebservice () {
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'WmsWebservice.php';
-		WmsWebservice::request(JRequest::get( 'get' ));
+		WmsWebservice::request($_GET);
 	}
 }
