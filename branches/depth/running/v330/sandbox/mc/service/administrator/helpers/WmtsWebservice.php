@@ -428,7 +428,7 @@ class WmtsWebservice {
 		$wmtsObj->loadData($form_values);
 		$layerObj = $wmtsObj->getLayerByName($layerID);
 		$layerObj->calculateAuthorizedTiles();
-		
+		var_dump($raw_GET);
 		foreach ($raw_GET['select'] as $tms => $tm) {
 			$tmsObj = $layerObj->getTileMatrixSetByName($tms);
 			$tmObj = $tmsObj->getTileMatrixByName($tm);
