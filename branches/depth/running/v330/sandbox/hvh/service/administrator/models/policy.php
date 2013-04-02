@@ -78,6 +78,21 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 
 		return $data;
 	}
+	
+	/**
+	 * A protected method to get a set of ordering conditions.
+	 *
+	 * @param	object	A record object.
+	 *
+	 * @return	array	An array of conditions to add to add to ordering queries.
+	 * @since	1.6
+	 */
+	protected function getReorderConditions($table)
+	{
+		$condition = array();
+		$condition[] = 'virtualservice_id = '.(int) $table->virtualservice_id;
+		return $condition;
+	}
 
 	/**
 	 * Method to get a single record.
@@ -87,54 +102,46 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 * @return	mixed	Object on success, false on failure.
 	 * @since	1.6
 	 */
-	public function getItem($pk = null)
-	{
+	public function getItem($pk = null) {
 		if ($item = parent::getItem($pk)) {
-			
-			
 			//Do any procesing on fields here if needed
 			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'tables');
 			
 			$pk = $item->id;
-			$layout = JRequest::getVar('layout',null);
-			$virtualservice_id = JRequest::getVar('virtualservice_id',null);
+// 			$layout = JRequest::getVar('layout',null);
 			
 			if (!isset($item->virtualservice_id)) {
-				$item->virtualservice_id = (int) $virtualservice_id;
+				$item->virtualservice_id = (int) JRequest::getVar('virtualservice_id',null);
 			}
 			
 			$db = JFactory::getDbo();
-			$db->setQuery('
-				SELECT sc.value
-				FROM #__sdi_virtualservice vs
-				JOIN #__sdi_sys_serviceconnector sc
-				ON sc.id = vs.sys_serviceconnector_id
-				WHERE vs.id = ' . $item->virtualservice_id . ';
-			');
+			$query = $db->getQuery(true);
+			$query
+			->select('sc.value')
+			->from(' #__sdi_virtualservice AS vs ')
+			->join('LEFT', '#__sdi_sys_serviceconnector AS sc ON sc.id = vs.serviceconnector_id')
+			->where('vs.id = ' . $item->virtualservice_id );
+			$db->setQuery($query);
+			$layout = $db->loadResult();
 			
-			try {
-				$serviceconnector_name = $db->loadResult();
-			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
-			}
-			
-			//we first update layers via a getCapabilities
-			//Easysdi_serviceHelper::getLayers(Array('service' => 'virtual_' . $item->virtualservice_id, 'user' => '', 'password' => ''));
-			
-			if ('WMS' == $serviceconnector_name) {
-				$item->physicalservice = $this->_getItemWMS($pk, $layout);
-			}
-			else if ('WFS' == $serviceconnector_name) {
-				$item->physicalservice = $this->_getItemWFS($pk, $layout);
-			}
-			else if ('WMTS' == $serviceconnector_name) {
-				$item->physicalservice = $this->_getItemWMTS($pk, $layout);
+			if (method_exists('Easysdi_serviceModelpolicy', '_getItem' . $layout)) {
+				$item->physicalService = $this->{'_getItem' . $layout}($pk, $item->virtualservice_id);
 			}
 		}
+		
+		//SetLayout : layout is the connector type
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query
+				->select('sc.value')
+				->from(' #__sdi_virtualservice AS vs ')
+				->join('LEFT', '#__sdi_sys_serviceconnector AS sc ON sc.id = vs.serviceconnector_id')
+				->where('vs.id = ' . $item->virtualservice_id );
+		$db->setQuery($query);
+		$layout = $db->loadResult();
 
+		$item->layout = ($layout == "WMSC")? "WMS" : $layout;
+		
 		return $item;
 	}
 	
@@ -143,45 +150,52 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 * Get item with WMS service connector
 	 *
 	*/
-	protected function _getItemWMS($pk, $layout) {
-		@$tab_physicalService =& JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
-		@$tab_servicePolicy =& JTable::getInstance('servicepolicy', 'Easysdi_serviceTable');
-		@$tab_layer =& JTable::getInstance('wmslayer', 'Easysdi_serviceTable');
-		@$tab_layerPolicy =& JTable::getInstance('wmslayerpolicy', 'Easysdi_serviceTable');
-		
-		$physicalservice = Array();
-		$ps_list = $tab_physicalService->getListByConnectorType($layout);
+	protected function _getItemWMS($pk, $virtualservice_id) {
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmsPhysicalService.php');
+		$tab_physicalService = JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
+		$db = JFactory::getDbo();
+		$ps_list = $tab_physicalService->getListByVirtualService($virtualservice_id);
+		$wmsObjList = Array();
 		foreach ($ps_list as $ps) {
-			$ps_arr = Array();
-			$ps_arr['id'] = $ps->id;
-			$ps_arr['name'] = $ps->name;
-			$ps_arr['resourceurl'] = $ps->resourceurl;
-			
-			$sp = $tab_servicePolicy->getByIDs($ps->id, $pk);
-			@$ps_arr['prefix'] = $sp->prefix;
-			@$ps_arr['namespace'] = $sp->namespace;
-			
-			$layerList = $tab_layer->getListByPhysicalService($ps->id);
-			$ps_arr['layers'] = Array();
-			foreach ($layerList as $layer) {
-				$lp = $tab_layerPolicy->getByIDs($layer->id, $pk);
-				$layer_infos = Array(
-					'id' => $layer->id,
-					'name' => $layer->name,
-					'description' => $layer->description
-				);
+			//check layers that have settings
+			if (!empty($pk)) {
+				$db->setQuery('
+					SELECT wlp.name
+					FROM #__sdi_policy p
+					JOIN #__sdi_physicalservice_policy psp
+					ON p.id = psp.policy_id
+					JOIN #__sdi_wmslayer_policy wlp
+					ON psp.id = wlp.physicalservicepolicy_id
+					WHERE p.id = ' . $pk . '
+					AND psp.physicalservice_id = ' . $ps->id . '
+					AND wlp.spatialpolicy_id IS NOT NULL;
+				');
 				
-				if (!empty($lp)) {
-					$layer_infos['minimumscale'] = $lp->minimumscale;
-					$layer_infos['maximumscale'] = $lp->maximumscale;
-					$layer_infos['geographicfilter'] = $lp->geographicfilter;
+				try {
+					$db->execute();
+					$resultset = $db->loadObjectList();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
 				}
 				
-				@$ps_arr['layers'][] = $layer_infos;
+				$layerList = Array();
+				foreach ($resultset as $row) {
+					$layerList[] = $row->name;
+				}
 			}
-			$physicalservice[] = $ps_arr;
+			
+			$wmsObj = new WmsPhysicalService($ps->id, $ps->resourceurl);
+			$wmsObj->getCapabilities();
+			$wmsObj->populate();
+			$wmsObj->sortLists();
+			$wmsObj->setLayerAsConfigured($layerList);
+			$wmsObjList[] = $wmsObj;
 		}
-		return $physicalservice;
+		
+		return $wmsObjList;
 	}
 	
 	/**
@@ -189,45 +203,52 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 * Get item with WFS service connector
 	 *
 	*/
-	protected function _getItemWFS($pk, $layout) {
-		@$tab_physicalService =& JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
-		@$tab_servicePolicy =& JTable::getInstance('servicepolicy', 'Easysdi_serviceTable');
-		@$tab_layer =& JTable::getInstance('featureclass', 'Easysdi_serviceTable');
-		@$tab_layerPolicy =& JTable::getInstance('featureclasspolicy', 'Easysdi_serviceTable');
+	protected function _getItemWFS($pk, $virtualservice_id) {
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WfsPhysicalService.php');
+		$tab_physicalService = JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
+		$db = JFactory::getDbo();
 		
-		$physicalservice = Array();
-		$ps_list = $tab_physicalService->getListByConnectorType($layout);
+		$ps_list = $tab_physicalService->getListByVirtualService($virtualservice_id);
+		$wfsObjList = Array();
 		foreach ($ps_list as $ps) {
-			$ps_arr = Array();
-			$ps_arr['id'] = $ps->id;
-			$ps_arr['name'] = $ps->name;
-			$ps_arr['resourceurl'] = $ps->resourceurl;
-			
-			$sp = $tab_servicePolicy->getByIDs($ps->id, $pk);
-			@$ps_arr['prefix'] = $sp->prefix;
-			@$ps_arr['namespace'] = $sp->namespace;
-			
-			$layerList = $tab_layer->getListByPhysicalService($ps->id);
-			$ps_arr['layers'] = Array();
-			foreach ($layerList as $layer) {
-				$lp = $tab_layerPolicy->getByIDs($layer->id, $pk);
-				$layer_infos = Array(
-					'id' => $layer->id,
-					'name' => $layer->name,
-					'description' => $layer->description
-				);
+			//check layers that have settings
+			if (!empty($pk)) {
+				$db->setQuery('
+					SELECT wlp.name
+					FROM #__sdi_policy p
+					JOIN #__sdi_physicalservice_policy psp
+					ON p.id = psp.policy_id
+					JOIN #__sdi_wfslayer_policy wlp
+					ON psp.id = wlp.physicalservicepolicy_id
+					WHERE p.id = ' . $pk . '
+					AND psp.physicalservice_id = ' . $ps->id . ';
+				');
 				
-				if (!empty($lp)) {
-					$layer_infos['attributerestriction'] = $lp->attributerestriction;
-					$layer_infos['boundingboxfilter'] = $lp->boundingboxfilter;
-					$layer_infos['geographicfilter'] = $lp->geographicfilter;
+				try {
+					$db->execute();
+					$resultset = $db->loadObjectList();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
 				}
 				
-				@$ps_arr['layers'][] = $layer_infos;
+				$layerList = Array();
+				foreach ($resultset as $row) {
+					$layerList[] = $row->name;
+				}
 			}
-			$physicalservice[] = $ps_arr;
+			
+			$wfsObj = new WfsPhysicalService($ps->id, $ps->resourceurl);
+			$wfsObj->getCapabilities();
+			$wfsObj->populate();
+			$wfsObj->sortLists();
+			$wfsObj->setLayerAsConfigured($layerList);
+			$wfsObjList[] = $wfsObj;
 		}
-		return $physicalservice;
+		
+		return $wfsObjList;
 	}
 	
 	/**
@@ -235,89 +256,52 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 * Get item with WMTS service connector
 	 *
 	*/
-	protected function _getItemWMTS($pk, $layout) {
-		@$tab_physicalService =& JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
-		@$tab_layer =& JTable::getInstance('wmtslayer', 'Easysdi_serviceTable');
-		@$tab_layerPolicy =& JTable::getInstance('wmtslayerpolicy', 'Easysdi_serviceTable');
-		@$tab_tilematrixset =& JTable::getInstance('tilematrixset', 'Easysdi_serviceTable');
-		@$tab_tilematrix =& JTable::getInstance('tilematrix', 'Easysdi_serviceTable');
-		@$tab_tileMatrixPolicy =& JTable::getInstance('tilematrixpolicy', 'Easysdi_serviceTable');
+	protected function _getItemWMTS($pk, $virtualservice_id) {
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmtsPhysicalService.php');
+		$tab_physicalService = JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
+		$db = JFactory::getDbo();
 		
-		$physicalservice = Array();
-		$ps_list = $tab_physicalService->getListByConnectorType($layout);
+		$ps_list = $tab_physicalService->getListByVirtualService($virtualservice_id);
+		$wmtsObjList = Array();
 		foreach ($ps_list as $ps) {
-			$ps_arr = Array();
-			$ps_arr['id'] = $ps->id;
-			$ps_arr['name'] = $ps->name;
-			$ps_arr['resourceurl'] = $ps->resourceurl;
-			
-			$layerList = $tab_layer->getListByPhysicalService($ps->id);
-			$ps_arr['layers'] = Array();
-			foreach ($layerList as $layer) {
-				$layer_infos = Array(
-					'id' => $layer->id,
-					'name' => $layer->name,
-					'description' => $layer->description
-				);
+			//check layers that have settings
+			if (!empty($pk)) {
+				$db->setQuery('
+					SELECT wlp.identifier
+					FROM #__sdi_policy p
+					JOIN #__sdi_physicalservice_policy psp
+					ON p.id = psp.policy_id
+					JOIN #__sdi_wmtslayer_policy wlp
+					ON psp.id = wlp.physicalservicepolicy_id
+					WHERE p.id = ' . $pk . '
+					AND psp.physicalservice_id = ' . $ps->id . ';
+				');
 				
-				$lp = $tab_layerPolicy->getByIDs($layer->id, $pk);
-				if (!empty($lp)) {
-					$layer_infos['geographicfilter'] = $lp->geographicfilter;
-					$layer_infos['spatialoperator'] = $lp->spatialoperator;
-					$layer_infos['bbox_minimumx'] = $lp->bbox_minimumx;
-					$layer_infos['bbox_minimumy'] = $lp->bbox_minimumy;
-					$layer_infos['bbox_maximumx'] = $lp->bbox_maximumx;
-					$layer_infos['bbox_maximumy'] = $lp->bbox_maximumy;
+				try {
+					$db->execute();
+					$resultset = $db->loadObjectList();
 				}
-				else {
-					$layer_infos['geographicfilter'] = '';
-					$layer_infos['spatialoperator'] = '';
-					$layer_infos['bbox_minimumx'] = '';
-					$layer_infos['bbox_minimumy'] = '';
-					$layer_infos['bbox_maximumx'] = '';
-					$layer_infos['bbox_maximumy'] = '';
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
 				}
 				
-				$layer_infos['tileMatrixSetList'] = Array();
-				$tileMatrixSetList = $tab_tilematrixset->getListByWMTSLayer($layer->id);
-				foreach ($tileMatrixSetList as $tileMatrixSet) {
-					$tileMatrixSet_arr = Array(
-						'id' => $tileMatrixSet->id,
-						'identifier' => $tileMatrixSet->identifier,
-						'supported_crs' => $tileMatrixSet->supported_crs,
-						'tileMatrixList' => Array(),
-					);
-					
-					$tileMatrixList = $tab_tilematrix->getListByTileMatrixSet($tileMatrixSet->id);
-					foreach ($tileMatrixList as $tileMatrix) {
-						$policy_exists = $tab_tileMatrixPolicy->exist(Array(
-							'wmtslayerpolicy_id' => $layer->id,
-							'tilematrixset_id' => $tileMatrixSet->id,
-							'tilematrix_id' => $tileMatrix->id,
-						));
-						
-						$tileMatrixSet_arr['tileMatrixList'][] = Array(
-							'id' => $tileMatrix->id,
-							'identifier' => $tileMatrix->identifier,
-							'scaledenominator' => $tileMatrix->scaledenominator,
-							'topleftcorner' => $tileMatrix->topleftcorner,
-							'tilewidth' => $tileMatrix->tilewidth,
-							'tileheight' => $tileMatrix->tileheight,
-							'matrixwidth' => $tileMatrix->matrixwidth,
-							'matrixheight' => $tileMatrix->matrixheight,
-							'selected' => ($policy_exists)?'selected':'',
-						);
-					}
-					$layer_infos['tileMatrixSetList'][] = $tileMatrixSet_arr;
+				$layerList = Array();
+				foreach ($resultset as $row) {
+					$layerList[] = $row->identifier;
 				}
-				
-				
-				$ps_arr['layers'][] = $layer_infos;
 			}
-			$physicalservice[] = $ps_arr;
+			
+			$wmtsObj = new WmtsPhysicalService($ps->id, $ps->resourceurl);
+			$wmtsObj->getCapabilities();
+			$wmtsObj->populate();
+			$wmtsObj->sortLists();
+			$wmtsObj->setLayerAsConfigured($layerList);
+			$wmtsObjList[] = $wmtsObj;
 		}
 		
-		return $physicalservice;
+		return $wmtsObjList;
 	}
 
 	/**
@@ -325,7 +309,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 *
 	 * @since	1.6
 	 */
-	protected function prepareTable(&$table)
+	protected function prepareTable($table)
 	{
 		jimport('joomla.filter.output');
 		if (empty($table->id)) {
@@ -347,7 +331,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			SELECT sc.value
 			FROM #__sdi_virtualservice vs
 			JOIN #__sdi_sys_serviceconnector sc
-			ON sc.id = vs.sys_serviceconnector_id
+			ON sc.id = vs.serviceconnector_id
 			WHERE vs.id = ' . $data['virtualservice_id'] . ';
 		');
 		
@@ -361,33 +345,29 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		}
 		
 		if(parent::save($data)){
+			
 			$data['id'] = $this->getItem()->get('id');
-			if ('WMS' == $serviceconnector_name) {
-				@$wmslayerpolicy =& JTable::getInstance('wmslayerpolicy', 'Easysdi_serviceTable');
-				if( !$wmslayerpolicy->save($data) ){
-					return false;
-				}
-			}
-			else if ('WFS' == $serviceconnector_name) {
-				@$featureclasspolicy =& JTable::getInstance('featureclasspolicy', 'Easysdi_serviceTable');
-				if( !$featureclasspolicy->save($data) ){
-					return false;
-				}
-			}
-			else if ('WMTS' == $serviceconnector_name) {
-				@$wmtslayerpolicy =& JTable::getInstance('wmtslayerpolicy', 'Easysdi_serviceTable');
-				if( !$wmtslayerpolicy->save($data) ){
+			if ('WMS' == $serviceconnector_name || 'WFS' == $serviceconnector_name || 'WMTS' == $serviceconnector_name) {
+				$physicalservicepolicy = JTable::getInstance('physicalservice_policy', 'Easysdi_serviceTable');
+				if(!$physicalservicepolicy->save($data)){
 					return false;
 				}
 			}
 			
-			if ('WMS' == $serviceconnector_name || 'WFS' == $serviceconnector_name) {
-				@$servicepolicy =& JTable::getInstance('servicepolicy', 'Easysdi_serviceTable');
-				if( !$servicepolicy->save($data) ){
+			if ('WMS' == $serviceconnector_name) {
+				require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmsWebservice.php');
+				
+				$params = Array(
+					'virtualServiceID' => $data['virtualservice_id'],
+					'policyID' => $data['id'],
+				);
+// 				if (!WmsWebservice::saveAllLayers($params, true)) {
+// 					return false;
+// 				}
+				if (!WmsWebservice::saveAllLayers( $data['virtualservice_id'], $data['id'])) {
 					return false;
 				}
 			}
-			//die();
 			return true;
 		}
 		return false;

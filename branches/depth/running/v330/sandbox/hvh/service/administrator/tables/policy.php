@@ -50,26 +50,22 @@ class Easysdi_serviceTablepolicy extends sdiTable {
 	}  
 
 	/**
-	* Method to get the parent asset under which to register this one.
-	* By default, all assets are registered to the ROOT node with ID 1.
-	* The extended class can define a table and id to lookup.  If the
-	* asset does not exist it will be created.
-	*
-	* @param   JTable   $table  A JTable object for the asset parent.
-	* @param   integer  $id     Id to look up
-	*
-	* @return  integer
-	*
-	* @since   11.1
-	*/
+      * Returns the parrent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
+      *
+      * @see JTable::_getAssetParentId 
+    */
 	protected function _getAssetParentId($table = null, $id = null) {
-		$db = JFactory::getDbo();
-		$db->setQuery('SELECT virtualservice_id FROM #__sdi_policy WHERE id = ' . $id);
-		$virtualservice_id = $db->loadResult();
-		
-		$asset = JTable::getInstance('Asset');
-		$asset->loadByName('com_easysdi_service.policy.' . $id);
-		return $asset->id;
+		// We will retrieve the parent-asset from the Asset-table
+		$assetParent = JTable::getInstance('Asset');
+		// Default: if no asset-parent can be found we take the global asset
+		$assetParentId = $assetParent->getRootId();
+		// The item has the component as asset-parent
+		$assetParent->loadByName('com_easysdi_service');
+		// Return the found asset-parent-id
+		if ($assetParent->id){
+			$assetParentId=$assetParent->id;
+		}
+		return $assetParentId;
 	}
 	
 	/**
@@ -79,9 +75,10 @@ class Easysdi_serviceTablepolicy extends sdiTable {
 		//If there is an ordering column and this is a new row then get the next ordering value
 		if (property_exists($this, 'ordering') && $this->id == 0)
 		{
-			$this->ordering = self::getNextOrder('catid = '.$this->virtualservice_id);
+			$this->ordering = self::getNextOrder('virtualservice_id = '.$this->virtualservice_id);
 		}
-	
+
 		return true;
 	}
+	
 }

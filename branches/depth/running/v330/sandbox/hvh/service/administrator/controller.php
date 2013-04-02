@@ -26,27 +26,10 @@ class Easysdi_serviceController extends JControllerLegacy
 		
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
 
-		// Load the submenu.
-// 		Easysdi_serviceHelper::addSubmenu(JRequest::getCmd('view', 'physicalservices'));
-		
-// 		$layout 	= JFactory::getApplication()->input->getCmd('layout', 'edit');
-// 		$id			= JFactory::getApplication()->input->getInt('id');
 		$view		= JFactory::getApplication()->input->getCmd('view', 'physicalservices');
 		JFactory::getApplication()->input->set('view', $view);
 	
-        //TODO correct with physicalservice and/or virtualservice
-        // Check for edit form.
-//         if ($view == 'physicalservice' && $layout == 'edit' && !$this->checkEditId('com_easysdi_service.edit.physicalservice', $id)) {
-//         	// Somehow the person just went to the form - we don't allow that.
-//         	$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));
-//         	$this->setMessage($this->getError(), 'error');
-//         	$this->setRedirect(JRoute::_('index.php?option=com_easysdi_service&view=physicalservices', false));
-        
-//         	return false;
-//         }
-
 		parent::display($cachable, $urlparams);
-		
 		return $this;
 	}
 	
@@ -64,5 +47,20 @@ class Easysdi_serviceController extends JControllerLegacy
 	public function easySDIHome ()
 	{
 		$this->setRedirect('index.php?option=com_easysdi_core');
+	}
+	
+	public function wmtsWebservice () {
+		require_once JPATH_COMPONENT.DS.'helpers'.DS.'WmtsWebservice.php';
+		WmtsWebservice::request($_GET);
+	}
+	
+	public function wfsWebservice () {
+		require_once JPATH_COMPONENT.DS.'helpers'.DS.'WfsWebservice.php';
+		WfsWebservice::request($_GET);
+	}
+	
+	public function wmsWebservice () {
+		require_once JPATH_COMPONENT.DS.'helpers'.DS.'WmsWebservice.php';
+		WmsWebservice::request($_GET);
 	}
 }

@@ -184,7 +184,7 @@ $params = JComponentHelper::getParams('com_easysdi_service');
 						<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'policies.', $canCheckin); ?>
 					<?php endif; ?>
 					<?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>
-						<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&layout='.$item->connector.'&virtualservice_id='.$item->virtualservice_id.'&id='.(int) $item->id); ?>">
+						<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&task=policy.edit&virtualservice_id='.$item->virtualservice_id.'&id='.(int) $item->id); ?>">
 						<?php echo $this->escape($item->name); ?></a>
 					<?php else : ?>
 						<?php echo $this->escape($item->name); ?>

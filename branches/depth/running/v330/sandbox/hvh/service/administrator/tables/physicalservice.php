@@ -244,6 +244,44 @@ class Easysdi_serviceTablephysicalservice extends sdiTable
 	}
 	
 	/**
+	 * Return a list of physical service belonging to a specific virtual service
+	 *
+	 * @param Int A pk of a virtual service
+	 *
+	 * @return Array A resultset containing physical services
+	 */
+	public function getListByVirtualService ($vs_id) {
+		$db = JFactory::getDbo();
+		$db->setQuery('
+				SELECT ps.*
+				FROM #__sdi_physicalservice ps
+				JOIN #__sdi_virtual_physical vp
+				ON vp.physicalservice_id = ps.id
+				WHERE vp.virtualservice_id = "' . $vs_id . '";
+				');
+	
+		try {
+			$resultSet = $db->loadObjectList();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+	
+		// Legacy error handling switch based on the JError::$legacy switch.
+		// @deprecated  12.1
+		if (JError::$legacy && $this->_db->getErrorNum())	{
+			$e = new JException($this->_db->getErrorMsg());
+			$this->setError($e);
+			return false;
+		}
+	
+		return $resultSet;
+	}
+	
+	
+	/**
 	 * Overloaded check function
 	 */
 // 	public function check() {
