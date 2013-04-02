@@ -40,7 +40,6 @@ function printSpatialPolicyForm ($suffix, $data) {
 	$html = '';
 	return $html;
 }
-
 ?>
 
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=policy&layout=wms&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="policy-form" class="form-validate">
@@ -61,7 +60,7 @@ function printSpatialPolicyForm ($suffix, $data) {
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_DETAILS' );?></legend>
 					<?php foreach($this->form->getFieldset('policy') as $field): 
 					?> 
-						<div class="control-group">
+						<div class="control-group" id="<?php echo $field->fieldname;?>">
 							<div class="control-label"><?php echo $field->label; ?></div>
 							<div class="controls"><?php echo $field->input; ?></div>
 						</div>
