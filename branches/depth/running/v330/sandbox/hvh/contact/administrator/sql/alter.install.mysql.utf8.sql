@@ -1,3 +1,6 @@
+ALTER TABLE `#__sdi_user`
+ADD CONSTRAINT `#__sdi_user_fk1` FOREIGN KEY (`user_id`) REFERENCES `#__users` (`id`) ;
+
 ALTER TABLE `#__sdi_address`
 ADD CONSTRAINT `#__sdi_address_fk1` FOREIGN KEY (`addresstype_id`) REFERENCES `#__sdi_sys_addresstype` (`id`) ;
 
