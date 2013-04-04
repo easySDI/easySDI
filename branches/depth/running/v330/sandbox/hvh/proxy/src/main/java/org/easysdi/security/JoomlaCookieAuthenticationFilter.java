@@ -14,13 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,7 +39,6 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
     private RememberMeServices rememberMeServices = new NullRememberMeServices();
     private boolean ignoreFailure = false;
     private String credentialsCharset = "UTF-8";
-    private JdbcTemplate sjt = null;
     
     @Autowired
     private SessionFactory sessionFactory;
@@ -54,11 +49,8 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
     @Autowired
     private AuthenticationEntryPoint basicAuthenticationEntryPoint;
     @Autowired
-    private UsersHome UsersHome;
-    
-    @Autowired
-    private JoomlaProvider joomlaProvider;
-    
+    private UsersHome usersHome;
+     
     private Cache userCache;
 
     @Override
@@ -71,8 +63,7 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 		}
     }
 
-    @SuppressWarnings("unchecked")
-	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException 
+  public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException 
     {
 		final HttpServletRequest request = (HttpServletRequest) req;
 		final HttpServletResponse response = (HttpServletResponse) res;
@@ -83,151 +74,125 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 				(request.getHeader("Referer") != null && request.getHeader("Referer").contains("com_easysdi_map") || cookies != null)
 			) 
 		{
-			String sessionKey = null, username = null, password = null;
-		    
 			final boolean debug = logger.isDebugEnabled();
 		    
 			userCache = cacheManager.getCache("userCache");
-		    Map<String, Object> authenticationPair = null;
 		    Users user = null;
 		    
-		    //Retrieve cookie from cache named 'userCache'
-		    Element e = userCache.get(cookies);
-		    if (e != null)
-		    {
-		    	authenticationPair = (Map<String, Object>) e.getValue();
-		    }
-		    else if (cookies != null)
+		    //Retrieve user from cache with cookie key
+		    if (cookies != null)
 		    {
 				for (Cookie cookie : cookies) {
-				    sessionKey = cookie.getValue();
+					String sessionKey = cookie.getValue();
+					Element e = userCache.get(sessionKey);
+				    if (e != null)
+				    {
+				    	user = (Users) e.getValue();
+				    	break;
+				    }
 				    
 				    if (sessionKey != null){
-						user = UsersHome.findBySession(sessionKey);
-				    					    		
-//						String sql1 = "select u.username, u.password from " + joomlaProvider.getPrefix() + "session s left join " + joomlaProvider.getPrefix()
-//						+ "users u " + "on (u.username = s.username) where session_id = ? limit 1";
-//						try {
-//						    authenticationPair = sjt.queryForMap(sql1, sessionKey);
-//						}catch (EmptyResultDataAccessException er){
-//						}
+						user = usersHome.findBySession(sessionKey);
 				    }
 				    if(user != null){
-				    	userCache.put(new Element(cookies, user));
+				    	userCache.put(new Element(sessionKey, user));
+				    	break;
 				    }
-//				    if (authenticationPair != null && authenticationPair.size() > 0){
-//						if (authenticationPair.get("username") != null){
-//						    userCache.put(new Element(cookies, authenticationPair));
-//						    break;
-//						}
-//				    }
 				}
 		    }
 	
 		    //Case : request from a front-end component with no logged user --> use a guest account
 		    if(user != null && user.getUsername() == null){
-		    	e = userCache.get("guest");
+		    	Element e = userCache.get("guest");
 		    	if (e != null){
 		    		user = (Users) e.getValue();
 		    	}
 		    	else{
-		    		user = UsersHome.findGuest();
+		    		user = usersHome.findGuest();
 		    		if(user != null)
 		    			userCache.put(new Element("guest", user));
 		    	}
 		    }
-		   
-		    if (user != null ) {
-				username = (String) authenticationPair.get("username");
-				password = (String) authenticationPair.get("password");
-		    }
 	
-		    if (debug) {
-		    	logger.debug("Joomla Cookie header found for user '" + user.getUsername() + "'");
-		    }
-	
-		    if (username != null) {
-			if (authenticationIsRequired(username)) {
-			    UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
-			    authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
-	
-			    Authentication authResult;
-	
-			    try {
-				authResult = authenticationManager.authenticate(authRequest);
-			    } catch (AuthenticationException failed) {
-				// Authentication failed
-				if (debug) {
-				    logger.debug("Authentication request for user: " + username + " failed: " + failed.toString());
+		    //Joomla user found, then authenticate
+		    if (user != null && user.getUsername() != null) {
+				if (authenticationIsRequired(user.getUsername())) {
+				    UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
+				    authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
+		
+				    Authentication authResult;
+		
+				    try {
+				    	authResult = authenticationManager.authenticate(authRequest);
+				    } catch (AuthenticationException failed) {
+				    	// Authentication failed
+						if (debug) {
+						    logger.debug("Authentication request for user: " + user.getUsername() + " failed: " + failed.toString());
+						}
+			
+						SecurityContextHolder.getContext().setAuthentication(null);
+						rememberMeServices.loginFail(request, response);
+						onUnsuccessfulAuthentication(request, response, failed);
+			
+						if (ignoreFailure) {
+						    chain.doFilter(request, response);
+						} else {
+						    basicAuthenticationEntryPoint.commence(request, response, failed);
+						}
+						return;
+				    }
+		
+				    // Authentication success
+				    if (debug) {
+				    	logger.debug("Authentication success: " + authResult.toString());
+				    }
+		
+				    SecurityContextHolder.getContext().setAuthentication(authResult);
+				    rememberMeServices.loginSuccess(request, response, authResult);
+				    onSuccessfulAuthentication(request, response, authResult);
 				}
-	
-				SecurityContextHolder.getContext().setAuthentication(null);
-	
-				rememberMeServices.loginFail(request, response);
-	
-				onUnsuccessfulAuthentication(request, response, failed);
-	
-				if (ignoreFailure) {
-				    chain.doFilter(request, response);
-				} else {
-				    basicAuthenticationEntryPoint.commence(request, response, failed);
-				}
-	
-				return;
-			    }
-	
-			    // Authentication success
-			    if (debug) {
-				logger.debug("Authentication success: " + authResult.toString());
-			    }
-	
-			    SecurityContextHolder.getContext().setAuthentication(authResult);
-	
-			    rememberMeServices.loginSuccess(request, response, authResult);
-	
-			    onSuccessfulAuthentication(request, response, authResult);
-			}
 		    }
 		}
+		
 		chain.doFilter(request, response);
     }
 
     private boolean authenticationIsRequired(String username) {
-	// Only reauthenticate if username doesn't match SecurityContextHolder
-	// and user isn't authenticated
-	// (see SEC-53)
-	Authentication existingAuth = SecurityContextHolder.getContext().getAuthentication();
-
-	if (existingAuth == null || !existingAuth.isAuthenticated()) {
-	    return true;
-	}
-
-	// Limit username comparison to providers which use usernames (ie
-	// UsernamePasswordAuthenticationToken)
-	// (see SEC-348)
-
-	if (existingAuth instanceof UsernamePasswordAuthenticationToken && !existingAuth.getName().equals(username)) {
-	    return true;
-	}
-
-	// Handle unusual condition where an AnonymousAuthenticationToken is
-	// already present
-	// This shouldn't happen very often, as BasicProcessingFitler is meant
-	// to be earlier in the filter
-	// chain than AnonymousAuthenticationFilter. Nevertheless, presence of
-	// both an AnonymousAuthenticationToken
-	// together with a BASIC authentication request header should indicate
-	// reauthentication using the
-	// BASIC protocol is desirable. This behaviour is also consistent with
-	// that provided by form and digest,
-	// both of which force re-authentication if the respective header is
-	// detected (and in doing so replace
-	// any existing AnonymousAuthenticationToken). See SEC-610.
-	if (existingAuth instanceof AnonymousAuthenticationToken) {
-	    return true;
-	}
-
-	return false;
+		// Only reauthenticate if username doesn't match SecurityContextHolder
+		// and user isn't authenticated
+		// (see SEC-53)
+		Authentication existingAuth = SecurityContextHolder.getContext().getAuthentication();
+	
+		if (existingAuth == null || !existingAuth.isAuthenticated()) {
+		    return true;
+		}
+	
+		// Limit username comparison to providers which use usernames (ie
+		// UsernamePasswordAuthenticationToken)
+		// (see SEC-348)
+	
+		if (existingAuth instanceof UsernamePasswordAuthenticationToken && !existingAuth.getName().equals(username)) {
+		    return true;
+		}
+	
+		// Handle unusual condition where an AnonymousAuthenticationToken is
+		// already present
+		// This shouldn't happen very often, as BasicProcessingFitler is meant
+		// to be earlier in the filter
+		// chain than AnonymousAuthenticationFilter. Nevertheless, presence of
+		// both an AnonymousAuthenticationToken
+		// together with a BASIC authentication request header should indicate
+		// reauthentication using the
+		// BASIC protocol is desirable. This behaviour is also consistent with
+		// that provided by form and digest,
+		// both of which force re-authentication if the respective header is
+		// detected (and in doing so replace
+		// any existing AnonymousAuthenticationToken). See SEC-610.
+		if (existingAuth instanceof AnonymousAuthenticationToken) {
+		    return true;
+		}
+	
+		return false;
     }
 
     protected void onSuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, Authentication authResult) throws IOException {

@@ -18,6 +18,8 @@ package org.easysdi.proxy.wms.v110;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.easysdi.proxy.wms.WMSExceptionReport;
 
 /**
@@ -38,6 +40,14 @@ public class WMSExceptionReport110 extends WMSExceptionReport {
 		sb.append("\n</ServiceExceptionReport>");
 		
 		return sb;
+	}
+
+	@Override
+	public void sendExceptionReport(HttpServletResponse response,
+			String errorMessage, String code, String locator)
+			throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

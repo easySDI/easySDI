@@ -47,11 +47,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public class JoomlaProvider implements AuthenticationProvider, UserDetailsService {
 
+	@Autowired
     private DataSource dataSource;
-
     @Autowired
     private CacheManager cacheManager;
-
+    
     private Cache userCache;
 
     public JdbcTemplate sjt = null;

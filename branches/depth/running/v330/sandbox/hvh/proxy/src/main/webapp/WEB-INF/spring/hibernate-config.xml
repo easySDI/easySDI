@@ -54,8 +54,9 @@
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 	
-	<bean id="SdiVirtualserviceHome" class="org.easysdi.proxy.domain.SdiVirtualserviceHome" parent="abstractDao"/>
-	<bean id="UsersHome" class="org.easysdi.proxy.domain.UsersHome" parent="abstractDao"/>
+	<bean id="sdiVirtualserviceHome" class="org.easysdi.proxy.domain.SdiVirtualserviceHome" parent="abstractDao"/>
+	<bean id="sdiPolicyHome" class="org.easysdi.proxy.domain.SdiPolicyHome" parent="abstractDao"/>
+	<bean id="usersHome" class="org.easysdi.proxy.domain.UsersHome" parent="abstractDao"/>
 	<bean id="extensionsHome" class="org.easysdi.proxy.domain.ExtensionsHome" parent="abstractDao"/>
 
 </beans>

@@ -40,7 +40,7 @@ public class SdiPolicyOrganism implements java.io.Serializable {
 		this.Id = Id;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "organism_id", nullable = false)
 	public SdiOrganism getSdiOrganism() {
 		return this.sdiOrganism;

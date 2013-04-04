@@ -18,6 +18,8 @@ package org.easysdi.proxy.ows.v10;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.easysdi.proxy.ows.OWSExceptionReport;
 
 
@@ -57,6 +59,14 @@ public class OWSExceptionReport10 extends OWSExceptionReport {
 		sb.append("\n</ExceptionReport>");
 		
 		return sb;
+	}
+
+	@Override
+	public void sendExceptionReport(HttpServletResponse response,
+			String errorMessage, String code, String locator)
+			throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

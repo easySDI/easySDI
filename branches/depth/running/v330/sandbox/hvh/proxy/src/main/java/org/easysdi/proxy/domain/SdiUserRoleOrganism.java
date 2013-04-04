@@ -53,7 +53,7 @@ public class SdiUserRoleOrganism implements java.io.Serializable {
 		this.sdiUser = sdiUser;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "organism_id")
 	public SdiOrganism getSdiOrganism() {
 		return this.sdiOrganism;

@@ -49,9 +49,31 @@ public class UsersHome {
 	
 	public Users findBySession(String session) {
 		try {
+			Query qSession = sessionFactory.getCurrentSession().createQuery("Select s FROM Session s WHERE session_id= :session ");
+			qSession.setParameter("session", session);
+			Object oSession = (Object) qSession.uniqueResult();
+			
+			if(oSession == null)
+				return null;
+			
 			Query query = sessionFactory.getCurrentSession().createQuery("Select u FROM Session s, Users u WHERE u.username = s.username AND session_id= :session ");
 			query.setParameter("session", session);
 			Users instance = (Users) query.uniqueResult();
+			if(instance == null)
+				instance = new Users();
+			
+			return instance;
+		} catch (RuntimeException re) {
+			log.error("get failed", re);
+			throw re;
+		}
+	}
+	
+	public Users findByUserName(String username) {
+		try {
+			Query query = sessionFactory.getCurrentSession().createQuery(" FROM Users WHERE username= :username");
+			query.setParameter("username", username);
+			Users instance = (Users) query.setCacheable(true).uniqueResult();
 			
 			return instance;
 		} catch (RuntimeException re) {

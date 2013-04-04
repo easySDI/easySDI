@@ -45,14 +45,6 @@ public class SdiVirtualserviceHome {
 			query.setParameter("alias", alias);
 			SdiVirtualservice instance = (SdiVirtualservice) query.setCacheable(true).list().get(0);
 			
-			
-			long oldMissCount = sessionFactory.getStatistics().getSecondLevelCacheHitCount();
-			long oldHitCount = sessionFactory.getStatistics().getSecondLevelCacheMissCount();
-
-//			Map cacheEntries = sessionFactory.getStatistics()
-//			        .getSecondLevelCacheStatistics("SdiVirtualservice")
-//			        .getEntries();
-			
 			return instance;
 		} catch (RuntimeException re) {
 			throw re;

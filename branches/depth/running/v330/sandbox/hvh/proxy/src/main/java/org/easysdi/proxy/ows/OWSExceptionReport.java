@@ -19,20 +19,22 @@ package org.easysdi.proxy.ows;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @author DEPTH SA
  *
  */
-public class OWSExceptionReport implements OWSIExceptionReport {
+public abstract class OWSExceptionReport implements OWSIExceptionReport {
 
     /* (non-Javadoc)
      * @see org.easysdi.proxy.ows.OWSIExceptionReport#generateExceptionReport(java.lang.String, java.lang.String, java.lang.String)
      */
-    public StringBuffer generateExceptionReport(String errorMessage,
-	    String code, String locator) throws IOException {
+	@Deprecated
+    public StringBuffer generateExceptionReport(String errorMessage,String code, String locator) throws IOException {
 	return null;
     }
-
+    
     /* (non-Javadoc)
      * @see org.easysdi.proxy.ows.OWSIExceptionReport#getHttpCodeDescription(java.lang.String)
      */
@@ -61,5 +63,7 @@ public class OWSExceptionReport implements OWSIExceptionReport {
 	}
 	return null;
     }
+
+	public abstract void sendExceptionReport(HttpServletResponse response , String errorMessage, String code,String locator) throws IOException ;
 
 }

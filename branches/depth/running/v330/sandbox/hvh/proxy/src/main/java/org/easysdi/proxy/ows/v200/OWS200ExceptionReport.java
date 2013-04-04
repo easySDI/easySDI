@@ -17,6 +17,9 @@
 package org.easysdi.proxy.ows.v200;
 
 import java.io.IOException;
+import java.io.OutputStream;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.easysdi.proxy.ows.OWSExceptionReport;
 
@@ -30,15 +33,26 @@ public class OWS200ExceptionReport extends OWSExceptionReport {
 	/* 
 	 * @see org.easysdi.proxy.ows.OWSExceptionReport#generateExceptionReport(java.lang.String, java.lang.String, java.lang.String)
 	 */
+	@Deprecated
 	public StringBuffer generateExceptionReport(String errorMessage,String code, String locator) throws IOException {
 		return generateExceptionReport(errorMessage, code, locator, "1.0.0");
 	}
-
+	
+	@Deprecated
 	public StringBuffer generateExceptionReport(String errorMessage,String code, String locator, String version) throws IOException {
+		return null;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.easysdi.proxy.ows.OWSExceptionReport#sendExceptionReport(java.lang.String, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void sendExceptionReport(HttpServletResponse response , String errorMessage, String code,String locator) throws IOException {
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8'?>\n");
 		sb.append("\n<ExceptionReport xmlns=\"http://www.opengis.net/ows/2.0\" ");
 		sb.append("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ");
-		sb.append("xsi:schemaLocation=\"http://www.opengis.net/ows/2.0 owsExceptionReport.xsd\" version=\""+version+"\">");
+		sb.append("xsi:schemaLocation=\"http://www.opengis.net/ows/2.0 owsExceptionReport.xsd\" version=\"1.0.0\">");
 		sb.append("\n\t<Exception exceptionCode=\"");
 		sb.append(code);
 		sb.append("\"");
@@ -57,7 +71,13 @@ public class OWS200ExceptionReport extends OWSExceptionReport {
 		}
 		sb.append("\n\t</Exception>");
 		sb.append("\n</ExceptionReport>");
-		
-		return sb;
+	
+		response.setContentType("text/xml; charset=utf-8");
+		response.setContentLength(sb.length());
+		OutputStream os;
+		os = response.getOutputStream();
+		os.write(sb.toString().getBytes());
+		os.flush();
+		os.close();
 	}
 }

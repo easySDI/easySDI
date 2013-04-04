@@ -16,6 +16,10 @@
  */
 package org.easysdi.proxy.wms;
 
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.easysdi.proxy.ows.OWSExceptionReport;
 
 /**
@@ -26,24 +30,35 @@ public abstract class WMSExceptionReport extends OWSExceptionReport {
 
 
     public StringBuffer getServiceExceptionBody (String errorMessage,String code, String locator){
-	StringBuffer sb = new StringBuffer();
-	sb.append("\n\t<ServiceException code=\"");
-	sb.append(code);
-	sb.append("\"");
-	if(locator != null && locator != "" )
-	{
-	    sb.append(" locator=\"");
-	    sb.append(locator);
-	    sb.append("\"");
-	}
-	sb.append(">");
-	if( errorMessage != null && errorMessage.length()!= 0)
-	{
-	    sb.append("\n\t"+errorMessage);
-	}
-	sb.append("\n\t</ServiceException>");
-
-	return sb;
+		StringBuffer sb = new StringBuffer();
+		sb.append("\n\t<ServiceException code=\"");
+		sb.append(code);
+		sb.append("\"");
+		if(locator != null && locator != "" )
+		{
+		    sb.append(" locator=\"");
+		    sb.append(locator);
+		    sb.append("\"");
+		}
+		sb.append(">");
+		if( errorMessage != null && errorMessage.length()!= 0)
+		{
+		    sb.append("\n\t"+errorMessage);
+		}
+		sb.append("\n\t</ServiceException>");
+	
+		return sb;
     }
+
+	/* (non-Javadoc)
+	 * @see org.easysdi.proxy.ows.OWSExceptionReport#sendExceptionReport(javax.servlet.http.HttpServletResponse, java.lang.String, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void sendExceptionReport(HttpServletResponse response,
+			String errorMessage, String code, String locator)
+			throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

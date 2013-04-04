@@ -40,7 +40,7 @@ public class SdiPolicyUser implements java.io.Serializable {
 		this.Id = Id;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "user_id", nullable = false)
 	public SdiUser getSdiUser() {
 		return this.sdiUser;

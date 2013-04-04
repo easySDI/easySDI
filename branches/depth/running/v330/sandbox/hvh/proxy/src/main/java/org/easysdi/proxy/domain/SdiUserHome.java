@@ -2,8 +2,13 @@ package org.easysdi.proxy.domain;
 
 // Generated Apr 4, 2013 10:31:48 AM by Hibernate Tools 3.4.0.CR1
 
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -36,7 +41,20 @@ public class SdiUserHome {
 			throw re;
 		}
 	}
-
+	
+	public Users findByUserName(String username) {
+		try {
+			Query query = sessionFactory.getCurrentSession().createQuery("Select s FROM Users u, SdiUser s WHERE u.username= :username AND u.id = s.user_id");
+			query.setParameter("username", username);
+			Users instance = (Users) query.setCacheable(true).uniqueResult();
+			
+			return instance;
+		} catch (RuntimeException re) {
+			log.error("get failed", re);
+			throw re;
+		}
+	}
+	
 	public void save(SdiUser transientInstance) {
 		log.debug("save SdiUser instance");
 		try {

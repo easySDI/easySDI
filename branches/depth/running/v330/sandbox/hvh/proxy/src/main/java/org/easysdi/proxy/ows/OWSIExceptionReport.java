@@ -104,7 +104,8 @@ public interface OWSIExceptionReport {
 
     public static final String TEXT_ERROR_HHTP_401_UNAUTHORIZED				= "Error sending exception.";
 
-    public StringBuffer generateExceptionReport (String errorMessage, String code, String locator) throws IOException;
+    @Deprecated
+    public  StringBuffer generateExceptionReport (String errorMessage, String code, String locator) throws IOException;
     
     public  String getHttpCodeDescription(String code);
    

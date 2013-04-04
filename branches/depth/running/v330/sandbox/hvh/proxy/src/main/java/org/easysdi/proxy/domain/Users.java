@@ -196,7 +196,7 @@ public class Users implements java.io.Serializable {
 		this.ResetCount = ResetCount;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "users")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "users")
 	public Set<SdiUser> getSdiUsers() {
 		return this.sdiUsers;
 	}
