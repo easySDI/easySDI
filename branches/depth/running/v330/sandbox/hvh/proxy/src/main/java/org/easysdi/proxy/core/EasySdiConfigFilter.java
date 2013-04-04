@@ -20,7 +20,6 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
-import org.easysdi.proxy.domain.SdiUserHome;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.domain.SdiVirtualserviceHome;
 import org.easysdi.proxy.exception.NoAnonymousPolicyFoundException;
@@ -31,8 +30,6 @@ import org.easysdi.proxy.policy.Policy;
 import org.easysdi.proxy.policy.PolicySet;
 import org.easysdi.xml.documents.Config;
 import org.easysdi.xml.handler.ConfigFileHandler;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;

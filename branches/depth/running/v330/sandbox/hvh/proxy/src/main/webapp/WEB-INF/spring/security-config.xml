@@ -45,9 +45,6 @@
 	</bean>
 
 	<bean id="joomlaCookieAuthenticationFilter" class="org.easysdi.security.JoomlaCookieAuthenticationFilter">
-		<property name="joomlaProvider" ref="joomlaProvider" />
-		<property name="authenticationManager" ref="authenticationManager" />
-		<property name="authenticationEntryPoint" ref="basicAuthenticationEntryPoint" />
 	</bean>
 
 	<bean id="authenticatedVoter" class="org.springframework.security.access.vote.AuthenticatedVoter" />

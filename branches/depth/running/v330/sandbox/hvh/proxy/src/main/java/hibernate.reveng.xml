@@ -156,5 +156,6 @@
 	<table-filter match-name="b6svl_sdi_wmtslayer_policy"
 		match-catalog="install">
 	</table-filter>
+	<table-filter match-name="b6svl_session" match-catalog="install"></table-filter>
 	<table-filter match-name="b6svl_users" match-catalog="install"></table-filter>
 </hibernate-reverse-engineering>

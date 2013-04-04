@@ -1,9 +1,10 @@
 package org.easysdi.proxy.domain;
 
-// Generated Mar 29, 2013 9:59:28 AM by Hibernate Tools 3.4.0.CR1
+// Generated Apr 4, 2013 10:31:48 AM by Hibernate Tools 3.4.0.CR1
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -33,6 +34,17 @@ public class ExtensionsHome {
 			return instance;
 		} catch (RuntimeException re) {
 			log.error("get failed", re);
+			throw re;
+		}
+	}
+	
+	public Extensions findByName(String name) {
+		try {
+			Query query = sessionFactory.getCurrentSession().createQuery("from Extensions where name= :name");
+			query.setParameter("name", name);
+			Extensions instance = (Extensions) query.uniqueResult();
+			return instance;
+		} catch (RuntimeException re) {
 			throw re;
 		}
 	}

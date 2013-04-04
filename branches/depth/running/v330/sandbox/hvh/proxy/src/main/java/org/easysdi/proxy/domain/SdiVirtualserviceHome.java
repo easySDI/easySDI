@@ -1,7 +1,6 @@
 package org.easysdi.proxy.domain;
 
-// Generated Mar 29, 2013 9:59:28 AM by Hibernate Tools 3.4.0.CR1
-import java.util.Map;
+// Generated Apr 4, 2013 10:31:48 AM by Hibernate Tools 3.4.0.CR1
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,21 +26,19 @@ public class SdiVirtualserviceHome {
 	@Autowired
 	private SessionFactory sessionFactory;
 
-	@SuppressWarnings("unused")
 	public SdiVirtualservice findById(Integer id) {
 		log.debug("getting SdiVirtualservice instance with id: " + id);
 		try {
 			SdiVirtualservice instance = (SdiVirtualservice) sessionFactory
 					.getCurrentSession().get(SdiVirtualservice.class, id);
 			log.debug("get successful");
-			
 			return instance;
 		} catch (RuntimeException re) {
 			log.error("get failed", re);
 			throw re;
 		}
 	}
-	
+
 	public SdiVirtualservice findByAlias(String alias) {
 		try {
 			Query query = sessionFactory.getCurrentSession().createQuery("from SdiVirtualservice where alias= :alias");

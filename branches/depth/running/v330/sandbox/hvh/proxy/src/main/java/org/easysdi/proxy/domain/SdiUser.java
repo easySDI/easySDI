@@ -1,6 +1,6 @@
 package org.easysdi.proxy.domain;
 
-// Generated Mar 29, 2013 9:59:28 AM by Hibernate Tools 3.4.0.CR1
+// Generated Apr 4, 2013 10:31:47 AM by Hibernate Tools 3.4.0.CR1
 
 import java.util.Date;
 import java.util.HashSet;

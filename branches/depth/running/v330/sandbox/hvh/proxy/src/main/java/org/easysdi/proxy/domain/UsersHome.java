@@ -1,9 +1,16 @@
 package org.easysdi.proxy.domain;
 
-// Generated Mar 29, 2013 9:59:28 AM by Hibernate Tools 3.4.0.CR1
+// Generated Apr 4, 2013 10:31:48 AM by Hibernate Tools 3.4.0.CR1
+
+import java.util.List;
+import java.util.Map;
+
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -23,6 +30,9 @@ public class UsersHome {
 
 	@Autowired
 	private SessionFactory sessionFactory;
+	
+	@Autowired
+	private ExtensionsHome extensionsHome;
 
 	public Users findById(Integer id) {
 		log.debug("getting Users instance with id: " + id);
@@ -30,6 +40,34 @@ public class UsersHome {
 			Users instance = (Users) sessionFactory.getCurrentSession().get(
 					Users.class, id);
 			log.debug("get successful");
+			return instance;
+		} catch (RuntimeException re) {
+			log.error("get failed", re);
+			throw re;
+		}
+	}
+	
+	public Users findBySession(String session) {
+		try {
+			Query query = sessionFactory.getCurrentSession().createQuery("Select u FROM Session s, Users u WHERE u.username = s.username AND session_id= :session ");
+			query.setParameter("session", session);
+			Users instance = (Users) query.uniqueResult();
+			
+			return instance;
+		} catch (RuntimeException re) {
+			log.error("get failed", re);
+			throw re;
+		}
+	}
+	
+	public Users findGuest() {
+		try {
+			Extensions extension = extensionsHome.findByName("com_easysdi_contact");
+			String params = extension.getParams();
+			JSONObject json = (JSONObject) JSONSerializer.toJSON( params );        
+	        int guestaccount = json.getInt("guestaccount" );
+	        Users instance = this.findById(guestaccount);
+			
 			return instance;
 		} catch (RuntimeException re) {
 			log.error("get failed", re);
