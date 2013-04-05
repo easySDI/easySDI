@@ -26,7 +26,7 @@ import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.easysdi.jdom.filter.ElementNamedLayerFilter;
+import org.easysdi.proxy.jdom.filter.ElementNamedLayerFilter;
 import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.wms.WMSProxyServlet;

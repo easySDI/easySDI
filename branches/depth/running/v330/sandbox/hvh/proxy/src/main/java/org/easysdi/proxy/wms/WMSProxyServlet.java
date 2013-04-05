@@ -50,7 +50,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.easysdi.jdom.filter.ElementNamedLayerFilter;
+import org.easysdi.proxy.jdom.filter.ElementNamedLayerFilter;
 import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.core.ProxyServlet;
@@ -73,7 +73,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.NamedIdentifier;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.xml.DocumentFactory;
-import org.integratedmodelling.geospace.gis.FeatureRasterizer;
+import org.easysdi.proxy.integratedmodelling.geospace.gis.FeatureRasterizer;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;

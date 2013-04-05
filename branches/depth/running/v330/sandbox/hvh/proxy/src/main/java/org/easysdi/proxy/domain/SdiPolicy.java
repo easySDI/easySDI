@@ -489,7 +489,8 @@ public class SdiPolicy implements java.io.Serializable {
 		this.Asset_id = Asset_id;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiPolicy")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "sdiPolicy")
+	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiPhysicalservicePolicy> getSdiPhysicalservicePolicies() {
 		return this.sdiPhysicalservicePolicies;
 	}
@@ -509,7 +510,8 @@ public class SdiPolicy implements java.io.Serializable {
 		this.sdiPolicyOrganisms = sdiPolicyOrganisms;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiPolicy")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "sdiPolicy")
+	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiAllowedoperation> getSdiAllowedoperations() {
 		return this.sdiAllowedoperations;
 	}
@@ -529,7 +531,8 @@ public class SdiPolicy implements java.io.Serializable {
 		this.sdiPolicyUsers = sdiPolicyUsers;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiPolicy")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "sdiPolicy")
+	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiPolicyMetadatastate> getSdiPolicyMetadatastates() {
 		return this.sdiPolicyMetadatastates;
 	}
@@ -539,7 +542,8 @@ public class SdiPolicy implements java.io.Serializable {
 		this.sdiPolicyMetadatastates = sdiPolicyMetadatastates;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiPolicy")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "sdiPolicy")
+	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiExcludedattribute> getSdiExcludedattributes() {
 		return this.sdiExcludedattributes;
 	}
@@ -548,5 +552,4 @@ public class SdiPolicy implements java.io.Serializable {
 			Set<SdiExcludedattribute> sdiExcludedattributes) {
 		this.sdiExcludedattributes = sdiExcludedattributes;
 	}
-
 }

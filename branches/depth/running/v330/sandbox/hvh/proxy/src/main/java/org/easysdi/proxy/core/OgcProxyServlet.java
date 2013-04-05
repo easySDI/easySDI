@@ -47,7 +47,7 @@ import org.easysdi.proxy.wms.WMSExceptionReport;
 import org.easysdi.proxy.wms.v130.WMSExceptionReport130;
 import org.easysdi.proxy.wmts.v100.WMTSExceptionReport100;
 import org.easysdi.proxy.policy.Policy;
-import org.easysdi.security.JoomlaProvider;
+import org.easysdi.proxy.security.JoomlaProvider;
 import org.easysdi.xml.documents.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

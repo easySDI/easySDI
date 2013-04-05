@@ -2,6 +2,7 @@ package org.easysdi.proxy.domain;
 
 // Generated Apr 4, 2013 10:31:48 AM by Hibernate Tools 3.4.0.CR1
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.xerces.parsers.IntegratedParserConfiguration;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,16 +60,22 @@ public class SdiPolicyHome {
 			}
 
 			//Policies of the organisms which the current user is member of
-//			String condition = "";
-//			Iterator<GrantedAuthority> i = authorities.iterator();
-//			while (i.hasNext())
-//			{
-//				condition += condition.length() > 0 ? ',' : "" ;
-//				condition += i.next().getAuthority();
-//			}
+			String condition = "";
+			Collection<Integer> c = new ArrayList<Integer>();
+			
+			Iterator<GrantedAuthority> i = authorities.iterator();
+			while (i.hasNext())
+			{
+				try{
+					Integer authority = Integer.parseInt(i.next().getAuthority());
+					c.add(authority) ;
+				}catch (NumberFormatException e){
+					//Keep going on
+				}
+			}
 			Query oQuery = sessionFactory.getCurrentSession().createQuery(
 					"SELECT p  FROM SdiPolicy p INNER JOIN p.sdiPolicyOrganisms as po INNER JOIN p.sdiVirtualservice as vs WHERE po.id IN (:organism) AND vs.id = :virtualservice ORDER BY p.ordering asc");
-			oQuery.setParameter("organism", authorities);
+			oQuery.setParameterList("organism", c);
 			oQuery.setParameter("virtualservice", virtualservice);
 			List oResults = oQuery.setCacheable(true).list();
 			if (oResults != null && oResults.size() > 0)

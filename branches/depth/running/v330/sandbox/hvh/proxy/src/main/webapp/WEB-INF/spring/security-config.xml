@@ -9,14 +9,14 @@
 		<security:authentication-provider ref="easysdiProvider" />
 	</security:authentication-manager>
 
-	<bean id="joomlaProvider" class="org.easysdi.security.JoomlaProvider">
+	<bean id="joomlaProvider" class="org.easysdi.proxy.security.JoomlaProvider">
 		<property name="prefix">
 			<value>b6svl_</value>
 		</property>
 		<property name="version" value="3.0.0" />
 	</bean>
 	
-	<bean id="easysdiProvider" class="org.easysdi.security.EasysdiProvider" />
+	<bean id="easysdiProvider" class="org.easysdi.proxy.security.EasysdiProvider" />
 	
 	<security:http auto-config="false" access-decision-manager-ref="accessDecisionManager" path-type="regex">
 		<security:http-basic />
@@ -45,7 +45,7 @@
 		<property name="rolePrefix" value="" />
 	</bean>
 
-	<bean id="joomlaCookieAuthenticationFilter" class="org.easysdi.security.JoomlaCookieAuthenticationFilter" />
+	<bean id="joomlaCookieAuthenticationFilter" class="org.easysdi.proxy.security.JoomlaCookieAuthenticationFilter" />
 	
 	<bean id="authenticatedVoter" class="org.springframework.security.access.vote.AuthenticatedVoter" />
 		

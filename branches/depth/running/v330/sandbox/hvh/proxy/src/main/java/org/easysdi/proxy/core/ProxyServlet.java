@@ -86,7 +86,7 @@ import org.easysdi.proxy.policy.Layer;
 import org.easysdi.proxy.policy.Operation;
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.proxy.policy.Server;
-import org.easysdi.security.JoomlaProvider;
+import org.easysdi.proxy.security.JoomlaProvider;
 import org.easysdi.proxy.log.ProxyLogger;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.geotools.xml.DocumentFactory;
@@ -1271,7 +1271,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		// Do not setCredentials if no account and password were
 		// supplied
 		if (serverInfo.getUser() != null && serverInfo.getPassword() != null) {
-		    org.easysdi.security.EasyAuthenticator.setCredientials(getUsername(urlstr).toString(), serverInfo.getPassword());
+		    org.easysdi.proxy.security.EasyAuthenticator.setCredientials(getUsername(urlstr).toString(), serverInfo.getPassword());
 		    // Fin de debug
 		    return serverInfo.getPassword();
 		}

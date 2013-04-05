@@ -30,11 +30,11 @@ import java.util.TreeMap;
 import java.util.Vector;
 import java.util.Map.Entry;
 
-import org.easysdi.jdom.filter.AttributeXlinkFilter;
-import org.easysdi.jdom.filter.ElementExceptionFilter;
-import org.easysdi.jdom.filter.ElementFormatFilter;
-import org.easysdi.jdom.filter.ElementLayerFilter;
-import org.easysdi.jdom.filter.ElementServiceExceptionFilter;
+import org.easysdi.proxy.jdom.filter.AttributeXlinkFilter;
+import org.easysdi.proxy.jdom.filter.ElementExceptionFilter;
+import org.easysdi.proxy.jdom.filter.ElementFormatFilter;
+import org.easysdi.proxy.jdom.filter.ElementLayerFilter;
+import org.easysdi.proxy.jdom.filter.ElementServiceExceptionFilter;
 import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.core.ProxyResponseBuilder;

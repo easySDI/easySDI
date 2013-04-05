@@ -26,9 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-import org.easysdi.jdom.filter.AttributeXlinkFilter;
-import org.easysdi.jdom.filter.ElementExceptionReportFilter;
-import org.easysdi.jdom.filter.ElementFragmentFilter;
+import org.easysdi.proxy.jdom.filter.AttributeXlinkFilter;
+import org.easysdi.proxy.jdom.filter.ElementExceptionReportFilter;
+import org.easysdi.proxy.jdom.filter.ElementFragmentFilter;
 import org.easysdi.proxy.core.ProxyServlet;
 import java.util.Iterator;
 import org.jdom.*;

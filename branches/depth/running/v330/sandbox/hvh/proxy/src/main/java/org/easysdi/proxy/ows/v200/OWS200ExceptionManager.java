@@ -28,7 +28,7 @@ import java.util.Map.Entry;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.easysdi.jdom.filter.ElementExceptionReportFilter;
+import org.easysdi.proxy.jdom.filter.ElementExceptionReportFilter;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.ows.OWSExceptionManager;
 import org.jdom.Document;

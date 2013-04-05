@@ -201,6 +201,7 @@ public class Users implements java.io.Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "users")
+	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiUser> getSdiUsers() {
 		return this.sdiUsers;
 	}

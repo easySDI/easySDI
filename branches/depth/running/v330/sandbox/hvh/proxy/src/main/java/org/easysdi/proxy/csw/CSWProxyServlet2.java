@@ -50,12 +50,12 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.easysdi.jdom.filter.ElementFileIdentifierFilter;
-import org.easysdi.jdom.filter.ElementMD_MetadataFilter;
-import org.easysdi.jdom.filter.ElementMD_MetadataNonAuthorizedFilter;
-import org.easysdi.jdom.filter.ElementSDIPlatformFilter;
-import org.easysdi.jdom.filter.ElementSearchResultsFilter;
-import org.easysdi.jdom.filter.ElementTransactionTypeFilter;
+import org.easysdi.proxy.jdom.filter.ElementFileIdentifierFilter;
+import org.easysdi.proxy.jdom.filter.ElementMD_MetadataFilter;
+import org.easysdi.proxy.jdom.filter.ElementMD_MetadataNonAuthorizedFilter;
+import org.easysdi.proxy.jdom.filter.ElementSDIPlatformFilter;
+import org.easysdi.proxy.jdom.filter.ElementSearchResultsFilter;
+import org.easysdi.proxy.jdom.filter.ElementTransactionTypeFilter;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.handler.CswRequestHandler;

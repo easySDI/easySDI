@@ -49,6 +49,7 @@ public class UsersHome {
 	
 	public Users findBySession(String session) {
 		try {
+			//TODO replace by sessionHome.findById()
 			Query qSession = sessionFactory.getCurrentSession().createQuery("Select s FROM Session s WHERE session_id= :session ");
 			qSession.setParameter("session", session);
 			Object oSession = (Object) qSession.setCacheable(true).uniqueResult();
@@ -58,7 +59,7 @@ public class UsersHome {
 			
 			Query query = sessionFactory.getCurrentSession().createQuery("Select u FROM Session s, Users u WHERE u.username = s.username AND session_id= :session ");
 			query.setParameter("session", session);
-			Users instance = (Users) query.setCacheable(true).uniqueResult();
+			Users instance = (Users) query.setCacheable(true).setCacheRegion("userCache").uniqueResult();
 			if(instance == null)
 				instance = new Users();
 			

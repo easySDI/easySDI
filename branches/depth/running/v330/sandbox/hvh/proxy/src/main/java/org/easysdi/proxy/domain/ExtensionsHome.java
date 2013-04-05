@@ -42,7 +42,7 @@ public class ExtensionsHome {
 		try {
 			Query query = sessionFactory.getCurrentSession().createQuery("from Extensions where name= :name");
 			query.setParameter("name", name);
-			Extensions instance = (Extensions) query.uniqueResult();
+			Extensions instance = (Extensions) query.setCacheable(true).uniqueResult();
 			return instance;
 		} catch (RuntimeException re) {
 			throw re;

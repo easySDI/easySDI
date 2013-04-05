@@ -258,6 +258,7 @@ public class SdiUser implements java.io.Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "sdiUser")
+	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiUserRoleOrganism> getSdiUserRoleOrganisms() {
 		return this.sdiUserRoleOrganisms;
 	}
@@ -268,6 +269,7 @@ public class SdiUser implements java.io.Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiUser")
+	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiPolicyUser> getSdiPolicyUsers() {
 		return this.sdiPolicyUsers;
 	}
@@ -277,6 +279,7 @@ public class SdiUser implements java.io.Serializable {
 	}
 	
 	@Transient
+	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiUserRoleOrganism> getSdiUserRoleOrganismsMember() {
 		Set<SdiUserRoleOrganism> result = new HashSet<SdiUserRoleOrganism>() ;
 		Iterator it = this.sdiUserRoleOrganisms.iterator();

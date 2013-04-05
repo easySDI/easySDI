@@ -442,6 +442,7 @@ public class SdiVirtualservice implements java.io.Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiVirtualservice")
+	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiVirtualserviceOrganism> getSdiVirtualserviceOrganisms() {
 		return this.sdiVirtualserviceOrganisms;
 	}
@@ -451,7 +452,8 @@ public class SdiVirtualservice implements java.io.Serializable {
 		this.sdiVirtualserviceOrganisms = sdiVirtualserviceOrganisms;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiVirtualservice")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "sdiVirtualservice")
+	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiVirtualPhysical> getSdiVirtualPhysicals() {
 		return this.sdiVirtualPhysicals;
 	}
@@ -461,7 +463,8 @@ public class SdiVirtualservice implements java.io.Serializable {
 		this.sdiVirtualPhysicals = sdiVirtualPhysicals;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiVirtualservice")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "sdiVirtualservice")
+	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiPolicy> getSdiPolicies() {
 		return this.sdiPolicies;
 	}
@@ -470,7 +473,8 @@ public class SdiVirtualservice implements java.io.Serializable {
 		this.sdiPolicies = sdiPolicies;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiVirtualservice")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "sdiVirtualservice")
+	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiVirtualserviceServicecompliance> getSdiVirtualserviceServicecompliances() {
 		return this.sdiVirtualserviceServicecompliances;
 	}
@@ -480,7 +484,8 @@ public class SdiVirtualservice implements java.io.Serializable {
 		this.sdiVirtualserviceServicecompliances = sdiVirtualserviceServicecompliances;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiVirtualservice")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "sdiVirtualservice")
+	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiVirtualmetadata> getSdiVirtualmetadatas() {
 		return this.sdiVirtualmetadatas;
 	}

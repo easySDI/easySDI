@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Vector;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.wmts.*;
-import org.easysdi.jdom.filter.*;
+import org.easysdi.proxy.jdom.filter.*;
 import org.easysdi.xml.documents.*;
 import org.jdom.Document;
 import org.jdom.Element;

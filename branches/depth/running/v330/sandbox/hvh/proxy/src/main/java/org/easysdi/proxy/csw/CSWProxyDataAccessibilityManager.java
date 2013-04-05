@@ -32,10 +32,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.easysdi.jdom.filter.ElementConstraintFilter;
+import org.easysdi.proxy.jdom.filter.ElementConstraintFilter;
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.proxy.policy.Status;
-import org.easysdi.security.JoomlaProvider;
+import org.easysdi.proxy.security.JoomlaProvider;
 import org.jdom.*;
 import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
