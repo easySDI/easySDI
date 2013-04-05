@@ -35,6 +35,27 @@ class TileMatrixSet {
 		uasort($this->tileMatrixList, array("TileMatrix", "compareDenominators"));
 	}
 	
+	/*
+	 * Get all TileMatrix with upper denominators
+	 * 
+	 * @param String $indentifier : the identifier of the Tile Matrix
+	 * 
+	 * @return Array : An array with TileMatrix objects with denominators superior or equal to the Tile Matrix passed
+	*/
+	public function getUpperTileMatrix ($identifier) {
+		$list = Array();
+		
+		$maxTmObj = $this->tileMatrixList[$identifier];
+		
+		foreach ($this->tileMatrixList as $tmObj) {
+			if ($maxTmObj->scaleDenominator <= $tmObj->scaleDenominator) {
+				$list[] = $tmObj;
+			}
+		}
+		
+		return $list;
+	}
+	
 	public function loadData ($data) {
 		foreach ($data as $key => $value) {
 			if (property_exists('TileMatrixSet', $key)) {
@@ -90,14 +111,18 @@ class TileMatrixSet {
 		}
 		
 		foreach ($this->tileMatrixList as $tileMatrixObj) {
-			//Get the East and North coordinates of the top left corner of the TileMatrix.
+		var_dump($this->identifier . ' - ' .$tileMatrixObj->identifier);
+			//Get the West and North coordinates of the top left corner of the TileMatrix.
 			//
 			//EPSG authority SRS definition (see : www.epsg-registry.org):
-			//- Geographic SRS give the topLeftCorner as <TopLeftCorner>North East</TopLeftCorner>
-			//- Projected SRS give the topLeftCorner as <TopLeftCorner>East North</TopLeftCorner>
+			//- Geographic SRS give the topLeftCorner as <TopLeftCorner>North West</TopLeftCorner>
+			//- Projected SRS give the topLeftCorner as <TopLeftCorner>West North</TopLeftCorner>
 			//OGC authority SRS defnition (see : OGC 07-057r7 document)
-			//- all SRS give the topLeftCorner as <TopLeftCorner>East North</TopLeftCorner>
+			//- all SRS give the topLeftCorner as <TopLeftCorner>West North</TopLeftCorner>
 			//Others authorities are not supported.
+			var_dump($tileMatrixObj->topLeftCorner);
+			// TODO: vérifier pourquoi EPSG et OGC ont un topleft dans le meme ordre
+			//if (!strpos($this->srsUnit,'m') && strpos($this->srs,'EPSG')) {
 			if (!strpos($this->srsUnit,'m') && strpos($this->srs,'EPSG')) {
 				$topLeftCornerY = substr($tileMatrixObj->topLeftCorner, 0, strpos($tileMatrixObj->topLeftCorner," "));
 				$topLeftCornerX = substr($tileMatrixObj->topLeftCorner, strpos($tileMatrixObj->topLeftCorner," ")+1);
@@ -134,12 +159,15 @@ class TileMatrixSet {
 				$tileMinCol = 0;
 			}
 			if ($tileMaxCol < 0) {
+				var_dump('A');
 				continue;
 			}
 			if ($tileMinCol > $tileMaxCol) {
+				var_dump('B', $tileMinCol, $tileMaxCol, $tileMatrixObj);
 				continue;
 			}
 			if ($tileMinCol >= $tileMatrixObj->matrixWidth) {
+				var_dump('C');
 				continue;
 			}
 			if ($tileMaxCol >= $tileMatrixObj->matrixWidth) {
@@ -149,12 +177,15 @@ class TileMatrixSet {
 				$tileMinRow = 0;
 			}
 			if ($tileMaxRow < 0) {
+				var_dump('D');
 				continue;
 			}
 			if ($tileMinRow > $tileMaxRow) {
+				var_dump('E');
 				continue;
 			}
 			if ($tileMinRow >= $tileMatrixObj->matrixHeight) {
+				var_dump('F');
 				continue;
 			}
 			if ($tileMaxRow >= $tileMatrixObj->matrixHeight) {
@@ -182,6 +213,7 @@ class TileMatrixSet {
 				$tileMatrixObj->maxTileCol = $tileMaxCol;
 				$tileMatrixObj->anyTile = false;
 			}
+			var_dump($tileMatrixObj);
 		}
 	}
 }

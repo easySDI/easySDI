@@ -86,7 +86,7 @@ class WmtsWebservice {
 				</tr>
 			</table>
 			<hr />
-			<select name="spatial_operator_id">
+			<select name="spatialoperatorid">
 				<option value="">' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_SPATIAL_OPERATOR_LABEL') . '</option>';
 				foreach ($resultset as $spatialOperator) {
 					$html .= '<option value="' . $spatialOperator->id . '" ' . (($spatialOperator->id == $layerObj->spatialOperator)?'selected="selected"':'') . '>' . $spatialOperator->value . '</option>';
@@ -254,13 +254,13 @@ class WmtsWebservice {
 			$query->insert('#__sdi_wmts_spatialpolicy')->columns('
 				spatialoperator_id, eastboundlongitude, westboundlongitude, northboundlatitude, southboundlatitude
 			')->values('
-				\'' . $raw_GET['spatial_operator_id'] . '\', \'' . $raw_GET['eastBoundLongitude'] . '\', \'' . $raw_GET['westBoundLongitude'] . '\', \'' . $raw_GET['northBoundLatitude'] . '\', \'' . $raw_GET['southBoundLatitude'] . '\'
+				\'' . $raw_GET['spatialoperatorid'] . '\', \'' . $raw_GET['eastBoundLongitude'] . '\', \'' . $raw_GET['westBoundLongitude'] . '\', \'' . $raw_GET['northBoundLatitude'] . '\', \'' . $raw_GET['southBoundLatitude'] . '\'
 			');
 		}
 		else {
 			$query = $db->getQuery(true);
 			$query->update('#__sdi_wmts_spatialpolicy')->set(Array(
-				'spatialoperator_id = \'' . $raw_GET['spatial_operator_id'] . '\'',
+				'spatialoperator_id = \'' . $raw_GET['spatialoperatorid'] . '\'',
 				'eastboundlongitude = \'' . $raw_GET['eastBoundLongitude'] . '\'',
 				'westboundlongitude = \'' . $raw_GET['westBoundLongitude'] . '\'',
 				'northboundlatitude = \'' . $raw_GET['northBoundLatitude'] . '\'',
@@ -408,7 +408,7 @@ class WmtsWebservice {
 		
 		$form_values[$layerID] = Array(
 			'enabled' => $raw_GET['enabled'],
-			'spatialOperator' => $spatialOperators[$raw_GET['spatial_operator_id']],
+			'spatialOperator' => $spatialOperators[$raw_GET['spatialoperatorid']],
 			'westBoundLongitude' => $raw_GET['westBoundLongitude'],
 			'eastBoundLongitude' => $raw_GET['eastBoundLongitude'],
 			'northBoundLatitude' => $raw_GET['northBoundLatitude'],
@@ -428,111 +428,61 @@ class WmtsWebservice {
 		$wmtsObj->loadData($form_values);
 		$layerObj = $wmtsObj->getLayerByName($layerID);
 		$layerObj->calculateAuthorizedTiles();
-		var_dump($raw_GET);
-		foreach ($raw_GET['select'] as $tms => $tm) {
-			$tmsObj = $layerObj->getTileMatrixSetByName($tms);
-			$tmObj = $tmsObj->getTileMatrixByName($tm);
+		
+		//flushing the previous Tile Matrix and Tile Matrix Set
+		$query = $db->getQuery(true);
+		$query->delete('#__sdi_tilematrixset_policy')->where('wmtslayerpolicy_id = ' . $wmtslayerpolicy_id);
+		$db->setQuery($query);
+		
+		try {
+			$db->execute();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
+		foreach ($layerObj->getTileMatrixSetList() as $tmsObj) {
+			$maxTmsIdentifier = (isset($raw_GET['select'][$tmsObj->identifier]))?$raw_GET['select'][$tmsObj->identifier]:null;
+			
 			//save Tile Matrix Set
-			$db->setQuery('
-				SELECT id
-				FROM #__sdi_tilematrixset_policy
-				WHERE wmtslayerpolicy_id = ' . $wmtslayerpolicy_id . '
-				AND identifier = \'' . $tms . '\';
-			');
-			
-			try {
-				$db->execute();
-				$num_result = $db->getNumRows();
-				$tilematrixsetpolicy_id = $db->loadResult();
-			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
-			}
-			
 			$query = $db->getQuery(true);
-			
-			if (0 == $num_result) {
-				$query->insert('#__sdi_tilematrixset_policy')->columns('
-					wmtslayerpolicy_id, identifier, anytilematrix
-				')->values('
-					\'' . $wmtslayerpolicy_id . '\', \'' . $tms . '\', ' . ((empty($tm))?1:0) . '
-				');
-			}
-			else {
-				//TODO: set SRS
-				$query->update('#__sdi_tilematrixset_policy')->set(Array(
-					'anytilematrix = \'' . ((empty($tm))?1:0) . '\'',
-				))->where(Array(
-					'id = \'' . $tilematrixsetpolicy_id . '\'',
-				));
-			}
-			
+			$query->insert('#__sdi_tilematrixset_policy')->columns('
+				wmtslayerpolicy_id, identifier, anytilematrix
+			')->values('
+				\'' . $wmtslayerpolicy_id . '\', \'' . $tmsObj->identifier . '\', ' . ((empty($maxTmsIdentifier))?1:0) . '
+			');
 			$db->setQuery($query);
 			
 			try {
 				$db->execute();
-				if (0 == $num_result) {
-					$tilematrixsetpolicy_id = $db->insertid();
-				}
+				$tilematrixsetpolicy_id = $db->insertid();
 			}
 			catch (JDatabaseException $e) {
 				$je = new JException($e->getMessage());
 				$this->setError($je);
 				return false;
 			}
-			
-			//save Tile Matrix
-			$db->setQuery('
-				SELECT id
-				FROM #__sdi_tilematrix_policy
-				WHERE tilematrixsetpolicy_id = ' . $tilematrixsetpolicy_id . ';
-			');
-			
-			try {
-				$db->execute();
-				$num_result = $db->getNumRows();
-				$tmp_id = $db->loadResult();
-			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
-			}
-			
-			$query = $db->getQuery(true);
-			
-			if (0 == $num_result) {
+				
+			foreach ($tmsObj->getUpperTileMatrix($maxTmsIdentifier) as $tmObj) {
+				//save Tile Matrix
+				$query = $db->getQuery(true);
 				$query->insert('#__sdi_tilematrix_policy')->columns('
 					tilematrixsetpolicy_id, identifier, anytile, tileminrow, tilemaxrow, tilemincol, tilemaxcol
 				')->values('
-					\'' . $tilematrixsetpolicy_id . '\', \'' . $tm . '\', \'' . $tmObj->anyTile . '\', \'' . $tmObj->minTileRow . '\', \'' . $tmObj->maxTileRow . '\', \'' . $tmObj->minTileCol . '\', \'' . $tmObj->maxTileCol . '\'
+					\'' . $tilematrixsetpolicy_id . '\', \'' . $tmObj->identifier . '\', \'' . $tmObj->anyTile . '\', \'' . $tmObj->minTileRow . '\', \'' . $tmObj->maxTileRow . '\', \'' . $tmObj->minTileCol . '\', \'' . $tmObj->maxTileCol . '\'
 				');
-			}
-			else {
-				//TODO: set BBox
-				$query->update('#__sdi_tilematrix_policy')->set(Array(
-					'identifier = \'' . $tm . '\'',
-					'anytile = \'' . $tmObj->anyTile . '\'',
-					'tileminrow = \'' . $tmObj->minTileRow . '\'',
-					'tilemaxrow = \'' . $tmObj->maxTileRow . '\'',
-					'tilemincol = \'' . $tmObj->minTileCol . '\'',
-					'tilemaxcol = \'' . $tmObj->maxTileCol . '\'',
-				))->where(Array(
-					'id = \'' . $tmp_id . '\'',
-				));
-			}
-			
-			$db->setQuery($query);
-			
-			try {
-				$db->execute();
-			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
+				$db->setQuery($query);
+				
+				try {
+					$db->execute();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
 			}
 		}
 		return true;

@@ -24,8 +24,7 @@ $document->addScript('components/com_easysdi_service/views/policy/tmpl/policy.js
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/wmts.js');
 JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 
-//TODO: use this fct to implement inherited forms
-function printSpatialPolicyForm ($suffix, $data) {
+function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	$db = JFactory::getDbo();
 	$db->setQuery('
 		SELECT *
@@ -36,47 +35,86 @@ function printSpatialPolicyForm ($suffix, $data) {
 	$db->execute();
 	$resultset = $db->loadObjectList();
 	
-	$html = '
-		<label class="checkbox">
-			<input type="checkbox" name="anyitem" value="1" ' . ((1 == $data->anyitem)?'checked="checked"':'') . ' /> ' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMTS_ANYITEM') . '
-			<input type="checkbox" name="inheritedspatialpolicy" value="1" ' . ((1 == $data->inheritedspatialpolicy)?'checked="checked"':'') . ' /> ' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMTS_INHERITEDSPATIALPOLICY') . '
-		</label>
-		<hr />
+	if (0 != $physicalServiceID) {
+		$query = '
+			SELECT *
+			FROM #__sdi_wmts_spatialpolicy
+			WHERE id = \'' . $data->wmts_spatialpolicy_id . '\';
+		';
+	}
+	else {
+		$query = '
+			SELECT wsp.*, psp.anyitem
+			FROM #__sdi_wmts_spatialpolicy wsp
+			JOIN #__sdi_physicalservice_policy psp
+			ON wsp.id = psp.wmts_spatialpolicy_id
+			WHERE psp.physicalservice_id = ' . $physicalServiceID . '
+			AND psp.policy_id = ' . $data->id . ';
+		';
+	}
+	$db->setQuery($query);
+	$db->execute();
+	$spatialpolicy = $db->loadObject();
+	
+	
+	$html = '';
+	if (0 == $physicalServiceID) {
+		$suffix = $data->wmts_spatialpolicy_id;
+		$html .= '
+			<label class="checkbox">
+				<input type="checkbox" name="anyservice" value="1" ' . ((1 == $data->anyservice)?'checked="checked"':'') . ' /><label for="anyservice">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMTS_ANYSERVICE') . '</label>
+			</label>
+		';
+	}
+	else {
+		$suffix = $physicalServiceID . '_' . $data->id;
+		$anyItem = (isset($spatialpolicy->anyitem))?$spatialpolicy->anyitem:1;
+		$html .= '
+			<label class="checkbox">
+				<input type="checkbox" name="anyitem_' . $physicalServiceID . '" value="1" ' . ((1 == $anyItem)?'checked="checked"':'') . ' /><label for="anyitem_' . $physicalServiceID . '">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMTS_ANYITEM') . '</label>
+			</label>
+		';
+	}
+	
+	$html .= '	<br />
 		<table>
 			<tr>
 				<td></td>
 				<td>
-					<input type="text" name="northBoundLatitude_' . $suffix . '" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_NORTH_BOUND_LATITUDE') . '" value="' . $data->northBoundLatitude . '"/>
+					<input type="text" name="northBoundLatitude_' . $suffix . '" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_NORTH_BOUND_LATITUDE') . '" value="' . ((isset($spatialpolicy->northboundlatitude))?$spatialpolicy->northboundlatitude:'') . '"/>
 				</td>
 				<td></td>
 			</tr>
 			<tr>
 				<td>
-					<input type="text" name="westBoundLongitude_' . $suffix . '" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_WEST_BOUND_LONGITUDE') . '" value="' . $data->westBoundLongitude . '"/>
+					<input type="text" name="westBoundLongitude_' . $suffix . '" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_WEST_BOUND_LONGITUDE') . '" value="' . ((isset($spatialpolicy->westboundlongitude))?$spatialpolicy->westboundlongitude:'') . '"/>
 				</td>
 				<td></td>
 				<td>
-					<input type="text" name="eastBoundLongitude_' . $suffix . '" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_EAST_BOUND_LONGITUDE') . '" value="' . $data->eastBoundLongitude . '"/>
+					<input type="text" name="eastBoundLongitude_' . $suffix . '" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_EAST_BOUND_LONGITUDE') . '" value="' . ((isset($spatialpolicy->eastboundlongitude))?$spatialpolicy->eastboundlongitude:'') . '"/>
 				</td>
 			</tr>
 			<tr>
 				<td></td>
 				<td>
-					<input type="text" name="southBoundLatitude_' . $suffix . '" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_SOUTH_BOUND_LATITUDE') . '" value="' . $data->southBoundLatitude . '"/>
+					<input type="text" name="southBoundLatitude_' . $suffix . '" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_SOUTH_BOUND_LATITUDE') . '" value="' . ((isset($spatialpolicy->southboundlatitude))?$spatialpolicy->southboundlatitude:'') . '"/>
 				</td>
 				<td></td>
 			</tr>
 		</table>
-		<hr />
-		<select name="spatial_operator_id_' . $suffix . '">
+		<br />
+		<select name="spatialoperatorid_' . $suffix . '">
 			<option value="">' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_SPATIAL_OPERATOR_LABEL') . '</option>';
 			foreach ($resultset as $spatialOperator) {
-				$html .= '<option value="' . $spatialOperator->id . '" ' . (($spatialOperator->id == $data->spatialOperator)?'selected="selected"':'') . '>' . $spatialOperator->value . '</option>';
+				$wsp_value = (isset($spatialpolicy->spatialoperator_id))?$spatialpolicy->spatialoperator_id:'';
+				$html .= '<option value="' . $spatialOperator->id . '" ' . (($spatialOperator->id == $wsp_value)?'selected="selected"':'') . '>' . $spatialOperator->value . '</option>';
 			}
 	$html .= '</select>
-		<hr />
+		<br />
+		<br />
+		<br />
 	';
-	return $html;
+	echo $html;
 }
 
 ?>
@@ -120,9 +158,8 @@ function printSpatialPolicyForm ($suffix, $data) {
 				
 				<div class="tab-pane" id="layers">
 					<fieldset>
-						<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_INHERITANCE' );?></legend>
-						
-						<!-- TODO : form with Policy lvl herited bbox and operator -->
+						<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_POLICY_INHERITANCE' );?></legend>
+						<?php printSpatialPolicyForm($this->item); ?>
 						
 					</fieldset>
 					<fieldset>
@@ -140,8 +177,7 @@ function printSpatialPolicyForm ($suffix, $data) {
 								</div>
 								<div class="accordion-body collapse" id="collapse_<?php echo $ps->id; ?>">
 								  <div class="accordion-inner">
-										
-										<!-- TODO : form with PS lvl herited bbox and operator -->
+										<?php printSpatialPolicyForm($this->item, $ps->id); ?>
 										
 										<table class="table" >
 											<thead>
@@ -176,6 +212,7 @@ function printSpatialPolicyForm ($suffix, $data) {
 								  </div>
 								</div>
 						  </div>
+						  <br />
 							<?php endforeach; ?>
 						</div>
 					<?php endif; ?>

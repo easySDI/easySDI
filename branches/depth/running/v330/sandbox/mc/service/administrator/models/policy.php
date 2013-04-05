@@ -290,6 +290,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	
 	
 	public function save($data) {
+		
 		$data['virtualservice_id'] = JRequest::getVar('vs_id',null);
 		$db = JFactory::getDbo();
 		$db->setQuery('
