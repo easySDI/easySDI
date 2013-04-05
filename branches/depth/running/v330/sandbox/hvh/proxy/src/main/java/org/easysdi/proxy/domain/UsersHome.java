@@ -51,14 +51,14 @@ public class UsersHome {
 		try {
 			Query qSession = sessionFactory.getCurrentSession().createQuery("Select s FROM Session s WHERE session_id= :session ");
 			qSession.setParameter("session", session);
-			Object oSession = (Object) qSession.uniqueResult();
+			Object oSession = (Object) qSession.setCacheable(true).uniqueResult();
 			
 			if(oSession == null)
 				return null;
 			
 			Query query = sessionFactory.getCurrentSession().createQuery("Select u FROM Session s, Users u WHERE u.username = s.username AND session_id= :session ");
 			query.setParameter("session", session);
-			Users instance = (Users) query.uniqueResult();
+			Users instance = (Users) query.setCacheable(true).uniqueResult();
 			if(instance == null)
 				instance = new Users();
 			

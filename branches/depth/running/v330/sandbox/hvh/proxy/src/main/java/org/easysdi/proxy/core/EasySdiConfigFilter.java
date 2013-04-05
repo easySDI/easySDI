@@ -105,31 +105,26 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 				}
 				Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>)principal.getAuthorities();
 				
-				//SdiPolicy need to be cached manually because multiple query are used and the final result can not be retreive directly from the cache by hibernate
-				Element policyE = virtualServiceCache.get(servletName + username + "policy");
-				if (policyE == null) { 
-					SdiPolicy policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualservice.getId(), sdiUserHome.findByUserName(username).getId(), authorities);
-					if (policy != null) {
-						policyE = new Element(servletName + username + "policy", policy);
-						virtualServiceCache.put(policyE);
-					}else{
-						if (((HttpServletRequest)req).getUserPrincipal() == null){
-							//Spring Anonymous user is used to perform this request, but not policy defined for it
-							logger.error("Error occurred during " + servletName + " config initialization : No anomnymous policy found.");
-							response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-							response.setHeader("WWW-Authenticate", "Basic realm=\"EasySDI Proxy "+virtualservice.getAlias()+"\"");
-							response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"No anomnymous policy found.");
-							return;
+				SdiPolicy policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualservice.getId(), sdiUserHome.findByUserName(username).getId(), authorities);
+				if (policy != null) {
+				}else{
+					if (((HttpServletRequest)req).getUserPrincipal() == null){
+						//Spring Anonymous user is used to perform this request, but not policy defined for it
+						logger.error("Error occurred during " + servletName + " config initialization : No anomnymous policy found.");
+						response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+						response.setHeader("WWW-Authenticate", "Basic realm=\"EasySDI Proxy "+virtualservice.getAlias()+"\"");
+						response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"No anomnymous policy found.");
+						return;
 
-						}else{
-							//No policy found for the authenticated user, return an ogc exception.
-							logger.error("Error occurred during " + servletName + " config initialization : No policy found for user.");
-							new OWS200ExceptionReport().sendExceptionReport(response,"No policy found for user.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "") ;
-							return;
-						}
+					}else{
+						//No policy found for the authenticated user, return an ogc exception.
+						logger.error("Error occurred during " + servletName + " config initialization : No policy found for user.");
+						new OWS200ExceptionReport().sendExceptionReport(response,"No policy found for user.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "") ;
+						return;
 					}
 				}
-			} 
+			}
+			
 			catch (Exception e) {
 				logger.error("Error occurred during " + servletName + " config initialization : " + e.toString());
 				new OWS200ExceptionReport().sendExceptionReport(response, "Error occurred during " + servletName + " config initialization : "+e.toString(), OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request") ;

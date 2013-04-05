@@ -47,10 +47,11 @@ public class SdiPolicyHome {
 	public SdiPolicy findByVirtualServiceAndUser(Integer virtualservice, Integer user, Collection<GrantedAuthority> authorities ) {
 		try {
 			//Policies linked to the current user
-			Query query = sessionFactory.getCurrentSession().createQuery("Select p FROM Policy p, SdiPolicyUser u WHERE u.user_id= :user AND u.policy_id = p.id AND p.virtualservice_id = :virtualservice ORDER BY p.ordering asc");
+			Query query = sessionFactory.getCurrentSession().createQuery(
+					"SELECT p FROM SdiPolicy p INNER JOIN p.sdiPolicyUsers as pu INNER JOIN pu.sdiUser as u WHERE u.id= :user AND p.sdiVirtualservice.id = :virtualservice ORDER BY p.ordering asc");
 			query.setParameter("user", user);
 			query.setParameter("virtualservice", virtualservice);
-			List results = query.list();
+			List results = query.setCacheable(true).list();
 			if(results != null && results.size() > 0)
 			{
 				return (SdiPolicy) results.get(0);
@@ -64,19 +65,21 @@ public class SdiPolicyHome {
 				condition += condition.length() > 0 ? ',' : "" ;
 				condition += i.next().getAuthority();
 			}
-			Query oQuery = sessionFactory.getCurrentSession().createQuery("Select p FROM Policy p, SdiPolicyOrganism o WHERE o.organism_id IN (:organism) AND o.policy_id = p.id AND p.virtualservice_id = :virtualservice ORDER BY p.ordering asc");
+			Query oQuery = sessionFactory.getCurrentSession().createQuery(
+					"SELECT p  FROM SdiPolicy p INNER JOIN p.sdiPolicyOrganisms as po INNER JOIN p.sdiVirtualservice as vs WHERE po.id IN (:organism) AND vs.id = :virtualservice ORDER BY p.ordering asc");
 			oQuery.setParameter("organism", condition);
 			oQuery.setParameter("virtualservice", virtualservice);
-			List oResults = oQuery.list();
+			List oResults = oQuery.setCacheable(true).list();
 			if (oResults != null && oResults.size() > 0)
 			{
 				return (SdiPolicy) oResults.get(0);
 			}
 			
 			//Public policies
-			Query pQuery = sessionFactory.getCurrentSession().createQuery("Select p FROM Policy p WHERE p.virtualservice_id = :virtualservice AND p.accessscope_id = 1 ORDER BY p.ordering asc");
+			Query pQuery = sessionFactory.getCurrentSession().createQuery(
+					"SELECT p  FROM SdiPolicy p INNER JOIN p.sdiVirtualservice as vs INNER JOIN p.sdiSysAccessscope as sc WHERE vs.id = :virtualservice AND sc.id = 1 ORDER BY p.ordering asc");
 			pQuery.setParameter("virtualservice", virtualservice);
-			List pResults = pQuery.list();
+			List pResults = pQuery.setCacheable(true).list();
 			if (pResults != null && pResults.size() > 0)
 			{
 				return (SdiPolicy) pResults.get(0);

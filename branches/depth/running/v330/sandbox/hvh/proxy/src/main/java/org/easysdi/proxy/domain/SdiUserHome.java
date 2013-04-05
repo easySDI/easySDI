@@ -2,10 +2,6 @@ package org.easysdi.proxy.domain;
 
 // Generated Apr 4, 2013 10:31:48 AM by Hibernate Tools 3.4.0.CR1
 
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
@@ -42,11 +38,11 @@ public class SdiUserHome {
 		}
 	}
 	
-	public Users findByUserName(String username) {
+	public SdiUser findByUserName(String username) {
 		try {
-			Query query = sessionFactory.getCurrentSession().createQuery("Select s FROM Users u, SdiUser s WHERE u.username= :username AND u.id = s.user_id");
+			Query query = sessionFactory.getCurrentSession().createQuery("FROM SdiUser s WHERE s.users.username= :username");
 			query.setParameter("username", username);
-			Users instance = (Users) query.setCacheable(true).uniqueResult();
+			SdiUser instance = (SdiUser) query.setCacheable(true).uniqueResult();
 			
 			return instance;
 		} catch (RuntimeException re) {

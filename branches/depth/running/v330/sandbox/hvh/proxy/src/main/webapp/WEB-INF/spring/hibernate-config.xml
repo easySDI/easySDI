@@ -56,6 +56,7 @@
 	
 	<bean id="sdiVirtualserviceHome" class="org.easysdi.proxy.domain.SdiVirtualserviceHome" parent="abstractDao"/>
 	<bean id="sdiPolicyHome" class="org.easysdi.proxy.domain.SdiPolicyHome" parent="abstractDao"/>
+	<bean id="sdiUserHome" class="org.easysdi.proxy.domain.SdiUserHome" parent="abstractDao"/>
 	<bean id="usersHome" class="org.easysdi.proxy.domain.UsersHome" parent="abstractDao"/>
 	<bean id="extensionsHome" class="org.easysdi.proxy.domain.ExtensionsHome" parent="abstractDao"/>
 

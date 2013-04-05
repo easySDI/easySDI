@@ -3,5 +3,6 @@
 @${pojo.importType("javax.persistence.Embeddable")}
 <#else>
 @${pojo.importType("javax.persistence.Entity")}
+@${pojo.importType("org.hibernate.annotations.Cache")}
 </#if>
 </#if>
