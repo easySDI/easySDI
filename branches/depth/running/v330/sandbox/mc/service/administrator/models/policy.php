@@ -104,7 +104,25 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				$item->physicalService = $this->{'_getItem' . $layout}($pk, $virtualservice_id);
 			}
 		}
+		
+		//SetLayout : layout is the connector type
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query
+				->select('sc.value, vs.name')
+				->from(' #__sdi_virtualservice AS vs ')
+				->join('LEFT', '#__sdi_sys_serviceconnector AS sc ON sc.id = vs.serviceconnector_id')
+				->where('vs.id = ' . $item->virtualservice_id );
+		$db->setQuery($query);
+		$result = $db->loadObject();
 
+		$item->layout 			= ($result->value == "WMSC")? "WMS" : $result->value;
+		$item->virtualservice 	= $result->name ;
+		
+		// Get the access scope
+		$item->organisms 		= $this->getAccessScopeOrganism($item->id);
+		$item->users 			= $this->getAccessScopeUser($item->id);
+		
 		return $item;
 	}
 	
@@ -325,13 +343,135 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					'virtualServiceID' => $data['virtualservice_id'],
 					'policyID' => $data['id'],
 				);
-				if (!WmsWebservice::saveAllLayers($params, true)) {
+				if (!WmsWebservice::saveAllLayers( $data['virtualservice_id'], $data['id'])) {
 					return false;
 				}
 			}
 			
+			//Access Scope
+			if(! $this->saveAccessScope($data))
+				return false;
+			
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * Method to save the organisms and users allowed by the access scope
+	 *
+	 * @param array 	$data	data posted from the form
+	 *
+	 * @return boolean 	True on success, False on error
+	 *
+	 * @since EasySDI 3.3.0
+	 */
+	public function saveAccessScope ($data)
+	{
+		//Delete previously saved access
+		$db = JFactory::getDbo();
+		$db->setQuery('DELETE FROM #__sdi_policy_organism WHERE policy_id = '.$data['id']);
+		$db->query();
+		$db->setQuery('DELETE FROM #__sdi_policy_user WHERE policy_id = '.$data['id']);
+		$db->query();
+	
+		$pks = $data['organisms'];
+		foreach ($pks as $pk)
+		{
+			try {
+				$db->setQuery(
+						'INSERT INTO #__sdi_policy_organism (policy_id, organism_id) ' .
+						' VALUES ('.$data['id'].','.$pk.')'
+				);
+				if (!$db->query()) {
+					throw new Exception($db->getErrorMsg());
+				}
+			} catch (Exception $e) {
+				$this->setError($e->getMessage());
+				return false;
+			}
+		}
+		
+		$pks = $data['users'];
+		foreach ($pks as $pk)
+		{
+			try {
+				$db->setQuery(
+						'INSERT INTO #__sdi_policy_user (policy_id, user_id) ' .
+						' VALUES ('.$data['id'].','.$pk.')'
+				);
+				if (!$db->query()) {
+					throw new Exception($db->getErrorMsg());
+				}
+			} catch (Exception $e) {
+				$this->setError($e->getMessage());
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Method to get the organisms authorized to access this policy
+	 *
+	 * @param int		$id		primary key of the current policy to get.
+	 *
+	 * @return boolean 	Object list on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	public function getAccessScopeOrganism  ( $id=null)
+	{
+		if(!isset($id))
+			return null;
+	
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query->select('p.organism_id as id');
+			$query->from('#__sdi_policy_organism p');
+			$query->where('p.policy_id = ' . (int) $id);
+			$db->setQuery($query);
+	
+			$scope = $db->loadColumn();
+			return $scope;
+	
+		} catch (Exception $e) {
+			$this->setError($e->getMessage());
+			return false;
+		}
+	
+	}
+	
+	/**
+	 * Method to get the users authorized to access this policy
+	 *
+	 * @param int		$id		primary key of the current policy to get.
+	 *
+	 * @return boolean 	Object list on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	public function getAccessScopeUser  ( $id=null)
+	{
+		if(!isset($id))
+			return null;
+	
+		try {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query->select('p.user_id as id');
+			$query->from('#__sdi_policy_user p');
+			$query->where('p.policy_id = ' . (int) $id);
+			$db->setQuery($query);
+	
+			$scope = $db->loadColumn();
+			return $scope;
+	
+		} catch (Exception $e) {
+			$this->setError($e->getMessage());
+			return false;
+		}
+	
 	}
 }
