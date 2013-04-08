@@ -28,10 +28,9 @@ class Easysdi_serviceViewVirtualservice extends JViewLegacy
 	{
 		JHtml::_('bootstrap.framework');
 		
-		$this->state		= $this->get('State');
-		$this->item			= $this->get('Item');
-		$this->form			= $this->get('Form');
-		$this->policies	= $this->get('Policies');
+		$this->state	= $this->get('State');
+		$this->item		= $this->get('Item');
+		$this->form		= $this->get('Form');
 		
 		if($this->item->layout)
 			$this->setLayout($this->item->layout);
@@ -59,9 +58,9 @@ class Easysdi_serviceViewVirtualservice extends JViewLegacy
         } else {
             $checkedOut = false;
         }
-		$this->canDo		= Easysdi_serviceHelper::getActions();
+		$this->canDo		= Easysdi_serviceHelper::getActionsVirtualService();
 
-		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_VIRTUALSERVICE'), 'virtualservice.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_HEADER_VIRTUALSERVICE'), 'virtualservice.png');
 		
 		// If not checked out, can save the item.
 		if (!$checkedOut && ($this->canDo->get('core.edit')||($this->canDo->get('core.create'))))

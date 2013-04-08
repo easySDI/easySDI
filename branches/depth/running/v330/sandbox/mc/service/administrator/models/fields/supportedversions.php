@@ -1,8 +1,8 @@
 <?php
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_service
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -21,7 +21,7 @@ class JFormFieldSupportedVersions extends JFormField {
 		
 		$supportedversions = json_decode($this->form->getValue('supportedversions'));
 		// Start the action field output.
-		$html[]  = '<div id="div-supportedversions" class="' . (string) $this->element['class'] . ' ">';
+		$html[]  = '<span id="div-supportedversions" class="span5 ' . (string) $this->element['class'] . ' ">';
 		if($supportedversions)
 		{
 			foreach($supportedversions as $supportedversion)
@@ -31,7 +31,10 @@ class JFormFieldSupportedVersions extends JFormField {
 				$html[] .= '</span>';
 			}
 		}
-		$html[] .= '</div>';
+		$html[] .= '</span>';
+
+		
+		$html[] .= '</span>';
 		
 		return implode($html);
 

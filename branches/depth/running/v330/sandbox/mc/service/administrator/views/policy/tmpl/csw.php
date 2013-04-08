@@ -24,7 +24,7 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&layout=csw&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="policy-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=policy&layout=csw&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="policy-form" class="form-validate">
 	<div class="row-fluid">
 		<div class="span10 form-horizontal">
 			<ul class="nav nav-tabs">
@@ -53,6 +53,12 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 							<div class="controls"><?php echo $field->input; ?></div>
 						</div>
 					<?php endforeach; ?>
+					
+					<div class="control-group">
+						<div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
+						<div class="controls"><?php echo $this->form->getInput('id'); ?></div>
+					</div>
+					
 					</fieldset>
 					
 					<div class="control-group">

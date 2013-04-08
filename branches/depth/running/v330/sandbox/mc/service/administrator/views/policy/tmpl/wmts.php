@@ -25,6 +25,7 @@ $document->addScript('components/com_easysdi_service/views/policy/tmpl/wmts.js')
 JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 
 function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
+	$debug = '';
 	$db = JFactory::getDbo();
 	$db->setQuery('
 		SELECT *
@@ -35,11 +36,13 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	$db->execute();
 	$resultset = $db->loadObjectList();
 	
-	if (0 != $physicalServiceID) {
+	$wmts_spatialpolicy_id = (!empty($data->wmts_spatialpolicy_id)) ? $data->wmts_spatialpolicy_id : -1;
+	
+	if (0 == $physicalServiceID) {
 		$query = '
 			SELECT *
 			FROM #__sdi_wmts_spatialpolicy
-			WHERE id = \'' . $data->wmts_spatialpolicy_id . '\';
+			WHERE id = ' . $wmts_spatialpolicy_id . ';
 		';
 	}
 	else {
@@ -52,26 +55,28 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 			AND psp.policy_id = ' . $data->id . ';
 		';
 	}
+	
 	$db->setQuery($query);
 	$db->execute();
 	$spatialpolicy = $db->loadObject();
 	
 	
 	$html = '';
+	$prefix = 'inherit';
 	if (0 == $physicalServiceID) {
-		$suffix = $data->wmts_spatialpolicy_id;
+		$prefix .= '_policy[' . $wmts_spatialpolicy_id . ']';
 		$html .= '
 			<label class="checkbox">
-				<input type="checkbox" name="anyservice" value="1" ' . ((1 == $data->anyservice)?'checked="checked"':'') . ' /><label for="anyservice">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMTS_ANYSERVICE') . '</label>
+				<input type="checkbox" name="' . $prefix . '[anyservice]" value="1" ' . ((1 == $data->anyservice)?'checked="checked"':'') . ' /><label for="anyservice">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMTS_ANYSERVICE') . '</label>
 			</label>
 		';
 	}
 	else {
-		$suffix = $physicalServiceID . '_' . $data->id;
+		$prefix .= '_server[' . $physicalServiceID . ']';
 		$anyItem = (isset($spatialpolicy->anyitem))?$spatialpolicy->anyitem:1;
 		$html .= '
 			<label class="checkbox">
-				<input type="checkbox" name="anyitem_' . $physicalServiceID . '" value="1" ' . ((1 == $anyItem)?'checked="checked"':'') . ' /><label for="anyitem_' . $physicalServiceID . '">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMTS_ANYITEM') . '</label>
+				<input type="checkbox" name="' . $prefix . '[anyitem]" value="1" ' . ((1 == $anyItem)?'checked="checked"':'') . ' /><label for="anyitem_' . $physicalServiceID . '">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMTS_ANYITEM') . '</label>
 			</label>
 		';
 	}
@@ -81,29 +86,29 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 			<tr>
 				<td></td>
 				<td>
-					<input type="text" name="northBoundLatitude_' . $suffix . '" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_NORTH_BOUND_LATITUDE') . '" value="' . ((isset($spatialpolicy->northboundlatitude))?$spatialpolicy->northboundlatitude:'') . '"/>
+					<input type="text" name="' . $prefix . '[northBoundLatitude]" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_NORTH_BOUND_LATITUDE') . '" value="' . ((isset($spatialpolicy->northboundlatitude))?$spatialpolicy->northboundlatitude:'') . '"/>
 				</td>
 				<td></td>
 			</tr>
 			<tr>
 				<td>
-					<input type="text" name="westBoundLongitude_' . $suffix . '" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_WEST_BOUND_LONGITUDE') . '" value="' . ((isset($spatialpolicy->westboundlongitude))?$spatialpolicy->westboundlongitude:'') . '"/>
+					<input type="text" name="' . $prefix . '[westBoundLongitude]" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_WEST_BOUND_LONGITUDE') . '" value="' . ((isset($spatialpolicy->westboundlongitude))?$spatialpolicy->westboundlongitude:'') . '"/>
 				</td>
 				<td></td>
 				<td>
-					<input type="text" name="eastBoundLongitude_' . $suffix . '" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_EAST_BOUND_LONGITUDE') . '" value="' . ((isset($spatialpolicy->eastboundlongitude))?$spatialpolicy->eastboundlongitude:'') . '"/>
+					<input type="text" name="' . $prefix . '[eastBoundLongitude]" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_EAST_BOUND_LONGITUDE') . '" value="' . ((isset($spatialpolicy->eastboundlongitude))?$spatialpolicy->eastboundlongitude:'') . '"/>
 				</td>
 			</tr>
 			<tr>
 				<td></td>
 				<td>
-					<input type="text" name="southBoundLatitude_' . $suffix . '" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_SOUTH_BOUND_LATITUDE') . '" value="' . ((isset($spatialpolicy->southboundlatitude))?$spatialpolicy->southboundlatitude:'') . '"/>
+					<input type="text" name="' . $prefix . '[southBoundLatitude]" placeholder="' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_SOUTH_BOUND_LATITUDE') . '" value="' . ((isset($spatialpolicy->southboundlatitude))?$spatialpolicy->southboundlatitude:'') . '"/>
 				</td>
 				<td></td>
 			</tr>
 		</table>
 		<br />
-		<select name="spatialoperatorid_' . $suffix . '">
+		<select name="' . $prefix . '[spatialoperatorid]">
 			<option value="">' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_SPATIAL_OPERATOR_LABEL') . '</option>';
 			foreach ($resultset as $spatialOperator) {
 				$wsp_value = (isset($spatialpolicy->spatialoperator_id))?$spatialpolicy->spatialoperator_id:'';
@@ -119,7 +124,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&layout=wmts&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="policy-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=policy&layout=wmts&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="policy-form" class="form-validate">
 	<div class="row-fluid">
 		<div class="span10 form-horizontal">
 			<ul class="nav nav-tabs">
@@ -142,6 +147,11 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 							<div class="controls"><?php echo $field->input; ?></div>
 						</div>
 					<?php endforeach; ?>
+						
+						<div class="control-group">
+							<div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
+							<div class="controls"><?php echo $this->form->getInput('id'); ?></div>
+						</div>
 					</fieldset>
 					
 					<div class="control-group">
@@ -157,16 +167,16 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 				</div>
 				
 				<div class="tab-pane" id="layers">
-					<fieldset>
-						<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_POLICY_INHERITANCE' );?></legend>
-						<?php printSpatialPolicyForm($this->item); ?>
-						
-					</fieldset>
-					<fieldset>
 					<?php if (empty($this->item->id)): ?>
 						<?php echo JText::_('COM_EASYSDI_SERVICE_LAYER_NOT_DISPLAYABLE');?>
 					<?php endif; ?>
 					<?php if (!empty($this->item->id)): ?>
+					<fieldset>
+						<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_INHERITANCE' );?></legend>
+						<?php printSpatialPolicyForm($this->item); ?>
+						
+					</fieldset>
+					<fieldset>
 						<div class="accordion" id="ps_accordion">
 							<?php foreach($this->item->physicalService as $ps):?>
 								<div class="accordion-group">
@@ -290,7 +300,6 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	</div>
 	
 	<input type="hidden" name="layout" id="layout" value="wmts" />
-	<input type="hidden" name="vs_id" id="vs_id" value="<?php echo JRequest::getVar('virtualservice_id',null); ?>" />
 	<input type="hidden" name="task" value="" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

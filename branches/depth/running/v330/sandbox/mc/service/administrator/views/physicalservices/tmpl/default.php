@@ -37,7 +37,19 @@ if ($saveOrder)
 }
 $sortFields = $this->getSortFields();
 ?>
-
+<script type="text/javascript">
+	Joomla.orderTable = function() {
+		table = document.getElementById("sortTable");
+		direction = document.getElementById("directionTable");
+		order = table.options[table.selectedIndex].value;
+		if (order != '<?php echo $listOrder; ?>') {
+			dirn = 'asc';
+		} else {
+			dirn = direction.options[direction.selectedIndex].value;
+		}
+		Joomla.tableOrdering(order, dirn, '');
+	}
+</script>
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=physicalservices'); ?>" method="post" name="adminForm" id="adminForm">
 	<?php if(!empty($this->sidebar)): ?>
 	<div id="j-sidebar-container" class="span2">
@@ -50,7 +62,7 @@ $sortFields = $this->getSortFields();
 	<div id="filter-bar" class="btn-toolbar">
 		<div class="filter-search btn-group pull-left">
 			<label for="filter_search" class="element-invisible"><?php echo JText::_('JSEARCH_FILTER');?></label>
-			<input type="text" name="filter_search" id="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" title="<?php echo JText::_('JSEARCH_FILTER'); ?>" />
+			<input type="text" name="filter_search" id="filter_search" placeholder="<?php echo JText::_('COM_EASYSDI_SERVICE_SEARCH_IN_SERVICE'); ?>" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" title="<?php echo JText::_('COM_EASYSDI_SERVICE_SEARCH_IN_SERVICE'); ?>" />
 		</div>
 		<div class="btn-group pull-left">
 			<button class="btn hasTooltip" type="submit" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
@@ -77,7 +89,7 @@ $sortFields = $this->getSortFields();
 		</div>
 	</div>        
 	<div class="clearfix"> </div>
-		<table class="table table-striped" id="organismList">
+		<table class="table table-striped" id="physicalserviceList">
 			<thead>
 				<tr>
 	                <?php if (isset($this->items[0]->ordering)): ?>
@@ -97,10 +109,10 @@ $sortFields = $this->getSortFields();
 						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_PHYSICALSERVICES_NAME', 'a.name', $listDirn, $listOrder); ?>
 					</th>
 					<th class='nowrap hidden-phone'>
-						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_SERVICES_CONNECTOR', 'a.serviceconnector_value', $listDirn, $listOrder); ?>
+						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_PHYSICALSERVICES_CONNECTOR', 'serviceconnector', $listDirn, $listOrder); ?>
 					</th>
-					<th class='nowrap hidden-phone'>
-						<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_SERVICES_URL', 'a.resourceurl', $listDirn, $listOrder); ?>
+					<th class='left'>
+						<?php echo JHtml::_('grid.sort', 'JCATEGORY', 'category_title', $listDirn, $listOrder); ?>
 					</th>
 					<th class='nowrap hidden-phone'>
 						<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
@@ -129,16 +141,16 @@ $sortFields = $this->getSortFields();
 		</tfoot>
 		<tbody>
 		<?php foreach ($this->items as $i => $item) :
-				$canDo			= Easysdi_serviceHelper::getActions('physical',null,$item->id);
+				$canDo			= Easysdi_serviceHelper::getActionsPhysicalService(null,$item->id);
 				$ordering		= ($listOrder == 'a.ordering');
 				$canEdit 		= $canDo->get('core.edit');
 				$canEditOwn 	= $canDo->get('core.edit.own');
 				$canChange 		= $canDo->get('core.edit.state');
 				$canCheckin		= $user->authorise('core.manage',		'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
-				$islocked = ($item->serviceconnector_value == 'Bing' || $item->serviceconnector_value == 'Google' || $item->serviceconnector_value == 'OSM')? true : false;
+				$islocked = ($item->serviceconnector == 'Bing' || $item->serviceconnector == 'Google' || $item->serviceconnector == 'OSM')? true : false;
 			?>
-			<tr class="row<?php echo $i % 2; ?>">
-                    
+<!--  			<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->catid?>"> -->
+                <tr class="row<?php echo $i % 2; ?>" >
                 <?php if (isset($this->items[0]->ordering)): ?>
 				<td class="order nowrap center hidden-phone">
 				<?php if ($canChange) :
@@ -160,9 +172,10 @@ $sortFields = $this->getSortFields();
 					</td>
                 <?php endif; ?>
 				<td class="center hidden-phone">
-					<?php if ($canEdit && !$islocked) echo JHtml::_('grid.id', $i, $item->id); 
-					else echo '<input type="checkbox" id="cb'.$i.'" name="cid[]" value="'.$item->id.'" disabled="disabled" onclick="Joomla.isChecked(this.checked);" />'  ?>
-					</td>
+					<?php 
+						echo JHtml::_('grid.id', $i, $item->id); 
+					?>
+				</td>
                 <?php if (isset($this->items[0]->state)): ?>
 				<td class="center">
 					<?php echo JHtml::_('jgrid.published', $item->state, $i, 'physicalservices.', $canChange, 'cb'); ?>
@@ -229,10 +242,10 @@ $sortFields = $this->getSortFields();
 				</div>
 			</td>
 			<td align="small hidden-phone">
-				<?php echo $item->serviceconnector_value; ?>
+				<?php echo $item->serviceconnector; ?>
 			</td>
 			<td align="small hidden-phone">
-				<?php echo $item->resourceurl; ?>
+				<?php echo $item->category_title; ?>
 			</td>
 			<td align="small hidden-phone">
 				<?php echo $item->access_level; ?>

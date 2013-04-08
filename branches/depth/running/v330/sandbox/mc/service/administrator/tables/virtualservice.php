@@ -63,9 +63,17 @@ class Easysdi_serviceTablevirtualservice extends sdiTable {
 	* @since   11.1
 	*/
 	protected function _getAssetParentId($table = null, $id = null) {
-		$asset = JTable::getInstance('Asset');
-		$asset->loadByName('com_easysdi_service');
-		return $asset->id;
+		// We will retrieve the parent-asset from the Asset-table
+		$assetParent = JTable::getInstance('Asset');
+		// Default: if no asset-parent can be found we take the global asset
+		$assetParentId = $assetParent->getRootId();
+		// The item has the component as asset-parent
+		$assetParent->loadByName('com_easysdi_service');
+		// Return the found asset-parent-id
+		if ($assetParent->id){
+			$assetParentId=$assetParent->id;
+		}
+		return $assetParentId;
 	}
 
 	/**
@@ -138,25 +146,28 @@ class Easysdi_serviceTablevirtualservice extends sdiTable {
 	 * @link    http://docs.joomla.org/JTable/load
 	 * @since   EasySDI 3.0.0
 	 */
-	public function GetIdsByContextId($context_id = null, $reset = true)
+	public function loadIdsByMapId($map_id = null, $reset = true)
 	{
 		if ($reset)
 		{
 			$this->reset();
 		}
+		
+		if(empty($map_id))
+			return false;
 	
 		// Initialise the query.
 		$query = $this->_db->getQuery(true);
 		$query->select('vs.id');
 		$query->from($this->_tbl.'  AS vs ');
-		$query->join('LEFT', '#__sdi_map_context_virtualservice AS cvs ON cvs.virtualservice_id=vs.id');
-		$query->where('cvs.context_id = ' . (int) $context_id);
+		$query->join('LEFT', '#__sdi_map_virtualservice AS cvs ON cvs.virtualservice_id=vs.id');
+		$query->where('cvs.map_id = ' . (int) $map_id);
 		$query->where('vs.state = 1' );
 		$this->_db->setQuery($query);
 	
 		try
 		{
-			$rows = $this->_db->loadResultArray();
+			$rows = $this->_db->loadColumn();
 	
 		}
 		catch (JDatabaseException $e)
@@ -180,7 +191,7 @@ class Easysdi_serviceTablevirtualservice extends sdiTable {
 		{
 			return false;
 		}
-	
+			
 		return $rows;
 	}
 	

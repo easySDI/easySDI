@@ -21,6 +21,7 @@ $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
 $document->addScript('components/com_easysdi_service/views/virtualservice/tmpl/virtualservice.js');
 JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
+JText::script('COM_EASYSDI_SERVICE_FORM_SERVICE_METADATA_ERROR');
 ?>
 
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.JRequest::getVar('id',null)); ?>" method="post" name="adminForm" id="virtualservice-form" class="form-validate">
@@ -29,7 +30,6 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_SERVICE_TAB_NEW_SERVICE') : JText::sprintf('COM_EASYSDI_SERVICE_TAB_EDIT_SERVICE', $this->item->id); ?></a></li>
 				<li><a href="#metadata" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_METADATA');?></a></li>
-				<li><a href="#policies" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_POLICIES');?></a></li>
 				<li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_PUBLISHING');?></a></li>
 				<?php if ($this->canDo->get('core.admin')): ?>
 					<li><a href="#permissions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_RULES');?></a></li>
@@ -51,7 +51,7 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 					<?php endforeach; ?>
 					<?php foreach($this->form->getFieldset('details') as $field): 
 					?> 
-						<div class="control-group">
+						<div class="control-group" id="<?php echo $field->fieldname;?>">
 							<div class="control-label"><?php echo $field->label; ?></div>
 							<div class="controls"><?php echo $field->input; ?></div>
 						</div>
@@ -79,46 +79,41 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 				</div>
 				
 				<div class="tab-pane" id="metadata">
-					
-					<fieldset>
+					<div class="control-group">
+						<div class="control-label"><?php echo $this->form->getLabel('reflectedmetadata'); ?></div>
+						<div class="controls"><?php echo $this->form->getInput('reflectedmetadata'); ?></div>
+					</div>
+					<fieldset id="servicemetadata">					
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_METADATA' );?></legend>
 					<?php foreach($this->form->getFieldset('metadata') as $field):?> 
 						<div class="control-group">
 							<div class="control-label"><?php echo $field->label; ?></div>
-							<div class="controls"><?php echo $field->input; ?></div>
+							<div class="controls form-inline"><?php echo $field->input;?>
+							<?php echo $this->form->getInput('inherited'.$field->fieldname);?>
+							<?php echo $this->form->getLabel('inherited'.$field->fieldname);?></div>
+							
 						</div>
 					<?php endforeach; ?>
 					</fieldset>
-					<fieldset>
+					<fieldset id=contact>
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_METADATA_CONTACT' );?></legend>
 					<?php foreach($this->form->getFieldset('contact') as $field):?> 
-						<div class="control-group">
-							<?php if ('jform[city]' != $field->name) :?>
+						<div class="control-group"> 
+						<?php if ('contactlocality' == $field->fieldname) : ?>
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls form-inline"><?php echo $this->form->getInput('contactpostalcode'); echo $field->input; ?></div>
+						<?php else :?>
 							<div class="control-label"><?php echo $field->label; ?></div>
-							<?php endif;?>
-							<div class="controls"><?php echo $field->input; ?></div>
+							<div class="controls"><?php echo $field->input;  ?></div>
+						<?php endif;?>
 						</div>
 					<?php endforeach; ?>
 					<?php foreach($this->form->getFieldset('contact_csw') as $field):?> 
 						<div class="control-group">
 							<div class="control-label"><?php echo $field->label; ?></div>
-							<div class="controls"><?php echo $field->input; ?></div>
+							<div class="controls"><?php echo $field->input;  ?></div>
 						</div>
 					<?php endforeach; ?>
-					</fieldset>
-				</div>
-				
-				<div class="tab-pane" id="policies">
-					<fieldset>
-						<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=policy&layout=csw&virtualservice_id='.JRequest::getVar('id',null)); ?>" class="btn"><?php echo JText::_('COM_EASYSDI_SERVICE_BTN_CREATE_POLICY');?></a>
-						<table class="table" >
-							<?php foreach($this->policies as $policy):?> 
-								<tr>
-									<td><?php echo $policy->name; ?></td>
-									<td><a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=policy&layout=csw&id='.$policy->id.'&virtualservice_id='.JRequest::getVar('id',null)); ?>" class="btn"><?php echo JText::_('COM_EASYSDI_SERVICE_BTN_MODIFY_POLICY');?></a></td>
-								</tr>
-							<?php endforeach; ?>
-						</table>
 					</fieldset>
 				</div>
 				
@@ -195,7 +190,6 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 	</div>
 	
 	<input type="hidden" name="layout" id="layout" value="csw" />
-	<input type="hidden" name="task" value="<?php echo JRequest::getCmd('task');?>" />
-	<input type="hidden" name="previoustask" value="<?php echo JRequest::getCmd('task');?>" />
+	 <input type="hidden" name="task" value="" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>

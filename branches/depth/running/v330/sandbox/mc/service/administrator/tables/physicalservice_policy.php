@@ -18,6 +18,7 @@ class Easysdi_serviceTablephysicalservice_policy extends sdiTable {
 	}
 	
 	public function save ($src, $orderingFilter = '', $ignore = '') {
+		
 		$virtualservice_id = $src['virtualservice_id'];
 		$policy_id = $src['id'];
 		
@@ -58,6 +59,16 @@ class Easysdi_serviceTablephysicalservice_policy extends sdiTable {
 				')->values('
 					\'' . $result->physicalservice_id . '\', \'' . $policy_id . '\'
 				');
+				$db->setQuery($query);
+					
+				try {
+					$db->execute();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
 			}
 			else {
 				//TODO save PS-wide settings here
@@ -70,16 +81,9 @@ class Easysdi_serviceTablephysicalservice_policy extends sdiTable {
 				*/
 			}
 			
-			$db->setQuery($query);
 			
-			try {
-				$db->execute();
-			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
-			}
 		}
+		return true;
+		
 	}
 }

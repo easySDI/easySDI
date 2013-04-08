@@ -125,54 +125,70 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	 */
 	public function getItem($pk = null)
 	{
-		if ($item = parent::getItem($pk)) {
-
-			//Do any procesing on fields here if needed
-			//inserting virtualmetadata content in virtualservice for display of edit form
-			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'tables');
-			$metadata = JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
-			$metadata->loadByVirtualServiceID(JRequest::getVar('id',null));
-			$item_fields = Array();
-			foreach ($item as $key => $value) {
-				$item_fields[] = $key;
-			}
-			foreach ($metadata->getFields() as $field) {
-				if (!in_array($field->Field, $item_fields)) {
-					$item->{$field->Field} = $metadata->{$field->Field};
-				}
-			}
-			
-			$compliances = $this->getServiceCompliance($item->id);
-			$compliance_ids =array();
-			$compliance_values =array();
-				
-			if(isset($compliances))
+		if(isset($this->alias)){//Get Item by alias
+			$item = $this->getTable();
+			$return = $item->loadByAlias($this->alias);
+			if ($return === false && $item->getError())
 			{
-				foreach ($compliances as $compliance)
-				{
-					$compliance_ids[] =$compliance->id;
-					$compliance_values[] =$compliance->value;
-				}
+				$this->setError($item->getError());
+				return false;
 			}
-			if(count($compliance_ids)>0)
-				$item->compliance = json_encode($compliance_values);
-			else
-				$item->compliance = '';
-			$item->supportedversions = json_encode($compliance_values);
-			
-			$item->physicalservice_id = $this->getPhysicalServiceAggregation($item->id);
-			
-			//SetLayout
-			if(!$item->serviceconnector_id)
-			{
-				$item->serviceconnector_id = JRequest::getVar( 'connector' );
+		
+		}else{//Get item by Id
+			$item = parent::getItem($pk);
+			if(!$item){
+				return false;
 			}
-			$serviceconnector = JTable::getInstance('serviceconnector', 'Easysdi_serviceTable');
-			$serviceconnector->load($item->serviceconnector_id);
-			$item->serviceconnector = $serviceconnector->value;
-			
-			$item->layout = ($serviceconnector->value == "WMSC")? "WMS" : $serviceconnector->value;
 		}
+				
+		//inserting virtualmetadata content in virtualservice for display of edit form
+		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'tables');
+		$metadata =& JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
+		$metadata->loadByVirtualServiceID(JRequest::getVar('id',null));
+		//Merging metadata object fields into virtualservice object 
+		$item_fields = Array();
+		foreach ($item as $key => $value) {
+			$item_fields[] = $key;
+		}
+		foreach ($metadata->getFields() as $field) {
+			if (!in_array($field->Field, $item_fields)) {
+				$item->{$field->Field} = $metadata->{$field->Field};
+			}
+		}
+		
+		//Get service compliance
+		$compliances = $this->getServiceCompliance($item->id);
+		$compliance_ids =array();
+		$compliance_values =array();
+		if(isset($compliances))
+		{
+			foreach ($compliances as $compliance)
+			{
+				$compliance_ids[] =$compliance->id;
+				$compliance_values[] =$compliance->value;
+			}
+		}
+		if(count($compliance_ids)>0)
+			$item->compliance = json_encode($compliance_values);
+		else
+			$item->compliance = '';
+		$item->supportedversions = json_encode($compliance_values);
+		
+		$item->physicalservice_id = $this->getPhysicalServiceAggregation($item->id);
+		
+		// Get the service scope
+		$item->organisms = $this->getServiceScopeOrganism($item->id);
+		
+		//SetLayout : layout is the connector type
+		if(!$item->serviceconnector_id)
+		{
+			$item->serviceconnector_id = JRequest::getVar( 'connector' );
+		}
+		$serviceconnector =& JTable::getInstance('serviceconnector', 'Easysdi_serviceTable');
+		$serviceconnector->load($item->serviceconnector_id);
+		$item->serviceconnector = $serviceconnector->value;
+		
+		$item->layout = ($serviceconnector->value == "WMSC")? "WMS" : $serviceconnector->value;
 
 		return $item;
 	}
@@ -198,10 +214,15 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	 *
 	 * @since	1.6
 	 */
-	protected function prepareTable($table)
+	protected function prepareTable(&$table)
 	{
 		jimport('joomla.filter.output');
+		$jform = JRequest::getVar('jform');
 
+		//Service id is set to default value '0' in case of creation.
+		//So this section of code is never executed.
+		//Ordering is set in sdiTable->check() function.
+		//However, We keep this section in case of default id was not set to '0' anymore (changes in form xml)
 		if (empty($table->id)) {
 
 			// Set ordering to the last item if not set
@@ -212,10 +233,21 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 				$table->ordering = $max+1;
 			}
 		}
-		
+		if (!isset($jform['reflectedmetadata'])) { // see if the checkbox has been submitted
+			$table->reflectedmetadata = 0; // if it has not been submitted, mark the field unchecked
+		}
+		else{
+			$table->reflectedmetadata = 1; //else mark the field checked
+		}
+						
+		//Alias is a mandatory field, if not set, use the name
 		if (empty($table->alias)){
 			$table->alias = $table->name;
 		}
+		
+ 		//Load component parameters
+		$params = JComponentHelper::getParams('com_easysdi_service');
+		$table->url = $params->get('proxyurl').$table->alias;
 	}
 	
 	/**
@@ -228,15 +260,24 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	 * @since   11.1
 	 */
 	public function save($data) {
+		
 		if(parent::save($data)){
+			
 			$data['id'] = $this->getItem()->get('id');
 			//Instantiate an address JTable
 			$virtualmetadata =& JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
 			$virtualmetadata->loadByVirtualServiceID($data['id']);
-			//Call the overloaded save function to store the input data
-			if( !$virtualmetadata->save($data) ){	
-				return false;
+			//If reflectedmetadata option is checked, delete existing metadata
+			if(isset($data['reflectedmetadata'])){
+				if(isset($virtualmetadata->id))
+					$virtualmetadata->delete($virtualmetadata->id);
+			}else{
+				//Call the overloaded save function to store the input data
+				if( !$virtualmetadata->save($data) ){
+					return false;
+				}
 			}
+						
 			if(isset($data['physicalservice_id']))
 			{
 				 if(!$this->savePhysicalServiceAggregation($data, $this->getState($this->getName().'.id')))
@@ -247,6 +288,8 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 				 if(!$this->saveServiceCompliance($data['compliance'],$data['serviceconnector_id'], $this->getState($this->getName().'.id')))
 				 	return false;
 			}
+			if(! $this->saveServiceScopeOrganism($data['organisms'], $this->getState($this->getName().'.id')))
+				return false;
 			return true;
 		}
 		return false;
@@ -359,12 +402,14 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	
 		try {
 			$db = JFactory::getDbo();
-			$db->setQuery(
-					'SELECT sv.value as value, sc.id as id FROM #__sdi_virtualservice_servicecompliance ssc ' .
-					' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id '.
-					' INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id'.
-					' WHERE ssc.service_id ='.$id
-			);
+			$query = $db->getQuery(true);
+			$query->select('sv.value as value, sc.id as id');
+			$query->from('#__sdi_virtualservice_servicecompliance ssc');
+			$query->join('INNER', '#__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id ');
+			$query->join('INNER', '#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id ');
+			$query->where('ssc.service_id = ' . (int) $id);
+			$db->setQuery($query);
+
 			$compliance = $db->loadObjectList();
 			return $compliance;
 	
@@ -376,22 +421,72 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	}
 	
 	/**
-	 * 
+	 * Method to save the organisms allowed by the service scope
+	 *
+	 * @param array 	$pks	array of the #__sdi_organism ids to link with the current service
+	 * @param int		$id		primary key of the current service to save.
+	 *
+	 * @return boolean 	True on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
 	 */
-	public function getPolicies () {
-		$vs_id = JRequest::getVar('id', -1);
+	public function saveServiceScopeOrganism ($pks, $id)
+	{
+		//Delete previously saved compliance
+		$db = $this->getDbo();
+		$db->setQuery(
+				'DELETE FROM #__sdi_virtualservice_organism WHERE virtualservice_id = '.$id
+		);
+		$db->query();
+	
+		foreach ($pks as $pk)
+		{
+			try {
+				$db->setQuery(
+						'INSERT INTO #__sdi_virtualservice_organism (virtualservice_id, organism_id) ' .
+						' VALUES ('.$id.','.$pk.')'
+				);
+				if (!$db->query()) {
+					throw new Exception($db->getErrorMsg());
+				}
+			} catch (Exception $e) {
+				$this->setError($e->getMessage());
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Method to get the organisms authorized to access this service
+	 *
+	 * @param int		$id		primary key of the current service to get.
+	 *
+	 * @return boolean 	Object list on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	public function getServiceScopeOrganism  ( $id=null)
+	{
+		if(!isset($id))
+			return null;
+	
 		try {
 			$db = JFactory::getDbo();
-			$db->setQuery('
-			SELECT *
-			FROM #__sdi_policy
-			WHERE virtualservice_id = ' . $vs_id . '
-			');
-			return $db->loadObjectList();
+			$query = $db->getQuery(true);
+			$query->select('so.organism_id as id');
+			$query->from('#__sdi_virtualservice_organism so');
+			$query->where('so.virtualservice_id = ' . (int) $id);
+			$db->setQuery($query);
+	
+			$scope = $db->loadColumn();
+			return $scope;
 	
 		} catch (Exception $e) {
 			$this->setError($e->getMessage());
 			return false;
 		}
+	
 	}
+
 }

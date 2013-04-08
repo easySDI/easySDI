@@ -1,4 +1,19 @@
-Joomla.submitbutton = function(task)
+	jQuery(document).ready(function (){
+		enableOrganism();
+	});
+
+	function enableOrganism(){
+		if(jQuery('#jform_servicescope_id').val() != 2){
+			jQuery("#jform_organisms").val("").trigger('liszt:updated');
+			jQuery("#organisms").hide();
+		}
+		else
+		{
+			jQuery("#organisms").show();
+		}
+	}
+	
+	Joomla.submitbutton = function(task)
 	{
 		if (task == 'physicalservice.cancel' || document.formvalidator.isValid(document.id('physicalservice-form'))) {
 			Joomla.submitform(task, document.getElementById('physicalservice-form'));
@@ -14,12 +29,16 @@ Joomla.submitbutton = function(task)
 		var url 			= document.getElementById("jform_resourceurl").value;
 		var user 			= document.getElementById("jform_resourceusername").value;
 		var password 		= document.getElementById("jform_resourcepassword").value;
-		var serurl 			= document.getElementById("jform_serviceurl").value;
-		var seruser 		= document.getElementById("jform_serviceusername").value;
-		var serpassword 	= document.getElementById("jform_servicepassword").value;
+		if(document.getElementById("jform_serviceurl"))
+			var serurl 			= document.getElementById("jform_serviceurl").value;
+		if(document.getElementById("jform_serviceusername"))
+			var seruser 		= document.getElementById("jform_serviceusername").value;
+		if(document.getElementById("jform_servicepassword"))
+			var serpassword 	= document.getElementById("jform_servicepassword").value;
 		var service 		= document.getElementById("jform_serviceconnector").value;
+		
 		var query 			= "index.php?option=com_easysdi_service&task=negotiation&resurl="+url+"&resuser="+user+"&respassword="+password+"&service="+service;
-		if(serurl.length > 0)
+		if(serurl && serurl.length > 0)
 		{
 			query 			= query + "&serurl="+url+"&seruser="+user+"&serpassword="+password;
 		}

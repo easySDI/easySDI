@@ -83,26 +83,28 @@ class Easysdi_serviceTablephysicalservice extends sdiTable
 	 * @link    http://docs.joomla.org/JTable/load
 	 * @since   EasySDI 3.0.0
 	 */
-	public function GetIdsByContextId($context_id = null, $reset = true)
+	public function loadIdsByMapId($map_id = null, $reset = true)
 	{
 		if ($reset)
 		{
 			$this->reset();
 		}
 	
+		if(empty($map_id))
+			return false;
+		
 		try
 		{
 			// Initialise the query.
 			$query = $this->_db->getQuery(true);
 			$query->select('ps.id');
 			$query->from($this->_tbl.'  AS ps ');
-			$query->join('LEFT', '#__sdi_map_context_physicalservice AS cps ON cps.physicalservice_id=ps.id');
-			$query->where('cps.context_id = ' . (int) $context_id);
+			$query->join('LEFT', '#__sdi_map_physicalservice AS cps ON cps.physicalservice_id=ps.id');
+			$query->where('cps.map_id = ' . (int) $map_id);
 			$query->where('ps.state = 1' );
 			$this->_db->setQuery($query);
-	
-		
-			$rows = $this->_db->loadResultArray();
+			
+			$rows = $this->_db->loadColumn();
 		}
 		catch (JDatabaseException $e)
 		{
@@ -151,8 +153,7 @@ class Easysdi_serviceTablephysicalservice extends sdiTable
 	protected function getAccessFromInheritance ()
 	{
 		$access = $this->access;
-		$state = $this->state;
-		 
+		$state = $this->state;		 
 		
 		$query = $this->_db->getQuery(true);
 		$query->select('v.*');
@@ -208,20 +209,18 @@ class Easysdi_serviceTablephysicalservice extends sdiTable
 	}
 
 	/**
-	 * Return a list of physical service belonging to a specific virtual service
+	 * Return a list of physical service according to the connector type
 	 *
-	 * @param Int A pk of a virtual service
-	 * 
-	 * @return Array A resultset containing physical services
+	 * @param String A name of connector type
 	 */
-	public function getListByVirtualService ($vs_id) {
+	public function getListByConnectorType ($connectorType) {
 		$db = JFactory::getDbo();
 		$db->setQuery('
 			SELECT ps.*
 			FROM #__sdi_physicalservice ps
-			JOIN #__sdi_virtual_physical vp
-			ON vp.physicalservice_id = ps.id
-			WHERE vp.virtualservice_id = "' . $vs_id . '";
+			JOIN #__sdi_sys_serviceconnector sc
+			ON sc.id = ps.serviceconnector_id
+			WHERE sc.value = "' . $connectorType . '";
 		');
 		
 		try {
@@ -243,5 +242,56 @@ class Easysdi_serviceTablephysicalservice extends sdiTable
 		
 		return $resultSet;
 	}
+	
+	/**
+	 * Return a list of physical service belonging to a specific virtual service
+	 *
+	 * @param Int A pk of a virtual service
+	 *
+	 * @return Array A resultset containing physical services
+	 */
+	public function getListByVirtualService ($vs_id) {
+		$db = JFactory::getDbo();
+		$db->setQuery('
+				SELECT ps.*
+				FROM #__sdi_physicalservice ps
+				JOIN #__sdi_virtual_physical vp
+				ON vp.physicalservice_id = ps.id
+				WHERE vp.virtualservice_id = "' . $vs_id . '";
+				');
+	
+		try {
+			$resultSet = $db->loadObjectList();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+	
+		// Legacy error handling switch based on the JError::$legacy switch.
+		// @deprecated  12.1
+		if (JError::$legacy && $this->_db->getErrorNum())	{
+			$e = new JException($this->_db->getErrorMsg());
+			$this->setError($e);
+			return false;
+		}
+	
+		return $resultSet;
+	}
+	
+	
+	/**
+	 * Overloaded check function
+	 */
+// 	public function check() {
+// 		//If there is an ordering column and this is a new row then get the next ordering value
+// 		if (property_exists($this, 'ordering') && $this->id == 0)
+// 		{
+// 			$this->ordering = self::getNextOrder('catid = '.$this->catid);
+// 		}
+	
+// 		return true;
+// 	}
 	
 }

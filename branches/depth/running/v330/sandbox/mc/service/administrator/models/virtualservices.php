@@ -34,7 +34,7 @@ class Easysdi_serviceModelvirtualservices extends JModelList
                 'created_by', 'a.created_by',
                 'name', 'a.name',
                 'alias', 'a.alias',
-                'connector', 'a.connector',
+                'url', 'a.url',
                 'reflectedurl', 'a.reflectedurl',
                 'reflectedmetadata', 'a.reflectedmetadata',
                 'xsltfilename', 'a.xsltfilename',
@@ -53,7 +53,8 @@ class Easysdi_serviceModelvirtualservices extends JModelList
                 'exceptionlevel_id', 'a.exceptionlevel_id',
                 'loglevel_id', 'a.loglevel_id',
                 'logroll_id', 'a.logroll_id',
-
+            	'access', 'a.access', 'access_level',
+            	'serviceconnector',
             );
         }
 
@@ -78,7 +79,8 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 		$published = $app->getUserStateFromRequest($this->context.'.filter.state', 'filter_published', '', 'string');
 		$this->setState('filter.state', $published);
         
-        
+		$connector = $app->getUserStateFromRequest($this->context.'.filter.connector', 'filter_connector', '', 'string');
+		$this->setState('filter.connector', $connector);
         
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_easysdi_service');
@@ -86,6 +88,54 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 
 		// List state information.
 		parent::populateState('a.id', 'asc');
+	}
+	
+	/**
+	 * Method to get an array of data items. Fields are restricted to id and name.
+	 *
+	 * @return  mixed  An array of data items on success, false on failure.
+	 *
+	 * @since   EasySDI 3.3.0
+	 */
+	public function getItemsRestricted ($connector = null, $pk = null)
+	{
+		// Get a storage key.
+		$store = $this->getStoreId();
+		
+		// Try to load the data from internal storage.
+		if (isset($this->cache[$store]))
+		{
+			return $this->cache[$store];
+		}
+		
+		// Load the list items.
+		$db		= $this->getDbo();
+		$query	= $db->getQuery(true);
+
+		// Select the required fields from the table.
+		$query->select('a.id as id, a.name as name, c.value as connector');
+		$query->from('`#__sdi_virtualservice` AS a');
+		$query->join('LEFT', '#__sdi_sys_serviceconnector AS c ON a.serviceconnector_id = c.id' );
+		if(!empty ($connector))
+			$query->where('c.id = '.$connector);
+		if(!empty ($pk))
+			$query->where('a.id = '.$pk);
+		$query->where('a.state = 1');
+		$query->order('a.ordering');
+		try
+		{
+			$items = $this->_getList($query, $this->getStart(), $this->getState('list.limit'));
+		}
+		catch (RuntimeException $e)
+		{
+			$this->setError($e->getMessage());
+			return false;
+		}
+		
+		// Add the items to the internal cache.
+		$this->cache[$store] = $items;
+		
+		return $this->cache[$store];
 	}
 	
 	/**
@@ -121,6 +171,7 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 		// Compile the store id.
 		$id.= ':' . $this->getState('filter.search');
 		$id.= ':' . $this->getState('filter.state');
+		$id.= ':' . $this->getState('filter.connector');
 
 		return parent::getStoreId($id);
 	}
@@ -146,7 +197,6 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 		);
 		$query->from('`#__sdi_virtualservice` AS a');
 
-
 	    // Join over the users for the checked out user.
 	    $query->select('uc.name AS editor');
 	    $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
@@ -158,6 +208,10 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 		// Join over the created by field 'created_by'
 		$query->select('created_by.name AS created_by');
 		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
+		
+		// Join over the foreign key serviceconnector_id
+		$query->select('ssc.value AS serviceconnector');
+		$query->join('LEFT', '#__sdi_sys_serviceconnector AS ssc ON ssc.id = a.serviceconnector_id');
 			
 		// Join over the foreign key 'proxytype_id'
 		$query->select('#__sdi_sys_proxytype_278358.value AS sysproxytypes_proxytype_278358');
@@ -175,6 +229,12 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 		$query->select('#__sdi_sys_logroll_278363.value AS __sdi_sys_logroll5937s_logroll_278363');
 		$query->join('LEFT', '#__sdi_sys_logroll AS #__sdi_sys_logroll_278363 ON #__sdi_sys_logroll_278363.id = a.logroll_id');
 	
+		// Filter by connector state
+		$connector = $this->getState('filter.connector');
+		if (is_numeric($connector)) {
+			$query->where('ssc.id = '.(int) $connector);
+		} 
+		
 	    // Filter by published state
 	    $published = $this->getState('filter.state');
 	    if (is_numeric($published)) {

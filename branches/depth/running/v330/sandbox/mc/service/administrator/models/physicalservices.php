@@ -28,7 +28,7 @@ class Easysdi_serviceModelphysicalservices extends JModelList
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                                'id', 'a.id',
+                'id', 'a.id',
                 'guid', 'a.guid',
                 'alias', 'a.alias',
                 'created_by', 'a.created_by',
@@ -51,6 +51,7 @@ class Easysdi_serviceModelphysicalservices extends JModelList
                 'params', 'a.params',
                 'asset_id', 'a.asset_id',
             	'access', 'a.access', 'access_level',
+            	'serviceconnector',
             );
         }
 
@@ -78,8 +79,8 @@ class Easysdi_serviceModelphysicalservices extends JModelList
 		$access = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', 0, 'int');
 		$this->setState('filter.access', $access);
 
-		$published = $app->getUserStateFromRequest($this->context.'.filter.state', 'filter_published', '', 'string');
-		$this->setState('filter.state', $published);
+		$state = $app->getUserStateFromRequest($this->context.'.filter.state', 'filter_published', '', 'string');
+		$this->setState('filter.state', $state);
 		
 		$categoryId = $this->getUserStateFromRequest($this->context.'.filter.category_id', 'filter_category_id');
 		$this->setState('filter.category_id', $categoryId);
@@ -172,7 +173,7 @@ class Easysdi_serviceModelphysicalservices extends JModelList
         $query->join('LEFT', '#__categories AS c ON c.id = a.catid');
         
         // Join over the foreign key 'serviceconnector_id'
-        $query->select('#__sdi_sys_serviceconnector.value AS serviceconnector_value');
+        $query->select('#__sdi_sys_serviceconnector.value AS serviceconnector');
         $query->join('LEFT', '#__sdi_sys_serviceconnector ON #__sdi_sys_serviceconnector.id=a.serviceconnector_id');
         
         // Join over the foreign key 'resourceauthentication_id'

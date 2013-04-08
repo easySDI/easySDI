@@ -61,9 +61,9 @@ class Easysdi_serviceViewPhysicalServices extends JViewLegacy
 		
 		$state	= $this->get('State');
 		
-		$canDo	= Easysdi_serviceHelper::getActions('physical',$state->get('filter.category_id'));
+		$canDo	= Easysdi_serviceHelper::getActionsPhysicalService($state->get('filter.category_id'));
 		
-		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_PHYSICALSERVICES'), 'links-cat.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_HEADER_PHYSICALSERVICES'), 'links-cat.png');
 
         //Check if the form exists before showing the add/edit buttons
 		$formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'physicalservice';
@@ -125,11 +125,16 @@ class Easysdi_serviceViewPhysicalServices extends JViewLegacy
         }
         
 		JToolBarHelper::divider();
-		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_core');
+		JToolBarHelper::custom('easySDIHome', 'home.png', 'home_f2.png', 'COM_EASYSDI_SERVICE_TOOLBAR_HOME', false);
 		
 		//Set sidebar action - New in 3.0
 		JHtmlSidebar::setAction('index.php?option=com_easysdi_service&view=physicalservices');
 		$this->extra_sidebar = '';
+		JHtmlSidebar::addFilter(
+				JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_SELECT_CONNECTOR'),
+				'filter_connector',
+				JHtml::_('select.options', $this->connector, "id", "value", $this->state->get('filter.connector'), true)
+		);
 		JHtmlSidebar::addFilter(
 			JText::_('JOPTION_SELECT_PUBLISHED'),
 			'filter_published',
@@ -151,27 +156,13 @@ class Easysdi_serviceViewPhysicalServices extends JViewLegacy
 	protected function getSortFields()
 	{
 		return array(
-				'a.id' => JText::_('JGRID_HEADING_ID'),
-				'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
-				'a.state' => JText::_('JSTATUS'),
-				'a.checked_out' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_CHECKED_OUT'),
-				'a.checked_out_time' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_CHECKED_OUT_TIME'),
-				'a.created_by' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_CREATED_BY'),
-				'a.name' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_NAME'),
-				'a.alias' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_ALIAS'),
-				'a.connector' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_CONNECTOR'),
-				'a.negociatedversion' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_NEGOCIATEDVERSION'),
-				'a.resourceurl' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_RESOURCEURL'),
-				'a.resourceauthentication' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_RESOURCEAUTHENTICATION'),
-				'a.resourceusername' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_RESOURCEUSERNAME'),
-				'a.resourcepassword' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_RESOURCEPASSWORD'),
-				'a.serviceauthentication' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_SERVICEAUTHENTICATION'),
-				'a.serviceurl' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_SERVICEURL'),
-				'a.serviceusername' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_SERVICEUSERNAME'),
-				'a.servicepassword' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_SERVICEPASSWORD'),
-				'a.modified_by' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_MODIFIED_BY'),
-				'a.modified' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_MODIFIED'),
-				'a.virtualservice_id' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_VIRTUALSERVICE_ID'),
+			'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
+			'a.state' => JText::_('JSTATUS'),
+			'a.name' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_NAME'),
+			'serviceconnector' => JText::_('COM_EASYSDI_SERVICE_PHYSICALSERVICES_CONNECTOR'),
+			'category_title' => JText::_('JCATEGORY'),
+			'a.access' => JText::_('JGRID_HEADING_ACCESS'),
+			'a.id' => JText::_('JGRID_HEADING_ID'),
 		);
 	}
 }

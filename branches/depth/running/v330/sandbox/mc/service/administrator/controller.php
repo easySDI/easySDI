@@ -23,13 +23,13 @@ class Easysdi_serviceController extends JControllerLegacy
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{
+		
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
 
 		$view		= JFactory::getApplication()->input->getCmd('view', 'physicalservices');
 		JFactory::getApplication()->input->set('view', $view);
-
+	
 		parent::display($cachable, $urlparams);
-		
 		return $this;
 	}
 	
@@ -37,6 +37,16 @@ class Easysdi_serviceController extends JControllerLegacy
 	{
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
 		Easysdi_serviceHelper::negotiation(JRequest::get( 'get' ));
+	}
+	
+	/**
+	 * Method to redirect to EasySDI home page (driven by easysdi_com_core)
+	 *
+	 * @since EasySDI 3.3.0
+	 */
+	public function easySDIHome ()
+	{
+		$this->setRedirect('index.php?option=com_easysdi_core');
 	}
 	
 	public function wmtsWebservice () {

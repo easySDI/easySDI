@@ -53,11 +53,9 @@ class Easysdi_serviceViewVirtualservices extends JViewLegacy
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
 
 		$state	= $this->get('State');
-		$canDo	= Easysdi_serviceHelper::getActions('virtual');
+		$canDo	= Easysdi_serviceHelper::getActionsVirtualService();
 
-		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_VIRTUALSERVICES'), 'virtualservices.png');
-
-		
+		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_HEADER_VIRTUALSERVICES'), 'virtualservices.png');
 		
         //Check if the form exists before showing the add/edit buttons
         $formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'virtualservice';
@@ -119,11 +117,16 @@ class Easysdi_serviceViewVirtualservices extends JViewLegacy
 			JToolBarHelper::preferences('com_easysdi_service');
 		}
 		JToolBarHelper::divider();
-		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_core');
+		JToolBarHelper::custom('easySDIHome', 'home.png', 'home_f2.png', 'COM_EASYSDI_SERVICE_TOOLBAR_HOME', false);
 		
 		//Set sidebar action - New in 3.0
 		JHtmlSidebar::setAction('index.php?option=com_easysdi_service&view=virtualservices');
 		$this->extra_sidebar = '';
+		JHtmlSidebar::addFilter(
+				JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_SELECT_CONNECTOR'),
+				'filter_connector',
+				JHtml::_('select.options', $this->connector, "id", "value", $this->state->get('filter.connector'), true)
+		);
 		JHtmlSidebar::addFilter(
 				JText::_('JOPTION_SELECT_PUBLISHED'),
 				'filter_published',
@@ -140,10 +143,14 @@ class Easysdi_serviceViewVirtualservices extends JViewLegacy
 	protected function getSortFields()
 	{
 		return array(
+				'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
+				'a.state' => JText::_('JSTATUS'),
 				'a.name' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_NAME'),
-				'a.alias' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_ALIAS'),
-				'a.connector' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_CONNECTOR'),
+				'serviceconnector' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_SERVICECONNECTOR'),
+				'a.url' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_URL'),
 				'a.reflectedurl' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_REFLECTEDURL'),
+				'a.access' => JText::_('JGRID_HEADING_ACCESS'),
+				'a.id' => JText::_('JGRID_HEADING_ID'),
 		);
 	}
 }

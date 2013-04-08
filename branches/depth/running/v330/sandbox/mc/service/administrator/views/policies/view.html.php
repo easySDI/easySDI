@@ -1,9 +1,9 @@
 <?php
 /**
- * @version     3.0.0
+ * @version     3.3.0
  * @package     com_easysdi_service
- * @copyright   Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
- * @license     Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2013. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 
@@ -15,7 +15,7 @@ jimport('joomla.application.component.view');
 /**
  * View class for a list of Easysdi_service.
  */
-class Easysdi_serviceViewPolicies extends JView
+class Easysdi_serviceViewPolicies extends JViewLegacy
 {
 	protected $items;
 	protected $pagination;
@@ -30,16 +30,16 @@ class Easysdi_serviceViewPolicies extends JView
 		$this->items		= $this->get('Items');
 		$this->pagination	= $this->get('Pagination');
 		
-		$session = JFactory::getSession();
-		$session->set('id', JRequest::getVar('virtualservice_id',''), 'sdi_virtualservice');
-		
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
 			JError::raiseError(500, implode("\n", $errors));
 			return false;
 		}
 
+		Easysdi_serviceHelper::addSubmenu('policies');
 		$this->addToolbar();
+		$this->sidebar = JHtmlSidebar::render();
+		
 		parent::display($tpl);
 	}
 
@@ -51,18 +51,30 @@ class Easysdi_serviceViewPolicies extends JView
 	protected function addToolbar()
 	{
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
+		
+		$virtualserviceModel 	= JModelLegacy::getInstance('virtualservices', 'Easysdi_serviceModel', array());
+		$virtualserviceList 	= $virtualserviceModel->getItemsRestricted($this->state->get('filter.connector'),$this->state->get('filter.virtualservice'));
+		$this->connector 		= $virtualserviceModel->getConnector();
+		
+		$canDo	= Easysdi_serviceHelper::getActionsPolicy();
 
-		$state	= $this->get('State');
-		$canDo	= Easysdi_serviceHelper::getActions($state->get('filter.category_id'));
-
-		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_POLICIES'), 'policies.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_HEADER_POLICIES'), 'policies.png');
 
         //Check if the form exists before showing the add/edit buttons
         $formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'policy';
         if (file_exists($formPath)) {
 
             if ($canDo->get('core.create')) {
-			    JToolBarHelper::addNew('policy.add', 'JTOOLBAR_NEW');
+		    	//Create custom button with a dropdown list allowing virtual service selection for new policy action
+		    	$dropdown = '<button class="btn dropdown-toggle btn-small btn-success" data-toggle="dropdown"><i class="icon-new icon-white"> '.JText::_('COM_EASYSDI_SERVICE_TOOLBAR_POLICY_NEW').'</i></button>
+		    	<ul class="dropdown-menu">';
+		    	foreach ($virtualserviceList as $virtualservice){
+		    		$dropdown .= '<li><a href="index.php?option=com_easysdi_service&view=policy&virtualservice_id='.$virtualservice->id.'">'.$virtualservice->name.'</a></li>';
+		    	}
+		    	$dropdown .= '</ul>';
+		    
+		    	$bar = JToolbar::getInstance('toolbar');
+		    	$bar->appendButton('Custom',$dropdown, 'new');
 		    }
 
 		    if ($canDo->get('core.edit')) {
@@ -93,7 +105,7 @@ class Easysdi_serviceViewPolicies extends JView
         
         //Show trash and delete for components that uses the state field
         if (isset($this->items[0]->state)) {
-		    if ($state->get('filter.state') == -2 && $canDo->get('core.delete')) {
+		    if ($this->state->get('filter.state') == -2 && $canDo->get('core.delete')) {
 			    JToolBarHelper::deleteList('', 'policies.delete','JTOOLBAR_EMPTY_TRASH');
 			    JToolBarHelper::divider();
 		    } else if ($canDo->get('core.edit.state')) {
@@ -105,30 +117,47 @@ class Easysdi_serviceViewPolicies extends JView
 		if ($canDo->get('core.admin')) {
 			JToolBarHelper::preferences('com_easysdi_service');
 		}
+		
 		JToolBarHelper::divider();
-		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_service&view=virtualservices');	
+		JToolBarHelper::custom('easySDIHome', 'home.png', 'home_f2.png', 'COM_EASYSDI_SERVICE_TOOLBAR_HOME', false);
+		
+		//Set sidebar action - New in 3.0
+		$virtualserviceModel 	= JModelLegacy::getInstance('virtualservices', 'Easysdi_serviceModel', array());
+		$virtualserviceList 	= $virtualserviceModel->getItemsRestricted();
+		JHtmlSidebar::setAction('index.php?option=com_easysdi_service&view=policies');
+		$this->extra_sidebar = '';
+		JHtmlSidebar::addFilter(
+				JText::_('COM_EASYSDI_SERVICE_POLICIES_SELECT_VIRTUALSERVICE'),
+				'filter_virtualservice',
+				JHtml::_('select.options', $virtualserviceList, "id", "name", $this->state->get('filter.virtualservice'), true)
+		);
+		JHtmlSidebar::addFilter(
+				JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_SELECT_CONNECTOR'),
+				'filter_connector',
+				JHtml::_('select.options', $this->connector, "id", "value", $this->state->get('filter.connector'), true)
+		);
+		JHtmlSidebar::addFilter(
+				JText::_('JOPTION_SELECT_PUBLISHED'),
+				'filter_published',
+				JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), "value", "text", $this->state->get('filter.state'), true)
+		);
+		JHtmlSidebar::addFilter(
+				JText::_('JOPTION_SELECT_ACCESS'),
+				'filter_access',
+				JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'))
+		);
 	}
 	
 	protected function getSortFields()
 	{
 		return array(
-				'a.id' => JText::_('JGRID_HEADING_ID'),
 				'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
 				'a.state' => JText::_('JSTATUS'),
-				'a.checked_out' => JText::_('COM_EASYSDI_SERVICE_POLICIES_CHECKED_OUT'),
-				'a.checked_out_time' => JText::_('COM_EASYSDI_SERVICE_POLICIES_CHECKED_OUT_TIME'),
-				'a.created_by' => JText::_('COM_EASYSDI_SERVICE_POLICIES_CREATED_BY'),
-				'a.anonymousaccess' => JText::_('COM_EASYSDI_SERVICE_POLICIES_ANONYMOUSACCESS'),
-				'a.anygroup' => JText::_('COM_EASYSDI_SERVICE_POLICIES_ANYGROUP'),
-				'a.anyoperation' => JText::_('COM_EASYSDI_SERVICE_POLICIES_ANYOPERATION'),
-				'a.anyservice' => JText::_('COM_EASYSDI_SERVICE_POLICIES_ANYSERVICE'),
-				'a.allowfrom' => JText::_('COM_EASYSDI_SERVICE_POLICIES_ALLOWFROM'),
-				'a.allowto' => JText::_('COM_EASYSDI_SERVICE_POLICIES_ALLOWTO'),
-				'a.priority' => JText::_('COM_EASYSDI_SERVICE_POLICIES_PRIORITY'),
-				'a.guid' => JText::_('COM_EASYSDI_SERVICE_POLICIES_GUID'),
-				'a.modified_by' => JText::_('COM_EASYSDI_SERVICE_POLICIES_MODIFIED_BY'),
-				'a.modified' => JText::_('COM_EASYSDI_SERVICE_POLICIES_MODIFIED'),
-				'a.virtualservice_id' => JText::_('COM_EASYSDI_SERVICE_POLICIES_VIRTUALSERVICE_ID'),
+				'a.name' => JText::_('COM_EASYSDI_SERVICE_POLICIES_NAME'),
+				'virtualservice_name' => JText::_('COM_EASYSDI_SERVICE_POLICIES_VIRTUALSERVICE'),
+				'connector' => JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICES_SERVICECONNECTOR'),
+				'a.access' => JText::_('JGRID_HEADING_ACCESS'),
+				'a.id' => JText::_('JGRID_HEADING_ID'),
 		);
 	}
 }

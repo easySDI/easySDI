@@ -59,10 +59,10 @@ class WfsWebservice {
 			</label>
 			<hr />
 			<label for="localgeographicfilter">' . JText::_('COM_EASYSDI_SERVICE_WFS_LAYER_LOCAL_FILTER') . '</label>
-			<textarea name="localgeographicfilter" rows="5" class="span12">' . $layerObj->localFilterGML . '</textarea>
+			<textarea name="localgeographicfilter" rows="10" class="span12">' . $layerObj->localFilterGML . '</textarea>
 			<br />
 			<label for="remotegeographicfilter">' . JText::_('COM_EASYSDI_SERVICE_WFS_LAYER_REMOTE_FILTER') . '</label>
-			<textarea name="remotegeographicfilter" rows="5" class="span12">' . $layerObj->remoteFilterGML . '</textarea>
+			<textarea name="remotegeographicfilter" rows="10" class="span12">' . $layerObj->remoteFilterGML . '</textarea>
 			<input type="hidden" name="psID" value="' . $physicalServiceID . '"/>
 			<input type="hidden" name="policyID" value="' . $policyID . '"/>
 			<input type="hidden" name="layerID" value="' . $layerID . '"/>

@@ -23,6 +23,7 @@ class Easysdi_serviceControllerPolicies extends JControllerAdmin
 	 */
 	public function getModel($name = 'policy', $prefix = 'Easysdi_serviceModel')
 	{
+		
 		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
 		return $model;
 	}

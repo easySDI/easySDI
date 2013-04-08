@@ -1,7 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="policy">
-		<field name="name" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_POLICY_ID" description="COM_EASYSDI_SERVICE_POLICY_ID"  filter="safehtml" />
+		<field name="name" type="text" size="40" class="inputbox" required="true" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_NAME" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_NAME"  filter="safehtml" />
+		<field name="alias" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALIAS" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALIAS"   filter="safehtml" />
+		<field name="layout" type="text" size="40"  label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CONNECTOR" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CONNECTOR" readonly="true" class="readonly" filter="safehtml" />
+		<field name="virtualservice" type="text" size="40"  label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_VIRTUALSERVICE" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_VIRTUALSERVICE" readonly="true" class="readonly" filter="safehtml" />
+		<field 	name="accessscope_id" 
+				onchange="enableAccessScope();"
+				type="sql" 
+				class="inputbox"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ACCESSSCOPE"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ACCESSSCOPE" 
+                query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 ORDER BY ordering" 
+                key_field="id" 
+                value_field="value"
+                 /> 
+         <field name="organisms" 
+				type="sql" 
+				class="multiselect input-xxlarge"
+				multiple="true"
+				label=""
+				description="" 
+                query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY ordering" 
+                key_field="id" 
+                value_field="name"
+                 /> 
+         <field name="users" 
+				type="sql" 
+				class="multiselect input-xxlarge"
+				multiple="true"
+				label=""
+				description="" 
+                query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY ordering" 
+                key_field="id" 
+                value_field="name"
+                 /> 
 		<field name="layout" type="text" size="40"  label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CONNECTOR" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CONNECTOR" readonly="true" class="readonly" filter="safehtml" />
 		<field name="virtualservice" type="text" size="40"  label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_VIRTUALSERVICE" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_VIRTUALSERVICE" readonly="true" class="readonly" filter="safehtml" />
 		<field 	name="accessscope_id" 
@@ -38,7 +71,6 @@
 		<field name="anyservice" type="checkbox" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ANYSERVICE" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ANYSERVICE"  value="1" default="0" />
 		<field name="allowfrom" type="calendar" class="inputbox" default="0000-00-00"  label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWFROM" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWFROM"  filter="safehtml" />
 		<field name="allowto" type="calendar" class="inputbox" default="0000-00-00"  label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWTO" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWTO"  filter="safehtml" />
-		<field name="priority" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_PRIORITY" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_PRIORITY"  filter="safehtml" />
 	</fieldset>
 	
 	<fieldset name="csw_policy">
@@ -50,8 +82,6 @@
 	</fieldset>
 	
 	<fieldset name="wms_policy">
-		<field name="prefix" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_PREFIX" filter="safehtml" />
-		<field name="namespace" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_NAMESPACE" filter="safehtml" />
 		<field name="wms_minimumwidth" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MINIMUMWIDTH" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MINIMUMWIDTH"  filter="safehtml" />
 		<field name="wms_minimumheight" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MINIMUMHEIGHT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MINIMUMHEIGHT"  filter="safehtml" />
 		<field name="wms_maximumwidth" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MAXIMUMWIDTH" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MAXIMUMWIDTH"  filter="safehtml" />
@@ -73,8 +103,21 @@
 		<field name="namespace" type="hidden"  filter="SAFEHTML" />
 	</fieldset>
 	
+	<fieldset name="wms_policy_hidden">
+		<field name="prefix" type="hidden"  filter="SAFEHTML" />
+		<field name="namespace" type="hidden"  filter="SAFEHTML" />
+	</fieldset>
+	
+	<field 	name="id" 
+			type="text" 
+			default="0" 
+			label="JGLOBAL_FIELD_ID_LABEL"
+            readonly="true" 
+			class="readonly"
+            description="JGLOBAL_FIELD_ID_DESC" /> 
+	
 	<fieldset name="hidden">
-		<field name="id" type="hidden" filter="unset"/>
+		<field name="virtualservice_id" type="hidden" filter="SAFEHTML" />
 		<field name="serviceconnector_id" type="hidden" filter="SAFEHTML" />
 		<field name="compliance" id="compliance" type="hidden" filter="SAFEHTML" />
 		<field name="proxytype_id" type="hidden" default="1" />

@@ -25,8 +25,7 @@ $document->addScript('components/com_easysdi_service/views/policy/tmpl/policy.js
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/wms.js');
 JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 
-//TODO: use this fct to implement inherited forms
-function printSpatialPolicyForm ($suffix, $data) {
+function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	$db = JFactory::getDbo();
 	$db->setQuery('
 		SELECT *
@@ -37,12 +36,65 @@ function printSpatialPolicyForm ($suffix, $data) {
 	$db->execute();
 	$resultset = $db->loadObjectList();
 	
+	if (0 != $physicalServiceID) {
+		$query = '
+			SELECT *
+			FROM #__sdi_wms_spatialpolicy
+			WHERE id = \'' . $data->wms_spatialpolicy_id . '\';
+		';
+	}
+	else {
+		$query = '
+			SELECT wsp.*, psp.anyitem
+			FROM #__sdi_wms_spatialpolicy wsp
+			JOIN #__sdi_physicalservice_policy psp
+			ON wsp.id = psp.wms_spatialpolicy_id
+			WHERE psp.physicalservice_id = ' . $physicalServiceID . '
+			AND psp.policy_id = ' . $data->id . ';
+		';
+	}
+	$db->setQuery($query);
+	$db->execute();
+	$spatialpolicy = $db->loadObject();
+	
+	
 	$html = '';
-	return $html;
+	if (0 == $physicalServiceID) {
+		$suffix = $data->wms_spatialpolicy_id;
+		$html .= '
+			<label class="checkbox">
+				<input type="checkbox" name="anyservice" value="1" ' . ((1 == $data->anyservice)?'checked="checked"':'') . ' /><label for="anyservice">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMTS_ANYSERVICE') . '</label>
+			</label>
+		';
+	}
+	else {
+		$suffix = $physicalServiceID . '_' . $data->id;
+		$anyItem = (isset($spatialpolicy->anyitem))?$spatialpolicy->anyitem:1;
+		$html .= '
+			<label class="checkbox">
+				<input type="checkbox" name="anyitem_' . $physicalServiceID . '" value="1" ' . ((1 == $anyItem)?'checked="checked"':'') . ' /><label for="anyitem_' . $physicalServiceID . '">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMTS_ANYITEM') . '</label>
+			</label>
+		';
+	}
+	
+	$html .= '	<br />
+		<label for="minimumscale_' . $suffix . '">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MINIMUM_SCALE') . '</label>
+		<input type="text" name="minimumscale_' . $suffix . '" value="' . ((isset($spatialpolicy->minimumScale))?$spatialpolicy->minimumScale:'') . '" />
+		<br />
+		<label for="maximumscale_' . $suffix . '">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MAXIMUM_SCALE') . '</label>
+		<input type="text" name="maximumscale_' . $suffix . '" value="' . ((isset($spatialpolicy->maximumScale))?$spatialpolicy->maximumScale:'') . '" />
+		<br />
+		<label for="geographicfilter_' . $suffix . '">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_FILTER') . '</label>
+		<textarea name="geographicfilter_' . $suffix . '" rows="10" class="span12">' . ((isset($spatialpolicy->geographicFilter))?$spatialpolicy->geographicFilter:'') . '</textarea>
+		<br />
+		<br />
+		<br />
+	';
+	echo $html;
 }
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&layout=wms&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="policy-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=policy&layout=wms&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="policy-form" class="form-validate">
 	<div class="row-fluid">
 		<div class="span10 form-horizontal">
 			<ul class="nav nav-tabs">
@@ -72,6 +124,11 @@ function printSpatialPolicyForm ($suffix, $data) {
 							<div class="controls"><?php echo $field->input; ?></div>
 						</div>
 					<?php endforeach; ?>
+						
+						<div class="control-group">
+							<div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
+							<div class="controls"><?php echo $this->form->getInput('id'); ?></div>
+						</div>
 					</fieldset>
 					
 					<div class="control-group">
@@ -87,17 +144,17 @@ function printSpatialPolicyForm ($suffix, $data) {
 				</div>
 				
 				<div class="tab-pane" id="layers">
-					<fieldset>
-						<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_INHERITANCE' );?></legend>
-						
-						<!-- TODO : form with Policy lvl herited bbox and operator -->
-						
-					</fieldset>
-					<fieldset>
 					<?php if (empty($this->item->id)): ?>
 						<?php echo JText::_('COM_EASYSDI_SERVICE_LAYER_NOT_DISPLAYABLE');?>
 					<?php endif; ?>
 					<?php if (!empty($this->item->id)): ?>
+					<fieldset>
+						<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_INHERITANCE' );?></legend>
+						
+						<?php printSpatialPolicyForm($this->item); ?>
+						
+					</fieldset>
+					<fieldset>
 						<div class="accordion" id="ps_accordion">
 							<?php foreach($this->item->physicalService as $ps):?>
 								<div class="accordion-group">
@@ -109,7 +166,7 @@ function printSpatialPolicyForm ($suffix, $data) {
 								<div class="accordion-body collapse" id="collapse_<?php echo $ps->id; ?>">
 								  <div class="accordion-inner">
 										
-										<!-- TODO : form with PS lvl herited bbox and operator -->
+										<?php printSpatialPolicyForm($this->item, $ps->id); ?>
 										
 										<table class="table" >
 											<thead>

@@ -297,7 +297,7 @@ class WmsWebservice {
 	 * @param Int virtual service ID
 	 * @param Int policy ID
 	*/
-	private static function saveAllLayers($virtualServiceID, $policyID) {
+	public static function saveAllLayers($virtualServiceID, $policyID) {
 		$db = JFactory::getDbo();
 		$db->setQuery('
 			SELECT ps.id, ps.resourceurl AS url, psp.id AS psp_id
@@ -323,6 +323,7 @@ class WmsWebservice {
 		}
 		
 		foreach ($resultset as $result) {
+			print_r($result);
 			$physicalServiceID = $result->id;
 			$wmsObj = new WmsPhysicalService($result->id, $result->url);
 			$wmsObj->getCapabilities();
@@ -396,5 +397,6 @@ class WmsWebservice {
 				echo '<hr />';
 			}
 		}
+		return true;
 	}
 }

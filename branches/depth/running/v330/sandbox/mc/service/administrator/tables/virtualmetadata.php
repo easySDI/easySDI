@@ -26,6 +26,7 @@ class Easysdi_serviceTablevirtualmetadata extends sdiTable {
 	
 	public function save($src, $orderingFilter = '', $ignore = '') {
 		$data = array();
+		
 		$data['title'] 						= $src['title'];
 		$data['summary'] 					= $src['summary'];
 		$data['keyword'] 					= $src['keyword'];
@@ -36,7 +37,7 @@ class Easysdi_serviceTablevirtualmetadata extends sdiTable {
 		$data['contactpostalcode'] 			= $src['contactpostalcode'];
 		$data['contactlocality'] 			= $src['contactlocality'];
 		$data['contactstate'] 				= $src['contactstate'];
-		$data['contactcountry'] 			= $src['contactcountry'];
+		$data['country_id'] 				= $src['country_id'];
 		$data['contactphone'] 				= $src['contactphone'];
 		$data['contactfax'] 				= $src['contactfax'];
 		$data['contactemail'] 				= $src['contactemail'];
@@ -46,6 +47,50 @@ class Easysdi_serviceTablevirtualmetadata extends sdiTable {
 		$data['fee'] 						= $src['fee'];
 		$data['accessconstraint'] 			= $src['accessconstraint'];
 		$data['virtualservice_id'] 			= $src['id'];
+		$data['contacturl'] 				= $src['contacturl'];
+	
+		
+		if (!isset($src['inheritedcontact'])) { // see if the checkbox has been submitted
+			$data['inheritedcontact'] = 0; // if it has not been submitted, mark the field unchecked
+		}
+		else{
+			$data['inheritedcontact'] = 1; //else mark the field checked
+		}
+		
+		if (!isset($src['inheritedtitle'])) { // see if the checkbox has been submitted
+			$data['inheritedtitle']  = 0; // if it has not been submitted, mark the field unchecked
+		}
+		else{
+			$data['inheritedtitle']  = 1; //else mark the field checked
+		}
+		
+		if (!isset($src['inheritedsummary'])) { // see if the checkbox has been submitted
+			$data['inheritedsummary']  = 0; // if it has not been submitted, mark the field unchecked
+		}
+		else{
+			$data['inheritedsummary']  = 1; //else mark the field checked
+		}
+		
+		if (!isset($src['inheritedkeyword'])) { // see if the checkbox has been submitted
+			$data['inheritedkeyword'] = 0; // if it has not been submitted, mark the field unchecked
+		}
+		else{
+			$data['inheritedkeyword'] = 1; //else mark the field checked
+		}
+		
+		if (!isset($src['inheritedfee'])) { // see if the checkbox has been submitted
+			$data['inheritedfee'] 	 = 0; // if it has not been submitted, mark the field unchecked
+		}
+		else{
+			$data['inheritedfee'] 	 = 1; //else mark the field checked
+		}
+		
+		if (!isset($src['inheritedaccessconstraint'])) { // see if the checkbox has been submitted
+			$data['inheritedaccessconstraint']  = 0; // if it has not been submitted, mark the field unchecked
+		}
+		else{
+			$data['inheritedaccessconstraint']  = 1; //else mark the field checked
+		}
 		
 		return parent::save($data, $orderingFilter , $ignore );
 	}

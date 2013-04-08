@@ -29,6 +29,9 @@ class Easysdi_serviceViewPolicy extends JViewLegacy
 		$this->item		= $this->get('Item');
 		$this->form		= $this->get('Form');
 		
+		//SetLayout : layout is the connector type
+		if($this->item->layout)
+			$this->setLayout($this->item->layout);
 		
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {

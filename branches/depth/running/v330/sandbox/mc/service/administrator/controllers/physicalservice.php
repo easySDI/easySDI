@@ -77,6 +77,9 @@ class Easysdi_serviceControllerPhysicalService extends JControllerForm
     	$recordId	= (int) isset($data[$key]) ? $data[$key] : 0;
     	$categoryId = 0;
     
+    	if($recordId < 4)
+    		return false;
+    	
     	if ($recordId)
     	{
     		$categoryId = (int) $this->getModel()->getItem($recordId)->catid;

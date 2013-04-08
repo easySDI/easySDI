@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_layer` (
 `modified_by` INT(11)  ,
 `modified` DATETIME ,
 `ordering` INT(11)  ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` INT(11)  NOT NULL DEFAULT '1',
 `checked_out` INT(11) NOT NULL DEFAULT '0',
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `name` VARCHAR(255)  NOT NULL ,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_physicalservice` (
 `modified_by` INT(11)   ,
 `modified` DATETIME ,
 `ordering` INT(11)  ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` INT(11)  NOT NULL DEFAULT '1',
 `checked_out` INT(11) NOT NULL  DEFAULT '0',
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `name` VARCHAR(255)   ,
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualservice` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR (36)  NOT NULL ,
 `ordering` INT(11)   ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` INT(11)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL DEFAULT '0',
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualmetadata` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` INT(11)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL DEFAULT '0',
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
@@ -110,8 +110,16 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualmetadata` (
 `modified_by` INT(11)  ,
 `modified` DATETIME ,
 `title` VARCHAR(255) ,
+`inheritedtitle` TINYINT(1)  NOT NULL DEFAULT '1',
 `summary` VARCHAR(255)   ,
+`inheritedsummary` TINYINT(1)  NOT NULL DEFAULT '1',
 `keyword` VARCHAR(255)  ,
+`inheritedkeyword` TINYINT(1)  NOT NULL DEFAULT '1',
+`fee` VARCHAR(255)   ,
+`inheritedfee` TINYINT(1)  NOT NULL DEFAULT '1',
+`accessconstraint` VARCHAR(255)   ,
+`inheritedaccessconstraint` TINYINT(1)  NOT NULL DEFAULT '1',
+`inheritedcontact` TINYINT(1)  NOT NULL DEFAULT '1',
 `contactorganization` VARCHAR(255)  ,
 `contactname` VARCHAR(255)   ,
 `contactposition` VARCHAR(255)  ,
@@ -119,15 +127,13 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualmetadata` (
 `contactpostalcode` VARCHAR(255)   ,
 `contactlocality` VARCHAR(255)  ,
 `contactstate` VARCHAR(255)  ,
-`contactcountry` VARCHAR(255)   ,
+`country_id` INT(11) UNSIGNED   ,
 `contactphone` VARCHAR(255)   ,
 `contactfax` VARCHAR(255)   ,
 `contactemail` VARCHAR(255)  ,
 `contacturl` VARCHAR(255)   ,
 `contactavailability` VARCHAR(255) ,
 `contactinstruction` VARCHAR(255)  ,
-`fee` VARCHAR(255)   ,
-`accessconstraint` VARCHAR(255)   ,
 `virtualservice_id` INT(11) UNSIGNED  NOT NULL,
 PRIMARY KEY (`id`)
 ) DEFAULT COLLATE=utf8_general_ci;
@@ -144,7 +150,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_policy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR (36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`state` INT(11)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  NOT NULL DEFAULT '0',
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
@@ -163,7 +169,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_policy` (
 `wms_spatialpolicy_id` INT(11) UNSIGNED ,
 `wmts_spatialpolicy_id` INT(11) UNSIGNED ,
 `wfs_spatialpolicy_id` INT(11) UNSIGNED ,
-`csw_version_id` INT(11) UNSIGNED  NOT NULL ,
+`csw_version_id` INT(11) UNSIGNED  NOT NULL DEFAULT '1' ,
 `csw_anyattribute` BOOLEAN NOT NULL DEFAULT '1',
 `csw_anycontext` BOOLEAN NOT NULL DEFAULT '1',
 `csw_anystate` BOOLEAN NOT NULL DEFAULT '1',
@@ -172,6 +178,9 @@ CREATE TABLE IF NOT EXISTS `#__sdi_policy` (
 `wms_minimumheight` INT(11) ,
 `wms_maximumwidth` INT(11)  ,
 `wms_maximumheight` INT(11) ,
+`params` VARCHAR(1024)   ,
+`access` INT(10)  NOT NULL DEFAULT '1',
+`asset_id` INT(10)   ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -276,7 +285,7 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__sdi_wmtslayer_policy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `identifier` varchar(255)  NOT NULL ,
-`enabled` TINYINT(1)  NOT NULL DEFAULT '0',
+`enabled` TINYINT(1)  NOT NULL DEFAULT '1',
 `inheritedspatialpolicy` BOOLEAN NOT NULL DEFAULT '1',
 `spatialpolicy_id` INT(11) UNSIGNED ,
 `anytilematrixset` TINYINT(1)  NOT NULL DEFAULT '1',
@@ -297,11 +306,11 @@ CREATE TABLE IF NOT EXISTS `#__sdi_tilematrix_policy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `tilematrixsetpolicy_id` INT(11) UNSIGNED  NOT NULL ,
 `identifier` varchar(255)  NOT NULL ,
-`anytile` BOOLEAN  NOT NULL DEFAULT '0',
 `tileminrow` INT(11) ,
 `tilemaxrow` INT(11) ,
 `tilemincol` INT(11) ,
 `tilemaxcol` INT(11) ,
+`anytile` TINYINT(1)  NOT NULL DEFAULT '1',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -336,8 +345,18 @@ CREATE TABLE IF NOT EXISTS `#__sdi_includedattribute` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
+CREATE TABLE IF NOT EXISTS `#__sdi_physicalservice_organism` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`physicalservice_id` INT(11) UNSIGNED  NOT NULL ,
+`organism_id` INT(11) UNSIGNED  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-
-
+CREATE TABLE IF NOT EXISTS `#__sdi_virtualservice_organism` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`virtualservice_id` INT(11) UNSIGNED  NOT NULL ,
+`organism_id` INT(11) UNSIGNED  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
