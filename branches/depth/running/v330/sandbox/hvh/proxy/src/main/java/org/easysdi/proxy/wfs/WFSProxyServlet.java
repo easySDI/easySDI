@@ -33,6 +33,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URI;
 import java.security.Principal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -72,6 +73,10 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.jasper.tagplugins.jstl.core.ForEach;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.core.ProxyServletRequest;
@@ -80,7 +85,10 @@ import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
+import org.easysdi.proxy.policy.Attribute;
+import org.easysdi.proxy.policy.FeatureType;
 import org.easysdi.proxy.policy.Operation;
+import org.easysdi.proxy.policy.Server;
 import org.easysdi.proxy.wmts.v100.WMTSExceptionReport100;
 import org.easysdi.xml.handler.RequestHandler;
 import org.easysdi.xml.resolver.ResourceResolver;
@@ -94,6 +102,8 @@ import org.geotools.gml.producer.FeatureTransformer;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.shape.FilterTransformer;
 import org.geotools.xml.DocumentFactory;
+import org.geotools.xml.SchemaFactory;
+import org.geotools.xml.XMLHandlerHints;
 import org.geotools.xml.XSISAXHandler;
 import org.geotools.xml.gml.GMLFeatureCollection;
 import org.geotools.xml.schema.ComplexType;
@@ -3570,4 +3580,266 @@ public class WFSProxyServlet extends ProxyServlet {
 		}
 
 	}
+	
+	/**
+     * TODO : move to WFS
+     * Open a wfs GetFeature response file and load xsd schema correctly. See
+     * remote-server-list element in config.xml for credentials.
+     * 
+     * @param file
+     *            temporary response file to parse
+     * @param username
+     *            xsd schema provider server username.
+     * @param password
+     *            xsd schema provider server password.
+     * @return
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected Object documentFactoryGetInstance(File file, String username, String password) {
+	// File schema = new File("src/main/webapp/schemas/eai/eai.xsd");
+	Map hints = new HashMap();
+	Map<String, URI> namespaceMapping = new HashMap<String, URI>();
+	hints.put(DocumentFactory.VALIDATION_HINT, false);
+	hints.put(XMLHandlerHints.NAMESPACE_MAPPING, namespaceMapping);
+	SAXBuilder sb = new SAXBuilder();
+	org.jdom.Document doc;
+	try {
+	    doc = sb.build(file);
+	    Namespace xsiNS = Namespace.getNamespace("http://www.w3.org/2001/XMLSchema-instance");
+	    String schemaLocation = doc.getRootElement().getAttributeValue("schemaLocation", xsiNS);
+	    String schemaParts[] = schemaLocation.split(" ");
+	    for (int i = 0; i < schemaParts.length; i += 2) {
+		String namespace = schemaParts[i];
+		String schemaLocationURI = schemaParts[i + 1];
+		if (SchemaFactory.getInstance(new URI(namespace)) == null) {
+		    GetMethod get = new GetMethod(schemaLocationURI);
+		    HttpClient client = new HttpClient();
+		    if (username != null && password != null)
+			client.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+		    client.executeMethod(get);
+		    File tempSchemaFile = File.createTempFile("proxy", ".xsd");
+		    FileWriter writer = new FileWriter(tempSchemaFile);
+		    writer.write(get.getResponseBodyAsString());
+		    writer.close();
+		    namespaceMapping.put(namespace, tempSchemaFile.toURI());
+		}
+	    }
+	    Object obj = DocumentFactory.getInstance(file.toURI(), hints, Level.WARNING);
+	    return obj;
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return null;
+    }
+    
+    /**
+     * TODO move to WFS
+     * @param url
+     * @return
+     */
+    protected String getFeatureTypeRemoteFilter(String url, String ft) {
+
+	if (policy == null)
+	    return null;
+	List<Server> serverList = policy.getServers().getServer();
+
+	for (int i = 0; i < serverList.size(); i++) {
+
+	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+
+		List<FeatureType> ftList = serverList.get(i).getFeatureTypes().getFeatureType();
+		for (int j = 0; j < ftList.size(); j++) {
+		    // Is a specific feature type allowed ?
+		    if (ft.equals(ftList.get(j).getName())) {
+			if (ftList.get(j).getRemoteFilter() == null)
+			    return null;
+			return ftList.get(j).getRemoteFilter().getContent();
+		    }
+		}
+	    }
+	}
+	return null;
+    }
+    
+    /**
+     * TODO : move to WFS
+     * Detects if the attribute of a feature type is allowed or not against the
+     * rule.
+     * 
+     * @param ft
+     *            The feature Type to test
+     * @param url
+     *            the url of the remote server.
+     * @param isAllAttributes
+     *            if the user request need all attributes.
+     * @return true if the feature type is allowed, false if not
+     */
+    protected boolean isAttributeAllowed(String url, String ft, String attribute) {
+	if (policy == null)
+	    return false;
+	if (policy.getAvailabilityPeriod() != null) {
+	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
+		return false;
+	}
+
+	//5.09.2010 - HVH 
+	if ( policy.getServers().isAll())
+	    return true;
+	//--
+	boolean isServerFound = false;
+	boolean isFeatureTypeFound = false;
+	boolean FeatureTypeAllowed = false;
+
+	List<Server> serverList = policy.getServers().getServer();
+
+	for (int i = 0; i < serverList.size(); i++) {
+	    // Is the server overloaded?
+	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+		isServerFound = true;
+		List<FeatureType> ftList = serverList.get(i).getFeatureTypes().getFeatureType();
+		//5.09.2010 - HVH --
+		if(serverList.get(i).getFeatureTypes().isAll())
+		{
+		    policyAttributeListNb = 0;
+		    return true;
+		}
+		//--
+		FeatureTypeAllowed = serverList.get(i).getFeatureTypes().isAll();
+		for (int j = 0; j < ftList.size(); j++) {
+		    // Is a specific feature type allowed ?
+		    if (ft.equals(ftList.get(j).getName())) {
+			isFeatureTypeFound = true;
+			// If all the attribute are authorized, then return
+			// true;
+			if (ftList.get(j).getAttributes().isAll()) {
+			    // Debug tb 08.06.2009
+			    policyAttributeListNb = 0;
+			    // Fin de debug
+			    return true;
+			}
+
+			// List d'attributs de Policy pour le featureType
+			// courant
+			List<Attribute> attributeList = ftList.get(j).getAttributes().getAttribute();
+			// Supprime les r�sultats, contenu dans la globale var,
+			// issus du pr�c�dent appel de la fonction courante
+			policyAttributeListToKeepPerFT.clear();
+			for (int k = 0; k < attributeList.size(); k++) {
+			    // If attributes are listed in user req
+			    if (attribute.equals(attributeList.get(k).getContent()))
+				return true;
+			    // Debug tb 04.06.2009
+			    // If no attributes are listed in user req -> all
+			    // the Policy Attributes will be returned
+			    else if (attribute.equals("")) {
+				String tmpFA = attributeList.get(k).getContent();
+				policyAttributeListToKeepPerFT.add(tmpFA);
+				// then at the end of function -> return false,
+				// "" is effectively not a valid attribute
+			    }
+			    // Fin de debug
+			}
+			// Debug tb 08.06.2009
+			// Pour que attributeListToKeepNbPerFT du featureType
+			// courant puisse enregistrer le nombre d'attributs de
+			// la Policy
+			policyAttributeListNb = attributeList.size();
+			// Fin de debug
+		    }
+		}
+	    }
+	}
+
+	//5.09.2010 - HVH : moved before the loop on the servers
+	//		// if the server is not overloaded and if all the servers are allowed
+	//		// then
+	//		// We can say that's ok
+	//		if (!isServerFound && policy.getServers().isAll())
+	//			return true;
+	//--
+	// if the server is overloaded and if the specific featureType was not
+	// overloaded and All the featuetypes are allowed
+	// We can say that's ok
+	if (isServerFound && !isFeatureTypeFound && FeatureTypeAllowed)
+	    // Debug tb 11.11.2009
+	{
+	    policyAttributeListNb = 0; // -> Attribure.All() = true
+	    return true;
+	}
+	// Fin de Debug
+
+	// in any other case the feature type is not allowed
+	return false;
+    }
+    
+    /**
+     * TODO move to WFS
+     * @param url
+     * @return
+     */
+    protected String getFeatureTypeLocalFilter(String url, String ft) {
+
+	if (policy == null)
+	    return null;
+	List<Server> serverList = policy.getServers().getServer();
+
+	for (int i = 0; i < serverList.size(); i++) {
+
+	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+
+		List<FeatureType> ftList = serverList.get(i).getFeatureTypes().getFeatureType();
+		for (int j = 0; j < ftList.size(); j++) {
+		    // Is a specific feature type allowed ?
+		    if (ft.equals(ftList.get(j).getName())) {
+			if (ftList.get(j).getLocalFilter() == null)
+			    return null;
+			return ftList.get(j).getLocalFilter().getContent();
+		    }
+		}
+
+	    }
+	}
+	return null;
+    }
+    
+    /**
+     * TODO move to WFS
+     * @param url
+     * @return
+     */
+    protected String getServerNamespace(String url) {
+	if (policy == null)
+	    return null;
+	List<Server> serverList = policy.getServers().getServer();
+
+	for (int i = 0; i < serverList.size(); i++) {
+	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+		if (serverList.get(i).getNamespace() == null)
+		    return null;
+		return serverList.get(i).getNamespace();
+	    }
+	}
+	return null;
+    }
+    
+    /**
+     * TODO move to WFS
+     * @param url
+     * @return
+     */
+    protected String getServerPrefix(String url) {
+	if (policy == null)
+	    return null;
+	List<Server> serverList = policy.getServers().getServer();
+
+	for (int i = 0; i < serverList.size(); i++) {
+	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+		if (serverList.get(i).getPrefix() == null)
+		    return null;
+		return serverList.get(i).getPrefix();
+	    }
+	}
+	return null;
+    }
 }

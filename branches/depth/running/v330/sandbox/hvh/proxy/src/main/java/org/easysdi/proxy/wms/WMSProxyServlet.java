@@ -58,6 +58,8 @@ import org.easysdi.proxy.core.ProxyServletRequest;
 import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.ows.OWSExceptionReport;
+import org.easysdi.proxy.policy.Layer;
+import org.easysdi.proxy.policy.Server;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetCapabilitiesThread;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetFeatureInfoThread;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetMapThread;
@@ -1494,4 +1496,172 @@ public class WMSProxyServlet extends ProxyServlet {
 		}
 		return null;
 	}
+	
+	/**
+     * TODO : move to WMS
+     */
+    protected boolean isAcceptingTransparency(String responseContentType) {
+	boolean isTransparent = false;
+	if (responseContentType == null)
+	    return true;
+	if (isXML(responseContentType)) {
+	    isTransparent = false;
+	} else if (responseContentType.startsWith(PNG)) {
+	    isTransparent = true;
+	} else if (responseContentType.startsWith(SVG)) {
+	    isTransparent = true;
+	} else if (responseContentType.startsWith(GIF)) {
+	    isTransparent = true;
+	} else if (responseContentType.startsWith(JPG)) {
+	    isTransparent = false;
+	} else if (responseContentType.startsWith(JPEG)) {
+	    isTransparent = false;
+	} else if (responseContentType.startsWith(TIFF)) {
+	    isTransparent = true;
+	} else if (responseContentType.startsWith(BMP)) {
+	    isTransparent = false;
+	} else {
+	    logger.debug("unkwnon content type" + responseContentType);
+	}
+
+	return isTransparent;
+    }
+    
+    /**
+     * TODO : move to WMS
+     * Detects if the layer is an allowed or not against the rule.
+     * 
+     * @param layer
+     *            The layer to test
+     * @param url
+     *            the url of the remote server.
+     * @param scale
+     *            the current scale
+     * @return true if the layer is the allowed scale, false if not
+     */
+    protected boolean isLayerInScale(String layer, String url, double scale) {
+	if (policy == null)
+	    return false;
+	if (policy.getAvailabilityPeriod() != null) {
+	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
+		return false;
+	}
+
+	//5.09.2010 - HVH 
+	if ( policy.getServers().isAll())
+	    return true;
+	//--
+	//		boolean isServerFound = false;
+	List<Server> serverList = policy.getServers().getServer();
+
+	for (int i = 0; i < serverList.size(); i++) {
+	    // Is the server overloaded?
+	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+		//				isServerFound = true;
+		// Are all layers Allowed ?
+		// Debug tb 12.11.2009
+		// if (serverList.get(i).getLayers().isAll())
+		// return true;
+		// Fin de debug
+
+		//5.09.2010 - HVH 
+		// Are all layers Allowed ?
+		if (serverList.get(i).getLayers().isAll())
+		    return true;
+		//--
+		List<Layer> layerList = serverList.get(i).getLayers().getLayer();
+		for (int j = 0; j < layerList.size(); j++) {
+		    // Is a specific layer allowed ?
+		    if (layer.equals(layerList.get(j).getName())) {
+			Double scaleMin = layerList.get(j).getScaleMin();
+			Double scaleMax = layerList.get(j).getScaleMax();
+
+			if (scaleMin == null)
+			    scaleMin = new Double(0);
+			if (scaleMax == null)
+			    scaleMax = new Double(Double.MAX_VALUE);
+			if (scale >= scaleMin.doubleValue() && scale <= scaleMax.doubleValue())
+			    return true;
+			else
+			    return false;
+		    }
+		}
+
+	    }
+	}
+
+	//5.09.2010 - HVH : moved before the loop on the servers
+	// if the server is not overloaded and if all the servers are allowed
+	// then
+	// We can consider that's ok
+	//		if (!isServerFound && policy.getServers().isAll())
+	//			return true;
+	//--
+	// in any other case the feature type is not allowed
+	return false;
+    }
+    
+    /**
+     * TODO move to WMS
+     * @param currentWidth
+     * @param currentHeight
+     * @return
+     */
+    protected boolean isSizeInTheRightRange(int currentWidth, int currentHeight) {
+
+	if (policy == null)
+	    return false;
+	if (policy.getAvailabilityPeriod() != null) {
+	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
+		return false;
+	}
+
+	int minWidth = 0;
+	int minHeight = 0;
+	int maxWidth = Integer.MAX_VALUE;
+	int maxHeight = Integer.MAX_VALUE;
+	if (policy.getImageSize() == null)
+	    return true;
+	if (policy.getImageSize().getMinimum() != null) {
+	    minWidth = policy.getImageSize().getMinimum().getWidth();
+	    minHeight = policy.getImageSize().getMinimum().getHeight();
+	}
+
+	if (policy.getImageSize().getMaximum() != null) {
+	    maxWidth = policy.getImageSize().getMaximum().getWidth();
+	    maxHeight = policy.getImageSize().getMaximum().getHeight();
+	}
+
+	if (currentWidth >= minWidth && currentWidth <= maxWidth && currentHeight >= minHeight && currentHeight <= maxHeight) {
+	    return true;
+	}
+
+	return false;
+    }
+    
+    /**
+     * TODO : move to WMS
+     */
+    public String getLayerFilter(String url, String layer) {
+	if (policy == null)
+	    return null;
+
+	List<Server> serverList = policy.getServers().getServer();
+
+	for (int i = 0; i < serverList.size(); i++) {
+	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+		List<Layer> layerList = serverList.get(i).getLayers().getLayer();
+		for (int j = 0; j < layerList.size(); j++) {
+		    // Is a specific feature type allowed ?
+		    if (layer.equals(layerList.get(j).getName())) {
+			if (layerList.get(j).getFilter() == null)
+			    return null;
+			return layerList.get(j).getFilter().getContent();
+		    }
+		}
+	    }
+	}
+	return null;
+    }
+
 }

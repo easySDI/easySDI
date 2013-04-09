@@ -48,11 +48,16 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.core.ProxyServletRequest;
 import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
+import org.easysdi.proxy.policy.Attribute;
+import org.easysdi.proxy.policy.Server;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.handler.CswRequestHandler;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -861,4 +866,108 @@ public class CSWProxyServlet extends ProxyServlet {
 		}
 
 	}
+	
+	/**
+     * Only used in CSW
+     * @param urlstr
+     * @param param
+     * @param loginServiceUrl
+     * @return
+     */
+    @SuppressWarnings("deprecation")
+    protected StringBuffer sendFile(String urlstr, StringBuffer param, String loginServiceUrl) {
+
+	try {
+	    DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+	    Date d = new Date();
+	    logger.info("RemoteRequestUrl="+ urlstr);
+	    logger.info("RemoteRequest="+ param.toString());
+	    logger.info("RemoteRequestLength="+ param.length());
+	    logger.info("RemoteRequestDateTime="+ dateFormat.format(d));
+
+	    HttpClient client = new HttpClient();
+
+	    PostMethod post = new PostMethod(urlstr);
+	    post.addRequestHeader("Content-Type", "application/xml");
+	    post.addRequestHeader("Charset", "UTF-8");
+	    post.setRequestBody(new ByteArrayInputStream(param.toString().getBytes("UTF-8")));
+
+	    GetMethod loginGet = new GetMethod(loginServiceUrl);
+	    client.executeMethod(loginGet);
+	    client.executeMethod(post);
+	    StringBuffer response = new StringBuffer(post.getResponseBodyAsString());
+
+	    logger.info("RemoteResponseToRequestUrl="+ urlstr);
+	    logger.info("RemoteResponseLength="+ response.length());
+
+	    dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+	    d = new Date();
+	    logger.info("RemoteResponseDateTime="+ dateFormat.format(d));
+
+	    return response;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return new StringBuffer();
+    }
+    
+    /**
+     * TODO move to CSW
+     * @param url
+     * @return
+     */
+    protected List<String> getAttributesNotAllowedInMetadata(String url) {
+	List<String> attrList = new Vector<String>();
+
+	if (policy == null)
+	    return attrList;
+
+	List<Server> serverList = policy.getServers().getServer();
+
+	for (int i = 0; i < serverList.size(); i++) {
+	    // Is the server overloaded?
+	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+		if (serverList.get(i).getMetadata().getAttributes().isAll()) {
+		    attrList.add("%");
+		    return attrList;
+		}
+		List<Attribute> attrList2 = serverList.get(i).getMetadata().getAttributes().getExclude().getAttribute();
+		for (int j = 0; j < attrList2.size(); j++) {
+		    attrList.add(attrList2.get(j).getContent());
+		}
+	    }
+	}
+	// in any other case the attribute is not allowed
+	return attrList;
+    }
+    
+    /**
+     * TODO move to CSW
+     */
+    protected boolean areAllAttributesAllowedForMetadata(String url) {
+	if (policy == null)
+	    return false;
+	if (policy.getAvailabilityPeriod() != null) {
+	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
+		return false;
+	}
+
+	List<Server> serverList = policy.getServers().getServer();
+
+	for (int i = 0; i < serverList.size(); i++) {
+	    // Is the server overloaded?
+	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+		if (serverList.get(i) != null && serverList.get(i).getMetadata() != null && serverList.get(i).getMetadata().getAttributes() != null) {
+		    if (serverList.get(i).getMetadata().getAttributes().isAll())
+			return true;
+		    else
+			return false;
+		}
+	    }
+	}
+
+	// in any other case the attribute is not allowed
+	return false;
+
+    }
 }

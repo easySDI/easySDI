@@ -22,9 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -40,16 +38,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.Vector;
-import java.util.logging.Level;
 import java.util.zip.GZIPInputStream;
 
 import javax.naming.NoPermissionException;
@@ -67,20 +62,16 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
+import org.easysdi.proxy.log.ProxyLogger;
 import org.easysdi.proxy.ows.OWSExceptionReport;
-import org.easysdi.proxy.policy.Attribute;
 import org.easysdi.proxy.policy.AvailabilityPeriod;
 import org.easysdi.proxy.policy.FeatureType;
 import org.easysdi.proxy.policy.FeatureTypes;
@@ -88,14 +79,9 @@ import org.easysdi.proxy.policy.Layer;
 import org.easysdi.proxy.policy.Operation;
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.proxy.policy.Server;
-import org.easysdi.proxy.log.ProxyLogger;
 import org.easysdi.xml.documents.RemoteServerInfo;
-import org.geotools.xml.DocumentFactory;
-import org.geotools.xml.SchemaFactory;
-import org.geotools.xml.XMLHandlerHints;
 import org.jdom.Document;
 import org.jdom.JDOMException;
-import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Node;
@@ -116,12 +102,12 @@ import com.google.common.collect.Multimap;
 public abstract class ProxyServlet extends HttpServlet {
 
     private static final long serialVersionUID = 3499090220094877198L;
-    private static final String PNG = "image/png";
-    private static final String GIF = "image/gif";
-    private static final String JPG = "image/jpg";
-    private static final String JPEG = "image/jpeg";
-    private static final String TIFF = "image/tiff";
-    private static final String BMP = "image/bmp";
+    protected static final String PNG = "image/png";
+    protected static final String GIF = "image/gif";
+    protected static final String JPG = "image/jpg";
+    protected static final String JPEG = "image/jpeg";
+    protected static final String TIFF = "image/tiff";
+    protected static final String BMP = "image/bmp";
     protected static final String XML = "text/xml";
     protected static final String TXT = "text/plain";
     protected static final String APPLICATION_XML = "application/xml";
@@ -137,6 +123,7 @@ public abstract class ProxyServlet extends HttpServlet {
     /**
      * Configuration loaded to complete the request
      */
+    @Deprecated
     protected org.easysdi.xml.documents.Config configuration;
 
     /**
@@ -230,6 +217,37 @@ public abstract class ProxyServlet extends HttpServlet {
     	this.proxyRequest = proxyRequest;
     	this.sdiVirtualService = virtualService;
     	this.sdiPolicy = policy;
+    	
+    	//Set the logger
+    	Level level = Level.toLevel(sdiVirtualService.getSdiSysLoglevel().getValue()); 
+    	logger = org.apache.log4j.Logger.getLogger("ProxyLogger");
+    	logger.setLevel(level);
+
+	    DailyRollingFileAppender appender = (DailyRollingFileAppender)logger.getAppender("logFileAppender");
+	    appender.setBufferedIO(true);
+	    appender.setAppend(true);
+	    appender.setFile(sdiVirtualService.getLogpath()+File.separator+sdiVirtualService.getAlias()+new Date()+sdiVirtualService.getSdiSysServiceconnector().getValue());
+	    //DatePattern receive the period rolling value
+	    if(sdiVirtualService.getSdiSysLogroll().getValue().equalsIgnoreCase("daily"))
+	    	appender.setDatePattern("'.'yyyy-MM-dd");
+	    else if(sdiVirtualService.getSdiSysLogroll().getValue().equalsIgnoreCase("monthly"))
+	    	appender.setDatePattern("'.'yyyy-MM");
+	    else if(sdiVirtualService.getSdiSysLogroll().getValue().equalsIgnoreCase("weekly"))
+	    	appender.setDatePattern("'.'yyyy-ww");
+	    else 
+	    	appender.setDatePattern("'.'yyyy-MM-dd");
+
+	    appender.activateOptions();
+	    PatternLayout layout = (PatternLayout) appender.getLayout();
+	    String conversionPattern = layout.getConversionPattern();
+	    int start = conversionPattern.indexOf("%d{")+3;
+	    int end = conversionPattern.indexOf("}", start);
+
+	    String result = conversionPattern.substring(0,start) + "dd/MM/yyyy HH:mm:ss" + conversionPattern.substring(end);
+	    layout.setConversionPattern(result);
+ 
+    	//Log initilization informations
+    	logger.info("Virtualservice="+sdiVirtualService.getAlias());
     }
 
     /**
@@ -935,79 +953,9 @@ public abstract class ProxyServlet extends HttpServlet {
 
     
 
-    /**
-     * Only used in CSW
-     * @param urlstr
-     * @param param
-     * @param loginServiceUrl
-     * @return
-     */
-    @SuppressWarnings("deprecation")
-    protected StringBuffer sendFile(String urlstr, StringBuffer param, String loginServiceUrl) {
+    
 
-	try {
-	    DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-	    Date d = new Date();
-	    logger.info("RemoteRequestUrl="+ urlstr);
-	    logger.info("RemoteRequest="+ param.toString());
-	    logger.info("RemoteRequestLength="+ param.length());
-	    logger.info("RemoteRequestDateTime="+ dateFormat.format(d));
-
-	    HttpClient client = new HttpClient();
-
-	    PostMethod post = new PostMethod(urlstr);
-	    post.addRequestHeader("Content-Type", "application/xml");
-	    post.addRequestHeader("Charset", "UTF-8");
-	    post.setRequestBody(new ByteArrayInputStream(param.toString().getBytes("UTF-8")));
-
-	    GetMethod loginGet = new GetMethod(loginServiceUrl);
-	    client.executeMethod(loginGet);
-	    client.executeMethod(post);
-	    StringBuffer response = new StringBuffer(post.getResponseBodyAsString());
-
-	    logger.info("RemoteResponseToRequestUrl="+ urlstr);
-	    logger.info("RemoteResponseLength="+ response.length());
-
-	    dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-	    d = new Date();
-	    logger.info("RemoteResponseDateTime="+ dateFormat.format(d));
-
-	    return response;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-	return new StringBuffer();
-    }
-
-    /**
-     * TODO : move to WMS
-     */
-    protected boolean isAcceptingTransparency(String responseContentType) {
-	boolean isTransparent = false;
-	if (responseContentType == null)
-	    return true;
-	if (isXML(responseContentType)) {
-	    isTransparent = false;
-	} else if (responseContentType.startsWith(PNG)) {
-	    isTransparent = true;
-	} else if (responseContentType.startsWith(SVG)) {
-	    isTransparent = true;
-	} else if (responseContentType.startsWith(GIF)) {
-	    isTransparent = true;
-	} else if (responseContentType.startsWith(JPG)) {
-	    isTransparent = false;
-	} else if (responseContentType.startsWith(JPEG)) {
-	    isTransparent = false;
-	} else if (responseContentType.startsWith(TIFF)) {
-	    isTransparent = true;
-	} else if (responseContentType.startsWith(BMP)) {
-	    isTransparent = false;
-	} else {
-	    logger.debug("unkwnon content type" + responseContentType);
-	}
-
-	return isTransparent;
-    }
+    
 
     /**
      * @param responseContentType2
@@ -1423,354 +1371,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	return false;
     }
 
-    /**
-     * TODO : move to WMS
-     * Detects if the layer is an allowed or not against the rule.
-     * 
-     * @param layer
-     *            The layer to test
-     * @param url
-     *            the url of the remote server.
-     * @param scale
-     *            the current scale
-     * @return true if the layer is the allowed scale, false if not
-     */
-    protected boolean isLayerInScale(String layer, String url, double scale) {
-	if (policy == null)
-	    return false;
-	if (policy.getAvailabilityPeriod() != null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
-		return false;
-	}
-
-	//5.09.2010 - HVH 
-	if ( policy.getServers().isAll())
-	    return true;
-	//--
-	//		boolean isServerFound = false;
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i = 0; i < serverList.size(); i++) {
-	    // Is the server overloaded?
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		//				isServerFound = true;
-		// Are all layers Allowed ?
-		// Debug tb 12.11.2009
-		// if (serverList.get(i).getLayers().isAll())
-		// return true;
-		// Fin de debug
-
-		//5.09.2010 - HVH 
-		// Are all layers Allowed ?
-		if (serverList.get(i).getLayers().isAll())
-		    return true;
-		//--
-		List<Layer> layerList = serverList.get(i).getLayers().getLayer();
-		for (int j = 0; j < layerList.size(); j++) {
-		    // Is a specific layer allowed ?
-		    if (layer.equals(layerList.get(j).getName())) {
-			Double scaleMin = layerList.get(j).getScaleMin();
-			Double scaleMax = layerList.get(j).getScaleMax();
-
-			if (scaleMin == null)
-			    scaleMin = new Double(0);
-			if (scaleMax == null)
-			    scaleMax = new Double(Double.MAX_VALUE);
-			if (scale >= scaleMin.doubleValue() && scale <= scaleMax.doubleValue())
-			    return true;
-			else
-			    return false;
-		    }
-		}
-
-	    }
-	}
-
-	//5.09.2010 - HVH : moved before the loop on the servers
-	// if the server is not overloaded and if all the servers are allowed
-	// then
-	// We can consider that's ok
-	//		if (!isServerFound && policy.getServers().isAll())
-	//			return true;
-	//--
-	// in any other case the feature type is not allowed
-	return false;
-    }
-
-    /**
-     * TODO : move to WFS
-     * Detects if the attribute of a feature type is allowed or not against the
-     * rule.
-     * 
-     * @param ft
-     *            The feature Type to test
-     * @param url
-     *            the url of the remote server.
-     * @param isAllAttributes
-     *            if the user request need all attributes.
-     * @return true if the feature type is allowed, false if not
-     */
-    protected boolean isAttributeAllowed(String url, String ft, String attribute) {
-	if (policy == null)
-	    return false;
-	if (policy.getAvailabilityPeriod() != null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
-		return false;
-	}
-
-	//5.09.2010 - HVH 
-	if ( policy.getServers().isAll())
-	    return true;
-	//--
-	boolean isServerFound = false;
-	boolean isFeatureTypeFound = false;
-	boolean FeatureTypeAllowed = false;
-
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i = 0; i < serverList.size(); i++) {
-	    // Is the server overloaded?
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		isServerFound = true;
-		List<FeatureType> ftList = serverList.get(i).getFeatureTypes().getFeatureType();
-		//5.09.2010 - HVH --
-		if(serverList.get(i).getFeatureTypes().isAll())
-		{
-		    policyAttributeListNb = 0;
-		    return true;
-		}
-		//--
-		FeatureTypeAllowed = serverList.get(i).getFeatureTypes().isAll();
-		for (int j = 0; j < ftList.size(); j++) {
-		    // Is a specific feature type allowed ?
-		    if (ft.equals(ftList.get(j).getName())) {
-			isFeatureTypeFound = true;
-			// If all the attribute are authorized, then return
-			// true;
-			if (ftList.get(j).getAttributes().isAll()) {
-			    // Debug tb 08.06.2009
-			    policyAttributeListNb = 0;
-			    // Fin de debug
-			    return true;
-			}
-
-			// List d'attributs de Policy pour le featureType
-			// courant
-			List<Attribute> attributeList = ftList.get(j).getAttributes().getAttribute();
-			// Supprime les r�sultats, contenu dans la globale var,
-			// issus du pr�c�dent appel de la fonction courante
-			policyAttributeListToKeepPerFT.clear();
-			for (int k = 0; k < attributeList.size(); k++) {
-			    // If attributes are listed in user req
-			    if (attribute.equals(attributeList.get(k).getContent()))
-				return true;
-			    // Debug tb 04.06.2009
-			    // If no attributes are listed in user req -> all
-			    // the Policy Attributes will be returned
-			    else if (attribute.equals("")) {
-				String tmpFA = attributeList.get(k).getContent();
-				policyAttributeListToKeepPerFT.add(tmpFA);
-				// then at the end of function -> return false,
-				// "" is effectively not a valid attribute
-			    }
-			    // Fin de debug
-			}
-			// Debug tb 08.06.2009
-			// Pour que attributeListToKeepNbPerFT du featureType
-			// courant puisse enregistrer le nombre d'attributs de
-			// la Policy
-			policyAttributeListNb = attributeList.size();
-			// Fin de debug
-		    }
-		}
-	    }
-	}
-
-	//5.09.2010 - HVH : moved before the loop on the servers
-	//		// if the server is not overloaded and if all the servers are allowed
-	//		// then
-	//		// We can say that's ok
-	//		if (!isServerFound && policy.getServers().isAll())
-	//			return true;
-	//--
-	// if the server is overloaded and if the specific featureType was not
-	// overloaded and All the featuetypes are allowed
-	// We can say that's ok
-	if (isServerFound && !isFeatureTypeFound && FeatureTypeAllowed)
-	    // Debug tb 11.11.2009
-	{
-	    policyAttributeListNb = 0; // -> Attribure.All() = true
-	    return true;
-	}
-	// Fin de Debug
-
-	// in any other case the feature type is not allowed
-	return false;
-    }
-
-    /**
-     * TODO : move to WMS
-     */
-    public String getLayerFilter(String url, String layer) {
-	if (policy == null)
-	    return null;
-
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i = 0; i < serverList.size(); i++) {
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		List<Layer> layerList = serverList.get(i).getLayers().getLayer();
-		for (int j = 0; j < layerList.size(); j++) {
-		    // Is a specific feature type allowed ?
-		    if (layer.equals(layerList.get(j).getName())) {
-			if (layerList.get(j).getFilter() == null)
-			    return null;
-			return layerList.get(j).getFilter().getContent();
-		    }
-		}
-	    }
-	}
-	return null;
-    }
-
-    /**
-     * TODO move to WFS
-     * @param url
-     * @return
-     */
-    protected String getServerNamespace(String url) {
-	if (policy == null)
-	    return null;
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i = 0; i < serverList.size(); i++) {
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		if (serverList.get(i).getNamespace() == null)
-		    return null;
-		return serverList.get(i).getNamespace();
-	    }
-	}
-	return null;
-    }
-
-    /**
-     * TODO move to WFS
-     * @param url
-     * @return
-     */
-    protected String getServerPrefix(String url) {
-	if (policy == null)
-	    return null;
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i = 0; i < serverList.size(); i++) {
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		if (serverList.get(i).getPrefix() == null)
-		    return null;
-		return serverList.get(i).getPrefix();
-	    }
-	}
-	return null;
-    }
-
-    /**
-     * TODO move to WFS
-     * @param url
-     * @return
-     */
-    protected String getFeatureTypeLocalFilter(String url, String ft) {
-
-	if (policy == null)
-	    return null;
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i = 0; i < serverList.size(); i++) {
-
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-
-		List<FeatureType> ftList = serverList.get(i).getFeatureTypes().getFeatureType();
-		for (int j = 0; j < ftList.size(); j++) {
-		    // Is a specific feature type allowed ?
-		    if (ft.equals(ftList.get(j).getName())) {
-			if (ftList.get(j).getLocalFilter() == null)
-			    return null;
-			return ftList.get(j).getLocalFilter().getContent();
-		    }
-		}
-
-	    }
-	}
-	return null;
-    }
-
-    /**
-     * TODO move to WFS
-     * @param url
-     * @return
-     */
-    protected String getFeatureTypeRemoteFilter(String url, String ft) {
-
-	if (policy == null)
-	    return null;
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i = 0; i < serverList.size(); i++) {
-
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-
-		List<FeatureType> ftList = serverList.get(i).getFeatureTypes().getFeatureType();
-		for (int j = 0; j < ftList.size(); j++) {
-		    // Is a specific feature type allowed ?
-		    if (ft.equals(ftList.get(j).getName())) {
-			if (ftList.get(j).getRemoteFilter() == null)
-			    return null;
-			return ftList.get(j).getRemoteFilter().getContent();
-		    }
-		}
-	    }
-	}
-	return null;
-    }
-
-
-    /**
-     * TODO move to WMS
-     * @param currentWidth
-     * @param currentHeight
-     * @return
-     */
-    protected boolean isSizeInTheRightRange(int currentWidth, int currentHeight) {
-
-	if (policy == null)
-	    return false;
-	if (policy.getAvailabilityPeriod() != null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
-		return false;
-	}
-
-	int minWidth = 0;
-	int minHeight = 0;
-	int maxWidth = Integer.MAX_VALUE;
-	int maxHeight = Integer.MAX_VALUE;
-	if (policy.getImageSize() == null)
-	    return true;
-	if (policy.getImageSize().getMinimum() != null) {
-	    minWidth = policy.getImageSize().getMinimum().getWidth();
-	    minHeight = policy.getImageSize().getMinimum().getHeight();
-	}
-
-	if (policy.getImageSize().getMaximum() != null) {
-	    maxWidth = policy.getImageSize().getMaximum().getWidth();
-	    maxHeight = policy.getImageSize().getMaximum().getHeight();
-	}
-
-	if (currentWidth >= minWidth && currentWidth <= maxWidth && currentHeight >= minHeight && currentHeight <= maxHeight) {
-	    return true;
-	}
-
-	return false;
-    }
-
+   
     /**
      * If the current date is not in the right date range returns an error
      * 
@@ -1816,117 +1417,11 @@ public abstract class ProxyServlet extends HttpServlet {
 	return true;
     }
 
-    /**
-     * TOD move to CSW
-     * @param url
-     * @return
-     */
-    protected List<String> getAttributesNotAllowedInMetadata(String url) {
-	List<String> attrList = new Vector<String>();
+    
 
-	if (policy == null)
-	    return attrList;
+   
 
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i = 0; i < serverList.size(); i++) {
-	    // Is the server overloaded?
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		if (serverList.get(i).getMetadata().getAttributes().isAll()) {
-		    attrList.add("%");
-		    return attrList;
-		}
-		List<Attribute> attrList2 = serverList.get(i).getMetadata().getAttributes().getExclude().getAttribute();
-		for (int j = 0; j < attrList2.size(); j++) {
-		    attrList.add(attrList2.get(j).getContent());
-		}
-	    }
-	}
-	// in any other case the attribute is not allowed
-	return attrList;
-    }
-
-    /**
-     * TODO move to CSW
-     */
-    protected boolean areAllAttributesAllowedForMetadata(String url) {
-	if (policy == null)
-	    return false;
-	if (policy.getAvailabilityPeriod() != null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
-		return false;
-	}
-
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i = 0; i < serverList.size(); i++) {
-	    // Is the server overloaded?
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		if (serverList.get(i) != null && serverList.get(i).getMetadata() != null && serverList.get(i).getMetadata().getAttributes() != null) {
-		    if (serverList.get(i).getMetadata().getAttributes().isAll())
-			return true;
-		    else
-			return false;
-		}
-	    }
-	}
-
-	// in any other case the attribute is not allowed
-	return false;
-
-    }
-
-    /**
-     * TODO : move to WFS
-     * Open a wfs GetFeature response file and load xsd schema correctly. See
-     * remote-server-list element in config.xml for credentials.
-     * 
-     * @param file
-     *            temporary response file to parse
-     * @param username
-     *            xsd schema provider server username.
-     * @param password
-     *            xsd schema provider server password.
-     * @return
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected Object documentFactoryGetInstance(File file, String username, String password) {
-	// File schema = new File("src/main/webapp/schemas/eai/eai.xsd");
-	Map hints = new HashMap();
-	Map<String, URI> namespaceMapping = new HashMap<String, URI>();
-	hints.put(DocumentFactory.VALIDATION_HINT, false);
-	hints.put(XMLHandlerHints.NAMESPACE_MAPPING, namespaceMapping);
-	SAXBuilder sb = new SAXBuilder();
-	Document doc;
-	try {
-	    doc = sb.build(file);
-	    Namespace xsiNS = Namespace.getNamespace("http://www.w3.org/2001/XMLSchema-instance");
-	    String schemaLocation = doc.getRootElement().getAttributeValue("schemaLocation", xsiNS);
-	    String schemaParts[] = schemaLocation.split(" ");
-	    for (int i = 0; i < schemaParts.length; i += 2) {
-		String namespace = schemaParts[i];
-		String schemaLocationURI = schemaParts[i + 1];
-		if (SchemaFactory.getInstance(new URI(namespace)) == null) {
-		    GetMethod get = new GetMethod(schemaLocationURI);
-		    HttpClient client = new HttpClient();
-		    if (username != null && password != null)
-			client.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
-		    client.executeMethod(get);
-		    File tempSchemaFile = File.createTempFile("proxy", ".xsd");
-		    FileWriter writer = new FileWriter(tempSchemaFile);
-		    writer.write(get.getResponseBodyAsString());
-		    writer.close();
-		    namespaceMapping.put(namespace, tempSchemaFile.toURI());
-		}
-	    }
-	    Object obj = DocumentFactory.getInstance(file.toURI(), hints, Level.WARNING);
-	    return obj;
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-	return null;
-    }
+    
 
     protected void sendHttpServletResponse (HttpServletRequest req, HttpServletResponse resp, ByteArrayOutputStream tempOut, String responseContentType, Integer responseCode)
     {
