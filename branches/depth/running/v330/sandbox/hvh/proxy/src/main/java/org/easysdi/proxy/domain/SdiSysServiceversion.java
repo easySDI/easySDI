@@ -1,13 +1,16 @@
 package org.easysdi.proxy.domain;
 
-// Generated Apr 4, 2013 10:31:47 AM by Hibernate Tools 3.4.0.CR1
+// Generated Apr 9, 2013 11:54:41 AM by Hibernate Tools 3.4.0.CR1
 
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
-
+import javax.persistence.OneToMany;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -22,6 +25,8 @@ public class SdiSysServiceversion implements java.io.Serializable {
 	private Integer Ordering;
 	private int State;
 	private String Value;
+	private Set<SdiSysServicecompliance> sdiSysServicecompliances = new HashSet<SdiSysServicecompliance>(
+			0);
 
 	public SdiSysServiceversion() {
 	}
@@ -31,10 +36,12 @@ public class SdiSysServiceversion implements java.io.Serializable {
 		this.Value = Value;
 	}
 
-	public SdiSysServiceversion(Integer Ordering, int State, String Value) {
+	public SdiSysServiceversion(Integer Ordering, int State, String Value,
+			Set<SdiSysServicecompliance> sdiSysServicecompliances) {
 		this.Ordering = Ordering;
 		this.State = State;
 		this.Value = Value;
+		this.sdiSysServicecompliances = sdiSysServicecompliances;
 	}
 
 	@Id
@@ -73,6 +80,16 @@ public class SdiSysServiceversion implements java.io.Serializable {
 
 	public void setValue(String Value) {
 		this.Value = Value;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiSysServiceversion")
+	public Set<SdiSysServicecompliance> getSdiSysServicecompliances() {
+		return this.sdiSysServicecompliances;
+	}
+
+	public void setSdiSysServicecompliances(
+			Set<SdiSysServicecompliance> sdiSysServicecompliances) {
+		this.sdiSysServicecompliances = sdiSysServicecompliances;
 	}
 
 }

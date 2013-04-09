@@ -76,6 +76,8 @@ import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.easysdi.proxy.domain.SdiPolicy;
+import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.policy.Attribute;
@@ -86,7 +88,6 @@ import org.easysdi.proxy.policy.Layer;
 import org.easysdi.proxy.policy.Operation;
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.proxy.policy.Server;
-import org.easysdi.proxy.security.JoomlaProvider;
 import org.easysdi.proxy.log.ProxyLogger;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.geotools.xml.DocumentFactory;
@@ -114,8 +115,6 @@ import com.google.common.collect.Multimap;
  */
 public abstract class ProxyServlet extends HttpServlet {
 
-
-
     private static final long serialVersionUID = 3499090220094877198L;
     private static final String PNG = "image/png";
     private static final String GIF = "image/gif";
@@ -129,8 +128,12 @@ public abstract class ProxyServlet extends HttpServlet {
     protected static final String XML_OGC_WMS = "application/vnd.ogc.wms_xml";
     protected static final String XML_OGC_EXCEPTION = "application/vnd.ogc.se_xml";
     protected static final String SVG = "image/svg+xml";
-    private List<String> temporaryFileList = new Vector<String>();
+   
+    private SdiVirtualservice sdiVirtualService;
+    private SdiPolicy sdiPolicy;
 
+    private List<String> temporaryFileList = new Vector<String>();
+    
     /**
      * Configuration loaded to complete the request
      */
@@ -140,13 +143,10 @@ public abstract class ProxyServlet extends HttpServlet {
      * Policy loaded
      */
     public Policy policy;
-
     protected String requestCharacterEncoding = null;
     protected String responseContentType = null;
     protected List<String> responseContentTypeList = new ArrayList<String>();
     protected Integer responseStatusCode = HttpServletResponse.SC_OK;
-//    protected String bbox = null;
-//    protected String srsName = null;
     protected Map<Integer, String> wfsFilePathList = new TreeMap<Integer, String>();
     public Multimap<Integer, String> wmsFilePathList = HashMultimap.create();
 
@@ -200,11 +200,6 @@ public abstract class ProxyServlet extends HttpServlet {
     /**
      * 
      */
-    //private List<String> lLogs = new Vector<String>();
-
-    /**
-     * 
-     */
     protected boolean hasPolicy = true;
 
     /**
@@ -216,11 +211,6 @@ public abstract class ProxyServlet extends HttpServlet {
      * Value of the version parameter received in the request
      */
     protected String requestedVersion ;
-
-    /**
-     * Use for accessing EasySDI Joomla data
-     */
-    private JoomlaProvider joomlaProvider;
 
     /**
      * Object representing the request
@@ -235,38 +225,32 @@ public abstract class ProxyServlet extends HttpServlet {
     /**
      * 
      */
-    public ProxyServlet() {
-	super();
-
-    }
-
-
-    /**
-     * @param joomlaProvider the joomlaProvider to set
-     */
-    protected void setJoomlaProvider(JoomlaProvider joomlaProvider) {
-	this.joomlaProvider = joomlaProvider;
-    }
-
-    /**
-     * @return the joomlaProvider
-     */
-    protected JoomlaProvider getJoomlaProvider() {
-	return joomlaProvider;
-    }
-
-    /**
-     * @param proxyRequest the proxyRequest to set
-     */
-    public void setProxyRequest(ProxyServletRequest proxyRequest) {
-	this.proxyRequest = proxyRequest;
+    public ProxyServlet(ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy) {
+    	super();
+    	this.proxyRequest = proxyRequest;
+    	this.sdiVirtualService = virtualService;
+    	this.sdiPolicy = policy;
     }
 
     /**
      * @return the proxyRequest
      */
     public ProxyServletRequest getProxyRequest() {
-	return proxyRequest;
+    	return this.proxyRequest;
+    }
+    
+    /**
+     * @return the Policy
+     */
+    public SdiPolicy getPolicy() {
+    	return this.sdiPolicy;
+    }
+    
+    /**
+     * @return the Virtual Service
+     */
+    public SdiVirtualservice getVirtualService() {
+    	return this.sdiVirtualService;
     }
 
     /**
@@ -377,15 +361,6 @@ public abstract class ProxyServlet extends HttpServlet {
     }
 
     /**
-     * Get the policy file path
-     * @return file path
-     */
-    //	protected String getPolicyFilePath() {
-    //		return configuration.getPolicyFile();
-    //	}
-
-
-    /**
      * Set the current config
      * @param conf
      * @throws ClassNotFoundException 
@@ -443,20 +418,6 @@ public abstract class ProxyServlet extends HttpServlet {
 	logger.info("Config="+configuration.getId());
     }
 
-    /**
-     * Get the policy file Search for the policy file path in attribute of the
-     * servlet : policy-file if not found search for the file
-     * policy-servletname.xml
-     * 
-     * @param req
-     * @return
-     */
-    //	protected String getPolicyFile(ServletConfig config) {
-    //		String policyFile = (String) config.getInitParameter("policy-file");
-    //		if (policyFile == null)
-    //			policyFile = "policy.xml";
-    //		return policyFile;
-    //	}
 
     /* (non-Javadoc)
      * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -972,97 +933,7 @@ public abstract class ProxyServlet extends HttpServlet {
 
     }
 
-    /*
-     * Send a file using mulipart/form-data
-     * 
-     * @param urlstr the url where to send
-     * 
-     * @param filePath the path of the file to send
-     * 
-     * @param loginServiceUrl Url to log in If needed
-     * 
-     * @param parameterName The name of the file paramater
-     * 
-     * @param parameterFileName The name of the file that will be published in
-     * the request
-     */
-    @Deprecated
-    protected StringBuffer sendFile(String urlstr, String filePath, String loginServiceUrl, String parameterName, String parameterFileName) {
-	try {
-	    InputStream is = new FileInputStream(filePath);
-	    return sendFile(urlstr, is, loginServiceUrl, parameterName, parameterFileName);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-	return new StringBuffer();
-    }
-
-    @Deprecated
-    protected StringBuffer sendFile(String urlstr, InputStream in, String loginServiceUrl, String parameterName, String parameterFileName) {
-
-	try {
-	    String cookie = null;
-	    if (loginServiceUrl != null) {
-		cookie = geonetworkLogIn(loginServiceUrl);
-	    }
-
-	    URL url = new URL(urlstr);
-	    HttpURLConnection hpcon = null;
-
-	    hpcon = (HttpURLConnection) url.openConnection();
-	    hpcon.setRequestMethod("POST");
-	    hpcon.addRequestProperty("Cookie", cookie);
-
-	    hpcon.setUseCaches(false);
-	    hpcon.setDoInput(true);
-	    hpcon.setDoOutput(true);
-
-	    Random random = new Random();
-
-	    String boundary = "---------------------------" + Long.toString(random.nextLong(), 36) + Long.toString(random.nextLong(), 36)
-	    + Long.toString(random.nextLong(), 36);
-	    hpcon.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-
-	    hpcon.connect();
-	    DataOutputStream os = new DataOutputStream(hpcon.getOutputStream());
-
-	    String s1 = "--" + boundary + "\r\ncontent-disposition: form-data; name=\"" + parameterName + "\"; filename=\"" + parameterFileName
-	    + "\"\r\nContent-Type: application/octet-stream\r\n\r\n";
-
-	    os.writeBytes(s1);
-
-	    byte[] buf = new byte[32768];
-	    int nread;
-	    synchronized (in) {
-		while ((nread = in.read(buf, 0, buf.length)) >= 0) {
-		    os.write(buf, 0, nread);
-		}
-	    }
-	    os.flush();
-
-	    String boundar = "\r\n--" + boundary + "--";
-	    os.writeBytes(boundar);
-	    buf = null;
-	    os.close();
-	    in = null;
-	    if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) {
-		in = new GZIPInputStream(hpcon.getInputStream());
-	    } else {
-		in = hpcon.getInputStream();
-	    }
-	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
-
-	    String input;
-	    StringBuffer response = new StringBuffer();
-	    while ((input = br.readLine()) != null) {
-		response.append(input);
-	    }
-	    return response;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-	return new StringBuffer();
-    }
+    
 
     /**
      * Only used in CSW
@@ -1296,17 +1167,11 @@ public abstract class ProxyServlet extends HttpServlet {
     }
 
     public org.easysdi.xml.documents.Config getConfiguration() {
-	return configuration;
+    	return configuration;
     }
 
-    public Policy getPolicy() {
-	return this.policy;
-    }
+    
 
-    public void setPolicy(Policy p) {
-	this.policy = p;
-	logger.info("Policy="+this.policy.getId());
-    }
 
     /**
      * If the current operation is not allowed, generate an ogc exception 
@@ -1314,7 +1179,8 @@ public abstract class ProxyServlet extends HttpServlet {
      * @param currentOperation
      * @param resp
      */
-    @Deprecated
+    @Deprecated 
+    /*used in CSW and WFS*/
     protected boolean handleNotAllowedOperation (String currentOperation, HttpServletResponse resp)
     {
 	//IF operation is not supported by the current version of the proxy

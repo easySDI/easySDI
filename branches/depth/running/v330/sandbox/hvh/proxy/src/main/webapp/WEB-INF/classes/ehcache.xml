@@ -33,6 +33,9 @@
     timeToLiveSeconds="2592000" overflowToDisk="true" diskPersistent="false"
     diskExpiryThreadIntervalSeconds="300" memoryStoreEvictionPolicy="LRU" />
     
+    <cache name="virtualserviceCache" maxElementsInMemory="1000" eternal="false" overflowToDisk="false" timeToIdleSeconds="3600" timeToLiveSeconds="36000"
+		diskPersistent="false" />
+		
 	<cache name="userCache" maxElementsInMemory="10000" timeToIdleSeconds="120" timeToLiveSeconds="120" eternal="false" overflowToDisk="false" />
 	
 	<cache name="configCache" maxElementsInMemory="1000" eternal="false" overflowToDisk="false" timeToIdleSeconds="3600" timeToLiveSeconds="36000"

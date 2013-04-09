@@ -632,8 +632,10 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 			String wgsMaxy;
 			String wgsMinx;
 			String wgsMiny;
-				
-			List<Server> serverList = servlet.getPolicy().getServers().getServer();
+			
+			//TODO Change it
+//			List<Server> serverList = servlet.getPolicy().getServers().getServer();
+			List<Server> serverList = new ArrayList<Server>();
 			
 			for(int l = 0 ; l < layersList.size();l++)
 			{

@@ -1,6 +1,6 @@
 package org.easysdi.proxy.domain;
 
-// Generated Apr 4, 2013 10:31:48 AM by Hibernate Tools 3.4.0.CR1
+// Generated Apr 9, 2013 11:54:42 AM by Hibernate Tools 3.4.0.CR1
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

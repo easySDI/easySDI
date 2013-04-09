@@ -22,6 +22,9 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.easysdi.proxy.core.ProxyServletRequest;
+import org.easysdi.proxy.domain.SdiPolicy;
+import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.wms.WMSProxyServlet;
 import org.easysdi.proxy.wms.v130.WMSExceptionReport130;
@@ -41,8 +44,8 @@ public class WMSProxyServlet130 extends WMSProxyServlet {
     /**
      * 
      */
-    public WMSProxyServlet130() {
-	super();
+    public WMSProxyServlet130(ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy) {
+		super(proxyRequest, virtualService, policy);
 	ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetMap", "GetFeatureInfo", "GetLegendGraphic");
 	docBuilder = new WMSProxyResponseBuilder130(this);
 	owsExceptionReport = new WMSExceptionReport130 ();

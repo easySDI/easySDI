@@ -56,6 +56,9 @@ import org.easysdi.proxy.jdom.filter.ElementMD_MetadataNonAuthorizedFilter;
 import org.easysdi.proxy.jdom.filter.ElementSDIPlatformFilter;
 import org.easysdi.proxy.jdom.filter.ElementSearchResultsFilter;
 import org.easysdi.proxy.jdom.filter.ElementTransactionTypeFilter;
+import org.easysdi.proxy.core.ProxyServletRequest;
+import org.easysdi.proxy.domain.SdiPolicy;
+import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.handler.CswRequestHandler;
@@ -74,6 +77,12 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 public class CSWProxyServlet2 extends CSWProxyServlet {
+
+	public CSWProxyServlet2(ProxyServletRequest proxyRequest,SdiVirtualservice virtualService, SdiPolicy policy) {
+		super(proxyRequest, virtualService, policy);
+	}
+
+
 
 	private static final long serialVersionUID = 1L;
 	
@@ -369,7 +378,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					            	nextRecordAttribute = e.getAttribute ("nextRecord");
 					            }
 					            
-					            CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
+					            CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy);
 					            Boolean isAll = cswDataManager.isAllEasySDIDataAccessible();
 					            List <String> authorizedGuidList = new ArrayList<String>();
 					            Integer numberOfRecordsActuallyMatched = 0;
@@ -663,7 +672,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			if(currentOperation.equalsIgnoreCase("GetRecordById"))
 			{
 				logger.trace("Start - Data Accessibility");
-				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
+				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy);
 				if(!cswDataManager.isAllEasySDIDataAccessible() || !policy.getIncludeHarvested())
 				{
 					String dataIDaccessible="";
@@ -694,7 +703,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					constraintLanguage = "CQL_TEXT";
 					constraint_language_version = "1.1.0";
 				}
-				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
+				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy);
 				if (constraintLanguage.equalsIgnoreCase("CQL_TEXT")){
 					//Add Geographical filter as CQL_TEXT additional parameter
 					constraint = cswDataManager.addCQLBBOXFilter(constraint);
@@ -935,7 +944,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			else if(currentOperation.equalsIgnoreCase("GetRecordById"))
 			{
 				logger.trace("Start - Data Accessibility");
-				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
+				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy);
 				String dataId = rh.getRecordId();
 				if(!cswDataManager.isAllEasySDIDataAccessible() || !policy.getIncludeHarvested())
 				{
@@ -994,7 +1003,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			else if(currentOperation.equalsIgnoreCase("GetRecords"))
 			{
 				logger.trace("Start - Data Accessibility");
-				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
+				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy);
 				if(		!cswDataManager.isAllDataAccessibleForGetRecords() || 
 						(policy.getBboxFilter() != null && policy.getBboxFilter().isValide()) || 
 						!policy.getIncludeHarvested())

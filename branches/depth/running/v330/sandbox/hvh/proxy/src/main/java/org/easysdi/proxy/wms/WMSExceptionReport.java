@@ -17,6 +17,7 @@
 package org.easysdi.proxy.wms;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -29,7 +30,7 @@ import org.easysdi.proxy.ows.OWSExceptionReport;
 public abstract class WMSExceptionReport extends OWSExceptionReport {
 
 
-    public StringBuffer getServiceExceptionBody (String errorMessage,String code, String locator){
+	public StringBuffer getServiceExceptionBody (String errorMessage,String code, String locator){
 		StringBuffer sb = new StringBuffer();
 		sb.append("\n\t<ServiceException code=\"");
 		sb.append(code);
@@ -50,14 +51,17 @@ public abstract class WMSExceptionReport extends OWSExceptionReport {
 		return sb;
     }
 
-	/* (non-Javadoc)
-	 * @see org.easysdi.proxy.ows.OWSExceptionReport#sendExceptionReport(javax.servlet.http.HttpServletResponse, java.lang.String, java.lang.String, java.lang.String)
-	 */
-	@Override
-	public void sendExceptionReport(HttpServletResponse response,
-			String errorMessage, String code, String locator)
-			throws IOException {
-		// TODO Auto-generated method stub
+
+	public void sendExceptionReport(HttpServletResponse response, String errorMessage, String code, String locator) throws IOException {
+		StringBuffer sb = this.generateExceptionReport(errorMessage, code, locator);
+		
+		response.setContentType("text/xml; charset=utf-8");
+		response.setContentLength(sb.length());
+		OutputStream os;
+		os = response.getOutputStream();
+		os.write(sb.toString().getBytes());
+		os.flush();
+		os.close();
 		
 	}
 

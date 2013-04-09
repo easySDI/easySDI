@@ -42,12 +42,4 @@ public class WMSExceptionReport130 extends WMSExceptionReport {
 		
 		return sb;
 	}
-
-	@Override
-	public void sendExceptionReport(HttpServletResponse response,
-			String errorMessage, String code, String locator)
-			throws IOException {
-		// TODO Auto-generated method stub
-		
-	}	
 }

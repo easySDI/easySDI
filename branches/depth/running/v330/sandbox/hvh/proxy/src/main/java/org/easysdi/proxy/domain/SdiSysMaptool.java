@@ -1,13 +1,12 @@
 package org.easysdi.proxy.domain;
 
-// Generated Apr 4, 2013 10:31:47 AM by Hibernate Tools 3.4.0.CR1
+// Generated Apr 9, 2013 11:54:41 AM by Hibernate Tools 3.4.0.CR1
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
-
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 

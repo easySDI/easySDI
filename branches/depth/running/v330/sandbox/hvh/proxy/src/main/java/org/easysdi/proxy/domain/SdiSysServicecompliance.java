@@ -1,6 +1,6 @@
 package org.easysdi.proxy.domain;
 
-// Generated Apr 4, 2013 10:31:47 AM by Hibernate Tools 3.4.0.CR1
+// Generated Apr 9, 2013 11:54:41 AM by Hibernate Tools 3.4.0.CR1
 
 import java.util.HashSet;
 import java.util.Set;
@@ -10,8 +10,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -23,10 +24,10 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 public class SdiSysServicecompliance implements java.io.Serializable {
 
 	private Integer Id;
+	private SdiSysServiceversion sdiSysServiceversion;
+	private SdiSysServiceconnector sdiSysServiceconnector;
 	private Integer Ordering;
 	private int State;
-	private int Serviceconnector_id;
-	private int Serviceversion_id;
 	private boolean Implemented;
 	private boolean Relayable;
 	private boolean Aggregatable;
@@ -41,12 +42,13 @@ public class SdiSysServicecompliance implements java.io.Serializable {
 	public SdiSysServicecompliance() {
 	}
 
-	public SdiSysServicecompliance(int State, int Serviceconnector_id,
-			int Serviceversion_id, boolean Implemented, boolean Relayable,
-			boolean Aggregatable, boolean Harvestable) {
+	public SdiSysServicecompliance(SdiSysServiceversion sdiSysServiceversion,
+			SdiSysServiceconnector sdiSysServiceconnector, int State,
+			boolean Implemented, boolean Relayable, boolean Aggregatable,
+			boolean Harvestable) {
+		this.sdiSysServiceversion = sdiSysServiceversion;
+		this.sdiSysServiceconnector = sdiSysServiceconnector;
 		this.State = State;
-		this.Serviceconnector_id = Serviceconnector_id;
-		this.Serviceversion_id = Serviceversion_id;
 		this.Implemented = Implemented;
 		this.Relayable = Relayable;
 		this.Aggregatable = Aggregatable;
@@ -54,10 +56,10 @@ public class SdiSysServicecompliance implements java.io.Serializable {
 	}
 
 	public SdiSysServicecompliance(
+			SdiSysServiceversion sdiSysServiceversion,
+			SdiSysServiceconnector sdiSysServiceconnector,
 			Integer Ordering,
 			int State,
-			int Serviceconnector_id,
-			int Serviceversion_id,
 			boolean Implemented,
 			boolean Relayable,
 			boolean Aggregatable,
@@ -65,10 +67,10 @@ public class SdiSysServicecompliance implements java.io.Serializable {
 			Set<SdiPhysicalserviceServicecompliance> sdiPhysicalserviceServicecompliances,
 			Set<SdiVirtualserviceServicecompliance> sdiVirtualserviceServicecompliances,
 			Set<SdiSysOperationcompliance> sdiSysOperationcompliances) {
+		this.sdiSysServiceversion = sdiSysServiceversion;
+		this.sdiSysServiceconnector = sdiSysServiceconnector;
 		this.Ordering = Ordering;
 		this.State = State;
-		this.Serviceconnector_id = Serviceconnector_id;
-		this.Serviceversion_id = Serviceversion_id;
 		this.Implemented = Implemented;
 		this.Relayable = Relayable;
 		this.Aggregatable = Aggregatable;
@@ -89,6 +91,28 @@ public class SdiSysServicecompliance implements java.io.Serializable {
 		this.Id = Id;
 	}
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "serviceversion_id", nullable = false)
+	public SdiSysServiceversion getSdiSysServiceversion() {
+		return this.sdiSysServiceversion;
+	}
+
+	public void setSdiSysServiceversion(
+			SdiSysServiceversion sdiSysServiceversion) {
+		this.sdiSysServiceversion = sdiSysServiceversion;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "serviceconnector_id", nullable = false)
+	public SdiSysServiceconnector getSdiSysServiceconnector() {
+		return this.sdiSysServiceconnector;
+	}
+
+	public void setSdiSysServiceconnector(
+			SdiSysServiceconnector sdiSysServiceconnector) {
+		this.sdiSysServiceconnector = sdiSysServiceconnector;
+	}
+
 	@Column(name = "ordering")
 	public Integer getOrdering() {
 		return this.Ordering;
@@ -105,24 +129,6 @@ public class SdiSysServicecompliance implements java.io.Serializable {
 
 	public void setState(int State) {
 		this.State = State;
-	}
-
-	@Column(name = "serviceconnector_id", nullable = false)
-	public int getServiceconnector_id() {
-		return this.Serviceconnector_id;
-	}
-
-	public void setServiceconnector_id(int Serviceconnector_id) {
-		this.Serviceconnector_id = Serviceconnector_id;
-	}
-
-	@Column(name = "serviceversion_id", nullable = false)
-	public int getServiceversion_id() {
-		return this.Serviceversion_id;
-	}
-
-	public void setServiceversion_id(int Serviceversion_id) {
-		this.Serviceversion_id = Serviceversion_id;
 	}
 
 	@Column(name = "implemented", nullable = false)

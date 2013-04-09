@@ -54,6 +54,9 @@ import org.easysdi.proxy.jdom.filter.ElementNamedLayerFilter;
 import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.core.ProxyServlet;
+import org.easysdi.proxy.core.ProxyServletRequest;
+import org.easysdi.proxy.domain.SdiPolicy;
+import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetCapabilitiesThread;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetFeatureInfoThread;
@@ -159,9 +162,9 @@ public class WMSProxyServlet extends ProxyServlet {
 	/**
 	 * Constructor
 	 */
-	public WMSProxyServlet ()
+	public WMSProxyServlet (ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy)
 	{
-		super();
+		super(proxyRequest, virtualService, policy);
 		ServiceOperations = Arrays.asList( "GetCapabilities", "GetMap", "GetFeatureInfo", "DescribeLayer", "GetLegendGraphic", "PutStyles", "GetStyles" );
 	}
 

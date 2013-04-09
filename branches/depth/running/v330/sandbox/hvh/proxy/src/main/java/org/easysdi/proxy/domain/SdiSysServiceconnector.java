@@ -1,6 +1,6 @@
 package org.easysdi.proxy.domain;
 
-// Generated Apr 4, 2013 10:31:47 AM by Hibernate Tools 3.4.0.CR1
+// Generated Apr 9, 2013 11:54:41 AM by Hibernate Tools 3.4.0.CR1
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,7 +11,6 @@ import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -32,6 +31,8 @@ public class SdiSysServiceconnector implements java.io.Serializable {
 			0);
 	private Set<SdiSysServiceconAuthenticationcon> sdiSysServiceconAuthenticationcons = new HashSet<SdiSysServiceconAuthenticationcon>(
 			0);
+	private Set<SdiSysServicecompliance> sdiSysServicecompliances = new HashSet<SdiSysServicecompliance>(
+			0);
 
 	public SdiSysServiceconnector() {
 	}
@@ -47,13 +48,15 @@ public class SdiSysServiceconnector implements java.io.Serializable {
 			String Value,
 			Set<SdiPhysicalservice> sdiPhysicalservices,
 			Set<SdiVirtualservice> sdiVirtualservices,
-			Set<SdiSysServiceconAuthenticationcon> sdiSysServiceconAuthenticationcons) {
+			Set<SdiSysServiceconAuthenticationcon> sdiSysServiceconAuthenticationcons,
+			Set<SdiSysServicecompliance> sdiSysServicecompliances) {
 		this.Ordering = Ordering;
 		this.State = State;
 		this.Value = Value;
 		this.sdiPhysicalservices = sdiPhysicalservices;
 		this.sdiVirtualservices = sdiVirtualservices;
 		this.sdiSysServiceconAuthenticationcons = sdiSysServiceconAuthenticationcons;
+		this.sdiSysServicecompliances = sdiSysServicecompliances;
 	}
 
 	@Id
@@ -121,6 +124,16 @@ public class SdiSysServiceconnector implements java.io.Serializable {
 	public void setSdiSysServiceconAuthenticationcons(
 			Set<SdiSysServiceconAuthenticationcon> sdiSysServiceconAuthenticationcons) {
 		this.sdiSysServiceconAuthenticationcons = sdiSysServiceconAuthenticationcons;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiSysServiceconnector")
+	public Set<SdiSysServicecompliance> getSdiSysServicecompliances() {
+		return this.sdiSysServicecompliances;
+	}
+
+	public void setSdiSysServicecompliances(
+			Set<SdiSysServicecompliance> sdiSysServicecompliances) {
+		this.sdiSysServicecompliances = sdiSysServicecompliances;
 	}
 
 }

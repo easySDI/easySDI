@@ -40,6 +40,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.easysdi.proxy.jdom.filter.ElementTileMatrixSetFilter;
 import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyServlet;
+import org.easysdi.proxy.core.ProxyServletRequest;
+import org.easysdi.proxy.domain.SdiPolicy;
+import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.ows.OWSExceptionManager;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.policy.Layer;
@@ -83,9 +86,8 @@ public class WMTSProxyServlet extends ProxyServlet{
     /**
      * 
      */
-    public WMTSProxyServlet() {
-	super();
-
+    public WMTSProxyServlet(ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy) {
+		super(proxyRequest, virtualService, policy);
     }
 
     /**

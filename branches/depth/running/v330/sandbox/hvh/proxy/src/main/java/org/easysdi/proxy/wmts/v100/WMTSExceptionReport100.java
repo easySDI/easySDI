@@ -29,10 +29,4 @@ public class WMTSExceptionReport100 extends OWS200ExceptionReport{
 	public static final String CODE_TILE_OUT_OF_RANGE 				= "TileOutOfRange";
 	public static final String CODE_POINT_IJ_OUT_OF_RANGE 			= "PointIJOutOfRange";
 	
-	public StringBuffer generateExceptionReport(String errorMessage,String code, String locator, String version) throws IOException {
-		if(version == null || version.equalsIgnoreCase("")){
-			version = "1.0.0";
-		}
-		return super.generateExceptionReport(errorMessage, code, locator, version);
-	}
 }

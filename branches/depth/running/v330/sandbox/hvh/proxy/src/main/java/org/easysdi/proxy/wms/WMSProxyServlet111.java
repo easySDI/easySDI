@@ -18,6 +18,9 @@ package org.easysdi.proxy.wms;
 
 import java.util.Arrays;
 
+import org.easysdi.proxy.core.ProxyServletRequest;
+import org.easysdi.proxy.domain.SdiPolicy;
+import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.wms.WMSProxyServlet;
 import org.easysdi.proxy.wms.v111.WMSExceptionReport111;
 import org.easysdi.proxy.wms.v111.WMSProxyResponseBuilder111;
@@ -36,8 +39,8 @@ public class WMSProxyServlet111 extends WMSProxyServlet {
 	/**
 	 * 
 	 */
-	public WMSProxyServlet111() {
-		super();
+	public WMSProxyServlet111(ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy) {
+		super(proxyRequest, virtualService, policy);
 		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetMap", "GetFeatureInfo", "GetLegendGraphic");
 		docBuilder = new WMSProxyResponseBuilder111(this);
 		owsExceptionReport = new WMSExceptionReport111 ();

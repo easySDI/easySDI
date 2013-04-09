@@ -1,6 +1,8 @@
 package org.easysdi.proxy.domain;
 
-// Generated Apr 4, 2013 10:31:48 AM by Hibernate Tools 3.4.0.CR1
+// Generated Apr 9, 2013 11:54:42 AM by Hibernate Tools 3.4.0.CR1
+
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,9 +45,13 @@ public class SdiVirtualserviceHome {
 		try {
 			Query query = sessionFactory.getCurrentSession().createQuery("from SdiVirtualservice where alias= :alias");
 			query.setParameter("alias", alias);
-			SdiVirtualservice instance = (SdiVirtualservice) query.setCacheable(true).list().get(0);
-			
-			return instance;
+			List<SdiVirtualservice> l = query.setCacheable(true).list();
+			if(l != null && l.size() > 0 )
+			{
+				SdiVirtualservice instance = l.get(0);
+				return instance;
+			}
+			return null;
 		} catch (RuntimeException re) {
 			throw re;
 		}

@@ -49,6 +49,9 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.easysdi.proxy.core.ProxyServlet;
+import org.easysdi.proxy.core.ProxyServletRequest;
+import org.easysdi.proxy.domain.SdiPolicy;
+import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.handler.CswRequestHandler;
@@ -65,9 +68,9 @@ public class CSWProxyServlet extends ProxyServlet {
 	/**
 	 * Constructor
 	 */
-	public CSWProxyServlet ()
+	public CSWProxyServlet (ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy)
 	{
-		super();
+		super(proxyRequest, virtualService, policy);
 		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetRecords", "GetRecordById","DescribeRecord","Transaction");
 	}
 	

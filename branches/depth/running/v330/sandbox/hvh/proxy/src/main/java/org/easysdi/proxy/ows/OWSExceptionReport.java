@@ -30,9 +30,8 @@ public abstract class OWSExceptionReport implements OWSIExceptionReport {
     /* (non-Javadoc)
      * @see org.easysdi.proxy.ows.OWSIExceptionReport#generateExceptionReport(java.lang.String, java.lang.String, java.lang.String)
      */
-	@Deprecated
-    public StringBuffer generateExceptionReport(String errorMessage,String code, String locator) throws IOException {
-	return null;
+	public StringBuffer generateExceptionReport(String errorMessage,String code, String locator) throws IOException {
+		return null;
     }
     
     /* (non-Javadoc)
@@ -64,6 +63,7 @@ public abstract class OWSExceptionReport implements OWSIExceptionReport {
 	return null;
     }
 
-	public abstract void sendExceptionReport(HttpServletResponse response , String errorMessage, String code,String locator) throws IOException ;
 
+
+	
 }

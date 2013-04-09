@@ -74,6 +74,9 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.jasper.tagplugins.jstl.core.ForEach;
 import org.easysdi.proxy.core.ProxyServlet;
+import org.easysdi.proxy.core.ProxyServletRequest;
+import org.easysdi.proxy.domain.SdiPolicy;
+import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
@@ -162,9 +165,9 @@ public class WFSProxyServlet extends ProxyServlet {
 	/**
 	 * Constructor
 	 */
-	public WFSProxyServlet ()
+	public WFSProxyServlet (ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy)
 	{
-		super();
+		super(proxyRequest, virtualService, policy);
 		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "DescribeFeatureType", "GetFeature","Transaction");
 	}
 
