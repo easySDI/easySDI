@@ -19,6 +19,7 @@ package org.easysdi.proxy.ows.v10;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.easysdi.proxy.ows.OWSExceptionReport;
@@ -30,18 +31,27 @@ import org.easysdi.proxy.ows.OWSExceptionReport;
  */
 public class OWSExceptionReport10 extends OWSExceptionReport {
 
-	@Deprecated
-	public StringBuffer generateExceptionReport(String errorMessage,String code, String locator) throws IOException {
-			return generateExceptionReport(errorMessage, code, locator, "1.0.0");
+	@Override
+	public void sendExceptionReport(HttpServletRequest request, HttpServletResponse response, String errorMessage, String code, String locator, int responseCode) throws IOException 
+	{
+		StringBuffer sb = this.generateExceptionReport(request, response, errorMessage, code, locator, responseCode);
+		response.setContentType("text/xml; charset=utf-8");
+		response.setContentLength(sb.length());
+		OutputStream os;
+		os = response.getOutputStream();
+		os.write(sb.toString().getBytes());
+		os.flush();
+		os.close();
 	}
 
-	@Deprecated
-	public StringBuffer generateExceptionReport(String errorMessage,String code, String locator, String version) throws IOException {
+	public StringBuffer generateExceptionReport(HttpServletRequest request,
+			HttpServletResponse response, String errorMessage, String code,
+			String locator, int responseCode) throws IOException {
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8'?>\n");
 		
 		sb.append("\n<ExceptionReport xmlns=\"http://www.opengis.net/ows\" ");
 		sb.append("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ");
-		sb.append("xsi:schemaLocation=\"http://www.opengis.net/ows owsExceptionReport.xsd\" version=\""+version+"\">");
+		sb.append("xsi:schemaLocation=\"http://www.opengis.net/ows owsExceptionReport.xsd\" version=\"1.2.0\">");
 		sb.append("\n\t<Exception exceptionCode=\"");
 		sb.append(code);
 		sb.append("\"");
@@ -63,41 +73,8 @@ public class OWSExceptionReport10 extends OWSExceptionReport {
 		
 		return sb;
 	}
-	
-	public static void  sendExceptionReport(HttpServletResponse response, String errorMessage, String code, String locator, String version) throws IOException {
-		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8'?>\n");
-		
-		sb.append("\n<ExceptionReport xmlns=\"http://www.opengis.net/ows\" ");
-		sb.append("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ");
-		sb.append("xsi:schemaLocation=\"http://www.opengis.net/ows owsExceptionReport.xsd\" version=\""+version+"\">");
-		sb.append("\n\t<Exception exceptionCode=\"");
-		sb.append(code);
-		sb.append("\"");
-		if(locator != null && locator != "" )
-		{
-			sb.append(" locator=\"");
-			sb.append(locator);
-			sb.append("\"");
-		}
-		sb.append(">");
-		if( errorMessage != null && errorMessage.length()!= 0)
-		{
-			sb.append("\n\t\t<ExceptionText>");
-			sb.append(errorMessage);
-			sb.append("</ExceptionText>");
-		}
-		sb.append("\n\t</Exception>");
-		sb.append("\n</ExceptionReport>");
-		
-		response.setContentType("text/xml; charset=utf-8");
-		response.setContentLength(sb.length());
-		OutputStream os;
-		os = response.getOutputStream();
-		os.write(sb.toString().getBytes());
-		os.flush();
-		os.close();
-		
-	}
+
+
 
 
 }

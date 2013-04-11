@@ -4,6 +4,7 @@ package org.easysdi.proxy.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -53,13 +54,24 @@ public class SdiPolicyHome {
 			if(user != null){
 				//Policies linked to the current user
 				Query query = sessionFactory.getCurrentSession().createQuery(
-						"SELECT p FROM SdiPolicy p INNER JOIN p.sdiPolicyUsers as pu INNER JOIN pu.sdiUser as u WHERE u.id= :user AND p.sdiVirtualservice.id = :virtualservice ORDER BY p.ordering asc");
+						"SELECT p FROM SdiPolicy p INNER JOIN p.sdiPolicyUsers as pu INNER JOIN pu.sdiUser as u WHERE u.id= :user AND p.sdiVirtualservice.id = :virtualservice AND p.state = 1 ORDER BY p.ordering asc");
 				query.setParameter("user", user);
 				query.setParameter("virtualservice", virtualservice);
 				List results = query.setCacheable(true).list();
 				if(results != null && results.size() > 0)
 				{
-					return (SdiPolicy) results.get(0);
+					Iterator<SdiPolicy> i = (Iterator<SdiPolicy>) results.iterator();
+					while (i.hasNext())
+					{
+						SdiPolicy policy = i.next();
+						Date from = policy.getAllowfrom();
+						Date to = policy.getAllowto();
+						Date currentDate = new Date();
+						if (currentDate.after(from) && currentDate.before(to))
+							return policy;
+						else
+							continue;
+					}
 				}
 			}
 
@@ -82,25 +94,47 @@ public class SdiPolicyHome {
 			if(c.size() > 0)
 			{
 				Query oQuery = sessionFactory.getCurrentSession().createQuery(
-						"SELECT p  FROM SdiPolicy p INNER JOIN p.sdiPolicyOrganisms as po INNER JOIN p.sdiVirtualservice as vs WHERE po.id IN (:organism) AND vs.id = :virtualservice ORDER BY p.ordering asc");
+						"SELECT p  FROM SdiPolicy p INNER JOIN p.sdiPolicyOrganisms as po INNER JOIN p.sdiVirtualservice as vs WHERE po.id IN (:organism) AND vs.id = :virtualservice AND p.state = 1 ORDER BY p.ordering asc");
 				oQuery.setParameterList("organism", c);
 				oQuery.setParameter("virtualservice", virtualservice);
 				List oResults = oQuery.setCacheable(true).list();
 				if (oResults != null && oResults.size() > 0)
 				{
-					return (SdiPolicy) oResults.get(0);
+					Iterator<SdiPolicy> i1 = (Iterator<SdiPolicy>) oResults.iterator();
+					while (i1.hasNext())
+					{
+						SdiPolicy policy = i1.next();
+						Date from = policy.getAllowfrom();
+						Date to = policy.getAllowto();
+						Date currentDate = new Date();
+						if (currentDate.after(from) && currentDate.before(to))
+							return policy;
+						else
+							continue;
+					}
 				}
 			}
 			
 			//If no authorities are SdiOrganism id, or if no policies are defined for the authorities, try to load a public policy
 			//Public policies
 			Query pQuery = sessionFactory.getCurrentSession().createQuery(
-					"SELECT p  FROM SdiPolicy p INNER JOIN p.sdiVirtualservice as vs INNER JOIN p.sdiSysAccessscope as sc WHERE vs.id = :virtualservice AND sc.id = 1 ORDER BY p.ordering asc");
+					"SELECT p  FROM SdiPolicy p INNER JOIN p.sdiVirtualservice as vs INNER JOIN p.sdiSysAccessscope as sc WHERE vs.id = :virtualservice AND sc.id = 1 AND p.state = 1 ORDER BY p.ordering asc");
 			pQuery.setParameter("virtualservice", virtualservice);
 			List pResults = pQuery.setCacheable(true).list();
 			if (pResults != null && pResults.size() > 0)
 			{
-				return (SdiPolicy) pResults.get(0);
+				Iterator<SdiPolicy> i2 = (Iterator<SdiPolicy>) pResults.iterator();
+				while (i2.hasNext())
+				{
+					SdiPolicy policy = i2.next();
+					Date from = policy.getAllowfrom();
+					Date to = policy.getAllowto();
+					Date currentDate = new Date();
+					if (currentDate.after(from) && currentDate.before(to))
+						return policy;
+					else
+						continue;
+				}
 			}
 			
 			return null;

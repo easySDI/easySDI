@@ -27,8 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -36,18 +34,17 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.Vector;
 import java.util.zip.GZIPInputStream;
 
-import javax.naming.NoPermissionException;
 import javax.net.ssl.SSLHandshakeException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -67,12 +64,14 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.easysdi.proxy.domain.SdiAllowedoperation;
 import org.easysdi.proxy.domain.SdiPolicy;
+import org.easysdi.proxy.domain.SdiSysServicecompliance;
 import org.easysdi.proxy.domain.SdiVirtualservice;
+import org.easysdi.proxy.domain.SdiVirtualserviceServicecompliance;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.proxy.log.ProxyLogger;
 import org.easysdi.proxy.ows.OWSExceptionReport;
-import org.easysdi.proxy.policy.AvailabilityPeriod;
 import org.easysdi.proxy.policy.FeatureType;
 import org.easysdi.proxy.policy.FeatureTypes;
 import org.easysdi.proxy.policy.Layer;
@@ -83,6 +82,7 @@ import org.easysdi.xml.documents.RemoteServerInfo;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.mortbay.jetty.Request;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -115,8 +115,12 @@ public abstract class ProxyServlet extends HttpServlet {
     protected static final String XML_OGC_EXCEPTION = "application/vnd.ogc.se_xml";
     protected static final String SVG = "image/svg+xml";
    
-    private SdiVirtualservice sdiVirtualService;
-    private SdiPolicy sdiPolicy;
+    protected SdiVirtualservice sdiVirtualService;
+    protected SdiPolicy sdiPolicy;
+    private static final String strDateFormat = "dd/MM/yyyy HH:mm:ss";
+    private DateFormat dateFormat ;
+    public HttpServletRequest request; 
+    public HttpServletResponse response;
 
     private List<String> temporaryFileList = new Vector<String>();
     
@@ -243,8 +247,11 @@ public abstract class ProxyServlet extends HttpServlet {
 	    int start = conversionPattern.indexOf("%d{")+3;
 	    int end = conversionPattern.indexOf("}", start);
 
-	    String result = conversionPattern.substring(0,start) + "dd/MM/yyyy HH:mm:ss" + conversionPattern.substring(end);
+	    String result = conversionPattern.substring(0,start) + strDateFormat + conversionPattern.substring(end);
 	    layout.setConversionPattern(result);
+	    
+	    //Init value
+	    dateFormat = new SimpleDateFormat(strDateFormat);
  
     	//Log initilization informations
     	logger.info("Virtualservice="+sdiVirtualService.getAlias());
@@ -378,131 +385,77 @@ public abstract class ProxyServlet extends HttpServlet {
 	return null;
     }
 
-    /**
-     * Set the current config
-     * @param conf
-     * @throws ClassNotFoundException 
-     * @throws InvocationTargetException 
-     * @throws IllegalAccessException 
-     * @throws IllegalArgumentException 
-     * @throws NoSuchMethodException 
-     * @throws SecurityException 
-     */
-    public void setConfiguration(org.easysdi.xml.documents.Config conf) throws ClassNotFoundException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, SecurityException, NoSuchMethodException {
-	//Set the configuration
-	configuration = conf;
-
-	//Set the logger
-	String loggerClassName = configuration.getClassLogger();
-	org.apache.log4j.Level level = org.apache.log4j.Level.toLevel(configuration.getLogLevel()); 
-	Class<?> classe;
-
-	classe = Class.forName(loggerClassName);
-	Method method = classe.getMethod("getLogger",new Class [] {Class.forName ("java.lang.String")} );
-	logger = (Logger) method.invoke(null,new Object[]{"ProxyLogger"});
-	logger.setLevel(level);
-
-
-	if (logger instanceof ProxyLogger){
-	    ((ProxyLogger)logger).setDateFormat(configuration.getLogDateFormat());
-	    ((ProxyLogger)logger).setLogFile(configuration.getLogFile());
-	}else{
-	    DailyRollingFileAppender appender = (DailyRollingFileAppender)logger.getAppender("logFileAppender");
-	    appender.setBufferedIO(true);
-	    appender.setAppend(true);
-	    appender.setFile(configuration.getLogFile());
-	    //DatePattern receive the period rolling value
-	    if(configuration.getPeriod().equalsIgnoreCase("daily"))
-		appender.setDatePattern("'.'yyyy-MM-dd");
-	    else if(configuration.getPeriod().equalsIgnoreCase("monthly"))
-		appender.setDatePattern("'.'yyyy-MM");
-	    else if(configuration.getPeriod().equalsIgnoreCase("weekly"))
-		appender.setDatePattern("'.'yyyy-ww");
-	    else 
-		appender.setDatePattern("'.'yyyy-MM-dd");
-
-	    appender.activateOptions();
-	    PatternLayout layout = (PatternLayout) appender.getLayout();
-	    String conversionPattern = layout.getConversionPattern();
-	    int start = conversionPattern.indexOf("%d{")+3;
-	    int end = conversionPattern.indexOf("}", start);
-
-	    String result = conversionPattern.substring(0,start) + configuration.getLogDateFormat() + conversionPattern.substring(end);
-	    layout.setConversionPattern(result);
-
-	}
-
-	//Log initilization informations
-	logger.info("Config="+configuration.getId());
-    }
-
-
+  
     /* (non-Javadoc)
      * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
-    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-	Date d = new Date();
-	requestCharacterEncoding = req.getCharacterEncoding();
-
-	try {
-	    logger.info("user="+SecurityContextHolder.getContext().getAuthentication().getName());
-	    logger.info("requestTime="+dateFormat.format(d));
-	    logger.info("RemoteAddr="+ req.getRemoteAddr());
-	    logger.info("RemoteUser="+ req.getRemoteUser());
-	    logger.info("QueryString="+ req.getQueryString());
-	    logger.info("RequestURL="+ req.getRequestURL().toString());
-
-	    requestPreTreatmentPOST(req, resp);
-	} finally {
-	    deleteTempFileList();
-	    //To flush log with log4j we need to set the param immediateFlush to 'true'
-	    //AND add a new entry to the log :  all the entries buffered during request execution are written into the log.
-	    //We set immediateFlush to false for performance reason (see log4j documentation).
-	    //We add the same extra entry in the ProxyLogger log to keep the content of the two kind of log equivalent.
-	    if (logger instanceof ProxyLogger){
-		((ProxyLogger)logger).info("ProxyServlet done.");
-		((ProxyLogger)logger).writeInLog(dateFormat.format(d), req);
-	    } else{
-		((FileAppender)logger.getAppender("logFileAppender")).setImmediateFlush(true);
-		logger.info("----------------------------------------------------------------------------------");
-		((FileAppender)logger.getAppender("logFileAppender")).setImmediateFlush(false);
-	    }
-	}
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException 
+    {
+		request = req;
+    	response = resp;
+    	Date d = new Date();
+		requestCharacterEncoding = req.getCharacterEncoding();
+	
+		try {
+		    logger.info("user="+SecurityContextHolder.getContext().getAuthentication().getName());
+		    logger.info("requestTime="+dateFormat.format(d));
+		    logger.info("RemoteAddr="+ req.getRemoteAddr());
+		    logger.info("RemoteUser="+ req.getRemoteUser());
+		    logger.info("QueryString="+ req.getQueryString());
+		    logger.info("RequestURL="+ req.getRequestURL().toString());
+	
+		    requestPreTreatmentPOST(req, resp);
+		} finally {
+		    deleteTempFileList();
+		    //To flush log with log4j we need to set the param immediateFlush to 'true'
+		    //AND add a new entry to the log :  all the entries buffered during request execution are written into the log.
+		    //We set immediateFlush to false for performance reason (see log4j documentation).
+		    //We add the same extra entry in the ProxyLogger log to keep the content of the two kind of log equivalent.
+		    if (logger instanceof ProxyLogger){
+			((ProxyLogger)logger).info("ProxyServlet done.");
+			((ProxyLogger)logger).writeInLog(dateFormat.format(d), req);
+		    } else{
+			((FileAppender)logger.getAppender("logFileAppender")).setImmediateFlush(true);
+			logger.info("----------------------------------------------------------------------------------");
+			((FileAppender)logger.getAppender("logFileAppender")).setImmediateFlush(false);
+		    }
+		}
     }
 
     /* (non-Javadoc)
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
-    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-	Date d = new Date();
-	requestCharacterEncoding = req.getCharacterEncoding();
-
-	try {
-	    logger.info("user="+SecurityContextHolder.getContext().getAuthentication().getName());
-	    logger.info("requestTime="+dateFormat.format(d));
-	    logger.info("RemoteAddr="+ req.getRemoteAddr());
-	    logger.info("RemoteUser="+ req.getRemoteUser());
-	    logger.info("QueryString="+ req.getQueryString());
-	    logger.info("RequestURL="+ req.getRequestURL().toString());
-
-	    requestPreTreatmentGET(req, resp);
-	} finally {
-	    deleteTempFileList();
-	    //To flush log with log4j we need to set the param immediateFlush to 'true'
-	    //AND add a new entry to the log :  all the entries buffered during request execution are written into the log.
-	    //We set immediateFlush to false for performance reason (see log4j documentation).
-	    //We add the same extra entry in the ProxyLogger log to keep the content of the two kind of log equivalent.
-	    if (logger instanceof ProxyLogger){
-		((ProxyLogger)logger).info("ProxyServlet done.");
-		((ProxyLogger)logger).writeInLog(dateFormat.format(d), req);
-	    } else{
-		((FileAppender)logger.getAppender("logFileAppender")).setImmediateFlush(true);
-		logger.info("----------------------------------------------------------------------------------");
-		((FileAppender)logger.getAppender("logFileAppender")).setImmediateFlush(false);
-	    }
-	}
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException 
+    {
+    	request = req;
+    	response = resp;
+		Date d = new Date();
+		requestCharacterEncoding = req.getCharacterEncoding();
+	
+		try {
+		    logger.info("user="+SecurityContextHolder.getContext().getAuthentication().getName());
+		    logger.info("requestTime="+dateFormat.format(d));
+		    logger.info("RemoteAddr="+ req.getRemoteAddr());
+		    logger.info("RemoteUser="+ req.getRemoteUser());
+		    logger.info("QueryString="+ req.getQueryString());
+		    logger.info("RequestURL="+ req.getRequestURL().toString());
+	
+		    requestPreTreatmentGET(req, resp);
+		} finally {
+		    deleteTempFileList();
+		    //To flush log with log4j we need to set the param immediateFlush to 'true'
+		    //AND add a new entry to the log :  all the entries buffered during request execution are written into the log.
+		    //We set immediateFlush to false for performance reason (see log4j documentation).
+		    //We add the same extra entry in the ProxyLogger log to keep the content of the two kind of log equivalent.
+		    if (logger instanceof ProxyLogger){
+			((ProxyLogger)logger).info("ProxyServlet done.");
+			((ProxyLogger)logger).writeInLog(dateFormat.format(d), req);
+		    } else{
+			((FileAppender)logger.getAppender("logFileAppender")).setImmediateFlush(true);
+			logger.info("----------------------------------------------------------------------------------");
+			((FileAppender)logger.getAppender("logFileAppender")).setImmediateFlush(false);
+		    }
+		}
     }
 
     /**
@@ -517,7 +470,6 @@ public abstract class ProxyServlet extends HttpServlet {
      */
     protected abstract void requestPreTreatmentGET(HttpServletRequest req, HttpServletResponse resp);
 
-
     /**
      * Aggregate exception files from remote servers in one single file
      * The search for tags <ServiceExceptionReport> and <ServiceException> is valid for
@@ -526,6 +478,7 @@ public abstract class ProxyServlet extends HttpServlet {
      * 
      *  WFS version 1.1 uses tags <ExceptionReport> and subTag <Exception>
      */
+    //TODO move to WFS
     @Deprecated
     protected ByteArrayOutputStream buildResponseForOgcServiceException ()
     {
@@ -597,6 +550,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	}
 	return null;
     }
+    
     /**
      * Builds the url from the request
      * 
@@ -628,39 +582,6 @@ public abstract class ProxyServlet extends HttpServlet {
     }
 
 
-
-
-
-    /**
-     * Send to the client the ogc Exception build by the proxy
-     * @param resp
-     * @param ogcException
-     */
-    @Deprecated
-    public void sendOgcExceptionBuiltInResponse (HttpServletResponse resp,StringBuffer ogcException)
-    {
-	try {
-	    resp.setContentType("text/xml; charset=utf-8");
-	    resp.setContentLength(Integer.MAX_VALUE);
-
-	    OutputStream os;
-	    os = resp.getOutputStream();
-	    os.write(ogcException.toString().getBytes());
-	    os.flush();
-	    os.close();
-	} catch (IOException e)
-	{
-	    e.printStackTrace();
-	}
-	finally
-	{
-	    DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-	    Date d = new Date();
-	    logger.info("ClientResponseDateTime="+ dateFormat.format(d));
-	    logger.info("ClientResponseLength="+ ogcException.length());
-	}
-    }
-
     @Deprecated
     public void sendProxyBuiltInResponse (HttpServletResponse resp,StringBuffer xmlResponse)
     {
@@ -679,7 +600,6 @@ public abstract class ProxyServlet extends HttpServlet {
 	}
 	finally
 	{
-	    DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 	    Date d = new Date();
 	    logger.info("ClientResponseDateTime="+ dateFormat.format(d));
 	    logger.info("ClientResponseLength="+ xmlResponse.length());
@@ -696,103 +616,95 @@ public abstract class ProxyServlet extends HttpServlet {
      * TODO use the server 'alias' as identifier in the method 'SendToRemoteServer' in place of the url string (this param is certainly not an identifier)
      */
 
-    public String sendData(String method, String urlstr, String parameters) {
-	try {
-	    HttpURLConnection hpcon = SendToRemoteServer(method,urlstr, parameters);
-
-	    InputStream in = null;
-	    String responseExtensionContentType=null;
-
-	    //HTTP Code handling
-	    int httpCode = hpcon.getResponseCode() ;
-	    responseStatusCode = httpCode;
-	    if(httpCode>= 400 && httpCode <500){
-		//Response with HTTP code 4xx are keeped because they can contain exception information usefull for the client
-		logger.info("Remote server '"+urlstr+"' returns HTTP CODE "+httpCode+" to request ["+parameters+"]");
-		try{
-		    in = hpcon.getInputStream();
-		}catch (IOException e){
-		    StringBuffer response = null;
-		    //The response is contained in the error stream, this kind of response is translated into OGC exceptions to be returned to client
-		    if(owsExceptionReport == null){
-			//WFS and CSW not used yet an object owsExceptionReport to generate exception message
-			//Used the deprecated method to do that until WFS and CSW were updated
-			response = generateOgcException("HTTP Code "+String.valueOf(httpCode), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", "");
-		    }else{
-			response = owsExceptionReport.generateExceptionReport(owsExceptionReport.getHttpCodeDescription(String.valueOf(httpCode)), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "");
+    public String sendData(String method, String urlstr, String parameters) 
+    {
+		try {
+		    HttpURLConnection hpcon = SendToRemoteServer(method,urlstr, parameters);
+	
+		    InputStream in = null;
+		    String responseExtensionContentType=null;
+	
+		    //HTTP Code handling
+		    int httpCode = hpcon.getResponseCode() ;
+		    responseStatusCode = httpCode;
+		    if(httpCode>= 400 && httpCode <500)
+		    {
+		    	//Response with HTTP code 4xx are keeped because they can contain exception information usefull for the client
+		    	logger.info("Remote server '"+urlstr+"' returns HTTP CODE "+httpCode+" to request ["+parameters+"]");
+				try{
+				    in = hpcon.getInputStream();
+				}catch (IOException e){
+					StringBuffer strResponse = null;
+				   	strResponse = owsExceptionReport.generateExceptionReport(request, response, owsExceptionReport.getHttpCodeDescription(String.valueOf(httpCode)), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK);
+					in = new ByteArrayInputStream(strResponse.toString().getBytes());
+				    //Set the ContentType according to the new content of the response 
+				    responseExtensionContentType = "text/xml";
+				    responseStatusCode = HttpServletResponse.SC_OK;
+				}
 		    }
-		    in = new ByteArrayInputStream(response.toString().getBytes());
-		    //Set the ContentType according to the new content of the response 
-		    responseExtensionContentType = "text/xml";
-		    responseStatusCode = HttpServletResponse.SC_OK;
-		}
-	    }else if (httpCode >=500){
-		logger.info("Remote server '"+urlstr+"' returns HTTP CODE "+httpCode+" to request ["+parameters+"]");
-		//All HTTP error with code > 500 are translated into OGC exceptions to be returned to the client (if the Exception management mode allowed it)
-		StringBuffer response = null;
-		if(owsExceptionReport == null){
-			//WFS and CSW not used yet an object owsExceptionReport to generate exception message
-			//Used the deprecated method to do that until WFS and CSW were updated
-			response = generateOgcException("HTTP Code "+String.valueOf(httpCode), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", "");
-		    }else{
-			response = owsExceptionReport.generateExceptionReport(owsExceptionReport.getHttpCodeDescription(String.valueOf(httpCode)), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "");
+		    else if (httpCode >=500)
+		    {
+				logger.info("Remote server '"+urlstr+"' returns HTTP CODE "+httpCode+" to request ["+parameters+"]");
+				//All HTTP error with code > 500 are translated into OGC exceptions to be returned to the client (if the Exception management mode allowed it)
+				StringBuffer strResponse = null;
+				strResponse = owsExceptionReport.generateExceptionReport(request, response,owsExceptionReport.getHttpCodeDescription(String.valueOf(httpCode)), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK);
+				in = new ByteArrayInputStream(strResponse.toString().getBytes());
+				//Set the ContentType according to the new content of the response 
+				responseExtensionContentType = "text/xml";
+				responseStatusCode = HttpServletResponse.SC_OK;
+			}
+		    else
+		    {
+				//Http Code < 400
+				if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) {
+				    in = new GZIPInputStream(hpcon.getInputStream());
+				    logger.trace( "return of the remote server is zipped");
+				} else {
+				    in = hpcon.getInputStream();
+				}
 		    }
-		in = new ByteArrayInputStream(response.toString().getBytes());
-		//Set the ContentType according to the new content of the response 
-		responseExtensionContentType = "text/xml";
-		responseStatusCode = HttpServletResponse.SC_OK;
-	    }else{
-		//Http Code < 400
-		if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) {
-		    in = new GZIPInputStream(hpcon.getInputStream());
-		    logger.trace( "return of the remote server is zipped");
-		} else {
-		    in = hpcon.getInputStream();
+	
+		    //Content type handling
+		    responseContentType = hpcon.getContentType();
+		    if(hpcon.getContentType() != null && responseExtensionContentType == null){
+			//Used to store the current response contentType
+			responseExtensionContentType = hpcon.getContentType().split(";")[0];
+			//Used to store all the remote server response ContentType : 
+			//needed to separate exception contentType (eg : text/xml)
+			//from valid response contentType (eg : image/png)
+			responseContentTypeList.add(responseExtensionContentType);
+		    }
+	
+		    //Temp file writing
+		    String tmpDir = System.getProperty("java.io.tmpdir");
+		    logger.debug(" tmpDir :  " + tmpDir);
+		    File tempFile = createTempFile("sendData_" + UUID.randomUUID().toString(), getExtension(responseExtensionContentType));
+		    FileOutputStream tempFos = new FileOutputStream(tempFile);
+		    byte[] buf = new byte[1024];
+		    int nread;
+		    while ((nread = in.read(buf)) >= 0) {
+			tempFos.write(buf, 0, nread);
+		    }
+		    tempFos.flush();
+		    tempFos.close();
+		    in.close();
+	
+		    logger.info("RemoteResponseToRequestUrl="+ urlstr);
+		    logger.info("RemoteResponseLength="+ tempFile.length());
+		    Date d = new Date();
+		    logger.info("RemoteResponseDateTime="+ dateFormat.format(d));
+	
+		    return tempFile.toString();
+	
+		}catch (SSLHandshakeException e){
+		    e.printStackTrace();
+		    logger.error("Unable to find valid certification. "+e.getCause().toString());
+		    return null;
+	
+		}catch (Exception e) {
+		    e.printStackTrace();
+		    return null;
 		}
-	    }
-
-	    //Content type handling
-	    responseContentType = hpcon.getContentType();
-	    if(hpcon.getContentType() != null && responseExtensionContentType == null){
-		//Used to store the current response contentType
-		responseExtensionContentType = hpcon.getContentType().split(";")[0];
-		//Used to store all the remote server response ContentType : 
-		//needed to separate exception contentType (eg : text/xml)
-		//from valid response contentType (eg : image/png)
-		responseContentTypeList.add(responseExtensionContentType);
-	    }
-
-	    //Temp file writing
-	    String tmpDir = System.getProperty("java.io.tmpdir");
-	    logger.debug(" tmpDir :  " + tmpDir);
-	    File tempFile = createTempFile("sendData_" + UUID.randomUUID().toString(), getExtension(responseExtensionContentType));
-	    FileOutputStream tempFos = new FileOutputStream(tempFile);
-	    byte[] buf = new byte[1024];
-	    int nread;
-	    while ((nread = in.read(buf)) >= 0) {
-		tempFos.write(buf, 0, nread);
-	    }
-	    tempFos.flush();
-	    tempFos.close();
-	    in.close();
-
-	    logger.info("RemoteResponseToRequestUrl="+ urlstr);
-	    logger.info("RemoteResponseLength="+ tempFile.length());
-	    DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-	    Date d = new Date();
-	    logger.info("RemoteResponseDateTime="+ dateFormat.format(d));
-
-	    return tempFile.toString();
-
-	}catch (SSLHandshakeException e){
-	    e.printStackTrace();
-	    logger.error("Unable to find valid certification. "+e.getCause().toString());
-	    return null;
-
-	}catch (Exception e) {
-	    e.printStackTrace();
-	    return null;
-	}
     }
 
     /**
@@ -843,7 +755,6 @@ public abstract class ProxyServlet extends HttpServlet {
 
 
 	logger.info("RemoteResponseToRequestUrl="+ sUrl);
-	DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 	Date d = new Date();
 	logger.info("RemoteResponseDateTime="+ dateFormat.format(d));
     }
@@ -861,7 +772,6 @@ public abstract class ProxyServlet extends HttpServlet {
 		    sUrl = sUrl.substring(0, sUrl.length() - 1);
 		}
 	    }
-	    DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 	    Date d = new Date();
 	    logger.info("RemoteRequestUrl="+ sUrl);
 	    logger.info("RemoteRequest="+ parameters.replaceAll("\r", ""));
@@ -870,7 +780,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	    String cookie = null;
 
 	    if (getLoginService(sUrl) != null) {
-		cookie = geonetworkLogIn(getLoginService(sUrl));
+	    	cookie = geonetworkLogIn(getLoginService(sUrl));
 	    }
 
 	    String encoding = null;
@@ -962,32 +872,32 @@ public abstract class ProxyServlet extends HttpServlet {
      * @return
      */
     protected String getExtension(String responseContentType) {
-	String ext = ".unk";
-	if (responseContentType == null)
-	    return ext;
-	if (isXML(responseContentType)) {
-	    ext = ".xml";
-	} else if (responseContentType.startsWith(PNG)) {
-	    ext = ".png";
-	} else if (responseContentType.startsWith(SVG)) {
-	    ext = ".svg";
-	} else if (responseContentType.startsWith(GIF)) {
-	    ext = ".gif";
-	} else if (responseContentType.startsWith(JPG)) {
-	    ext = ".jpg";
-	} else if (responseContentType.startsWith(JPEG)) {
-	    ext = ".jpeg";
-	} else if (responseContentType.startsWith(TIFF)) {
-	    ext = ".tiff";
-	} else if (responseContentType.startsWith(BMP)) {
-	    ext = ".bmp";
-	} else if (responseContentType.startsWith(TXT)) {
-	    ext = ".txt";
-	} else {
-	    logger.debug("unkwnon content type " + responseContentType);
-	}
-
-	return ext;
+		String ext = ".unk";
+		if (responseContentType == null)
+		    return ext;
+		if (isXML(responseContentType)) {
+		    ext = ".xml";
+		} else if (responseContentType.startsWith(PNG)) {
+		    ext = ".png";
+		} else if (responseContentType.startsWith(SVG)) {
+		    ext = ".svg";
+		} else if (responseContentType.startsWith(GIF)) {
+		    ext = ".gif";
+		} else if (responseContentType.startsWith(JPG)) {
+		    ext = ".jpg";
+		} else if (responseContentType.startsWith(JPEG)) {
+		    ext = ".jpeg";
+		} else if (responseContentType.startsWith(TIFF)) {
+		    ext = ".tiff";
+		} else if (responseContentType.startsWith(BMP)) {
+		    ext = ".bmp";
+		} else if (responseContentType.startsWith(TXT)) {
+		    ext = ".txt";
+		} else {
+		    logger.debug("unkwnon content type " + responseContentType);
+		}
+	
+		return ext;
     }
 
     /**
@@ -996,41 +906,39 @@ public abstract class ProxyServlet extends HttpServlet {
      * @return
      */
     protected File createTempFile(String name, String ext) {
-	try {
-	    File f = File.createTempFile(name, ext);
-	    temporaryFileList.add(f.toURI().toString());
-	    return f;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    return null;
-	}
-
+		try {
+		    File f = File.createTempFile(name, ext);
+		    temporaryFileList.add(f.toURI().toString());
+		    return f;
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    return null;
+		}
     }
 
     /**
      * 
      */
-    protected void deleteTempFileList() {
-
-	try {
-	    for (int i = 0; i < temporaryFileList.size(); i++) {
-		File f = new File(new URI(temporaryFileList.get(i)));
-		if (f.exists()) {
-		    boolean deleted = f.delete();
-		    if (deleted)
-			logger.debug("temporary file " + f.toURI().toString() + " is deleted");
-		    else {
-			f.deleteOnExit();
-			logger.warn( "temporary file " + f.toURI().toString() + " is not deleted");
+    protected void deleteTempFileList() 
+    {
+		try {
+		    for (int i = 0; i < temporaryFileList.size(); i++) {
+			File f = new File(new URI(temporaryFileList.get(i)));
+			if (f.exists()) {
+			    boolean deleted = f.delete();
+			    if (deleted)
+				logger.debug("temporary file " + f.toURI().toString() + " is deleted");
+			    else {
+				f.deleteOnExit();
+				logger.warn( "temporary file " + f.toURI().toString() + " is not deleted");
+			    }
+			}
+	
 		    }
+		    temporaryFileList.clear();
+		} catch (Exception e) {
+		    e.printStackTrace();
 		}
-
-	    }
-	    temporaryFileList.clear();
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-
     }
 
     /**
@@ -1038,14 +946,13 @@ public abstract class ProxyServlet extends HttpServlet {
      * @return
      */
     protected boolean isXML(String responseContentType) {
-	if (responseContentType == null)
-	    return false;
-
-	if (responseContentType.startsWith(XML) || responseContentType.startsWith(XML_OGC_WMS) || responseContentType.startsWith(XML_OGC_EXCEPTION)
-		|| responseContentType.startsWith(APPLICATION_XML) || responseContentType.contains("gml"))
-	    return true;
-	return false;
-
+		if (responseContentType == null)
+		    return false;
+	
+		if (responseContentType.startsWith(XML) || responseContentType.startsWith(XML_OGC_WMS) || responseContentType.startsWith(XML_OGC_EXCEPTION)
+			|| responseContentType.startsWith(APPLICATION_XML) || responseContentType.contains("gml"))
+		    return true;
+		return false;
     }
 
     /**
@@ -1114,6 +1021,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	return null;
     }
 
+    @Deprecated
     public org.easysdi.xml.documents.Config getConfiguration() {
     	return configuration;
     }
@@ -1121,93 +1029,30 @@ public abstract class ProxyServlet extends HttpServlet {
     
 
 
-    /**
-     * If the current operation is not allowed, generate an ogc exception 
-     * and send it to the client
-     * @param currentOperation
-     * @param resp
-     */
-    @Deprecated 
-    /*used in CSW and WFS*/
-    protected boolean handleNotAllowedOperation (String currentOperation, HttpServletResponse resp)
-    {
-	//IF operation is not supported by the current version of the proxy
-	if(!ServiceSupportedOperations.contains(currentOperation))
-	{
-	    sendOgcExceptionBuiltInResponse(resp,generateOgcException("Operation not allowed","OperationNotSupported","request", requestedVersion));
-	    return true;
-	}
-	try
-	{
-	    if (!isOperationAllowed(currentOperation))
-	    {
-		sendOgcExceptionBuiltInResponse(resp,generateOgcException("Operation not allowed","OperationNotSupported","request",requestedVersion));
-		return true;
-
-	    }
-	}
-	catch (AvailabilityPeriodException ex)
-	{
-
-	    sendOgcExceptionBuiltInResponse(resp,generateOgcException(ex.getMessage(),"OperationNotSupported","request",requestedVersion));
-	    return true;
-	}
-
-	return false;
-    }
-
-    /**
-     * Return If the current operation is  allowed by the loaded policy
-     * @param currentOperation
-     */
-    protected boolean isOperationAllowedByPolicy (String currentOperation)
-    {
-	try{
-	    if (isOperationAllowed(currentOperation)) {
-		return true;
-	    }
-	}catch (AvailabilityPeriodException ex){
-	    return false;
-	}
-	return false;
-    }
-
-    /**
-     * Return if the current operation is supported by the current version of the proxy
-     * @param currentOperation
-     */
-    protected boolean isOperationSupportedByProxy (String currentOperation)
-    {
-	if(ServiceSupportedOperations.contains(currentOperation))
-	    return true;
-	return false;
-    }
-
-    /**
+       /**
      * If the operation is allowed in the policy then return true, in any other
      * case return false.
      * 
-     * @param operation
-     *            the operation to check
+     * @param operation the operation to check
      * @return true | false.
      */
-    public boolean isOperationAllowed(String operation) {
-	if (policy == null)
-	    return false;
+    public boolean isOperationAllowed(String operation) 
+    {
+		if(sdiPolicy.isAnyoperation())
+			return true;
+		
+		Set<SdiAllowedoperation> allowedoperations =  sdiPolicy.getSdiAllowedoperations();
+		if(allowedoperations == null)
+			return false;
+		
+		Iterator<SdiAllowedoperation> i = allowedoperations.iterator();
+		while(i.hasNext()){
+			SdiAllowedoperation allowOperation = i.next();
+			if(allowOperation.getSdiSysServiceoperation().getValue().equals(operation))
+				return true;
+		}
 
-	if (policy.getAvailabilityPeriod() != null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
 		return false;
-	}
-
-	if (policy.getOperations().isAll())
-	    return true;
-	List<Operation> operationList = policy.getOperations().getOperation();
-	for (int i = 0; i < operationList.size(); i++) {
-	    if (operation.equalsIgnoreCase(operationList.get(i).getName()))
-		return true;
-	}
-	return false;
     }
 
     /**
@@ -1218,13 +1063,9 @@ public abstract class ProxyServlet extends HttpServlet {
      * @param ft The feature type to test
      * @return true if the layer is allowed, false if not
      */
-    protected boolean isFeatureTypeAllowed(String ft) {
-	if (policy == null)
-	    return false;
-	if (policy.getAvailabilityPeriod() != null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
-		return false;
-	}
+    protected boolean isFeatureTypeAllowed(String ft) 
+    {
+	
 
 	List<Server> serverList = policy.getServers().getServer();
 	for (int i = 0; i < serverList.size(); i++) {
@@ -1252,13 +1093,7 @@ public abstract class ProxyServlet extends HttpServlet {
      * @return true if the feature type is allowed, false if not
      */
     protected boolean isFeatureTypeAllowed(String ft, String url) {
-	if (policy == null)
-	    return false;
-	if (policy.getAvailabilityPeriod() != null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
-		return false;
-	}
-
+	
 	//Debug HVH 23.12.2010
 	//using policy.getServers().isAll() and features.isAll()
 	//return wrong results.
@@ -1305,223 +1140,92 @@ public abstract class ProxyServlet extends HttpServlet {
     }
 
     /**
-     * Detects if the layer is allowed :
-     * - by being specifically allowed in the policy
-     * - by default, when <Servers All = true> or <Layers All=true> 
-     * 
-     * @param layer
-     *            The layer to test
-     * @return true if the layer is allowed, false if not
-     */
-    protected boolean isLayerAllowed (String layer)
-    {
-	if (policy == null)
-	    return false;
-	if (policy.getAvailabilityPeriod() != null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
-		return false;
-	}
-	if (layer == null)
-	    return false;
-
-	List<Server> serverList = policy.getServers().getServer();
-	for (int i = 0; i < serverList.size(); i++) {
-	    List<Layer> layerList = serverList.get(i).getLayers().getLayer();
-	    for (int j = 0; j < layerList.size(); j++) {
-		if (layer.equals(layerList.get(j).getName()))
-		    return true;
-	    }
-	}
-	return false;
-    }
-    /**
      * Detects if the layer is allowed or not against the rule.
      * 
-     * @param layer
-     *            The layer to test
-     * @param url
-     *            the url of the remote server.
+     * @param layer The layer to test
+     * @param url   the url of the remote server.
      * @return true if the layer is allowed, false if not
      */
-    public boolean isLayerAllowed(String layer, String url) {
-	if (policy == null)
-	    return false;
-	if (policy.getAvailabilityPeriod() != null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
-		return false;
-	}
-
-	if (layer == null)
-	    return false;
-
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i = 0; i < serverList.size(); i++) {
-	    // Is the server overloaded?
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		List<Layer> layerList = serverList.get(i).getLayers().getLayer();
-		for (int j = 0; j < layerList.size(); j++) {
-		    // Is a specific layer allowed ?
-		    if (layer.equals(layerList.get(j).getName()))
-			return true;
+    public boolean isLayerAllowed(String layer, String url) 
+    {
+		if (layer == null)
+		    return false;
+	
+		List<Server> serverList = policy.getServers().getServer();
+	
+		for (int i = 0; i < serverList.size(); i++) {
+		    // Is the server overloaded?
+		    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+			List<Layer> layerList = serverList.get(i).getLayers().getLayer();
+			for (int j = 0; j < layerList.size(); j++) {
+			    // Is a specific layer allowed ?
+			    if (layer.equals(layerList.get(j).getName()))
+				return true;
+			}
+	
+		    }
 		}
-
-	    }
-	}
-	return false;
+		return false;
     }
 
-   
     /**
-     * If the current date is not in the right date range returns an error
      * 
-     * @param conf
-     * @return
-     * @throws NoPermissionException
+     * @param req
+     * @param resp
+     * @param tempOut
+     * @param responseContentType
+     * @param responseCode
      */
-    protected boolean isDateAvaillable(AvailabilityPeriod p) {
-	if (policy == null)
-	    throw new AvailabilityPeriodException(AvailabilityPeriodException.SERVICE_IS_NULL);
-	// return false;
-	SimpleDateFormat sdf = new SimpleDateFormat(p.getMask());
-	Calendar calendar = Calendar.getInstance(); 
-	Date fromDate = null;
-	Date toDate = null;
-
-	try {
-	    if (p.getFrom() != null)
-		fromDate = sdf.parse(p.getFrom().getDate());
-	    if (p.getTo() != null)
-		toDate = sdf.parse(p.getTo().getDate());
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new AvailabilityPeriodException(AvailabilityPeriodException.SERVICE_DATES_PARSE_ERROR);
-	    // return false;
-	}
-	Date currentDate = new Date();
-	if (fromDate != null)
-	    if (currentDate.compareTo(fromDate) <0)
-		throw new AvailabilityPeriodException(AvailabilityPeriodException.CURRENT_DATE_BEFORE_SERVICE_FROM_DATE);
-	// return false;
-
-	if (toDate != null)
-	    //toDate contains hh:mm:ss, so it is like 01:01:2011 00:00:00
-	    //To include the toDate in the validity period, we add a day to compare to the current date.
-	    calendar.setTime(toDate);
-	calendar.add(Calendar.DAY_OF_MONTH, 1);
-	toDate = calendar.getTime();
-	if (currentDate.compareTo(toDate) > 0)
-	    throw new AvailabilityPeriodException(AvailabilityPeriodException.CURRENT_DATE_AFTER_SERVICE_TO_DATE);
-	// return false;
-
-	return true;
-    }
-
-    
-
-   
-
-    
-
     protected void sendHttpServletResponse (HttpServletRequest req, HttpServletResponse resp, ByteArrayOutputStream tempOut, String responseContentType, Integer responseCode)
     {
-	try
-	{
-	    BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
-	    resp.setContentType(responseContentType);
-	    resp.setStatus(responseCode);
-	    if (tempOut != null)
-		resp.setContentLength(tempOut.size());
-	    else
-		resp.setContentLength(0);
-
-	    try {
-		logger.trace("begin response writting");
-		if (req!= null && "1".equals(req.getParameter("download"))) {
-		    String format = req.getParameter("format");
-		    if (format == null)
-			format = req.getParameter("FORMAT");
-		    if (format != null) {
-			String parts[] = format.split("/");
-			String ext = "";
-			if (parts.length > 1)
-			    ext = parts[1];
-			resp.setHeader("Content-Disposition", "attachment; filename=download." + ext);
+		try
+		{
+		    BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
+		    resp.setContentType(responseContentType);
+		    resp.setStatus(responseCode);
+		    if (tempOut != null)
+		    	resp.setContentLength(tempOut.size());
+		    else
+		    	resp.setContentLength(0);
+	
+		    try {
+				logger.trace("begin response writting");
+				if (req!= null && "1".equals(req.getParameter("download"))) {
+				    String format = req.getParameter("format");
+				    if (format == null)
+				    	format = req.getParameter("FORMAT");
+				    if (format != null) {
+				    	String parts[] = format.split("/");
+						String ext = "";
+						if (parts.length > 1)
+						    ext = parts[1];
+						resp.setHeader("Content-Disposition", "attachment; filename=download." + ext);
+				    }
+				}
+				if (tempOut != null)
+				    os.write(tempOut.toByteArray());
+				logger.trace("end response writting");
+		    } 
+		    finally {
+				os.flush();
+				os.close();
+				Date d = new Date();
+				logger.info("ClientResponseDateTime="+ dateFormat.format(d));
+				if (tempOut != null)
+				    logger.info("ClientResponseLength="+ tempOut.size());
 		    }
+		
+			Date d = new Date();
+			logger.info( "ClientResponseDateTime="+ dateFormat.format(d));
+		} 
+		catch (Exception e) 
+		{
+		    resp.setHeader("easysdi-proxy-error-occured", "true");
+		    logger.error(e.getMessage());
 		}
-		if (tempOut != null)
-		    os.write(tempOut.toByteArray());
-		logger.trace("end response writting");
-	    } finally {
-		os.flush();
-		os.close();
-		DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-		Date d = new Date();
-		logger.info("ClientResponseDateTime="+ dateFormat.format(d));
-		if (tempOut != null)
-		    logger.info("ClientResponseLength="+ tempOut.size());
-	    }
-
-	    DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-	    Date d = new Date();
-	    logger.info( "ClientResponseDateTime="+ dateFormat.format(d));
-	} 
-	catch (Exception e) 
-	{
-	    resp.setHeader("easysdi-proxy-error-occured", "true");
-	    logger.error(e.getMessage());
-	}
     }
 
-    public void sendHttpServletResponse (HttpServletRequest req, HttpServletResponse resp, StringBuffer tempOut, String responseContentType, Integer responseCode)
-    {
-	try
-	{
-	    BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
-	    resp.setContentType(responseContentType);
-	    resp.setStatus(responseCode);
-	    if (tempOut != null)
-		resp.setContentLength(tempOut.length());
-	    else
-		resp.setContentLength(0);
-
-	    try {
-		logger.trace("transform begin response writting");
-		if (req!= null && "1".equals(req.getParameter("download"))) {
-		    String format = req.getParameter("format");
-		    if (format == null)
-			format = req.getParameter("FORMAT");
-		    if (format != null) {
-			String parts[] = format.split("/");
-			String ext = "";
-			if (parts.length > 1)
-			    ext = parts[1];
-			resp.setHeader("Content-Disposition", "attachment; filename=download." + ext);
-		    }
-		}
-		/*if(responseCode.equals(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)){
-		    resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tempOut.toString());
-		}
-		else*/ if (tempOut != null)
-		    os.write(tempOut.toString().getBytes());
-		logger.trace("transform end response writting");
-	    } finally {
-		os.flush();
-		os.close();
-		DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-		Date d = new Date();
-		logger.info("ClientResponseDateTime="+ dateFormat.format(d));
-		if (tempOut != null)
-		    logger.info("ClientResponseLength="+ tempOut.length());
-	    }
-	} 
-	catch (Exception e) 
-	{
-	    resp.setHeader("easysdi-proxy-error-occured", "true");
-	    logger.error(e.getMessage());
-	}
-    }
-
+    
     /**
      * Return if the file at the given path is an XML OGC exception file.
      * @param path
@@ -1532,119 +1236,129 @@ public abstract class ProxyServlet extends HttpServlet {
      * @throws JDOMException 
      */
     public boolean isRemoteServerResponseException(String path) throws SAXException, IOException, ParserConfigurationException, JDOMException{
-	String ext = (path.lastIndexOf(".")==-1)?"":path.substring(path.lastIndexOf(".")+1,path.length());
-	if (ext.equals("xml"))
-	{
-	    SAXBuilder sxb = new SAXBuilder();
-	    Document documentMaster = sxb.build(new File(path));
-	    if (documentMaster != null) 
-	    {
-		//ServiceExceptionReport is the root element name for WMS, WFS exception
-		//ExceptionReport is the root element for OWS, WMTS, CSW exception
-		if(documentMaster.getRootElement().getName().equalsIgnoreCase("ServiceExceptionReport") || documentMaster.getRootElement().getName().equalsIgnoreCase("ExceptionReport"))
-		    return true;
-		else
-		    return false;
-	    }
-	}else if (ext.equals("txt")){
-	    //Exception file can be sent with content txpe text/plain and temporarly store under .txt extension
-	    try{
-		SAXBuilder sxb = new SAXBuilder();
-		Document documentMaster = sxb.build(new File(path));
-		if (documentMaster != null) 
+		String ext = (path.lastIndexOf(".")==-1)?"":path.substring(path.lastIndexOf(".")+1,path.length());
+		if (ext.equals("xml"))
 		{
-		    //ServiceExceptionReport is the root element name for WMS, WFS exception
-		    //ExceptionReport is the root element for OWS, WMTS, CSW exception
-		    if(documentMaster.getRootElement().getName().equalsIgnoreCase("ServiceExceptionReport") || documentMaster.getRootElement().getName().equalsIgnoreCase("ExceptionReport"))
-			return true;
-		    else
+		    SAXBuilder sxb = new SAXBuilder();
+		    Document documentMaster = sxb.build(new File(path));
+		    if (documentMaster != null) 
+		    {
+			//ServiceExceptionReport is the root element name for WMS, WFS exception
+			//ExceptionReport is the root element for OWS, WMTS, CSW exception
+			if(documentMaster.getRootElement().getName().equalsIgnoreCase("ServiceExceptionReport") || documentMaster.getRootElement().getName().equalsIgnoreCase("ExceptionReport"))
+			    return true;
+			else
+			    return false;
+		    }
+		}else if (ext.equals("txt")){
+		    //Exception file can be sent with content txpe text/plain and temporarly store under .txt extension
+		    try{
+			SAXBuilder sxb = new SAXBuilder();
+			Document documentMaster = sxb.build(new File(path));
+			if (documentMaster != null) 
+			{
+			    //ServiceExceptionReport is the root element name for WMS, WFS exception
+			    //ExceptionReport is the root element for OWS, WMTS, CSW exception
+			    if(documentMaster.getRootElement().getName().equalsIgnoreCase("ServiceExceptionReport") || documentMaster.getRootElement().getName().equalsIgnoreCase("ExceptionReport"))
+				return true;
+			    else
+				return false;
+			}
+		    }catch(JDOMException e){
 			return false;
+		    }
 		}
-	    }catch(JDOMException e){
 		return false;
-	    }
-	}
-	return false;
     }
 
+    /**
+     * 
+     * @param response
+     * @return
+     */
     public ByteArrayOutputStream applyUserXSLT (ByteArrayOutputStream response){
-	try{
-        	String userXsltPath = getConfiguration().getXsltPath();
-        	if (SecurityContextHolder.getContext().getAuthentication() != null) {
-        	    userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
-        	}
-        
-        	userXsltPath = userXsltPath + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
-        	String globalXsltPath = getConfiguration().getXsltPath() + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
-        
-        	ByteArrayOutputStream result = new ByteArrayOutputStream();
-        	File xsltFile = new File(userXsltPath);
-        	if (!xsltFile.exists()) {
-        	    logger.trace("Postreatment file " + xsltFile.toString() + "does not exist");
-        	    xsltFile = new File(globalXsltPath);
-        	} 
-        
-        	if (xsltFile.exists() && isXML(responseContentType)) {
-        	    logger.trace("transform begin userTransform xslt");
-        
-        	    Transformer transformer = null;
-        	    TransformerFactory tFactory = TransformerFactory.newInstance();
-        	    try {
-        		transformer = tFactory.newTransformer(new StreamSource(xsltFile));
-        		InputStream is = new java.io.ByteArrayInputStream(response.toByteArray());
-        
-        		StreamSource attach = new StreamSource(is);
-        		transformer.transform(attach, new StreamResult(result));
-        	    } catch (TransformerConfigurationException e1) {
-        		logger.error(e1.getMessage());
-        	    } catch (TransformerException e) {
-        		logger.error(e.getMessage());
-        	    }
-        	    logger.trace("transform end userTransform xslt");
-        	    return result;
-        	}else{
-        	    return response;
-        	}
-	}catch (Exception e){
-	    //If the XSLT transform can not be done, return the initial response 
-	    return response;
-	}
+		try{
+	        	String userXsltPath = sdiVirtualService.getXsltfilename();
+	        	if (SecurityContextHolder.getContext().getAuthentication() != null) {
+	        	    userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
+	        	}
+	        
+	        	userXsltPath = userXsltPath + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
+	        	String globalXsltPath = userXsltPath + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
+	        
+	        	ByteArrayOutputStream result = new ByteArrayOutputStream();
+	        	File xsltFile = new File(userXsltPath);
+	        	if (!xsltFile.exists()) {
+	        	    logger.trace("Postreatment file " + xsltFile.toString() + "does not exist");
+	        	    xsltFile = new File(globalXsltPath);
+	        	} 
+	        
+	        	if (xsltFile.exists() && isXML(responseContentType)) {
+	        	    logger.trace("transform begin userTransform xslt");
+	        
+	        	    Transformer transformer = null;
+	        	    TransformerFactory tFactory = TransformerFactory.newInstance();
+	        	    try {
+	        		transformer = tFactory.newTransformer(new StreamSource(xsltFile));
+	        		InputStream is = new java.io.ByteArrayInputStream(response.toByteArray());
+	        
+	        		StreamSource attach = new StreamSource(is);
+	        		transformer.transform(attach, new StreamResult(result));
+	        	    } catch (TransformerConfigurationException e1) {
+	        		logger.error(e1.getMessage());
+	        	    } catch (TransformerException e) {
+	        		logger.error(e.getMessage());
+	        	    }
+	        	    logger.trace("transform end userTransform xslt");
+	        	    return result;
+	        	}else{
+	        	    return response;
+	        	}
+		}catch (Exception e){
+		    //If the XSLT transform can not be done, return the initial response 
+		    return response;
+		}
     }
 
+    /**
+     * 
+     * @param response
+     * @return
+     */
     public File applyUserXSLT (File response){
-	String userXsltPath = getConfiguration().getXsltPath();
-	if (SecurityContextHolder.getContext().getAuthentication() != null) {
-	    userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
-	}
-
-	userXsltPath = userXsltPath + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
-	String globalXsltPath = getConfiguration().getXsltPath() + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
-
-	File result = new File (response.getPath()+".xml");
-	File xsltFile = new File(userXsltPath);
-	if (!xsltFile.exists()) {
-	    logger.trace("Postreatment file " + xsltFile.toString() + "does not exist");
-	    xsltFile = new File(globalXsltPath);
-	} 
-
-	if (xsltFile.exists() && isXML(responseContentType)) {
-	    logger.trace("transform begin userTransform xslt");
-
-	    Transformer transformer = null;
-	    TransformerFactory tFactory = TransformerFactory.newInstance();
-	    try {
-		transformer = tFactory.newTransformer(new StreamSource(xsltFile));
-		transformer.transform(new StreamSource(response), new StreamResult(result));
-	    } catch (TransformerConfigurationException e1) {
-		logger.error(e1.getMessage());
-	    } catch (TransformerException e) {
-		logger.error(e.getMessage());
-	    }
-	    logger.trace("transform end userTransform xslt");
-	    return result;
-	}else{
-	    return response;
-	}
+    	String userXsltPath = sdiVirtualService.getXsltfilename();
+		if (SecurityContextHolder.getContext().getAuthentication() != null) {
+		    userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
+		}
+	
+		userXsltPath = userXsltPath + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
+		String globalXsltPath = userXsltPath + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
+	
+		File result = new File (response.getPath()+".xml");
+		File xsltFile = new File(userXsltPath);
+		if (!xsltFile.exists()) {
+		    logger.trace("Postreatment file " + xsltFile.toString() + "does not exist");
+		    xsltFile = new File(globalXsltPath);
+		} 
+	
+		if (xsltFile.exists() && isXML(responseContentType)) {
+		    logger.trace("transform begin userTransform xslt");
+	
+		    Transformer transformer = null;
+		    TransformerFactory tFactory = TransformerFactory.newInstance();
+		    try {
+			transformer = tFactory.newTransformer(new StreamSource(xsltFile));
+			transformer.transform(new StreamSource(response), new StreamResult(result));
+		    } catch (TransformerConfigurationException e1) {
+			logger.error(e1.getMessage());
+		    } catch (TransformerException e) {
+			logger.error(e.getMessage());
+		    }
+		    logger.trace("transform end userTransform xslt");
+		    return result;
+		}else{
+		    return response;
+		}
     }
 
 }

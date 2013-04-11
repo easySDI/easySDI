@@ -18,6 +18,7 @@ package org.easysdi.proxy.ows;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public interface OWSIExceptionReport {
@@ -106,8 +107,8 @@ public interface OWSIExceptionReport {
 
     public static final String TEXT_ERROR_HHTP_401_UNAUTHORIZED				= "Error sending exception.";
 
-    @Deprecated
-    public  StringBuffer generateExceptionReport (String errorMessage, String code, String locator) throws IOException;
+    public void sendExceptionReport (HttpServletRequest request, HttpServletResponse response, String errorMessage, String code, String locator, int responseCode) throws IOException;
+    public StringBuffer generateExceptionReport (HttpServletRequest request, HttpServletResponse response, String errorMessage, String code, String locator, int responseCode) throws IOException;
     
     public  String getHttpCodeDescription(String code);   
 }

@@ -56,6 +56,9 @@ import org.easysdi.proxy.jdom.filter.ElementMD_MetadataNonAuthorizedFilter;
 import org.easysdi.proxy.jdom.filter.ElementSDIPlatformFilter;
 import org.easysdi.proxy.jdom.filter.ElementSearchResultsFilter;
 import org.easysdi.proxy.jdom.filter.ElementTransactionTypeFilter;
+import org.easysdi.proxy.ows.OWSExceptionReport;
+import org.easysdi.proxy.ows.v10.OWSExceptionReport10;
+import org.easysdi.proxy.wmts.v100.WMTSExceptionReport100;
 import org.easysdi.proxy.core.ProxyServletRequest;
 import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiVirtualservice;
@@ -80,6 +83,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 
 	public CSWProxyServlet2(ProxyServletRequest proxyRequest,SdiVirtualservice virtualService, SdiPolicy policy) {
 		super(proxyRequest, virtualService, policy);
+		owsExceptionReport = new OWSExceptionReport10();
 	}
 
 
@@ -582,14 +586,22 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			e.printStackTrace();
 			logger.error(e.getMessage());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Response format not recognized. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+			try {
+				owsExceptionReport.sendExceptionReport(req, resp, OWSExceptionReport.TEXT_INVALID_FORMAT,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_OK);
+			} catch (IOException e1) {
+				logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+			}
 		} 
 		catch (Exception e) 
 		{
 			e.printStackTrace();
 			logger.error(e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+			try {
+				owsExceptionReport.sendExceptionReport(req, resp, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_OK);
+			} catch (IOException e1) {
+				logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+			}
 		}
 	}
 
@@ -659,9 +671,12 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			logger.info("Request="+req.getQueryString());
 			logger.info("RequestOperation="+ currentOperation);
 			
-			//Generate OGC exception if current operation is not allowed
-			if(handleNotAllowedOperation(currentOperation,resp))
-				return ;
+			//Generate OGC exception and send it to the client if current operation is not allowed
+			if(!isOperationAllowed(currentOperation))
+			{
+				owsExceptionReport.sendExceptionReport(req,resp, OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED, OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED, "REQUEST", HttpServletResponse.SC_OK) ;
+				return;
+			}
 			
 			//GetRecords is not supported in GET request
 			//EXCEPT for a configuration dedicated to the harvesting
@@ -714,7 +729,11 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					
 				}else{
 					//The constraint language specified in the request is not valid, or not yet supported by the proxy
-					sendOgcExceptionBuiltInResponse(resp, generateOgcException("The query language specified in parameter 'constraintLanguage' is not supported.", "InvalidParameterValue", "constraintLanguage", requestedVersion));
+					try {
+						owsExceptionReport.sendExceptionReport(req, resp, OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"constraintLanguage", HttpServletResponse.SC_OK);
+					} catch (IOException e1) {
+						logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+					}
 					return;
 				}
 			}
@@ -782,7 +801,11 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
 					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
 					{
-						sendOgcExceptionBuiltInResponse(resp, generateOgcException("Request can not be completed. "+cswManager.GetLastError(), "NoApplicableCode", "", requestedVersion));
+						try {
+							owsExceptionReport.sendExceptionReport(req, resp, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY+"Request can not be completed. "+cswManager.GetLastError(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"constraintLanguage", HttpServletResponse.SC_OK);
+						} catch (IOException e1) {
+							logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+						}
 						return;
 					}
 					logger.trace("End - Complete metadata");
@@ -796,13 +819,21 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		catch (AvailabilityPeriodException e) 
 		{
 			logger.error( e.getMessage());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported","request",requestedVersion));
+			try {
+				owsExceptionReport.sendExceptionReport(req, resp, OWSExceptionReport.TEXT_OPERATION_NOT_SUPPORTED,OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED,"REQUEST", HttpServletResponse.SC_OK);
+			} catch (IOException e1) {
+				logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+			}
 		}catch (Exception e) 
 		{
 			e.printStackTrace();
 			logger.error( e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcException("CSWProxyServlet.requestPreTreatmentGET returns : "+ e.toString(),"NoApplicableCode","request",requestedVersion));
+			try {
+				owsExceptionReport.sendExceptionReport(req, resp, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY+"CSWProxyServlet.requestPreTreatmentGET returns : "+ e.toString(),OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED,"REQUEST", HttpServletResponse.SC_OK);
+			} catch (IOException e1) {
+				logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+			}
 		}
 	}
 
@@ -814,6 +845,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void requestPreTreatmentPOST(HttpServletRequest req, HttpServletResponse resp) {
+		try {
 		try {
 			//Read request
 			XMLReader xr = XMLReaderFactory.createXMLReader();
@@ -839,15 +871,18 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			String currentOperation = rh.getOperation();
 			logger.info("RequestOperation="+ currentOperation);
 			
-			//Generate OGC exception if current operation is not allowed
-			if(handleNotAllowedOperation(currentOperation,resp))
+			//Generate OGC exception and send it to the client if current operation is not allowed
+			if(!isOperationAllowed(currentOperation))
+			{
+				owsExceptionReport.sendExceptionReport(req,resp, OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED, OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED, "REQUEST", HttpServletResponse.SC_OK) ;
 				return;
+			}
 
 			//Check the value of the PARAMETER 'content'
 			String content = rh.getContent();
 			if( !content.equalsIgnoreCase("") && !content.equalsIgnoreCase("core") && !content.equalsIgnoreCase("complete"))
 			{
-				sendOgcExceptionBuiltInResponse(resp, generateOgcException("Invalid value for parameter 'content' : "+content, "InvalidParameterValue", "content", requestedVersion));
+				owsExceptionReport.sendExceptionReport(req,resp, OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE, OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "CONTENT", HttpServletResponse.SC_OK) ;
 				return;
 			}
 			
@@ -990,7 +1025,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
 					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
 					{
-						sendOgcExceptionBuiltInResponse(resp, generateOgcException("Request can not be completed. "+cswManager.GetLastError(), "NoApplicableCode", "", requestedVersion));
+						owsExceptionReport.sendExceptionReport(req,resp, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY+"Request can not be completed. "+cswManager.GetLastError(), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK) ;
 						return;
 					}
 					logger.trace("End - Complete metadata");
@@ -1031,7 +1066,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
 					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
 					{
-						sendOgcExceptionBuiltInResponse(resp, generateOgcException("Request can not be completed. "+cswManager.GetLastError(), "NoApplicableCode", "", requestedVersion));
+						owsExceptionReport.sendExceptionReport(req,resp, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY+"Request can not be completed. "+cswManager.GetLastError(), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK) ;
 						return;
 					}
 					logger.trace("End - Complete metadata");
@@ -1053,20 +1088,26 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		catch (AvailabilityPeriodException e) 
 		{
 			logger.error( e.getMessage());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported","request",requestedVersion));
+			owsExceptionReport.sendExceptionReport(req,resp, OWSExceptionReport.TEXT_OPERATION_NOT_SUPPORTED, OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED, "REQUEST", HttpServletResponse.SC_OK) ;
 		}
 		catch (SAXParseException e)
 		{
 			logger.error(e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcException("The query syntax is invalid","NoApplicableCode","",requestedVersion));
+			owsExceptionReport.sendExceptionReport(req,resp, OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE+"The query syntax is invalid", OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "", HttpServletResponse.SC_OK) ;
 		}
 		catch (Exception e) 
 		{
 			e.printStackTrace();
 			logger.error( e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details. CSWProxyServlet.requestPreTreatmentPOST returns : "+ e.toString(),"NoApplicableCode","",requestedVersion));
-		}
+			owsExceptionReport.sendExceptionReport(req,resp, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY+"CSWProxyServlet.requestPreTreatmentPOST returns : "+ e.toString(), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK) ;
+		} 
+	}
+	catch (IOException e1) 
+	{
+		logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+	}
+			
 	}
 }

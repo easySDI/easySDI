@@ -2,6 +2,7 @@ package org.easysdi.proxy.core;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -64,7 +65,7 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 		if( request.getPathInfo() == null ||  request.getPathInfo().equals("/"))
 		{
 			logger.error("Could not determine proxy request from http request. Service name is missing.");
-			OWS200ExceptionReport.sendExceptionReport(response, "Could not determine request from http request. Service name is missing.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "service") ;
+			new OWS200ExceptionReport().sendExceptionReport(request, response, "Could not determine request from http request. Service name is missing.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "service", HttpServletResponse.SC_BAD_REQUEST) ;
 			return;
 		}
 
@@ -72,7 +73,7 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 		{
 			if(request.getParameter("request") == null && request.getParameter("REQUEST") == null && request.getParameter("Request") == null){
 				logger.error("Could not determine proxy request from http request. Parameter REQUEST is missing.");
-				OWS200ExceptionReport.sendExceptionReport(response, "Could not determine proxy request from http request. Parameter REQUEST is missing.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request") ;
+				new OWS200ExceptionReport().sendExceptionReport(request, response, "Could not determine proxy request from http request. Parameter REQUEST is missing.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request", HttpServletResponse.SC_BAD_REQUEST) ;
 				return;
 			}
 		}
@@ -80,7 +81,7 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 		{
 			if(request.getContentLength() == 0){
 				logger.error("Could not determine proxy request from http request. Parameter REQUEST is missing.");
-				OWS200ExceptionReport.sendExceptionReport(response, "Could not determine proxy request from http request. Parameter REQUEST is missing.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request") ;
+				new OWS200ExceptionReport().sendExceptionReport(request, response, "Could not determine proxy request from http request. Parameter REQUEST is missing.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request", HttpServletResponse.SC_BAD_REQUEST) ;
 				return;
 			}
 		}
@@ -104,7 +105,7 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 				
 				if(virtualservice == null){
 					logger.error("Error occurred during " + servletName + " config initialization : service does not exist.");
-					OWS200ExceptionReport.sendExceptionReport(response,"Error occurred during " + servletName + " config initialization : service does not exist.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request") ;
+					new OWS200ExceptionReport().sendExceptionReport(request,response, "Error occurred during " + servletName + " config initialization : service does not exist.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request", HttpServletResponse.SC_BAD_REQUEST) ;
 					return;
 				}
 				//To allow the anonymous user to be handled as others users, we need to get throw the SecurityContextHolder to get the Authentication
@@ -119,6 +120,21 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 				
 				SdiPolicy policy = null;
 				Element elementp = virtualServiceCache.get(servletName+username);
+				if(elementp != null){
+					//Get the policy from the cache
+					policy = (SdiPolicy)elementp.getValue();
+					//Check if this policy is still valid according to its date of validity
+					Date from = policy.getAllowfrom();
+					Date to = policy.getAllowto();
+					Date currentDate = new Date();
+					if (!currentDate.after(from) || !currentDate.before(to))
+					{
+						//Policy is not valid anymore, remove it from the cache
+						policy = null;
+						elementp = null;
+						virtualServiceCache.remove(servletName+username);
+					}
+				}
 				if(elementp == null)
 				{
 					SdiUser user = sdiUserHome.findByUserName(username);
@@ -129,8 +145,6 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 					Element elementPolicy = new Element(servletName+username, policy);
 					virtualServiceCache.put(elementPolicy);
 				}
-				else
-					policy = (SdiPolicy)elementp.getValue();
 				
 				if (policy == null) {
 					if (((HttpServletRequest)req).getUserPrincipal() == null){
@@ -144,7 +158,7 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 					}else{
 						//No policy found for the authenticated user, return an ogc exception.
 						logger.error("Error occurred during " + servletName + " config initialization : No policy found for user.");
-						OWS200ExceptionReport.sendExceptionReport(response,"No policy found for user.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "") ;
+						new OWS200ExceptionReport().sendExceptionReport(request,response, "No policy found for user.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK) ;
 						return;
 					}
 				}
@@ -152,7 +166,7 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 			
 			catch (Exception e) {
 				logger.error("Error occurred during " + servletName + " config initialization : " + e.toString());
-				OWS200ExceptionReport.sendExceptionReport(response, "Error occurred during " + servletName + " config initialization : "+e.toString(), OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request") ;
+				new OWS200ExceptionReport().sendExceptionReport(request, response, "Error occurred during " + servletName + " config initialization : "+e.toString(), OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request", HttpServletResponse.SC_OK) ;
 				return;
 			}
 		}

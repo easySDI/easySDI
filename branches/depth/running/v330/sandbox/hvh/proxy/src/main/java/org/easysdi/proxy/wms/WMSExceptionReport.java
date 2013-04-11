@@ -19,6 +19,7 @@ package org.easysdi.proxy.wms;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.easysdi.proxy.ows.OWSExceptionReport;
@@ -52,17 +53,9 @@ public abstract class WMSExceptionReport extends OWSExceptionReport {
     }
 
 
-	public void sendExceptionReport(HttpServletResponse response, String errorMessage, String code, String locator) throws IOException {
-		StringBuffer sb = this.generateExceptionReport(errorMessage, code, locator);
-		
-		response.setContentType("text/xml; charset=utf-8");
-		response.setContentLength(sb.length());
-		OutputStream os;
-		os = response.getOutputStream();
-		os.write(sb.toString().getBytes());
-		os.flush();
-		os.close();
-		
+	public void sendExceptionReport(HttpServletRequest request, HttpServletResponse response, String errorMessage, String code, String locator, int responseCode) throws IOException {
+		StringBuffer sb = this.generateExceptionReport(request, response, errorMessage, code, locator, responseCode);
+		sendHttpServletResponse(request, response,sb,"text/xml; charset=utf-8", responseCode);
 	}
-
+	
 }

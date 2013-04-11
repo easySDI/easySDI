@@ -19,9 +19,16 @@ package org.easysdi.proxy.core;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.easysdi.proxy.domain.SdiAllowedoperation;
+import org.easysdi.proxy.domain.SdiPolicy;
+import org.easysdi.proxy.domain.SdiSysOperationcompliance;
+import org.easysdi.proxy.domain.SdiSysServicecompliance;
+import org.easysdi.proxy.exception.OperationNotSupportedException;
 import org.easysdi.proxy.exception.ProxyServletException;
 
 public abstract class ProxyServletRequest {
@@ -137,5 +144,40 @@ public abstract class ProxyServletRequest {
 		} catch (InvocationTargetException e) {
 			throw e;
 		}
+	}
+
+	public boolean isOperationSupported (SdiSysServicecompliance sdiSysServiceCompliance){
+		Set<SdiSysOperationcompliance> operationcompliances =  sdiSysServiceCompliance.getSdiSysOperationcompliances();
+		if(operationcompliances == null)
+		{
+			return false;
+		}
+		Iterator<SdiSysOperationcompliance> i = operationcompliances.iterator();
+		while (i.hasNext()){
+			SdiSysOperationcompliance operationcompliance = i.next();
+			if(operationcompliance.getSdiSysServiceoperation().getValue().equals(this.getOperation()))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isOperationAllowedByPolicy (SdiPolicy policy){
+		if(policy.isAnyoperation())
+			return true;
+		
+		Set<SdiAllowedoperation> allowedoperations =  policy.getSdiAllowedoperations();
+		if(allowedoperations == null)
+			return false;
+		
+		Iterator<SdiAllowedoperation> i = allowedoperations.iterator();
+		while(i.hasNext()){
+			SdiAllowedoperation operation = i.next();
+			if(operation.getSdiSysServiceoperation().getValue().equals(this.getOperation()))
+				return true;
+		}
+			
+		return false;
 	}
 }

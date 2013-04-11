@@ -51,13 +51,17 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.tools.ant.taskdefs.condition.Http;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.core.ProxyServletRequest;
 import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
+import org.easysdi.proxy.ows.OWSExceptionReport;
+import org.easysdi.proxy.ows.v10.OWSExceptionReport10;
 import org.easysdi.proxy.policy.Attribute;
 import org.easysdi.proxy.policy.Server;
+import org.easysdi.proxy.wfs.WFSExceptionReport;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.handler.CswRequestHandler;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -76,6 +80,7 @@ public class CSWProxyServlet extends ProxyServlet {
 	public CSWProxyServlet (ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy)
 	{
 		super(proxyRequest, virtualService, policy);
+		owsExceptionReport = new OWSExceptionReport10();
 		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetRecords", "GetRecordById","DescribeRecord","Transaction");
 	}
 	
@@ -541,7 +546,11 @@ public class CSWProxyServlet extends ProxyServlet {
 				e.printStackTrace();
 				logger.error( e.toString());
 				resp.setHeader("easysdi-proxy-error-occured", "true");
-				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+				try {
+					owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY, OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK);
+				} catch (IOException e1) {
+					logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+				}
 			}
 		} else {
 			try {
@@ -555,7 +564,11 @@ public class CSWProxyServlet extends ProxyServlet {
 				e.printStackTrace();
 				logger.error( e.toString());
 				resp.setHeader("easysdi-proxy-error-occured", "true");
-				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+				try {
+					owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY, OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK);
+				} catch (IOException e1) {
+					logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+				}
 			}
 		}
 	}
@@ -601,9 +614,12 @@ public class CSWProxyServlet extends ProxyServlet {
 				}
 			}
 			
-			//Generate OGC exception if current operation is not allowed
-			if(handleNotAllowedOperation(currentOperation,resp))
-				return ;
+			//Generate OGC exception and send it to the client if current operation is not allowed
+			if(!isOperationAllowed(currentOperation))
+			{
+				owsExceptionReport.sendExceptionReport(req,resp, OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED, OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED, "REQUEST", HttpServletResponse.SC_OK) ;
+				return;
+			}
 					
 			
 			// Build the request to dispatch
@@ -631,14 +647,22 @@ public class CSWProxyServlet extends ProxyServlet {
 		catch (AvailabilityPeriodException e) 
 		{
 			logger.error( e.getMessage());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
+			try {
+				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_OPERATION_NOT_SUPPORTED, OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED, "REQUEST", HttpServletResponse.SC_OK);
+			} catch (IOException e1) {
+				logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+			}
 		} 
 		catch (Exception e) 
 		{
 			e.printStackTrace();
 			logger.error( e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+			try {
+				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY, OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK);
+			} catch (IOException e1) {
+				logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+			}
 		}
 	}
 
@@ -670,10 +694,12 @@ public class CSWProxyServlet extends ProxyServlet {
 			
 			String currentOperation = rh.getOperation();
 
-			//Generate OGC exception if current operation is not allowed
-			if(handleNotAllowedOperation(currentOperation,resp))
+			//Generate OGC exception and send it to the client if current operation is not allowed
+			if(!isOperationAllowed(currentOperation))
+			{
+				owsExceptionReport.sendExceptionReport(req,resp, OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED, OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED, "REQUEST", HttpServletResponse.SC_OK) ;
 				return;
-
+			}
 			
 			// In the case of transaction only one remote server is supported.
 			// We use the configuration of the first one.
@@ -743,12 +769,20 @@ public class CSWProxyServlet extends ProxyServlet {
 		} catch (AvailabilityPeriodException e) 
 		{
 			logger.error( e.getMessage());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
+			try {
+				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_OPERATION_NOT_SUPPORTED, OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED, "REQUEST", HttpServletResponse.SC_OK);
+			} catch (IOException e1) {
+				logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error( e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+			try {
+				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY, OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK);
+			} catch (IOException e1) {
+				logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+			}
 		}
 	}
 
@@ -945,12 +979,7 @@ public class CSWProxyServlet extends ProxyServlet {
      * TODO move to CSW
      */
     protected boolean areAllAttributesAllowedForMetadata(String url) {
-	if (policy == null)
-	    return false;
-	if (policy.getAvailabilityPeriod() != null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
-		return false;
-	}
+	
 
 	List<Server> serverList = policy.getServers().getServer();
 

@@ -90,29 +90,27 @@ public class WMSProxyServlet130 extends WMSProxyServlet {
      */
     @Override
     public void requestPreTreatmentGetFeatureInfo(HttpServletRequest req, HttpServletResponse resp) {
-	try {
-	    if(((WMSProxyServletRequest)getProxyRequest()).getInfo_format() == null || ((WMSProxyServletRequest)getProxyRequest()).getInfo_format().equalsIgnoreCase(""))
-	    {
-		logger.info( "QUERY_LAYERS "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE);
-		StringBuffer out = owsExceptionReport.generateExceptionReport("INFO_FORMAT "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE,OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE,"INFO_FORMAT");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
-		return;
-	    }
-	} catch (IOException e) {
-	    resp.setHeader("easysdi-proxy-error-occured", "true");
-	    e.printStackTrace();
-	    logger.error( e.getMessage());
-	    StringBuffer out;
-	    try {
-		out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
-	    } catch (IOException e1) {
-		logger.error( e1.getMessage());
-		e1.printStackTrace();
-	    }
-	    return;
-	}
-	super.requestPreTreatmentGetFeatureInfo(req, resp);
+		try {
+		    if(((WMSProxyServletRequest)getProxyRequest()).getInfo_format() == null || ((WMSProxyServletRequest)getProxyRequest()).getInfo_format().equalsIgnoreCase(""))
+		    {
+				logger.info( "QUERY_LAYERS "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE);
+				owsExceptionReport.sendExceptionReport(request, response,"INFO_FORMAT "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE,OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "INFO_FORMAT", HttpServletResponse.SC_BAD_REQUEST);
+				return;
+		    }
+		} catch (IOException e) {
+		    resp.setHeader("easysdi-proxy-error-occured", "true");
+		    e.printStackTrace();
+		    logger.error( e.getMessage());
+		    StringBuffer out;
+		    try {
+		    	owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK);
+			} catch (IOException e1) {
+				logger.error( e1.getMessage());
+				e1.printStackTrace();
+		    }
+		    return;
+		}
+		super.requestPreTreatmentGetFeatureInfo(req, resp);
     }
 
 }

@@ -19,6 +19,7 @@ package org.easysdi.proxy.ows.v200;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.easysdi.proxy.ows.OWSExceptionReport;
@@ -30,7 +31,15 @@ import org.easysdi.proxy.ows.OWSExceptionReport;
  */
 public class OWS200ExceptionReport extends OWSExceptionReport {
 
-	public static void sendExceptionReport(HttpServletResponse response , String errorMessage, String code,String locator) throws IOException {
+	public void sendExceptionReport(HttpServletRequest request , HttpServletResponse response, String errorMessage,String code, String locator, int responseCode) throws IOException 
+	{
+		StringBuffer sb = this.generateExceptionReport(request, response, errorMessage, code, locator, responseCode);
+		sendHttpServletResponse(request, response,sb,"text/xml; charset=utf-8", responseCode);
+	}
+
+	public StringBuffer generateExceptionReport(HttpServletRequest request,
+			HttpServletResponse response, String errorMessage, String code,
+			String locator, int responseCode) throws IOException {
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8'?>\n");
 		sb.append("\n<ExceptionReport xmlns=\"http://www.opengis.net/ows/2.0\" ");
 		sb.append("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ");
@@ -53,13 +62,8 @@ public class OWS200ExceptionReport extends OWSExceptionReport {
 		}
 		sb.append("\n\t</Exception>");
 		sb.append("\n</ExceptionReport>");
-	
-		response.setContentType("text/xml; charset=utf-8");
-		response.setContentLength(sb.length());
-		OutputStream os;
-		os = response.getOutputStream();
-		os.write(sb.toString().getBytes());
-		os.flush();
-		os.close();
+		
+		return sb;
 	}
+
 }

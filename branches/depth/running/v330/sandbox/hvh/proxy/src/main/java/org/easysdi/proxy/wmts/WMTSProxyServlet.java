@@ -112,23 +112,7 @@ public class WMTSProxyServlet extends ProxyServlet{
     protected void requestPreTreatmentGET(HttpServletRequest req,HttpServletResponse resp) {
 	try
 	{
-	    //Generate OGC exception and send it to the client if current request operation is not allowed
-	    if(!isOperationSupportedByProxy(getProxyRequest().getOperation()))
-	    {
-		logger.error(OWSExceptionReport.TEXT_OPERATION_NOT_SUPPORTED);
-		StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_OPERATION_NOT_SUPPORTED ,OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED,"request");
-		sendHttpServletResponse(null, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_NOT_IMPLEMENTED);
-		return;
-	    }
-	    //Generate OGC exception and send it to the client if current operation is not allowed by the loaded policy
-	    if(!isOperationAllowedByPolicy(getProxyRequest().getOperation()))
-	    {
-		logger.error( OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED);
-		StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED,OWSExceptionReport.CODE_OPERATION_NOT_ALLOWED,"REQUEST");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
-		return;
-	    }
-
+	    
 	    Method preTreatmentMethod = this.getClass().getMethod("requestPreTreatment"+getProxyRequest().getOperation(), new Class [] {Class.forName ("javax.servlet.http.HttpServletRequest"), Class.forName ("javax.servlet.http.HttpServletResponse")});
 	    preTreatmentMethod.invoke(this ,new Object[] {req,resp});
 
@@ -140,11 +124,10 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    logger.error( e.toString());
 	    StringBuffer out;
 	    try {
-		out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	    	owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	    } catch (IOException e1) {
-		logger.error( e1.toString());
-		e1.printStackTrace();
+			logger.error( e1.toString());
+			e1.printStackTrace();
 	    }
 	    return;
 	}
@@ -189,8 +172,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 		StringBuffer out;
 		try {
 		    logger.error(OWSExceptionReport.TEXT_NO_RESULT_RECEIVED_BY_PROXY);
-		    out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_NO_RESULT_RECEIVED_BY_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		    sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		    owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_NO_RESULT_RECEIVED_BY_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		} catch (IOException e) {
 		    logger.error( configuration.getServletClass() + ".requestPreTreatmentGetCapabilities : ", e);
 		}
@@ -201,10 +183,9 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    logger.error( configuration.getServletClass() + ".requestPreTreatmentGetCapabilities : ", e);
 	    StringBuffer out;
 	    try {
-		out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	    	owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	    } catch (IOException e1) {
-		logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+	    	logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
 	    }
 	    return;
 	}
@@ -220,17 +201,15 @@ public class WMTSProxyServlet extends ProxyServlet{
 
 	    if(pLayer.getAlias() == null)
 	    {
-		logger.error( OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName());
-		StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"LAYER");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
-		return;
+			logger.error( OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName());
+			owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "LAYER", HttpServletResponse.SC_BAD_REQUEST);
+			return;
 	    }
 	    RemoteServerInfo RS = (RemoteServerInfo)htRemoteServer.get(pLayer.getAlias());
 
 	    //Check layer
 	    if( RS == null ){
-		StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"LAYER");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+	    	owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "LAYER", HttpServletResponse.SC_BAD_REQUEST);
 		return;
 	    }
 
@@ -272,10 +251,9 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    logger.error( configuration.getServletClass() + ".requestPreTreatmentGetCapabilities : ", e);
 	    StringBuffer out;
 	    try {
-		out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	    	owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	    } catch (IOException e1) {
-		logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+	    	logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
 	    }
 	    return;
 	}
@@ -291,17 +269,15 @@ public class WMTSProxyServlet extends ProxyServlet{
 
 	    if(pLayer.getAlias() == null)
 	    {
-		logger.error( OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName());
-		StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"LAYER");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
-		return;
+			logger.error( OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName());
+			owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "LAYER", HttpServletResponse.SC_BAD_REQUEST);
+			return;
 	    }
 	    RemoteServerInfo RS = (RemoteServerInfo)htRemoteServer.get(pLayer.getAlias());
 
 	    //Check layer
 	    if( RS == null ){
-		StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"LAYER");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+	    	owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "LAYER", HttpServletResponse.SC_BAD_REQUEST);
 		return;
 	    }
 
@@ -326,8 +302,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    logger.error( configuration.getServletClass() + ".requestPreTreatmentGetFeatureInfo : ", e);
 	    StringBuffer out;
 	    try {
-		out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	    	owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	    } catch (IOException e1) {
 		logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
 	    }
@@ -368,32 +343,28 @@ public class WMTSProxyServlet extends ProxyServlet{
 		if(!docBuilder.CapabilitiesContentsFiltering(wmtsGetCapabilitiesResponseFilePathMap))
 		{
 		    logger.error(docBuilder.getLastException().toString());
-		    StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		    sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		    owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		    return;
 		}
 
 		if(!docBuilder.CapabilitiesOperationsFiltering(wmtsGetCapabilitiesResponseFilePathMap.get(rs.getAlias()), getServletUrl(req)))
 		{
 		    logger.error(docBuilder.getLastException().toString());
-		    StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		    sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		    owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		    return;
 		}
 
 		if(!docBuilder.CapabilitiesMerging(wmtsGetCapabilitiesResponseFilePathMap))
 		{
 		    logger.error(docBuilder.getLastException().toString());
-		    StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		    sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		    owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		    return;
 		}
 
 		if(!docBuilder.CapabilitiesServiceMetadataWriting(wmtsGetCapabilitiesResponseFilePathMap.get(rs.getAlias()),getServletUrl(req)))
 		{
 		    logger.error(docBuilder.getLastException().toString());
-		    StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		    sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		    owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		    return;
 		}
 
@@ -412,8 +383,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    resp.setHeader("easysdi-proxy-error-occured", "true");
 	    StringBuffer out;
 	    try {
-		out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	    	owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	    } catch (IOException e1) {
 		e1.printStackTrace();
 		logger.error( e1.toString());
@@ -444,8 +414,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    logger.error(configuration.getServletClass() + ".transformGetFeatureInfo: ", e);
 	    StringBuffer out;
 	    try {
-		out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	    	owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	    } catch (IOException e1) {
 		logger.error(OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
 	    }
@@ -475,15 +444,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	Integer tileRow = Integer.parseInt( proxyRequest.getTileRow());
 	Integer tileCol = Integer.parseInt( proxyRequest.getTileCol());
 
-	//If no policy loaded, return false
-	if (policy == null)
-	    return "policy";
-
-	//If the policy period of validity is expired, return null
-	if (policy.getAvailabilityPeriod() != null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
-		return "availability";
-	}
+	
 
 	//If one of the mandatory parameters is missing, return false
 	if (pLayer == null) 
@@ -580,12 +541,7 @@ public class WMTSProxyServlet extends ProxyServlet{
      * @return true if the layer is allowed, false if not
      */
     public boolean isLayerAllowed(String layer, String url) {
-	if (policy == null)
-	    return false;
-	if (policy.getAvailabilityPeriod() != null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
-		return false;
-	}
+	
 
 	if (layer == null)
 	    return false;

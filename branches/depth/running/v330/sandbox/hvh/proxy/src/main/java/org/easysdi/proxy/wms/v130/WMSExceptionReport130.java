@@ -18,6 +18,7 @@ package org.easysdi.proxy.wms.v130;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.easysdi.proxy.wms.WMSExceptionReport;
@@ -31,7 +32,9 @@ public class WMSExceptionReport130 extends WMSExceptionReport {
 	/* (non-Javadoc)
 	 * @see org.easysdi.proxy.ows.OWSExceptionReport#generateExceptionReport(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	public StringBuffer generateExceptionReport(String errorMessage,String code, String locator) throws IOException {
+	public StringBuffer generateExceptionReport(HttpServletRequest request,
+			HttpServletResponse response, String errorMessage, String code,
+			String locator, int responseCode) throws IOException {
 		
 		StringBuffer sb = new StringBuffer();
 		sb.append("<?xml version='1.0' encoding='utf-8'?>");

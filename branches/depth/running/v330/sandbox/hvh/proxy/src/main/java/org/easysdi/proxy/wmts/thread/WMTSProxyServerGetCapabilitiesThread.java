@@ -58,8 +58,7 @@ public class WMTSProxyServerGetCapabilitiesThread extends Thread {
 			servlet.logger.error( "Server Thread " + remoteServer.getUrl()+ " :" + e.getMessage());
 			StringBuffer out;
 			try {
-				out = servlet.owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-				servlet.sendHttpServletResponse(null, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				servlet.owsExceptionReport.sendExceptionReport(servlet.request, servlet.response, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY, OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			} catch (IOException e1) {
 				servlet.logger.error( e1.toString());
 				e1.printStackTrace();
