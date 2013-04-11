@@ -70,18 +70,6 @@ class Easysdi_serviceTablephysicalservice_policy extends sdiTable {
 					return false;
 				}
 			}
-			else {
-				//TODO save PS-wide settings here
-				/*
-				$query->update('#__sdi_physicalservice_policy')->set(Array(
-					'physicalservice_id = \'' . $raw_GET['spatial_operator_id'] . '\'',
-				))->where(Array(
-					'id = \'' . $spatial_policy_id . '\'',
-				));
-				*/
-			}
-			
-			
 		}
 		return true;
 		

@@ -67,10 +67,9 @@
                 key_field="id" 
                 value_field="name"
                  /> 
-		<field name="anyoperation" type="checkbox" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ANYOPERATION" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ANYOPERATION"  value="1" default="0" />
-		<field name="anyservice" type="checkbox" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ANYSERVICE" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ANYSERVICE"  value="1" default="0" />
 		<field name="allowfrom" type="calendar" class="inputbox" default="0000-00-00"  label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWFROM" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWFROM"  filter="safehtml" />
 		<field name="allowto" type="calendar" class="inputbox" default="0000-00-00"  label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWTO" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWTO"  filter="safehtml" />
+		<field name="anyoperation" type="checkbox" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ANYOPERATION" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ANYOPERATION"  value="1" default="0" />
 	</fieldset>
 	
 	<fieldset name="csw_policy">
@@ -169,4 +168,153 @@
 		<option value="2">JARCHIVED</option>
 		<option value="-2">JTRASHED</option>
 	</field>
+	
+	<field 
+		name="allowedoperation_wmts" 
+		type="sql" 
+		class="multiselect input-xxlarge"
+		multiple="true"
+		label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWED_OPERATION" 
+		description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWED_OPERATION"
+		query="
+				SELECT so.id as id, so.value as value
+				FROM #__sdi_sys_serviceoperation so
+				INNER JOIN #__sdi_sys_operationcompliance oc
+				ON oc.serviceoperation_id = so.id
+				INNER JOIN #__sdi_sys_servicecompliance sc
+				ON sc.id = oc.servicecompliance_id
+				INNER JOIN #__sdi_sys_serviceversion sv
+				ON sv.id = sc.serviceversion_id
+				INNER JOIN #__sdi_sys_serviceconnector scc
+				ON scc.id = sc.serviceconnector_id
+				WHERE scc.value = 'WMTS'
+				AND oc.implemented = 1
+				AND so.state = 1
+				AND sv.value = (
+					SELECT sv.value
+					FROM #__sdi_sys_servicecompliance sc
+					INNER JOIN #__sdi_sys_serviceversion sv
+					ON sv.id = sc.serviceversion_id
+					INNER JOIN #__sdi_sys_serviceconnector scc
+					ON scc.id = sc.serviceconnector_id
+					WHERE scc.value = 'WMTS'
+					ORDER BY sv.ordering DESC
+					LIMIT 0,1
+				);"
+		key_field="id" 
+		value_field="value" 
+		required="false"
+	/>
+	
+	<field 
+		name="allowedoperation_wms" 
+		type="sql" 
+		class="multiselect input-xxlarge"
+		multiple="true"
+		label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWED_OPERATION" 
+		description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWED_OPERATION"
+		query="
+				SELECT so.id as id, so.value as value
+				FROM #__sdi_sys_serviceoperation so
+				INNER JOIN #__sdi_sys_operationcompliance oc
+				ON oc.serviceoperation_id = so.id
+				INNER JOIN #__sdi_sys_servicecompliance sc
+				ON sc.id = oc.servicecompliance_id
+				INNER JOIN #__sdi_sys_serviceversion sv
+				ON sv.id = sc.serviceversion_id
+				INNER JOIN #__sdi_sys_serviceconnector scc
+				ON scc.id = sc.serviceconnector_id
+				WHERE scc.value = 'WMS'
+				AND oc.implemented = 1
+				AND so.state = 1
+				AND sv.value = (
+					SELECT sv.value
+					FROM #__sdi_sys_servicecompliance sc
+					INNER JOIN #__sdi_sys_serviceversion sv
+					ON sv.id = sc.serviceversion_id
+					INNER JOIN #__sdi_sys_serviceconnector scc
+					ON scc.id = sc.serviceconnector_id
+					WHERE scc.value = 'WMS'
+					ORDER BY sv.ordering DESC
+					LIMIT 0,1
+				);"
+		key_field="id" 
+		value_field="value" 
+		required="false"
+	/>
+	
+	<field 
+		name="allowedoperation_wfs" 
+		type="sql" 
+		class="multiselect input-xxlarge"
+		multiple="true"
+		label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWED_OPERATION" 
+		description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWED_OPERATION"
+		query="
+				SELECT so.id as id, so.value as value
+				FROM #__sdi_sys_serviceoperation so
+				INNER JOIN #__sdi_sys_operationcompliance oc
+				ON oc.serviceoperation_id = so.id
+				INNER JOIN #__sdi_sys_servicecompliance sc
+				ON sc.id = oc.servicecompliance_id
+				INNER JOIN #__sdi_sys_serviceversion sv
+				ON sv.id = sc.serviceversion_id
+				INNER JOIN #__sdi_sys_serviceconnector scc
+				ON scc.id = sc.serviceconnector_id
+				WHERE scc.value = 'WFS'
+				AND oc.implemented = 1
+				AND so.state = 1
+				AND sv.value = (
+					SELECT sv.value
+					FROM #__sdi_sys_servicecompliance sc
+					INNER JOIN #__sdi_sys_serviceversion sv
+					ON sv.id = sc.serviceversion_id
+					INNER JOIN #__sdi_sys_serviceconnector scc
+					ON scc.id = sc.serviceconnector_id
+					WHERE scc.value = 'WFS'
+					ORDER BY sv.ordering DESC
+					LIMIT 0,1
+				);"
+		key_field="id" 
+		value_field="value" 
+		required="false"
+	/>
+	
+	<field 
+		name="allowedoperation_csw" 
+		type="sql" 
+		class="multiselect input-xxlarge"
+		multiple="true"
+		label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWED_OPERATION" 
+		description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWED_OPERATION"
+		query="
+				SELECT so.id as id, so.value as value
+				FROM #__sdi_sys_serviceoperation so
+				INNER JOIN #__sdi_sys_operationcompliance oc
+				ON oc.serviceoperation_id = so.id
+				INNER JOIN #__sdi_sys_servicecompliance sc
+				ON sc.id = oc.servicecompliance_id
+				INNER JOIN #__sdi_sys_serviceversion sv
+				ON sv.id = sc.serviceversion_id
+				INNER JOIN #__sdi_sys_serviceconnector scc
+				ON scc.id = sc.serviceconnector_id
+				WHERE scc.value = 'CSW'
+				AND oc.implemented = 1
+				AND so.state = 1
+				AND sv.value = (
+					SELECT sv.value
+					FROM #__sdi_sys_servicecompliance sc
+					INNER JOIN #__sdi_sys_serviceversion sv
+					ON sv.id = sc.serviceversion_id
+					INNER JOIN #__sdi_sys_serviceconnector scc
+					ON scc.id = sc.serviceconnector_id
+					WHERE scc.value = 'CSW'
+					ORDER BY sv.ordering DESC
+					LIMIT 0,1
+				);"
+		key_field="id" 
+		value_field="value" 
+		required="false"
+	/>
+	
 </form>

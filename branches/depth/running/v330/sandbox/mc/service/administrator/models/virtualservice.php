@@ -143,7 +143,7 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 				
 		//inserting virtualmetadata content in virtualservice for display of edit form
 		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'tables');
-		$metadata =& JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
+		$metadata = JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
 		$metadata->loadByVirtualServiceID(JRequest::getVar('id',null));
 		//Merging metadata object fields into virtualservice object 
 		$item_fields = Array();
@@ -184,7 +184,7 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 		{
 			$item->serviceconnector_id = JRequest::getVar( 'connector' );
 		}
-		$serviceconnector =& JTable::getInstance('serviceconnector', 'Easysdi_serviceTable');
+		$serviceconnector = JTable::getInstance('serviceconnector', 'Easysdi_serviceTable');
 		$serviceconnector->load($item->serviceconnector_id);
 		$item->serviceconnector = $serviceconnector->value;
 		
@@ -214,7 +214,7 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	 *
 	 * @since	1.6
 	 */
-	protected function prepareTable(&$table)
+	protected function prepareTable($table)
 	{
 		jimport('joomla.filter.output');
 		$jform = JRequest::getVar('jform');
@@ -265,7 +265,7 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 			
 			$data['id'] = $this->getItem()->get('id');
 			//Instantiate an address JTable
-			$virtualmetadata =& JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
+			$virtualmetadata = JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
 			$virtualmetadata->loadByVirtualServiceID($data['id']);
 			//If reflectedmetadata option is checked, delete existing metadata
 			if(isset($data['reflectedmetadata'])){

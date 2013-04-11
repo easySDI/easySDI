@@ -34,7 +34,9 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	$db->execute();
 	$resultset = $db->loadObjectList();
 	
-	if (0 != $physicalServiceID) {
+	$wfs_spatialpolicy_id = (!empty($data->wfs_spatialpolicy_id)) ? $data->wfs_spatialpolicy_id : -1;
+	
+	if (0 == $physicalServiceID) {
 		$query = '
 			SELECT *
 			FROM #__sdi_wfs_spatialpolicy
@@ -57,30 +59,31 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	
 	
 	$html = '';
+	$prefix = 'inherit';
 	if (0 == $physicalServiceID) {
-		$suffix = $data->wfs_spatialpolicy_id;
+		$prefix .= '_policy[' . $wfs_spatialpolicy_id . ']';
 		$html .= '
 			<label class="checkbox">
-				<input type="checkbox" name="anyservice" value="1" ' . ((1 == $data->anyservice)?'checked="checked"':'') . ' /><label for="anyservice">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMTS_ANYSERVICE') . '</label>
+				<input type="checkbox" name="' . $prefix . '[anyservice]" value="1" ' . ((1 == $data->anyservice)?'checked="checked"':'') . ' /><label for="' . $prefix . '[anyservice]">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WFS_ANYSERVICE') . '</label>
 			</label>
 		';
 	}
 	else {
-		$suffix = $physicalServiceID . '_' . $data->id;
+		$prefix .= '_server[' . $physicalServiceID . ']';
 		$anyItem = (isset($spatialpolicy->anyitem))?$spatialpolicy->anyitem:1;
 		$html .= '
 			<label class="checkbox">
-				<input type="checkbox" name="anyitem_' . $physicalServiceID . '" value="1" ' . ((1 == $anyItem)?'checked="checked"':'') . ' /><label for="anyitem_' . $physicalServiceID . '">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMTS_ANYITEM') . '</label>
+				<input type="checkbox" name="' . $prefix . '[anyitem]" value="1" ' . ((1 == $anyItem)?'checked="checked"':'') . ' /><label for="' . $prefix . '[anyitem]">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WFS_ANYITEM') . '</label>
 			</label>
 		';
 	}
 	
 	$html .= '	<br />
-		<label for="localgeographicfilter_' . $suffix . '">' . JText::_('COM_EASYSDI_SERVICE_WFS_LAYER_LOCAL_FILTER') . '</label>
-		<textarea name="localgeographicfilter_' . $suffix . '" rows="10" class="span12">' . ((isset($spatialpolicy->localFilterGML))?$spatialpolicy->localFilterGML:'') . '</textarea>
+		<label for="' . $prefix . '[localgeographicfilter]">' . JText::_('COM_EASYSDI_SERVICE_WFS_LAYER_LOCAL_FILTER') . '</label>
+		<textarea name="' . $prefix . '[localgeographicfilter]" rows="10" class="span12">' . ((isset($spatialpolicy->localgeographicfilter))?$spatialpolicy->localgeographicfilter:'') . '</textarea>
 		<br />
-		<label for="remotegeographicfilter_' . $suffix . '">' . JText::_('COM_EASYSDI_SERVICE_WFS_LAYER_REMOTE_FILTER') . '</label>
-		<textarea name="remotegeographicfilter_' . $suffix . '" rows="10" class="span12">' . ((isset($spatialpolicy->remoteFilterGML))?$spatialpolicy->remoteFilterGML:'') . '</textarea>
+		<label for="' . $prefix . '[remotegeographicfilter]">' . JText::_('COM_EASYSDI_SERVICE_WFS_LAYER_REMOTE_FILTER') . '</label>
+		<textarea name="' . $prefix . '[remotegeographicfilter]" rows="10" class="span12">' . ((isset($spatialpolicy->remotegeographicfilter))?$spatialpolicy->remotegeographicfilter:'') . '</textarea>
 		<br />
 		<br />
 		<br />
@@ -114,6 +117,10 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 						</div>
 					<?php endforeach; ?>
 					
+						<div class="control-group">
+							<div class="control-label"><?php echo $this->form->getLabel('allowedoperation_wfs'); ?></div>
+							<div class="controls"><?php echo $this->form->getInput('allowedoperation_wfs'); ?></div>
+						</div>
 						<div class="control-group">
 							<div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
 							<div class="controls"><?php echo $this->form->getInput('id'); ?></div>

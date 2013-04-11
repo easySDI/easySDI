@@ -26,6 +26,10 @@ class WfsPhysicalService extends PhysicalService{
 	 * 
 	 */
 	public function populate () {
+		if ('SimpleXMLElement' != get_class($this->xmlCapabilities)) {
+			return;
+		}
+		
 		$featureTypeList = $this->xmlCapabilities->xpath('//dflt:FeatureType');
 		
 		//inserting each featureClass

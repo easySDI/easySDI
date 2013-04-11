@@ -177,7 +177,6 @@ class WmsWebservice {
 			return false;
 		}
 		
-		//TODO: add values calculated by the JS
 		if (0 == $num_result) {
 			$query = $db->getQuery(true);
 			$query->insert('#__sdi_wms_spatialpolicy')->columns('
@@ -354,7 +353,7 @@ class WmsWebservice {
 				
 				if ($layer_exists) {
 					//if the layer already exists, we do nothing and we skip to the next layer
-					break;
+					continue;
 				}
 				else {
 					//we retrieve the physicalservice_policy id to link the layer policy with

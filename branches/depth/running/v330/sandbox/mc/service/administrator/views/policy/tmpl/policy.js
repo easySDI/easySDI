@@ -1,7 +1,11 @@
-Joomla.submitbutton = function(task)
-{
+Joomla.submitbutton = function (task) {
 	if (task == 'policy.cancel' || document.formvalidator.isValid(document.id('policy-form'))) {
-		Joomla.submitform(task, document.getElementById('policy-form'));
+		if ('policy.cancel' != task && 'WMS' == jQuery('#jform_layout').val()) {
+			jQuery(document).trigger('recalculate', task);
+		}
+		else {
+			Joomla.submitform(task, document.getElementById('policy-form'));
+		}
 	}
 	else {
 		alert(Joomla.JText._('JGLOBAL_VALIDATION_FORM_FAILED', 'Form validation failed')); 

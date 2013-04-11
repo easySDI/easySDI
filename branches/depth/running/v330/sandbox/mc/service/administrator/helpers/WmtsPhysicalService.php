@@ -26,6 +26,10 @@ class WmtsPhysicalService extends PhysicalService{
 	 * 
 	 */
 	public function populate () {
+		if ('SimpleXMLElement' != get_class($this->xmlCapabilities)) {
+			return;
+		}
+		
 		$wmtsLayerList = $this->xmlCapabilities->xpath('/dflt:Capabilities/dflt:Contents/dflt:Layer');
 		
 		//inserting each wmtslayer

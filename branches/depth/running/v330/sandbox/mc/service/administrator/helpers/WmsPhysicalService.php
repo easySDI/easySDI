@@ -26,6 +26,10 @@ class WmsPhysicalService extends PhysicalService{
 	 * 
 	 */
 	public function populate () {
+		if ('SimpleXMLElement' != get_class($this->xmlCapabilities)) {
+			return;
+		}
+		
 		$version = $this->xmlCapabilities->xpath('@version');
 		$version = (string)$version[0];
 		$xpathQuery = 'Capability//Layer[Name]';

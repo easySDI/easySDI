@@ -1,4 +1,47 @@
+var debug = {};
 jQuery(document).ready(function () {
+	function calculateBBox (geographicFilter) {
+		var result = {
+			minX: '',
+			minY: '',
+			maxX: '',
+			maxY: '',
+			srs: '',
+		};
+		
+		geographicFilter = geographicFilter.replace(/^\s*|\s*$/g,'');
+		if(geographicFilter.length != 0){
+			//Get the srs name
+			var index = geographicFilter.indexOf("srsName=\"", 0);
+			var indexEnd = geographicFilter.indexOf("\"", index+9) ;
+			var srsValue = geographicFilter.substring(index+9, indexEnd);
+
+			//Complete filter GML
+			geographicFilter = "<gml:featureMembers xmlns:gml=\"http://www.opengis.net/gml\"><gml:FeatureFilter xmlns:gml=\"http://www.opengis.net/gml\">" + geographicFilter + "</gml:FeatureFilter></gml:featureMembers>";
+			//Load filter as DOMDocument
+			if (window.ActiveXObject) {
+				var doc = new ActiveXObject('Microsoft.XMLDOM');
+				doc.async = 'false';
+				doc.loadXML(geographicFilter);
+			}
+			else {
+				var parser = new DOMParser();
+				var doc = parser.parseFromString(geographicFilter,'text/xml');
+			}
+			var theParser = new OpenLayers.Format.GML({
+				featureName: "FeatureFilter",
+				gmlns: "http://www.opengis.net/gml"
+			});
+			var bbox = theParser.read(doc)[0].geometry.getBounds().toBBOX().split(',');
+			result.minX = bbox[0];
+			result.minY = bbox[1];
+			result.maxX = bbox[2];
+			result.maxY = bbox[3];
+			result.srs = srsValue;
+		}
+		return result;
+	}
+	
 	//onClick on a layer configuration btn, we fill the modal with an ajax request
 	jQuery('.btn_modify_layer').click(function () {
 		var psID = jQuery(this).data('psid');
@@ -45,40 +88,15 @@ jQuery(document).ready(function () {
 			form_values[raw_form_array[i].name] = raw_form_array[i].value;
 		}
 		
-		//TODO: get SRS, calculate and set max/min X/Y
 		var geographicFilter = form_values.geographicfilter;
 		if(geographicFilter != ""){
+			var bbox = calculateBBox(geographicFilter);
 			
-			geographicFilter = geographicFilter.replace(/^\s*|\s*$/g,'');
-			if(geographicFilter.length != 0){
-				//Get the srs name
-				var index = geographicFilter.indexOf("srsName=\"", 0);
-				var indexEnd = geographicFilter.indexOf("\"", index+9) ;
-				var srsValue = geographicFilter.substring(index+9, indexEnd);
-
-				//Complete filter GML
-				geographicFilter = "<gml:featureMembers xmlns:gml=\"http://www.opengis.net/gml\"><gml:FeatureFilter xmlns:gml=\"http://www.opengis.net/gml\">" + geographicFilter + "</gml:FeatureFilter></gml:featureMembers>";
-				//Load filter as DOMDocument
-				if (window.ActiveXObject) {
-					var doc = new ActiveXObject('Microsoft.XMLDOM');
-					doc.async = 'false';
-					doc.loadXML(geographicFilter);
-				}
-				else {
-					var parser = new DOMParser();
-					var doc = parser.parseFromString(geographicFilter,'text/xml');
-				}
-				var theParser = new OpenLayers.Format.GML({
-					featureName: "FeatureFilter",
-					gmlns: "http://www.opengis.net/gml"
-				});
-				var bbox = theParser.read(doc)[0].geometry.getBounds().toBBOX().split(',');
-				form_values['minX'] = bbox[0];
-				form_values['minY'] = bbox[1];
-				form_values['maxX'] = bbox[2];
-				form_values['maxY'] = bbox[3];
-				form_values['srs'] = srsValue;
-			}
+			form_values['minX'] = bbox.minX;
+			form_values['minY'] = bbox.minY;
+			form_values['maxX'] = bbox.maxX;
+			form_values['maxY'] = bbox.maxY;
+			form_values['srs'] = bbox.srs;
 		}
 		
 		var get_str = '';
@@ -90,7 +108,6 @@ jQuery(document).ready(function () {
 		form_values['option'] = 'com_easysdi_service';
 		form_values['task'] = 'wmsWebservice';
 		form_values['method'] = 'setWmsLayerSettings';
-		console.log(form_values);
 		
 		jQuery.ajax({
 			dataType: 'html',
@@ -105,5 +122,59 @@ jQuery(document).ready(function () {
 			}
 		});
 		
+	});
+	
+	//event fired when the policy-form is submitted
+	jQuery(document).on('recalculate', function (e, task) {
+		//we pre-calculate the bboxes
+		var raw_form_array = jQuery('#policy-form').serializeArray();
+		var form_values = {
+			inherit_policy : {},
+			inherit_server: {},
+		};
+		for (var i = 0; i < raw_form_array.length; i++) {
+			var key = raw_form_array[i].name;
+			var value = raw_form_array[i].value;
+			
+			if (-1 != key.search(/^inherit_policy/g)) {
+				var indexes = key.substr(0, key.length - 1).split(/\[|\]\[/g);
+				form_values.inherit_policy[indexes[2]] = value;
+				form_values.inherit_policy['id'] = indexes[1];
+			}
+			else if (-1 != key.search(/^inherit_server/g)) {
+				var indexes = key.substr(0, key.length - 1).split(/\[|\]\[/g);
+				if (undefined == form_values.inherit_server[indexes[1]]) {
+					form_values.inherit_server[indexes[1]] = {};
+				}
+				form_values.inherit_server[indexes[1]][indexes[2]] = value;
+			}
+		}
+		debug.form_values = form_values;
+		
+		//calculate for inherit_policy
+		var geographicFilter = form_values.inherit_policy.geographicfilter;
+		if(geographicFilter != ""){
+			var bbox = calculateBBox(geographicFilter);
+			jQuery('#inherit_policy_' + form_values.inherit_policy.id + '_maxx').val(bbox.maxX);
+			jQuery('#inherit_policy_' + form_values.inherit_policy.id + '_maxy').val(bbox.maxY);
+			jQuery('#inherit_policy_' + form_values.inherit_policy.id + '_minx').val(bbox.minX);
+			jQuery('#inherit_policy_' + form_values.inherit_policy.id + '_miny').val(bbox.minY);
+			jQuery('#inherit_policy_' + form_values.inherit_policy.id + '_srssource').val(bbox.srs);
+		}
+		
+		//calculate for inherit_server
+		for (key in form_values.inherit_server) {
+			var geographicFilter = form_values.inherit_server[key].geographicfilter;
+			if(geographicFilter != ""){
+				var bbox = calculateBBox(geographicFilter);
+				jQuery('#inherit_server_' + key + '_maxx').val(bbox.maxX);
+				jQuery('#inherit_server_' + key + '_maxy').val(bbox.maxY);
+				jQuery('#inherit_server_' + key + '_minx').val(bbox.minX);
+				jQuery('#inherit_server_' + key + '_miny').val(bbox.minY);
+				jQuery('#inherit_server_' + key + '_srssource').val(bbox.srs);
+			}
+		}
+		
+		Joomla.submitform(task, document.getElementById('policy-form'));
 	});
 });

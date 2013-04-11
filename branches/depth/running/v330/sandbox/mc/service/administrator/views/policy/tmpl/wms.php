@@ -36,11 +36,13 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	$db->execute();
 	$resultset = $db->loadObjectList();
 	
-	if (0 != $physicalServiceID) {
+	$wmts_spatialpolicy_id = (!empty($data->wms_spatialpolicy_id)) ? $data->wms_spatialpolicy_id : -1;
+	
+	if (0 == $physicalServiceID) {
 		$query = '
 			SELECT *
 			FROM #__sdi_wms_spatialpolicy
-			WHERE id = \'' . $data->wms_spatialpolicy_id . '\';
+			WHERE id = \'' . $wmts_spatialpolicy_id . '\';
 		';
 	}
 	else {
@@ -53,39 +55,46 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 			AND psp.policy_id = ' . $data->id . ';
 		';
 	}
+	
 	$db->setQuery($query);
 	$db->execute();
 	$spatialpolicy = $db->loadObject();
 	
 	
 	$html = '';
+	$prefix = 'inherit';
 	if (0 == $physicalServiceID) {
-		$suffix = $data->wms_spatialpolicy_id;
+		$prefix .= '_policy[' . $wmts_spatialpolicy_id . ']';
 		$html .= '
 			<label class="checkbox">
-				<input type="checkbox" name="anyservice" value="1" ' . ((1 == $data->anyservice)?'checked="checked"':'') . ' /><label for="anyservice">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMTS_ANYSERVICE') . '</label>
+				<input type="checkbox" name="' . $prefix . '[anyservice]" value="1" ' . ((1 == $data->anyservice)?'checked="checked"':'') . ' /><label for="' . $prefix . '[anyservice]">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_ANYSERVICE') . '</label>
 			</label>
 		';
 	}
 	else {
-		$suffix = $physicalServiceID . '_' . $data->id;
+		$prefix .= '_server[' . $physicalServiceID . ']';
 		$anyItem = (isset($spatialpolicy->anyitem))?$spatialpolicy->anyitem:1;
 		$html .= '
 			<label class="checkbox">
-				<input type="checkbox" name="anyitem_' . $physicalServiceID . '" value="1" ' . ((1 == $anyItem)?'checked="checked"':'') . ' /><label for="anyitem_' . $physicalServiceID . '">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMTS_ANYITEM') . '</label>
+				<input type="checkbox" name="' . $prefix . '[anyitem]" value="1" ' . ((1 == $anyItem)?'checked="checked"':'') . ' /><label for="' . $prefix . '[anyitem]">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_ANYITEM') . '</label>
 			</label>
 		';
 	}
 	
 	$html .= '	<br />
-		<label for="minimumscale_' . $suffix . '">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MINIMUM_SCALE') . '</label>
-		<input type="text" name="minimumscale_' . $suffix . '" value="' . ((isset($spatialpolicy->minimumScale))?$spatialpolicy->minimumScale:'') . '" />
+		<label for="' . $prefix . '[minimumscale]">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MINIMUM_SCALE') . '</label>
+		<input type="text" name="' . $prefix . '[minimumscale]" value="' . ((isset($spatialpolicy->minimumscale))?$spatialpolicy->minimumscale:'') . '" />
 		<br />
-		<label for="maximumscale_' . $suffix . '">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MAXIMUM_SCALE') . '</label>
-		<input type="text" name="maximumscale_' . $suffix . '" value="' . ((isset($spatialpolicy->maximumScale))?$spatialpolicy->maximumScale:'') . '" />
+		<label for="' . $prefix . '[maximumscale]">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MAXIMUM_SCALE') . '</label>
+		<input type="text" name="' . $prefix . '[maximumscale]" value="' . ((isset($spatialpolicy->maximumscale))?$spatialpolicy->maximumscale:'') . '" />
 		<br />
-		<label for="geographicfilter_' . $suffix . '">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_FILTER') . '</label>
-		<textarea name="geographicfilter_' . $suffix . '" rows="10" class="span12">' . ((isset($spatialpolicy->geographicFilter))?$spatialpolicy->geographicFilter:'') . '</textarea>
+		<label for="' . $prefix . '[geographicfilter]">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_FILTER') . '</label>
+		<textarea name="' . $prefix . '[geographicfilter]" rows="10" class="span12">' . ((isset($spatialpolicy->geographicfilter))?$spatialpolicy->geographicfilter:'') . '</textarea>
+		<input type="hidden" name="' . $prefix . '[maxx]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'maxx" />
+		<input type="hidden" name="' . $prefix . '[maxy]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'maxy" />
+		<input type="hidden" name="' . $prefix . '[minx]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'minx" />
+		<input type="hidden" name="' . $prefix . '[miny]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'miny" />
+		<input type="hidden" name="' . $prefix . '[srssource]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'srssource" />
 		<br />
 		<br />
 		<br />
@@ -125,6 +134,10 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 						</div>
 					<?php endforeach; ?>
 						
+						<div class="control-group">
+							<div class="control-label"><?php echo $this->form->getLabel('allowedoperation_wms'); ?></div>
+							<div class="controls"><?php echo $this->form->getInput('allowedoperation_wms'); ?></div>
+						</div>
 						<div class="control-group">
 							<div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
 							<div class="controls"><?php echo $this->form->getInput('id'); ?></div>

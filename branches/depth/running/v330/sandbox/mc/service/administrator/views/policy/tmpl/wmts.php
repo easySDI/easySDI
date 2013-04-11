@@ -149,6 +149,10 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 					<?php endforeach; ?>
 						
 						<div class="control-group">
+							<div class="control-label"><?php echo $this->form->getLabel('allowedoperation_wmts'); ?></div>
+							<div class="controls"><?php echo $this->form->getInput('allowedoperation_wmts'); ?></div>
+						</div>
+						<div class="control-group">
 							<div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
 							<div class="controls"><?php echo $this->form->getInput('id'); ?></div>
 						</div>
