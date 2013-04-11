@@ -341,7 +341,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 
 	    if ("GetCapabilities".equalsIgnoreCase(operation)) 
 	    {
-		RemoteServerInfo rs = getRemoteServerInfoMaster();
+		RemoteServerInfo rs = getPhysicalServiceMaster();
 
 		if(!docBuilder.CapabilitiesContentsFiltering(wmtsGetCapabilitiesResponseFilePathMap))
 		{

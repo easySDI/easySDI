@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.easysdi.proxy.jdom.filter.ElementNamedLayerFilter;
 import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyRemoteServerResponse;
+import org.easysdi.proxy.domain.SdiPhysicalservice;
 import org.easysdi.proxy.wms.WMSProxyServlet;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.jdom.*;
@@ -46,26 +47,26 @@ public class WMSProxyLayerThread extends Thread {
     String paramUrlBase;
     TreeMap<Integer, ProxyLayer> layers;
     TreeMap<Integer, String> styles;
-    RemoteServerInfo remoteServer;
+    SdiPhysicalservice physicalService;
     HttpServletResponse resp;
 
     public WMSProxyLayerThread(	WMSProxyServlet servlet, 
 	    String paramUrlBase,
 	    TreeMap<Integer, ProxyLayer> layers,
 	    TreeMap<Integer, String> styles,
-	    RemoteServerInfo remoteServer, 
+	    SdiPhysicalservice physicalService, 
 	    HttpServletResponse resp) {
 	this.servlet = servlet;
 	this.paramUrlBase = paramUrlBase;
 	this.layers = layers;
 	this.styles = styles;
-	this.remoteServer = remoteServer;
+	this.physicalService = physicalService;
 	this.resp = resp;
     }
 
     public void run() {
 	try {
-	    servlet.logger.trace( "Thread Layers group: " + layers.values().toString() + " work begin on server " + remoteServer.getUrl());
+	    servlet.logger.trace( "Thread Layers group: " + layers.values().toString() + " work begin on server " + physicalService.getResourceurl());
 
 	    String requestToSend;
 	    if(servlet.getProxyRequest().getRequest().getMethod().equalsIgnoreCase("POST"))
@@ -73,17 +74,17 @@ public class WMSProxyLayerThread extends Thread {
 	    else
 		requestToSend = getRequestGET();
 
-	    String filePath = servlet.sendData(servlet.getProxyRequest().getRequest().getMethod(), remoteServer.getUrl(), requestToSend);
+	    String filePath = servlet.sendData(servlet.getProxyRequest().getRequest().getMethod(), physicalService.getResourceurl(), requestToSend);
 
-	    ProxyRemoteServerResponse response = new ProxyRemoteServerResponse(remoteServer.getAlias(), filePath);
+	    ProxyRemoteServerResponse response = new ProxyRemoteServerResponse(physicalService.getAlias(), filePath);
 
 	    synchronized (servlet.wmsGetMapResponseFilePathMap) {
 		servlet.wmsGetMapResponseFilePathMap.put(layers.firstKey(),response);
 	    }
-	    servlet.logger.trace("Thread Layers group: " + layers.values().toString() + " work finished on server " + remoteServer.getUrl());
+	    servlet.logger.trace("Thread Layers group: " + layers.values().toString() + " work finished on server " + physicalService.getResourceurl());
 	} catch (Exception e) {
 	    resp.setHeader("easysdi-proxy-error-occured", "true");
-	    servlet.logger.error( "Server " + remoteServer.getUrl() + " - Layers group Thread " + layers.values().toString() + " :" + e.getMessage());
+	    servlet.logger.error( "Server " + physicalService.getResourceurl() + " - Layers group Thread " + layers.values().toString() + " :" + e.getMessage());
 	}
     }
 

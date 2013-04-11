@@ -66,6 +66,18 @@ public class SdiWmslayerPolicy implements java.io.Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "spatialpolicy_id")
 	public SdiWmsSpatialpolicy getSdiWmsSpatialpolicy() {
+		if(this.sdiWmsSpatialpolicy == null)
+		{
+			if(this.getSdiPhysicalservicePolicy().getSdiWmsSpatialpolicy()==null)
+			{
+				if(this.getSdiPhysicalservicePolicy().getSdiPolicy().getSdiWmsSpatialpolicy()!= null)
+					return this.getSdiPhysicalservicePolicy().getSdiPolicy().getSdiWmsSpatialpolicy();
+			}
+			else
+			{
+				return this.getSdiPhysicalservicePolicy().getSdiWmsSpatialpolicy();
+			}
+		}
 		return this.sdiWmsSpatialpolicy;
 	}
 

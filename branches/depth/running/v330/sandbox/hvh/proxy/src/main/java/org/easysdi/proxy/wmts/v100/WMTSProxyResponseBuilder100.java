@@ -275,7 +275,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 
 	try {
 	    SAXBuilder sxb = new SAXBuilder();
-	    RemoteServerInfo master = servlet.getRemoteServerInfoMaster();
+	    RemoteServerInfo master = servlet.getPhysicalServiceMaster();
 	    String fileMasterPath = filePathList.get(master.getAlias());
 	    Document documentMaster = sxb.build(new File(fileMasterPath));
 	    Filter layerFilter = new ElementLayerFilter();

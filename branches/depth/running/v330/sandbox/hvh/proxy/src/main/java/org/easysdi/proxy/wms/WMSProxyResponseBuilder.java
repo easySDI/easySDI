@@ -26,6 +26,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.Map.Entry;
@@ -39,6 +40,12 @@ import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.core.ProxyResponseBuilder;
 import org.easysdi.proxy.core.ProxyServlet;
+import org.easysdi.proxy.domain.SdiPhysicalservice;
+import org.easysdi.proxy.domain.SdiPhysicalservicePolicy;
+import org.easysdi.proxy.domain.SdiVirtualmetadata;
+import org.easysdi.proxy.domain.SdiVirtualservice;
+import org.easysdi.proxy.domain.SdiWmsSpatialpolicy;
+import org.easysdi.proxy.domain.SdiWmslayerPolicy;
 import org.easysdi.proxy.policy.BoundingBox;
 import org.easysdi.proxy.policy.Layer;
 import org.easysdi.proxy.policy.Server;
@@ -230,7 +237,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		    	{
 		    		Element layerElement = (Element)iLLayer.next();
 		    		Element nameElement = getChildElementName(layerElement);
-		    		if (nameElement!= null && !servlet.isLayerAllowed(nameElement.getText(),servlet.getPhysicalServiceByAlias(fileEntry.getKey()).getUrl()))
+		    		if (nameElement!= null && !((WMSProxyServlet)servlet).isLayerAllowed(nameElement.getText(),servlet.getPhysicalServiceByAlias(fileEntry.getKey()).getResourceurl()))
 					{
 		    				Parent parent = layerElement.getParent();
 		    				parent.removeContent (layerElement);
@@ -247,7 +254,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		    			}
 		    					    			
 		    			//Get the remote server URL
-		    			String serverUrl = servlet.getPhysicalServiceByAlias(fileEntry.getKey()).getUrl();
+		    			String serverUrl = servlet.getPhysicalServiceByAlias(fileEntry.getKey()).getResourceurl();
 		    			
 		    			//Rewrite the online resource present in the <Style> element
 		    			Iterator iXlink = layerElement.getDescendants(new AttributeXlinkFilter());
@@ -312,9 +319,10 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		try {
 			SAXBuilder sxb = new SAXBuilder();
 			
-			//Get the master remote server 
-			RemoteServerInfo master = servlet.getRemoteServerInfoMaster();
-			String fileMasterPath = wmsGetCapabilitiesResponseFilePath.get(master.getAlias());
+			//Get the master physical service : first get from hashtable... 
+			SdiPhysicalservice physicalServiceMaster = servlet.getPhysicalServiceMaster();
+			
+			String fileMasterPath = wmsGetCapabilitiesResponseFilePath.get(physicalServiceMaster.getAlias());
 			Document documentMaster = sxb.build(new File(fileMasterPath));
 			
 			//Filter the layer
@@ -366,118 +374,139 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		servlet.logger.trace("transform - Start - Capabilities metadata writing");
 		try
 		{
-			Config config = servlet.getConfiguration();
-			
 			SAXBuilder sxb = new SAXBuilder();
 			Document document = sxb.build(new File(filePath));
 			
-			//Remove the current Service element
-			Element racine = document.getRootElement();
-			racine.removeContent(racine.getChild("Service"));
-			
-			//Create a new Service element
-			Element newService  = new Element ("Service");
-			newService.addContent((new Element("Name")).setText("WMS"));
-			
-			if(config == null )
+			if(!servlet.getVirtualService().isReflectedmetadata())
 			{
-				XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-		        sortie.output(document, new FileOutputStream(filePath));
-				return true;
+				//Service Metadata doesn't have to be overwrite 
+				//Keep the service Metadata
+				//Overwrite OnLineResource
+				Element racine = document.getRootElement();
+				Element service = racine.getChild("service");
+				service.removeContent(service.getChild("OnlineResource"));
+				
+				Element onlineResource = new Element("OnlineResource");
+				onlineResource.setAttribute("type", "simple",nsXLINK);
+				onlineResource.setAttribute("href", href, nsXLINK);
+				service.addContent(onlineResource);
 			}
-						
-			
-			if(config.getTitle() != null && config.getTitle().length() != 0)
-				newService.addContent((new Element("Title")).setText(config.getTitle()));
-			if(config.getAbst() != null && config.getAbst().length() != 0)
-				newService.addContent((new Element("Abstract")).setText(config.getAbst()));
-			if(config.getKeywordList() != null && config.getKeywordList().size() != 0)
+			else
 			{
-				Element keywords = new Element("KeywordsList");
-				Iterator<String> iKeywords = config.getKeywordList().iterator();
-				while (iKeywords.hasNext())
+				SdiVirtualmetadata virtualMetadata = servlet.getVirtualService().getSdiVirtualmetadatas().iterator().next();
+				
+				//Remove the current Service element
+				Element racine = document.getRootElement();
+				Element oldService = (Element)racine.getChild("Service").clone();
+				
+				//Create a new Service element
+				Element newService  = new Element ("Service");
+				newService.addContent((new Element("Name")).setText("WMS"));
+				
+				if(!virtualMetadata.isInheritedtitle() && virtualMetadata.getTitle() != null && virtualMetadata.getTitle().length() != 0)
+					newService.addContent((new Element("Title")).setText(virtualMetadata.getTitle()));
+				else if(virtualMetadata.isInheritedtitle())
+					newService.addContent((new Element("Title")).setText(oldService.getChildText("Title")));
+				
+				if(!virtualMetadata.isInheritedsummary() && virtualMetadata.getSummary() != null && virtualMetadata.getSummary().length() != 0)
+					newService.addContent((new Element("Abstract")).setText(virtualMetadata.getSummary()));
+				else if(virtualMetadata.isInheritedsummary())
+					newService.addContent((new Element("Abstract")).setText(oldService.getChildText("Abstract")));
+				
+				if(!virtualMetadata.isInheritedkeyword() && virtualMetadata.getKeyword() != null && virtualMetadata.getKeyword().length() != 0)
 				{
-					keywords.addContent((new Element("Keyword")).setText(iKeywords.next()));
+					Element keywords = new Element("KeywordsList");
+					String[] words = virtualMetadata.getKeyword().split(",");
+					for(String word: words){
+						keywords.addContent((new Element("Keyword")).setText(word));
+					}
+					newService.addContent(keywords);
 				}
-				newService.addContent(keywords);
+				else if (virtualMetadata.isInheritedkeyword())
+					newService.addContent((new Element("KeywordsList")).setContent(oldService.getChild("KeywordsList")));
+				
+				Element onlineResource = new Element("OnlineResource");
+				onlineResource.setAttribute("type", "simple",nsXLINK);
+				onlineResource.setAttribute("href", href, nsXLINK);
+				newService.addContent(onlineResource);
+				
+				if(virtualMetadata.isInheritedcontact())
+				{
+					Element newContactInformation = new Element("ContactInformation");
+					Element newContactPersonPrimary = new Element("ContactPersonPrimary");
+					Boolean hasContactPersonPrimary = false;
+					
+					if(virtualMetadata.getContactname() != null && virtualMetadata.getContactname().length() != 0){
+						newContactPersonPrimary.addContent((new Element("ContactPerson")).setText(virtualMetadata.getContactname()));
+						hasContactPersonPrimary = true;
+					}
+					if(virtualMetadata.getContactorganization() != null && virtualMetadata.getContactorganization().length() != 0){
+						newContactPersonPrimary.addContent((new Element("ContactOrganization")).setText(virtualMetadata.getContactorganization()));
+						hasContactPersonPrimary = true;
+					}
+					if(hasContactPersonPrimary)
+						newContactInformation.addContent(newContactPersonPrimary);
+					
+					if (virtualMetadata.getContactposition() != null && virtualMetadata.getContactposition().length() != 0)
+						newContactInformation.addContent((new Element("ContactPosition")).setText(virtualMetadata.getContactposition()));
+					
+					Element newContactAddress = new Element("ContactAddress");
+					Boolean hasContactAddress = false;
+					//TODO add the address type
+//						if(virtualMetadata.getC != null && contactAddress.getType().length() != 0){
+//							newContactAddress.addContent((new Element("AddressType")).setText(contactAddress.getType()));
+//							hasContactAddress = true;
+//						}
+					if(virtualMetadata.getContactadress() != null && virtualMetadata.getContactadress().length() != 0){
+						newContactAddress.addContent((new Element("Address")).setText(virtualMetadata.getContactadress()));
+						hasContactAddress = true;
+					}
+					if(virtualMetadata.getContactlocality() != null && virtualMetadata.getContactlocality().length() != 0){
+						newContactAddress.addContent((new Element("City")).setText(virtualMetadata.getContactlocality()));
+						hasContactAddress = true;
+					}
+					//TODO add province
+//						if(virtualMetadata.getContactstate() != null && virtualMetadata.getContactstate().length() != 0){
+//							newContactAddress.addContent((new Element("StateOrProvince")).setText(virtualMetadata.getContactstate()));
+//							hasContactAddress = true;
+//						}
+					if(virtualMetadata.getContactpostalcode() != null && virtualMetadata.getContactpostalcode().length() != 0){
+						newContactAddress.addContent((new Element("PostCode")).setText(virtualMetadata.getContactpostalcode()));
+						hasContactAddress = true;
+					}
+					if(virtualMetadata.getContactstate() != null && virtualMetadata.getContactstate().length() != 0){
+						newContactAddress.addContent((new Element("Country")).setText(virtualMetadata.getContactstate()));
+						hasContactAddress = true;
+					}
+					
+					if(hasContactAddress)
+						newContactInformation.addContent(newContactAddress);
+					
+					if (virtualMetadata.getContactphone() != null && virtualMetadata.getContactphone().length() != 0)
+						newContactInformation.addContent((new Element("ContactVoiceTelephone")).setText(virtualMetadata.getContactphone()));
+					
+					if (virtualMetadata.getContactfax() != null && virtualMetadata.getContactfax().length() != 0)
+						newContactInformation.addContent((new Element("ContactFacsimileTelephone")).setText(virtualMetadata.getContactfax()));
+					
+					if (virtualMetadata.getContactemail() != null && virtualMetadata.getContactemail().length() != 0)
+						newContactInformation.addContent((new Element("ContactElectronicMailAddress")).setText(virtualMetadata.getContactemail()));
+					
+					newService.addContent(newContactInformation);
+				}
+				
+				if(!virtualMetadata.isInheritedfee() && virtualMetadata.getFee() != null && virtualMetadata.getFee().length() != 0)
+					newService.addContent((new Element("Fees")).setText(virtualMetadata.getFee()));
+				else if (virtualMetadata.isInheritedfee())
+					newService.addContent((new Element("Fees")).setText(oldService.getChildText("Fees")));
+				
+				if(!virtualMetadata.isInheritedaccessconstraint() && virtualMetadata.getAccessconstraint() != null && virtualMetadata.getAccessconstraint().length() != 0)
+					newService.addContent((new Element("AccessConstraints")).setText(virtualMetadata.getAccessconstraint()));
+				else if (virtualMetadata.isInheritedaccessconstraint())
+					newService.addContent((new Element("AccessConstraints")).setText(oldService.getChildText("AccessConstraints")));
+				
+				racine.removeContent(racine.getChild("Service"));
+				racine.addContent( 1, newService);
 			}
-			Element onlineResource = new Element("OnlineResource");
-			onlineResource.setAttribute("type", "simple",nsXLINK);
-			onlineResource.setAttribute("href", href, nsXLINK);
-			newService.addContent(onlineResource);
-			
-			
-			if(config.getContactInfo() != null && !config.getContactInfo().isEmpty()){
-				Element newContactInformation = new Element("ContactInformation");
-				
-				ServiceContactInfo contactInfo = config.getContactInfo();
-				
-				Element newContactPersonPrimary = new Element("ContactPersonPrimary");
-				Boolean hasContactPersonPrimary = false;
-				if(contactInfo.getName() != null && contactInfo.getName().length() != 0){
-					newContactPersonPrimary.addContent((new Element("ContactPerson")).setText(contactInfo.getName()));
-					hasContactPersonPrimary = true;
-				}
-				if(contactInfo.getOrganization() != null && contactInfo.getOrganization().length() != 0){
-					newContactPersonPrimary.addContent((new Element("ContactOrganization")).setText(contactInfo.getOrganization()));
-					hasContactPersonPrimary = true;
-				}
-				if(hasContactPersonPrimary)
-					newContactInformation.addContent(newContactPersonPrimary);
-				
-				if (contactInfo.getPosition() != null && contactInfo.getPosition().length() != 0)
-					newContactInformation.addContent((new Element("ContactPosition")).setText(contactInfo.getPosition()));
-				
-				ServiceContactAdressInfo contactAddress = contactInfo.getContactAddress();
-				Element newContactAddress = new Element("ContactAddress");
-				Boolean hasContactAddress = false;
-				if(contactAddress.getType() != null && contactAddress.getType().length() != 0){
-					newContactAddress.addContent((new Element("AddressType")).setText(contactAddress.getType()));
-					hasContactAddress = true;
-				}
-				if(contactAddress.getAddress() != null && contactAddress.getAddress().length() != 0){
-					newContactAddress.addContent((new Element("Address")).setText(contactAddress.getAddress()));
-					hasContactAddress = true;
-				}
-				if(contactAddress.getCity() != null && contactAddress.getCity().length() != 0){
-					newContactAddress.addContent((new Element("City")).setText(contactAddress.getCity()));
-					hasContactAddress = true;
-				}
-				if(contactAddress.getState() != null && contactAddress.getState().length() != 0){
-					newContactAddress.addContent((new Element("StateOrProvince")).setText(contactAddress.getState()));
-					hasContactAddress = true;
-				}
-				if(contactAddress.getPostalCode() != null && contactAddress.getPostalCode().length() != 0){
-					newContactAddress.addContent((new Element("PostCode")).setText(contactAddress.getPostalCode()));
-					hasContactAddress = true;
-				}
-				if(contactAddress.getCountry() != null && contactAddress.getCountry().length() != 0){
-					newContactAddress.addContent((new Element("Country")).setText(contactAddress.getCountry()));
-					hasContactAddress = true;
-				}
-				
-				if(hasContactAddress)
-					newContactInformation.addContent(newContactAddress);
-				
-				if (contactInfo.getVoicePhone() != null && contactInfo.getVoicePhone().length() != 0)
-					newContactInformation.addContent((new Element("ContactVoiceTelephone")).setText(contactInfo.getVoicePhone()));
-				
-				if (contactInfo.getFacSimile() != null && contactInfo.getFacSimile().length() != 0)
-					newContactInformation.addContent((new Element("ContactFacsimileTelephone")).setText(contactInfo.getFacSimile()));
-				
-				if (contactInfo.geteMail() != null && contactInfo.geteMail().length() != 0)
-					newContactInformation.addContent((new Element("ContactElectronicMailAddress")).setText(contactInfo.geteMail()));
-				
-				newService.addContent(newContactInformation);
-			}
-			
-				
-			if(config.getFees() != null && config.getFees().length() != 0)
-				newService.addContent((new Element("Fees")).setText(config.getFees()));
-			if(config.getAccessConstraints() != null && config.getAccessConstraints().length() != 0)
-				newService.addContent((new Element("AccessConstraints")).setText(config.getAccessConstraints()));
-			
-			racine.addContent( 1, newService);
 			
 			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 	        sortie.output(document, new FileOutputStream(filePath));
@@ -633,77 +662,72 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 			String wgsMinx;
 			String wgsMiny;
 			
-			//TODO Change it
-//			List<Server> serverList = servlet.getPolicy().getServers().getServer();
-			List<Server> serverList = new ArrayList<Server>();
-			
 			for(int l = 0 ; l < layersList.size();l++)
 			{
 				Element elementLayer = (Element)layersList.get(l);
-			
-				for (int i=0 ; i < serverList.size() ; i++)
+				String layerName = getLayerName(elementLayer);
+				//Layer does not have a <Name>, it is not a layer that can be requested  
+    			if(layerName == null)
+    					continue;
+    			ProxyLayer proxyLayer = new ProxyLayer(layerName);
+    							
+				Set<SdiPhysicalservicePolicy> physicalServicePolicies = servlet.getPolicy().getSdiPhysicalservicePolicies();
+				Iterator<SdiPhysicalservicePolicy> ip = physicalServicePolicies.iterator();
+				while(ip.hasNext())
 				{
-				
-	    			Server server = serverList.get(i);
-	    			
-	    			String layerName = getLayerName(elementLayer);
-	    			
-	    			//Layer does not have a <Name>, it is not a layer that can be requested  
-	    			if(layerName == null)
-	    					continue;
-	    			
-	    			ProxyLayer proxyLayer = new ProxyLayer(layerName);
-	    			
-	    			
-	    			Layer currentLayer = server.getLayers().getLayerByName(proxyLayer.getPrefixedName());
-	    			
-	    			//Not the right server
-	    			if(currentLayer == null)
-	    				continue;
-	    			
-	    			//No geographic filter : no BBOX to overwrite
-	    			if(currentLayer.getBoundingBox() == null)
-	    				continue;
-	    			
-	    			//Calculate WGS BBOX
-	    			BoundingBox srsBBOX =  currentLayer.getBoundingBox();
-	    			if(srsBBOX.getSRS().equalsIgnoreCase("EPSG:4326"))
-	    			{
-	    				wgsMaxx = (srsBBOX.getMaxx());
-	    				wgsMaxy = (srsBBOX.getMaxy());
-	    				wgsMinx = (srsBBOX.getMinx());
-	    				wgsMiny = (srsBBOX.getMiny());
-	    			}	
-	    			else
-	    			{
-	    				
-		    				CoordinateReferenceSystem sourceCRS = CRS.decode(srsBBOX.getSRS());
-		    				MathTransform transform = CRS.findMathTransform(sourceCRS, wgsCRS);
-		    				Envelope sourceEnvelope = new Envelope(Double.valueOf(srsBBOX.getMinx()),Double.valueOf(srsBBOX.getMaxx()),Double.valueOf(srsBBOX.getMiny()),Double.valueOf(srsBBOX.getMaxy()));
-		    				Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
-		    				wgsMaxx = (String.valueOf(targetEnvelope.getMaxX()));
-		    				wgsMaxy = (String.valueOf(targetEnvelope.getMaxY()));
-		    				wgsMinx = (String.valueOf(targetEnvelope.getMinX()));
-		    				wgsMiny = (String.valueOf(targetEnvelope.getMinY()));
-	    				
-	    			}
-	    			
-	    			if( !writeLatLonBBOX(elementLayer, wgsMinx, wgsMiny,wgsMaxx, wgsMaxy)) return false;
-	    			
-	    			parentCRS = writeCRSBBOX(elementLayer,srsBBOX,wgsCRS,parentCRS,wgsMinx,wgsMiny,wgsMaxx,wgsMaxy);
-	    			
-	    			Filter filtre = new WMSProxyCapabilitiesLayerFilter();
-	    			Iterator<Element> itL = elementLayer.getDescendants(filtre);
-	    			List<org.jdom.Element> sublayersList = new ArrayList<org.jdom.Element>();
-			    	while(itL.hasNext())
+					SdiPhysicalservicePolicy physicalservicePolicy = ip.next();
+					Set<SdiWmslayerPolicy> wmsLayerPolicies =  physicalservicePolicy.getSdiWmslayerPolicies();
+					Iterator<SdiWmslayerPolicy> ilayers = wmsLayerPolicies.iterator();
+					while(ilayers.hasNext())
 					{
-			    		sublayersList.add((org.jdom.Element)itL.next());
+						SdiWmslayerPolicy layer = ilayers.next();
+						if(layer.getName().equals(proxyLayer.getPrefixedName()))
+						{
+							SdiWmsSpatialpolicy spatialPolicy = layer.getSdiWmsSpatialpolicy();
+							if(spatialPolicy != null)
+							{
+								if(spatialPolicy.getSrssource()!= null)
+								{
+									if(spatialPolicy.getSrssource().equalsIgnoreCase("EPSG:4326"))
+					    			{
+					    				wgsMaxx = (spatialPolicy.getMaxx()).toString();
+					    				wgsMaxy = (spatialPolicy.getMaxy()).toString();
+					    				wgsMinx = (spatialPolicy.getMinx()).toString();
+					    				wgsMiny = (spatialPolicy.getMiny()).toString();
+					    			}	
+					    			else
+					    			{
+					    				
+						    				CoordinateReferenceSystem sourceCRS = CRS.decode(spatialPolicy.getSrssource());
+						    				MathTransform transform = CRS.findMathTransform(sourceCRS, wgsCRS);
+						    				Envelope sourceEnvelope = new Envelope(spatialPolicy.getMinx().doubleValue(),spatialPolicy.getMaxx().doubleValue(),spatialPolicy.getMiny().doubleValue(),spatialPolicy.getMaxy().doubleValue());
+						    				Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
+						    				wgsMaxx = (String.valueOf(targetEnvelope.getMaxX()));
+						    				wgsMaxy = (String.valueOf(targetEnvelope.getMaxY()));
+						    				wgsMinx = (String.valueOf(targetEnvelope.getMinX()));
+						    				wgsMiny = (String.valueOf(targetEnvelope.getMinY()));
+					    				
+					    			}
+									
+									if( !writeLatLonBBOX(elementLayer, wgsMinx, wgsMiny,wgsMaxx, wgsMaxy)) return false;
+					    			
+					    			parentCRS = writeCRSBBOX(elementLayer,spatialPolicy,wgsCRS,parentCRS,wgsMinx,wgsMiny,wgsMaxx,wgsMaxy);
+					    			
+					    			Filter filtre = new WMSProxyCapabilitiesLayerFilter();
+					    			Iterator<Element> itL = elementLayer.getDescendants(filtre);
+					    			List<org.jdom.Element> sublayersList = new ArrayList<org.jdom.Element>();
+							    	while(itL.hasNext())
+									{
+							    		sublayersList.add((org.jdom.Element)itL.next());
+									}
+					    			while(itL.hasNext())
+									{
+							    		if ( !rewriteBBOX(sublayersList, wgsCRS,parentCRS) ) return false;
+									}
+								}
+							}
+						}
 					}
-	    			while(itL.hasNext())
-					{
-			    		if ( !rewriteBBOX(sublayersList, wgsCRS,parentCRS) ) return false;
-					}	
-				
 				}
 			}
 			return true;
@@ -762,7 +786,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	 * Rewrite the BoundingBox element
 	 * <BoundingBox SRS="EPSG:27582" minx="10000" miny="1.6e+06" maxx="1.2e+06" maxy="2.7e+06"/>
 	 * @param elementLayer
-	 * @param srsBBOX : the BoundingBox define in the policy filter
+	 * @param spatialPolicy : the BoundingBox define in the policy filter
 	 * @param wgsCRS : the EPSG:4326 CoordinateReferenceSystem
 	 * @param parentCRS : the CoordinateReferenceSystem of the parent layer
 	 * @param wgsMinx : minx in EPSG:4326 reference system
@@ -771,7 +795,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	 * @param wgsMaxy : maxy in EPSG:4326 reference system
 	 * @return
 	 */
-	protected CoordinateReferenceSystem writeCRSBBOX(Element elementLayer,BoundingBox srsBBOX,CoordinateReferenceSystem wgsCRS,CoordinateReferenceSystem parentCRS,String wgsMinx, String wgsMiny, String wgsMaxx, String wgsMaxy)
+	protected CoordinateReferenceSystem writeCRSBBOX(Element elementLayer,SdiWmsSpatialpolicy spatialPolicy,CoordinateReferenceSystem wgsCRS,CoordinateReferenceSystem parentCRS,String wgsMinx, String wgsMiny, String wgsMaxx, String wgsMaxy)
 	{
 		try
 		{
@@ -799,16 +823,16 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 				for (int j = 0 ; j < srsBBOXElements.size() ; j++)
 				{
 					Element BBOX = (Element) srsBBOXElements.get(j);
-					if(BBOX.getAttributeValue(getAttributeSRS()).equals(srsBBOX.getSRS()))
+					if(BBOX.getAttributeValue(getAttributeSRS()).equals(spatialPolicy.getSrssource()))
 					{
 						if(j == 0)
 						{
 							parentCRS = CRS.decode(BBOX.getAttributeValue(getAttributeSRS()));
 						}
-						BBOX.setAttribute("minx", srsBBOX.getMinx());
-						BBOX.setAttribute("miny", srsBBOX.getMiny());
-						BBOX.setAttribute("maxx", srsBBOX.getMaxx());
-						BBOX.setAttribute("maxy", srsBBOX.getMaxy());
+						BBOX.setAttribute("minx", spatialPolicy.getMinx().toString());
+						BBOX.setAttribute("miny", spatialPolicy.getMiny().toString());
+						BBOX.setAttribute("maxx", spatialPolicy.getMaxx().toString());
+						BBOX.setAttribute("maxy", spatialPolicy.getMaxy().toString());
 					}
 					else
 					{

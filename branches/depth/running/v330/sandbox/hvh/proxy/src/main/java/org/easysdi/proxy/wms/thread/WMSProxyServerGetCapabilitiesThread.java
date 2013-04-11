@@ -20,6 +20,7 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.easysdi.proxy.domain.SdiPhysicalservice;
 import org.easysdi.proxy.wms.*;
 import org.easysdi.xml.documents.RemoteServerInfo;
 
@@ -34,35 +35,35 @@ public class WMSProxyServerGetCapabilitiesThread extends Thread {
 
     WMSProxyServlet servlet;
     String paramUrlBase;
-    RemoteServerInfo remoteServerInfo;
+    SdiPhysicalservice physicalService;
     HttpServletResponse resp;
 
 
     public WMSProxyServerGetCapabilitiesThread( WMSProxyServlet servlet, 
 	    String paramUrlBase,
-	    RemoteServerInfo remoteServer, 
+	    SdiPhysicalservice physicalService, 
 	    HttpServletResponse resp) {
 	this.paramUrlBase = paramUrlBase;
 	this.resp = resp;
 	this.servlet = servlet;
-	this.remoteServerInfo = remoteServer;
+	this.physicalService = physicalService;
     }
 
     public void run() {
 
 	try {
-	    servlet.logger.trace("Thread Server: " + remoteServerInfo.getUrl() + " work begin");
+	    servlet.logger.trace("Thread Server: " + physicalService.getResourceurl() + " work begin");
 
-	    String filePath = servlet.sendData(servlet.getProxyRequest().getRequest().getMethod(), remoteServerInfo.getUrl(), paramUrlBase);
+	    String filePath = servlet.sendData(servlet.getProxyRequest().getRequest().getMethod(), physicalService.getResourceurl(), paramUrlBase);
 
 	    synchronized (servlet.wmsGetCapabilitiesResponseFilePathMap) {
-		servlet.logger.trace("requestPreTraitementGET save response from thread server " + remoteServerInfo.getUrl());
-		servlet.wmsGetCapabilitiesResponseFilePathMap.put(remoteServerInfo.getAlias(), filePath);
+		servlet.logger.trace("requestPreTraitementGET save response from thread server " + physicalService.getResourceurl());
+		servlet.wmsGetCapabilitiesResponseFilePathMap.put(physicalService.getAlias(), filePath);
 	    }
 
 	} catch (Exception e) {
 	    resp.setHeader("easysdi-proxy-error-occured", "true");
-	    servlet.logger.error("Server Thread " + remoteServerInfo.getUrl() + " :" + e.getMessage());
+	    servlet.logger.error("Server Thread " + physicalService.getResourceurl() + " :" + e.getMessage());
 	}
 
 

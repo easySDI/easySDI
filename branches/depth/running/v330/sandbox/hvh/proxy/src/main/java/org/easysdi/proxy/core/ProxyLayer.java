@@ -36,22 +36,22 @@ public class ProxyLayer {
 
 	    if(requestedLayer.contains(":"))
 	    {
-		this.setPrefix(requestedLayer.substring(0, requestedLayer.indexOf(":")));
-		requestedLayer = requestedLayer.substring(requestedLayer.indexOf(":",0)+1);
+			this.setPrefix(requestedLayer.substring(0, requestedLayer.indexOf(":")));
+			requestedLayer = requestedLayer.substring(requestedLayer.indexOf(":",0)+1);
 	    }
 	    if(requestedLayer.contains("_"))
 	    {
-		this.setAlias(requestedLayer.substring(0, requestedLayer.indexOf("_")));
-		this.setName(requestedLayer.substring(requestedLayer.indexOf("_",0)+1));
+			this.setAlias(requestedLayer.substring(0, requestedLayer.indexOf("_")));
+			this.setName(requestedLayer.substring(requestedLayer.indexOf("_",0)+1));
 	    }
 	    else
 	    {
-		this.setName(requestedLayer);
+	    	this.setName(requestedLayer);
 	    }
 	    if(this.getPrefix() !=null ){
-		this.setPrefixedName(this.getPrefix() +":" + this.getName());
+	    	this.setPrefixedName(this.getPrefix() +":" + this.getName());
 	    }else{
-		this.setPrefixedName(this.getName());
+	    	this.setPrefixedName(this.getName());
 	    }
 	}
     }

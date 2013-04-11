@@ -29,6 +29,7 @@ import java.util.logging.Level;
 import javax.servlet.http.HttpServletResponse;
 
 import org.easysdi.proxy.core.ProxyLayer;
+import org.easysdi.proxy.domain.SdiPhysicalservice;
 import org.easysdi.proxy.wms.WMSProxyServlet;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -53,27 +54,27 @@ public class WMSProxyServerGetMapThread extends Thread {
     String paramUrlBase;
     TreeMap<Integer, ProxyLayer> layers;
     TreeMap<Integer, String> styles;
-    RemoteServerInfo remoteServer;
+    SdiPhysicalservice physicalService;
     HttpServletResponse resp;
 
     public WMSProxyServerGetMapThread(	WMSProxyServlet servlet, 
 	    String paramUrlBase,
 	    TreeMap<Integer, ProxyLayer> layers,
 	    TreeMap<Integer, String> styles,
-	    RemoteServerInfo remoteServer, 
+	    SdiPhysicalservice physicalService, 
 	    HttpServletResponse resp) {
 	this.servlet = servlet;
 	this.paramUrlBase = paramUrlBase;
 	this.layers = layers;
 	this.styles = styles;
-	this.remoteServer = remoteServer;
+	this.physicalService = physicalService;
 	this.resp = resp;
     }
 
     public void run() {
 
 	try {
-	    servlet.logger.trace( "Thread Server: " + remoteServer.getUrl() + " work begin");
+	    servlet.logger.trace( "Thread Server: " + physicalService.getResourceurl() + " work begin");
 
 	    //Layer order
 	    List<TreeMap<Integer, ProxyLayer>> layerGroupList = new ArrayList<TreeMap<Integer,ProxyLayer>>() ;
@@ -124,7 +125,7 @@ public class WMSProxyServerGetMapThread extends Thread {
 		    Entry<Integer, ProxyLayer> layer = itL.next();
 
 		    //Compare the filter with the requested BBOX
-		    String filter = servlet.getLayerFilter(remoteServer.getUrl(), layer.getValue().getPrefixedName());
+		    String filter = servlet.getLayerFilter(physicalService.getResourceurl(), layer.getValue().getPrefixedName());
 		    if(filter == null || filter.length() == 0){
 			//No filter define on the layer : the layer has to be requested
 			continue;
@@ -166,15 +167,15 @@ public class WMSProxyServerGetMapThread extends Thread {
 
 		if(continuousLayers.size()==1){
 		    //Send the request
-		    servlet.logger.trace("WMSProxyServerGetMapThread send request multiLayer to thread server " + remoteServer.getUrl());
-		    WMSProxyLayerThread th = new WMSProxyLayerThread(servlet,paramUrlBase,continuousLayers,styles, remoteServer,resp);
+		    servlet.logger.trace("WMSProxyServerGetMapThread send request multiLayer to thread server " + physicalService.getResourceurl());
+		    WMSProxyLayerThread th = new WMSProxyLayerThread(servlet,paramUrlBase,continuousLayers,styles, physicalService,resp);
 		    th.start();
 		    layerThreadList.add(th);
 		}else if(continuousLayers.size()>1){
 		    if(isGeographicFilterEqual){
 			//Send all the layer in the same request : layers are in the same order than in the request and the geographic filter are the same
-			servlet.logger.trace("WMSProxyServerGetMapThread send request multiLayer to thread server " + remoteServer.getUrl());
-			WMSProxyLayerThread th = new WMSProxyLayerThread(servlet,paramUrlBase,continuousLayers,styles, remoteServer,resp);
+			servlet.logger.trace("WMSProxyServerGetMapThread send request multiLayer to thread server " + physicalService.getResourceurl());
+			WMSProxyLayerThread th = new WMSProxyLayerThread(servlet,paramUrlBase,continuousLayers,styles, physicalService,resp);
 			th.start();
 			layerThreadList.add(th);
 		    }else{
@@ -184,8 +185,8 @@ public class WMSProxyServerGetMapThread extends Thread {
 			    Entry<Integer, ProxyLayer> layer = itLToS.next();
 			    TreeMap<Integer, ProxyLayer> temp = new TreeMap<Integer, ProxyLayer>();
 			    temp.put(layer.getKey(), layer.getValue());
-			    servlet.logger.trace("WMSProxyServerGetMapThread send request singleLayer to thread server " + remoteServer.getUrl());
-			    WMSProxyLayerThread th = new WMSProxyLayerThread(servlet,paramUrlBase,temp,styles, remoteServer,resp);
+			    servlet.logger.trace("WMSProxyServerGetMapThread send request singleLayer to thread server " + physicalService.getResourceurl());
+			    WMSProxyLayerThread th = new WMSProxyLayerThread(servlet,paramUrlBase,temp,styles, physicalService,resp);
 			    th.start();
 			    layerThreadList.add(th);
 			}
@@ -198,14 +199,14 @@ public class WMSProxyServerGetMapThread extends Thread {
 		layerThreadList.get(i).join();
 	    }
 
-	    servlet.logger.trace("Thread Server: " + remoteServer.getUrl() + " work finished");
+	    servlet.logger.trace("Thread Server: " + physicalService.getResourceurl() + " work finished");
 	} catch (FactoryException e){
 	    //CRS can not be determine with the given SRS code
 	    resp.setHeader("easysdi-proxy-error-occured", "true");
-	    servlet.logger.error( "Server Thread " + remoteServer.getUrl() + " :" + e.getMessage());
+	    servlet.logger.error( "Server Thread " + physicalService.getResourceurl() + " :" + e.getMessage());
 	} catch (Exception e) {
 	    resp.setHeader("easysdi-proxy-error-occured", "true");
-	    servlet.logger.error( "Server Thread " + remoteServer.getUrl() + " :" + e.getMessage());
+	    servlet.logger.error( "Server Thread " + physicalService.getResourceurl() + " :" + e.getMessage());
 	}			
     }
 }

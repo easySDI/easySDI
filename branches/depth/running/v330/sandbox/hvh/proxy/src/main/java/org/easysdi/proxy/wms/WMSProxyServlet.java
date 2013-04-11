@@ -37,11 +37,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
@@ -51,24 +52,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.easysdi.proxy.jdom.filter.ElementNamedLayerFilter;
 import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.core.ProxyServletRequest;
+import org.easysdi.proxy.domain.SdiPhysicalservice;
 import org.easysdi.proxy.domain.SdiPhysicalservicePolicy;
 import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.domain.SdiWmslayerPolicy;
+import org.easysdi.proxy.integratedmodelling.geospace.gis.FeatureRasterizer;
+import org.easysdi.proxy.jdom.filter.ElementNamedLayerFilter;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.policy.Layer;
 import org.easysdi.proxy.policy.Server;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetCapabilitiesThread;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetFeatureInfoThread;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetMapThread;
-import org.easysdi.proxy.wms.WMSProxyResponseBuilder;
 import org.easysdi.xml.documents.RemoteServerInfo;
-import org.geotools.data.ows.CRSEnvelope; 
+import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.feature.AttributeType;
 import org.geotools.feature.AttributeTypeFactory;
 import org.geotools.feature.FeatureType;
@@ -81,7 +83,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.NamedIdentifier;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.xml.DocumentFactory;
-import org.easysdi.proxy.integratedmodelling.geospace.gis.FeatureRasterizer;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -92,6 +93,7 @@ import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.xml.sax.SAXException;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 
@@ -207,8 +209,8 @@ public class WMSProxyServlet extends ProxyServlet {
 		try{
 			List<WMSProxyServerGetCapabilitiesThread> serverThreadList = new Vector<WMSProxyServerGetCapabilitiesThread>();
 			
-			Hashtable<String, RemoteServerInfo> remoteServersTable = getPhysicalServiceHastable();
-			Iterator<Entry<String, RemoteServerInfo>> it =remoteServersTable.entrySet().iterator();
+			LinkedHashMap<String, SdiPhysicalservice> physicalServices = getPhysicalServiceHastable();
+			Iterator<Entry<String, SdiPhysicalservice>> it =physicalServices.entrySet().iterator();
 
 			while(it.hasNext())
 			{
@@ -217,6 +219,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					requestContent = getProxyRequest().getUrlParameters();
 				else
 					requestContent = getProxyRequest().getBodyRequest().toString();
+				
 				WMSProxyServerGetCapabilitiesThread s = new WMSProxyServerGetCapabilitiesThread(this,
 						requestContent, 
 						it.next().getValue(), 
@@ -236,19 +239,17 @@ public class WMSProxyServlet extends ProxyServlet {
 				transformGetCapabilities(req, resp);
 				logger.trace("requestPreTreatmentGetCapabilities end transform");
 			} else {
-				StringBuffer out;
 				try {
 					logger.error(OWSExceptionReport.TEXT_NO_RESULT_RECEIVED_BY_PROXY);
 					owsExceptionReport.sendExceptionReport(req, resp, OWSExceptionReport.TEXT_NO_RESULT_RECEIVED_BY_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_OK);
 				} catch (IOException e) {
-					logger.error( configuration.getServletClass() + ".requestPreTreatmentGetCapabilities : ", e);
+					logger.error( "WMSProxyServlet.requestPreTreatmentGetCapabilities : ", e);
 				}
 				return;
 			}
 		}catch(Exception e){
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error( configuration.getServletClass() + ".requestPreTreatmentGetCapabilities : ", e);
-			StringBuffer out;
+			logger.error( "WMSProxyServlet.requestPreTreatmentGetCapabilities : ", e);
 			try {
 				owsExceptionReport.sendExceptionReport(req, resp, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_OK);
 			} catch (IOException e1) {
@@ -335,7 +336,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				logger.trace("requestPreTraitementGET end transform");
 			} else {
 				//Generate an empty image
-				logger.debug(configuration.getServletClass() + ".requestPreTreatmentGetMap : no response from remote servers, generate an empty image");
+				logger.debug("WMSProxyServlet.requestPreTreatmentGetMap : no response from remote servers, generate an empty image");
 				BufferedImage imgOut = generateEmptyImage(getProxyRequest().getWidth(), getProxyRequest().getHeight(), getProxyRequest().getFormat(), true, resp);
 				Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(getProxyRequest().getFormat());
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -349,8 +350,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			}
 		}catch(Exception e){
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error(configuration.getServletClass() + ".requestPreTreatmentGetMap: ", e);
-			StringBuffer out;
+			logger.error("WMSProxyServlet.requestPreTreatmentGetMap: ", e);
 			try {
 				owsExceptionReport.sendExceptionReport(req, resp, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY, OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK);
 			} catch (IOException e1) {
@@ -375,7 +375,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			}
 
 			//Get the remote server informations
-			Hashtable<String, RemoteServerInfo> remoteServersTable = getPhysicalServiceHastable();
+			LinkedHashMap<String, SdiPhysicalservice> physicalServiceTable = getPhysicalServiceHastable();
 
 			//Check if the layer is allowed against policy rules
 			String layerAsString = ((WMSProxyServletRequest)getProxyRequest()).getLayer();
@@ -387,22 +387,21 @@ public class WMSProxyServlet extends ProxyServlet {
 			}
 
 			//Find the remote server concerning by the current layer
-			RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(layer.getAlias());
+			SdiPhysicalservice physicalService = (SdiPhysicalservice)physicalServiceTable.get(layer.getAlias());
 
 			//Check the availaibility of the requested LAYERS 
-			if( RS == null || !isLayerAllowed(layer.getPrefixedName(), RS.getUrl())){
+			if( physicalService == null || !isLayerAllowed(layer.getPrefixedName(), physicalService.getResourceurl())){
 				logger.error( OWSExceptionReport.TEXT_INVALID_LAYER_NAME+layerAsString+" is not allowed");
 				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_INVALID_LAYER_NAME+layerAsString,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYER", HttpServletResponse.SC_OK);
 				return;
 			}
 
 			//Send the request to the remote server and send back the response directly to client
-			sendDataDirectStream(resp,"GET", RS.getUrl(), getProxyRequest().getUrlParameters() + "&LAYER="+layer.getPrefixedName());
+			sendDataDirectStream(resp,"GET", physicalService.getResourceurl(), getProxyRequest().getUrlParameters() + "&LAYER="+layer.getPrefixedName());
 
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error(configuration.getServletClass() + ".requestPreTreatmentGetLegendGraphic: ", e);
-			StringBuffer out;
+			logger.error("WMSProxyServlet.requestPreTreatmentGetLegendGraphic: ", e);
 			try {
 				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_OK);
 			} catch (IOException e1) {
@@ -442,7 +441,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			TreeMap<Integer,ProxyLayer> layerTableToKeep = new TreeMap<Integer, ProxyLayer>();
 
 			//Get the remote server informations
-			Hashtable<String, RemoteServerInfo> remoteServersTable = getPhysicalServiceHastable();
+			LinkedHashMap<String, SdiPhysicalservice> physicalServiceTable = getPhysicalServiceHastable();
 
 			ArrayList <String> remoteServerToCall = new ArrayList<String>();
 
@@ -459,15 +458,15 @@ public class WMSProxyServlet extends ProxyServlet {
 				}
 
 				//Find the remote server concerning by the current layer
-				RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(layer.getAlias());
+				SdiPhysicalservice physicalService = (SdiPhysicalservice)physicalServiceTable.get(layer.getAlias());
 
 				//Check the availaibility of the requested QUERY_LAYERS 
-				if( RS == null ){
+				if( physicalService == null ){
 					logger.info( OWSExceptionReport.TEXT_INVALID_QUERY_LAYERS_NAME+layerArray.get(k)+". Prefix is unknown.");
 					owsExceptionReport.sendExceptionReport(request, response, "QUERY_LAYERS "+OWSExceptionReport.TEXT_INVALID_QUERY_LAYERS_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"QUERY_LAYERS", HttpServletResponse.SC_OK);
 					return ;
 				}
-				if(  !isLayerAllowed(layer.getPrefixedName(), RS.getUrl())){
+				if(  !isLayerAllowed(layer.getPrefixedName(), physicalService.getResourceurl())){
 					logger.info( OWSExceptionReport.TEXT_INVALID_QUERY_LAYERS_NAME+layerArray.get(k)+" is not allowed");
 					owsExceptionReport.sendExceptionReport(request, response, "QUERY_LAYERS "+OWSExceptionReport.TEXT_INVALID_QUERY_LAYERS_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"QUERY_LAYERS", HttpServletResponse.SC_OK);
 					return ;
@@ -477,14 +476,14 @@ public class WMSProxyServlet extends ProxyServlet {
 					Entry<Integer, ProxyLayer> entry =  i.next();
 					if(entry.getValue().getAlias().equals(layer.getAlias()) && entry.getValue().getPrefixedName().equals(layer.getPrefixedName())){
 						layerTableToKeep.put(k, layer);
-						if(!remoteServerToCall.contains(RS.getAlias()))
-							remoteServerToCall.add(RS.getAlias());
+						if(!remoteServerToCall.contains(physicalService.getAlias()))
+							remoteServerToCall.add(physicalService.getAlias());
 					}
 				}
 			}
 
 			//Find if request is candidate to direct streaming
-			if(remoteServerToCall.size() == 1 && (getConfiguration().getXsltPath() == null||getConfiguration().getXsltPath().trim() =="" ) ){
+			if(remoteServerToCall.size() == 1 && (sdiVirtualService.getXsltfilename() == null||sdiVirtualService.getXsltfilename().trim() =="" ) ){
 				logger.debug("WMSProxyServlet.requestPreTreatmentGetFeatureInfo : request is streamed.");
 				//Request can be send with direct streaming
 				Iterator<Entry<Integer, ProxyLayer>> itQPL = layerTableToKeep.entrySet().iterator();
@@ -500,7 +499,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				String queryLayersUrl = "&QUERY_LAYERS=" + queryLayerList.substring(0, queryLayerList.length()-1);
 				String layersUrl = "&LAYERS=" + queryLayerList.substring(0, queryLayerList.length()-1);
 				String stylesUrl = "&STYLES=" + styleList.substring(0, styleList.length()-1);
-				sendDataDirectStream(resp, "GET", ((RemoteServerInfo)remoteServersTable.get(remoteServerToCall.get(0))).getUrl(), getProxyRequest().getUrlParameters() + queryLayersUrl + "&" + layersUrl + "&" + stylesUrl);
+				sendDataDirectStream(resp, "GET", ((SdiPhysicalservice)physicalServiceTable.get(remoteServerToCall.get(0))).getResourceurl(), getProxyRequest().getUrlParameters() + queryLayersUrl + "&" + layersUrl + "&" + stylesUrl);
 				return;
 			}
 
@@ -512,13 +511,13 @@ public class WMSProxyServlet extends ProxyServlet {
 				TreeMap<Integer, ProxyLayer> queryLayerByServerTable = new TreeMap<Integer, ProxyLayer>();
 
 				//Get the remote server info
-				RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(remoteServerToCall.get(k));
+				SdiPhysicalservice physicalService = (SdiPhysicalservice)physicalServiceTable.get(remoteServerToCall.get(k));
 
 				//Loop on QUERY_LAYERS to keep only those to send to the current RS
 				Iterator<Entry<Integer, ProxyLayer>> itLK = layerTableToKeep.entrySet().iterator();
 				while(itLK.hasNext()){
 					Entry<Integer, ProxyLayer> layerOrdered = itLK.next();
-					if(((ProxyLayer)layerOrdered.getValue()).getAlias().equals(RS.getAlias())){
+					if(((ProxyLayer)layerOrdered.getValue()).getAlias().equals(physicalService.getAlias())){
 						queryLayerByServerTable.put(layerOrdered.getKey(), layerOrdered.getValue());
 					}
 				}
@@ -527,7 +526,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				Iterator<Entry<Integer, ProxyLayer>> itLKGM = layerTableToKeepFromGetMap.entrySet().iterator();
 				while(itLKGM.hasNext()){
 					Entry<Integer, ProxyLayer> layerOrdered = itLKGM.next();
-					if(((ProxyLayer)layerOrdered.getValue()).getAlias().equals(RS.getAlias())){
+					if(((ProxyLayer)layerOrdered.getValue()).getAlias().equals(physicalService.getAlias())){
 						layerByServerTable.put(layerOrdered.getKey(), layerOrdered.getValue());
 					}
 				}
@@ -538,7 +537,7 @@ public class WMSProxyServlet extends ProxyServlet {
 						queryLayerByServerTable,
 						layerByServerTable, 
 						layerStyleMap,
-						RS,
+						physicalService,
 						resp);
 
 				s.start();
@@ -555,15 +554,14 @@ public class WMSProxyServlet extends ProxyServlet {
 				transformGetFeatureInfo( req, resp);
 				logger.trace("requestPreTreatmentGetFeatureInfo end transform");
 			} else {
-				logger.debug(configuration.getServletClass() + ".requestPreTreatmentGetFeatureInfo : no response from remote servers, generate an empty response");
+				logger.debug("WMSProxyServlet.requestPreTreatmentGetFeatureInfo : no response from remote servers, generate an empty response");
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				sendHttpServletResponse(req, resp,out,responseContentType, HttpServletResponse.SC_OK);
 			}
 
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error(configuration.getServletClass() + ".requestPreTreatmentGetFeatureInfo: ", e);
-			StringBuffer out;
+			logger.error("WMSProxyServlet.requestPreTreatmentGetFeatureInfo: ", e);
 			try {
 				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_OK);
 			} catch (IOException e1) {
@@ -576,17 +574,17 @@ public class WMSProxyServlet extends ProxyServlet {
 	public boolean requestSendingGetMapGET(HttpServletRequest req, HttpServletResponse resp, ArrayList <String> remoteServerToCall, TreeMap<Integer,ProxyLayer> layerTableToKeep, TreeMap<Integer,String> layerStyleMap){
 		try{
 			//Get the remote server informations
-			Hashtable<String, RemoteServerInfo> remoteServersTable = getPhysicalServiceHastable();
+			LinkedHashMap<String, SdiPhysicalservice> physicalServiceTable = getPhysicalServiceHastable();
 
 			//Find if request is candidate to direct streaming
 			//getLayerFilter(getRemoteServerInfo(response.getValue().getAlias()).getUrl(),getProxyRequest().getLayers().split(",")[response.getKey()]),
 			if(remoteServerToCall.size() == 1){
 				Boolean isCandidateToStreaming = true;
-				RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(remoteServerToCall.get(0));
+				SdiPhysicalservice physicalService = (SdiPhysicalservice)physicalServiceTable.get(remoteServerToCall.get(0));
 				Iterator<Entry<Integer, ProxyLayer>> itLK = layerTableToKeep.entrySet().iterator();
 				while(itLK.hasNext()){
 					Entry<Integer, ProxyLayer> layer = itLK.next();
-					if(getLayerFilter(RS.getUrl(), layer.getValue().getPrefixedName()) != null){
+					if(getLayerFilter(physicalService.getResourceurl(), layer.getValue().getPrefixedName()) != null){
 						isCandidateToStreaming = false;
 						break;
 					}
@@ -611,7 +609,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					if (paramUrl.toUpperCase().indexOf("TRANSPARENT=") == -1)
 						paramUrl += "TRANSPARENT=TRUE&";
 
-					sendDataDirectStream(resp,"GET", RS.getUrl(), paramUrl + layersUrl + stylesUrl);
+					sendDataDirectStream(resp,"GET", physicalService.getResourceurl(), paramUrl + layersUrl + stylesUrl);
 					return false;
 				}
 			}
@@ -620,12 +618,12 @@ public class WMSProxyServlet extends ProxyServlet {
 			List<WMSProxyServerGetMapThread> serverThreadList = new Vector<WMSProxyServerGetMapThread>();
 			for(int k = 0; k<remoteServerToCall.size();k++){
 				TreeMap<Integer, ProxyLayer> layerByServerTable = new TreeMap<Integer, ProxyLayer>();
-				RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(remoteServerToCall.get(k));
+				SdiPhysicalservice physicalService = (SdiPhysicalservice)physicalServiceTable.get(remoteServerToCall.get(k));
 				Iterator<Entry<Integer, ProxyLayer>> itLK = layerTableToKeep.entrySet().iterator();
 				//Build a list of the layers for the current remote server
 				while(itLK.hasNext()){
 					Entry<Integer, ProxyLayer> layerOrdered = itLK.next();
-					if(((ProxyLayer)layerOrdered.getValue()).getAlias().equals(RS.getAlias())){
+					if(((ProxyLayer)layerOrdered.getValue()).getAlias().equals(physicalService.getAlias())){
 						layerByServerTable.put(layerOrdered.getKey(), layerOrdered.getValue());
 					}
 				}
@@ -634,7 +632,7 @@ public class WMSProxyServlet extends ProxyServlet {
 						getProxyRequest().getUrlParameters(), 
 						layerByServerTable, 
 						layerStyleMap,
-						RS,
+						physicalService,
 						resp);
 
 				s.start();
@@ -650,8 +648,7 @@ public class WMSProxyServlet extends ProxyServlet {
 
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error(configuration.getServletClass() +  ".requestSendingGetMapGET: ", e);
-			StringBuffer out;
+			logger.error("WMSProxyServlet.requestSendingGetMapGET: ", e);
 			try {
 				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_OK);
 			} catch (IOException e1) {
@@ -664,17 +661,17 @@ public class WMSProxyServlet extends ProxyServlet {
 	public boolean requestSendingGetMapPOST(HttpServletRequest req, HttpServletResponse resp, ArrayList <String> remoteServerToCall, TreeMap<Integer,ProxyLayer> layerTableToKeep, TreeMap<Integer,String> layerStyleMap){
 		try{
 			//Get the remote server informations
-			Hashtable<String, RemoteServerInfo> remoteServersTable = getPhysicalServiceHastable();
+			LinkedHashMap<String, SdiPhysicalservice> physicalServiceTable = getPhysicalServiceHastable();
 
 			//Find if request is candidate to direct streaming
 			//getLayerFilter(getRemoteServerInfo(response.getValue().getAlias()).getUrl(),getProxyRequest().getLayers().split(",")[response.getKey()]),
 			if(remoteServerToCall.size() == 1){
 				Boolean isCandidateToStreaming = true;
-				RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(remoteServerToCall.get(0));
+				SdiPhysicalservice physicalService = (SdiPhysicalservice)physicalServiceTable.get(remoteServerToCall.get(0));
 				Iterator<Entry<Integer, ProxyLayer>> itLK = layerTableToKeep.entrySet().iterator();
 				while(itLK.hasNext()){
 					Entry<Integer, ProxyLayer> layer = itLK.next();
-					if(getLayerFilter(RS.getUrl(), layer.getValue().getPrefixedName()) != null){
+					if(getLayerFilter(physicalService.getResourceurl(), layer.getValue().getPrefixedName()) != null){
 						isCandidateToStreaming = false;
 						break;
 					}
@@ -684,7 +681,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					//Request can be send with direct streaming
 					StringBuffer request = rewriteGetMapRequestPOST(layerTableToKeep);
 
-					sendDataDirectStream(resp,"POST", RS.getUrl(), request.toString());
+					sendDataDirectStream(resp,"POST", physicalService.getResourceurl(), request.toString());
 					return false;
 				}
 			}
@@ -693,12 +690,12 @@ public class WMSProxyServlet extends ProxyServlet {
 			List<WMSProxyServerGetMapThread> serverThreadList = new Vector<WMSProxyServerGetMapThread>();
 			for(int k = 0; k<remoteServerToCall.size();k++){
 				TreeMap<Integer, ProxyLayer> layerByServerTable = new TreeMap<Integer, ProxyLayer>();
-				RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(remoteServerToCall.get(k));
+				SdiPhysicalservice physicalService = (SdiPhysicalservice)physicalServiceTable.get(remoteServerToCall.get(k));
 				Iterator<Entry<Integer, ProxyLayer>> itLK = layerTableToKeep.entrySet().iterator();
 				//Build a list of the layers for the current remote server
 				while(itLK.hasNext()){
 					Entry<Integer, ProxyLayer> layerOrdered = itLK.next();
-					if(((ProxyLayer)layerOrdered.getValue()).getAlias().equals(RS.getAlias())){
+					if(((ProxyLayer)layerOrdered.getValue()).getAlias().equals(physicalService.getAlias())){
 						layerByServerTable.put(layerOrdered.getKey(), layerOrdered.getValue());
 					}
 				}
@@ -708,7 +705,7 @@ public class WMSProxyServlet extends ProxyServlet {
 						getProxyRequest().getBodyRequest().toString(), 
 						layerByServerTable, 
 						layerStyleMap,
-						RS,
+						physicalService,
 						resp);
 
 				s.start();
@@ -724,8 +721,7 @@ public class WMSProxyServlet extends ProxyServlet {
 
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error(configuration.getServletClass() +  ".requestSendingGetMapPOST: ", e);
-			StringBuffer out;
+			logger.error("WMSProxyServlet.requestSendingGetMapPOST: ", e);
 			try {
 				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_OK);
 			} catch (IOException e1) {
@@ -754,8 +750,8 @@ public class WMSProxyServlet extends ProxyServlet {
 			//If the Exception mode is 'restrictive' and at least a response is an exception
 			//Or if the Exception mode is 'permissive' and all the response are exceptio
 			//Aggegate the exception files and send the result to the client
-			if((remoteServerExceptionFiles.size() > 0 && configuration.getExceptionMode().equals("restrictive")) ||  
-					(configuration.getExceptionMode().equals("permissive") && wmsGetCapabilitiesResponseFilePathMap.size() == 0)){
+			if((remoteServerExceptionFiles.size() > 0 && sdiVirtualService.getSdiSysExceptionlevel().getValue().equals("restrictive")) ||  
+					(sdiVirtualService.getSdiSysExceptionlevel().getValue().equals("permissive") && wmsGetCapabilitiesResponseFilePathMap.size() == 0)){
 				logger.info("Exception(s) returned by remote server(s) are sent to client.");
 				ByteArrayOutputStream exceptionOutputStream = docBuilder.ExceptionAggregation(remoteServerExceptionFiles);
 				sendHttpServletResponse(req,resp,exceptionOutputStream, "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
@@ -778,7 +774,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			}
 
 			//Capabilities rewriting
-			RemoteServerInfo rs = getRemoteServerInfoMaster();
+			SdiPhysicalservice physicalServiceMaster = getPhysicalServiceMaster();
 
 			try{
 				if(!docBuilder.CapabilitiesContentsFiltering(wmsGetCapabilitiesResponseFilePathMap,getServletUrl(req)))
@@ -793,7 +789,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				return;
 			}
 
-			if(!docBuilder.CapabilitiesOperationsFiltering(wmsGetCapabilitiesResponseFilePathMap.get(rs.getAlias()), getServletUrl(req)))
+			if(!docBuilder.CapabilitiesOperationsFiltering(wmsGetCapabilitiesResponseFilePathMap.get(physicalServiceMaster.getAlias()), getServletUrl(req)))
 			{
 				logger.error(docBuilder.getLastException().getMessage());
 				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_OK);
@@ -807,7 +803,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				return;
 			}
 
-			if(!docBuilder.CapabilitiesServiceMetadataWriting(wmsGetCapabilitiesResponseFilePathMap.get(rs.getAlias()),getServletUrl(req)))
+			if(!docBuilder.CapabilitiesServiceMetadataWriting(wmsGetCapabilitiesResponseFilePathMap.get(physicalServiceMaster.getAlias()),getServletUrl(req)))
 			{
 				logger.error(docBuilder.getLastException().getMessage());
 				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_OK);
@@ -815,7 +811,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			}
 
 			//If exists, apply a specific user XSLT transformation
-			File result = applyUserXSLT(new File(wmsGetCapabilitiesResponseFilePathMap.get(rs.getAlias())));
+			File result = applyUserXSLT(new File(wmsGetCapabilitiesResponseFilePathMap.get(physicalServiceMaster.getAlias())));
 
 			//Prepare response
 			FileInputStream reader = new FileInputStream(result);
@@ -883,7 +879,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			while (iR.hasNext()){
 				Entry<Integer, ProxyRemoteServerResponse> response = iR.next(); 
 				ProxyLayer pLayer = new ProxyLayer(getProxyRequest().getLayers().split(",")[response.getKey()]);
-				BufferedImage image = filterImage(getLayerFilter(getPhysicalServiceByAlias(response.getValue().getAlias()).getUrl(),pLayer.getPrefixedName()),
+				BufferedImage image = filterImage(getLayerFilter(getPhysicalServiceByAlias(response.getValue().getAlias()).getResourceurl(),pLayer.getPrefixedName()),
 						response.getValue().getPath(),
 						isTransparent, 
 						resp);
@@ -1103,7 +1099,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		}
 
 		//Get the remote server informations
-		Hashtable<String, RemoteServerInfo> remoteServersTable = getPhysicalServiceHastable();
+		LinkedHashMap<String, SdiPhysicalservice> physicalServiceTable = getPhysicalServiceHastable();
 
 		//Get the requested layer names
 		TreeMap<Integer,String> layerMap = new TreeMap <Integer,String>();
@@ -1163,23 +1159,24 @@ public class WMSProxyServlet extends ProxyServlet {
 				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_INVALID_LAYERS_NAME+layerName,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYERS", HttpServletResponse.SC_OK);
 				return null;
 			}
+			
 			//Find the remote server concerning by the current layer
-			RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(layer.getAlias());
+			SdiPhysicalservice physicalService = (SdiPhysicalservice)physicalServiceTable.get(layer.getAlias());
 
 			//Check the availaibility of the requested LAYERS 
-			if( RS == null ){
+			if( physicalService == null ){
 				logger.error( OWSExceptionReport.TEXT_INVALID_LAYERS_NAME+layerName+". Prefix is unknown");
 				owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_INVALID_LAYERS_NAME+layerName,OWSExceptionReport.CODE_LAYER_NOT_DEFINED, "LAYERS", HttpServletResponse.SC_OK);
 				return null;
 			}
-			if( !isLayerAllowed(layer.getPrefixedName(), RS.getUrl())){
+			if( !isLayerAllowed(layer.getPrefixedName(), physicalService.getResourceurl())){
 				logger.error( OWSExceptionReport.TEXT_INVALID_LAYERS_NAME+layerName+" is not allowed");
 				owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_INVALID_LAYERS_NAME+layerName,OWSExceptionReport.CODE_LAYER_NOT_DEFINED, "LAYERS", HttpServletResponse.SC_OK);
 				return null;
 			}
 
 			//Check if the scale is available
-			if (isLayerInScale(layer.getPrefixedName(), RS.getUrl(), RendererUtilities.calculateOGCScale(rEnvelope, Integer.parseInt(((WMSProxyServletRequest)getProxyRequest()).getWidth()), null))) {
+			if (isLayerInScale(layer.getPrefixedName(), physicalService.getResourceurl(), RendererUtilities.calculateOGCScale(rEnvelope, Integer.parseInt(((WMSProxyServletRequest)getProxyRequest()).getWidth()), null))) {
 				//Layer to keep in the request
 				layerTableToKeep.put(layerOrdered.getKey(),layer);
 				//Servers to call to complete the request
@@ -1279,7 +1276,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			}
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error(configuration.getServletClass() + ".filterImage: ",e);
+			logger.error("WMSProxyServlet.filterImage: ",e);
 		}
 		return null;
 	}

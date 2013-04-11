@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -109,7 +110,7 @@ public abstract class ProxyServlet extends HttpServlet {
     /**
      * List of the physical services relayed by the current virtual service
      */
-    public Hashtable<String, SdiPhysicalservice> physicalServiceHashTable = new Hashtable <String, SdiPhysicalservice>();
+    public LinkedHashMap<String, SdiPhysicalservice> physicalServiceHashTable = new LinkedHashMap <String, SdiPhysicalservice>();
     
     private List<String> temporaryFileList = new Vector<String>();
     
@@ -171,6 +172,7 @@ public abstract class ProxyServlet extends HttpServlet {
     /**
      * Store all the operations define by the ogc norme for the specific service
      */
+    @Deprecated
     public static List<String> ServiceOperations = Arrays.asList();
 
     /**
@@ -269,8 +271,11 @@ public abstract class ProxyServlet extends HttpServlet {
      * replace : getRemoteServerInfoList
      * @return
      */
-    public Hashtable<String, SdiPhysicalservice> getPhysicalServiceHastable() 
+    public LinkedHashMap<String, SdiPhysicalservice> getPhysicalServiceHastable() 
     {
+    	if (!physicalServiceHashTable.isEmpty())
+    		return physicalServiceHashTable;
+    	
     	Set<SdiVirtualPhysical> physicalServices = sdiVirtualService.getSdiVirtualPhysicals();
     	Iterator<SdiVirtualPhysical> i = physicalServices.iterator();
     	while (i.hasNext())
@@ -304,26 +309,21 @@ public abstract class ProxyServlet extends HttpServlet {
      * Get the remoteServerInfo defines as the master in the config.xml
      * @return
      */
-    @Deprecated
-    public SdiPhysicalservice getRemoteServerInfoMaster()
+    public SdiPhysicalservice getPhysicalServiceMaster()
     {
-//		if (remoteServerInfoHashTable.isEmpty())
-//		{
-//		    remoteServerInfoHashTable = getPhysicalServiceHastable();
-//		}
-//		Iterator<Map.Entry<String, RemoteServerInfo>> i =  remoteServerInfoHashTable.entrySet().iterator();
-//		while (i.hasNext())
-//		{
-//		    Map.Entry<String, RemoteServerInfo> entry = i.next();
-//		    if(entry.getValue().isMaster)
-//			return entry.getValue();
-//		}
+    	if (physicalServiceHashTable.isEmpty())
+		{
+			physicalServiceHashTable = getPhysicalServiceHastable();
+		}
+    	
+    	for (Map.Entry<String, SdiPhysicalservice> entry : physicalServiceHashTable.entrySet()) {
+    		return entry.getValue();
+    	}
 		return null;
     }
 
     /**
-     * Get the list of remote servers defined in the config.xml
-     * @deprecated
+     * Get the list of physical services relayed by the virtual service
      * @return
      */
     protected List<SdiPhysicalservice> getPhysicalServiceList() {
@@ -340,10 +340,10 @@ public abstract class ProxyServlet extends HttpServlet {
 
 
     /**
-     * Get a RemoteServerInfo by his index in the list
-     * @deprecated
+     * Get a SdiPhysicalservice by his index in the list
      * @param i
      * @return
+     * @deprecated
      */
     protected SdiPhysicalservice getPhysicalServiceByIndex(int i) 
     {
@@ -355,10 +355,10 @@ public abstract class ProxyServlet extends HttpServlet {
     }
 
     /**
-     * Get a RemoteServerInfo Url by is index in the list
-     * @deprecated
+     * Get a SdiPhysicalservice Url by is index in the list
      * @param i
      * @return
+     * @deprecated
      */
     public String getPhysicalServiceURLByIndex(int i) {
     	List<SdiPhysicalservice> l = this.getPhysicalServiceList();
