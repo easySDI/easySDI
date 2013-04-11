@@ -81,6 +81,8 @@ import org.apache.jasper.tagplugins.jstl.core.ForEach;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.core.ProxyServletRequest;
 import org.easysdi.proxy.csw.CSWExceptionReport;
+import org.easysdi.proxy.domain.SdiFeaturetypePolicy;
+import org.easysdi.proxy.domain.SdiPhysicalservicePolicy;
 import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
@@ -247,7 +249,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			WFSCapabilities100.append(url);
 			// Changer seulement la partie racine de l'URL, pas les
 			// param après '?'
-			WFSCapabilities100.append("<xsl:value-of select=\"substring-after($thisValue,'" + getRemoteServerUrl(remoteServerIndex) + "')\"/>");
+			WFSCapabilities100.append("<xsl:value-of select=\"substring-after($thisValue,'" + getPhysicalServiceURLByIndex(remoteServerIndex) + "')\"/>");
 			WFSCapabilities100.append("</xsl:attribute>");
 			WFSCapabilities100.append("</xsl:template>");
 
@@ -338,7 +340,7 @@ public class WFSProxyServlet extends ProxyServlet {
 								//String[] s = tmpFT.split(":");
 								//tmpFT = s[s.length - 1];
 							}
-							if (!isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(remoteServerIndex))) {
+							if (!isFeatureTypeAllowed(tmpFT, getPhysicalServiceURLByIndex(remoteServerIndex))) {
 								WFSCapabilities100.append("<xsl:template match=\"//wfs:FeatureType[starts-with(wfs:Name,'" + ftName + "')]\">");
 								WFSCapabilities100.append("</xsl:template>");
 							}
@@ -678,7 +680,7 @@ public class WFSProxyServlet extends ProxyServlet {
 										 // tmpFT =
 										 // tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());
 										 // Fin de Debug
-										 if (isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(iServer))) {
+										 if (isFeatureTypeAllowed(tmpFT, getPhysicalServiceURLByIndex(iServer))) {
 											 featureTypeListToKeep.add(tmpFT);
 											 // Debug tb 04.06.2009
 											 // Filtrage des attributs autorisés
@@ -755,7 +757,7 @@ public class WFSProxyServlet extends ProxyServlet {
 													 // l'attribut en cours:
 													 // tmpFA =
 													 // ""
-													 if (isAttributeAllowed(getRemoteServerUrl(iServer), tmpFT, tmpFA)) {
+													 if (isAttributeAllowed(getPhysicalServiceURLByIndex(iServer), tmpFT, tmpFA)) {
 														 if (!fieldsAttribute[k].toString().equals("")) // au
 															 // cas:
 															 // req
@@ -824,7 +826,7 @@ public class WFSProxyServlet extends ProxyServlet {
 													 // la
 													 // policy
 												 {
-													 isAttributeAllowed(getRemoteServerUrl(iServer), tmpFT, "");
+													 isAttributeAllowed(getPhysicalServiceURLByIndex(iServer), tmpFT, "");
 													 attributeListToKeepNbPerFT.set(ii, policyAttributeListNb);
 													 attributeListToKeepPerFT.addAll(policyAttributeListToKeepPerFT);
 												 }
@@ -844,7 +846,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 											 //if (param.indexOf("Query") < 0) param = null;
 											 if (param != null) {
-												 WFSGetFeatureRunnable r = new WFSGetFeatureRunnable("POST", getRemoteServerUrl(iServer), param, this,
+												 WFSGetFeatureRunnable r = new WFSGetFeatureRunnable("POST", getPhysicalServiceURLByIndex(iServer), param, this,
 														 serversIndex, wfsFilePathList, iServer, queryCount);
 												 pool.execute(r);
 												 iii++;
@@ -951,7 +953,7 @@ public class WFSProxyServlet extends ProxyServlet {
 					String userFilter = null;
 
 					if (featureTypeListToKeep.size() > 0) {
-						userFilter = getFeatureTypeRemoteFilter(getRemoteServerUrl(iServer), featureTypeListToKeep.get(0));
+						userFilter = getFeatureTypeRemoteFilter(getPhysicalServiceURLByIndex(iServer), featureTypeListToKeep.get(0));
 						featureTypePathList = featureTypeListToKeep;
 					}
 
@@ -1022,7 +1024,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				//Quick fix : not support multi-server request!
 				if("Transaction".equalsIgnoreCase(currentOperation)){
 					logger.debug("Transaction Operation.");
-					filePath = sendData("POST", getRemoteServerUrl(iServer), param);
+					filePath = sendData("POST", getPhysicalServiceURLByIndex(iServer), param);
 					logger.debug("Transaction response :"+filePath);
 					wfsFilePathList.put(iServer, filePath);
 					logger.debug("End transaction operation.");
@@ -1032,7 +1034,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				// cours ->s'il y a plusieurs serveurs, alors cet appel se fait
 				// plus d'une fois!!!
 				if (send) {
-					filePath = sendData("POST", getRemoteServerUrl(iServer), param);
+					filePath = sendData("POST", getPhysicalServiceURLByIndex(iServer), param);
 					wfsFilePathList.put(iServer, filePath);
 				}
 			}
@@ -1251,7 +1253,7 @@ public class WFSProxyServlet extends ProxyServlet {
 										// tmpFT =
 										// tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());
 										// Fin de Debug
-										if (isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(iServer))) {
+										if (isFeatureTypeAllowed(tmpFT, getPhysicalServiceURLByIndex(iServer))) {
 											featureTypeListToKeep.add(tmpFT);
 											// Debug tb 25.06.2009
 											// Filtrage des attributs autorisés
@@ -1316,7 +1318,7 @@ public class WFSProxyServlet extends ProxyServlet {
 													// et retourne faux pour
 													// l'attribut en cours:
 													// tmpFA = ""
-													if (isAttributeAllowed(getRemoteServerUrl(iServer), tmpFT, tmpFA)) {
+													if (isAttributeAllowed(getPhysicalServiceURLByIndex(iServer), tmpFT, tmpFA)) {
 														if (!fieldsAttribute[k].toString().equals("")) // au
 															// cas:
 															// req
@@ -1389,7 +1391,7 @@ public class WFSProxyServlet extends ProxyServlet {
 													// la
 													// policy
 												{
-													isAttributeAllowed(getRemoteServerUrl(iServer), tmpFT, "");
+													isAttributeAllowed(getPhysicalServiceURLByIndex(iServer), tmpFT, "");
 													attributeListToKeepNbPerFT.set(ii, policyAttributeListNb);
 													attributeListToKeepPerFT.addAll(policyAttributeListToKeepPerFT);
 												}
@@ -1420,7 +1422,7 @@ public class WFSProxyServlet extends ProxyServlet {
 								if (filter == null) {
 									String userFilter = null;
 									if (featureTypeListToKeep.size() > 0) {
-										userFilter = getFeatureTypeRemoteFilter(getRemoteServerUrl(iServer), featureTypeListToKeep.get(0));
+										userFilter = getFeatureTypeRemoteFilter(getPhysicalServiceURLByIndex(iServer), featureTypeListToKeep.get(0));
 										featureTypePathList.add(featureTypeListToKeep.get(0));
 									}
 									// Debug tb 21.05.2009
@@ -1440,7 +1442,7 @@ public class WFSProxyServlet extends ProxyServlet {
 								else {
 									String userFilter = null;
 									if (featureTypeListToKeep.size() > 0) {
-										userFilter = getFeatureTypeRemoteFilter(getRemoteServerUrl(iServer), featureTypeListToKeep.get(0));
+										userFilter = getFeatureTypeRemoteFilter(getPhysicalServiceURLByIndex(iServer), featureTypeListToKeep.get(0));
 										// Debug tb 24.06.2009
 										featureTypePathList.add(featureTypeListToKeep.get(0));
 										// Fin de Debug
@@ -1597,7 +1599,7 @@ public class WFSProxyServlet extends ProxyServlet {
 							// Debug tb 24.06.2009
 						{
 							// Fin de Debug
-							filePath = sendData("GET", getRemoteServerUrl(iServer), paramUrl);
+							filePath = sendData("GET", getPhysicalServiceURLByIndex(iServer), paramUrl);
 							// Debug tb 24.06.2009
 							serversIndex.add(iServer);
 							// Fin de Debug
@@ -1611,7 +1613,7 @@ public class WFSProxyServlet extends ProxyServlet {
 						//Add to the request the only version supported
 						paramUrl+= "version=1.0.0";
 						
-						String filePath = sendData("GET", getRemoteServerUrl(iServer), paramUrl);
+						String filePath = sendData("GET", getPhysicalServiceURLByIndex(iServer), paramUrl);
 						serversIndex.add(iServer);
 						wfsFilePathList.put(iServer, filePath);
 						
@@ -1619,7 +1621,7 @@ public class WFSProxyServlet extends ProxyServlet {
 					// Si l'opération courante est différente de DescribeFeature
 					// ou GetFeature
 					else {
-						String filePath = sendData("GET", getRemoteServerUrl(iServer), paramUrl);
+						String filePath = sendData("GET", getPhysicalServiceURLByIndex(iServer), paramUrl);
 						// Debug tb 24.06.2009
 						serversIndex.add(iServer);
 						// Fin de Debug
@@ -1690,7 +1692,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			// Recherche du LocalFilter dans la Policy
 			String localFilter = null;
 
-			localFilter = getFeatureTypeLocalFilter(getRemoteServerUrl(iServer), featureTypeToKeep);
+			localFilter = getFeatureTypeLocalFilter(getPhysicalServiceURLByIndex(iServer), featureTypeToKeep);
 
 			// Récupération de l'attribut geom du localFilter
 			// In case localFilter is activ but not Set
@@ -1752,9 +1754,9 @@ public class WFSProxyServlet extends ProxyServlet {
 
 				// Debug tb 11.06.2009
 				// Sauvegarde du prefix et namespace pour le iServer
-				String policyServerPrefix = getServerPrefix(getRemoteServerUrl(iServer));
+				String policyServerPrefix = getServerPrefix(getPhysicalServiceURLByIndex(iServer));
 				policyServersPrefix.add(policyServerPrefix);
-				String policyServerNamespace = getServerNamespace(getRemoteServerUrl(iServer));
+				String policyServerNamespace = getServerNamespace(getPhysicalServiceURLByIndex(iServer));
 				policyServersNamespace.add(policyServerNamespace);
 				// Fin de Debug
 
@@ -2009,7 +2011,7 @@ public class WFSProxyServlet extends ProxyServlet {
 						// Fin de Debug
 
 						if (tmpFT.equals(featureTypeListToKeep.get(j))) {
-							String policyServerPrefix = getServerPrefix(getRemoteServerUrl(iServer));
+							String policyServerPrefix = getServerPrefix(getPhysicalServiceURLByIndex(iServer));
 							policyServersPrefix.add(policyServerPrefix);
 							//nl.item(i).setTextContent(policyServerPrefix + ":" + tmpFT);
 							nl.item(i).setTextContent(tmpFT);
@@ -2047,9 +2049,9 @@ public class WFSProxyServlet extends ProxyServlet {
 
 		// Debug tb 25.06.2009
 		// Sauvegarde du prefix et namespace pour le iServer
-		String policyServerPrefix = getServerPrefix(getRemoteServerUrl(iServer));
+		String policyServerPrefix = getServerPrefix(getPhysicalServiceURLByIndex(iServer));
 		policyServersPrefix.add(policyServerPrefix);
-		String policyServerNamespace = getServerNamespace(getRemoteServerUrl(iServer));
+		String policyServerNamespace = getServerNamespace(getPhysicalServiceURLByIndex(iServer));
 		policyServersNamespace.add(policyServerNamespace);
 		Boolean hasPropertyName = false;
 		Boolean isPolicyAll = false;
@@ -2546,10 +2548,10 @@ public class WFSProxyServlet extends ProxyServlet {
 								//String[] s = tmpFT.split(":");
 								//tmpFT = s[s.length - 1];
 								// Fin de Debug
-								if (isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(serversIndex.get(j)))) {
+								if (isFeatureTypeAllowed(tmpFT, getPhysicalServiceURLByIndex(serversIndex.get(j)))) {
 									org.geotools.xml.schema.Element[] elem = ct[i].getChildElements();
 									for (int k = 0; k < elem.length; k++) {
-										if (!isAttributeAllowed(getRemoteServerUrl(serversIndex.get(j)), tmpFT, elem[k].getName())) {
+										if (!isAttributeAllowed(getPhysicalServiceURLByIndex(serversIndex.get(j)), tmpFT, elem[k].getName())) {
 											// Cela supprime, de la réponse, les
 											// Attributs non autorisés du
 											// FeatureType courant qui est
@@ -2763,8 +2765,8 @@ public class WFSProxyServlet extends ProxyServlet {
 							tempFos = new FileOutputStream(tempFile);
 
 							XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-							String user = (String) getUsername(getRemoteServerUrl(serversIndex.get(iFileServer)));
-							String password = (String) getPassword(getRemoteServerUrl(serversIndex.get(iFileServer)));
+							String user = (String) getUsername(getPhysicalServiceURLByIndex(serversIndex.get(iFileServer)));
+							String password = (String) getPassword(getPhysicalServiceURLByIndex(serversIndex.get(iFileServer)));
 							ResourceResolver rr = null;
 							if (user != null && user.length() > 0) {
 								rr = new ResourceResolver(user, password);
@@ -2804,7 +2806,7 @@ public class WFSProxyServlet extends ProxyServlet {
 								// Si localFilter est actif mais not Set ->
 								// filter = ""
 								if (serversIndex.contains(iFileServer) && featureTypePathList.contains(iFileServer))
-									filter = getFeatureTypeLocalFilter(getRemoteServerUrl(serversIndex.get(iFileServer)), featureTypePathList.get(iFileServer));
+									filter = getFeatureTypeLocalFilter(getPhysicalServiceURLByIndex(serversIndex.get(iFileServer)), featureTypePathList.get(iFileServer));
 							}
 							// Debug tb 15.06.2009
 							// Si un localFilter est défini
@@ -3274,7 +3276,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				if (nlElements.item(i).getAttributes().getNamedItem("substitutionGroup") != null) {
 					if ("gml:_Feature".equals(nlElements.item(i).getAttributes().getNamedItem("substitutionGroup").getTextContent())) {
 						String origName = nlElements.item(i).getAttributes().getNamedItem("name").getTextContent();
-						nlElements.item(i).getAttributes().getNamedItem("name").setTextContent(getRemoteServerInfo(0).getPrefix() + ":" + origName);
+						nlElements.item(i).getAttributes().getNamedItem("name").setTextContent(getPhysicalServiceByIndex(0).getPrefix() + ":" + origName);
 					}
 				}
 
@@ -3291,7 +3293,7 @@ public class WFSProxyServlet extends ProxyServlet {
 					if (nlElements.item(j).getAttributes().getNamedItem("substitutionGroup") != null) {
 						if ("gml:_Feature".equals(nlElements.item(j).getAttributes().getNamedItem("substitutionGroup").getTextContent())) {
 							String origName = nlElements.item(j).getAttributes().getNamedItem("name").getTextContent();
-							nlElements.item(j).getAttributes().getNamedItem("name").setTextContent(getRemoteServerInfo(i).getPrefix() + ":" + origName);
+							nlElements.item(j).getAttributes().getNamedItem("name").setTextContent(getPhysicalServiceByIndex(i).getPrefix() + ":" + origName);
 						}
 					}
 
@@ -3860,5 +3862,144 @@ public class WFSProxyServlet extends ProxyServlet {
 	    }
 	}
 	return null;
+    }
+    
+    /**
+     * Aggregate exception files from remote servers in one single file
+     * The search for tags <ServiceExceptionReport> and <ServiceException> is valid for
+     * WMS version 1.1, 1.3
+     * WFS version 1.0
+     * 
+     *  WFS version 1.1 uses tags <ExceptionReport> and subTag <Exception>
+     */
+    //TODO move to WFS
+    @Deprecated
+    protected ByteArrayOutputStream buildResponseForOgcServiceException ()
+    {
+	try 
+	{
+	    for (String path : ogcExceptionFilePathList.values()) 
+	    {
+		DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
+		db.setNamespaceAware(false);
+		File fMaster = new File(path);
+		org.w3c.dom.Document documentMaster = db.newDocumentBuilder().parse(fMaster);
+		if (documentMaster != null) 
+		{
+		    NodeList nl = documentMaster.getElementsByTagName("ServiceExceptionReport");
+		    if (nl.item(0) != null)
+		    {
+			logger.trace("transform begin exception response writting");
+			DOMImplementationLS implLS = null;
+			if (documentMaster.getImplementation().hasFeature("LS", "3.0")) 
+			{
+			    implLS = (DOMImplementationLS) documentMaster.getImplementation();
+			} 
+			else 
+			{
+			    DOMImplementationRegistry enregistreur = DOMImplementationRegistry.newInstance();
+			    implLS = (DOMImplementationLS) enregistreur.getDOMImplementation("LS 3.0");
+			}
+
+			Node ItemMaster = nl.item(0);
+			//Loop on other file
+			for (String pathChild : ogcExceptionFilePathList.values()) 
+			{
+			    org.w3c.dom.Document documentChild = null;
+			    if(path.equals(pathChild))
+				continue;
+
+			    documentChild = db.newDocumentBuilder().parse(pathChild);
+
+			    if (documentChild != null) {
+				NodeList nlChild = documentChild.getElementsByTagName("ServiceException");
+				if (nlChild != null && nlChild.getLength() > 0) 
+				{
+				    for (int i = 0; i < nlChild.getLength(); i++) 
+				    {
+					Node nnode = nlChild.item(i);
+					nnode = documentMaster.importNode(nnode, true);
+					ItemMaster.appendChild(nnode);
+				    }
+				}
+			    }
+			}
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			LSSerializer serialiseur = implLS.createLSSerializer();
+			LSOutput sortie = implLS.createLSOutput();
+			sortie.setEncoding("UTF-8");
+			sortie.setByteStream(out);
+			serialiseur.write(documentMaster, sortie);
+			logger.trace("transform end exception response writting");
+			return out;
+		    }	
+		}
+	    }
+	}
+	catch (Exception ex)
+	{
+	    ex.printStackTrace();
+	    logger.error(ex.getMessage());
+	    return null;
+	}
+	return null;
+    }
+    
+    /**
+     * Detects if the feature type is allowed or not against the rule.
+     * 
+     * @param ft
+     *            The feature Type to test
+     * @param url
+     *            the url of the remote server.
+     * @return true if the feature type is allowed, false if not
+     */
+    protected boolean isFeatureTypeAllowed(String ft, String url) 
+    {
+    	Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
+    	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
+    	while(i.hasNext())
+    	{
+    		SdiPhysicalservicePolicy physicalservicePolicy = i.next();
+    		if(physicalservicePolicy.getSdiPhysicalservice().getResourceurl().equals(url))
+    		{
+	    		Set<SdiFeaturetypePolicy> featureTypePolicies = physicalservicePolicy.getSdiFeaturetypePolicies();
+	    		Iterator<SdiFeaturetypePolicy> it = featureTypePolicies.iterator();
+	    		while (it.hasNext())
+	    		{
+	    			SdiFeaturetypePolicy featureTypePolicy = it.next();
+	    			if(featureTypePolicy.getName().equals(ft) && featureTypePolicy.isEnabled())
+	    				return true;
+	    		}
+    		}
+    	}
+    	return false;
+    }
+    
+    /**
+     * Detects if the feature type is allowed :
+     * - by being specifically allowed in the policy
+     * - by default, when <Servers All = true> or <FeatureTypes All=true> 
+     * 
+     * @param ft The feature type to test
+     * @return true if the layer is allowed, false if not
+     */
+    protected boolean isFeatureTypeAllowed(String ft) 
+    {
+    	Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
+    	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
+    	while(i.hasNext())
+    	{
+    		SdiPhysicalservicePolicy physicalservicePolicy = i.next();
+    		Set<SdiFeaturetypePolicy> featureTypePolicies = physicalservicePolicy.getSdiFeaturetypePolicies();
+    		Iterator<SdiFeaturetypePolicy> it = featureTypePolicies.iterator();
+    		while (it.hasNext())
+    		{
+    			SdiFeaturetypePolicy featureTypePolicy = it.next();
+    			if(featureTypePolicy.getName().equals(ft) && featureTypePolicy.isEnabled())
+    				return true;
+    		}
+    	}
+    	return false;
     }
 }

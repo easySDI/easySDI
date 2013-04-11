@@ -50,7 +50,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -65,31 +64,17 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.easysdi.proxy.domain.SdiAllowedoperation;
+import org.easysdi.proxy.domain.SdiPhysicalservice;
 import org.easysdi.proxy.domain.SdiPolicy;
-import org.easysdi.proxy.domain.SdiSysServicecompliance;
+import org.easysdi.proxy.domain.SdiVirtualPhysical;
 import org.easysdi.proxy.domain.SdiVirtualservice;
-import org.easysdi.proxy.domain.SdiVirtualserviceServicecompliance;
-import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.proxy.log.ProxyLogger;
 import org.easysdi.proxy.ows.OWSExceptionReport;
-import org.easysdi.proxy.policy.FeatureType;
-import org.easysdi.proxy.policy.FeatureTypes;
-import org.easysdi.proxy.policy.Layer;
-import org.easysdi.proxy.policy.Operation;
 import org.easysdi.proxy.policy.Policy;
-import org.easysdi.proxy.policy.Server;
-import org.easysdi.xml.documents.RemoteServerInfo;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-import org.mortbay.jetty.Request;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSOutput;
-import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
 import com.google.common.collect.HashMultimap;
@@ -118,10 +103,14 @@ public abstract class ProxyServlet extends HttpServlet {
     protected SdiVirtualservice sdiVirtualService;
     protected SdiPolicy sdiPolicy;
     private static final String strDateFormat = "dd/MM/yyyy HH:mm:ss";
-    private DateFormat dateFormat ;
+    protected DateFormat dateFormat ;
     public HttpServletRequest request; 
     public HttpServletResponse response;
-
+    /**
+     * List of the physical services relayed by the current virtual service
+     */
+    public Hashtable<String, SdiPhysicalservice> physicalServiceHashTable = new Hashtable <String, SdiPhysicalservice>();
+    
     private List<String> temporaryFileList = new Vector<String>();
     
     /**
@@ -133,6 +122,7 @@ public abstract class ProxyServlet extends HttpServlet {
     /**
      * Policy loaded
      */
+    @Deprecated
     public Policy policy;
     protected String requestCharacterEncoding = null;
     protected String responseContentType = null;
@@ -145,11 +135,6 @@ public abstract class ProxyServlet extends HttpServlet {
      * WMTS response files
      */
     public Hashtable<String, String> ogcExceptionFilePathTable = new Hashtable<String, String>();
-
-    /**
-     * List of the remote servers define in the config.xml
-     */
-    public Hashtable<String, RemoteServerInfo> remoteServerInfoHashTable = new Hashtable <String, RemoteServerInfo>();
 
     /**
      * Une liste des fichiers (sendData) réponse de chaque serveur WFS
@@ -279,24 +264,21 @@ public abstract class ProxyServlet extends HttpServlet {
     }
 
     /**
-     * Get the list of remote servers defined in the config.xml
-     * in a Hashtable mapping <alias,RemoteServerInfo>
+     * Get the list of physical services relayed by the current virtual service
+     * in a Hashtable mapping <alias,SdiPhysicalservice>
      * replace : getRemoteServerInfoList
      * @return
      */
-    public Hashtable<String, RemoteServerInfo> getRemoteServerHastable() {
-
-	if (configuration == null)
-	    return null;
-
-	List<RemoteServerInfo> list = configuration.getRemoteServer();
-	Iterator<RemoteServerInfo> iRS = list.iterator();
-	while (iRS.hasNext())
-	{
-	    RemoteServerInfo RS = iRS.next();
-	    remoteServerInfoHashTable.put(RS.getAlias(),RS);
-	}
-	return remoteServerInfoHashTable;
+    public Hashtable<String, SdiPhysicalservice> getPhysicalServiceHastable() 
+    {
+    	Set<SdiVirtualPhysical> physicalServices = sdiVirtualService.getSdiVirtualPhysicals();
+    	Iterator<SdiVirtualPhysical> i = physicalServices.iterator();
+    	while (i.hasNext())
+    	{
+    		SdiVirtualPhysical physicalService = i.next();
+    		physicalServiceHashTable.put(physicalService.getSdiPhysicalservice().getAlias(),physicalService.getSdiPhysicalservice());
+    	}
+    	return physicalServiceHashTable;
     }
 
     /**
@@ -306,36 +288,37 @@ public abstract class ProxyServlet extends HttpServlet {
      * @param alias
      * @return
      */
-    public RemoteServerInfo getRemoteServerInfo (String alias)
+    public SdiPhysicalservice getPhysicalServiceByAlias (String alias)
     {
-	if(alias == null || alias == "")
-	    return null;
-
-	if (remoteServerInfoHashTable.isEmpty())
-	{
-	    remoteServerInfoHashTable = getRemoteServerHastable();
-	}
-	return remoteServerInfoHashTable.get(alias);
+		if(alias == null || alias == "")
+		    return null;
+	
+		if (physicalServiceHashTable.isEmpty())
+		{
+			physicalServiceHashTable = getPhysicalServiceHastable();
+		}
+		return physicalServiceHashTable.get(alias);
     }
 
     /**
      * Get the remoteServerInfo defines as the master in the config.xml
      * @return
      */
-    public RemoteServerInfo getRemoteServerInfoMaster()
+    @Deprecated
+    public SdiPhysicalservice getRemoteServerInfoMaster()
     {
-	if (remoteServerInfoHashTable.isEmpty())
-	{
-	    remoteServerInfoHashTable = getRemoteServerHastable();
-	}
-	Iterator<Map.Entry<String, RemoteServerInfo>> i =  remoteServerInfoHashTable.entrySet().iterator();
-	while (i.hasNext())
-	{
-	    Map.Entry<String, RemoteServerInfo> entry = i.next();
-	    if(entry.getValue().isMaster)
-		return entry.getValue();
-	}
-	return null;
+//		if (remoteServerInfoHashTable.isEmpty())
+//		{
+//		    remoteServerInfoHashTable = getPhysicalServiceHastable();
+//		}
+//		Iterator<Map.Entry<String, RemoteServerInfo>> i =  remoteServerInfoHashTable.entrySet().iterator();
+//		while (i.hasNext())
+//		{
+//		    Map.Entry<String, RemoteServerInfo> entry = i.next();
+//		    if(entry.getValue().isMaster)
+//			return entry.getValue();
+//		}
+		return null;
     }
 
     /**
@@ -343,11 +326,16 @@ public abstract class ProxyServlet extends HttpServlet {
      * @deprecated
      * @return
      */
-    protected List<RemoteServerInfo> getRemoteServerInfoList() {
-	if (configuration == null)
-	    return null;
-
-	return configuration.getRemoteServer();
+    protected List<SdiPhysicalservice> getPhysicalServiceList() {
+    	Set<SdiVirtualPhysical> physicalServices = sdiVirtualService.getSdiVirtualPhysicals();
+    	Iterator<SdiVirtualPhysical> i = physicalServices.iterator();
+    	List<SdiPhysicalservice> l = new ArrayList<SdiPhysicalservice>();
+    	while (i.hasNext())
+    	{
+    		SdiVirtualPhysical physicalService = i.next();
+    		l.add(physicalService.getSdiPhysicalservice());
+    	}
+    	return l;
     }
 
 
@@ -357,15 +345,13 @@ public abstract class ProxyServlet extends HttpServlet {
      * @param i
      * @return
      */
-    protected RemoteServerInfo getRemoteServerInfo(int i) {
-	if (configuration == null)
-	    return null;
-
-	List<RemoteServerInfo> l = configuration.getRemoteServer();
-	if (l != null && l.size() > 0) {
-	    return (RemoteServerInfo) l.get(i);
-	}
-	return null;
+    protected SdiPhysicalservice getPhysicalServiceByIndex(int i) 
+    {
+		List<SdiPhysicalservice> l = this.getPhysicalServiceList();
+		if (l != null && l.size() > 0) {
+		    return (SdiPhysicalservice) l.get(i);
+		}
+		return null;
     }
 
     /**
@@ -374,15 +360,12 @@ public abstract class ProxyServlet extends HttpServlet {
      * @param i
      * @return
      */
-    public String getRemoteServerUrl(int i) {
-	if (configuration == null)
-	    return null;
-
-	List<RemoteServerInfo> l = configuration.getRemoteServer();
-	if (l != null && l.size() > 0) {
-	    return (String) ((RemoteServerInfo) l.get(i)).getUrl();
-	}
-	return null;
+    public String getPhysicalServiceURLByIndex(int i) {
+    	List<SdiPhysicalservice> l = this.getPhysicalServiceList();
+		if (l != null && l.size() > 0) {
+		    return l.get(i).getResourceurl();
+		}
+		return null;
     }
 
   
@@ -470,86 +453,7 @@ public abstract class ProxyServlet extends HttpServlet {
      */
     protected abstract void requestPreTreatmentGET(HttpServletRequest req, HttpServletResponse resp);
 
-    /**
-     * Aggregate exception files from remote servers in one single file
-     * The search for tags <ServiceExceptionReport> and <ServiceException> is valid for
-     * WMS version 1.1, 1.3
-     * WFS version 1.0
-     * 
-     *  WFS version 1.1 uses tags <ExceptionReport> and subTag <Exception>
-     */
-    //TODO move to WFS
-    @Deprecated
-    protected ByteArrayOutputStream buildResponseForOgcServiceException ()
-    {
-	try 
-	{
-	    for (String path : ogcExceptionFilePathList.values()) 
-	    {
-		DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
-		db.setNamespaceAware(false);
-		File fMaster = new File(path);
-		org.w3c.dom.Document documentMaster = db.newDocumentBuilder().parse(fMaster);
-		if (documentMaster != null) 
-		{
-		    NodeList nl = documentMaster.getElementsByTagName("ServiceExceptionReport");
-		    if (nl.item(0) != null)
-		    {
-			logger.trace("transform begin exception response writting");
-			DOMImplementationLS implLS = null;
-			if (documentMaster.getImplementation().hasFeature("LS", "3.0")) 
-			{
-			    implLS = (DOMImplementationLS) documentMaster.getImplementation();
-			} 
-			else 
-			{
-			    DOMImplementationRegistry enregistreur = DOMImplementationRegistry.newInstance();
-			    implLS = (DOMImplementationLS) enregistreur.getDOMImplementation("LS 3.0");
-			}
-
-			Node ItemMaster = nl.item(0);
-			//Loop on other file
-			for (String pathChild : ogcExceptionFilePathList.values()) 
-			{
-			    org.w3c.dom.Document documentChild = null;
-			    if(path.equals(pathChild))
-				continue;
-
-			    documentChild = db.newDocumentBuilder().parse(pathChild);
-
-			    if (documentChild != null) {
-				NodeList nlChild = documentChild.getElementsByTagName("ServiceException");
-				if (nlChild != null && nlChild.getLength() > 0) 
-				{
-				    for (int i = 0; i < nlChild.getLength(); i++) 
-				    {
-					Node nnode = nlChild.item(i);
-					nnode = documentMaster.importNode(nnode, true);
-					ItemMaster.appendChild(nnode);
-				    }
-				}
-			    }
-			}
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			LSSerializer serialiseur = implLS.createLSSerializer();
-			LSOutput sortie = implLS.createLSOutput();
-			sortie.setEncoding("UTF-8");
-			sortie.setByteStream(out);
-			serialiseur.write(documentMaster, sortie);
-			logger.trace("transform end exception response writting");
-			return out;
-		    }	
-		}
-	    }
-	}
-	catch (Exception ex)
-	{
-	    ex.printStackTrace();
-	    logger.error(ex.getMessage());
-	    return null;
-	}
-	return null;
-    }
+   
     
     /**
      * Builds the url from the request
@@ -559,52 +463,27 @@ public abstract class ProxyServlet extends HttpServlet {
      * @return returns the url
      */
     public String getServletUrl(HttpServletRequest req) {
-	// http://hostname.com:80/mywebapp/servlet/MyServlet/a/b;c=123?d=789
-	if (configuration.getHostTranslator() != null && configuration.getHostTranslator().length() > 0) {
-	    return configuration.getHostTranslator();
-	}
-	String scheme = req.getScheme(); // http
-	String serverName = req.getServerName(); // hostname.com
-	int serverPort = req.getServerPort(); // 80
-	String contextPath = req.getContextPath(); // /mywebapp
-	String servletPath = req.getServletPath(); // /servlet/MyServlet
-	String pathInfo = req.getPathInfo(); // /a/b;c=123
-	if(pathInfo.endsWith("?"))
-	    pathInfo = pathInfo.substring(0, pathInfo.length()-1);
-	// String queryString = req.getQueryString(); // d=789
-
-	String url = scheme + "://" + serverName + ":" + serverPort + contextPath + servletPath;
-	if (pathInfo != null) {
-	    url += pathInfo;
-	}
-
-	return url;
+		// http://hostname.com:80/mywebapp/servlet/MyServlet/a/b;c=123?d=789
+	    if (sdiVirtualService.getReflectedurl() != null && sdiVirtualService.getReflectedurl().length() > 0) {
+		    return sdiVirtualService.getReflectedurl();
+		}
+		String scheme = req.getScheme(); // http
+		String serverName = req.getServerName(); // hostname.com
+		int serverPort = req.getServerPort(); // 80
+		String contextPath = req.getContextPath(); // /mywebapp
+		String servletPath = req.getServletPath(); // /servlet/MyServlet
+		String pathInfo = req.getPathInfo(); // /a/b;c=123
+		if(pathInfo.endsWith("?"))
+		    pathInfo = pathInfo.substring(0, pathInfo.length()-1);
+		
+		String url = scheme + "://" + serverName + ":" + serverPort + contextPath + servletPath;
+		if (pathInfo != null) {
+		    url += pathInfo;
+		}
+	
+		return url;
     }
-
-
-    @Deprecated
-    public void sendProxyBuiltInResponse (HttpServletResponse resp,StringBuffer xmlResponse)
-    {
-	try {
-	    resp.setContentType("text/xml; charset=utf-8");
-	    resp.setContentLength(Integer.MAX_VALUE);
-	    OutputStream os;
-	    os = resp.getOutputStream();
-	    os.write(xmlResponse.toString().getBytes());
-	    os.flush();
-	    os.close();
-	} 
-	catch (IOException e) 
-	{
-	    e.printStackTrace();
-	}
-	finally
-	{
-	    Date d = new Date();
-	    logger.info("ClientResponseDateTime="+ dateFormat.format(d));
-	    logger.info("ClientResponseLength="+ xmlResponse.length());
-	}
-    }
+    
     /**
      * Sends parameters to a remote server
      * 
@@ -715,48 +594,47 @@ public abstract class ProxyServlet extends HttpServlet {
      * @param parameters
      * @throws Exception
      */
-    public void sendDataDirectStream(HttpServletResponse resp, String method, String sUrl, String parameters) throws Exception{
+    public void sendDataDirectStream(HttpServletResponse resp, String method, String sUrl, String parameters) throws Exception
+    {
+		HttpURLConnection hpcon = SendToRemoteServer(method,sUrl, parameters);
+		InputStream in = null;
+		int code = hpcon.getResponseCode();
+		if( code >= 400){
+		    //Response has a HTTP code error
+		    //Try to get the response in the inputStream
+		    //If failed, get the errorStream
+		    try{
+			in = hpcon.getInputStream();
+		    }catch (IOException e){
+			in = hpcon.getErrorStream();
+		    }
+		}else{
+		    //HTTP code < 400
+		    in = hpcon.getInputStream();
+		}
+		resp.setContentType(hpcon.getContentType());
+		resp.setStatus(hpcon.getResponseCode());
+		resp.setContentLength(hpcon.getContentLength());
+		OutputStream os = resp.getOutputStream();
+	
+		//in can be null.eg : when response code is >= 400, the error stream can be null
+		if(in == null){
+		    os.flush();
+		    os.close();
+		}else{
+		    byte[] buf = new byte[in.available()];
+		    int nread;
+		    while ((nread = in.read(buf)) != -1) {
+			os.write(buf, 0, nread);
+			os.flush();
+		    }
+		    os.close();
+		    in.close();
+		}
 
-	HttpURLConnection hpcon = SendToRemoteServer(method,sUrl, parameters);
-	InputStream in = null;
-	int code = hpcon.getResponseCode();
-	if( code >= 400){
-	    //Response has a HTTP code error
-	    //Try to get the response in the inputStream
-	    //If failed, get the errorStream
-	    try{
-		in = hpcon.getInputStream();
-	    }catch (IOException e){
-		in = hpcon.getErrorStream();
-	    }
-	}else{
-	    //HTTP code < 400
-	    in = hpcon.getInputStream();
-	}
-	resp.setContentType(hpcon.getContentType());
-	resp.setStatus(hpcon.getResponseCode());
-	resp.setContentLength(hpcon.getContentLength());
-	OutputStream os = resp.getOutputStream();
-
-	//in can be null.eg : when response code is >= 400, the error stream can be null
-	if(in == null){
-	    os.flush();
-	    os.close();
-	}else{
-	    byte[] buf = new byte[in.available()];
-	    int nread;
-	    while ((nread = in.read(buf)) != -1) {
-		os.write(buf, 0, nread);
-		os.flush();
-	    }
-	    os.close();
-	    in.close();
-	}
-
-
-	logger.info("RemoteResponseToRequestUrl="+ sUrl);
-	Date d = new Date();
-	logger.info("RemoteResponseDateTime="+ dateFormat.format(d));
+		logger.info("RemoteResponseToRequestUrl="+ sUrl);
+		Date d = new Date();
+		logger.info("RemoteResponseDateTime="+ dateFormat.format(d));
     }
 
     /**
@@ -766,72 +644,72 @@ public abstract class ProxyServlet extends HttpServlet {
      * @return
      */
     private HttpURLConnection SendToRemoteServer (String method, String sUrl, String parameters){
-	try {
-	    if (sUrl != null) {
-		if (sUrl.endsWith("?")) {
-		    sUrl = sUrl.substring(0, sUrl.length() - 1);
+		try {
+		    if (sUrl != null) {
+				if (sUrl.endsWith("?")) {
+				    sUrl = sUrl.substring(0, sUrl.length() - 1);
+				}
+		    }
+		    Date d = new Date();
+		    logger.info("RemoteRequestUrl="+ sUrl);
+		    logger.info("RemoteRequest="+ parameters.replaceAll("\r", ""));
+		    logger.info("RemoteRequestLength="+ parameters.length());
+		    logger.info("RemoteRequestDateTime="+ dateFormat.format(d));
+		    String cookie = null;
+	
+		    if (getLoginService(sUrl) != null) {
+		    	cookie = geonetworkLogIn(getLoginService(sUrl));
+		    }
+	
+		    String encoding = null;
+	
+		    if (getUsername(sUrl) != null && getPassword(sUrl) != null) {
+				String userPassword = getUsername(sUrl) + ":" + getPassword(sUrl);
+				encoding = new sun.misc.BASE64Encoder().encode(userPassword.getBytes());
+		    }
+	
+		    if (method.equalsIgnoreCase("GET")) {
+				if (!sUrl.contains("?"))
+				    sUrl = sUrl + "?" + parameters;
+				else
+				    sUrl = sUrl+ "&" + parameters;
+		    }
+		    URL url = new URL(sUrl);
+		    HttpURLConnection hpcon = null;
+	
+		    hpcon = (HttpURLConnection) url.openConnection();
+		    hpcon.setRequestMethod(method);
+		    if (cookie != null) {
+		    	hpcon.addRequestProperty("Cookie", cookie);
+		    }
+		    if (encoding != null) {
+		    	hpcon.setRequestProperty("Authorization", "Basic " + encoding);
+		    }
+		    hpcon.setUseCaches(false);
+		    hpcon.setDoInput(true);
+	
+		    if (method.equalsIgnoreCase("POST")) {
+		    	hpcon.setRequestProperty("Content-Length", "" + Integer.toString(parameters.getBytes().length));
+				String contentType = XML;
+				if(requestCharacterEncoding != null)
+				    contentType += "; " +requestCharacterEncoding;
+				hpcon.setRequestProperty("Content-Type", contentType);
+		
+				hpcon.setDoOutput(true);
+				DataOutputStream printout = new DataOutputStream(hpcon.getOutputStream());
+				printout.writeBytes(parameters);
+				printout.flush();
+				printout.close();
+		    } 
+		    else {
+		    	hpcon.setDoOutput(false);
+		    }
+	
+		    return hpcon;
+	
+		}catch (Exception e){
+		    return null;
 		}
-	    }
-	    Date d = new Date();
-	    logger.info("RemoteRequestUrl="+ sUrl);
-	    logger.info("RemoteRequest="+ parameters.replaceAll("\r", ""));
-	    logger.info("RemoteRequestLength="+ parameters.length());
-	    logger.info("RemoteRequestDateTime="+ dateFormat.format(d));
-	    String cookie = null;
-
-	    if (getLoginService(sUrl) != null) {
-	    	cookie = geonetworkLogIn(getLoginService(sUrl));
-	    }
-
-	    String encoding = null;
-
-	    if (getUsername(sUrl) != null && getPassword(sUrl) != null) {
-		String userPassword = getUsername(sUrl) + ":" + getPassword(sUrl);
-		encoding = new sun.misc.BASE64Encoder().encode(userPassword.getBytes());
-
-	    }
-
-	    if (method.equalsIgnoreCase("GET")) {
-		if (!sUrl.contains("?"))
-		    sUrl = sUrl + "?" + parameters;
-		else
-		    sUrl = sUrl+ "&" + parameters;
-	    }
-	    URL url = new URL(sUrl);
-	    HttpURLConnection hpcon = null;
-
-	    hpcon = (HttpURLConnection) url.openConnection();
-	    hpcon.setRequestMethod(method);
-	    if (cookie != null) {
-		hpcon.addRequestProperty("Cookie", cookie);
-	    }
-	    if (encoding != null) {
-		hpcon.setRequestProperty("Authorization", "Basic " + encoding);
-	    }
-	    hpcon.setUseCaches(false);
-	    hpcon.setDoInput(true);
-
-	    if (method.equalsIgnoreCase("POST")) {
-		hpcon.setRequestProperty("Content-Length", "" + Integer.toString(parameters.getBytes().length));
-		String contentType = XML;
-		if(requestCharacterEncoding != null)
-		    contentType += "; " +requestCharacterEncoding;
-		hpcon.setRequestProperty("Content-Type", contentType);
-
-		hpcon.setDoOutput(true);
-		DataOutputStream printout = new DataOutputStream(hpcon.getOutputStream());
-		printout.writeBytes(parameters);
-		printout.flush();
-		printout.close();
-	    } else {
-		hpcon.setDoOutput(false);
-	    }
-
-	    return hpcon;
-
-	}catch (Exception e){
-	    return null;
-	}
     }
     /**
      * @param loginServiceUrl
@@ -860,12 +738,6 @@ public abstract class ProxyServlet extends HttpServlet {
 	return cookie;
 
     }
-
-    
-
-    
-
-    
 
     /**
      * @param responseContentType2
@@ -923,17 +795,16 @@ public abstract class ProxyServlet extends HttpServlet {
     {
 		try {
 		    for (int i = 0; i < temporaryFileList.size(); i++) {
-			File f = new File(new URI(temporaryFileList.get(i)));
-			if (f.exists()) {
-			    boolean deleted = f.delete();
-			    if (deleted)
-				logger.debug("temporary file " + f.toURI().toString() + " is deleted");
-			    else {
-				f.deleteOnExit();
-				logger.warn( "temporary file " + f.toURI().toString() + " is not deleted");
-			    }
-			}
-	
+				File f = new File(new URI(temporaryFileList.get(i)));
+				if (f.exists()) {
+				    boolean deleted = f.delete();
+				    if (deleted)
+					logger.debug("temporary file " + f.toURI().toString() + " is deleted");
+				    else {
+					f.deleteOnExit();
+					logger.warn( "temporary file " + f.toURI().toString() + " is not deleted");
+				    }
+				}
 		    }
 		    temporaryFileList.clear();
 		} catch (Exception e) {
@@ -956,21 +827,25 @@ public abstract class ProxyServlet extends HttpServlet {
     }
 
     /**
+     * Get the username for authentication on physical service
      * @param urlstr
      * @return
      */
-    protected Object getUsername(String urlstr) {
-
-	List<RemoteServerInfo> serverInfoList = configuration.getRemoteServer();
-	Iterator<RemoteServerInfo> it = serverInfoList.iterator();
-	while (it.hasNext()) {
-	    RemoteServerInfo serverInfo = it.next();
-	    if (serverInfo.getUrl().equals(urlstr))
-		return serverInfo.getUser();
+    protected Object getUsername(String urlstr) 
+    {
+    	if (physicalServiceHashTable.isEmpty())
+		{
+			physicalServiceHashTable = getPhysicalServiceHastable();
+		}
+    	Iterator<Map.Entry <String, SdiPhysicalservice>> i = physicalServiceHashTable.entrySet().iterator();
+    	while (i.hasNext())
+    	{
+    		Map.Entry <String, SdiPhysicalservice> service = i.next();
+    		if(service.getValue().getResourceurl().equals(urlstr))
+    			return service.getValue().getResourceusername();
+    	}
+    	return null;
 	}
-
-	return null;
-    }
 
     @Deprecated
     protected abstract  StringBuffer generateOgcException(String errorMessage, String code, String locator, String version) ;
@@ -981,44 +856,49 @@ public abstract class ProxyServlet extends HttpServlet {
      * @return
      */
     protected Object getPassword(String urlstr) {
-	List<RemoteServerInfo> serverInfoList = configuration.getRemoteServer();
-	Iterator<RemoteServerInfo> it = serverInfoList.iterator();
-	while (it.hasNext()) {
-	    RemoteServerInfo serverInfo = it.next();
-	    if (serverInfo.getUrl().equals(urlstr)) {
-		// Debug tb 28.09.2009
-		// Utilisation de la classe Java "Authenticator" qui ajoute
-		// l'authentication, selon les besoins, � la classe java
-		// "URLConnection".
-		// Pour des raisons de v�rification de schema xsd (requete
-		// DescribeFeatureType), la classe "DocumentFactory" n�cessite
-		// l'authentication au cas o� geoserver d�fini un compte de
-		// service.
-		// Do not setCredentials if no account and password were
-		// supplied
-		if (serverInfo.getUser() != null && serverInfo.getPassword() != null) {
-		    org.easysdi.proxy.security.EasyAuthenticator.setCredientials(getUsername(urlstr).toString(), serverInfo.getPassword());
-		    // Fin de debug
-		    return serverInfo.getPassword();
+    	if (physicalServiceHashTable.isEmpty())
+		{
+			physicalServiceHashTable = getPhysicalServiceHastable();
 		}
-	    }
+    	Iterator<Map.Entry <String, SdiPhysicalservice>> i = physicalServiceHashTable.entrySet().iterator();
+    	while (i.hasNext())
+    	{
+    		Map.Entry <String, SdiPhysicalservice> service = i.next();
+    		if(service.getValue().getResourceurl().equals(urlstr))
+    			if(service.getValue().getResourceusername() != null  &&service.getValue().getResourcepassword() != null)
+    			{
+    				// Utilisation de la classe Java "Authenticator" qui ajoute
+    				// l'authentication, selon les besoins, � la classe java
+    				// "URLConnection".
+    				// Pour des raisons de v�rification de schema xsd (requete
+    				// DescribeFeatureType), la classe "DocumentFactory" n�cessite
+    				// l'authentication au cas o� geoserver d�fini un compte de
+    				// service.
+    				// Do not setCredentials if no account and password were
+    				// supplied
+					org.easysdi.proxy.security.EasyAuthenticator.setCredientials(getUsername(urlstr).toString(), service.getValue().getResourceusername() );
+					return service.getValue().getResourcepassword();
+    			}
+    	}
+    	return null;
 	}
-
-	return null;
-    }
 
     /**
      * @return
      */
     private String getLoginService(String urlstr) {
-	List<RemoteServerInfo> serverInfoList = configuration.getRemoteServer();
-	Iterator<RemoteServerInfo> it = serverInfoList.iterator();
-	while (it.hasNext()) {
-	    RemoteServerInfo serverInfo = it.next();
-	    if (serverInfo.getUrl().equals(urlstr))
-		return serverInfo.getLoginService();
-	}
-	return null;
+    	if (physicalServiceHashTable.isEmpty())
+		{
+			physicalServiceHashTable = getPhysicalServiceHastable();
+		}
+    	Iterator<Map.Entry <String, SdiPhysicalservice>> i = physicalServiceHashTable.entrySet().iterator();
+    	while (i.hasNext())
+    	{
+    		Map.Entry <String, SdiPhysicalservice> service = i.next();
+    		if(service.getValue().getResourceurl().equals(urlstr))
+    			return service.getValue().getServiceusername();
+    	}
+    	return null;
     }
 
     @Deprecated
@@ -1054,120 +934,7 @@ public abstract class ProxyServlet extends HttpServlet {
 
 		return false;
     }
-
-    /**
-     * Detects if the feature type is allowed :
-     * - by being specifically allowed in the policy
-     * - by default, when <Servers All = true> or <FeatureTypes All=true> 
-     * 
-     * @param ft The feature type to test
-     * @return true if the layer is allowed, false if not
-     */
-    protected boolean isFeatureTypeAllowed(String ft) 
-    {
-	
-
-	List<Server> serverList = policy.getServers().getServer();
-	for (int i = 0; i < serverList.size(); i++) {
-	    FeatureTypes features = serverList.get(i).getFeatureTypes();
-	    if (features != null) {
-		List<FeatureType> ftList = features.getFeatureType();
-		for (int j = 0; j < ftList.size(); j++) {
-		    // Is a specific feature type allowed ?
-		    if (ft.equals(ftList.get(j).getName()))
-			return true;
-		}
-	    }
-	}
-
-	return false;
-    }
-
-    /**
-     * Detects if the feature type is allowed or not against the rule.
-     * 
-     * @param ft
-     *            The feature Type to test
-     * @param url
-     *            the url of the remote server.
-     * @return true if the feature type is allowed, false if not
-     */
-    protected boolean isFeatureTypeAllowed(String ft, String url) {
-	
-	//Debug HVH 23.12.2010
-	//using policy.getServers().isAll() and features.isAll()
-	//return wrong results.
-	//Policy content was changed to include all the feature types name in case of getServer().isAll()
-	//and features.isAll().
-	//So we do not care anymore about those 2 booleans and we loop on all the feature types in the policy
-	//5.09.2010 - HVH 
-	//		if (policy.getServers().isAll())
-	//			return true;
-	//--
-	//		boolean isServerFound = false;
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i = 0; i < serverList.size(); i++) {
-	    // Is the server overloaded?
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		//				isServerFound = true;
-		// Are all feature Types Allowed ?
-		FeatureTypes features = serverList.get(i).getFeatureTypes();
-		if (features != null) {
-		    //					if (features.isAll())
-		    //						return true;
-
-		    List<FeatureType> ftList = features.getFeatureType();
-		    for (int j = 0; j < ftList.size(); j++) {
-			// Is a specific feature type allowed ?
-			if (ft.equals(ftList.get(j).getName()))
-			    return true;
-		    }
-		}
-
-	    }
-	}
-
-	//5.09.2010 - HVH : moved before the loop on the servers
-	// if the server is not overloaded and if all the servers are allowed
-	// then
-	// We can consider that's ok
-	//		if (!isServerFound && policy.getServers().isAll())
-	//			return true;
-	//--
-	// in any other case the feature type is not allowed
-	return false;
-    }
-
-    /**
-     * Detects if the layer is allowed or not against the rule.
-     * 
-     * @param layer The layer to test
-     * @param url   the url of the remote server.
-     * @return true if the layer is allowed, false if not
-     */
-    public boolean isLayerAllowed(String layer, String url) 
-    {
-		if (layer == null)
-		    return false;
-	
-		List<Server> serverList = policy.getServers().getServer();
-	
-		for (int i = 0; i < serverList.size(); i++) {
-		    // Is the server overloaded?
-		    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-			List<Layer> layerList = serverList.get(i).getLayers().getLayer();
-			for (int j = 0; j < layerList.size(); j++) {
-			    // Is a specific layer allowed ?
-			    if (layer.equals(layerList.get(j).getName()))
-				return true;
-			}
-	
-		    }
-		}
-		return false;
-    }
-
+ 
     /**
      * 
      * @param req
@@ -1176,7 +943,7 @@ public abstract class ProxyServlet extends HttpServlet {
      * @param responseContentType
      * @param responseCode
      */
-    protected void sendHttpServletResponse (HttpServletRequest req, HttpServletResponse resp, ByteArrayOutputStream tempOut, String responseContentType, Integer responseCode)
+    protected void sendHttpServletResponse (HttpServletRequest req, HttpServletResponse resp, ByteArrayOutputStream tempOut, String responseContentType, int responseCode)
     {
 		try
 		{

@@ -230,7 +230,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		    	{
 		    		Element layerElement = (Element)iLLayer.next();
 		    		Element nameElement = getChildElementName(layerElement);
-		    		if (nameElement!= null && !servlet.isLayerAllowed(nameElement.getText(),servlet.getRemoteServerInfo(fileEntry.getKey()).getUrl()))
+		    		if (nameElement!= null && !servlet.isLayerAllowed(nameElement.getText(),servlet.getPhysicalServiceByAlias(fileEntry.getKey()).getUrl()))
 					{
 		    				Parent parent = layerElement.getParent();
 		    				parent.removeContent (layerElement);
@@ -247,7 +247,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		    			}
 		    					    			
 		    			//Get the remote server URL
-		    			String serverUrl = servlet.getRemoteServerInfo(fileEntry.getKey()).getUrl();
+		    			String serverUrl = servlet.getPhysicalServiceByAlias(fileEntry.getKey()).getUrl();
 		    			
 		    			//Rewrite the online resource present in the <Style> element
 		    			Iterator iXlink = layerElement.getDescendants(new AttributeXlinkFilter());

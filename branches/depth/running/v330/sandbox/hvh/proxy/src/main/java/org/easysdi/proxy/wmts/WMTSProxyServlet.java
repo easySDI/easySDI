@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
@@ -41,8 +42,11 @@ import org.easysdi.proxy.jdom.filter.ElementTileMatrixSetFilter;
 import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.core.ProxyServletRequest;
+import org.easysdi.proxy.domain.SdiPhysicalservicePolicy;
 import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiVirtualservice;
+import org.easysdi.proxy.domain.SdiWmslayerPolicy;
+import org.easysdi.proxy.domain.SdiWmtslayerPolicy;
 import org.easysdi.proxy.ows.OWSExceptionManager;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.policy.Layer;
@@ -102,7 +106,7 @@ public class WMTSProxyServlet extends ProxyServlet{
      */
     @Override
     protected void requestPreTreatmentPOST(HttpServletRequest req,HttpServletResponse resp) {
-	requestPreTreatmentGET(req,resp);
+    	requestPreTreatmentGET(req,resp);
     }
 
     /* (non-Javadoc)
@@ -110,27 +114,26 @@ public class WMTSProxyServlet extends ProxyServlet{
      */
     @Override
     protected void requestPreTreatmentGET(HttpServletRequest req,HttpServletResponse resp) {
-	try
-	{
-	    
-	    Method preTreatmentMethod = this.getClass().getMethod("requestPreTreatment"+getProxyRequest().getOperation(), new Class [] {Class.forName ("javax.servlet.http.HttpServletRequest"), Class.forName ("javax.servlet.http.HttpServletResponse")});
-	    preTreatmentMethod.invoke(this ,new Object[] {req,resp});
-
-	}
-	catch (Exception e)
-	{
-	    resp.setHeader("easysdi-proxy-error-occured", "true");
-	    e.printStackTrace();
-	    logger.error( e.toString());
-	    StringBuffer out;
-	    try {
-	    	owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-	    } catch (IOException e1) {
-			logger.error( e1.toString());
-			e1.printStackTrace();
-	    }
-	    return;
-	}
+		try
+		{
+		    
+		    Method preTreatmentMethod = this.getClass().getMethod("requestPreTreatment"+getProxyRequest().getOperation(), new Class [] {Class.forName ("javax.servlet.http.HttpServletRequest"), Class.forName ("javax.servlet.http.HttpServletResponse")});
+		    preTreatmentMethod.invoke(this ,new Object[] {req,resp});
+	
+		}
+		catch (Exception e)
+		{
+		    resp.setHeader("easysdi-proxy-error-occured", "true");
+		    e.printStackTrace();
+		    logger.error( e.toString());
+		    try {
+		    	owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		    } catch (IOException e1) {
+				logger.error( e1.toString());
+				e1.printStackTrace();
+		    }
+		    return;
+		}
     }
 
     /**
@@ -140,7 +143,7 @@ public class WMTSProxyServlet extends ProxyServlet{
     public void requestPreTreatmentGetCapabilities (HttpServletRequest req, HttpServletResponse resp){
 	try{
 	    //Servers define in config.xml
-	    Hashtable<String, RemoteServerInfo> htRemoteServer = getRemoteServerHastable();
+	    Hashtable<String, RemoteServerInfo> htRemoteServer = getPhysicalServiceHastable();
 	    List<WMTSProxyServerGetCapabilitiesThread> serverThreadList = new Vector<WMTSProxyServerGetCapabilitiesThread>();
 
 
@@ -194,7 +197,7 @@ public class WMTSProxyServlet extends ProxyServlet{
     public void requestPreTreatmentGetTile (HttpServletRequest req, HttpServletResponse resp){
 	try{
 	    //Servers define in config.xml
-	    Hashtable<String, RemoteServerInfo> htRemoteServer = getRemoteServerHastable();
+	    Hashtable<String, RemoteServerInfo> htRemoteServer = getPhysicalServiceHastable();
 
 	    //Find the remote server concerning by the current request
 	    ProxyLayer pLayer = new ProxyLayer(((WMTSProxyServletRequest)getProxyRequest()).getLayer());
@@ -262,7 +265,7 @@ public class WMTSProxyServlet extends ProxyServlet{
     public void requestPreTreatmentGetFeatureInfo (HttpServletRequest req, HttpServletResponse resp){
 	try{
 	    //Servers define in config.xml
-	    Hashtable<String, RemoteServerInfo> htRemoteServer = getRemoteServerHastable();
+	    Hashtable<String, RemoteServerInfo> htRemoteServer = getPhysicalServiceHastable();
 
 	    //Find the remote server concerning by the current request
 	    ProxyLayer pLayer = new ProxyLayer(((WMTSProxyServletRequest)getProxyRequest()).getLayer());
@@ -530,38 +533,45 @@ public class WMTSProxyServlet extends ProxyServlet{
 
     /**
      * Detects if the layer is allowed or not against the rule.
-     * Overwrite the generic ProxyServlet method because in WMTS policy file, 
-     * when all layer are allowed for a server or all servers are allowed
+     * Overwrite the generic ProxyServlet method because in WMTS policy, 
+     * when all layer are allowed for a physical service or all physical services are allowed
      * the name of the layer are not stored.
-     * This is a difference with the others policy files, which contain all the layer name allowed 
+     * This is a difference with the others policy, which contain all the layer name allowed 
      * @param layer
      *            The layer to test
      * @param url
      *            the url of the remote server.
      * @return true if the layer is allowed, false if not
      */
-    public boolean isLayerAllowed(String layer, String url) {
+    public boolean isLayerAllowed(String layer, String url) 
+    {
+    	if (layer == null)
+		    return false;
 	
-
-	if (layer == null)
-	    return false;
-
-	if(policy.getServers().isAll())
-	    return true;
-
-	List<Server> serverList = policy.getServers().getServer();
-	for (int i = 0; i < serverList.size(); i++) {
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		if(serverList.get(i).getLayers().isAll())
-		    return true;
-		List<Layer> layerList = serverList.get(i).getLayers().getLayer();
-		for (int j = 0; j < layerList.size(); j++) {
-		    if (layer.equals(layerList.get(j).getName()))
-			return true;
-		}
-	    }
-	}
-	return false;
+    	if(sdiPolicy.isAnyservice())
+    		return true;
+    	
+    	Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
+    	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
+    	while(i.hasNext())
+    	{
+    		SdiPhysicalservicePolicy physicalservicePolicy = i.next();
+    		if(physicalservicePolicy.getSdiPhysicalservice().getResourceurl().equals(url))
+    		{
+    			if(physicalservicePolicy.isAnyitem())
+    				return true;
+    			Set<SdiWmtslayerPolicy> wmtsLayerPolicies = physicalservicePolicy.getSdiWmtslayerPolicies();
+	    		Iterator<SdiWmtslayerPolicy> it = wmtsLayerPolicies.iterator();
+	    		while (it.hasNext())
+	    		{
+	    			SdiWmtslayerPolicy layerPolicy = it.next();
+	    			if(layerPolicy.getIdentifier().equals(layer) && layerPolicy.isEnabled())
+	    				return true;
+	    		}
+	    		break;
+    		}
+    	}
+    	return false;
     }
 
     /**
@@ -643,4 +653,5 @@ public class WMTSProxyServlet extends ProxyServlet{
 	} 
 
     }
+
 }

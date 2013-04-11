@@ -19,10 +19,12 @@ package org.easysdi.proxy.ows;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
 
 /**
  * @author DEPTH SA
@@ -34,9 +36,10 @@ public abstract class OWSExceptionReport implements OWSIExceptionReport {
    
    public void sendHttpServletResponse (HttpServletRequest req, HttpServletResponse resp, StringBuffer tempOut, String responseContentType, Integer responseCode)
    {
+	   Logger logger = Logger.getLogger("ProxyLogger");
 		try
 		{
-		    BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
+			BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
 		    resp.setContentType(responseContentType);
 		    resp.setStatus(responseCode);
 		    if (tempOut != null)
@@ -45,7 +48,7 @@ public abstract class OWSExceptionReport implements OWSIExceptionReport {
 		    	resp.setContentLength(0);
 	
 		    try {
-//			    logger.trace("transform begin response writting");
+			    logger.trace("transform begin response writting");
 				if (req!= null && "1".equals(req.getParameter("download"))) {
 				    String format = req.getParameter("format");
 				    if (format == null)
@@ -60,21 +63,21 @@ public abstract class OWSExceptionReport implements OWSIExceptionReport {
 				}
 				if (tempOut != null)
 				    os.write(tempOut.toString().getBytes());
-//				logger.trace("transform end response writting");
+				logger.trace("transform end response writting");
 			} 
 		    finally {
 				os.flush();
 				os.close();
 				Date d = new Date();
-//				logger.info("ClientResponseDateTime="+ dateFormat.format(d));
-//				if (tempOut != null)
-//				    logger.info("ClientResponseLength="+ tempOut.length());
+				logger.info("ClientResponseDateTime="+ new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(d));
+				if (tempOut != null)
+				    logger.info("ClientResponseLength="+ tempOut.length());
 		    }
 		} 
 		catch (Exception e) 
 		{
 		    resp.setHeader("easysdi-proxy-error-occured", "true");
-//		    logger.error(e.getMessage());
+		    logger.error(e.getMessage());
 		}
    }
 

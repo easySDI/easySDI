@@ -117,7 +117,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 
 
 			//Remove the not allowed attributes
-			List<String> notAllowedAttributeList = getAttributesNotAllowedInMetadata(getRemoteServerUrl(0));
+			List<String> notAllowedAttributeList = getAttributesNotAllowedInMetadata(getPhysicalServiceURLByIndex(0));
 			if(notAllowedAttributeList.size()!=0)
 			{
 				int nsI = 0;
@@ -282,7 +282,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					logger.trace("transform end apply XSLT on service metadata");
 				}
 				else if ("DescribeRecord".equals(currentOperation)){
-					if (areAllAttributesAllowedForMetadata(getRemoteServerUrl(0)) ) 
+					if (areAllAttributesAllowedForMetadata(getPhysicalServiceURLByIndex(0)) ) 
 					{
 						// Keep the metadata as it is
 						tempFile = new File(filePathList.get(0));
@@ -293,7 +293,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					}
 				}
 				else if ("GetRecords".equals(currentOperation)){
-					if (areAllAttributesAllowedForMetadata(getRemoteServerUrl(0)) ) 
+					if (areAllAttributesAllowedForMetadata(getPhysicalServiceURLByIndex(0)) ) 
 					{
 						// Keep the metadata as it is
 						tempFile = new File(filePathList.get(0));
@@ -465,7 +465,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				}
 				else if( "GetRecordById".equals(currentOperation) )
 				{
-					if (areAllAttributesAllowedForMetadata(getRemoteServerUrl(0)) ) 
+					if (areAllAttributesAllowedForMetadata(getPhysicalServiceURLByIndex(0)) ) 
 					{
 						// Keep the metadata as it is
 						tempFile = new File(filePathList.get(0));
@@ -694,7 +694,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					if(!cswDataManager.isObjectAccessible(requestedId))
 					{
 						logger.info(requestedId+" - Requested metadata is not accessible regarding policy restriction. Method isObjectAccessible returned false.");
-						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
+						owsExceptionReport.sendHttpServletResponse(request, response,cswDataManager.generateEmptyResponse(requestedVersion),"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 						return;
 					}
 					if(!cswDataManager.isMetadataAccessible(requestedId)){
@@ -705,7 +705,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					
 					if (requestedId == null)
 					{
-						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
+						owsExceptionReport.sendHttpServletResponse(request, response,cswDataManager.generateEmptyResponse(requestedVersion),"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 						return;
 					}
 				}
@@ -787,7 +787,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			
 			// Send the request to the remote server
 			List<String> filePathList = new Vector<String>();
-			String filePath = sendData("GET", getRemoteServerUrl(0), paramUrl);
+			String filePath = sendData("GET", getPhysicalServiceURLByIndex(0), paramUrl);
 			filePathList.add(filePath);
 			
 			if(currentOperation.equalsIgnoreCase("GetRecords") || currentOperation.equalsIgnoreCase("GetRecordById"))
@@ -891,7 +891,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			// add a tag in the configuration file to set the default
 			// server --> HVH-27.08.2010 : Only one server is supported in the config file fot the moment,
 			// default server tag will be implemented when several servers will be supported
-			RemoteServerInfo rsi = getRemoteServerInfo(0);
+			RemoteServerInfo rsi = getPhysicalServiceByIndex(0);
 			String transactionType = "ogc";
 			if (rsi != null) 
 			{
@@ -987,7 +987,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					if(!cswDataManager.isObjectAccessible(dataId))
 					{
 						logger.info(dataId+" - Requested metadata is not accessible regarding policy restriction. Method isObjectAccessible returned false.");
-						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
+						owsExceptionReport.sendHttpServletResponse(request, response,cswDataManager.generateEmptyResponse(requestedVersion),"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 						return;
 					}
 					if(!cswDataManager.isMetadataAccessible(dataId)){
@@ -999,7 +999,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					if (dataId == null)
 					{
 						logger.debug("Metadata id is Null. Return an empty response");
-						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
+						owsExceptionReport.sendHttpServletResponse(request, response,cswDataManager.generateEmptyResponse(requestedVersion),"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 						return;
 					}
 					if(dataId.compareTo(rh.getRecordId()) != 0)
@@ -1014,7 +1014,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				logger.trace("End - Data Accessibility");
 				
 				List<String> filePathList = new Vector<String>();
-				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
+				String filePath = sendData("POST", getPhysicalServiceURLByIndex(0), param.toString());
 				filePathList.add(filePath);
 				if( (rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete")) && !configuration.isHarvestingConfig())
 				{
@@ -1047,7 +1047,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					param = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), param);
 					if(param == null)
 					{
-						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponseForGetRecords(requestedVersion));
+						owsExceptionReport.sendHttpServletResponse(request, response,cswDataManager.generateEmptyResponseForGetRecords(requestedVersion),"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 						return;
 					}
 				}
@@ -1056,7 +1056,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				
 //				dump("INFO","Start - Get response");
 				List<String> filePathList = new Vector<String>();
-				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
+				String filePath = sendData("POST", getPhysicalServiceURLByIndex(0), param.toString());
 				filePathList.add(filePath);
 //				dump("INFO","End - Get response");
 				if( rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete"))
@@ -1079,7 +1079,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			else 
 			{
 				List<String> filePathList = new Vector<String>();
-				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
+				String filePath = sendData("POST", getPhysicalServiceURLByIndex(0), param.toString());
 				filePathList.add(filePath);
 				//Transform the request response
 				transform(version, currentOperation, req, resp, filePathList);
@@ -1110,4 +1110,6 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 	}
 			
 	}
+	
+	
 }

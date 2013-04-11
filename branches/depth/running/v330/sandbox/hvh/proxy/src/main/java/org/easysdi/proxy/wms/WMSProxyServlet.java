@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.Map.Entry;
@@ -55,8 +56,10 @@ import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.core.ProxyServletRequest;
+import org.easysdi.proxy.domain.SdiPhysicalservicePolicy;
 import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiVirtualservice;
+import org.easysdi.proxy.domain.SdiWmslayerPolicy;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.policy.Layer;
 import org.easysdi.proxy.policy.Server;
@@ -187,8 +190,7 @@ public class WMSProxyServlet extends ProxyServlet {
 
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error( configuration.getServletClass() + ".requestPreTreatmentGET : ", e);
-			StringBuffer out;
+			logger.error("WMSProxyServlet.requestPreTreatmentGET : ", e);
 			try {
 				owsExceptionReport.sendExceptionReport(req, resp, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_OK);
 			} catch (IOException e1) {
@@ -205,7 +207,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		try{
 			List<WMSProxyServerGetCapabilitiesThread> serverThreadList = new Vector<WMSProxyServerGetCapabilitiesThread>();
 			
-			Hashtable<String, RemoteServerInfo> remoteServersTable = getRemoteServerHastable();
+			Hashtable<String, RemoteServerInfo> remoteServersTable = getPhysicalServiceHastable();
 			Iterator<Entry<String, RemoteServerInfo>> it =remoteServersTable.entrySet().iterator();
 
 			while(it.hasNext())
@@ -373,7 +375,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			}
 
 			//Get the remote server informations
-			Hashtable<String, RemoteServerInfo> remoteServersTable = getRemoteServerHastable();
+			Hashtable<String, RemoteServerInfo> remoteServersTable = getPhysicalServiceHastable();
 
 			//Check if the layer is allowed against policy rules
 			String layerAsString = ((WMSProxyServletRequest)getProxyRequest()).getLayer();
@@ -440,7 +442,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			TreeMap<Integer,ProxyLayer> layerTableToKeep = new TreeMap<Integer, ProxyLayer>();
 
 			//Get the remote server informations
-			Hashtable<String, RemoteServerInfo> remoteServersTable = getRemoteServerHastable();
+			Hashtable<String, RemoteServerInfo> remoteServersTable = getPhysicalServiceHastable();
 
 			ArrayList <String> remoteServerToCall = new ArrayList<String>();
 
@@ -574,7 +576,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	public boolean requestSendingGetMapGET(HttpServletRequest req, HttpServletResponse resp, ArrayList <String> remoteServerToCall, TreeMap<Integer,ProxyLayer> layerTableToKeep, TreeMap<Integer,String> layerStyleMap){
 		try{
 			//Get the remote server informations
-			Hashtable<String, RemoteServerInfo> remoteServersTable = getRemoteServerHastable();
+			Hashtable<String, RemoteServerInfo> remoteServersTable = getPhysicalServiceHastable();
 
 			//Find if request is candidate to direct streaming
 			//getLayerFilter(getRemoteServerInfo(response.getValue().getAlias()).getUrl(),getProxyRequest().getLayers().split(",")[response.getKey()]),
@@ -662,7 +664,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	public boolean requestSendingGetMapPOST(HttpServletRequest req, HttpServletResponse resp, ArrayList <String> remoteServerToCall, TreeMap<Integer,ProxyLayer> layerTableToKeep, TreeMap<Integer,String> layerStyleMap){
 		try{
 			//Get the remote server informations
-			Hashtable<String, RemoteServerInfo> remoteServersTable = getRemoteServerHastable();
+			Hashtable<String, RemoteServerInfo> remoteServersTable = getPhysicalServiceHastable();
 
 			//Find if request is candidate to direct streaming
 			//getLayerFilter(getRemoteServerInfo(response.getValue().getAlias()).getUrl(),getProxyRequest().getLayers().split(",")[response.getKey()]),
@@ -881,7 +883,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			while (iR.hasNext()){
 				Entry<Integer, ProxyRemoteServerResponse> response = iR.next(); 
 				ProxyLayer pLayer = new ProxyLayer(getProxyRequest().getLayers().split(",")[response.getKey()]);
-				BufferedImage image = filterImage(getLayerFilter(getRemoteServerInfo(response.getValue().getAlias()).getUrl(),pLayer.getPrefixedName()),
+				BufferedImage image = filterImage(getLayerFilter(getPhysicalServiceByAlias(response.getValue().getAlias()).getUrl(),pLayer.getPrefixedName()),
 						response.getValue().getPath(),
 						isTransparent, 
 						resp);
@@ -1101,7 +1103,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		}
 
 		//Get the remote server informations
-		Hashtable<String, RemoteServerInfo> remoteServersTable = getRemoteServerHastable();
+		Hashtable<String, RemoteServerInfo> remoteServersTable = getPhysicalServiceHastable();
 
 		//Get the requested layer names
 		TreeMap<Integer,String> layerMap = new TreeMap <Integer,String>();
@@ -1597,6 +1599,39 @@ public class WMSProxyServlet extends ProxyServlet {
 	    }
 	}
 	return null;
+    }
+    
+    /**
+     * Detects if the layer is allowed or not against the rule.
+     * 
+     * @param layer The layer to test
+     * @param url   the url of the remote server.
+     * @return true if the layer is allowed, false if not
+     */
+    public boolean isLayerAllowed(String layer, String url) 
+    {
+		if (layer == null)
+		    return false;
+	
+		Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
+    	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
+    	while(i.hasNext())
+    	{
+    		SdiPhysicalservicePolicy physicalservicePolicy = i.next();
+    		if(physicalservicePolicy.getSdiPhysicalservice().getResourceurl().equals(url))
+    		{
+    			Set<SdiWmslayerPolicy> wmsLayerPolicies = physicalservicePolicy.getSdiWmslayerPolicies();
+	    		Iterator<SdiWmslayerPolicy> it = wmsLayerPolicies.iterator();
+	    		while (it.hasNext())
+	    		{
+	    			SdiWmslayerPolicy layerPolicy = it.next();
+	    			if(layerPolicy.getName().equals(layer) && layerPolicy.isEnabled())
+	    				return true;
+	    		}
+	    		break;
+    		}
+    	}
+    	return false;
     }
 
 }

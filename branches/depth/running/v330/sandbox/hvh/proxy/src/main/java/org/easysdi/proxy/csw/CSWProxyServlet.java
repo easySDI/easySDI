@@ -480,7 +480,7 @@ public class CSWProxyServlet extends ProxyServlet {
 					} else {
 						if ("GetRecords".equals(currentOperation) || "GetRecordById".equals(currentOperation)) {
 
-							if (areAllAttributesAllowedForMetadata(getRemoteServerUrl(0))) {
+							if (areAllAttributesAllowedForMetadata(getPhysicalServiceURLByIndex(0))) {
 								// Keep the metadata as it is
 								tempFile = new File(filePathList.get(0));
 							} else {
@@ -639,7 +639,7 @@ public class CSWProxyServlet extends ProxyServlet {
 			
 			// Send the request to the remote server
 			List<String> filePathList = new Vector<String>();
-			String filePath = sendData("GET", getRemoteServerUrl(0), paramUrl);
+			String filePath = sendData("GET", getPhysicalServiceURLByIndex(0), paramUrl);
 			filePathList.add(filePath);
 			transform(version, currentOperation, req, resp, filePathList);
 			
@@ -706,7 +706,7 @@ public class CSWProxyServlet extends ProxyServlet {
 			// add a tag in the configuration file to set the default
 			// server --> HVH-27.08.2010 : Only one server is supported in the config file fot the moment,
 			// default server tag will be implemented when several servers will be supported
-			RemoteServerInfo rsi = getRemoteServerInfo(0);
+			RemoteServerInfo rsi = getPhysicalServiceByIndex(0);
 			String transactionType = "ogc";
 			if (rsi != null) {
 				transactionType = rsi.getTransaction();
@@ -762,7 +762,7 @@ public class CSWProxyServlet extends ProxyServlet {
 
 				// dump (param.toString());
 				List<String> filePathList = new Vector<String>();
-				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
+				String filePath = sendData("POST", getPhysicalServiceURLByIndex(0), param.toString());
 				filePathList.add(filePath);
 				transform(version, currentOperation, req, resp, filePathList);
 			}
@@ -794,7 +794,7 @@ public class CSWProxyServlet extends ProxyServlet {
 
 			CSWCapabilities200.append("<xsl:stylesheet version=\"1.00\" xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xmlns:ns3=\"http://www.isotc211.org/2005/gmx\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:gts=\"http://www.isotc211.org/2005/gts\"    xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:csw=\"http://www.opengis.net/cat/csw\" xmlns:ows=\"http://www.opengis.net/ows\">");
 
-			List<String> notAllowedAttributeList = getAttributesNotAllowedInMetadata(getRemoteServerUrl(0));
+			List<String> notAllowedAttributeList = getAttributesNotAllowedInMetadata(getPhysicalServiceURLByIndex(0));
 			int nsI = 0;
 			for (int i = 0; i < notAllowedAttributeList.size(); i++) 
 			{

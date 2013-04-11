@@ -203,7 +203,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 		{
 		    Element layerElement = (Element)iLLayer.next();
 		    Element idElement = layerElement.getChild("Identifier", localNsOWS);
-		    if (idElement!= null && !servlet.isLayerAllowed(idElement.getText(),servlet.getRemoteServerInfo(fileEntry.getKey()).getUrl()))
+		    if (idElement!= null && !servlet.isLayerAllowed(idElement.getText(),servlet.getPhysicalServiceByAlias(fileEntry.getKey()).getUrl()))
 		    {
 			Parent parent = layerElement.getParent();
 			parent.removeContent (layerElement);
