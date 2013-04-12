@@ -8,9 +8,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+
+import org.easysdi.proxy.domain.SdiSysAuthenticationlevel;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -24,7 +29,7 @@ public class SdiSysAuthenticationconnector implements java.io.Serializable {
 	private Integer Id;
 	private Integer Ordering;
 	private int State;
-	private SdiSysAuthenticationlevel sdiAuthenticationlevelId;
+	private SdiSysAuthenticationlevel sdiSysAuthenticationlevel;
 	private String Value;
 	private Set<SdiPhysicalservice> sdiPhysicalservicesForServiceauthenticationId = new HashSet<SdiPhysicalservice>(
 			0);
@@ -44,14 +49,14 @@ public class SdiSysAuthenticationconnector implements java.io.Serializable {
 	public SdiSysAuthenticationconnector(
 			Integer Ordering,
 			int State,
-			SdiSysAuthenticationlevel Authenticationlevel_id,
+			SdiSysAuthenticationlevel sdiSysAuthenticationlevel,
 			String Value,
 			Set<SdiPhysicalservice> sdiPhysicalservicesForServiceauthenticationId,
 			Set<SdiPhysicalservice> sdiPhysicalservicesForResourceauthenticationId,
 			Set<SdiSysServiceconAuthenticationcon> sdiSysServiceconAuthenticationcons) {
 		this.Ordering = Ordering;
 		this.State = State;
-		this.sdiAuthenticationlevelId = Authenticationlevel_id;
+		this.sdiSysAuthenticationlevel = sdiSysAuthenticationlevel;
 		this.Value = Value;
 		this.sdiPhysicalservicesForServiceauthenticationId = sdiPhysicalservicesForServiceauthenticationId;
 		this.sdiPhysicalservicesForResourceauthenticationId = sdiPhysicalservicesForResourceauthenticationId;
@@ -87,13 +92,15 @@ public class SdiSysAuthenticationconnector implements java.io.Serializable {
 		this.State = State;
 	}
 
-	@Column(name = "authenticationlevel_id", nullable = false)
-	public SdiSysAuthenticationlevel getAuthenticationlevel() {
-		return this.sdiAuthenticationlevelId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "authenticationlevel_id", nullable = false)
+	public SdiSysAuthenticationlevel getSdiSysAuthenticationlevel() {
+		return this.sdiSysAuthenticationlevel;
 	}
 
-	public void setAuthenticationlevel_id(SdiSysAuthenticationlevel Authenticationlevel_id) {
-		this.sdiAuthenticationlevelId = Authenticationlevel_id;
+	public void setSdiSysAuthenticationlevel(
+			SdiSysAuthenticationlevel sdiSysAuthenticationlevel) {
+		this.sdiSysAuthenticationlevel = sdiSysAuthenticationlevel;
 	}
 
 	@Column(name = "value", nullable = false, length = 150)
