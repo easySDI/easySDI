@@ -48,6 +48,10 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 							<div class="controls"><?php echo $field->input; ?></div>
 						</div>
 					<?php endforeach; ?>
+					<div class="control-group">
+						<div class="control-label"><?php echo $this->form->getLabel('allowedoperation_csw'); ?></div>
+						<div class="controls"><?php echo $this->form->getInput('allowedoperation_csw'); ?></div>
+					</div>
 					<?php foreach($this->form->getFieldset('csw_policy') as $field): 
 					?> 
 						<div class="control-group">
@@ -56,10 +60,6 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 						</div>
 					<?php endforeach; ?>
 					
-					<div class="control-group">
-						<div class="control-label"><?php echo $this->form->getLabel('allowedoperation_csw'); ?></div>
-						<div class="controls"><?php echo $this->form->getInput('allowedoperation_csw'); ?></div>
-					</div>
 					<div class="control-group">
 						<div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
 						<div class="controls"><?php echo $this->form->getInput('id'); ?></div>
@@ -80,7 +80,7 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 				</div>
 				
 				<div class="tab-pane" id="excluded_attribute">
-					<fieldset id="div_excluded_attributes">
+					<div id="div_excluded_attributes">
 						<?php
 							$policy_id = (!empty($this->item->id))?$this->item->id:-1;
 							$db = JFactory::getDbo();
@@ -96,7 +96,7 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 								$path_count++;
 							}
 						?>
-					</fieldset>
+					</div>
 					<button class="btn" data-count="<?php echo $path_count; ?>" id="btn_add_excluded_attribute">
 						<?php echo JText::_('COM_EASYSDI_SERVICE_CSW_BTN_ADD_EXCLUDED_ATTRIBUTE');?>
 					</button>

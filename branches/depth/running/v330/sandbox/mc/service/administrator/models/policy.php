@@ -355,12 +355,6 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			}
 			
 			if ('WMS' == $serviceconnector_name) {
-				require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmsWebservice.php');
-				
-				if (!WmsWebservice::saveAllLayers( $data['virtualservice_id'], $data['id'])) {
-					$this->setError('Failed to save all WMS layers.');
-					return false;
-				}
 			}
 			
 			if (!$isNew) {
@@ -372,12 +366,24 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 						}
 						break;
 					case 'WMS':
+						require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmsWebservice.php');
+						if (!WmsWebservice::saveAllLayers( $data['virtualservice_id'], $data['id'])) {
+							$this->setError('Failed to save all WMS layers.');
+							return false;
+						}
+						
 						if (!$this->saveWMSInheritance($data)) {
 							$this->setError('Failed to save inheritance.');
 							return false;
 						}
 						break;
 					case 'WFS':
+						require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WfsWebservice.php');
+						if (!WfsWebservice::saveAllFeatureTypes( $data['virtualservice_id'], $data['id'])) {
+							$this->setError('Failed to save all WFS layers.');
+							return false;
+						}
+						
 						if (!$this->saveWFSInheritance($data)) {
 							$this->setError('Failed to save inheritance.');
 							return false;
@@ -1123,17 +1129,16 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		
 		$arr_ex = $_POST['excluded_attribute'];
 		foreach ($arr_ex as $value) {
+			$db->setQuery('
+				INSERT INTO #__sdi_excludedattribute (policy_id, path)
+				VALUES (' . $data['id'] . ',\'' . $value . '\');
+			');
 			try {
-				$db->setQuery('
-					INSERT INTO #__sdi_excludedattribute (policy_id, path)
-					VALUES (' . $data['id'] . ',\'' . $value . '\');
-				');
-				if (!$db->query()) {
-					throw new Exception($db->getErrorMsg());
-				}
+				$db->execute();
 			}
-			catch (Exception $e) {
-				$this->setError($e->getMessage());
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
 				return false;
 			}
 		}

@@ -63,6 +63,28 @@ class WfsWebservice {
 			<br />
 			<label for="remotegeographicfilter">' . JText::_('COM_EASYSDI_SERVICE_WFS_LAYER_REMOTE_FILTER') . '</label>
 			<textarea name="remotegeographicfilter" rows="10" class="span12">' . $layerObj->remoteFilterGML . '</textarea>
+			<hr />
+			<div id="div_included_attributes">
+		';
+		
+		$db->setQuery('
+			SELECT ia.name
+			FROM #__sdi_includedattribute ia
+			JOIN #__sdi_featuretype_policy ftp
+			ON ftp.id = ia.featuretypepolicy_id
+			WHERE ftp.name = \'' . $layerID . '\';
+		');
+		$db->execute();
+		$items = $db->loadColumn();
+		$item_count = 0;
+		foreach ($items as $item) {
+			$html.= '<textarea name="included_attribute[' . $item_count . ']" rows="5" class="span12">' . $item . '</textarea><br /><br />';
+		}
+		
+		$html .= '</div>
+			<button class="btn" data-count="' . $item_count . '" id="btn_add_included_attribute" onClick="onAddIncludedAttribute();return false;">
+				' . JText::_('COM_EASYSDI_SERVICE_WFS_BTN_ADD_INCLUDED_ATTRIBUTE') . '
+			</button>
 			<input type="hidden" name="psID" value="' . $physicalServiceID . '"/>
 			<input type="hidden" name="policyID" value="' . $policyID . '"/>
 			<input type="hidden" name="layerID" value="' . $layerID . '"/>
@@ -266,7 +288,135 @@ class WfsWebservice {
 			return false;
 		}
 		
+		//save included attributes
+		$db->setQuery('DELETE FROM #__sdi_includedattribute WHERE featuretypepolicy_id = ' . $featuretypepolicy_id);
+		$db->query();
+		
+		$arr_ex = $raw_GET['included_attribute'];
+		foreach ($arr_ex as $value) {
+			$db->setQuery('
+				INSERT INTO #__sdi_includedattribute (featuretypepolicy_id, name)
+				VALUES (' . $featuretypepolicy_id . ',\'' . $value . '\');
+			');
+			try {
+				$db->execute();
+			}
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
+		}
+		
 		return true;
 	}
 	
+	/*
+	 * Save all layers of a given virtual service
+	 * 
+	 * @param Int virtual service ID
+	 * @param Int policy ID
+	*/
+	public static function saveAllFeatureTypes($virtualServiceID, $policyID) {
+		$db = JFactory::getDbo();
+		$db->setQuery('
+			SELECT ps.id, ps.resourceurl AS url, psp.id AS psp_id
+			FROM #__sdi_virtualservice vs
+			JOIN #__sdi_virtual_physical vp
+			ON vs.id = vp.virtualservice_id
+			JOIN #__sdi_physicalservice ps
+			ON ps.id = vp.physicalservice_id
+			JOIN #__sdi_physicalservice_policy psp
+			ON ps.id = psp.physicalservice_id
+			WHERE vs.id = ' . $virtualServiceID . '
+			AND psp.policy_id = ' . $policyID . ';
+		');
+		
+		try {
+			$db->execute();
+			$resultset = $db->loadObjectList();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
+		foreach ($resultset as $result) {
+			print_r($result);
+			$physicalServiceID = $result->id;
+			$wfsObj = new WfsPhysicalService($result->id, $result->url);
+			$wfsObj->getCapabilities();
+			$wfsObj->populate();
+			$layerList = $wfsObj->getLayerList();
+			
+			foreach ($layerList as $layer) {
+				//we check if the layer already exists
+				$db->setQuery('
+					SELECT ftp.id
+					FROM #__sdi_featuretype_policy ftp
+					JOIN #__sdi_physicalservice_policy psp
+					ON psp.id = ftp.physicalservicepolicy_id
+					WHERE psp.physicalservice_id = ' . $physicalServiceID . '
+					AND psp.policy_id = ' . $policyID . '
+					AND ftp.name = \'' . $layer->name . '\';
+				');
+				
+				try {
+					$db->execute();
+					$layer_exists = (0 == $db->getNumRows())?false:true;
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
+				
+				if ($layer_exists) {
+					//if the layer already exists, we do nothing and we skip to the next layer
+					continue;
+				}
+				else {
+					//we retrieve the physicalservice_policy id to link the layer policy with
+					$db->setQuery('
+						SELECT id
+						FROM #__sdi_physicalservice_policy
+						WHERE physicalservice_id = ' . $physicalServiceID . '
+						AND policy_id = ' . $policyID . ';
+					');
+					
+					try {
+						$db->execute();
+						$physicalservice_policy_id = $db->loadResult();
+					}
+					catch (JDatabaseException $e) {
+						$je = new JException($e->getMessage());
+						$this->setError($je);
+						return false;
+					}
+					
+					//we save the layer policy
+					$query = $db->getQuery(true);
+					$query->insert('#__sdi_featuretype_policy')->columns('
+						name, description, physicalservicepolicy_id
+					')->values('
+						\'' . $layer->name . '\', \'' . addslashes($layer->description) . '\', \'' . $physicalservice_policy_id . '\'
+					');
+					
+					$db->setQuery($query);
+					
+					try {
+						$db->execute();
+					}
+					catch (JDatabaseException $e) {
+						$je = new JException($e->getMessage());
+						$this->setError($je);
+						return false;
+					}
+				}
+				echo '<hr />';
+			}
+		}
+		return true;
+	}
 }
