@@ -343,7 +343,6 @@ public abstract class ProxyServlet extends HttpServlet {
      * Get a SdiPhysicalservice by his index in the list
      * @param i
      * @return
-     * @deprecated
      */
     protected SdiPhysicalservice getPhysicalServiceByIndex(int i) 
     {

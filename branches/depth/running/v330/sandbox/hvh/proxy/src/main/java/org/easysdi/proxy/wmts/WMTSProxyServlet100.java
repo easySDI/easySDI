@@ -14,8 +14,6 @@ public class WMTSProxyServlet100 extends WMTSProxyServlet{
 	
 	 public WMTSProxyServlet100(ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy) {
 		super(proxyRequest, virtualService, policy);
-	    ServiceOperations =  Arrays.asList( "GetCapabilities", "GetTile", "GetFeatureInfo" );
-		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetTile", "GetFeatureInfo");
 		docBuilder = new WMTSProxyResponseBuilder100(this);
 		owsExceptionManager = new OWS200ExceptionManager();
 		owsExceptionReport = new WMTSExceptionReport100();

@@ -64,6 +64,11 @@ public abstract class ProxyServletRequest {
 	protected String service;
 	
 	/**
+	 * 
+	 */
+	protected SdiSysServicecompliance serviceCompliance;
+	
+	/**
 	 * @return the request
 	 */
 	public HttpServletRequest getRequest() {
@@ -146,6 +151,13 @@ public abstract class ProxyServletRequest {
 		}
 	}
 
+	/**
+	 * Check if the current operation is supported by the Proxy.
+	 * All the OGC operations are not yet implemented.
+	 * Implemented operations for each service version are stored in the Joomla database by the component EasySDI CORE.
+	 * @param sdiSysServiceCompliance
+	 * @return
+	 */
 	public boolean isOperationSupported (SdiSysServicecompliance sdiSysServiceCompliance){
 		Set<SdiSysOperationcompliance> operationcompliances =  sdiSysServiceCompliance.getSdiSysOperationcompliances();
 		if(operationcompliances == null)
@@ -163,6 +175,11 @@ public abstract class ProxyServletRequest {
 		return false;
 	}
 	
+	/**
+	 * Check if the current operation is authorized by the security restrictions of the current loaded policy.
+	 * @param policy
+	 * @return
+	 */
 	public boolean isOperationAllowedByPolicy (SdiPolicy policy){
 		if(policy.isAnyoperation())
 			return true;
@@ -179,5 +196,20 @@ public abstract class ProxyServletRequest {
 		}
 			
 		return false;
+	}
+
+	/**
+	 * @return the serviceCompliance
+	 */
+	public SdiSysServicecompliance getServiceCompliance() {
+		return serviceCompliance;
+	}
+
+	/**
+	 * @param serviceCompliance the serviceCompliance to set
+	 */
+	public boolean setServiceCompliance(SdiSysServicecompliance serviceCompliance) {
+		this.serviceCompliance = serviceCompliance;
+		return isOperationSupported(this.serviceCompliance);
 	}
 }

@@ -17,7 +17,6 @@
 package org.easysdi.proxy.wms;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

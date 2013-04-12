@@ -17,10 +17,12 @@
 package org.easysdi.proxy.wmts.thread;
 
 import java.io.IOException;
+
 import javax.servlet.http.HttpServletResponse;
+
+import org.easysdi.proxy.domain.SdiPhysicalservice;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.wmts.WMTSProxyServlet;
-import org.easysdi.xml.documents.RemoteServerInfo;
 
 /**
  * @author DEPTH SA
@@ -29,13 +31,13 @@ import org.easysdi.xml.documents.RemoteServerInfo;
 public class WMTSProxyServerGetCapabilitiesThread extends Thread {
 
 	String paramUrl;
-	RemoteServerInfo remoteServer;
+	SdiPhysicalservice physicalService;
 	HttpServletResponse resp;
 	WMTSProxyServlet servlet;
 
-	public WMTSProxyServerGetCapabilitiesThread(WMTSProxyServlet servlet,String pParamUrl, RemoteServerInfo pRemoteServer, HttpServletResponse response) {
+	public WMTSProxyServerGetCapabilitiesThread(WMTSProxyServlet servlet,String pParamUrl, SdiPhysicalservice physicalService, HttpServletResponse response) {
 		paramUrl = pParamUrl;
-		remoteServer = pRemoteServer;
+		this.physicalService = physicalService;
 		resp = response;
 		this.servlet = servlet;
 	}
@@ -43,20 +45,19 @@ public class WMTSProxyServerGetCapabilitiesThread extends Thread {
 	public void run() {
 		try {
 			
-			servlet.logger.trace( "Thread Server: " + remoteServer.getUrl() + " work begin");
-			String filePath = servlet.sendData(servlet.getProxyRequest().getRequest().getMethod(), remoteServer.getUrl(), paramUrl);
+			servlet.logger.trace( "Thread Server: " + physicalService.getResourceurl() + " work begin");
+			String filePath = servlet.sendData(servlet.getProxyRequest().getRequest().getMethod(), physicalService.getResourceurl(), paramUrl);
 			synchronized (servlet.wmtsGetCapabilitiesResponseFilePathMap) {
-				servlet.logger.trace("WMTSProxyServerGetCapabilitiesThread save response from thread server " + remoteServer.getUrl());
-				servlet.wmtsGetCapabilitiesResponseFilePathMap.put(remoteServer.getAlias(), filePath);
+				servlet.logger.trace("WMTSProxyServerGetCapabilitiesThread save response from thread server " + physicalService.getResourceurl());
+				servlet.wmtsGetCapabilitiesResponseFilePathMap.put(physicalService.getAlias(), filePath);
 			}
-			servlet.logger.trace( "Thread Server: " + remoteServer.getUrl() + " work finished");
+			servlet.logger.trace( "Thread Server: " + physicalService.getResourceurl() + " work finished");
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			servlet.logger.error( "Server Thread " + remoteServer.getUrl()+ " :" + e.getMessage());
-			StringBuffer out;
+			servlet.logger.error( "Server Thread " + physicalService.getResourceurl()+ " :" + e.getMessage());
 			try {
 				servlet.owsExceptionReport.sendExceptionReport(servlet.request, servlet.response, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY, OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			} catch (IOException e1) {

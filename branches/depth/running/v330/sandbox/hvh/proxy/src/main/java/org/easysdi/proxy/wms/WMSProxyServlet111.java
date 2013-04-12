@@ -41,7 +41,6 @@ public class WMSProxyServlet111 extends WMSProxyServlet {
 	 */
 	public WMSProxyServlet111(ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy) {
 		super(proxyRequest, virtualService, policy);
-		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetMap", "GetFeatureInfo", "GetLegendGraphic");
 		docBuilder = new WMSProxyResponseBuilder111(this);
 		owsExceptionReport = new WMSExceptionReport111 ();
 	}

@@ -26,33 +26,26 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
-import java.util.Map.Entry;
 
-import org.easysdi.proxy.jdom.filter.AttributeXlinkFilter;
-import org.easysdi.proxy.jdom.filter.ElementExceptionFilter;
-import org.easysdi.proxy.jdom.filter.ElementFormatFilter;
-import org.easysdi.proxy.jdom.filter.ElementLayerFilter;
-import org.easysdi.proxy.jdom.filter.ElementServiceExceptionFilter;
 import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.core.ProxyResponseBuilder;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.domain.SdiPhysicalservice;
 import org.easysdi.proxy.domain.SdiPhysicalservicePolicy;
+import org.easysdi.proxy.domain.SdiSysOperationcompliance;
 import org.easysdi.proxy.domain.SdiVirtualmetadata;
-import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.domain.SdiWmsSpatialpolicy;
 import org.easysdi.proxy.domain.SdiWmslayerPolicy;
-import org.easysdi.proxy.policy.BoundingBox;
-import org.easysdi.proxy.policy.Layer;
-import org.easysdi.proxy.policy.Server;
-import org.easysdi.xml.documents.Config;
-import org.easysdi.xml.documents.RemoteServerInfo;
-import org.easysdi.xml.documents.ServiceContactAdressInfo;
-import org.easysdi.xml.documents.ServiceContactInfo;
+import org.easysdi.proxy.jdom.filter.AttributeXlinkFilter;
+import org.easysdi.proxy.jdom.filter.ElementExceptionFilter;
+import org.easysdi.proxy.jdom.filter.ElementFormatFilter;
+import org.easysdi.proxy.jdom.filter.ElementLayerFilter;
+import org.easysdi.proxy.jdom.filter.ElementServiceExceptionFilter;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.jdom.Document;
@@ -96,19 +89,23 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	    	//Retrieve allowed and denied operations from the policy
 			List<String> permitedOperations = new Vector<String>();
 			List<String> deniedOperations = new Vector<String>();
-			for (int i = 0; i < ProxyServlet.ServiceOperations.size(); i++) 
-			{
-				if (ProxyServlet.ServiceSupportedOperations.contains(ProxyServlet.ServiceOperations.get(i)) 
-						&& servlet.isOperationAllowed(ProxyServlet.ServiceOperations.get(i))) 
-				{
-					permitedOperations.add(ProxyServlet.ServiceOperations.get(i));
-					servlet.logger.trace(ProxyServlet.ServiceOperations.get(i) + " is permitted");
-				} else 
-				{
-					deniedOperations.add(ProxyServlet.ServiceOperations.get(i));
-					servlet.logger.trace(ProxyServlet.ServiceOperations.get(i) + " is denied");
-				}
-			}
+			Set<SdiSysOperationcompliance> operationCompliances = servlet.getProxyRequest().getServiceCompliance().getSdiSysOperationcompliances();
+		   Iterator<SdiSysOperationcompliance> i = operationCompliances.iterator();
+		   while (i.hasNext())
+		   {
+			   SdiSysOperationcompliance compliance = i.next();
+			   if(compliance.getSdiSysServiceoperation().getState() == 1 && compliance.getState() == 1 && compliance.isImplemented() && servlet.isOperationAllowed(compliance.getSdiSysServiceoperation().getValue()))
+			   {
+				   permitedOperations.add(compliance.getSdiSysServiceoperation().getValue());
+				   servlet.logger.trace(compliance.getSdiSysServiceoperation().getValue() + " is permitted");
+			   }
+			   else
+			   {
+				   deniedOperations.add(compliance.getSdiSysServiceoperation().getValue());
+				   servlet.logger.trace(compliance.getSdiSysServiceoperation().getValue() + " is denied");
+				   
+			   }
+		   }
 				
 			Document  docParent = sxb.build(new File(filePath));
 	    	Element racine = docParent.getRootElement();
@@ -377,7 +374,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 			SAXBuilder sxb = new SAXBuilder();
 			Document document = sxb.build(new File(filePath));
 			
-			if(!servlet.getVirtualService().isReflectedmetadata())
+			if(servlet.getVirtualService().isReflectedmetadata())
 			{
 				//Service Metadata doesn't have to be overwrite 
 				//Keep the service Metadata
@@ -430,7 +427,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 				onlineResource.setAttribute("href", href, nsXLINK);
 				newService.addContent(onlineResource);
 				
-				if(virtualMetadata.isInheritedcontact())
+				if(!virtualMetadata.isInheritedcontact())
 				{
 					Element newContactInformation = new Element("ContactInformation");
 					Element newContactPersonPrimary = new Element("ContactPersonPrimary");
@@ -465,17 +462,17 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 						newContactAddress.addContent((new Element("City")).setText(virtualMetadata.getContactlocality()));
 						hasContactAddress = true;
 					}
-					//TODO add province
-//						if(virtualMetadata.getContactstate() != null && virtualMetadata.getContactstate().length() != 0){
-//							newContactAddress.addContent((new Element("StateOrProvince")).setText(virtualMetadata.getContactstate()));
-//							hasContactAddress = true;
-//						}
+					
+					if(virtualMetadata.getContactstate() != null && virtualMetadata.getContactstate().length() != 0){
+						newContactAddress.addContent((new Element("StateOrProvince")).setText(virtualMetadata.getContactstate()));
+						hasContactAddress = true;
+					}
 					if(virtualMetadata.getContactpostalcode() != null && virtualMetadata.getContactpostalcode().length() != 0){
 						newContactAddress.addContent((new Element("PostCode")).setText(virtualMetadata.getContactpostalcode()));
 						hasContactAddress = true;
 					}
-					if(virtualMetadata.getContactstate() != null && virtualMetadata.getContactstate().length() != 0){
-						newContactAddress.addContent((new Element("Country")).setText(virtualMetadata.getContactstate()));
+					if(virtualMetadata.getSdiSysCountry() != null && virtualMetadata.getSdiSysCountry().getName() != null){
+						newContactAddress.addContent((new Element("Country")).setText(virtualMetadata.getSdiSysCountry().getName()));
 						hasContactAddress = true;
 					}
 					
@@ -493,6 +490,8 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 					
 					newService.addContent(newContactInformation);
 				}
+				else if (!virtualMetadata.isInheritedcontact())
+					newService.addContent((new Element("ContactInformation")).setContent(oldService.getChild("ContactInformation")));
 				
 				if(!virtualMetadata.isInheritedfee() && virtualMetadata.getFee() != null && virtualMetadata.getFee().length() != 0)
 					newService.addContent((new Element("Fees")).setText(virtualMetadata.getFee()));

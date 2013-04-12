@@ -27,11 +27,20 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
-import org.easysdi.proxy.core.ProxyServlet;
-import org.easysdi.proxy.wmts.*;
-import org.easysdi.proxy.jdom.filter.*;
-import org.easysdi.xml.documents.*;
+
+import org.easysdi.proxy.domain.SdiPhysicalservice;
+import org.easysdi.proxy.domain.SdiSysOperationcompliance;
+import org.easysdi.proxy.domain.SdiVirtualmetadata;
+import org.easysdi.proxy.jdom.filter.AttributeXlinkFilter;
+import org.easysdi.proxy.jdom.filter.ElementExceptionFilter;
+import org.easysdi.proxy.jdom.filter.ElementExceptionTextFilter;
+import org.easysdi.proxy.jdom.filter.ElementLayerFilter;
+import org.easysdi.proxy.jdom.filter.ElementOperationFilter;
+import org.easysdi.proxy.jdom.filter.ElementTileMatrixSetFilter;
+import org.easysdi.proxy.wmts.WMTSProxyResponseBuilder;
+import org.easysdi.proxy.wmts.WMTSProxyServlet;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -59,102 +68,107 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public Boolean CapabilitiesOperationsFiltering (String filePath, String href ){
-	servlet.logger.trace("transform - Start - Capabilities operations filtering");
-	try{
-	    SAXBuilder sxb = new SAXBuilder();
-	    //Retrieve allowed and denied operations from the policy
-	    List<String> permitedOperations = new Vector<String>();
-	    List<String> deniedOperations = new Vector<String>();
-	    for (int i = 0; i < ProxyServlet.ServiceOperations.size(); i++) 
-	    {
-		if (ProxyServlet.ServiceSupportedOperations.contains(ProxyServlet.ServiceOperations.get(i)) 
-			&& servlet.isOperationAllowed(ProxyServlet.ServiceOperations.get(i))) 
-		{
-		    permitedOperations.add(ProxyServlet.ServiceOperations.get(i));
-		    servlet.logger.trace(ProxyServlet.ServiceOperations.get(i) + " is permitted");
-		} else 
-		{
-		    deniedOperations.add(ProxyServlet.ServiceOperations.get(i));
-		    servlet.logger.trace(ProxyServlet.ServiceOperations.get(i) + " is denied");
-		}
-	    }
-
-	    Document  docParent = sxb.build(new File(filePath));
-	    Element racine = docParent.getRootElement();
-
-	    //get the namespaces
-	    nsWMTS = racine.getNamespace();
-	    List lns = racine.getAdditionalNamespaces();
-	    Iterator<Namespace> ilns = lns.iterator();
-	    while (ilns.hasNext())
-	    {
-		Namespace ns = (Namespace)ilns.next();
-		if(ns.getPrefix().equalsIgnoreCase("ows"))
-		    nsOWS = ns;
-		if(ns.getPrefix().equalsIgnoreCase("xlink"))
-		    nsXLINK = ns;
-	    }
-
-
-	    //We can not modify Elements while we loop over them with an iterator.
-	    //We have to use a separate List storing the Elements we want to modify.
-
-	    //Operation filtering
-	    Filter operationFilter = new ElementOperationFilter();
-	    Filter xlinkFilter = new AttributeXlinkFilter();
-	    List<Element> operationList = new ArrayList<Element>();	    	  
-	    Iterator iOperation= racine.getDescendants(operationFilter);
-	    while(iOperation.hasNext())
-	    {
-		Element courant = (Element)iOperation.next();
-		operationList.add(courant);
-	    }
-	    //Modification of the selected Elements
-	    Iterator iLOperation = operationList.iterator();
-	    while (iLOperation.hasNext())
-	    {
-		Element child = (Element)iLOperation.next();
-		if (deniedOperations.contains(child.getAttribute("name").getValue()))
-		{
-		    Parent parent = child.getParent();
-		    parent.removeContent (child);
-		}
-		else
-		{
-		    Iterator iXlink = child.getDescendants(xlinkFilter);
-		    List<Element> xlinkList = new ArrayList<Element>();	  
-		    while (iXlink.hasNext())
+		servlet.logger.trace("transform - Start - Capabilities operations filtering");
+		try{
+		    SAXBuilder sxb = new SAXBuilder();
+		    //Retrieve allowed and denied operations from the policy
+		    List<String> permitedOperations = new Vector<String>();
+		    List<String> deniedOperations = new Vector<String>();
+		    
+		   Set<SdiSysOperationcompliance> operationCompliances = servlet.getProxyRequest().getServiceCompliance().getSdiSysOperationcompliances();
+		   Iterator<SdiSysOperationcompliance> i = operationCompliances.iterator();
+		   while (i.hasNext())
+		   {
+			   SdiSysOperationcompliance compliance = i.next();
+			   if(compliance.getSdiSysServiceoperation().getState() == 1 && compliance.getState() == 1 && compliance.isImplemented() && servlet.isOperationAllowed(compliance.getSdiSysServiceoperation().getValue()))
+			   {
+				   permitedOperations.add(compliance.getSdiSysServiceoperation().getValue());
+				   servlet.logger.trace(compliance.getSdiSysServiceoperation().getValue() + " is permitted");
+			   }
+			   else
+			   {
+				   deniedOperations.add(compliance.getSdiSysServiceoperation().getValue());
+				   servlet.logger.trace(compliance.getSdiSysServiceoperation().getValue() + " is denied");
+				   
+			   }
+		   }
+		
+		    Document  docParent = sxb.build(new File(filePath));
+		    Element racine = docParent.getRootElement();
+	
+		    //get the namespaces
+		    nsWMTS = racine.getNamespace();
+		    List lns = racine.getAdditionalNamespaces();
+		    Iterator<Namespace> ilns = lns.iterator();
+		    while (ilns.hasNext())
 		    {
-			Element courant = (Element)iXlink.next();
-			xlinkList.add(courant);
+			Namespace ns = (Namespace)ilns.next();
+			if(ns.getPrefix().equalsIgnoreCase("ows"))
+			    nsOWS = ns;
+			if(ns.getPrefix().equalsIgnoreCase("xlink"))
+			    nsXLINK = ns;
 		    }
-		    Iterator ilXlink = xlinkList.iterator();
-		    while(ilXlink.hasNext())
+	
+	
+		    //We can not modify Elements while we loop over them with an iterator.
+		    //We have to use a separate List storing the Elements we want to modify.
+	
+		    //Operation filtering
+		    Filter operationFilter = new ElementOperationFilter();
+		    Filter xlinkFilter = new AttributeXlinkFilter();
+		    List<Element> operationList = new ArrayList<Element>();	    	  
+		    Iterator iOperation= racine.getDescendants(operationFilter);
+		    while(iOperation.hasNext())
 		    {
-			Element toUpdate = (Element)ilXlink.next();
-			String att = toUpdate.getAttribute("href", nsXLINK).getValue();
-			if(att.contains("?"))
+			Element courant = (Element)iOperation.next();
+			operationList.add(courant);
+		    }
+		    //Modification of the selected Elements
+		    Iterator iLOperation = operationList.iterator();
+		    while (iLOperation.hasNext())
+		    {
+			Element child = (Element)iLOperation.next();
+			if (deniedOperations.contains(child.getAttribute("name").getValue()))
 			{
-			    att = att.replace(att.substring(0, att.indexOf("?")), href);
+			    Parent parent = child.getParent();
+			    parent.removeContent (child);
 			}
 			else
 			{
-			    att = href;
+			    Iterator iXlink = child.getDescendants(xlinkFilter);
+			    List<Element> xlinkList = new ArrayList<Element>();	  
+			    while (iXlink.hasNext())
+			    {
+				Element courant = (Element)iXlink.next();
+				xlinkList.add(courant);
+			    }
+			    Iterator ilXlink = xlinkList.iterator();
+			    while(ilXlink.hasNext())
+			    {
+				Element toUpdate = (Element)ilXlink.next();
+				String att = toUpdate.getAttribute("href", nsXLINK).getValue();
+				if(att.contains("?"))
+				{
+				    att = att.replace(att.substring(0, att.indexOf("?")), href);
+				}
+				else
+				{
+				    att = href;
+				}
+				toUpdate.setAttribute("href", att, nsXLINK);
+			    }
 			}
-			toUpdate.setAttribute("href", att, nsXLINK);
 		    }
+	
+		    XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+		    sortie.output(docParent, new FileOutputStream(filePath));
+		    servlet.logger.trace("transform - End - Capabilities operations filtering");
+		    return true;
 		}
-	    }
-
-	    XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-	    sortie.output(docParent, new FileOutputStream(filePath));
-	    servlet.logger.trace("transform - End - Capabilities operations filtering");
-	    return true;
-	}
-	catch (Exception ex){
-	    setLastException(ex);
-	    return false;
-	}
+		catch (Exception ex){
+		    setLastException(ex);
+		    return false;
+		}
     }
 
     /**
@@ -203,7 +217,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 		{
 		    Element layerElement = (Element)iLLayer.next();
 		    Element idElement = layerElement.getChild("Identifier", localNsOWS);
-		    if (idElement!= null && !servlet.isLayerAllowed(idElement.getText(),servlet.getPhysicalServiceByAlias(fileEntry.getKey()).getUrl()))
+		    if (idElement!= null && !((WMTSProxyServlet)servlet).isLayerAllowed(idElement.getText(),servlet.getPhysicalServiceByAlias(fileEntry.getKey()).getResourceurl()))
 		    {
 			Parent parent = layerElement.getParent();
 			parent.removeContent (layerElement);
@@ -275,7 +289,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 
 	try {
 	    SAXBuilder sxb = new SAXBuilder();
-	    RemoteServerInfo master = servlet.getPhysicalServiceMaster();
+	    SdiPhysicalservice master = servlet.getPhysicalServiceMaster();
 	    String fileMasterPath = filePathList.get(master.getAlias());
 	    Document documentMaster = sxb.build(new File(fileMasterPath));
 	    Filter layerFilter = new ElementLayerFilter();
@@ -325,136 +339,148 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 	servlet.logger.trace("transform - Start - Capabilities metadata writing");
 	try
 	{
-	    Config config = servlet.getConfiguration();
-	    OWSServiceMetadata serviceMetadata = config.getOwsServiceMetadata();
-
 	    SAXBuilder sxb = new SAXBuilder();
 	    Document document = sxb.build(new File(filePath));
 	    Element racine = document.getRootElement();
+	    
+	    //Service metadata are inherited from the remote physical service
+	    if(servlet.getVirtualService().isReflectedmetadata())
+	    {
+	    	//Service Metadata doesn't have to be overwrite 
+			//Keep the service Metadata
+			//Overwrite OnLineResource
+	    	Element serviceMetadataUrl = racine.getChild("ServiceMetadataURL", nsWMTS);
+		    if(serviceMetadataUrl != null)
+		    {
+		    	String metadataUrl = serviceMetadataUrl.getAttributeValue("href", nsXLINK);
+				if(metadataUrl.contains("?"))
+				{
+				    metadataUrl = metadataUrl.replace(metadataUrl.substring(0, metadataUrl.indexOf("?")), href);
+				}
+				else if (metadataUrl.contains("/1.0.0/WMTSCapabilities.xml"))
+				{
+				    metadataUrl = metadataUrl.replace(metadataUrl.substring(0, metadataUrl.indexOf("/1.0.0")), href);
+				}
+				serviceMetadataUrl.setAttribute("href", metadataUrl, nsXLINK);
+		    }
+			
+	    	XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+		    sortie.output(document, new FileOutputStream(filePath));
+
+	    	return true;
+	    }	
+	    
+	    SdiVirtualmetadata sdiVirtualMetadata = servlet.getVirtualService().getSdiVirtualmetadatas().iterator().next();
+	    	    
+	    Element oldServiceIdentification = (Element)racine.getChild("ServiceIdentification", nsOWS).clone();
+	    Element oldServiceProvider = (Element)racine.getChild("ServiceProvider", nsOWS).clone();
 	    racine.removeContent(racine.getChild("ServiceIdentification", nsOWS));
 	    racine.removeContent(racine.getChild("ServiceProvider", nsOWS));
 
-	    if(serviceMetadata == null || serviceMetadata.isEmpty())
-	    {
-		XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-		sortie.output(document, new FileOutputStream(filePath));
-		return true;
+	    //Service Identification
+	    Element newServiceIdentification = new Element("ServiceIdentification", nsOWS);
+	    
+	    if(!sdiVirtualMetadata.isInheritedtitle() && sdiVirtualMetadata.getTitle() != null && sdiVirtualMetadata.getTitle().length() != 0)
+	    	newServiceIdentification.addContent((new Element("Title", nsOWS)).setText(sdiVirtualMetadata.getTitle()));
+	    else if (sdiVirtualMetadata.isInheritedtitle())
+	    	newServiceIdentification.addContent((new Element("Title", nsOWS)).setText(oldServiceIdentification.getChildText("Title",nsOWS)));
+	    
+	    if(!sdiVirtualMetadata.isInheritedsummary() && sdiVirtualMetadata.getSummary() != null && sdiVirtualMetadata.getSummary().length() != 0)
+	    	newServiceIdentification.addContent((new Element("Abstract", nsOWS)).setText(sdiVirtualMetadata.getSummary()));
+	    else if (sdiVirtualMetadata.isInheritedsummary())
+	    	newServiceIdentification.addContent((new Element("Abstract", nsOWS)).setText(oldServiceIdentification.getChildText("Abstract",nsOWS)));
+	    
+	    if(!sdiVirtualMetadata.isInheritedkeyword() && sdiVirtualMetadata.getKeyword() != null && sdiVirtualMetadata.getKeyword().length() != 0){
+	    	Element keywords = new Element("Keywords", nsOWS);
+			String[] words = sdiVirtualMetadata.getKeyword().split(",");
+			for(String word: words){
+				keywords.addContent((new Element("Keyword", nsOWS)).setText(word));
+			}
+			newServiceIdentification.addContent(keywords);
 	    }
-
-	    if(serviceMetadata.getIdentification() != null && !serviceMetadata.getIdentification().isEmpty())
-	    {
-		Element newServiceIdentification = new Element("ServiceIdentification", nsOWS);
-		if(serviceMetadata.getIdentification().getTitle() != null && serviceMetadata.getIdentification().getTitle().length() != 0)
-		    newServiceIdentification.addContent((new Element("Title", nsOWS)).setText(serviceMetadata.getIdentification().getTitle()));
-		if(serviceMetadata.getIdentification().getAbst() != null && serviceMetadata.getIdentification().getAbst().length() != 0)
-		    newServiceIdentification.addContent((new Element("Abstract", nsOWS)).setText(serviceMetadata.getIdentification().getAbst()));
-		if(serviceMetadata.getIdentification().getKeywords() != null && serviceMetadata.getIdentification().getKeywords().size() != 0)
-		{
-		    Element keywords = new Element("Keywords", nsOWS);
-		    Iterator<String> iKeywords = serviceMetadata.getIdentification().getKeywords().iterator();
-		    while (iKeywords.hasNext())
-		    {
-			keywords.addContent((new Element("Keyword", nsOWS)).setText(iKeywords.next()));
-		    }
-		    newServiceIdentification.addContent(keywords);
-		}
-		newServiceIdentification.addContent((new Element("ServiceType", nsOWS)).setText("OGC WMTS"));
+	    else if (sdiVirtualMetadata.isInheritedkeyword())
+	    	newServiceIdentification.addContent((new Element("Keywords", nsOWS)).setContent(oldServiceIdentification.getChild("Keywords", nsOWS)));
+	    
+	    newServiceIdentification.addContent((new Element("ServiceType", nsOWS)).setText("OGC WMTS"));
 		newServiceIdentification.addContent((new Element("ServiceTypeVersion", nsOWS)).setText("1.0.0"));
-		if(serviceMetadata.getIdentification().getFees() != null && serviceMetadata.getIdentification().getFees().length() != 0)
-		    newServiceIdentification.addContent((new Element("Fees", nsOWS)).setText(serviceMetadata.getIdentification().getFees()));
-		if(serviceMetadata.getIdentification().getAccessConstraints() != null && serviceMetadata.getIdentification().getAccessConstraints().length() != 0)
-		    newServiceIdentification.addContent((new Element("AccessConstraints", nsOWS)).setText(serviceMetadata.getIdentification().getAccessConstraints()));
-
+		
+		if(!sdiVirtualMetadata.isInheritedfee() && sdiVirtualMetadata.getFee() != null && sdiVirtualMetadata.getFee().length() != 0)
+			newServiceIdentification.addContent((new Element("Fees", nsOWS)).setText(sdiVirtualMetadata.getFee()));
+		else if (sdiVirtualMetadata.isInheritedfee())
+			newServiceIdentification.addContent((new Element("Fees", nsOWS)).setText(oldServiceIdentification.getChildText("Fees", nsOWS)));
+		
+		if(!sdiVirtualMetadata.isInheritedaccessconstraint() && sdiVirtualMetadata.getAccessconstraint() != null && sdiVirtualMetadata.getAccessconstraint().length() != 0)
+			newServiceIdentification.addContent((new Element("AccessConstraints", nsOWS)).setText(sdiVirtualMetadata.getAccessconstraint()));
+		else if (sdiVirtualMetadata.isInheritedaccessconstraint())
+			newServiceIdentification.addContent((new Element("AccessConstraints", nsOWS)).setText(oldServiceIdentification.getChildText("AccessConstraints", nsOWS)));
+		
 		racine.addContent( 0, newServiceIdentification);
-	    }
-	    OWSServiceProvider serviceProvider = serviceMetadata.getProvider();
-	    if(serviceProvider != null && !serviceProvider.isEmpty())
-	    {	
-		Element newServiceProvider = new Element("ServiceProvider", nsOWS);
-		if(serviceProvider.getName() != null )
-		    newServiceProvider.addContent((new Element("ProviderName", nsOWS)).setText(serviceProvider.getName()));
-		if(serviceProvider.getLinkage() != null )
+		
+		//Provider
+		if(!sdiVirtualMetadata.isInheritedcontact())
 		{
-		    Element site = new Element("ProviderSite", nsOWS);
-		    site.setAttribute("href", serviceProvider.getLinkage(),nsXLINK);
-		    newServiceProvider.addContent(site);
-		}
-
-		OWSResponsibleParty responsibleParty = serviceProvider.getResponsibleParty();
-		if(responsibleParty != null && !responsibleParty.isEmpty())
-		{
-		    Element newServiceContact = new Element("ServiceContact", nsOWS);
-		    if(responsibleParty.getName() != null)
-			newServiceContact.addContent((new Element("IndividualName", nsOWS)).setText(responsibleParty.getName()));
-		    if(responsibleParty.getPosition() != null)
-			newServiceContact.addContent((new Element("PositionName", nsOWS)).setText(responsibleParty.getPosition()));
-		    if(responsibleParty.getRole() != null)
-			newServiceContact.addContent((new Element("Role", nsOWS)).setText(responsibleParty.getRole()));
-
-		    OWSContact contact  = responsibleParty.getContactInfo();
-		    if(contact != null && !contact.isEmpty())
-		    {
+			Element newServiceProvider = new Element("ServiceProvider", nsOWS);
+			if(sdiVirtualMetadata.getContactorganization()!= null && sdiVirtualMetadata.getContactorganization().length() != 0)
+				newServiceProvider.addContent((new Element("ProviderName", nsOWS)).setText(sdiVirtualMetadata.getContactorganization()));
+			if(sdiVirtualMetadata.getContacturl()!= null && sdiVirtualMetadata.getContacturl().length() != 0)
+			{
+				Element site = new Element("ProviderSite", nsOWS);
+				site.setAttribute("href", sdiVirtualMetadata.getContacturl(),nsXLINK);
+			    newServiceProvider.addContent(site);
+			}
+			
+			Element newServiceContact = new Element("ServiceContact", nsOWS);
+			if(sdiVirtualMetadata.getContactname()!= null && sdiVirtualMetadata.getContactname().length() != 0)
+				newServiceContact.addContent((new Element("IndividualName", nsOWS)).setText(sdiVirtualMetadata.getContactname()));
+			if(sdiVirtualMetadata.getContactposition()!= null && sdiVirtualMetadata.getContactposition().length() != 0)
+				newServiceContact.addContent((new Element("PositionName", nsOWS)).setText(sdiVirtualMetadata.getContactposition()));
+			
+//			if(sdiVirtualMetadata.getContacttype()!= null && sdiVirtualMetadata.getContacttype().length() != 0)
+//				newServiceContact.addContent((new Element("Role", nsOWS)).setText(sdiVirtualMetadata.getContacttype()));
+			
 			Element newContactInfo = new Element("ContactInfo", nsOWS);
-			OWSTelephone phone = contact.getContactPhone();
-			if(phone != null && !phone.isEmpty())
-			{
-			    Element newPhone = new Element("Phone", nsOWS);
-			    if(phone.getVoicePhone() != null)
-				newPhone.addContent((new Element("Voice", nsOWS)).setText(phone.getVoicePhone()));
-			    if(phone.getFacSimile() != null)
-				newPhone.addContent((new Element("Facsimile", nsOWS)).setText(phone.getFacSimile()));
-			    newContactInfo.addContent(newPhone);
-			}
-			OWSAddress address = contact.getAdress();
-			if(address != null && !address.isEmpty())
-			{
-			    Element newAddress = new Element("Address", nsOWS);
-			    if (address.getDelivryPoint() != null)
-			    {
-				newAddress.addContent((new Element ("DelivryPoint", nsOWS)).setText(address.getDelivryPoint()));
-			    }
-			    if (address.getCity() != null)
-			    {
-				newAddress.addContent((new Element ("City", nsOWS)).setText(address.getCity()));
-			    }
-			    if (address.getArea() != null)
-			    {
-				newAddress.addContent((new Element ("AdministrativeArea", nsOWS)).setText(address.getArea()));
-			    }
-			    if (address.getPostalCode() != null)
-			    {
-				newAddress.addContent((new Element ("PostalCode", nsOWS)).setText(address.getPostalCode()));
-			    }
-			    if (address.getCountry() != null)
-			    {
-				newAddress.addContent((new Element ("Country", nsOWS)).setText(address.getCountry()));
-			    }
-			    if (address.getElectronicMail() != null)
-			    {
-				newAddress.addContent((new Element ("ElectronicMailAddress", nsOWS)).setText(address.getElectronicMail()));
-			    }
-			    newContactInfo.addContent(newAddress);
-			}
+			Element newPhone = new Element("Phone", nsOWS);
+			if(sdiVirtualMetadata.getContactphone()!= null && sdiVirtualMetadata.getContactphone().length() != 0)
+				newPhone.addContent((new Element("Voice", nsOWS)).setText(sdiVirtualMetadata.getContactphone()));
+			if(sdiVirtualMetadata.getContactfax()!= null && sdiVirtualMetadata.getContactfax().length() != 0)
+				newPhone.addContent((new Element("Facsimile", nsOWS)).setText(sdiVirtualMetadata.getContactfax()));
+			newContactInfo.addContent(newPhone);
+			
+			Element newAddress = new Element("Address", nsOWS);
+			if(sdiVirtualMetadata.getContactadress()!= null && sdiVirtualMetadata.getContactadress().length() != 0)
+				newAddress.addContent((new Element("DelivryPoint", nsOWS)).setText(sdiVirtualMetadata.getContactadress()));
+			if(sdiVirtualMetadata.getContactlocality()!= null && sdiVirtualMetadata.getContactlocality().length() != 0)
+				newAddress.addContent((new Element("City", nsOWS)).setText(sdiVirtualMetadata.getContactlocality()));
+			if(sdiVirtualMetadata.getContactstate()!= null && sdiVirtualMetadata.getContactstate().length() != 0)
+				newAddress.addContent((new Element("AdministrativeArea", nsOWS)).setText(sdiVirtualMetadata.getContactstate()));
+			if(sdiVirtualMetadata.getContactpostalcode()!= null && sdiVirtualMetadata.getContactpostalcode().length() != 0)
+				newAddress.addContent((new Element("PostalCode", nsOWS)).setText(sdiVirtualMetadata.getContactpostalcode()));
+			if(sdiVirtualMetadata.getSdiSysCountry()!= null && sdiVirtualMetadata.getSdiSysCountry().getName() != null)
+				newAddress.addContent((new Element("Country", nsOWS)).setText(sdiVirtualMetadata.getSdiSysCountry().getName()));
+			if(sdiVirtualMetadata.getContactemail()!= null && sdiVirtualMetadata.getContactemail().length() != 0)
+				newAddress.addContent((new Element("ElectronicMailAddress", nsOWS)).setText(sdiVirtualMetadata.getContactemail()));
+			newContactInfo.addContent(newAddress);
 			newServiceContact.addContent(newContactInfo);
-		    }
-		    newServiceProvider.addContent(newServiceContact);
+			newServiceProvider.addContent(newServiceContact);
+			racine.addContent( 1, newServiceProvider);
 		}
-		racine.addContent( 1, newServiceProvider);
-	    }
-
+		else {
+			racine.addContent((new Element("ServiceProvider")).setContent(oldServiceProvider));
+		}
+	    
 	    Element serviceMetadataUrl = racine.getChild("ServiceMetadataURL", nsWMTS);
 	    if(serviceMetadataUrl != null)
 	    {
-		String metadataUrl = serviceMetadataUrl.getAttributeValue("href", nsXLINK);
-		if(metadataUrl.contains("?"))
-		{
-		    metadataUrl = metadataUrl.replace(metadataUrl.substring(0, metadataUrl.indexOf("?")), href);
-		}
-		else if (metadataUrl.contains("/1.0.0/WMTSCapabilities.xml"))
-		{
-		    metadataUrl = metadataUrl.replace(metadataUrl.substring(0, metadataUrl.indexOf("/1.0.0")), href);
-		}
-		serviceMetadataUrl.setAttribute("href", metadataUrl, nsXLINK);
+	    	String metadataUrl = serviceMetadataUrl.getAttributeValue("href", nsXLINK);
+			if(metadataUrl.contains("?"))
+			{
+			    metadataUrl = metadataUrl.replace(metadataUrl.substring(0, metadataUrl.indexOf("?")), href);
+			}
+			else if (metadataUrl.contains("/1.0.0/WMTSCapabilities.xml"))
+			{
+			    metadataUrl = metadataUrl.replace(metadataUrl.substring(0, metadataUrl.indexOf("/1.0.0")), href);
+			}
+			serviceMetadataUrl.setAttribute("href", metadataUrl, nsXLINK);
 	    }
 
 

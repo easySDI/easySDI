@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -69,7 +68,6 @@ import org.easysdi.proxy.policy.Server;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetCapabilitiesThread;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetFeatureInfoThread;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetMapThread;
-import org.easysdi.xml.documents.RemoteServerInfo;
 import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.feature.AttributeType;
 import org.geotools.feature.AttributeTypeFactory;
@@ -172,7 +170,6 @@ public class WMSProxyServlet extends ProxyServlet {
 	public WMSProxyServlet (ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy)
 	{
 		super(proxyRequest, virtualService, policy);
-		ServiceOperations = Arrays.asList( "GetCapabilities", "GetMap", "GetFeatureInfo", "DescribeLayer", "GetLegendGraphic", "PutStyles", "GetStyles" );
 	}
 
 	/**

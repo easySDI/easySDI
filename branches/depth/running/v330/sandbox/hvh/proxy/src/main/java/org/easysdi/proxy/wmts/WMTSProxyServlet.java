@@ -25,11 +25,11 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
 
@@ -38,23 +38,20 @@ import javax.imageio.ImageWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.easysdi.proxy.jdom.filter.ElementTileMatrixSetFilter;
 import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.core.ProxyServletRequest;
+import org.easysdi.proxy.domain.SdiPhysicalservice;
 import org.easysdi.proxy.domain.SdiPhysicalservicePolicy;
 import org.easysdi.proxy.domain.SdiPolicy;
+import org.easysdi.proxy.domain.SdiTilematrixPolicy;
+import org.easysdi.proxy.domain.SdiTilematrixsetPolicy;
 import org.easysdi.proxy.domain.SdiVirtualservice;
-import org.easysdi.proxy.domain.SdiWmslayerPolicy;
 import org.easysdi.proxy.domain.SdiWmtslayerPolicy;
+import org.easysdi.proxy.jdom.filter.ElementTileMatrixSetFilter;
 import org.easysdi.proxy.ows.OWSExceptionManager;
 import org.easysdi.proxy.ows.OWSExceptionReport;
-import org.easysdi.proxy.policy.Layer;
-import org.easysdi.proxy.policy.Server;
-import org.easysdi.proxy.policy.TileMatrix;
-import org.easysdi.proxy.policy.TileMatrixSet;
 import org.easysdi.proxy.wmts.thread.WMTSProxyServerGetCapabilitiesThread;
-import org.easysdi.xml.documents.RemoteServerInfo;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -142,49 +139,50 @@ public class WMTSProxyServlet extends ProxyServlet{
      */
     public void requestPreTreatmentGetCapabilities (HttpServletRequest req, HttpServletResponse resp){
 	try{
-	    //Servers define in config.xml
-	    Hashtable<String, RemoteServerInfo> htRemoteServer = getPhysicalServiceHastable();
+	    
+		LinkedHashMap<String, SdiPhysicalservice> physicalServices = getPhysicalServiceHastable();
 	    List<WMTSProxyServerGetCapabilitiesThread> serverThreadList = new Vector<WMTSProxyServerGetCapabilitiesThread>();
 
+	    Iterator<Entry<String, SdiPhysicalservice>> it =physicalServices.entrySet().iterator();
+	    while(it.hasNext())
+		{
+			String requestContent=null;
+			if(getProxyRequest().getRequest().getMethod().equalsIgnoreCase("GET"))
+				requestContent = getProxyRequest().getUrlParameters();
+			else
+				requestContent = getProxyRequest().getBodyRequest().toString();
+			
+			WMTSProxyServerGetCapabilitiesThread s = new WMTSProxyServerGetCapabilitiesThread( this,requestContent,it.next().getValue() , resp);
+			s.start();
+			serverThreadList.add(s);
 
-	    Enumeration<RemoteServerInfo> enumRS =  htRemoteServer.elements();
-	    while (enumRS.hasMoreElements())
-	    {
-		RemoteServerInfo rs = (RemoteServerInfo)enumRS.nextElement();
-
-		String requestContent=null;
-		if(getProxyRequest().getRequest().getMethod().equalsIgnoreCase("GET"))
-		    requestContent = getProxyRequest().getUrlParameters();
-		else
-		    requestContent = getProxyRequest().getBodyRequest().toString();
-
-		WMTSProxyServerGetCapabilitiesThread s = new WMTSProxyServerGetCapabilitiesThread( this,requestContent,rs , resp);
-		s.start();
-		serverThreadList.add(s);
-	    }
-
-	    for (int i = 0; i < serverThreadList.size(); i++) {
-		serverThreadList.get(i).join();
-	    }
-	    if (wmtsGetCapabilitiesResponseFilePathMap.size() > 0) {
-		//Post treatment
-		logger.trace("requestPreTraitementGET begin transform");
-		transformGetCapabilities(requestedVersion, getProxyRequest().getOperation(), req, resp);
-		logger.trace("requestPreTraitementGET end transform");
-	    } else {
-		StringBuffer out;
-		try {
-		    logger.error(OWSExceptionReport.TEXT_NO_RESULT_RECEIVED_BY_PROXY);
-		    owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_NO_RESULT_RECEIVED_BY_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		} catch (IOException e) {
-		    logger.error( configuration.getServletClass() + ".requestPreTreatmentGetCapabilities : ", e);
+			s.start();
+			serverThreadList.add(s);
 		}
-		return;
+
+	    // Wait for thread results
+	    for (int i = 0; i < serverThreadList.size(); i++) {
+	    	serverThreadList.get(i).join();
+	    }
+	    
+	    if (wmtsGetCapabilitiesResponseFilePathMap.size() > 0) {
+			//Post treatment
+			logger.trace("requestPreTraitementGET begin transform");
+			transformGetCapabilities(requestedVersion, getProxyRequest().getOperation(), req, resp);
+			logger.trace("requestPreTraitementGET end transform");
+	    } 
+	    else {
+			try {
+			    logger.error(OWSExceptionReport.TEXT_NO_RESULT_RECEIVED_BY_PROXY);
+			    owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_NO_RESULT_RECEIVED_BY_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			} catch (IOException e) {
+			    logger.error( "WMTSProxyServlet.requestPreTreatmentGetCapabilities : ", e);
+			}
+			return;
 	    }
 	}catch(Exception e){
 	    resp.setHeader("easysdi-proxy-error-occured", "true");
-	    logger.error( configuration.getServletClass() + ".requestPreTreatmentGetCapabilities : ", e);
-	    StringBuffer out;
+	    logger.error("WMTSProxyServlet.requestPreTreatmentGetCapabilities : ", e);
 	    try {
 	    	owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	    } catch (IOException e1) {
@@ -197,7 +195,7 @@ public class WMTSProxyServlet extends ProxyServlet{
     public void requestPreTreatmentGetTile (HttpServletRequest req, HttpServletResponse resp){
 	try{
 	    //Servers define in config.xml
-	    Hashtable<String, RemoteServerInfo> htRemoteServer = getPhysicalServiceHastable();
+		LinkedHashMap<String, SdiPhysicalservice> physicalServices = getPhysicalServiceHastable();
 
 	    //Find the remote server concerning by the current request
 	    ProxyLayer pLayer = new ProxyLayer(((WMTSProxyServletRequest)getProxyRequest()).getLayer());
@@ -208,51 +206,50 @@ public class WMTSProxyServlet extends ProxyServlet{
 			owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "LAYER", HttpServletResponse.SC_BAD_REQUEST);
 			return;
 	    }
-	    RemoteServerInfo RS = (RemoteServerInfo)htRemoteServer.get(pLayer.getAlias());
+	    SdiPhysicalservice physicalService = (SdiPhysicalservice)physicalServices.get(pLayer.getAlias());
 
 	    //Check layer
-	    if( RS == null ){
+	    if( physicalService == null ){
 	    	owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "LAYER", HttpServletResponse.SC_BAD_REQUEST);
 		return;
 	    }
 
 	    //Check if the requested tile is allowed
-	    String tileAllowed = isTileAllowed((WMTSProxyServletRequest)getProxyRequest(), RS.getUrl());
+	    String tileAllowed = isTileAllowed((WMTSProxyServletRequest)getProxyRequest(), physicalService.getResourceurl());
 	    if(!tileAllowed.equalsIgnoreCase("true")){
-		//the tile is not allowed, a blank image is returned.
-		logger.debug("WMTSProxyServlet.requestPreTreatmentGetTile : tile is not allowed, generate an empty image");
-		BufferedImage imgOut = generateEmptyImage(RS.getUrl(), getProxyRequest().getFormat());
-		if(imgOut != null){
-		    Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(getProxyRequest().getFormat());
-		    ByteArrayOutputStream out = new ByteArrayOutputStream();
-		    if (iter.hasNext()) {
-			ImageWriter writer = (ImageWriter) iter.next();
-			writer.setOutput(javax.imageio.ImageIO.createImageOutputStream(out));
-			writer.write(imgOut);
-			writer.dispose();
-		    }
-		    sendHttpServletResponse(req, resp,out,getProxyRequest().getFormat(), HttpServletResponse.SC_OK);
-		}else{
-		    ByteArrayOutputStream out = null;
-		    sendHttpServletResponse(req, resp,out,getProxyRequest().getFormat(), HttpServletResponse.SC_OK);
-		}
-		
-		return;
+			//the tile is not allowed, a blank image is returned.
+			logger.debug("WMTSProxyServlet.requestPreTreatmentGetTile : tile is not allowed, generate an empty image");
+			BufferedImage imgOut = generateEmptyImage(physicalService.getResourceurl(), getProxyRequest().getFormat());
+			if(imgOut != null){
+			    Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(getProxyRequest().getFormat());
+			    ByteArrayOutputStream out = new ByteArrayOutputStream();
+			    if (iter.hasNext()) {
+				ImageWriter writer = (ImageWriter) iter.next();
+				writer.setOutput(javax.imageio.ImageIO.createImageOutputStream(out));
+				writer.write(imgOut);
+				writer.dispose();
+			    }
+			    sendHttpServletResponse(req, resp,out,getProxyRequest().getFormat(), HttpServletResponse.SC_OK);
+			}else{
+			    ByteArrayOutputStream out = null;
+			    sendHttpServletResponse(req, resp,out,getProxyRequest().getFormat(), HttpServletResponse.SC_OK);
+			}
+			
+			return;
 	    }
 
 	    String requestContent=null;
 	    if(getProxyRequest().getRequest().getMethod().equalsIgnoreCase("GET"))
-		requestContent = getProxyRequest().getUrlParameters();
+	    	requestContent = getProxyRequest().getUrlParameters();
 	    else
-		requestContent = getProxyRequest().getBodyRequest().toString();
+	    	requestContent = getProxyRequest().getBodyRequest().toString();
 
-	    sendDataDirectStream(resp,getProxyRequest().getRequest().getMethod(), RS.getUrl(), requestContent);
+	    sendDataDirectStream(resp,getProxyRequest().getRequest().getMethod(), physicalService.getResourceurl(), requestContent);
 	    return;
 
 	}catch(Exception e){
 	    resp.setHeader("easysdi-proxy-error-occured", "true");
-	    logger.error( configuration.getServletClass() + ".requestPreTreatmentGetCapabilities : ", e);
-	    StringBuffer out;
+	    logger.error("WMTSProxyServlet.requestPreTreatmentGetCapabilities : ", e);
 	    try {
 	    	owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	    } catch (IOException e1) {
@@ -265,8 +262,8 @@ public class WMTSProxyServlet extends ProxyServlet{
     public void requestPreTreatmentGetFeatureInfo (HttpServletRequest req, HttpServletResponse resp){
 	try{
 	    //Servers define in config.xml
-	    Hashtable<String, RemoteServerInfo> htRemoteServer = getPhysicalServiceHastable();
-
+		LinkedHashMap<String, SdiPhysicalservice> physicalServices = getPhysicalServiceHastable();
+	    
 	    //Find the remote server concerning by the current request
 	    ProxyLayer pLayer = new ProxyLayer(((WMTSProxyServletRequest)getProxyRequest()).getLayer());
 
@@ -276,16 +273,16 @@ public class WMTSProxyServlet extends ProxyServlet{
 			owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "LAYER", HttpServletResponse.SC_BAD_REQUEST);
 			return;
 	    }
-	    RemoteServerInfo RS = (RemoteServerInfo)htRemoteServer.get(pLayer.getAlias());
+	    SdiPhysicalservice physicalService = (SdiPhysicalservice)physicalServices.get(pLayer.getAlias());
 
 	    //Check layer
-	    if( RS == null ){
+	    if( physicalService == null ){
 	    	owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "LAYER", HttpServletResponse.SC_BAD_REQUEST);
 		return;
 	    }
 
 	    //Check if the requested tile is allowed
-	    String tileAllowed = isTileAllowed((WMTSProxyServletRequest)getProxyRequest(), RS.getUrl());
+	    String tileAllowed = isTileAllowed((WMTSProxyServletRequest)getProxyRequest(), physicalService.getResourceurl());
 	    if(!tileAllowed.equalsIgnoreCase("true")){
 		//The tile is not allowed, an empty response is sent
 		ByteArrayOutputStream out = null;
@@ -293,17 +290,16 @@ public class WMTSProxyServlet extends ProxyServlet{
 		return;
 	    }
 
-	    if((getConfiguration().getXsltPath() == null||getConfiguration().getXsltPath().trim() =="" )){
-		sendDataDirectStream(resp,"GET", RS.getUrl(), getProxyRequest().getUrlParameters());
+	    if((sdiVirtualService.getXsltfilename() == null||sdiVirtualService.getXsltfilename().trim() =="" )){
+		sendDataDirectStream(resp,"GET", physicalService.getResourceurl(), getProxyRequest().getUrlParameters());
 		return;
 	    }else{
-		String tempFile = sendData("GET", RS.getUrl(), getProxyRequest().getUrlParameters());
+		String tempFile = sendData("GET", physicalService.getResourceurl(), getProxyRequest().getUrlParameters());
 		transformGetFeatureInfo(req, resp, tempFile);
 	    }
 	}catch(Exception e){
 	    resp.setHeader("easysdi-proxy-error-occured", "true");
-	    logger.error( configuration.getServletClass() + ".requestPreTreatmentGetFeatureInfo : ", e);
-	    StringBuffer out;
+	    logger.error( "WMTSProxyServlet.requestPreTreatmentGetFeatureInfo : ", e);
 	    try {
 	    	owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	    } catch (IOException e1) {
@@ -327,9 +323,9 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    HashMap<String, String> remoteServerExceptionFiles = owsExceptionManager.getRemoteServerExceptionResponse(this,wmtsGetCapabilitiesResponseFilePathMap);
 
 	    //If the Exception mode is 'restrictive' and at least a response is an exception
-	    //Or if the Exception mode is 'permissive' and all the response are exceptio
-	    //Aggegate the exception files and send the result to the client
-	    if((remoteServerExceptionFiles.size() > 0 && configuration.getExceptionMode().equals("restrictive")) ||  
+	    //Or if the Exception mode is 'permissive' and all the response are exceptions
+	    //Agregate the exception files and send the result to the client
+	    if((remoteServerExceptionFiles.size() > 0 && sdiVirtualService.getSdiSysExceptionlevel().getValue().equals("restrictive")) ||  
 		    (wmtsGetCapabilitiesResponseFilePathMap.size() == 0)){
 		logger.info("Exception(s) returned by remote server(s) are sent to client.");
 		ByteArrayOutputStream exceptionOutputStream = docBuilder.ExceptionAggregation(remoteServerExceptionFiles);
@@ -341,7 +337,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 
 	    if ("GetCapabilities".equalsIgnoreCase(operation)) 
 	    {
-		RemoteServerInfo rs = getPhysicalServiceMaster();
+		SdiPhysicalservice physicalServiceMaster = getPhysicalServiceMaster();
 
 		if(!docBuilder.CapabilitiesContentsFiltering(wmtsGetCapabilitiesResponseFilePathMap))
 		{
@@ -350,7 +346,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 		    return;
 		}
 
-		if(!docBuilder.CapabilitiesOperationsFiltering(wmtsGetCapabilitiesResponseFilePathMap.get(rs.getAlias()), getServletUrl(req)))
+		if(!docBuilder.CapabilitiesOperationsFiltering(wmtsGetCapabilitiesResponseFilePathMap.get(physicalServiceMaster.getAlias()), getServletUrl(req)))
 		{
 		    logger.error(docBuilder.getLastException().toString());
 		    owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -364,14 +360,14 @@ public class WMTSProxyServlet extends ProxyServlet{
 		    return;
 		}
 
-		if(!docBuilder.CapabilitiesServiceMetadataWriting(wmtsGetCapabilitiesResponseFilePathMap.get(rs.getAlias()),getServletUrl(req)))
+		if(!docBuilder.CapabilitiesServiceMetadataWriting(wmtsGetCapabilitiesResponseFilePathMap.get(physicalServiceMaster.getAlias()),getServletUrl(req)))
 		{
 		    logger.error(docBuilder.getLastException().toString());
 		    owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		    return;
 		}
 
-		FileInputStream reader = new FileInputStream(new File(wmtsGetCapabilitiesResponseFilePathMap.get(rs.getAlias())));
+		FileInputStream reader = new FileInputStream(new File(wmtsGetCapabilitiesResponseFilePathMap.get(physicalServiceMaster.getAlias())));
 		byte[] data = new byte[reader.available()];
 		reader.read(data, 0, reader.available());
 		tempOut.write(data);
@@ -384,12 +380,11 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    e.printStackTrace();
 	    logger.error( e.toString());
 	    resp.setHeader("easysdi-proxy-error-occured", "true");
-	    StringBuffer out;
 	    try {
 	    	owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	    } catch (IOException e1) {
-		e1.printStackTrace();
-		logger.error( e1.toString());
+			e1.printStackTrace();
+			logger.error( e1.toString());
 	    }
 	}
     }
@@ -400,26 +395,26 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    ByteArrayOutputStream bos = new ByteArrayOutputStream();
 	    byte[] buf = new byte[1024];
 	    for (int readNum; (readNum = fis.read(buf)) != -1;) {
-		bos.write(buf, 0, readNum); 
+	    	bos.write(buf, 0, readNum); 
 	    }
+	    fis.close();
 	    //If the response is an OGC exception, the XSLT transformation is not applied
 	    //the response is send to the client
 	    if(isRemoteServerResponseException(responseFile)){
-		logger.info("Exception returned by remote server is sent to client.");
-		sendHttpServletResponse(req,resp,bos, "text/xml; charset=utf-8", responseStatusCode);
-		return;
+			logger.info("Exception returned by remote server is sent to client.");
+			sendHttpServletResponse(req,resp,bos, "text/xml; charset=utf-8", responseStatusCode);
+			return;
 	    }
 
 	    //apply XSLT transformation if needed before send back to client the response
 	    sendHttpServletResponse(req,resp, applyUserXSLT(bos),responseContentType, responseStatusCode);
 	}catch (Exception e){
 	    resp.setHeader("easysdi-proxy-error-occured", "true");
-	    logger.error(configuration.getServletClass() + ".transformGetFeatureInfo: ", e);
-	    StringBuffer out;
+	    logger.error("WMTSProxyServlet.transformGetFeatureInfo: ", e);
 	    try {
 	    	owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	    } catch (IOException e1) {
-		logger.error(OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+	    	logger.error(OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
 	    }
 	    return;
 	}
@@ -441,94 +436,109 @@ public class WMTSProxyServlet extends ProxyServlet{
      * @return 
      */
     protected String isTileAllowed (WMTSProxyServletRequest proxyRequest, String serverUrl){
-	ProxyLayer pLayer = proxyRequest.getpLayer();
-	WMTSProxyTileMatrixSet pTileMatrixSet = proxyRequest.getpTileMatrixSet();
-	String tileMatrix = proxyRequest.getTileMatrix();
-	Integer tileRow = Integer.parseInt( proxyRequest.getTileRow());
-	Integer tileCol = Integer.parseInt( proxyRequest.getTileCol());
-
+		ProxyLayer pLayer = proxyRequest.getpLayer();
+		WMTSProxyTileMatrixSet pTileMatrixSet = proxyRequest.getpTileMatrixSet();
+		String tileMatrix = proxyRequest.getTileMatrix();
+		Integer tileRow = Integer.parseInt( proxyRequest.getTileRow());
+		Integer tileCol = Integer.parseInt( proxyRequest.getTileCol());
 	
-
-	//If one of the mandatory parameters is missing, return false
-	if (pLayer == null) 
-	    return "Layer";
-	if (pTileMatrixSet == null )
-	    return "TileMatrixSet";
-	if(tileMatrix == null)
-	    return "tileMatrix";
-	if( tileRow == null ) 
-	    return "tileRow";
-	if (tileCol == null)
-	    return "tileCol";
-
-	if(policy.getServers().isAll())
-	    return "true";
-
-	List<Server> serverList = policy.getServers().getServer();
-	boolean isServerFound = false;
-	for (int i = 0; i < serverList.size(); i++) {
-	    if (serverUrl.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		isServerFound = true;
-		if (serverList.get(i).getLayers().isAll())
-		    return "true";
-		List<Layer> layerList = serverList.get(i).getLayers().getLayer();
-		boolean isLayerFound = false;
-		for (int j = 0; j < layerList.size(); j++) {
-		    if (pLayer.getPrefixedName().equals(layerList.get(j).getName())){
-			isLayerFound = true;
-			if( layerList.get(j).isAll())
-			    return "true";
-			List<TileMatrixSet> lTileMatrixSet = layerList.get(j).getTileMatrixSet();
-			boolean isTileMatrixSetFound = false;
-			for(int k = 0 ; k <lTileMatrixSet.size() ; k++){
-			    if(lTileMatrixSet.get(k).getId().equals(pTileMatrixSet.getName())){
-				isTileMatrixSetFound = true;
-				if(lTileMatrixSet.get(k).isAll())
-				    return "true";
-				List<TileMatrix> lTileMatrix = lTileMatrixSet.get(k).getTileMatrix();
-				boolean isTileMatrixFound = false; 
-				for(int l = 0 ; l < lTileMatrix.size(); l++){
-				    if(lTileMatrix.get(l).getId().equals(tileMatrix)){
-					isTileMatrixFound = true;
-					if(lTileMatrix.get(l).isAll())
-					    return "true";
-					Integer minCol = Integer.parseInt( lTileMatrix.get(l).getTileMinCol() );
-					Integer maxCol = Integer.parseInt(lTileMatrix.get(l).getTileMaxCol());
-					Integer minRow = Integer.parseInt(lTileMatrix.get(l).getTileMinRow());
-					Integer maxRow = Integer.parseInt(lTileMatrix.get(l).getTileMaxRow());
-					if(tileRow <= maxRow && tileRow >= minRow && tileCol <= maxCol && tileCol >= minCol )
-					    return "true";
-					else{
-					    if(tileRow > maxRow || tileRow < minRow)
-						return "tileRow";
-					    if(tileCol > maxCol || tileCol < minCol)
-						return "tileCol";
-					}
-				    }
-				}
-				if(!isTileMatrixFound){
-				    //TileMatrix is not allowed
-				    return "TileMatrix";
-				}
-			    }
-			}
-			if(!isTileMatrixSetFound){
-			    //tileMatrixSet is not allowed
-			    return "TileMatrixSet";
-			}
-		    }
-		}
-		if(!isLayerFound){
-		    //layer is not allowed
+		//If one of the mandatory parameters is missing, return false
+		if (pLayer == null) 
 		    return "Layer";
+		if (pTileMatrixSet == null )
+		    return "TileMatrixSet";
+		if(tileMatrix == null)
+		    return "tileMatrix";
+		if( tileRow == null ) 
+		    return "tileRow";
+		if (tileCol == null)
+		    return "tileCol";
+	
+		if(sdiPolicy.isAnyservice())
+			return "true";
+		
+		Set<SdiPhysicalservicePolicy> physicalServicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
+		Iterator<SdiPhysicalservicePolicy> i = physicalServicePolicies.iterator();
+		boolean isServerFound = false;
+		while (i.hasNext()){
+			//SdiPhysicalservicePolicy
+			SdiPhysicalservicePolicy physicalServicePolicy = i.next();
+			//SdiPhysicalservice
+			SdiPhysicalservice physicalService = physicalServicePolicy.getSdiPhysicalservice();
+			if(serverUrl.equalsIgnoreCase(physicalService.getResourceurl())){
+				isServerFound = true;
+				if(physicalServicePolicy.isAnyitem())
+					return "true";
+				Set<SdiWmtslayerPolicy> wmtsLayerPolicies = physicalServicePolicy.getSdiWmtslayerPolicies();
+				boolean isLayerFound = false;
+				Iterator<SdiWmtslayerPolicy> it = wmtsLayerPolicies.iterator();
+				while (it.hasNext())
+				{
+					//SdiWmtslayerPolicy
+					SdiWmtslayerPolicy wmtslayerPolicy = it.next();
+					if(pLayer.getPrefixedName().equals(wmtslayerPolicy.getIdentifier()))
+					{
+						isLayerFound = true;
+						if(wmtslayerPolicy.isAnytilematrixset())
+							return "true";
+												
+						Set<SdiTilematrixsetPolicy> tileMatrixSetPolicies = wmtslayerPolicy.getSdiTilematrixsetPolicies();
+						boolean isTileMatrixSetFound = false;
+						Iterator<SdiTilematrixsetPolicy> is = tileMatrixSetPolicies.iterator();
+						while (is.hasNext())
+						{
+							//SdiTilematrixsetPolicy
+							isTileMatrixSetFound = true;
+							SdiTilematrixsetPolicy tileMatrixSetPolicy = is.next();
+							if(tileMatrixSetPolicy.isAnytilematrix())
+								return "true";
+							
+							Set<SdiTilematrixPolicy> tileMatrixPolicies = tileMatrixSetPolicy.getSdiTilematrixPolicies();
+							boolean isTileMatrixFound = false;
+							Iterator<SdiTilematrixPolicy> im = tileMatrixPolicies.iterator();
+							while(im.hasNext())
+							{
+								//SdiTilematrixPolicy
+								isTileMatrixFound = true;
+								SdiTilematrixPolicy tileMatriyPolicy = im.next();
+								if(tileMatriyPolicy.isAnytile())
+									return "true";
+								Integer minCol = tileMatriyPolicy.getTilemincol();
+								Integer maxCol = tileMatriyPolicy.getTilemaxcol();
+								Integer minRow = tileMatriyPolicy.getTileminrow();
+								Integer maxRow = tileMatriyPolicy.getTilemaxrow();
+								if(tileRow <= maxRow && tileRow >= minRow && tileCol <= maxCol && tileCol >= minCol )
+								    return "true";
+								else{
+								    if(tileRow > maxRow || tileRow < minRow)
+								    	return "tileRow";
+								    if(tileCol > maxCol || tileCol < minCol)
+								    	return "tileCol";
+								}
+							}
+							if(!isTileMatrixFound){
+							    //TileMatrix is not allowed
+							    return "TileMatrix";
+							}
+						}
+						if(!isTileMatrixSetFound){
+						    //tileMatrixSet is not allowed
+						    return "TileMatrixSet";
+						}
+					}
+				}
+				if(!isLayerFound){
+				    //layer is not allowed
+				    return "Layer";
+				}
+			}
 		}
-	    }
-	}
-	if(!isServerFound){
-	    //Server is not allowed
-	    return "Server";
-	}
-	return "false";
+		if(!isServerFound){
+		    //Server is not allowed
+		    return "Server";
+		}
+		
+		return "false";
     }
 
     /**

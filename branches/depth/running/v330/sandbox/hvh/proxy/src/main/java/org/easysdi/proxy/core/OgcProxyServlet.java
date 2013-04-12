@@ -233,8 +233,8 @@ public class OgcProxyServlet extends HttpServlet {
 				sendException(e,connector, null);
 				return null;
 			}
-
-			//Get the correct CSWProxyServlet class name according to the EasySDI version currently running
+			
+						//Get the correct CSWProxyServlet class name according to the EasySDI version currently running
 //			if (className.equalsIgnoreCase("org.easysdi.proxy.csw.CSWProxyServlet") && joomlaProvider.getVersion() != null
 //					&& Integer.parseInt(joomlaProvider.getVersion()) >= 200) {
 //				className += "2";
@@ -255,7 +255,7 @@ public class OgcProxyServlet extends HttpServlet {
 						if(value.equals(request.getVersion())){
 							found= true;
 							//ProxyRequest checks if the current requested operation is supported by the virtualservice loaded and defined by its compliances.
-							if(!request.isOperationSupported(compliance.getSdiSysServicecompliance())){
+							if(!request.setServiceCompliance(compliance.getSdiSysServicecompliance())){
 								sendException( new OperationNotSupportedException(request.getOperation()),connector, request.getVersion());
 								return null;
 							}
@@ -270,7 +270,7 @@ public class OgcProxyServlet extends HttpServlet {
 					{
 						reqVersion = highestversion;
 						//ProxyRequest checks if the current requested operation is supported by the virtualservice loaded and defined by its compliances.
-						if(!request.isOperationSupported(highestServicecompliance)){
+						if(!request.setServiceCompliance(highestServicecompliance)){
 							sendException( new OperationNotSupportedException(request.getOperation()),connector, request.getVersion());
 							return null;
 						}
@@ -292,6 +292,12 @@ public class OgcProxyServlet extends HttpServlet {
 				
 				request.setVersion(reqVersion);
 				className += reqVersion.replaceAll("\\.", "");
+			}
+			
+			//CSW
+			if(connector.equals("CSW"))
+			{
+				className = packagename + "ProxyServlet";
 			}
 
 			String user = null;

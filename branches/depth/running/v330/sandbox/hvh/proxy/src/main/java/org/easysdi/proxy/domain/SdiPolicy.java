@@ -53,6 +53,7 @@ public class SdiPolicy implements java.io.Serializable {
 	private boolean Csw_anycontext;
 	private boolean Csw_anystate;
 	private boolean Csw_anyvisibility;
+	private boolean Csw_includeharvested;
 	private Integer Wms_minimumwidth;
 	private Integer Wms_minimumheight;
 	private Integer Wms_maximumwidth;
@@ -420,9 +421,18 @@ public class SdiPolicy implements java.io.Serializable {
 	public boolean isCsw_anyvisibility() {
 		return this.Csw_anyvisibility;
 	}
-
+	
 	public void setCsw_anyvisibility(boolean Csw_anyvisibility) {
 		this.Csw_anyvisibility = Csw_anyvisibility;
+	}
+	
+	@Column(name = "csw_includeharvested", nullable = false)
+	public boolean isCsw_includeharvested() {
+		return Csw_includeharvested;
+	}
+
+	public void setCsw_includeharvested(boolean csw_includeharvested) {
+		Csw_includeharvested = csw_includeharvested;
 	}
 
 	@Column(name = "wms_minimumwidth")

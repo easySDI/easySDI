@@ -23,7 +23,7 @@ import java.util.Vector;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-@Deprecated
+
 public class CswRequestHandler extends DefaultHandler {
 
     private String operation = "";

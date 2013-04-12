@@ -24,7 +24,7 @@ public class SdiSysAuthenticationconnector implements java.io.Serializable {
 	private Integer Id;
 	private Integer Ordering;
 	private int State;
-	private int Authenticationlevel_id;
+	private SdiSysAuthenticationlevel sdiAuthenticationlevelId;
 	private String Value;
 	private Set<SdiPhysicalservice> sdiPhysicalservicesForServiceauthenticationId = new HashSet<SdiPhysicalservice>(
 			0);
@@ -36,24 +36,22 @@ public class SdiSysAuthenticationconnector implements java.io.Serializable {
 	public SdiSysAuthenticationconnector() {
 	}
 
-	public SdiSysAuthenticationconnector(int State, int Authenticationlevel_id,
-			String Value) {
+	public SdiSysAuthenticationconnector(int State, String Value) {
 		this.State = State;
-		this.Authenticationlevel_id = Authenticationlevel_id;
 		this.Value = Value;
 	}
 
 	public SdiSysAuthenticationconnector(
 			Integer Ordering,
 			int State,
-			int Authenticationlevel_id,
+			SdiSysAuthenticationlevel Authenticationlevel_id,
 			String Value,
 			Set<SdiPhysicalservice> sdiPhysicalservicesForServiceauthenticationId,
 			Set<SdiPhysicalservice> sdiPhysicalservicesForResourceauthenticationId,
 			Set<SdiSysServiceconAuthenticationcon> sdiSysServiceconAuthenticationcons) {
 		this.Ordering = Ordering;
 		this.State = State;
-		this.Authenticationlevel_id = Authenticationlevel_id;
+		this.sdiAuthenticationlevelId = Authenticationlevel_id;
 		this.Value = Value;
 		this.sdiPhysicalservicesForServiceauthenticationId = sdiPhysicalservicesForServiceauthenticationId;
 		this.sdiPhysicalservicesForResourceauthenticationId = sdiPhysicalservicesForResourceauthenticationId;
@@ -90,12 +88,12 @@ public class SdiSysAuthenticationconnector implements java.io.Serializable {
 	}
 
 	@Column(name = "authenticationlevel_id", nullable = false)
-	public int getAuthenticationlevel_id() {
-		return this.Authenticationlevel_id;
+	public SdiSysAuthenticationlevel getAuthenticationlevel() {
+		return this.sdiAuthenticationlevelId;
 	}
 
-	public void setAuthenticationlevel_id(int Authenticationlevel_id) {
-		this.Authenticationlevel_id = Authenticationlevel_id;
+	public void setAuthenticationlevel_id(SdiSysAuthenticationlevel Authenticationlevel_id) {
+		this.sdiAuthenticationlevelId = Authenticationlevel_id;
 	}
 
 	@Column(name = "value", nullable = false, length = 150)

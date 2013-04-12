@@ -593,7 +593,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			// défini dans CONFIG
 			// L'ordre des balises <server> dans POLICY doit être le même!!!
 			int queryCount = 0;
-			for (int iServer = 0; iServer < getRemoteServerInfoList().size(); iServer++) {
+			for (int iServer = 0; iServer < getPhysicalServiceList().size(); iServer++) {
 
 				param = paramOrig;
 
@@ -1188,7 +1188,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			// dans Policy <server>!!!
 			// ATTENTION: Dans cette fonction iServer == à l'index du serveur
 			// défini dans CONFIG
-			for (int iServer = 0; iServer < getRemoteServerInfoList().size(); iServer++) {
+			for (int iServer = 0; iServer < getPhysicalServiceList().size(); iServer++) {
 				// Reset the original request url
 				paramUrl = requestParamUrl;
 
@@ -3272,11 +3272,26 @@ public class WFSProxyServlet extends ProxyServlet {
 			Node ItemMaster = nlMaster.item(0);
 
 			NodeList nlElements = documentMaster.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "element");
+			//Find the current object sdiPhysicalservicePolicy which linked PhysicalService and Policy and hold the prefix and namespace
+			SdiPhysicalservicePolicy currentPhysicalservicePolicy=null;
+			Set<SdiPhysicalservicePolicy> physicalservicePolicies =  getPhysicalServiceByIndex(0).getSdiPhysicalservicePolicies();
+			Iterator<SdiPhysicalservicePolicy> it = physicalservicePolicies.iterator();
+			while (it.hasNext())
+			{
+				SdiPhysicalservicePolicy physicalservicePolicy = it.next();
+				if(physicalservicePolicy.getSdiPolicy().getId().equals(sdiPolicy.getId()))
+				{
+					currentPhysicalservicePolicy = physicalservicePolicy;
+					break;
+				}
+			}
 			for (int i = 0; i < nlElements.getLength(); i++) {
 				if (nlElements.item(i).getAttributes().getNamedItem("substitutionGroup") != null) {
 					if ("gml:_Feature".equals(nlElements.item(i).getAttributes().getNamedItem("substitutionGroup").getTextContent())) {
 						String origName = nlElements.item(i).getAttributes().getNamedItem("name").getTextContent();
-						nlElements.item(i).getAttributes().getNamedItem("name").setTextContent(getPhysicalServiceByIndex(0).getPrefix() + ":" + origName);
+						
+						
+						nlElements.item(i).getAttributes().getNamedItem("name").setTextContent(currentPhysicalservicePolicy.getPrefix() + ":" + origName);
 					}
 				}
 
@@ -3289,11 +3304,26 @@ public class WFSProxyServlet extends ProxyServlet {
 				NodeList nl2 = nl1.item(0).getChildNodes();
 
 				nlElements = documentChild.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "element");
+				
+				//Find the current object sdiPhysicalservicePolicy which linked PhysicalService and Policy and hold the prefix and namespace
+				SdiPhysicalservicePolicy derivePhysicalservicePolicy=null;
+				Set<SdiPhysicalservicePolicy> dphysicalservicePolicies =  getPhysicalServiceByIndex(i).getSdiPhysicalservicePolicies();
+				Iterator<SdiPhysicalservicePolicy> idt = dphysicalservicePolicies.iterator();
+				while (idt.hasNext())
+				{
+					SdiPhysicalservicePolicy physicalservicePolicy = idt.next();
+					if(physicalservicePolicy.getSdiPolicy().getId().equals(sdiPolicy.getId()))
+					{
+						derivePhysicalservicePolicy = physicalservicePolicy;
+						break;
+					}
+							
+				}
 				for (int j = 0; j < nlElements.getLength(); j++) {
 					if (nlElements.item(j).getAttributes().getNamedItem("substitutionGroup") != null) {
 						if ("gml:_Feature".equals(nlElements.item(j).getAttributes().getNamedItem("substitutionGroup").getTextContent())) {
 							String origName = nlElements.item(j).getAttributes().getNamedItem("name").getTextContent();
-							nlElements.item(j).getAttributes().getNamedItem("name").setTextContent(getPhysicalServiceByIndex(i).getPrefix() + ":" + origName);
+							nlElements.item(j).getAttributes().getNamedItem("name").setTextContent(derivePhysicalservicePolicy.getPrefix() + ":" + origName);
 						}
 					}
 

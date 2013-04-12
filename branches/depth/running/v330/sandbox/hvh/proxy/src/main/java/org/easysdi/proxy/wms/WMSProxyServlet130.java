@@ -46,9 +46,8 @@ public class WMSProxyServlet130 extends WMSProxyServlet {
      */
     public WMSProxyServlet130(ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy) {
 		super(proxyRequest, virtualService, policy);
-	ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetMap", "GetFeatureInfo", "GetLegendGraphic");
-	docBuilder = new WMSProxyResponseBuilder130(this);
-	owsExceptionReport = new WMSExceptionReport130 ();
+		docBuilder = new WMSProxyResponseBuilder130(this);
+		owsExceptionReport = new WMSExceptionReport130 ();
     }
 
     /* (non-Javadoc)
