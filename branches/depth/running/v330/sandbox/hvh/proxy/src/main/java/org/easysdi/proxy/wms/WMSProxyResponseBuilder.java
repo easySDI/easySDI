@@ -207,7 +207,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		servlet.logger.trace("transform - Start - Capabilities contents filtering");
 	    try
 	    {
-	    	CoordinateReferenceSystem wgsCRS = CRS.decode("EPSG:4326");
+	    	
 	    	
 	    	SAXBuilder sxb = new SAXBuilder();
 	    	Iterator<Entry<String, String>> iFile =  wmsGetCapabilitiesResponseFilePath.entrySet().iterator();
@@ -281,7 +281,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		    	   Element courant = (Element)iLayerParent.next();
 		    	   layerParentList.add(courant);
 		    	}
-		    	
+		    	CoordinateReferenceSystem wgsCRS = CRS.decode("EPSG:4326");
 			    if(!rewriteBBOX(layerParentList, wgsCRS, null))
 			    	return false;
 		    	

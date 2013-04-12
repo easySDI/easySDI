@@ -1487,11 +1487,6 @@ public class WMSProxyServlet extends ProxyServlet {
      */
     protected boolean isLayerInScale(String layer, String url, double scale) {
 	
-
-	//5.09.2010 - HVH 
-	if ( policy.getServers().isAll())
-	    return true;
-	//--
 	//		boolean isServerFound = false;
 	List<Server> serverList = policy.getServers().getServer();
 
