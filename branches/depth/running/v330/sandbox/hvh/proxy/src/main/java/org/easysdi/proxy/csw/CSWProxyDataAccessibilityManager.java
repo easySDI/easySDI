@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.jdom.filter.ElementConstraintFilter;
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.proxy.policy.Status;
@@ -52,7 +53,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
  */
 public class CSWProxyDataAccessibilityManager {
 	
-	private Policy policy;
+	private SdiPolicy policy;
 	private String dataIdVersionAccessible;
 	private String prefix = "";
 	Namespace nsCSW =  Namespace.getNamespace("http://www.opengis.net/cat/csw/2.0.2");
@@ -64,10 +65,11 @@ public class CSWProxyDataAccessibilityManager {
 	 * @return
 	 */
 	public Integer getCountOfEasySDIMetadatas(){
-		String query = "SELECT count(guid) as c FROM "+ prefix +"sdi_metadata ";
-//		Map<String, Object> result= joomlaProvider.sjt.queryForMap(query);
-		Map<String, Object> result = null;
-		return  ((Long)result.get("c")).intValue();
+//		String query = "SELECT count(guid) as c FROM "+ prefix +"sdi_metadata ";
+////		Map<String, Object> result= joomlaProvider.sjt.queryForMap(query);
+//		Map<String, Object> result = null;
+//		return  ((Long)result.get("c")).intValue();
+		return 0;
 	}
 	
 	
@@ -85,14 +87,15 @@ public class CSWProxyDataAccessibilityManager {
 	 */
 	public boolean isAllDataAccessibleForGetRecords ()
 	{
-		if( (policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll()) 
-			&& (policy.getObjectTypes()== null || policy.getObjectTypes().isAll())
-			&& (policy.getObjectStatus()== null || policy.getObjectStatus().isAll())
-			&& (policy.getBboxFilter() == null || policy.getBboxFilter().isValide() ))
-		{
-			return true;
-		}
-		return false;
+//		if( (policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll()) 
+//			&& (policy.getObjectTypes()== null || policy.getObjectTypes().isAll())
+//			&& (policy.getObjectStatus()== null || policy.getObjectStatus().isAll())
+//			&& (policy.getBboxFilter() == null || policy.getBboxFilter().isValide() ))
+//		{
+//			return true;
+//		}
+//		return false;
+		return true;
 	}
 	
 	/**
@@ -102,14 +105,15 @@ public class CSWProxyDataAccessibilityManager {
 	 */
 	public boolean isAllEasySDIDataAccessible ()
 	{
-		if( (policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll()) 
-			&& (policy.getObjectTypes()== null || policy.getObjectTypes().isAll())
-			&& (policy.getObjectStatus()== null || policy.getObjectStatus().isAll())
-			)
-		{
-			return true;
-		}
-		return false;
+//		if( (policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll()) 
+//			&& (policy.getObjectTypes()== null || policy.getObjectTypes().isAll())
+//			&& (policy.getObjectStatus()== null || policy.getObjectStatus().isAll())
+//			)
+//		{
+//			return true;
+//		}
+//		return false;
+		return true;
 	}
 	
 	
@@ -125,7 +129,7 @@ public class CSWProxyDataAccessibilityManager {
 	 * @param p_policy
 	 * @param p_joomlaProvider
 	 */
-	public CSWProxyDataAccessibilityManager(Policy p_policy)
+	public CSWProxyDataAccessibilityManager(SdiPolicy p_policy)
 	{
 		policy = p_policy;
 	}
@@ -137,89 +141,90 @@ public class CSWProxyDataAccessibilityManager {
 	 */
 	public boolean isObjectAccessible (String dataId) 
 	{
-		//Is the requested Metadata managed by EasySDI
-		//OR is the requested metadata a harvested one?
-		try{
-			String query = "SELECT m.guid FROM "+ prefix +"sdi_metadata m WHERE m.guid = '"+dataId+"'";
-//			Map<String, Object> result= joomlaProvider.sjt.queryForMap(query);
-			Map<String, Object> result = null;
-		}catch (IncorrectResultSizeDataAccessException ex)
-		{
-			//The metadata is harvested
-			//If the harvested are allowed, return true.
-			if(policy.getIncludeHarvested())
-				return true;
-			else
-				return false;
-		}
-		
-		if((policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll())
-				&& (policy.getObjectTypes()== null || policy.getObjectTypes().isAll())
-				&& (policy.getObjectStatus()== null || policy.getObjectStatus().isAll()))
-		{
-			return true;
-		}
-		
-		String listVisibility = "";
-		if(policy.getObjectVisibilities() != null && !policy.getObjectVisibilities().isAll())
-		{
-			List<String>  allowedVisibility = policy.getObjectVisibilities().getVisibilities();
-			for (int i = 0 ; i<allowedVisibility.size() ; i++)
-			{
-				listVisibility += "'"+ allowedVisibility.get(i)+"'";
-				if(i != allowedVisibility.size()-1)
-				{
-					listVisibility += ",";
-				}
-			}
-		}
-		String listObjectType="";
-		if(policy.getObjectTypes()!= null && !policy.getObjectTypes().isAll())
-		{
-			List<String>  allowedObjectTypes = policy.getObjectTypes().getObjectTypes();
-			for (int i = 0 ; i<allowedObjectTypes.size() ; i++)
-			{
-				listObjectType += "'"+ allowedObjectTypes.get(i)+"'";
-				if(i != allowedObjectTypes.size()-1)
-				{
-					listObjectType += ",";
-				}
-			}
-		}
-		try
-		{
-			String query =     " SELECT m.guid FROM "+ prefix +"sdi_metadata m "+
-			" INNER JOIN "+ prefix +"sdi_objectversion ov  ON m.id = ov.metadata_id "+
-			" INNER JOIN "+ prefix +"sdi_object o ON o.id = ov.object_id "+
-			" INNER JOIN "+ prefix +"sdi_objecttype ot ON o.objecttype_id = ot.id "+
-			" INNER JOIN "+ prefix +"sdi_list_visibility v ON o.visibility_id = v.id ";
-			if(listObjectType != "" || listVisibility != "")
-			{
-				query += " WHERE ";
-				
-			}
-			if(listObjectType != "" )
-			{
-				query += " ot.code IN ("+ listObjectType +") ";
-				if(listVisibility != "")
-				{
-					query += " AND v.code IN ("+ listVisibility +") ";
-				}
-				
-			}
-			else
-			{
-				query += " v.code IN ("+ listVisibility +") ";
-			}
-			query += " AND m.guid = '"+dataId+"'" ;
-	
-//			Map<String, Object> resultfinal= joomlaProvider.sjt.queryForMap(query);
-			Map<String, Object> resultfinal = null;
-		}
-		catch (IncorrectResultSizeDataAccessException ex)
-		{
-			return false;
-		}
+//		//Is the requested Metadata managed by EasySDI
+//		//OR is the requested metadata a harvested one?
+//		try{
+//			String query = "SELECT m.guid FROM "+ prefix +"sdi_metadata m WHERE m.guid = '"+dataId+"'";
+////			Map<String, Object> result= joomlaProvider.sjt.queryForMap(query);
+//			Map<String, Object> result = null;
+//		}catch (IncorrectResultSizeDataAccessException ex)
+//		{
+//			//The metadata is harvested
+//			//If the harvested are allowed, return true.
+//			if(policy.getIncludeHarvested())
+//				return true;
+//			else
+//				return false;
+//		}
+//		
+//		if((policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll())
+//				&& (policy.getObjectTypes()== null || policy.getObjectTypes().isAll())
+//				&& (policy.getObjectStatus()== null || policy.getObjectStatus().isAll()))
+//		{
+//			return true;
+//		}
+//		
+//		String listVisibility = "";
+//		if(policy.getObjectVisibilities() != null && !policy.getObjectVisibilities().isAll())
+//		{
+//			List<String>  allowedVisibility = policy.getObjectVisibilities().getVisibilities();
+//			for (int i = 0 ; i<allowedVisibility.size() ; i++)
+//			{
+//				listVisibility += "'"+ allowedVisibility.get(i)+"'";
+//				if(i != allowedVisibility.size()-1)
+//				{
+//					listVisibility += ",";
+//				}
+//			}
+//		}
+//		String listObjectType="";
+//		if(policy.getObjectTypes()!= null && !policy.getObjectTypes().isAll())
+//		{
+//			List<String>  allowedObjectTypes = policy.getObjectTypes().getObjectTypes();
+//			for (int i = 0 ; i<allowedObjectTypes.size() ; i++)
+//			{
+//				listObjectType += "'"+ allowedObjectTypes.get(i)+"'";
+//				if(i != allowedObjectTypes.size()-1)
+//				{
+//					listObjectType += ",";
+//				}
+//			}
+//		}
+//		try
+//		{
+//			String query =     " SELECT m.guid FROM "+ prefix +"sdi_metadata m "+
+//			" INNER JOIN "+ prefix +"sdi_objectversion ov  ON m.id = ov.metadata_id "+
+//			" INNER JOIN "+ prefix +"sdi_object o ON o.id = ov.object_id "+
+//			" INNER JOIN "+ prefix +"sdi_objecttype ot ON o.objecttype_id = ot.id "+
+//			" INNER JOIN "+ prefix +"sdi_list_visibility v ON o.visibility_id = v.id ";
+//			if(listObjectType != "" || listVisibility != "")
+//			{
+//				query += " WHERE ";
+//				
+//			}
+//			if(listObjectType != "" )
+//			{
+//				query += " ot.code IN ("+ listObjectType +") ";
+//				if(listVisibility != "")
+//				{
+//					query += " AND v.code IN ("+ listVisibility +") ";
+//				}
+//				
+//			}
+//			else
+//			{
+//				query += " v.code IN ("+ listVisibility +") ";
+//			}
+//			query += " AND m.guid = '"+dataId+"'" ;
+//	
+////			Map<String, Object> resultfinal= joomlaProvider.sjt.queryForMap(query);
+//			Map<String, Object> resultfinal = null;
+//		}
+//		catch (IncorrectResultSizeDataAccessException ex)
+//		{
+//			return false;
+//		}
+//		return true;
 		return true;
 	}
 	
@@ -230,98 +235,99 @@ public class CSWProxyDataAccessibilityManager {
 	 */
 	public boolean isMetadataAccessible (String dataId)
 	{
-		if (policy.getObjectStatus()!= null && !policy.getObjectStatus().isAll())
-		{
-			//Get metadata status
-			String query= "SELECT  m.guid as guid, m.published  as published, m.archived as archived, ms.code as state" ;
-			query +=	" FROM "+ prefix +"sdi_metadata m ";
-			query +=	" INNER JOIN "+ prefix +"sdi_list_metadatastate ms ON m.metadatastate_id=ms.id ";
-			query +=	" AND m.guid = '"+dataId+"' ";
-			query +=	" LIMIT 0,1 ";
-			
-//			Map<String, Object> metadataObject= joomlaProvider.sjt.queryForMap(query);
-			Map<String, Object> metadataObject = null;
-			String status = (String)metadataObject.get("state");
-			
-			List<Status>  allowedStatus = policy.getObjectStatus().getStatus();
-
-			for (int i = 0 ; i <allowedStatus.size() ; i++)
-			{
-				if (allowedStatus.get(i).getStatus().equalsIgnoreCase("validated") && ("validated").equalsIgnoreCase(status))
-				{
-					return true;
-				}
-				if (allowedStatus.get(i).getStatus().equalsIgnoreCase("unpublished") && ("unpublished").equalsIgnoreCase(status))
-				{
-					return true;
-				}
-				if (allowedStatus.get(i).getStatus().equalsIgnoreCase("archived") 
-						&& ("archived").equalsIgnoreCase(status) 
-						&& (((Date)metadataObject.get("archived")).compareTo(new Date()) < 0 ) )
-				{
-					return true;
-				}
-				if(allowedStatus.get(i).getStatus().equalsIgnoreCase("published") 
-						&& allowedStatus.get(i).getVersion().equalsIgnoreCase("all")
-						&& ((("published").equalsIgnoreCase(status) 
-								&& (((Date)metadataObject.get("published")).compareTo(new Date()) < 0 ))
-								||(("archived").equalsIgnoreCase(status) 
-										&& (((Date)metadataObject.get("archived")).compareTo(new Date()) > 0 ) 
-										&& (((Date)metadataObject.get("published")).compareTo(new Date()) < 0 ))))
-				{
-					return true;
-				}
-				if(allowedStatus.get(i).getStatus().equalsIgnoreCase("published") 
-						&& allowedStatus.get(i).getVersion().equalsIgnoreCase("last")
-						&& ((("published").equalsIgnoreCase(status) 
-								&& (((Date)metadataObject.get("published")).compareTo(new Date()) < 0 ))
-								||(("archived").equalsIgnoreCase(status) 
-										&& (((Date)metadataObject.get("archived")).compareTo(new Date()) > 0 ) 
-										&& (((Date)metadataObject.get("published")).compareTo(new Date()) < 0 ))))
-				{
-					//request with condition on last published metadata
-					String queryVersion= "SELECT  m.guid as guid, m.published  as title ";
-					queryVersion +=	"FROM "+ prefix +"sdi_metadata m ";
-					queryVersion +=	" INNER JOIN "+ prefix +"sdi_objectversion ov ON ov.metadata_id = m.id ";
-					queryVersion +=	" INNER JOIN "+ prefix +"sdi_object o ON o.id = ov.object_id ";
-					queryVersion +=	" INNER JOIN "+ prefix +"sdi_list_metadatastate ms ON m.metadatastate_id=ms.id ";
-					queryVersion +=	" WHERE (ms.code='published' ";
-					queryVersion +=	" AND o.id = (SELECT object_id FROM "+ prefix +"sdi_objectversion WHERE metadata_id = (SELECT id FROM "+ prefix +"sdi_metadata WHERE guid = '"+dataId+"')) ";
-					queryVersion +=	" AND m.published <=CURDATE() )";
-					queryVersion +=	" OR ( ms.code='archived' ";
-					queryVersion +=	" AND o.id = (SELECT object_id FROM "+ prefix +"sdi_objectversion WHERE metadata_id = (SELECT id FROM "+ prefix +"sdi_metadata WHERE guid = '"+dataId+"')) ";
-					queryVersion +=	" AND m.published <=CURDATE() AND m.archived > CURDATE())";
-					queryVersion +=	" ORDER BY m.published DESC ";
-					queryVersion +=	" LIMIT 0,1 ";
-					try
-					{
-//						Map<String, Object> results= joomlaProvider.sjt.queryForMap(queryVersion);
-						Map<String, Object> results = null;
-						if(results.containsValue(dataId))
-						{
-							return true;
-						}
-						else
-						{
-							try
-							{
-								setDataIdVersionAccessible((String) results.get("guid"));
-								return false;
-							}
-							catch (Exception ex)
-							{
-								return false;
-							}
-						}
-					}
-					catch (Exception ex)
-					{
-						return false;
-					}
-				}
-			}
-			return false;
-		}
+//		if (policy.getObjectStatus()!= null && !policy.getObjectStatus().isAll())
+//		{
+//			//Get metadata status
+//			String query= "SELECT  m.guid as guid, m.published  as published, m.archived as archived, ms.code as state" ;
+//			query +=	" FROM "+ prefix +"sdi_metadata m ";
+//			query +=	" INNER JOIN "+ prefix +"sdi_list_metadatastate ms ON m.metadatastate_id=ms.id ";
+//			query +=	" AND m.guid = '"+dataId+"' ";
+//			query +=	" LIMIT 0,1 ";
+//			
+////			Map<String, Object> metadataObject= joomlaProvider.sjt.queryForMap(query);
+//			Map<String, Object> metadataObject = null;
+//			String status = (String)metadataObject.get("state");
+//			
+//			List<Status>  allowedStatus = policy.getObjectStatus().getStatus();
+//
+//			for (int i = 0 ; i <allowedStatus.size() ; i++)
+//			{
+//				if (allowedStatus.get(i).getStatus().equalsIgnoreCase("validated") && ("validated").equalsIgnoreCase(status))
+//				{
+//					return true;
+//				}
+//				if (allowedStatus.get(i).getStatus().equalsIgnoreCase("unpublished") && ("unpublished").equalsIgnoreCase(status))
+//				{
+//					return true;
+//				}
+//				if (allowedStatus.get(i).getStatus().equalsIgnoreCase("archived") 
+//						&& ("archived").equalsIgnoreCase(status) 
+//						&& (((Date)metadataObject.get("archived")).compareTo(new Date()) < 0 ) )
+//				{
+//					return true;
+//				}
+//				if(allowedStatus.get(i).getStatus().equalsIgnoreCase("published") 
+//						&& allowedStatus.get(i).getVersion().equalsIgnoreCase("all")
+//						&& ((("published").equalsIgnoreCase(status) 
+//								&& (((Date)metadataObject.get("published")).compareTo(new Date()) < 0 ))
+//								||(("archived").equalsIgnoreCase(status) 
+//										&& (((Date)metadataObject.get("archived")).compareTo(new Date()) > 0 ) 
+//										&& (((Date)metadataObject.get("published")).compareTo(new Date()) < 0 ))))
+//				{
+//					return true;
+//				}
+//				if(allowedStatus.get(i).getStatus().equalsIgnoreCase("published") 
+//						&& allowedStatus.get(i).getVersion().equalsIgnoreCase("last")
+//						&& ((("published").equalsIgnoreCase(status) 
+//								&& (((Date)metadataObject.get("published")).compareTo(new Date()) < 0 ))
+//								||(("archived").equalsIgnoreCase(status) 
+//										&& (((Date)metadataObject.get("archived")).compareTo(new Date()) > 0 ) 
+//										&& (((Date)metadataObject.get("published")).compareTo(new Date()) < 0 ))))
+//				{
+//					//request with condition on last published metadata
+//					String queryVersion= "SELECT  m.guid as guid, m.published  as title ";
+//					queryVersion +=	"FROM "+ prefix +"sdi_metadata m ";
+//					queryVersion +=	" INNER JOIN "+ prefix +"sdi_objectversion ov ON ov.metadata_id = m.id ";
+//					queryVersion +=	" INNER JOIN "+ prefix +"sdi_object o ON o.id = ov.object_id ";
+//					queryVersion +=	" INNER JOIN "+ prefix +"sdi_list_metadatastate ms ON m.metadatastate_id=ms.id ";
+//					queryVersion +=	" WHERE (ms.code='published' ";
+//					queryVersion +=	" AND o.id = (SELECT object_id FROM "+ prefix +"sdi_objectversion WHERE metadata_id = (SELECT id FROM "+ prefix +"sdi_metadata WHERE guid = '"+dataId+"')) ";
+//					queryVersion +=	" AND m.published <=CURDATE() )";
+//					queryVersion +=	" OR ( ms.code='archived' ";
+//					queryVersion +=	" AND o.id = (SELECT object_id FROM "+ prefix +"sdi_objectversion WHERE metadata_id = (SELECT id FROM "+ prefix +"sdi_metadata WHERE guid = '"+dataId+"')) ";
+//					queryVersion +=	" AND m.published <=CURDATE() AND m.archived > CURDATE())";
+//					queryVersion +=	" ORDER BY m.published DESC ";
+//					queryVersion +=	" LIMIT 0,1 ";
+//					try
+//					{
+////						Map<String, Object> results= joomlaProvider.sjt.queryForMap(queryVersion);
+//						Map<String, Object> results = null;
+//						if(results.containsValue(dataId))
+//						{
+//							return true;
+//						}
+//						else
+//						{
+//							try
+//							{
+//								setDataIdVersionAccessible((String) results.get("guid"));
+//								return false;
+//							}
+//							catch (Exception ex)
+//							{
+//								return false;
+//							}
+//						}
+//					}
+//					catch (Exception ex)
+//					{
+//						return false;
+//					}
+//				}
+//			}
+//			return false;
+//		}
+//		return true;
 		return true;
 	}
 	
@@ -356,230 +362,230 @@ public class CSWProxyDataAccessibilityManager {
 	 */
 	public List<Map<String,Object>> getAccessibleDataIds ()
 	{
-		List<Map<String,Object>> object_ids = null;
-		List<Map<String,Object>> metadata_ids = null;
+//		List<Map<String,Object>> object_ids = null;
+//		List<Map<String,Object>> metadata_ids = null;
 		List<Map<String,Object>> final_metadata_ids = null;
-		String query;
-		
-		//If ObjectVisibilities, ObjectStatus or ObjectTypes don't have any value selected in the policy and the attribute all is set to 'false' :
-		//none of the metadatas will be allowed to be delivered
-		if(    (policy.getObjectVisibilities() != null && 
-				policy.getObjectVisibilities().getVisibilities()!= null && 
-				policy.getObjectVisibilities().getVisibilities().size() == 0  && 
-				!policy.getObjectVisibilities().isAll()) 
-				|| 
-			   (policy.getObjectTypes()!= null && 
-			    policy.getObjectTypes().getObjectTypes() != null && 
-			    policy.getObjectTypes().getObjectTypes().size() == 0 &&  
-			    !policy.getObjectTypes().isAll()) 
-			    ||
-			    (policy.getObjectStatus() != null && 
-			    policy.getObjectStatus().getStatus() != null &&
-			    policy.getObjectStatus().getStatus().size() == 0 &&
-			    !policy.getObjectStatus().isAll())
-				)
-		{
-			return new ArrayList<Map<String,Object>>();
-		}
-		
-		//Accessible objects
-		if(    (policy.getObjectVisibilities() != null && 
-				policy.getObjectVisibilities().getVisibilities()!= null && 
-				policy.getObjectVisibilities().getVisibilities().size() != 0  && 
-				!policy.getObjectVisibilities().isAll()) 
-				|| 
-			   (policy.getObjectTypes()!= null && 
-			    policy.getObjectTypes().getObjectTypes() != null && 
-			    policy.getObjectTypes().getObjectTypes().size() != 0 &&  
-			    !policy.getObjectTypes().isAll()))
-			   
-		{
-			String listVisibility = "";
-			if(policy.getObjectVisibilities() != null && !policy.getObjectVisibilities().isAll())
-			{
-				List<String>  allowedVisibility = policy.getObjectVisibilities().getVisibilities();
-				for (int i = 0 ; i<allowedVisibility.size() ; i++)
-				{
-					listVisibility += "'"+ allowedVisibility.get(i)+"'";
-					if(i != allowedVisibility.size()-1)
-					{
-						listVisibility += ",";
-					}
-				}
-			}
-			String listObjectType="";
-			if(policy.getObjectTypes()!= null && !policy.getObjectTypes().isAll())
-			{
-				List<String>  allowedObjectTypes = policy.getObjectTypes().getObjectTypes();
-				for (int i = 0 ; i<allowedObjectTypes.size() ; i++)
-				{
-					listObjectType += "'"+ allowedObjectTypes.get(i)+"'";
-					if(i != allowedObjectTypes.size()-1)
-					{
-						listObjectType += ",";
-					}
-				}
-			}
-			
-			query =     " SELECT m.guid FROM "+ prefix +"sdi_metadata m "+
-			" INNER JOIN "+ prefix +"sdi_objectversion ov  ON m.id = ov.metadata_id "+
-			" INNER JOIN "+ prefix +"sdi_object o ON o.id = ov.object_id "+
-			" INNER JOIN "+ prefix +"sdi_objecttype ot ON o.objecttype_id = ot.id "+
-			" INNER JOIN "+ prefix +"sdi_list_visibility v ON o.visibility_id = v.id ";
-			if(listObjectType != "" || listVisibility != "")
-			{
-				query += " WHERE ";
-				
-			}
-			if(listObjectType != "" )
-			{
-				query += " ot.code IN ("+ listObjectType +") ";
-				if(listVisibility != "")
-				{
-					query += " AND v.code IN ("+ listVisibility +") ";
-				}
-				
-			}
-			else
-			{
-				query += " v.code IN ("+ listVisibility +") ";
-			}
-			
-			if(metadata_ids == null)
-//				metadata_ids = joomlaProvider.sjt.queryForList(query);
-				metadata_ids  = null;
-			else
-//				metadata_ids.addAll(joomlaProvider.sjt.queryForList(query));
-				metadata_ids = null;
-		}
-		
-		//Status & version
-		if(policy.getObjectStatus() != null && !policy.getObjectStatus().isAll())
-		{
-			//metatadata id allowed by the filter on object
-			String tempMetadataIdString ="";
-			if(metadata_ids != null)
-			{
-				for (int k = 0 ; k<metadata_ids.size() ; k++)
-				{
-					tempMetadataIdString += "'" + metadata_ids.get(k).get("guid") + "'";
-					if(k != metadata_ids.size()-1)
-					{
-						tempMetadataIdString += ",";
-					}
-				}
-			}
-			
-			query = "SELECT m.guid FROM "+ prefix +"sdi_metadata m" +
-			" INNER JOIN "+ prefix +"sdi_objectversion ov  ON m.id = ov.metadata_id "+
-			" INNER JOIN "+ prefix +"sdi_object o ON o.id = ov.object_id "+
-			" INNER JOIN "+ prefix +"sdi_objecttype ot ON o.objecttype_id = ot.id "+
-			" INNER JOIN "+ prefix +"sdi_list_metadatastate ms ON m.metadatastate_id=ms.id "+
-			" WHERE ";
-			
-			if(tempMetadataIdString != "")
-			{
-				query += " m.guid IN  ("+tempMetadataIdString+") AND ";
-			}
-				
-			boolean needOr = false;
-			boolean needExec = false;
-			List<Status>  allowedStatus = policy.getObjectStatus().getStatus();
-			for (int i = 0 ; i <allowedStatus.size() ; i++)
-			{
-				if (allowedStatus.get(i).getStatus().equalsIgnoreCase("validated") )
-				{
-					if(needOr)
-						query += " OR ";
-					query += "( ms.code = 'validated' )";
-					needOr = true;
-					needExec = true;
-				}
-				if (allowedStatus.get(i).getStatus().equalsIgnoreCase("unpublished") )
-				{
-					if(needOr)
-						query += " OR ";
-					query += " ( ms.code = 'unpublished' )";
-					needOr = true;
-					needExec = true;
-				}
-				if (allowedStatus.get(i).getStatus().equalsIgnoreCase("archived"))
-				{
-					if(needOr)
-						query += " OR ";
-					query += " (ms.code = 'archived' AND m.archived <= CURDATE() )";
-					needOr = true;
-					needExec = true;
-				}
-				if(allowedStatus.get(i).getStatus().equalsIgnoreCase("published") 
-						&& allowedStatus.get(i).getVersion().equalsIgnoreCase("all")
-						)
-				{
-					if(needOr)
-						query += " OR ";
-					query += "(( ms.code = 'published' AND m.published <= CURDATE()) OR (ms.code = 'archived' AND m.archived >= CURDATE() AND m.published <= CURDATE())) ";
-					needOr = true;
-					needExec = true;
-				}
-				
-				//Particular case only last published
-				if(allowedStatus.get(i).getStatus().equalsIgnoreCase("published") 
-						&& allowedStatus.get(i).getVersion().equalsIgnoreCase("last"))
-				{
-					String queryObjects="";
-					if (tempMetadataIdString != "")
-					{
-						queryObjects= "SELECT ov.object_id FROM "+ prefix +"sdi_objectversion ov " +
-							" INNER JOIN "+ prefix +"sdi_metadata m ON ov.metadata_id=m.id "+
-							" WHERE m.guid IN ("+tempMetadataIdString+") GROUP BY ov.object_id ";
-					}
-					else
-					{
-						queryObjects= "SELECT object_id FROM "+ prefix +"sdi_objectversion " +
-						" GROUP BY object_id ";
-					}
-//					object_ids = joomlaProvider.sjt.queryForList(queryObjects);
-					object_ids = null;
-					
-					//Get last  metadata id
-					for(int j = 0 ; j <object_ids.size() ; j++)
-					{
-						String localQuery = "  SELECT m.guid  "+
-		                " FROM "+ prefix +"sdi_objectversion ov "+ 
-		                " INNER JOIN "+ prefix +"sdi_metadata m ON ov.metadata_id=m.id "+
-		                " INNER JOIN "+ prefix +"sdi_list_metadatastate ms ON m.metadatastate_id=ms.id "+
-		                " INNER JOIN "+ prefix +"sdi_object o ON ov.object_id=o.id " + 
-		                " WHERE o.id="+object_ids.get(j).get("object_id")+" " +
-		                        " AND ((ms.code='published' AND m.published <=CURDATE() )" +
-		                        " OR (ms.code='archived' AND m.archived >= CURDATE() AND m.published <= CURDATE())) "+ 
-		                " ORDER BY m.published DESC " +
-		                " LIMIT 0,1 ";
-						
-						if(final_metadata_ids == null)
-//							final_metadata_ids = joomlaProvider.sjt.queryForList(localQuery);
-							final_metadata_ids = null;
-						else
-//							final_metadata_ids.addAll(joomlaProvider.sjt.queryForList(localQuery));
-							final_metadata_ids = null;
-						
-					}
-					
-				}
-			}
-			if(needExec)
-			{	
-				if(final_metadata_ids == null)
-//					final_metadata_ids = joomlaProvider.sjt.queryForList(query);
-					final_metadata_ids = null;
-				else
-//					final_metadata_ids.addAll(joomlaProvider.sjt.queryForList(query));
-					final_metadata_ids = null;
-			}
-		}
-		else
-		{
-			final_metadata_ids = metadata_ids;
-		}
+//		String query;
+//		
+//		//If ObjectVisibilities, ObjectStatus or ObjectTypes don't have any value selected in the policy and the attribute all is set to 'false' :
+//		//none of the metadatas will be allowed to be delivered
+//		if(    (policy.getObjectVisibilities() != null && 
+//				policy.getObjectVisibilities().getVisibilities()!= null && 
+//				policy.getObjectVisibilities().getVisibilities().size() == 0  && 
+//				!policy.getObjectVisibilities().isAll()) 
+//				|| 
+//			   (policy.getObjectTypes()!= null && 
+//			    policy.getObjectTypes().getObjectTypes() != null && 
+//			    policy.getObjectTypes().getObjectTypes().size() == 0 &&  
+//			    !policy.getObjectTypes().isAll()) 
+//			    ||
+//			    (policy.getObjectStatus() != null && 
+//			    policy.getObjectStatus().getStatus() != null &&
+//			    policy.getObjectStatus().getStatus().size() == 0 &&
+//			    !policy.getObjectStatus().isAll())
+//				)
+//		{
+//			return new ArrayList<Map<String,Object>>();
+//		}
+//		
+//		//Accessible objects
+//		if(    (policy.getObjectVisibilities() != null && 
+//				policy.getObjectVisibilities().getVisibilities()!= null && 
+//				policy.getObjectVisibilities().getVisibilities().size() != 0  && 
+//				!policy.getObjectVisibilities().isAll()) 
+//				|| 
+//			   (policy.getObjectTypes()!= null && 
+//			    policy.getObjectTypes().getObjectTypes() != null && 
+//			    policy.getObjectTypes().getObjectTypes().size() != 0 &&  
+//			    !policy.getObjectTypes().isAll()))
+//			   
+//		{
+//			String listVisibility = "";
+//			if(policy.getObjectVisibilities() != null && !policy.getObjectVisibilities().isAll())
+//			{
+//				List<String>  allowedVisibility = policy.getObjectVisibilities().getVisibilities();
+//				for (int i = 0 ; i<allowedVisibility.size() ; i++)
+//				{
+//					listVisibility += "'"+ allowedVisibility.get(i)+"'";
+//					if(i != allowedVisibility.size()-1)
+//					{
+//						listVisibility += ",";
+//					}
+//				}
+//			}
+//			String listObjectType="";
+//			if(policy.getObjectTypes()!= null && !policy.getObjectTypes().isAll())
+//			{
+//				List<String>  allowedObjectTypes = policy.getObjectTypes().getObjectTypes();
+//				for (int i = 0 ; i<allowedObjectTypes.size() ; i++)
+//				{
+//					listObjectType += "'"+ allowedObjectTypes.get(i)+"'";
+//					if(i != allowedObjectTypes.size()-1)
+//					{
+//						listObjectType += ",";
+//					}
+//				}
+//			}
+//			
+//			query =     " SELECT m.guid FROM "+ prefix +"sdi_metadata m "+
+//			" INNER JOIN "+ prefix +"sdi_objectversion ov  ON m.id = ov.metadata_id "+
+//			" INNER JOIN "+ prefix +"sdi_object o ON o.id = ov.object_id "+
+//			" INNER JOIN "+ prefix +"sdi_objecttype ot ON o.objecttype_id = ot.id "+
+//			" INNER JOIN "+ prefix +"sdi_list_visibility v ON o.visibility_id = v.id ";
+//			if(listObjectType != "" || listVisibility != "")
+//			{
+//				query += " WHERE ";
+//				
+//			}
+//			if(listObjectType != "" )
+//			{
+//				query += " ot.code IN ("+ listObjectType +") ";
+//				if(listVisibility != "")
+//				{
+//					query += " AND v.code IN ("+ listVisibility +") ";
+//				}
+//				
+//			}
+//			else
+//			{
+//				query += " v.code IN ("+ listVisibility +") ";
+//			}
+//			
+//			if(metadata_ids == null)
+////				metadata_ids = joomlaProvider.sjt.queryForList(query);
+//				metadata_ids  = null;
+//			else
+////				metadata_ids.addAll(joomlaProvider.sjt.queryForList(query));
+//				metadata_ids = null;
+//		}
+//		
+//		//Status & version
+//		if(policy.getObjectStatus() != null && !policy.getObjectStatus().isAll())
+//		{
+//			//metatadata id allowed by the filter on object
+//			String tempMetadataIdString ="";
+//			if(metadata_ids != null)
+//			{
+//				for (int k = 0 ; k<metadata_ids.size() ; k++)
+//				{
+//					tempMetadataIdString += "'" + metadata_ids.get(k).get("guid") + "'";
+//					if(k != metadata_ids.size()-1)
+//					{
+//						tempMetadataIdString += ",";
+//					}
+//				}
+//			}
+//			
+//			query = "SELECT m.guid FROM "+ prefix +"sdi_metadata m" +
+//			" INNER JOIN "+ prefix +"sdi_objectversion ov  ON m.id = ov.metadata_id "+
+//			" INNER JOIN "+ prefix +"sdi_object o ON o.id = ov.object_id "+
+//			" INNER JOIN "+ prefix +"sdi_objecttype ot ON o.objecttype_id = ot.id "+
+//			" INNER JOIN "+ prefix +"sdi_list_metadatastate ms ON m.metadatastate_id=ms.id "+
+//			" WHERE ";
+//			
+//			if(tempMetadataIdString != "")
+//			{
+//				query += " m.guid IN  ("+tempMetadataIdString+") AND ";
+//			}
+//				
+//			boolean needOr = false;
+//			boolean needExec = false;
+//			List<Status>  allowedStatus = policy.getObjectStatus().getStatus();
+//			for (int i = 0 ; i <allowedStatus.size() ; i++)
+//			{
+//				if (allowedStatus.get(i).getStatus().equalsIgnoreCase("validated") )
+//				{
+//					if(needOr)
+//						query += " OR ";
+//					query += "( ms.code = 'validated' )";
+//					needOr = true;
+//					needExec = true;
+//				}
+//				if (allowedStatus.get(i).getStatus().equalsIgnoreCase("unpublished") )
+//				{
+//					if(needOr)
+//						query += " OR ";
+//					query += " ( ms.code = 'unpublished' )";
+//					needOr = true;
+//					needExec = true;
+//				}
+//				if (allowedStatus.get(i).getStatus().equalsIgnoreCase("archived"))
+//				{
+//					if(needOr)
+//						query += " OR ";
+//					query += " (ms.code = 'archived' AND m.archived <= CURDATE() )";
+//					needOr = true;
+//					needExec = true;
+//				}
+//				if(allowedStatus.get(i).getStatus().equalsIgnoreCase("published") 
+//						&& allowedStatus.get(i).getVersion().equalsIgnoreCase("all")
+//						)
+//				{
+//					if(needOr)
+//						query += " OR ";
+//					query += "(( ms.code = 'published' AND m.published <= CURDATE()) OR (ms.code = 'archived' AND m.archived >= CURDATE() AND m.published <= CURDATE())) ";
+//					needOr = true;
+//					needExec = true;
+//				}
+//				
+//				//Particular case only last published
+//				if(allowedStatus.get(i).getStatus().equalsIgnoreCase("published") 
+//						&& allowedStatus.get(i).getVersion().equalsIgnoreCase("last"))
+//				{
+//					String queryObjects="";
+//					if (tempMetadataIdString != "")
+//					{
+//						queryObjects= "SELECT ov.object_id FROM "+ prefix +"sdi_objectversion ov " +
+//							" INNER JOIN "+ prefix +"sdi_metadata m ON ov.metadata_id=m.id "+
+//							" WHERE m.guid IN ("+tempMetadataIdString+") GROUP BY ov.object_id ";
+//					}
+//					else
+//					{
+//						queryObjects= "SELECT object_id FROM "+ prefix +"sdi_objectversion " +
+//						" GROUP BY object_id ";
+//					}
+////					object_ids = joomlaProvider.sjt.queryForList(queryObjects);
+//					object_ids = null;
+//					
+//					//Get last  metadata id
+//					for(int j = 0 ; j <object_ids.size() ; j++)
+//					{
+//						String localQuery = "  SELECT m.guid  "+
+//		                " FROM "+ prefix +"sdi_objectversion ov "+ 
+//		                " INNER JOIN "+ prefix +"sdi_metadata m ON ov.metadata_id=m.id "+
+//		                " INNER JOIN "+ prefix +"sdi_list_metadatastate ms ON m.metadatastate_id=ms.id "+
+//		                " INNER JOIN "+ prefix +"sdi_object o ON ov.object_id=o.id " + 
+//		                " WHERE o.id="+object_ids.get(j).get("object_id")+" " +
+//		                        " AND ((ms.code='published' AND m.published <=CURDATE() )" +
+//		                        " OR (ms.code='archived' AND m.archived >= CURDATE() AND m.published <= CURDATE())) "+ 
+//		                " ORDER BY m.published DESC " +
+//		                " LIMIT 0,1 ";
+//						
+//						if(final_metadata_ids == null)
+////							final_metadata_ids = joomlaProvider.sjt.queryForList(localQuery);
+//							final_metadata_ids = null;
+//						else
+////							final_metadata_ids.addAll(joomlaProvider.sjt.queryForList(localQuery));
+//							final_metadata_ids = null;
+//						
+//					}
+//					
+//				}
+//			}
+//			if(needExec)
+//			{	
+//				if(final_metadata_ids == null)
+////					final_metadata_ids = joomlaProvider.sjt.queryForList(query);
+//					final_metadata_ids = null;
+//				else
+////					final_metadata_ids.addAll(joomlaProvider.sjt.queryForList(query));
+//					final_metadata_ids = null;
+//			}
+//		}
+//		else
+//		{
+//			final_metadata_ids = metadata_ids;
+//		}
 		
 		return final_metadata_ids;
 	}
@@ -637,6 +643,7 @@ public class CSWProxyDataAccessibilityManager {
 			</ogc:And>
 		</ogc:Filter> 
 	 */
+	
 	//TODO : le type de contrainte peut être soit XML soit CQL
 	//-> le support du CQl en POST n'est pas présent
 	public StringBuffer addFilterOnDataAccessible (String ogcSearchFilter, StringBuffer param)
@@ -746,7 +753,7 @@ public class CSWProxyDataAccessibilityManager {
 				elementHarvestedValueFalse.addContent(elementLiteral1);
 				elementLiteral1.setText("false");
 				
-				if(policy.getIncludeHarvested()){
+				if(policy.isCsw_includeharvested()){
 					Element elementHarvestedValueTrue = new Element("PropertyIsEqualTo", nsOGC);
 					elementOr.addContent(elementHarvestedValueTrue);
 					Element elementName2 = new Element("PropertyName", nsOGC);
@@ -760,7 +767,7 @@ public class CSWProxyDataAccessibilityManager {
 				//There is only a geographical restriction defined in the policy
 				
 				//If harvested MD have to be excluded
-				if(!policy.getIncludeHarvested()){
+				if(!policy.isCsw_includeharvested()){
 					Element elementHarvestedValueFalse = new Element("PropertyIsEqualTo", nsOGC);
 					elementAnd.addContent(elementHarvestedValueFalse);
 					Element elementName = new Element("PropertyName", nsOGC);
@@ -807,7 +814,7 @@ public class CSWProxyDataAccessibilityManager {
 				elementHarvestedValueFalse.addContent(elementLiteral);
 				elementLiteral.setText("false");
 				
-				if(policy.getIncludeHarvested()){
+				if(policy.isCsw_includeharvested()){
 					Element elementHarvestedValueTrue = new Element("PropertyIsEqualTo", nsOGC);
 					elementOr.addContent(elementHarvestedValueTrue);
 					Element elementName2 = new Element("PropertyName", nsOGC);
@@ -819,7 +826,7 @@ public class CSWProxyDataAccessibilityManager {
 				}
 			}
 			
-			if(policy.getBboxFilter() != null && policy.getBboxFilter().isValide()){
+			if(policy.getSdiCswSpatialpolicy().isValid() ){
 				SAXBuilder builder = new SAXBuilder();
 				Reader in = new StringReader(buildXMLBBOXFilter());
 				Document filterDoc = builder.build(in);
@@ -850,7 +857,7 @@ public class CSWProxyDataAccessibilityManager {
 	 * @throws JDOMException 
 	 */
 	public String addXMLBBOXFilter(String constraint) throws JDOMException, IOException{
-		if(policy.getBboxFilter() == null || !policy.getBboxFilter().isValide())
+		if(!policy.getSdiCswSpatialpolicy().isValid())
 			return constraint;
 		
 		if(constraint != null && constraint.length() > 0 ){
@@ -887,7 +894,7 @@ public class CSWProxyDataAccessibilityManager {
 	 * @throws UnsupportedEncodingException
 	 */
 	public String buildXMLConstraint () throws UnsupportedEncodingException{
-		if(policy.getBboxFilter() == null || !policy.getBboxFilter().isValide())
+		if(!policy.getSdiCswSpatialpolicy().isValid())
 			return new String ();
 		
 		String constraint = new String();
@@ -914,14 +921,14 @@ public class CSWProxyDataAccessibilityManager {
 		filter = "<ogc:BBOX xmlns:ogc='http://www.opengis.net/ogc' xmlns:gml='http://www.opengis.net/gml'>";
 		filter += "<ogc:PropertyName>BoundingBox</ogc:PropertyName>";
 		filter += "<gml:Envelope srsName='";
-		filter += policy.getBboxFilter().getCRS() + "'>";
+		filter += "urn:x-ogc:def:crs:EPSG:4326'>";
 		filter += "<gml:lowerCorner>";
-		filter += policy.getBboxFilter().getMinx() + " ";
-		filter += policy.getBboxFilter().getMiny() + " ";
+		filter += policy.getSdiCswSpatialpolicy().getWestboundlongitude() + " ";
+		filter += policy.getSdiCswSpatialpolicy().getSouthboundlatitude() + " ";
 		filter += "</gml:lowerCorner>";
 		filter += "<gml:upperCorner>";
-		filter += policy.getBboxFilter().getMaxx() + " ";
-		filter += policy.getBboxFilter().getMaxy() + " ";
+		filter += policy.getSdiCswSpatialpolicy().getEastboundlongitude() + " ";
+		filter += policy.getSdiCswSpatialpolicy().getNorthboundlatitude() + " ";
 		filter += "</gml:upperCorner>";
 		filter += "</gml:Envelope>";
 		filter += "</ogc:BBOX>";
@@ -934,14 +941,14 @@ public class CSWProxyDataAccessibilityManager {
 	 * @return
 	 */
 	public String addCQLBBOXFilter (String constraint) throws UnsupportedEncodingException{
-		if(policy.getBboxFilter() == null || !policy.getBboxFilter().isValide())
+		if(!policy.getSdiCswSpatialpolicy().isValid())
 			return constraint;
 		//Add a geographic filter if one defined in the loaded policy
 		
 		if(constraint.length() > 0)
-			constraint += URLEncoder.encode(" AND BBOX(BoundingBox,"+policy.getBboxFilter().getMinx()+","+policy.getBboxFilter().getMiny()+","+policy.getBboxFilter().getMaxx()+","+policy.getBboxFilter().getMaxy()+",'"+policy.getBboxFilter().getCRS()+"') ", "UTF-8");
+			constraint += URLEncoder.encode(" AND BBOX(BoundingBox,"+policy.getSdiCswSpatialpolicy().getWestboundlongitude()+","+policy.getSdiCswSpatialpolicy().getSouthboundlatitude()+","+policy.getSdiCswSpatialpolicy().getEastboundlongitude() +","+policy.getSdiCswSpatialpolicy().getNorthboundlatitude()+",'urn:x-ogc:def:crs:EPSG:4326') ", "UTF-8");
 		else
-			constraint = URLEncoder.encode(" BBOX(BoundingBox,"+policy.getBboxFilter().getMinx()+","+policy.getBboxFilter().getMiny()+","+policy.getBboxFilter().getMaxx()+","+policy.getBboxFilter().getMaxy()+",'"+policy.getBboxFilter().getCRS()+"') ", "UTF-8");
+			constraint = URLEncoder.encode(" BBOX(BoundingBox,"+policy.getSdiCswSpatialpolicy().getWestboundlongitude()+","+policy.getSdiCswSpatialpolicy().getSouthboundlatitude()+","+policy.getSdiCswSpatialpolicy().getEastboundlongitude() +","+policy.getSdiCswSpatialpolicy().getNorthboundlatitude()+",'urn:x-ogc:def:crs:EPSG:4326') ", "UTF-8");
 		return constraint;
 	}
 }
