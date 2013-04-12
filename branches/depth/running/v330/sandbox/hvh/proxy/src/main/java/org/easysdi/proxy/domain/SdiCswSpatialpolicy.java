@@ -4,11 +4,14 @@ package org.easysdi.proxy.domain;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.Transient;
+
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -58,6 +61,16 @@ public class SdiCswSpatialpolicy implements java.io.Serializable {
 		this.sdiPhysicalservicePolicies = sdiPhysicalservicePolicies;
 	}
 
+	@Transient
+	public Boolean isValid() {
+		if(this.Eastboundlongitude != null 
+			&& this.Westboundlongitude != null
+			&& this.Northboundlatitude != null
+			&& this.Southboundlatitude != null)
+			return true;
+		return false;
+	}
+	
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)

@@ -357,7 +357,6 @@ public abstract class ProxyServlet extends HttpServlet {
      * Get a SdiPhysicalservice Url by is index in the list
      * @param i
      * @return
-     * @deprecated
      */
     public String getPhysicalServiceURLByIndex(int i) {
     	List<SdiPhysicalservice> l = this.getPhysicalServiceList();

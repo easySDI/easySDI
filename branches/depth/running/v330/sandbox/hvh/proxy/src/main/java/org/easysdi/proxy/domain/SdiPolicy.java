@@ -16,6 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -33,6 +34,7 @@ public class SdiPolicy implements java.io.Serializable {
 	private SdiWmtsSpatialpolicy sdiWmtsSpatialpolicy;
 	private SdiCswSpatialpolicy sdiCswSpatialpolicy;
 	private SdiWfsSpatialpolicy sdiWfsSpatialpolicy;
+	private SdiSysMetadataversion sdiSysMetadataversion;
 	private String Guid;
 	private int Ordering;
 	private int State;
@@ -48,7 +50,6 @@ public class SdiPolicy implements java.io.Serializable {
 	private Date Allowto;
 	private boolean Anyoperation;
 	private boolean Anyservice;
-	private int Csw_version_id;
 	private boolean Csw_anyattribute;
 	private boolean Csw_anycontext;
 	private boolean Csw_anystate;
@@ -81,7 +82,7 @@ public class SdiPolicy implements java.io.Serializable {
 			int State, int Checked_out, Date Checked_out_time, int Created_by,
 			Date Created, String Name, String Alias, Date Allowfrom,
 			Date Allowto, boolean Anyoperation, boolean Anyservice,
-			int Csw_version_id, boolean Csw_anyattribute,
+			SdiSysMetadataversion sdiSysMetadataversion, boolean Csw_anyattribute,
 			boolean Csw_anycontext, boolean Csw_anystate,
 			boolean Csw_anyvisibility, int Access) {
 		this.sdiSysAccessscope = sdiSysAccessscope;
@@ -99,7 +100,7 @@ public class SdiPolicy implements java.io.Serializable {
 		this.Allowto = Allowto;
 		this.Anyoperation = Anyoperation;
 		this.Anyservice = Anyservice;
-		this.Csw_version_id = Csw_version_id;
+		this.sdiSysMetadataversion = sdiSysMetadataversion;
 		this.Csw_anyattribute = Csw_anyattribute;
 		this.Csw_anycontext = Csw_anycontext;
 		this.Csw_anystate = Csw_anystate;
@@ -116,7 +117,7 @@ public class SdiPolicy implements java.io.Serializable {
 			int State, int Checked_out, Date Checked_out_time, int Created_by,
 			Date Created, Integer Modified_by, Date Modified, String Name,
 			String Alias, Date Allowfrom, Date Allowto, boolean Anyoperation,
-			boolean Anyservice, int Csw_version_id, boolean Csw_anyattribute,
+			boolean Anyservice, SdiSysMetadataversion sdiSysMetadataversion, boolean Csw_anyattribute,
 			boolean Csw_anycontext, boolean Csw_anystate,
 			boolean Csw_anyvisibility, Integer Wms_minimumwidth,
 			Integer Wms_minimumheight, Integer Wms_maximumwidth,
@@ -149,7 +150,7 @@ public class SdiPolicy implements java.io.Serializable {
 		this.Allowto = Allowto;
 		this.Anyoperation = Anyoperation;
 		this.Anyservice = Anyservice;
-		this.Csw_version_id = Csw_version_id;
+		this.sdiSysMetadataversion = sdiSysMetadataversion;
 		this.Csw_anyattribute = Csw_anyattribute;
 		this.Csw_anycontext = Csw_anycontext;
 		this.Csw_anystate = Csw_anystate;
@@ -239,6 +240,17 @@ public class SdiPolicy implements java.io.Serializable {
 
 	public void setSdiWfsSpatialpolicy(SdiWfsSpatialpolicy sdiWfsSpatialpolicy) {
 		this.sdiWfsSpatialpolicy = sdiWfsSpatialpolicy;
+	}
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "csw_version_id", nullable = false)
+	public SdiSysMetadataversion getSdiSysMetadataversion() {
+		return this.sdiSysMetadataversion;
+	}
+
+	public void setSdiSysMetadataversion(
+			SdiSysMetadataversion sdiSysMetadataversion) {
+		this.sdiSysMetadataversion = sdiSysMetadataversion;
 	}
 
 	@Column(name = "guid", nullable = false, length = 36)
@@ -381,15 +393,6 @@ public class SdiPolicy implements java.io.Serializable {
 		this.Anyservice = Anyservice;
 	}
 
-	@Column(name = "csw_version_id", nullable = false)
-	public int getCsw_version_id() {
-		return this.Csw_version_id;
-	}
-
-	public void setCsw_version_id(int Csw_version_id) {
-		this.Csw_version_id = Csw_version_id;
-	}
-
 	@Column(name = "csw_anyattribute", nullable = false)
 	public boolean isCsw_anyattribute() {
 		return this.Csw_anyattribute;
@@ -428,11 +431,11 @@ public class SdiPolicy implements java.io.Serializable {
 	
 	@Column(name = "csw_includeharvested", nullable = false)
 	public boolean isCsw_includeharvested() {
-		return Csw_includeharvested;
+		return this.Csw_includeharvested;
 	}
 
-	public void setCsw_includeharvested(boolean csw_includeharvested) {
-		Csw_includeharvested = csw_includeharvested;
+	public void setCsw_includeharvested(boolean Csw_includeharvested) {
+		this.Csw_includeharvested = Csw_includeharvested;
 	}
 
 	@Column(name = "wms_minimumwidth")

@@ -282,9 +282,9 @@ public class SdiUser implements java.io.Serializable {
 	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiUserRoleOrganism> getSdiUserRoleOrganismsMember() {
 		Set<SdiUserRoleOrganism> result = new HashSet<SdiUserRoleOrganism>() ;
-		Iterator it = this.sdiUserRoleOrganisms.iterator();
+		Iterator<SdiUserRoleOrganism> it = this.sdiUserRoleOrganisms.iterator();
 		 while (it.hasNext()) {
-			 SdiUserRoleOrganism uro = (SdiUserRoleOrganism)it.next();
+			 SdiUserRoleOrganism uro = it.next();
 			 Integer role = (uro).getSdiSysRole().getId();
 			 if(role == 6){
 				 result.add(uro);

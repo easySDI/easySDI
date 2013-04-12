@@ -63,7 +63,9 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.util.HttpURLConnection;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.core.ProxyServletRequest;
+import org.easysdi.proxy.domain.SdiExcludedattribute;
 import org.easysdi.proxy.domain.SdiPhysicalservice;
+import org.easysdi.proxy.domain.SdiPhysicalservicePolicy;
 import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiSysOperationcompliance;
 import org.easysdi.proxy.domain.SdiVirtualservice;
@@ -285,14 +287,14 @@ public class CSWProxyServlet extends ProxyServlet {
 	{
 		try 
 		{
-			String userXsltPath = getConfiguration().getXsltPath();
+			String userXsltPath = sdiVirtualService.getXsltfilename();
 			if (SecurityContextHolder.getContext().getAuthentication() != null) 
 			{
 				userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
 			}
 
 			userXsltPath = userXsltPath + "/" + version + "/" + currentOperation + ".xsl";
-			String globalXsltPath = getConfiguration().getXsltPath() + "/" + version + "/" + currentOperation + ".xsl";
+			String globalXsltPath = userXsltPath + "/" + version + "/" + currentOperation + ".xsl";
 			
 			File xsltFile = new File(userXsltPath);
 			boolean isPostTreat = false;
@@ -362,7 +364,7 @@ public class CSWProxyServlet extends ProxyServlet {
 					logger.trace("transform end apply XSLT on service metadata");
 				}
 				else if ("DescribeRecord".equals(currentOperation)){
-					if (areAllAttributesAllowedForMetadata(getPhysicalServiceURLByIndex(0)) ) 
+					if (sdiPolicy.isCsw_anyattribute()) 
 					{
 						// Keep the metadata as it is
 						tempFile = new File(filePathList.get(0));
@@ -373,7 +375,7 @@ public class CSWProxyServlet extends ProxyServlet {
 					}
 				}
 				else if ("GetRecords".equals(currentOperation)){
-					if (areAllAttributesAllowedForMetadata(getPhysicalServiceURLByIndex(0)) ) 
+					if (sdiPolicy.isCsw_anyattribute()) 
 					{
 						// Keep the metadata as it is
 						tempFile = new File(filePathList.get(0));
@@ -385,7 +387,7 @@ public class CSWProxyServlet extends ProxyServlet {
 					
 					//If the current config is used to harvest remote catalog (see config file : <harvesting-config>true</harvesting-config>),
 					//add dynamically an XML node (and its namespace definition) to the metadata to indicate that this metadata was haversting
-					if(configuration.isHarvestingConfig()){
+					if(sdiVirtualService.isHarvester()){
 						SAXBuilder sb = new SAXBuilder();
 	
 						Document doc = null;
@@ -471,7 +473,7 @@ public class CSWProxyServlet extends ProxyServlet {
 					            if(isAll){
 					            	//All metadatas are authorized to be delivered
 					            	authorizedGuidList = null;
-					            	if(policy.getIncludeHarvested())
+					            	if(sdiPolicy.isCsw_includeharvested())
 					            		numberOfRecordsActuallyMatched = numberOfRecordsMatchedAttribute.getIntValue();
 					            	else
 					            		numberOfRecordsActuallyMatched = numberOfEasySDIMetadatas;
@@ -484,14 +486,14 @@ public class CSWProxyServlet extends ProxyServlet {
 							            for (int i = 0 ; i < accessibleDataIds.size() ; i++ ){
 							            	authorizedGuidList.add((String)accessibleDataIds.get(i).get("guid"));
 							            }
-							            if(policy.getIncludeHarvested())
+							            if(sdiPolicy.isCsw_includeharvested())
 						            		numberOfRecordsActuallyMatched = numberOfRecordsMatchedAttribute.getIntValue() - (numberOfEasySDIMetadatas - authorizedGuidList.size());
 						            	else
 						            		numberOfRecordsActuallyMatched = authorizedGuidList.size();
 						            }else{
 						            	//accessibleDataIds null means all Metadatas are allowed 
 						            	authorizedGuidList = null;
-						            	if(policy.getIncludeHarvested())
+						            	if(sdiPolicy.isCsw_includeharvested())
 						            		numberOfRecordsActuallyMatched = numberOfRecordsMatchedAttribute.getIntValue();
 						            	else
 						            		numberOfRecordsActuallyMatched = cswDataManager.getCountOfEasySDIMetadatas();
@@ -499,7 +501,7 @@ public class CSWProxyServlet extends ProxyServlet {
 					            }
 					            
 					            //Get all the unauthorized metadata nodes in the result document 
-					            Iterator<Element> resultIterator = racine.getDescendants(new ElementMD_MetadataNonAuthorizedFilter(authorizedGuidList,policy.getIncludeHarvested()));
+					            Iterator<Element> resultIterator = racine.getDescendants(new ElementMD_MetadataNonAuthorizedFilter(authorizedGuidList,sdiPolicy.isCsw_includeharvested()));
 					            while(resultIterator.hasNext()){
 									Element e = resultIterator.next();
 									lElementUnauthorized.add(e);
@@ -520,13 +522,13 @@ public class CSWProxyServlet extends ProxyServlet {
 									numberOfRecordsMatchedAttribute.setValue(String.valueOf(numberOfRecordsActuallyMatched));
 								//If harvested MD are not included, we can set a value closer to the right one in place of the value returned by the remote server
 								//But, this value is not guaranteed to be right
-								if (numberOfRecordsMatchedAttribute != null && asConstraint && !policy.getIncludeHarvested()){
+								if (numberOfRecordsMatchedAttribute != null && asConstraint && !sdiPolicy.isCsw_includeharvested()){
 									if(numberOfRecordsMatchedAttribute.getIntValue() > numberOfRecordsActuallyMatched)
 										numberOfRecordsMatchedAttribute.setValue(String.valueOf(numberOfRecordsActuallyMatched));
 								}
 											
 								//Rewrite the attribute 'nextRecord'
-								if(!policy.getIncludeHarvested() && !asConstraint && numberOfRecordsReturnedAttribute!= null && numberOfRecordsMatchedAttribute != null && numberOfRecordsActuallyMatched == numberOfRecordsReturnedAttribute.getIntValue())
+								if(!sdiPolicy.isCsw_includeharvested() && !asConstraint && numberOfRecordsReturnedAttribute!= null && numberOfRecordsMatchedAttribute != null && numberOfRecordsActuallyMatched == numberOfRecordsReturnedAttribute.getIntValue())
 									nextRecordAttribute.setValue(String.valueOf("0"));
 							}
 					        catch (JDOMException e) {
@@ -545,7 +547,7 @@ public class CSWProxyServlet extends ProxyServlet {
 				}
 				else if( "GetRecordById".equals(currentOperation) )
 				{
-					if (areAllAttributesAllowedForMetadata(getPhysicalServiceURLByIndex(0)) ) 
+					if (sdiPolicy.isCsw_anyattribute()) 
 					{
 						// Keep the metadata as it is
 						tempFile = new File(filePathList.get(0));
@@ -557,7 +559,7 @@ public class CSWProxyServlet extends ProxyServlet {
 					
 					//If the current config is used to harvest remote catalog (see config file : <harvesting-config>true</harvesting-config>),
 					//add dynamically an XML node (and its namespace definition) to the metadata to indicate that this metadata was haversting
-					if(configuration.isHarvestingConfig()){
+					if(sdiVirtualService.isHarvester()){
 						SAXBuilder sb = new SAXBuilder();
 	
 						Document doc = null;
@@ -651,7 +653,6 @@ public class CSWProxyServlet extends ProxyServlet {
 			{
 				os.close();
 				is.close();
-				DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 				Date d = new Date();
 				logger.info("ClientResponseDateTime="+ dateFormat.format(d));
 				if (tempFile != null) 
@@ -692,6 +693,7 @@ public class CSWProxyServlet extends ProxyServlet {
 	 * org.easysdi.proxy.core.ProxyServlet#requestPreTreatmentGET(javax.servlet
 	 * .http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void requestPreTreatmentGET(HttpServletRequest req, HttpServletResponse resp) 
 	{
@@ -710,7 +712,7 @@ public class CSWProxyServlet extends ProxyServlet {
 			
 			while (parameterNames.hasMoreElements()) 
 			{
-				String key = (String) parameterNames.nextElement();
+				String key = parameterNames.nextElement();
 				String value = URLEncoder.encode(req.getParameter(key),"UTF-8");
 				if(key.equalsIgnoreCase("id")){
 					requestedId = value;
@@ -768,9 +770,8 @@ public class CSWProxyServlet extends ProxyServlet {
 			{
 				logger.trace("Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy);
-				if(!cswDataManager.isAllEasySDIDataAccessible() || !policy.getIncludeHarvested())
+				if(!cswDataManager.isAllEasySDIDataAccessible() || !sdiPolicy.isCsw_includeharvested())
 				{
-					String dataIDaccessible="";
 					if(!cswDataManager.isObjectAccessible(requestedId))
 					{
 						logger.info(requestedId+" - Requested metadata is not accessible regarding policy restriction. Method isObjectAccessible returned false.");
@@ -822,7 +823,7 @@ public class CSWProxyServlet extends ProxyServlet {
 			parameterNames = req.getParameterNames();
 			while (parameterNames.hasMoreElements()) 
 			{
-				String key = (String) parameterNames.nextElement();
+				String key = parameterNames.nextElement();
 				String value = URLEncoder.encode(req.getParameter(key),"UTF-8");
 				
 				if(key.equalsIgnoreCase("id"))
@@ -874,7 +875,7 @@ public class CSWProxyServlet extends ProxyServlet {
 			{
 				//If the config is used to harvest remote servers, the metadatas are never completed.
 				//The completion process of metadatas is only available for EasySDI metadatas (metadatas created and managed by the solution)
-				if( (content.equalsIgnoreCase("") || content.equalsIgnoreCase("complete")) && !configuration.isHarvestingConfig())
+				if( (content.equalsIgnoreCase("") || content.equalsIgnoreCase("complete")) && !sdiVirtualService.isHarvester())
 				{
 					logger.trace("Start - Complete metadata");
 					//Build complete metadata
@@ -988,7 +989,7 @@ public class CSWProxyServlet extends ProxyServlet {
 		            	resultListStorage.addAll(result.getChildren());
 		            	for(int i=resultListStorage.size()-1;i>=0;i--)
 		            	{
-		            		if (((Element)resultListStorage.get(i)).getName().equalsIgnoreCase("Constraint") || ((Element)resultListStorage.get(i)).getName().equalsIgnoreCase("RecordProperty")){
+		            		if (resultListStorage.get(i).getName().equalsIgnoreCase("Constraint") || resultListStorage.get(i).getName().equalsIgnoreCase("RecordProperty")){
 		            			resultListStorage.remove(i);
 		            		}
 		            	}
@@ -1052,7 +1053,7 @@ public class CSWProxyServlet extends ProxyServlet {
 				logger.trace("Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy);
 				String dataId = rh.getRecordId();
-				if(!cswDataManager.isAllEasySDIDataAccessible() || !policy.getIncludeHarvested())
+				if(!cswDataManager.isAllEasySDIDataAccessible() || !sdiPolicy.isCsw_includeharvested())
 				{
 					if(!cswDataManager.isObjectAccessible(dataId))
 					{
@@ -1086,7 +1087,7 @@ public class CSWProxyServlet extends ProxyServlet {
 				List<String> filePathList = new Vector<String>();
 				String filePath = sendData("POST", getPhysicalServiceURLByIndex(0), param.toString());
 				filePathList.add(filePath);
-				if( (rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete")) && !configuration.isHarvestingConfig())
+				if( (rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete")) && !sdiVirtualService.isHarvester())
 				{
 					//If the config is used to harvest remote servers, the metadatas are never completed.
 					//The completion process of metadatas is only available for EasySDI metadatas (metadatas created and managed by the solution)
@@ -1110,11 +1111,11 @@ public class CSWProxyServlet extends ProxyServlet {
 				logger.trace("Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy);
 				if(		!cswDataManager.isAllDataAccessibleForGetRecords() || 
-						(policy.getBboxFilter() != null && policy.getBboxFilter().isValide()) || 
-						!policy.getIncludeHarvested())
+						sdiPolicy.getSdiCswSpatialpolicy().isValid() || 
+						!sdiPolicy.isCsw_includeharvested())
 				{
 					//Add a filter on the data id in the request
-					param = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), param);
+					param = cswDataManager.addFilterOnDataAccessible(sdiVirtualService.getIdentifiersearchattribute(), param);
 					if(param == null)
 					{
 						owsExceptionReport.sendHttpServletResponse(request, response,cswDataManager.generateEmptyResponseForGetRecords(requestedVersion),"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
@@ -1124,11 +1125,9 @@ public class CSWProxyServlet extends ProxyServlet {
 				//Add a filter on the data id in the request
 				logger.trace("End - Data Accessibility");
 				
-//				dump("INFO","Start - Get response");
 				List<String> filePathList = new Vector<String>();
 				String filePath = sendData("POST", getPhysicalServiceURLByIndex(0), param.toString());
 				filePathList.add(filePath);
-//				dump("INFO","End - Get response");
 				if( rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete"))
 				{
 					logger.trace("Start - Complete metadata");
@@ -1218,7 +1217,7 @@ public class CSWProxyServlet extends ProxyServlet {
 			CSWCapabilities200.append("</xsl:template>");
 
 			if (hasPolicy) {
-				if (!policy.getOperations().isAll() || deniedOperations.size() > 0) {
+				if (!sdiPolicy.isAnyoperation() || deniedOperations.size() > 0) {
 					Iterator<String> it = permitedOperations.iterator();
 					while (it.hasNext()) {
 						String text = it.next();
@@ -1274,61 +1273,33 @@ public class CSWProxyServlet extends ProxyServlet {
 	}
 	
 	/**
-     * TODO move to CSW
      * @param url
      * @return
      */
     protected List<String> getAttributesNotAllowedInMetadata(String url) {
-	List<String> attrList = new Vector<String>();
-
-	if (policy == null)
-	    return attrList;
-
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i = 0; i < serverList.size(); i++) {
-	    // Is the server overloaded?
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		if (serverList.get(i).getMetadata().getAttributes().isAll()) {
-		    attrList.add("%");
+		List<String> attrList = new Vector<String>();
+	
+		// Get the XPath defining excluded attributes.
+	    if(sdiPolicy.isCsw_anyattribute())
+    	{
+    		attrList.add("%");
 		    return attrList;
-		}
-		List<org.easysdi.proxy.policy.Attribute> attrList2 = serverList.get(i).getMetadata().getAttributes().getExclude().getAttribute();
-		for (int j = 0; j < attrList2.size(); j++) {
-		    attrList.add(attrList2.get(j).getContent());
-		}
-	    }
-	}
-	// in any other case the attribute is not allowed
-	return attrList;
+    	}
+    	Set<SdiExcludedattribute> excludedAttributes = sdiPolicy.getSdiExcludedattributes();
+    	if(!excludedAttributes.isEmpty())
+    	{
+    		Iterator<SdiExcludedattribute> i = excludedAttributes.iterator();
+    		while (i.hasNext())
+    		{
+    			 attrList.add(i.next().getPath());
+    		}
+    	}
+	    
+		// in any other case the attribute is not allowed
+		return attrList;
     }
 
-    /**
-     * TODO move to CSW
-     */
-    protected boolean areAllAttributesAllowedForMetadata(String url) {
-	
-
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i = 0; i < serverList.size(); i++) {
-	    // Is the server overloaded?
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		if (serverList.get(i) != null && serverList.get(i).getMetadata() != null && serverList.get(i).getMetadata().getAttributes() != null) {
-		    if (serverList.get(i).getMetadata().getAttributes().isAll())
-			return true;
-		    else
-			return false;
-		}
-	    }
-	}
-
-	// in any other case the attribute is not allowed
-	return false;
-
-    }
-	
-    protected StringBuffer buildServiceMetadataCapabilitiesXSLT() 
+   protected StringBuffer buildServiceMetadataCapabilitiesXSLT() 
 	{
 		StringBuffer serviceMetadataXSLT = new StringBuffer();
 		serviceMetadataXSLT.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><xsl:stylesheet version=\"1.00\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
@@ -1356,29 +1327,30 @@ public class CSWProxyServlet extends ProxyServlet {
 		serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getTitle() + "</xsl:text>");
 		serviceMetadataXSLT.append("</xsl:element>");
 		//Abstract
-		if(getConfiguration().getAbst()!=null)
+		if(!sdiVirtualService.getSdiVirtualmetadatas().iterator().next().isInheritedsummary() && sdiVirtualService.getSdiVirtualmetadatas().iterator().next().getSummary() != null)
 		{
 			serviceMetadataXSLT.append("<xsl:element name=\"ows:Abstract\"> ");
-			serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAbst() + "</xsl:text>");
+			serviceMetadataXSLT.append("<xsl:text>" + sdiVirtualService.getSdiVirtualmetadatas().iterator().next().getSummary() + "</xsl:text>");
 			serviceMetadataXSLT.append("</xsl:element>");
 		}
 		//Keyword
-		if(getConfiguration().getKeywordList()!= null)
+		if(!sdiVirtualService.getSdiVirtualmetadatas().iterator().next().isInheritedkeyword() && sdiVirtualService.getSdiVirtualmetadatas().iterator().next().getKeyword() != null)
 		{
-			List<String> keywords = getConfiguration().getKeywordList();
+			String skeywords =sdiVirtualService.getSdiVirtualmetadatas().iterator().next().getKeyword();
+			String[] keywords = skeywords.split(",");
 			serviceMetadataXSLT.append("<xsl:element name=\"ows:Keywords\"> ");
-			for (int n = 0; n < keywords.size(); n++) {
+			for (int n = 0; n < keywords.length; n++) {
 				serviceMetadataXSLT.append("<xsl:element name=\"ows:Keyword\"> ");
-				serviceMetadataXSLT.append("<xsl:text>" + keywords.get(n) + "</xsl:text>");
+				serviceMetadataXSLT.append("<xsl:text>" + keywords[n] + "</xsl:text>");
 				serviceMetadataXSLT.append("</xsl:element>");
 			}
 			serviceMetadataXSLT.append("</xsl:element>");
 		}
 		//Fees
-		if(getConfiguration().getFees() !=null)
+		if(!sdiVirtualService.getSdiVirtualmetadatas().iterator().next().isInheritedfee() && sdiVirtualService.getSdiVirtualmetadatas().iterator().next().getFee() != null)
 		{
 			serviceMetadataXSLT.append("<xsl:element name=\"ows:Fees\"> ");
-			serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getFees() + "</xsl:text>");
+			serviceMetadataXSLT.append("<xsl:text>" + sdiVirtualService.getSdiVirtualmetadatas().iterator().next().getFee() + "</xsl:text>");
 			serviceMetadataXSLT.append("</xsl:element>");
 		}
 		//AccesConstraints

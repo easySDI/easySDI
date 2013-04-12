@@ -158,4 +158,7 @@
 	</table-filter>
 	<table-filter match-name="b6svl_session" match-catalog="install"></table-filter>
 	<table-filter match-name="b6svl_users" match-catalog="install"></table-filter>
+	<table-filter match-name="b6svl_sdi_sys_metadataversion"
+		match-catalog="install">
+	</table-filter>
 </hibernate-reverse-engineering>
