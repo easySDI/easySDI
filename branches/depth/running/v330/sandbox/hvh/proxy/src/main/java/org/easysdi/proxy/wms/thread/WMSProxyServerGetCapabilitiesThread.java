@@ -21,8 +21,7 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletResponse;
 
 import org.easysdi.proxy.domain.SdiPhysicalservice;
-import org.easysdi.proxy.wms.*;
-import org.easysdi.xml.documents.RemoteServerInfo;
+import org.easysdi.proxy.wms.WMSProxyServlet;
 
 /**
  * @author DEPTH SA

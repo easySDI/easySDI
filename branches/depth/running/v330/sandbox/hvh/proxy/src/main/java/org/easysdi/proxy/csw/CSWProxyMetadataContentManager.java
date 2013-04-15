@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 import org.easysdi.proxy.jdom.filter.AttributeXlinkFilter;
-import org.easysdi.proxy.jdom.filter.ElementExceptionReportFilter;
+import org.easysdi.proxy.jdom.filter.ElementFilter;
 import org.easysdi.proxy.jdom.filter.ElementFragmentFilter;
 import org.easysdi.proxy.core.ProxyServlet;
 import java.util.Iterator;
@@ -135,7 +135,7 @@ public class CSWProxyMetadataContentManager
 				InputStream xmlChild = sendData(serverUrl,params);
 				if(xmlChild == null)
 				{
-					_lastError = ("Error on : "+URLEncoder.encode(target));
+					_lastError = ("Error on : "+URLEncoder.encode(target,"UTF-8"));
 					return false;
 				}
 //				proxy.dump("DEBUG","End - Get content metadata");
@@ -144,7 +144,7 @@ public class CSWProxyMetadataContentManager
 				//Check if the response is an Ogc Exception
 				Document documentChild = sxb.build(xmlChild);
 				Element elementChild = documentChild.getRootElement();
-				Filter exceptionFilter = new ElementExceptionReportFilter();
+				ElementFilter exceptionFilter = new ElementFilter("ExceptionReport");
 				List  l = elementChild.getContent(exceptionFilter);
 				if(l.size() > 0)
 				{

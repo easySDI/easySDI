@@ -26,13 +26,14 @@ import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.easysdi.proxy.jdom.filter.ElementNamedLayerFilter;
 import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.domain.SdiPhysicalservice;
+import org.easysdi.proxy.jdom.filter.ElementFilter;
 import org.easysdi.proxy.wms.WMSProxyServlet;
-import org.easysdi.xml.documents.RemoteServerInfo;
-import org.jdom.*;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -103,7 +104,7 @@ public class WMSProxyLayerThread extends Thread {
 	//		Namespace nsSE =  Namespace.getNamespace("se","http://www.opengis.net/se");
 
 	Element racine = document.getRootElement();
-	Iterator<?> ilNamedLayer = racine.getDescendants(new ElementNamedLayerFilter());
+	Iterator<?> ilNamedLayer = racine.getDescendants(new ElementFilter("NamedLayer"));
 
 	while(ilNamedLayer.hasNext()){
 	    Element namedLayer = (Element)ilNamedLayer.next();

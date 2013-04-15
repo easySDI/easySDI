@@ -8,13 +8,6 @@
 	<security:authentication-manager alias="authenticationManager">
 		<security:authentication-provider ref="easysdiProvider" />
 	</security:authentication-manager>
-
-	<bean id="joomlaProvider" class="org.easysdi.proxy.security.JoomlaProvider">
-		<property name="prefix">
-			<value>b6svl_</value>
-		</property>
-		<property name="version" value="3.0.0" />
-	</bean>
 	
 	<bean id="easysdiProvider" class="org.easysdi.proxy.security.EasysdiProvider" />
 	

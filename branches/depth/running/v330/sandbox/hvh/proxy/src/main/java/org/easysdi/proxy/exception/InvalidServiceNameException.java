@@ -22,9 +22,6 @@ package org.easysdi.proxy.exception;
  */
 public class InvalidServiceNameException extends ProxyServletException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -6089495385047608602L;
 
 	/**

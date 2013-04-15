@@ -33,15 +33,12 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.UUID;
 import java.util.Vector;
 import java.util.zip.GZIPInputStream;
@@ -71,15 +68,11 @@ import org.easysdi.proxy.domain.SdiVirtualPhysical;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.log.ProxyLogger;
 import org.easysdi.proxy.ows.OWSExceptionReport;
-import org.easysdi.proxy.policy.Policy;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.xml.sax.SAXException;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 
 /**
  * @author DEPTH SA
@@ -107,78 +100,33 @@ public abstract class ProxyServlet extends HttpServlet {
     protected DateFormat dateFormat ;
     public HttpServletRequest request; 
     public HttpServletResponse response;
+    
     /**
      * List of the physical services relayed by the current virtual service
      */
-    public LinkedHashMap<String, SdiPhysicalservice> physicalServiceHashTable = new LinkedHashMap <String, SdiPhysicalservice>();
+    private LinkedHashMap<String, SdiPhysicalservice> physicalServiceHashTable = new LinkedHashMap <String, SdiPhysicalservice>();
     
+    /**
+     * 
+     */
     private List<String> temporaryFileList = new Vector<String>();
+    /**
+     * 
+     */
+    protected String requestCharacterEncoding = null;
+    /**
+     * 
+     */
+    protected String responseContentType = null;
+    /**
+     * 
+     */
+    protected List<String> responseContentTypeList = new ArrayList<String>();
     
     /**
-     * Configuration loaded to complete the request
+     * 
      */
-    @Deprecated
-    protected org.easysdi.xml.documents.Config configuration;
-
-    /**
-     * Policy loaded
-     */
-    @Deprecated
-    public Policy policy;
-    protected String requestCharacterEncoding = null;
-    protected String responseContentType = null;
-    protected List<String> responseContentTypeList = new ArrayList<String>();
     protected Integer responseStatusCode = HttpServletResponse.SC_OK;
-    protected Map<Integer, String> wfsFilePathList = new TreeMap<Integer, String>();
-    public Multimap<Integer, String> wmsFilePathList = HashMultimap.create();
-
-    /**
-     * WMTS response files
-     */
-    public Hashtable<String, String> ogcExceptionFilePathTable = new Hashtable<String, String>();
-
-    /**
-     * Une liste des fichiers (sendData) réponse de chaque serveur WFS
-     */
-    public Map<Integer, String> layerFilePathList = new TreeMap<Integer, String>();
-
-    /**
-     * 
-     */
-    protected Vector<String> featureTypePathList = new Vector<String>(); 
-
-    /**
-     *  Contient	le featureTypetoKeep.get(0) (->reference pour le filtre remoteFilter) par Server
-     *  Debug tb 04.06.2009
-     */
-    protected List<String> policyAttributeListToKeepPerFT = new Vector<String>();
-
-    /**
-     * 
-     */
-    protected int policyAttributeListNb = 0;
-
-    /**
-     * Liste des fichiers réponses de chaque serveur qui contiennent des erreurs OGC
-     */
-    protected Multimap<Integer, String> ogcExceptionFilePathList = HashMultimap.create();
-
-    /**
-     * Store operations supported by the current version of the proxy
-     * Update this list to reflect proxy's capabilities
-     */
-    public static List<String> ServiceSupportedOperations = Arrays.asList();
-
-    /**
-     * Store all the operations define by the ogc norme for the specific service
-     */
-    @Deprecated
-    public static List<String> ServiceOperations = Arrays.asList();
-
-    /**
-     * 
-     */
-    protected boolean hasPolicy = true;
 
     /**
      * 
@@ -213,11 +161,14 @@ public abstract class ProxyServlet extends HttpServlet {
     	Level level = Level.toLevel(sdiVirtualService.getSdiSysLoglevel().getValue()); 
     	logger = org.apache.log4j.Logger.getLogger("ProxyLogger");
     	logger.setLevel(level);
+    	
+    	//Init value
+	    dateFormat = new SimpleDateFormat(strDateFormat);
 
 	    DailyRollingFileAppender appender = (DailyRollingFileAppender)logger.getAppender("logFileAppender");
 	    appender.setBufferedIO(true);
 	    appender.setAppend(true);
-	    appender.setFile(sdiVirtualService.getLogpath()+File.separator+sdiVirtualService.getAlias()+new Date()+sdiVirtualService.getSdiSysServiceconnector().getValue());
+	    appender.setFile(sdiVirtualService.getLogpath()+File.separator+sdiVirtualService.getAlias()+new SimpleDateFormat("yyyy.MM.dd").format(new Date())+sdiVirtualService.getSdiSysServiceconnector().getValue()+".log");
 	    //DatePattern receive the period rolling value
 	    if(sdiVirtualService.getSdiSysLogroll().getValue().equalsIgnoreCase("daily"))
 	    	appender.setDatePattern("'.'yyyy-MM-dd");
@@ -237,9 +188,6 @@ public abstract class ProxyServlet extends HttpServlet {
 	    String result = conversionPattern.substring(0,start) + strDateFormat + conversionPattern.substring(end);
 	    layout.setConversionPattern(result);
 	    
-	    //Init value
-	    dateFormat = new SimpleDateFormat(strDateFormat);
- 
     	//Log initilization informations
     	logger.info("Virtualservice="+sdiVirtualService.getAlias());
     }
@@ -899,14 +847,7 @@ public abstract class ProxyServlet extends HttpServlet {
     	return null;
     }
 
-    @Deprecated
-    public org.easysdi.xml.documents.Config getConfiguration() {
-    	return configuration;
-    }
-
-    
-
-
+   
        /**
      * If the operation is allowed in the policy then return true, in any other
      * case return false.

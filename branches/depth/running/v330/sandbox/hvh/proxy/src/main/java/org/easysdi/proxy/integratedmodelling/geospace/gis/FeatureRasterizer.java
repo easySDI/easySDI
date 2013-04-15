@@ -32,7 +32,6 @@ import org.geotools.feature.Feature;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -57,7 +56,9 @@ public class FeatureRasterizer {
 
 	public class FeatureRasterizerException extends Exception {
 		   
-	    /**
+	  private static final long serialVersionUID = 181880408872058192L;
+
+		/**
 	     * Constructor with message argument.
 	     *
 	     * @param message Reason for the exception being thrown

@@ -19,14 +19,11 @@ package org.easysdi.proxy.wms.v130;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import org.easysdi.proxy.core.ProxyServlet;
+import org.easysdi.proxy.domain.SdiVirtualmetadata;
 import org.easysdi.proxy.wms.WMSProxyResponseBuilder;
-import org.easysdi.xml.documents.Config;
-import org.easysdi.xml.documents.ServiceContactAdressInfo;
-import org.easysdi.xml.documents.ServiceContactInfo;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -57,8 +54,6 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 		servlet.logger.trace("transform - Start - Capabilities metadata writing");
 		try
 		{
-			Config config = servlet.getConfiguration();
-			
 			SAXBuilder sxb = new SAXBuilder();
 			Document document = sxb.build(new File(filePath));
 			
@@ -79,104 +74,82 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 			//Create a new Service element
 			Element newService  = new Element ("Service", nsWMS);
 			newService.addContent((new Element("Name", nsWMS)).setText("WMS"));
-			
-			if(config == null )
+			if(servlet.getVirtualService().isReflectedmetadata())
 			{
 				XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 		        sortie.output(document, new FileOutputStream(filePath));
 				return true;
 			}
 						
-			
-			if(config.getTitle() != null && config.getTitle().length() != 0)
-				newService.addContent((new Element("Title", nsWMS)).setText(config.getTitle()));
-			if(config.getAbst() != null && config.getAbst().length() != 0)
-				newService.addContent((new Element("Abstract", nsWMS)).setText(config.getAbst()));
-			if(config.getKeywordList() != null && config.getKeywordList().size() != 0)
+			SdiVirtualmetadata metadata = servlet.getVirtualService().getSdiVirtualmetadatas().iterator().next();
+			if(!metadata.isInheritedtitle())
+				newService.addContent((new Element("Title", nsWMS)).setText(metadata.getTitle()));
+			if(!metadata.isInheritedsummary())
+				newService.addContent((new Element("Abstract", nsWMS)).setText(metadata.getSummary()));
+			if(!metadata.isInheritedkeyword())
 			{
 				Element keywords = new Element("KeywordsList", nsWMS);
-				Iterator<String> iKeywords = config.getKeywordList().iterator();
-				while (iKeywords.hasNext())
+				String skeywords = metadata.getKeyword();
+				if(skeywords != null)
 				{
-					keywords.addContent((new Element("Keyword", nsWMS)).setText(iKeywords.next()));
+					String[] words = skeywords.split(",");
+					for (int n = 0; n < words.length; n++) {
+						keywords.addContent((new Element("Keyword", nsWMS)).setText(words[n] ));
+					}
+					newService.addContent(keywords);
 				}
-				newService.addContent(keywords);
 			}
 			Element onlineResource = new Element("OnlineResource", nsWMS);
 			onlineResource.setAttribute("type", "simple",nsXLINK);
 			onlineResource.setAttribute("href", href, nsXLINK);
 			newService.addContent(onlineResource);
 			
-			
-			if(config.getContactInfo() != null && !config.getContactInfo().isEmpty()){
+			if(!metadata.isInheritedcontact()){
 				Element newContactInformation = new Element("ContactInformation", nsWMS);
-				
-				ServiceContactInfo contactInfo = config.getContactInfo();
-				
 				Element newContactPersonPrimary = new Element("ContactPersonPrimary", nsWMS);
-				Boolean hasContactPersonPrimary = false;
-				if(contactInfo.getName() != null && contactInfo.getName().length() != 0){
-					newContactPersonPrimary.addContent((new Element("ContactPerson", nsWMS)).setText(contactInfo.getName()));
-					hasContactPersonPrimary = true;
-				}
-				if(contactInfo.getOrganization() != null && contactInfo.getOrganization().length() != 0){
-					newContactPersonPrimary.addContent((new Element("ContactOrganization", nsWMS)).setText(contactInfo.getOrganization()));
-					hasContactPersonPrimary = true;
-				}
-				if(hasContactPersonPrimary)
-					newContactInformation.addContent(newContactPersonPrimary);
 				
-				if (contactInfo.getPosition() != null && contactInfo.getPosition().length() != 0)
-					newContactInformation.addContent((new Element("ContactPosition", nsWMS)).setText(contactInfo.getPosition()));
+				if(metadata.getContactname() != null)
+					newContactPersonPrimary.addContent((new Element("ContactPerson", nsWMS)).setText(metadata.getContactname()));
+				if(metadata.getContactorganization() != null)
+					newContactPersonPrimary.addContent((new Element("ContactOrganization", nsWMS)).setText(metadata.getContactorganization()));
 				
-				ServiceContactAdressInfo contactAddress = contactInfo.getContactAddress();
+				newContactInformation.addContent(newContactPersonPrimary);
+				
+				if(metadata.getContactposition() != null)
+					newContactInformation.addContent((new Element("ContactPosition", nsWMS)).setText(metadata.getContactposition()));
+				
 				Element newContactAddress = new Element("ContactAddress", nsWMS);
-				Boolean hasContactAddress = false;
-				if(contactAddress.getType() != null && contactAddress.getType().length() != 0){
-					newContactAddress.addContent((new Element("AddressType", nsWMS)).setText(contactAddress.getType()));
-					hasContactAddress = true;
-				}
-				if(contactAddress.getAddress() != null && contactAddress.getAddress().length() != 0){
-					newContactAddress.addContent((new Element("Address", nsWMS)).setText(contactAddress.getAddress()));
-					hasContactAddress = true;
-				}
-				if(contactAddress.getCity() != null && contactAddress.getCity().length() != 0){
-					newContactAddress.addContent((new Element("City", nsWMS)).setText(contactAddress.getCity()));
-					hasContactAddress = true;
-				}
-				if(contactAddress.getState() != null && contactAddress.getState().length() != 0){
-					newContactAddress.addContent((new Element("StateOrProvince", nsWMS)).setText(contactAddress.getState()));
-					hasContactAddress = true;
-				}
-				if(contactAddress.getPostalCode() != null && contactAddress.getPostalCode().length() != 0){
-					newContactAddress.addContent((new Element("PostCode", nsWMS)).setText(contactAddress.getPostalCode()));
-					hasContactAddress = true;
-				}
-				if(contactAddress.getCountry() != null && contactAddress.getCountry().length() != 0){
-					newContactAddress.addContent((new Element("Country", nsWMS)).setText(contactAddress.getCountry()));
-					hasContactAddress = true;
-				}
+				//TODO add address type
+//				newContactAddress.addContent((new Element("AddressType", nsWMS)).setText(metadata.getContactadress()));
+				if(metadata.getContactadress() != null)
+					newContactAddress.addContent((new Element("Address", nsWMS)).setText(metadata.getContactadress()));
+				if(metadata.getContactlocality() != null)
+					newContactAddress.addContent((new Element("City", nsWMS)).setText(metadata.getContactlocality()));
+				if(metadata.getContactstate() != null)
+					newContactAddress.addContent((new Element("StateOrProvince", nsWMS)).setText(metadata.getContactstate()));
+				if(metadata.getContactpostalcode() != null)
+					newContactAddress.addContent((new Element("PostCode", nsWMS)).setText(metadata.getContactpostalcode()));
+				if(metadata.getSdiSysCountry() != null)
+					newContactAddress.addContent((new Element("Country", nsWMS)).setText(metadata.getSdiSysCountry().getName()));
+				newContactInformation.addContent(newContactAddress);
 				
-				if(hasContactAddress)
-					newContactInformation.addContent(newContactAddress);
+				if(metadata.getContactphone() != null)
+					newContactInformation.addContent((new Element("ContactVoiceTelephone", nsWMS)).setText(metadata.getContactphone()));
 				
-				if (contactInfo.getVoicePhone() != null && contactInfo.getVoicePhone().length() != 0)
-					newContactInformation.addContent((new Element("ContactVoiceTelephone", nsWMS)).setText(contactInfo.getVoicePhone()));
+				if(metadata.getContactfax() != null)
+					newContactInformation.addContent((new Element("ContactFacsimileTelephone", nsWMS)).setText(metadata.getContactfax()));
 				
-				if (contactInfo.getFacSimile() != null && contactInfo.getFacSimile().length() != 0)
-					newContactInformation.addContent((new Element("ContactFacsimileTelephone", nsWMS)).setText(contactInfo.getFacSimile()));
-				
-				if (contactInfo.geteMail() != null && contactInfo.geteMail().length() != 0)
-					newContactInformation.addContent((new Element("ContactElectronicMailAddress", nsWMS)).setText(contactInfo.geteMail()));
+				if(metadata.getContactemail() != null)
+					newContactInformation.addContent((new Element("ContactElectronicMailAddress", nsWMS)).setText(metadata.getContactemail()));
 				
 				newService.addContent(newContactInformation);
 			}
 			
 				
-			if(config.getFees() != null && config.getFees().length() != 0)
-				newService.addContent((new Element("Fees", nsWMS)).setText(config.getFees()));
-			if(config.getAccessConstraints() != null && config.getAccessConstraints().length() != 0)
-				newService.addContent((new Element("AccessConstraints", nsWMS)).setText(config.getAccessConstraints()));
+			if(metadata.getFee() != null)
+				newService.addContent((new Element("Fees", nsWMS)).setText(metadata.getFee()));
+			if(metadata.getAccessconstraint() != null)
+				newService.addContent((new Element("AccessConstraints", nsWMS)).setText(metadata.getAccessconstraint()));
 			
 			//Add the 3 elements which are not overwrite by the config definition
 			if(oldLayerLimit!=null)newService.addContent(oldLayerLimit);

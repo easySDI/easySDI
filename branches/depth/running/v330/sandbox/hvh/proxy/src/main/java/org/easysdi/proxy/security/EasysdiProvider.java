@@ -162,7 +162,7 @@ public class EasysdiProvider implements AuthenticationProvider,
 	/* (non-Javadoc)
 	 * @see org.springframework.security.authentication.AuthenticationProvider#supports(java.lang.Class)
 	 */
-	public boolean supports(Class authenticationClassName) {
+	public boolean supports(@SuppressWarnings("rawtypes") Class authenticationClassName) {
 		return true;
 	}
 

@@ -14,22 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
-package org.easysdi.xml.resolver;
+package org.easysdi.proxy.xml.resolver;
 
-import javax.xml.transform.URIResolver;
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.stream.StreamSource;
-
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.zip.GZIPInputStream;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class ResourceResolver  implements org.xml.sax.EntityResolver
 {

@@ -28,7 +28,6 @@ import org.easysdi.proxy.domain.SdiAllowedoperation;
 import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiSysOperationcompliance;
 import org.easysdi.proxy.domain.SdiSysServicecompliance;
-import org.easysdi.proxy.exception.OperationNotSupportedException;
 import org.easysdi.proxy.exception.ProxyServletException;
 
 public abstract class ProxyServletRequest {

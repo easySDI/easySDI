@@ -20,6 +20,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 public class SdiWmslayerPolicy implements java.io.Serializable {
 
+		private static final long serialVersionUID = 1270331377106612332L;
 	private Integer Id;
 	private SdiWmsSpatialpolicy sdiWmsSpatialpolicy;
 	private SdiPhysicalservicePolicy sdiPhysicalservicePolicy;

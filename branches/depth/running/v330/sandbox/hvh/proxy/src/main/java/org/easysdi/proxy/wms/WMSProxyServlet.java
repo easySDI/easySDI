@@ -61,10 +61,8 @@ import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.domain.SdiWmslayerPolicy;
 import org.easysdi.proxy.integratedmodelling.geospace.gis.FeatureRasterizer;
-import org.easysdi.proxy.jdom.filter.ElementNamedLayerFilter;
+import org.easysdi.proxy.jdom.filter.ElementFilter;
 import org.easysdi.proxy.ows.OWSExceptionReport;
-import org.easysdi.proxy.policy.Layer;
-import org.easysdi.proxy.policy.Server;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetCapabilitiesThread;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetFeatureInfoThread;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetMapThread;
@@ -821,8 +819,7 @@ public class WMSProxyServlet extends ProxyServlet {
 
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error(configuration.getServletClass() + ".transformGetCapabilities: ", e);
-			StringBuffer out;
+			logger.error("WMSProxyServlet.transformGetCapabilities: ", e);
 			try {
 				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_OK);
 			} catch (IOException e1) {
@@ -846,7 +843,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			//If the Exception mode is 'restrictive' and at least a response is an exception
 			//Or if the Exception mode is 'permissive' and all the response are exceptio
 			//Aggegate the exception files and send the result to the client
-			if((remoteServerExceptionFiles.size() > 0 && configuration.getExceptionMode().equals("restrictive")) ||  
+			if((remoteServerExceptionFiles.size() > 0 && sdiVirtualService.getSdiSysExceptionlevel().getValue().equals("restrictive")) ||  
 					(wmsGetMapResponseFilePathMap.size() == 0)){
 				logger.info("Exception(s) returned by remote server(s) are sent to client.");
 				ByteArrayOutputStream exceptionOutputStream = docBuilder.ExceptionAggregation(remoteServerExceptionFiles);
@@ -900,8 +897,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			sendHttpServletResponse(req,resp, out,responseContentType, responseStatusCode);
 		}catch (Exception e){
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error(configuration.getServletClass() + ".transformGetMap: ", e);
-			StringBuffer out;
+			logger.error("WMSProxyServlet.transformGetMap: ", e);
 			try {
 				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_OK);
 			} catch (IOException e1) {
@@ -923,7 +919,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			//If the Exception mode is 'restrictive' and at least a response is an exception
 			//Or if the Exception mode is 'permissive' and all the response are exceptio
 			//Aggegate the exception files and send the result to the client
-			if((remoteServerExceptionFiles.size() > 0 && configuration.getExceptionMode().equals("restrictive")) ||  
+			if((remoteServerExceptionFiles.size() > 0 && sdiVirtualService.getSdiSysExceptionlevel().getValue().equals("restrictive")) ||  
 					(wmsGetFeatureInfoResponseFilePathMap.size() == 0)){
 				logger.info("Exception(s) returned by remote server(s) are sent to client.");
 				ByteArrayOutputStream exceptionOutputStream = docBuilder.ExceptionAggregation(remoteServerExceptionFiles);
@@ -943,8 +939,7 @@ public class WMSProxyServlet extends ProxyServlet {
 
 		}catch (Exception e){
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error(configuration.getServletClass() + ".transformGetFeatureInfo: ", e);
-			StringBuffer out;
+			logger.error("WMSProxyServlet.transformGetFeatureInfo: ", e);
 			try {
 				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_OK);
 			} catch (IOException e1) {
@@ -1314,7 +1309,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				}
 			} catch (Exception e) {
 				resp.setHeader("easysdi-proxy-error-occured", "true");
-				logger.error(configuration.getServletClass() + ".imageFiltering: ",e);
+				logger.error("WMSProxyServlet.imageFiltering: ",e);
 			}
 
 			final GeometryAttributeType geom = new GeometricAttributeType("Geom", Geometry.class, false, null, crs, null);
@@ -1364,7 +1359,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			return dimg;
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error(configuration.getServletClass() + ".imageFiltering: ",e);
+			logger.error("WMSProxyServlet.imageFiltering: ",e);
 		}
 
 		return imageSource;
@@ -1391,7 +1386,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			//	    Namespace nsSE =  Namespace.getNamespace("se","http://www.opengis.net/se");
 
 			Element racine = document.getRootElement();
-			Iterator ilNamedLayer = racine.getDescendants(new ElementNamedLayerFilter());
+			Iterator ilNamedLayer = racine.getDescendants(new ElementFilter("NamedLayer"));
 
 			while(ilNamedLayer.hasNext()){
 				Element namedLayer = (Element)ilNamedLayer.next();
@@ -1444,37 +1439,38 @@ public class WMSProxyServlet extends ProxyServlet {
 	}
 	
 	/**
-     * TODO : move to WMS
-     */
+	 * 
+	 * @param responseContentType
+	 * @return
+	 */
     protected boolean isAcceptingTransparency(String responseContentType) {
-	boolean isTransparent = false;
-	if (responseContentType == null)
-	    return true;
-	if (isXML(responseContentType)) {
-	    isTransparent = false;
-	} else if (responseContentType.startsWith(PNG)) {
-	    isTransparent = true;
-	} else if (responseContentType.startsWith(SVG)) {
-	    isTransparent = true;
-	} else if (responseContentType.startsWith(GIF)) {
-	    isTransparent = true;
-	} else if (responseContentType.startsWith(JPG)) {
-	    isTransparent = false;
-	} else if (responseContentType.startsWith(JPEG)) {
-	    isTransparent = false;
-	} else if (responseContentType.startsWith(TIFF)) {
-	    isTransparent = true;
-	} else if (responseContentType.startsWith(BMP)) {
-	    isTransparent = false;
-	} else {
-	    logger.debug("unkwnon content type" + responseContentType);
-	}
-
-	return isTransparent;
+		boolean isTransparent = false;
+		if (responseContentType == null)
+		    return true;
+		if (isXML(responseContentType)) {
+		    isTransparent = false;
+		} else if (responseContentType.startsWith(PNG)) {
+		    isTransparent = true;
+		} else if (responseContentType.startsWith(SVG)) {
+		    isTransparent = true;
+		} else if (responseContentType.startsWith(GIF)) {
+		    isTransparent = true;
+		} else if (responseContentType.startsWith(JPG)) {
+		    isTransparent = false;
+		} else if (responseContentType.startsWith(JPEG)) {
+		    isTransparent = false;
+		} else if (responseContentType.startsWith(TIFF)) {
+		    isTransparent = true;
+		} else if (responseContentType.startsWith(BMP)) {
+		    isTransparent = false;
+		} else {
+		    logger.debug("unkwnon content type" + responseContentType);
+		}
+	
+		return isTransparent;
     }
     
     /**
-     * TODO : move to WMS
      * Detects if the layer is an allowed or not against the rule.
      * 
      * @param layer
@@ -1486,59 +1482,52 @@ public class WMSProxyServlet extends ProxyServlet {
      * @return true if the layer is the allowed scale, false if not
      */
     protected boolean isLayerInScale(String layer, String url, double scale) {
+    	if (layer == null)
+		    return false;
 	
-	//		boolean isServerFound = false;
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i = 0; i < serverList.size(); i++) {
-	    // Is the server overloaded?
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		//				isServerFound = true;
-		// Are all layers Allowed ?
-		// Debug tb 12.11.2009
-		// if (serverList.get(i).getLayers().isAll())
-		// return true;
-		// Fin de debug
-
-		//5.09.2010 - HVH 
-		// Are all layers Allowed ?
-		if (serverList.get(i).getLayers().isAll())
-		    return true;
-		//--
-		List<Layer> layerList = serverList.get(i).getLayers().getLayer();
-		for (int j = 0; j < layerList.size(); j++) {
-		    // Is a specific layer allowed ?
-		    if (layer.equals(layerList.get(j).getName())) {
-			Double scaleMin = layerList.get(j).getScaleMin();
-			Double scaleMax = layerList.get(j).getScaleMax();
-
-			if (scaleMin == null)
-			    scaleMin = new Double(0);
-			if (scaleMax == null)
-			    scaleMax = new Double(Double.MAX_VALUE);
-			if (scale >= scaleMin.doubleValue() && scale <= scaleMax.doubleValue())
-			    return true;
-			else
-			    return false;
-		    }
-		}
-
-	    }
+		if(sdiPolicy.isAnyservice())
+			return true;
+		
+		Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
+    	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
+    	while(i.hasNext())
+    	{
+    		SdiPhysicalservicePolicy physicalservicePolicy = i.next();
+    		if(physicalservicePolicy.getSdiPhysicalservice().getResourceurl().equals(url))
+    		{
+    			if(physicalservicePolicy.isAnyitem())
+    				return true;
+    			
+    			Set<SdiWmslayerPolicy> wmsLayerPolicies = physicalservicePolicy.getSdiWmslayerPolicies();
+	    		Iterator<SdiWmslayerPolicy> it = wmsLayerPolicies.iterator();
+	    		while (it.hasNext())
+	    		{
+	    			SdiWmslayerPolicy layerPolicy = it.next();
+	    			if(layerPolicy.getName().equals(layer) && layerPolicy.isEnabled())
+	    			{
+	    				if(layerPolicy.getSdiWmsSpatialpolicy() != null)
+	    				{
+	    					Integer maxscale = layerPolicy.getSdiWmsSpatialpolicy().getMaximumscale();
+	    					Integer minscale = layerPolicy.getSdiWmsSpatialpolicy().getMinimumscale();
+	    					if (scale >= minscale.doubleValue() && scale <= maxscale.doubleValue())
+	    					    return true;
+	    					else
+	    					    return false;
+	    				}
+	    				else
+	    				{
+	    					return true;
+	    				}
+	    				
+	    			}
+	    		}
+	    		break;
+    		}
+    	}
+    	return false;
 	}
-
-	//5.09.2010 - HVH : moved before the loop on the servers
-	// if the server is not overloaded and if all the servers are allowed
-	// then
-	// We can consider that's ok
-	//		if (!isServerFound && policy.getServers().isAll())
-	//			return true;
-	//--
-	// in any other case the feature type is not allowed
-	return false;
-    }
     
     /**
-     * TODO move to WMS
      * @param currentWidth
      * @param currentHeight
      * @return
@@ -1565,29 +1554,36 @@ public class WMSProxyServlet extends ProxyServlet {
 		return false;
     }
     
-    /**
-     * TODO : move to WMS
-     */
+	/**
+	 * 
+	 * @param url
+	 * @param layer
+	 * @return
+	 */
     public String getLayerFilter(String url, String layer) {
-	if (policy == null)
-	    return null;
-
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i = 0; i < serverList.size(); i++) {
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		List<Layer> layerList = serverList.get(i).getLayers().getLayer();
-		for (int j = 0; j < layerList.size(); j++) {
-		    // Is a specific feature type allowed ?
-		    if (layer.equals(layerList.get(j).getName())) {
-			if (layerList.get(j).getFilter() == null)
-			    return null;
-			return layerList.get(j).getFilter().getContent();
-		    }
-		}
-	    }
-	}
-	return null;
+    	if (layer == null)
+		    return null;
+	
+		Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
+    	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
+    	while(i.hasNext())
+    	{
+    		SdiPhysicalservicePolicy physicalservicePolicy = i.next();
+    		if(physicalservicePolicy.getSdiPhysicalservice().getResourceurl().equals(url))
+    		{
+    			Set<SdiWmslayerPolicy> wmsLayerPolicies = physicalservicePolicy.getSdiWmslayerPolicies();
+	    		Iterator<SdiWmslayerPolicy> it = wmsLayerPolicies.iterator();
+	    		while (it.hasNext())
+	    		{
+	    			SdiWmslayerPolicy layerPolicy = it.next();
+	    			if(layerPolicy.getName().equals(layer) && layerPolicy.isEnabled())
+	    				if(layerPolicy.getSdiWmsSpatialpolicy() != null)
+	    					return layerPolicy.getSdiWmsSpatialpolicy().getGeographicfilter();
+	    		}
+	    		break;
+    		}
+    	}
+    	return null;
     }
     
     /**
@@ -1602,6 +1598,9 @@ public class WMSProxyServlet extends ProxyServlet {
 		if (layer == null)
 		    return false;
 	
+		if(sdiPolicy.isAnyservice())
+			return true;
+		
 		Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
     	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
     	while(i.hasNext())
@@ -1609,6 +1608,9 @@ public class WMSProxyServlet extends ProxyServlet {
     		SdiPhysicalservicePolicy physicalservicePolicy = i.next();
     		if(physicalservicePolicy.getSdiPhysicalservice().getResourceurl().equals(url))
     		{
+    			if(physicalservicePolicy.isAnyitem())
+    				return true;
+    			
     			Set<SdiWmslayerPolicy> wmsLayerPolicies = physicalservicePolicy.getSdiWmslayerPolicies();
 	    		Iterator<SdiWmslayerPolicy> it = wmsLayerPolicies.iterator();
 	    		while (it.hasNext())

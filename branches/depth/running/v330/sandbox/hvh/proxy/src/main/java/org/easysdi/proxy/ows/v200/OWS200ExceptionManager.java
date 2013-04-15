@@ -28,7 +28,7 @@ import java.util.Map.Entry;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.easysdi.proxy.jdom.filter.ElementExceptionReportFilter;
+import org.easysdi.proxy.jdom.filter.ElementFilter;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.ows.OWSExceptionManager;
 import org.jdom.Document;
@@ -137,7 +137,9 @@ public class OWS200ExceptionManager implements OWSExceptionManager {
 				Document documentMaster = sxb.build(new File(path));
 				if (documentMaster != null) 
 				{
-					List<?> exceptionList = documentMaster.getContent(new ElementExceptionReportFilter());
+					ElementFilter exceptionFilter = new ElementFilter("ExceptionReport");
+					
+					List<?> exceptionList = documentMaster.getContent(exceptionFilter);
 					if(exceptionList.iterator().hasNext())
 					{
 						toRemove.put(entry.getKey(), path);
@@ -180,7 +182,8 @@ public class OWS200ExceptionManager implements OWSExceptionManager {
 				Document documentMaster = sxb.build(new File(path));
 				if (documentMaster != null) 
 				{
-					List<?> exceptionReportList = documentMaster.getContent(new ElementExceptionReportFilter());
+					ElementFilter exceptionFilter = new ElementFilter("ExceptionReport");
+					List<?> exceptionReportList = documentMaster.getContent(exceptionFilter);
 					Iterator<?> iExceptionReportList = exceptionReportList.iterator();
 					if(iExceptionReportList.hasNext())
 					{
@@ -198,7 +201,7 @@ public class OWS200ExceptionManager implements OWSExceptionManager {
 							documentChild = sxb.build(new File(pathChild));
 							
 							if (documentChild != null) {
-								List<?> exceptionList = documentChild.getContent(new ElementExceptionReportFilter());
+								List<?> exceptionList = documentChild.getContent(exceptionFilter);
 								Iterator<?> iExceptionList = exceptionList.iterator();
 								if (iExceptionList.hasNext())
 								{

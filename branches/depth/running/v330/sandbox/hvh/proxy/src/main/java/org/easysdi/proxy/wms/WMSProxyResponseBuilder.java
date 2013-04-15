@@ -42,10 +42,7 @@ import org.easysdi.proxy.domain.SdiVirtualmetadata;
 import org.easysdi.proxy.domain.SdiWmsSpatialpolicy;
 import org.easysdi.proxy.domain.SdiWmslayerPolicy;
 import org.easysdi.proxy.jdom.filter.AttributeXlinkFilter;
-import org.easysdi.proxy.jdom.filter.ElementExceptionFilter;
-import org.easysdi.proxy.jdom.filter.ElementFormatFilter;
-import org.easysdi.proxy.jdom.filter.ElementLayerFilter;
-import org.easysdi.proxy.jdom.filter.ElementServiceExceptionFilter;
+import org.easysdi.proxy.jdom.filter.ElementFilter;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.jdom.Document;
@@ -169,7 +166,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	    	}
 	    	
 	    	if(getFeatureInfoElement != null){
-	    		Filter formatFilter = new ElementFormatFilter();
+	    		ElementFilter formatFilter = new ElementFilter("Format");
 	    		Iterator iFormat = getFeatureInfoElement.getDescendants(formatFilter);
 				List<Element> formatList = new ArrayList<Element>();	  
 				while (iFormat.hasNext()){
@@ -219,7 +216,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		    	Element racine = docParent.getRootElement();
 		      
 		    	//Layer filtering
-		    	Filter layerFilter = new ElementLayerFilter();
+		    	ElementFilter layerFilter = new ElementFilter("Layer");
 		    	List<Element> layerList = new ArrayList<Element>();	    	  
 		    	Iterator iLayer= racine.getDescendants(layerFilter);
 		    	while(iLayer.hasNext())
@@ -273,7 +270,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		    	}
 		    	
 		    	//Rewrite the BBOX according to the policy geographic filter
-		    	Filter layerParentFilter = new ElementLayerFilter();
+		    	ElementFilter layerParentFilter = new ElementFilter("Layer");
 		    	List<Element> layerParentList = new ArrayList<Element>();	    	  
 		    	Iterator iLayerParent= racine.getDescendants(layerFilter);
 		    	while(iLayerParent.hasNext())
@@ -323,7 +320,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 			Document documentMaster = sxb.build(new File(fileMasterPath));
 			
 			//Filter the layer
-			Filter layerFilter = new ElementLayerFilter();
+			ElementFilter layerFilter = new ElementFilter("Layer");
 			Element racineMaster = documentMaster.getRootElement();
 			Element capabilityMaster = getChildElementCapability(racineMaster);
 			
@@ -540,7 +537,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 					
 					//Get the serviceException elements of the parent document
 					List<Element> serviceExceptionList = new ArrayList<Element>();
-					Filter serviceExceptionFilter = new ElementServiceExceptionFilter();
+					Filter serviceExceptionFilter = new ElementFilter("ServiceException");
 					Iterator<Element> iSE = racineParent.getDescendants(serviceExceptionFilter);
 					while (iSE.hasNext()){
 						Element serviceException = (Element)iSE.next();
@@ -559,7 +556,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 			    		//This WMS Exception should contain serviceException element according to the service specifications (see OGC documentation)
 			    		//But, it can also contain ows:Exception element define in the OWS common specification (see OGC documentation)
 			    		//Get the serviceows:Exception element if serviceException does not exist
-			    		Filter exceptionFilter = new ElementExceptionFilter();
+			    		ElementFilter exceptionFilter = new ElementFilter("Exception");
 			    		Iterator<Element> iE = racineParent.getDescendants(exceptionFilter);
 						while (iE.hasNext()){
 							Element serviceException = (Element)iE.next();
@@ -582,7 +579,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		    	Element racine = docChild.getRootElement();
 		    	//Get the serviceException elements of the child document
 				List<Element> serviceExceptionList = new ArrayList<Element>();
-				Filter serviceExceptionFilter = new ElementServiceExceptionFilter();
+				Filter serviceExceptionFilter = new ElementFilter("ServiceException");
 				Iterator<Element> iSE = racine.getDescendants(serviceExceptionFilter);
 				while (iSE.hasNext()){
 					Element serviceException = (Element)iSE.next();
@@ -606,7 +603,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		    		//This WMS Exception should contain serviceException element according to the service specifications (see OGC documentation)
 		    		//But, it can also contain ows:Exception element define in the OWS common specification (see OGC documentation)
 		    		//Get the serviceows:Exception element if serviceException does not exist
-		    		Filter exceptionFilter = new ElementExceptionFilter();
+		    		ElementFilter exceptionFilter = new ElementFilter("Exception");
 		    		Iterator<Element> iE = racine.getDescendants(exceptionFilter);
 					while (iE.hasNext()){
 						Element serviceException = (Element)iE.next();

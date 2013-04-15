@@ -23,11 +23,9 @@ import org.jdom.filter.*;
  * @author DEPTH SA
  *
  */
+@SuppressWarnings("serial")
 public class ElementTileMatrixSetFilter implements Filter
 {
-	private static final long serialVersionUID = 1L;
-	
-	
 	public boolean matches(Object ob)
       {
          //Check if filtered objects are Element 

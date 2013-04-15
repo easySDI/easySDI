@@ -28,8 +28,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -64,12 +62,12 @@ import org.easysdi.proxy.domain.SdiSysOperationcompliance;
 import org.easysdi.proxy.domain.SdiVirtualmetadata;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
+import org.easysdi.proxy.jdom.filter.ElementFilter;
 import org.easysdi.proxy.jdom.filter.ElementMD_MetadataNonAuthorizedFilter;
-import org.easysdi.proxy.jdom.filter.ElementSearchResultsFilter;
 import org.easysdi.proxy.jdom.filter.ElementTransactionTypeFilter;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.ows.v10.OWSExceptionReport10;
-import org.easysdi.xml.handler.CswRequestHandler;
+import org.easysdi.proxy.xml.handler.CswRequestHandler;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -391,7 +389,7 @@ public class CSWProxyServlet extends ProxyServlet {
 				            
 				            //Get the metadata element from the complete response file
 				            List<Element> resultListStorage = new ArrayList<Element> ();
-				            Iterator<Element> resultIterator = racine.getDescendants(new ElementSearchResultsFilter());
+				            Iterator<Element> resultIterator = racine.getDescendants(new ElementFilter("SearchResults"));
 				            while(resultIterator.hasNext()){
 				            	Element result = resultIterator.next();
 				            	resultListStorage.addAll(result.getChildren());
@@ -447,7 +445,7 @@ public class CSWProxyServlet extends ProxyServlet {
 								List<Element> lElementUnauthorized = new ArrayList<Element> ();
 								doc = sb.build(tempFile);
 					            Element racine = doc.getRootElement();
-					            Iterator<Element> searchResultIterator = racine.getDescendants(new ElementSearchResultsFilter());
+					            Iterator<Element> searchResultIterator = racine.getDescendants(new ElementFilter("SearchResults"));
 					            Attribute numberOfRecordsReturnedAttribute = null;
 					            Attribute numberOfRecordsMatchedAttribute = null;
 					            Attribute nextRecordAttribute = null;
@@ -1206,39 +1204,34 @@ public class CSWProxyServlet extends ProxyServlet {
 			CSWCapabilities200.append("</ows:Post>");
 			CSWCapabilities200.append("</xsl:template>");
 
-			if (hasPolicy) {
-				if (!sdiPolicy.isAnyoperation() || deniedOperations.size() > 0) {
-					Iterator<String> it = permitedOperations.iterator();
-					while (it.hasNext()) {
-						String text = it.next();
-						if (text != null) {
-							CSWCapabilities200.append("<xsl:template match=\"ows:OperationsMetadata/ows:Operation[@name='");
-							CSWCapabilities200.append(text);
-							CSWCapabilities200.append("']\">");
-							CSWCapabilities200.append("<!-- Copy the current node -->");
-							CSWCapabilities200.append("<xsl:copy>");
-							CSWCapabilities200.append("<!-- Including any attributes it has and any child nodes -->");
-							CSWCapabilities200.append("<xsl:apply-templates select=\"@*|node()\"/>");
-							CSWCapabilities200.append("</xsl:copy>");
-							CSWCapabilities200.append("</xsl:template>");
-						}
-					}
-
-					it = deniedOperations.iterator();
-					while (it.hasNext()) {
+			if (!sdiPolicy.isAnyoperation() || deniedOperations.size() > 0) {
+				Iterator<String> it = permitedOperations.iterator();
+				while (it.hasNext()) {
+					String text = it.next();
+					if (text != null) {
 						CSWCapabilities200.append("<xsl:template match=\"ows:OperationsMetadata/ows:Operation[@name='");
-						CSWCapabilities200.append(it.next());
-						CSWCapabilities200.append("']\"></xsl:template>");
+						CSWCapabilities200.append(text);
+						CSWCapabilities200.append("']\">");
+						CSWCapabilities200.append("<!-- Copy the current node -->");
+						CSWCapabilities200.append("<xsl:copy>");
+						CSWCapabilities200.append("<!-- Including any attributes it has and any child nodes -->");
+						CSWCapabilities200.append("<xsl:apply-templates select=\"@*|node()\"/>");
+						CSWCapabilities200.append("</xsl:copy>");
+						CSWCapabilities200.append("</xsl:template>");
 					}
 				}
-				if (permitedOperations.size() == 0 ) {
-					CSWCapabilities200.append("<xsl:template match=\"ows:OperationsMetadata/ows:Operation\"></xsl:template>");
+
+				it = deniedOperations.iterator();
+				while (it.hasNext()) {
+					CSWCapabilities200.append("<xsl:template match=\"ows:OperationsMetadata/ows:Operation[@name='");
+					CSWCapabilities200.append(it.next());
+					CSWCapabilities200.append("']\"></xsl:template>");
 				}
 			}
-			else
-			{
+			if (permitedOperations.size() == 0 ) {
 				CSWCapabilities200.append("<xsl:template match=\"ows:OperationsMetadata/ows:Operation\"></xsl:template>");
 			}
+			
 
 			CSWCapabilities200.append("  <!-- Whenever you match any node or any attribute -->");
 			CSWCapabilities200.append("<xsl:template match=\"node()|@*\">");
@@ -1433,7 +1426,6 @@ public class CSWProxyServlet extends ProxyServlet {
     protected StringBuffer sendFile(String urlstr, StringBuffer param, String loginServiceUrl) {
 
 	try {
-	    DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 	    Date d = new Date();
 	    logger.info("RemoteRequestUrl="+ urlstr);
 	    logger.info("RemoteRequest="+ param.toString());
@@ -1455,7 +1447,6 @@ public class CSWProxyServlet extends ProxyServlet {
 	    logger.info("RemoteResponseToRequestUrl="+ urlstr);
 	    logger.info("RemoteResponseLength="+ response.length());
 
-	    dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 	    d = new Date();
 	    logger.info("RemoteResponseDateTime="+ dateFormat.format(d));
 

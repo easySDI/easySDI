@@ -1,4 +1,4 @@
-package org.easysdi.xml.handler;
+package org.easysdi.proxy.xml.handler;
 
 import java.util.ArrayList;
 import java.util.List;

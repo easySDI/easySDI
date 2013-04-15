@@ -17,7 +17,6 @@
 package org.easysdi.proxy.ows.v200;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

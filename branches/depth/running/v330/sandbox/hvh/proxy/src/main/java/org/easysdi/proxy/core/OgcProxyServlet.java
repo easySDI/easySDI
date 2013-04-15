@@ -18,7 +18,6 @@
 package org.easysdi.proxy.core;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.security.Principal;
 import java.util.HashMap;
@@ -30,9 +29,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
+
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
+
 import org.easysdi.proxy.csw.CSWExceptionReport;
 import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiSysServicecompliance;
@@ -49,7 +50,6 @@ import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
 import org.easysdi.proxy.wfs.WFSExceptionReport;
 import org.easysdi.proxy.wms.WMSExceptionReport;
 import org.easysdi.proxy.wmts.v100.WMTSExceptionReport100;
-import org.mortbay.jetty.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -326,6 +326,7 @@ public class OgcProxyServlet extends HttpServlet {
 			try {
 				//Instantiate the servlet class
 				Class<?> classe = Class.forName(className);
+				@SuppressWarnings("rawtypes")
 				Class[] intArgsClass = new Class[] {ProxyServletRequest.class, SdiVirtualservice.class, SdiPolicy.class};
 				Constructor<?> constructeur = classe.getConstructor(intArgsClass);
 				Object[] intArgs = new Object[] {request, virtualService, policy};

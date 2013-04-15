@@ -22,9 +22,6 @@ package org.easysdi.proxy.exception;
  */
 public class NoAnonymousPolicyFoundException extends RuntimeException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -1614722650632132707L;
 	
 	public NoAnonymousPolicyFoundException(String message) {

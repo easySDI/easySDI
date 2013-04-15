@@ -29,8 +29,8 @@ import net.sf.ehcache.constructs.web.PageInfo;
 import net.sf.ehcache.constructs.web.filter.FilterNonReentrantException;
 import net.sf.ehcache.constructs.web.filter.SimpleCachingHeadersPageCachingFilter;
 
+import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.exception.PolicyNotFoundException;
-import org.easysdi.proxy.policy.Policy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -151,18 +151,18 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 	@Override
 	protected String calculateKey(HttpServletRequest httpRequest) throws PolicyNotFoundException{
 		String servletName = httpRequest.getPathInfo().substring(1);
-		configCache = cm.getCache("configCache");
+		configCache = cm.getCache("virtualserviceCache");
 		String user = null;
 		Principal principal = SecurityContextHolder.getContext().getAuthentication();
 		if (principal != null)
 			user = principal.getName();
-		Element policyE = configCache.get(servletName + user + "policyFile");
+		Element policyE = configCache.get(servletName + user);
 		if(policyE == null)
 		{
 			//No policy available
 			throw new PolicyNotFoundException("No policy found.");
 		}
-		Policy policy = (Policy) policyE.getValue();
+		SdiPolicy policy = (SdiPolicy) policyE.getValue();
 		StringBuffer stringBuffer = new StringBuffer();
 		String url;
 		try {

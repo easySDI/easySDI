@@ -16,8 +16,6 @@
  */
 package org.easysdi.proxy.wmts.v100;
 
-import java.io.IOException;
-
 import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
 
 /**

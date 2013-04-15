@@ -25,9 +25,9 @@ import org.jdom.filter.Filter;
  * @author DEPTH SA
  *
  */
+@SuppressWarnings("serial")
 public class AttributeXlinkFilter implements Filter{
 
-	private static final long serialVersionUID = 1L;
 	private static final  Namespace ns = Namespace.getNamespace("http://www.w3.org/1999/xlink");
 		
 	public boolean matches(Object ob)

@@ -25,24 +25,20 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.easysdi.proxy.domain.SdiPolicy;
-import org.easysdi.proxy.jdom.filter.ElementConstraintFilter;
-import org.easysdi.proxy.policy.Policy;
-import org.easysdi.proxy.policy.Status;
-import org.easysdi.proxy.security.JoomlaProvider;
-import org.jdom.*;
-import org.jdom.filter.Filter;
+import org.easysdi.proxy.jdom.filter.ElementFilter;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 
 /**
@@ -55,7 +51,6 @@ public class CSWProxyDataAccessibilityManager {
 	
 	private SdiPolicy policy;
 	private String dataIdVersionAccessible;
-	private String prefix = "";
 	Namespace nsCSW =  Namespace.getNamespace("http://www.opengis.net/cat/csw/2.0.2");
 	Namespace nsOGC =  Namespace.getNamespace("http://www.opengis.net/ogc");
 	
@@ -646,6 +641,7 @@ public class CSWProxyDataAccessibilityManager {
 	
 	//TODO : le type de contrainte peut être soit XML soit CQL
 	//-> le support du CQl en POST n'est pas présent
+	@SuppressWarnings({ "unchecked", "rawtypes", "deprecation" })
 	public StringBuffer addFilterOnDataAccessible (String ogcSearchFilter, StringBuffer param)
 	{
 		SAXBuilder sxb = new SAXBuilder();
@@ -660,7 +656,7 @@ public class CSWProxyDataAccessibilityManager {
 	    	Element elementAnd = null;
 	    	Element elementOr = null;
 	    	
-	    	Filter filtre = new ElementConstraintFilter();
+	    	ElementFilter filtre = new ElementFilter("csw:Constraint");
 	    	Iterator it= docParent.getDescendants(filtre);
 			  
 	    	
@@ -856,6 +852,7 @@ public class CSWProxyDataAccessibilityManager {
 	 * @throws IOException 
 	 * @throws JDOMException 
 	 */
+	@SuppressWarnings("unchecked")
 	public String addXMLBBOXFilter(String constraint) throws JDOMException, IOException{
 		if(!policy.getSdiCswSpatialpolicy().isValid())
 			return constraint;

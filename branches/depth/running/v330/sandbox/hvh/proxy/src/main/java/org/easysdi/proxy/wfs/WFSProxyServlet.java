@@ -34,10 +34,6 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
-import java.security.Principal;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -53,7 +49,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-import javax.naming.NoPermissionException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
@@ -77,25 +72,19 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.jasper.tagplugins.jstl.core.ForEach;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.core.ProxyServletRequest;
-import org.easysdi.proxy.csw.CSWExceptionReport;
 import org.easysdi.proxy.domain.SdiFeaturetypePolicy;
+import org.easysdi.proxy.domain.SdiIncludedattribute;
 import org.easysdi.proxy.domain.SdiPhysicalservicePolicy;
 import org.easysdi.proxy.domain.SdiPolicy;
+import org.easysdi.proxy.domain.SdiSysOperationcompliance;
+import org.easysdi.proxy.domain.SdiVirtualmetadata;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.proxy.ows.OWSExceptionReport;
-import org.easysdi.proxy.ows.v10.OWSExceptionReport10;
-import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
-import org.easysdi.proxy.policy.Attribute;
-import org.easysdi.proxy.policy.FeatureType;
-import org.easysdi.proxy.policy.Operation;
-import org.easysdi.proxy.policy.Server;
-import org.easysdi.proxy.wmts.v100.WMTSExceptionReport100;
-import org.easysdi.xml.handler.RequestHandler;
-import org.easysdi.xml.resolver.ResourceResolver;
+import org.easysdi.proxy.xml.handler.RequestHandler;
+import org.easysdi.proxy.xml.resolver.ResourceResolver;
 import org.geotools.data.ows.FeatureSetDescription;
 import org.geotools.feature.Feature;
 import org.geotools.feature.FeatureCollection;
@@ -132,11 +121,16 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+
 /**
  * @author rmi
  * 
  */
 public class WFSProxyServlet extends ProxyServlet {
+	
+	private static final long serialVersionUID = 8143233381180843582L;
 	// Debug tb 02.10.2009
 	private SAXParser parser;
 	private List<Integer> serversIndex = new Vector<Integer>(); // list of
@@ -175,6 +169,27 @@ public class WFSProxyServlet extends ProxyServlet {
 	//Update this list to reflect proxy's capabilities
 	//private static final List<String> WFSSupportedOperations = Arrays.asList("GetCapabilities", "DescribeFeature", "GetFeature","Transaction");
 
+	/**
+	 * 
+	 */
+	protected Vector<String> featureTypePathList = new Vector<String>(); 
+	/**
+     *  Contient	le featureTypetoKeep.get(0) (->reference pour le filtre remoteFilter) par Server
+     *  Debug tb 04.06.2009
+     */
+    protected List<String> policyAttributeListToKeepPerFT = new Vector<String>();
+    /**
+     * 
+     */
+    protected int policyAttributeListNb = 0;
+    /**
+     * Liste des fichiers réponses de chaque serveur qui contiennent des erreurs OGC
+     */
+    protected Multimap<Integer, String> ogcExceptionFilePathList = HashMultimap.create();
+    /**
+     * 
+     */
+    protected Map<Integer, String> wfsFilePathList = new TreeMap<Integer, String>();
 
 	/**
 	 * Constructor
@@ -183,7 +198,6 @@ public class WFSProxyServlet extends ProxyServlet {
 	{
 		super(proxyRequest, virtualService, policy);
 		owsExceptionReport = new WFSExceptionReport();
-		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "DescribeFeatureType", "GetFeature","Transaction");
 	}
 
 	protected StringBuffer generateOgcException(String errorMessage, String code, String locator, String version) {
@@ -220,16 +234,20 @@ public class WFSProxyServlet extends ProxyServlet {
 			//Retrieve allowed and denied operations from the policy
 			List<String> permitedOperations = new Vector<String>();
 			List<String> deniedOperations = new Vector<String>();
-			for (int i = 0; i < WFSOperation.length; i++) 
+			Set<SdiSysOperationcompliance> operationCompliances = getProxyRequest().getServiceCompliance().getSdiSysOperationcompliances();
+			Iterator<SdiSysOperationcompliance> ic = operationCompliances.iterator();
+			while (ic.hasNext())
 			{
-				if (ServiceSupportedOperations.contains(WFSOperation[i]) && isOperationAllowed(WFSOperation[i])) 
+				SdiSysOperationcompliance compliance = ic.next();
+				if(compliance.getSdiSysServiceoperation().getState() == 1 && compliance.getState() == 1 && compliance.isImplemented() && isOperationAllowed(compliance.getSdiSysServiceoperation().getValue()))
 				{
-					permitedOperations.add(WFSOperation[i]);
-					logger.trace(WFSOperation[i] + " is permitted");
-				} else 
+					permitedOperations.add(compliance.getSdiSysServiceoperation().getValue());
+					logger.trace(compliance.getSdiSysServiceoperation().getValue() + " is permitted");
+				}
+				else
 				{
-					deniedOperations.add(WFSOperation[i]);
-					logger.trace(WFSOperation[i] + " is denied");
+					deniedOperations.add(compliance.getSdiSysServiceoperation().getValue());
+					logger.trace(compliance.getSdiSysServiceoperation().getValue() + " is denied");
 				}
 			}
 
@@ -253,69 +271,34 @@ public class WFSProxyServlet extends ProxyServlet {
 			WFSCapabilities100.append("</xsl:attribute>");
 			WFSCapabilities100.append("</xsl:template>");
 
-			if (hasPolicy) {
-				if (!policy.getOperations().isAll() || deniedOperations.size() > 0) {
-					Iterator<String> it = permitedOperations.iterator();
-					while (it.hasNext()) {
-						String text = it.next();
-						if (text != null) {
-							WFSCapabilities100.append("<xsl:template match=\"wfs:Capability/wfs:Request/wfs:");
-							WFSCapabilities100.append(text);
-							WFSCapabilities100.append("\">");
-							WFSCapabilities100.append("<!-- Copy the current node -->");
-							WFSCapabilities100.append("<xsl:copy>");
-							WFSCapabilities100.append("<!-- Including any attributes it has and any child nodes -->");
-							WFSCapabilities100.append("<xsl:apply-templates select=\"@*|node()\"/>");
-							WFSCapabilities100.append("</xsl:copy>");
-							WFSCapabilities100.append("</xsl:template>");
-						}
-					}
-
-					it = deniedOperations.iterator();
-					while (it.hasNext()) {
+			if (!sdiPolicy.isAnyoperation() || deniedOperations.size() > 0) {
+				Iterator<String> it = permitedOperations.iterator();
+				while (it.hasNext()) {
+					String text = it.next();
+					if (text != null) {
 						WFSCapabilities100.append("<xsl:template match=\"wfs:Capability/wfs:Request/wfs:");
-						WFSCapabilities100.append(it.next());
-						WFSCapabilities100.append("\"></xsl:template>");
+						WFSCapabilities100.append(text);
+						WFSCapabilities100.append("\">");
+						WFSCapabilities100.append("<!-- Copy the current node -->");
+						WFSCapabilities100.append("<xsl:copy>");
+						WFSCapabilities100.append("<!-- Including any attributes it has and any child nodes -->");
+						WFSCapabilities100.append("<xsl:apply-templates select=\"@*|node()\"/>");
+						WFSCapabilities100.append("</xsl:copy>");
+						WFSCapabilities100.append("</xsl:template>");
 					}
 				}
-				if (permitedOperations.size() == 0 )
-				{
-					WFSCapabilities100.append("<xsl:template match=\"wfs:Capability/wfs:Request/\"></xsl:template>");
+
+				it = deniedOperations.iterator();
+				while (it.hasNext()) {
+					WFSCapabilities100.append("<xsl:template match=\"wfs:Capability/wfs:Request/wfs:");
+					WFSCapabilities100.append(it.next());
+					WFSCapabilities100.append("\"></xsl:template>");
 				}
 			}
-			else
+			if (permitedOperations.size() == 0 )
 			{
 				WFSCapabilities100.append("<xsl:template match=\"wfs:Capability/wfs:Request/\"></xsl:template>");
 			}
-			//				if (!policy.getOperations().isAll()) {
-			//
-			//					Iterator<Operation> it = policy.getOperations().getOperation().iterator();
-			//
-			//					while (it.hasNext()) {
-			//
-			//						String text = it.next().getName();
-			//						if (text != null) {
-			//							WFSCapabilities100.append("<xsl:template match=\"wfs:Capability/wfs:Request/wfs:");
-			//
-			//							WFSCapabilities100.append(text);
-			//
-			//							WFSCapabilities100.append("\">");
-			//
-			//							WFSCapabilities100.append("<!-- Copy the current node -->");
-			//							WFSCapabilities100.append("<xsl:copy>");
-			//							WFSCapabilities100.append("<!-- Including any attributes it has and any child nodes -->");
-			//							WFSCapabilities100.append("<xsl:apply-templates select=\"@*|node()\"/>");
-			//							WFSCapabilities100.append("</xsl:copy>");
-			//
-			//							WFSCapabilities100.append("</xsl:template>");
-			//						}
-			//					}
-			//
-			//					if (policy.getOperations().getOperation().size() == 0) {
-			//						WFSCapabilities100.append("<xsl:template match=\"wfs:Capability/wfs:Request/\"></xsl:template>");
-			//					}
-			//				}
-
 			WFSCapabilities100.append("  <!-- Whenever you match any node or any attribute -->");
 			WFSCapabilities100.append("<xsl:template match=\"node()|@*\">");
 			WFSCapabilities100.append("<!-- Copy the current node -->");
@@ -325,29 +308,26 @@ public class WFSProxyServlet extends ProxyServlet {
 			WFSCapabilities100.append("</xsl:copy>");
 			WFSCapabilities100.append("</xsl:template>");
 
-			if (hasPolicy) {
-				Map hints = new HashMap();
-				hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
-				org.geotools.data.ows.WFSCapabilities doc = (org.geotools.data.ows.WFSCapabilities) DocumentFactory.getInstance(new File(wfsFilePathList
-						.get(remoteServerIndex)).toURI(), hints, Level.WARNING);
-				if (doc != null) {
-					List<FeatureSetDescription> l = doc.getFeatureTypes();
-					for (int i = 0; i < l.size(); i++) {
-						String ftName = l.get(i).getName();
-						if (hasPolicy) {
-							String tmpFT = ftName;
-							if (tmpFT != null) {
-								//String[] s = tmpFT.split(":");
-								//tmpFT = s[s.length - 1];
-							}
-							if (!isFeatureTypeAllowed(tmpFT, getPhysicalServiceURLByIndex(remoteServerIndex))) {
-								WFSCapabilities100.append("<xsl:template match=\"//wfs:FeatureType[starts-with(wfs:Name,'" + ftName + "')]\">");
-								WFSCapabilities100.append("</xsl:template>");
-							}
-						}
+			Map<String, Object> hints = new HashMap<String, Object>();
+			hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
+			org.geotools.data.ows.WFSCapabilities doc = (org.geotools.data.ows.WFSCapabilities) DocumentFactory.getInstance(new File(wfsFilePathList
+					.get(remoteServerIndex)).toURI(), hints, Level.WARNING);
+			if (doc != null) {
+				List<FeatureSetDescription> l = doc.getFeatureTypes();
+				for (int i = 0; i < l.size(); i++) {
+					String ftName = l.get(i).getName();
+					String tmpFT = ftName;
+					if (tmpFT != null) {
+						//String[] s = tmpFT.split(":");
+						//tmpFT = s[s.length - 1];
+					}
+					if (!isFeatureTypeAllowed(tmpFT, getPhysicalServiceURLByIndex(remoteServerIndex))) {
+						WFSCapabilities100.append("<xsl:template match=\"//wfs:FeatureType[starts-with(wfs:Name,'" + ftName + "')]\">");
+						WFSCapabilities100.append("</xsl:template>");
 					}
 				}
 			}
+			
 			WFSCapabilities100.append("</xsl:stylesheet>");
 			return WFSCapabilities100;
 		} catch (Exception e) {
@@ -377,6 +357,10 @@ public class WFSProxyServlet extends ProxyServlet {
 			serviceMetadataXSLT.append("</xsl:copy>");
 			serviceMetadataXSLT.append("</xsl:template>");
 
+			if(sdiVirtualService.isReflectedmetadata())
+				return serviceMetadataXSLT;
+				
+			SdiVirtualmetadata metadata = sdiVirtualService.getSdiVirtualmetadatas().iterator().next();
 			serviceMetadataXSLT.append("<xsl:template match=\"wfs:Service\">");
 			serviceMetadataXSLT.append("<xsl:copy>");
 			//Name
@@ -384,130 +368,46 @@ public class WFSProxyServlet extends ProxyServlet {
 			serviceMetadataXSLT.append("<xsl:text>WFS</xsl:text>");
 			serviceMetadataXSLT.append("</xsl:element>");
 			//Title
-			serviceMetadataXSLT.append("<xsl:element name=\"Title\" namespace=\"http://www.opengis.net/wfs\"> ");
-			serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getTitle() + "</xsl:text>");
-			serviceMetadataXSLT.append("</xsl:element>");
+			if(!metadata.isInheritedtitle())
+			{
+				serviceMetadataXSLT.append("<xsl:element name=\"Title\" namespace=\"http://www.opengis.net/wfs\"> ");
+				serviceMetadataXSLT.append("<xsl:text>" + metadata.getTitle() + "</xsl:text>");
+				serviceMetadataXSLT.append("</xsl:element>");
+			}
 			//Abstract
-			if(getConfiguration().getAbst()!=null)
+			if(!metadata.isInheritedsummary())
 			{
 				serviceMetadataXSLT.append("<xsl:element name=\"Abstract\" namespace=\"http://www.opengis.net/wfs\"> ");
-				serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAbst() + "</xsl:text>");
+				serviceMetadataXSLT.append("<xsl:text>" + metadata.getSummary() + "</xsl:text>");
 				serviceMetadataXSLT.append("</xsl:element>");
 			}
 			//Keyword
-			if(getConfiguration().getKeywordList()!= null)
+			if(!metadata.isInheritedkeyword())
 			{
-				List<String> keywords = getConfiguration().getKeywordList();
 				serviceMetadataXSLT.append("<xsl:element name=\"Keywords\" namespace=\"http://www.opengis.net/wfs\"> ");
-				String sKeyWords = new String() ;
-				for (int n = 0; n < keywords.size(); n++) {
-					sKeyWords+= keywords.get(n);
-					if(n != keywords.size()-1)
-					{
-						sKeyWords += ", ";
-					}
-					//				serviceMetadataXSLT.append("<xsl:element name=\"Keyword\"> ");
-					//				serviceMetadataXSLT.append("<xsl:text>" + keywords.get(n) + "</xsl:text>");
-					//				serviceMetadataXSLT.append("</xsl:element>");
-				}
-				serviceMetadataXSLT.append("<xsl:text>" + sKeyWords + "</xsl:text>");
+				serviceMetadataXSLT.append("<xsl:text>" + metadata.getKeyword() + "</xsl:text>");
 				serviceMetadataXSLT.append("</xsl:element>");
 			}
 			//OnlineResource
 			serviceMetadataXSLT.append("<xsl:copy-of select=\"wfs:OnlineResource\" />");
 
 			//Fees
-			if(getConfiguration().getFees()!=null)
+			if(!metadata.isInheritedfee())
 			{
 				serviceMetadataXSLT.append("<xsl:element name=\"Fees\" namespace=\"http://www.opengis.net/wfs\"> ");
-				serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getFees() + "</xsl:text>");
+				serviceMetadataXSLT.append("<xsl:text>" + metadata.getFee() + "</xsl:text>");
 				serviceMetadataXSLT.append("</xsl:element>");
 			}
 			//AccesConstraints
-			if(getConfiguration().getAccessConstraints()!=null)
+			if(!metadata.isInheritedaccessconstraint())
 			{
 				serviceMetadataXSLT.append("<xsl:element name=\"AccessConstraints\" namespace=\"http://www.opengis.net/wfs\"> ");
-				serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAccessConstraints() + "</xsl:text>");
+				serviceMetadataXSLT.append("<xsl:text>" + metadata.getAccessconstraint() + "</xsl:text>");
 				serviceMetadataXSLT.append("</xsl:element>");
 			}
 
 			serviceMetadataXSLT.append("</xsl:copy>");
 			serviceMetadataXSLT.append("</xsl:template>");
-
-			//		serviceMetadataXSLT.append("<xsl:element name=\"ows:ServiceProvider\"> ");
-			//		//contactInfo
-			//		if(getConfiguration().getContactInfo() != null && !getConfiguration().getContactInfo().isEmpty())
-			//		{
-			//				if(!configuration.getContactInfo().getOrganization().equals("")){
-			//					serviceMetadataXSLT.append("<xsl:element name=\"ows:ProviderName\"> ");
-			//					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getOrganization() + "</xsl:text>");
-			//					serviceMetadataXSLT.append("</xsl:element>");
-			//				}
-			//				
-			//				serviceMetadataXSLT.append("<xsl:element name=\"ows:ServiceContact\"> ");
-			//				if(!configuration.getContactInfo().getName().equals("")){
-			//					serviceMetadataXSLT.append("<xsl:element name=\"ows:IndividualName\"> ");
-			//					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getName()+ "</xsl:text>");
-			//					serviceMetadataXSLT.append("</xsl:element>");
-			//				}
-			//				if(!configuration.getContactInfo().getPosition().equals("")){
-			//					serviceMetadataXSLT.append("<xsl:element name=\"ows:PositionName\"> ");
-			//					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getPosition()+ "</xsl:text>");
-			//					serviceMetadataXSLT.append("</xsl:element>");
-			//				}
-			//				serviceMetadataXSLT.append("<xsl:element name=\"ows:ContactInfo\"> ");
-			//				serviceMetadataXSLT.append("<xsl:element name=\"ows:Phone\"> ");
-			//				if(!configuration.getContactInfo().getVoicePhone().equals(""))
-			//				{
-			//					serviceMetadataXSLT.append("<xsl:element name=\"ows:Voice\"> ");
-			//					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getVoicePhone()+ "</xsl:text>");
-			//					serviceMetadataXSLT.append("</xsl:element>");
-			//				}
-			//				if(!configuration.getContactInfo().getFacSimile().equals(""))
-			//				{
-			//					serviceMetadataXSLT.append("<xsl:element name=\"ows:Facsimile\"> ");
-			//					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getFacSimile()+ "</xsl:text>");
-			//					serviceMetadataXSLT.append("</xsl:element>");
-			//				}
-			//				serviceMetadataXSLT.append("</xsl:element>");
-			//				
-			//				if (configuration.getContactInfo().getContactAddress() != null && !configuration.getContactInfo().getContactAddress().isEmpty())
-			//				{
-			//					serviceMetadataXSLT.append("<xsl:element name=\"ows:Address\"> ");
-			//					if(!configuration.getContactInfo().getContactAddress().getAddress().equals("")){
-			//						serviceMetadataXSLT.append("<xsl:element name=\"ows:delivryPoint\"> ");
-			//						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getAddress()+ "</xsl:text>");
-			//						serviceMetadataXSLT.append("</xsl:element>");
-			//					}
-			//					if(!configuration.getContactInfo().getContactAddress().getCity().equals("")){
-			//						serviceMetadataXSLT.append("<xsl:element name=\"ows:City\"> ");
-			//						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getCity()+ "</xsl:text>");
-			//						serviceMetadataXSLT.append("</xsl:element>");
-			//					}
-			//					if(!configuration.getContactInfo().getContactAddress().getState().equals("")){
-			//						serviceMetadataXSLT.append("<xsl:element name=\"ows:AdministrativeArea\"> ");
-			//						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getState()+ "</xsl:text>");
-			//						serviceMetadataXSLT.append("</xsl:element>");
-			//					}
-			//					if(!configuration.getContactInfo().getContactAddress().getPostalCode().equals("")){
-			//						serviceMetadataXSLT.append("<xsl:element name=\"ows:PostalCode\"> ");
-			//						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getPostalCode()+ "</xsl:text>");
-			//						serviceMetadataXSLT.append("</xsl:element>");
-			//					}
-			//					if(!configuration.getContactInfo().getContactAddress().getCountry().equals("")){
-			//						serviceMetadataXSLT.append("<xsl:element name=\"ows:Country\"> ");
-			//						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getCountry()+ "</xsl:text>");
-			//						serviceMetadataXSLT.append("</xsl:element>");
-			//					}
-			//					serviceMetadataXSLT.append("</xsl:element>");
-			//				}
-			//				serviceMetadataXSLT.append("</xsl:element>");
-			//				serviceMetadataXSLT.append("</xsl:element>");
-			//		}
-
-
-			//		serviceMetadataXSLT.append("</xsl:element>");
-
 
 			serviceMetadataXSLT.append("</xsl:stylesheet>");
 
@@ -531,7 +431,6 @@ public class WFSProxyServlet extends ProxyServlet {
 			// utilistateur
 			// sous forme
 			// d'un xml
-			HashMap<String, String> env = new HashMap<String, String>();
 			RequestHandler rh = new RequestHandler();
 			xr.setContentHandler(rh);
 
@@ -563,12 +462,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 			String currentOperation = rh.getOperation();
 
-			String user = "";
-			Principal principal = SecurityContextHolder.getContext().getAuthentication();
-			if (principal != null) {
-				user = principal.getName();
-			}
-
+			
 			//Generate OGC exception and send it to the client if current operation is not allowed
 			if(!isOperationAllowed(currentOperation))
 			{
@@ -655,8 +549,7 @@ public class WFSProxyServlet extends ProxyServlet {
 						 StringWriter sw = new StringWriter();
 						 transformer.transform(new DOMSource(dQuery), new StreamResult(sw));
 						 param = sw.toString();
-						 if (hasPolicy) {
-							 int ii = 0; // Authorized FeatureType counter
+						 	 int ii = 0; // Authorized FeatureType counter
 							 attributeListToKeepNbPerFT.add(0);
 
 							 for (int i = 0; i < hFields.length; i++) {
@@ -856,13 +749,9 @@ public class WFSProxyServlet extends ProxyServlet {
 											 featureTypeListToRemove.add(tmpFT);
 										 }
 									 }
-								 } else {
-									 if (tmpFT.equals("")) {
-										 featureTypeListToKeep.add("");
-									 }
-								 }
+								 } 
 							 }
-						 }
+						 
 					}
 					pool.shutdown();
 					pool.awaitTermination(120L, TimeUnit.SECONDS);
@@ -878,17 +767,7 @@ public class WFSProxyServlet extends ProxyServlet {
 						String s = "<?xml version='1.0' encoding='utf-8' ?>"
 								+ "<ogcwfs:FeatureCollection xmlns:ogcwfs=\"http://www.opengis.net/wfs\"   xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" >"
 								+ "<gml:boundedBy>" + "<gml:null>unavailable</gml:null>" + "</gml:boundedBy>" + "</ogcwfs:FeatureCollection>";
-						//						File tempFile = createTempFile("requestPreTreatmentPOST" + UUID.randomUUID().toString(), ".xml");
-						//
-						//						FileOutputStream tempFos = new FileOutputStream(tempFile);
-						//						tempFos.write(s.getBytes());
-						//						tempFos.flush();
-						//						tempFos.close();
-						//						in.close();
-						//						filePath = tempFile.toString();
-						////						wfsFilePathList.put(iServer, filePath);
 						send = false;
-
 						ByteArrayOutputStream out = new ByteArrayOutputStream();
 						out.write(s.getBytes());
 						out.flush();
@@ -908,15 +787,6 @@ public class WFSProxyServlet extends ProxyServlet {
 						String s = "<?xml version='1.0' encoding='utf-8' ?>"
 								+ "<ogcwfs:FeatureCollection xmlns:ogcwfs=\"http://www.opengis.net/wfs\"   xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" >"
 								+ "<gml:boundedBy>" + "<gml:null>unavailable</gml:null>" + "</gml:boundedBy>" + "</ogcwfs:FeatureCollection>";
-						//						File tempFile = createTempFile("requestPreTreatmentPOST" + UUID.randomUUID().toString(), ".xml");
-						//
-						//						FileOutputStream tempFos = new FileOutputStream(tempFile);
-						//						tempFos.write(s.getBytes());
-						//						tempFos.flush();
-						//						tempFos.close();
-						//						in.close();
-						//						filePath = tempFile.toString();
-						////						wfsFilePathList.put(iServer, filePath);
 						send = false;
 
 						ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -1079,23 +949,22 @@ public class WFSProxyServlet extends ProxyServlet {
 	}
 
 	// ***************************************************************************************************************************************
+	@SuppressWarnings("unchecked")
 	protected void requestPreTreatmentGET(HttpServletRequest req, HttpServletResponse resp) {
 
 		try {
 			String currentOperation = null;
 			String version = "000";
-			String service = "";
 			Enumeration<String> parameterNames = req.getParameterNames();
 			String requestParamUrl = "";
 			String paramUrl = "";
 			String filter = null;
-			HashMap<String, String> env = new HashMap<String, String>();
 			String typeName = "";
 			String propertyName = "";
 	
 			// Récupération des valeurs des paramètres de la requête utilisateur
 			while (parameterNames.hasMoreElements()) {
-				String key = (String) parameterNames.nextElement();
+				String key = parameterNames.nextElement();
 				String value = req.getParameter(key);
 
 				if (!key.equalsIgnoreCase("FILTER") && !key.equalsIgnoreCase("version")) {
@@ -1124,7 +993,7 @@ public class WFSProxyServlet extends ProxyServlet {
 					
 				} else if (key.equalsIgnoreCase("service")) {
 					// Gets the requested service
-					service = value;
+//					service = value;
 				} else if (key.equalsIgnoreCase("FILTER")) {
 					// Gets the requested Filter
 					filter = value;
@@ -1154,32 +1023,6 @@ public class WFSProxyServlet extends ProxyServlet {
 				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED, OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED, "REQUEST", HttpServletResponse.SC_OK) ;
 				return;
 			}
-
-
-			String user = "";
-			if (SecurityContextHolder.getContext().getAuthentication() != null) {
-				user = SecurityContextHolder.getContext().getAuthentication().getName();
-			}
-
-			//			if (hasPolicy) {
-			//				if (!isOperationAllowed(currentOperation))
-			//				{
-			//					try {
-			//						resp.setContentType("application/xml");
-			//						resp.setContentLength(Integer.MAX_VALUE);
-			//						OutputStream os = resp.getOutputStream();
-			//						os.write(generateOgcError("Operation not allowed").toString().getBytes());
-			//						os.flush();
-			//						os.close();
-			//						return;
-			//					} catch (Exception e) {
-			//						e.printStackTrace();
-			//						dump("ERROR", e.getMessage());
-			//						return;
-			//					}
-			//				}
-			//					throw new NoPermissionException("operation is not allowed");
-			//			}
 
 			// *****************************************************************************************************************************
 			// Construction des FeaturesTypes et Attributs associés authorisés
@@ -1222,7 +1065,6 @@ public class WFSProxyServlet extends ProxyServlet {
 
 						// Begin
 						// removeTypesFromGetUrl********************************************************************************
-						if (hasPolicy) {
 							// Debug tb 25.06.2009
 							int ii = 0; // Authorized FeatureType counter
 							attributeListToKeepNbPerFT.add(0);
@@ -1405,11 +1247,7 @@ public class WFSProxyServlet extends ProxyServlet {
 									ii += 1;
 									attributeListToKeepNbPerFT.add(0);
 									// Fin de Debug
-								} else {
-									if (tmpFT.equals("")) {
-										featureTypeListToKeep.add("");
-									}
-								}
+								} 
 							}
 							if (!currentOperation.equalsIgnoreCase("DescribeFeatureType")) {
 								// Recherche du remoteFilter dans la Policy et
@@ -1433,7 +1271,7 @@ public class WFSProxyServlet extends ProxyServlet {
 										if (!paramUrl.endsWith("&")) {
 											paramUrl = paramUrl + "&";
 										}
-										paramUrl = paramUrl + "FILTER=" + java.net.URLEncoder.encode(userFilter);
+										paramUrl = paramUrl + "FILTER=" + java.net.URLEncoder.encode(userFilter, "UTF-8");
 									}
 								}
 								// S'il y a un filtre dans la requête
@@ -1454,7 +1292,7 @@ public class WFSProxyServlet extends ProxyServlet {
 										if (!paramUrl.endsWith("&")) {
 											paramUrl = paramUrl + "&";
 										}
-										paramUrl = paramUrl + "FILTER=" + java.net.URLEncoder.encode(filter);
+										paramUrl = paramUrl + "FILTER=" + java.net.URLEncoder.encode(filter, "UTF-8");
 									}
 									// True if remoteFilter is activ and Set
 									else if (userFilter != null && !userFilter.equals(""))
@@ -1516,7 +1354,7 @@ public class WFSProxyServlet extends ProxyServlet {
 										fluxSortie.flush();
 										fluxSortie.close();
 
-										paramUrl = paramUrl + "FILTER=" + java.net.URLEncoder.encode(fluxSortie.toString());
+										paramUrl = paramUrl + "FILTER=" + java.net.URLEncoder.encode(fluxSortie.toString(), "UTF-8");
 									}
 								}
 								// Fin de modification de la requête user avec
@@ -1529,7 +1367,7 @@ public class WFSProxyServlet extends ProxyServlet {
 							paramUrl = removeTypesFromGetUrl(featureTypeListToKeep, attributeListToKeepPerFT, attributeListToKeepNbPerFT, paramUrl, iServer,
 									currentOperation);
 							// Fin de Debug
-						}
+						
 						// End
 						// removeTypesFromGetUrl********************************************************************************
 
@@ -2319,7 +2157,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			Iterator<Map.Entry<Integer,String>> itR = toRemove.entrySet().iterator();
 			while(itR.hasNext())
 			{
-				Map.Entry<Integer,String> entry = (Map.Entry<Integer,String>)itR.next();
+				Map.Entry<Integer,String> entry = itR.next();
 
 				ogcExceptionFilePathList.put(entry.getKey(), entry.getValue());
 				wfsFilePathList.remove(entry.getKey());
@@ -2368,8 +2206,8 @@ public class WFSProxyServlet extends ProxyServlet {
 			//Ou
 			//Si le mode de gestion des exceptions est "permissif" et que tous les serveurs retournent des exceptions
 			//alors le proxy retourne l'ensemble des exceptions concaténées
-			if((configuration.getExceptionMode().equals("restrictive") && ogcExceptionFilePathList.size() > 0) || 
-					(configuration.getExceptionMode().equals("permissive") && wfsFilePathList.size() == 0))
+			if((sdiVirtualService.getSdiSysExceptionlevel().getValue().equals("restrictive") && ogcExceptionFilePathList.size() > 0) || 
+					(sdiVirtualService.getSdiSysExceptionlevel().getValue().equals("permissive") && wfsFilePathList.size() == 0))
 			{
 				//Traitement des réponses de type exception OGC
 				//Le stream retourné contient les exceptions concaténées et mises en forme pour être retournées 
@@ -2383,14 +2221,14 @@ public class WFSProxyServlet extends ProxyServlet {
 			// ******************************************************************************************
 			// Création d'un fichier XSLT correspondant à celui possiblement
 			// spécifié par l'utilisateur
-			String userXsltPath = getConfiguration().getXsltPath();
+			String userXsltPath = sdiVirtualService.getXsltfilename();
 
 			if (SecurityContextHolder.getContext().getAuthentication() != null) {
 				userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
 			}
 
 			userXsltPath = userXsltPath + "/" + version + "/" + currentOperation + ".xsl";
-			String globalXsltPath = getConfiguration().getXsltPath() + "/" + version + "/" + currentOperation + ".xsl";
+			String globalXsltPath = userXsltPath + "/" + version + "/" + currentOperation + ".xsl";
 			;
 
 			File xsltFile = new File(userXsltPath);
@@ -2488,7 +2326,6 @@ public class WFSProxyServlet extends ProxyServlet {
 					logger.trace("transform end apply XSLT on service metadata");
 
 				} else if (currentOperation.equalsIgnoreCase("DescribeFeatureType")) {
-					if (hasPolicy) {
 						List<File> tempFileDescribeType = new Vector<File>(); // Utile
 						// si
 						// wfsFilePathList.size()>1
@@ -2594,7 +2431,6 @@ public class WFSProxyServlet extends ProxyServlet {
 
 								// Debug de 15.06.2009
 								// Log le timing avant transformation
-								DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 								Date d = new Date();
 								logger.info( "DescribeFeatureTypeBeginTransfoDateTime="+ dateFormat.format(d));
 								// Fin de debug
@@ -2630,6 +2466,7 @@ public class WFSProxyServlet extends ProxyServlet {
 									}
 									BufTempFos.flush();
 									xml.close();
+									BufTempFos.close();
 									tempFileDescribeType.add(tempFile);
 								} catch (Exception e) {
 									e.printStackTrace();
@@ -2644,10 +2481,8 @@ public class WFSProxyServlet extends ProxyServlet {
 						// wfsFilePathList.size()>1
 						if (wfsFilePathList.size() > 1)
 							tempFile = mergeDescribeFeatureType(tempFileDescribeType);
-					}
 				} else if (currentOperation.equalsIgnoreCase("GetFeature")) {
-					if (hasPolicy) {
-						List<File> tempGetFeatureFile = new Vector();
+						List<File> tempGetFeatureFile = new Vector<File>();
 
 						// Posttraitement par Server intérrogé ->
 						// wfsFilePathList.get(i) contient le fichier réponse
@@ -2815,7 +2650,7 @@ public class WFSProxyServlet extends ProxyServlet {
 									// Fin de Debug
 									// Création de "doc" -> un tempFile formaté
 									// en GMLFeatureCollection
-									Map hints = new HashMap();
+									Map<String, Boolean> hints = new HashMap<String, Boolean>();
 									hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
 
 									GMLFeatureCollection doc = null; // Réutilise
@@ -2923,7 +2758,6 @@ public class WFSProxyServlet extends ProxyServlet {
 									// serversIndex.get(iFileServer)
 									if (WFSProxyGeomAttributesList.get(a).getFeatureTypeName() == WFSProxyGeomAttributesList.get(a).getFeatureTypeName()) {
 										// Log le timing avant transformation
-										DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 										Date d = new Date();
 										logger.info("GetFeatureTypeGeomBeginTransfoDateTime="+ dateFormat.format(d));
 
@@ -2991,7 +2825,7 @@ public class WFSProxyServlet extends ProxyServlet {
 							// Debug tb 13.05.2009
 						}
 						// Fin de Debug
-					}
+					
 
 					if(tempFile != null)
 					{
@@ -3000,8 +2834,8 @@ public class WFSProxyServlet extends ProxyServlet {
 						org.jdom.Document  docParent = sxb.build(tempFile);
 						org.jdom.Element racine = docParent.getRootElement();
 						Namespace nsXSI = null;
-						List lns =  racine.getAdditionalNamespaces();
-						Iterator ilns = lns.iterator();
+						List<?> lns =  racine.getAdditionalNamespaces();
+						Iterator<?> ilns = lns.iterator();
 						while (ilns.hasNext())
 						{
 							Namespace ns = (Namespace)ilns.next();
@@ -3118,7 +2952,6 @@ public class WFSProxyServlet extends ProxyServlet {
 				logger.error("BufferedOutputStream ERROR="+ e.getMessage() + " " + e.getLocalizedMessage() + " " + e.getCause());
 				logger.error("BufferedOutputStream ERROR="+ e.toString());
 			} finally {
-				DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 				Date d = new Date();
 				logger.info("ClientResponseDateTime="+ dateFormat.format(d));
 
@@ -3149,54 +2982,7 @@ public class WFSProxyServlet extends ProxyServlet {
 		}
 	}
 
-	//	private void sendHttpServletResponse (HttpServletRequest req, HttpServletResponse resp, ByteArrayOutputStream tempOut)
-	//	{
-	//		try
-	//		{
-	//			// Ecriture du résultat final dans resp de
-	//			// httpServletResponse*****************************************************
-	//			// No post rule to apply. Copy the file result on the output stream
-	//			BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
-	//			resp.setContentType("text/xml");
-	//			try {
-	//				dump("transform begin response writting");
-	//				if ("1".equals(req.getParameter("download"))) {
-	//					String format = req.getParameter("format");
-	//					if (format == null)
-	//						format = req.getParameter("FORMAT");
-	//					if (format != null) {
-	//						String parts[] = format.split("/");
-	//						String ext = "";
-	//						if (parts.length > 1)
-	//							ext = parts[1];
-	//						resp.setHeader("Content-Disposition", "attachment; filename=download." + ext);
-	//					}
-	//				}
-	//				if (tempOut != null)
-	//					os.write(tempOut.toByteArray());
-	//				dump("transform end response writting");
-	//			} finally {
-	//				os.flush();
-	//				os.close();
-	//				// Log le résultat et supprime les fichiers temporaires
-	//				DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-	//				Date d = new Date();
-	//				dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
-	//				if (tempOut != null)
-	//					dump("SYSTEM", "ClientResponseLength", tempOut.size());
-	//			}
-	//	
-	//			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-	//			Date d = new Date();
-	//			dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
-	//		} 
-	//		catch (Exception e) 
-	//		{
-	//			resp.setHeader("easysdi-proxy-error-occured", "true");
-	//			e.printStackTrace();
-	//			dump("ERROR", e.getMessage());
-	//		}
-	//	}
+
 	// ***************************************************************************************************************************************
 	private File mergeGetFeatures(List<File> tempGetFeaturesList, TransformerFactory tFactory, Transformer transformer) {
 		if (tempGetFeaturesList.size() == 0)
@@ -3493,7 +3279,6 @@ public class WFSProxyServlet extends ProxyServlet {
 
 			// Debug de 15.06.2009
 			// Log le timing avant transformation
-			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 			Date d = new Date();
 			logger.info("LocalFilterBeginTransfoDateTime="+ dateFormat.format(d));
 			// Fin de debug
@@ -3609,7 +3394,6 @@ public class WFSProxyServlet extends ProxyServlet {
 			// résultat filtré
 			// -> option désactivée: renomage du prefix
 			FeatureIterator it = fc.features();
-			int i = 0;
 			String lastTypeName = "";
 			while (it.hasNext()) {
 				Feature feature = it.next();
@@ -3620,7 +3404,6 @@ public class WFSProxyServlet extends ProxyServlet {
 					ft.setSrsName((String) feature.getDefaultGeometry().getUserData());
 					lastTypeName = feature.getFeatureType().getTypeName();
 				}
-				i++;
 			}
 			// Ecriture du résultat dans le fichier pointé par os
 			ft.transform(fc, os);
@@ -3638,7 +3421,6 @@ public class WFSProxyServlet extends ProxyServlet {
 	}
 	
 	/**
-     * TODO : move to WFS
      * Open a wfs GetFeature response file and load xsd schema correctly. See
      * remote-server-list element in config.xml for credentials.
      * 
@@ -3650,10 +3432,9 @@ public class WFSProxyServlet extends ProxyServlet {
      *            xsd schema provider server password.
      * @return
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     protected Object documentFactoryGetInstance(File file, String username, String password) {
 	// File schema = new File("src/main/webapp/schemas/eai/eai.xsd");
-	Map hints = new HashMap();
+	Map<String, Object> hints = new HashMap<String, Object>();
 	Map<String, URI> namespaceMapping = new HashMap<String, URI>();
 	hints.put(DocumentFactory.VALIDATION_HINT, false);
 	hints.put(XMLHandlerHints.NAMESPACE_MAPPING, namespaceMapping);
@@ -3690,36 +3471,47 @@ public class WFSProxyServlet extends ProxyServlet {
     }
     
     /**
-     * TODO move to WFS
      * @param url
      * @return
      */
-    protected String getFeatureTypeRemoteFilter(String url, String ft) {
-
-	if (policy == null)
-	    return null;
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i = 0; i < serverList.size(); i++) {
-
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-
-		List<FeatureType> ftList = serverList.get(i).getFeatureTypes().getFeatureType();
-		for (int j = 0; j < ftList.size(); j++) {
-		    // Is a specific feature type allowed ?
-		    if (ft.equals(ftList.get(j).getName())) {
-			if (ftList.get(j).getRemoteFilter() == null)
-			    return null;
-			return ftList.get(j).getRemoteFilter().getContent();
-		    }
-		}
-	    }
-	}
-	return null;
+    protected String getFeatureTypeRemoteFilter(String url, String ft) 
+    {
+    	if (ft == null)
+		    return null;
+	
+		if(sdiPolicy.isAnyservice())
+			return null;
+		
+		Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
+    	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
+    	while(i.hasNext())
+    	{
+    		SdiPhysicalservicePolicy physicalservicePolicy = i.next();
+    		if(physicalservicePolicy.getSdiPhysicalservice().getResourceurl().equals(url))
+    		{
+    			if(physicalservicePolicy.isAnyitem())
+    				return null;
+    			
+    			Set<SdiFeaturetypePolicy> wfsFeatureTypePolicies = physicalservicePolicy.getSdiFeaturetypePolicies();
+	    		Iterator<SdiFeaturetypePolicy> it = wfsFeatureTypePolicies.iterator();
+	    		while (it.hasNext())
+	    		{
+	    			SdiFeaturetypePolicy featureTypePolicy = it.next();
+	    			if(featureTypePolicy.getName().equals(ft) && featureTypePolicy.isEnabled())
+	    			{
+	    				if(featureTypePolicy.getSdiWfsSpatialpolicy() != null)
+	    				{
+	    					return featureTypePolicy.getSdiWfsSpatialpolicy().getRemotegeographicfilter();
+	    				}
+	    			}
+	    		}
+	    		break;
+    		}
+    	}
+    	return null;
     }
     
     /**
-     * TODO : move to WFS
      * Detects if the attribute of a feature type is allowed or not against the
      * rule.
      * 
@@ -3731,167 +3523,131 @@ public class WFSProxyServlet extends ProxyServlet {
      *            if the user request need all attributes.
      * @return true if the feature type is allowed, false if not
      */
-    protected boolean isAttributeAllowed(String url, String ft, String attribute) {
+    protected boolean isAttributeAllowed(String url, String ft, String attribute) 
+    {
 	
-
-	//5.09.2010 - HVH 
-	if ( policy.getServers().isAll())
-	    return true;
-	//--
-	boolean isServerFound = false;
-	boolean isFeatureTypeFound = false;
-	boolean FeatureTypeAllowed = false;
-
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i = 0; i < serverList.size(); i++) {
-	    // Is the server overloaded?
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		isServerFound = true;
-		List<FeatureType> ftList = serverList.get(i).getFeatureTypes().getFeatureType();
-		//5.09.2010 - HVH --
-		if(serverList.get(i).getFeatureTypes().isAll())
-		{
-		    policyAttributeListNb = 0;
-		    return true;
-		}
-		//--
-		FeatureTypeAllowed = serverList.get(i).getFeatureTypes().isAll();
-		for (int j = 0; j < ftList.size(); j++) {
-		    // Is a specific feature type allowed ?
-		    if (ft.equals(ftList.get(j).getName())) {
-			isFeatureTypeFound = true;
-			// If all the attribute are authorized, then return
-			// true;
-			if (ftList.get(j).getAttributes().isAll()) {
-			    // Debug tb 08.06.2009
-			    policyAttributeListNb = 0;
-			    // Fin de debug
-			    return true;
-			}
-
-			// List d'attributs de Policy pour le featureType
-			// courant
-			List<Attribute> attributeList = ftList.get(j).getAttributes().getAttribute();
-			// Supprime les r�sultats, contenu dans la globale var,
-			// issus du pr�c�dent appel de la fonction courante
-			policyAttributeListToKeepPerFT.clear();
-			for (int k = 0; k < attributeList.size(); k++) {
-			    // If attributes are listed in user req
-			    if (attribute.equals(attributeList.get(k).getContent()))
-				return true;
-			    // Debug tb 04.06.2009
-			    // If no attributes are listed in user req -> all
-			    // the Policy Attributes will be returned
-			    else if (attribute.equals("")) {
-				String tmpFA = attributeList.get(k).getContent();
-				policyAttributeListToKeepPerFT.add(tmpFA);
-				// then at the end of function -> return false,
-				// "" is effectively not a valid attribute
-			    }
-			    // Fin de debug
-			}
-			// Debug tb 08.06.2009
-			// Pour que attributeListToKeepNbPerFT du featureType
-			// courant puisse enregistrer le nombre d'attributs de
-			// la Policy
-			policyAttributeListNb = attributeList.size();
-			// Fin de debug
-		    }
-		}
-	    }
-	}
-
-	//5.09.2010 - HVH : moved before the loop on the servers
-	//		// if the server is not overloaded and if all the servers are allowed
-	//		// then
-	//		// We can say that's ok
-	//		if (!isServerFound && policy.getServers().isAll())
-	//			return true;
-	//--
-	// if the server is overloaded and if the specific featureType was not
-	// overloaded and All the featuetypes are allowed
-	// We can say that's ok
-	if (isServerFound && !isFeatureTypeFound && FeatureTypeAllowed)
-	    // Debug tb 11.11.2009
-	{
-	    policyAttributeListNb = 0; // -> Attribure.All() = true
-	    return true;
-	}
-	// Fin de Debug
-
-	// in any other case the feature type is not allowed
-	return false;
+    	if (ft == null)
+		    return false;
+	
+		if(sdiPolicy.isAnyservice())
+			return true;
+		
+		Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
+    	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
+    	while(i.hasNext())
+    	{
+    		SdiPhysicalservicePolicy physicalservicePolicy = i.next();
+    		if(physicalservicePolicy.getSdiPhysicalservice().getResourceurl().equals(url))
+    		{
+    			if(physicalservicePolicy.isAnyitem())
+    			{
+    				policyAttributeListNb = 0;
+    				return true;
+    			}
+    				
+    			
+    			Set<SdiFeaturetypePolicy> wfsFeatureTypePolicies = physicalservicePolicy.getSdiFeaturetypePolicies();
+	    		Iterator<SdiFeaturetypePolicy> it = wfsFeatureTypePolicies.iterator();
+	    		while (it.hasNext())
+	    		{
+	    			SdiFeaturetypePolicy featureTypePolicy = it.next();
+	    			Set<SdiIncludedattribute> includedAttributes = featureTypePolicy.getSdiIncludedattributes();
+	    			if(includedAttributes.isEmpty())
+	    			{
+	    				policyAttributeListNb = 0;
+	    				return true;
+	    			}
+	    			// Supprime les r�sultats, contenu dans la globale var,
+	    			// issus du pr�c�dent appel de la fonction courante
+	    			policyAttributeListToKeepPerFT.clear();
+	    			Iterator<SdiIncludedattribute> ia = includedAttributes.iterator();
+	    			while(ia.hasNext())
+	    			{
+	    				if(ia.next().getName().equals(ft)) 
+	    					return true;
+	    				// If no attributes are listed in user req -> all
+	    			    // the Policy Attributes will be returned
+	    			    else if (attribute.equals("")) {
+		    				String tmpFA = ia.next().getName();
+		    				policyAttributeListToKeepPerFT.add(tmpFA);
+		    				// then at the end of function -> return false,
+		    				// "" is effectively not a valid attribute
+	    			    }
+	    			}
+	    			policyAttributeListNb = includedAttributes.size();
+	    		}
+	    		break;
+    		}
+    	}
+    	return false;
     }
     
     /**
-     * TODO move to WFS
      * @param url
      * @return
      */
     protected String getFeatureTypeLocalFilter(String url, String ft) {
-
-	if (policy == null)
-	    return null;
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i = 0; i < serverList.size(); i++) {
-
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-
-		List<FeatureType> ftList = serverList.get(i).getFeatureTypes().getFeatureType();
-		for (int j = 0; j < ftList.size(); j++) {
-		    // Is a specific feature type allowed ?
-		    if (ft.equals(ftList.get(j).getName())) {
-			if (ftList.get(j).getLocalFilter() == null)
-			    return null;
-			return ftList.get(j).getLocalFilter().getContent();
-		    }
-		}
-
-	    }
+    	if (ft == null)
+		    return null;
+	
+		if(sdiPolicy.isAnyservice())
+			return null;
+		
+		Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
+    	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
+    	while(i.hasNext())
+    	{
+    		SdiPhysicalservicePolicy physicalservicePolicy = i.next();
+    		if(physicalservicePolicy.getSdiPhysicalservice().getResourceurl().equals(url))
+    		{
+    			if(physicalservicePolicy.isAnyitem())
+    				return null;
+    			
+    			Set<SdiFeaturetypePolicy> wfsFeatureTypePolicies = physicalservicePolicy.getSdiFeaturetypePolicies();
+	    		Iterator<SdiFeaturetypePolicy> it = wfsFeatureTypePolicies.iterator();
+	    		while (it.hasNext())
+	    		{
+	    			SdiFeaturetypePolicy featureTypePolicy = it.next();
+	    			if(featureTypePolicy.getName().equals(ft) && featureTypePolicy.isEnabled())
+	    			{
+	    				if(featureTypePolicy.getSdiWfsSpatialpolicy() != null)
+	    				{
+	    					return featureTypePolicy.getSdiWfsSpatialpolicy().getLocalgeographicfilter();
+	    				}
+	    			}
+	    		}
+	    		break;
+    		}
+    	}
+    	return null;
 	}
-	return null;
-    }
     
     /**
-     * TODO move to WFS
      * @param url
      * @return
      */
     protected String getServerNamespace(String url) {
-	if (policy == null)
-	    return null;
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i = 0; i < serverList.size(); i++) {
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		if (serverList.get(i).getNamespace() == null)
-		    return null;
-		return serverList.get(i).getNamespace();
-	    }
-	}
-	return null;
+    	Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
+    	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
+    	while(i.hasNext())
+    	{
+    		return i.next().getNamespace();
+    	}
+    	return null;
     }
     
     /**
-     * TODO move to WFS
      * @param url
      * @return
      */
     protected String getServerPrefix(String url) {
-	if (policy == null)
-	    return null;
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i = 0; i < serverList.size(); i++) {
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		if (serverList.get(i).getPrefix() == null)
-		    return null;
-		return serverList.get(i).getPrefix();
-	    }
-	}
-	return null;
+    	Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
+    	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
+    	while(i.hasNext())
+    	{
+    		return i.next().getPrefix();
+    	}
+    	return null;
     }
     
     /**
@@ -3902,7 +3658,6 @@ public class WFSProxyServlet extends ProxyServlet {
      * 
      *  WFS version 1.1 uses tags <ExceptionReport> and subTag <Exception>
      */
-    //TODO move to WFS
     @Deprecated
     protected ByteArrayOutputStream buildResponseForOgcServiceException ()
     {

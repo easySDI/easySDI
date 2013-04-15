@@ -18,9 +18,9 @@ package org.easysdi.proxy.wms.thread;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,7 +28,6 @@ import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.domain.SdiPhysicalservice;
 import org.easysdi.proxy.wms.WMSProxyServlet;
-import org.easysdi.xml.documents.RemoteServerInfo;
 
 
 /**

@@ -27,6 +27,7 @@ import org.jdom.filter.Filter;
  * @author DEPTH SA
  *
  */
+@SuppressWarnings("serial")
 public class ElementMD_MetadataNonAuthorizedFilter implements Filter {
 
 	public Namespace nsSDI = Namespace.getNamespace("sdi","http://www.easysdi.org/2011/sdi") ;
@@ -42,11 +43,6 @@ public class ElementMD_MetadataNonAuthorizedFilter implements Filter {
 		this._authorizedGuidList = authorizedGuidList;
 		this._withHarvested = withHarvested;
 	}
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7709714697050594402L;
 
 	public boolean matches(Object ob)
 	{

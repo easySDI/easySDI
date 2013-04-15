@@ -23,9 +23,9 @@ import org.jdom.filter.*;
  * @author DEPTH SA
  *
  */
+@SuppressWarnings("serial")
 public class ElementFragmentFilter implements Filter
 {
-	private static final long serialVersionUID = 1L;
 	private String _fragment;
 	
 	public ElementFragmentFilter(String fragment)

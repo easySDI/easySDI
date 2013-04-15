@@ -16,12 +16,9 @@
  */
 package org.easysdi.proxy.wms;
 
-import java.util.Arrays;
-
 import org.easysdi.proxy.core.ProxyServletRequest;
 import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiVirtualservice;
-import org.easysdi.proxy.wms.WMSProxyServlet;
 import org.easysdi.proxy.wms.v111.WMSExceptionReport111;
 import org.easysdi.proxy.wms.v111.WMSProxyResponseBuilder111;
 

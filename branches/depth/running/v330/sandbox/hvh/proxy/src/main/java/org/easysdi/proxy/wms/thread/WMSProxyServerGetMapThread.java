@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.domain.SdiPhysicalservice;
 import org.easysdi.proxy.wms.WMSProxyServlet;
-import org.easysdi.xml.documents.RemoteServerInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.GeometryConverterFactory;
 import org.geotools.xml.DocumentFactory;

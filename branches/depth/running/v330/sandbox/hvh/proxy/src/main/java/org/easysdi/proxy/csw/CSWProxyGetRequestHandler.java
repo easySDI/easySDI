@@ -1,5 +1,6 @@
 package org.easysdi.proxy.csw;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 public class CSWProxyGetRequestHandler 
@@ -37,14 +38,14 @@ public class CSWProxyGetRequestHandler
 		return _server;
 	}
 
-	public CSWProxyGetRequestHandler (String request)
+	public CSWProxyGetRequestHandler (String request) throws UnsupportedEncodingException
 	{
 		_request = request;
 		_server = _request.substring(0, _request.indexOf("?"));
 		_parameters = _request.substring(_request.indexOf("?")+1);
 		if(_request.indexOf("fragment") != -1)
 		{
-			_fragment = URLDecoder.decode(_request.substring(_request.indexOf("fragment")+ 9));
+			_fragment = URLDecoder.decode(_request.substring(_request.indexOf("fragment")+ 9), "UTF-8");
 		}
 	}
 

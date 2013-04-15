@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.easysdi.proxy.core.ProxyServletRequest;
 import org.easysdi.proxy.exception.ProxyServletException;
 import org.easysdi.proxy.exception.VersionNotSupportedException;
-import org.easysdi.xml.handler.WMSRequestHandler;
+import org.easysdi.proxy.xml.handler.WMSRequestHandler;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;

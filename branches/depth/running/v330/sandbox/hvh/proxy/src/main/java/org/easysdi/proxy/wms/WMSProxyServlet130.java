@@ -17,7 +17,6 @@
 package org.easysdi.proxy.wms;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,7 +25,6 @@ import org.easysdi.proxy.core.ProxyServletRequest;
 import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.ows.OWSExceptionReport;
-import org.easysdi.proxy.wms.WMSProxyServlet;
 import org.easysdi.proxy.wms.v130.WMSExceptionReport130;
 import org.easysdi.proxy.wms.v130.WMSProxyResponseBuilder130;
 
@@ -100,7 +98,6 @@ public class WMSProxyServlet130 extends WMSProxyServlet {
 		    resp.setHeader("easysdi-proxy-error-occured", "true");
 		    e.printStackTrace();
 		    logger.error( e.getMessage());
-		    StringBuffer out;
 		    try {
 		    	owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK);
 			} catch (IOException e1) {

@@ -9,6 +9,8 @@ package org.easysdi.proxy.exception;
  */
 public class OperationNotAllowedException extends RuntimeException {
 
+	private static final long serialVersionUID = -7245911656325136777L;
+
 	/**
 	 * 
 	 */

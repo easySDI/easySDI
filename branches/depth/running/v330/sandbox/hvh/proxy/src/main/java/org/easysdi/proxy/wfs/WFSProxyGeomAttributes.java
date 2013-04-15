@@ -5,7 +5,6 @@ public class WFSProxyGeomAttributes extends Object
 	private int requestServerIndex;
 	private String policyServerPrefix;
 	private String policyServerNamespace;
-	private String requestServerPrefixNS;
 	private String featureTypeName;
 	private String geomAttributName;
 
@@ -13,7 +12,6 @@ public class WFSProxyGeomAttributes extends Object
 	WFSProxyGeomAttributes(int p_serverIndex,String p_requestServerPrefixNS,String p_featureTypeName,String p_geomAttributName)
 		{
 		requestServerIndex = p_serverIndex;
-		requestServerPrefixNS = p_requestServerPrefixNS;
 		featureTypeName = p_featureTypeName;
 		geomAttributName = p_geomAttributName;
 		}

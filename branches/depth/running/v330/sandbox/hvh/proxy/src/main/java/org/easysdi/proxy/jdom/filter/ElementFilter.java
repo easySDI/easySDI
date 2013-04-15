@@ -17,38 +17,38 @@
 package org.easysdi.proxy.jdom.filter;
 
 import org.jdom.Element;
-import org.jdom.filter.Filter;
+import org.jdom.filter.*;
 
 /**
  * @author DEPTH SA
  *
  */
-public class ElementSDIPlatformFilter implements Filter {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -1513283134857941196L;
+@SuppressWarnings("serial")
+public class ElementFilter implements Filter
+{
+	private String name = "";
 	
-	/* (non-Javadoc)
-	 * @see org.jdom.filter.Filter#matches(java.lang.Object)
-	 */
+	public ElementFilter(String name)
+	{
+		super();
+		this.name = name;
+	}
+	
 	public boolean matches(Object ob)
-    {
-       //Check if filtered objects are Element 
-       if(!(ob instanceof Element)){return false;}
+      {
+         //Check if filtered objects are Element 
+         if(!(ob instanceof Element)){return false;}
 
-       //Filter to use against Elements
-       Element element = (Element)ob;
-       if(element.getQualifiedName().equals("sdi:platform"))
-       {
-      	 return true;
-       }
-       else
-       {
-      	 return false;
-       }
+         //Filter to use against Elements
+         Element element = (Element)ob;
+         if(element.getName().equals(this.name))
+         {
+        	 return true;
+         }
+         else
+         {
+        	 return false;
+         }
 
-    }
-
+      }
 }

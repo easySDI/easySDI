@@ -34,10 +34,7 @@ import org.easysdi.proxy.domain.SdiPhysicalservice;
 import org.easysdi.proxy.domain.SdiSysOperationcompliance;
 import org.easysdi.proxy.domain.SdiVirtualmetadata;
 import org.easysdi.proxy.jdom.filter.AttributeXlinkFilter;
-import org.easysdi.proxy.jdom.filter.ElementExceptionFilter;
-import org.easysdi.proxy.jdom.filter.ElementExceptionTextFilter;
-import org.easysdi.proxy.jdom.filter.ElementLayerFilter;
-import org.easysdi.proxy.jdom.filter.ElementOperationFilter;
+import org.easysdi.proxy.jdom.filter.ElementFilter;
 import org.easysdi.proxy.jdom.filter.ElementTileMatrixSetFilter;
 import org.easysdi.proxy.wmts.WMTSProxyResponseBuilder;
 import org.easysdi.proxy.wmts.WMTSProxyServlet;
@@ -114,7 +111,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 		    //We have to use a separate List storing the Elements we want to modify.
 	
 		    //Operation filtering
-		    Filter operationFilter = new ElementOperationFilter();
+		    Filter operationFilter = new ElementFilter("Operation");
 		    Filter xlinkFilter = new AttributeXlinkFilter();
 		    List<Element> operationList = new ArrayList<Element>();	    	  
 		    Iterator iOperation= racine.getDescendants(operationFilter);
@@ -202,7 +199,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 		}
 
 		//Layer filtering
-		Filter layerFilter = new ElementLayerFilter();
+		ElementFilter layerFilter = new ElementFilter("Layer");
 		List<Element> layerList = new ArrayList<Element>();	    	  
 		Iterator iLayer= racine.getDescendants(layerFilter);
 		while(iLayer.hasNext())
@@ -292,7 +289,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 	    SdiPhysicalservice master = servlet.getPhysicalServiceMaster();
 	    String fileMasterPath = filePathList.get(master.getAlias());
 	    Document documentMaster = sxb.build(new File(fileMasterPath));
-	    Filter layerFilter = new ElementLayerFilter();
+	    ElementFilter layerFilter = new ElementFilter("Layer");
 	    Element racineMaster = documentMaster.getRootElement();
 	    Element contentsMaster=  ((Element)racineMaster.getDescendants(layerFilter).next()).getParentElement();
 
@@ -309,7 +306,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 		    Element racineChild = documentChild.getRootElement();
 		    Namespace localNsWMTS = racineChild.getNamespace(); 
 		    Element contentsChild = (Element)racineChild.getChild("Contents", localNsWMTS);
-		    Iterator<Element> ichild = contentsChild.getDescendants(new ElementLayerFilter());
+		    Iterator<Element> ichild = contentsChild.getDescendants(new ElementFilter("Layer"));
 		    while (ichild.hasNext())
 		    {
 			Element child = (Element)((Element)ichild.next()).clone();
@@ -514,7 +511,8 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 
 		    //Get the Exception elements of the parent document
 		    List<Element> exceptionList = new ArrayList<Element>();
-		    Filter exceptionFilter = new ElementExceptionFilter();
+		    ElementFilter exceptionFilter = new ElementFilter("Exception");
+		    
 		    Iterator<Element> iE = racineParent.getDescendants(exceptionFilter);
 		    while (iE.hasNext()){
 			Element exception = (Element)iE.next();
@@ -527,7 +525,8 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 		    List<Element> exceptionToComplete = new ArrayList<Element>();
 		    while (iEL.hasNext()){
 			Element exception = (Element)iEL.next();
-			Iterator<Element> iET = exception.getDescendants(new ElementExceptionTextFilter());
+			ElementFilter exceptionTextFilter = new ElementFilter("ExceptionText");
+			Iterator<Element> iET = exception.getDescendants(exceptionTextFilter);
 			boolean found = false;
 			while (iET.hasNext()){
 			    exceptionTextToUpdate.add((Element)iET.next());
@@ -564,7 +563,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 		Element racine = docChild.getRootElement();
 		//Get the Exception elements of the child document
 		List<Element> exceptionList = new ArrayList<Element>();
-		Filter exceptionFilter = new ElementExceptionFilter();
+		ElementFilter exceptionFilter = new ElementFilter("Exception");
 		Iterator<Element> iE = racine.getDescendants(exceptionFilter);
 		while (iE.hasNext()){
 		    Element exception = (Element)iE.next();
@@ -577,7 +576,8 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 		List<Element> exceptionToComplete = new ArrayList<Element>();
 		while (iEL.hasNext()){
 		    Element exception = (Element)iEL.next();
-		    Iterator<Element> iET = exception.getDescendants(new ElementExceptionTextFilter());
+		    ElementFilter exceptionTextFilter = new ElementFilter("ExceptionText");
+		    Iterator<Element> iET = exception.getDescendants(exceptionTextFilter);
 		    boolean found = false;
 		    while (iET.hasNext()){
 			exceptionTextToUpdate.add((Element)iET.next());

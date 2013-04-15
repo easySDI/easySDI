@@ -23,12 +23,8 @@ import org.jdom.filter.Filter;
  * @author DEPTH SA
  *
  */
+@SuppressWarnings("serial")
 public class ElementTransactionTypeFilter implements Filter {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -889099982969483663L;
 
 	public boolean matches(Object ob) {
 		//Check if filtered objects are Element 

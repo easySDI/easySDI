@@ -1,12 +1,11 @@
 package org.easysdi.proxy.wmts;
 
-import java.util.Arrays;
-
 import org.easysdi.proxy.core.ProxyServletRequest;
 import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiVirtualservice;
-import org.easysdi.proxy.ows.v200.*;
-import org.easysdi.proxy.wmts.v100.*;
+import org.easysdi.proxy.ows.v200.OWS200ExceptionManager;
+import org.easysdi.proxy.wmts.v100.WMTSExceptionReport100;
+import org.easysdi.proxy.wmts.v100.WMTSProxyResponseBuilder100;
 
 public class WMTSProxyServlet100 extends WMTSProxyServlet{
 

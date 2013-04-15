@@ -1,7 +1,6 @@
 package org.easysdi.proxy.security;
 
 import java.io.IOException;
-import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -13,8 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
 
+import org.easysdi.proxy.domain.Users;
+import org.easysdi.proxy.domain.UsersHome;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -30,8 +30,6 @@ import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
-import org.easysdi.proxy.domain.Users;
-import org.easysdi.proxy.domain.UsersHome;
 
 public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 
