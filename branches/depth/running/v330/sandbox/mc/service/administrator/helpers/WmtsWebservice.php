@@ -488,4 +488,43 @@ class WmtsWebservice {
 		return true;
 	}
 	
+	private static function deleteWmtsLayer ($physicalServiceID, $policyID, $layerID) {
+		$db = JFactory::getDbo();
+		
+		$db->setQuery('
+			SELECT wp.id
+			FROM #__sdi_wmtslayer_policy wp
+			JOIN #__sdi_physicalservice_policy pp
+			ON wp.physicalservicepolicy_id = pp.id
+			WHERE pp.physicalservice_id = ' . $physicalServiceID . '
+			AND pp.policy_id = ' . $policyID . '
+			AND wp.identifier = \'' . $layerID . '\';
+		');
+		
+		try {
+			$db->execute();
+			$pk = $db->loadResult();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
+		if (is_numeric($pk) && 0 < $pk) {
+			$query = $db->getQuery(true);
+			$query->delete('#__sdi_wmtslayer_policy')->where('id = ' . $pk);
+			
+			$db->setQuery($query);
+			
+			try {
+				$db->execute();
+			}
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
+		}
+	}
 }

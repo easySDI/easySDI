@@ -389,19 +389,23 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 							return false;
 						}
 						break;
+					case 'CSW':
+						if (!$this->saveCSWState($data)) {
+							$this->setError('Failed to save state.');
+							return false;
+						}
+						
+						if (!$this->saveExcludedAttributes($data)) {
+							$this->setError('Failed to save excluded attributes.');
+							return false;
+						}
+						break;
 				}
 			}
 			
 			if (!$this->saveAllowedOperation($data)) {
 				$this->setError('Failed to save allowed operations.');
 				return false;
-			}
-			
-			if ('CSW' == $serviceconnector_name) {
-				if (!$this->saveExcludedAttributes($data)) {
-					$this->setError('Failed to save excluded attributes.');
-					return false;
-				}
 			}
 			
 			//Access Scope
@@ -1132,6 +1136,38 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			$db->setQuery('
 				INSERT INTO #__sdi_excludedattribute (policy_id, path)
 				VALUES (' . $data['id'] . ',\'' . $value . '\');
+			');
+			try {
+				$db->execute();
+			}
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Method to save the state of a csw policy
+	 *
+	 * @param array 	$data	data posted from the form
+	 *
+	 * @return boolean 	True on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	public function saveCSWState ($data) {
+		$db = $this->getDbo();
+		$db->setQuery('DELETE FROM #__sdi_policy_metadatastate WHERE policy_id = ' . $data['id']);
+		$db->query();
+		
+		$arr_pks = $_POST['csw_state'];
+		foreach ($arr_pks as $pk) {
+			$db->setQuery('
+				INSERT INTO #__sdi_policy_metadatastate (policy_id, metadatastate_id)
+				VALUES (' . $data['id'] . ',\'' . $pk . '\');
 			');
 			try {
 				$db->execute();

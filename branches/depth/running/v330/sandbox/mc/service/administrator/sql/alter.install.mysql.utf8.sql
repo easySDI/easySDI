@@ -90,6 +90,9 @@ ADD CONSTRAINT `#__sdi_policy_fk1` FOREIGN KEY (`virtualservice_id`) REFERENCES 
 ALTER TABLE `#__sdi_policy`
 ADD CONSTRAINT `#__sdi_policy_fk2` FOREIGN KEY (`accessscope_id`) REFERENCES `#__sdi_sys_accessscope` (`id`) ;
 
+ALTER TABLE `#__sdi_policy`
+ADD CONSTRAINT `#__sdi_policy_fk7` FOREIGN KEY (`csw_version_id`) REFERENCES `#__sdi_sys_metadataversion` (`id`) ;
+
 ALTER TABLE `#__sdi_allowedoperation`
 ADD CONSTRAINT `#__sdi_allowedoperationy_fk1` FOREIGN KEY (`policy_id`) REFERENCES `#__sdi_policy` (`id`) ON DELETE CASCADE;
 

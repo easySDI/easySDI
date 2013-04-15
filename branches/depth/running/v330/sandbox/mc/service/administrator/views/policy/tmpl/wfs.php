@@ -22,6 +22,8 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/policy.js');
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/wfs.js');
 JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
+JText::script('COM_EASYSDI_SERVICE_MODAL_ERROR');
+JText::script('COM_EASYSDI_SERVICE_CONFIRM_DELETION');
 
 function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	$db = JFactory::getDbo();
@@ -164,7 +166,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 										
 										<?php printSpatialPolicyForm($this->item, $ps->id); ?>
 										
-										<table class="table" >
+										<table class="table table-striped" >
 											<thead>
 												<tr>
 													<th>name</th>
@@ -188,6 +190,9 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 													<td>
 														<button type="button" class="btn btn_modify_layer" data-toggle="modal" data-target="#layer_settings_modal" data-psid="<?php echo $ps->id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>">
 															<?php echo JText::_('COM_EASYSDI_SERVICE_BTN_SETTINGS');?>
+														</button>
+														<button type="button" class="btn btn-danger btn_delete_layer" data-psid="<?php echo $ps->id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>">
+															<?php echo JText::_('COM_EASYSDI_SERVICE_BTN_DELETE_SETTINGS');?>
 														</button>
 													</td>
 												</tr>

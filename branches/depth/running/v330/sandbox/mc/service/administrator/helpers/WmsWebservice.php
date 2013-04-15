@@ -399,4 +399,63 @@ class WmsWebservice {
 		return true;
 	}
 	
+	private static function deleteWmtsLayer ($physicalServiceID, $policyID, $layerID) {
+		$db = JFactory::getDbo();
+		
+		$db->setQuery('
+			SELECT wp.id AS id, pp.id AS psp_id
+			FROM #__sdi_wmslayer_policy wp
+			JOIN #__sdi_physicalservice_policy pp
+			ON wp.physicalservicepolicy_id = pp.id
+			WHERE pp.physicalservice_id = ' . $physicalServiceID . '
+			AND pp.policy_id = ' . $policyID . '
+			AND wp.identifier = \'' . $layerID . '\';
+		');
+		
+		try {
+			$db->execute();
+			$result = $db->loadObject();
+			$pk = $result->id;
+			$physicalservice_policy_id = $result->psp_id;
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
+		if (is_numeric($pk) && 0 < $pk) {
+			$query = $db->getQuery(true);
+			$query->delete('#__sdi_wmslayer_policy')->where('id = ' . $pk);
+			
+			$db->setQuery($query);
+			
+			try {
+				$db->execute();
+			}
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
+			
+			$query = $db->getQuery(true);
+			$query->insert('#__sdi_wmslayer_policy')->columns('
+				name, physicalservicepolicy_id
+			')->values('
+				\'' . $layerID . '\', \'' . $physicalservice_policy_id . '\'
+			');
+			
+			$db->setQuery($query);
+			
+			try {
+				$db->execute();
+			}
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
+		}
+	}
 }
