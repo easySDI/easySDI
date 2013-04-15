@@ -20,6 +20,7 @@ package org.easysdi.proxy.core;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -36,8 +37,12 @@ import net.sf.ehcache.Element;
 
 import org.easysdi.proxy.csw.CSWExceptionReport;
 import org.easysdi.proxy.domain.SdiPolicy;
+import org.easysdi.proxy.domain.SdiPolicyHome;
 import org.easysdi.proxy.domain.SdiSysServicecompliance;
+import org.easysdi.proxy.domain.SdiUser;
+import org.easysdi.proxy.domain.SdiUserHome;
 import org.easysdi.proxy.domain.SdiVirtualservice;
+import org.easysdi.proxy.domain.SdiVirtualserviceHome;
 import org.easysdi.proxy.domain.SdiVirtualserviceServicecompliance;
 import org.easysdi.proxy.exception.InvalidServiceNameException;
 import org.easysdi.proxy.exception.OperationNotAllowedException;
@@ -52,7 +57,10 @@ import org.easysdi.proxy.wms.WMSExceptionReport;
 import org.easysdi.proxy.wmts.v100.WMTSExceptionReport100;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -65,11 +73,14 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class OgcProxyServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 5619994356764480389L;
-	private Cache virtualserviceCache;
+//	private Cache virtualserviceCache;
 	private Logger logger = LoggerFactory.getLogger("OgcProxyServlet");
 	private HttpServletResponse servletResponse;
 	private HttpServletRequest servletRequest;
 	public static HashMap<String, Double> executionCount = new HashMap<String, Double>();
+	public SdiVirtualserviceHome sdiVirtualserviceHome;
+	public SdiPolicyHome sdiPolicyHome;
+	public SdiUserHome sdiUserHome;
 
 
 	/* (non-Javadoc)
@@ -78,11 +89,14 @@ public class OgcProxyServlet extends HttpServlet {
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 		ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-		CacheManager cm = (CacheManager) context.getBean("cacheManager");
-
-		if (cm != null) {
-			virtualserviceCache = cm.getCache("virtualserviceCache");
-		}
+		sdiVirtualserviceHome  = (SdiVirtualserviceHome)context.getBean("sdiVirtualserviceHome");
+		sdiPolicyHome  = (SdiPolicyHome)context.getBean("sdiPolicyHome");
+		sdiUserHome  = (SdiUserHome)context.getBean("sdiUserHome");
+//		CacheManager cm = (CacheManager) context.getBean("cacheManager");
+//
+//		if (cm != null) {
+//			virtualserviceCache = cm.getCache("virtualserviceCache");
+//		}
 		System.setProperty("org.geotools.referencing.forceXY", "true");
 		logger.info("OgcProxyServlet initialization done.");
 	}
@@ -171,12 +185,14 @@ public class OgcProxyServlet extends HttpServlet {
 		String connector = "";
 		ProxyServletRequest request = null;
 		try {
-			Element el = virtualserviceCache.get(servletName);
-			if (el == null){
-				logger.error(servletName + " not found ! Servlet can not be created.");
-				return null;
-			}
-			SdiVirtualservice virtualService = (SdiVirtualservice)el.getValue();
+//			Element el = virtualserviceCache.get(servletName);
+//			if (el == null){
+//				logger.error(servletName + " not found ! Servlet can not be created.");
+//				return null;
+//			}
+//			SdiVirtualservice virtualService = (SdiVirtualservice)el.getValue();
+			
+			SdiVirtualservice virtualService = sdiVirtualserviceHome.findByAlias(servletName);
 			
 			//Get the service connector
 			connector = virtualService.getSdiSysServiceconnector().getValue();
@@ -204,6 +220,10 @@ public class OgcProxyServlet extends HttpServlet {
 				Class<?> requestClasse = Class.forName(requestClassName);
 				Constructor<?> requestConstructeur = requestClasse.getConstructor(new Class [] {Class.forName ("javax.servlet.http.HttpServletRequest")});
 				request = (ProxyServletRequest) requestConstructeur.newInstance(req);
+				if (!connector.equals(request.getService()))
+				{
+					sendException(new ProxyServletException("Problem parsing request: "+e.toString()), connector, highestversion);
+				}
 			} catch (ClassNotFoundException e) {
 				//Class request does not exist, keep going on (it can be the case for old version connector)
 			} catch (NoSuchMethodException e) {
@@ -300,21 +320,33 @@ public class OgcProxyServlet extends HttpServlet {
 				className = packagename + "ProxyServlet";
 			}
 
-			String user = null;
-			Principal principal = SecurityContextHolder.getContext().getAuthentication();
-			if (principal != null)
-				user = principal.getName();
-			Element policyE = virtualserviceCache.get(servletName + user);
-
-			SdiPolicy policy = null;
-			if (policyE != null) {
-				policy = (SdiPolicy) policyE.getValue();
-			} else {
-				// If no policy found, return an OGC Exception and quit.
-				logger.error("No policy found!");
-				sendException(new PolicyNotFoundException(PolicyNotFoundException.NO_POLICY_FOUND), connector, reqVersion);
-				return null;
+//			String user = null;
+//			Principal principal = SecurityContextHolder.getContext().getAuthentication();
+//			if (principal != null)
+//				user = principal.getName();
+//			Element policyE = virtualserviceCache.get(servletName + user);
+//
+//			SdiPolicy policy = null;
+//			if (policyE != null) {
+//				policy = (SdiPolicy) policyE.getValue();
+//			} else {
+//				// If no policy found, return an OGC Exception and quit.
+//				logger.error("No policy found!");
+//				sendException(new PolicyNotFoundException(PolicyNotFoundException.NO_POLICY_FOUND), connector, reqVersion);
+//				return null;
+//			}
+			Authentication principal = SecurityContextHolder.getContext().getAuthentication();
+			String username = null;
+			if (principal != null){
+				username = principal.getName();
+				logger.debug("Authentication : "+username);
 			}
+			Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>)principal.getAuthorities();
+			SdiUser user = sdiUserHome.findByUserName(username);
+			Integer id = null;
+			if (user != null)
+				id = user.getId();
+			SdiPolicy policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualService.getId(), id , authorities);
 			
 			//Check if the current requested operation is allowed by the loaded policy
 			if(!request.isOperationAllowedByPolicy(policy)){

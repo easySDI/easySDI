@@ -384,125 +384,127 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 				onlineResource.setAttribute("type", "simple",nsXLINK);
 				onlineResource.setAttribute("href", href, nsXLINK);
 				service.addContent(onlineResource);
+				return true;
 			}
-			else
+			
+			//Clone service element to keep value which are inherited 
+			Element racine = document.getRootElement();
+			Element oldService = (Element)racine.getChild("Service").clone();
+			
+			//Remove the current Service element
+			racine.removeContent(racine.getChild("Service"));
+			
+			//Create a new Service element
+			Element newService  = new Element ("Service");
+			newService.addContent((new Element("Name")).setText("WMS"));
+			
+			//Metadata overwrite in the virtal service configuration	
+			SdiVirtualmetadata virtualMetadata = servlet.getVirtualService().getSdiVirtualmetadatas().iterator().next();
+			
+			if(!virtualMetadata.isInheritedtitle() && virtualMetadata.getTitle() != null && virtualMetadata.getTitle().length() != 0)
+				newService.addContent((new Element("Title")).setText(virtualMetadata.getTitle()));
+			else if(virtualMetadata.isInheritedtitle() && oldService.getChildText("Title") != null )
+				newService.addContent((new Element("Title")).setText(oldService.getChildText("Title")));
+			
+			if(!virtualMetadata.isInheritedsummary() && virtualMetadata.getSummary() != null && virtualMetadata.getSummary().length() != 0)
+				newService.addContent((new Element("Abstract")).setText(virtualMetadata.getSummary()));
+			else if(virtualMetadata.isInheritedsummary() && oldService.getChildText("Abstract") != null)
+				newService.addContent((new Element("Abstract")).setText(oldService.getChildText("Abstract")));
+			
+			if(!virtualMetadata.isInheritedkeyword() && virtualMetadata.getKeyword() != null && virtualMetadata.getKeyword().length() != 0)
 			{
-				SdiVirtualmetadata virtualMetadata = servlet.getVirtualService().getSdiVirtualmetadatas().iterator().next();
-				
-				//Remove the current Service element
-				Element racine = document.getRootElement();
-				Element oldService = (Element)racine.getChild("Service").clone();
-				
-				//Create a new Service element
-				Element newService  = new Element ("Service");
-				newService.addContent((new Element("Name")).setText("WMS"));
-				
-				if(!virtualMetadata.isInheritedtitle() && virtualMetadata.getTitle() != null && virtualMetadata.getTitle().length() != 0)
-					newService.addContent((new Element("Title")).setText(virtualMetadata.getTitle()));
-				else if(virtualMetadata.isInheritedtitle())
-					newService.addContent((new Element("Title")).setText(oldService.getChildText("Title")));
-				
-				if(!virtualMetadata.isInheritedsummary() && virtualMetadata.getSummary() != null && virtualMetadata.getSummary().length() != 0)
-					newService.addContent((new Element("Abstract")).setText(virtualMetadata.getSummary()));
-				else if(virtualMetadata.isInheritedsummary())
-					newService.addContent((new Element("Abstract")).setText(oldService.getChildText("Abstract")));
-				
-				if(!virtualMetadata.isInheritedkeyword() && virtualMetadata.getKeyword() != null && virtualMetadata.getKeyword().length() != 0)
-				{
-					Element keywords = new Element("KeywordsList");
-					String[] words = virtualMetadata.getKeyword().split(",");
-					for(String word: words){
-						keywords.addContent((new Element("Keyword")).setText(word));
-					}
-					newService.addContent(keywords);
+				Element keywords = new Element("KeywordsList");
+				String[] words = virtualMetadata.getKeyword().split(",");
+				for(String word: words){
+					keywords.addContent((new Element("Keyword")).setText(word));
 				}
-				else if (virtualMetadata.isInheritedkeyword())
-					newService.addContent((new Element("KeywordsList")).setContent(oldService.getChild("KeywordsList")));
+				newService.addContent(keywords);
+			}
+			else if (virtualMetadata.isInheritedkeyword() && oldService.getChild("KeywordsList") != null)
+				newService.addContent((new Element("KeywordsList")).setContent(oldService.getChild("KeywordsList")));
+			
+			Element onlineResource = new Element("OnlineResource");
+			onlineResource.setAttribute("type", "simple",nsXLINK);
+			onlineResource.setAttribute("href", href, nsXLINK);
+			newService.addContent(onlineResource);
+			
+			if(!virtualMetadata.isInheritedcontact())
+			{
+				Element newContactInformation = new Element("ContactInformation");
+				Element newContactPersonPrimary = new Element("ContactPersonPrimary");
+				Boolean hasContactPersonPrimary = false;
 				
-				Element onlineResource = new Element("OnlineResource");
-				onlineResource.setAttribute("type", "simple",nsXLINK);
-				onlineResource.setAttribute("href", href, nsXLINK);
-				newService.addContent(onlineResource);
+				if(virtualMetadata.getContactname() != null && virtualMetadata.getContactname().length() != 0){
+					newContactPersonPrimary.addContent((new Element("ContactPerson")).setText(virtualMetadata.getContactname()));
+					hasContactPersonPrimary = true;
+				}
+				if(virtualMetadata.getContactorganization() != null && virtualMetadata.getContactorganization().length() != 0){
+					newContactPersonPrimary.addContent((new Element("ContactOrganization")).setText(virtualMetadata.getContactorganization()));
+					hasContactPersonPrimary = true;
+				}
+				if(hasContactPersonPrimary)
+					newContactInformation.addContent(newContactPersonPrimary);
 				
-				if(!virtualMetadata.isInheritedcontact())
-				{
-					Element newContactInformation = new Element("ContactInformation");
-					Element newContactPersonPrimary = new Element("ContactPersonPrimary");
-					Boolean hasContactPersonPrimary = false;
-					
-					if(virtualMetadata.getContactname() != null && virtualMetadata.getContactname().length() != 0){
-						newContactPersonPrimary.addContent((new Element("ContactPerson")).setText(virtualMetadata.getContactname()));
-						hasContactPersonPrimary = true;
-					}
-					if(virtualMetadata.getContactorganization() != null && virtualMetadata.getContactorganization().length() != 0){
-						newContactPersonPrimary.addContent((new Element("ContactOrganization")).setText(virtualMetadata.getContactorganization()));
-						hasContactPersonPrimary = true;
-					}
-					if(hasContactPersonPrimary)
-						newContactInformation.addContent(newContactPersonPrimary);
-					
-					if (virtualMetadata.getContactposition() != null && virtualMetadata.getContactposition().length() != 0)
-						newContactInformation.addContent((new Element("ContactPosition")).setText(virtualMetadata.getContactposition()));
-					
-					Element newContactAddress = new Element("ContactAddress");
-					Boolean hasContactAddress = false;
-					//TODO add the address type
+				if (virtualMetadata.getContactposition() != null && virtualMetadata.getContactposition().length() != 0)
+					newContactInformation.addContent((new Element("ContactPosition")).setText(virtualMetadata.getContactposition()));
+				
+				Element newContactAddress = new Element("ContactAddress");
+				Boolean hasContactAddress = false;
+				//TODO add the address type
 //						if(virtualMetadata.getC != null && contactAddress.getType().length() != 0){
 //							newContactAddress.addContent((new Element("AddressType")).setText(contactAddress.getType()));
 //							hasContactAddress = true;
 //						}
-					if(virtualMetadata.getContactadress() != null && virtualMetadata.getContactadress().length() != 0){
-						newContactAddress.addContent((new Element("Address")).setText(virtualMetadata.getContactadress()));
-						hasContactAddress = true;
-					}
-					if(virtualMetadata.getContactlocality() != null && virtualMetadata.getContactlocality().length() != 0){
-						newContactAddress.addContent((new Element("City")).setText(virtualMetadata.getContactlocality()));
-						hasContactAddress = true;
-					}
-					
-					if(virtualMetadata.getContactstate() != null && virtualMetadata.getContactstate().length() != 0){
-						newContactAddress.addContent((new Element("StateOrProvince")).setText(virtualMetadata.getContactstate()));
-						hasContactAddress = true;
-					}
-					if(virtualMetadata.getContactpostalcode() != null && virtualMetadata.getContactpostalcode().length() != 0){
-						newContactAddress.addContent((new Element("PostCode")).setText(virtualMetadata.getContactpostalcode()));
-						hasContactAddress = true;
-					}
-					if(virtualMetadata.getSdiSysCountry() != null && virtualMetadata.getSdiSysCountry().getName() != null){
-						newContactAddress.addContent((new Element("Country")).setText(virtualMetadata.getSdiSysCountry().getName()));
-						hasContactAddress = true;
-					}
-					
-					if(hasContactAddress)
-						newContactInformation.addContent(newContactAddress);
-					
-					if (virtualMetadata.getContactphone() != null && virtualMetadata.getContactphone().length() != 0)
-						newContactInformation.addContent((new Element("ContactVoiceTelephone")).setText(virtualMetadata.getContactphone()));
-					
-					if (virtualMetadata.getContactfax() != null && virtualMetadata.getContactfax().length() != 0)
-						newContactInformation.addContent((new Element("ContactFacsimileTelephone")).setText(virtualMetadata.getContactfax()));
-					
-					if (virtualMetadata.getContactemail() != null && virtualMetadata.getContactemail().length() != 0)
-						newContactInformation.addContent((new Element("ContactElectronicMailAddress")).setText(virtualMetadata.getContactemail()));
-					
-					newService.addContent(newContactInformation);
+				if(virtualMetadata.getContactadress() != null && virtualMetadata.getContactadress().length() != 0){
+					newContactAddress.addContent((new Element("Address")).setText(virtualMetadata.getContactadress()));
+					hasContactAddress = true;
 				}
-				else if (!virtualMetadata.isInheritedcontact())
-					newService.addContent((new Element("ContactInformation")).setContent(oldService.getChild("ContactInformation")));
+				if(virtualMetadata.getContactlocality() != null && virtualMetadata.getContactlocality().length() != 0){
+					newContactAddress.addContent((new Element("City")).setText(virtualMetadata.getContactlocality()));
+					hasContactAddress = true;
+				}
 				
-				if(!virtualMetadata.isInheritedfee() && virtualMetadata.getFee() != null && virtualMetadata.getFee().length() != 0)
-					newService.addContent((new Element("Fees")).setText(virtualMetadata.getFee()));
-				else if (virtualMetadata.isInheritedfee())
-					newService.addContent((new Element("Fees")).setText(oldService.getChildText("Fees")));
+				if(virtualMetadata.getContactstate() != null && virtualMetadata.getContactstate().length() != 0){
+					newContactAddress.addContent((new Element("StateOrProvince")).setText(virtualMetadata.getContactstate()));
+					hasContactAddress = true;
+				}
+				if(virtualMetadata.getContactpostalcode() != null && virtualMetadata.getContactpostalcode().length() != 0){
+					newContactAddress.addContent((new Element("PostCode")).setText(virtualMetadata.getContactpostalcode()));
+					hasContactAddress = true;
+				}
+				if(virtualMetadata.getSdiSysCountry() != null && virtualMetadata.getSdiSysCountry().getName() != null){
+					newContactAddress.addContent((new Element("Country")).setText(virtualMetadata.getSdiSysCountry().getName()));
+					hasContactAddress = true;
+				}
 				
-				if(!virtualMetadata.isInheritedaccessconstraint() && virtualMetadata.getAccessconstraint() != null && virtualMetadata.getAccessconstraint().length() != 0)
-					newService.addContent((new Element("AccessConstraints")).setText(virtualMetadata.getAccessconstraint()));
-				else if (virtualMetadata.isInheritedaccessconstraint())
-					newService.addContent((new Element("AccessConstraints")).setText(oldService.getChildText("AccessConstraints")));
+				if(hasContactAddress)
+					newContactInformation.addContent(newContactAddress);
 				
-				racine.removeContent(racine.getChild("Service"));
-				racine.addContent( 1, newService);
+				if (virtualMetadata.getContactphone() != null && virtualMetadata.getContactphone().length() != 0)
+					newContactInformation.addContent((new Element("ContactVoiceTelephone")).setText(virtualMetadata.getContactphone()));
+				
+				if (virtualMetadata.getContactfax() != null && virtualMetadata.getContactfax().length() != 0)
+					newContactInformation.addContent((new Element("ContactFacsimileTelephone")).setText(virtualMetadata.getContactfax()));
+				
+				if (virtualMetadata.getContactemail() != null && virtualMetadata.getContactemail().length() != 0)
+					newContactInformation.addContent((new Element("ContactElectronicMailAddress")).setText(virtualMetadata.getContactemail()));
+				
+				newService.addContent(newContactInformation);
 			}
+			else if (!virtualMetadata.isInheritedcontact() && oldService.getChild("ContactInformation") != null)
+				newService.addContent((new Element("ContactInformation")).setContent(oldService.getChild("ContactInformation")));
+			
+			if(!virtualMetadata.isInheritedfee() && virtualMetadata.getFee() != null && virtualMetadata.getFee().length() != 0)
+				newService.addContent((new Element("Fees")).setText(virtualMetadata.getFee()));
+			else if (virtualMetadata.isInheritedfee() && oldService.getChildText("Fees") != null)
+				newService.addContent((new Element("Fees")).setText(oldService.getChildText("Fees")));
+			
+			if(!virtualMetadata.isInheritedaccessconstraint() && virtualMetadata.getAccessconstraint() != null && virtualMetadata.getAccessconstraint().length() != 0)
+				newService.addContent((new Element("AccessConstraints")).setText(virtualMetadata.getAccessconstraint()));
+			else if (virtualMetadata.isInheritedaccessconstraint() && oldService.getChildText("AccessConstraints") != null)
+				newService.addContent((new Element("AccessConstraints")).setText(oldService.getChildText("AccessConstraints")));
+			
+			racine.addContent( 1, newService);
 			
 			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 	        sortie.output(document, new FileOutputStream(filePath));

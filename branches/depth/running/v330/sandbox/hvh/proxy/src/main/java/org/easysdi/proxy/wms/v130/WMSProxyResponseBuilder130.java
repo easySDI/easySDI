@@ -57,9 +57,28 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 			SAXBuilder sxb = new SAXBuilder();
 			Document document = sxb.build(new File(filePath));
 			
-			//Remove the current Service element
-			Element racine = document.getRootElement();
+			if(servlet.getVirtualService().isReflectedmetadata())
+			{
+				//Service Metadata doesn't have to be overwrite 
+				//Keep the service Metadata
+				//Overwrite OnLineResource
+				Element racine = document.getRootElement();
+				Element service = racine.getChild("service",nsWMS);
+				service.removeContent(service.getChild("OnlineResource",nsWMS));
+				Element onlineResource = new Element("OnlineResource",nsWMS);
+				onlineResource.setAttribute("type", "simple",nsXLINK);
+				onlineResource.setAttribute("href", href, nsXLINK);
+				service.addContent(onlineResource);
+				XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+		        sortie.output(document, new FileOutputStream(filePath));
+				return true;
+			}
 			
+			//Clone service element to keep value which are inherited 
+			Element racine = document.getRootElement();
+			Element oldService = (Element)racine.getChild("Service", nsWMS).clone();
+			
+			//Clone elements which are not yet proposed to be overwrite
 			Element oldLayerLimit=null;
 			Element oldMaxWidth=null;
 			Element oldMaxHeight=null;
@@ -69,27 +88,31 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 				oldMaxWidth = (Element)racine.getChild("MaxWidth",nsWMS).clone();
 			if((Element)racine.getChild("MaxHeight",nsWMS) != null)
 				oldMaxHeight = (Element)racine.getChild("MaxHeight",nsWMS).clone();
+			
+			//Remove the current Service element
 			racine.removeContent(racine.getChild("Service", nsWMS));
 			
 			//Create a new Service element
 			Element newService  = new Element ("Service", nsWMS);
 			newService.addContent((new Element("Name", nsWMS)).setText("WMS"));
-			if(servlet.getVirtualService().isReflectedmetadata())
-			{
-				XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-		        sortie.output(document, new FileOutputStream(filePath));
-				return true;
-			}
-						
-			SdiVirtualmetadata metadata = servlet.getVirtualService().getSdiVirtualmetadatas().iterator().next();
-			if(!metadata.isInheritedtitle())
-				newService.addContent((new Element("Title", nsWMS)).setText(metadata.getTitle()));
-			if(!metadata.isInheritedsummary())
-				newService.addContent((new Element("Abstract", nsWMS)).setText(metadata.getSummary()));
-			if(!metadata.isInheritedkeyword())
+			
+			//Metadata overwrite in the virtal service configuration			
+			SdiVirtualmetadata virtualMetadata = servlet.getVirtualService().getSdiVirtualmetadatas().iterator().next();
+			
+			if(!virtualMetadata.isInheritedtitle() && virtualMetadata.getTitle() != null && virtualMetadata.getTitle().length() != 0)
+				newService.addContent((new Element("Title", nsWMS)).setText(virtualMetadata.getTitle()));
+			else if(virtualMetadata.isInheritedtitle() && oldService.getChildText("Title", nsWMS) != null)
+				newService.addContent((new Element("Title", nsWMS)).setText(oldService.getChildText("Title", nsWMS)));
+			
+			if(!virtualMetadata.isInheritedsummary() && virtualMetadata.getSummary() != null && virtualMetadata.getSummary().length() != 0)
+				newService.addContent((new Element("Abstract", nsWMS)).setText(virtualMetadata.getSummary()));
+			else if (virtualMetadata.isInheritedsummary() && oldService.getChildText("Abstract", nsWMS) != null)
+				newService.addContent((new Element("Abstract", nsWMS)).setText(oldService.getChildText("Abstract", nsWMS)));
+			
+			if(!virtualMetadata.isInheritedkeyword() && virtualMetadata.getKeyword() != null && virtualMetadata.getKeyword().length() != 0)
 			{
 				Element keywords = new Element("KeywordsList", nsWMS);
-				String skeywords = metadata.getKeyword();
+				String skeywords = virtualMetadata.getKeyword();
 				if(skeywords != null)
 				{
 					String[] words = skeywords.split(",");
@@ -99,62 +122,97 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 					newService.addContent(keywords);
 				}
 			}
+			else if (virtualMetadata.isInheritedkeyword() && oldService.getChild("KeywordsList") != null)
+				newService.addContent((new Element("KeywordsList", nsWMS)).setContent(oldService.getChild("KeywordsList")));
+			
 			Element onlineResource = new Element("OnlineResource", nsWMS);
 			onlineResource.setAttribute("type", "simple",nsXLINK);
 			onlineResource.setAttribute("href", href, nsXLINK);
 			newService.addContent(onlineResource);
 			
-			if(!metadata.isInheritedcontact()){
+			if(!virtualMetadata.isInheritedcontact()){
 				Element newContactInformation = new Element("ContactInformation", nsWMS);
 				Element newContactPersonPrimary = new Element("ContactPersonPrimary", nsWMS);
 				
-				if(metadata.getContactname() != null)
-					newContactPersonPrimary.addContent((new Element("ContactPerson", nsWMS)).setText(metadata.getContactname()));
-				if(metadata.getContactorganization() != null)
-					newContactPersonPrimary.addContent((new Element("ContactOrganization", nsWMS)).setText(metadata.getContactorganization()));
+				boolean hasPersonPrimary = false;
+				if(virtualMetadata.getContactname() != null && virtualMetadata.getContactname().length() != 0)
+				{
+					newContactPersonPrimary.addContent((new Element("ContactPerson", nsWMS)).setText(virtualMetadata.getContactname()));
+					hasPersonPrimary = true;
+				}
+				if(virtualMetadata.getContactorganization() != null  && virtualMetadata.getContactorganization().length() != 0)
+				{
+					newContactPersonPrimary.addContent((new Element("ContactOrganization", nsWMS)).setText(virtualMetadata.getContactorganization()));
+					hasPersonPrimary = true;
+				}
+				if(hasPersonPrimary)
+					newContactInformation.addContent(newContactPersonPrimary);
 				
-				newContactInformation.addContent(newContactPersonPrimary);
-				
-				if(metadata.getContactposition() != null)
-					newContactInformation.addContent((new Element("ContactPosition", nsWMS)).setText(metadata.getContactposition()));
+				if(virtualMetadata.getContactposition() != null && virtualMetadata.getContactposition().length() != 0)
+					newContactInformation.addContent((new Element("ContactPosition", nsWMS)).setText(virtualMetadata.getContactposition()));
 				
 				Element newContactAddress = new Element("ContactAddress", nsWMS);
+				boolean hasContactAddress = false;
 				//TODO add address type
 //				newContactAddress.addContent((new Element("AddressType", nsWMS)).setText(metadata.getContactadress()));
-				if(metadata.getContactadress() != null)
-					newContactAddress.addContent((new Element("Address", nsWMS)).setText(metadata.getContactadress()));
-				if(metadata.getContactlocality() != null)
-					newContactAddress.addContent((new Element("City", nsWMS)).setText(metadata.getContactlocality()));
-				if(metadata.getContactstate() != null)
-					newContactAddress.addContent((new Element("StateOrProvince", nsWMS)).setText(metadata.getContactstate()));
-				if(metadata.getContactpostalcode() != null)
-					newContactAddress.addContent((new Element("PostCode", nsWMS)).setText(metadata.getContactpostalcode()));
-				if(metadata.getSdiSysCountry() != null)
-					newContactAddress.addContent((new Element("Country", nsWMS)).setText(metadata.getSdiSysCountry().getName()));
-				newContactInformation.addContent(newContactAddress);
+				if(virtualMetadata.getContactadress() != null && virtualMetadata.getContactadress().length() != 0)
+				{
+					newContactAddress.addContent((new Element("Address", nsWMS)).setText(virtualMetadata.getContactadress()));
+					hasContactAddress = true;
+				}
+				if(virtualMetadata.getContactlocality() != null && virtualMetadata.getContactlocality().length() != 0)
+				{
+					newContactAddress.addContent((new Element("City", nsWMS)).setText(virtualMetadata.getContactlocality()));
+					hasContactAddress = true;
+				}
+				if(virtualMetadata.getContactstate() != null && virtualMetadata.getContactstate().length() != 0)
+				{
+					newContactAddress.addContent((new Element("StateOrProvince", nsWMS)).setText(virtualMetadata.getContactstate()));
+					hasContactAddress = true;
+				}
+				if(virtualMetadata.getContactpostalcode() != null  && virtualMetadata.getContactpostalcode().length() != 0)
+				{
+					newContactAddress.addContent((new Element("PostCode", nsWMS)).setText(virtualMetadata.getContactpostalcode()));
+					hasContactAddress = true;
+				}
+				if(virtualMetadata.getSdiSysCountry() != null && virtualMetadata.getSdiSysCountry().getName() != null)
+				{
+					newContactAddress.addContent((new Element("Country", nsWMS)).setText(virtualMetadata.getSdiSysCountry().getName()));
+					hasContactAddress = true;
+				}
 				
-				if(metadata.getContactphone() != null)
-					newContactInformation.addContent((new Element("ContactVoiceTelephone", nsWMS)).setText(metadata.getContactphone()));
+				if(hasContactAddress)
+					newContactInformation.addContent(newContactAddress);
 				
-				if(metadata.getContactfax() != null)
-					newContactInformation.addContent((new Element("ContactFacsimileTelephone", nsWMS)).setText(metadata.getContactfax()));
+				if(virtualMetadata.getContactphone() != null && virtualMetadata.getContactphone().length() != 0)
+					newContactInformation.addContent((new Element("ContactVoiceTelephone", nsWMS)).setText(virtualMetadata.getContactphone()));
 				
-				if(metadata.getContactemail() != null)
-					newContactInformation.addContent((new Element("ContactElectronicMailAddress", nsWMS)).setText(metadata.getContactemail()));
+				if(virtualMetadata.getContactfax() != null && virtualMetadata.getContactfax().length() != 0)
+					newContactInformation.addContent((new Element("ContactFacsimileTelephone", nsWMS)).setText(virtualMetadata.getContactfax()));
+				
+				if(virtualMetadata.getContactemail() != null && virtualMetadata.getContactemail().length() != 0)
+					newContactInformation.addContent((new Element("ContactElectronicMailAddress", nsWMS)).setText(virtualMetadata.getContactemail()));
 				
 				newService.addContent(newContactInformation);
 			}
+			else  if (!virtualMetadata.isInheritedcontact() && oldService.getChild("ContactInformation", nsWMS) != null )
+				newService.addContent((new Element("ContactInformation", nsWMS)).setContent(oldService.getChild("ContactInformation", nsWMS)));
+
+			if(!virtualMetadata.isInheritedfee() && virtualMetadata.getFee() != null && virtualMetadata.getFee().length() != 0)
+				newService.addContent((new Element("Fees", nsWMS)).setText(virtualMetadata.getFee()));
+			else if (virtualMetadata.isInheritedfee() && oldService.getChildText("Fees", nsWMS) != null )
+				newService.addContent((new Element("Fees", nsWMS)).setText(oldService.getChildText("Fees", nsWMS)));
 			
-				
-			if(metadata.getFee() != null)
-				newService.addContent((new Element("Fees", nsWMS)).setText(metadata.getFee()));
-			if(metadata.getAccessconstraint() != null)
-				newService.addContent((new Element("AccessConstraints", nsWMS)).setText(metadata.getAccessconstraint()));
+			if(!virtualMetadata.isInheritedaccessconstraint() && virtualMetadata.getAccessconstraint() != null && virtualMetadata.getAccessconstraint().length() != 0)
+				newService.addContent((new Element("AccessConstraints", nsWMS)).setText(virtualMetadata.getAccessconstraint()));
+			else if (virtualMetadata.isInheritedaccessconstraint() && oldService.getChildText("AccessConstraints", nsWMS) != null )
+				newService.addContent((new Element("AccessConstraints", nsWMS)).setText(oldService.getChildText("AccessConstraints", nsWMS)));
 			
-			//Add the 3 elements which are not overwrite by the config definition
+			//Add the 3 elements which are not overwrite by the virtual service definition
 			if(oldLayerLimit!=null)newService.addContent(oldLayerLimit);
 			if(oldMaxWidth!=null)newService.addContent(oldMaxWidth);
 			if(oldMaxHeight!=null)newService.addContent(oldMaxHeight);
+			
 			racine.addContent( 1, newService);
 						
 			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());

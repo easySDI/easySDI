@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +44,9 @@ public class SdiVirtualserviceHome {
 
 	public SdiVirtualservice findByAlias(String alias) {
 		try {
-			Query query = sessionFactory.getCurrentSession().createQuery("from SdiVirtualservice where alias= :alias");
+			Session session = sessionFactory.getCurrentSession();
+			session.enableFilter("entityState");
+			Query query = session.createQuery("from SdiVirtualservice where alias= :alias");
 			query.setParameter("alias", alias);
 			List<SdiVirtualservice> l = query.setCacheable(true).list();
 			if(l != null && l.size() > 0 )

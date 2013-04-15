@@ -379,12 +379,12 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 	    
 	    if(!sdiVirtualMetadata.isInheritedtitle() && sdiVirtualMetadata.getTitle() != null && sdiVirtualMetadata.getTitle().length() != 0)
 	    	newServiceIdentification.addContent((new Element("Title", nsOWS)).setText(sdiVirtualMetadata.getTitle()));
-	    else if (sdiVirtualMetadata.isInheritedtitle())
+	    else if (sdiVirtualMetadata.isInheritedtitle() && oldServiceIdentification.getChildText("Title",nsOWS) != null)
 	    	newServiceIdentification.addContent((new Element("Title", nsOWS)).setText(oldServiceIdentification.getChildText("Title",nsOWS)));
 	    
 	    if(!sdiVirtualMetadata.isInheritedsummary() && sdiVirtualMetadata.getSummary() != null && sdiVirtualMetadata.getSummary().length() != 0)
 	    	newServiceIdentification.addContent((new Element("Abstract", nsOWS)).setText(sdiVirtualMetadata.getSummary()));
-	    else if (sdiVirtualMetadata.isInheritedsummary())
+	    else if (sdiVirtualMetadata.isInheritedsummary() && oldServiceIdentification.getChildText("Abstract",nsOWS) != null)
 	    	newServiceIdentification.addContent((new Element("Abstract", nsOWS)).setText(oldServiceIdentification.getChildText("Abstract",nsOWS)));
 	    
 	    if(!sdiVirtualMetadata.isInheritedkeyword() && sdiVirtualMetadata.getKeyword() != null && sdiVirtualMetadata.getKeyword().length() != 0){
@@ -395,7 +395,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 			}
 			newServiceIdentification.addContent(keywords);
 	    }
-	    else if (sdiVirtualMetadata.isInheritedkeyword())
+	    else if (sdiVirtualMetadata.isInheritedkeyword() && oldServiceIdentification.getChild("Keywords", nsOWS) != null)
 	    	newServiceIdentification.addContent((new Element("Keywords", nsOWS)).setContent(oldServiceIdentification.getChild("Keywords", nsOWS)));
 	    
 	    newServiceIdentification.addContent((new Element("ServiceType", nsOWS)).setText("OGC WMTS"));
@@ -403,12 +403,12 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 		
 		if(!sdiVirtualMetadata.isInheritedfee() && sdiVirtualMetadata.getFee() != null && sdiVirtualMetadata.getFee().length() != 0)
 			newServiceIdentification.addContent((new Element("Fees", nsOWS)).setText(sdiVirtualMetadata.getFee()));
-		else if (sdiVirtualMetadata.isInheritedfee())
+		else if (sdiVirtualMetadata.isInheritedfee() && oldServiceIdentification.getChildText("Fees", nsOWS) != null)
 			newServiceIdentification.addContent((new Element("Fees", nsOWS)).setText(oldServiceIdentification.getChildText("Fees", nsOWS)));
 		
 		if(!sdiVirtualMetadata.isInheritedaccessconstraint() && sdiVirtualMetadata.getAccessconstraint() != null && sdiVirtualMetadata.getAccessconstraint().length() != 0)
 			newServiceIdentification.addContent((new Element("AccessConstraints", nsOWS)).setText(sdiVirtualMetadata.getAccessconstraint()));
-		else if (sdiVirtualMetadata.isInheritedaccessconstraint())
+		else if (sdiVirtualMetadata.isInheritedaccessconstraint() && oldServiceIdentification.getChildText("AccessConstraints", nsOWS) != null)
 			newServiceIdentification.addContent((new Element("AccessConstraints", nsOWS)).setText(oldServiceIdentification.getChildText("AccessConstraints", nsOWS)));
 		
 		racine.addContent( 0, newServiceIdentification);
@@ -461,7 +461,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 			newServiceProvider.addContent(newServiceContact);
 			racine.addContent( 1, newServiceProvider);
 		}
-		else {
+		else if (oldServiceProvider != null){
 			racine.addContent((new Element("ServiceProvider")).setContent(oldServiceProvider));
 		}
 	    
@@ -479,7 +479,6 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 			}
 			serviceMetadataUrl.setAttribute("href", metadataUrl, nsXLINK);
 	    }
-
 
 	    XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 	    sortie.output(document, new FileOutputStream(filePath));

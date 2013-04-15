@@ -27,6 +27,8 @@ public class ProxyServletException extends RuntimeException {
 	 */
 	private static final long serialVersionUID = 2620471556738045649L;
 
+	protected String code;
+	protected String locator;
 	/**
 	 * 
 	 */
@@ -53,6 +55,34 @@ public class ProxyServletException extends RuntimeException {
 	 */
 	public ProxyServletException(String message, Throwable cause) {
 		super(message, cause);
+	}
+
+	/**
+	 * @return the code
+	 */
+	public String getCode() {
+		return code;
+	}
+
+	/**
+	 * @param code the code to set
+	 */
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	/**
+	 * @return the locator
+	 */
+	public String getLocator() {
+		return locator;
+	}
+
+	/**
+	 * @param locator the locator to set
+	 */
+	public void setLocator(String locator) {
+		this.locator = locator;
 	}
 
 }

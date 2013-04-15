@@ -20,6 +20,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 public class SdiAllowedoperation implements java.io.Serializable {
 
+	private static final long serialVersionUID = 7959173122659912495L;
 	private Integer Id;
 	private SdiSysServiceoperation sdiSysServiceoperation;
 	private SdiPolicy sdiPolicy;

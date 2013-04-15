@@ -2,9 +2,6 @@ package org.easysdi.proxy.domain;
 
 // Generated Apr 9, 2013 11:54:41 AM by Hibernate Tools 3.4.0.CR1
 
-import java.util.List;
-import java.util.Map;
-
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 

@@ -23,6 +23,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 public class SdiVirtualmetadata implements java.io.Serializable {
 
+	private static final long serialVersionUID = -4766085612606767989L;
 	private Integer Id;
 	private SdiVirtualservice sdiVirtualservice;
 	private SdiSysCountry sdiSysCountry;

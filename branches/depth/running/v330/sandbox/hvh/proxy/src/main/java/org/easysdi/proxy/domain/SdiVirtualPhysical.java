@@ -20,6 +20,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 public class SdiVirtualPhysical implements java.io.Serializable {
 
+	private static final long serialVersionUID = 3417408691354285312L;
 	private Integer Id;
 	private SdiVirtualservice sdiVirtualservice;
 	private SdiPhysicalservice sdiPhysicalservice;

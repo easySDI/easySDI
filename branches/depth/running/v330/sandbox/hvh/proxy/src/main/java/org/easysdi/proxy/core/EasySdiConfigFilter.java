@@ -44,11 +44,11 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 	@Autowired
     private SdiUserHome sdiUserHome;
 	
-	private Cache virtualServiceCache;
+//	private Cache virtualServiceCache;
 	private Logger logger = LoggerFactory.getLogger("EasySdiConfigFilter");
 
 	public EasySdiConfigFilter(CacheManager cacheManager, SdiVirtualserviceHome sdiVirtualserviceHome, SdiPolicyHome sdiPolicyHome, SdiUserHome sdiUserHome) {
-		virtualServiceCache = cacheManager.getCache("virtualserviceCache");
+//		virtualServiceCache = cacheManager.getCache("virtualserviceCache");
 		this.sdiVirtualserviceHome = sdiVirtualserviceHome;
 		this.sdiPolicyHome = sdiPolicyHome;
 		this.sdiUserHome = sdiUserHome;
@@ -90,18 +90,21 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 			String servletName = request.getPathInfo().substring(1);
 			SdiVirtualservice virtualservice = null;
 			try {
-				Element elements = virtualServiceCache.get(servletName);
-				if(elements == null)
-				{
-					virtualservice = sdiVirtualserviceHome.findByAlias(servletName);
-					if(virtualservice != null)
-					{
-						Element element = new Element(servletName, virtualservice);
-						virtualServiceCache.put(element);
-					}
-				}
-				else
-					virtualservice = (SdiVirtualservice)elements.getValue();
+//				Element elements = virtualServiceCache.get(servletName);
+//				if(elements == null)
+//				{
+//					virtualservice = sdiVirtualserviceHome.findByAlias(servletName);
+//					if(virtualservice != null)
+//					{
+//						Element element = new Element(servletName, virtualservice);
+//						virtualServiceCache.put(element);
+//					}
+//				}
+//				else
+//					virtualservice = (SdiVirtualservice)elements.getValue();
+				
+				//Use of the 2nd level cache
+				virtualservice = sdiVirtualserviceHome.findByAlias(servletName);
 				
 				if(virtualservice == null){
 					logger.error("Error occurred during " + servletName + " config initialization : service does not exist.");
@@ -119,32 +122,40 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 				Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>)principal.getAuthorities();
 				
 				SdiPolicy policy = null;
-				Element elementp = virtualServiceCache.get(servletName+username);
-				if(elementp != null){
-					//Get the policy from the cache
-					policy = (SdiPolicy)elementp.getValue();
-					//Check if this policy is still valid according to its date of validity
-					Date from = policy.getAllowfrom();
-					Date to = policy.getAllowto();
-					Date currentDate = new Date();
-					if (!currentDate.after(from) || !currentDate.before(to))
-					{
-						//Policy is not valid anymore, remove it from the cache
-						policy = null;
-						elementp = null;
-						virtualServiceCache.remove(servletName+username);
-					}
-				}
-				if(elementp == null)
-				{
-					SdiUser user = sdiUserHome.findByUserName(username);
-					Integer id = null;
-					if (user != null)
-						id = user.getId();
-					policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualservice.getId(), id , authorities);
-					Element elementPolicy = new Element(servletName+username, policy);
-					virtualServiceCache.put(elementPolicy);
-				}
+//				Element elementp = virtualServiceCache.get(servletName+username);
+//				if(elementp != null){
+//					//Get the policy from the cache
+//					policy = (SdiPolicy)elementp.getValue();
+//					//Check if this policy is still valid according to its date of validity
+//					Date from = policy.getAllowfrom();
+//					Date to = policy.getAllowto();
+//					Date currentDate = new Date();
+//					if (!currentDate.after(from) || !currentDate.before(to))
+//					{
+//						//Policy is not valid anymore, remove it from the cache
+//						policy = null;
+//						elementp = null;
+//						virtualServiceCache.remove(servletName+username);
+//					}
+//				}
+//				if(elementp == null)
+//				{
+//					SdiUser user = sdiUserHome.findByUserName(username);
+//					Integer id = null;
+//					if (user != null)
+//						id = user.getId();
+//					policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualservice.getId(), id , authorities);
+//					Element elementPolicy = new Element(servletName+username, policy);
+//					virtualServiceCache.put(elementPolicy);
+//				}
+//				
+				
+				//Use of the 2nd level cache
+				SdiUser user = sdiUserHome.findByUserName(username);
+				Integer id = null;
+				if (user != null)
+					id = user.getId();
+				policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualservice.getId(), id , authorities);
 				
 				if (policy == null) {
 					if (((HttpServletRequest)req).getUserPrincipal() == null){

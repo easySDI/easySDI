@@ -39,7 +39,6 @@ public class WMSProxyResponseBuilder111 extends WMSProxyResponseBuilder {
 	public Boolean CapabilitiesContentsFiltering(
 			HashMap<String, String> filePathList)
 			throws NoSuchAuthorityCodeException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }
