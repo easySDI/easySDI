@@ -5,6 +5,7 @@ package org.easysdi.proxy.domain;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -40,7 +41,9 @@ public class SdiUserHome {
 	
 	public SdiUser findByUserName(String username) {
 		try {
-			Query query = sessionFactory.getCurrentSession().createQuery("FROM SdiUser s WHERE s.users.username= :username");
+			Session session = sessionFactory.getCurrentSession();
+//			session.enableFilter("entityState");
+			Query query = session.createQuery("FROM SdiUser s WHERE s.users.username= :username");
 			query.setParameter("username", username);
 			SdiUser instance = (SdiUser) query.setCacheable(true).uniqueResult();
 			

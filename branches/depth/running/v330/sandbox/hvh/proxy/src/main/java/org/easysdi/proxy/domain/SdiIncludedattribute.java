@@ -2,14 +2,16 @@ package org.easysdi.proxy.domain;
 
 // Generated Apr 9, 2013 11:54:41 AM by Hibernate Tools 3.4.0.CR1
 
+import static javax.persistence.GenerationType.IDENTITY;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -20,6 +22,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 public class SdiIncludedattribute implements java.io.Serializable {
 
+	private static final long serialVersionUID = 8425643787861864337L;
 	private Integer Id;
 	private SdiFeaturetypePolicy sdiFeaturetypePolicy;
 	private String Name;

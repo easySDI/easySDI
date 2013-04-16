@@ -23,6 +23,7 @@ import java.security.Principal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -43,7 +44,6 @@ import org.easysdi.proxy.domain.SdiUser;
 import org.easysdi.proxy.domain.SdiUserHome;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.domain.SdiVirtualserviceHome;
-import org.easysdi.proxy.domain.SdiVirtualserviceServicecompliance;
 import org.easysdi.proxy.exception.InvalidServiceNameException;
 import org.easysdi.proxy.exception.OperationNotAllowedException;
 import org.easysdi.proxy.exception.OperationNotSupportedException;
@@ -200,14 +200,14 @@ public class OgcProxyServlet extends HttpServlet {
 			//Get the highest version
 			String highestversion = "";
 			SdiSysServicecompliance highestServicecompliance = null;
-			Iterator<SdiVirtualserviceServicecompliance> i = virtualService.getSdiVirtualserviceServicecompliances().iterator();
+			Iterator<SdiSysServicecompliance> i = virtualService.getSdiSysServicecompliances().iterator();
 			while (i.hasNext()){
-				SdiVirtualserviceServicecompliance compliance = i.next();
-				String value = compliance.getSdiSysServicecompliance().getSdiSysServiceversion().getValue();
+				SdiSysServicecompliance compliance = i.next();
+				String value = compliance.getSdiSysServiceversion().getValue();
 				if(value.compareTo(highestversion) > 0)
 				{
 					highestversion = value;
-					highestServicecompliance = compliance.getSdiSysServicecompliance();
+					highestServicecompliance = compliance;
 				}
 			}
 			
@@ -220,9 +220,15 @@ public class OgcProxyServlet extends HttpServlet {
 				Class<?> requestClasse = Class.forName(requestClassName);
 				Constructor<?> requestConstructeur = requestClasse.getConstructor(new Class [] {Class.forName ("javax.servlet.http.HttpServletRequest")});
 				request = (ProxyServletRequest) requestConstructeur.newInstance(req);
+				if(request.getService() == null & request.getService().equals(""))
+				{
+					sendException("Service value is not given in the request.",OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE ,"SERVICE", HttpServletResponse.SC_BAD_REQUEST, connector, highestversion);
+					return null;
+				}
 				if (!connector.equals(request.getService()))
 				{
-					sendException(new ProxyServletException("Problem parsing request: "+e.toString()), connector, highestversion);
+					sendException("Wrong service value given in the request.",OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE ,"SERVICE", HttpServletResponse.SC_BAD_REQUEST, connector, highestversion);
+					return null;
 				}
 			} catch (ClassNotFoundException e) {
 				//Class request does not exist, keep going on (it can be the case for old version connector)
@@ -231,26 +237,26 @@ public class OgcProxyServlet extends HttpServlet {
 			} catch (InstantiationException e) {
 				//Problem parsing the request
 				logger.error("Problem parsing request in OgcProxyServlet: ",e);
-				sendException(new ProxyServletException("Problem parsing request: "+e.toString()), connector, highestversion);
+				sendException("Problem parsing request.",OWSExceptionReport.CODE_NO_APPLICABLE_CODE ,"", HttpServletResponse.SC_INTERNAL_SERVER_ERROR, connector, highestversion);
 				return null;
 			} catch (IllegalAccessException e) {
 				//Problem parsing the request
 				logger.error("Problem parsing request in OgcProxyServlet: ",e);
-				sendException(new ProxyServletException("Problem parsing request: "+e.toString()), connector, highestversion);
+				sendException("Problem parsing request",OWSExceptionReport.CODE_NO_APPLICABLE_CODE ,"", HttpServletResponse.SC_INTERNAL_SERVER_ERROR, connector, highestversion);
 				return null;
 			} catch (java.lang.reflect.InvocationTargetException e) {
 				//Problem parsing the request
 				logger.error("Problem parsing request in OgcProxyServlet: ",e);
-				sendException(new ProxyServletException("Problem parsing request: "+e.getCause().getCause().toString()),connector, highestversion);
+				sendException("Problem parsing request",OWSExceptionReport.CODE_NO_APPLICABLE_CODE ,"", HttpServletResponse.SC_INTERNAL_SERVER_ERROR,connector, highestversion);
 				return null;
 			} catch (IllegalArgumentException e) {
 				//Problem parsing the request
 				logger.error("Problem parsing request in OgcProxyServlet: ",e);
-				sendException(new ProxyServletException("Problem parsing request: "+e.toString()), connector, highestversion);
+				sendException("Problem parsing request",OWSExceptionReport.CODE_NO_APPLICABLE_CODE ,"", HttpServletResponse.SC_INTERNAL_SERVER_ERROR, connector, highestversion);
 				return null;
 			} catch (ProxyServletException e) {
-				logger.error("ProxyServletException in OgcProxyServlet: ",e);
-				sendException(e,connector, null);
+				logger.error("ProxyServletException in OgcProxyServlet: ",e.toString());
+				sendException(e.getMessage(),e.getCode(),e.getLocator(),e.getHttpCode(),connector, null);
 				return null;
 			}
 			
@@ -268,15 +274,15 @@ public class OgcProxyServlet extends HttpServlet {
 				//Check if the requested version is supported by the service
 				Boolean found = false;
 				if(request.getVersion() != null){
-					Iterator<SdiVirtualserviceServicecompliance> it = virtualService.getSdiVirtualserviceServicecompliances().iterator();
+					Iterator<SdiSysServicecompliance> it = virtualService.getSdiSysServicecompliances().iterator();
 					while (it.hasNext()){
-						SdiVirtualserviceServicecompliance compliance = it.next();
-						String value = compliance.getSdiSysServicecompliance().getSdiSysServiceversion().getValue();
+						SdiSysServicecompliance compliance = it.next();
+						String value = compliance.getSdiSysServiceversion().getValue();
 						if(value.equals(request.getVersion())){
 							found= true;
 							//ProxyRequest checks if the current requested operation is supported by the virtualservice loaded and defined by its compliances.
-							if(!request.setServiceCompliance(compliance.getSdiSysServicecompliance())){
-								sendException( new OperationNotSupportedException(request.getOperation()),connector, request.getVersion());
+							if(!request.setServiceCompliance(compliance)){
+								sendException(OWSExceptionReport.TEXT_OPERATION_NOT_SUPPORTED, OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED, "REQUEST",HttpServletResponse.SC_NOT_IMPLEMENTED, connector, request.getVersion());
 								return null;
 							}
 							break;
@@ -291,7 +297,7 @@ public class OgcProxyServlet extends HttpServlet {
 						reqVersion = highestversion;
 						//ProxyRequest checks if the current requested operation is supported by the virtualservice loaded and defined by its compliances.
 						if(!request.setServiceCompliance(highestServicecompliance)){
-							sendException( new OperationNotSupportedException(request.getOperation()),connector, request.getVersion());
+							sendException( OWSExceptionReport.TEXT_OPERATION_NOT_SUPPORTED,  OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED, "REQUEST",HttpServletResponse.SC_NOT_IMPLEMENTED, connector, request.getVersion());
 							return null;
 						}
 					}
@@ -301,7 +307,7 @@ public class OgcProxyServlet extends HttpServlet {
 					//Others operations are rejected if the version resquested is not supported
 					if(!found){
 						logger.error( OWSExceptionReport.TEXT_VERSION_NOT_SUPPORTED);
-						sendException( new VersionNotSupportedException(request.getVersion()),connector, request.getVersion());
+						sendException( OWSExceptionReport.TEXT_VERSION_NOT_SUPPORTED,  OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "VERSION",HttpServletResponse.SC_BAD_REQUEST, connector, request.getVersion());
 						return null;
 					}
 					else
@@ -351,7 +357,7 @@ public class OgcProxyServlet extends HttpServlet {
 			//Check if the current requested operation is allowed by the loaded policy
 			if(!request.isOperationAllowedByPolicy(policy)){
 				logger.error( OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED);
-				sendException( new OperationNotAllowedException(request.getOperation()),connector, request.getVersion());
+				sendException( OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED,  OWSExceptionReport.CODE_OPERATION_NOT_ALLOWED,"REQUEST", HttpServletResponse.SC_NOT_IMPLEMENTED,connector, request.getVersion());
 				return null;
 			}
 			
@@ -367,13 +373,13 @@ public class OgcProxyServlet extends HttpServlet {
 				return ps;
 			} catch (Exception e) {
 				logger.error("Problem occured in configuration parsing and/or logging settings.",e);
-				sendException(new InvalidServiceNameException("Problem occured while instanciate the virtual service."), connector, null);
+				sendException("Problem occured while instanciate the virtual service.",OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"SERVICE",HttpServletResponse.SC_BAD_REQUEST,  connector, null);
 				return null;
 			}
 		} catch (Exception e) {
 			//Enable to instanciate the request proxy servlet class due to bad service or bad version parameter
 			logger.error("Invalid service and/or version.",e);
-			sendException(new ProxyServletException("Invalid service and/or version."), connector, null);
+			sendException("Invalid service and/or version.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_INTERNAL_SERVER_ERROR,  connector, null);
 			return null;
 		} 
 	}
@@ -383,64 +389,28 @@ public class OgcProxyServlet extends HttpServlet {
 	 * @param servletClass
 	 * @param version
 	 */
-	public void sendException (Exception e, String connector, String version)
+	public void sendException (String message, String code, String locator, Integer httpcode, String connector, String version)
 	{
-		String errorMessage = "";
-		String code = "";
-		String locator = "";
-		Integer httpCode = null;
-
-		if(e.getMessage().contains("VersionNotSupportedException") || e.getClass().getName().contains("VersionNotSupportedException")){
-			errorMessage = OWSExceptionReport.TEXT_VERSION_NOT_SUPPORTED;
-			errorMessage += " : ";
-			errorMessage += e.getMessage();
-			code = OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE;
-			locator = "VERSION";
-			httpCode = HttpServletResponse.SC_BAD_REQUEST;
-		}else if(e.getMessage().contains("InvalidServiceNameException") || e.getClass().getName().contains("InvalidServiceNameException")){
-			errorMessage = OWSExceptionReport.TEXT_INVALID_SERVICE_NAME;
-			errorMessage += " : ";
-			errorMessage += e.getMessage();
-			code = OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE;
-			locator = "SERVICE";
-			httpCode = HttpServletResponse.SC_BAD_REQUEST;
-		}else if(e.getMessage().contains("OperationNotSupportedException") || e.getClass().getName().contains("OperationNotSupportedException")){
-			errorMessage = OWSExceptionReport.TEXT_OPERATION_NOT_SUPPORTED;
-			code = OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED;
-			locator = "REQUEST";
-			httpCode = HttpServletResponse.SC_NOT_IMPLEMENTED;
-		}else if(e.getMessage().contains("OperationNotAllowedException") || e.getClass().getName().contains("OperationNotAllowedException")){
-			errorMessage = OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED;
-			code = OWSExceptionReport.CODE_OPERATION_NOT_ALLOWED;
-			locator = "REQUEST";
-			httpCode = HttpServletResponse.SC_NOT_IMPLEMENTED;
-		}else {
-			errorMessage = e.toString();
-			code = OWSExceptionReport.CODE_NO_APPLICABLE_CODE;
-			locator = null;
-			httpCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-		}
-
 		try {
-			logger.error( "OgcProxyServlet sends exception", e.toString());
+			logger.error( "OgcProxyServlet sends exception", message);
 			if(connector.equalsIgnoreCase("WMS")){
 				try{
 					Class<?> supportedClasse = Class.forName("org.easysdi.proxy.wms.v"+version.replace(".", "")+".WMSExceptionReport"+version.replace(".", ""));
 					Constructor<?> supportedClasseConstructeur = supportedClasse.getConstructor(new Class [] {});
 					WMSExceptionReport exceptionReport = (WMSExceptionReport) supportedClasseConstructeur.newInstance();
-					exceptionReport.sendExceptionReport(servletRequest, servletResponse, errorMessage, code, locator, httpCode);
+					exceptionReport.sendExceptionReport(servletRequest, servletResponse, message, code, locator, httpcode);
 				} catch (Exception ex)
 				{
-					new OWS200ExceptionReport().sendExceptionReport(servletRequest,servletResponse, errorMessage, code, locator, httpCode) ;
+					new OWS200ExceptionReport().sendExceptionReport(servletRequest,servletResponse,message, code, locator, httpcode) ;
 				}
 			}else if (connector.equalsIgnoreCase("WFS")){
-				new WFSExceptionReport().sendExceptionReport(servletRequest, servletResponse, errorMessage, code, locator, httpCode);
+				new WFSExceptionReport().sendExceptionReport(servletRequest, servletResponse,message, code, locator, httpcode);
 			}else if (connector.equalsIgnoreCase("WMTS")){
-				new WMTSExceptionReport100().sendExceptionReport(servletRequest,servletResponse, errorMessage, code, locator, httpCode);
+				new WMTSExceptionReport100().sendExceptionReport(servletRequest,servletResponse, message, code, locator, httpcode);
 			}else if (connector.equalsIgnoreCase("CSW")){
-				new CSWExceptionReport().sendExceptionReport(servletRequest,servletResponse,errorMessage, code, locator,httpCode);
+				new CSWExceptionReport().sendExceptionReport(servletRequest,servletResponse,message, code, locator, httpcode);
 			}else{
-				new OWS200ExceptionReport().sendExceptionReport(servletRequest,servletResponse, e.toString(), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, null, httpCode) ;
+				new OWS200ExceptionReport().sendExceptionReport(servletRequest,servletResponse, message, code, locator, httpcode) ;
 			}
 		} catch (Exception e1) {
 			logger.error("Error occured trying to send exception to client.",e1);

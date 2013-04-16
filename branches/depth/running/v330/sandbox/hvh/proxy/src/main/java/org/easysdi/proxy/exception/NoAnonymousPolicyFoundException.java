@@ -20,7 +20,44 @@ package org.easysdi.proxy.exception;
  * @author DEPTH SA
  *
  */
-public class NoAnonymousPolicyFoundException extends RuntimeException {
+public class NoAnonymousPolicyFoundException extends ProxyServletException {
+
+	/**
+	 * 
+	 */
+	public NoAnonymousPolicyFoundException() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @param message
+	 * @param code
+	 * @param locator
+	 * @param cause
+	 */
+	public NoAnonymousPolicyFoundException(String message, String code,
+			String locator,Integer httpCode, Throwable cause) {
+		super(message, code, locator,httpCode, cause);
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @param message
+	 * @param cause
+	 */
+	public NoAnonymousPolicyFoundException(String message, Throwable cause) {
+		super(message, cause);
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @param cause
+	 */
+	public NoAnonymousPolicyFoundException(Throwable cause) {
+		super(cause);
+		// TODO Auto-generated constructor stub
+	}
 
 	private static final long serialVersionUID = -1614722650632132707L;
 	

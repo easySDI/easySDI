@@ -29,6 +29,7 @@ public class ProxyServletException extends RuntimeException {
 
 	protected String code;
 	protected String locator;
+	protected Integer httpCode;
 	/**
 	 * 
 	 */
@@ -55,6 +56,19 @@ public class ProxyServletException extends RuntimeException {
 	 */
 	public ProxyServletException(String message, Throwable cause) {
 		super(message, cause);
+	}
+	
+	/**
+	 * @param message
+	 * @param cause
+	 * @param code
+	 * @param locator
+	 */
+	public ProxyServletException(String message, String code, String locator, Integer httpcode, Throwable cause) {
+		super(message, cause);
+		this.code = code;
+		this.locator = locator;
+		this.httpCode = httpcode;
 	}
 
 	/**
@@ -83,6 +97,20 @@ public class ProxyServletException extends RuntimeException {
 	 */
 	public void setLocator(String locator) {
 		this.locator = locator;
+	}
+
+	/**
+	 * @return the httpCode
+	 */
+	public Integer getHttpCode() {
+		return httpCode;
+	}
+
+	/**
+	 * @param httpCode the httpCode to set
+	 */
+	public void setHttpCode(Integer httpCode) {
+		this.httpCode = httpCode;
 	}
 
 }

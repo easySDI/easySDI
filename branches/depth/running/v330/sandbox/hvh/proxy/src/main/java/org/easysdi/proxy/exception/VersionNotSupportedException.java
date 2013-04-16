@@ -23,6 +23,18 @@ package org.easysdi.proxy.exception;
 public class VersionNotSupportedException extends ProxyServletException {
 
 	/**
+	 * @param message
+	 * @param code
+	 * @param locator
+	 * @param cause
+	 */
+	public VersionNotSupportedException(String message, String code,
+			String locator,Integer httpCode, Throwable cause) {
+		super(message, code, locator,httpCode, cause);
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1136522124569373687L;

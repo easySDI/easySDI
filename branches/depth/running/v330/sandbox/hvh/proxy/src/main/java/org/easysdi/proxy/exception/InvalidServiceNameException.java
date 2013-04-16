@@ -47,6 +47,17 @@ public class InvalidServiceNameException extends ProxyServletException {
 	/**
 	 * @param message
 	 * @param cause
+	 * @param code
+	 * @param locator
+	 */
+	public InvalidServiceNameException(String message, String code,
+			String locator, Integer httpCode,Throwable cause) {
+		super(message, code, locator,httpCode, cause);
+	}
+
+	/**
+	 * @param message
+	 * @param cause
 	 */
 	public InvalidServiceNameException(String message, Throwable cause) {
 		super(message, cause);

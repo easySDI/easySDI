@@ -14,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
@@ -63,12 +64,12 @@ public class SdiVirtualservice implements java.io.Serializable {
 	private String Params;
 	private int Access;
 	private Integer Asset_id;
-	private Set<SdiVirtualserviceOrganism> sdiVirtualserviceOrganisms = new HashSet<SdiVirtualserviceOrganism>(
+	private Set<SdiOrganism> sdiOrganisms = new HashSet<SdiOrganism>(
 			0);
 	private Set<SdiVirtualPhysical> sdiVirtualPhysicals = new HashSet<SdiVirtualPhysical>(
 			0);
 	private Set<SdiPolicy> sdiPolicies = new HashSet<SdiPolicy>(0);
-	private Set<SdiVirtualserviceServicecompliance> sdiVirtualserviceServicecompliances = new HashSet<SdiVirtualserviceServicecompliance>(
+	private Set<SdiSysServicecompliance> sdiSysServicecompliances = new HashSet<SdiSysServicecompliance>(
 			0);
 	private Set<SdiVirtualmetadata> sdiVirtualmetadatas = new HashSet<SdiVirtualmetadata>(
 			0);
@@ -134,10 +135,10 @@ public class SdiVirtualservice implements java.io.Serializable {
 			String Params,
 			int Access,
 			Integer Asset_id,
-			Set<SdiVirtualserviceOrganism> sdiVirtualserviceOrganisms,
+			Set<SdiOrganism> sdiOrganisms,
 			Set<SdiVirtualPhysical> sdiVirtualPhysicals,
 			Set<SdiPolicy> sdiPolicies,
-			Set<SdiVirtualserviceServicecompliance> sdiVirtualserviceServicecompliances,
+			Set<SdiSysServicecompliance> sdiSysServicecompliances,
 			Set<SdiVirtualmetadata> sdiVirtualmetadatas) {
 		this.sdiSysServicescope = sdiSysServicescope;
 		this.sdiSysLogroll = sdiSysLogroll;
@@ -167,10 +168,10 @@ public class SdiVirtualservice implements java.io.Serializable {
 		this.Params = Params;
 		this.Access = Access;
 		this.Asset_id = Asset_id;
-		this.sdiVirtualserviceOrganisms = sdiVirtualserviceOrganisms;
+		this.sdiOrganisms = sdiOrganisms;
 		this.sdiVirtualPhysicals = sdiVirtualPhysicals;
 		this.sdiPolicies = sdiPolicies;
-		this.sdiVirtualserviceServicecompliances = sdiVirtualserviceServicecompliances;
+		this.sdiSysServicecompliances = sdiSysServicecompliances;
 		this.sdiVirtualmetadatas = sdiVirtualmetadatas;
 	}
 
@@ -198,7 +199,6 @@ public class SdiVirtualservice implements java.io.Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "logroll_id", nullable = false)
-	@Filter(name = "entityState",condition="State = 1")
 	public SdiSysLogroll getSdiSysLogroll() {
 		return this.sdiSysLogroll;
 	}
@@ -209,7 +209,6 @@ public class SdiVirtualservice implements java.io.Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "exceptionlevel_id", nullable = false)
-	@Filter(name = "entityState",condition="State = 1")
 	public SdiSysExceptionlevel getSdiSysExceptionlevel() {
 		return this.sdiSysExceptionlevel;
 	}
@@ -221,7 +220,6 @@ public class SdiVirtualservice implements java.io.Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "proxytype_id", nullable = false)
-	@Filter(name = "entityState",condition="State = 1")
 	public SdiSysProxytype getSdiSysProxytype() {
 		return this.sdiSysProxytype;
 	}
@@ -232,7 +230,6 @@ public class SdiVirtualservice implements java.io.Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "serviceconnector_id", nullable = false)
-	@Filter(name = "entityState",condition="State = 1")
 	public SdiSysServiceconnector getSdiSysServiceconnector() {
 		return this.sdiSysServiceconnector;
 	}
@@ -244,7 +241,6 @@ public class SdiVirtualservice implements java.io.Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "loglevel_id", nullable = false)
-	@Filter(name = "entityState",condition="State = 1")
 	public SdiSysLoglevel getSdiSysLoglevel() {
 		return this.sdiSysLoglevel;
 	}
@@ -454,15 +450,16 @@ public class SdiVirtualservice implements java.io.Serializable {
 		this.Asset_id = Asset_id;
 	}
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "sdiVirtualservice")
+	@OneToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "SdiVirtualserviceOrganism", joinColumns = {@JoinColumn(name = "virtualservice_id")}, inverseJoinColumns = {@JoinColumn (name = "organism_id")})
 	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
-	public Set<SdiVirtualserviceOrganism> getSdiVirtualserviceOrganisms() {
-		return this.sdiVirtualserviceOrganisms;
+	public Set<SdiOrganism> getSdiOrganisms() {
+		return this.sdiOrganisms;
 	}
 
-	public void setSdiVirtualserviceOrganisms(
-			Set<SdiVirtualserviceOrganism> sdiVirtualserviceOrganisms) {
-		this.sdiVirtualserviceOrganisms = sdiVirtualserviceOrganisms;
+	public void setSdiOrganisms(
+			Set<SdiOrganism> sdiOrganisms) {
+		this.sdiOrganisms = sdiOrganisms;
 	}
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "sdiVirtualservice")
@@ -487,15 +484,16 @@ public class SdiVirtualservice implements java.io.Serializable {
 		this.sdiPolicies = sdiPolicies;
 	}
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "sdiVirtualservice")
+	@OneToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "SdiVirtualserviceServicecompliance", joinColumns = {@JoinColumn(name = "service_id")}, inverseJoinColumns = {@JoinColumn (name = "servicecompliance_id")})
 	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
-	public Set<SdiVirtualserviceServicecompliance> getSdiVirtualserviceServicecompliances() {
-		return this.sdiVirtualserviceServicecompliances;
+	public Set<SdiSysServicecompliance> getSdiSysServicecompliances() {
+		return this.sdiSysServicecompliances;
 	}
 
-	public void setSdiVirtualserviceServicecompliances(
-			Set<SdiVirtualserviceServicecompliance> sdiVirtualserviceServicecompliances) {
-		this.sdiVirtualserviceServicecompliances = sdiVirtualserviceServicecompliances;
+	public void setSdiSysServicecompliances(
+			Set<SdiSysServicecompliance> sdiSysServicecompliances) {
+		this.sdiSysServicecompliances = sdiSysServicecompliances;
 	}
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "sdiVirtualservice")

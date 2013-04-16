@@ -34,5 +34,10 @@ public class CustomNamingStrategy extends ImprovedNamingStrategy {
 	public String columnName(String columnName) {
 		return columnName.toLowerCase();
 	}
+	
+	@Override
+	public String tableName(String tableName) {
+		return this.addPrefix(super.addUnderscores(tableName));
+	}
 
 }

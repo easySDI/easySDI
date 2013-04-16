@@ -73,7 +73,7 @@ public class EasysdiProvider implements AuthenticationProvider,
 		Iterator<SdiUser> it = sdiUser.iterator();
 		Set<SdiUserRoleOrganism> result = null;
         while (it.hasNext()) {
-               result = ((SdiUser) it.next()).getSdiUserRoleOrganismsMember();
+             result = ((SdiUser) it.next()).getSdiUserRoleOrganismsMember();
         }
         
         List<GrantedAuthority> authList = new ArrayList<GrantedAuthority>();

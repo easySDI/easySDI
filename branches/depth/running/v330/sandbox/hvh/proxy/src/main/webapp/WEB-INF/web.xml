@@ -49,7 +49,12 @@
 			<param-value>true</param-value>
 		</init-param>
 	</filter>
-
+	
+	<!-- <filter>
+		<filter-name>hibernateFilter</filter-name>
+		<filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+	</filter>
+ -->
 	<listener>
 		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
 	</listener>
@@ -67,6 +72,11 @@
 		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>/ogc/*</url-pattern>
 	</filter-mapping>
+	
+	<!-- <filter-mapping>
+		<filter-name>hibernateFilter</filter-name>
+		<url-pattern>/ogc/*</url-pattern>
+	</filter-mapping> -->
 
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>

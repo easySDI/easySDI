@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
@@ -61,7 +62,7 @@ public class SdiPhysicalservice implements java.io.Serializable {
 			0);
 	private Set<SdiPhysicalserviceServicecompliance> sdiPhysicalserviceServicecompliances = new HashSet<SdiPhysicalserviceServicecompliance>(
 			0);
-	private Set<SdiPhysicalserviceOrganism> sdiPhysicalserviceOrganisms = new HashSet<SdiPhysicalserviceOrganism>(
+	private Set<SdiOrganism> sdiOrganisms = new HashSet<SdiOrganism>(
 			0);
 
 	public SdiPhysicalservice() {
@@ -113,7 +114,7 @@ public class SdiPhysicalservice implements java.io.Serializable {
 			Set<SdiVirtualPhysical> sdiVirtualPhysicals,
 			Set<SdiPhysicalservicePolicy> sdiPhysicalservicePolicies,
 			Set<SdiPhysicalserviceServicecompliance> sdiPhysicalserviceServicecompliances,
-			Set<SdiPhysicalserviceOrganism> sdiPhysicalserviceOrganisms) {
+			Set<SdiOrganism> sdiOrganisms) {
 		this.sdiSysServicescope = sdiSysServicescope;
 		this.sdiSysAuthenticationconnectorByResourceauthenticationId = sdiSysAuthenticationconnectorByResourceauthenticationId;
 		this.sdiSysAuthenticationconnectorByServiceauthenticationId = sdiSysAuthenticationconnectorByServiceauthenticationId;
@@ -142,7 +143,7 @@ public class SdiPhysicalservice implements java.io.Serializable {
 		this.sdiVirtualPhysicals = sdiVirtualPhysicals;
 		this.sdiPhysicalservicePolicies = sdiPhysicalservicePolicies;
 		this.sdiPhysicalserviceServicecompliances = sdiPhysicalserviceServicecompliances;
-		this.sdiPhysicalserviceOrganisms = sdiPhysicalserviceOrganisms;
+		this.sdiOrganisms = sdiOrganisms;
 	}
 
 	@Id
@@ -421,14 +422,15 @@ public class SdiPhysicalservice implements java.io.Serializable {
 		this.sdiPhysicalserviceServicecompliances = sdiPhysicalserviceServicecompliances;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiPhysicalservice")
-	public Set<SdiPhysicalserviceOrganism> getSdiPhysicalserviceOrganisms() {
-		return this.sdiPhysicalserviceOrganisms;
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "SdiPhysicalserviceOrganism", joinColumns = {@JoinColumn(name = "physicalservice_id")}, inverseJoinColumns = {@JoinColumn (name = "organism_id")})
+	public Set<SdiOrganism> getSdiOrganisms() {
+		return this.sdiOrganisms;
 	}
 
-	public void setSdiPhysicalserviceOrganisms(
-			Set<SdiPhysicalserviceOrganism> sdiPhysicalserviceOrganisms) {
-		this.sdiPhysicalserviceOrganisms = sdiPhysicalserviceOrganisms;
+	public void setSdiOrganisms(
+			Set<SdiOrganism> sdiOrganisms) {
+		this.sdiOrganisms = sdiOrganisms;
 	}
 
 }

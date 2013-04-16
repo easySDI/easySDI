@@ -2,16 +2,19 @@ package org.easysdi.proxy.domain;
 
 // Generated Apr 9, 2013 11:54:41 AM by Hibernate Tools 3.4.0.CR1
 
+import static javax.persistence.GenerationType.IDENTITY;
+
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -22,6 +25,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 public class SdiWmsSpatialpolicy implements java.io.Serializable {
 
+	private static final long serialVersionUID = -5877600153772933886L;
 	private Integer Id;
 	private BigDecimal Maxx;
 	private BigDecimal Maxy;

@@ -20,7 +20,7 @@
 		when the in-memory cache has reached the maxInMemory limit.
 	-->
 
-	<defaultCache maxElementsInMemory="10000" eternal="false" timeToIdleSeconds="120" timeToLiveSeconds="2592000" overflowToDisk="true"
+	<defaultCache maxElementsInMemory="10000" eternal="false" timeToIdleSeconds="120" timeToLiveSeconds="2592000" overflowToDisk="false"
 		diskSpoolBufferSizeMB="30" maxElementsOnDisk="10000000" diskPersistent="false" diskExpiryThreadIntervalSeconds="120" memoryStoreEvictionPolicy="LRU" />
 
 <cache name="org.hibernate.cache.UpdateTimestampsCache"
@@ -36,12 +36,12 @@
     <cache name="virtualserviceCache" maxElementsInMemory="1000" eternal="false" overflowToDisk="false" timeToIdleSeconds="3600" timeToLiveSeconds="36000"
 		diskPersistent="false" />
 		
-	<cache name="userCache" maxElementsInMemory="10000" timeToIdleSeconds="120" timeToLiveSeconds="120" eternal="false" overflowToDisk="false" />
+	<cache name="userCache" maxElementsInMemory="10000" timeToIdleSeconds="120" timeToLiveSeconds="120" eternal="false" overflowToDisk="false"  />
 	
 	<cache name="configCache" maxElementsInMemory="1000" eternal="false" overflowToDisk="false" timeToIdleSeconds="3600" timeToLiveSeconds="36000"
 		diskPersistent="false" />
 
-	<cache name="getMapCache" maxElementsInMemory="10000" diskPersistent="true" timeToLiveSeconds="2592000" overflowToDisk="true"
+	<cache name="getMapCache" maxElementsInMemory="10000" diskPersistent="false" timeToLiveSeconds="2592000" overflowToDisk="true"
 		memoryStoreEvictionPolicy="LFU" clearOnFlush="false" eternal="false" />
 
 </ehcache>

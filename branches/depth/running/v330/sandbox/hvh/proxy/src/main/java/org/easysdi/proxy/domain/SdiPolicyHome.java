@@ -7,12 +7,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.xerces.parsers.IntegratedParserConfiguration;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -49,12 +48,13 @@ public class SdiPolicyHome {
 	
 	public SdiPolicy findByVirtualServiceAndUser(Integer virtualservice, Integer user, Collection<GrantedAuthority> authorities ) {
 		try {
-			
+			Session session = sessionFactory.getCurrentSession();
+//			session.enableFilter("entityState");
 			//Anonymous request gives a null user here
 			if(user != null){
 				//Policies linked to the current user
-				Query query = sessionFactory.getCurrentSession().createQuery(
-						"SELECT p FROM SdiPolicy p INNER JOIN p.sdiPolicyUsers as pu INNER JOIN pu.sdiUser as u WHERE u.id= :user AND p.sdiVirtualservice.id = :virtualservice AND p.state = 1 ORDER BY p.ordering asc");
+				Query query = session.createQuery(
+						"SELECT p FROM SdiPolicy p INNER JOIN p.sdiUsers as u WHERE u.id= :user AND p.sdiVirtualservice.id = :virtualservice AND p.state = 1 ORDER BY p.ordering asc");
 				query.setParameter("user", user);
 				query.setParameter("virtualservice", virtualservice);
 				List results = query.setCacheable(true).list();
@@ -76,7 +76,6 @@ public class SdiPolicyHome {
 			}
 
 			//Policies of the organisms which the current user is member of
-			String condition = "";
 			Collection<Integer> c = new ArrayList<Integer>();
 			Iterator<GrantedAuthority> i = authorities.iterator();
 			//Loop through the authority to remove those which are not SdiOrganism id
@@ -93,8 +92,8 @@ public class SdiPolicyHome {
 			
 			if(c.size() > 0)
 			{
-				Query oQuery = sessionFactory.getCurrentSession().createQuery(
-						"SELECT p  FROM SdiPolicy p INNER JOIN p.sdiPolicyOrganisms as po INNER JOIN p.sdiVirtualservice as vs WHERE po.id IN (:organism) AND vs.id = :virtualservice AND p.state = 1 ORDER BY p.ordering asc");
+				Query oQuery = session.createQuery(
+						"SELECT p  FROM SdiPolicy p INNER JOIN p.sdiOrganisms as po INNER JOIN p.sdiVirtualservice as vs WHERE po.id IN (:organism) AND vs.id = :virtualservice AND p.state = 1 ORDER BY p.ordering asc");
 				oQuery.setParameterList("organism", c);
 				oQuery.setParameter("virtualservice", virtualservice);
 				List oResults = oQuery.setCacheable(true).list();
@@ -117,7 +116,7 @@ public class SdiPolicyHome {
 			
 			//If no authorities are SdiOrganism id, or if no policies are defined for the authorities, try to load a public policy
 			//Public policies
-			Query pQuery = sessionFactory.getCurrentSession().createQuery(
+			Query pQuery = session.createQuery(
 					"SELECT p  FROM SdiPolicy p INNER JOIN p.sdiVirtualservice as vs INNER JOIN p.sdiSysAccessscope as sc WHERE vs.id = :virtualservice AND sc.id = 1 AND p.state = 1 ORDER BY p.ordering asc");
 			pQuery.setParameter("virtualservice", virtualservice);
 			List pResults = pQuery.setCacheable(true).list();

@@ -8,6 +8,7 @@ import net.sf.json.JSONSerializer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -34,7 +35,9 @@ public class UsersHome {
 	public Users findById(Integer id) {
 		log.debug("getting Users instance with id: " + id);
 		try {
-			Users instance = (Users) sessionFactory.getCurrentSession().get(
+			Session session = sessionFactory.getCurrentSession();
+//			session.enableFilter("entityState");
+			Users instance = (Users) session.get(
 					Users.class, id);
 			log.debug("get successful");
 			return instance;
@@ -44,11 +47,13 @@ public class UsersHome {
 		}
 	}
 	
-	public Users findBySession(String session) {
+	public Users findBySession(String jsession) {
 		try {
 			//TODO replace by sessionHome.findById()
-			Query qSession = sessionFactory.getCurrentSession().createQuery("Select s FROM Session s WHERE session_id= :session ");
-			qSession.setParameter("session", session);
+			Session session = sessionFactory.getCurrentSession();
+//			session.enableFilter("entityState");
+			Query qSession = session.createQuery("Select s FROM Session s WHERE session_id= :session ");
+			qSession.setParameter("session", jsession);
 			Object oSession = (Object) qSession.setCacheable(true).uniqueResult();
 			
 			if(oSession == null)
@@ -69,7 +74,9 @@ public class UsersHome {
 	
 	public Users findByUserName(String username) {
 		try {
-			Query query = sessionFactory.getCurrentSession().createQuery(" FROM Users WHERE username= :username");
+			Session session = sessionFactory.getCurrentSession();
+//			session.enableFilter("entityState");
+			Query query = session.createQuery(" FROM Users WHERE username= :username");
 			query.setParameter("username", username);
 			Users instance = (Users) query.setCacheable(true).uniqueResult();
 			

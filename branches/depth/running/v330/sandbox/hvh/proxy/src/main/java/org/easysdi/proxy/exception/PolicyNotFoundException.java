@@ -20,7 +20,44 @@ package org.easysdi.proxy.exception;
  * @author DEPTH SA
  *
  */
-public class PolicyNotFoundException extends RuntimeException{
+public class PolicyNotFoundException extends ProxyServletException{
+
+	/**
+	 * 
+	 */
+	public PolicyNotFoundException() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @param message
+	 * @param code
+	 * @param locator
+	 * @param cause
+	 */
+	public PolicyNotFoundException(String message, String code, String locator,Integer httpCode,
+			Throwable cause) {
+		super(message, code, locator,httpCode, cause);
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @param message
+	 * @param cause
+	 */
+	public PolicyNotFoundException(String message, Throwable cause) {
+		super(message, cause);
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @param cause
+	 */
+	public PolicyNotFoundException(Throwable cause) {
+		super(cause);
+		// TODO Auto-generated constructor stub
+	}
 
 	private static final long serialVersionUID = 4979269297236189882L;
 	public static final String NO_POLICY_FOUND = "No policy found";

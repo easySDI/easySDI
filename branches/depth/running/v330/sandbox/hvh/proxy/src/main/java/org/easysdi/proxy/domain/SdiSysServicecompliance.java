@@ -8,6 +8,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.JoinTable;
+
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -37,7 +39,7 @@ public class SdiSysServicecompliance implements java.io.Serializable {
 	private boolean Harvestable;
 	private Set<SdiPhysicalserviceServicecompliance> sdiPhysicalserviceServicecompliances = new HashSet<SdiPhysicalserviceServicecompliance>(
 			0);
-	private Set<SdiVirtualserviceServicecompliance> sdiVirtualserviceServicecompliances = new HashSet<SdiVirtualserviceServicecompliance>(
+	private Set<SdiVirtualservice> sdiVirtualservices = new HashSet<SdiVirtualservice>(
 			0);
 	private Set<SdiSysOperationcompliance> sdiSysOperationcompliances = new HashSet<SdiSysOperationcompliance>(
 			0);
@@ -68,7 +70,7 @@ public class SdiSysServicecompliance implements java.io.Serializable {
 			boolean Aggregatable,
 			boolean Harvestable,
 			Set<SdiPhysicalserviceServicecompliance> sdiPhysicalserviceServicecompliances,
-			Set<SdiVirtualserviceServicecompliance> sdiVirtualserviceServicecompliances,
+			Set<SdiVirtualservice> sdiVirtualservices,
 			Set<SdiSysOperationcompliance> sdiSysOperationcompliances) {
 		this.sdiSysServiceversion = sdiSysServiceversion;
 		this.sdiSysServiceconnector = sdiSysServiceconnector;
@@ -79,7 +81,7 @@ public class SdiSysServicecompliance implements java.io.Serializable {
 		this.Aggregatable = Aggregatable;
 		this.Harvestable = Harvestable;
 		this.sdiPhysicalserviceServicecompliances = sdiPhysicalserviceServicecompliances;
-		this.sdiVirtualserviceServicecompliances = sdiVirtualserviceServicecompliances;
+		this.sdiVirtualservices = sdiVirtualservices;
 		this.sdiSysOperationcompliances = sdiSysOperationcompliances;
 	}
 
@@ -180,14 +182,15 @@ public class SdiSysServicecompliance implements java.io.Serializable {
 		this.sdiPhysicalserviceServicecompliances = sdiPhysicalserviceServicecompliances;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiSysServicecompliance")
-	public Set<SdiVirtualserviceServicecompliance> getSdiVirtualserviceServicecompliances() {
-		return this.sdiVirtualserviceServicecompliances;
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "SdiVirtualserviceServicecompliance", joinColumns = {@JoinColumn(name = "servicecompliance_id")}, inverseJoinColumns = {@JoinColumn (name = "service_id")})
+	public Set<SdiVirtualservice> getSdiVirtualservices() {
+		return this.sdiVirtualservices;
 	}
 
-	public void setSdiVirtualserviceServicecompliances(
-			Set<SdiVirtualserviceServicecompliance> sdiVirtualserviceServicecompliances) {
-		this.sdiVirtualserviceServicecompliances = sdiVirtualserviceServicecompliances;
+	public void setSdiVirtualservices(
+			Set<SdiVirtualservice> sdiVirtualservices) {
+		this.sdiVirtualservices = sdiVirtualservices;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiSysServicecompliance")

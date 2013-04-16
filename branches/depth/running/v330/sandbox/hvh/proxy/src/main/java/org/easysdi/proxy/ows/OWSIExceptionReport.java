@@ -67,6 +67,7 @@ public interface OWSIExceptionReport {
     public static final String CODE_INVALID_UPDATE_SEQUENCE 				= "InvalidUpdateSequence";
     public static final String CODE_OPTION_NOT_SUPPORTED 					= "OptionNotSupported";
     public static final String CODE_NO_APPLICABLE_CODE 						= "NoApplicableCode";
+    
 
     public static final String CODE_INVALID_FORMAT							= "InvalidFormat";
     public static final String CODE_INVALID_CRS 							= "InvalidCRS";
