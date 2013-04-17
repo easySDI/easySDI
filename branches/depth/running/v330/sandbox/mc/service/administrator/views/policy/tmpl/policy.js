@@ -12,10 +12,6 @@ Joomla.submitbutton = function (task) {
 	}
 }
 
-jQuery(document).ready(function (){
-	enableAccessScope();
-});
-
 function enableAccessScope(){
 	if(jQuery('#jform_accessscope_id').val() == 1){
 		jQuery("#jform_organisms").val("").trigger('liszt:updated');
@@ -35,7 +31,54 @@ function enableAccessScope(){
 	}
 }
 
+/*
+ * Check the state of the checkboxes in the layers tab and determine whether elements must be hidden or shown
+*/
+function initVisibility () {
+	if (jQuery('.anyservice').is(":checked")) {
+		jQuery('#ps_accordion').hide();
+	}
+	else {
+		jQuery('#ps_accordion').show();
+	}
+	
+	jQuery('.anyitem').each(function () {
+		var ps_id = jQuery(this).data('ps_id');
+		if (jQuery(this).is(":checked")) {
+			jQuery('#table-layers-' + ps_id).hide();
+		}
+		else {
+			jQuery('#table-layers-' + ps_id).show();
+		}
+	});
+}
+
 function popAlert (msg, cssClass) {
 	jQuery('#system-message-container').html('<div class="alert ' + cssClass + '"><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Message</h4><p>' + msg + '</p></div>');
 	jQuery('#system-message-container').alert();
 }
+
+jQuery(document).ready(function (){
+	enableAccessScope();
+	initVisibility();
+	
+	jQuery('.anyservice').change(function () {
+		if (jQuery(this).is(":checked")) {
+			jQuery('#ps_accordion').hide();
+		}
+		else {
+			jQuery('#ps_accordion').show();
+		}
+	});
+	
+	jQuery('.anyitem').change(function () {
+		var ps_id = jQuery(this).data('ps_id');
+		if (jQuery(this).is(":checked")) {
+			jQuery('#table-layers-' + ps_id).hide();
+		}
+		else {
+			jQuery('#table-layers-' + ps_id).show();
+		}
+	});
+	
+});

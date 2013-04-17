@@ -67,7 +67,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 		$prefix .= '_policy[' . $wfs_spatialpolicy_id . ']';
 		$html .= '
 			<label class="checkbox">
-				<input type="checkbox" name="' . $prefix . '[anyservice]" value="1" ' . ((1 == $data->anyservice)?'checked="checked"':'') . ' /><label for="' . $prefix . '[anyservice]">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WFS_ANYSERVICE') . '</label>
+				<input type="checkbox" name="' . $prefix . '[anyservice]" class="anyservice" value="1" ' . ((1 == $data->anyservice)?'checked="checked"':'') . ' /><label for="' . $prefix . '[anyservice]">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WFS_ANYSERVICE') . '</label>
 			</label>
 		';
 	}
@@ -76,7 +76,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 		$anyItem = (isset($spatialpolicy->anyitem))?$spatialpolicy->anyitem:1;
 		$html .= '
 			<label class="checkbox">
-				<input type="checkbox" name="' . $prefix . '[anyitem]" value="1" ' . ((1 == $anyItem)?'checked="checked"':'') . ' /><label for="' . $prefix . '[anyitem]">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WFS_ANYITEM') . '</label>
+				<input type="checkbox" name="' . $prefix . '[anyitem]" class="anyitem" data-ps_id="' . $physicalServiceID . '" value="1" ' . ((1 == $anyItem)?'checked="checked"':'') . ' /><label for="' . $prefix . '[anyitem]">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WFS_ANYITEM') . '</label>
 			</label>
 		';
 	}
@@ -167,7 +167,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 										
 										<?php printSpatialPolicyForm($this->item, $ps->id); ?>
 										
-										<table class="table table-striped" >
+										<table class="table table-striped" id="table-layers-<?php echo $ps->id; ?>" >
 											<thead>
 												<tr>
 													<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_POLICY_LAYER_ENABLED' );?></th>
