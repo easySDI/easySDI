@@ -461,6 +461,7 @@ class WfsWebservice {
 				return false;
 			}
 			
+			// TODO: find a way to save the description
 			$query = $db->getQuery(true);
 			$query->insert('#__sdi_featuretype_policy')->columns('
 				name, physicalservicepolicy_id

@@ -439,6 +439,7 @@ class WmsWebservice {
 				return false;
 			}
 			
+			// TODO: find a way to save the description
 			$query = $db->getQuery(true);
 			$query->insert('#__sdi_wmslayer_policy')->columns('
 				name, physicalservicepolicy_id

@@ -145,7 +145,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 * Get item with WMS service connector
 	 *
 	*/
-	protected function _getItemWMS($pk, $virtualservice_id) {
+	private function _getItemWMS($pk, $virtualservice_id) {
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmsPhysicalService.php');
 		$tab_physicalService = JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
 		$db = JFactory::getDbo();
@@ -153,11 +153,11 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		$wmsObjList = Array();
 		foreach ($ps_list as $ps) {
 			$layerList = Array();
-			
+			$data = Array();
 			//check layers that have settings
 			if (!empty($pk)) {
 				$db->setQuery('
-					SELECT wlp.name
+					SELECT wlp.name, wlp.enabled
 					FROM #__sdi_policy p
 					JOIN #__sdi_physicalservice_policy psp
 					ON p.id = psp.policy_id
@@ -180,12 +180,16 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				
 				foreach ($resultset as $row) {
 					$layerList[] = $row->name;
+					$data[$row->name] = Array(
+						'enabled' => $row->enabled,
+					);
 				}
 			}
 			
 			$wmsObj = new WmsPhysicalService($ps->id, $ps->resourceurl);
 			$wmsObj->getCapabilities();
 			$wmsObj->populate();
+			$wmtsObj->loadData($data);
 			$wmsObj->sortLists();
 			$wmsObj->setLayerAsConfigured($layerList);
 			$wmsObjList[] = $wmsObj;
@@ -199,7 +203,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 * Get item with WFS service connector
 	 *
 	*/
-	protected function _getItemWFS($pk, $virtualservice_id) {
+	private function _getItemWFS($pk, $virtualservice_id) {
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WfsPhysicalService.php');
 		$tab_physicalService = JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
 		$db = JFactory::getDbo();
@@ -208,10 +212,11 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		$wfsObjList = Array();
 		foreach ($ps_list as $ps) {
 			$layerList = Array();
+			$data = Array();
 			//check layers that have settings
 			if (!empty($pk)) {
 				$db->setQuery('
-					SELECT wlp.name
+					SELECT wlp.name, wlp.enabled
 					FROM #__sdi_policy p
 					JOIN #__sdi_physicalservice_policy psp
 					ON p.id = psp.policy_id
@@ -233,12 +238,16 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				
 				foreach ($resultset as $row) {
 					$layerList[] = $row->name;
+					$data[$row->name] = Array(
+						'enabled' => $row->enabled,
+					);
 				}
 			}
 			
 			$wfsObj = new WfsPhysicalService($ps->id, $ps->resourceurl);
 			$wfsObj->getCapabilities();
 			$wfsObj->populate();
+			$wmtsObj->loadData($data);
 			$wfsObj->sortLists();
 			$wfsObj->setLayerAsConfigured($layerList);
 			$wfsObjList[] = $wfsObj;
@@ -252,7 +261,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 * Get item with WMTS service connector
 	 *
 	*/
-	protected function _getItemWMTS($pk, $virtualservice_id) {
+	private function _getItemWMTS($pk, $virtualservice_id) {
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmtsPhysicalService.php');
 		$tab_physicalService = JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
 		$db = JFactory::getDbo();
@@ -261,17 +270,23 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		$wmtsObjList = Array();
 		foreach ($ps_list as $ps) {
 			$layerList = Array();
-			//check layers that have settings
+			$data = Array();
+			//check layers that have settings and that are enabled
 			if (!empty($pk)) {
 				$db->setQuery('
-					SELECT wlp.identifier
+					SELECT wlp.identifier, wlp.enabled, wlp.spatialpolicy_id, tmsp.identifier AS tmsp_id, tmp.identifier AS tmp_id
 					FROM #__sdi_policy p
 					JOIN #__sdi_physicalservice_policy psp
 					ON p.id = psp.policy_id
 					JOIN #__sdi_wmtslayer_policy wlp
 					ON psp.id = wlp.physicalservicepolicy_id
+					LEFT JOIN #__sdi_tilematrixset_policy tmsp
+					ON tmsp.wmtslayerpolicy_id = wlp.id
+					LEFT JOIN #__sdi_tilematrix_policy tmp
+					ON tmp.tilematrixsetpolicy_id = tmsp.id
 					WHERE p.id = ' . $pk . '
-					AND psp.physicalservice_id = ' . $ps->id . ';
+					AND psp.physicalservice_id = ' . $ps->id . '
+					GROUP BY wlp.identifier;
 				');
 				
 				try {
@@ -285,13 +300,19 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				}
 				
 				foreach ($resultset as $row) {
-					$layerList[] = $row->identifier;
+					if ((!is_null($row->spatialpolicy_id)) || (!is_null($row->tmsp_id)) || (!is_null($row->tmp_id))) {
+						$layerList[] = $row->identifier;
+					}
+					$data[$row->identifier] = Array(
+						'enabled' => $row->enabled,
+					);
 				}
 			}
 			
 			$wmtsObj = new WmtsPhysicalService($ps->id, $ps->resourceurl);
 			$wmtsObj->getCapabilities();
 			$wmtsObj->populate();
+			$wmtsObj->loadData($data);
 			$wmtsObj->sortLists();
 			$wmtsObj->setLayerAsConfigured($layerList);
 			$wmtsObjList[] = $wmtsObj;
@@ -364,6 +385,11 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 							$this->setError('Failed to save inheritance.');
 							return false;
 						}
+						
+						if (!$this->saveWMTSEnabledLayers($data)) {
+							$this->setError('Failed to save enabled layers.');
+							return false;
+						}
 						break;
 					case 'WMS':
 						require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmsWebservice.php');
@@ -376,6 +402,11 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 							$this->setError('Failed to save inheritance.');
 							return false;
 						}
+						
+						if (!$this->saveWMSEnabledLayers($data)) {
+							$this->setError('Failed to save enabled layers.');
+							return false;
+						}
 						break;
 					case 'WFS':
 						require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WfsWebservice.php');
@@ -386,6 +417,11 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 						
 						if (!$this->saveWFSInheritance($data)) {
 							$this->setError('Failed to save inheritance.');
+							return false;
+						}
+						
+						if (!$this->saveWFSEnabledFeatureType($data)) {
+							$this->setError('Failed to save enabled layers.');
 							return false;
 						}
 						break;
@@ -429,7 +465,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 *
 	 * @since EasySDI 3.3.0
 	 */
-	public function saveWMTSInheritance ($data) {
+	private function saveWMTSInheritance ($data) {
 		$db = JFactory::getDbo();
 		
 		//Save the policy-wide inheritance
@@ -601,7 +637,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 *
 	 * @since EasySDI 3.3.0
 	 */
-	public function saveWMSInheritance ($data) {
+	private function saveWMSInheritance ($data) {
 		$db = JFactory::getDbo();
 		
 		//Save the policy-wide inheritance
@@ -779,7 +815,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 *
 	 * @since EasySDI 3.3.0
 	 */
-	public function saveWFSInheritance ($data) {
+	private function saveWFSInheritance ($data) {
 		$db = JFactory::getDbo();
 		
 		//Save the policy-wide inheritance
@@ -1063,7 +1099,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 *
 	 * @since EasySDI 3.0.0
 	 */
-	public function saveAllowedOperation ($data) {
+	private function saveAllowedOperation ($data) {
 		$db = $this->getDbo();
 		$db->setQuery('DELETE FROM #__sdi_allowedoperation WHERE policy_id = ' . $data['id']);
 		$db->query();
@@ -1096,7 +1132,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 *
 	 * @since EasySDI 3.0.0
 	 */
-	public function loadAllowedOperation ($pk) {
+	private function loadAllowedOperation ($pk) {
 		if (empty($pk)) {
 			return Array();
 		}
@@ -1126,10 +1162,10 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 *
 	 * @since EasySDI 3.0.0
 	 */
-	public function saveExcludedAttributes ($data) {
+	private function saveExcludedAttributes ($data) {
 		$db = $this->getDbo();
 		$db->setQuery('DELETE FROM #__sdi_excludedattribute WHERE policy_id = ' . $data['id']);
-		$db->query();
+		$db->execute();
 		
 		$arr_ex = $_POST['excluded_attribute'];
 		foreach ($arr_ex as $value) {
@@ -1158,10 +1194,10 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 *
 	 * @since EasySDI 3.0.0
 	 */
-	public function saveCSWState ($data) {
+	private function saveCSWState ($data) {
 		$db = $this->getDbo();
 		$db->setQuery('DELETE FROM #__sdi_policy_metadatastate WHERE policy_id = ' . $data['id']);
-		$db->query();
+		$db->execute();
 		
 		$arr_pks = $_POST['csw_state'];
 		foreach ($arr_pks as $pk) {
@@ -1176,6 +1212,306 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				$je = new JException($e->getMessage());
 				$this->setError($je);
 				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Method to save the enabled layers of a wmts policy
+	 *
+	 * @param array 	$data	data posted from the form
+	 *
+	 * @return boolean 	True on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	private function saveWMTSEnabledLayers ($data) {
+		$arrEnabled = $_POST['enabled'];
+		$policyID = $data['id'];
+		$db = $this->getDbo();
+		
+		foreach ($arrEnabled as $physicalServiceID => $arrValues) {
+			$db->setQuery('
+				SELECT id
+				FROM #__sdi_physicalservice_policy
+				WHERE physicalservice_id = ' . $physicalServiceID . '
+				AND policy_id = ' . $policyID . ';
+			');
+			
+			try {
+				$db->execute();
+				$physicalservice_policy_id = $db->loadResult();
+			}
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
+			
+			//disable all layers (only checked layer will be added)
+			$query = $db->getQuery(true);
+			$query->update('#__sdi_wmtslayer_policy')->set('enabled = 0')->where('physicalservicepolicy_id = ' . $physicalservice_policy_id);
+			$db->setQuery($query);
+			
+			try {
+				$db->execute();
+			}
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
+			foreach ($arrValues as $layerID => $value) {
+				$db->setQuery('
+					SELECT p.id
+					FROM #__sdi_wmtslayer_policy p
+					JOIN #__sdi_physicalservice_policy psp
+					ON psp.id = p.physicalservicepolicy_id
+					WHERE psp.physicalservice_id = ' . $physicalServiceID . '
+					AND psp.policy_id = ' . $policyID . '
+					AND p.identifier = \'' . $layerID . '\';
+				');
+				
+				try {
+					$db->execute();
+					$num_result = $db->getNumRows();
+					$wmtslayerpolicy_id = $db->loadResult();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
+				
+				if (0 == $num_result) {
+					//create Wmts Layer Policy if don't exist
+					$query = $db->getQuery(true);
+					$query->insert('#__sdi_wmtslayer_policy')->columns('
+						identifier, enabled, physicalservicepolicy_id
+					')->values('
+						\'' . $layerID . '\', 1, \'' . $physicalservice_policy_id . '\'
+					');
+				}
+				else {
+					$query = $db->getQuery(true);
+					$query->update('#__sdi_wmtslayer_policy')->set(
+						'enabled = 1'
+					)->where(Array(
+						'id = \'' . $wmtslayerpolicy_id . '\'',
+					));
+				}
+				
+				$db->setQuery($query);
+				
+				try {
+					$db->execute();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Method to save the enabled layers of a wms policy
+	 *
+	 * @param array 	$data	data posted from the form
+	 *
+	 * @return boolean 	True on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	private function saveWMSEnabledLayers ($data) {
+		$arrEnabled = $_POST['enabled'];
+		$policyID = $data['id'];
+		$db = $this->getDbo();
+		
+		foreach ($arrEnabled as $physicalServiceID => $arrValues) {
+			$db->setQuery('
+				SELECT id
+				FROM #__sdi_physicalservice_policy
+				WHERE physicalservice_id = ' . $physicalServiceID . '
+				AND policy_id = ' . $policyID . ';
+			');
+			
+			try {
+				$db->execute();
+				$physicalservice_policy_id = $db->loadResult();
+			}
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
+			
+			//disable all layers (only checked layer will be added)
+			$query = $db->getQuery(true);
+			$query->update('#__sdi_wmslayer_policy')->set('enabled = 0')->where('physicalservicepolicy_id = ' . $physicalservice_policy_id);
+			$db->setQuery($query);
+			
+			try {
+				$db->execute();
+			}
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
+			foreach ($arrValues as $layerID => $value) {
+				$db->setQuery('
+					SELECT p.id
+					FROM #__sdi_wmslayer_policy p
+					JOIN #__sdi_physicalservice_policy psp
+					ON psp.id = p.physicalservicepolicy_id
+					WHERE psp.physicalservice_id = ' . $physicalServiceID . '
+					AND psp.policy_id = ' . $policyID . '
+					AND p.identifier = \'' . $layerID . '\';
+				');
+				
+				try {
+					$db->execute();
+					$num_result = $db->getNumRows();
+					$wmslayerpolicy_id = $db->loadResult();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
+				
+				if (0 == $num_result) {
+					//create Wmts Layer Policy if don't exist
+					$query = $db->getQuery(true);
+					$query->insert('#__sdi_wmslayer_policy')->columns('
+						name, enabled, physicalservicepolicy_id
+					')->values('
+						\'' . $layerID . '\', 1, \'' . $physicalservice_policy_id . '\'
+					');
+				}
+				else {
+					$query = $db->getQuery(true);
+					$query->update('#__sdi_wmslayer_policy')->set(
+						'enabled = 1'
+					)->where(Array(
+						'id = \'' . $wmslayerpolicy_id . '\'',
+					));
+				}
+				
+				$db->setQuery($query);
+				
+				try {
+					$db->execute();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Method to save the enabled feature type of a wfs policy
+	 *
+	 * @param array 	$data	data posted from the form
+	 *
+	 * @return boolean 	True on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	private function saveWFSEnabledFeatureType ($data) {
+		$arrEnabled = $_POST['enabled'];
+		$policyID = $data['id'];
+		$db = $this->getDbo();
+		
+		foreach ($arrEnabled as $physicalServiceID => $arrValues) {
+			$db->setQuery('
+				SELECT id
+				FROM #__sdi_physicalservice_policy
+				WHERE physicalservice_id = ' . $physicalServiceID . '
+				AND policy_id = ' . $policyID . ';
+			');
+			
+			try {
+				$db->execute();
+				$physicalservice_policy_id = $db->loadResult();
+			}
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
+			
+			//disable all layers (only checked layer will be added)
+			$query = $db->getQuery(true);
+			$query->update('#__sdi_featuretype_policy')->set('enabled = 0')->where('physicalservicepolicy_id = ' . $physicalservice_policy_id);
+			$db->setQuery($query);
+			
+			try {
+				$db->execute();
+			}
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
+			foreach ($arrValues as $layerID => $value) {
+				$db->setQuery('
+					SELECT p.id
+					FROM #__sdi_featuretype_policy p
+					JOIN #__sdi_physicalservice_policy psp
+					ON psp.id = p.physicalservicepolicy_id
+					WHERE psp.physicalservice_id = ' . $physicalServiceID . '
+					AND psp.policy_id = ' . $policyID . '
+					AND p.identifier = \'' . $layerID . '\';
+				');
+				
+				try {
+					$db->execute();
+					$num_result = $db->getNumRows();
+					$wmslayerpolicy_id = $db->loadResult();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
+				
+				if (0 == $num_result) {
+					//create Wmts Layer Policy if don't exist
+					$query = $db->getQuery(true);
+					$query->insert('#__sdi_featuretype_policy')->columns('
+						name, enabled, physicalservicepolicy_id
+					')->values('
+						\'' . $layerID . '\', 1, \'' . $physicalservice_policy_id . '\'
+					');
+				}
+				else {
+					$query = $db->getQuery(true);
+					$query->update('#__sdi_featuretype_policy')->set(
+						'enabled = 1'
+					)->where(Array(
+						'id = \'' . $wmslayerpolicy_id . '\'',
+					));
+				}
+				
+				$db->setQuery($query);
+				
+				try {
+					$db->execute();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
 			}
 		}
 		return true;

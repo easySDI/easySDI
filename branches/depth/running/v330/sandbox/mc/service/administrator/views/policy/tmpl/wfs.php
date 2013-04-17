@@ -24,6 +24,7 @@ $document->addScript('components/com_easysdi_service/views/policy/tmpl/wfs.js');
 JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 JText::script('COM_EASYSDI_SERVICE_MODAL_ERROR');
 JText::script('COM_EASYSDI_SERVICE_CONFIRM_DELETION');
+JText::script('COM_EASYSDI_SERVICE_MSG_MODAL_SAVED');
 
 function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	$db = JFactory::getDbo();
@@ -169,8 +170,9 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 										<table class="table table-striped" >
 											<thead>
 												<tr>
-													<th>name</th>
-													<th>description</th>
+													<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_POLICY_LAYER_ENABLED' );?></th>
+													<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_POLICY_LAYER_NAME' );?></th>
+													<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_POLICY_LAYER_DESCRIPTION' );?></th>
 													<th></th>
 												</tr>
 											</thead>

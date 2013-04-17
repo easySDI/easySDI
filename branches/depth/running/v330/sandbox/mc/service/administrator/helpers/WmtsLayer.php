@@ -36,11 +36,16 @@ class WmtsLayer extends Layer{
 		foreach ($data as $key => $value) {
 			if (property_exists('WmtsLayer', $key) && 'tileMatrixSetList' != $key) {
 				$this->{$key} = $value;
-				$this->hasConfig = true;
+				if ('enabled' != $key) {
+					$this->hasConfig = true;
+				}
 			}
 		}
-		foreach ($data['tileMatrixSetList'] as $key => $value) {
-			$this->tileMatrixSetList[$key]->loadData($value);
+		
+		if (isset($data['tileMatrixSetList'])) {
+			foreach ($data['tileMatrixSetList'] as $key => $value) {
+				$this->tileMatrixSetList[$key]->loadData($value);
+			}
 		}
 	}
 	
