@@ -69,8 +69,6 @@ require_once( JPATH_COMPONENT_ADMINISTRATOR.'/'.'i18n'.'/'.'lang.php' );
 		Joomla.tableOrdering(order, dirn, '');
 	}
 </script>
-Hello
-
 
 <div id="tabsContainer"></div>
 <table id="graphTable" style="width: 100%">

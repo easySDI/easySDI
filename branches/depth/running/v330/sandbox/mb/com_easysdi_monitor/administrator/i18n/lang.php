@@ -73,7 +73,6 @@ foreach ($i18n as $key => $val)
 		$key = addslashes($key);
 		$val = addslashes($val);
                 
-                var_dump($key,$val);
 		$s .= "SData.i18n['$key'] = '$val';";
         }
 }

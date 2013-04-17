@@ -16,7 +16,7 @@
  */
 Ext.namespace("EasySDI_Mon");
 
-Ext.BLANK_IMAGE_URL = './components/com_easysdi_monitor/lib/ext/resources/images/default/s.gif';	
+Ext.BLANK_IMAGE_URL = './components/com_easysdi_monitor/libraries/ext/resources/images/default/s.gif';	
 //use not utc time to prevent time shift in graphs
 Highcharts.setOptions({
 	global: {
