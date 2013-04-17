@@ -56,10 +56,6 @@ class WmtsWebservice {
 		}
 		
 		$html = '
-			<label class="checkbox">
-				<input type="checkbox" name="enabled" value="1" ' . ((1 == $layerObj->enabled)?'checked="checked"':'') . ' /> ' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_ENABLED') . '
-			</label>
-			<hr />
 			<table>
 				<tr>
 					<td></td>

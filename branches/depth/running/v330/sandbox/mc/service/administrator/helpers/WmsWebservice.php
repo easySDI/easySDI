@@ -67,10 +67,6 @@ class WmsWebservice {
 		}
 		
 		$html = '
-			<label class="checkbox">
-				<input type="checkbox" name="enabled" value="1" ' . ((1 == $layerObj->enabled)?'checked="checked"':'') . ' /> ' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_ENABLED') . '
-			</label>
-			<hr />
 			<label for="minimumscale">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MINIMUM_SCALE') . '</label>
 			<input type="text" name="minimumscale" value="' . $layerObj->minimumScale . '" />
 			<br />

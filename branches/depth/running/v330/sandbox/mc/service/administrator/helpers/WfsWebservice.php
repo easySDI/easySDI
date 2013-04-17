@@ -54,10 +54,6 @@ class WfsWebservice {
 		}
 		
 		$html = '
-			<label class="checkbox">
-				<input type="checkbox" name="enabled" value="1" ' . ((1 == $layerObj->enabled)?'checked="checked"':'') . ' /> ' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_ENABLED') . '
-			</label>
-			<hr />
 			<label for="localgeographicfilter">' . JText::_('COM_EASYSDI_SERVICE_WFS_LAYER_LOCAL_FILTER') . '</label>
 			<textarea name="localgeographicfilter" rows="10" class="span12">' . $layerObj->localFilterGML . '</textarea>
 			<br />
