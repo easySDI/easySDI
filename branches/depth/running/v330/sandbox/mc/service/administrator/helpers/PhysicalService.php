@@ -4,7 +4,7 @@ abstract class PhysicalService {
 	public $id;
 	public $name;
 	public $url;
-	public $rawXml;
+	protected $rawXml;
 	protected $compliance;
 	protected $connector;
 	protected $xmlCapabilities;
@@ -22,6 +22,10 @@ abstract class PhysicalService {
 		$this->connector = $connector;
 	}
 	
+	public function getRawXml () {
+		return $this->rawXml;
+	}
+	
 	/**
 	 * Request the Capabilities of the server and store them.
 	 * 
@@ -30,7 +34,7 @@ abstract class PhysicalService {
 	 * @return bool : true on success, false on error
 	 */
 	public function getCapabilities ($rawXML = null) {
-		$xmlString = $rawXML;
+		$this->rawXML = $rawXML;
 		if (!isset($rawXML)) {
 			$completeUrl = $this->url . "?REQUEST=GetCapabilities&SERVICE=".$this->connector;
 			if(isset($this->compliance)){
@@ -43,7 +47,7 @@ abstract class PhysicalService {
 			}
 			curl_setopt($session, CURLOPT_HEADER, false);
 			curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
-			$xmlString = curl_exec($session);
+			$this->rawXML = curl_exec($session);
 			$http_status = curl_getinfo($session, CURLINFO_HTTP_CODE);
 			curl_close($session);
 			
@@ -54,7 +58,7 @@ abstract class PhysicalService {
 			}
 		}
 		
-		$xmlCapa = simplexml_load_string($xmlString);
+		$xmlCapa = simplexml_load_string($this->rawXML);
 		
 		$namespaces = $xmlCapa->getNamespaces(true);
 		foreach ($namespaces as $key => $value) {

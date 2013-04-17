@@ -218,7 +218,7 @@ class WmtsWebservice {
 	}
 	
 	private static function setWmtsLayerSettings ($raw_GET) {
-		$enabled = (isset($raw_GET['enabled']))?1:0;
+		//$enabled = (isset($raw_GET['enabled']))?1:0;
 		$physicalServiceID = $raw_GET['psID'];
 		$policyID = $raw_GET['policyID'];
 		$layerID = $raw_GET['layerID'];
@@ -327,19 +327,19 @@ class WmtsWebservice {
 			
 			$query = $db->getQuery(true);
 			$query->insert('#__sdi_wmtslayer_policy')->columns('
-				identifier, enabled, spatialpolicy_id, physicalservicepolicy_id
+				identifier, spatialpolicy_id, physicalservicepolicy_id
 			')->values('
-				\'' . $layerID . '\', \'' . $enabled . '\', \'' . $spatial_policy_id . '\', \'' . $physicalservice_policy_id . '\'
+				\'' . $layerID . '\', \'' . $spatial_policy_id . '\', \'' . $physicalservice_policy_id . '\'
 			');
 		}
-		else {
+		/*else {
 			$query = $db->getQuery(true);
 			$query->update('#__sdi_wmtslayer_policy')->set(Array(
 				'enabled = \'' . $enabled . '\'',
 			))->where(Array(
 				'id = \'' . $wmtslayerpolicy_id . '\'',
 			));
-		}
+		}*/
 		
 		$db->setQuery($query);
 		
