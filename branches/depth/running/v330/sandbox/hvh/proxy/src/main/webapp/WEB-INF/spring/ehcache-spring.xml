@@ -7,7 +7,7 @@
 		<constructor-arg type="java.net.URL" value="classpath:/ehcache.xml" />
 	</bean>
 
-	<bean id="getMapCacheFilter" class="org.easysdi.proxy.ehcache.GetMapCacheFilter">
+	<bean id="OGCOperationCacheFilter" class="org.easysdi.proxy.ehcache.OGCOperationCacheFilter">
 		<constructor-arg ref="cacheManager" />
 	</bean>
 

@@ -54,7 +54,11 @@ public class SdiPolicyHome {
 			if(user != null){
 				//Policies linked to the current user
 				Query query = session.createQuery(
-						"SELECT p FROM SdiPolicy p INNER JOIN p.sdiUsers as u WHERE u.id= :user AND p.sdiVirtualservice.id = :virtualservice AND p.state = 1 ORDER BY p.ordering asc");
+						"SELECT p FROM SdiPolicy p INNER JOIN p.sdiUsers as u " +
+						"INNER JOIN p.sdiVirtualservice as vs WHERE u.id= :user" +
+						" AND vs.id = :virtualservice AND p.state = 1 AND vs.state = 1  " +
+						" AND p.allowfrom <= CURRENT_DATE() AND p.allowto >= CURRENT_DATE()"+
+						"ORDER BY p.ordering asc");
 				query.setParameter("user", user);
 				query.setParameter("virtualservice", virtualservice);
 				List results = query.setCacheable(true).list();
@@ -64,13 +68,13 @@ public class SdiPolicyHome {
 					while (i.hasNext())
 					{
 						SdiPolicy policy = i.next();
-						Date from = policy.getAllowfrom();
-						Date to = policy.getAllowto();
-						Date currentDate = new Date();
-						if (currentDate.after(from) && currentDate.before(to))
+//						Date from = policy.getAllowfrom();
+//						Date to = policy.getAllowto();
+//						Date currentDate = new Date();
+//						if (currentDate.after(from) && currentDate.before(to))
 							return policy;
-						else
-							continue;
+//						else
+//							continue;
 					}
 				}
 			}
@@ -93,7 +97,11 @@ public class SdiPolicyHome {
 			if(c.size() > 0)
 			{
 				Query oQuery = session.createQuery(
-						"SELECT p  FROM SdiPolicy p INNER JOIN p.sdiOrganisms as po INNER JOIN p.sdiVirtualservice as vs WHERE po.id IN (:organism) AND vs.id = :virtualservice AND p.state = 1 ORDER BY p.ordering asc");
+						"SELECT p  FROM SdiPolicy p INNER JOIN p.sdiOrganisms as po " +
+						"INNER JOIN p.sdiVirtualservice as vs WHERE po.id IN (:organism) " +
+						"AND vs.id = :virtualservice AND p.state = 1 AND vs.state = 1 " +
+						" AND p.allowfrom <= CURRENT_DATE() AND p.allowto >= CURRENT_DATE()"+
+						"ORDER BY p.ordering asc");
 				oQuery.setParameterList("organism", c);
 				oQuery.setParameter("virtualservice", virtualservice);
 				List oResults = oQuery.setCacheable(true).list();
@@ -103,13 +111,13 @@ public class SdiPolicyHome {
 					while (i1.hasNext())
 					{
 						SdiPolicy policy = i1.next();
-						Date from = policy.getAllowfrom();
-						Date to = policy.getAllowto();
-						Date currentDate = new Date();
-						if (currentDate.after(from) && currentDate.before(to))
+//						Date from = policy.getAllowfrom();
+//						Date to = policy.getAllowto();
+//						Date currentDate = new Date();
+//						if (currentDate.after(from) && currentDate.before(to))
 							return policy;
-						else
-							continue;
+//						else
+//							continue;
 					}
 				}
 			}
@@ -117,7 +125,11 @@ public class SdiPolicyHome {
 			//If no authorities are SdiOrganism id, or if no policies are defined for the authorities, try to load a public policy
 			//Public policies
 			Query pQuery = session.createQuery(
-					"SELECT p  FROM SdiPolicy p INNER JOIN p.sdiVirtualservice as vs INNER JOIN p.sdiSysAccessscope as sc WHERE vs.id = :virtualservice AND sc.id = 1 AND p.state = 1 ORDER BY p.ordering asc");
+					"SELECT p  FROM SdiPolicy p INNER JOIN p.sdiVirtualservice as vs " +
+					"INNER JOIN p.sdiSysAccessscope as sc WHERE vs.id = :virtualservice " +
+					"AND sc.id = 1 AND p.state = 1 AND vs.state = 1 " +
+					" AND p.allowfrom <= CURRENT_DATE() AND p.allowto >= CURRENT_DATE()"+
+					"ORDER BY p.ordering asc");
 			pQuery.setParameter("virtualservice", virtualservice);
 			List pResults = pQuery.setCacheable(true).list();
 			if (pResults != null && pResults.size() > 0)
@@ -126,13 +138,13 @@ public class SdiPolicyHome {
 				while (i2.hasNext())
 				{
 					SdiPolicy policy = i2.next();
-					Date from = policy.getAllowfrom();
-					Date to = policy.getAllowto();
-					Date currentDate = new Date();
-					if (currentDate.after(from) && currentDate.before(to))
+//					Date from = policy.getAllowfrom();
+//					Date to = policy.getAllowto();
+//					Date currentDate = new Date();
+//					if (currentDate.after(from) && currentDate.before(to))
 						return policy;
-					else
-						continue;
+//					else
+//						continue;
 				}
 			}
 			

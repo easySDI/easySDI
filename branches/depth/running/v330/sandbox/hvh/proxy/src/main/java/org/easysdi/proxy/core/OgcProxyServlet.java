@@ -107,6 +107,7 @@ public class OgcProxyServlet extends HttpServlet {
 	 */
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		servletResponse = resp;
+		servletRequest = req;
 		ProxyServlet obj = null;
 
 		try {
@@ -194,6 +195,13 @@ public class OgcProxyServlet extends HttpServlet {
 			
 			SdiVirtualservice virtualService = sdiVirtualserviceHome.findByAlias(servletName);
 			
+			if(virtualService == null)
+			{
+				logger.error("Invalid Virtual Service alias.");
+				sendException("Invalid Virtual Service alias.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_INTERNAL_SERVER_ERROR,  connector, null);
+				return null;
+			}
+				
 			//Get the service connector
 			connector = virtualService.getSdiSysServiceconnector().getValue();
 			
@@ -230,6 +238,11 @@ public class OgcProxyServlet extends HttpServlet {
 					sendException("Wrong service value given in the request.",OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE ,"SERVICE", HttpServletResponse.SC_BAD_REQUEST, connector, highestversion);
 					return null;
 				}
+			} catch (VersionNotSupportedException e) {
+				//Problem parsing the request
+				logger.error("Version not support",e);
+				sendException(OWSExceptionReport.TEXT_VERSION_NOT_SUPPORTED,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE ,"VERSION", HttpServletResponse.SC_INTERNAL_SERVER_ERROR,connector, highestversion);
+				return null;
 			} catch (ClassNotFoundException e) {
 				//Class request does not exist, keep going on (it can be the case for old version connector)
 			} catch (NoSuchMethodException e) {
@@ -245,9 +258,18 @@ public class OgcProxyServlet extends HttpServlet {
 				sendException("Problem parsing request",OWSExceptionReport.CODE_NO_APPLICABLE_CODE ,"", HttpServletResponse.SC_INTERNAL_SERVER_ERROR, connector, highestversion);
 				return null;
 			} catch (java.lang.reflect.InvocationTargetException e) {
-				//Problem parsing the request
-				logger.error("Problem parsing request in OgcProxyServlet: ",e);
-				sendException("Problem parsing request",OWSExceptionReport.CODE_NO_APPLICABLE_CODE ,"", HttpServletResponse.SC_INTERNAL_SERVER_ERROR,connector, highestversion);
+				if(e.getTargetException() instanceof VersionNotSupportedException ){
+					//Problem parsing the request
+					logger.error(OWSExceptionReport.TEXT_VERSION_NOT_SUPPORTED,e);
+					sendException(OWSExceptionReport.TEXT_VERSION_NOT_SUPPORTED,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE ,"VERSION", HttpServletResponse.SC_INTERNAL_SERVER_ERROR,connector, highestversion);
+					
+				}
+				else
+				{
+					//Problem parsing the request
+					logger.error("Problem parsing request in OgcProxyServlet: ",e);
+					sendException("Problem parsing request",OWSExceptionReport.CODE_NO_APPLICABLE_CODE ,"", HttpServletResponse.SC_INTERNAL_SERVER_ERROR,connector, highestversion);
+				}
 				return null;
 			} catch (IllegalArgumentException e) {
 				//Problem parsing the request
@@ -354,11 +376,15 @@ public class OgcProxyServlet extends HttpServlet {
 				id = user.getId();
 			SdiPolicy policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualService.getId(), id , authorities);
 			
-			//Check if the current requested operation is allowed by the loaded policy
-			if(!request.isOperationAllowedByPolicy(policy)){
-				logger.error( OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED);
-				sendException( OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED,  OWSExceptionReport.CODE_OPERATION_NOT_ALLOWED,"REQUEST", HttpServletResponse.SC_NOT_IMPLEMENTED,connector, request.getVersion());
-				return null;
+			//WFS connector doesn't have yet a request handler
+			if(request != null)
+			{
+				//Check if the current requested operation is allowed by the loaded policy
+				if(!request.isOperationAllowedByPolicy(policy)){
+					logger.error( OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED);
+					sendException( OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED,  OWSExceptionReport.CODE_OPERATION_NOT_ALLOWED,"REQUEST", HttpServletResponse.SC_NOT_IMPLEMENTED,connector, request.getVersion());
+					return null;
+				}
 			}
 			
 			try {

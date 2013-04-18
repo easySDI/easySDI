@@ -231,7 +231,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		    	{
 		    		Element layerElement = (Element)iLLayer.next();
 		    		Element nameElement = getChildElementName(layerElement);
-		    		if (nameElement!= null && !((WMSProxyServlet)servlet).isLayerAllowed(nameElement.getText(),servlet.getPhysicalServiceByAlias(fileEntry.getKey()).getResourceurl()))
+		    		if (nameElement!= null && !((WMSProxyServlet)servlet).isLayerAllowed(nameElement.getText(),servlet.getPhysicalServiceByAlias(fileEntry.getKey())))
 					{
 		    				Parent parent = layerElement.getParent();
 		    				parent.removeContent (layerElement);

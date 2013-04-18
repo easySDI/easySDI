@@ -64,7 +64,6 @@ import org.apache.log4j.PatternLayout;
 import org.easysdi.proxy.domain.SdiAllowedoperation;
 import org.easysdi.proxy.domain.SdiPhysicalservice;
 import org.easysdi.proxy.domain.SdiPolicy;
-import org.easysdi.proxy.domain.SdiVirtualPhysical;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.log.ProxyLogger;
 import org.easysdi.proxy.ows.OWSExceptionReport;
@@ -224,12 +223,13 @@ public abstract class ProxyServlet extends HttpServlet {
     	if (!physicalServiceHashTable.isEmpty())
     		return physicalServiceHashTable;
     	
-    	Set<SdiVirtualPhysical> physicalServices = sdiVirtualService.getSdiVirtualPhysicals();
-    	Iterator<SdiVirtualPhysical> i = physicalServices.iterator();
+    	Set<SdiPhysicalservice> physicalServices = sdiVirtualService.getSdiPhysicalservices();
+    	Iterator<SdiPhysicalservice> i = physicalServices.iterator();
     	while (i.hasNext())
     	{
-    		SdiVirtualPhysical physicalService = i.next();
-    		physicalServiceHashTable.put(physicalService.getSdiPhysicalservice().getAlias(),physicalService.getSdiPhysicalservice());
+    		SdiPhysicalservice physicalService = i.next();
+    		if(physicalService != null)
+    			physicalServiceHashTable.put(physicalService.getAlias(),physicalService);
     	}
     	return physicalServiceHashTable;
     }
@@ -275,13 +275,14 @@ public abstract class ProxyServlet extends HttpServlet {
      * @return
      */
     protected List<SdiPhysicalservice> getPhysicalServiceList() {
-    	Set<SdiVirtualPhysical> physicalServices = sdiVirtualService.getSdiVirtualPhysicals();
-    	Iterator<SdiVirtualPhysical> i = physicalServices.iterator();
+    	Set<SdiPhysicalservice> physicalServices = sdiVirtualService.getSdiPhysicalservices();
+    	Iterator<SdiPhysicalservice> i = physicalServices.iterator();
     	List<SdiPhysicalservice> l = new ArrayList<SdiPhysicalservice>();
     	while (i.hasNext())
     	{
-    		SdiVirtualPhysical physicalService = i.next();
-    		l.add(physicalService.getSdiPhysicalservice());
+    		SdiPhysicalservice physicalService = i.next();
+    		if(physicalService != null)
+    			l.add(physicalService);
     	}
     	return l;
     }

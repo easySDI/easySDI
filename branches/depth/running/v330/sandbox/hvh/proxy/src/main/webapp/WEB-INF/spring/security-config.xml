@@ -19,7 +19,7 @@
 		<security:intercept-url pattern="(.*)" access="anonymous,proxy_user" />
 		<security:custom-filter ref="joomlaCookieAuthenticationFilter" before="BASIC_AUTH_FILTER" />
 		<security:custom-filter ref="easySdiConfigFilter" after="FILTER_SECURITY_INTERCEPTOR" />
-		<security:custom-filter ref="getMapCacheFilter" position="LAST" />
+		<security:custom-filter ref="OGCOperationCacheFilter" position="LAST" />
 	</security:http>
 
 	<bean id="basicAuthenticationEntryPoint" class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
@@ -44,13 +44,13 @@
 	
 	<bean id="authenticatedVoter" class="org.springframework.security.access.vote.AuthenticatedVoter" />
 	
-<!-- 	<bean id="sessionFilterAdvice" class="org.easysdi.proxy.hibernate.SessionFilterAdvice" />
+ <!-- 	<bean id="sessionFilterAdvice" class="org.easysdi.proxy.hibernate.SessionFilterAdvice" />
 	
 	<aop:config>
 	    <aop:aspect id="forceFilter" ref="sessionFilterAdvice">
 	        <aop:pointcut id="hibernateSessionFactoryGetSession" expression="execution(* org.hibernate.SessionFactory.openSession(..))" />
 	        <aop:after-returning method="setupFilter" pointcut-ref="hibernateSessionFactoryGetSession" returning="session" />
 	    </aop:aspect>
-	</aop:config>  -->
+	</aop:config>   -->
 		
 </beans>

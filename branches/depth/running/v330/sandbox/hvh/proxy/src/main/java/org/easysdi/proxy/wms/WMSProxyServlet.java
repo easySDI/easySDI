@@ -385,7 +385,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			SdiPhysicalservice physicalService = (SdiPhysicalservice)physicalServiceTable.get(layer.getAlias());
 
 			//Check the availaibility of the requested LAYERS 
-			if( physicalService == null || !isLayerAllowed(layer.getPrefixedName(), physicalService.getResourceurl())){
+			if( physicalService == null || !isLayerAllowed(layer.getPrefixedName(), physicalService)){
 				logger.error( OWSExceptionReport.TEXT_INVALID_LAYER_NAME+layerAsString+" is not allowed");
 				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_INVALID_LAYER_NAME+layerAsString,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYER", HttpServletResponse.SC_OK);
 				return;
@@ -461,7 +461,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					owsExceptionReport.sendExceptionReport(request, response, "QUERY_LAYERS "+OWSExceptionReport.TEXT_INVALID_QUERY_LAYERS_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"QUERY_LAYERS", HttpServletResponse.SC_OK);
 					return ;
 				}
-				if(  !isLayerAllowed(layer.getPrefixedName(), physicalService.getResourceurl())){
+				if(  !isLayerAllowed(layer.getPrefixedName(), physicalService)){
 					logger.info( OWSExceptionReport.TEXT_INVALID_QUERY_LAYERS_NAME+layerArray.get(k)+" is not allowed");
 					owsExceptionReport.sendExceptionReport(request, response, "QUERY_LAYERS "+OWSExceptionReport.TEXT_INVALID_QUERY_LAYERS_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"QUERY_LAYERS", HttpServletResponse.SC_OK);
 					return ;
@@ -579,7 +579,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				Iterator<Entry<Integer, ProxyLayer>> itLK = layerTableToKeep.entrySet().iterator();
 				while(itLK.hasNext()){
 					Entry<Integer, ProxyLayer> layer = itLK.next();
-					if(getLayerFilter(physicalService.getResourceurl(), layer.getValue().getPrefixedName()) != null){
+					if(getLayerFilter(physicalService, layer.getValue().getPrefixedName()) != null){
 						isCandidateToStreaming = false;
 						break;
 					}
@@ -666,7 +666,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				Iterator<Entry<Integer, ProxyLayer>> itLK = layerTableToKeep.entrySet().iterator();
 				while(itLK.hasNext()){
 					Entry<Integer, ProxyLayer> layer = itLK.next();
-					if(getLayerFilter(physicalService.getResourceurl(), layer.getValue().getPrefixedName()) != null){
+					if(getLayerFilter(physicalService, layer.getValue().getPrefixedName()) != null){
 						isCandidateToStreaming = false;
 						break;
 					}
@@ -873,7 +873,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			while (iR.hasNext()){
 				Entry<Integer, ProxyRemoteServerResponse> response = iR.next(); 
 				ProxyLayer pLayer = new ProxyLayer(getProxyRequest().getLayers().split(",")[response.getKey()]);
-				BufferedImage image = filterImage(getLayerFilter(getPhysicalServiceByAlias(response.getValue().getAlias()).getResourceurl(),pLayer.getPrefixedName()),
+				BufferedImage image = filterImage(getLayerFilter(getPhysicalServiceByAlias(response.getValue().getAlias()),pLayer.getPrefixedName()),
 						response.getValue().getPath(),
 						isTransparent, 
 						resp);
@@ -1161,14 +1161,14 @@ public class WMSProxyServlet extends ProxyServlet {
 				owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_INVALID_LAYERS_NAME+layerName,OWSExceptionReport.CODE_LAYER_NOT_DEFINED, "LAYERS", HttpServletResponse.SC_OK);
 				return null;
 			}
-			if( !isLayerAllowed(layer.getPrefixedName(), physicalService.getResourceurl())){
+			if( !isLayerAllowed(layer.getPrefixedName(), physicalService)){
 				logger.error( OWSExceptionReport.TEXT_INVALID_LAYERS_NAME+layerName+" is not allowed");
 				owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_INVALID_LAYERS_NAME+layerName,OWSExceptionReport.CODE_LAYER_NOT_DEFINED, "LAYERS", HttpServletResponse.SC_OK);
 				return null;
 			}
 
 			//Check if the scale is available
-			if (isLayerInScale(layer.getPrefixedName(), physicalService.getResourceurl(), RendererUtilities.calculateOGCScale(rEnvelope, Integer.parseInt(((WMSProxyServletRequest)getProxyRequest()).getWidth()), null))) {
+			if (isLayerInScale(layer.getPrefixedName(), physicalService, RendererUtilities.calculateOGCScale(rEnvelope, Integer.parseInt(((WMSProxyServletRequest)getProxyRequest()).getWidth()), null))) {
 				//Layer to keep in the request
 				layerTableToKeep.put(layerOrdered.getKey(),layer);
 				//Servers to call to complete the request
@@ -1481,7 +1481,7 @@ public class WMSProxyServlet extends ProxyServlet {
      *            the current scale
      * @return true if the layer is the allowed scale, false if not
      */
-    protected boolean isLayerInScale(String layer, String url, double scale) {
+    protected boolean isLayerInScale(String layer, SdiPhysicalservice physicalservice, double scale) {
     	if (layer == null)
 		    return false;
 	
@@ -1493,7 +1493,7 @@ public class WMSProxyServlet extends ProxyServlet {
     	while(i.hasNext())
     	{
     		SdiPhysicalservicePolicy physicalservicePolicy = i.next();
-    		if(physicalservicePolicy.getSdiPhysicalservice().getResourceurl().equals(url))
+    		if(physicalservicePolicy.getSdiPhysicalservice().getId().equals(physicalservice.getId()))
     		{
     			if(physicalservicePolicy.isAnyitem())
     				return true;
@@ -1560,7 +1560,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	 * @param layer
 	 * @return
 	 */
-    public String getLayerFilter(String url, String layer) {
+    public String getLayerFilter(SdiPhysicalservice physicalservice, String layer) {
     	if (layer == null)
 		    return null;
 	
@@ -1569,7 +1569,7 @@ public class WMSProxyServlet extends ProxyServlet {
     	while(i.hasNext())
     	{
     		SdiPhysicalservicePolicy physicalservicePolicy = i.next();
-    		if(physicalservicePolicy.getSdiPhysicalservice().getResourceurl().equals(url))
+    		if(physicalservicePolicy.getSdiPhysicalservice().getId().equals(physicalservice.getId()))
     		{
     			Set<SdiWmslayerPolicy> wmsLayerPolicies = physicalservicePolicy.getSdiWmslayerPolicies();
 	    		Iterator<SdiWmslayerPolicy> it = wmsLayerPolicies.iterator();
@@ -1593,7 +1593,7 @@ public class WMSProxyServlet extends ProxyServlet {
      * @param url   the url of the remote server.
      * @return true if the layer is allowed, false if not
      */
-    public boolean isLayerAllowed(String layer, String url) 
+    public boolean isLayerAllowed(String layer, SdiPhysicalservice physicalservice) 
     {
 		if (layer == null)
 		    return false;
@@ -1606,7 +1606,7 @@ public class WMSProxyServlet extends ProxyServlet {
     	while(i.hasNext())
     	{
     		SdiPhysicalservicePolicy physicalservicePolicy = i.next();
-    		if(physicalservicePolicy.getSdiPhysicalservice().getResourceurl().equals(url))
+    		if(physicalservicePolicy.getSdiPhysicalservice().getId().equals(physicalservice.getId()))
     		{
     			if(physicalservicePolicy.isAnyitem())
     				return true;

@@ -155,9 +155,6 @@ public class WMTSProxyServlet extends ProxyServlet{
 			WMTSProxyServerGetCapabilitiesThread s = new WMTSProxyServerGetCapabilitiesThread( this,requestContent,it.next().getValue() , resp);
 			s.start();
 			serverThreadList.add(s);
-
-			s.start();
-			serverThreadList.add(s);
 		}
 
 	    // Wait for thread results

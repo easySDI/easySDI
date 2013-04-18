@@ -66,7 +66,7 @@ public class SdiVirtualservice implements java.io.Serializable {
 	private Integer Asset_id;
 	private Set<SdiOrganism> sdiOrganisms = new HashSet<SdiOrganism>(
 			0);
-	private Set<SdiVirtualPhysical> sdiVirtualPhysicals = new HashSet<SdiVirtualPhysical>(
+	private Set<SdiPhysicalservice> sdiPhysicalservices = new HashSet<SdiPhysicalservice>(
 			0);
 	private Set<SdiPolicy> sdiPolicies = new HashSet<SdiPolicy>(0);
 	private Set<SdiSysServicecompliance> sdiSysServicecompliances = new HashSet<SdiSysServicecompliance>(
@@ -136,7 +136,7 @@ public class SdiVirtualservice implements java.io.Serializable {
 			int Access,
 			Integer Asset_id,
 			Set<SdiOrganism> sdiOrganisms,
-			Set<SdiVirtualPhysical> sdiVirtualPhysicals,
+			Set<SdiPhysicalservice> sdiPhysicalservices,
 			Set<SdiPolicy> sdiPolicies,
 			Set<SdiSysServicecompliance> sdiSysServicecompliances,
 			Set<SdiVirtualmetadata> sdiVirtualmetadatas) {
@@ -169,7 +169,7 @@ public class SdiVirtualservice implements java.io.Serializable {
 		this.Access = Access;
 		this.Asset_id = Asset_id;
 		this.sdiOrganisms = sdiOrganisms;
-		this.sdiVirtualPhysicals = sdiVirtualPhysicals;
+		this.sdiPhysicalservices = sdiPhysicalservices;
 		this.sdiPolicies = sdiPolicies;
 		this.sdiSysServicecompliances = sdiSysServicecompliances;
 		this.sdiVirtualmetadatas = sdiVirtualmetadatas;
@@ -453,6 +453,7 @@ public class SdiVirtualservice implements java.io.Serializable {
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "SdiVirtualserviceOrganism", joinColumns = {@JoinColumn(name = "virtualservice_id")}, inverseJoinColumns = {@JoinColumn (name = "organism_id")})
 	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
+	@Filter(name = "entityState",condition="State = 1")
 	public Set<SdiOrganism> getSdiOrganisms() {
 		return this.sdiOrganisms;
 	}
@@ -462,15 +463,17 @@ public class SdiVirtualservice implements java.io.Serializable {
 		this.sdiOrganisms = sdiOrganisms;
 	}
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "sdiVirtualservice")
+	@OneToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "SdiVirtualPhysical", joinColumns = {@JoinColumn(name = "virtualservice_id")}, inverseJoinColumns = {@JoinColumn (name = "physicalservice_id")})
 	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
-	public Set<SdiVirtualPhysical> getSdiVirtualPhysicals() {
-		return this.sdiVirtualPhysicals;
+	@Filter(name = "entityState",condition="State = 1")
+	public Set<SdiPhysicalservice> getSdiPhysicalservices() {
+		return this.sdiPhysicalservices;
 	}
 
-	public void setSdiVirtualPhysicals(
-			Set<SdiVirtualPhysical> sdiVirtualPhysicals) {
-		this.sdiVirtualPhysicals = sdiVirtualPhysicals;
+	public void setSdiPhysicalservices(
+			Set<SdiPhysicalservice> sdiPhysicalservices) {
+		this.sdiPhysicalservices = sdiPhysicalservices;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiVirtualservice")
@@ -487,6 +490,7 @@ public class SdiVirtualservice implements java.io.Serializable {
 	@OneToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "SdiVirtualserviceServicecompliance", joinColumns = {@JoinColumn(name = "service_id")}, inverseJoinColumns = {@JoinColumn (name = "servicecompliance_id")})
 	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
+	@Filter(name = "entityState",condition="State = 1")
 	public Set<SdiSysServicecompliance> getSdiSysServicecompliances() {
 		return this.sdiSysServicecompliances;
 	}

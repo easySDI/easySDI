@@ -34,6 +34,7 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -168,6 +169,7 @@ public class WFSProxyServlet extends ProxyServlet {
 	//Store operations supported by the current version of the proxy
 	//Update this list to reflect proxy's capabilities
 	//private static final List<String> WFSSupportedOperations = Arrays.asList("GetCapabilities", "DescribeFeature", "GetFeature","Transaction");
+	private static final List<String> ServiceSupportedOperations = Arrays.asList("GetCapabilities", "DescribeFeatureType", "GetFeature","Transaction");
 
 	/**
 	 * 
@@ -234,22 +236,34 @@ public class WFSProxyServlet extends ProxyServlet {
 			//Retrieve allowed and denied operations from the policy
 			List<String> permitedOperations = new Vector<String>();
 			List<String> deniedOperations = new Vector<String>();
-			Set<SdiSysOperationcompliance> operationCompliances = getProxyRequest().getServiceCompliance().getSdiSysOperationcompliances();
-			Iterator<SdiSysOperationcompliance> ic = operationCompliances.iterator();
-			while (ic.hasNext())
+			for (int i = 0; i < WFSOperation.length; i++) 
 			{
-				SdiSysOperationcompliance compliance = ic.next();
-				if(compliance.getSdiSysServiceoperation().getState() == 1 && compliance.getState() == 1 && compliance.isImplemented() && isOperationAllowed(compliance.getSdiSysServiceoperation().getValue()))
+				if (ServiceSupportedOperations.contains(WFSOperation[i]) && isOperationAllowed(WFSOperation[i])) 
 				{
-					permitedOperations.add(compliance.getSdiSysServiceoperation().getValue());
-					logger.trace(compliance.getSdiSysServiceoperation().getValue() + " is permitted");
-				}
-				else
+					permitedOperations.add(WFSOperation[i]);
+					logger.trace(WFSOperation[i] + " is permitted");
+				} else 
 				{
-					deniedOperations.add(compliance.getSdiSysServiceoperation().getValue());
-					logger.trace(compliance.getSdiSysServiceoperation().getValue() + " is denied");
+					deniedOperations.add(WFSOperation[i]);
+					logger.trace(WFSOperation[i] + " is denied");
 				}
 			}
+//			Set<SdiSysOperationcompliance> operationCompliances = getProxyRequest().getServiceCompliance().getSdiSysOperationcompliances();
+//			Iterator<SdiSysOperationcompliance> ic = operationCompliances.iterator();
+//			while (ic.hasNext())
+//			{
+//				SdiSysOperationcompliance compliance = ic.next();
+//				if(compliance.getSdiSysServiceoperation().getState() == 1 && compliance.getState() == 1 && compliance.isImplemented() && isOperationAllowed(compliance.getSdiSysServiceoperation().getValue()))
+//				{
+//					permitedOperations.add(compliance.getSdiSysServiceoperation().getValue());
+//					logger.trace(compliance.getSdiSysServiceoperation().getValue() + " is permitted");
+//				}
+//				else
+//				{
+//					deniedOperations.add(compliance.getSdiSysServiceoperation().getValue());
+//					logger.trace(compliance.getSdiSysServiceoperation().getValue() + " is denied");
+//				}
+//			}
 
 			StringBuffer WFSCapabilities100 = new StringBuffer();
 
@@ -358,7 +372,10 @@ public class WFSProxyServlet extends ProxyServlet {
 			serviceMetadataXSLT.append("</xsl:template>");
 
 			if(sdiVirtualService.isReflectedmetadata())
+			{
+				serviceMetadataXSLT.append("</xsl:stylesheet>");
 				return serviceMetadataXSLT;
+			}
 				
 			SdiVirtualmetadata metadata = sdiVirtualService.getSdiVirtualmetadatas().iterator().next();
 			serviceMetadataXSLT.append("<xsl:template match=\"wfs:Service\">");

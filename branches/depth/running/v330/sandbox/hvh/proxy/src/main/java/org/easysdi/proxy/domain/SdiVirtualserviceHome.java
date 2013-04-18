@@ -46,7 +46,7 @@ public class SdiVirtualserviceHome {
 		try {
 			Session session = sessionFactory.getCurrentSession();
 //			session.enableFilter("entityState");
-			Query query = session.createQuery("from SdiVirtualservice where alias= :alias");
+			Query query = session.createQuery("from SdiVirtualservice where alias= :alias AND state = 1");
 			query.setParameter("alias", alias);
 			List<SdiVirtualservice> l = query.setCacheable(true).list();
 			if(l != null && l.size() > 0 )

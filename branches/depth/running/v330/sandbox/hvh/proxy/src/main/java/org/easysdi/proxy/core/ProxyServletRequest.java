@@ -29,6 +29,7 @@ import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiSysOperationcompliance;
 import org.easysdi.proxy.domain.SdiSysServicecompliance;
 import org.easysdi.proxy.exception.ProxyServletException;
+import org.easysdi.proxy.exception.VersionNotSupportedException;
 
 public abstract class ProxyServletRequest {
 	
@@ -135,8 +136,6 @@ public abstract class ProxyServletRequest {
 		try {
 			Method m = this.getClass().getMethod("parseRequest"+method, (Class[])null);
 			m.invoke(this, (Object[]) null);
-		} catch (ProxyServletException e){
-			throw e;
 		} catch (SecurityException e) {
 			throw e;
 		} catch (NoSuchMethodException e) {
@@ -146,7 +145,7 @@ public abstract class ProxyServletRequest {
 		} catch (IllegalAccessException e) {
 			throw e;
 		} catch (InvocationTargetException e) {
-			throw e;
+			throw e.getTargetException();
 		}
 	}
 

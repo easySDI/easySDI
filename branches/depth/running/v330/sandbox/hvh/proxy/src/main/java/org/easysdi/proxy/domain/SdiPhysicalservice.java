@@ -56,7 +56,7 @@ public class SdiPhysicalservice implements java.io.Serializable {
 	private String Params;
 	private int Access;
 	private Integer Asset_id;
-	private Set<SdiVirtualPhysical> sdiVirtualPhysicals = new HashSet<SdiVirtualPhysical>(
+	private Set<SdiVirtualservice> sdiVirtualservices = new HashSet<SdiVirtualservice>(
 			0);
 	private Set<SdiPhysicalservicePolicy> sdiPhysicalservicePolicies = new HashSet<SdiPhysicalservicePolicy>(
 			0);
@@ -111,7 +111,7 @@ public class SdiPhysicalservice implements java.io.Serializable {
 			String Params,
 			int Access,
 			Integer Asset_id,
-			Set<SdiVirtualPhysical> sdiVirtualPhysicals,
+			Set<SdiVirtualservice> sdiVirtualservices,
 			Set<SdiPhysicalservicePolicy> sdiPhysicalservicePolicies,
 			Set<SdiPhysicalserviceServicecompliance> sdiPhysicalserviceServicecompliances,
 			Set<SdiOrganism> sdiOrganisms) {
@@ -140,7 +140,7 @@ public class SdiPhysicalservice implements java.io.Serializable {
 		this.Params = Params;
 		this.Access = Access;
 		this.Asset_id = Asset_id;
-		this.sdiVirtualPhysicals = sdiVirtualPhysicals;
+		this.sdiVirtualservices = sdiVirtualservices;
 		this.sdiPhysicalservicePolicies = sdiPhysicalservicePolicies;
 		this.sdiPhysicalserviceServicecompliances = sdiPhysicalserviceServicecompliances;
 		this.sdiOrganisms = sdiOrganisms;
@@ -392,14 +392,15 @@ public class SdiPhysicalservice implements java.io.Serializable {
 		this.Asset_id = Asset_id;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiPhysicalservice")
-	public Set<SdiVirtualPhysical> getSdiVirtualPhysicals() {
-		return this.sdiVirtualPhysicals;
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "SdiVirtualPhysical", joinColumns = {@JoinColumn(name = "physicalservice_id")}, inverseJoinColumns = {@JoinColumn (name = "virtualservice_id")})
+	public Set<SdiVirtualservice> getSdiVirtualservices() {
+		return this.sdiVirtualservices;
 	}
 
-	public void setSdiVirtualPhysicals(
-			Set<SdiVirtualPhysical> sdiVirtualPhysicals) {
-		this.sdiVirtualPhysicals = sdiVirtualPhysicals;
+	public void setSdiVirtualservices(
+			Set<SdiVirtualservice> sdiVirtualservices) {
+		this.sdiVirtualservices = sdiVirtualservices;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiPhysicalservice")

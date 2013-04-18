@@ -37,16 +37,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
+public class OGCOperationCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 
 	private Logger logger = LoggerFactory.getLogger("EasySdiConfigFilter");
-	private Cache configCache;
+	private Cache virtualserviceCache;
 	private ProxyCacheEntryFactory cacheFactory = new ProxyCacheEntryFactory();
 	private String operationValue = null;
 	private boolean bCache = false;
 	//	private String postRequestAsString = ""; 
 
-	public GetMapCacheFilter(CacheManager cm) throws ServletException {
+	public OGCOperationCacheFilter(CacheManager cm) throws ServletException {
 		this.cm = cm;
 		doInit(null);
 	}
@@ -151,12 +151,12 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 	@Override
 	protected String calculateKey(HttpServletRequest httpRequest) throws PolicyNotFoundException{
 		String servletName = httpRequest.getPathInfo().substring(1);
-		configCache = cm.getCache("virtualserviceCache");
+		virtualserviceCache = cm.getCache("virtualserviceCache");
 		String user = null;
 		Principal principal = SecurityContextHolder.getContext().getAuthentication();
 		if (principal != null)
 			user = principal.getName();
-		Element policyE = configCache.get(servletName + user);
+		Element policyE = virtualserviceCache.get(servletName + user);
 		if(policyE == null)
 		{
 			//No policy available

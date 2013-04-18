@@ -124,7 +124,7 @@ public class WMSProxyServerGetMapThread extends Thread {
 		    Entry<Integer, ProxyLayer> layer = itL.next();
 
 		    //Compare the filter with the requested BBOX
-		    String filter = servlet.getLayerFilter(physicalService.getResourceurl(), layer.getValue().getPrefixedName());
+		    String filter = servlet.getLayerFilter(physicalService, layer.getValue().getPrefixedName());
 		    if(filter == null || filter.length() == 0){
 			//No filter define on the layer : the layer has to be requested
 			continue;

@@ -44,11 +44,11 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 	@Autowired
     private SdiUserHome sdiUserHome;
 	
-//	private Cache virtualServiceCache;
+	private Cache virtualServiceCache;
 	private Logger logger = LoggerFactory.getLogger("EasySdiConfigFilter");
 
 	public EasySdiConfigFilter(CacheManager cacheManager, SdiVirtualserviceHome sdiVirtualserviceHome, SdiPolicyHome sdiPolicyHome, SdiUserHome sdiUserHome) {
-//		virtualServiceCache = cacheManager.getCache("virtualserviceCache");
+		virtualServiceCache = cacheManager.getCache("virtualserviceCache");
 		this.sdiVirtualserviceHome = sdiVirtualserviceHome;
 		this.sdiPolicyHome = sdiPolicyHome;
 		this.sdiUserHome = sdiUserHome;
@@ -107,8 +107,8 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 				virtualservice = sdiVirtualserviceHome.findByAlias(servletName);
 				
 				if(virtualservice == null){
-					logger.error("Error occurred during " + servletName + " config initialization : service does not exist.");
-					new OWS200ExceptionReport().sendExceptionReport(request,response, "Error occurred during " + servletName + " config initialization : service does not exist.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request", HttpServletResponse.SC_BAD_REQUEST) ;
+					logger.error("Error occurred during " + servletName + " service initialization : service does not exist.");
+					new OWS200ExceptionReport().sendExceptionReport(request,response, "Error occurred during " + servletName + " service initialization : service does not exist.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request", HttpServletResponse.SC_BAD_REQUEST) ;
 					return;
 				}
 				//To allow the anonymous user to be handled as others users, we need to get throw the SecurityContextHolder to get the Authentication
@@ -122,45 +122,45 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 				Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>)principal.getAuthorities();
 				
 				SdiPolicy policy = null;
-//				Element elementp = virtualServiceCache.get(servletName+username);
-//				if(elementp != null){
-//					//Get the policy from the cache
-//					policy = (SdiPolicy)elementp.getValue();
-//					//Check if this policy is still valid according to its date of validity
-//					Date from = policy.getAllowfrom();
-//					Date to = policy.getAllowto();
-//					Date currentDate = new Date();
-//					if (!currentDate.after(from) || !currentDate.before(to))
-//					{
-//						//Policy is not valid anymore, remove it from the cache
-//						policy = null;
-//						elementp = null;
-//						virtualServiceCache.remove(servletName+username);
-//					}
-//				}
-//				if(elementp == null)
-//				{
-//					SdiUser user = sdiUserHome.findByUserName(username);
-//					Integer id = null;
-//					if (user != null)
-//						id = user.getId();
-//					policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualservice.getId(), id , authorities);
-//					Element elementPolicy = new Element(servletName+username, policy);
-//					virtualServiceCache.put(elementPolicy);
-//				}
+				Element elementp = virtualServiceCache.get(servletName+username);
+				if(elementp != null){
+					//Get the policy from the cache
+					policy = (SdiPolicy)elementp.getValue();
+					//Check if this policy is still valid according to its date of validity
+					Date from = policy.getAllowfrom();
+					Date to = policy.getAllowto();
+					Date currentDate = new Date();
+					if (!currentDate.after(from) || !currentDate.before(to))
+					{
+						//Policy is not valid anymore, remove it from the cache
+						policy = null;
+						elementp = null;
+						virtualServiceCache.remove(servletName+username);
+					}
+				}
+				if(elementp == null)
+				{
+					SdiUser user = sdiUserHome.findByUserName(username);
+					Integer id = null;
+					if (user != null)
+						id = user.getId();
+					policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualservice.getId(), id , authorities);
+					Element elementPolicy = new Element(servletName+username, policy);
+					virtualServiceCache.put(elementPolicy);
+				}
 //				
 				
 				//Use of the 2nd level cache
-				SdiUser user = sdiUserHome.findByUserName(username);
-				Integer id = null;
-				if (user != null)
-					id = user.getId();
-				policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualservice.getId(), id , authorities);
+//				SdiUser user = sdiUserHome.findByUserName(username);
+//				Integer id = null;
+//				if (user != null)
+//					id = user.getId();
+//				policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualservice.getId(), id , authorities);
 				
 				if (policy == null) {
 					if (((HttpServletRequest)req).getUserPrincipal() == null){
 						//Spring Anonymous user is used to perform this request, but not policy defined for it
-						logger.error("Error occurred during " + servletName + " config initialization : No anomnymous policy found.");
+						logger.error("Error occurred during " + servletName + " service initialization : No anomnymous policy found.");
 						response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 						response.setHeader("WWW-Authenticate", "Basic realm=\"EasySDI Proxy "+virtualservice.getAlias()+"\"");
 						response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"No anomnymous policy found.");
@@ -168,7 +168,7 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 
 					}else{
 						//No policy found for the authenticated user, return an ogc exception.
-						logger.error("Error occurred during " + servletName + " config initialization : No policy found for user.");
+						logger.error("Error occurred during " + servletName + " service initialization : No policy found for user.");
 						new OWS200ExceptionReport().sendExceptionReport(request,response, "No policy found for user.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK) ;
 						return;
 					}
@@ -176,8 +176,8 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 			}
 			
 			catch (Exception e) {
-				logger.error("Error occurred during " + servletName + " config initialization : " + e.toString());
-				new OWS200ExceptionReport().sendExceptionReport(request, response, "Error occurred during " + servletName + " config initialization : "+e.toString(), OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request", HttpServletResponse.SC_OK) ;
+				logger.error("Error occurred during " + servletName + " service initialization : " + e.toString());
+				new OWS200ExceptionReport().sendExceptionReport(request, response, "Error occurred during " + servletName + " service initialization : "+e.toString(), OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request", HttpServletResponse.SC_OK) ;
 				return;
 			}
 		}

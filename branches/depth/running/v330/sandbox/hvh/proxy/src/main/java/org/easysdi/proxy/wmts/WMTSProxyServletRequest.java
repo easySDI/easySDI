@@ -439,125 +439,129 @@ public class WMTSProxyServletRequest extends ProxyServletRequest {
      * @throws ProxyServletException
      */
     @SuppressWarnings("unchecked")
-    public void parseRequestGET () throws ProxyServletException{
-	Enumeration<String> parameterNames = request.getParameterNames();
-
-	while (parameterNames.hasMoreElements()) {
-	    String key = (String) parameterNames.nextElement();
-	    String value = null;
-
-	    if (   key.equalsIgnoreCase("LAYER") 
-		    || key.equalsIgnoreCase("STYLE")
-		    || key.equalsIgnoreCase("TILEMATRIX") 
-		    || key.equalsIgnoreCase("TILEMATRIXSET") 
-		    || key.equalsIgnoreCase("TILEROW")
-		    || key.equalsIgnoreCase("TILECOL")) {
-		value = request.getParameter(key);
-	    } else {
-		try {
-		    value = URLEncoder.encode(request.getParameter(key),"UTF-8");
-		} catch (UnsupportedEncodingException e) {
-		    throw new ProxyServletException(e.toString());
-		}
-	    }
-
-	    if (key.equalsIgnoreCase("acceptVersions")){
-		value = "1.0.0";
-		urlParameters = urlParameters + key + "=" + value + "&";
-	    }
-	    else if (key.equalsIgnoreCase("Layer")){
-		urlParameters = urlParameters + key + "=" +  new ProxyLayer(value).getPrefixedName() + "&" ;
-	    }else if (key.equalsIgnoreCase("TileMatrixSet")){
-		urlParameters = urlParameters + key + "=" +  new WMTSProxyTileMatrixSet(value).getName() + "&" ;
-	    }
-	    else if (!key.equalsIgnoreCase("VERSION") ){
-		urlParameters = urlParameters + key + "=" + value + "&";
-	    }
-
-	    if (key.equalsIgnoreCase("service") )
-	    {
-		service = request.getParameter(key);
-	    }
-	    else if (key.equalsIgnoreCase("request"))
-	    {
-		operation = request.getParameter(key);
-	    }
-	    else if (key.equalsIgnoreCase("acceptVersions"))
-	    {
-		setAcceptVersions(request.getParameter(key));
-		if(getAcceptVersions().contains("1.0.0"))
+    public void parseRequestGET () throws ProxyServletException
+    {
+		Enumeration<String> parameterNames = request.getParameterNames();
+	
+		while (parameterNames.hasMoreElements()) 
 		{
-		    setAcceptVersions("1.0.0");
-		    requestedVersion = "1.0.0";
+		    String key = (String) parameterNames.nextElement();
+		    String value = null;
+	
+		    if (   key.equalsIgnoreCase("LAYER") 
+			    || key.equalsIgnoreCase("STYLE")
+			    || key.equalsIgnoreCase("TILEMATRIX") 
+			    || key.equalsIgnoreCase("TILEMATRIXSET") 
+			    || key.equalsIgnoreCase("TILEROW")
+			    || key.equalsIgnoreCase("TILECOL")) {
+		    	value = request.getParameter(key);
+		    } else {
+				try {
+				    value = URLEncoder.encode(request.getParameter(key),"UTF-8");
+				} catch (UnsupportedEncodingException e) {
+				    throw new ProxyServletException(e.toString());
+				}
+		    }
+	
+		    if (key.equalsIgnoreCase("acceptVersions"))
+		    {
+		    	value = "1.0.0";
+		    	urlParameters = urlParameters + key + "=" + value + "&";
+		    }
+		    else if (key.equalsIgnoreCase("Layer")){
+		    	urlParameters = urlParameters + key + "=" +  new ProxyLayer(value).getPrefixedName() + "&" ;
+		    }
+		    else if (key.equalsIgnoreCase("TileMatrixSet")){
+		    	urlParameters = urlParameters + key + "=" +  new WMTSProxyTileMatrixSet(value).getName() + "&" ;
+		    }
+		    else if (!key.equalsIgnoreCase("VERSION") ){
+		    	urlParameters = urlParameters + key + "=" + value + "&";
+		    }
+	
+		    if (key.equalsIgnoreCase("service") )
+		    {
+		    	service = request.getParameter(key);
+		    }
+		    else if (key.equalsIgnoreCase("request"))
+		    {
+		    	operation = request.getParameter(key);
+		    }
+		    else if (key.equalsIgnoreCase("acceptVersions"))
+		    {
+		    	setAcceptVersions(request.getParameter(key));
+				if(getAcceptVersions().contains("1.0.0"))
+				{
+				    setAcceptVersions("1.0.0");
+				    requestedVersion = "1.0.0";
+				}
+				else
+				{
+				    throw new VersionNotSupportedException(getAcceptVersions());
+				}
+		    }
+		    else if (key.equalsIgnoreCase("version"))
+		    {
+		    	version = request.getParameter(key);
+				if(!version.equalsIgnoreCase("1.0.0"))
+				{
+				    throw new VersionNotSupportedException(version);
+				}
+		    }
+		    else if (key.equalsIgnoreCase("sections"))
+		    {
+		    	sections = request.getParameter(key);
+		    }
+		    else if (key.equalsIgnoreCase("updateSequence"))
+		    {
+		    	updateSequence = request.getParameter(key);
+		    }
+		    else if (key.equalsIgnoreCase("acceptFormats"))
+		    {
+		    	acceptFormats = request.getParameter(key);
+		    }
+		    else if (key.equalsIgnoreCase("Layer"))
+		    {
+				layer = request.getParameter(key);
+				pLayer = new ProxyLayer(layer);
+		    }
+		    else if (key.equalsIgnoreCase("Style"))
+		    {
+		    	style = request.getParameter(key);
+		    }
+		    else if (key.equalsIgnoreCase("Format"))
+		    {
+		    	format = request.getParameter(key);
+		    }
+		    else if (key.equalsIgnoreCase("TileMatrixSet"))
+		    {
+				tileMatrixSet = request.getParameter(key);
+				pTileMatrixSet = new WMTSProxyTileMatrixSet(tileMatrixSet);
+		    }
+		    else if (key.equalsIgnoreCase("TileMatrix"))
+		    {
+		    	tileMatrix = request.getParameter(key);
+		    }
+		    else if (key.equalsIgnoreCase("TileRow"))
+		    {
+		    	tileRow = request.getParameter(key);
+		    }
+		    else if (key.equalsIgnoreCase("TileCol"))
+		    {
+		    	tileCol = request.getParameter(key);
+		    }
+		    else if (key.equalsIgnoreCase("I"))
+		    {
+		    	i = request.getParameter(key);
+		    }
+		    else if (key.equalsIgnoreCase("J"))
+		    {
+		    	j = request.getParameter(key);
+		    }
+		    else if (key.equalsIgnoreCase("INFOFORMAT"))
+		    {
+		    	infoFormat = request.getParameter(key);
+		    }
 		}
-		else
-		{
-		    throw new VersionNotSupportedException(getAcceptVersions());
-		}
-	    }
-	    else if (key.equalsIgnoreCase("version"))
-	    {
-		version = request.getParameter(key);
-		if(!version.equalsIgnoreCase("1.0.0"))
-		{
-		    throw new VersionNotSupportedException(version);
-		}
-	    }
-	    else if (key.equalsIgnoreCase("sections"))
-	    {
-		sections = request.getParameter(key);
-	    }
-	    else if (key.equalsIgnoreCase("updateSequence"))
-	    {
-		updateSequence = request.getParameter(key);
-	    }
-	    else if (key.equalsIgnoreCase("acceptFormats"))
-	    {
-		acceptFormats = request.getParameter(key);
-	    }
-	    else if (key.equalsIgnoreCase("Layer"))
-	    {
-		layer = request.getParameter(key);
-		pLayer = new ProxyLayer(layer);
-	    }
-	    else if (key.equalsIgnoreCase("Style"))
-	    {
-		style = request.getParameter(key);
-	    }
-	    else if (key.equalsIgnoreCase("Format"))
-	    {
-		format = request.getParameter(key);
-	    }
-	    else if (key.equalsIgnoreCase("TileMatrixSet"))
-	    {
-		tileMatrixSet = request.getParameter(key);
-		pTileMatrixSet = new WMTSProxyTileMatrixSet(tileMatrixSet);
-	    }
-	    else if (key.equalsIgnoreCase("TileMatrix"))
-	    {
-		tileMatrix = request.getParameter(key);
-	    }
-	    else if (key.equalsIgnoreCase("TileRow"))
-	    {
-		tileRow = request.getParameter(key);
-	    }
-	    else if (key.equalsIgnoreCase("TileCol"))
-	    {
-		tileCol = request.getParameter(key);
-	    }
-	    else if (key.equalsIgnoreCase("I"))
-	    {
-		i = request.getParameter(key);
-	    }
-	    else if (key.equalsIgnoreCase("J"))
-	    {
-		j = request.getParameter(key);
-	    }
-	    else if (key.equalsIgnoreCase("INFOFORMAT"))
-	    {
-		infoFormat = request.getParameter(key);
-	    }
-	}
 
     }
 }
