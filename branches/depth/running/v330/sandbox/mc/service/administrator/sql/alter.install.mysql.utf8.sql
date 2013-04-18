@@ -1,15 +1,3 @@
--- System tables
-ALTER TABLE `#__sdi_sys_operationcompliance`
-ADD CONSTRAINT `#__sdi_sys_operationcompliance_fk1` FOREIGN KEY (`servicecompliance_id`) REFERENCES `#__sdi_sys_servicecompliance` (`id`);
-
-ALTER TABLE `#__sdi_sys_operationcompliance`
-ADD CONSTRAINT `#__sdi_sys_operationcompliance_fk2` FOREIGN KEY (`serviceoperation_id`) REFERENCES `#__sdi_sys_serviceoperation` (`id`);
-
-ALTER TABLE `#__sdi_sys_servicecon_authenticationcon`
-ADD CONSTRAINT `#__sdi_sys_servicecon_authenticationcon_fk1` FOREIGN KEY (`serviceconnector_id`) REFERENCES `#__sdi_sys_serviceconnector` (`id`) ON DELETE CASCADE ;
-
-ALTER TABLE `#__sdi_sys_servicecon_authenticationcon`
-ADD CONSTRAINT `#__sdi_sys_servicecon_authenticationcon_fk2` FOREIGN KEY (`authenticationconnector_id`) REFERENCES `#__sdi_sys_authenticationconnector` (`id`) ON DELETE CASCADE ;
 
 -- Google Bing and OSM layer
 ALTER TABLE `#__sdi_layer`
@@ -182,6 +170,8 @@ ADD CONSTRAINT `#__sdi_physicalservice_policy_fk5` FOREIGN KEY (`wfs_spatialpoli
 ALTER TABLE `#__sdi_physicalservice_policy`
 ADD CONSTRAINT `#__sdi_physicalservice_policy_fk6` FOREIGN KEY (`wmts_spatialpolicy_id`) REFERENCES `#__sdi_wmts_spatialpolicy` (`id`) ;
 
+ALTER TABLE `#__sdi_policy`
+ADD CONSTRAINT `#__sdi_policy_fk7` FOREIGN KEY (`csw_version_id`) REFERENCES `#__sdi_sys_metadataversion` (`id`) ;
 
 
 
