@@ -167,22 +167,25 @@ VALUES
 (28,1,7,16,0),
 (29,1,3,17,1),
 (30,1,3,18,1),
-(31,1,3,19,1),
+(31,1,3,19,0),
 (32,1,3,20,0),
 (33,1,3,21,0),
 (34,1,3,1,1),
 (35,1,4,17,1),
 (36,1,4,18,1),
-(37,1,4,19,1),
+(37,1,4,19,0),
 (38,1,4,20,0),
 (39,1,4,21,0),
 (40,1,4,1,1),
 (41,1,5,17,1),
 (42,1,5,18,1),
-(43,1,5,19,1),
+(43,1,5,19,0),
 (44,1,5,20,0),
 (45,1,5,21,0),
-(46,1,5,1,1)
+(46,1,5,1,1),
+(47,1,3,12,1),
+(48,1,4,12,1),
+(49,1,5,12,1)
 ;
 
 INSERT INTO `#__sdi_sys_serviceconnector` (ordering,state,value) 
@@ -231,6 +234,9 @@ VALUES
 (3,1,'monthly'),
 (4,1,'annually')
 ;
+
+INSERT INTO `#__sdi_sys_metadataversion` VALUES ('1','1','1','all' );
+INSERT INTO `#__sdi_sys_metadataversion` VALUES ('2','2','1','last' );
 
 INSERT INTO `#__sdi_sys_country` VALUES ('1', '1', '1', 'Afghanistan', 'AF', 'AFG');
 INSERT INTO `#__sdi_sys_country` VALUES ('2', '2', '1', 'Åland Islands', 'AX', 'ALA');
