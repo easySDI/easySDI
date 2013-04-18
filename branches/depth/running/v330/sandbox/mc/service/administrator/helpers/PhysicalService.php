@@ -34,7 +34,7 @@ abstract class PhysicalService {
 	 * @return bool : true on success, false on error
 	 */
 	public function getCapabilities ($rawXML = null) {
-		$this->rawXML = $rawXML;
+		$this->rawXml = $rawXML;
 		if (!isset($rawXML)) {
 			$completeUrl = $this->url . "?REQUEST=GetCapabilities&SERVICE=".$this->connector;
 			if(isset($this->compliance)){
@@ -47,7 +47,7 @@ abstract class PhysicalService {
 			}
 			curl_setopt($session, CURLOPT_HEADER, false);
 			curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
-			$this->rawXML = curl_exec($session);
+			$this->rawXml = curl_exec($session);
 			$http_status = curl_getinfo($session, CURLINFO_HTTP_CODE);
 			curl_close($session);
 			
@@ -58,7 +58,7 @@ abstract class PhysicalService {
 			}
 		}
 		
-		$xmlCapa = simplexml_load_string($this->rawXML);
+		$xmlCapa = simplexml_load_string($this->rawXml);
 		
 		$namespaces = $xmlCapa->getNamespaces(true);
 		foreach ($namespaces as $key => $value) {

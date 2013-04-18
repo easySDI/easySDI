@@ -28,10 +28,12 @@ class WmtsWebservice {
 	
 	private static function getWmtsLayerForm ($raw_GET) {
 		$physicalServiceID = $raw_GET['physicalServiceID'];
+		$virtualServiceID = $raw_GET['virtualServiceID'];
 		$policyID = ('' == $raw_GET['policyID'])?0:$raw_GET['policyID'];
 		$layerID = $raw_GET['layerID'];
 		
 		$layerObj = WmtsWebservice::getWmtsLayerSettings(
+			$virtualServiceID,
 			$physicalServiceID,
 			$policyID,
 			$layerID
@@ -132,6 +134,7 @@ class WmtsWebservice {
 				</tbody>
 			</table>
 			<input type="hidden" name="psID" value="' . $physicalServiceID . '"/>
+			<input type="hidden" name="vsID" value="' . $virtualServiceID . '"/>
 			<input type="hidden" name="policyID" value="' . $policyID . '"/>
 			<input type="hidden" name="layerID" value="' . $layerID . '"/>
 			<input type="hidden" name="tms_list" value="' . implode(';', $tms_identifier_list) . '"/>
@@ -139,7 +142,7 @@ class WmtsWebservice {
 		return $html;
 	}
 	
-	private static function getWmtsLayerSettings ($physicalServiceID, $policyID, $layerID) {
+	private static function getWmtsLayerSettings ($virtualServiceID, $physicalServiceID, $policyID, $layerID) {
 		$db = JFactory::getDbo();
 		
 		$db->setQuery('
@@ -204,7 +207,7 @@ class WmtsWebservice {
 		}
 		
 		$wmtsObj = new WmtsPhysicalService($physicalServiceID, $url);
-		$wmtsObj->getCapabilities();
+		$wmtsObj->getCapabilities(self::getXmlFromCache($physicalServiceID, $virtualServiceID));
 		$wmtsObj->populate();
 		$wmtsObj->sortLists();
 		$wmtsObj->loadData($data);
@@ -356,6 +359,7 @@ class WmtsWebservice {
 	
 	private static function setTileMatrixSettings ($wmtslayerpolicy_id, $raw_GET){
 		$physicalServiceID = $raw_GET['psID'];
+		$virtualServiceID = $raw_GET['vsID'];
 		$policyID = $raw_GET['policyID'];
 		$layerID = $raw_GET['layerID'];
 		$tileMatrixSet_arr = $raw_GET['select'];
@@ -399,7 +403,7 @@ class WmtsWebservice {
 		}
 		
 		$wmtsObj = new WmtsPhysicalService($physicalServiceID, $ps_url);
-		$wmtsObj->getCapabilities();
+		$wmtsObj->getCapabilities(self::getXmlFromCache($physicalServiceID, $virtualServiceID));
 		$wmtsObj->populate();
 		
 		$form_values[$layerID] = Array(
@@ -523,4 +527,39 @@ class WmtsWebservice {
 			}
 		}
 	}
+	
+	private static function getXmlFromCache ($physicalServiceID, $virtualServiceID) {
+		$db = JFactory::getDbo();
+		
+		$db->setQuery('
+			SELECT pssc.capabilities
+			FROM #__sdi_virtualservice vs
+			JOIN #__sdi_virtual_physical vp
+			ON vs.id = vp.virtualservice_id
+			JOIN #__sdi_physicalservice ps
+			ON ps.id = vp.physicalservice_id
+			JOIN #__sdi_physicalservice_servicecompliance pssc
+			ON ps.id = pssc.service_id
+			JOIN #__sdi_virtualservice_servicecompliance vssc
+			ON vs.id = vssc.service_id
+			JOIN #__sdi_sys_servicecompliance sc
+			ON sc.id = vssc.servicecompliance_id
+			JOIN #__sdi_sys_serviceversion sv
+			ON sv.id = sc.serviceversion_id
+			WHERE ps.id = ' . $physicalServiceID . '
+			AND vs.id = ' . $virtualServiceID . '
+			ORDER BY sv.ordering DESC
+			LIMIT 0,1;
+		');
+		try {
+			$db->execute();
+			return $db->loadResult();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return null;
+		}
+	}
+	
 }

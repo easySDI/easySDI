@@ -190,7 +190,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 													</td>
 													<td><?php echo $layer->description; ?></td>
 													<td>
-														<button type="button" class="btn btn_modify_layer" data-toggle="modal" data-target="#layer_settings_modal" data-psid="<?php echo $ps->id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>">
+														<button type="button" class="btn btn_modify_layer" data-toggle="modal" data-target="#layer_settings_modal" data-psid="<?php echo $ps->id;?>" data-vsid="<?php echo $this->item->virtualservice_id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>">
 															<?php echo JText::_('COM_EASYSDI_SERVICE_BTN_SETTINGS');?>
 														</button>
 														<button type="button" class="btn btn-danger btn_delete_layer" data-psid="<?php echo $ps->id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>">

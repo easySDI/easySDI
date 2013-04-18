@@ -193,6 +193,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			$wmsObj->sortLists();
 			$wmsObj->setLayerAsConfigured($layerList);
 			$wmsObjList[] = $wmsObj;
+			
+			$this->cacheXMLCapabilities($wmsObj->getRawXml(), $ps->id, $virtualservice_id);
 		}
 		
 		return $wmsObjList;
@@ -251,6 +253,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			$wfsObj->sortLists();
 			$wfsObj->setLayerAsConfigured($layerList);
 			$wfsObjList[] = $wfsObj;
+			
+			$this->cacheXMLCapabilities($wfsObj->getRawXml(), $ps->id, $virtualservice_id);
 		}
 		
 		return $wfsObjList;
@@ -316,6 +320,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			$wmtsObj->sortLists();
 			$wmtsObj->setLayerAsConfigured($layerList);
 			$wmtsObjList[] = $wmtsObj;
+			
+			$this->cacheXMLCapabilities($wmtsObj->getRawXml(), $ps->id, $virtualservice_id);
 		}
 		
 		return $wmtsObjList;
@@ -1516,5 +1522,65 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		}
 		return true;
 	}
+	
+	/**
+	 * Cache capabilities xml in db for later uses
+	 *
+	 * @param string $xml	xmlstring to store in DB
+	 *
+	 * @param int $physicalServiceID a physical service id
+	 *
+	 * @param int $virutalServiceID a virtual service id
+	 *
+	 * @return boolean 	True on success, False on error
+	 *
+	 */
+	private function cacheXMLCapabilities ($xml, $physicalServiceID, $virtualServiceID) {
+		$db = $this->getDbo();
+		
+		$db->setQuery('
+			SELECT pssc.id
+			FROM #__sdi_virtualservice vs
+			JOIN #__sdi_virtual_physical vp
+			ON vs.id = vp.virtualservice_id
+			JOIN #__sdi_physicalservice ps
+			ON ps.id = vp.physicalservice_id
+			JOIN #__sdi_physicalservice_servicecompliance pssc
+			ON ps.id = pssc.service_id
+			JOIN #__sdi_virtualservice_servicecompliance vssc
+			ON vs.id = vssc.service_id
+			JOIN #__sdi_sys_servicecompliance sc
+			ON sc.id = vssc.servicecompliance_id
+			JOIN #__sdi_sys_serviceversion sv
+			ON sv.id = sc.serviceversion_id
+			WHERE ps.id = ' . $physicalServiceID . '
+			AND vs.id = ' . $virtualServiceID . '
+			ORDER BY sv.ordering DESC
+			LIMIT 0,1;
+		');
+		try {
+			$db->execute();
+			$serviceComplianceID = $db->loadResult();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
+		$query = $db->getQuery(true);
+		$query->update('#__sdi_physicalservice_servicecompliance')->set('capabilities = \'' . $xml . '\'')->where('id = ' . $serviceComplianceID);
+		$db->setQuery($query);
+		try {
+			$db->execute();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+	}
+	
+	
 	
 }

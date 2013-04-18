@@ -10,6 +10,7 @@ jQuery(document).ready(function () {
 	//onClick on a layer configuration btn, we fill the modal with an ajax request
 	jQuery('.btn_modify_layer').click(function () {
 		var psID = jQuery(this).data('psid');
+		var vsID = jQuery(this).data('vsid');
 		var policyID = jQuery(this).data('policyid');
 		var layerName = jQuery(this).data('layername');
 		
@@ -22,6 +23,7 @@ jQuery(document).ready(function () {
 				task: 'wfsWebservice',
 				method: 'getFeatureTypeForm',
 				physicalServiceID: psID,
+				virtualServiceID: vsID,
 				policyID: policyID,
 				layerID: layerName,
 			},

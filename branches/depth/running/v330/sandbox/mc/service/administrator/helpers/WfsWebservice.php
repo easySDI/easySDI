@@ -26,10 +26,12 @@ class WfsWebservice {
 	
 	private static function getFeatureTypeForm ($raw_GET) {
 		$physicalServiceID = $raw_GET['physicalServiceID'];
+		$virtualServiceID = $raw_GET['virtualServiceID'];
 		$policyID = ('' == $raw_GET['policyID'])?0:$raw_GET['policyID'];
 		$layerID = $raw_GET['layerID'];
 		
 		$layerObj = WfsWebservice::getFeatureTypeSettings(
+			$virtualServiceID,
 			$physicalServiceID,
 			$policyID,
 			$layerID
@@ -82,6 +84,7 @@ class WfsWebservice {
 				' . JText::_('COM_EASYSDI_SERVICE_WFS_BTN_ADD_INCLUDED_ATTRIBUTE') . '
 			</button>
 			<input type="hidden" name="psID" value="' . $physicalServiceID . '"/>
+			<input type="hidden" name="vsID" value="' . $virtualServiceID . '"/>
 			<input type="hidden" name="policyID" value="' . $policyID . '"/>
 			<input type="hidden" name="layerID" value="' . $layerID . '"/>
 		';
@@ -141,7 +144,7 @@ class WfsWebservice {
 		}
 		
 		$wfsObj = new WfsPhysicalService($physicalServiceID, $url);
-		$wfsObj->getCapabilities();
+		$wfsObj->getCapabilities(self::getXmlFromCache($physicalServiceID, $virtualServiceID));
 		$wfsObj->populate();
 		$wfsObj->loadData($data);
 		$layerObj = $wfsObj->getLayerByName($layerID);
@@ -416,7 +419,6 @@ class WfsWebservice {
 		return true;
 	}
 	
-	
 	private static function deleteWmtsLayer ($physicalServiceID, $policyID, $layerID) {
 		$db = JFactory::getDbo();
 		
@@ -477,4 +479,39 @@ class WfsWebservice {
 			}
 		}
 	}
+	
+	private static function getXmlFromCache ($physicalServiceID, $virtualServiceID) {
+		$db = JFactory::getDbo();
+		
+		$db->setQuery('
+			SELECT pssc.capabilities
+			FROM #__sdi_virtualservice vs
+			JOIN #__sdi_virtual_physical vp
+			ON vs.id = vp.virtualservice_id
+			JOIN #__sdi_physicalservice ps
+			ON ps.id = vp.physicalservice_id
+			JOIN #__sdi_physicalservice_servicecompliance pssc
+			ON ps.id = pssc.service_id
+			JOIN #__sdi_virtualservice_servicecompliance vssc
+			ON vs.id = vssc.service_id
+			JOIN #__sdi_sys_servicecompliance sc
+			ON sc.id = vssc.servicecompliance_id
+			JOIN #__sdi_sys_serviceversion sv
+			ON sv.id = sc.serviceversion_id
+			WHERE ps.id = ' . $physicalServiceID . '
+			AND vs.id = ' . $virtualServiceID . '
+			ORDER BY sv.ordering DESC
+			LIMIT 0,1;
+		');
+		try {
+			$db->execute();
+			return $db->loadResult();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return null;
+		}
+	}
+	
 }
