@@ -938,7 +938,7 @@ public class CSWProxyDataAccessibilityManager {
 	 * @return
 	 */
 	public String addCQLBBOXFilter (String constraint) throws UnsupportedEncodingException{
-		if(!policy.getSdiCswSpatialpolicy().isValid())
+		if(policy.getSdiCswSpatialpolicy() == null || !policy.getSdiCswSpatialpolicy().isValid())
 			return constraint;
 		//Add a geographic filter if one defined in the loaded policy
 		

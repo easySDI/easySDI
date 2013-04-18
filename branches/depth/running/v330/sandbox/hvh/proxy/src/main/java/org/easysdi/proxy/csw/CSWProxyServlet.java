@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -88,6 +89,8 @@ public class CSWProxyServlet extends ProxyServlet {
 	public Namespace nsSDI = Namespace.getNamespace("sdi","http://www.easysdi.org/2011/sdi") ;
 	private Boolean asConstraint = false;
 	private CSWProxyDataAccessibilityManager cswDataManager ;
+	private String[] CSWOperation = { "GetCapabilities", "GetRecords", "GetRecordById", "Harvest", "DescribeRecord", "GetExtrinsicContent", "Transaction","GetDomain" };
+	private static final List<String> ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetRecords", "GetRecordById","DescribeRecord","Transaction");
 	
 	public CSWProxyServlet(ProxyServletRequest proxyRequest,SdiVirtualservice virtualService, SdiPolicy policy) {
 		super(proxyRequest, virtualService, policy);
@@ -142,23 +145,34 @@ public class CSWProxyServlet extends ProxyServlet {
 			List<String> deniedOperations = new Vector<String>();
 
 			// Fill the vectors with the corresponding information
-			Set<SdiSysOperationcompliance> operationCompliances = getProxyRequest().getServiceCompliance().getSdiSysOperationcompliances();
-		   Iterator<SdiSysOperationcompliance> i = operationCompliances.iterator();
-		   while (i.hasNext())
-		   {
-			   SdiSysOperationcompliance compliance = i.next();
-			   if(compliance.getSdiSysServiceoperation().getState() == 1 && compliance.getState() == 1 && compliance.isImplemented() && isOperationAllowed(compliance.getSdiSysServiceoperation().getValue()))
-			   {
-				   permitedOperations.add(compliance.getSdiSysServiceoperation().getValue());
-				   logger.trace(compliance.getSdiSysServiceoperation().getValue() + " is permitted");
-			   }
-			   else
-			   {
-				   deniedOperations.add(compliance.getSdiSysServiceoperation().getValue());
-				   logger.trace(compliance.getSdiSysServiceoperation().getValue() + " is denied");
-				   
-			   }
-		   }
+			for (int i = 0; i < CSWOperation.length; i++) {
+
+					if (ServiceSupportedOperations.contains(CSWOperation[i]) && isOperationAllowed(CSWOperation[i])) 
+					{
+						permitedOperations.add(CSWOperation[i]);
+						logger.trace(CSWOperation[i] + " is permitted");
+					} else {
+						deniedOperations.add(CSWOperation[i]);
+						logger.trace(CSWOperation[i] + " is denied");
+					}
+			}
+//			Set<SdiSysOperationcompliance> operationCompliances = getProxyRequest().getServiceCompliance().getSdiSysOperationcompliances();
+//		   Iterator<SdiSysOperationcompliance> i = operationCompliances.iterator();
+//		   while (i.hasNext())
+//		   {
+//			   SdiSysOperationcompliance compliance = i.next();
+//			   if(compliance.getSdiSysServiceoperation().getState() == 1 && compliance.getState() == 1 && compliance.isImplemented() && isOperationAllowed(compliance.getSdiSysServiceoperation().getValue()))
+//			   {
+//				   permitedOperations.add(compliance.getSdiSysServiceoperation().getValue());
+//				   logger.trace(compliance.getSdiSysServiceoperation().getValue() + " is permitted");
+//			   }
+//			   else
+//			   {
+//				   deniedOperations.add(compliance.getSdiSysServiceoperation().getValue());
+//				   logger.trace(compliance.getSdiSysServiceoperation().getValue() + " is denied");
+//				   
+//			   }
+//		   }
 			
 			return generateXSLTForCSWCapabilities200(url, deniedOperations, permitedOperations);
 		} catch (Exception e) {

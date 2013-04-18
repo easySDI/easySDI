@@ -95,7 +95,7 @@ public abstract class ProxyServlet extends HttpServlet {
    
     protected SdiVirtualservice sdiVirtualService;
     protected SdiPolicy sdiPolicy;
-    private static final String strDateFormat = "dd/MM/yyyy HH:mm:ss";
+    private static final String strDateFormat = "dd/MM/yyyy HH:mm:ss:SSS";
     protected DateFormat dateFormat ;
     public HttpServletRequest request; 
     public HttpServletResponse response;
@@ -843,7 +843,7 @@ public abstract class ProxyServlet extends HttpServlet {
     	{
     		Map.Entry <String, SdiPhysicalservice> service = i.next();
     		if(service.getValue().getResourceurl().equals(urlstr))
-    			return service.getValue().getServiceusername();
+    			return service.getValue().getServiceurl();
     	}
     	return null;
     }

@@ -104,6 +104,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
+			<artifactId>gt2-shapefile-renderer</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
 			<artifactId>gt2-wms</artifactId>
 			<version>${geotools.version}</version>
 			<exclusions>
@@ -131,11 +136,7 @@
 			<artifactId>gt2-wfs</artifactId>
 			<version>${geotools.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.geotools</groupId>
-			<artifactId>gt2-shapefile-renderer</artifactId>
-			<version>${geotools.version}</version>
-		</dependency>
+		
 		 <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt2-epsg-extension</artifactId>
@@ -199,6 +200,11 @@
 			<groupId>commons-dbcp</groupId>
 			<artifactId>commons-dbcp</artifactId>
 			<version>1.2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>jaxen</groupId>
+			<artifactId>jaxen</artifactId>
+			<version>1.1.4</version>
 		</dependency>
 
 		<!-- Hibernate -->
