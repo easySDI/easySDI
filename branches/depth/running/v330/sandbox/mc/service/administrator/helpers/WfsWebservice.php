@@ -3,10 +3,15 @@
 // No direct access
 defined('_JEXEC') or die;
 
-/**
- * Easysdi_service helper.
- */
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WfsPhysicalService.php');
+
 class WfsWebservice {
+	/*
+	 * Entry point of the class
+	 * 
+	 * @param Array Usually the $_GET, or any associative array
+	 * @param Boolean Set to true to force a return value, results are echoed otherwise
+	*/
 	public static function request ($params) {
 		switch ($params['method']) {
 			case 'getFeatureTypeForm':
@@ -14,6 +19,14 @@ class WfsWebservice {
 				break;
 			case 'setFeatureTypeSettings':
 				if (WfsWebservice::setFeatureTypeSettings($params)) {
+					echo 'OK';
+				}
+				break;
+			case 'deleteFeatureType':
+				$physicalServiceID = $raw_GET['physicalServiceID'];
+				$policyID = $raw_GET['policyID'];
+				$layerID = $raw_GET['layerID'];
+				if (WmtsWebservice::deleteFeatureType($physicalServiceID, $policyID, $layerID)) {
 					echo 'OK';
 				}
 				break;
@@ -92,8 +105,6 @@ class WfsWebservice {
 	}
 	
 	private static function getFeatureTypeSettings ($physicalServiceID, $policyID, $layerID) {
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WfsPhysicalService.php');
-		
 		$db = JFactory::getDbo();
 		
 		$db->setQuery('
@@ -419,7 +430,7 @@ class WfsWebservice {
 		return true;
 	}
 	
-	private static function deleteWmtsLayer ($physicalServiceID, $policyID, $layerID) {
+	private static function deleteFeatureType ($physicalServiceID, $policyID, $layerID) {
 		$db = JFactory::getDbo();
 		
 		$db->setQuery('

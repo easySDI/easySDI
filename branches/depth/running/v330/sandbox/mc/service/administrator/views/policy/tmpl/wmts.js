@@ -6,6 +6,8 @@ jQuery(document).ready(function () {
 		var policyID = jQuery(this).data('policyid');
 		var layerName = jQuery(this).data('layername');
 		
+		jQuery('#modal_alert').html('');
+		
 		jQuery.ajax({
 			dataType: 'html',
 			type: 'GET',
@@ -77,6 +79,11 @@ jQuery(document).ready(function () {
 		}
 		var tms_list = form_values.tms_list.split(';');
 		
+		if (isNaN(form_values.eastBoundLongitude) || isNaN(form_values.westBoundLongitude) || isNaN(form_values.northBoundLatitude) || isNaN(form_values.southBoundLatitude)) {
+			popModalAlert(Joomla.JText._('COM_EASYSDI_SERVICE_MSG_MODAL_MALFORMED_BBOX_BOUNDARIES'), 'alert-error');
+			return false;
+		}
+		
 		if (form_values.eastBoundLongitude != '' && form_values.westBoundLongitude != '' && form_values.northBoundLatitude != '' && form_values.southBoundLatitude != '') {
 			for (var i = 0; i < tms_list.length; i++) {
 				var tms_identifier = tms_list[i];
@@ -105,6 +112,12 @@ jQuery(document).ready(function () {
 				form_values['maxY[' + tms_identifier + ']'] = pUpperWestCorner.y;
 				form_values['maxX[' + tms_identifier + ']'] = pLowerEastCorner.x;
 				form_values['minY[' + tms_identifier + ']'] = pLowerEastCorner.y;
+			}
+		}
+		else {
+			if (!(form_values.eastBoundLongitude == '' && form_values.westBoundLongitude == '' && form_values.northBoundLatitude == '' && form_values.southBoundLatitude == '')) {
+				popModalAlert(Joomla.JText._('COM_EASYSDI_SERVICE_MSG_MODAL_MISSING_BBOX_BOUNDARIES'), 'alert-error');
+				return false;
 			}
 		}
 		

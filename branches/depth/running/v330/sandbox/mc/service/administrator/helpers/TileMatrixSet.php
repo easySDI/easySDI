@@ -45,11 +45,13 @@ class TileMatrixSet {
 	public function getUpperTileMatrix ($identifier) {
 		$list = Array();
 		
-		$maxTmObj = $this->tileMatrixList[$identifier];
-		
-		foreach ($this->tileMatrixList as $tmObj) {
-			if ($maxTmObj->scaleDenominator <= $tmObj->scaleDenominator) {
-				$list[] = $tmObj;
+		if (isset($this->tileMatrixList[$identifier])) {
+			$maxTmObj = $this->tileMatrixList[$identifier];
+			
+			foreach ($this->tileMatrixList as $tmObj) {
+				if ($maxTmObj->scaleDenominator <= $tmObj->scaleDenominator) {
+					$list[] = $tmObj;
+				}
 			}
 		}
 		
@@ -111,7 +113,6 @@ class TileMatrixSet {
 		}
 		
 		foreach ($this->tileMatrixList as $tileMatrixObj) {
-		var_dump($this->identifier . ' - ' .$tileMatrixObj->identifier);
 			//Get the West and North coordinates of the top left corner of the TileMatrix.
 			//
 			//EPSG authority SRS definition (see : www.epsg-registry.org):
@@ -120,7 +121,7 @@ class TileMatrixSet {
 			//OGC authority SRS defnition (see : OGC 07-057r7 document)
 			//- all SRS give the topLeftCorner as <TopLeftCorner>West North</TopLeftCorner>
 			//Others authorities are not supported.
-			var_dump($tileMatrixObj->topLeftCorner);
+			
 			// TODO: vérifier pourquoi EPSG et OGC ont un topleft dans le meme ordre
 			//if (!strpos($this->srsUnit,'m') && strpos($this->srs,'EPSG')) {
 			if (!strpos($this->srsUnit,'m') && strpos($this->srs,'EPSG')) {
@@ -159,15 +160,12 @@ class TileMatrixSet {
 				$tileMinCol = 0;
 			}
 			if ($tileMaxCol < 0) {
-				var_dump('A');
 				continue;
 			}
 			if ($tileMinCol > $tileMaxCol) {
-				var_dump('B', $tileMinCol, $tileMaxCol, $tileMatrixObj);
 				continue;
 			}
 			if ($tileMinCol >= $tileMatrixObj->matrixWidth) {
-				var_dump('C');
 				continue;
 			}
 			if ($tileMaxCol >= $tileMatrixObj->matrixWidth) {
@@ -177,15 +175,12 @@ class TileMatrixSet {
 				$tileMinRow = 0;
 			}
 			if ($tileMaxRow < 0) {
-				var_dump('D');
 				continue;
 			}
 			if ($tileMinRow > $tileMaxRow) {
-				var_dump('E');
 				continue;
 			}
 			if ($tileMinRow >= $tileMatrixObj->matrixHeight) {
-				var_dump('F');
 				continue;
 			}
 			if ($tileMaxRow >= $tileMatrixObj->matrixHeight) {
@@ -213,7 +208,6 @@ class TileMatrixSet {
 				$tileMatrixObj->maxTileCol = $tileMaxCol;
 				$tileMatrixObj->anyTile = false;
 			}
-			var_dump($tileMatrixObj);
 		}
 	}
 }

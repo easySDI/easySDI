@@ -9,6 +9,10 @@ jQuery(document).ready(function () {
 			srs: '',
 		};
 		
+		if(geographicFilter != ""){
+			return $result;
+		}
+		
 		geographicFilter = geographicFilter.replace(/^\s*|\s*$/g,'');
 		if(geographicFilter.length != 0){
 			//Get the srs name
@@ -48,6 +52,8 @@ jQuery(document).ready(function () {
 		var vsID = jQuery(this).data('vsid');
 		var policyID = jQuery(this).data('policyid');
 		var layerName = jQuery(this).data('layername');
+		
+		jQuery('#modal_alert').html('');
 		
 		jQuery.ajax({
 			dataType: 'html',
@@ -120,15 +126,13 @@ jQuery(document).ready(function () {
 		}
 		
 		var geographicFilter = form_values.geographicfilter;
-		if(geographicFilter != ""){
-			var bbox = calculateBBox(geographicFilter);
-			
-			form_values['minX'] = bbox.minX;
-			form_values['minY'] = bbox.minY;
-			form_values['maxX'] = bbox.maxX;
-			form_values['maxY'] = bbox.maxY;
-			form_values['srs'] = bbox.srs;
-		}
+		var bbox = calculateBBox(geographicFilter);
+		
+		form_values['minX'] = bbox.minX;
+		form_values['minY'] = bbox.minY;
+		form_values['maxX'] = bbox.maxX;
+		form_values['maxY'] = bbox.maxY;
+		form_values['srs'] = bbox.srs;
 		
 		var get_str = '';
 		for (key in form_values) {
@@ -186,26 +190,22 @@ jQuery(document).ready(function () {
 		
 		//calculate for inherit_policy
 		var geographicFilter = form_values.inherit_policy.geographicfilter;
-		if(geographicFilter != ""){
-			var bbox = calculateBBox(geographicFilter);
-			jQuery('#inherit_policy_' + form_values.inherit_policy.id + '_maxx').val(bbox.maxX);
-			jQuery('#inherit_policy_' + form_values.inherit_policy.id + '_maxy').val(bbox.maxY);
-			jQuery('#inherit_policy_' + form_values.inherit_policy.id + '_minx').val(bbox.minX);
-			jQuery('#inherit_policy_' + form_values.inherit_policy.id + '_miny').val(bbox.minY);
-			jQuery('#inherit_policy_' + form_values.inherit_policy.id + '_srssource').val(bbox.srs);
-		}
+		var bbox = calculateBBox(geographicFilter);
+		jQuery('#inherit_policy_' + form_values.inherit_policy.id + '_maxx').val(bbox.maxX);
+		jQuery('#inherit_policy_' + form_values.inherit_policy.id + '_maxy').val(bbox.maxY);
+		jQuery('#inherit_policy_' + form_values.inherit_policy.id + '_minx').val(bbox.minX);
+		jQuery('#inherit_policy_' + form_values.inherit_policy.id + '_miny').val(bbox.minY);
+		jQuery('#inherit_policy_' + form_values.inherit_policy.id + '_srssource').val(bbox.srs);
 		
 		//calculate for inherit_server
 		for (key in form_values.inherit_server) {
 			var geographicFilter = form_values.inherit_server[key].geographicfilter;
-			if(geographicFilter != ""){
-				var bbox = calculateBBox(geographicFilter);
-				jQuery('#inherit_server_' + key + '_maxx').val(bbox.maxX);
-				jQuery('#inherit_server_' + key + '_maxy').val(bbox.maxY);
-				jQuery('#inherit_server_' + key + '_minx').val(bbox.minX);
-				jQuery('#inherit_server_' + key + '_miny').val(bbox.minY);
-				jQuery('#inherit_server_' + key + '_srssource').val(bbox.srs);
-			}
+			var bbox = calculateBBox(geographicFilter);
+			jQuery('#inherit_server_' + key + '_maxx').val(bbox.maxX);
+			jQuery('#inherit_server_' + key + '_maxy').val(bbox.maxY);
+			jQuery('#inherit_server_' + key + '_minx').val(bbox.minX);
+			jQuery('#inherit_server_' + key + '_miny').val(bbox.minY);
+			jQuery('#inherit_server_' + key + '_srssource').val(bbox.srs);
 		}
 		
 		Joomla.submitform(task, document.getElementById('policy-form'));

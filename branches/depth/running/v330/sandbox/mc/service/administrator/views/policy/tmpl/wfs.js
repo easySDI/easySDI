@@ -14,6 +14,8 @@ jQuery(document).ready(function () {
 		var policyID = jQuery(this).data('policyid');
 		var layerName = jQuery(this).data('layername');
 		
+		jQuery('#modal_alert').html('');
+		
 		jQuery.ajax({
 			dataType: 'html',
 			type: 'GET',

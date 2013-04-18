@@ -189,7 +189,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			$wmsObj = new WmsPhysicalService($ps->id, $ps->resourceurl);
 			$wmsObj->getCapabilities();
 			$wmsObj->populate();
-			$wmtsObj->loadData($data);
+			$wmsObj->loadData($data);
 			$wmsObj->sortLists();
 			$wmsObj->setLayerAsConfigured($layerList);
 			$wmsObjList[] = $wmsObj;
@@ -249,7 +249,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			$wfsObj = new WfsPhysicalService($ps->id, $ps->resourceurl);
 			$wfsObj->getCapabilities();
 			$wfsObj->populate();
-			$wmtsObj->loadData($data);
+			$wfsObj->loadData($data);
 			$wfsObj->sortLists();
 			$wfsObj->setLayerAsConfigured($layerList);
 			$wfsObjList[] = $wfsObj;
@@ -1569,7 +1569,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		}
 		
 		$query = $db->getQuery(true);
-		$query->update('#__sdi_physicalservice_servicecompliance')->set('capabilities = \'' . $xml . '\'')->where('id = ' . $serviceComplianceID);
+		$query->update('#__sdi_physicalservice_servicecompliance')->set('capabilities = \'' . $query->escape($xml) . '\'')->where('id = ' . $serviceComplianceID);
 		$db->setQuery($query);
 		try {
 			$db->execute();

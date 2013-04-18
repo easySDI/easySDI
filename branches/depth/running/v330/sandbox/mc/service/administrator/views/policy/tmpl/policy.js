@@ -58,6 +58,11 @@ function popAlert (msg, cssClass) {
 	jQuery('#system-message-container').alert();
 }
 
+function popModalAlert (msg, cssClass) {
+	jQuery('#modal_alert').html('<div class="alert ' + cssClass + '"><button type="button" class="close" data-dismiss="alert">&times;</button><h4 class="alert-heading">Message</h4><p>' + msg + '</p></div>');
+	jQuery('#modal_alert').alert();
+}
+
 jQuery(document).ready(function (){
 	enableAccessScope();
 	initVisibility();

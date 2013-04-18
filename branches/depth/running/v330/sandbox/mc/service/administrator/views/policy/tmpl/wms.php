@@ -27,6 +27,8 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 JText::script('COM_EASYSDI_SERVICE_MODAL_ERROR');
 JText::script('COM_EASYSDI_SERVICE_CONFIRM_DELETION');
 JText::script('COM_EASYSDI_SERVICE_MSG_MODAL_SAVED');
+JText::script('COM_EASYSDI_SERVICE_MSG_MODAL_MISSING_BBOX_BOUNDARIES');
+JText::script('COM_EASYSDI_SERVICE_MSG_MODAL_MALFORMED_BBOX_BOUNDARIES');
 
 function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	$db = JFactory::getDbo();
@@ -173,7 +175,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 					<fieldset>
 						<div class="accordion" id="ps_accordion">
 							<?php foreach($this->item->physicalService as $ps):?>
-								<div class="accordion-group>
+								<div class="accordion-group">
 								<div class="accordion-heading">
 								  <a class="accordion-toggle" data-toggle="collapse" data-parent="#ps_accordion" href="#collapse_<?php echo $ps->id; ?>">
 										<?php echo $ps->name . ' &mdash; ' . $ps->url; ?>
@@ -220,7 +222,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 										</table>
 								  </div>
 								</div>
-						  </div>
+								</div>
 							<?php endforeach; ?>
 						</div>
 					<?php endif; ?>
@@ -309,6 +311,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 		<h3 id="myModalLabel"><?php echo JText::_('COM_EASYSDI_SERVICE_WMS_MODAL_TITLE');?> : <span id="layer_name"></span></h3>
 	</div>
 	<div class="modal-body">
+		<div id="modal_alert"></div>
 		<img class="loaderImg" src="<?php echo JURI::base(true).DS.'components'.DS.'com_easysdi_service'.DS.'assets'.DS.'images'.DS.'loader.gif'; ?>" />
 		<form id="modal_layer_form"></form>
 	</div>

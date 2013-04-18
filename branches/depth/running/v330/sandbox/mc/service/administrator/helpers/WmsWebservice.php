@@ -2,6 +2,7 @@
 
 // No direct access
 defined('_JEXEC') or die;
+
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmsPhysicalService.php');
 
 class WmsWebservice {
@@ -19,6 +20,14 @@ class WmsWebservice {
 				break;
 			case 'setWmsLayerSettings':
 				$return = WmsWebservice::setWmsLayerSettings($params);
+				break;
+			case 'deleteWmsLayer':
+				$physicalServiceID = $raw_GET['physicalServiceID'];
+				$policyID = $raw_GET['policyID'];
+				$layerID = $raw_GET['layerID'];
+				if (WmtsWebservice::deleteWmsLayer($physicalServiceID, $policyID, $layerID)) {
+					echo 'OK';
+				}
 				break;
 			default:
 				$return = 'Unknown method.';
@@ -394,7 +403,7 @@ class WmsWebservice {
 		return true;
 	}
 	
-	private static function deleteWmtsLayer ($physicalServiceID, $policyID, $layerID) {
+	private static function deleteWmsLayer ($physicalServiceID, $policyID, $layerID) {
 		$db = JFactory::getDbo();
 		
 		$db->setQuery('
