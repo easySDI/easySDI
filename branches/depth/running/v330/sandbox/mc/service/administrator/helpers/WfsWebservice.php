@@ -104,7 +104,7 @@ class WfsWebservice {
 		return $html;
 	}
 	
-	private static function getFeatureTypeSettings ($physicalServiceID, $policyID, $layerID) {
+	private static function getFeatureTypeSettings ($virtualServiceID,$physicalServiceID, $policyID, $layerID) {
 		$db = JFactory::getDbo();
 		
 		$db->setQuery('
