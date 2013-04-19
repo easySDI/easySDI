@@ -169,7 +169,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	    DailyRollingFileAppender appender = (DailyRollingFileAppender)logger.getAppender("logFileAppender");
 	    appender.setBufferedIO(true);
 	    appender.setAppend(true);
-	    appender.setFile(sdiVirtualService.getLogpath()+File.separator+sdiVirtualService.getAlias()+new SimpleDateFormat("yyyy.MM.dd").format(new Date())+sdiVirtualService.getSdiSysServiceconnector().getValue()+".log");
+	    appender.setFile(sdiVirtualService.getLogpath()+File.separator+sdiVirtualService.getAlias()+"."+new SimpleDateFormat("yyyy.MM.dd").format(new Date())+"."+sdiVirtualService.getSdiSysServiceconnector().getValue()+".log");
 	    //DatePattern receive the period rolling value
 	    if(sdiVirtualService.getSdiSysLogroll().getValue().equalsIgnoreCase("daily"))
 	    	appender.setDatePattern("'.'yyyy-MM-dd");
