@@ -193,15 +193,43 @@ public class OgcProxyServlet extends HttpServlet {
 //			}
 //			SdiVirtualservice virtualService = (SdiVirtualservice)el.getValue();
 			
+			//Get the virtual service
 			SdiVirtualservice virtualService = sdiVirtualserviceHome.findByAlias(servletName);
-			
 			if(virtualService == null)
 			{
-				logger.error("Invalid Virtual Service alias.");
-				sendException("Invalid Virtual Service alias.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_INTERNAL_SERVER_ERROR,  connector, null);
+				logger.error("Error occurred during " + servletName + " service initialization : service does not exist.");
+				sendException("Error occurred during " + servletName + " service initialization : service does not exist.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_INTERNAL_SERVER_ERROR,  connector, null);
 				return null;
 			}
-				
+			
+			//Get the Policy 
+			Authentication principal = SecurityContextHolder.getContext().getAuthentication();
+			String username = null;
+			if (principal != null){
+				username = principal.getName();
+				logger.debug("Authentication : "+username);
+			}
+			Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>)principal.getAuthorities();
+			SdiUser user = sdiUserHome.findByUserName(username);
+			Integer id = null;
+			if (user != null)
+				id = user.getId();
+			SdiPolicy policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualService.getId(), id , authorities);
+			if (policy == null) {
+				if (((HttpServletRequest)req).getUserPrincipal() == null){
+					//Spring Anonymous user is used to perform this request, but not policy defined for it
+					logger.error("Error occurred during " + servletName + " service initialization : No anomnymous policy found.");
+					sendException( "Error occurred during " + servletName + " service initialization : No anomnymous policy found.",  OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "",HttpServletResponse.SC_OK, connector, request.getVersion());
+					return null;
+
+				}else{
+					//No policy found for the authenticated user, return an ogc exception.
+					logger.error("Error occurred during " + servletName + " service initialization : No policy found for user.");
+					sendException( "Error occurred during " + servletName + " service initialization : No policy found for user.",  OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "",HttpServletResponse.SC_OK, connector, request.getVersion());
+					return null;
+				}
+			}
+			
 			//Get the service connector
 			connector = virtualService.getSdiSysServiceconnector().getValue();
 			
@@ -262,7 +290,6 @@ public class OgcProxyServlet extends HttpServlet {
 					//Problem parsing the request
 					logger.error(OWSExceptionReport.TEXT_VERSION_NOT_SUPPORTED,e);
 					sendException(OWSExceptionReport.TEXT_VERSION_NOT_SUPPORTED,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE ,"VERSION", HttpServletResponse.SC_INTERNAL_SERVER_ERROR,connector, highestversion);
-					
 				}
 				else
 				{
@@ -363,18 +390,8 @@ public class OgcProxyServlet extends HttpServlet {
 //				sendException(new PolicyNotFoundException(PolicyNotFoundException.NO_POLICY_FOUND), connector, reqVersion);
 //				return null;
 //			}
-			Authentication principal = SecurityContextHolder.getContext().getAuthentication();
-			String username = null;
-			if (principal != null){
-				username = principal.getName();
-				logger.debug("Authentication : "+username);
-			}
-			Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>)principal.getAuthorities();
-			SdiUser user = sdiUserHome.findByUserName(username);
-			Integer id = null;
-			if (user != null)
-				id = user.getId();
-			SdiPolicy policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualService.getId(), id , authorities);
+			
+			
 			
 			//WFS connector doesn't have yet a request handler
 			if(request != null)
@@ -387,7 +404,8 @@ public class OgcProxyServlet extends HttpServlet {
 				}
 			}
 			
-			try {
+			try 
+			{
 				//Instantiate the servlet class
 				Class<?> classe = Class.forName(className);
 				@SuppressWarnings("rawtypes")

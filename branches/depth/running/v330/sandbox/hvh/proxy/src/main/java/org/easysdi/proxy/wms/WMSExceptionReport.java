@@ -30,27 +30,7 @@ import org.easysdi.proxy.ows.OWSExceptionReport;
 public abstract class WMSExceptionReport extends OWSExceptionReport {
 
 
-	public StringBuffer getServiceExceptionBody (String errorMessage,String code, String locator){
-		StringBuffer sb = new StringBuffer();
-		sb.append("\n\t<ServiceException code=\"");
-		sb.append(code);
-		sb.append("\"");
-		if(locator != null && locator != "" )
-		{
-		    sb.append(" locator=\"");
-		    sb.append(locator);
-		    sb.append("\"");
-		}
-		sb.append(">");
-		if( errorMessage != null && errorMessage.length()!= 0)
-		{
-		    sb.append("\n\t"+errorMessage);
-		}
-		sb.append("\n\t</ServiceException>");
 	
-		return sb;
-    }
-
 
 	public void sendExceptionReport(HttpServletRequest request, HttpServletResponse response, String errorMessage, String code, String locator, int responseCode) throws IOException {
 		StringBuffer sb = this.generateExceptionReport(request, response, errorMessage, code, locator, responseCode);

@@ -16,12 +16,12 @@
  */
 package org.easysdi.proxy.csw;
 
-import org.easysdi.proxy.ows.v10.OWSExceptionReport10;
+import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
 
 /**
  * @author DEPTH SA
  *
  */
-public class CSWExceptionReport extends OWSExceptionReport10 {
+public class CSWExceptionReport extends OWS200ExceptionReport {
 
 }

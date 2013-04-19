@@ -68,6 +68,7 @@ import org.easysdi.proxy.jdom.filter.ElementMD_MetadataNonAuthorizedFilter;
 import org.easysdi.proxy.jdom.filter.ElementTransactionTypeFilter;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.ows.v10.OWSExceptionReport10;
+import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
 import org.easysdi.proxy.xml.handler.CswRequestHandler;
 import org.jdom.Attribute;
 import org.jdom.Document;
@@ -94,7 +95,7 @@ public class CSWProxyServlet extends ProxyServlet {
 	
 	public CSWProxyServlet(ProxyServletRequest proxyRequest,SdiVirtualservice virtualService, SdiPolicy policy) {
 		super(proxyRequest, virtualService, policy);
-		owsExceptionReport = new OWSExceptionReport10();
+		owsExceptionReport = new OWS200ExceptionReport();
 		cswDataManager = new CSWProxyDataAccessibilityManager(policy);
 	}
 

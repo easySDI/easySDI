@@ -86,42 +86,42 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 			}
 		}
 
-		if ("/ogc".equals(request.getServletPath())) {
-			String servletName = request.getPathInfo().substring(1);
-			SdiVirtualservice virtualservice = null;
-			try {
-//				Element elements = virtualServiceCache.get(servletName);
-//				if(elements == null)
-//				{
-//					virtualservice = sdiVirtualserviceHome.findByAlias(servletName);
-//					if(virtualservice != null)
-//					{
-//						Element element = new Element(servletName, virtualservice);
-//						virtualServiceCache.put(element);
-//					}
+//		if ("/ogc".equals(request.getServletPath())) {
+//			String servletName = request.getPathInfo().substring(1);
+//			SdiVirtualservice virtualservice = null;
+//			try {
+////				Element elements = virtualServiceCache.get(servletName);
+////				if(elements == null)
+////				{
+////					virtualservice = sdiVirtualserviceHome.findByAlias(servletName);
+////					if(virtualservice != null)
+////					{
+////						Element element = new Element(servletName, virtualservice);
+////						virtualServiceCache.put(element);
+////					}
+////				}
+////				else
+////					virtualservice = (SdiVirtualservice)elements.getValue();
+//				
+//				//Use of the 2nd level cache
+//				virtualservice = sdiVirtualserviceHome.findByAlias(servletName);
+//				
+//				if(virtualservice == null){
+//					logger.error("Error occurred during " + servletName + " service initialization : service does not exist.");
+//					new OWS200ExceptionReport().sendExceptionReport(request,response, "Error occurred during " + servletName + " service initialization : service does not exist.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request", HttpServletResponse.SC_BAD_REQUEST) ;
+//					return;
 //				}
-//				else
-//					virtualservice = (SdiVirtualservice)elements.getValue();
-				
-				//Use of the 2nd level cache
-				virtualservice = sdiVirtualserviceHome.findByAlias(servletName);
-				
-				if(virtualservice == null){
-					logger.error("Error occurred during " + servletName + " service initialization : service does not exist.");
-					new OWS200ExceptionReport().sendExceptionReport(request,response, "Error occurred during " + servletName + " service initialization : service does not exist.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request", HttpServletResponse.SC_BAD_REQUEST) ;
-					return;
-				}
-				//To allow the anonymous user to be handled as others users, we need to get throw the SecurityContextHolder to get the Authentication
-				//(httpRequest.getUserPrincipal() returns null in the case of anonymous authentication).
-				Authentication principal = SecurityContextHolder.getContext().getAuthentication();
-				String username = null;
-				if (principal != null){
-					username = principal.getName();
-					logger.debug("Authentication : "+username);
-				}
-				Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>)principal.getAuthorities();
-				
-				SdiPolicy policy = null;
+//				//To allow the anonymous user to be handled as others users, we need to get throw the SecurityContextHolder to get the Authentication
+//				//(httpRequest.getUserPrincipal() returns null in the case of anonymous authentication).
+//				Authentication principal = SecurityContextHolder.getContext().getAuthentication();
+//				String username = null;
+//				if (principal != null){
+//					username = principal.getName();
+//					logger.debug("Authentication : "+username);
+//				}
+//				Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>)principal.getAuthorities();
+//				
+//				SdiPolicy policy = null;
 //				long start = System.nanoTime();
 //				Element elementp = virtualServiceCache.get(servletName+username);
 //				if(elementp != null){
@@ -155,38 +155,38 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 				
 				//Use of the 2nd level cache
 //				start = System.nanoTime();
-				SdiUser user = sdiUserHome.findByUserName(username);
-				Integer id = null;
-				if (user != null)
-					id = user.getId();
-				policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualservice.getId(), id , authorities);
-//				elapsedTimeInSec = (System.nanoTime() - start) * 1.0e-9;
-//				logger.info("2nd level cache : "+elapsedTimeInSec);
-				
-				if (policy == null) {
-					if (((HttpServletRequest)req).getUserPrincipal() == null){
-						//Spring Anonymous user is used to perform this request, but not policy defined for it
-						logger.error("Error occurred during " + servletName + " service initialization : No anomnymous policy found.");
-						response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-						response.setHeader("WWW-Authenticate", "Basic realm=\"EasySDI Proxy "+virtualservice.getAlias()+"\"");
-						response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"No anomnymous policy found.");
-						return;
-
-					}else{
-						//No policy found for the authenticated user, return an ogc exception.
-						logger.error("Error occurred during " + servletName + " service initialization : No policy found for user.");
-						new OWS200ExceptionReport().sendExceptionReport(request,response, "No policy found for user.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK) ;
-						return;
-					}
-				}
-			}
-			
-			catch (Exception e) {
-				logger.error("Error occurred during " + servletName + " service initialization : " + e.toString());
-				new OWS200ExceptionReport().sendExceptionReport(request, response, "Error occurred during " + servletName + " service initialization : "+e.toString(), OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request", HttpServletResponse.SC_OK) ;
-				return;
-			}
-		}
+//				SdiUser user = sdiUserHome.findByUserName(username);
+//				Integer id = null;
+//				if (user != null)
+//					id = user.getId();
+//				policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualservice.getId(), id , authorities);
+////				elapsedTimeInSec = (System.nanoTime() - start) * 1.0e-9;
+////				logger.info("2nd level cache : "+elapsedTimeInSec);
+//				
+//				if (policy == null) {
+//					if (((HttpServletRequest)req).getUserPrincipal() == null){
+//						//Spring Anonymous user is used to perform this request, but not policy defined for it
+//						logger.error("Error occurred during " + servletName + " service initialization : No anomnymous policy found.");
+//						response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//						response.setHeader("WWW-Authenticate", "Basic realm=\"EasySDI Proxy "+virtualservice.getAlias()+"\"");
+//						response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"No anomnymous policy found.");
+//						return;
+//
+//					}else{
+//						//No policy found for the authenticated user, return an ogc exception.
+//						logger.error("Error occurred during " + servletName + " service initialization : No policy found for user.");
+//						new OWS200ExceptionReport().sendExceptionReport(request,response, "No policy found for user.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK) ;
+//						return;
+//					}
+//				}
+//			}
+//			
+//			catch (Exception e) {
+//				logger.error("Error occurred during " + servletName + " service initialization : " + e.toString());
+//				new OWS200ExceptionReport().sendExceptionReport(request, response, "Error occurred during " + servletName + " service initialization : "+e.toString(), OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request", HttpServletResponse.SC_OK) ;
+//				return;
+//			}
+//		}
 		chain.doFilter(request, response);
 	}
 

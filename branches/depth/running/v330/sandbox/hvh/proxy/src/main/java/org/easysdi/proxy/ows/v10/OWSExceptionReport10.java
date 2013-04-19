@@ -29,6 +29,7 @@ import org.easysdi.proxy.ows.OWSExceptionReport;
  * @author DEPTH SA
  *
  */
+@Deprecated
 public class OWSExceptionReport10 extends OWSExceptionReport {
 
 	@Override

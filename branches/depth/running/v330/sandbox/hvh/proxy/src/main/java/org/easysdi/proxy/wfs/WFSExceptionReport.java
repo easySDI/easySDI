@@ -34,23 +34,26 @@ public class WFSExceptionReport extends OWSExceptionReport {
 			HttpServletResponse response, String errorMessage, String code,
 			String locator, int responseCode) throws IOException {
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8'?>\n");
-		sb.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc ../wfs/1.0.0/OGC-exception.xsd\" version=\"1.2.0\">\n");
-		sb.append("\t<ServiceException ");
-		if(code != null && code != "")
-		{
-			sb.append(" code=\"");
-			sb.append(code);
-			sb.append("\"");
-		}
-		if(locator != null && locator != "")
-		{
-			sb.append(" locator=\"");
-			sb.append(locator);
-			sb.append("\"");
-		}
-		sb.append(">");
-		sb.append(errorMessage);
-		sb.append("</ServiceException>\n");
+		sb.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" " +
+				"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
+				"xsi:schemaLocation=\"http://www.opengis.net/ogc ../wfs/1.0.0/OGC-exception.xsd\" version=\"1.2.0\">\n");
+		sb.append(this.getServiceExceptionBody(errorMessage, code, locator));
+//		sb.append("\t<ServiceException ");
+//		if(code != null && code != "")
+//		{
+//			sb.append(" code=\"");
+//			sb.append(code);
+//			sb.append("\"");
+//		}
+//		if(locator != null && locator != "")
+//		{
+//			sb.append(" locator=\"");
+//			sb.append(locator);
+//			sb.append("\"");
+//		}
+//		sb.append(">");
+//		sb.append(errorMessage);
+//		sb.append("</ServiceException>\n");
 		sb.append("</ServiceExceptionReport>");
 		
 		return sb;
