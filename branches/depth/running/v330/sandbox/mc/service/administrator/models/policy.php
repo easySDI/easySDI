@@ -157,7 +157,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			//check layers that have settings
 			if (!empty($pk)) {
 				$db->setQuery('
-					SELECT wlp.name, wlp.enabled
+					SELECT wlp.name, wlp.enabled, wlp.spatialpolicy_id
 					FROM #__sdi_policy p
 					JOIN #__sdi_physicalservice_policy psp
 					ON p.id = psp.policy_id
@@ -179,7 +179,9 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				}
 				
 				foreach ($resultset as $row) {
-					$layerList[] = $row->name;
+					if (!is_null($row->spatialpolicy_id)) {
+						$layerList[] = $row->name;
+					}
 					$data[$row->name] = Array(
 						'enabled' => $row->enabled,
 					);
@@ -218,7 +220,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			//check layers that have settings
 			if (!empty($pk)) {
 				$db->setQuery('
-					SELECT wlp.name, wlp.enabled
+					SELECT wlp.name, wlp.enabled, wlp.spatialpolicy_id
 					FROM #__sdi_policy p
 					JOIN #__sdi_physicalservice_policy psp
 					ON p.id = psp.policy_id
@@ -239,7 +241,9 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				}
 				
 				foreach ($resultset as $row) {
-					$layerList[] = $row->name;
+					if (!is_null($row->spatialpolicy_id)) {
+						$layerList[] = $row->name;
+					}
 					$data[$row->name] = Array(
 						'enabled' => $row->enabled,
 					);

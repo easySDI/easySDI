@@ -199,6 +199,12 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 											<?php foreach($ps->getLayerList() as $layer):?>
 												<tr>
 													<td>
+														<?php
+															$checked = (1 == $layer->enabled)?'checked="checked"':'';
+															echo '<input type="checkbox" name="enabled[' . $ps->id . '][' . $layer->name . ']" value="1" ' . $checked . '/>';
+														?>
+													</td>
+													<td>
 														<?php echo $layer->name; ?>
 														&nbsp;
 														<?php
