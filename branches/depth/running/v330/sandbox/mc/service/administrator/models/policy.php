@@ -1480,7 +1480,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					ON psp.id = p.physicalservicepolicy_id
 					WHERE psp.physicalservice_id = ' . $physicalServiceID . '
 					AND psp.policy_id = ' . $policyID . '
-					AND p.identifier = \'' . $layerID . '\';
+					AND p.name = \'' . $layerID . '\';
 				');
 				
 				try {
