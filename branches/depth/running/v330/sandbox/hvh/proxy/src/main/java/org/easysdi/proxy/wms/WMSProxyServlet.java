@@ -1485,9 +1485,6 @@ public class WMSProxyServlet extends ProxyServlet {
     protected boolean isLayerInScale(String layer, SdiPhysicalservice physicalservice, double scale) {
     	if (layer == null)
 		    return false;
-	
-		if(sdiPolicy.isAnyservice())
-			return true;
 		
 		Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
     	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
@@ -1496,9 +1493,6 @@ public class WMSProxyServlet extends ProxyServlet {
     		SdiPhysicalservicePolicy physicalservicePolicy = i.next();
     		if(physicalservicePolicy.getSdiPhysicalservice().getId().equals(physicalservice.getId()))
     		{
-    			if(physicalservicePolicy.isAnyitem())
-    				return true;
-    			
     			Set<SdiWmslayerPolicy> wmsLayerPolicies = physicalservicePolicy.getSdiWmslayerPolicies();
 	    		Iterator<SdiWmslayerPolicy> it = wmsLayerPolicies.iterator();
 	    		while (it.hasNext())
@@ -1577,9 +1571,13 @@ public class WMSProxyServlet extends ProxyServlet {
 	    		while (it.hasNext())
 	    		{
 	    			SdiWmslayerPolicy layerPolicy = it.next();
-	    			if(layerPolicy.getName().equals(layer) && layerPolicy.isEnabled())
-	    				if(layerPolicy.getSdiWmsSpatialpolicy() != null)
-	    					return layerPolicy.getSdiWmsSpatialpolicy().getGeographicfilter();
+	    			if(layerPolicy.getName().equals(layer))
+	    			{
+	    				if(layerPolicy.isEnabled())
+	    					return layerPolicy.getSdiWmsSpatialpolicy() == null ? null : layerPolicy.getSdiWmsSpatialpolicy().getGeographicfilter();
+	    				else
+	    					return null;
+	    			}
 	    		}
 	    		break;
     		}
@@ -1617,8 +1615,8 @@ public class WMSProxyServlet extends ProxyServlet {
 	    		while (it.hasNext())
 	    		{
 	    			SdiWmslayerPolicy layerPolicy = it.next();
-	    			if(layerPolicy.getName().equals(layer) && layerPolicy.isEnabled())
-	    				return true;
+	    			if(layerPolicy.getName().equals(layer))
+	    				return layerPolicy.isEnabled() ? true : false;
 	    		}
 	    		break;
     		}

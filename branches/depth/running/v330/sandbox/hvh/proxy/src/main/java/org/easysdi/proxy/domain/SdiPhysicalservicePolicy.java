@@ -96,6 +96,11 @@ public class SdiPhysicalservicePolicy implements java.io.Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "wms_spatialpolicy_id")
 	public SdiWmsSpatialpolicy getSdiWmsSpatialpolicy() {
+		if(this.sdiWmsSpatialpolicy == null)
+		{
+			if (this.getSdiPolicy().getSdiWmsSpatialpolicy() != null)
+				this.sdiWmsSpatialpolicy = this.getSdiPolicy().getSdiWmsSpatialpolicy();
+		}
 		return this.sdiWmsSpatialpolicy;
 	}
 
@@ -131,6 +136,11 @@ public class SdiPhysicalservicePolicy implements java.io.Serializable {
 
 	public void setSdiWmtsSpatialpolicy(
 			SdiWmtsSpatialpolicy sdiWmtsSpatialpolicy) {
+		if(this.sdiWmtsSpatialpolicy == null)
+		{
+			if (this.getSdiPolicy().getSdiWmtsSpatialpolicy() != null)
+				this.sdiWmtsSpatialpolicy = this.getSdiPolicy().getSdiWmtsSpatialpolicy();
+		}
 		this.sdiWmtsSpatialpolicy = sdiWmtsSpatialpolicy;
 	}
 
@@ -147,6 +157,11 @@ public class SdiPhysicalservicePolicy implements java.io.Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "wfs_spatialpolicy_id")
 	public SdiWfsSpatialpolicy getSdiWfsSpatialpolicy() {
+		if(this.sdiWfsSpatialpolicy == null)
+		{
+			if (this.getSdiPolicy().getSdiWfsSpatialpolicy() != null)
+				this.sdiWfsSpatialpolicy = this.getSdiPolicy().getSdiWfsSpatialpolicy();
+		}
 		return this.sdiWfsSpatialpolicy;
 	}
 

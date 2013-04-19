@@ -74,11 +74,11 @@ public class SdiWmslayerPolicy implements java.io.Serializable {
 			if(this.getSdiPhysicalservicePolicy().getSdiWmsSpatialpolicy()==null)
 			{
 				if(this.getSdiPhysicalservicePolicy().getSdiPolicy().getSdiWmsSpatialpolicy()!= null)
-					return this.getSdiPhysicalservicePolicy().getSdiPolicy().getSdiWmsSpatialpolicy();
+					this.sdiWmsSpatialpolicy = this.getSdiPhysicalservicePolicy().getSdiPolicy().getSdiWmsSpatialpolicy();
 			}
 			else
 			{
-				return this.getSdiPhysicalservicePolicy().getSdiWmsSpatialpolicy();
+				this.sdiWmsSpatialpolicy = this.getSdiPhysicalservicePolicy().getSdiWmsSpatialpolicy();
 			}
 		}
 		return this.sdiWmsSpatialpolicy;

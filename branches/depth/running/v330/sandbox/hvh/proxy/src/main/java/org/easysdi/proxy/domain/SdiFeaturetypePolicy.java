@@ -77,6 +77,18 @@ public class SdiFeaturetypePolicy implements java.io.Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "spatialpolicy_id")
 	public SdiWfsSpatialpolicy getSdiWfsSpatialpolicy() {
+		if(this.sdiWfsSpatialpolicy == null)
+		{
+			if(this.getSdiPhysicalservicePolicy().getSdiWfsSpatialpolicy()==null)
+			{
+				if(this.getSdiPhysicalservicePolicy().getSdiPolicy().getSdiWfsSpatialpolicy()!= null)
+					this.sdiWfsSpatialpolicy =  this.getSdiPhysicalservicePolicy().getSdiPolicy().getSdiWfsSpatialpolicy();
+			}
+			else
+			{
+				this.sdiWfsSpatialpolicy = this.getSdiPhysicalservicePolicy().getSdiWfsSpatialpolicy();
+			}
+		}
 		return this.sdiWfsSpatialpolicy;
 	}
 
