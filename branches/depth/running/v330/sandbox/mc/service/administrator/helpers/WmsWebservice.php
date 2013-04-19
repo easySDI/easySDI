@@ -145,11 +145,15 @@ class WmsWebservice {
 	}
 	
 	private static function setWmsLayerSettings ($raw_GET) {
-		//$enabled = (isset($raw_GET['enabled']))?1:0;
 		$physicalServiceID = $raw_GET['psID'];
 		$policyID = $raw_GET['policyID'];
 		$layerID = $raw_GET['layerID'];
-		var_dump($raw_GET);
+		$raw_GET['maxX'] = ('' != $raw_GET['maxX'])?$raw_GET['maxX']:'null';
+		$raw_GET['maxY'] = ('' != $raw_GET['maxY'])?$raw_GET['maxY']:'null';
+		$raw_GET['minX'] = ('' != $raw_GET['minX'])?$raw_GET['minX']:'null';
+		$raw_GET['minY'] = ('' != $raw_GET['minY'])?$raw_GET['minY']:'null';
+		$raw_GET['minimumscale'] = ('' != $raw_GET['minimumscale'])?$raw_GET['minimumscale']:'null';
+		$raw_GET['maximumscale'] = ('' != $raw_GET['maximumscale'])?$raw_GET['maximumscale']:'null';
 		$db = JFactory::getDbo();
 		
 		//save Spatial Policy
@@ -176,8 +180,8 @@ class WmsWebservice {
 			return false;
 		}
 		
+		$query = $db->getQuery(true);
 		if (0 == $num_result) {
-			$query = $db->getQuery(true);
 			$query->insert('#__sdi_wms_spatialpolicy')->columns('
 				geographicfilter, maxx, maxy, minx, miny, minimumscale, maximumscale, srssource
 			')->values('
@@ -185,7 +189,6 @@ class WmsWebservice {
 			');
 		}
 		else {
-			$query = $db->getQuery(true);
 			$query->update('#__sdi_wms_spatialpolicy')->set(Array(
 				'geographicfilter = \'' . $raw_GET['geographicfilter'] . '\'',
 				'maxx = ' . $raw_GET['maxX'],
@@ -199,7 +202,6 @@ class WmsWebservice {
 				'id = \'' . $spatial_policy_id . '\'',
 			));
 		}
-		
 		$db->setQuery($query);
 		
 		try {
@@ -237,52 +239,23 @@ class WmsWebservice {
 		}
 		
 		
-		if (0 == $num_result) {
-			$db->setQuery('
-				SELECT id
-				FROM #__sdi_physicalservice_policy
-				WHERE physicalservice_id = ' . $physicalServiceID . '
-				AND policy_id = ' . $policyID . ';
-			');
+		if (0 != $num_result) {
+			$query = $db->getQuery(true);
+			$query->update('#__sdi_wmslayer_policy')->set(Array(
+				'spatialpolicy_id = \'' . $spatial_policy_id . '\'',
+			))->where(Array(
+				'id = \'' . $wmslayerpolicy_id . '\'',
+			));
+			$db->setQuery($query);
 			
 			try {
 				$db->execute();
-				$physicalservice_policy_id = $db->loadResult();
 			}
 			catch (JDatabaseException $e) {
 				$je = new JException($e->getMessage());
 				$this->setError($je);
 				return false;
 			}
-			
-			$query = $db->getQuery(true);
-			$query->insert('#__sdi_wmslayer_policy')->columns('
-				name, spatialpolicy_id, physicalservicepolicy_id
-			')->values('
-				\'' . $layerID . '\', \'' . $spatial_policy_id . '\', \'' . $physicalservice_policy_id . '\'
-			');
-		}
-		/*else {
-			$query = $db->getQuery(true);
-			$query->update('#__sdi_wmslayer_policy')->set(Array(
-				'enabled = \'' . $enabled . '\'',
-			))->where(Array(
-				'id = \'' . $wmslayerpolicy_id . '\'',
-			));
-		}*/
-		
-		$db->setQuery($query);
-		
-		try {
-			$db->execute();
-			if (0 == $num_result) {
-				$wmslayerpolicy_id = $db->insertid();
-			}
-		}
-		catch (JDatabaseException $e) {
-			$je = new JException($e->getMessage());
-			$this->setError($je);
-			return false;
 		}
 		
 		return true;

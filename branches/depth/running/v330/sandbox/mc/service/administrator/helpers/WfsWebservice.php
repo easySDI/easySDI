@@ -161,7 +161,6 @@ class WfsWebservice {
 	}
 	
 	private static function setFeatureTypeSettings ($raw_GET) {
-		//$enabled = (isset($raw_GET['enabled']))?1:0;
 		$physicalServiceID = $raw_GET['psID'];
 		$policyID = $raw_GET['policyID'];
 		$layerID = $raw_GET['layerID'];
@@ -247,52 +246,23 @@ class WfsWebservice {
 		}
 		
 		
-		if (0 == $num_result) {
-			$db->setQuery('
-				SELECT id
-				FROM #__sdi_physicalservice_policy
-				WHERE physicalservice_id = ' . $physicalServiceID . '
-				AND policy_id = ' . $policyID . ';
-			');
+		if (0 != $num_result) {
+			$query = $db->getQuery(true);
+			$query->update('#__sdi_featuretype_policy')->set(Array(
+				'spatialpolicy_id = \'' . $spatial_policy_id . '\'',
+			))->where(Array(
+				'id = \'' . $featuretypepolicy_id . '\'',
+			));
+			$db->setQuery($query);
 			
 			try {
 				$db->execute();
-				$physicalservice_policy_id = $db->loadResult();
 			}
 			catch (JDatabaseException $e) {
 				$je = new JException($e->getMessage());
 				$this->setError($je);
 				return false;
 			}
-			
-			$query = $db->getQuery(true);
-			$query->insert('#__sdi_featuretype_policy')->columns('
-				name, spatialpolicy_id, physicalservicepolicy_id
-			')->values('
-				\'' . $layerID . '\', \'' . $spatial_policy_id . '\', \'' . $physicalservice_policy_id . '\'
-			');
-		}
-		/*else {
-			$query = $db->getQuery(true);
-			$query->update('#__sdi_featuretype_policy')->set(Array(
-				'enabled = \'' . $enabled . '\'',
-			))->where(Array(
-				'id = \'' . $featuretypepolicy_id . '\'',
-			));
-		}*/
-		
-		$db->setQuery($query);
-		
-		try {
-			$db->execute();
-			if (0 == $num_result) {
-				$featuretypepolicy_id = $db->insertid();
-			}
-		}
-		catch (JDatabaseException $e) {
-			$je = new JException($e->getMessage());
-			$this->setError($je);
-			return false;
 		}
 		
 		//save included attributes
