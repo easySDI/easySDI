@@ -149,7 +149,7 @@ class WmsWebservice {
 		$physicalServiceID = $raw_GET['psID'];
 		$policyID = $raw_GET['policyID'];
 		$layerID = $raw_GET['layerID'];
-		
+		var_dump($raw_GET);
 		$db = JFactory::getDbo();
 		
 		//save Spatial Policy
@@ -181,19 +181,19 @@ class WmsWebservice {
 			$query->insert('#__sdi_wms_spatialpolicy')->columns('
 				geographicfilter, maxx, maxy, minx, miny, minimumscale, maximumscale, srssource
 			')->values('
-				\'' . $raw_GET['geographicfilter'] . '\', \'' . $raw_GET['maxX'] . '\', \'' . $raw_GET['maxY'] . '\', \'' . $raw_GET['minX'] . '\', \'' . $raw_GET['minY'] . '\', \'' . $raw_GET['minimumscale'] . '\', \'' . $raw_GET['maximumscale'] . '\', \'' . $raw_GET['srs'] . '\'
+				\'' . $raw_GET['geographicfilter'] . '\', ' . $raw_GET['maxX'] . ', ' . $raw_GET['maxY'] . ', ' . $raw_GET['minX'] . ', ' . $raw_GET['minY'] . ', ' . $raw_GET['minimumscale'] . ', ' . $raw_GET['maximumscale'] . ', \'' . $raw_GET['srs'] . '\'
 			');
 		}
 		else {
 			$query = $db->getQuery(true);
 			$query->update('#__sdi_wms_spatialpolicy')->set(Array(
 				'geographicfilter = \'' . $raw_GET['geographicfilter'] . '\'',
-				'maxx = \'' . $raw_GET['maxX'] . '\'',
-				'maxy = \'' . $raw_GET['maxY'] . '\'',
-				'minx = \'' . $raw_GET['minX'] . '\'',
-				'miny = \'' . $raw_GET['minY'] . '\'',
-				'minimumscale = \'' . $raw_GET['minimumscale'] . '\'',
-				'maximumscale = \'' . $raw_GET['maximumscale'] . '\'',
+				'maxx = ' . $raw_GET['maxX'],
+				'maxy = ' . $raw_GET['maxY'],
+				'minx = ' . $raw_GET['minX'],
+				'miny = ' . $raw_GET['minY'],
+				'minimumscale = ' . $raw_GET['minimumscale'],
+				'maximumscale = ' . $raw_GET['maximumscale'],
 				'srssource = \'' . $raw_GET['srs'] . '\'',
 			))->where(Array(
 				'id = \'' . $spatial_policy_id . '\'',
