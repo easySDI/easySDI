@@ -124,25 +124,24 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 				<div class="tab-pane active" id="details">
 					<fieldset>
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_DETAILS' );?></legend>
-					<?php foreach($this->form->getFieldset('policy') as $field): 
-					?> 
-						<div class="control-group" id="<?php echo $field->fieldname;?>">
-							<div class="control-label"><?php echo $field->label; ?></div>
-							<div class="controls"><?php echo $field->input; ?></div>
-						</div>
-					<?php endforeach; ?>
-					<?php foreach($this->form->getFieldset('wms_policy') as $field): 
-					?> 
-						<div class="control-group">
-							<div class="control-label"><?php echo $field->label; ?></div>
-							<div class="controls"><?php echo $field->input; ?></div>
-						</div>
-					<?php endforeach; ?>
-						
+						<?php foreach($this->form->getFieldset('policy') as $field): ?> 
+							<div class="control-group" id="<?php echo $field->fieldname;?>">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+						<?php endforeach; ?>
 						<div class="control-group">
 							<div class="control-label"><?php echo $this->form->getLabel('allowedoperation_wms'); ?></div>
 							<div class="controls"><?php echo $this->form->getInput('allowedoperation_wms'); ?></div>
 						</div>
+						<?php foreach($this->form->getFieldset('wms_policy') as $field): 
+						?> 
+							<div class="control-group">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+						<?php endforeach; ?>
+						
 						<div class="control-group">
 							<div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
 							<div class="controls"><?php echo $this->form->getInput('id'); ?></div>

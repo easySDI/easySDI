@@ -386,6 +386,11 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			}
 			
 			if ('WMS' == $serviceconnector_name) {
+				require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmsWebservice.php');
+				if (!WmsWebservice::saveAllLayers( $data['virtualservice_id'], $data['id'])) {
+					$this->setError('Failed to save all WMS layers.');
+					return false;
+				}
 			}
 			
 			if (!$isNew) {
@@ -402,12 +407,6 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 						}
 						break;
 					case 'WMS':
-						require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmsWebservice.php');
-						if (!WmsWebservice::saveAllLayers( $data['virtualservice_id'], $data['id'])) {
-							$this->setError('Failed to save all WMS layers.');
-							return false;
-						}
-						
 						if (!$this->saveWMSInheritance($data)) {
 							$this->setError('Failed to save inheritance.');
 							return false;
@@ -482,6 +481,12 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		$spatialPolicy = current($_POST['inherit_policy']);
 		$spatialPolicyID = key($_POST['inherit_policy']);
 		
+		$spatialPolicy['spatialoperatorid'] = ('' != $spatialPolicy['spatialoperatorid'])?$spatialPolicy['spatialoperatorid']:1;
+		$spatialPolicy['eastBoundLongitude'] = ('' != $spatialPolicy['eastBoundLongitude'])?$spatialPolicy['eastBoundLongitude']:'null';
+		$spatialPolicy['westBoundLongitude'] = ('' != $spatialPolicy['westBoundLongitude'])?$spatialPolicy['westBoundLongitude']:'null';
+		$spatialPolicy['northBoundLatitude'] = ('' != $spatialPolicy['northBoundLatitude'])?$spatialPolicy['northBoundLatitude']:'null';
+		$spatialPolicy['southBoundLatitude'] = ('' != $spatialPolicy['southBoundLatitude'])?$spatialPolicy['southBoundLatitude']:'null';
+		
 		$policyUpdates = Array(
 			'anyservice = ' . ((isset($spatialPolicy['anyservice'])) ? 1 : 0),
 		);
@@ -492,7 +497,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			$query = $db->getQuery(true);
 			$query->insert('#__sdi_wmts_spatialpolicy')->columns(
 				'northboundlatitude, westboundlongitude, eastboundlongitude, southboundlatitude, spatialoperator_id'
-			)->values('\'' . $spatialPolicy['northBoundLatitude'] . '\', \'' . $spatialPolicy['westBoundLongitude'] . '\', \'' . $spatialPolicy['eastBoundLongitude'] . '\', \'' . $spatialPolicy['southBoundLatitude'] . '\', \'' . $spatialPolicy['spatialoperatorid'] . '\'');
+			)->values($spatialPolicy['northBoundLatitude'] . ', ' . $spatialPolicy['westBoundLongitude'] . ', ' . $spatialPolicy['eastBoundLongitude'] . ', ' . $spatialPolicy['southBoundLatitude'] . ', ' . $spatialPolicy['spatialoperatorid']);
 			
 			try {
 				$db->setQuery($query);
@@ -513,11 +518,11 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			//we update the spatial policy
 			$query = $db->getQuery(true);
 			$query->update('#__sdi_wmts_spatialpolicy')->set(Array(
-				'northboundlatitude = \'' . $spatialPolicy['northBoundLatitude'] . '\'',
-				'westboundlongitude = \'' . $spatialPolicy['westBoundLongitude'] . '\'',
-				'eastboundlongitude = \'' . $spatialPolicy['eastBoundLongitude'] . '\'',
-				'southboundlatitude = \'' . $spatialPolicy['southBoundLatitude'] . '\'',
-				'spatialoperator_id = \'' . $spatialPolicy['spatialoperatorid'] . '\'',
+				'northboundlatitude = ' . $spatialPolicy['northBoundLatitude'],
+				'westboundlongitude = ' . $spatialPolicy['westBoundLongitude'],
+				'eastboundlongitude = ' . $spatialPolicy['eastBoundLongitude'],
+				'southboundlatitude = ' . $spatialPolicy['southBoundLatitude'],
+				'spatialoperator_id = ' . $spatialPolicy['spatialoperatorid'],
 			))->where('id = ' . $spatialPolicyID);
 			
 			try {
@@ -575,13 +580,19 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				return false;
 			}
 			
+			$spatialPolicy['spatialoperatorid'] = ('' != $spatialPolicy['spatialoperatorid'])?$spatialPolicy['spatialoperatorid']:1;
+			$spatialPolicy['eastBoundLongitude'] = ('' != $spatialPolicy['eastBoundLongitude'])?$spatialPolicy['eastBoundLongitude']:'null';
+			$spatialPolicy['westBoundLongitude'] = ('' != $spatialPolicy['westBoundLongitude'])?$spatialPolicy['westBoundLongitude']:'null';
+			$spatialPolicy['northBoundLatitude'] = ('' != $spatialPolicy['northBoundLatitude'])?$spatialPolicy['northBoundLatitude']:'null';
+			$spatialPolicy['southBoundLatitude'] = ('' != $spatialPolicy['southBoundLatitude'])?$spatialPolicy['southBoundLatitude']:'null';
+			
 			//test whether that physicalservice_policy already have a spatialPolicy or not
 			if (empty($spatialPolicyID)) {
 				//create a spatial policy
 				$query = $db->getQuery(true);
 				$query->insert('#__sdi_wmts_spatialpolicy')->columns(
 					'northboundlatitude, westboundlongitude, eastboundlongitude, southboundlatitude, spatialoperator_id'
-				)->values('\'' . $spatialPolicy['northBoundLatitude'] . '\', \'' . $spatialPolicy['westBoundLongitude'] . '\', \'' . $spatialPolicy['eastBoundLongitude'] . '\', \'' . $spatialPolicy['southBoundLatitude'] . '\', \'' . $spatialPolicy['spatialoperatorid'] . '\'');
+				)->values($spatialPolicy['northBoundLatitude'] . ', ' . $spatialPolicy['westBoundLongitude'] . ', ' . $spatialPolicy['eastBoundLongitude'] . ', ' . $spatialPolicy['southBoundLatitude'] . ', ' . $spatialPolicy['spatialoperatorid']);
 				
 				try {
 					$db->setQuery($query);
@@ -602,11 +613,11 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				//update the spatial policy
 				$query = $db->getQuery(true);
 				$query->update('#__sdi_wmts_spatialpolicy')->set(Array(
-					'northboundlatitude = \'' . $spatialPolicy['northBoundLatitude'] . '\'',
-					'westboundlongitude = \'' . $spatialPolicy['westBoundLongitude'] . '\'',
-					'eastboundlongitude = \'' . $spatialPolicy['eastBoundLongitude'] . '\'',
-					'southboundlatitude = \'' . $spatialPolicy['southBoundLatitude'] . '\'',
-					'spatialoperator_id = \'' . $spatialPolicy['spatialoperatorid'] . '\'',
+					'northboundlatitude = ' . $spatialPolicy['northBoundLatitude'],
+					'westboundlongitude = ' . $spatialPolicy['westBoundLongitude'],
+					'eastboundlongitude = ' . $spatialPolicy['eastBoundLongitude'],
+					'southboundlatitude = ' . $spatialPolicy['southBoundLatitude'],
+					'spatialoperator_id = ' . $spatialPolicy['spatialoperatorid'],
 				))->where('id = ' . $spatialPolicyID);
 				
 				try {
@@ -654,6 +665,13 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		$spatialPolicy = current($_POST['inherit_policy']);
 		$spatialPolicyID = key($_POST['inherit_policy']);
 		
+		$spatialPolicy['maxx'] = ('' != $spatialPolicy['maxx'])?$spatialPolicy['maxx']:'null';
+		$spatialPolicy['maxy'] = ('' != $spatialPolicy['maxy'])?$spatialPolicy['maxy']:'null';
+		$spatialPolicy['minx'] = ('' != $spatialPolicy['minx'])?$spatialPolicy['minx']:'null';
+		$spatialPolicy['miny'] = ('' != $spatialPolicy['miny'])?$spatialPolicy['miny']:'null';
+		$spatialPolicy['minimumscale'] = ('' != $spatialPolicy['minimumscale'])?$spatialPolicy['minimumscale']:'null';
+		$spatialPolicy['maximumscale'] = ('' != $spatialPolicy['maximumscale'])?$spatialPolicy['maximumscale']:'null';
+		
 		$policyUpdates = Array(
 			'anyservice = ' . ((isset($spatialPolicy['anyservice'])) ? 1 : 0),
 		);
@@ -664,7 +682,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			$query = $db->getQuery(true);
 			$query->insert('#__sdi_wms_spatialpolicy')->columns(
 				'maxx, maxy, minx, miny, geographicfilter, maximumscale, minimumscale, srssource'
-			)->values('\'' . $spatialPolicy['maxx'] . '\', \'' . $spatialPolicy['maxy'] . '\', \'' . $spatialPolicy['minx'] . '\', \'' . $spatialPolicy['miny'] . '\', \'' . $spatialPolicy['geographicfilter'] . '\', \'' . $spatialPolicy['maximumscale'] . '\', \'' . $spatialPolicy['minimumscale'] . '\', \'' . $spatialPolicy['srssource'] . '\'');
+			)->values($spatialPolicy['maxx'] . ', ' . $spatialPolicy['maxy'] . ', ' . $spatialPolicy['minx'] . ', ' . $spatialPolicy['miny'] . ', \'' . $spatialPolicy['geographicfilter'] . '\', ' . $spatialPolicy['maximumscale'] . ', ' . $spatialPolicy['minimumscale'] . ', \'' . $spatialPolicy['srssource'] . '\'');
 			
 			try {
 				$db->setQuery($query);
@@ -685,13 +703,13 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			//we update the spatial policy
 			$query = $db->getQuery(true);
 			$query->update('#__sdi_wms_spatialpolicy')->set(Array(
-				'maxx = \'' . $spatialPolicy['maxx'] . '\'',
-				'maxy = \'' . $spatialPolicy['maxy'] . '\'',
-				'minx = \'' . $spatialPolicy['minx'] . '\'',
-				'miny = \'' . $spatialPolicy['miny'] . '\'',
+				'maxx = ' . $spatialPolicy['maxx'],
+				'maxy = ' . $spatialPolicy['maxy'],
+				'minx = ' . $spatialPolicy['minx'],
+				'miny = ' . $spatialPolicy['miny'],
 				'geographicfilter = \'' . $spatialPolicy['geographicfilter'] . '\'',
-				'maximumscale = \'' . $spatialPolicy['maximumscale'] . '\'',
-				'minimumscale = \'' . $spatialPolicy['minimumscale'] . '\'',
+				'maximumscale = ' . $spatialPolicy['maximumscale'],
+				'minimumscale = ' . $spatialPolicy['minimumscale'],
 				'srssource = \'' . $spatialPolicy['srssource'] . '\'',
 			))->where('id = ' . $spatialPolicyID);
 			
@@ -750,13 +768,20 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				return false;
 			}
 			
+			$spatialPolicy['maxx'] = ('' != $spatialPolicy['maxx'])?$spatialPolicy['maxx']:'null';
+			$spatialPolicy['maxy'] = ('' != $spatialPolicy['maxy'])?$spatialPolicy['maxy']:'null';
+			$spatialPolicy['minx'] = ('' != $spatialPolicy['minx'])?$spatialPolicy['minx']:'null';
+			$spatialPolicy['miny'] = ('' != $spatialPolicy['miny'])?$spatialPolicy['miny']:'null';
+			$spatialPolicy['minimumscale'] = ('' != $spatialPolicy['minimumscale'])?$spatialPolicy['minimumscale']:'null';
+			$spatialPolicy['maximumscale'] = ('' != $spatialPolicy['maximumscale'])?$spatialPolicy['maximumscale']:'null';
+			
 			//test whether that physicalservice_policy already have a spatialPolicy or not
 			if (empty($spatialPolicyID)) {
 				//create a spatial policy
 				$query = $db->getQuery(true);
 				$query->insert('#__sdi_wms_spatialpolicy')->columns(
 					'maxx, maxy, minx, miny, geographicfilter, maximumscale, minimumscale, srssource'
-				)->values('\'' . $spatialPolicy['maxx'] . '\', \'' . $spatialPolicy['maxy'] . '\', \'' . $spatialPolicy['minx'] . '\', \'' . $spatialPolicy['miny'] . '\', \'' . $spatialPolicy['geographicfilter'] . '\', \'' . $spatialPolicy['maximumscale'] . '\', \'' . $spatialPolicy['minimumscale'] . '\', \'' . $spatialPolicy['srssource'] . '\'');
+				)->values($spatialPolicy['maxx'] . ', ' . $spatialPolicy['maxy'] . ', ' . $spatialPolicy['minx'] . ', ' . $spatialPolicy['miny'] . ', \'' . $spatialPolicy['geographicfilter'] . '\', ' . $spatialPolicy['maximumscale'] . ', ' . $spatialPolicy['minimumscale'] . ', \'' . $spatialPolicy['srssource'] . '\'');
 				
 				try {
 					$db->setQuery($query);
@@ -777,13 +802,13 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				//update the spatial policy
 				$query = $db->getQuery(true);
 				$query->update('#__sdi_wms_spatialpolicy')->set(Array(
-					'maxx = \'' . $spatialPolicy['maxx'] . '\'',
-					'maxy = \'' . $spatialPolicy['maxy'] . '\'',
-					'minx = \'' . $spatialPolicy['minx'] . '\'',
-					'miny = \'' . $spatialPolicy['miny'] . '\'',
+					'maxx = ' . $spatialPolicy['maxx'],
+					'maxy = ' . $spatialPolicy['maxy'],
+					'minx = ' . $spatialPolicy['minx'],
+					'miny = ' . $spatialPolicy['miny'],
 					'geographicfilter = \'' . $spatialPolicy['geographicfilter'] . '\'',
-					'maximumscale = \'' . $spatialPolicy['maximumscale'] . '\'',
-					'minimumscale = \'' . $spatialPolicy['minimumscale'] . '\'',
+					'maximumscale = ' . $spatialPolicy['maximumscale'],
+					'minimumscale = ' . $spatialPolicy['minimumscale'],
 					'srssource = \'' . $spatialPolicy['srssource'] . '\'',
 				))->where('id = ' . $spatialPolicyID);
 				
@@ -1380,7 +1405,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					ON psp.id = p.physicalservicepolicy_id
 					WHERE psp.physicalservice_id = ' . $physicalServiceID . '
 					AND psp.policy_id = ' . $policyID . '
-					AND p.identifier = \'' . $layerID . '\';
+					AND p.name = \'' . $layerID . '\';
 				');
 				
 				try {

@@ -18,7 +18,6 @@ class Easysdi_serviceTablephysicalservice_policy extends sdiTable {
 	}
 	
 	public function save ($src, $orderingFilter = '', $ignore = '') {
-		
 		$virtualservice_id = $src['virtualservice_id'];
 		$policy_id = $src['id'];
 		
@@ -32,13 +31,13 @@ class Easysdi_serviceTablephysicalservice_policy extends sdiTable {
 			ON vs.id = vp.virtualservice_id
 			JOIN #__sdi_physicalservice ps
 			ON ps.id = vp.physicalservice_id
+			JOIN #__sdi_policy p
+			ON vs.id = p.virtualservice_id
 			LEFT JOIN #__sdi_physicalservice_policy psp
-			ON ps.id = psp.physicalservice_id
+			ON p.id = psp.policy_id
 			WHERE vs.id = ' . $virtualservice_id . '
-			AND (
-				psp.policy_id = ' . $policy_id . '
-				OR psp.policy_id IS NULL
-			);
+			AND psp.policy_id IS NULL
+			AND p.id = ' . $policy_id . ';
 		');
 		
 		try {
@@ -71,6 +70,7 @@ class Easysdi_serviceTablephysicalservice_policy extends sdiTable {
 				}
 			}
 		}
+		
 		return true;
 		
 	}

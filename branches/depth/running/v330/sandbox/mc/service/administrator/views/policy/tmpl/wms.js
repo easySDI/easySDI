@@ -1,4 +1,3 @@
-var debug = {};
 jQuery(document).ready(function () {
 	function calculateBBox (geographicFilter) {
 		var result = {
@@ -7,9 +6,10 @@ jQuery(document).ready(function () {
 			maxX: '',
 			maxY: '',
 			srs: '',
+			error: false
 		};
 		
-		if(geographicFilter == ""){
+		if(geographicFilter == "" || geographicFilter == undefined){
 			return result;
 		}
 		
@@ -32,11 +32,18 @@ jQuery(document).ready(function () {
 				var parser = new DOMParser();
 				var doc = parser.parseFromString(geographicFilter,'text/xml');
 			}
+			console.log(doc);
 			var theParser = new OpenLayers.Format.GML({
 				featureName: "FeatureFilter",
 				gmlns: "http://www.opengis.net/gml"
 			});
-			var bbox = theParser.read(doc)[0].geometry.getBounds().toBBOX().split(',');
+			try {
+				var bbox = theParser.read(doc)[0].geometry.getBounds().toBBOX().split(',');
+			}
+			catch (err){
+				result.error = true;
+				return result;
+			}
 			result.minX = bbox[0];
 			result.minY = bbox[1];
 			result.maxX = bbox[2];
@@ -128,6 +135,11 @@ jQuery(document).ready(function () {
 		var geographicFilter = form_values.geographicfilter;
 		var bbox = calculateBBox(geographicFilter);
 		
+		if (bbox.error) {
+			popModalAlert('malformed filter', 'alert-error');
+			return false;
+		}
+		
 		form_values['minX'] = bbox.minX;
 		form_values['minY'] = bbox.minY;
 		form_values['maxX'] = bbox.maxX;
@@ -150,7 +162,6 @@ jQuery(document).ready(function () {
 			url: 'index.php',
 			data: form_values,
 			success: function (data, textStatus, jqXHR) {
-				//console.log(arguments);
 				jQuery('#layer_settings_modal').modal('hide');
 				popAlert(Joomla.JText._('COM_EASYSDI_SERVICE_MSG_MODAL_SAVED'), 'alert-success');
 			},
@@ -191,6 +202,11 @@ jQuery(document).ready(function () {
 		//calculate for inherit_policy
 		var geographicFilter = form_values.inherit_policy.geographicfilter;
 		var bbox = calculateBBox(geographicFilter);
+		
+		if (bbox.error) {
+			popAlert('malformed filter', 'alert-error');
+			return false;
+		}
 		jQuery('#inherit_policy_' + form_values.inherit_policy.id + '_maxx').val(bbox.maxX);
 		jQuery('#inherit_policy_' + form_values.inherit_policy.id + '_maxy').val(bbox.maxY);
 		jQuery('#inherit_policy_' + form_values.inherit_policy.id + '_minx').val(bbox.minX);
@@ -201,6 +217,12 @@ jQuery(document).ready(function () {
 		for (key in form_values.inherit_server) {
 			var geographicFilter = form_values.inherit_server[key].geographicfilter;
 			var bbox = calculateBBox(geographicFilter);
+		
+			if (bbox.error) {
+				popAlert('malformed filter', 'alert-error');
+				return false;
+			}
+			
 			jQuery('#inherit_server_' + key + '_maxx').val(bbox.maxX);
 			jQuery('#inherit_server_' + key + '_maxy').val(bbox.maxY);
 			jQuery('#inherit_server_' + key + '_minx').val(bbox.minX);
