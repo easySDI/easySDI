@@ -23,10 +23,7 @@ class WfsWebservice {
 				}
 				break;
 			case 'deleteFeatureType':
-				$physicalServiceID = $raw_GET['physicalServiceID'];
-				$policyID = $raw_GET['policyID'];
-				$layerID = $raw_GET['layerID'];
-				if (WmtsWebservice::deleteFeatureType($physicalServiceID, $policyID, $layerID)) {
+				if (WmtsWebservice::deleteFeatureType($params)) {
 					echo 'OK';
 				}
 				break;
@@ -104,7 +101,7 @@ class WfsWebservice {
 		return $html;
 	}
 	
-	private static function getFeatureTypeSettings ($virtualServiceID,$physicalServiceID, $policyID, $layerID) {
+	private static function getFeatureTypeSettings ($virtualServiceID, $physicalServiceID, $policyID, $layerID) {
 		$db = JFactory::getDbo();
 		
 		$db->setQuery('
@@ -430,7 +427,11 @@ class WfsWebservice {
 		return true;
 	}
 	
-	private static function deleteFeatureType ($physicalServiceID, $policyID, $layerID) {
+	private static function deleteFeatureType ($raw_GET) {
+		$physicalServiceID = $raw_GET['physicalServiceID'];
+		$policyID = $raw_GET['policyID'];
+		$layerID = $raw_GET['layerID'];
+		
 		$db = JFactory::getDbo();
 		
 		$db->setQuery('

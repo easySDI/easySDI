@@ -10,7 +10,7 @@ jQuery(document).ready(function () {
 		};
 		
 		if(geographicFilter != ""){
-			return $result;
+			return result;
 		}
 		
 		geographicFilter = geographicFilter.replace(/^\s*|\s*$/g,'');

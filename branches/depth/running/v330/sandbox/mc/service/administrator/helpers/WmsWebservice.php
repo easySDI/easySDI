@@ -12,35 +12,29 @@ class WmsWebservice {
 	 * @param Array Usually the $_GET, or any associative array
 	 * @param Boolean Set to true to force a return value, results are echoed otherwise
 	*/
-	public static function request ($params, $returnHTML = false) {
-		$return = false;
+	public static function request ($params) {
 		switch ($params['method']) {
 			case 'getWmsLayerForm':
 				echo WmsWebservice::getWmsLayerForm($params);
 				break;
 			case 'setWmsLayerSettings':
-				$return = WmsWebservice::setWmsLayerSettings($params);
+				if (WmsWebservice::setWmsLayerSettings($params)) {
+					echo 'OK';
+				}
 				break;
 			case 'deleteWmsLayer':
 				$physicalServiceID = $raw_GET['physicalServiceID'];
 				$policyID = $raw_GET['policyID'];
 				$layerID = $raw_GET['layerID'];
-				if (WmtsWebservice::deleteWmsLayer($physicalServiceID, $policyID, $layerID)) {
+				if (WmtsWebservice::deleteWmsLayer($params)) {
 					echo 'OK';
 				}
 				break;
 			default:
-				$return = 'Unknown method.';
+				echo 'Unknown method.';
 				break;
 		}
-		
-		if (!$returnHTML) {
-			echo (true === $return)?'OK':$return;
-			die();
-		}
-		else {
-			return $return;
-		}
+		die();
 	}
 	
 	private static function getWmsLayerForm ($raw_GET) {
@@ -91,7 +85,7 @@ class WmsWebservice {
 		return $html;
 	}
 	
-	private static function getWmsLayerSettings ($physicalServiceID, $policyID, $layerID) {
+	private static function getWmsLayerSettings ($virtualServiceID, $physicalServiceID, $policyID, $layerID) {
 		$db = JFactory::getDbo();
 		
 		$db->setQuery('
@@ -155,7 +149,7 @@ class WmsWebservice {
 		$physicalServiceID = $raw_GET['psID'];
 		$policyID = $raw_GET['policyID'];
 		$layerID = $raw_GET['layerID'];
-		var_dump($raw_GET);
+		
 		$db = JFactory::getDbo();
 		
 		//save Spatial Policy
@@ -403,7 +397,11 @@ class WmsWebservice {
 		return true;
 	}
 	
-	private static function deleteWmsLayer ($physicalServiceID, $policyID, $layerID) {
+	private static function deleteWmsLayer ($raw_GET) {
+		$physicalServiceID = $raw_GET['physicalServiceID'];
+		$policyID = $raw_GET['policyID'];
+		$layerID = $raw_GET['layerID'];
+		
 		$db = JFactory::getDbo();
 		
 		$db->setQuery('
