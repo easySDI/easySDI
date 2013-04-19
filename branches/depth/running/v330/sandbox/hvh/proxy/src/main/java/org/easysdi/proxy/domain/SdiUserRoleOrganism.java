@@ -61,7 +61,7 @@ public class SdiUserRoleOrganism implements java.io.Serializable {
 		this.sdiUser = sdiUser;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "organism_id")
 	@Filter(name = "entityState",condition="State = 1")
 	public SdiOrganism getSdiOrganism() {
@@ -72,7 +72,7 @@ public class SdiUserRoleOrganism implements java.io.Serializable {
 		this.sdiOrganism = sdiOrganism;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "role_id")
 	@Filter(name = "entityState",condition="State = 1")
 	public SdiSysRole getSdiSysRole() {

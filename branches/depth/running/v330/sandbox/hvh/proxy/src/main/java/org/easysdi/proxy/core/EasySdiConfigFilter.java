@@ -122,40 +122,46 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 				Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>)principal.getAuthorities();
 				
 				SdiPolicy policy = null;
-				Element elementp = virtualServiceCache.get(servletName+username);
-				if(elementp != null){
-					//Get the policy from the cache
-					policy = (SdiPolicy)elementp.getValue();
-					//Check if this policy is still valid according to its date of validity
-					Date from = policy.getAllowfrom();
-					Date to = policy.getAllowto();
-					Date currentDate = new Date();
-					if (!currentDate.after(from) || !currentDate.before(to))
-					{
-						//Policy is not valid anymore, remove it from the cache
-						policy = null;
-						elementp = null;
-						virtualServiceCache.remove(servletName+username);
-					}
-				}
-				if(elementp == null)
-				{
-					SdiUser user = sdiUserHome.findByUserName(username);
-					Integer id = null;
-					if (user != null)
-						id = user.getId();
-					policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualservice.getId(), id , authorities);
-					Element elementPolicy = new Element(servletName+username, policy);
-					virtualServiceCache.put(elementPolicy);
-				}
+//				long start = System.nanoTime();
+//				Element elementp = virtualServiceCache.get(servletName+username);
+//				if(elementp != null){
+//					//Get the policy from the cache
+//					policy = (SdiPolicy)elementp.getValue();
+//					//Check if this policy is still valid according to its date of validity
+//					Date from = policy.getAllowfrom();
+//					Date to = policy.getAllowto();
+//					Date currentDate = new Date();
+//					if (!currentDate.after(from) || !currentDate.before(to))
+//					{
+//						//Policy is not valid anymore, remove it from the cache
+//						policy = null;
+//						elementp = null;
+//						virtualServiceCache.remove(servletName+username);
+//					}
+//				}
+//				if(elementp == null)
+//				{
+//					SdiUser user = sdiUserHome.findByUserName(username);
+//					Integer id = null;
+//					if (user != null)
+//						id = user.getId();
+//					policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualservice.getId(), id , authorities);
+//					Element elementPolicy = new Element(servletName+username, policy);
+//					virtualServiceCache.put(elementPolicy);
+//				}
+//				double elapsedTimeInSec = (System.nanoTime() - start) * 1.0e-9;
+//				logger.info("ehcache : "+elapsedTimeInSec);
 //				
 				
 				//Use of the 2nd level cache
-//				SdiUser user = sdiUserHome.findByUserName(username);
-//				Integer id = null;
-//				if (user != null)
-//					id = user.getId();
-//				policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualservice.getId(), id , authorities);
+//				start = System.nanoTime();
+				SdiUser user = sdiUserHome.findByUserName(username);
+				Integer id = null;
+				if (user != null)
+					id = user.getId();
+				policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualservice.getId(), id , authorities);
+//				elapsedTimeInSec = (System.nanoTime() - start) * 1.0e-9;
+//				logger.info("2nd level cache : "+elapsedTimeInSec);
 				
 				if (policy == null) {
 					if (((HttpServletRequest)req).getUserPrincipal() == null){

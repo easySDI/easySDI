@@ -104,6 +104,8 @@ public abstract class ProxyServlet extends HttpServlet {
      * List of the physical services relayed by the current virtual service
      */
     private LinkedHashMap<String, SdiPhysicalservice> physicalServiceHashTable = new LinkedHashMap <String, SdiPhysicalservice>();
+    //WFS specific
+    private List<SdiPhysicalservice> physicalServiceList = new ArrayList<SdiPhysicalservice>();
     
     /**
      * 
@@ -275,16 +277,18 @@ public abstract class ProxyServlet extends HttpServlet {
      * @return
      */
     protected List<SdiPhysicalservice> getPhysicalServiceList() {
+    	if(!physicalServiceList.isEmpty())
+    		return  physicalServiceList;
+    	
     	Set<SdiPhysicalservice> physicalServices = sdiVirtualService.getSdiPhysicalservices();
     	Iterator<SdiPhysicalservice> i = physicalServices.iterator();
-    	List<SdiPhysicalservice> l = new ArrayList<SdiPhysicalservice>();
     	while (i.hasNext())
     	{
     		SdiPhysicalservice physicalService = i.next();
     		if(physicalService != null)
-    			l.add(physicalService);
+    			physicalServiceList.add(physicalService);
     	}
-    	return l;
+    	return physicalServiceList;
     }
 
 

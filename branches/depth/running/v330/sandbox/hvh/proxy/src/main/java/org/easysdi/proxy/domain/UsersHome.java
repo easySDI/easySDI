@@ -61,7 +61,7 @@ public class UsersHome {
 			
 			Query query = sessionFactory.getCurrentSession().createQuery("Select u FROM Session s, Users u WHERE u.username = s.username AND session_id= :session ");
 			query.setParameter("session", session);
-			Users instance = (Users) query.setCacheable(true).setCacheRegion("userCache").uniqueResult();
+			Users instance = (Users) query.setCacheable(true).uniqueResult();
 			if(instance == null)
 				instance = new Users();
 			

@@ -873,10 +873,11 @@ public class WMSProxyServlet extends ProxyServlet {
 			while (iR.hasNext()){
 				Entry<Integer, ProxyRemoteServerResponse> response = iR.next(); 
 				ProxyLayer pLayer = new ProxyLayer(getProxyRequest().getLayers().split(",")[response.getKey()]);
-				BufferedImage image = filterImage(getLayerFilter(getPhysicalServiceByAlias(response.getValue().getAlias()),pLayer.getPrefixedName()),
-						response.getValue().getPath(),
-						isTransparent, 
-						resp);
+				BufferedImage image = filterImage(
+										getLayerFilter(getPhysicalServiceByAlias(response.getValue().getAlias()),pLayer.getPrefixedName()),
+										response.getValue().getPath(),
+										isTransparent, 
+										resp);
 				if (g == null) {
 					imageSource = image;
 					if (imageSource != null)
@@ -1218,7 +1219,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	 */
 	private BufferedImage filterImage(String filter, String fileName, boolean isTransparent, HttpServletResponse resp) {
 		try {
-			if (filter != null) {
+			if (filter != null && !filter.equals("")) {
 				String[] s = ((WMSProxyServletRequest)getProxyRequest()).getBbox().split(",");
 
 				InputStream bis = new ByteArrayInputStream(filter.getBytes());

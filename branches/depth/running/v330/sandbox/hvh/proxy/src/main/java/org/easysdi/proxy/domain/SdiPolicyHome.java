@@ -49,6 +49,7 @@ public class SdiPolicyHome {
 	public SdiPolicy findByVirtualServiceAndUser(Integer virtualservice, Integer user, Collection<GrantedAuthority> authorities ) {
 		try {
 			Session session = sessionFactory.getCurrentSession();
+			Date currentDate = new Date();
 //			session.enableFilter("entityState");
 			//Anonymous request gives a null user here
 			if(user != null){
@@ -57,7 +58,7 @@ public class SdiPolicyHome {
 						"SELECT p FROM SdiPolicy p INNER JOIN p.sdiUsers as u " +
 						"INNER JOIN p.sdiVirtualservice as vs WHERE u.id= :user" +
 						" AND vs.id = :virtualservice AND p.state = 1 AND vs.state = 1  " +
-						" AND p.allowfrom <= CURRENT_DATE() AND p.allowto >= CURRENT_DATE()"+
+//						" AND p.allowfrom <= CURRENT_DATE() AND p.allowto >= CURRENT_DATE()"+
 						"ORDER BY p.ordering asc");
 				query.setParameter("user", user);
 				query.setParameter("virtualservice", virtualservice);
@@ -68,13 +69,13 @@ public class SdiPolicyHome {
 					while (i.hasNext())
 					{
 						SdiPolicy policy = i.next();
-//						Date from = policy.getAllowfrom();
-//						Date to = policy.getAllowto();
-//						Date currentDate = new Date();
-//						if (currentDate.after(from) && currentDate.before(to))
+						//Date validity is check out of the SQL query to not interfer with query cache
+						Date from = policy.getAllowfrom();
+						Date to = policy.getAllowto();
+						if (currentDate.after(from) && currentDate.before(to))
 							return policy;
-//						else
-//							continue;
+						else
+							continue;
 					}
 				}
 			}
@@ -100,7 +101,7 @@ public class SdiPolicyHome {
 						"SELECT p  FROM SdiPolicy p INNER JOIN p.sdiOrganisms as po " +
 						"INNER JOIN p.sdiVirtualservice as vs WHERE po.id IN (:organism) " +
 						"AND vs.id = :virtualservice AND p.state = 1 AND vs.state = 1 " +
-						" AND p.allowfrom <= CURRENT_DATE() AND p.allowto >= CURRENT_DATE()"+
+//						" AND p.allowfrom <= CURRENT_DATE() AND p.allowto >= CURRENT_DATE()"+
 						"ORDER BY p.ordering asc");
 				oQuery.setParameterList("organism", c);
 				oQuery.setParameter("virtualservice", virtualservice);
@@ -111,13 +112,12 @@ public class SdiPolicyHome {
 					while (i1.hasNext())
 					{
 						SdiPolicy policy = i1.next();
-//						Date from = policy.getAllowfrom();
-//						Date to = policy.getAllowto();
-//						Date currentDate = new Date();
-//						if (currentDate.after(from) && currentDate.before(to))
+						Date from = policy.getAllowfrom();
+						Date to = policy.getAllowto();
+						if (currentDate.after(from) && currentDate.before(to))
 							return policy;
-//						else
-//							continue;
+						else
+							continue;
 					}
 				}
 			}
@@ -128,7 +128,7 @@ public class SdiPolicyHome {
 					"SELECT p  FROM SdiPolicy p INNER JOIN p.sdiVirtualservice as vs " +
 					"INNER JOIN p.sdiSysAccessscope as sc WHERE vs.id = :virtualservice " +
 					"AND sc.id = 1 AND p.state = 1 AND vs.state = 1 " +
-					" AND p.allowfrom <= CURRENT_DATE() AND p.allowto >= CURRENT_DATE()"+
+//					" AND p.allowfrom <= CURRENT_DATE() AND p.allowto >= CURRENT_DATE()"+
 					"ORDER BY p.ordering asc");
 			pQuery.setParameter("virtualservice", virtualservice);
 			List pResults = pQuery.setCacheable(true).list();
@@ -138,13 +138,12 @@ public class SdiPolicyHome {
 				while (i2.hasNext())
 				{
 					SdiPolicy policy = i2.next();
-//					Date from = policy.getAllowfrom();
-//					Date to = policy.getAllowto();
-//					Date currentDate = new Date();
-//					if (currentDate.after(from) && currentDate.before(to))
+					Date from = policy.getAllowfrom();
+					Date to = policy.getAllowto();
+					if (currentDate.after(from) && currentDate.before(to))
 						return policy;
-//					else
-//						continue;
+					else
+						continue;
 				}
 			}
 			

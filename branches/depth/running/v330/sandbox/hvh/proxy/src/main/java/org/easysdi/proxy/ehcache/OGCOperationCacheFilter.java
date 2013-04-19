@@ -30,9 +30,15 @@ import net.sf.ehcache.constructs.web.filter.FilterNonReentrantException;
 import net.sf.ehcache.constructs.web.filter.SimpleCachingHeadersPageCachingFilter;
 
 import org.easysdi.proxy.domain.SdiPolicy;
+import org.easysdi.proxy.domain.SdiPolicyHome;
+import org.easysdi.proxy.domain.SdiUser;
+import org.easysdi.proxy.domain.SdiUserHome;
+import org.easysdi.proxy.domain.SdiVirtualservice;
+import org.easysdi.proxy.domain.SdiVirtualserviceHome;
 import org.easysdi.proxy.exception.PolicyNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,10 +50,21 @@ public class OGCOperationCacheFilter extends SimpleCachingHeadersPageCachingFilt
 	private ProxyCacheEntryFactory cacheFactory = new ProxyCacheEntryFactory();
 	private String operationValue = null;
 	private boolean bCache = false;
-	//	private String postRequestAsString = ""; 
+	private static final int MILLISECONDS_PER_SECOND = 1000;
 
-	public OGCOperationCacheFilter(CacheManager cm) throws ServletException {
+	private CacheManager cm;
+	@Autowired
+    private SdiVirtualserviceHome sdiVirtualserviceHome;
+	@Autowired
+    private SdiPolicyHome sdiPolicyHome;
+	@Autowired
+    private SdiUserHome sdiUserHome;
+
+	public OGCOperationCacheFilter(CacheManager cm,  SdiVirtualserviceHome sdiVirtualserviceHome, SdiPolicyHome sdiPolicyHome, SdiUserHome sdiUserHome) throws ServletException {
 		this.cm = cm;
+		this.sdiVirtualserviceHome = sdiVirtualserviceHome;
+		this.sdiPolicyHome = sdiPolicyHome;
+		this.sdiUserHome = sdiUserHome;
 		doInit(null);
 	}
 
@@ -81,50 +98,31 @@ public class OGCOperationCacheFilter extends SimpleCachingHeadersPageCachingFilt
 				cacheValue = request.getParameter(operation);
 			}
 		}
-		//		}
 
-		//		if(method.equalsIgnoreCase("POST")){
-		//			XMLReader xr = XMLReaderFactory.createXMLReader(); 
-		//			RequestHandler rh = new RequestHandler();
-		//			xr.setContentHandler(rh);
-		//			
-		//			String input;
-		//			StringBuffer paramSB = new StringBuffer();
-		//			
-		//			BufferedReader in = new BufferedReader(new InputStreamReader(request.getInputStream()));
-		//			while ((input = in.readLine()) != null) {
-		//				paramSB.append(input);
-		//			}
-		//			in.close();
-		//			postRequestAsString = paramSB.toString();
-		//			
-		//			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(postRequestAsString.toString().getBytes()))));
-		//			operationValue = rh.getOperation();
-		//			
-		//			postRequestAsString = postRequestAsString.replace(" ", "");
-		//		}
-
-		if(("GetMap").equalsIgnoreCase(operationValue))
-		{
-			//Get Vendor specific CACHE
-			bCache = Boolean.parseBoolean(cacheValue);
-			if(bCache)
-				super.doFilter(request, response, chain);
-			else
-				chain.doFilter(request, response);
-		}
-		else if (("GetRecords").equalsIgnoreCase(operationValue) ||
+//		if(("GetMap").equalsIgnoreCase(operationValue))
+//		{
+//			//Get Vendor specific CACHE
+//			bCache = Boolean.parseBoolean(cacheValue);
+//			if(bCache)
+//				super.doFilter(request, response, chain);
+//			else
+//				chain.doFilter(request, response);
+//		}
+//		else 
+		if (("GetMap").equalsIgnoreCase(operationValue) ||
+				("GetRecords").equalsIgnoreCase(operationValue) ||
 				("GetTile").equalsIgnoreCase(operationValue)||
-				("GetCapabilities").equalsIgnoreCase(operationValue)||
 				("DescribeRecord").equalsIgnoreCase(operationValue)||
 				("GetRecordById").equalsIgnoreCase(operationValue)||
 				("GetFeature").equalsIgnoreCase(operationValue) ||
 				("GetFeatureInfo").equalsIgnoreCase(operationValue)||
 				("Transaction").equalsIgnoreCase(operationValue))		{
+			//No cache for this request
 			chain.doFilter(request, response);
 		}
 		else
 		{
+			//Request response is put in cache
 			super.doFilter(request, response, chain);
 		}
 	}
@@ -151,18 +149,31 @@ public class OGCOperationCacheFilter extends SimpleCachingHeadersPageCachingFilt
 	@Override
 	protected String calculateKey(HttpServletRequest httpRequest) throws PolicyNotFoundException{
 		String servletName = httpRequest.getPathInfo().substring(1);
-		virtualserviceCache = cm.getCache("virtualserviceCache");
-		String user = null;
-		Principal principal = SecurityContextHolder.getContext().getAuthentication();
+//		virtualserviceCache = cm.getCache("virtualserviceCache");
+//		String user = null;
+//		Principal principal = SecurityContextHolder.getContext().getAuthentication();
+//		if (principal != null)
+//			user = principal.getName();
+//		Element policyE = virtualserviceCache.get(servletName + user);
+//		if(policyE == null)
+//		{
+//			//No policy available
+//			throw new PolicyNotFoundException("No policy found.");
+//		}
+		
+		String username = null;
+		Authentication principal = SecurityContextHolder.getContext().getAuthentication();
 		if (principal != null)
-			user = principal.getName();
-		Element policyE = virtualserviceCache.get(servletName + user);
-		if(policyE == null)
-		{
-			//No policy available
-			throw new PolicyNotFoundException("No policy found.");
-		}
-		SdiPolicy policy = (SdiPolicy) policyE.getValue();
+			username = principal.getName();
+		Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>)principal.getAuthorities();
+		
+		SdiUser user = sdiUserHome.findByUserName(username);
+		Integer id = null;
+		if (user != null)
+			id = user.getId();
+		SdiVirtualservice virtualservice = sdiVirtualserviceHome.findByAlias(servletName);
+		
+		SdiPolicy policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualservice.getId(), id , authorities);
 		StringBuffer stringBuffer = new StringBuffer();
 		String url;
 		try {
@@ -285,8 +296,6 @@ public class OGCOperationCacheFilter extends SimpleCachingHeadersPageCachingFilt
 		return eTag;
 	}
 
-	private static final int MILLISECONDS_PER_SECOND = 1000;
 
-	private CacheManager cm;
 
 }

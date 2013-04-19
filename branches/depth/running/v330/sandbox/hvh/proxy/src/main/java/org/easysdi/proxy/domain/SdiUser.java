@@ -262,7 +262,7 @@ public class SdiUser implements java.io.Serializable {
 		this.Asset_id = Asset_id;
 	}
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "sdiUser")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiUser")
 	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiUserRoleOrganism> getSdiUserRoleOrganisms() {
 		return this.sdiUserRoleOrganisms;

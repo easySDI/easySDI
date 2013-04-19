@@ -2402,7 +2402,7 @@ public class WFSProxyServlet extends ProxyServlet {
 								//String[] s = tmpFT.split(":");
 								//tmpFT = s[s.length - 1];
 								// Fin de Debug
-								if (isFeatureTypeAllowed(tmpFT, getPhysicalServiceURLByIndex(serversIndex.get(j)))) {
+								if (isFeatureTypeAllowed(el[i].getName(), getPhysicalServiceURLByIndex(serversIndex.get(j)))) {
 									org.geotools.xml.schema.Element[] elem = ct[i].getChildElements();
 									for (int k = 0; k < elem.length; k++) {
 										if (!isAttributeAllowed(getPhysicalServiceURLByIndex(serversIndex.get(j)), tmpFT, elem[k].getName())) {
@@ -3758,6 +3758,9 @@ public class WFSProxyServlet extends ProxyServlet {
      */
     protected boolean isFeatureTypeAllowed(String ft, String url) 
     {
+    	if(sdiPolicy.isAnyservice())
+    		return true;
+    	
     	Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
     	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
     	while(i.hasNext())
@@ -3770,8 +3773,20 @@ public class WFSProxyServlet extends ProxyServlet {
 	    		while (it.hasNext())
 	    		{
 	    			SdiFeaturetypePolicy featureTypePolicy = it.next();
-	    			if(featureTypePolicy.getName().equals(ft) && featureTypePolicy.isEnabled())
-	    				return true;
+	    			
+	    			if(featureTypePolicy.getName().equals(ft))
+	    			{
+	    				//The feature type exists in a physical service.
+	    				//It is allowed if all feature types are allowed by this policy for this physical service
+	    				if(physicalservicePolicy.isAnyitem())
+	    					return true;
+	    				//Or if this feature type is explicitly set as allowed
+	    				if(featureTypePolicy.isEnabled())
+	    					return true;
+	    				
+	    				//Else, the feature is not allowed
+	    				return false;
+	    			}
 	    		}
     		}
     	}
@@ -3788,6 +3803,9 @@ public class WFSProxyServlet extends ProxyServlet {
      */
     protected boolean isFeatureTypeAllowed(String ft) 
     {
+    	if(sdiPolicy.isAnyservice())
+    		return true;
+    	
     	Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
     	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
     	while(i.hasNext())
@@ -3798,10 +3816,22 @@ public class WFSProxyServlet extends ProxyServlet {
     		while (it.hasNext())
     		{
     			SdiFeaturetypePolicy featureTypePolicy = it.next();
-    			if(featureTypePolicy.getName().equals(ft) && featureTypePolicy.isEnabled())
-    				return true;
+    			if(featureTypePolicy.getName().equals(ft))
+    			{
+    				//The feature type exists in a physical service.
+    				//It is allowed if all feature types are allowed by this policy for this physical service
+    				if(physicalservicePolicy.isAnyitem())
+    					return true;
+    				//Or if this feature type is explicitly set as allowed
+    				if(featureTypePolicy.isEnabled())
+    					return true;
+    				
+    				//Else, the feature is not allowed
+    				return false;
+    			}	
     		}
     	}
+    	//The feature type doesn't exist in all the physical services referenced by the policy, so return false.
     	return false;
     }
 }

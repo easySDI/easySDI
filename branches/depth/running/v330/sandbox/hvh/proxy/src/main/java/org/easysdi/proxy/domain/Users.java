@@ -204,7 +204,7 @@ public class Users implements java.io.Serializable {
 		this.ResetCount = ResetCount;
 	}
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "users")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "users")
 	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	@Filter(name = "entityState",condition="State = 1")
 	public Set<SdiUser> getSdiUsers() {

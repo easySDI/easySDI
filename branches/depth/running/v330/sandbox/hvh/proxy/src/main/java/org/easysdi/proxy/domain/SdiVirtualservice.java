@@ -450,7 +450,7 @@ public class SdiVirtualservice implements java.io.Serializable {
 		this.Asset_id = Asset_id;
 	}
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "SdiVirtualserviceOrganism", joinColumns = {@JoinColumn(name = "virtualservice_id")}, inverseJoinColumns = {@JoinColumn (name = "organism_id")})
 	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	@Filter(name = "entityState",condition="State = 1")
@@ -463,7 +463,7 @@ public class SdiVirtualservice implements java.io.Serializable {
 		this.sdiOrganisms = sdiOrganisms;
 	}
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "SdiVirtualPhysical", joinColumns = {@JoinColumn(name = "virtualservice_id")}, inverseJoinColumns = {@JoinColumn (name = "physicalservice_id")})
 	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	@Filter(name = "entityState",condition="State = 1")
@@ -487,7 +487,7 @@ public class SdiVirtualservice implements java.io.Serializable {
 		this.sdiPolicies = sdiPolicies;
 	}
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "SdiVirtualserviceServicecompliance", joinColumns = {@JoinColumn(name = "service_id")}, inverseJoinColumns = {@JoinColumn (name = "servicecompliance_id")})
 	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	@Filter(name = "entityState",condition="State = 1")
@@ -500,7 +500,7 @@ public class SdiVirtualservice implements java.io.Serializable {
 		this.sdiSysServicecompliances = sdiSysServicecompliances;
 	}
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "sdiVirtualservice")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiVirtualservice")
 	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	@Filter(name = "entityState",condition="State = 1")
 	public Set<SdiVirtualmetadata> getSdiVirtualmetadatas() {

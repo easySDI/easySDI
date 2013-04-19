@@ -478,10 +478,15 @@ public class CSWProxyServlet extends ProxyServlet {
 					            if(isAll){
 					            	//All metadatas are authorized to be delivered
 					            	authorizedGuidList = null;
-					            	if(sdiPolicy.isCsw_includeharvested())
-					            		numberOfRecordsActuallyMatched = numberOfRecordsMatchedAttribute.getIntValue();
-					            	else
+					            	if(sdiPolicy.isCsw_includeharvested()){
+					            		if(numberOfRecordsMatchedAttribute == null)
+					            			numberOfRecordsActuallyMatched = 0;
+					            		else
+					            			numberOfRecordsActuallyMatched = numberOfRecordsMatchedAttribute.getIntValue();
+					            	}
+					            	else{
 					            		numberOfRecordsActuallyMatched = numberOfEasySDIMetadatas;
+					            	}
 					            		
 					            }else{
 					            	//Get the list of authorized metadatas
@@ -765,10 +770,6 @@ public class CSWProxyServlet extends ProxyServlet {
 				return;
 			}
 			
-			//GetRecords is not supported in GET request
-			//EXCEPT for a configuration dedicated to the harvesting
-//			if(currentOperation.equalsIgnoreCase("GetRecords") && !configuration.isHarvestingConfig())
-//				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Operation not supported in a GET request","OperationNotSupported ","request", requestedVersion));
 			
 			//GetRecordById
 			if(currentOperation.equalsIgnoreCase("GetRecordById"))
@@ -877,7 +878,7 @@ public class CSWProxyServlet extends ProxyServlet {
 			
 			if(currentOperation.equalsIgnoreCase("GetRecords") || currentOperation.equalsIgnoreCase("GetRecordById"))
 			{
-				//If the config is used to harvest remote servers, the metadatas are never completed.
+				//If the virtual service is used to harvest remote servers, the metadatas are never completed.
 				//The completion process of metadatas is only available for EasySDI metadatas (metadatas created and managed by the solution)
 				if( (content.equalsIgnoreCase("") || content.equalsIgnoreCase("complete")) && !sdiVirtualService.isHarvester())
 				{
@@ -1113,7 +1114,7 @@ public class CSWProxyServlet extends ProxyServlet {
 			{
 				logger.trace("Start - Data Accessibility");
 				if(		!cswDataManager.isAllDataAccessibleForGetRecords() || 
-						sdiPolicy.getSdiCswSpatialpolicy().isValid() || 
+						(sdiPolicy.getSdiCswSpatialpolicy() != null && sdiPolicy.getSdiCswSpatialpolicy().isValid()) || 
 						!sdiPolicy.isCsw_includeharvested())
 				{
 					//Add a filter on the data id in the request
