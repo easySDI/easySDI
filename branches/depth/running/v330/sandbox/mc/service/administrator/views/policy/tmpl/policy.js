@@ -32,7 +32,7 @@ function enableAccessScope(){
 }
 
 /*
- * Check the state of the checkboxes in the layers tab and determine whether elements must be hidden or shown
+ * Check the state of the checkboxes and determine whether elements must be hidden or shown
 */
 function initVisibility () {
 	if (jQuery('.anyservice').is(":checked")) {
@@ -40,6 +40,13 @@ function initVisibility () {
 	}
 	else {
 		jQuery('#ps_accordion').show();
+	}
+	
+	if (jQuery('#jform_anyoperation').is(":checked")) {
+		jQuery('.allowedoperation').parent().parent().hide();
+	}
+	else {
+		jQuery('.allowedoperation').parent().parent().show();
 	}
 	
 	jQuery('.anyitem').each(function () {
@@ -67,6 +74,23 @@ jQuery(document).ready(function (){
 	enableAccessScope();
 	initVisibility();
 	
+	//preinput allowFrom and allowTo
+	var now = new Date();
+	var date = {
+		year: now.getFullYear(),
+		month: (10 > (now.getMonth() + 1))? '0' + (now.getMonth() + 1):(now.getMonth() + 1),
+		day: (10 > now.getDate())? '0' + now.getDate():now.getDate()
+	};
+	var allowFrom = jQuery('#jform_allowfrom');
+	var allowTo = jQuery('#jform_allowto');
+	if ('0000-00-00' == allowFrom.val()) {
+		allowFrom.val(date.year + '-' + date.month + '-' + date.day);
+	}
+	if ('0000-00-00' == allowTo.val()) {
+		date.year += 100;
+		allowTo.val(date.year + '-' + date.month + '-' + date.day);
+	}
+	
 	jQuery('.anyservice').change(function () {
 		if (jQuery(this).is(":checked")) {
 			jQuery('#ps_accordion').hide();
@@ -83,6 +107,15 @@ jQuery(document).ready(function (){
 		}
 		else {
 			jQuery('#table-layers-' + ps_id).show();
+		}
+	});
+	
+	jQuery('#jform_anyoperation').change(function () {
+		if (jQuery(this).is(":checked")) {
+			jQuery('.allowedoperation').parent().parent().hide();
+		}
+		else {
+			jQuery('.allowedoperation').parent().parent().show();
 		}
 	});
 	

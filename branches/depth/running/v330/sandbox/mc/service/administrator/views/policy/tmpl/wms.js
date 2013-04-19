@@ -9,7 +9,7 @@ jQuery(document).ready(function () {
 			srs: '',
 		};
 		
-		if(geographicFilter != ""){
+		if(geographicFilter == ""){
 			return result;
 		}
 		

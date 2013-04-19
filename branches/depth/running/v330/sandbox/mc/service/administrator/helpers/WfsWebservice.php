@@ -86,7 +86,7 @@ class WfsWebservice {
 		$items = $db->loadColumn();
 		$item_count = 0;
 		foreach ($items as $item) {
-			$html.= '<textarea name="included_attribute[' . $item_count . ']" rows="5" class="span12">' . $item . '</textarea><br /><br />';
+			$html.= '<textarea name="included_attribute[' . $item_count . ']" rows="1" class="span12">' . $item . '</textarea><br /><br />';
 		}
 		
 		$html .= '</div>
