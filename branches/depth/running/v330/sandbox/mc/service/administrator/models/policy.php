@@ -676,14 +676,14 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			'anyservice = ' . ((isset($spatialPolicy['anyservice'])) ? 1 : 0),
 		);
 		
-		if ('null' != $spatialPolicy['minimumscale'] || 'null' != $spatialPolicy['maximumscale'] || 'null' != $spatialPolicy['geographicfilter']) {
+		if ('null' != $spatialPolicy['minimumscale'] || 'null' != $spatialPolicy['maximumscale'] || !empty($spatialPolicy['geographicfilter'])) {
 			//test whether that policy already have a spatialPolicy or not
 			if (-1 == $spatialPolicyID) {
 				//we create the spatial policy
 				$query = $db->getQuery(true);
 				$query->insert('#__sdi_wms_spatialpolicy')->columns(
 					'maxx, maxy, minx, miny, geographicfilter, maximumscale, minimumscale, srssource'
-				)->values($spatialPolicy['maxx'] . ', ' . $spatialPolicy['maxy'] . ', ' . $spatialPolicy['minx'] . ', ' . $spatialPolicy['miny'] . ', \'' . $spatialPolicy['geographicfilter'] . '\', ' . $spatialPolicy['maximumscale'] . ', ' . $spatialPolicy['minimumscale'] . ', \'' . $spatialPolicy['srssource'] . '\'');
+				)->values($spatialPolicy['maxx'] . ', ' . $spatialPolicy['maxy'] . ', ' . $spatialPolicy['minx'] . ', ' . $spatialPolicy['miny'] . ', ' . ((!empty($spatialPolicy['geographicfilter']))?'\'' . $spatialPolicy['geographicfilter'] . '\'':'null') . ', ' . $spatialPolicy['maximumscale'] . ', ' . $spatialPolicy['minimumscale'] . ', \'' . $spatialPolicy['srssource'] . '\'');
 				
 				try {
 					$db->setQuery($query);
@@ -708,7 +708,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					'maxy = ' . $spatialPolicy['maxy'],
 					'minx = ' . $spatialPolicy['minx'],
 					'miny = ' . $spatialPolicy['miny'],
-					'geographicfilter = \'' . $spatialPolicy['geographicfilter'] . '\'',
+					'geographicfilter = ' . ((!empty($spatialPolicy['geographicfilter']))?'\'' . $spatialPolicy['geographicfilter'] . '\'':'null'),
 					'maximumscale = ' . $spatialPolicy['maximumscale'],
 					'minimumscale = ' . $spatialPolicy['minimumscale'],
 					'srssource = \'' . $spatialPolicy['srssource'] . '\'',
@@ -753,7 +753,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			$spatialPolicy['minimumscale'] = ('' != $spatialPolicy['minimumscale'])?$spatialPolicy['minimumscale']:'null';
 			$spatialPolicy['maximumscale'] = ('' != $spatialPolicy['maximumscale'])?$spatialPolicy['maximumscale']:'null';
 			
-			if ('null' != $spatialPolicy['minimumscale'] || 'null' != $spatialPolicy['maximumscale'] || 'null' != $spatialPolicy['geographicfilter']) {
+			if ('null' != $spatialPolicy['minimumscale'] || 'null' != $spatialPolicy['maximumscale'] || !empty($spatialPolicy['geographicfilter'])) {
 				//check if a spatial policy exists for that physicalservice_policy
 				$query = '
 					SELECT wms_spatialpolicy_id, id
@@ -784,7 +784,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					$query = $db->getQuery(true);
 					$query->insert('#__sdi_wms_spatialpolicy')->columns(
 						'maxx, maxy, minx, miny, geographicfilter, maximumscale, minimumscale, srssource'
-					)->values($spatialPolicy['maxx'] . ', ' . $spatialPolicy['maxy'] . ', ' . $spatialPolicy['minx'] . ', ' . $spatialPolicy['miny'] . ', \'' . $spatialPolicy['geographicfilter'] . '\', ' . $spatialPolicy['maximumscale'] . ', ' . $spatialPolicy['minimumscale'] . ', \'' . $spatialPolicy['srssource'] . '\'');
+					)->values($spatialPolicy['maxx'] . ', ' . $spatialPolicy['maxy'] . ', ' . $spatialPolicy['minx'] . ', ' . $spatialPolicy['miny'] . ', ' . ((!empty($spatialPolicy['geographicfilter']))?'\'' . $spatialPolicy['geographicfilter'] . '\'':'null') . ', ' . $spatialPolicy['maximumscale'] . ', ' . $spatialPolicy['minimumscale'] . ', \'' . $spatialPolicy['srssource'] . '\'');
 					
 					try {
 						$db->setQuery($query);
@@ -809,7 +809,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 						'maxy = ' . $spatialPolicy['maxy'],
 						'minx = ' . $spatialPolicy['minx'],
 						'miny = ' . $spatialPolicy['miny'],
-						'geographicfilter = \'' . $spatialPolicy['geographicfilter'] . '\'',
+						'geographicfilter = ' . ((!empty($spatialPolicy['geographicfilter']))?'\'' . $spatialPolicy['geographicfilter'] . '\'':'null'),
 						'maximumscale = ' . $spatialPolicy['maximumscale'],
 						'minimumscale = ' . $spatialPolicy['minimumscale'],
 						'srssource = \'' . $spatialPolicy['srssource'] . '\'',
@@ -865,14 +865,14 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			'anyservice = ' . ((isset($spatialPolicy['anyservice'])) ? 1 : 0),
 		);
 		
-		if ('' != $spatialPolicy['localgeographicfilter'] || '' != $spatialPolicy['remotegeographicfilter']) {
+		if (!empty($spatialPolicy['localgeographicfilter']) || !empty($spatialPolicy['remotegeographicfilter'])) {
 			//test whether that policy already have a spatialPolicy or not
 			if (-1 == $spatialPolicyID) {
 				//we create the spatial policy
 				$query = $db->getQuery(true);
 				$query->insert('#__sdi_wfs_spatialpolicy')->columns(
 					'localgeographicfilter, remotegeographicfilter'
-				)->values('\'' . $spatialPolicy['localgeographicfilter'] . '\', \'' . $spatialPolicy['remotegeographicfilter'] . '\'');
+				)->values(((!empty($spatialPolicy['localgeographicfilter']))?'\'' . $spatialPolicy['localgeographicfilter'] . '\'':'null') . ', ' . ((!empty($spatialPolicy['remotegeographicfilter']))?'\'' . $spatialPolicy['remotegeographicfilter'] . '\'':'null'));
 				
 				try {
 					$db->setQuery($query);
@@ -893,8 +893,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				//we update the spatial policy
 				$query = $db->getQuery(true);
 				$query->update('#__sdi_wfs_spatialpolicy')->set(Array(
-					'localgeographicfilter = \'' . $spatialPolicy['localgeographicfilter'] . '\'',
-					'remotegeographicfilter = \'' . $spatialPolicy['remotegeographicfilter'] . '\'',
+					'localgeographicfilter = ' . ((!empty($spatialPolicy['localgeographicfilter']))?'\'' . $spatialPolicy['localgeographicfilter'] . '\'':'null'),
+					'remotegeographicfilter = ' . ((!empty($spatialPolicy['remotegeographicfilter']))?'\'' . $spatialPolicy['remotegeographicfilter'] . '\'':'null'),
 				))->where('id = ' . $spatialPolicyID);
 				
 				try {
@@ -960,7 +960,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					$query = $db->getQuery(true);
 					$query->insert('#__sdi_wfs_spatialpolicy')->columns(
 						'localgeographicfilter, remotegeographicfilter'
-					)->values('\'' . $spatialPolicy['localgeographicfilter'] . '\', \'' . $spatialPolicy['remotegeographicfilter'] . '\'');
+					)->values(((!empty($spatialPolicy['localgeographicfilter']))?'\'' . $spatialPolicy['localgeographicfilter'] . '\'':'null') . ', ' . ((!empty($spatialPolicy['remotegeographicfilter']))?'\'' . $spatialPolicy['remotegeographicfilter'] . '\'':'null'));
 					
 					try {
 						$db->setQuery($query);
@@ -981,8 +981,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					//update the spatial policy
 					$query = $db->getQuery(true);
 					$query->update('#__sdi_wms_spatialpolicy')->set(Array(
-					'localgeographicfilter = \'' . $spatialPolicy['localgeographicfilter'] . '\'',
-					'remotegeographicfilter = \'' . $spatialPolicy['remotegeographicfilter'] . '\'',
+						'localgeographicfilter = ' . ((!empty($spatialPolicy['localgeographicfilter']))?'\'' . $spatialPolicy['localgeographicfilter'] . '\'':'null'),
+						'remotegeographicfilter = ' . ((!empty($spatialPolicy['remotegeographicfilter']))?'\'' . $spatialPolicy['remotegeographicfilter'] . '\'':'null'),
 					))->where('id = ' . $spatialPolicyID);
 					
 					try {
