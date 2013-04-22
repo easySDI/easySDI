@@ -1,0 +1,78 @@
+<?xml version="1.0" ?>
+
+<project default="com_easysdi_monitor" basedir="../../../">
+    
+    
+    <target name="package-monitor" description="Main target" >
+        <antcall target="common.copy-administrator">
+            <param name="component.name" value="com_easysdi_monitor"/>
+        </antcall>
+        <antcall target="common.copy-site">
+            <param name="component.name" value="com_easysdi_monitor"/>
+        </antcall>
+        <antcall target="minify-js">
+            <param name="component.name" value="com_easysdi_monitor"/>
+            <param name="src.out.dir" value="${root.out.dir}/com_easysdi_monitor/src"/>
+            <param name="package.out.dir" value="${root.out.dir}/com_easysdi_monitor/package"/>
+        </antcall>
+        <antcall target="common.build-info">
+            <param name="component.name" value="com_easysdi_monitor"/>
+        </antcall>
+        <antcall target="common.zip-package">
+            <param name="component.name" value="com_easysdi_monitor"/>
+        </antcall>
+    </target>
+    
+    <!-- Minifying JS Source -->
+    <target name="minify-js">
+        <echo>Minifying js source</echo>
+        <concat destfile="${src.out.dir}/administrator/views/mains/js/Monitor.js">
+            <filelist dir="${joomla.administrator.components.dir}/${component.name}/views/mains/js/dev">
+                <file name="exportType.js"/>
+                <file name="language.js"/>
+                <file name="vtypes.js"/>
+                <file name="app/App.js"/>
+                <file name="definitions.js"/>
+                <file name="jobManager.js"/>
+                <file name="jobRequest.js"/>
+                <file name="jobAlert.js"/>
+                <file name="sla.js" />
+                <file name="reports.js"/>
+                <file name="alerts.js"/>
+                <file name="responseoverview.js" />
+                <file name="state.js"/>
+                <file name="maintenance.js"/>
+                <file name="monitor.js"/>
+                <file name="graphs/healthGraphRaw.js"/>
+                <file name="graphs/healthGraphAgg.js"/>
+                <file name="graphs/healthLineGraph.js"/>
+                <file name="graphs/responseTimeGraph.js"/>			
+            </filelist>
+        </concat>
+        
+        <echo>Checking code syntax and minifying.</echo>
+        <jscomp compilationLevel="whitespace" warning="verbose" debug="true" output="${src.out.dir}/administrator/views/mains/js/Monitor.js">
+            <sources dir="${src.out.dir}/administrator/views/mains/js/dev">
+                <file name="language.js"/>
+                <file name="vtypes.js"/>
+                <file name="app/App.js"/>
+                <file name="definitions.js"/>
+                <file name="jobManager.js"/>
+                <file name="jobRequest.js"/>
+                <file name="jobAlert.js"/>
+                <file name="reports.js"/>
+                <file name="alerts.js"/>
+                <file name="responseoverview.js" />
+                <file name="sla.js" />
+                <file name="state.js"/>
+                <file name="maintenance.js"/>
+                <file name="monitor.js"/>
+                <file name="graphs/healthGraphRaw.js"/>
+                <file name="graphs/healthGraphAgg.js"/>
+                <file name="graphs/healthLineGraph.js"/>
+                <file name="graphs/responseTimeGraph.js"/>
+            </sources>
+        </jscomp>
+    </target>
+    
+</project>
