@@ -676,108 +676,10 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			'anyservice = ' . ((isset($spatialPolicy['anyservice'])) ? 1 : 0),
 		);
 		
-		//test whether that policy already have a spatialPolicy or not
-		if (-1 == $spatialPolicyID) {
-			//we create the spatial policy
-			$query = $db->getQuery(true);
-			$query->insert('#__sdi_wms_spatialpolicy')->columns(
-				'maxx, maxy, minx, miny, geographicfilter, maximumscale, minimumscale, srssource'
-			)->values($spatialPolicy['maxx'] . ', ' . $spatialPolicy['maxy'] . ', ' . $spatialPolicy['minx'] . ', ' . $spatialPolicy['miny'] . ', \'' . $spatialPolicy['geographicfilter'] . '\', ' . $spatialPolicy['maximumscale'] . ', ' . $spatialPolicy['minimumscale'] . ', \'' . $spatialPolicy['srssource'] . '\'');
-			
-			try {
-				$db->setQuery($query);
-				$db->execute();
-				$spatialPolicyID = $db->insertid();
-			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
-			}
-			
-			//we update the spatial policy foreign key in policy
-			$policyUpdates[] = 'wms_spatialpolicy_id = ' . $spatialPolicyID;
-			
-		}
-		else {
-			//we update the spatial policy
-			$query = $db->getQuery(true);
-			$query->update('#__sdi_wms_spatialpolicy')->set(Array(
-				'maxx = ' . $spatialPolicy['maxx'],
-				'maxy = ' . $spatialPolicy['maxy'],
-				'minx = ' . $spatialPolicy['minx'],
-				'miny = ' . $spatialPolicy['miny'],
-				'geographicfilter = \'' . $spatialPolicy['geographicfilter'] . '\'',
-				'maximumscale = ' . $spatialPolicy['maximumscale'],
-				'minimumscale = ' . $spatialPolicy['minimumscale'],
-				'srssource = \'' . $spatialPolicy['srssource'] . '\'',
-			))->where('id = ' . $spatialPolicyID);
-			
-			try {
-				$db->setQuery($query);
-				$db->execute();
-			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
-			}
-		}
-			
-		//we update the anyservice switch
-		$query = $db->getQuery(true);
-		$query->update('#__sdi_policy')->set($policyUpdates)->where('id = ' . $data['id']);
-		
-		try {
-			$db->setQuery($query);
-			$db->execute();
-		}
-		catch (JDatabaseException $e) {
-			$je = new JException($e->getMessage());
-			$this->setError($je);
-			return false;
-		}
-		
-		//Save the server-wide inheritance
-		$spatialPolicy = null;
-		foreach ($_POST['inherit_server'] as $physicalServiceID => $spatialPolicy) {
-			$physicalServicePolicyUpdates = Array(
-				'anyitem = ' . ((isset($spatialPolicy['anyitem'])) ? 1 : 0),
-			);
-			//check if a spatial policy exists for that physicalservice_policy
-			$query = '
-				SELECT wms_spatialpolicy_id, id
-				FROM #__sdi_physicalservice_policy
-				WHERE physicalservice_id = ' . $physicalServiceID . '
-				AND policy_id = ' . $data['id'] . ';
-			';
-			
-			try {
-				$db->setQuery($query);
-				$db->execute();
-				$resultSet = $db->loadObject();
-				$spatialPolicyID = null;
-				if (!empty($resultSet)) {
-					$spatialPolicyID = $resultSet->wmts_spatialpolicy_id;
-					$physicalServicePolicyID = $resultSet->id;
-				}
-			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
-			}
-			
-			$spatialPolicy['maxx'] = ('' != $spatialPolicy['maxx'])?$spatialPolicy['maxx']:'null';
-			$spatialPolicy['maxy'] = ('' != $spatialPolicy['maxy'])?$spatialPolicy['maxy']:'null';
-			$spatialPolicy['minx'] = ('' != $spatialPolicy['minx'])?$spatialPolicy['minx']:'null';
-			$spatialPolicy['miny'] = ('' != $spatialPolicy['miny'])?$spatialPolicy['miny']:'null';
-			$spatialPolicy['minimumscale'] = ('' != $spatialPolicy['minimumscale'])?$spatialPolicy['minimumscale']:'null';
-			$spatialPolicy['maximumscale'] = ('' != $spatialPolicy['maximumscale'])?$spatialPolicy['maximumscale']:'null';
-			
-			//test whether that physicalservice_policy already have a spatialPolicy or not
-			if (empty($spatialPolicyID)) {
-				//create a spatial policy
+		if ('null' != $spatialPolicy['minimumscale'] || 'null' != $spatialPolicy['maximumscale'] || 'null' != $spatialPolicy['geographicfilter']) {
+			//test whether that policy already have a spatialPolicy or not
+			if (-1 == $spatialPolicyID) {
+				//we create the spatial policy
 				$query = $db->getQuery(true);
 				$query->insert('#__sdi_wms_spatialpolicy')->columns(
 					'maxx, maxy, minx, miny, geographicfilter, maximumscale, minimumscale, srssource'
@@ -794,12 +696,12 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					return false;
 				}
 				
-				//update the spatial foreign key in physicalservice_policy
-				$physicalServicePolicyUpdates[] = 'wms_spatialpolicy_id = ' . $spatialPolicyID;
+				//we update the spatial policy foreign key in policy
+				$policyUpdates[] = 'wms_spatialpolicy_id = ' . $spatialPolicyID;
 				
 			}
 			else {
-				//update the spatial policy
+				//we update the spatial policy
 				$query = $db->getQuery(true);
 				$query->update('#__sdi_wms_spatialpolicy')->set(Array(
 					'maxx = ' . $spatialPolicy['maxx'],
@@ -822,19 +724,121 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					return false;
 				}
 			}
+		}	
+		//we update the anyservice switch
+		$query = $db->getQuery(true);
+		$query->update('#__sdi_policy')->set($policyUpdates)->where('id = ' . $data['id']);
+		
+		try {
+			$db->setQuery($query);
+			$db->execute();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
+		//Save the server-wide inheritance
+		$spatialPolicy = null;
+		foreach ($_POST['inherit_server'] as $physicalServiceID => $spatialPolicy) {
+			$physicalServicePolicyUpdates = Array(
+				'anyitem = ' . ((isset($spatialPolicy['anyitem'])) ? 1 : 0),
+			);
 			
-			//update the anyitem switch
-			$query = $db->getQuery(true);
-			$query->update('#__sdi_physicalservice_policy')->set($physicalServicePolicyUpdates)->where('id = ' . $physicalServicePolicyID);
+			$spatialPolicy['maxx'] = ('' != $spatialPolicy['maxx'])?$spatialPolicy['maxx']:'null';
+			$spatialPolicy['maxy'] = ('' != $spatialPolicy['maxy'])?$spatialPolicy['maxy']:'null';
+			$spatialPolicy['minx'] = ('' != $spatialPolicy['minx'])?$spatialPolicy['minx']:'null';
+			$spatialPolicy['miny'] = ('' != $spatialPolicy['miny'])?$spatialPolicy['miny']:'null';
+			$spatialPolicy['minimumscale'] = ('' != $spatialPolicy['minimumscale'])?$spatialPolicy['minimumscale']:'null';
+			$spatialPolicy['maximumscale'] = ('' != $spatialPolicy['maximumscale'])?$spatialPolicy['maximumscale']:'null';
 			
-			try {
-				$db->setQuery($query);
-				$db->execute();
-			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
+			if ('null' != $spatialPolicy['minimumscale'] || 'null' != $spatialPolicy['maximumscale'] || 'null' != $spatialPolicy['geographicfilter']) {
+				//check if a spatial policy exists for that physicalservice_policy
+				$query = '
+					SELECT wms_spatialpolicy_id, id
+					FROM #__sdi_physicalservice_policy
+					WHERE physicalservice_id = ' . $physicalServiceID . '
+					AND policy_id = ' . $data['id'] . ';
+				';
+				
+				try {
+					$db->setQuery($query);
+					$db->execute();
+					$resultSet = $db->loadObject();
+					$spatialPolicyID = null;
+					if (!empty($resultSet)) {
+						$spatialPolicyID = $resultSet->wmts_spatialpolicy_id;
+						$physicalServicePolicyID = $resultSet->id;
+					}
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
+				
+				//test whether that physicalservice_policy already have a spatialPolicy or not
+				if (empty($spatialPolicyID)) {
+					//create a spatial policy
+					$query = $db->getQuery(true);
+					$query->insert('#__sdi_wms_spatialpolicy')->columns(
+						'maxx, maxy, minx, miny, geographicfilter, maximumscale, minimumscale, srssource'
+					)->values($spatialPolicy['maxx'] . ', ' . $spatialPolicy['maxy'] . ', ' . $spatialPolicy['minx'] . ', ' . $spatialPolicy['miny'] . ', \'' . $spatialPolicy['geographicfilter'] . '\', ' . $spatialPolicy['maximumscale'] . ', ' . $spatialPolicy['minimumscale'] . ', \'' . $spatialPolicy['srssource'] . '\'');
+					
+					try {
+						$db->setQuery($query);
+						$db->execute();
+						$spatialPolicyID = $db->insertid();
+					}
+					catch (JDatabaseException $e) {
+						$je = new JException($e->getMessage());
+						$this->setError($je);
+						return false;
+					}
+					
+					//update the spatial foreign key in physicalservice_policy
+					$physicalServicePolicyUpdates[] = 'wms_spatialpolicy_id = ' . $spatialPolicyID;
+					
+				}
+				else {
+					//update the spatial policy
+					$query = $db->getQuery(true);
+					$query->update('#__sdi_wms_spatialpolicy')->set(Array(
+						'maxx = ' . $spatialPolicy['maxx'],
+						'maxy = ' . $spatialPolicy['maxy'],
+						'minx = ' . $spatialPolicy['minx'],
+						'miny = ' . $spatialPolicy['miny'],
+						'geographicfilter = \'' . $spatialPolicy['geographicfilter'] . '\'',
+						'maximumscale = ' . $spatialPolicy['maximumscale'],
+						'minimumscale = ' . $spatialPolicy['minimumscale'],
+						'srssource = \'' . $spatialPolicy['srssource'] . '\'',
+					))->where('id = ' . $spatialPolicyID);
+					
+					try {
+						$db->setQuery($query);
+						$db->execute();
+					}
+					catch (JDatabaseException $e) {
+						$je = new JException($e->getMessage());
+						$this->setError($je);
+						return false;
+					}
+				}
+				
+				//update the anyitem switch
+				$query = $db->getQuery(true);
+				$query->update('#__sdi_physicalservice_policy')->set($physicalServicePolicyUpdates)->where('id = ' . $physicalServicePolicyID);
+				
+				try {
+					$db->setQuery($query);
+					$db->execute();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
 			}
 		}
 		
@@ -861,48 +865,50 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			'anyservice = ' . ((isset($spatialPolicy['anyservice'])) ? 1 : 0),
 		);
 		
-		//test whether that policy already have a spatialPolicy or not
-		if (-1 == $spatialPolicyID) {
-			//we create the spatial policy
-			$query = $db->getQuery(true);
-			$query->insert('#__sdi_wfs_spatialpolicy')->columns(
-				'localgeographicfilter, remotegeographicfilter'
-			)->values('\'' . $spatialPolicy['localgeographicfilter'] . '\', \'' . $spatialPolicy['remotegeographicfilter'] . '\'');
-			
-			try {
-				$db->setQuery($query);
-				$db->execute();
-				$spatialPolicyID = $db->insertid();
+		if ('' != $spatialPolicy['localgeographicfilter'] || '' != $spatialPolicy['remotegeographicfilter']) {
+			//test whether that policy already have a spatialPolicy or not
+			if (-1 == $spatialPolicyID) {
+				//we create the spatial policy
+				$query = $db->getQuery(true);
+				$query->insert('#__sdi_wfs_spatialpolicy')->columns(
+					'localgeographicfilter, remotegeographicfilter'
+				)->values('\'' . $spatialPolicy['localgeographicfilter'] . '\', \'' . $spatialPolicy['remotegeographicfilter'] . '\'');
+				
+				try {
+					$db->setQuery($query);
+					$db->execute();
+					$spatialPolicyID = $db->insertid();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
+				
+				//we update the spatial policy foreign key in policy
+				$policyUpdates[] = 'wfs_spatialpolicy_id = ' . $spatialPolicyID;
+				
 			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
+			else {
+				//we update the spatial policy
+				$query = $db->getQuery(true);
+				$query->update('#__sdi_wfs_spatialpolicy')->set(Array(
+					'localgeographicfilter = \'' . $spatialPolicy['localgeographicfilter'] . '\'',
+					'remotegeographicfilter = \'' . $spatialPolicy['remotegeographicfilter'] . '\'',
+				))->where('id = ' . $spatialPolicyID);
+				
+				try {
+					$db->setQuery($query);
+					$db->execute();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
 			}
-			
-			//we update the spatial policy foreign key in policy
-			$policyUpdates[] = 'wfs_spatialpolicy_id = ' . $spatialPolicyID;
-			
 		}
-		else {
-			//we update the spatial policy
-			$query = $db->getQuery(true);
-			$query->update('#__sdi_wfs_spatialpolicy')->set(Array(
-				'localgeographicfilter = \'' . $spatialPolicy['localgeographicfilter'] . '\'',
-				'remotegeographicfilter = \'' . $spatialPolicy['remotegeographicfilter'] . '\'',
-			))->where('id = ' . $spatialPolicyID);
-			
-			try {
-				$db->setQuery($query);
-				$db->execute();
-			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
-			}
-		}
-			
+		
 		//we update the anyservice switch
 		$query = $db->getQuery(true);
 		$query->update('#__sdi_policy')->set($policyUpdates)->where('id = ' . $data['id']);
@@ -920,45 +926,27 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		//Save the server-wide inheritance
 		$spatialPolicy = null;
 		foreach ($_POST['inherit_server'] as $physicalServiceID => $spatialPolicy) {
-			$physicalServicePolicyUpdates = Array(
-				'anyitem = ' . ((isset($spatialPolicy['anyitem'])) ? 1 : 0),
-			);
-			//check if a spatial policy exists for that physicalservice_policy
-			$query = '
-				SELECT wfs_spatialpolicy_id, id
-				FROM #__sdi_physicalservice_policy
-				WHERE physicalservice_id = ' . $physicalServiceID . '
-				AND policy_id = ' . $data['id'] . ';
-			';
-			
-			try {
-				$db->setQuery($query);
-				$db->execute();
-				$resultSet = $db->loadObject();
-				$spatialPolicyID = null;
-				if (!empty($resultSet)) {
-					$spatialPolicyID = $resultSet->wmts_spatialpolicy_id;
-					$physicalServicePolicyID = $resultSet->id;
-				}
-			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
-			}
-			
-			//test whether that physicalservice_policy already have a spatialPolicy or not
-			if (empty($spatialPolicyID)) {
-				//create a spatial policy
-				$query = $db->getQuery(true);
-				$query->insert('#__sdi_wfs_spatialpolicy')->columns(
-					'localgeographicfilter, remotegeographicfilter'
-				)->values('\'' . $spatialPolicy['localgeographicfilter'] . '\', \'' . $spatialPolicy['remotegeographicfilter'] . '\'');
+			if ('' != $spatialPolicy['localgeographicfilter'] || '' != $spatialPolicy['remotegeographicfilter']) {
+				$physicalServicePolicyUpdates = Array(
+					'anyitem = ' . ((isset($spatialPolicy['anyitem'])) ? 1 : 0),
+				);
+				//check if a spatial policy exists for that physicalservice_policy
+				$query = '
+					SELECT wfs_spatialpolicy_id, id
+					FROM #__sdi_physicalservice_policy
+					WHERE physicalservice_id = ' . $physicalServiceID . '
+					AND policy_id = ' . $data['id'] . ';
+				';
 				
 				try {
 					$db->setQuery($query);
 					$db->execute();
-					$spatialPolicyID = $db->insertid();
+					$resultSet = $db->loadObject();
+					$spatialPolicyID = null;
+					if (!empty($resultSet)) {
+						$spatialPolicyID = $resultSet->wmts_spatialpolicy_id;
+						$physicalServicePolicyID = $resultSet->id;
+					}
 				}
 				catch (JDatabaseException $e) {
 					$je = new JException($e->getMessage());
@@ -966,17 +954,51 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					return false;
 				}
 				
-				//update the spatial foreign key in physicalservice_policy
-				$physicalServicePolicyUpdates[] = 'wfs_spatialpolicy_id = ' . $spatialPolicyID;
+				//test whether that physicalservice_policy already have a spatialPolicy or not
+				if (empty($spatialPolicyID)) {
+					//create a spatial policy
+					$query = $db->getQuery(true);
+					$query->insert('#__sdi_wfs_spatialpolicy')->columns(
+						'localgeographicfilter, remotegeographicfilter'
+					)->values('\'' . $spatialPolicy['localgeographicfilter'] . '\', \'' . $spatialPolicy['remotegeographicfilter'] . '\'');
+					
+					try {
+						$db->setQuery($query);
+						$db->execute();
+						$spatialPolicyID = $db->insertid();
+					}
+					catch (JDatabaseException $e) {
+						$je = new JException($e->getMessage());
+						$this->setError($je);
+						return false;
+					}
+					
+					//update the spatial foreign key in physicalservice_policy
+					$physicalServicePolicyUpdates[] = 'wfs_spatialpolicy_id = ' . $spatialPolicyID;
+					
+				}
+				else {
+					//update the spatial policy
+					$query = $db->getQuery(true);
+					$query->update('#__sdi_wms_spatialpolicy')->set(Array(
+					'localgeographicfilter = \'' . $spatialPolicy['localgeographicfilter'] . '\'',
+					'remotegeographicfilter = \'' . $spatialPolicy['remotegeographicfilter'] . '\'',
+					))->where('id = ' . $spatialPolicyID);
+					
+					try {
+						$db->setQuery($query);
+						$db->execute();
+					}
+					catch (JDatabaseException $e) {
+						$je = new JException($e->getMessage());
+						$this->setError($je);
+						return false;
+					}
+				}
 				
-			}
-			else {
-				//update the spatial policy
+				//update the anyitem switch
 				$query = $db->getQuery(true);
-				$query->update('#__sdi_wms_spatialpolicy')->set(Array(
-				'localgeographicfilter = \'' . $spatialPolicy['localgeographicfilter'] . '\'',
-				'remotegeographicfilter = \'' . $spatialPolicy['remotegeographicfilter'] . '\'',
-				))->where('id = ' . $spatialPolicyID);
+				$query->update('#__sdi_physicalservice_policy')->set($physicalServicePolicyUpdates)->where('id = ' . $physicalServicePolicyID);
 				
 				try {
 					$db->setQuery($query);
@@ -987,20 +1009,6 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					$this->setError($je);
 					return false;
 				}
-			}
-			
-			//update the anyitem switch
-			$query = $db->getQuery(true);
-			$query->update('#__sdi_physicalservice_policy')->set($physicalServicePolicyUpdates)->where('id = ' . $physicalServicePolicyID);
-			
-			try {
-				$db->setQuery($query);
-				$db->execute();
-			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
 			}
 		}
 		

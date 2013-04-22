@@ -179,6 +179,7 @@ class WmsWebservice {
 		
 		$query = $db->getQuery(true);
 		if (0 == $num_result) {
+			var_dump('insert');
 			$query->insert('#__sdi_wms_spatialpolicy')->columns('
 				geographicfilter, maxx, maxy, minx, miny, minimumscale, maximumscale, srssource
 			')->values('
@@ -186,6 +187,7 @@ class WmsWebservice {
 			');
 		}
 		else {
+			var_dump('update', $spatial_policy_id);
 			$query->update('#__sdi_wms_spatialpolicy')->set(Array(
 				'geographicfilter = \'' . $raw_GET['geographicfilter'] . '\'',
 				'maxx = ' . $raw_GET['maxX'],
