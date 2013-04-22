@@ -106,10 +106,20 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 				cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiVirtualmetadatas", id);
 				cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiPhysicalservicePolicies", id);
 				cache.evictEntity("org.easysdi.proxy.domain.SdiVirtualservice", id);
+				//Invalidate query cache (initial loading)
 			}
 			else if(entityClass.equalsIgnoreCase("SdiPolicy")){
 				SdiPolicyHome sdiPolicyHome  = (SdiPolicyHome)context.getBean("sdiPolicyHome");
+				if(operation != null && operation.equalsIgnoreCase("DELETE")){
+					SdiPolicy policy = sdiPolicyHome.findById(Integer.getInteger(id));
+					
+					if(policy.getSdiVirtualservice() != null)
+						cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiPolicies", policy.getSdiVirtualservice().getId());
+						cache.evictEntity("org.easysdi.proxy.domain.SdiVirtualservice", policy.getSdiVirtualservice().getId());
+				}
+				
 				InvalidateSdiPolicyCache ( id,  sdiPolicyHome);
+				//Invalidate query cache (initial loading)
 			}
 			else if(entityClass.equalsIgnoreCase("SdiUser")){
 				cache.evictCollection("org.easysdi.proxy.domain.SdiUser.sdiOrganisms", id);
@@ -141,6 +151,7 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 		
 		for(SdiVirtualservice virtualService :physicalservice.getSdiVirtualservices()){
 			cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiPhysicalservices", virtualService.getId());
+			cache.evictEntity("org.easysdi.proxy.domain.SdiVirtualservice", virtualService.getId());
 		}
 	}
 	
