@@ -111,7 +111,7 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 			
 			if(!virtualMetadata.isInheritedkeyword() && virtualMetadata.getKeyword() != null && virtualMetadata.getKeyword().length() != 0)
 			{
-				Element keywords = new Element("KeywordsList", nsWMS);
+				Element keywords = new Element("KeywordList", nsWMS);
 				String skeywords = virtualMetadata.getKeyword();
 				if(skeywords != null)
 				{
@@ -122,8 +122,8 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 					newService.addContent(keywords);
 				}
 			}
-			else if (virtualMetadata.isInheritedkeyword() && oldService.getChild("KeywordsList") != null)
-				newService.addContent((new Element("KeywordsList", nsWMS)).setContent(oldService.getChild("KeywordsList")));
+			else if (virtualMetadata.isInheritedkeyword() && oldService.getChild("KeywordList", nsWMS) != null)
+				newService.addContent((new Element("KeywordList", nsWMS)).setContent(oldService.getChild("KeywordList", nsWMS).cloneContent()));
 			
 			Element onlineResource = new Element("OnlineResource", nsWMS);
 			onlineResource.setAttribute("type", "simple",nsXLINK);
@@ -195,8 +195,8 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 				
 				newService.addContent(newContactInformation);
 			}
-			else  if (!virtualMetadata.isInheritedcontact() && oldService.getChild("ContactInformation", nsWMS) != null )
-				newService.addContent((new Element("ContactInformation", nsWMS)).setContent(oldService.getChild("ContactInformation", nsWMS)));
+			else  if (virtualMetadata.isInheritedcontact() && oldService.getChild("ContactInformation", nsWMS) != null )
+				newService.addContent((new Element("ContactInformation", nsWMS)).setContent(oldService.getChild("ContactInformation", nsWMS).cloneContent()));
 
 			if(!virtualMetadata.isInheritedfee() && virtualMetadata.getFee() != null && virtualMetadata.getFee().length() != 0)
 				newService.addContent((new Element("Fees", nsWMS)).setText(virtualMetadata.getFee()));

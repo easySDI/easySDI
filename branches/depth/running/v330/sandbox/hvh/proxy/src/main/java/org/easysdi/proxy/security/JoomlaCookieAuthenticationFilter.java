@@ -1,6 +1,7 @@
 package org.easysdi.proxy.security;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 
 import org.easysdi.proxy.domain.Users;
 import org.easysdi.proxy.domain.UsersHome;
@@ -73,21 +75,37 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 			) 
 		{
 			final boolean debug = logger.isDebugEnabled();
-		    
+			
+			userCache = cacheManager.getCache("userCache");
+			
 			Users user = null;
 		    if (cookies != null)
 		    {
 				for (Cookie cookie : cookies) {
-					String sessionKey = cookie.getValue();
-					user = usersHome.findBySession(sessionKey);
-					if(user != null)
-						break;
+					Element e = userCache.get(cookie);
+					if (e != null){
+				    	user = (Users) e.getValue();
+				    }
+					else{
+						String sessionKey = cookie.getValue();
+						user = usersHome.findBySession(sessionKey);
+						if(user != null){
+							userCache.put(new Element(cookie, user));
+							break;
+						}
+					}
 				}
 		    }
 	
 		    //Case : request from a front-end component with no logged user --> use a guest account
 		    if(user != null && user.getUsername() == null){
-		    		user = usersHome.findGuest();
+		    	Element e = userCache.get("easysdiguest");
+		    	if (e != null){
+			    	user = (Users) e.getValue();
+			    }else{
+			    	user = usersHome.findGuest();
+			    	userCache.put(new Element("easysdiguest", user));
+			    }
 		    }
 	
 		    //Joomla user found, then authenticate

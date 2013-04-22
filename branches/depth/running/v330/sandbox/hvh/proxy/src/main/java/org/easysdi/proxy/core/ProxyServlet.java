@@ -67,6 +67,7 @@ import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.log.ProxyLogger;
 import org.easysdi.proxy.ows.OWSExceptionReport;
+import org.hibernate.metadata.CollectionMetadata;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
@@ -225,14 +226,10 @@ public abstract class ProxyServlet extends HttpServlet {
     	if (!physicalServiceHashTable.isEmpty())
     		return physicalServiceHashTable;
     	
-    	Set<SdiPhysicalservice> physicalServices = sdiVirtualService.getSdiPhysicalservices();
-    	Iterator<SdiPhysicalservice> i = physicalServices.iterator();
-    	while (i.hasNext())
-    	{
-    		SdiPhysicalservice physicalService = i.next();
+    	for(SdiPhysicalservice physicalService : sdiVirtualService.getSdiPhysicalservices()){
     		if(physicalService != null)
     			physicalServiceHashTable.put(physicalService.getAlias(),physicalService);
-    	}
+	    }
     	return physicalServiceHashTable;
     }
 
@@ -280,14 +277,11 @@ public abstract class ProxyServlet extends HttpServlet {
     	if(!physicalServiceList.isEmpty())
     		return  physicalServiceList;
     	
-    	Set<SdiPhysicalservice> physicalServices = sdiVirtualService.getSdiPhysicalservices();
-    	Iterator<SdiPhysicalservice> i = physicalServices.iterator();
-    	while (i.hasNext())
-    	{
-    		SdiPhysicalservice physicalService = i.next();
+    	for(SdiPhysicalservice physicalService : sdiVirtualService.getSdiPhysicalservices()){
     		if(physicalService != null)
     			physicalServiceList.add(physicalService);
-    	}
+	    }
+    	
     	return physicalServiceList;
     }
 
@@ -788,13 +782,11 @@ public abstract class ProxyServlet extends HttpServlet {
 		{
 			physicalServiceHashTable = getPhysicalServiceHastable();
 		}
-    	Iterator<Map.Entry <String, SdiPhysicalservice>> i = physicalServiceHashTable.entrySet().iterator();
-    	while (i.hasNext())
-    	{
-    		Map.Entry <String, SdiPhysicalservice> service = i.next();
+    	for(Map.Entry <String, SdiPhysicalservice> service : physicalServiceHashTable.entrySet()){
     		if(service.getValue().getResourceurl().equals(urlstr))
     			return service.getValue().getResourceusername();
     	}
+
     	return null;
 	}
 
@@ -811,11 +803,8 @@ public abstract class ProxyServlet extends HttpServlet {
 		{
 			physicalServiceHashTable = getPhysicalServiceHastable();
 		}
-    	Iterator<Map.Entry <String, SdiPhysicalservice>> i = physicalServiceHashTable.entrySet().iterator();
-    	while (i.hasNext())
-    	{
-    		Map.Entry <String, SdiPhysicalservice> service = i.next();
-    		if(service.getValue().getResourceurl().equals(urlstr))
+    	for(Map.Entry <String, SdiPhysicalservice> service : physicalServiceHashTable.entrySet()){
+    		if(service.getValue().getResourceurl().equals(urlstr)){
     			if(service.getValue().getResourceusername() != null  &&service.getValue().getResourcepassword() != null)
     			{
     				// Utilisation de la classe Java "Authenticator" qui ajoute
@@ -830,6 +819,7 @@ public abstract class ProxyServlet extends HttpServlet {
 					org.easysdi.proxy.security.EasyAuthenticator.setCredientials(getUsername(urlstr).toString(), service.getValue().getResourceusername() );
 					return service.getValue().getResourcepassword();
     			}
+    		}
     	}
     	return null;
 	}
@@ -842,10 +832,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		{
 			physicalServiceHashTable = getPhysicalServiceHastable();
 		}
-    	Iterator<Map.Entry <String, SdiPhysicalservice>> i = physicalServiceHashTable.entrySet().iterator();
-    	while (i.hasNext())
-    	{
-    		Map.Entry <String, SdiPhysicalservice> service = i.next();
+    	for(Map.Entry <String, SdiPhysicalservice> service : physicalServiceHashTable.entrySet()){
     		if(service.getValue().getResourceurl().equals(urlstr))
     			return service.getValue().getServiceurl();
     	}
@@ -865,13 +852,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		if(sdiPolicy.isAnyoperation())
 			return true;
 		
-		Set<SdiAllowedoperation> allowedoperations =  sdiPolicy.getSdiAllowedoperations();
-		if(allowedoperations == null)
-			return false;
-		
-		Iterator<SdiAllowedoperation> i = allowedoperations.iterator();
-		while(i.hasNext()){
-			SdiAllowedoperation allowOperation = i.next();
+		for(SdiAllowedoperation allowOperation :sdiPolicy.getSdiAllowedoperations()){
 			if(allowOperation.getSdiSysServiceoperation().getValue().equals(operation))
 				return true;
 		}

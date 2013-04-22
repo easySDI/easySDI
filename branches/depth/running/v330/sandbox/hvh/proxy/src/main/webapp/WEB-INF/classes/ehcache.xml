@@ -53,15 +53,6 @@
     	diskPersistent="false"
     	diskExpiryThreadIntervalSeconds="300" 
     	memoryStoreEvictionPolicy="LRU" />
-    
-    <cache 
-    	name="virtualserviceCache" 
-    	maxElementsInMemory="1000" 
-    	eternal="true" 
-    	overflowToDisk="false" 
-    	timeToIdleSeconds="0" 
-    	timeToLiveSeconds="0"
-		diskPersistent="false" />
 		
 	<cache 
 		name="userCache" 
@@ -72,9 +63,9 @@
 		overflowToDisk="false"  />
 
 	<cache 
-		name="getMapCache" 
+		name="operationBasedCache" 
 		maxElementsInMemory="10000" 
-		diskPersistent="false" 
+		diskPersistent="true" 
 		timeToLiveSeconds="2592000" 
 		overflowToDisk="true"
 		memoryStoreEvictionPolicy="LFU" 

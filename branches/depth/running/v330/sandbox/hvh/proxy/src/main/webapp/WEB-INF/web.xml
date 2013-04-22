@@ -19,17 +19,14 @@
 	<servlet>
 		<servlet-name>ogc</servlet-name>
 		<servlet-class>org.easysdi.proxy.core.OgcProxyServlet</servlet-class>
-		<init-param>
-			<param-name>configFile</param-name>
-			<param-value>C:\Resources\Config\opcc\config.xml</param-value>
-		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
-
-	<context-param>
-		<param-name>configFile</param-name>
-		<param-value>C:\Resources\Config\opcc\config.xml</param-value>
-	</context-param>
+	
+	<servlet>
+		<servlet-name>invalidator</servlet-name>
+		<servlet-class>org.easysdi.proxy.hibernate.ProxyCacheInvalidationServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
 
 	<context-param>
 		<param-name>log4jConfigLocation</param-name>
@@ -66,6 +63,11 @@
 	<servlet-mapping>
 		<servlet-name>ogc</servlet-name>
 		<url-pattern>/ogc/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>invalidator</servlet-name>
+		<url-pattern>/cache/*</url-pattern>
 	</servlet-mapping>
 
 	<filter-mapping>

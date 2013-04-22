@@ -37,6 +37,7 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
 import org.easysdi.proxy.csw.CSWExceptionReport;
+import org.easysdi.proxy.domain.SdiPhysicalservice;
 import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiPolicyHome;
 import org.easysdi.proxy.domain.SdiSysServicecompliance;
@@ -236,16 +237,15 @@ public class OgcProxyServlet extends HttpServlet {
 			//Get the highest version
 			String highestversion = "";
 			SdiSysServicecompliance highestServicecompliance = null;
-			Iterator<SdiSysServicecompliance> i = virtualService.getSdiSysServicecompliances().iterator();
-			while (i.hasNext()){
-				SdiSysServicecompliance compliance = i.next();
+			
+			for(SdiSysServicecompliance compliance : virtualService.getSdiSysServicecompliances()){
 				String value = compliance.getSdiSysServiceversion().getValue();
 				if(value.compareTo(highestversion) > 0)
 				{
 					highestversion = value;
 					highestServicecompliance = compliance;
 				}
-			}
+		    }
 			
 			//Build package name
 			String packagename = "org.easysdi.proxy."+ connector.toLowerCase() + "." + connector.toUpperCase();
@@ -323,9 +323,7 @@ public class OgcProxyServlet extends HttpServlet {
 				//Check if the requested version is supported by the service
 				Boolean found = false;
 				if(request.getVersion() != null){
-					Iterator<SdiSysServicecompliance> it = virtualService.getSdiSysServicecompliances().iterator();
-					while (it.hasNext()){
-						SdiSysServicecompliance compliance = it.next();
+					for(SdiSysServicecompliance compliance : virtualService.getSdiSysServicecompliances()){
 						String value = compliance.getSdiSysServiceversion().getValue();
 						if(value.equals(request.getVersion())){
 							found= true;
@@ -336,7 +334,7 @@ public class OgcProxyServlet extends HttpServlet {
 							}
 							break;
 						}
-					}
+				    }
 				}
 				
 				if(request.getOperation().equalsIgnoreCase("GetCapabilities")){

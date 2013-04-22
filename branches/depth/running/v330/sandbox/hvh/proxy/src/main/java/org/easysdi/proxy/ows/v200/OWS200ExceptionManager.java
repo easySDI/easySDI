@@ -56,9 +56,7 @@ public class OWS200ExceptionManager implements OWSExceptionManager {
 		HashMap<String, String> remoteServerExceptionFiles = new HashMap<String, String>();
 		
 		try{
-			Iterator<Entry<String,String>> it = remoteServerResponseFile.entrySet().iterator();
-			while(it.hasNext()){
-				Entry<String,String> entry = it.next();
+			for(Entry<String,String> entry :remoteServerResponseFile.entrySet()){
 				String path  = entry.getValue();
 				if(path == null || path.length() == 0)
 					continue;
@@ -68,11 +66,7 @@ public class OWS200ExceptionManager implements OWSExceptionManager {
 					toRemove.put(entry.getKey(), path);
 				}
 			}
-			
-			Iterator<Entry<String,String>> itR = toRemove.entrySet().iterator();
-			while(itR.hasNext())
-			{
-				Entry<String, String> entry = itR.next();
+			for(Entry<String, String> entry :toRemove.entrySet()){
 				remoteServerExceptionFiles.put(entry.getKey(),entry.getValue());
 				remoteServerResponseFile.remove(entry.getKey());
 			}
@@ -122,7 +116,6 @@ public class OWS200ExceptionManager implements OWSExceptionManager {
 	{
 		 
 		Hashtable<String,String> toRemove = new Hashtable<String,String>();
-		
 		Iterator<Map.Entry<String, String>> it = serverResponses.entrySet().iterator();
 		while(it.hasNext())
 		{

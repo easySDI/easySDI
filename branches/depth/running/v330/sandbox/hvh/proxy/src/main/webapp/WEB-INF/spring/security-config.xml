@@ -19,7 +19,7 @@
 		<security:intercept-url pattern="(.*)" access="anonymous,proxy_user" />
 		<security:custom-filter ref="joomlaCookieAuthenticationFilter" before="BASIC_AUTH_FILTER" />
 		<security:custom-filter ref="easySdiConfigFilter" after="FILTER_SECURITY_INTERCEPTOR" />
-		<security:custom-filter ref="OGCOperationCacheFilter" position="LAST" />
+		<security:custom-filter ref="OGCOperationBasedCacheFilter" position="LAST" />
 	</security:http>
 
 	<bean id="basicAuthenticationEntryPoint" class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">

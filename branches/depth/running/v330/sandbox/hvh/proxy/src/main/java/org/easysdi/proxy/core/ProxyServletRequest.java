@@ -162,9 +162,7 @@ public abstract class ProxyServletRequest {
 		{
 			return false;
 		}
-		Iterator<SdiSysOperationcompliance> i = operationcompliances.iterator();
-		while (i.hasNext()){
-			SdiSysOperationcompliance operationcompliance = i.next();
+		for(SdiSysOperationcompliance operationcompliance:operationcompliances){
 			if(operationcompliance.getSdiSysServiceoperation().getValue().equals(this.getOperation()))
 			{
 				return true;
@@ -182,17 +180,11 @@ public abstract class ProxyServletRequest {
 		if(policy.isAnyoperation())
 			return true;
 		
-		Set<SdiAllowedoperation> allowedoperations =  policy.getSdiAllowedoperations();
-		if(allowedoperations == null)
-			return false;
-		
-		Iterator<SdiAllowedoperation> i = allowedoperations.iterator();
-		while(i.hasNext()){
-			SdiAllowedoperation operation = i.next();
+		for(SdiAllowedoperation operation :policy.getSdiAllowedoperations()){
 			if(operation.getSdiSysServiceoperation().getValue().equals(this.getOperation()))
 				return true;
 		}
-			
+
 		return false;
 	}
 

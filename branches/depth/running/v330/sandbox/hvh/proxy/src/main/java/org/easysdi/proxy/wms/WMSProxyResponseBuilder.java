@@ -86,23 +86,19 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	    	//Retrieve allowed and denied operations from the policy
 			List<String> permitedOperations = new Vector<String>();
 			List<String> deniedOperations = new Vector<String>();
-			Set<SdiSysOperationcompliance> operationCompliances = servlet.getProxyRequest().getServiceCompliance().getSdiSysOperationcompliances();
-		   Iterator<SdiSysOperationcompliance> i = operationCompliances.iterator();
-		   while (i.hasNext())
-		   {
-			   SdiSysOperationcompliance compliance = i.next();
-			   if(compliance.getSdiSysServiceoperation().getState() == 1 && compliance.getState() == 1 && compliance.isImplemented() && servlet.isOperationAllowed(compliance.getSdiSysServiceoperation().getValue()))
-			   {
-				   permitedOperations.add(compliance.getSdiSysServiceoperation().getValue());
-				   servlet.logger.trace(compliance.getSdiSysServiceoperation().getValue() + " is permitted");
-			   }
-			   else
-			   {
-				   deniedOperations.add(compliance.getSdiSysServiceoperation().getValue());
-				   servlet.logger.trace(compliance.getSdiSysServiceoperation().getValue() + " is denied");
-				   
-			   }
-		   }
+			for(SdiSysOperationcompliance compliance : servlet.getProxyRequest().getServiceCompliance().getSdiSysOperationcompliances()){
+				if(compliance.getSdiSysServiceoperation().getState() == 1 && compliance.getState() == 1 && compliance.isImplemented() && servlet.isOperationAllowed(compliance.getSdiSysServiceoperation().getValue()))
+				   {
+					   permitedOperations.add(compliance.getSdiSysServiceoperation().getValue());
+					   servlet.logger.trace(compliance.getSdiSysServiceoperation().getValue() + " is permitted");
+				   }
+				   else
+				   {
+					   deniedOperations.add(compliance.getSdiSysServiceoperation().getValue());
+					   servlet.logger.trace(compliance.getSdiSysServiceoperation().getValue() + " is denied");
+					   
+				   }
+			}
 				
 			Document  docParent = sxb.build(new File(filePath));
 	    	Element racine = docParent.getRootElement();
@@ -413,15 +409,15 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 			
 			if(!virtualMetadata.isInheritedkeyword() && virtualMetadata.getKeyword() != null && virtualMetadata.getKeyword().length() != 0)
 			{
-				Element keywords = new Element("KeywordsList");
+				Element keywords = new Element("KeywordList");
 				String[] words = virtualMetadata.getKeyword().split(",");
 				for(String word: words){
 					keywords.addContent((new Element("Keyword")).setText(word));
 				}
 				newService.addContent(keywords);
 			}
-			else if (virtualMetadata.isInheritedkeyword() && oldService.getChild("KeywordsList") != null)
-				newService.addContent((new Element("KeywordsList")).setContent(oldService.getChild("KeywordsList")));
+			else if (virtualMetadata.isInheritedkeyword() && oldService.getChild("KeywordList") != null)
+				newService.addContent((new Element("KeywordList")).setContent(oldService.getChild("KeywordList").cloneContent()));
 			
 			Element onlineResource = new Element("OnlineResource");
 			onlineResource.setAttribute("type", "simple",nsXLINK);
@@ -479,7 +475,6 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 				
 				if(hasContactAddress)
 					newContactInformation.addContent(newContactAddress);
-				
 				if (virtualMetadata.getContactphone() != null && virtualMetadata.getContactphone().length() != 0)
 					newContactInformation.addContent((new Element("ContactVoiceTelephone")).setText(virtualMetadata.getContactphone()));
 				
@@ -491,8 +486,8 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 				
 				newService.addContent(newContactInformation);
 			}
-			else if (!virtualMetadata.isInheritedcontact() && oldService.getChild("ContactInformation") != null)
-				newService.addContent((new Element("ContactInformation")).setContent(oldService.getChild("ContactInformation")));
+			else if (virtualMetadata.isInheritedcontact() && oldService.getChild("ContactInformation") != null)
+				newService.addContent((new Element("ContactInformation")).setContent(oldService.getChild("ContactInformation").cloneContent()));
 			
 			if(!virtualMetadata.isInheritedfee() && virtualMetadata.getFee() != null && virtualMetadata.getFee().length() != 0)
 				newService.addContent((new Element("Fees")).setText(virtualMetadata.getFee()));
@@ -669,17 +664,9 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
     					continue;
     			ProxyLayer proxyLayer = new ProxyLayer(layerName);
     							
-				Set<SdiPhysicalservicePolicy> physicalServicePolicies = servlet.getPolicy().getSdiPhysicalservicePolicies();
-				Iterator<SdiPhysicalservicePolicy> ip = physicalServicePolicies.iterator();
-				while(ip.hasNext())
-				{
-					SdiPhysicalservicePolicy physicalservicePolicy = ip.next();
-					Set<SdiWmslayerPolicy> wmsLayerPolicies =  physicalservicePolicy.getSdiWmslayerPolicies();
-					Iterator<SdiWmslayerPolicy> ilayers = wmsLayerPolicies.iterator();
-					while(ilayers.hasNext())
-					{
-						SdiWmslayerPolicy layer = ilayers.next();
-						if(layer.getName().equals(proxyLayer.getPrefixedName()))
+    			for(SdiPhysicalservicePolicy physicalservicePolicy : servlet.getPolicy().getSdiPhysicalservicePolicies()){
+    				for(SdiWmslayerPolicy layer :physicalservicePolicy.getSdiWmslayerPolicies()){
+    					if(layer.getName().equals(proxyLayer.getPrefixedName()))
 						{
 							SdiWmsSpatialpolicy spatialPolicy = layer.getSdiWmsSpatialpolicy();
 							if(spatialPolicy != null)
@@ -725,8 +712,8 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 								}
 							}
 						}
-					}
-				}
+    				}
+    			}
 			}
 			return true;
 		}catch (NoSuchAuthorityCodeException e){

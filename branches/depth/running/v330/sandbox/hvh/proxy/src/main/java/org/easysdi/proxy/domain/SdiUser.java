@@ -6,7 +6,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -288,14 +287,12 @@ public class SdiUser implements java.io.Serializable {
 	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiUserRoleOrganism> getSdiUserRoleOrganismsMember() {
 		Set<SdiUserRoleOrganism> result = new HashSet<SdiUserRoleOrganism>() ;
-		Iterator<SdiUserRoleOrganism> it = this.getSdiUserRoleOrganisms().iterator();
-		 while (it.hasNext()) {
-			 SdiUserRoleOrganism uro = it.next();
-			 Integer role = (uro).getSdiSysRole().getId();
+		for(SdiUserRoleOrganism uro :this.getSdiUserRoleOrganisms()){
+			Integer role = (uro).getSdiSysRole().getId();
 			 if(role == 6){
 				 result.add(uro);
 			 }
-		 }
+		}
 		return result;
 	}
 

@@ -466,9 +466,8 @@ public class WMSProxyServlet extends ProxyServlet {
 					owsExceptionReport.sendExceptionReport(request, response, "QUERY_LAYERS "+OWSExceptionReport.TEXT_INVALID_QUERY_LAYERS_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"QUERY_LAYERS", HttpServletResponse.SC_OK);
 					return ;
 				}
-				Iterator<Entry<Integer,ProxyLayer>> i = layerTableToKeepFromGetMap.entrySet().iterator();
-				while(i.hasNext()){
-					Entry<Integer, ProxyLayer> entry =  i.next();
+				
+				for(Entry<Integer, ProxyLayer> entry : layerTableToKeepFromGetMap.entrySet()){
 					if(entry.getValue().getAlias().equals(layer.getAlias()) && entry.getValue().getPrefixedName().equals(layer.getPrefixedName())){
 						layerTableToKeep.put(k, layer);
 						if(!remoteServerToCall.contains(physicalService.getAlias()))
@@ -481,16 +480,13 @@ public class WMSProxyServlet extends ProxyServlet {
 			if(remoteServerToCall.size() == 1 && (sdiVirtualService.getXsltfilename() == null||sdiVirtualService.getXsltfilename().trim() =="" ) ){
 				logger.debug("WMSProxyServlet.requestPreTreatmentGetFeatureInfo : request is streamed.");
 				//Request can be send with direct streaming
-				Iterator<Entry<Integer, ProxyLayer>> itQPL = layerTableToKeep.entrySet().iterator();
 				String queryLayerList ="";
 				String styleList ="";
-				while(itQPL.hasNext()){
-					Entry<Integer, ProxyLayer> layer = itQPL.next();
+				for(Entry<Integer, ProxyLayer> layer: layerTableToKeep.entrySet()){
 					queryLayerList += layer.getValue().getPrefixedName() +",";
 					styleList += layerStyleMap.get(layer.getKey()) +",";
 				}
-
-
+				
 				String queryLayersUrl = "&QUERY_LAYERS=" + queryLayerList.substring(0, queryLayerList.length()-1);
 				String layersUrl = "&LAYERS=" + queryLayerList.substring(0, queryLayerList.length()-1);
 				String stylesUrl = "&STYLES=" + styleList.substring(0, styleList.length()-1);
@@ -509,18 +505,14 @@ public class WMSProxyServlet extends ProxyServlet {
 				SdiPhysicalservice physicalService = (SdiPhysicalservice)physicalServiceTable.get(remoteServerToCall.get(k));
 
 				//Loop on QUERY_LAYERS to keep only those to send to the current RS
-				Iterator<Entry<Integer, ProxyLayer>> itLK = layerTableToKeep.entrySet().iterator();
-				while(itLK.hasNext()){
-					Entry<Integer, ProxyLayer> layerOrdered = itLK.next();
+				for(Entry<Integer, ProxyLayer> layerOrdered :layerTableToKeep.entrySet() ){
 					if(((ProxyLayer)layerOrdered.getValue()).getAlias().equals(physicalService.getAlias())){
 						queryLayerByServerTable.put(layerOrdered.getKey(), layerOrdered.getValue());
 					}
 				}
 
 				//Loop on LAYERS to keep only those to send to the current RS
-				Iterator<Entry<Integer, ProxyLayer>> itLKGM = layerTableToKeepFromGetMap.entrySet().iterator();
-				while(itLKGM.hasNext()){
-					Entry<Integer, ProxyLayer> layerOrdered = itLKGM.next();
+				for(Entry<Integer, ProxyLayer> layerOrdered :layerTableToKeepFromGetMap.entrySet()){
 					if(((ProxyLayer)layerOrdered.getValue()).getAlias().equals(physicalService.getAlias())){
 						layerByServerTable.put(layerOrdered.getKey(), layerOrdered.getValue());
 					}
@@ -869,9 +861,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			BufferedImage imageSource = null;
 			Graphics2D g = null;
 			//Loop over the remote servers response
-			Iterator<Entry<Integer, ProxyRemoteServerResponse>> iR = wmsGetMapResponseFilePathMap.entrySet().iterator();
-			while (iR.hasNext()){
-				Entry<Integer, ProxyRemoteServerResponse> response = iR.next(); 
+			for(Entry<Integer, ProxyRemoteServerResponse> response :wmsGetMapResponseFilePathMap.entrySet()){
 				ProxyLayer pLayer = new ProxyLayer(getProxyRequest().getLayers().split(",")[response.getKey()]);
 				BufferedImage image = filterImage(
 										getLayerFilter(getPhysicalServiceByAlias(response.getValue().getAlias()),pLayer.getPrefixedName()),
@@ -962,9 +952,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		HashMap<String, String> remoteServerExceptionFiles = new HashMap<String, String>();
 
 		try {
-			Iterator<Entry<String,String>> it = remoteServerResponseFile.entrySet().iterator();
-			while(it.hasNext()){
-				Entry<String,String> entry = it.next();
+			for(Entry<String,String> entry :remoteServerResponseFile.entrySet()){
 				String path  = entry.getValue();
 				if(path == null || path.length() == 0)
 					continue;
@@ -975,10 +963,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				}
 			}
 
-			Iterator<Entry<String,String>> itR = toRemove.entrySet().iterator();
-			while(itR.hasNext())
-			{
-				Entry<String, String> entry = itR.next();
+			for(Entry<String, String> entry : toRemove.entrySet()) {
 				remoteServerExceptionFiles.put(entry.getKey(),entry.getValue());
 				remoteServerResponseFile.remove(entry.getKey());
 			}

@@ -65,10 +65,7 @@ public class SdiPolicyHome {
 				List results = query.setCacheable(true).list();
 				if(results != null && results.size() > 0)
 				{
-					Iterator<SdiPolicy> i = (Iterator<SdiPolicy>) results.iterator();
-					while (i.hasNext())
-					{
-						SdiPolicy policy = i.next();
+					for(SdiPolicy policy :(List<SdiPolicy>)results){
 						//Date validity is check out of the SQL query to not interfer with query cache
 						Date from = policy.getAllowfrom();
 						Date to = policy.getAllowto();
@@ -108,10 +105,8 @@ public class SdiPolicyHome {
 				List oResults = oQuery.setCacheable(true).list();
 				if (oResults != null && oResults.size() > 0)
 				{
-					Iterator<SdiPolicy> i1 = (Iterator<SdiPolicy>) oResults.iterator();
-					while (i1.hasNext())
-					{
-						SdiPolicy policy = i1.next();
+					for(SdiPolicy policy :(List<SdiPolicy>)oResults){
+						//Date validity is check out of the SQL query to not interfer with query cache
 						Date from = policy.getAllowfrom();
 						Date to = policy.getAllowto();
 						if (currentDate.after(from) && currentDate.before(to))
@@ -134,10 +129,8 @@ public class SdiPolicyHome {
 			List pResults = pQuery.setCacheable(true).list();
 			if (pResults != null && pResults.size() > 0)
 			{
-				Iterator<SdiPolicy> i2 = (Iterator<SdiPolicy>) pResults.iterator();
-				while (i2.hasNext())
-				{
-					SdiPolicy policy = i2.next();
+				for(SdiPolicy policy :(List<SdiPolicy>)pResults){
+					//Date validity is check out of the SQL query to not interfer with query cache
 					Date from = policy.getAllowfrom();
 					Date to = policy.getAllowto();
 					if (currentDate.after(from) && currentDate.before(to))

@@ -7,7 +7,7 @@
 		<constructor-arg type="java.net.URL" value="classpath:/ehcache.xml" />
 	</bean>
 
-	<bean id="OGCOperationCacheFilter" class="org.easysdi.proxy.ehcache.OGCOperationCacheFilter">
+	<bean id="OGCOperationBasedCacheFilter" class="org.easysdi.proxy.ehcache.OGCOperationBasedCacheFilter">
 		<constructor-arg ref="cacheManager" />
 		<constructor-arg ref="sdiVirtualserviceHome" />
 		<constructor-arg ref="sdiPolicyHome" />
