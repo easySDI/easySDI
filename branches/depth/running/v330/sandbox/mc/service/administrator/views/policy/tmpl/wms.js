@@ -197,7 +197,6 @@ jQuery(document).ready(function () {
 				form_values.inherit_server[indexes[1]][indexes[2]] = value;
 			}
 		}
-		debug.form_values = form_values;
 		
 		//calculate for inherit_policy
 		var geographicFilter = form_values.inherit_policy.geographicfilter;
