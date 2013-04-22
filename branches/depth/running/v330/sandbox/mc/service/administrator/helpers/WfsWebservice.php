@@ -23,7 +23,7 @@ class WfsWebservice {
 				}
 				break;
 			case 'deleteFeatureType':
-				if (WmtsWebservice::deleteFeatureType($params)) {
+				if (WfsWebservice::deleteFeatureType($params)) {
 					echo 'OK';
 				}
 				break;
@@ -411,14 +411,12 @@ class WfsWebservice {
 			ON ftp.physicalservicepolicy_id = pp.id
 			WHERE pp.physicalservice_id = ' . $physicalServiceID . '
 			AND pp.policy_id = ' . $policyID . '
-			AND ftp.identifier = \'' . $layerID . '\';
+			AND ftp.name = \'' . $layerID . '\';
 		');
 		
 		try {
 			$db->execute();
-			$result = $db->loadObject();
-			$pk = $result->id;
-			$physicalservice_policy_id = $result->psp_id;
+			$pk = $db->loadResult();
 		}
 		catch (JDatabaseException $e) {
 			$je = new JException($e->getMessage());
@@ -428,26 +426,7 @@ class WfsWebservice {
 		
 		if (is_numeric($pk) && 0 < $pk) {
 			$query = $db->getQuery(true);
-			$query->delete('#__sdi_featuretype_policy')->where('id = ' . $pk);
-			
-			$db->setQuery($query);
-			
-			try {
-				$db->execute();
-			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
-			}
-			
-			// TODO: find a way to save the description
-			$query = $db->getQuery(true);
-			$query->insert('#__sdi_featuretype_policy')->columns('
-				name, physicalservicepolicy_id
-			')->values('
-				\'' . $layerID . '\', \'' . $physicalservice_policy_id . '\'
-			');
+			$query->delete('#__sdi_wfs_spatialpolicy')->where('id = ' . $pk);
 			
 			$db->setQuery($query);
 			

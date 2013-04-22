@@ -101,7 +101,7 @@ jQuery(document).ready(function () {
 				url: 'index.php',
 				data: {
 					option: 'com_easysdi_service',
-					task: 'wmtsWebservice',
+					task: 'wmsWebservice',
 					method: 'deleteWmsLayer',
 					physicalServiceID: psID,
 					policyID: policyID,

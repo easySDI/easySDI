@@ -55,7 +55,7 @@ jQuery(document).ready(function () {
 				url: 'index.php',
 				data: {
 					option: 'com_easysdi_service',
-					task: 'wmtsWebservice',
+					task: 'wfsWebservice',
 					method: 'deleteFeatureType',
 					physicalServiceID: psID,
 					policyID: policyID,

@@ -23,10 +23,7 @@ class WmsWebservice {
 				}
 				break;
 			case 'deleteWmsLayer':
-				$physicalServiceID = $raw_GET['physicalServiceID'];
-				$policyID = $raw_GET['policyID'];
-				$layerID = $raw_GET['layerID'];
-				if (WmtsWebservice::deleteWmsLayer($params)) {
+				if (WmsWebservice::deleteWmsLayer($params)) {
 					echo 'OK';
 				}
 				break;
@@ -378,20 +375,26 @@ class WmsWebservice {
 		$db = JFactory::getDbo();
 		
 		$db->setQuery('
-			SELECT wp.id AS id, pp.id AS psp_id
+			SELECT wp.spatialpolicy_id
 			FROM #__sdi_wmslayer_policy wp
 			JOIN #__sdi_physicalservice_policy pp
 			ON wp.physicalservicepolicy_id = pp.id
 			WHERE pp.physicalservice_id = ' . $physicalServiceID . '
 			AND pp.policy_id = ' . $policyID . '
-			AND wp.identifier = \'' . $layerID . '\';
+			AND wp.name = \'' . $layerID . '\';
 		');
-		
+		var_dump('
+			SELECT wp.spatialpolicy_id
+			FROM #__sdi_wmslayer_policy wp
+			JOIN #__sdi_physicalservice_policy pp
+			ON wp.physicalservicepolicy_id = pp.id
+			WHERE pp.physicalservice_id = ' . $physicalServiceID . '
+			AND pp.policy_id = ' . $policyID . '
+			AND wp.name = \'' . $layerID . '\';
+		');
 		try {
 			$db->execute();
-			$result = $db->loadObject();
-			$pk = $result->id;
-			$physicalservice_policy_id = $result->psp_id;
+			$pk = $db->loadResult();
 		}
 		catch (JDatabaseException $e) {
 			$je = new JException($e->getMessage());
@@ -401,26 +404,7 @@ class WmsWebservice {
 		
 		if (is_numeric($pk) && 0 < $pk) {
 			$query = $db->getQuery(true);
-			$query->delete('#__sdi_wmslayer_policy')->where('id = ' . $pk);
-			
-			$db->setQuery($query);
-			
-			try {
-				$db->execute();
-			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
-			}
-			
-			// TODO: find a way to save the description
-			$query = $db->getQuery(true);
-			$query->insert('#__sdi_wmslayer_policy')->columns('
-				name, physicalservicepolicy_id
-			')->values('
-				\'' . $layerID . '\', \'' . $physicalservice_policy_id . '\'
-			');
+			$query->delete('#__sdi_wms_spatialpolicy')->where('id = ' . $pk);
 			
 			$db->setQuery($query);
 			
