@@ -451,12 +451,29 @@ public class WMTSProxyServlet extends ProxyServlet{
 		if (tileCol == null)
 		    return "tileCol";
 	
-		if(sdiPolicy.isAnyservice())
-			return "true";
+//		if(sdiPolicy.isAnyservice())
+//			return "true";
 		
-		Set<SdiPhysicalservicePolicy> physicalServicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
-		Iterator<SdiPhysicalservicePolicy> i = physicalServicePolicies.iterator();
 		boolean isServerFound = false;
+		Set<SdiPhysicalservicePolicy> physicalServicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
+//		for(SdiPhysicalservicePolicy physicalServicePolicy:sdiPolicy.getSdiPhysicalservicePolicies()){
+//			SdiPhysicalservice physicalService = physicalServicePolicy.getSdiPhysicalservice();
+//			if(serverUrl.equalsIgnoreCase(physicalService.getResourceurl())){
+//				isServerFound = true;
+//				boolean isLayerFound = false;
+//				for(SdiWmtslayerPolicy wmtslayerPolicy :physicalServicePolicy.getSdiWmtslayerPolicies()){
+//					if(pLayer.getPrefixedName().equals(wmtslayerPolicy.getIdentifier()))
+//					{
+//						isLayerFound = true;
+//						if(wmtslayerPolicy.isAnytilematrixset())
+//							return "true";
+//						boolean isTileMatrixSetFound = false;
+//					}
+//				}
+//			}
+//		}
+		Iterator<SdiPhysicalservicePolicy> i = physicalServicePolicies.iterator();
+		
 		while (i.hasNext()){
 			//SdiPhysicalservicePolicy
 			SdiPhysicalservicePolicy physicalServicePolicy = i.next();
@@ -464,8 +481,8 @@ public class WMTSProxyServlet extends ProxyServlet{
 			SdiPhysicalservice physicalService = physicalServicePolicy.getSdiPhysicalservice();
 			if(serverUrl.equalsIgnoreCase(physicalService.getResourceurl())){
 				isServerFound = true;
-				if(physicalServicePolicy.isAnyitem())
-					return "true";
+//				if(physicalServicePolicy.isAnyitem())
+//					return "true";
 				Set<SdiWmtslayerPolicy> wmtsLayerPolicies = physicalServicePolicy.getSdiWmtslayerPolicies();
 				boolean isLayerFound = false;
 				Iterator<SdiWmtslayerPolicy> it = wmtsLayerPolicies.iterator();

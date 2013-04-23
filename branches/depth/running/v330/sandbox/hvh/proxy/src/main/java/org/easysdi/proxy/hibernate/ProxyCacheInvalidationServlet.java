@@ -4,9 +4,6 @@
 package org.easysdi.proxy.hibernate;
 
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -30,10 +27,8 @@ import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.domain.SdiVirtualserviceHome;
 import org.easysdi.proxy.domain.SdiWmslayerPolicy;
 import org.easysdi.proxy.domain.SdiWmtslayerPolicy;
-import org.hibernate.SessionFactory;
 import org.hibernate.Cache;
-import org.hibernate.metadata.ClassMetadata;
-import org.hibernate.metadata.CollectionMetadata;
+import org.hibernate.SessionFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -45,7 +40,11 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -5054942482987117794L;
 	private Cache cache;
-	ApplicationContext context;
+	private ApplicationContext context;
+	private String operation;
+	private String entityClass 	;
+	private Integer id;
+	private String complete;
 	
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -54,10 +53,10 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		String operation 	= req.getParameter("operation");
-		String entityClass 	= req.getParameter("entityclass");
-		String id 			= req.getParameter("id");
-		String complete 	= req.getParameter("complete");
+		operation 		= req.getParameter("operation");
+		entityClass 	= req.getParameter("entityclass");
+		id 				= Integer.parseInt(req.getParameter("id"));
+		complete 		= req.getParameter("complete");
 		
 		context	= WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		CacheManager cacheManager 		= (CacheManager) context.getBean("cacheManager");
@@ -67,10 +66,13 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 		
 		//Invalidate all cache regions
 		if (complete != null && complete.equalsIgnoreCase("TRUE")){
-//			if (cacheManager.cacheExists("userCache")) cacheManager.getCache("userCache").removeAll();
-//			if (cacheManager.cacheExists("operationBasedCache")) cacheManager.getCache("operationBasedCache").removeAll();
-			String[] n = cacheManager.getCacheNames();
-			List<CacheManager> l = cacheManager.ALL_CACHE_MANAGERS;
+			//see JoomlaCookieAuthenticationFilter for the use of userCache cache
+			if (cacheManager.cacheExists("userCache")) 
+				cacheManager.getCache("userCache").removeAll();
+			
+			//see OGCOperationBasedCacheFilter for the use of operationBasedCache cache
+			if (cacheManager.cacheExists("operationBasedCache")) 
+				cacheManager.getEhcache("operationBasedCache").removeAll();
 			
 			cache.evictDefaultQueryRegion();
 			cache.evictEntityRegions();
@@ -81,7 +83,17 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 		
 		//Invalidate a specific entity region
 		if(entityClass != null && id == null){
+			if(entityClass.equalsIgnoreCase("SdiPhysicalservice") ){
+				
+			}else if(entityClass.equalsIgnoreCase("SdiVirtualservice")){
+				
+			}else if(entityClass.equalsIgnoreCase("SdiPolicy")){
+				
+			}else if(entityClass.equalsIgnoreCase("SdiUser")){
+				
+			}
 			cache.evictEntityRegion(entityClass);
+			return;
 		}
 		
 		//Invalidate a specific entity
@@ -104,14 +116,16 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 				cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiPhysicalservices", id);
 				cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiSysServicecompliances", id);
 				cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiVirtualmetadatas", id);
-				cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiPhysicalservicePolicies", id);
+				cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiPolicies", id);
 				cache.evictEntity("org.easysdi.proxy.domain.SdiVirtualservice", id);
 				//Invalidate query cache (initial loading)
+				cache.evictDefaultQueryRegion();
+				cache.evictQueryRegions();
 			}
 			else if(entityClass.equalsIgnoreCase("SdiPolicy")){
 				SdiPolicyHome sdiPolicyHome  = (SdiPolicyHome)context.getBean("sdiPolicyHome");
 				if(operation != null && operation.equalsIgnoreCase("DELETE")){
-					SdiPolicy policy = sdiPolicyHome.findById(Integer.getInteger(id));
+					SdiPolicy policy = sdiPolicyHome.findById(id);
 					
 					if(policy.getSdiVirtualservice() != null)
 						cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiPolicies", policy.getSdiVirtualservice().getId());
@@ -120,19 +134,27 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 				
 				InvalidateSdiPolicyCache ( id,  sdiPolicyHome);
 				//Invalidate query cache (initial loading)
+				cache.evictDefaultQueryRegion();
+				cache.evictQueryRegions();
 			}
 			else if(entityClass.equalsIgnoreCase("SdiUser")){
 				cache.evictCollection("org.easysdi.proxy.domain.SdiUser.sdiOrganisms", id);
 				cache.evictEntity("org.easysdi.proxy.domain.SdiUser", id);
+				if (cacheManager.cacheExists("userCache")) 
+					cacheManager.getCache("userCache").removeAll();
 			}
+			//whatever the case, clear the operationBasedCache
+			if (cacheManager.cacheExists("operationBasedCache")) 
+				cacheManager.getEhcache("operationBasedCache").removeAll();
 		}
+
 	}
 	
-	private void InvalidateSdiVirtualServiceCache(String id, SdiVirtualserviceHome sdiVirtualServiceHome){
-		SdiVirtualservice virtualservice = sdiVirtualServiceHome.findById(Integer.getInteger(id));
+	private void InvalidateSdiVirtualServiceCache(Integer id, SdiVirtualserviceHome sdiVirtualServiceHome){
+		SdiVirtualservice virtualservice = sdiVirtualServiceHome.findById(id);
 		SdiPolicyHome sdiPolicyHome  = (SdiPolicyHome)context.getBean("sdiPolicyHome");
 		for(SdiPolicy policy :virtualservice.getSdiPolicies()){
-			InvalidateSdiPolicyCache ( policy.getId().toString(),sdiPolicyHome );
+			InvalidateSdiPolicyCache ( policy.getId(),sdiPolicyHome );
 		}
 		cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiPolicies", id);
 		
@@ -141,11 +163,11 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 		}
 	}
 	
-	private void InvalidateSdiPhysicalServiceCache(String id, SdiPhysicalserviceHome sdiPhysicalServiceHome){
-		SdiPhysicalservice physicalservice = sdiPhysicalServiceHome.findById(Integer.getInteger(id));
+	private void InvalidateSdiPhysicalServiceCache(Integer id, SdiPhysicalserviceHome sdiPhysicalServiceHome){
+		SdiPhysicalservice physicalservice = sdiPhysicalServiceHome.findById(id);
 		
 		for(SdiPhysicalservicePolicy servicepolicy :physicalservice.getSdiPhysicalservicePolicies()){
-			InvalidatesdiPhysicalServicePolicyCache ( servicepolicy);
+			InvalidatesdiPhysicalServicePolicyCache (servicepolicy);
 		}
 		cache.evictCollection("org.easysdi.proxy.domain.SdiPhysicalservice.sdiVirtualservices", id);
 		
@@ -155,11 +177,11 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 		}
 	}
 	
-	private void InvalidateSdiPolicyCache (String id, SdiPolicyHome sdiPolicyHome){
-		SdiPolicy policy = sdiPolicyHome.findById(Integer.getInteger(id));
+	private void InvalidateSdiPolicyCache (Integer id, SdiPolicyHome sdiPolicyHome){
+		SdiPolicy policy = sdiPolicyHome.findById(id);
 		
 		for(SdiPhysicalservicePolicy servicepolicy :policy.getSdiPhysicalservicePolicies()){
-			InvalidatesdiPhysicalServicePolicyCache ( servicepolicy);
+			InvalidatesdiPhysicalServicePolicyCache (servicepolicy);
 		}
 		
 		for(SdiExcludedattribute attribute :policy.getSdiExcludedattributes()){
@@ -223,22 +245,6 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 		cache.evictEntity("org.easysdi.proxy.domain.sdiPhysicalservicePolicy", servicepolicy.getId());
 		
 	}
-	
-	
-	@SuppressWarnings("unchecked")
-	private static void ClearCache(SessionFactory sessionFactory, Cache cache )
-	{
-	    cache.evictQueryRegions();
-	    
-		Map<String, CollectionMetadata> colM = sessionFactory.getAllCollectionMetadata();
-	    for(CollectionMetadata m : colM.values()){
-	    	cache.evictCollectionRegion(m.getRole());
-	    }
-	    Map<String, ClassMetadata> colC = sessionFactory.getAllClassMetadata();
-	    for(ClassMetadata c : colC.values()){
-	    	cache.evictEntityRegion(c.getEntityName());
-	    }
-	    
-	}
+
 
 }

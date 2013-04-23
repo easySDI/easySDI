@@ -35,6 +35,7 @@ import org.easysdi.proxy.domain.SdiUser;
 import org.easysdi.proxy.domain.SdiUserHome;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.domain.SdiVirtualserviceHome;
+import org.easysdi.proxy.exception.InvalidServiceNameException;
 import org.easysdi.proxy.exception.PolicyNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,10 +47,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 
 	private Logger logger = LoggerFactory.getLogger("EasySdiConfigFilter");
-//	private Cache virtualserviceCache;
 	private ProxyCacheEntryFactory cacheFactory = new ProxyCacheEntryFactory();
 	private String operationValue = null;
-//	private boolean bCache = false;
 	private static final int MILLISECONDS_PER_SECOND = 1000;
 
 	private CacheManager cm;
@@ -74,10 +73,7 @@ public class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPageCachin
 	AlreadyCommittedException, FilterNonReentrantException, LockTimeoutException, Exception {
 
 		String method = request.getMethod();
-		String cacheValue = null;
 		operationValue= null;
-//		bCache = false;
-		//		postRequestAsString = "";
 
 		//Request sent by POST are not handle and not cached 
 		if(method.equalsIgnoreCase("POST")){
@@ -85,7 +81,6 @@ public class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPageCachin
 			return;
 		}
 
-		//		if(method.equalsIgnoreCase("GET")){
 		Enumeration<String> operations = request.getParameterNames();
 		while (operations.hasMoreElements()) { 
 			String operation = (String) operations.nextElement();
@@ -93,38 +88,40 @@ public class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPageCachin
 			{
 				operationValue = request.getParameter(operation);
 			}
-			if(operation.equalsIgnoreCase("CACHE"))
-			{
-				cacheValue = request.getParameter(operation);
-			}
 		}
-
-//		if(("GetMap").equalsIgnoreCase(operationValue))
-//		{
-//			//Get Vendor specific CACHE
-//			bCache = Boolean.parseBoolean(cacheValue);
-//			if(bCache)
-//				super.doFilter(request, response, chain);
-//			else
-//				chain.doFilter(request, response);
-//		}
-//		else 
-		if (("GetMap").equalsIgnoreCase(operationValue) ||
-				("GetRecords").equalsIgnoreCase(operationValue) ||
-				("GetTile").equalsIgnoreCase(operationValue)||
-				("DescribeRecord").equalsIgnoreCase(operationValue)||
-				("GetRecordById").equalsIgnoreCase(operationValue)||
-				("GetFeature").equalsIgnoreCase(operationValue) ||
-				("GetFeatureInfo").equalsIgnoreCase(operationValue)||
-				("Transaction").equalsIgnoreCase(operationValue))		{
-			//No cache for this request
+		
+		if(operationValue == null || operationValue.equals("")){
 			chain.doFilter(request, response);
+			return;
 		}
-		else
+ 
+		if (	("GetCapabilities").equalsIgnoreCase(operationValue) ||
+				("DescribeRecord").equalsIgnoreCase(operationValue)||
+				("DescribeFeatureType").equalsIgnoreCase(operationValue))		
 		{
 			//Request response is put in cache
 			super.doFilter(request, response, chain);
 		}
+		else{
+			//No cache for this request
+			chain.doFilter(request, response);
+		}
+//		if (("GetMap").equalsIgnoreCase(operationValue) ||
+//				("GetRecords").equalsIgnoreCase(operationValue) ||
+//				("GetTile").equalsIgnoreCase(operationValue)||
+//				("DescribeRecord").equalsIgnoreCase(operationValue)||
+//				("GetRecordById").equalsIgnoreCase(operationValue)||
+//				("GetFeature").equalsIgnoreCase(operationValue) ||
+//				("GetFeatureInfo").equalsIgnoreCase(operationValue)||
+//				("Transaction").equalsIgnoreCase(operationValue))		{
+//			//No cache for this request
+//			chain.doFilter(request, response);
+//		}
+//		else
+//		{
+//			//Request response is put in cache
+//			super.doFilter(request, response, chain);
+//		}
 	}
 
 	@Override
@@ -147,7 +144,7 @@ public class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPageCachin
 	}
 
 	@Override
-	protected String calculateKey(HttpServletRequest httpRequest) throws PolicyNotFoundException{
+	protected String calculateKey(HttpServletRequest httpRequest) throws PolicyNotFoundException, InvalidServiceNameException{
 		String servletName = httpRequest.getPathInfo().substring(1);
 //		virtualserviceCache = cm.getCache("virtualserviceCache");
 //		String user = null;
@@ -173,6 +170,8 @@ public class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPageCachin
 			id = user.getId();
 		SdiVirtualservice virtualservice = sdiVirtualserviceHome.findByAlias(servletName);
 		
+		if(virtualservice==null)
+			throw new InvalidServiceNameException("No service found");
 		SdiPolicy policy = sdiPolicyHome.findByVirtualServiceAndUser(virtualservice.getId(), id , authorities);
 		if(policy == null)
 			throw new PolicyNotFoundException("No policy found.");
@@ -245,10 +244,8 @@ public class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPageCachin
 					pageInfo = buildPage(request, response, chain);
 					if (pageInfo.isOk() && !response.containsHeader("easysdi-proxy-error-occured")) {
 						logger.debug("PageInfo ok. Adding to cache " + blockingCache.getName() + " with key " + key);
-//						if (cacheAllowed) {
-							blockingCache.put(new Element(key, pageInfo));
-							blockingCache.flush();
-//						}
+						blockingCache.put(new Element(key, pageInfo));
+						blockingCache.flush();
 					} else {
 						logger.debug("PageInfo was not ok(200). Putting null into cache " + blockingCache.getName() + " with key " + key);
 						blockingCache.put(new Element(key, null));
@@ -257,10 +254,8 @@ public class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPageCachin
 				} catch (final Throwable throwable) {
 					// Must unlock the cache if the above fails. Will be logged
 					// at Filter
-//					if (cacheAllowed) {
-						blockingCache.put(new Element(key, null));
-						blockingCache.flush();
-//					}
+					blockingCache.put(new Element(key, null));
+					blockingCache.flush();
 					throw new Exception(throwable);
 				}
 			} else {

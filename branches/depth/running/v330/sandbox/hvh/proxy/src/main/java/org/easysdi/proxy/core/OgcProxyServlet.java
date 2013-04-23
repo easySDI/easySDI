@@ -19,11 +19,8 @@ package org.easysdi.proxy.core;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.security.Principal;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -32,12 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
-
 import org.easysdi.proxy.csw.CSWExceptionReport;
-import org.easysdi.proxy.domain.SdiPhysicalservice;
 import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiPolicyHome;
 import org.easysdi.proxy.domain.SdiSysServicecompliance;
@@ -45,10 +37,6 @@ import org.easysdi.proxy.domain.SdiUser;
 import org.easysdi.proxy.domain.SdiUserHome;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.domain.SdiVirtualserviceHome;
-import org.easysdi.proxy.exception.InvalidServiceNameException;
-import org.easysdi.proxy.exception.OperationNotAllowedException;
-import org.easysdi.proxy.exception.OperationNotSupportedException;
-import org.easysdi.proxy.exception.PolicyNotFoundException;
 import org.easysdi.proxy.exception.ProxyServletException;
 import org.easysdi.proxy.exception.VersionNotSupportedException;
 import org.easysdi.proxy.ows.OWSExceptionReport;
@@ -58,7 +46,6 @@ import org.easysdi.proxy.wms.WMSExceptionReport;
 import org.easysdi.proxy.wmts.v100.WMTSExceptionReport100;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -82,6 +69,7 @@ public class OgcProxyServlet extends HttpServlet {
 	public SdiVirtualserviceHome sdiVirtualserviceHome;
 	public SdiPolicyHome sdiPolicyHome;
 	public SdiUserHome sdiUserHome;
+	ApplicationContext context;
 
 
 	/* (non-Javadoc)
@@ -89,15 +77,11 @@ public class OgcProxyServlet extends HttpServlet {
 	 */
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-		ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+		context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		sdiVirtualserviceHome  = (SdiVirtualserviceHome)context.getBean("sdiVirtualserviceHome");
 		sdiPolicyHome  = (SdiPolicyHome)context.getBean("sdiPolicyHome");
 		sdiUserHome  = (SdiUserHome)context.getBean("sdiUserHome");
-//		CacheManager cm = (CacheManager) context.getBean("cacheManager");
-//
-//		if (cm != null) {
-//			virtualserviceCache = cm.getCache("virtualserviceCache");
-//		}
+
 		System.setProperty("org.geotools.referencing.forceXY", "true");
 		logger.info("OgcProxyServlet initialization done.");
 	}
@@ -120,6 +104,7 @@ public class OgcProxyServlet extends HttpServlet {
 			if (obj != null) {
 				obj.doGet(req, resp);
 			}
+			
 		} catch (Exception e) {
 			logger.error("Error occured processing doGet: "+e.getMessage());
 			try {
@@ -563,4 +548,7 @@ public class OgcProxyServlet extends HttpServlet {
 			executionCount.put(userPrincipalName, executed);
 		}
 	}
+	
+	
+	
 }

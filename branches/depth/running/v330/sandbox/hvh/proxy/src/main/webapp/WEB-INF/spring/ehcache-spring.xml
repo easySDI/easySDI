@@ -15,10 +15,6 @@
 	</bean>
 
 	<bean id="easySdiConfigFilter" class="org.easysdi.proxy.core.EasySdiConfigFilter">
-		<constructor-arg ref="cacheManager" />
-		<constructor-arg ref="sdiVirtualserviceHome" />
-		<constructor-arg ref="sdiPolicyHome" />
-		<constructor-arg ref="sdiUserHome" />
 	</bean>
 		
 </beans>
