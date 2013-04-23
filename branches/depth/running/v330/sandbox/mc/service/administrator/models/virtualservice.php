@@ -262,7 +262,6 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	public function save($data) {
 		
 		if(parent::save($data)){
-			
 			$data['id'] = $this->getItem()->get('id');
 			//Instantiate an address JTable
 			$virtualmetadata = JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
@@ -277,19 +276,27 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 					return false;
 				}
 			}
-						
-			if(isset($data['physicalservice_id']))
-			{
-				 if(!$this->savePhysicalServiceAggregation($data, $this->getState($this->getName().'.id')))
-				 	return false;
+			
+			if(isset($data['physicalservice_id'])) {
+				if(!$this->savePhysicalServiceAggregation($data, $this->getState($this->getName().'.id'))) {
+					return false;
+				}
 			}
-			if(isset($data['compliance']))
-			{
-				 if(!$this->saveServiceCompliance($data['compliance'],$data['serviceconnector_id'], $this->getState($this->getName().'.id')))
-				 	return false;
-			}
-			if(! $this->saveServiceScopeOrganism($data['organisms'], $this->getState($this->getName().'.id')))
+			
+			$physicalservicepolicy = JTable::getInstance('physicalservice_policy', 'Easysdi_serviceTable');
+			if(!$physicalservicepolicy->saveAll($data['id'])){
 				return false;
+			}
+			
+			if(isset($data['compliance'])) {
+				if(!$this->saveServiceCompliance($data['compliance'],$data['serviceconnector_id'], $this->getState($this->getName().'.id'))) {
+					return false;
+				}
+			}
+			
+			if(!$this->saveServiceScopeOrganism($data['organisms'], $this->getState($this->getName().'.id'))) {
+				return false;
+			}
 			return true;
 		}
 		return false;
@@ -488,5 +495,5 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 		}
 	
 	}
-
+	
 }

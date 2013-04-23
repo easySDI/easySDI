@@ -379,7 +379,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			$data['id'] = $this->getItem()->get('id');
 			if ('WMS' == $serviceconnector_name || 'WFS' == $serviceconnector_name || 'WMTS' == $serviceconnector_name) {
 				$physicalservicepolicy = JTable::getInstance('physicalservice_policy', 'Easysdi_serviceTable');
-				if(!$physicalservicepolicy->save($data)){
+				if(!$physicalservicepolicy->saveAll($data['virtualservice_id'], $data['id'])){
 					$this->setError('Failed to save physicalservice_policy.');
 					return false;
 				}
