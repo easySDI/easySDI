@@ -349,7 +349,7 @@ class WmsWebservice {
 					$query->insert('#__sdi_wmslayer_policy')->columns('
 						name, description, physicalservicepolicy_id
 					')->values('
-						\'' . $layer->name . '\', \'' . $layer->description . '\', \'' . $physicalservice_policy_id . '\'
+						\'' . $layer->name . '\', \'' . $db->escape($layer->description) . '\', \'' . $physicalservice_policy_id . '\'
 					');
 					
 					$db->setQuery($query);

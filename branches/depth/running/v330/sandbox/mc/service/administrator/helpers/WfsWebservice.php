@@ -377,7 +377,7 @@ class WfsWebservice {
 					$query->insert('#__sdi_featuretype_policy')->columns('
 						name, description, physicalservicepolicy_id
 					')->values('
-						\'' . $layer->name . '\', \'' . addslashes($layer->description) . '\', \'' . $physicalservice_policy_id . '\'
+						\'' . $layer->name . '\', \'' . $db->escape($layer->description) . '\', \'' . $physicalservice_policy_id . '\'
 					');
 					
 					$db->setQuery($query);
