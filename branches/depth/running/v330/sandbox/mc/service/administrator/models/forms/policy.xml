@@ -132,9 +132,9 @@
 		<field name="namespace" type="hidden"  filter="SAFEHTML" />
 	</fieldset>
 	
-	<fieldset name="wfs_policy_hidden">
-		<field name="prefix" type="hidden"  filter="SAFEHTML" />
-		<field name="namespace" type="hidden"  filter="SAFEHTML" />
+	<fieldset name="wfs_policy">
+		<field name="prefix" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WFS_PREFIX" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WFS_PREFIX"  filter="safehtml" />
+		<field name="namespace" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WFS_NAMESPACE" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WFS_NAMESPACE"  filter="safehtml" />
 	</fieldset>
 	
 	<fieldset name="csw_policy_hidden">

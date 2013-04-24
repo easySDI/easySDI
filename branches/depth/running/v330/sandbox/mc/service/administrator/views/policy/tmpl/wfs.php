@@ -129,14 +129,16 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 							<div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
 							<div class="controls"><?php echo $this->form->getInput('id'); ?></div>
 						</div>
+						<?php foreach($this->form->getFieldset('wfs_policy') as $field):?> 
+							<div class="control-group" id="<?php echo $field->fieldname;?>">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+						<?php endforeach; ?>
 					</fieldset>
 					
 					<div class="control-group">
-					<?php foreach($this->form->getFieldset('wfs_policy_hidden') as $field):?> 
-						<div class="controls"><?php echo $field->input; ?></div>
-					<?php
-					endforeach;
-					foreach($this->form->getFieldset('hidden') as $field):
+					<?php foreach($this->form->getFieldset('hidden') as $field):
 					?> 
 						<div class="controls"><?php echo $field->input; ?></div>
 					<?php endforeach; ?>
