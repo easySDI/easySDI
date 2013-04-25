@@ -13,6 +13,10 @@
         <mysql.connector.version>5.1.8</mysql.connector.version>
     </properties>
     
+    <scm>
+        <connection>scm:svn:http://www.easysdi.org/easysdi/branches/depth/running/v330/sandbox/mb/easysdi330</connection>
+    </scm>
+    
     <distributionManagement>
         <repository>
             <id>easysdi-repo</id>
@@ -90,7 +94,38 @@
     </dependencyManagement>
  
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <configuration>
+                        <archive>
+                            <manifestEntries>
+                                <Build>${project.groupId}.${project.artifactId}-${project.version}-r${buildNumber}</Build>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <doCheck>false</doCheck>
+                    <doUpdate>false</doUpdate>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -102,6 +137,7 @@
             </plugin>
         </plugins>
     </build>
+    
     <modules>
         <module>monitor</module>
         <module>proxy</module>
