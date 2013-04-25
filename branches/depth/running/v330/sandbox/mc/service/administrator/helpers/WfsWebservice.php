@@ -271,17 +271,19 @@ class WfsWebservice {
 		
 		$arr_ex = $raw_GET['included_attribute'];
 		foreach ($arr_ex as $value) {
-			$db->setQuery('
-				INSERT INTO #__sdi_includedattribute (featuretypepolicy_id, name)
-				VALUES (' . $featuretypepolicy_id . ',\'' . $value . '\');
-			');
-			try {
-				$db->execute();
-			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
+			if (!empty($value)) {
+				$db->setQuery('
+					INSERT INTO #__sdi_includedattribute (featuretypepolicy_id, name)
+					VALUES (' . $featuretypepolicy_id . ',\'' . $value . '\');
+				');
+				try {
+					$db->execute();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
 			}
 		}
 		
@@ -405,7 +407,7 @@ class WfsWebservice {
 		$db = JFactory::getDbo();
 		
 		$db->setQuery('
-			SELECT ftp.id AS id, pp.id AS psp_id
+			SELECT ftp.id AS id
 			FROM #__sdi_featuretype_policy ftp
 			JOIN #__sdi_physicalservice_policy pp
 			ON ftp.physicalservicepolicy_id = pp.id
@@ -427,6 +429,20 @@ class WfsWebservice {
 		if (is_numeric($pk) && 0 < $pk) {
 			$query = $db->getQuery(true);
 			$query->delete('#__sdi_wfs_spatialpolicy')->where('id = ' . $pk);
+			
+			$db->setQuery($query);
+			
+			try {
+				$db->execute();
+			}
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
+			
+			$query = $db->getQuery(true);
+			$query->delete('#__sdi_includedattribute')->where('featuretypepolicy_id = ' . $pk);
 			
 			$db->setQuery($query);
 			

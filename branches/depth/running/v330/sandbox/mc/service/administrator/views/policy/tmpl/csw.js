@@ -17,9 +17,21 @@ jQuery(document).ready(function () {
 	//onClick on the button to add a new excluded attribute field
 	jQuery('#btn_add_excluded_attribute').click(function () {
 		var count = jQuery(this).data('count');
-		jQuery('#div_excluded_attributes').append('<textarea name="excluded_attribute[' + count + ']" rows="5" class="span12"></textarea><br /><br />');
+		jQuery('#div_excluded_attributes').append(
+			'<div class="div_ea_' + count + ' span12">' + 
+				'<textarea name="excluded_attribute[' + count + ']" rows="5" class="span10"></textarea>' +
+				'<button type="button" class="btn btn-danger btn_ea_delete">' + Joomla.JText._('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE') + '</button>' +
+				'<br /><br />' +
+			'</div>'
+		);
 		count++;
 		jQuery(this).data('count', count);
 		return false;
+	});
+	
+	jQuery('.btn_ea_delete').click(function () {
+		var parent = jQuery(this).parent();
+		parent.children('textarea').html('');
+		parent.hide();
 	});
 });

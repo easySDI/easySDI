@@ -22,6 +22,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/policy.js');
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/csw.js');
 JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
+JText::script('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE');
 
 ?>
 
@@ -92,7 +93,11 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 							$paths = $db->loadColumn();
 							$path_count = 0;
 							foreach ($paths as $path) {
-								echo '<textarea name="excluded_attribute[' . $path_count . ']" rows="5" class="span12">' . $path . '</textarea><br /><br />';
+								echo '<div class="div_ea_' . $path_count . ' span12">
+									<textarea name="excluded_attribute[' . $path_count . ']" rows="5" class="span10">' . $path . '</textarea>
+									<button type="button" class="btn btn-danger btn_ea_delete">' .JText::_('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE') . '</button>
+									<br /><br />
+								</div>';
 								$path_count++;
 							}
 						?>

@@ -374,6 +374,21 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		
 		$isNew = (0 == $data['id']) ? true : false;
 		
+		if ('WMS' == $serviceconnector_name) {
+			if ('' == $data['wms_minimumwidth']) {
+				unset($data['wms_minimumwidth']);
+			}
+			if ('' == $data['wms_maximumwidth']) {
+				unset($data['wms_maximumwidth']);
+			}
+			if ('' == $data['wms_minimumheight']) {
+				unset($data['wms_minimumheight']);
+			}
+			if ('' == $data['wms_maximumheight']) {
+				unset($data['wms_maximumheight']);
+			}
+		}
+		
 		if(parent::save($data)){
 			
 			$data['id'] = $this->getItem()->get('id');
@@ -1212,17 +1227,19 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		
 		$arr_ex = $_POST['excluded_attribute'];
 		foreach ($arr_ex as $value) {
-			$db->setQuery('
-				INSERT INTO #__sdi_excludedattribute (policy_id, path)
-				VALUES (' . $data['id'] . ',\'' . $value . '\');
-			');
-			try {
-				$db->execute();
-			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
+			if (!empty($value)) {
+				$db->setQuery('
+					INSERT INTO #__sdi_excludedattribute (policy_id, path)
+					VALUES (' . $data['id'] . ',\'' . $value . '\');
+				');
+				try {
+					$db->execute();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
 			}
 		}
 		return true;
