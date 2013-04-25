@@ -525,6 +525,7 @@ public class SdiPolicy implements java.io.Serializable {
 
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "SdiPolicyOrganism", joinColumns = {@JoinColumn(name = "policy_id")}, inverseJoinColumns = {@JoinColumn (name = "organism_id")})
+	@Filter(name = "entityState",condition="State = 1")
 	@Cache (usage=CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiOrganism> getSdiOrganisms() {
 		return this.sdiOrganisms;
@@ -548,6 +549,7 @@ public class SdiPolicy implements java.io.Serializable {
 
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "SdiPolicyUser", joinColumns = {@JoinColumn(name = "policy_id")}, inverseJoinColumns = {@JoinColumn (name = "user_id")})
+	@Filter(name = "entityState",condition="State = 1")
 	@Cache (usage=CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiUser> getSdiUsers() {
 		return this.sdiUsers;

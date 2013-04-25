@@ -23,7 +23,6 @@ import org.hibernate.annotations.FilterDef;
 @Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 @FilterDef(name="entityState")
 @Filter(name = "entityState",condition="state = 1")
-
 public class SdiSysCountry implements java.io.Serializable {
 
 	private static final long serialVersionUID = -1532106703281545970L;

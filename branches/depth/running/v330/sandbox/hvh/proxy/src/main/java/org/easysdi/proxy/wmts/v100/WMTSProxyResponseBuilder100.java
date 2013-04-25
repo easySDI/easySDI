@@ -432,8 +432,8 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 			if(sdiVirtualMetadata.getContactposition()!= null && sdiVirtualMetadata.getContactposition().length() != 0)
 				newServiceContact.addContent((new Element("PositionName", nsOWS)).setText(sdiVirtualMetadata.getContactposition()));
 			
-//			if(sdiVirtualMetadata.getContacttype()!= null && sdiVirtualMetadata.getContacttype().length() != 0)
-//				newServiceContact.addContent((new Element("Role", nsOWS)).setText(sdiVirtualMetadata.getContacttype()));
+			if(sdiVirtualMetadata.getContactrole()!= null && sdiVirtualMetadata.getContactrole().length() != 0)
+				newServiceContact.addContent((new Element("Role", nsOWS)).setText(sdiVirtualMetadata.getContactrole()));
 			
 			Element newContactInfo = new Element("ContactInfo", nsOWS);
 			Element newPhone = new Element("Phone", nsOWS);
@@ -441,11 +441,12 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 				newPhone.addContent((new Element("Voice", nsOWS)).setText(sdiVirtualMetadata.getContactphone()));
 			if(sdiVirtualMetadata.getContactfax()!= null && sdiVirtualMetadata.getContactfax().length() != 0)
 				newPhone.addContent((new Element("Facsimile", nsOWS)).setText(sdiVirtualMetadata.getContactfax()));
-			newContactInfo.addContent(newPhone);
+			if(newPhone.getChildren().size() > 0)
+				newContactInfo.addContent(newPhone);
 			
 			Element newAddress = new Element("Address", nsOWS);
-			if(sdiVirtualMetadata.getContactadress()!= null && sdiVirtualMetadata.getContactadress().length() != 0)
-				newAddress.addContent((new Element("DelivryPoint", nsOWS)).setText(sdiVirtualMetadata.getContactadress()));
+			if(sdiVirtualMetadata.getContactaddress()!= null && sdiVirtualMetadata.getContactaddress().length() != 0)
+				newAddress.addContent((new Element("DelivryPoint", nsOWS)).setText(sdiVirtualMetadata.getContactaddress()));
 			if(sdiVirtualMetadata.getContactlocality()!= null && sdiVirtualMetadata.getContactlocality().length() != 0)
 				newAddress.addContent((new Element("City", nsOWS)).setText(sdiVirtualMetadata.getContactlocality()));
 			if(sdiVirtualMetadata.getContactstate()!= null && sdiVirtualMetadata.getContactstate().length() != 0)
@@ -456,10 +457,14 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 				newAddress.addContent((new Element("Country", nsOWS)).setText(sdiVirtualMetadata.getSdiSysCountry().getName()));
 			if(sdiVirtualMetadata.getContactemail()!= null && sdiVirtualMetadata.getContactemail().length() != 0)
 				newAddress.addContent((new Element("ElectronicMailAddress", nsOWS)).setText(sdiVirtualMetadata.getContactemail()));
-			newContactInfo.addContent(newAddress);
-			newServiceContact.addContent(newContactInfo);
-			newServiceProvider.addContent(newServiceContact);
-			racine.addContent( 1, newServiceProvider);
+			if(newAddress.getChildren().size() > 0)
+				newContactInfo.addContent(newAddress);
+			if(newContactInfo.getChildren().size() > 0)
+				newServiceContact.addContent(newContactInfo);
+			if(newServiceContact.getChildren().size() > 0)
+				newServiceProvider.addContent(newServiceContact);
+			if(newServiceProvider.getChildren().size() > 0)
+				racine.addContent( 1, newServiceProvider);
 		}
 		else if (oldServiceProvider != null){
 			racine.addContent((new Element("ServiceProvider")).setContent(oldServiceProvider));

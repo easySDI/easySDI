@@ -20,7 +20,6 @@ import org.hibernate.annotations.FilterDef;
  */
 @Entity
 @Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
-@FilterDef(name="entityState")
 public class SdiUserRoleOrganism implements java.io.Serializable {
 
 	private static final long serialVersionUID = 6539616093414557944L;

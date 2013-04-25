@@ -51,6 +51,61 @@
     	diskPersistent="false"
     	diskExpiryThreadIntervalSeconds="300" 
     	memoryStoreEvictionPolicy="LRU" />
+    	
+    <cache 
+		name="ExtensionsQueryCache"
+    	maxElementsInMemory="10000" 
+    	eternal="true" 
+    	timeToIdleSeconds="0"
+    	timeToLiveSeconds="0" 
+    	overflowToDisk="false" 
+    	diskPersistent="false"
+    	diskExpiryThreadIntervalSeconds="300" 
+    	memoryStoreEvictionPolicy="LRU" />
+    	
+    <cache 
+		name="UsersQueryCache"
+    	maxElementsInMemory="10000" 
+    	eternal="true" 
+    	timeToIdleSeconds="0"
+    	timeToLiveSeconds="0" 
+    	overflowToDisk="false" 
+    	diskPersistent="false"
+    	diskExpiryThreadIntervalSeconds="300" 
+    	memoryStoreEvictionPolicy="LRU" />
+    	
+    <cache 
+		name="SdiPolicyQueryCache"
+    	maxElementsInMemory="10000" 
+    	eternal="true" 
+    	timeToIdleSeconds="0"
+    	timeToLiveSeconds="0" 
+    	overflowToDisk="false" 
+    	diskPersistent="false"
+    	diskExpiryThreadIntervalSeconds="300" 
+    	memoryStoreEvictionPolicy="LRU" />
+    	
+     <cache 
+		name="SdiUserQueryCache"
+    	maxElementsInMemory="10000" 
+    	eternal="true" 
+    	timeToIdleSeconds="0"
+    	timeToLiveSeconds="0" 
+    	overflowToDisk="false" 
+    	diskPersistent="false"
+    	diskExpiryThreadIntervalSeconds="300" 
+    	memoryStoreEvictionPolicy="LRU" />
+    	
+    <cache 
+		name="SdiVirtualServiceQueryCache"
+    	maxElementsInMemory="10000" 
+    	eternal="true" 
+    	timeToIdleSeconds="0"
+    	timeToLiveSeconds="0" 
+    	overflowToDisk="false" 
+    	diskPersistent="false"
+    	diskExpiryThreadIntervalSeconds="300" 
+    	memoryStoreEvictionPolicy="LRU" />
 		
 	<cache 
 		name="userCache" 
@@ -63,11 +118,11 @@
 	<cache 
 		name="operationBasedCache" 
 		maxElementsInMemory="10000" 
-		diskPersistent="false" 
+		diskPersistent="true" 
 		timeToLiveSeconds="2592000" 
-		overflowToDisk="false"
+		overflowToDisk="true"
 		memoryStoreEvictionPolicy="LFU" 
-		clearOnFlush="false" 
+		clearOnFlush="true" 
 		eternal="true" />
 
 </ehcache>

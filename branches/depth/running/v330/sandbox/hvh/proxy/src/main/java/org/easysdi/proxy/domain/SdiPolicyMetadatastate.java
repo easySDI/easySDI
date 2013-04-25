@@ -20,6 +20,8 @@ import org.hibernate.annotations.FilterDef;
  */
 @Entity
 @Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
+@FilterDef(name="entityState")
+@Filter(name = "entityState",condition="state = 1")
 public class SdiPolicyMetadatastate implements java.io.Serializable {
 
 	private Integer Id;

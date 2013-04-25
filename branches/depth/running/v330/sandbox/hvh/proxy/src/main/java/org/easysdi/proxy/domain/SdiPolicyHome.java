@@ -50,19 +50,18 @@ public class SdiPolicyHome {
 		try {
 			Session session = sessionFactory.getCurrentSession();
 			Date currentDate = new Date();
-//			session.enableFilter("entityState");
+			session.enableFilter("entityState");
 			//Anonymous request gives a null user here
 			if(user != null){
 				//Policies linked to the current user
 				Query query = session.createQuery(
 						"SELECT p FROM SdiPolicy p INNER JOIN p.sdiUsers as u " +
 						"INNER JOIN p.sdiVirtualservice as vs WHERE u.id= :user" +
-						" AND vs.id = :virtualservice AND p.state = 1 AND vs.state = 1  " +
-//						" AND p.allowfrom <= CURRENT_DATE() AND p.allowto >= CURRENT_DATE()"+
+						" AND vs.id = :virtualservice " +
 						"ORDER BY p.ordering asc");
 				query.setParameter("user", user);
 				query.setParameter("virtualservice", virtualservice);
-				List results = query.setCacheable(true).list();
+				List results = query.setCacheRegion("SdiPolicyQueryCache").setCacheable(true).list();
 				if(results != null && results.size() > 0)
 				{
 					for(SdiPolicy policy :(List<SdiPolicy>)results){
@@ -97,12 +96,11 @@ public class SdiPolicyHome {
 				Query oQuery = session.createQuery(
 						"SELECT p  FROM SdiPolicy p INNER JOIN p.sdiOrganisms as po " +
 						"INNER JOIN p.sdiVirtualservice as vs WHERE po.id IN (:organism) " +
-						"AND vs.id = :virtualservice AND p.state = 1 AND vs.state = 1 " +
-//						" AND p.allowfrom <= CURRENT_DATE() AND p.allowto >= CURRENT_DATE()"+
+						"AND vs.id = :virtualservice " +
 						"ORDER BY p.ordering asc");
 				oQuery.setParameterList("organism", c);
 				oQuery.setParameter("virtualservice", virtualservice);
-				List oResults = oQuery.setCacheable(true).list();
+				List oResults = oQuery.setCacheRegion("SdiPolicyQueryCache").setCacheable(true).list();
 				if (oResults != null && oResults.size() > 0)
 				{
 					for(SdiPolicy policy :(List<SdiPolicy>)oResults){
@@ -122,11 +120,10 @@ public class SdiPolicyHome {
 			Query pQuery = session.createQuery(
 					"SELECT p  FROM SdiPolicy p INNER JOIN p.sdiVirtualservice as vs " +
 					"INNER JOIN p.sdiSysAccessscope as sc WHERE vs.id = :virtualservice " +
-					"AND sc.id = 1 AND p.state = 1 AND vs.state = 1 " +
-//					" AND p.allowfrom <= CURRENT_DATE() AND p.allowto >= CURRENT_DATE()"+
+					"AND sc.id = 1  " +
 					"ORDER BY p.ordering asc");
 			pQuery.setParameter("virtualservice", virtualservice);
-			List pResults = pQuery.setCacheable(true).list();
+			List pResults = pQuery.setCacheRegion("SdiPolicyQueryCache").setCacheable(true).list();
 			if (pResults != null && pResults.size() > 0)
 			{
 				for(SdiPolicy policy :(List<SdiPolicy>)pResults){

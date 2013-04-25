@@ -36,7 +36,7 @@ public class UsersHome {
 		log.debug("getting Users instance with id: " + id);
 		try {
 			Session session = sessionFactory.getCurrentSession();
-//			session.enableFilter("entityState");
+			session.enableFilter("entityState");
 			Users instance = (Users) session.get(
 					Users.class, id);
 			log.debug("get successful");
@@ -49,19 +49,18 @@ public class UsersHome {
 	
 	public Users findBySession(String jsession) {
 		try {
-			//TODO replace by sessionHome.findById()
 			Session session = sessionFactory.getCurrentSession();
-//			session.enableFilter("entityState");
+			session.enableFilter("entityState");
 			Query qSession = session.createQuery("Select s FROM Session s WHERE session_id= :session ");
 			qSession.setParameter("session", jsession);
-			Object oSession = (Object) qSession.setCacheable(true).uniqueResult();
+			Object oSession = (Object) qSession.setCacheRegion("UsersQueryCache").setCacheable(true).uniqueResult();
 			
 			if(oSession == null)
 				return null;
 			
 			Query query = sessionFactory.getCurrentSession().createQuery("Select u FROM Session s, Users u WHERE u.username = s.username AND session_id= :session ");
 			query.setParameter("session", session);
-			Users instance = (Users) query.setCacheable(true).uniqueResult();
+			Users instance = (Users) query.setCacheRegion("UsersQueryCache").setCacheable(true).uniqueResult();
 			if(instance == null)
 				instance = new Users();
 			
@@ -75,10 +74,10 @@ public class UsersHome {
 	public Users findByUserName(String username) {
 		try {
 			Session session = sessionFactory.getCurrentSession();
-//			session.enableFilter("entityState");
+			session.enableFilter("entityState");
 			Query query = session.createQuery(" FROM Users WHERE username= :username");
 			query.setParameter("username", username);
-			Users instance = (Users) query.setCacheable(true).uniqueResult();
+			Users instance = (Users) query.setCacheRegion("UsersQueryCache").setCacheable(true).uniqueResult();
 			
 			return instance;
 		} catch (RuntimeException re) {

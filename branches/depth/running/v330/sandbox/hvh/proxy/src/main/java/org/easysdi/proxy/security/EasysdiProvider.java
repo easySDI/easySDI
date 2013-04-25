@@ -69,6 +69,8 @@ public class EasysdiProvider implements AuthenticationProvider,
 	
 	private Collection<GrantedAuthority> getAuthorities(String username)  {
 		Set<SdiUser> sdiUser = user.getSdiUsers();
+		if(sdiUser.isEmpty())
+			throw new UsernameNotFoundException("EasySDI User not found !");
 		
 		Iterator<SdiUser> it = sdiUser.iterator();
 		Set<SdiUserRoleOrganism> result = null;

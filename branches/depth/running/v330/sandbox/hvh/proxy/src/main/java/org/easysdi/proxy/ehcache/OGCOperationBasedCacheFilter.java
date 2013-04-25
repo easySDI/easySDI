@@ -145,7 +145,7 @@ public class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPageCachin
 
 	@Override
 	protected String calculateKey(HttpServletRequest httpRequest) throws PolicyNotFoundException, InvalidServiceNameException{
-		String servletName = httpRequest.getPathInfo().substring(1);
+		String servletName = httpRequest.getServletPath().substring(1);
 //		virtualserviceCache = cm.getCache("virtualserviceCache");
 //		String user = null;
 //		Principal principal = SecurityContextHolder.getContext().getAuthentication();

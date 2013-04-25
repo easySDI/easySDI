@@ -93,10 +93,11 @@ public class OgcProxyServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		servletResponse = resp;
 		servletRequest = req;
+
 		ProxyServlet obj = null;
 
 		try {
-			obj = createProxy(req.getPathInfo().substring(1), req, resp);
+			obj = createProxy(req.getServletPath().substring(1), req, resp);
 			double maxRequestNumber = -1;
 	
 			waitWhenConnectionsExceed(req, maxRequestNumber);
@@ -205,13 +206,13 @@ public class OgcProxyServlet extends HttpServlet {
 				if (((HttpServletRequest)req).getUserPrincipal() == null){
 					//Spring Anonymous user is used to perform this request, but not policy defined for it
 					logger.error("Error occurred during " + servletName + " service initialization : No anomnymous policy found.");
-					sendException( "Error occurred during " + servletName + " service initialization : No anomnymous policy found.",  OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "",HttpServletResponse.SC_OK, connector, request.getVersion());
+					sendException( "Error occurred during " + servletName + " service initialization : No anomnymous policy found.",  OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "",HttpServletResponse.SC_OK, connector,null);
 					return null;
 
 				}else{
 					//No policy found for the authenticated user, return an ogc exception.
 					logger.error("Error occurred during " + servletName + " service initialization : No policy found for user.");
-					sendException( "Error occurred during " + servletName + " service initialization : No policy found for user.",  OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "",HttpServletResponse.SC_OK, connector, request.getVersion());
+					sendException( "Error occurred during " + servletName + " service initialization : No policy found for user.",  OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "",HttpServletResponse.SC_OK, connector, null);
 					return null;
 				}
 			}

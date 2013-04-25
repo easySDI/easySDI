@@ -69,6 +69,7 @@ public class SdiSysOperationcompliance implements java.io.Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "serviceoperation_id", nullable = false)
+	@Filter(name = "entityState",condition="State = 1")
 	public SdiSysServiceoperation getSdiSysServiceoperation() {
 		return this.sdiSysServiceoperation;
 	}
@@ -80,6 +81,7 @@ public class SdiSysOperationcompliance implements java.io.Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "servicecompliance_id", nullable = false)
+	@Filter(name = "entityState",condition="State = 1")
 	public SdiSysServicecompliance getSdiSysServicecompliance() {
 		return this.sdiSysServicecompliance;
 	}

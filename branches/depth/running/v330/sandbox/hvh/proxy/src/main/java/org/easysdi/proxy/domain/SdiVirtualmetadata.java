@@ -53,7 +53,9 @@ public class SdiVirtualmetadata implements java.io.Serializable {
 	private String Contactorganization;
 	private String Contactname;
 	private String Contactposition;
-	private String Contactadress;
+	private String Contactrole;
+	private String Contactaddress;
+	private String Contactaddresstype;
 	private String Contactpostalcode;
 	private String Contactlocality;
 	private String Contactstate;
@@ -98,7 +100,7 @@ public class SdiVirtualmetadata implements java.io.Serializable {
 			boolean Inheritedfee, String Accessconstraint,
 			boolean Inheritedaccessconstraint, boolean Inheritedcontact,
 			String Contactorganization, String Contactname,
-			String Contactposition, String Contactadress,
+			String Contactposition, String Contactrole, String Contactaddress,String Contactaddresstype,
 			String Contactpostalcode, String Contactlocality,
 			String Contactstate, String Contactphone, String Contactfax,
 			String Contactemail, String Contacturl, String Contactavailability,
@@ -128,7 +130,9 @@ public class SdiVirtualmetadata implements java.io.Serializable {
 		this.Contactorganization = Contactorganization;
 		this.Contactname = Contactname;
 		this.Contactposition = Contactposition;
-		this.Contactadress = Contactadress;
+		this.Contactrole = Contactrole;
+		this.Contactaddress = Contactaddress;
+		this.Contactaddresstype = Contactaddresstype;
 		this.Contactpostalcode = Contactpostalcode;
 		this.Contactlocality = Contactlocality;
 		this.Contactstate = Contactstate;
@@ -380,14 +384,32 @@ public class SdiVirtualmetadata implements java.io.Serializable {
 	public void setContactposition(String Contactposition) {
 		this.Contactposition = Contactposition;
 	}
-
-	@Column(name = "contactadress")
-	public String getContactadress() {
-		return this.Contactadress;
+	
+	@Column(name = "contactrole")
+	public String getContactrole() {
+		return this.Contactrole;
 	}
 
-	public void setContactadress(String Contactadress) {
-		this.Contactadress = Contactadress;
+	public void setContactrole(String Contactrole) {
+		this.Contactrole = Contactrole;
+	}
+
+	@Column(name = "contactaddress")
+	public String getContactaddress() {
+		return this.Contactaddress;
+	}
+
+	public void setContactaddress(String Contactaddress) {
+		this.Contactaddress = Contactaddress;
+	}
+	
+	@Column(name = "contactaddresstype")
+	public String getContactaddresstype() {
+		return this.Contactaddresstype;
+	}
+
+	public void setContactaddresstype(String Contactaddresstype) {
+		this.Contactaddresstype = Contactaddresstype;
 	}
 
 	@Column(name = "contactpostalcode")

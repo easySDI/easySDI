@@ -45,10 +45,10 @@ public class SdiVirtualserviceHome {
 	public SdiVirtualservice findByAlias(String alias) {
 		try {
 			Session session = sessionFactory.getCurrentSession();
-//			session.enableFilter("entityState");
-			Query query = session.createQuery("from SdiVirtualservice where alias= :alias AND state = 1");
+			session.enableFilter("entityState");
+			Query query = session.createQuery("from SdiVirtualservice where alias= :alias ");
 			query.setParameter("alias", alias);
-			List<SdiVirtualservice> l = query.setCacheable(true).list();
+			List<SdiVirtualservice> l = query.setCacheRegion("SdiVirtualServiceQueryCache").setCacheable(true).list();
 			if(l != null && l.size() > 0 )
 			{
 				SdiVirtualservice instance = l.get(0);

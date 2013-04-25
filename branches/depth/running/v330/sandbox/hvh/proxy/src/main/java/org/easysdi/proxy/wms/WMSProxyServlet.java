@@ -1470,20 +1470,11 @@ public class WMSProxyServlet extends ProxyServlet {
     protected boolean isLayerInScale(String layer, SdiPhysicalservice physicalservice, double scale) {
     	if (layer == null)
 		    return false;
-		
-		Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
-    	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
-    	while(i.hasNext())
-    	{
-    		SdiPhysicalservicePolicy physicalservicePolicy = i.next();
-    		if(physicalservicePolicy.getSdiPhysicalservice().getId().equals(physicalservice.getId()))
+		for(SdiPhysicalservicePolicy physicalservicePolicy :sdiPolicy.getSdiPhysicalservicePolicies()){
+			if(physicalservicePolicy.getSdiPhysicalservice().getId().equals(physicalservice.getId()))
     		{
-    			Set<SdiWmslayerPolicy> wmsLayerPolicies = physicalservicePolicy.getSdiWmslayerPolicies();
-	    		Iterator<SdiWmslayerPolicy> it = wmsLayerPolicies.iterator();
-	    		while (it.hasNext())
-	    		{
-	    			SdiWmslayerPolicy layerPolicy = it.next();
-	    			if(layerPolicy.getName().equals(layer) && layerPolicy.isEnabled())
+				for(SdiWmslayerPolicy layerPolicy :physicalservicePolicy.getSdiWmslayerPolicies()){
+					if(layerPolicy.getName().equals(layer) && layerPolicy.isEnabled())
 	    			{
 	    				if(layerPolicy.getSdiWmsSpatialpolicy() != null)
 	    				{
@@ -1500,10 +1491,11 @@ public class WMSProxyServlet extends ProxyServlet {
 	    				}
 	    				
 	    			}
-	    		}
+				}
 	    		break;
     		}
-    	}
+		}
+
     	return false;
 	}
     

@@ -4,6 +4,9 @@
 package org.easysdi.proxy.hibernate;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -27,8 +30,12 @@ import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.domain.SdiVirtualserviceHome;
 import org.easysdi.proxy.domain.SdiWmslayerPolicy;
 import org.easysdi.proxy.domain.SdiWmtslayerPolicy;
+import org.easysdi.proxy.domain.Users;
+import org.easysdi.proxy.domain.UsersHome;
 import org.hibernate.Cache;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -39,12 +46,16 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ProxyCacheInvalidationServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -5054942482987117794L;
+	private Logger logger = LoggerFactory.getLogger("EasySdiConfigFilter");
 	private Cache cache;
 	private ApplicationContext context;
+	private CacheManager cacheManager;
+	SessionFactory sessionFactory;
 	private String operation;
 	private String entityClass 	;
 	private Integer id;
 	private String complete;
+	private String jsonresponse;
 	
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -52,105 +63,129 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		
-		operation 		= req.getParameter("operation");
-		entityClass 	= req.getParameter("entityclass");
-		id 				= Integer.parseInt(req.getParameter("id"));
-		complete 		= req.getParameter("complete");
-		
-		context	= WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-		CacheManager cacheManager 		= (CacheManager) context.getBean("cacheManager");
-		SessionFactory sessionFactory 	= (SessionFactory)context.getBean("sessionFactory");
-		
-		cache = sessionFactory.getCache();
-		
-		//Invalidate all cache regions
-		if (complete != null && complete.equalsIgnoreCase("TRUE")){
-			//see JoomlaCookieAuthenticationFilter for the use of userCache cache
-			if (cacheManager.cacheExists("userCache")) 
-				cacheManager.getCache("userCache").removeAll();
-			
-			//see OGCOperationBasedCacheFilter for the use of operationBasedCache cache
-			if (cacheManager.cacheExists("operationBasedCache")) 
-				cacheManager.getEhcache("operationBasedCache").removeAll();
-			
-			cache.evictDefaultQueryRegion();
-			cache.evictEntityRegions();
-			cache.evictQueryRegions();
-			cache.evictCollectionRegions();
-			return;
-		}
-		
-		//Invalidate a specific entity region
-		if(entityClass != null && id == null){
-			if(entityClass.equalsIgnoreCase("SdiPhysicalservice") ){
-				
-			}else if(entityClass.equalsIgnoreCase("SdiVirtualservice")){
-				
-			}else if(entityClass.equalsIgnoreCase("SdiPolicy")){
-				
-			}else if(entityClass.equalsIgnoreCase("SdiUser")){
-				
-			}
-			cache.evictEntityRegion(entityClass);
-			return;
-		}
-		
-		//Invalidate a specific entity
-		if(entityClass != null && id != null){
-			if(entityClass.equalsIgnoreCase("SdiPhysicalservice") ){
-				if(operation != null && operation.equalsIgnoreCase("DELETE")){
-					SdiPhysicalserviceHome sdiPhysicalServiceHome  = (SdiPhysicalserviceHome)context.getBean("sdiPhysicalServiceHome");
-					InvalidateSdiPhysicalServiceCache(id, sdiPhysicalServiceHome);
-				}
-				cache.evictCollection("org.easysdi.proxy.domain.SdiPhysicalservice.sdiPhysicalserviceServicecompliances", id);
-				cache.evictCollection("org.easysdi.proxy.domain.SdiPhysicalservice.sdiOrganisms", id);
-				cache.evictEntity("org.easysdi.proxy.domain.SdiPhysicalservice", id);
-			}
-			else if(entityClass.equalsIgnoreCase("SdiVirtualservice")){
-				if(operation != null && operation.equalsIgnoreCase("DELETE")){
-					SdiVirtualserviceHome sdiVirtualServiceHome  = (SdiVirtualserviceHome)context.getBean("sdiVirtualServiceHome");
-					InvalidateSdiVirtualServiceCache(id,sdiVirtualServiceHome);
-				}
-				cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiOrganisms", id);
-				cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiPhysicalservices", id);
-				cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiSysServicecompliances", id);
-				cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiVirtualmetadatas", id);
-				cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiPolicies", id);
-				cache.evictEntity("org.easysdi.proxy.domain.SdiVirtualservice", id);
-				//Invalidate query cache (initial loading)
-				cache.evictDefaultQueryRegion();
-				cache.evictQueryRegions();
-			}
-			else if(entityClass.equalsIgnoreCase("SdiPolicy")){
-				SdiPolicyHome sdiPolicyHome  = (SdiPolicyHome)context.getBean("sdiPolicyHome");
-				if(operation != null && operation.equalsIgnoreCase("DELETE")){
-					SdiPolicy policy = sdiPolicyHome.findById(id);
+		try{
+			operation 		= req.getParameter("operation");
+			entityClass 	= req.getParameter("entityclass");
+			id 				= Integer.parseInt(req.getParameter("id"));
+			complete 		= req.getParameter("complete");
+			context			= WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+			cacheManager 	= (CacheManager) context.getBean("cacheManager");
+			sessionFactory 	= (SessionFactory)context.getBean("sessionFactory");
+			cache 			= sessionFactory.getCache();
 					
-					if(policy.getSdiVirtualservice() != null)
-						cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiPolicies", policy.getSdiVirtualservice().getId());
-						cache.evictEntity("org.easysdi.proxy.domain.SdiVirtualservice", policy.getSdiVirtualservice().getId());
-				}
-				
-				InvalidateSdiPolicyCache ( id,  sdiPolicyHome);
-				//Invalidate query cache (initial loading)
-				cache.evictDefaultQueryRegion();
-				cache.evictQueryRegions();
-			}
-			else if(entityClass.equalsIgnoreCase("SdiUser")){
-				cache.evictCollection("org.easysdi.proxy.domain.SdiUser.sdiOrganisms", id);
-				cache.evictEntity("org.easysdi.proxy.domain.SdiUser", id);
+			//Invalidate all cache regions
+			if (complete != null && complete.equalsIgnoreCase("TRUE")){
+				//see JoomlaCookieAuthenticationFilter for the use of userCache cache
 				if (cacheManager.cacheExists("userCache")) 
 					cacheManager.getCache("userCache").removeAll();
+				
+				//see OGCOperationBasedCacheFilter for the use of operationBasedCache cache
+				if (cacheManager.cacheExists("operationBasedCache")) 
+					cacheManager.getEhcache("operationBasedCache").removeAll();
+				
+				cache.evictDefaultQueryRegion();
+				cache.evictEntityRegions();
+				cache.evictQueryRegions();
+				cache.evictCollectionRegions();
+				
+				jsonresponse = "{status: 'OK', message: 'Complete cache invalidation done.'}";
 			}
-			//whatever the case, clear the operationBasedCache
-			if (cacheManager.cacheExists("operationBasedCache")) 
-				cacheManager.getEhcache("operationBasedCache").removeAll();
+			//Invalidate a specific entity
+			else if(entityClass != null && id != null){
+				Method invalidateMethod = this.getClass().getMethod("requestInvalidate"+entityClass, new Class [] {});
+				invalidateMethod.invoke(this ,new Object[] {});
+				
+				//whatever the case, clear the operationBasedCache
+				if (cacheManager.cacheExists("operationBasedCache")) 
+					cacheManager.getEhcache("operationBasedCache").removeAll();
+				
+				jsonresponse = "{status: 'OK', message: '"+entityClass+"#"+id+" cache invalidation done.'}";
+			}
+			 
+		}catch (Exception e){
+			logger.error(e.getStackTrace().toString());
+			jsonresponse = "{status: 'KO', message: '"+e.toString()+"'}"; 
+		}finally{
+			//Return the response
+			resp.setContentType("application/json");
+			// Get the printwriter object from response to write the required json object to the output stream      
+			PrintWriter out = resp.getWriter();
+			out.print(jsonresponse);
+			out.flush();
 		}
-
 	}
 	
-	private void InvalidateSdiVirtualServiceCache(Integer id, SdiVirtualserviceHome sdiVirtualServiceHome){
+	public void requestInvalidateSdiPhysicalservice(){
+		if(operation != null && operation.equalsIgnoreCase("DELETE")){
+			InvalidateSdiPhysicalServiceCache();
+		}
+		cache.evictCollection("org.easysdi.proxy.domain.SdiPhysicalservice.sdiPhysicalserviceServicecompliances", id);
+		cache.evictCollection("org.easysdi.proxy.domain.SdiPhysicalservice.sdiOrganisms", id);
+		cache.evictEntity("org.easysdi.proxy.domain.SdiPhysicalservice", id);
+	}
+	
+	public void requestInvalidateSdiVirtualservice(){
+		if(operation != null && operation.equalsIgnoreCase("DELETE")){
+			InvalidateSdiVirtualServiceCache();
+		}
+		cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiOrganisms", id);
+		cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiPhysicalservices", id);
+		cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiSysServicecompliances", id);
+		cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiVirtualmetadatas", id);
+		cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiPolicies", id);
+		cache.evictEntity("org.easysdi.proxy.domain.SdiVirtualservice", id);
+		//Invalidate query cache (initial loading)
+		cache.evictQueryRegion("SdiVirtualServiceQueryCache");
+	}
+	
+	public void requestInvalidateSdiPolicy(){
+		SdiPolicyHome sdiPolicyHome  = (SdiPolicyHome)context.getBean("sdiPolicyHome");
+		if(operation != null && operation.equalsIgnoreCase("DELETE")){
+			SdiPolicy policy = sdiPolicyHome.findById(id);
+			if(policy.getSdiVirtualservice() != null)
+				cache.evictCollection("org.easysdi.proxy.domain.SdiVirtualservice.sdiPolicies", policy.getSdiVirtualservice().getId());
+				cache.evictEntity("org.easysdi.proxy.domain.SdiVirtualservice", policy.getSdiVirtualservice().getId());
+		}
+		
+		InvalidateSdiPolicyCache ( id,  sdiPolicyHome);
+		//Invalidate query cache (initial loading)
+		cache.evictQueryRegion("SdiPolicyQueryCache");
+	}
+	
+	public void requestInvalidateSdiUser(){
+		cache.evictCollection("org.easysdi.proxy.domain.SdiUser.sdiOrganisms", id);
+		cache.evictEntity("org.easysdi.proxy.domain.SdiUser", id);
+		cache.evictQueryRegion("SdiUserQueryCache");
+		if (cacheManager.cacheExists("userCache")) 
+			cacheManager.getCache("userCache").removeAll();
+	}
+	
+	public void requestInvalidateUsers(){
+		UsersHome usersHome  = (UsersHome)context.getBean("usersHome");
+		Users users = usersHome.findById(id);
+		Integer userid = id;
+		try{
+			id = users.getSdiUsers().iterator().next().getId();
+			requestInvalidateSdiUser();
+		}catch (Exception e ){
+			//sdiUser not found
+		}
+		cache.evictEntity("org.easysdi.proxy.domain.Users", userid);
+		cache.evictQueryRegion("UsersQueryCache");
+	}
+	
+	public void requestInvalidateExtensions(){
+		cache.evictEntity("org.easysdi.proxy.domain.Extensions", id);
+		cache.evictQueryRegion("ExtensionsQueryCache");
+	}
+	
+	public void requestInvalidateSdiOrganism(){
+		cache.evictCollectionRegion("org.easysdi.proxy.domain.SdiUser.sdiOrganisms");
+		cache.evictEntity("org.easysdi.proxy.domain.SdiOrganism", id);
+	}
+	
+	public void InvalidateSdiVirtualServiceCache(){
+		SdiVirtualserviceHome sdiVirtualServiceHome  = (SdiVirtualserviceHome)context.getBean("sdiVirtualServiceHome");
 		SdiVirtualservice virtualservice = sdiVirtualServiceHome.findById(id);
 		SdiPolicyHome sdiPolicyHome  = (SdiPolicyHome)context.getBean("sdiPolicyHome");
 		for(SdiPolicy policy :virtualservice.getSdiPolicies()){
@@ -163,7 +198,8 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 		}
 	}
 	
-	private void InvalidateSdiPhysicalServiceCache(Integer id, SdiPhysicalserviceHome sdiPhysicalServiceHome){
+	public void InvalidateSdiPhysicalServiceCache(){
+		SdiPhysicalserviceHome sdiPhysicalServiceHome  = (SdiPhysicalserviceHome)context.getBean("sdiPhysicalServiceHome");
 		SdiPhysicalservice physicalservice = sdiPhysicalServiceHome.findById(id);
 		
 		for(SdiPhysicalservicePolicy servicepolicy :physicalservice.getSdiPhysicalservicePolicies()){
@@ -177,7 +213,7 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 		}
 	}
 	
-	private void InvalidateSdiPolicyCache (Integer id, SdiPolicyHome sdiPolicyHome){
+	public void InvalidateSdiPolicyCache (Integer id, SdiPolicyHome sdiPolicyHome){
 		SdiPolicy policy = sdiPolicyHome.findById(id);
 		
 		for(SdiPhysicalservicePolicy servicepolicy :policy.getSdiPhysicalservicePolicies()){
@@ -197,7 +233,7 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 		cache.evictEntity("org.easysdi.proxy.domain.SdiPolicy", id);
 	}
 	
-	private void InvalidatesdiPhysicalServicePolicyCache (SdiPhysicalservicePolicy servicepolicy){
+	public void InvalidatesdiPhysicalServicePolicyCache (SdiPhysicalservicePolicy servicepolicy){
 		
 		//WMS
 		for(SdiWmslayerPolicy layerpolicy : servicepolicy.getSdiWmslayerPolicies()){
@@ -243,8 +279,5 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 			cache.evictEntity("org.easysdi.proxy.domain.SdiCswSpatialpolicy", layerpolicy.getId());
 		
 		cache.evictEntity("org.easysdi.proxy.domain.sdiPhysicalservicePolicy", servicepolicy.getId());
-		
 	}
-
-
 }

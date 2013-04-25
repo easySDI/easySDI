@@ -28,8 +28,7 @@ import org.hibernate.annotations.FilterDef;
 @Entity
 @Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 @FilterDef(name="entityState")
-@Filter(name = "entityState",condition="State = 1")
-
+@Filter(name = "entityState",condition="state = 1")
 public class SdiSysAuthenticationconnector implements java.io.Serializable {
 
 	private static final long serialVersionUID = -7198814298159551697L;

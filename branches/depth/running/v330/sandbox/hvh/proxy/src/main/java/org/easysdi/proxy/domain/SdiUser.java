@@ -23,6 +23,8 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 
@@ -262,6 +264,7 @@ public class SdiUser implements java.io.Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiUser")
+	@Fetch(FetchMode.JOIN)
 	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	public Set<SdiUserRoleOrganism> getSdiUserRoleOrganisms() {
 		return this.sdiUserRoleOrganisms;
@@ -275,6 +278,7 @@ public class SdiUser implements java.io.Serializable {
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "SdiPolicyUser", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn (name = "policy_id")})
 	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
+	@Filter(name = "entityState",condition="State = 1")
 	public Set<SdiPolicy> getSdiPolicys() {
 		return this.sdiPolicys;
 	}

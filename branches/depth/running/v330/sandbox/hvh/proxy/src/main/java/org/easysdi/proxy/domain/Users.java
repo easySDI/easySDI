@@ -16,6 +16,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 
@@ -205,6 +207,7 @@ public class Users implements java.io.Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "users")
+	@Fetch(FetchMode.JOIN)
 	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 	@Filter(name = "entityState",condition="State = 1")
 	public Set<SdiUser> getSdiUsers() {

@@ -42,10 +42,10 @@ public class SdiUserHome {
 	public SdiUser findByUserName(String username) {
 		try {
 			Session session = sessionFactory.getCurrentSession();
-//			session.enableFilter("entityState");
+			session.enableFilter("entityState");
 			Query query = session.createQuery("FROM SdiUser s WHERE s.users.username= :username");
 			query.setParameter("username", username);
-			SdiUser instance = (SdiUser) query.setCacheable(true).uniqueResult();
+			SdiUser instance = (SdiUser) query.setCacheRegion("SdiUserQueryCache").setCacheable(true).uniqueResult();
 			
 			return instance;
 		} catch (RuntimeException re) {

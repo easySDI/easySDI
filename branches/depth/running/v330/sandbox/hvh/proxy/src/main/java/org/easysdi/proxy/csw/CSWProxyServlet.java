@@ -1396,7 +1396,7 @@ public class CSWProxyServlet extends ProxyServlet {
 				
 				serviceMetadataXSLT.append("<xsl:element name=\"ows:Address\"> ");//ows:Address
 				serviceMetadataXSLT.append("<xsl:element name=\"ows:DelivryPoint\"> ");
-				serviceMetadataXSLT.append("<xsl:text>" + virtualMetadata.getContactadress()+ "</xsl:text>");
+				serviceMetadataXSLT.append("<xsl:text>" + virtualMetadata.getContactaddress()+ "</xsl:text>");
 				serviceMetadataXSLT.append("</xsl:element>");
 				serviceMetadataXSLT.append("<xsl:element name=\"ows:City\"> ");
 				serviceMetadataXSLT.append("<xsl:text>" + virtualMetadata.getContactlocality()+ "</xsl:text>");

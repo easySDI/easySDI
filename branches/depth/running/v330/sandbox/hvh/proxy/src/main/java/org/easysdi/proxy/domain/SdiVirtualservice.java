@@ -502,7 +502,6 @@ public class SdiVirtualservice implements java.io.Serializable {
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiVirtualservice")
 	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
-	@Filter(name = "entityState",condition="State = 1")
 	public Set<SdiVirtualmetadata> getSdiVirtualmetadatas() {
 		return this.sdiVirtualmetadatas;
 	}

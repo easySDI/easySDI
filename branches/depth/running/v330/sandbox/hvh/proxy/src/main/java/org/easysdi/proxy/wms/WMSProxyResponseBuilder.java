@@ -446,13 +446,12 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 				
 				Element newContactAddress = new Element("ContactAddress");
 				Boolean hasContactAddress = false;
-				//TODO add the address type
-//						if(virtualMetadata.getC != null && contactAddress.getType().length() != 0){
-//							newContactAddress.addContent((new Element("AddressType")).setText(contactAddress.getType()));
-//							hasContactAddress = true;
-//						}
-				if(virtualMetadata.getContactadress() != null && virtualMetadata.getContactadress().length() != 0){
-					newContactAddress.addContent((new Element("Address")).setText(virtualMetadata.getContactadress()));
+				if(virtualMetadata.getContactaddresstype() != null && virtualMetadata.getContactaddresstype().length() != 0){
+					newContactAddress.addContent((new Element("AddressType")).setText(virtualMetadata.getContactaddresstype()));
+					hasContactAddress = true;
+				}
+				if(virtualMetadata.getContactaddress() != null && virtualMetadata.getContactaddress().length() != 0){
+					newContactAddress.addContent((new Element("Address")).setText(virtualMetadata.getContactaddress()));
 					hasContactAddress = true;
 				}
 				if(virtualMetadata.getContactlocality() != null && virtualMetadata.getContactlocality().length() != 0){

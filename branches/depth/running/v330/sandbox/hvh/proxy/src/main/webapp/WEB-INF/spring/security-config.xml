@@ -18,7 +18,7 @@
 		<security:anonymous username="spring2a2d595e6ed9a0b24f027f2b63b134d6" granted-authority="anonymous" />
 		<security:intercept-url pattern="(.*)" access="anonymous,proxy_user" />
 		<security:custom-filter ref="joomlaCookieAuthenticationFilter" before="BASIC_AUTH_FILTER" />
-		<security:custom-filter ref="easySdiConfigFilter" after="FILTER_SECURITY_INTERCEPTOR" />
+		<security:custom-filter ref="EasySdiRequestFilter" after="FILTER_SECURITY_INTERCEPTOR" />
 		<security:custom-filter ref="OGCOperationBasedCacheFilter" position="LAST" />
 	</security:http>
 

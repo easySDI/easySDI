@@ -153,11 +153,13 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 				
 				Element newContactAddress = new Element("ContactAddress", nsWMS);
 				boolean hasContactAddress = false;
-				//TODO add address type
-//				newContactAddress.addContent((new Element("AddressType", nsWMS)).setText(metadata.getContactadress()));
-				if(virtualMetadata.getContactadress() != null && virtualMetadata.getContactadress().length() != 0)
+				if(virtualMetadata.getContactaddresstype() != null && virtualMetadata.getContactaddresstype().length() != 0){
+					newContactAddress.addContent((new Element("AddressType")).setText(virtualMetadata.getContactaddresstype()));
+					hasContactAddress = true;
+				}
+				if(virtualMetadata.getContactaddress() != null && virtualMetadata.getContactaddress().length() != 0)
 				{
-					newContactAddress.addContent((new Element("Address", nsWMS)).setText(virtualMetadata.getContactadress()));
+					newContactAddress.addContent((new Element("Address", nsWMS)).setText(virtualMetadata.getContactaddress()));
 					hasContactAddress = true;
 				}
 				if(virtualMetadata.getContactlocality() != null && virtualMetadata.getContactlocality().length() != 0)

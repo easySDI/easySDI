@@ -417,14 +417,14 @@ public abstract class ProxyServlet extends HttpServlet {
 		int serverPort = req.getServerPort(); // 80
 		String contextPath = req.getContextPath(); // /mywebapp
 		String servletPath = req.getServletPath(); // /servlet/MyServlet
-		String pathInfo = req.getPathInfo(); // /a/b;c=123
-		if(pathInfo.endsWith("?"))
-		    pathInfo = pathInfo.substring(0, pathInfo.length()-1);
+//		String pathInfo = req.getPathInfo(); // /a/b;c=123 --> always null since proxy servlet not uses anymore the 'ogc' pathInfo 
+		if(servletPath.endsWith("?"))
+			servletPath = servletPath.substring(0, servletPath.length()-1);
 		
 		String url = scheme + "://" + serverName + ":" + serverPort + contextPath + servletPath;
-		if (pathInfo != null) {
-		    url += pathInfo;
-		}
+//		if (pathInfo != null) {
+//		    url += pathInfo;
+//		}
 	
 		return url;
     }

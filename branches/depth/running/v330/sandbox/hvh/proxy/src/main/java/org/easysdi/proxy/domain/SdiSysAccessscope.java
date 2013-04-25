@@ -23,9 +23,9 @@ import org.hibernate.annotations.FilterDef;
 @Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
 @FilterDef(name="entityState")
 @Filter(name = "entityState",condition="state = 1")
-
 public class SdiSysAccessscope implements java.io.Serializable {
 
+	private static final long serialVersionUID = 6074565860256604958L;
 	private Integer Id;
 	private int Ordering;
 	private int State;
