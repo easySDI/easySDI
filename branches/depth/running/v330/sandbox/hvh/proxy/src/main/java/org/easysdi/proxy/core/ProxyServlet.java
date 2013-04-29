@@ -217,7 +217,7 @@ public abstract class ProxyServlet extends HttpServlet {
 
     /**
      * Get the list of physical services relayed by the current virtual service
-     * in a Hashtable mapping <alias,SdiPhysicalservice>
+     * in a LinkedHashMap mapping <alias,SdiPhysicalservice>
      * replace : getRemoteServerInfoList
      * @return
      */

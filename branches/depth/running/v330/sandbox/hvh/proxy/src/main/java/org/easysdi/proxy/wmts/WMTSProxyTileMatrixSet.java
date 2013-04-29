@@ -37,26 +37,26 @@ public class WMTSProxyTileMatrixSet {
     
     public WMTSProxyTileMatrixSet (String requestedTileMatrixSet)
     {
-	if(requestedTileMatrixSet != null)
-	{
-	    setAliasName(requestedTileMatrixSet);
-	    if(requestedTileMatrixSet.contains("_"))
-	    {
-		this.setAlias(requestedTileMatrixSet.substring(0, requestedTileMatrixSet.indexOf("_")));
-		this.setName(requestedTileMatrixSet.substring(requestedTileMatrixSet.indexOf("_",0)+1));
-	    }
-	    else
-	    {
-		this.setName(requestedTileMatrixSet);
-	    }
-	}
+		if(requestedTileMatrixSet != null)
+		{
+		    setAliasName(requestedTileMatrixSet);
+		    if(requestedTileMatrixSet.contains("_"))
+		    {
+				this.setAlias(requestedTileMatrixSet.substring(0, requestedTileMatrixSet.indexOf("_")));
+				this.setName(requestedTileMatrixSet.substring(requestedTileMatrixSet.indexOf("_",0)+1));
+		    }
+		    else
+		    {
+		    	this.setName(requestedTileMatrixSet);
+		    }
+		}
     }
 
     /**
      * @param alias the alias to set
      */
     public void setAlias(String alias) {
-	this.alias = alias;
+    	this.alias = alias;
     }
 
     /**

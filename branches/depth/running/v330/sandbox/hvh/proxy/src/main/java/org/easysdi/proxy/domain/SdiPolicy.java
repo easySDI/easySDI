@@ -63,10 +63,10 @@ public class SdiPolicy implements java.io.Serializable {
 	private boolean Csw_anystate;
 	private boolean Csw_anyvisibility;
 	private boolean Csw_includeharvested;
-	private Integer Wms_minimumwidth;
-	private Integer Wms_minimumheight;
-	private Integer Wms_maximumwidth;
-	private Integer Wms_maximumheight;
+	private String Wms_minimumwidth;
+	private String Wms_minimumheight;
+	private String Wms_maximumwidth;
+	private String Wms_maximumheight;
 	private String Params;
 	private int Access;
 	private Integer Asset_id;
@@ -127,9 +127,9 @@ public class SdiPolicy implements java.io.Serializable {
 			String Alias, Date Allowfrom, Date Allowto, boolean Anyoperation,
 			boolean Anyservice, SdiSysMetadataversion sdiSysMetadataversion, boolean Csw_anyattribute,
 			boolean Csw_anycontext, boolean Csw_anystate,
-			boolean Csw_anyvisibility, Integer Wms_minimumwidth,
-			Integer Wms_minimumheight, Integer Wms_maximumwidth,
-			Integer Wms_maximumheight, String Params, int Access,
+			boolean Csw_anyvisibility, String Wms_minimumwidth,
+			String Wms_minimumheight, String Wms_maximumwidth,
+			String Wms_maximumheight, String Params, int Access,
 			Integer Asset_id,
 			Set<SdiPhysicalservicePolicy> sdiPhysicalservicePolicies,
 			Set<SdiOrganism> sdiOrganisms,
@@ -449,38 +449,38 @@ public class SdiPolicy implements java.io.Serializable {
 	}
 
 	@Column(name = "wms_minimumwidth")
-	public Integer getWms_minimumwidth() {
+	public String getWms_minimumwidth() {
 		return this.Wms_minimumwidth;
 	}
 
-	public void setWms_minimumwidth(Integer Wms_minimumwidth) {
+	public void setWms_minimumwidth(String Wms_minimumwidth) {
 		this.Wms_minimumwidth = Wms_minimumwidth;
 	}
 
 	@Column(name = "wms_minimumheight")
-	public Integer getWms_minimumheight() {
+	public String getWms_minimumheight() {
 		return this.Wms_minimumheight;
 	}
 
-	public void setWms_minimumheight(Integer Wms_minimumheight) {
+	public void setWms_minimumheight(String Wms_minimumheight) {
 		this.Wms_minimumheight = Wms_minimumheight;
 	}
 
 	@Column(name = "wms_maximumwidth")
-	public Integer getWms_maximumwidth() {
+	public String getWms_maximumwidth() {
 		return this.Wms_maximumwidth;
 	}
 
-	public void setWms_maximumwidth(Integer Wms_maximumwidth) {
+	public void setWms_maximumwidth(String Wms_maximumwidth) {
 		this.Wms_maximumwidth = Wms_maximumwidth;
 	}
 
 	@Column(name = "wms_maximumheight")
-	public Integer getWms_maximumheight() {
+	public String getWms_maximumheight() {
 		return this.Wms_maximumheight;
 	}
 
-	public void setWms_maximumheight(Integer Wms_maximumheight) {
+	public void setWms_maximumheight(String Wms_maximumheight) {
 		this.Wms_maximumheight = Wms_maximumheight;
 	}
 

@@ -34,7 +34,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 /**
- * @author Helene
+ * @author DEPTH SA
  *
  */
 public class EasysdiProvider implements AuthenticationProvider,

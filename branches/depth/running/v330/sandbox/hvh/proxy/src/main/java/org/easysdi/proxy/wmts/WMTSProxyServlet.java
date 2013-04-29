@@ -47,6 +47,7 @@ import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiTilematrixPolicy;
 import org.easysdi.proxy.domain.SdiTilematrixsetPolicy;
 import org.easysdi.proxy.domain.SdiVirtualservice;
+import org.easysdi.proxy.domain.SdiWmtsSpatialpolicy;
 import org.easysdi.proxy.domain.SdiWmtslayerPolicy;
 import org.easysdi.proxy.jdom.filter.ElementTileMatrixSetFilter;
 import org.easysdi.proxy.ows.OWSExceptionManager;
@@ -427,7 +428,8 @@ public class WMTSProxyServlet extends ProxyServlet{
     }	
 
     /**
-     * return if the tile is allowed or not according to the policy restriction
+     * Return if the tile is allowed or not according to the policy restriction
+     * Tile restriction is deducted from the spatial policy definition.
      * @param proxyRequest : the request object
      * @param serverUrl : url of the remote server
      * @return 
@@ -450,89 +452,67 @@ public class WMTSProxyServlet extends ProxyServlet{
 		    return "tileRow";
 		if (tileCol == null)
 		    return "tileCol";
-	
-//		if(sdiPolicy.isAnyservice())
-//			return "true";
+		
+		if(sdiPolicy.isAnyservice() && sdiPolicy.getSdiWmtsSpatialpolicy() == null)
+			return "true";
 		
 		boolean isServerFound = false;
-		Set<SdiPhysicalservicePolicy> physicalServicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
-//		for(SdiPhysicalservicePolicy physicalServicePolicy:sdiPolicy.getSdiPhysicalservicePolicies()){
-//			SdiPhysicalservice physicalService = physicalServicePolicy.getSdiPhysicalservice();
-//			if(serverUrl.equalsIgnoreCase(physicalService.getResourceurl())){
-//				isServerFound = true;
-//				boolean isLayerFound = false;
-//				for(SdiWmtslayerPolicy wmtslayerPolicy :physicalServicePolicy.getSdiWmtslayerPolicies()){
-//					if(pLayer.getPrefixedName().equals(wmtslayerPolicy.getIdentifier()))
-//					{
-//						isLayerFound = true;
-//						if(wmtslayerPolicy.isAnytilematrixset())
-//							return "true";
-//						boolean isTileMatrixSetFound = false;
-//					}
-//				}
-//			}
-//		}
-		Iterator<SdiPhysicalservicePolicy> i = physicalServicePolicies.iterator();
-		
-		while (i.hasNext()){
-			//SdiPhysicalservicePolicy
-			SdiPhysicalservicePolicy physicalServicePolicy = i.next();
-			//SdiPhysicalservice
+		for(SdiPhysicalservicePolicy physicalServicePolicy:sdiPolicy.getSdiPhysicalservicePolicies()){
 			SdiPhysicalservice physicalService = physicalServicePolicy.getSdiPhysicalservice();
 			if(serverUrl.equalsIgnoreCase(physicalService.getResourceurl())){
 				isServerFound = true;
-//				if(physicalServicePolicy.isAnyitem())
-//					return "true";
-				Set<SdiWmtslayerPolicy> wmtsLayerPolicies = physicalServicePolicy.getSdiWmtslayerPolicies();
+				
+				//No spatial restriction on the service, all tiles allowed
+				if(physicalServicePolicy.isAnyitem() && physicalServicePolicy.getSdiWmtsSpatialpolicy() == null)
+					return "true";
+				
 				boolean isLayerFound = false;
-				Iterator<SdiWmtslayerPolicy> it = wmtsLayerPolicies.iterator();
-				while (it.hasNext())
-				{
-					//SdiWmtslayerPolicy
-					SdiWmtslayerPolicy wmtslayerPolicy = it.next();
+				for(SdiWmtslayerPolicy wmtslayerPolicy :physicalServicePolicy.getSdiWmtslayerPolicies()){
 					if(pLayer.getPrefixedName().equals(wmtslayerPolicy.getIdentifier()))
 					{
 						isLayerFound = true;
-						if(wmtslayerPolicy.isAnytilematrixset())
+						SdiWmtsSpatialpolicy wmtsSpatialpolicy = wmtslayerPolicy.getSdiWmtsSpatialpolicy();
+						//No spatial restriction for the layer, all tiles allowed
+						if(wmtsSpatialpolicy == null && wmtslayerPolicy.isAnytilematrixset()){
 							return "true";
-												
-						Set<SdiTilematrixsetPolicy> tileMatrixSetPolicies = wmtslayerPolicy.getSdiTilematrixsetPolicies();
+						}
+						
 						boolean isTileMatrixSetFound = false;
-						Iterator<SdiTilematrixsetPolicy> is = tileMatrixSetPolicies.iterator();
-						while (is.hasNext())
-						{
-							//SdiTilematrixsetPolicy
-							isTileMatrixSetFound = true;
-							SdiTilematrixsetPolicy tileMatrixSetPolicy = is.next();
-							if(tileMatrixSetPolicy.isAnytilematrix())
-								return "true";
-							
-							Set<SdiTilematrixPolicy> tileMatrixPolicies = tileMatrixSetPolicy.getSdiTilematrixPolicies();
-							boolean isTileMatrixFound = false;
-							Iterator<SdiTilematrixPolicy> im = tileMatrixPolicies.iterator();
-							while(im.hasNext())
-							{
-								//SdiTilematrixPolicy
-								isTileMatrixFound = true;
-								SdiTilematrixPolicy tileMatriyPolicy = im.next();
-								if(tileMatriyPolicy.isAnytile())
+						for(SdiTilematrixsetPolicy tilematrixsetPolicy : wmtslayerPolicy.getSdiTilematrixsetPolicies()){
+							if(tilematrixsetPolicy.getIdentifier().equalsIgnoreCase(pTileMatrixSet.getName())){
+								isTileMatrixSetFound = true;
+								//No spatial restriction on the matrixset, all tiles allowed
+								if(wmtsSpatialpolicy == null && tilematrixsetPolicy.isAnytilematrix()){
 									return "true";
-								Integer minCol = tileMatriyPolicy.getTilemincol();
-								Integer maxCol = tileMatriyPolicy.getTilemaxcol();
-								Integer minRow = tileMatriyPolicy.getTileminrow();
-								Integer maxRow = tileMatriyPolicy.getTilemaxrow();
-								if(tileRow <= maxRow && tileRow >= minRow && tileCol <= maxCol && tileCol >= minCol )
-								    return "true";
-								else{
-								    if(tileRow > maxRow || tileRow < minRow)
-								    	return "tileRow";
-								    if(tileCol > maxCol || tileCol < minCol)
-								    	return "tileCol";
 								}
-							}
-							if(!isTileMatrixFound){
-							    //TileMatrix is not allowed
-							    return "TileMatrix";
+								
+								boolean isTileMatrixFound = false;
+								for(SdiTilematrixPolicy tilematrixPolicy : tilematrixsetPolicy.getSdiTilematrixPolicies()){
+									if(tilematrixPolicy.getIdentifier().equalsIgnoreCase(tileMatrix)){
+										isTileMatrixFound = true;
+										if(wmtsSpatialpolicy == null && tilematrixPolicy.isAnytile()){
+											return "true";
+										}
+										
+										Integer minCol = tilematrixPolicy.getTilemincol();
+										Integer maxCol = tilematrixPolicy.getTilemaxcol();
+										Integer minRow = tilematrixPolicy.getTileminrow();
+										Integer maxRow = tilematrixPolicy.getTilemaxrow();
+										if(tileRow <= maxRow && tileRow >= minRow && tileCol <= maxCol && tileCol >= minCol )
+										    return "true";
+										else{
+										    if(tileRow > maxRow || tileRow < minRow)
+										    	return "tileRow";
+										    if(tileCol > maxCol || tileCol < minCol)
+										    	return "tileCol";
+										}	
+									}
+								}
+								if(!isTileMatrixFound){
+								    //TileMatrix is not allowed
+								    return "TileMatrix";
+								}
+								
 							}
 						}
 						if(!isTileMatrixSetFound){

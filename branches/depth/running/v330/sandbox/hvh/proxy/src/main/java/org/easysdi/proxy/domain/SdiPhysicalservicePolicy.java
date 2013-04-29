@@ -129,6 +129,13 @@ public class SdiPhysicalservicePolicy implements java.io.Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "wmts_spatialpolicy_id")
 	public SdiWmtsSpatialpolicy getSdiWmtsSpatialpolicy() {
+		if(this.sdiWmtsSpatialpolicy == null)
+		{
+			if(this.getSdiPolicy().getSdiWmtsSpatialpolicy()!=null)
+			{
+				this.sdiWmtsSpatialpolicy = getSdiPolicy().getSdiWmtsSpatialpolicy();
+			}
+		}
 		return this.sdiWmtsSpatialpolicy;
 	}
 

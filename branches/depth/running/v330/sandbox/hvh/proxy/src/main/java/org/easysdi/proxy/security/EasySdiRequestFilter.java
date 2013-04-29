@@ -57,7 +57,7 @@ public class EasySdiRequestFilter extends GenericFilterBean {
 				if(request.getUserPrincipal() == null ){
 					//Request to the cache invalidator are not allowed for anonymous user
 					logger.error("Cache invalidation requires an authentication.");
-					String jsonresponse = "{status: 'KO', message: 'Cache invalidation requires an authentication.'}"; 
+					String jsonresponse = "{'status': 'KO','message': 'Cache invalidation requires an authentication.'}"; 
 					response.setContentType("application/json");
 					// Get the printwriter object from response to write the required json object to the output stream      
 					PrintWriter out = response.getWriter();

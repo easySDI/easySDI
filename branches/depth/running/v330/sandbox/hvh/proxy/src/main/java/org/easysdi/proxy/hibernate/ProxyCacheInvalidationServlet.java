@@ -40,7 +40,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- * @author Helene
+ * @author DEPTH SA
  *
  */
 public class ProxyCacheInvalidationServlet extends HttpServlet {
@@ -88,7 +88,7 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 				cache.evictQueryRegions();
 				cache.evictCollectionRegions();
 				
-				jsonresponse = "{status: 'OK', message: 'Complete cache invalidation done.'}";
+				jsonresponse = "{\"status\": \"OK\", \"message\": \"Complete cache invalidation done.\"}";
 			}
 			//Invalidate a specific entity
 			else if(entityClass != null && id != null){
@@ -99,12 +99,12 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 				if (cacheManager.cacheExists("operationBasedCache")) 
 					cacheManager.getEhcache("operationBasedCache").removeAll();
 				
-				jsonresponse = "{status: 'OK', message: '"+entityClass+"#"+id+" cache invalidation done.'}";
+				jsonresponse = "{\"status\": \"OK\", \"message\": \""+entityClass+"#"+id+" cache invalidation done.\"}";
 			}
 			 
 		}catch (Exception e){
 			logger.error(e.getStackTrace().toString());
-			jsonresponse = "{status: 'KO', message: '"+e.toString()+"'}"; 
+			jsonresponse = "{\"status\": \"KO\", \"message\": \""+e.toString()+"\"}"; 
 		}finally{
 			//Return the response
 			resp.setContentType("application/json");
@@ -153,7 +153,7 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 	}
 	
 	public void requestInvalidateSdiUser(){
-		cache.evictCollection("org.easysdi.proxy.domain.SdiUser.sdiOrganisms", id);
+		cache.evictCollection("org.easysdi.proxy.domain.SdiUser.sdiUserRoleOrganisms", id);
 		cache.evictEntity("org.easysdi.proxy.domain.SdiUser", id);
 		cache.evictQueryRegion("SdiUserQueryCache");
 		if (cacheManager.cacheExists("userCache")) 
@@ -177,10 +177,12 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 	public void requestInvalidateExtensions(){
 		cache.evictEntity("org.easysdi.proxy.domain.Extensions", id);
 		cache.evictQueryRegion("ExtensionsQueryCache");
+		if (cacheManager.cacheExists("userCache")) 
+			cacheManager.getCache("userCache").removeAll();
 	}
 	
 	public void requestInvalidateSdiOrganism(){
-		cache.evictCollectionRegion("org.easysdi.proxy.domain.SdiUser.sdiOrganisms");
+		cache.evictCollectionRegion("org.easysdi.proxy.domain.SdiUser.sdiUserRoleOrganisms");
 		cache.evictEntity("org.easysdi.proxy.domain.SdiOrganism", id);
 	}
 	
@@ -223,7 +225,7 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 		for(SdiExcludedattribute attribute :policy.getSdiExcludedattributes()){
 			cache.evictEntity("org.easysdi.proxy.domain.SdiExcludedattribute", attribute.getId());
 		}
-		cache.evictCollection("org.easysdi.proxy.domain.sdiPolicy.SdiExcludedattributes", policy.getId());
+		cache.evictCollection("org.easysdi.proxy.domain.SdiPolicy.sdiExcludedattributes", policy.getId());
 		cache.evictCollection("org.easysdi.proxy.domain.SdiPolicy.sdiPhysicalservicePolicies", id);
 		cache.evictCollection("org.easysdi.proxy.domain.SdiPolicy.sdiOrganisms", id);
 		cache.evictCollection("org.easysdi.proxy.domain.SdiPolicy.sdiAllowedoperations", id);
@@ -241,7 +243,7 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 				cache.evictEntity("org.easysdi.proxy.domain.SdiWmsSpatialpolicy", layerpolicy.getSdiWmsSpatialpolicy().getId());
 			cache.evictEntity("org.easysdi.proxy.domain.SdiWmslayerPolicy", layerpolicy.getId());
 		}
-		cache.evictCollection("org.easysdi.proxy.domain.sdiPhysicalservicePolicy.sdiWmslayerPolicies", servicepolicy.getId());
+		cache.evictCollection("org.easysdi.proxy.domain.SdiPhysicalservicePolicy.sdiWmslayerPolicies", servicepolicy.getId());
 		
 		//WFS
 		for(SdiFeaturetypePolicy layerpolicy : servicepolicy.getSdiFeaturetypePolicies()){
@@ -252,7 +254,7 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 			cache.evictCollection("org.easysdi.proxy.domain.SdiFeaturetypePolicy.sdiIncludedattributes", layerpolicy.getId());
 			cache.evictEntity("org.easysdi.proxy.domain.SdiFeaturetypePolicy", layerpolicy.getId());
 		}
-		cache.evictCollection("org.easysdi.proxy.domain.sdiPhysicalservicePolicy.sdiFeaturetypePolicies", servicepolicy.getId());
+		cache.evictCollection("org.easysdi.proxy.domain.SdiPhysicalservicePolicy.sdiFeaturetypePolicies", servicepolicy.getId());
 		
 		//WMTS
 		for(SdiWmtslayerPolicy layerpolicy : servicepolicy.getSdiWmtslayerPolicies()){
@@ -271,13 +273,13 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 				
 			cache.evictEntity("org.easysdi.proxy.domain.SdiWmtslayerPolicy", layerpolicy.getId());
 		}
-		cache.evictCollection("org.easysdi.proxy.domain.sdiPhysicalservicePolicy.sdiWmtslayerPolicies", servicepolicy.getId());
+		cache.evictCollection("org.easysdi.proxy.domain.SdiPhysicalservicePolicy.sdiWmtslayerPolicies", servicepolicy.getId());
 		
 		//CSW
 		SdiCswSpatialpolicy layerpolicy = servicepolicy.getSdiCswSpatialpolicy();
 		if(layerpolicy != null)
 			cache.evictEntity("org.easysdi.proxy.domain.SdiCswSpatialpolicy", layerpolicy.getId());
 		
-		cache.evictEntity("org.easysdi.proxy.domain.sdiPhysicalservicePolicy", servicepolicy.getId());
+		cache.evictEntity("org.easysdi.proxy.domain.SdiPhysicalservicePolicy", servicepolicy.getId());
 	}
 }

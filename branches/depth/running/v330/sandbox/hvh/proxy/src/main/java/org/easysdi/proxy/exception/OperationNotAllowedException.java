@@ -4,7 +4,7 @@
 package org.easysdi.proxy.exception;
 
 /**
- * @author Helene
+ * @author DEPTH SA
  *
  */
 public class OperationNotAllowedException extends ProxyServletException {

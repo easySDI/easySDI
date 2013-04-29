@@ -1514,10 +1514,10 @@ public class WMSProxyServlet extends ProxyServlet {
 		if ( sdiPolicy.getWms_maximumheight() == null && sdiPolicy.getWms_maximumwidth() == null && sdiPolicy.getWms_minimumheight() == null && sdiPolicy.getWms_minimumwidth() == null)
 			return true;
 		
-		if(sdiPolicy.getWms_maximumheight() != null )  maxHeight =sdiPolicy.getWms_maximumheight();
-		if(sdiPolicy.getWms_maximumwidth() != null )  maxWidth =sdiPolicy.getWms_maximumwidth();
-		if(sdiPolicy.getWms_minimumheight() != null )  minHeight =sdiPolicy.getWms_minimumheight();
-		if(sdiPolicy.getWms_minimumwidth() != null )  minWidth =sdiPolicy.getWms_minimumwidth();
+		if(sdiPolicy.getWms_maximumheight() != null &&  sdiPolicy.getWms_maximumheight().length() > 0)  maxHeight 	= Integer.parseInt(sdiPolicy.getWms_maximumheight());
+		if(sdiPolicy.getWms_maximumwidth() != null && sdiPolicy.getWms_maximumwidth().length() > 0)  maxWidth 		= Integer.parseInt(sdiPolicy.getWms_maximumwidth());
+		if(sdiPolicy.getWms_minimumheight() != null && sdiPolicy.getWms_minimumheight().length() > 0)  minHeight 	= Integer.parseInt(sdiPolicy.getWms_minimumheight());
+		if(sdiPolicy.getWms_minimumwidth() != null && sdiPolicy.getWms_minimumwidth().length() > 0)  minWidth 		= Integer.parseInt(sdiPolicy.getWms_minimumwidth());
 				
 		if (currentWidth >= minWidth && currentWidth <= maxWidth && currentHeight >= minHeight && currentHeight <= maxHeight) {
 		    return true;
@@ -1577,27 +1577,19 @@ public class WMSProxyServlet extends ProxyServlet {
 		if(sdiPolicy.isAnyservice())
 			return true;
 		
-		Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
-    	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
-    	while(i.hasNext())
-    	{
-    		SdiPhysicalservicePolicy physicalservicePolicy = i.next();
-    		if(physicalservicePolicy.getSdiPhysicalservice().getId().equals(physicalservice.getId()))
+		for(SdiPhysicalservicePolicy physicalservicePolicy : sdiPolicy.getSdiPhysicalservicePolicies() ){
+			if(physicalservicePolicy.getSdiPhysicalservice().getId().equals(physicalservice.getId()))
     		{
     			if(physicalservicePolicy.isAnyitem())
     				return true;
     			
-    			Set<SdiWmslayerPolicy> wmsLayerPolicies = physicalservicePolicy.getSdiWmslayerPolicies();
-	    		Iterator<SdiWmslayerPolicy> it = wmsLayerPolicies.iterator();
-	    		while (it.hasNext())
-	    		{
-	    			SdiWmslayerPolicy layerPolicy = it.next();
-	    			if(layerPolicy.getName().equals(layer))
+    			for(SdiWmslayerPolicy layerPolicy  : physicalservicePolicy.getSdiWmslayerPolicies()){
+    				if(layerPolicy.getName().equals(layer))
 	    				return layerPolicy.isEnabled() ? true : false;
-	    		}
+    			}
 	    		break;
     		}
-    	}
+		}
     	return false;
     }
 
