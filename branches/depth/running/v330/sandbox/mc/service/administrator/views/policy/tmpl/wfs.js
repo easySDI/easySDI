@@ -1,9 +1,21 @@
 //onClick on the button to add a new excluded attribute field
 function onAddIncludedAttribute () {
 	var count = jQuery('#btn_add_included_attribute').data('count');
-	jQuery('#div_included_attributes').append('<textarea name="included_attribute[' + count + ']" rows="1" class="span12"></textarea><br /><br />');
+	jQuery('#div_included_attributes').append(
+			'<div class="div_ia_' + count + ' span12">' + 
+				'<textarea name="included_attribute[' + count + ']" rows="1" class="span10"></textarea>' +
+				'<button type="button" class="btn btn-danger btn_ia_delete">' + Joomla.JText._('COM_EASYSDI_SERVICE_POLICY_WFS_BTN_DELETE_INCLUDED_ATTRIBUTE') + '</button>' +
+				'<br /><br />' +
+			'</div>'
+		);
 	count++;
 	jQuery('#btn_add_included_attribute').data('count', count);
+}
+
+function onDeleteIncludedAttribute (index) {
+		var parent = jQuery('.div_ea_' + index);
+		parent.children('textarea').html('');
+		parent.hide();
 }
 
 jQuery(document).ready(function () {

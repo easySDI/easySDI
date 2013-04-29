@@ -86,7 +86,11 @@ class WfsWebservice {
 		$items = $db->loadColumn();
 		$item_count = 0;
 		foreach ($items as $item) {
-			$html.= '<textarea name="included_attribute[' . $item_count . ']" rows="1" class="span12">' . $item . '</textarea><br /><br />';
+			$html.= '<div class="div_ea_' . $item_count . ' span12">
+				<textarea name="excluded_attribute[' . $item_count . ']" rows="1" class="span10">' . $item . '</textarea>
+				<button type="button" class="btn btn-danger btn_ea_delete" onClick="onDeleteIncludedAttribute(' . $item_count . ');return false;">' .JText::_('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE') . '</button>
+				<br /><br />
+			</div>';
 		}
 		
 		$html .= '</div>

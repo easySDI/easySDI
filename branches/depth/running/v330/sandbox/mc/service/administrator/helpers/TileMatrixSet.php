@@ -12,7 +12,7 @@ class TileMatrixSet {
 	public $maxTileMatrix;
 	private $tileMatrixList = Array();
 	
-	public $allTileMatrix;
+	public $anyTileMatrix;
 	
 	public function __construct ($identifier, $srs) {
 		$this->identifier = $identifier;

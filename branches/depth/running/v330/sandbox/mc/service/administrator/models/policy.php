@@ -374,21 +374,6 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		
 		$isNew = (0 == $data['id']) ? true : false;
 		
-		if ('WMS' == $serviceconnector_name) {
-			if ('' == $data['wms_minimumwidth']) {
-				unset($data['wms_minimumwidth']);
-			}
-			if ('' == $data['wms_maximumwidth']) {
-				unset($data['wms_maximumwidth']);
-			}
-			if ('' == $data['wms_minimumheight']) {
-				unset($data['wms_minimumheight']);
-			}
-			if ('' == $data['wms_maximumheight']) {
-				unset($data['wms_maximumheight']);
-			}
-		}
-		
 		if(parent::save($data)){
 			
 			$data['id'] = $this->getItem()->get('id');
