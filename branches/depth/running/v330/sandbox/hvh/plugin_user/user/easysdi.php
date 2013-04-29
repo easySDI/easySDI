@@ -17,7 +17,7 @@ if(!defined('DS')) {
 
 class plgUserEasysdi extends JPlugin {
 
-	public function __construct(& $subject, $config)
+	public function __construct($subject, $config)
 	{
 		parent::__construct($subject, $config);
 		$this->loadLanguage();
@@ -41,18 +41,19 @@ class plgUserEasysdi extends JPlugin {
 		$lang->load('plg_user_easysdi', JPATH_ADMINISTRATOR);
 		
 		if (empty($user_id)) {
-			JError::raiseWarning(41, JText::_('PLG_EASYSDIUSER_ERR_INVALID_USER'));
+			JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDIUSER_ERR_INVALID_USER'), 'error');
 			return false;
 		}
 
 		$dbo = JFactory::getDBO();
 		$dbo->setQuery('SELECT id FROM #__sdi_user WHERE user_id = '. $user_id );
 		$id = $dbo->loadResult();
-		
+		JFactory::getApplication()->enqueueMessage('SELECT id FROM #__sdi_user WHERE user_id = '. $user_id, 'error');
 		if($id){
-			JError::raiseWarning(41, JText::_('PLG_EASYSDIUSER_ERR_CANT_DELETE'));
+			JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDIUSER_ERR_CANT_DELETE'), 'error');
 			return false;
 		}
+		return true;
 	}
 
 	/**
@@ -72,18 +73,44 @@ class plgUserEasysdi extends JPlugin {
 			return false; // if the user wasn't stored we don't create an easysdi user
 		}
 	
-		if(!$isnew) {
-			return false; // if the user isn't new we don't create an easysdi user
-		}
-	
 		// ensure the user id is really an int
 		$user_id = (int)$user['id'];
 		
 		// Load user_easysdi plugin language (not done automatically).
 		if (empty($user_id)) {
-			JError::raiseWarning(41, JText::_('PLG_EASYSDIUSER_ERR_INVALID_USER'));
+			JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDIUSER_ERR_INVALID_USER'), 'error');
 			return false;
 		}
+		
+		if(!$isnew) {
+			//Invalidate Proxy cache
+			$entity = "Users";
+			
+			$params = JComponentHelper::getParams('com_easysdi_service');
+			if(!isset($params))return true;
+			$url = $params->get('proxyurl');
+			if(!isset($url)) return true;
+			
+			$url .= "cache?entityclass=".$entity."&id=".$user_id."&complete=FALSE";
+			$juser = JFactory::getUser();
+			
+			$session 	= curl_init($url);
+			$httpHeader[]='Authorization: Basic '.base64_encode($juser->username .':'.$juser->password);
+			curl_setopt($session, CURLOPT_HTTPHEADER, $httpHeader);
+			curl_setopt($session, CURLOPT_HEADER, false);
+			curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+			$rawresponse = curl_exec($session);
+			curl_close($session);
+			$response = json_decode($rawresponse);
+			if($response->{"status"} == "OK"){
+				JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDIUSER_OK_INVALIDATION'), 'notice');
+			}else{
+				JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDIUSER_ERR_INVALIDATION')." ".$response->{"message"}, 'error');
+			}
+			return false; // if the user isn't new we don't create an easysdi user
+		}
+	
+		
 
 		$dbo = JFactory::getDBO();
 		
@@ -94,7 +121,7 @@ class plgUserEasysdi extends JPlugin {
 		$defaultaccount = $dbo->loadObject();
 		
 		if (!$defaultaccount) {
-			JError::raiseWarning(41, JText::_('PLG_EASYSDIUSER_ERR_FAILED_LOAD_USER'));
+			JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDIUSER_ERR_FAILED_LOAD_USER'), 'error');
 			return false; 
 		}
 		//Create new EasySDI User account
@@ -102,7 +129,7 @@ class plgUserEasysdi extends JPlugin {
 		$newaccount = JTable::getInstance('user', 'easysdi_contactTable');	
 		
 		if (!$newaccount) {
-			JError::raiseWarning(41, JText::_('PLG_EASYSDIUSER_ERR_FAILED_INSTANTIATE'));
+			JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDIUSER_ERR_FAILED_INSTANTIATE'), 'error');
 			return false;
 		}
 		
@@ -117,11 +144,13 @@ class plgUserEasysdi extends JPlugin {
 		$result = $newaccount->store();
 		
 		if (!(isset($result)) || !$result) {
-			JError::raiseWarning(41, JText::_('PLG_EASYSDIUSER_ERR_FAILED_CREATE'));
+			JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDIUSER_ERR_FAILED_CREATE'), 'error');
 			return false;
 		}
 		
 		//Set the state of the new EasySDI account to unpublish
 		$newaccount->publish(null, 0);
+		JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDIUSER_SUCCESS_CREATE'));
+		return true;
 	}
 }
