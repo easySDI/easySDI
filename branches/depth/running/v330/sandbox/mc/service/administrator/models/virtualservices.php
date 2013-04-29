@@ -120,7 +120,7 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 			$query->where('c.id = '.$connector);
 		if(!empty ($pk))
 			$query->where('a.id = '.$pk);
-		$query->where('a.state = 1');
+// 		$query->where('a.state = 1');
 		$query->order('a.ordering');
 		try
 		{

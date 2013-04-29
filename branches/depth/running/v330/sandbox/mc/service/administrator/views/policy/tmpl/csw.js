@@ -6,11 +6,13 @@ function onStateChange () {
 			var text = jQuery('#jform_csw_state option[value="' + values[i] + '"]').text();
 			if ('published' == text) {
 				jQuery('#jform_csw_version_id').show();
+				jQuery("#jform_csw_version_id").trigger("liszt:updated");
 				return;
 			}
 		}
 	}
 	jQuery('#jform_csw_version_id').hide();
+	jQuery("#jform_csw_version_id").trigger("liszt:updated");
 }
 
 jQuery(document).ready(function () {
@@ -29,7 +31,7 @@ jQuery(document).ready(function () {
 		return false;
 	});
 	
-	jQuery('.btn_ea_delete').click(function () {
+	jQuery('button.btn_ea_delete').click(function () {
 		var parent = jQuery(this).parent();
 		parent.children('textarea').html('');
 		parent.hide();

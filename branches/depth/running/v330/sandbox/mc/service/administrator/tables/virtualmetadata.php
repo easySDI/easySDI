@@ -48,7 +48,14 @@ class Easysdi_serviceTablevirtualmetadata extends sdiTable {
 		$data['accessconstraint'] 			= $src['accessconstraint'];
 		$data['virtualservice_id'] 			= $src['id'];
 		$data['contacturl'] 				= $src['contacturl'];
-	
+
+		foreach (array_keys($data) as $field)
+		{
+			if (empty($data[$field]))
+			{
+				$data[$field] = null;
+			}
+		}
 		
 		if (!isset($src['inheritedcontact'])) { // see if the checkbox has been submitted
 			$data['inheritedcontact'] = 0; // if it has not been submitted, mark the field unchecked
@@ -91,8 +98,11 @@ class Easysdi_serviceTablevirtualmetadata extends sdiTable {
 		else{
 			$data['inheritedaccessconstraint']  = 1; //else mark the field checked
 		}
-		
 		return parent::save($data, $orderingFilter , $ignore );
+	}
+	
+	public function store (){
+		return parent::store(true);
 	}
 	
 	public function loadByVirtualServiceID($virtualservice_id = null, $reset = true) {

@@ -534,6 +534,9 @@ class WmtsWebservice {
 		}
 		
 		if (is_numeric($result->sp_id) && 0 < $result->sp_id) {
+			$db->setQuery("UPDATE #__sdi_wmtslayer_policy SET spatialpolicy_id = NULL WHERE spatialpolicy_id = ".$result->sp_id);
+			$db->execute();
+			
 			$query = $db->getQuery(true);
 			$query->delete('#__sdi_wmts_spatialpolicy')->where('id = ' . $result->sp_id);
 			

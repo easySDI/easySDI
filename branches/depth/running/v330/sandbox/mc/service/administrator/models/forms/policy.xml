@@ -75,7 +75,10 @@
 		/> 
 		<field name="allowfrom" type="calendar" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWFROM" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWFROM"  filter="safehtml" />
 		<field name="allowto" type="calendar" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWTO" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWTO"  filter="safehtml" />
-		<field name="anyoperation" type="checkbox" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ANYOPERATION" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ANYOPERATION"  value="1" default="0" />
+		<field name="anyoperation" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ANYOPERATION" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ANYOPERATION">
+			  <option value="0">NO</option>
+			  <option value="1">YES</option>
+			</field>
 	</fieldset>
 	
 	<fieldset name="csw_policy">
@@ -121,10 +124,10 @@
 	</fieldset>
 	
 	<fieldset name="wms_policy">
-		<field name="wms_minimumwidth" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MINIMUMWIDTH" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MINIMUMWIDTH"  filter="safehtml" />
-		<field name="wms_minimumheight" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MINIMUMHEIGHT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MINIMUMHEIGHT"  filter="safehtml" />
-		<field name="wms_maximumwidth" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MAXIMUMWIDTH" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MAXIMUMWIDTH"  filter="safehtml" />
-		<field name="wms_maximumheight" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MAXIMUMHEIGHT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MAXIMUMHEIGHT"  filter="safehtml" />
+		<field name="wms_minimumwidth" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MINIMUMWIDTH" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MINIMUMWIDTH"  filter="integer" />
+		<field name="wms_minimumheight" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MINIMUMHEIGHT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MINIMUMHEIGHT"  filter="integer" />
+		<field name="wms_maximumwidth" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MAXIMUMWIDTH" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MAXIMUMWIDTH"  filter="integer" />
+		<field name="wms_maximumheight" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MAXIMUMHEIGHT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MAXIMUMHEIGHT"  filter="integer" />
 	</fieldset>
 	
 	<fieldset name="wmts_policy_hidden">

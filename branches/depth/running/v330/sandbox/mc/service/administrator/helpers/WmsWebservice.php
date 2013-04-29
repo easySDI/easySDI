@@ -405,13 +405,17 @@ class WmsWebservice {
 		}
 		
 		if (is_numeric($pk) && 0 < $pk) {
-			$query = $db->getQuery(true);
-			$query->delete('#__sdi_wms_spatialpolicy')->where('id = ' . $pk);
-			
-			$db->setQuery($query);
-			
 			try {
+				$db->setQuery("UPDATE #__sdi_wmslayer_policy SET spatialpolicy_id = NULL WHERE spatialpolicy_id = ".$pk);
 				$db->execute();
+				
+				$query = $db->getQuery(true);
+				$query->delete('#__sdi_wms_spatialpolicy')->where('id = ' . $pk);
+				
+				$db->setQuery($query);
+				$db->execute();
+				
+				
 			}
 			catch (JDatabaseException $e) {
 				$je = new JException($e->getMessage());

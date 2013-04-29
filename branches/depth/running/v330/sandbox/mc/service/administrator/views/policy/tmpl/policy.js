@@ -42,7 +42,7 @@ function initVisibility () {
 		jQuery('#ps_accordion').show();
 	}
 	
-	if (jQuery('#jform_anyoperation').is(":checked")) {
+	if (jQuery('#jform_anyoperation1').is(":checked")) {
 		jQuery('.allowedoperation').parent().parent().hide();
 	}
 	else {
@@ -110,8 +110,9 @@ jQuery(document).ready(function (){
 		}
 	});
 	
-	jQuery('#jform_anyoperation').change(function () {
-		if (jQuery(this).is(":checked")) {
+	jQuery('input[name="jform[anyoperation]"]').click(function () {
+		if (jQuery('#jform_anyoperation1').is(":checked")) {
+			jQuery(".allowedoperation").val("").trigger('liszt:updated');
 			jQuery('.allowedoperation').parent().parent().hide();
 		}
 		else {

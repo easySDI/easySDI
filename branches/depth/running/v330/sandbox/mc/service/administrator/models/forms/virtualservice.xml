@@ -104,7 +104,6 @@
 						INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id
 						INNER JOIN #__sdi_sys_serviceconnector sycc ON sycc.id = syc.serviceconnector_id
 						WHERE sycc.value = 'WMS'
-						AND s.state= 1
 						GROUP BY s.id"
 				key_field="id" 
 				value_field="value" 
@@ -125,7 +124,6 @@
 						INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id
 						INNER JOIN #__sdi_sys_serviceconnector sycc ON sycc.id = syc.serviceconnector_id
 						WHERE sycc.value = 'WMSC'
-						AND s.state= 1
 						GROUP BY s.id"
 				key_field="id" 
 				value_field="value" 
@@ -146,7 +144,6 @@
 						INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id
 						INNER JOIN #__sdi_sys_serviceconnector sycc ON sycc.id = syc.serviceconnector_id
 						WHERE sycc.value = 'WFS'
-						AND s.state= 1
 						GROUP BY s.id"
 				key_field="id" 
 				value_field="value" 
@@ -167,7 +164,6 @@
 						INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id
 						INNER JOIN #__sdi_sys_serviceconnector sycc ON sycc.id = syc.serviceconnector_id
 						WHERE sycc.value = 'CSW'
-						AND s.state= 1
 						GROUP BY s.id"
 				key_field="id" 
 				value_field="value" 
@@ -233,7 +229,6 @@
 						INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id
 						INNER JOIN #__sdi_sys_serviceconnector sycc ON sycc.id = syc.serviceconnector_id
 						WHERE sycc.value = 'WMTS'
-						AND s.state= 1
 						GROUP BY s.id"
 				key_field="id" 
 				value_field="value" 
@@ -271,6 +266,13 @@
 	</fieldset>
 
 	<fieldset name="contact_wmts">
+		<field 	name="contactrole" 
+				type="text" 
+				size="255" 
+				class="inputbox"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_METADATA_CONTACT_ROLE" 
+				description="COM_EASYSDI_SERVICE_FORM_DESC_METADATA_CONTACT_ROLE"
+				filter="safehtml" />
 		<field 	name="contacturl" 
 				type="text" 
 				size="255" 
@@ -326,12 +328,12 @@
 				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_POSITION" 
 				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONTACT_POSITION"
 				filter="safehtml" />
-		<field 	name="contactadress" 
+		<field 	name="contactaddress" 
 				type="text" 
 				size="255" 
 				class="inputbox"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_ADRESS" 
-				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONTACT_ADRESS"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_ADDRESS" 
+				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONTACT_ADDRESS"
 				filter="safehtml" />
 		<field 	name="contactlocality" 
 				type="text" 
@@ -353,7 +355,7 @@
 				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_COUNTRY"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONTACT_COUNTRY" 
 				translate="true" 
-                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, name FROM #__sdi_sys_country" key_field="id" value_field="value"
+                query="SELECT null AS id, '- Please select -' AS value UNION SELECT id, name FROM #__sdi_sys_country" key_field="id" value_field="value"
         />
 		<field name="contactphone" type="text" size="255" class="inputbox"
 		validate="tel"
@@ -372,6 +374,14 @@
 	<field name="contactpostalcode" type="text" size="10" class="input-mini"
 			label="COM_EASYSDI_SERVICE_METADATA_CONTACT_CITY" description=""
 			filter="safehtml" />
+			
+	<field 	name="contactaddresstype" 
+				type="text" 
+				size="255" 
+				class="inputbox"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_CONTACT_ADDRESSTYPE" 
+				description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_CONTACT_ADDRESSTYPE"
+				filter="safehtml" />
 			
 	<field 	name="reflectedmetadata" 
 			type="checkbox" 
