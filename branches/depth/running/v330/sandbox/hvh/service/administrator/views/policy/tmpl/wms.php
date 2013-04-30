@@ -24,9 +24,13 @@ $document->addScript('components/com_easysdi_service/libraries/proj4js/lib/proj4
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/policy.js');
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/wms.js');
 JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
+JText::script('COM_EASYSDI_SERVICE_MODAL_ERROR');
+JText::script('COM_EASYSDI_SERVICE_CONFIRM_DELETION');
+JText::script('COM_EASYSDI_SERVICE_MSG_MODAL_SAVED');
+JText::script('COM_EASYSDI_SERVICE_MSG_MODAL_MISSING_BBOX_BOUNDARIES');
+JText::script('COM_EASYSDI_SERVICE_MSG_MODAL_MALFORMED_BBOX_BOUNDARIES');
 
-//TODO: use this fct to implement inherited forms
-function printSpatialPolicyForm ($suffix, $data) {
+function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	$db = JFactory::getDbo();
 	$db->setQuery('
 		SELECT *
@@ -37,8 +41,78 @@ function printSpatialPolicyForm ($suffix, $data) {
 	$db->execute();
 	$resultset = $db->loadObjectList();
 	
+	$wmts_spatialpolicy_id = (!empty($data->wms_spatialpolicy_id)) ? $data->wms_spatialpolicy_id : -1;
+	
+	if (0 == $physicalServiceID) {
+		$query = '
+			SELECT *
+			FROM #__sdi_wms_spatialpolicy
+			WHERE id = \'' . $wmts_spatialpolicy_id . '\';
+		';
+	}
+	else {
+		$query = '
+			SELECT wsp.*, psp.anyitem
+			FROM #__sdi_physicalservice_policy psp
+			JOIN #__sdi_wms_spatialpolicy wsp
+			ON wsp.id = psp.wms_spatialpolicy_id
+			WHERE psp.physicalservice_id = ' . $physicalServiceID . '
+			AND psp.policy_id = ' . $data->id . ';
+		';
+	}
+	
+	$db->setQuery($query);
+	$db->execute();
+	$spatialpolicy = $db->loadObject();
+	
+	
 	$html = '';
-	return $html;
+	$prefix = 'inherit';
+	if (0 == $physicalServiceID) {
+		$prefix .= '_policy[' . $wmts_spatialpolicy_id . ']';
+		$html .= '
+			<label class="checkbox">
+				<input type="checkbox" name="' . $prefix . '[anyservice]" class="anyservice" value="1" ' . ((1 == $data->anyservice)?'checked="checked"':'') . ' /><label for="' . $prefix . '[anyservice]">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_ANYSERVICE') . '</label>
+			</label>
+		';
+	}
+	else {
+		$prefix .= '_server[' . $physicalServiceID . ']';
+		$db->setQuery('
+		SELECT psp.anyitem
+		FROM #__sdi_physicalservice_policy psp
+		WHERE psp.physicalservice_id = ' . $physicalServiceID . '
+		AND psp.policy_id = ' . $data->id . ';
+		');
+		$db->execute();
+		$anyItem = $db->loadResult();
+		//$anyItem = (isset($spatialpolicy->anyitem))?$spatialpolicy->anyitem:1;
+		$html .= '
+			<label class="checkbox">
+				<input type="checkbox" name="' . $prefix . '[anyitem]" class="anyitem" data-ps_id="' . $physicalServiceID . '" value="1" ' . ((1 == $anyItem)?'checked="checked"':'') . ' /><label for="' . $prefix . '[anyitem]">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_ANYITEM') . '</label>
+			</label>
+		';
+	}
+	
+	$html .= '	<br />
+		<label for="' . $prefix . '[minimumscale]">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MINIMUM_SCALE') . '</label>
+		<input type="text" name="' . $prefix . '[minimumscale]" value="' . ((isset($spatialpolicy->minimumscale))?$spatialpolicy->minimumscale:'') . '" />
+		<br />
+		<label for="' . $prefix . '[maximumscale]">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MAXIMUM_SCALE') . '</label>
+		<input type="text" name="' . $prefix . '[maximumscale]" value="' . ((isset($spatialpolicy->maximumscale))?$spatialpolicy->maximumscale:'') . '" />
+		<br />
+		<label for="' . $prefix . '[geographicfilter]">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_FILTER') . '</label>
+		<textarea name="' . $prefix . '[geographicfilter]" rows="10" class="span12">' . ((isset($spatialpolicy->geographicfilter))?$spatialpolicy->geographicfilter:'') . '</textarea>
+		<input type="hidden" name="' . $prefix . '[maxx]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'maxx" />
+		<input type="hidden" name="' . $prefix . '[maxy]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'maxy" />
+		<input type="hidden" name="' . $prefix . '[minx]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'minx" />
+		<input type="hidden" name="' . $prefix . '[miny]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'miny" />
+		<input type="hidden" name="' . $prefix . '[srssource]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'srssource" />
+		<br />
+		<br />
+		<br />
+	';
+	echo $html;
 }
 ?>
 
@@ -58,20 +132,23 @@ function printSpatialPolicyForm ($suffix, $data) {
 				<div class="tab-pane active" id="details">
 					<fieldset>
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_DETAILS' );?></legend>
-					<?php foreach($this->form->getFieldset('policy') as $field): 
-					?> 
-						<div class="control-group" id="<?php echo $field->fieldname;?>">
-							<div class="control-label"><?php echo $field->label; ?></div>
-							<div class="controls"><?php echo $field->input; ?></div>
-						</div>
-					<?php endforeach; ?>
-					<?php foreach($this->form->getFieldset('wms_policy') as $field): 
-					?> 
+						<?php foreach($this->form->getFieldset('policy') as $field): ?> 
+							<div class="control-group" id="<?php echo $field->fieldname;?>">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+						<?php endforeach; ?>
 						<div class="control-group">
-							<div class="control-label"><?php echo $field->label; ?></div>
-							<div class="controls"><?php echo $field->input; ?></div>
+							<div class="control-label"><?php echo $this->form->getLabel('allowedoperation_wms'); ?></div>
+							<div class="controls"><?php echo $this->form->getInput('allowedoperation_wms'); ?></div>
 						</div>
-					<?php endforeach; ?>
+						<?php foreach($this->form->getFieldset('wms_policy') as $field): 
+						?> 
+							<div class="control-group">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+						<?php endforeach; ?>
 						
 						<div class="control-group">
 							<div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
@@ -92,19 +169,19 @@ function printSpatialPolicyForm ($suffix, $data) {
 				</div>
 				
 				<div class="tab-pane" id="layers">
-					<fieldset>
-						<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_INHERITANCE' );?></legend>
-						
-						<!-- TODO : form with Policy lvl herited bbox and operator -->
-						
-					</fieldset>
-					<fieldset>
 					<?php if (empty($this->item->id)): ?>
 						<?php echo JText::_('COM_EASYSDI_SERVICE_LAYER_NOT_DISPLAYABLE');?>
 					<?php endif; ?>
 					<?php if (!empty($this->item->id)): ?>
+					<fieldset>
+						<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_INHERITANCE' );?></legend>
+						
+						<?php printSpatialPolicyForm($this->item); ?>
+						
+					</fieldset>
+					<fieldset>
 						<div class="accordion" id="ps_accordion">
-							<?php foreach($this->item->physicalService as $ps):?>
+							<?php foreach($this->item->physicalService as $ps): ?>
 								<div class="accordion-group">
 								<div class="accordion-heading">
 								  <a class="accordion-toggle" data-toggle="collapse" data-parent="#ps_accordion" href="#collapse_<?php echo $ps->id; ?>">
@@ -114,19 +191,26 @@ function printSpatialPolicyForm ($suffix, $data) {
 								<div class="accordion-body collapse" id="collapse_<?php echo $ps->id; ?>">
 								  <div class="accordion-inner">
 										
-										<!-- TODO : form with PS lvl herited bbox and operator -->
+										<?php printSpatialPolicyForm($this->item, $ps->id); ?>
 										
-										<table class="table" >
+										<table class="table table-striped" id="table-layers-<?php echo $ps->id; ?>" >
 											<thead>
 												<tr>
-													<th>name</th>
-													<th>description</th>
+													<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_POLICY_LAYER_ENABLED' );?></th>
+													<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_POLICY_LAYER_NAME' );?></th>
+													<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_POLICY_LAYER_DESCRIPTION' );?></th>
 													<th></th>
 												</tr>
 											</thead>
 											<tbody>
 											<?php foreach($ps->getLayerList() as $layer):?>
 												<tr>
+													<td>
+														<?php
+															$checked = (1 == $layer->enabled)?'checked="checked"':'';
+															echo '<input type="checkbox" name="enabled[' . $ps->id . '][' . $layer->name . ']" value="1" ' . $checked . '/>';
+														?>
+													</td>
 													<td>
 														<?php echo $layer->name; ?>
 														&nbsp;
@@ -138,8 +222,11 @@ function printSpatialPolicyForm ($suffix, $data) {
 													</td>
 													<td><?php echo $layer->description; ?></td>
 													<td>
-														<button type="button" class="btn btn_modify_layer" data-toggle="modal" data-target="#layer_settings_modal" data-psid="<?php echo $ps->id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>">
+														<button type="button" class="btn btn_modify_layer" data-toggle="modal" data-target="#layer_settings_modal" data-psid="<?php echo $ps->id;?>" data-vsid="<?php echo $this->item->virtualservice_id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>">
 															<?php echo JText::_('COM_EASYSDI_SERVICE_BTN_SETTINGS');?>
+														</button>
+														<button type="button" class="btn btn-danger btn_delete_layer" data-psid="<?php echo $ps->id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>">
+															<?php echo JText::_('COM_EASYSDI_SERVICE_BTN_DELETE_SETTINGS');?>
 														</button>
 													</td>
 												</tr>
@@ -148,7 +235,7 @@ function printSpatialPolicyForm ($suffix, $data) {
 										</table>
 								  </div>
 								</div>
-						  </div>
+								</div>
 							<?php endforeach; ?>
 						</div>
 					<?php endif; ?>
@@ -237,6 +324,7 @@ function printSpatialPolicyForm ($suffix, $data) {
 		<h3 id="myModalLabel"><?php echo JText::_('COM_EASYSDI_SERVICE_WMS_MODAL_TITLE');?> : <span id="layer_name"></span></h3>
 	</div>
 	<div class="modal-body">
+		<div id="modal_alert"></div>
 		<img class="loaderImg" src="<?php echo JURI::base(true).DS.'components'.DS.'com_easysdi_service'.DS.'assets'.DS.'images'.DS.'loader.gif'; ?>" />
 		<form id="modal_layer_form"></form>
 	</div>

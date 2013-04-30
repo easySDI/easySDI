@@ -143,7 +143,7 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 				
 		//inserting virtualmetadata content in virtualservice for display of edit form
 		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'tables');
-		$metadata =& JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
+		$metadata = JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
 		$metadata->loadByVirtualServiceID(JRequest::getVar('id',null));
 		//Merging metadata object fields into virtualservice object 
 		$item_fields = Array();
@@ -184,7 +184,7 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 		{
 			$item->serviceconnector_id = JRequest::getVar( 'connector' );
 		}
-		$serviceconnector =& JTable::getInstance('serviceconnector', 'Easysdi_serviceTable');
+		$serviceconnector = JTable::getInstance('serviceconnector', 'Easysdi_serviceTable');
 		$serviceconnector->load($item->serviceconnector_id);
 		$item->serviceconnector = $serviceconnector->value;
 		
@@ -214,7 +214,7 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	 *
 	 * @since	1.6
 	 */
-	protected function prepareTable(&$table)
+	protected function prepareTable($table)
 	{
 		jimport('joomla.filter.output');
 		$jform = JRequest::getVar('jform');
@@ -260,12 +260,10 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	 * @since   11.1
 	 */
 	public function save($data) {
-		
 		if(parent::save($data)){
-			
 			$data['id'] = $this->getItem()->get('id');
 			//Instantiate an address JTable
-			$virtualmetadata =& JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
+			$virtualmetadata = JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
 			$virtualmetadata->loadByVirtualServiceID($data['id']);
 			//If reflectedmetadata option is checked, delete existing metadata
 			if(isset($data['reflectedmetadata'])){
@@ -277,19 +275,27 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 					return false;
 				}
 			}
-						
-			if(isset($data['physicalservice_id']))
-			{
-				 if(!$this->savePhysicalServiceAggregation($data, $this->getState($this->getName().'.id')))
-				 	return false;
+			
+			if(isset($data['physicalservice_id'])) {
+				if(!$this->savePhysicalServiceAggregation($data, $this->getState($this->getName().'.id'))) {
+					return false;
+				}
 			}
-			if(isset($data['compliance']))
-			{
-				 if(!$this->saveServiceCompliance($data['compliance'],$data['serviceconnector_id'], $this->getState($this->getName().'.id')))
-				 	return false;
-			}
-			if(! $this->saveServiceScopeOrganism($data['organisms'], $this->getState($this->getName().'.id')))
+			
+			$physicalservicepolicy = JTable::getInstance('physicalservice_policy', 'Easysdi_serviceTable');
+			if(!$physicalservicepolicy->saveAll($data['id'])){
 				return false;
+			}
+			
+			if(isset($data['compliance'])) {
+				if(!$this->saveServiceCompliance($data['compliance'],$data['serviceconnector_id'], $this->getState($this->getName().'.id'))) {
+					return false;
+				}
+			}
+			
+			if(!$this->saveServiceScopeOrganism($data['organisms'], $this->getState($this->getName().'.id'))) {
+				return false;
+			}
 			return true;
 		}
 		return false;
@@ -488,5 +494,5 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 		}
 	
 	}
-
+	
 }

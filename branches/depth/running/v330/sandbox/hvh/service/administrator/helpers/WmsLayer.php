@@ -16,6 +16,9 @@ class WmsLayer extends Layer{
 		foreach ($data as $key => $value) {
 			if (property_exists('WmsLayer', $key)) {
 				$this->{$key} = $value;
+				if ('enabled' != $key) {
+					$this->hasConfig = true;
+				}
 			}
 		}
 	}

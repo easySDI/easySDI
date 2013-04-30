@@ -10,6 +10,9 @@ class WfsFeatureType extends Layer{
 		foreach ($data as $key => $value) {
 			if (property_exists('WfsFeatureType', $key)) {
 				$this->{$key} = $value;
+				if ('enabled' != $key) {
+					$this->hasConfig = true;
+				}
 			}
 		}
 	}

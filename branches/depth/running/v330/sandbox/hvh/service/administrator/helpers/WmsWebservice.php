@@ -2,6 +2,7 @@
 
 // No direct access
 defined('_JEXEC') or die;
+
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmsPhysicalService.php');
 
 class WmsWebservice {
@@ -11,38 +12,36 @@ class WmsWebservice {
 	 * @param Array Usually the $_GET, or any associative array
 	 * @param Boolean Set to true to force a return value, results are echoed otherwise
 	*/
-	public static function request ($params, $returnHTML = false) {
-		$return = false;
+	public static function request ($params) {
 		switch ($params['method']) {
 			case 'getWmsLayerForm':
 				echo WmsWebservice::getWmsLayerForm($params);
 				break;
 			case 'setWmsLayerSettings':
-				$return = WmsWebservice::setWmsLayerSettings($params);
+				if (WmsWebservice::setWmsLayerSettings($params)) {
+					echo 'OK';
+				}
 				break;
-			case 'saveAllLayers':
-				$return = WmsWebservice::saveAllLayers($params['virtualServiceID'], $params['policyID']);
+			case 'deleteWmsLayer':
+				if (WmsWebservice::deleteWmsLayer($params)) {
+					echo 'OK';
+				}
 				break;
 			default:
-				$return = 'Unknown method.';
+				echo 'Unknown method.';
 				break;
 		}
-		
-		if (!$returnHTML) {
-			echo (true === $return)?'OK':$return;
-			die();
-		}
-		else {
-			return $return;
-		}
+		die();
 	}
 	
 	private static function getWmsLayerForm ($raw_GET) {
 		$physicalServiceID = $raw_GET['physicalServiceID'];
+		$virtualServiceID = $raw_GET['virtualServiceID'];
 		$policyID = ('' == $raw_GET['policyID'])?0:$raw_GET['policyID'];
 		$layerID = $raw_GET['layerID'];
 		
 		$layerObj = WmsWebservice::getWmsLayerSettings(
+			$virtualServiceID,
 			$physicalServiceID,
 			$policyID,
 			$layerID
@@ -67,10 +66,6 @@ class WmsWebservice {
 		}
 		
 		$html = '
-			<label class="checkbox">
-				<input type="checkbox" name="enabled" value="1" ' . ((1 == $layerObj->enabled)?'checked="checked"':'') . ' /> ' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_ENABLED') . '
-			</label>
-			<hr />
 			<label for="minimumscale">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MINIMUM_SCALE') . '</label>
 			<input type="text" name="minimumscale" value="' . $layerObj->minimumScale . '" />
 			<br />
@@ -80,13 +75,14 @@ class WmsWebservice {
 			<label for="geographicfilter">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_FILTER') . '</label>
 			<textarea name="geographicfilter" rows="10" class="span12">' . $layerObj->geographicFilter . '</textarea>
 			<input type="hidden" name="psID" value="' . $physicalServiceID . '"/>
+			<input type="hidden" name="vsID" value="' . $virtualServiceID . '"/>
 			<input type="hidden" name="policyID" value="' . $policyID . '"/>
 			<input type="hidden" name="layerID" value="' . $layerID . '"/>
 		';
 		return $html;
 	}
 	
-	private static function getWmsLayerSettings ($physicalServiceID, $policyID, $layerID) {
+	private static function getWmsLayerSettings ($virtualServiceID, $physicalServiceID, $policyID, $layerID) {
 		$db = JFactory::getDbo();
 		
 		$db->setQuery('
@@ -138,7 +134,7 @@ class WmsWebservice {
 		}
 		
 		$wmsObj = new WmsPhysicalService($physicalServiceID, $url);
-		$wmsObj->getCapabilities();
+		$wmsObj->getCapabilities(self::getXmlFromCache($physicalServiceID, $virtualServiceID));
 		$wmsObj->populate();
 		$wmsObj->loadData($data);
 		$layerObj = $wmsObj->getLayerByName($layerID);
@@ -146,11 +142,15 @@ class WmsWebservice {
 	}
 	
 	private static function setWmsLayerSettings ($raw_GET) {
-		$enabled = (isset($raw_GET['enabled']))?1:0;
 		$physicalServiceID = $raw_GET['psID'];
 		$policyID = $raw_GET['policyID'];
 		$layerID = $raw_GET['layerID'];
-		var_dump($raw_GET);
+		$raw_GET['maxX'] = ('' != $raw_GET['maxX'])?$raw_GET['maxX']:'null';
+		$raw_GET['maxY'] = ('' != $raw_GET['maxY'])?$raw_GET['maxY']:'null';
+		$raw_GET['minX'] = ('' != $raw_GET['minX'])?$raw_GET['minX']:'null';
+		$raw_GET['minY'] = ('' != $raw_GET['minY'])?$raw_GET['minY']:'null';
+		$raw_GET['minimumscale'] = ('' != $raw_GET['minimumscale'])?$raw_GET['minimumscale']:'null';
+		$raw_GET['maximumscale'] = ('' != $raw_GET['maximumscale'])?$raw_GET['maximumscale']:'null';
 		$db = JFactory::getDbo();
 		
 		//save Spatial Policy
@@ -177,31 +177,30 @@ class WmsWebservice {
 			return false;
 		}
 		
-		//TODO: add values calculated by the JS
+		$query = $db->getQuery(true);
 		if (0 == $num_result) {
-			$query = $db->getQuery(true);
+			var_dump('insert');
 			$query->insert('#__sdi_wms_spatialpolicy')->columns('
 				geographicfilter, maxx, maxy, minx, miny, minimumscale, maximumscale, srssource
 			')->values('
-				\'' . $raw_GET['geographicfilter'] . '\', \'' . $raw_GET['maxX'] . '\', \'' . $raw_GET['maxY'] . '\', \'' . $raw_GET['minX'] . '\', \'' . $raw_GET['minY'] . '\', \'' . $raw_GET['minimumscale'] . '\', \'' . $raw_GET['maximumscale'] . '\', \'' . $raw_GET['srs'] . '\'
+				\'' . $raw_GET['geographicfilter'] . '\', ' . $raw_GET['maxX'] . ', ' . $raw_GET['maxY'] . ', ' . $raw_GET['minX'] . ', ' . $raw_GET['minY'] . ', ' . $raw_GET['minimumscale'] . ', ' . $raw_GET['maximumscale'] . ', \'' . $raw_GET['srs'] . '\'
 			');
 		}
 		else {
-			$query = $db->getQuery(true);
+			var_dump('update', $spatial_policy_id);
 			$query->update('#__sdi_wms_spatialpolicy')->set(Array(
 				'geographicfilter = \'' . $raw_GET['geographicfilter'] . '\'',
-				'maxx = \'' . $raw_GET['maxX'] . '\'',
-				'maxy = \'' . $raw_GET['maxY'] . '\'',
-				'minx = \'' . $raw_GET['minX'] . '\'',
-				'miny = \'' . $raw_GET['minY'] . '\'',
-				'minimumscale = \'' . $raw_GET['minimumscale'] . '\'',
-				'maximumscale = \'' . $raw_GET['maximumscale'] . '\'',
+				'maxx = ' . $raw_GET['maxX'],
+				'maxy = ' . $raw_GET['maxY'],
+				'minx = ' . $raw_GET['minX'],
+				'miny = ' . $raw_GET['minY'],
+				'minimumscale = ' . $raw_GET['minimumscale'],
+				'maximumscale = ' . $raw_GET['maximumscale'],
 				'srssource = \'' . $raw_GET['srs'] . '\'',
 			))->where(Array(
 				'id = \'' . $spatial_policy_id . '\'',
 			));
 		}
-		
 		$db->setQuery($query);
 		
 		try {
@@ -239,53 +238,23 @@ class WmsWebservice {
 		}
 		
 		
-		if (0 == $num_result) {
-			$db->setQuery('
-				SELECT id
-				FROM #__sdi_physicalservice_policy
-				WHERE physicalservice_id = ' . $physicalServiceID . '
-				AND policy_id = ' . $policyID . ';
-			');
+		if (0 != $num_result) {
+			$query = $db->getQuery(true);
+			$query->update('#__sdi_wmslayer_policy')->set(Array(
+				'spatialpolicy_id = \'' . $spatial_policy_id . '\'',
+			))->where(Array(
+				'id = \'' . $wmslayerpolicy_id . '\'',
+			));
+			$db->setQuery($query);
 			
 			try {
 				$db->execute();
-				$physicalservice_policy_id = $db->loadResult();
 			}
 			catch (JDatabaseException $e) {
 				$je = new JException($e->getMessage());
 				$this->setError($je);
 				return false;
 			}
-			
-			$query = $db->getQuery(true);
-			$query->insert('#__sdi_wmslayer_policy')->columns('
-				name, enabled, spatialpolicy_id, physicalservicepolicy_id
-			')->values('
-				\'' . $layerID . '\', \'' . $enabled . '\', \'' . $spatial_policy_id . '\', \'' . $physicalservice_policy_id . '\'
-			');
-		}
-		else {
-			$query = $db->getQuery(true);
-			$query->update('#__sdi_wmslayer_policy')->set(Array(
-				'enabled = \'' . $enabled . '\'',
-				'spatialpolicy_id = \'' . $spatial_policy_id . '\'',
-			))->where(Array(
-				'id = \'' . $wmslayerpolicy_id . '\'',
-			));
-		}
-		
-		$db->setQuery($query);
-		
-		try {
-			$db->execute();
-			if (0 == $num_result) {
-				$wmslayerpolicy_id = $db->insertid();
-			}
-		}
-		catch (JDatabaseException $e) {
-			$je = new JException($e->getMessage());
-			$this->setError($je);
-			return false;
 		}
 		
 		return true;
@@ -323,7 +292,6 @@ class WmsWebservice {
 		}
 		
 		foreach ($resultset as $result) {
-			print_r($result);
 			$physicalServiceID = $result->id;
 			$wmsObj = new WmsPhysicalService($result->id, $result->url);
 			$wmsObj->getCapabilities();
@@ -354,7 +322,7 @@ class WmsWebservice {
 				
 				if ($layer_exists) {
 					//if the layer already exists, we do nothing and we skip to the next layer
-					break;
+					continue;
 				}
 				else {
 					//we retrieve the physicalservice_policy id to link the layer policy with
@@ -380,7 +348,7 @@ class WmsWebservice {
 					$query->insert('#__sdi_wmslayer_policy')->columns('
 						name, description, physicalservicepolicy_id
 					')->values('
-						\'' . $layer->name . '\', \'' . $layer->description . '\', \'' . $physicalservice_policy_id . '\'
+						\'' . $layer->name . '\', \'' . $db->escape($layer->description) . '\', \'' . $physicalservice_policy_id . '\'
 					');
 					
 					$db->setQuery($query);
@@ -399,4 +367,87 @@ class WmsWebservice {
 		}
 		return true;
 	}
+	
+	private static function deleteWmsLayer ($raw_GET) {
+		$physicalServiceID = $raw_GET['physicalServiceID'];
+		$policyID = $raw_GET['policyID'];
+		$layerID = $raw_GET['layerID'];
+		
+		$db = JFactory::getDbo();
+		
+		$db->setQuery('
+			SELECT wp.spatialpolicy_id
+			FROM #__sdi_wmslayer_policy wp
+			JOIN #__sdi_physicalservice_policy pp
+			ON wp.physicalservicepolicy_id = pp.id
+			WHERE pp.physicalservice_id = ' . $physicalServiceID . '
+			AND pp.policy_id = ' . $policyID . '
+			AND wp.name = \'' . $layerID . '\';
+		');
+
+		try {
+			$db->execute();
+			$pk = $db->loadResult();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
+		if (is_numeric($pk) && 0 < $pk) {
+			try {
+				$db->setQuery("UPDATE #__sdi_wmslayer_policy SET spatialpolicy_id = NULL WHERE spatialpolicy_id = ".$pk);
+				$db->execute();
+				
+				$query = $db->getQuery(true);
+				$query->delete('#__sdi_wms_spatialpolicy')->where('id = ' . $pk);
+				
+				$db->setQuery($query);
+				$db->execute();
+				
+				
+			}
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
+		}
+	}
+	
+	private static function getXmlFromCache ($physicalServiceID, $virtualServiceID) {
+		$db = JFactory::getDbo();
+		
+		$db->setQuery('
+			SELECT pssc.capabilities
+			FROM #__sdi_virtualservice vs
+			JOIN #__sdi_virtual_physical vp
+			ON vs.id = vp.virtualservice_id
+			JOIN #__sdi_physicalservice ps
+			ON ps.id = vp.physicalservice_id
+			JOIN #__sdi_physicalservice_servicecompliance pssc
+			ON ps.id = pssc.service_id
+			JOIN #__sdi_virtualservice_servicecompliance vssc
+			ON vs.id = vssc.service_id
+			JOIN #__sdi_sys_servicecompliance sc
+			ON sc.id = vssc.servicecompliance_id
+			JOIN #__sdi_sys_serviceversion sv
+			ON sv.id = sc.serviceversion_id
+			WHERE ps.id = ' . $physicalServiceID . '
+			AND vs.id = ' . $virtualServiceID . '
+			ORDER BY sv.ordering DESC
+			LIMIT 0,1;
+		');
+		try {
+			$db->execute();
+			return $db->loadResult();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return null;
+		}
+	}
+	
 }

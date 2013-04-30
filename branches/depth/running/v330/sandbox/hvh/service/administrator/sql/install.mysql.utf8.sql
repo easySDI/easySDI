@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_physicalservice_servicecompliance` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `service_id` INT(11) UNSIGNED  NOT NULL ,
 `servicecompliance_id` INT(11) UNSIGNED  NOT NULL ,
-`capabilities` TEXT,
+`capabilities` LONGTEXT,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -123,7 +123,9 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualmetadata` (
 `contactorganization` VARCHAR(255)  ,
 `contactname` VARCHAR(255)   ,
 `contactposition` VARCHAR(255)  ,
-`contactadress` VARCHAR(255)  ,
+`contactaddress` VARCHAR(255)  ,
+`contactaddresstype`  varchar(255)  ,
+`contactrole`  varchar(255) ,
 `contactpostalcode` VARCHAR(255)   ,
 `contactlocality` VARCHAR(255)  ,
 `contactstate` VARCHAR(255)  ,

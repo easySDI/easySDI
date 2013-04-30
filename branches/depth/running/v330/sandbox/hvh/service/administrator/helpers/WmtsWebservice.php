@@ -5,10 +5,13 @@ defined('_JEXEC') or die;
 
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmtsPhysicalService.php');
 
-/**
- * Easysdi_service helper.
- */
 class WmtsWebservice {
+	/*
+	 * Entry point of the class
+	 * 
+	 * @param Array Usually the $_GET, or any associative array
+	 * @param Boolean Set to true to force a return value, results are echoed otherwise
+	*/
 	public static function request ($params) {
 		switch ($params['method']) {
 			case 'getWmtsLayerForm':
@@ -16,6 +19,11 @@ class WmtsWebservice {
 				break;
 			case 'setWmtsLayerSettings':
 				if (WmtsWebservice::setWmtsLayerSettings($params)) {
+					echo 'OK';
+				}
+				break;
+			case 'deleteWmtsLayer':
+				if (WmtsWebservice::deleteWmtsLayer($params)) {
 					echo 'OK';
 				}
 				break;
@@ -28,10 +36,12 @@ class WmtsWebservice {
 	
 	private static function getWmtsLayerForm ($raw_GET) {
 		$physicalServiceID = $raw_GET['physicalServiceID'];
+		$virtualServiceID = $raw_GET['virtualServiceID'];
 		$policyID = ('' == $raw_GET['policyID'])?0:$raw_GET['policyID'];
 		$layerID = $raw_GET['layerID'];
 		
 		$layerObj = WmtsWebservice::getWmtsLayerSettings(
+			$virtualServiceID,
 			$physicalServiceID,
 			$policyID,
 			$layerID
@@ -56,10 +66,6 @@ class WmtsWebservice {
 		}
 		
 		$html = '
-			<label class="checkbox">
-				<input type="checkbox" name="enabled" value="1" ' . ((1 == $layerObj->enabled)?'checked="checked"':'') . ' /> ' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_ENABLED') . '
-			</label>
-			<hr />
 			<table>
 				<tr>
 					<td></td>
@@ -86,7 +92,7 @@ class WmtsWebservice {
 				</tr>
 			</table>
 			<hr />
-			<select name="spatial_operator_id">
+			<select name="spatialoperatorid">
 				<option value="">' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_SPATIAL_OPERATOR_LABEL') . '</option>';
 				foreach ($resultset as $spatialOperator) {
 					$html .= '<option value="' . $spatialOperator->id . '" ' . (($spatialOperator->id == $layerObj->spatialOperator)?'selected="selected"':'') . '>' . $spatialOperator->value . '</option>';
@@ -136,6 +142,7 @@ class WmtsWebservice {
 				</tbody>
 			</table>
 			<input type="hidden" name="psID" value="' . $physicalServiceID . '"/>
+			<input type="hidden" name="vsID" value="' . $virtualServiceID . '"/>
 			<input type="hidden" name="policyID" value="' . $policyID . '"/>
 			<input type="hidden" name="layerID" value="' . $layerID . '"/>
 			<input type="hidden" name="tms_list" value="' . implode(';', $tms_identifier_list) . '"/>
@@ -143,7 +150,7 @@ class WmtsWebservice {
 		return $html;
 	}
 	
-	private static function getWmtsLayerSettings ($physicalServiceID, $policyID, $layerID) {
+	private static function getWmtsLayerSettings ($virtualServiceID, $physicalServiceID, $policyID, $layerID) {
 		$db = JFactory::getDbo();
 		
 		$db->setQuery('
@@ -208,7 +215,7 @@ class WmtsWebservice {
 		}
 		
 		$wmtsObj = new WmtsPhysicalService($physicalServiceID, $url);
-		$wmtsObj->getCapabilities();
+		$wmtsObj->getCapabilities(self::getXmlFromCache($physicalServiceID, $virtualServiceID));
 		$wmtsObj->populate();
 		$wmtsObj->sortLists();
 		$wmtsObj->loadData($data);
@@ -218,70 +225,79 @@ class WmtsWebservice {
 	}
 	
 	private static function setWmtsLayerSettings ($raw_GET) {
-		$enabled = (isset($raw_GET['enabled']))?1:0;
+		//$enabled = (isset($raw_GET['enabled']))?1:0;
 		$physicalServiceID = $raw_GET['psID'];
 		$policyID = $raw_GET['policyID'];
 		$layerID = $raw_GET['layerID'];
 		
+		$raw_GET['spatialoperatorid'] = ('' != $raw_GET['spatialoperatorid'])?$raw_GET['spatialoperatorid']:1;
+		$raw_GET['eastBoundLongitude'] = ('' != $raw_GET['eastBoundLongitude'])?$raw_GET['eastBoundLongitude']:'null';
+		$raw_GET['westBoundLongitude'] = ('' != $raw_GET['westBoundLongitude'])?$raw_GET['westBoundLongitude']:'null';
+		$raw_GET['northBoundLatitude'] = ('' != $raw_GET['northBoundLatitude'])?$raw_GET['northBoundLatitude']:'null';
+		$raw_GET['southBoundLatitude'] = ('' != $raw_GET['southBoundLatitude'])?$raw_GET['southBoundLatitude']:'null';
+		
 		$db = JFactory::getDbo();
+		$spatial_policy_id = 'null';
 		
 		//save Spatial Policy
-		$db->setQuery('
-			SELECT sp.id
-			FROM #__sdi_wmts_spatialpolicy sp
-			JOIN #__sdi_wmtslayer_policy p
-			ON sp.id = p.spatialpolicy_id
-			JOIN #__sdi_physicalservice_policy psp
-			ON psp.id = p.physicalservicepolicy_id
-			WHERE psp.physicalservice_id = ' . $physicalServiceID . '
-			AND psp.policy_id = ' . $policyID . '
-			AND p.identifier = \'' . $layerID . '\';
-		');
-		
-		try {
-			$db->execute();
-			$num_result = $db->getNumRows();
-			$spatial_policy_id = $db->loadResult();
-		}
-		catch (JDatabaseException $e) {
-			$je = new JException($e->getMessage());
-			$this->setError($je);
-			return false;
-		}
-		
-		if (0 == $num_result) {
-			$query = $db->getQuery(true);
-			$query->insert('#__sdi_wmts_spatialpolicy')->columns('
-				spatialoperator_id, eastboundlongitude, westboundlongitude, northboundlatitude, southboundlatitude
-			')->values('
-				\'' . $raw_GET['spatial_operator_id'] . '\', \'' . $raw_GET['eastBoundLongitude'] . '\', \'' . $raw_GET['westBoundLongitude'] . '\', \'' . $raw_GET['northBoundLatitude'] . '\', \'' . $raw_GET['southBoundLatitude'] . '\'
+		if ('null' != $raw_GET['eastBoundLongitude'] && 'null' != $raw_GET['westBoundLongitude'] && 'null' != $raw_GET['northBoundLatitude'] && 'null' != $raw_GET['southBoundLatitude']) {
+			$db->setQuery('
+				SELECT sp.id
+				FROM #__sdi_wmts_spatialpolicy sp
+				JOIN #__sdi_wmtslayer_policy p
+				ON sp.id = p.spatialpolicy_id
+				JOIN #__sdi_physicalservice_policy psp
+				ON psp.id = p.physicalservicepolicy_id
+				WHERE psp.physicalservice_id = ' . $physicalServiceID . '
+				AND psp.policy_id = ' . $policyID . '
+				AND p.identifier = \'' . $layerID . '\';
 			');
-		}
-		else {
-			$query = $db->getQuery(true);
-			$query->update('#__sdi_wmts_spatialpolicy')->set(Array(
-				'spatialoperator_id = \'' . $raw_GET['spatial_operator_id'] . '\'',
-				'eastboundlongitude = \'' . $raw_GET['eastBoundLongitude'] . '\'',
-				'westboundlongitude = \'' . $raw_GET['westBoundLongitude'] . '\'',
-				'northboundlatitude = \'' . $raw_GET['northBoundLatitude'] . '\'',
-				'southboundlatitude = \'' . $raw_GET['southBoundLatitude'] . '\'',
-			))->where(Array(
-				'id = \'' . $spatial_policy_id . '\'',
-			));
-		}
-		
-		$db->setQuery($query);
-		
-		try {
-			$db->execute();
-			if (0 == $num_result) {
-				$spatial_policy_id = $db->insertid();
+			
+			try {
+				$db->execute();
+				$num_result = $db->getNumRows();
+				$spatial_policy_id = $db->loadResult();
 			}
-		}
-		catch (JDatabaseException $e) {
-			$je = new JException($e->getMessage());
-			$this->setError($je);
-			return false;
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
+			
+			if (0 == $num_result) {
+				$query = $db->getQuery(true);
+				$query->insert('#__sdi_wmts_spatialpolicy')->columns('
+					spatialoperator_id, eastboundlongitude, westboundlongitude, northboundlatitude, southboundlatitude
+				')->values('
+					' . $raw_GET['spatialoperatorid'] . ', ' . $raw_GET['eastBoundLongitude'] . ', ' . $raw_GET['westBoundLongitude'] . ', ' . $raw_GET['northBoundLatitude'] . ', ' . $raw_GET['southBoundLatitude'] . '
+				');
+			}
+			else {
+				$query = $db->getQuery(true);
+				$query->update('#__sdi_wmts_spatialpolicy')->set(Array(
+					'spatialoperator_id = ' . $raw_GET['spatialoperatorid'],
+					'eastboundlongitude = ' . $raw_GET['eastBoundLongitude'],
+					'westboundlongitude = ' . $raw_GET['westBoundLongitude'],
+					'northboundlatitude = ' . $raw_GET['northBoundLatitude'],
+					'southboundlatitude = ' . $raw_GET['southBoundLatitude'],
+				))->where(Array(
+					'id = \'' . $spatial_policy_id . '\'',
+				));
+			}
+			
+			$db->setQuery($query);
+			
+			try {
+				$db->execute();
+				if (0 == $num_result) {
+					$spatial_policy_id = $db->insertid();
+				}
+			}
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
 		}
 		
 		//save Wmts Layer Policy
@@ -327,19 +343,19 @@ class WmtsWebservice {
 			
 			$query = $db->getQuery(true);
 			$query->insert('#__sdi_wmtslayer_policy')->columns('
-				identifier, enabled, spatialpolicy_id, physicalservicepolicy_id
+				identifier, spatialpolicy_id, physicalservicepolicy_id
 			')->values('
-				\'' . $layerID . '\', \'' . $enabled . '\', \'' . $spatial_policy_id . '\', \'' . $physicalservice_policy_id . '\'
+				\'' . $layerID . '\', \'' . $spatial_policy_id . '\', \'' . $physicalservice_policy_id . '\'
 			');
 		}
-		else {
+		/*else {
 			$query = $db->getQuery(true);
 			$query->update('#__sdi_wmtslayer_policy')->set(Array(
 				'enabled = \'' . $enabled . '\'',
 			))->where(Array(
 				'id = \'' . $wmtslayerpolicy_id . '\'',
 			));
-		}
+		}*/
 		
 		$db->setQuery($query);
 		
@@ -360,6 +376,7 @@ class WmtsWebservice {
 	
 	private static function setTileMatrixSettings ($wmtslayerpolicy_id, $raw_GET){
 		$physicalServiceID = $raw_GET['psID'];
+		$virtualServiceID = $raw_GET['vsID'];
 		$policyID = $raw_GET['policyID'];
 		$layerID = $raw_GET['layerID'];
 		$tileMatrixSet_arr = $raw_GET['select'];
@@ -403,12 +420,11 @@ class WmtsWebservice {
 		}
 		
 		$wmtsObj = new WmtsPhysicalService($physicalServiceID, $ps_url);
-		$wmtsObj->getCapabilities();
+		$wmtsObj->getCapabilities(self::getXmlFromCache($physicalServiceID, $virtualServiceID));
 		$wmtsObj->populate();
 		
 		$form_values[$layerID] = Array(
-			'enabled' => $raw_GET['enabled'],
-			'spatialOperator' => $spatialOperators[$raw_GET['spatial_operator_id']],
+			'spatialOperator' => $spatialOperators[$raw_GET['spatialoperatorid']],
 			'westBoundLongitude' => $raw_GET['westBoundLongitude'],
 			'eastBoundLongitude' => $raw_GET['eastBoundLongitude'],
 			'northBoundLatitude' => $raw_GET['northBoundLatitude'],
@@ -428,101 +444,101 @@ class WmtsWebservice {
 		$wmtsObj->loadData($form_values);
 		$layerObj = $wmtsObj->getLayerByName($layerID);
 		$layerObj->calculateAuthorizedTiles();
-		var_dump($raw_GET);
-		foreach ($raw_GET['select'] as $tms => $tm) {
-			$tmsObj = $layerObj->getTileMatrixSetByName($tms);
-			$tmObj = $tmsObj->getTileMatrixByName($tm);
+		
+		//flushing the previous Tile Matrix and Tile Matrix Set
+		$query = $db->getQuery(true);
+		$query->delete('#__sdi_tilematrixset_policy')->where('wmtslayerpolicy_id = ' . $wmtslayerpolicy_id);
+		$db->setQuery($query);
+		
+		try {
+			$db->execute();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
+		foreach ($layerObj->getTileMatrixSetList() as $tmsObj) {
+			$maxTmsIdentifier = (isset($raw_GET['select'][$tmsObj->identifier]))?$raw_GET['select'][$tmsObj->identifier]:null;
+			
 			//save Tile Matrix Set
-			$db->setQuery('
-				SELECT id
-				FROM #__sdi_tilematrixset_policy
-				WHERE wmtslayerpolicy_id = ' . $wmtslayerpolicy_id . '
-				AND identifier = \'' . $tms . '\';
-			');
-			
-			try {
-				$db->execute();
-				$num_result = $db->getNumRows();
-				$tilematrixsetpolicy_id = $db->loadResult();
-			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
-			}
-			
 			$query = $db->getQuery(true);
-			
-			if (0 == $num_result) {
-				$query->insert('#__sdi_tilematrixset_policy')->columns('
-					wmtslayerpolicy_id, identifier, anytilematrix
-				')->values('
-					\'' . $wmtslayerpolicy_id . '\', \'' . $tms . '\', ' . ((empty($tm))?1:0) . '
-				');
-			}
-			else {
-				//TODO: set SRS
-				$query->update('#__sdi_tilematrixset_policy')->set(Array(
-					'anytilematrix = \'' . ((empty($tm))?1:0) . '\'',
-				))->where(Array(
-					'id = \'' . $tilematrixsetpolicy_id . '\'',
-				));
-			}
-			
+			$query->insert('#__sdi_tilematrixset_policy')->columns('
+				wmtslayerpolicy_id, identifier, anytilematrix
+			')->values('
+				\'' . $wmtslayerpolicy_id . '\', \'' . $tmsObj->identifier . '\', ' . ((empty($maxTmsIdentifier))?1:0) . '
+			');
 			$db->setQuery($query);
 			
 			try {
 				$db->execute();
-				if (0 == $num_result) {
-					$tilematrixsetpolicy_id = $db->insertid();
-				}
+				$tilematrixsetpolicy_id = $db->insertid();
 			}
 			catch (JDatabaseException $e) {
 				$je = new JException($e->getMessage());
 				$this->setError($je);
 				return false;
 			}
-			
-			//save Tile Matrix
-			$db->setQuery('
-				SELECT id
-				FROM #__sdi_tilematrix_policy
-				WHERE tilematrixsetpolicy_id = ' . $tilematrixsetpolicy_id . ';
-			');
-			
-			try {
-				$db->execute();
-				$num_result = $db->getNumRows();
-				$tmp_id = $db->loadResult();
-			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
-			}
-			
-			$query = $db->getQuery(true);
-			
-			if (0 == $num_result) {
+				
+			foreach ($tmsObj->getUpperTileMatrix($maxTmsIdentifier) as $tmObj) {
+				//save Tile Matrix
+				$query = $db->getQuery(true);
 				$query->insert('#__sdi_tilematrix_policy')->columns('
 					tilematrixsetpolicy_id, identifier, anytile, tileminrow, tilemaxrow, tilemincol, tilemaxcol
 				')->values('
-					\'' . $tilematrixsetpolicy_id . '\', \'' . $tm . '\', \'' . $tmObj->anyTile . '\', \'' . $tmObj->minTileRow . '\', \'' . $tmObj->maxTileRow . '\', \'' . $tmObj->minTileCol . '\', \'' . $tmObj->maxTileCol . '\'
+					\'' . $tilematrixsetpolicy_id . '\', \'' . $tmObj->identifier . '\', \'' . $tmObj->anyTile . '\', \'' . $tmObj->minTileRow . '\', \'' . $tmObj->maxTileRow . '\', \'' . $tmObj->minTileCol . '\', \'' . $tmObj->maxTileCol . '\'
 				');
+				$db->setQuery($query);
+				
+				try {
+					$db->execute();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
 			}
-			else {
-				//TODO: set BBox
-				$query->update('#__sdi_tilematrix_policy')->set(Array(
-					'identifier = \'' . $tm . '\'',
-					'anytile = \'' . $tmObj->anyTile . '\'',
-					'tileminrow = \'' . $tmObj->minTileRow . '\'',
-					'tilemaxrow = \'' . $tmObj->maxTileRow . '\'',
-					'tilemincol = \'' . $tmObj->minTileCol . '\'',
-					'tilemaxcol = \'' . $tmObj->maxTileCol . '\'',
-				))->where(Array(
-					'id = \'' . $tmp_id . '\'',
-				));
-			}
+		}
+		return true;
+	}
+	
+	private static function deleteWmtsLayer ($raw_GET) {
+		$physicalServiceID = $raw_GET['physicalServiceID'];
+		$policyID = $raw_GET['policyID'];
+		$layerID = $raw_GET['layerID'];
+		
+		$db = JFactory::getDbo();
+		
+		$db->setQuery('
+			SELECT wp.id AS wp_id, sp.id AS sp_id
+			FROM #__sdi_wmtslayer_policy wp
+			JOIN #__sdi_physicalservice_policy pp
+			ON wp.physicalservicepolicy_id = pp.id
+			LEFT JOIN #__sdi_wmts_spatialpolicy sp
+			ON wp.spatialpolicy_id = sp.id
+			WHERE pp.physicalservice_id = ' . $physicalServiceID . '
+			AND pp.policy_id = ' . $policyID . '
+			AND wp.identifier = \'' . $layerID . '\';
+		');
+		
+		try {
+			$db->execute();
+			$result = $db->loadObject();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
+		if (is_numeric($result->sp_id) && 0 < $result->sp_id) {
+			$db->setQuery("UPDATE #__sdi_wmtslayer_policy SET spatialpolicy_id = NULL WHERE spatialpolicy_id = ".$result->sp_id);
+			$db->execute();
+			
+			$query = $db->getQuery(true);
+			$query->delete('#__sdi_wmts_spatialpolicy')->where('id = ' . $result->sp_id);
 			
 			$db->setQuery($query);
 			
@@ -535,7 +551,56 @@ class WmtsWebservice {
 				return false;
 			}
 		}
-		return true;
+		
+		if (is_numeric($result->wp_id) && 0 < $result->wp_id) {
+			$query = $db->getQuery(true);
+			$query->delete('#__sdi_tilematrixset_policy')->where('wmtslayerpolicy_id = ' . $result->wp_id);
+			
+			$db->setQuery($query);
+			
+			try {
+				$db->execute();
+			}
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
+		}
+	}
+	
+	private static function getXmlFromCache ($physicalServiceID, $virtualServiceID) {
+		$db = JFactory::getDbo();
+		
+		$db->setQuery('
+			SELECT pssc.capabilities
+			FROM #__sdi_virtualservice vs
+			JOIN #__sdi_virtual_physical vp
+			ON vs.id = vp.virtualservice_id
+			JOIN #__sdi_physicalservice ps
+			ON ps.id = vp.physicalservice_id
+			JOIN #__sdi_physicalservice_servicecompliance pssc
+			ON ps.id = pssc.service_id
+			JOIN #__sdi_virtualservice_servicecompliance vssc
+			ON vs.id = vssc.service_id
+			JOIN #__sdi_sys_servicecompliance sc
+			ON sc.id = vssc.servicecompliance_id
+			JOIN #__sdi_sys_serviceversion sv
+			ON sv.id = sc.serviceversion_id
+			WHERE ps.id = ' . $physicalServiceID . '
+			AND vs.id = ' . $virtualServiceID . '
+			ORDER BY sv.ordering DESC
+			LIMIT 0,1;
+		');
+		try {
+			$db->execute();
+			return $db->loadResult();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return null;
+		}
 	}
 	
 }

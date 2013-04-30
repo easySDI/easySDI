@@ -12,7 +12,7 @@ class TileMatrixSet {
 	public $maxTileMatrix;
 	private $tileMatrixList = Array();
 	
-	public $allTileMatrix;
+	public $anyTileMatrix;
 	
 	public function __construct ($identifier, $srs) {
 		$this->identifier = $identifier;
@@ -33,6 +33,29 @@ class TileMatrixSet {
 	
 	public function sortLists () {
 		uasort($this->tileMatrixList, array("TileMatrix", "compareDenominators"));
+	}
+	
+	/*
+	 * Get all TileMatrix with upper denominators
+	 * 
+	 * @param String $indentifier : the identifier of the Tile Matrix
+	 * 
+	 * @return Array : An array with TileMatrix objects with denominators superior or equal to the Tile Matrix passed
+	*/
+	public function getUpperTileMatrix ($identifier) {
+		$list = Array();
+		
+		if (isset($this->tileMatrixList[$identifier])) {
+			$maxTmObj = $this->tileMatrixList[$identifier];
+			
+			foreach ($this->tileMatrixList as $tmObj) {
+				if ($maxTmObj->scaleDenominator <= $tmObj->scaleDenominator) {
+					$list[] = $tmObj;
+				}
+			}
+		}
+		
+		return $list;
 	}
 	
 	public function loadData ($data) {
@@ -90,14 +113,17 @@ class TileMatrixSet {
 		}
 		
 		foreach ($this->tileMatrixList as $tileMatrixObj) {
-			//Get the East and North coordinates of the top left corner of the TileMatrix.
+			//Get the West and North coordinates of the top left corner of the TileMatrix.
 			//
 			//EPSG authority SRS definition (see : www.epsg-registry.org):
-			//- Geographic SRS give the topLeftCorner as <TopLeftCorner>North East</TopLeftCorner>
-			//- Projected SRS give the topLeftCorner as <TopLeftCorner>East North</TopLeftCorner>
+			//- Geographic SRS give the topLeftCorner as <TopLeftCorner>North West</TopLeftCorner>
+			//- Projected SRS give the topLeftCorner as <TopLeftCorner>West North</TopLeftCorner>
 			//OGC authority SRS defnition (see : OGC 07-057r7 document)
-			//- all SRS give the topLeftCorner as <TopLeftCorner>East North</TopLeftCorner>
+			//- all SRS give the topLeftCorner as <TopLeftCorner>West North</TopLeftCorner>
 			//Others authorities are not supported.
+			
+			// TODO: vérifier pourquoi EPSG et OGC ont un topleft dans le meme ordre
+			//if (!strpos($this->srsUnit,'m') && strpos($this->srs,'EPSG')) {
 			if (!strpos($this->srsUnit,'m') && strpos($this->srs,'EPSG')) {
 				$topLeftCornerY = substr($tileMatrixObj->topLeftCorner, 0, strpos($tileMatrixObj->topLeftCorner," "));
 				$topLeftCornerX = substr($tileMatrixObj->topLeftCorner, strpos($tileMatrixObj->topLeftCorner," ")+1);

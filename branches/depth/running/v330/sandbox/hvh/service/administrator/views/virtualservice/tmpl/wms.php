@@ -97,15 +97,26 @@ JText::script('COM_EASYSDI_SERVICE_FORM_SERVICE_METADATA_ERROR');
 					<fieldset id=contact>
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_METADATA_CONTACT' );?></legend>
 					<?php foreach($this->form->getFieldset('contact') as $field):?> 
-						<div class="control-group"> 
 						<?php if ('contactlocality' == $field->fieldname) : ?>
-								<div class="control-label"><?php echo $field->label; ?></div>
-								<div class="controls form-inline"><?php echo $this->form->getInput('contactpostalcode'); echo $field->input; ?></div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $field->label; ?></div>
+									<div class="controls form-inline"><?php echo $this->form->getInput('contactpostalcode'); echo $field->input; ?></div>
+								</div>
+						<?php elseif ('contactaddress' == $field->fieldname) : ?>
+								<div class="control-group">
+									<div class="control-label"><?php echo $this->form->getLabel('contactaddresstype'); ?></div>
+									<div class="controls"><?php echo $this->form->getInput('contactaddresstype'); ?></div>
+								</div>
+								<div class="control-group">
+									<div class="control-label"><?php echo $field->label; ?></div>
+									<div class="controls"><?php echo $field->input; ?></div>
+								</div>
 						<?php else :?>
-							<div class="control-label"><?php echo $field->label; ?></div>
-							<div class="controls"><?php echo $field->input;  ?></div>
+							<div class="control-group">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input;  ?></div>
+							</div>
 						<?php endif;?>
-						</div>
 					<?php endforeach; ?>
 					</fieldset>
 				</div>

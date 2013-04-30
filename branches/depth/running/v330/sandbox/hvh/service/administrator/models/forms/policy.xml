@@ -5,55 +5,129 @@
 		<field name="alias" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALIAS" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALIAS"   filter="safehtml" />
 		<field name="layout" type="text" size="40"  label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CONNECTOR" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CONNECTOR" readonly="true" class="readonly" filter="safehtml" />
 		<field name="virtualservice" type="text" size="40"  label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_VIRTUALSERVICE" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_VIRTUALSERVICE" readonly="true" class="readonly" filter="safehtml" />
-		<field 	name="accessscope_id" 
-				onchange="enableAccessScope();"
-				type="sql" 
-				class="inputbox"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ACCESSSCOPE"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ACCESSSCOPE" 
-                query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 ORDER BY ordering" 
-                key_field="id" 
-                value_field="value"
-                 /> 
-         <field name="organisms" 
-				type="sql" 
-				class="multiselect input-xxlarge"
-				multiple="true"
-				label=""
-				description="" 
-                query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY ordering" 
-                key_field="id" 
-                value_field="name"
-                 /> 
-         <field name="users" 
-				type="sql" 
-				class="multiselect input-xxlarge"
-				multiple="true"
-				label=""
-				description="" 
-                query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY ordering" 
-                key_field="id" 
-                value_field="name"
-                 /> 
-		<field name="anyoperation" type="checkbox" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ANYOPERATION" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ANYOPERATION"  value="1" default="0" />
-		<field name="anyservice" type="checkbox" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ANYSERVICE" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ANYSERVICE"  value="1" default="0" />
-		<field name="allowfrom" type="calendar" class="inputbox" default="0000-00-00"  label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWFROM" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWFROM"  filter="safehtml" />
-		<field name="allowto" type="calendar" class="inputbox" default="0000-00-00"  label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWTO" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWTO"  filter="safehtml" />
+		<field
+			name="accessscope_id" 
+			onchange="enableAccessScope();"
+			type="sql" 
+			class="inputbox"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ACCESSSCOPE"
+			description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ACCESSSCOPE" 
+			query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 ORDER BY ordering" 
+			key_field="id" 
+			value_field="value"
+		/> 
+		<field
+			name="organisms" 
+			type="sql" 
+			class="multiselect input-xxlarge"
+			multiple="true"
+			label=""
+			description="" 
+			query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY ordering" 
+			key_field="id" 
+			value_field="name"
+		/> 
+		<field
+			name="users" 
+			type="sql" 
+			class="multiselect input-xxlarge"
+			multiple="true"
+			label=""
+			description="" 
+			query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY ordering" 
+			key_field="id" 
+			value_field="name"
+		/> 
+		<field name="layout" type="text" size="40"  label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CONNECTOR" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CONNECTOR" readonly="true" class="readonly" filter="safehtml" />
+		<field name="virtualservice" type="text" size="40"  label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_VIRTUALSERVICE" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_VIRTUALSERVICE" readonly="true" class="readonly" filter="safehtml" />
+		<field
+			name="accessscope_id" 
+			onchange="enableAccessScope();"
+			type="sql" 
+			class="inputbox"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ACCESSSCOPE"
+			description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ACCESSSCOPE" 
+			query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 ORDER BY ordering" 
+			key_field="id" 
+			value_field="value"
+		/> 
+		<field
+			name="organisms" 
+			type="sql" 
+			class="multiselect input-xxlarge"
+			multiple="true"
+			label=""
+			description="" 
+			query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY ordering" 
+			key_field="id" 
+			value_field="name"
+		/> 
+		<field
+			name="users" 
+			type="sql" 
+			class="multiselect input-xxlarge"
+			multiple="true"
+			label=""
+			description="" 
+			query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY ordering" 
+			key_field="id" 
+			value_field="name"
+		/> 
+		<field name="allowfrom" type="calendar" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWFROM" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWFROM"  filter="safehtml" />
+		<field name="allowto" type="calendar" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWTO" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWTO"  filter="safehtml" />
+		<field name="anyoperation" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ANYOPERATION" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ANYOPERATION">
+			  <option value="0">NO</option>
+			  <option value="1">YES</option>
+			</field>
 	</fieldset>
 	
 	<fieldset name="csw_policy">
-		<field name="csw_version" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_VERSION" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_VERSION"  filter="safehtml" />
 		<field name="csw_anystate" type="checkbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYSTATE" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYSTATE" value="1" default="0"/>
+		<field 
+			name="csw_state" 
+			type="sql" 
+			class="multiselect input-xxlarge"
+			onchange="onStateChange();"
+			multiple="true"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_STATE" 
+			description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_STATE"
+			query="
+					SELECT id , value
+					FROM #__sdi_sys_metadatastate
+					WHERE state = 1
+					ORDER BY ordering;"
+			key_field="id" 
+			value_field="value" 
+			required="false"
+		/>
+		<field
+			name="csw_version_id"
+			type="sql" 
+			class="inputbox"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_VERSION"
+			description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_VERSION" 
+			query="
+				SELECT id, value
+				FROM #__sdi_sys_metadataversion
+				WHERE state=1
+				ORDER BY ordering" 
+			key_field="id" 
+			value_field="value"
+		/>
 		<field name="csw_anycontext" type="checkbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYCONTEXT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYCONTEXT" value="1" default="0"/>
 		<field name="csw_anyvisibility" type="checkbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYVISIBILITY" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYVISIBILITY" value="1" default="0"/>
+		<field name="csw_includeharvested" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_INCLUDE_HARVESTED" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_INCLUDE_HARVESTED">
+		  <option value="0">No</option>
+		  <option value="1">Yes</option>
+		</field>
 		<field name="csw_geographicfilter" type="textarea" rows="5" class="inputbox span12" filter="safehtml" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_GEOGRAPHICFILTER" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_GEOGRAPHICFILTER"  />
 	</fieldset>
 	
 	<fieldset name="wms_policy">
-		<field name="wms_minimumwidth" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MINIMUMWIDTH" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MINIMUMWIDTH"  filter="safehtml" />
-		<field name="wms_minimumheight" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MINIMUMHEIGHT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MINIMUMHEIGHT"  filter="safehtml" />
-		<field name="wms_maximumwidth" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MAXIMUMWIDTH" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MAXIMUMWIDTH"  filter="safehtml" />
-		<field name="wms_maximumheight" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MAXIMUMHEIGHT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MAXIMUMHEIGHT"  filter="safehtml" />
+		<field name="wms_minimumwidth" type="text" size="40" class="inputbox validate-numeric" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MINIMUMWIDTH" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MINIMUMWIDTH"  filter="safehtml" />
+		<field name="wms_minimumheight" type="text" size="40" class="inputbox validate-numeric" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MINIMUMHEIGHT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MINIMUMHEIGHT"  filter="safehtml" />
+		<field name="wms_maximumwidth" type="text" size="40" class="inputbox validate-numeric" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MAXIMUMWIDTH" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MAXIMUMWIDTH"  filter="safehtml" />
+		<field name="wms_maximumheight" type="text" size="40" class="inputbox validate-numeric" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MAXIMUMHEIGHT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MAXIMUMHEIGHT"  filter="safehtml" />
 	</fieldset>
 	
 	<fieldset name="wmts_policy_hidden">
@@ -61,9 +135,9 @@
 		<field name="namespace" type="hidden"  filter="SAFEHTML" />
 	</fieldset>
 	
-	<fieldset name="wfs_policy_hidden">
-		<field name="prefix" type="hidden"  filter="SAFEHTML" />
-		<field name="namespace" type="hidden"  filter="SAFEHTML" />
+	<fieldset name="wfs_policy">
+		<field name="prefix" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WFS_PREFIX" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WFS_PREFIX"  filter="safehtml" />
+		<field name="namespace" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WFS_NAMESPACE" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WFS_NAMESPACE"  filter="safehtml" />
 	</fieldset>
 	
 	<fieldset name="csw_policy_hidden">
@@ -137,4 +211,153 @@
 		<option value="2">JARCHIVED</option>
 		<option value="-2">JTRASHED</option>
 	</field>
+	
+	<field 
+		name="allowedoperation_wmts"
+		type="sql" 
+		class="allowedoperation multiselect input-xxlarge"
+		multiple="true"
+		label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWED_OPERATION" 
+		description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWED_OPERATION"
+		query="
+				SELECT so.id as id, so.value as value
+				FROM #__sdi_sys_serviceoperation so
+				INNER JOIN #__sdi_sys_operationcompliance oc
+				ON oc.serviceoperation_id = so.id
+				INNER JOIN #__sdi_sys_servicecompliance sc
+				ON sc.id = oc.servicecompliance_id
+				INNER JOIN #__sdi_sys_serviceversion sv
+				ON sv.id = sc.serviceversion_id
+				INNER JOIN #__sdi_sys_serviceconnector scc
+				ON scc.id = sc.serviceconnector_id
+				WHERE scc.value = 'WMTS'
+				AND oc.implemented = 1
+				AND so.state = 1
+				AND sv.value = (
+					SELECT sv.value
+					FROM #__sdi_sys_servicecompliance sc
+					INNER JOIN #__sdi_sys_serviceversion sv
+					ON sv.id = sc.serviceversion_id
+					INNER JOIN #__sdi_sys_serviceconnector scc
+					ON scc.id = sc.serviceconnector_id
+					WHERE scc.value = 'WMTS'
+					ORDER BY sv.ordering DESC
+					LIMIT 0,1
+				);"
+		key_field="id" 
+		value_field="value" 
+		required="false"
+	/>
+	
+	<field 
+		name="allowedoperation_wms" 
+		type="sql" 
+		class="allowedoperation multiselect input-xxlarge"
+		multiple="true"
+		label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWED_OPERATION" 
+		description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWED_OPERATION"
+		query="
+				SELECT so.id as id, so.value as value
+				FROM #__sdi_sys_serviceoperation so
+				INNER JOIN #__sdi_sys_operationcompliance oc
+				ON oc.serviceoperation_id = so.id
+				INNER JOIN #__sdi_sys_servicecompliance sc
+				ON sc.id = oc.servicecompliance_id
+				INNER JOIN #__sdi_sys_serviceversion sv
+				ON sv.id = sc.serviceversion_id
+				INNER JOIN #__sdi_sys_serviceconnector scc
+				ON scc.id = sc.serviceconnector_id
+				WHERE scc.value = 'WMS'
+				AND oc.implemented = 1
+				AND so.state = 1
+				AND sv.value = (
+					SELECT sv.value
+					FROM #__sdi_sys_servicecompliance sc
+					INNER JOIN #__sdi_sys_serviceversion sv
+					ON sv.id = sc.serviceversion_id
+					INNER JOIN #__sdi_sys_serviceconnector scc
+					ON scc.id = sc.serviceconnector_id
+					WHERE scc.value = 'WMS'
+					ORDER BY sv.ordering DESC
+					LIMIT 0,1
+				);"
+		key_field="id" 
+		value_field="value" 
+		required="false"
+	/>
+	
+	<field 
+		name="allowedoperation_wfs" 
+		type="sql" 
+		class="allowedoperation multiselect input-xxlarge"
+		multiple="true"
+		label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWED_OPERATION" 
+		description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWED_OPERATION"
+		query="
+				SELECT so.id as id, so.value as value
+				FROM #__sdi_sys_serviceoperation so
+				INNER JOIN #__sdi_sys_operationcompliance oc
+				ON oc.serviceoperation_id = so.id
+				INNER JOIN #__sdi_sys_servicecompliance sc
+				ON sc.id = oc.servicecompliance_id
+				INNER JOIN #__sdi_sys_serviceversion sv
+				ON sv.id = sc.serviceversion_id
+				INNER JOIN #__sdi_sys_serviceconnector scc
+				ON scc.id = sc.serviceconnector_id
+				WHERE scc.value = 'WFS'
+				AND oc.implemented = 1
+				AND so.state = 1
+				AND sv.value = (
+					SELECT sv.value
+					FROM #__sdi_sys_servicecompliance sc
+					INNER JOIN #__sdi_sys_serviceversion sv
+					ON sv.id = sc.serviceversion_id
+					INNER JOIN #__sdi_sys_serviceconnector scc
+					ON scc.id = sc.serviceconnector_id
+					WHERE scc.value = 'WFS'
+					ORDER BY sv.ordering DESC
+					LIMIT 0,1
+				);"
+		key_field="id" 
+		value_field="value" 
+		required="false"
+	/>
+	
+	<field 
+		name="allowedoperation_csw" 
+		type="sql" 
+		class="allowedoperation multiselect input-xxlarge"
+		multiple="true"
+		label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWED_OPERATION" 
+		description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWED_OPERATION"
+		query="
+				SELECT so.id as id, so.value as value
+				FROM #__sdi_sys_serviceoperation so
+				INNER JOIN #__sdi_sys_operationcompliance oc
+				ON oc.serviceoperation_id = so.id
+				INNER JOIN #__sdi_sys_servicecompliance sc
+				ON sc.id = oc.servicecompliance_id
+				INNER JOIN #__sdi_sys_serviceversion sv
+				ON sv.id = sc.serviceversion_id
+				INNER JOIN #__sdi_sys_serviceconnector scc
+				ON scc.id = sc.serviceconnector_id
+				WHERE scc.value = 'CSW'
+				AND oc.implemented = 1
+				AND so.state = 1
+				AND sv.value = (
+					SELECT sv.value
+					FROM #__sdi_sys_servicecompliance sc
+					INNER JOIN #__sdi_sys_serviceversion sv
+					ON sv.id = sc.serviceversion_id
+					INNER JOIN #__sdi_sys_serviceconnector scc
+					ON scc.id = sc.serviceconnector_id
+					WHERE scc.value = 'CSW'
+					ORDER BY sv.ordering DESC
+					LIMIT 0,1
+				);"
+		key_field="id" 
+		value_field="value" 
+		required="false"
+	/>
+	
 </form>

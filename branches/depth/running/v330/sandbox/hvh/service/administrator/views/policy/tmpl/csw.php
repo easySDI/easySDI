@@ -20,7 +20,9 @@ JHtml::_('behavior.keepalive');
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/policy.js');
+$document->addScript('components/com_easysdi_service/views/policy/tmpl/csw.js');
 JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
+JText::script('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE');
 
 ?>
 
@@ -29,6 +31,7 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 		<div class="span10 form-horizontal">
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_SERVICE_TAB_NEW_POLICY') : JText::sprintf('COM_EASYSDI_SERVICE_TAB_EDIT_POLICY', $this->item->id); ?></a></li>
+				<li><a href="#excluded_attribute" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_CSW_TAB_EXCLUDED_ATTRIBUTE');?></a></li>
 				<li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_PUBLISHING');?></a></li>
 				<?php if ($this->canDo->get('core.admin')): ?>
 					<li><a href="#permissions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_RULES');?></a></li>
@@ -46,6 +49,10 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 							<div class="controls"><?php echo $field->input; ?></div>
 						</div>
 					<?php endforeach; ?>
+					<div class="control-group">
+						<div class="control-label"><?php echo $this->form->getLabel('allowedoperation_csw'); ?></div>
+						<div class="controls"><?php echo $this->form->getInput('allowedoperation_csw'); ?></div>
+					</div>
 					<?php foreach($this->form->getFieldset('csw_policy') as $field): 
 					?> 
 						<div class="control-group">
@@ -71,6 +78,33 @@ JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 						<div class="controls"><?php echo $field->input; ?></div>
 					<?php endforeach; ?>
 					</div>
+				</div>
+				
+				<div class="tab-pane" id="excluded_attribute">
+					<div id="div_excluded_attributes">
+						<?php
+							$policy_id = (!empty($this->item->id))?$this->item->id:-1;
+							$db = JFactory::getDbo();
+							$db->setQuery('
+								SELECT path FROM #__sdi_excludedattribute
+								WHERE policy_id = ' . $policy_id . ';
+							');
+							$db->execute();
+							$paths = $db->loadColumn();
+							$path_count = 0;
+							foreach ($paths as $path) {
+								echo '<div class="div_ea_' . $path_count . ' span12">
+									<textarea name="excluded_attribute[' . $path_count . ']" rows="5" class="span10">' . $path . '</textarea>
+									<button type="button" class="btn btn-danger btn_ea_delete">' .JText::_('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE') . '</button>
+									<br /><br />
+								</div>';
+								$path_count++;
+							}
+						?>
+					</div>
+					<button class="btn" data-count="<?php echo $path_count; ?>" id="btn_add_excluded_attribute">
+						<?php echo JText::_('COM_EASYSDI_SERVICE_CSW_BTN_ADD_EXCLUDED_ATTRIBUTE');?>
+					</button>
 				</div>
 				
 				<div class="tab-pane" id="publishing">
