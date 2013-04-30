@@ -1474,9 +1474,12 @@ public class WMSProxyServlet extends ProxyServlet {
 			if(physicalservicePolicy.getSdiPhysicalservice().getId().equals(physicalservice.getId()))
     		{
 				for(SdiWmslayerPolicy layerPolicy :physicalservicePolicy.getSdiWmslayerPolicies()){
-					if(layerPolicy.getName().equals(layer) && layerPolicy.isEnabled())
+					if(layerPolicy.getName().equals(layer) )
 	    			{
-	    				if(layerPolicy.getSdiWmsSpatialpolicy() != null)
+						if(!layerPolicy.isEnabled() && !sdiPolicy.isAnyservice() && !physicalservicePolicy.isAnyitem())
+							return false;
+						
+	    				if(layerPolicy.getSdiWmsSpatialpolicy() != null && layerPolicy.getSdiWmsSpatialpolicy().getMaximumscale() != null && layerPolicy.getSdiWmsSpatialpolicy().getMinimumscale() != null)
 	    				{
 	    					Integer maxscale = layerPolicy.getSdiWmsSpatialpolicy().getMaximumscale();
 	    					Integer minscale = layerPolicy.getSdiWmsSpatialpolicy().getMinimumscale();
@@ -1492,7 +1495,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	    				
 	    			}
 				}
-	    		break;
+	    		return false;
     		}
 		}
 
@@ -1574,18 +1577,16 @@ public class WMSProxyServlet extends ProxyServlet {
 		if (layer == null)
 		    return false;
 	
-		if(sdiPolicy.isAnyservice())
-			return true;
-		
 		for(SdiPhysicalservicePolicy physicalservicePolicy : sdiPolicy.getSdiPhysicalservicePolicies() ){
 			if(physicalservicePolicy.getSdiPhysicalservice().getId().equals(physicalservice.getId()))
     		{
-    			if(physicalservicePolicy.isAnyitem())
-    				return true;
-    			
     			for(SdiWmslayerPolicy layerPolicy  : physicalservicePolicy.getSdiWmslayerPolicies()){
-    				if(layerPolicy.getName().equals(layer))
-	    				return layerPolicy.isEnabled() ? true : false;
+    				if(layerPolicy.getName().equals(layer)){
+    					if(sdiPolicy.isAnyservice() || physicalservicePolicy.isAnyitem())
+    						return true;
+    					else
+    						return layerPolicy.isEnabled() ? true : false;
+    				}
     			}
 	    		break;
     		}

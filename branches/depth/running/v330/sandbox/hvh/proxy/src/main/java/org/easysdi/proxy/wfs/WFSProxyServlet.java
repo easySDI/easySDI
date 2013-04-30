@@ -948,8 +948,8 @@ public class WFSProxyServlet extends ProxyServlet {
 							// Fin de Debug
 							// Passe en revue les typesName(=FeatureTypes) de la requete
 							for (int i = 0; i < fields.length; i++) {
-								// Proxy est non compatible avec les multi Query dans les requêtes GetFeature!
-								if (currentOperation.equalsIgnoreCase("GetFeature") && i > 0) {
+								// Proxy est non compatible avec les multi Query dans les requêtes GetFeature !
+								if ((currentOperation.equalsIgnoreCase("GetFeature") ) && i > 0) {
 									break;
 								}
 
@@ -1145,11 +1145,13 @@ public class WFSProxyServlet extends ProxyServlet {
 						boolean send = true;
 						String filePath = "";
 						// Vérifier que la requête avec opération DescribeFeatureType comporte encore au moins 1 TypeName sinon la réponse doit être une exception OGC
+						// Faux : dans le cas d'une aggrégation de serveur, le featuretype demandé peux provenir d'un autre serveur, le fait que la liste featureTypeListToKeep soit
+						// vide pour un serveur ne veut pas dire quel a requête entière est non valide.
 						if ("DescribeFeatureType".equalsIgnoreCase(currentOperation)) {
-							if (featureTypeListToKeep.size() == 0) {
-								owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE, OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "TYPENAME", HttpServletResponse.SC_OK) ;
-								return;
-							}
+//							if (featureTypeListToKeep.size() == 0) {
+//								owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE, OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "TYPENAME", HttpServletResponse.SC_OK) ;
+//								return;
+//							}
 						}
 
 						if ("GetFeature".equalsIgnoreCase(currentOperation)) {
@@ -1169,9 +1171,18 @@ public class WFSProxyServlet extends ProxyServlet {
 						// Exécution de la requête utilisateur modifiée au serveur en cours ->s'il y a plusieurs serveurs, alors cet appel se fait plus d'une fois!!!
 						if (send)
 						{
-							filePath = sendData("GET", getPhysicalServiceURLByIndex(iServer), paramUrl);
-							serversIndex.add(iServer);
-							wfsFilePathList.put(iServer, filePath);
+							if ("DescribeFeatureType".equalsIgnoreCase(currentOperation)) {
+								if (featureTypeListToKeep.size() != 0) {
+									filePath = sendData("GET", getPhysicalServiceURLByIndex(iServer), paramUrl);
+									serversIndex.add(iServer);
+									wfsFilePathList.put(iServer, filePath);
+								}
+							}else{
+								filePath = sendData("GET", getPhysicalServiceURLByIndex(iServer), paramUrl);
+								serversIndex.add(iServer);
+								wfsFilePathList.put(iServer, filePath);
+							}
+							
 						}
 					}
 					else if (currentOperation.equalsIgnoreCase("GetCapabilities"))
@@ -1938,6 +1949,8 @@ public class WFSProxyServlet extends ProxyServlet {
 							WFSDescribeFeatureType
 							.append("<xsl:stylesheet version=\"1.00\"  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ogcwfs=\"http://www.opengis.net/wfs\" xmlns:gml=\"http://www.opengis.net/gml\"  xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
 							// On récupère le gml
+							if(wfsFilePathList.get(j) == null)
+								continue;
 							InputStream dataSourceInputStream = new FileInputStream(wfsFilePathList.get(j));
 							// PBM à la Ligne suivante: attention "schema" est
 							// un singleton: n'est pas cleaner entre chaque
@@ -3131,6 +3144,10 @@ public class WFSProxyServlet extends ProxyServlet {
 		if(sdiPolicy.isAnyservice())
 			return true;
 		
+		boolean isServerFound = false;
+		boolean isFeatureTypeFound = false;
+		boolean FeatureTypeAllowed = false;
+		
 		Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
     	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
     	while(i.hasNext())
@@ -3138,42 +3155,48 @@ public class WFSProxyServlet extends ProxyServlet {
     		SdiPhysicalservicePolicy physicalservicePolicy = i.next();
     		if(physicalservicePolicy.getSdiPhysicalservice().getResourceurl().equals(url))
     		{
+    			isServerFound = true;
     			if(physicalservicePolicy.isAnyitem())
     			{
     				policyAttributeListNb = 0;
     				return true;
     			}
     				
-    			
+    			FeatureTypeAllowed = physicalservicePolicy.isAnyitem();
     			Set<SdiFeaturetypePolicy> wfsFeatureTypePolicies = physicalservicePolicy.getSdiFeaturetypePolicies();
 	    		Iterator<SdiFeaturetypePolicy> it = wfsFeatureTypePolicies.iterator();
 	    		while (it.hasNext())
 	    		{
 	    			SdiFeaturetypePolicy featureTypePolicy = it.next();
-	    			Set<SdiIncludedattribute> includedAttributes = featureTypePolicy.getSdiIncludedattributes();
-	    			if(includedAttributes == null || includedAttributes.isEmpty())
-	    			{
-	    				policyAttributeListNb = 0;
-	    				return true;
+	    			if(featureTypePolicy.getName().equalsIgnoreCase(ft)){
+	    				isFeatureTypeFound = true;
+		    			Set<SdiIncludedattribute> includedAttributes = featureTypePolicy.getSdiIncludedattributes();
+		    			if(includedAttributes == null || includedAttributes.isEmpty())
+		    			{
+		    				policyAttributeListNb = 0;
+		    				return true;
+		    			}
+		    			// Supprime les résultats, contenu dans la globale var, issus du précédent appel de la fonction courante
+		    			policyAttributeListToKeepPerFT.clear();
+		    			for(SdiIncludedattribute includedattribute : includedAttributes){
+		    				if(includedattribute.getName().equals(attribute))
+		    					return true;
+		    				// If no attributes are listed in user req -> all the Policy Attributes will be returned
+		    			    else if (attribute.equals("")) {
+			    				String tmpFA = includedattribute.getName();
+			    				policyAttributeListToKeepPerFT.add(tmpFA);
+			    				// then at the end of function -> return false, "" is effectively not a valid attribute
+		    			    }
+		    			}
+		    			policyAttributeListNb = includedAttributes.size();
 	    			}
-	    			// Supprime les résultats, contenu dans la globale var, issus du précédent appel de la fonction courante
-	    			policyAttributeListToKeepPerFT.clear();
-	    			Iterator<SdiIncludedattribute> ia = includedAttributes.iterator();
-	    			while(ia.hasNext())
-	    			{
-	    				if(ia.next().getName().equals(ft)) 
-	    					return true;
-	    				// If no attributes are listed in user req -> all the Policy Attributes will be returned
-	    			    else if (attribute.equals("")) {
-		    				String tmpFA = ia.next().getName();
-		    				policyAttributeListToKeepPerFT.add(tmpFA);
-		    				// then at the end of function -> return false, "" is effectively not a valid attribute
-	    			    }
-	    			}
-	    			policyAttributeListNb = includedAttributes.size();
 	    		}
-	    		return false;
     		}
+    	}
+    	if (isServerFound && !isFeatureTypeFound && FeatureTypeAllowed)
+    	{
+    	    policyAttributeListNb = 0; 
+    	    return true;
     	}
     	return false;
     }
@@ -3337,9 +3360,6 @@ public class WFSProxyServlet extends ProxyServlet {
      */
     protected boolean isFeatureTypeAllowed(String ft, String url) 
     {
-    	if(sdiPolicy.isAnyservice())
-    		return true;
-    	
     	Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
     	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
     	while(i.hasNext())
@@ -3357,7 +3377,7 @@ public class WFSProxyServlet extends ProxyServlet {
 	    			{
 	    				//The feature type exists in a physical service.
 	    				//It is allowed if all feature types are allowed by this policy for this physical service
-	    				if(physicalservicePolicy.isAnyitem())
+	    				if(physicalservicePolicy.isAnyitem() || sdiPolicy.isAnyservice())
 	    					return true;
 	    				//Or if this feature type is explicitly set as allowed
 	    				if(featureTypePolicy.isEnabled())
@@ -3382,9 +3402,6 @@ public class WFSProxyServlet extends ProxyServlet {
      */
     protected boolean isFeatureTypeAllowed(String ft) 
     {
-    	if(sdiPolicy.isAnyservice())
-    		return true;
-    	
     	Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
     	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
     	while(i.hasNext())
@@ -3399,7 +3416,7 @@ public class WFSProxyServlet extends ProxyServlet {
     			{
     				//The feature type exists in a physical service.
     				//It is allowed if all feature types are allowed by this policy for this physical service
-    				if(physicalservicePolicy.isAnyitem())
+    				if(physicalservicePolicy.isAnyitem() || sdiPolicy.isAnyservice())
     					return true;
     				//Or if this feature type is explicitly set as allowed
     				if(featureTypePolicy.isEnabled())

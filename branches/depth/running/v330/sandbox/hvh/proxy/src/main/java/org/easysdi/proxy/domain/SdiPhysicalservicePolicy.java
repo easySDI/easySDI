@@ -133,7 +133,7 @@ public class SdiPhysicalservicePolicy implements java.io.Serializable {
 		{
 			if(this.getSdiPolicy().getSdiWmtsSpatialpolicy()!=null)
 			{
-				this.sdiWmtsSpatialpolicy = getSdiPolicy().getSdiWmtsSpatialpolicy();
+				return getSdiPolicy().getSdiWmtsSpatialpolicy();
 			}
 		}
 		return this.sdiWmtsSpatialpolicy;
@@ -141,11 +141,6 @@ public class SdiPhysicalservicePolicy implements java.io.Serializable {
 
 	public void setSdiWmtsSpatialpolicy(
 			SdiWmtsSpatialpolicy sdiWmtsSpatialpolicy) {
-		if(this.sdiWmtsSpatialpolicy == null)
-		{
-			if (this.getSdiPolicy().getSdiWmtsSpatialpolicy() != null)
-				this.sdiWmtsSpatialpolicy = this.getSdiPolicy().getSdiWmtsSpatialpolicy();
-		}
 		this.sdiWmtsSpatialpolicy = sdiWmtsSpatialpolicy;
 	}
 
@@ -165,7 +160,7 @@ public class SdiPhysicalservicePolicy implements java.io.Serializable {
 		if(this.sdiWfsSpatialpolicy == null)
 		{
 			if (this.getSdiPolicy().getSdiWfsSpatialpolicy() != null)
-				this.sdiWfsSpatialpolicy = this.getSdiPolicy().getSdiWfsSpatialpolicy();
+				return this.getSdiPolicy().getSdiWfsSpatialpolicy();
 		}
 		return this.sdiWfsSpatialpolicy;
 	}

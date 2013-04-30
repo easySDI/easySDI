@@ -82,11 +82,11 @@ public class SdiFeaturetypePolicy implements java.io.Serializable {
 			if(this.getSdiPhysicalservicePolicy().getSdiWfsSpatialpolicy()==null)
 			{
 				if(this.getSdiPhysicalservicePolicy().getSdiPolicy().getSdiWfsSpatialpolicy()!= null)
-					this.sdiWfsSpatialpolicy =  this.getSdiPhysicalservicePolicy().getSdiPolicy().getSdiWfsSpatialpolicy();
+					return  this.getSdiPhysicalservicePolicy().getSdiPolicy().getSdiWfsSpatialpolicy();
 			}
 			else
 			{
-				this.sdiWfsSpatialpolicy = this.getSdiPhysicalservicePolicy().getSdiWfsSpatialpolicy();
+				return this.getSdiPhysicalservicePolicy().getSdiWfsSpatialpolicy();
 			}
 		}
 		return this.sdiWfsSpatialpolicy;
