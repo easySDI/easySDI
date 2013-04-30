@@ -323,6 +323,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			$wmtsObj->loadData($data);
 			$wmtsObj->sortLists();
 			$wmtsObj->setLayerAsConfigured($layerList);
+			$wmtsObj->compileAllSRS();
 			$wmtsObjList[] = $wmtsObj;
 			
 			$this->cacheXMLCapabilities($wmtsObj->getRawXml(), $ps->id, $virtualservice_id);

@@ -4,6 +4,7 @@ require_once('WmtsLayer.php');
 
 class WmtsPhysicalService extends PhysicalService{
 	private $layerList = Array();
+	private $SRSList = Array();
 	
 	public function __construct ($id, $url) {
 		parent::__construct($id, $url, 'WMTS');
@@ -11,6 +12,10 @@ class WmtsPhysicalService extends PhysicalService{
 	
 	public function getLayerList () {
 		return $this->layerList;
+	}
+	
+	public function getSRSList () {
+		return $this->SRSList;
 	}
 	
 	public function getLayerByName ($name) {
@@ -110,4 +115,18 @@ class WmtsPhysicalService extends PhysicalService{
 			$this->getLayerByName($layerIdentifier)->setHasConfig(true);
 		}
 	}
+	
+	/**
+	 * Populate SRSList with all srs found in the tilematrixes of this physical service
+	 * 
+	 */
+	public function compileAllSRS () {
+		foreach ($this->layerList as $layerIdentifier => $layer) {
+			foreach ($layer->getTileMatrixSetList() as $tmsIdentifier => $tms) {
+				$this->SRSList[] = $tms->srs;
+			}
+		}
+		$this->SRSList = array_unique($this->SRSList);
+	}
+	
 }

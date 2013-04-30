@@ -29,6 +29,13 @@ JText::script('COM_EASYSDI_SERVICE_MSG_MODAL_SAVED');
 JText::script('COM_EASYSDI_SERVICE_MSG_MODAL_MISSING_BBOX_BOUNDARIES');
 JText::script('COM_EASYSDI_SERVICE_MSG_MODAL_MALFORMED_BBOX_BOUNDARIES');
 
+$SRSList = Array();
+foreach($this->item->physicalService as $ps) {
+	$SRSList = array_merge($SRSList, $ps->getSRSList());
+}
+$SRSList = array_unique($SRSList);
+echo '<script> var SRSList = ' . json_encode($SRSList) . '; </script>';
+
 function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	$debug = '';
 	$db = JFactory::getDbo();

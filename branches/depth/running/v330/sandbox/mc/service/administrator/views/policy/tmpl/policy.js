@@ -1,6 +1,6 @@
 Joomla.submitbutton = function (task) {
 	if (task == 'policy.cancel' || document.formvalidator.isValid(document.id('policy-form'))) {
-		if ('policy.cancel' != task && 'WMS' == jQuery('#jform_layout').val()) {
+		if ('policy.cancel' != task && ('WMS' == jQuery('#jform_layout').val() || 'WMTS' == jQuery('#jform_layout').val())) {
 			jQuery(document).trigger('recalculate', task);
 		}
 		else {
