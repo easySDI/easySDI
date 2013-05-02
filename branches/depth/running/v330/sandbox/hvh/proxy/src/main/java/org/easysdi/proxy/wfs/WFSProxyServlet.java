@@ -1998,7 +1998,7 @@ public class WFSProxyServlet extends ProxyServlet {
 								if (isFeatureTypeAllowed(el[i].getName(), getPhysicalServiceURLByIndex(serversIndex.get(j)))) {
 									org.geotools.xml.schema.Element[] elem = ct[i].getChildElements();
 									for (int k = 0; k < elem.length; k++) {
-										if (!isAttributeAllowed(getPhysicalServiceURLByIndex(serversIndex.get(j)), tmpFT, elem[k].getName())) {
+										if (!isAttributeAllowed(getPhysicalServiceURLByIndex(serversIndex.get(j)), el[i].getName(), elem[k].getName())) {
 											// Cela supprime, de la réponse, les
 											// Attributs non autorisés du
 											// FeatureType courant qui est
@@ -2502,7 +2502,7 @@ public class WFSProxyServlet extends ProxyServlet {
 					// wfsFilePathList.get(0) et pas le résultat joint des
 					// transformations sur les serveur: TempFile
 					else
-						transformer.transform(new StreamSource(wfsFilePathList.get(0)), new StreamResult(out));
+						transformer.transform(new StreamSource(wfsFilePathList.get(((TreeMap)wfsFilePathList).firstKey())), new StreamResult(out));
 					// delete the temporary file
 					tempFile.delete();
 					out.close();
@@ -2537,8 +2537,9 @@ public class WFSProxyServlet extends ProxyServlet {
 
 			InputStream is = null;
 			if (tempFile == null) {
-				is = new FileInputStream(wfsFilePathList.get(0));
-				resp.setContentLength((int) new File(wfsFilePathList.get(0)).length());
+				String wfsFileResult = wfsFilePathList.get(((TreeMap)wfsFilePathList).firstKey());
+				is = new FileInputStream(wfsFileResult);
+				resp.setContentLength((int) new File(wfsFileResult).length());
 			} else {
 				is = new FileInputStream(tempFile);
 				resp.setContentLength((int) tempFile.length());
@@ -3147,6 +3148,7 @@ public class WFSProxyServlet extends ProxyServlet {
 		boolean isServerFound = false;
 		boolean isFeatureTypeFound = false;
 		boolean FeatureTypeAllowed = false;
+		boolean AttributeFound = false;
 		
 		Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
     	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
@@ -3178,17 +3180,25 @@ public class WFSProxyServlet extends ProxyServlet {
 		    			}
 		    			// Supprime les résultats, contenu dans la globale var, issus du précédent appel de la fonction courante
 		    			policyAttributeListToKeepPerFT.clear();
+		    			 
 		    			for(SdiIncludedattribute includedattribute : includedAttributes){
 		    				if(includedattribute.getName().equals(attribute))
 		    					return true;
 		    				// If no attributes are listed in user req -> all the Policy Attributes will be returned
 		    			    else if (attribute.equals("")) {
+		    			    	AttributeFound = true;
 			    				String tmpFA = includedattribute.getName();
 			    				policyAttributeListToKeepPerFT.add(tmpFA);
 			    				// then at the end of function -> return false, "" is effectively not a valid attribute
 		    			    }
 		    			}
-		    			policyAttributeListNb = includedAttributes.size();
+		    			if(AttributeFound){
+			    			policyAttributeListNb = includedAttributes.size();
+			    			return false;
+		    			}
+		    			else{
+		    				return false;
+		    			}
 	    			}
 	    		}
     		}
