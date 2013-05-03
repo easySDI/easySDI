@@ -1,7 +1,7 @@
 <?php
 /**
 * @version     3.3.0
-* @package     com_easysdi_core
+* @package     plg_content_easysdi
 * @copyright   Copyright (C) 2013. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
 * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 /**
  * 
  *
- * @package     
+ * @package     plg_content_easysdi
  * @subpackage  
  * @since       3.3.0
  */
@@ -28,17 +28,35 @@ class plgContentEasysdi extends JPlugin
 		parent::__construct($subject, $config);
 		$this->loadLanguage();
 	}
+	
 	/**
 	 * Method is called right after the item is saved
 	 *
 	 * @param	string		The context of the content passed to the plugin (added in 1.6)
 	 * @param	object		A JTableContent object
 	 * @param	bool		If the content is just about to be created
-	 * @since	1.6
+	 * @since	2.5
 	 */
 	public function onContentAfterSave($context, $data, $isNew)
 	{
 		return $this->onContentAfterAction($context, $data, 'UPDATE');
+	}
+	
+	/**
+	 * This is fired when the item is published, unpublished, archived, or unarchived from the list view.
+	 *
+	 * @param	string		The context of the content passed to the plugin (added in 1.6)
+	 * @param	array		A list of primary key ids of the content that has changed state
+	 * @param	string		The value of the state that the content has been changed to.
+	 * @since	2.5
+	 */
+	public function onContentChangeState ($context, $pks, $value)
+	{
+		foreach ($pks as $pk){
+			$this->onContentIdAfterAction($context, $pk, 'UPDATE');
+		}
+		return true;
+		
 	}
 
 	/**
@@ -47,7 +65,7 @@ class plgContentEasysdi extends JPlugin
 	 * @param	string	The context for the content passed to the plugin.
 	 * @param	object	The data relating to the content that was deleted.
 	 * @return	boolean
-	 * @since	1.6
+	 * @since	2.5
 	 */
 	public function onContentAfterDelete($context, $data)
 	{
@@ -59,8 +77,20 @@ class plgContentEasysdi extends JPlugin
 	 * @param string	The context for the content passed to the plugin.
 	 * @param object	The data relating to the item.
 	 * @param string	Operation performed on the item : UPDATE or DELETE
+	 * @return	boolean
 	 */
 	private function onContentAfterAction ($context, $data, $operation){
+		return $this->onContentIdAfterAction($context, $data->id, $operation);
+	}
+	
+	/**
+	 *
+	 * @param string	The context for the content passed to the plugin.
+	 * @param int		The data id relating to the item.
+	 * @param string	Operation performed on the item : UPDATE or DELETE
+	 * @return	boolean
+	 */
+	private function onContentIdAfterAction($context, $id, $operation){
 		$entity = "";
 		if ($context == 'com_easysdi_service.policy') {
 			$entity = "SdiPolicy";
@@ -77,8 +107,7 @@ class plgContentEasysdi extends JPlugin
 		else if ($context == 'com_easysdi_contact.organism') {
 			$entity = "SdiOrganism";
 		}
-		$id = $data->id;
-		
+				
 		$params = JComponentHelper::getParams('com_easysdi_service');
 		if(!isset($params))return true;
 		$url = $params->get('proxyurl');
