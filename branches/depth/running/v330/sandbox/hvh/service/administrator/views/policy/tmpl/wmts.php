@@ -164,10 +164,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 					</fieldset>
 					
 					<div class="control-group">
-					<?php foreach($this->form->getFieldset('wmts_policy_hidden') as $field):?> 
-						<div class="controls"><?php echo $field->input; ?></div>
-					<?php
-					endforeach;
+					<?php 
 					foreach($this->form->getFieldset('hidden') as $field):
 					?> 
 						<div class="controls"><?php echo $field->input; ?></div>

@@ -181,6 +181,10 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 			AND c.id = ".$item->serviceconnector_id;
 			$db->setQuery($query);
 			$item->currentresourceauthenticationconnectorlist = $db->loadObjectList();
+			if ($error = $db->getErrorMsg()) {
+				$this->setError($error);
+				return false;
+			}
 				
 			$query	= "SELECT 0 AS id, '- None -' AS value UNION SELECT ac.id, ac.value FROM #__sdi_sys_authenticationconnector ac
 			INNER JOIN #__sdi_sys_servicecon_authenticationcon sc ON sc.authenticationconnector_id = ac.id
@@ -190,10 +194,18 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 			AND c.id = ".$item->serviceconnector_id;
 			$db->setQuery($query);
 			$item->currentserviceauthenticationconnectorlist = $db->loadObjectList();
+			if ($error = $db->getErrorMsg()) {
+				$this->setError($error);
+				return false;
+			}
 			
 			$query = "SELECT value FROM #__sdi_sys_serviceconnector WHERE id=".$item->serviceconnector_id;
 			$db->setQuery($query);
 			$item->serviceconnector = $db->loadResult();
+			if ($error = $db->getErrorMsg()) {
+				$this->setError($error);
+				return false;
+			}
 			
 			// Get the service scope
 			$item->organisms = $this->getServiceScopeOrganism($item->id);

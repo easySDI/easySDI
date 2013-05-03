@@ -89,10 +89,10 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 			<label class="checkbox">
 				<input type="checkbox" name="' . $prefix . '[anyitem]" class="anyitem" data-ps_id="' . $physicalServiceID . '" value="1" ' . ((1 == $psp->anyitem)?'checked="checked"':'') . ' /><label for="' . $prefix . '[anyitem]">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WFS_ANYITEM') . '</label>
 			</label>
-			<label for="minimumscale">' . JText::_('COM_EASYSDI_SERVICE_WFS_SERVER_PREFIXE') . '</label>
+			<label for="' . $prefix . '[prefix]" data-ps_id="' . $physicalServiceID . '">' . JText::_('COM_EASYSDI_SERVICE_WFS_SERVER_PREFIXE') . '</label>
 			<input type="text" name="' . $prefix . '[prefix]" data-ps_id="' . $physicalServiceID . '" value="' . $psp->prefix . '" />
 			<br />
-			<label for="maximumscale">' . JText::_('COM_EASYSDI_SERVICE_WFS_SERVER_NAMESPACE') . '</label>
+			<label for="' . $prefix . '[namespace]" data-ps_id="' . $physicalServiceID . '">' . JText::_('COM_EASYSDI_SERVICE_WFS_SERVER_NAMESPACE') . '</label>
 			<input type="text" name="' . $prefix . '[namespace]" data-ps_id="' . $physicalServiceID . '" value="' . $psp->namespace . '" />
 			<br />
 		';
@@ -144,12 +144,6 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 							<div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
 							<div class="controls"><?php echo $this->form->getInput('id'); ?></div>
 						</div>
-						<?php foreach($this->form->getFieldset('wfs_policy') as $field):?> 
-							<div class="control-group" id="<?php echo $field->fieldname;?>">
-								<div class="control-label"><?php echo $field->label; ?></div>
-								<div class="controls"><?php echo $field->input; ?></div>
-							</div>
-						<?php endforeach; ?>
 					</fieldset>
 					
 					<div class="control-group">
@@ -217,7 +211,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 														<button type="button" class="btn btn_modify_layer" data-toggle="modal" data-target="#layer_settings_modal" data-psid="<?php echo $ps->id;?>" data-vsid="<?php echo $this->item->virtualservice_id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>">
 															<?php echo JText::_('COM_EASYSDI_SERVICE_BTN_SETTINGS');?>
 														</button>
-														<button type="button" class="btn btn-danger btn_delete_layer" data-psid="<?php echo $ps->id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>" <?php if (!$layer->hasConfig()) echo 'disabled';?>>
+														<button type="button" class="btn btn-danger btn_delete_layer" data-psid="<?php echo $ps->id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>" >
 															<?php echo JText::_('COM_EASYSDI_SERVICE_BTN_DELETE_SETTINGS');?>
 														</button>
 													</td>

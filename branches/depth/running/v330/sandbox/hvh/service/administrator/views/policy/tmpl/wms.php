@@ -102,7 +102,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 		<input type="text" name="' . $prefix . '[maximumscale]" value="' . ((isset($spatialpolicy->maximumscale))?$spatialpolicy->maximumscale:'') . '" />
 		<br />
 		<label for="' . $prefix . '[geographicfilter]">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_FILTER') . '</label>
-		<textarea name="' . $prefix . '[geographicfilter]" rows="10" class="span12">' . ((isset($spatialpolicy->geographicfilter))?$spatialpolicy->geographicfilter:'') . '</textarea>
+		<textarea name="' . $prefix . '[geographicfilter]" rows="8" class="input-xxlarge">' . ((isset($spatialpolicy->geographicfilter))?$spatialpolicy->geographicfilter:'') . '</textarea>
 		<input type="hidden" name="' . $prefix . '[maxx]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'maxx" />
 		<input type="hidden" name="' . $prefix . '[maxy]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'maxy" />
 		<input type="hidden" name="' . $prefix . '[minx]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'minx" />
@@ -157,10 +157,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 					</fieldset>
 					
 					<div class="control-group">
-					<?php foreach($this->form->getFieldset('wms_policy_hidden') as $field):?> 
-						<div class="controls"><?php echo $field->input; ?></div>
-					<?php
-					endforeach;
+					<?php 
 					foreach($this->form->getFieldset('hidden') as $field):
 					?> 
 						<div class="controls"><?php echo $field->input; ?></div>
@@ -216,7 +213,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 														&nbsp;
 														<?php
 															if ($layer->hasConfig()) {
-																echo '<span class="label label-info">' . JText::_('COM_EASYSDI_SERVICE_LAYER_HAS_CONFIG') . '</span>';
+																echo '<span id="configured[' . $ps->id . '][' . $layer->name . ']" class="label label-info">' . JText::_('COM_EASYSDI_SERVICE_LAYER_HAS_CONFIG') . '</span>';
 															}
 														?>
 													</td>

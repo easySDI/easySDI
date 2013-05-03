@@ -62,6 +62,23 @@ JText::script('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE');
 					<?php endforeach; ?>
 					
 					<div class="control-group">
+						<div class="control-label"><?php echo $this->form->getLabel('csw_anystate'); ?></div>
+						<div class="controls"><?php echo $this->form->getInput('csw_anystate'); ?></div>
+					</div>
+					<div class="control-group">
+						<div class="control-label"><?php echo $this->form->getLabel('csw_state'); ?></div>
+						<div class="controls"><?php echo $this->form->getInput('csw_state'); ?></div>
+					</div>
+					<div class="control-group">
+						<div class="control-label"><?php echo $this->form->getLabel('csw_version_id'); ?></div>
+						<div class="controls"><?php echo $this->form->getInput('csw_version_id'); ?></div>
+					</div>
+					<div class="control-group">
+						<div class="control-label"><?php echo $this->form->getLabel('csw_geographicfilter'); ?></div>
+						<div class="controls"><?php echo $this->form->getInput('csw_geographicfilter'); ?></div>
+					</div>
+					
+					<div class="control-group">
 						<div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
 						<div class="controls"><?php echo $this->form->getInput('id'); ?></div>
 					</div>
@@ -69,10 +86,7 @@ JText::script('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE');
 					</fieldset>
 					
 					<div class="control-group">
-					<?php foreach($this->form->getFieldset('csw_policy_hidden') as $field):?> 
-						<div class="controls"><?php echo $field->input; ?></div>
-					<?php
-					endforeach;
+					<?php 
 					foreach($this->form->getFieldset('hidden') as $field):
 					?> 
 						<div class="controls"><?php echo $field->input; ?></div>
@@ -94,7 +108,7 @@ JText::script('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE');
 							$path_count = 0;
 							foreach ($paths as $path) {
 								echo '<div class="div_ea_' . $path_count . ' span12">
-									<textarea name="excluded_attribute[' . $path_count . ']" rows="5" class="span10">' . $path . '</textarea>
+									<textarea name="excluded_attribute[' . $path_count . ']" rows="1" class="inputbox input-xxlarge">' . $path . '</textarea>
 									<button type="button" class="btn btn-danger btn_ea_delete">' .JText::_('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE') . '</button>
 									<br /><br />
 								</div>';

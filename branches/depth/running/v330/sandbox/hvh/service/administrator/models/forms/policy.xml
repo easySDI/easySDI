@@ -76,15 +76,38 @@
 		<field name="allowfrom" type="calendar" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWFROM" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWFROM"  filter="safehtml" />
 		<field name="allowto" type="calendar" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWTO" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWTO"  filter="safehtml" />
 		<field name="anyoperation" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ANYOPERATION" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ANYOPERATION">
-			  <option value="0">NO</option>
-			  <option value="1">YES</option>
+			  <option value="0">JNO</option>
+			  <option value="1">JYES</option>
 			</field>
 	</fieldset>
 	
 	<fieldset name="csw_policy">
-		<field name="csw_anystate" type="checkbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYSTATE" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYSTATE" value="1" default="0"/>
-		<field 
-			name="csw_state" 
+		
+		<field name="csw_anycontext" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYCONTEXT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYCONTEXT" >
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="csw_anyvisibility" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYVISIBILITY" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYVISIBILITY" >
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="csw_includeharvested" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_INCLUDE_HARVESTED" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_INCLUDE_HARVESTED">
+		  <option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		
+	</fieldset>
+	
+	<field 	name="csw_anystate" 
+			type="radio" 
+			class="btn-group" 
+			default="1" 
+			label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYSTATE" 
+			description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYSTATE" >
+		<option value="0">JNO</option>
+		<option value="1">JYES</option>
+	</field>
+	<field  name="csw_state" 
 			type="sql" 
 			class="multiselect input-xxlarge"
 			onchange="onStateChange();"
@@ -99,9 +122,8 @@
 			key_field="id" 
 			value_field="value" 
 			required="false"
-		/>
-		<field
-			name="csw_version_id"
+	/>
+	<field	name="csw_version_id"
 			type="sql" 
 			class="inputbox"
 			label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_VERSION"
@@ -113,41 +135,15 @@
 				ORDER BY ordering" 
 			key_field="id" 
 			value_field="value"
-		/>
-		<field name="csw_anycontext" type="checkbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYCONTEXT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYCONTEXT" value="1" default="0"/>
-		<field name="csw_anyvisibility" type="checkbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYVISIBILITY" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYVISIBILITY" value="1" default="0"/>
-		<field name="csw_includeharvested" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_INCLUDE_HARVESTED" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_INCLUDE_HARVESTED">
-		  <option value="0">No</option>
-		  <option value="1">Yes</option>
-		</field>
-		<field name="csw_geographicfilter" type="textarea" rows="5" class="inputbox span12" filter="safehtml" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_GEOGRAPHICFILTER" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_GEOGRAPHICFILTER"  />
-	</fieldset>
+	/>
+		
+	<field name="csw_geographicfilter" type="textarea" rows="5" class="inputbox input-xxlarge" filter="safehtml" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_GEOGRAPHICFILTER" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_GEOGRAPHICFILTER"  />
 	
 	<fieldset name="wms_policy">
-		<field name="wms_minimumwidth" type="text" size="40" class="inputbox validate-numeric" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MINIMUMWIDTH" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MINIMUMWIDTH"  filter="safehtml" />
-		<field name="wms_minimumheight" type="text" size="40" class="inputbox validate-numeric" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MINIMUMHEIGHT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MINIMUMHEIGHT"  filter="safehtml" />
-		<field name="wms_maximumwidth" type="text" size="40" class="inputbox validate-numeric" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MAXIMUMWIDTH" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MAXIMUMWIDTH"  filter="safehtml" />
-		<field name="wms_maximumheight" type="text" size="40" class="inputbox validate-numeric" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MAXIMUMHEIGHT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MAXIMUMHEIGHT"  filter="safehtml" />
-	</fieldset>
-	
-	<fieldset name="wmts_policy_hidden">
-		<field name="prefix" type="hidden"  filter="SAFEHTML" />
-		<field name="namespace" type="hidden"  filter="SAFEHTML" />
-	</fieldset>
-	
-	<fieldset name="wfs_policy">
-		<field name="prefix" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WFS_PREFIX" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WFS_PREFIX"  filter="safehtml" />
-		<field name="namespace" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WFS_NAMESPACE" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WFS_NAMESPACE"  filter="safehtml" />
-	</fieldset>
-	
-	<fieldset name="csw_policy_hidden">
-		<field name="prefix" type="hidden"  filter="SAFEHTML" />
-		<field name="namespace" type="hidden"  filter="SAFEHTML" />
-	</fieldset>
-	
-	<fieldset name="wms_policy_hidden">
-		<field name="prefix" type="hidden"  filter="SAFEHTML" />
-		<field name="namespace" type="hidden"  filter="SAFEHTML" />
+		<field name="wms_minimumwidth" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MINIMUMWIDTH" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MINIMUMWIDTH"  filter="integer" />
+		<field name="wms_minimumheight" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MINIMUMHEIGHT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MINIMUMHEIGHT"  filter="integer" />
+		<field name="wms_maximumwidth" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MAXIMUMWIDTH" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MAXIMUMWIDTH"  filter="integer" />
+		<field name="wms_maximumheight" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MAXIMUMHEIGHT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_WMS_MAXIMUMHEIGHT"  filter="integer" />
 	</fieldset>
 	
 	<field 	name="id" 

@@ -346,7 +346,10 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				$max = $db->loadResult();
 				$table->ordering = $max+1;
 			}
-
+		}
+		//Fill alias with name as default value
+		if (empty($table->alias)){
+			$table->alias = $table->name;
 		}
 	}
 	
