@@ -37,6 +37,8 @@ import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.domain.SdiVirtualserviceHome;
 import org.easysdi.proxy.exception.InvalidServiceNameException;
 import org.easysdi.proxy.exception.PolicyNotFoundException;
+import org.easysdi.proxy.ows.OWSExceptionReport;
+import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -228,12 +230,11 @@ public class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPageCachin
 //				}
 //			} 
 //		}
-
-
-		final String key = calculateKey(request);
 		PageInfo pageInfo = null;
 		String originalThreadName = Thread.currentThread().getName();
 		try {
+			final String key = calculateKey(request);
+			
 			checkNoReentry(request);
 			Element element = blockingCache.get(key);
 			if (element == null || element.getObjectValue() == null) {
@@ -262,6 +263,14 @@ public class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPageCachin
 				logger.debug("Page is already cached. Send it to client.");
 				pageInfo = (PageInfo) element.getObjectValue();
 			}
+		}catch (PolicyNotFoundException e){
+			logger.error("No Policy found for the service. No request can be performed.");
+			new OWS200ExceptionReport().sendExceptionReport(request, response, "No Policy found for the service. No request can be performed.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "request", HttpServletResponse.SC_INTERNAL_SERVER_ERROR) ;
+		}catch (InvalidServiceNameException e){
+			logger.error("Could not determine proxy request from http request. Service name is invalid.");
+			new OWS200ExceptionReport().sendExceptionReport(request, response, "Could not determine proxy request from http request. Service name is invalid.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "request", HttpServletResponse.SC_INTERNAL_SERVER_ERROR) ;
+			
+			
 		} catch (LockTimeoutException e) {
 			// do not release the lock, because you never acquired it
 			throw e;

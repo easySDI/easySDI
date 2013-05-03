@@ -1585,7 +1585,7 @@ public class WMSProxyServlet extends ProxyServlet {
     					if(sdiPolicy.isAnyservice() || physicalservicePolicy.isAnyitem())
     						return true;
     					else
-    						return layerPolicy.isEnabled() ? true : false;
+    						return layerPolicy.isEnabled();
     				}
     			}
 	    		break;

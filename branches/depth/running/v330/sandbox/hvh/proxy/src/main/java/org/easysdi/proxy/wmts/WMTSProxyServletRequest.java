@@ -502,10 +502,10 @@ public class WMTSProxyServletRequest extends ProxyServletRequest {
 		    else if (key.equalsIgnoreCase("version"))
 		    {
 		    	version = request.getParameter(key);
-				if(!version.equalsIgnoreCase("1.0.0"))
-				{
-				    throw new VersionNotSupportedException(version);
-				}
+//				if(!version.equalsIgnoreCase("1.0.0"))
+//				{
+//				    throw new VersionNotSupportedException(version);
+//				}
 		    }
 		    else if (key.equalsIgnoreCase("sections"))
 		    {

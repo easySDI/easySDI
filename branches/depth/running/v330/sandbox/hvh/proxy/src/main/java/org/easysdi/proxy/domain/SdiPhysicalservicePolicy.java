@@ -97,7 +97,7 @@ public class SdiPhysicalservicePolicy implements java.io.Serializable {
 		if(this.sdiWmsSpatialpolicy == null)
 		{
 			if (this.getSdiPolicy().getSdiWmsSpatialpolicy() != null)
-				this.sdiWmsSpatialpolicy = this.getSdiPolicy().getSdiWmsSpatialpolicy();
+				return this.getSdiPolicy().getSdiWmsSpatialpolicy();
 		}
 		return this.sdiWmsSpatialpolicy;
 	}
@@ -133,7 +133,7 @@ public class SdiPhysicalservicePolicy implements java.io.Serializable {
 		{
 			if(this.getSdiPolicy().getSdiWmtsSpatialpolicy()!=null)
 			{
-				return getSdiPolicy().getSdiWmtsSpatialpolicy();
+				return this.getSdiPolicy().getSdiWmtsSpatialpolicy();
 			}
 		}
 		return this.sdiWmtsSpatialpolicy;

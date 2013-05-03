@@ -24,6 +24,7 @@ import org.hibernate.annotations.FilterDef;
 @Filter(name = "entityState",condition="state = 1")
 public class SdiPolicyMetadatastate implements java.io.Serializable {
 
+	private static final long serialVersionUID = 1514250916336817693L;
 	private Integer Id;
 	private SdiSysMetadatastate sdiSysMetadatastate;
 	private SdiPolicy sdiPolicy;

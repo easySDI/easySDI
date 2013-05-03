@@ -211,28 +211,40 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    	owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "LAYER", HttpServletResponse.SC_BAD_REQUEST);
 		return;
 	    }
+	    
+	    //Check if the requested layer is allowed
+	    if( !isLayerAllowed(pLayer.getPrefixedName(), physicalService.getResourceurl())){
+			logger.error( OWSExceptionReport.TEXT_INVALID_LAYERS_NAME+pLayer.getPrefixedName()+" is not allowed");
+			owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_INVALID_LAYERS_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_LAYER_NOT_DEFINED, "LAYERS", HttpServletResponse.SC_OK);
+			return ;
+		}
 
 	    //Check if the requested tile is allowed
 	    String tileAllowed = isTileAllowed((WMTSProxyServletRequest)getProxyRequest(), physicalService.getResourceurl());
 	    if(!tileAllowed.equalsIgnoreCase("true")){
-			//the tile is not allowed, a blank image is returned.
-			logger.debug("WMTSProxyServlet.requestPreTreatmentGetTile : tile is not allowed, generate an empty image");
-			BufferedImage imgOut = generateEmptyImage(physicalService.getResourceurl(), getProxyRequest().getFormat());
-			if(imgOut != null){
-			    Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(getProxyRequest().getFormat());
-			    ByteArrayOutputStream out = new ByteArrayOutputStream();
-			    if (iter.hasNext()) {
-				ImageWriter writer = (ImageWriter) iter.next();
-				writer.setOutput(javax.imageio.ImageIO.createImageOutputStream(out));
-				writer.write(imgOut);
-				writer.dispose();
-			    }
-			    sendHttpServletResponse(req, resp,out,getProxyRequest().getFormat(), HttpServletResponse.SC_OK);
-			}else{
-			    ByteArrayOutputStream out = null;
-			    sendHttpServletResponse(req, resp,out,getProxyRequest().getFormat(), HttpServletResponse.SC_OK);
-			}
-			
+	    	if(tileAllowed.equalsIgnoreCase("tileRow") || tileAllowed.equalsIgnoreCase("tileCol")){
+	    		//the tile is not allowed, a blank image is returned.
+				logger.debug("WMTSProxyServlet.requestPreTreatmentGetTile : tile is not allowed (Source : "+tileAllowed+"), generate an empty image");
+				BufferedImage imgOut = generateEmptyImage(physicalService.getResourceurl(), getProxyRequest().getFormat());
+				if(imgOut != null){
+				    Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(getProxyRequest().getFormat());
+				    ByteArrayOutputStream out = new ByteArrayOutputStream();
+				    if (iter.hasNext()) {
+					ImageWriter writer = (ImageWriter) iter.next();
+					writer.setOutput(javax.imageio.ImageIO.createImageOutputStream(out));
+					writer.write(imgOut);
+					writer.dispose();
+				    }
+				    sendHttpServletResponse(req, resp,out,getProxyRequest().getFormat(), HttpServletResponse.SC_OK);
+				}else{
+				    ByteArrayOutputStream out = null;
+				    sendHttpServletResponse(req, resp,out,getProxyRequest().getFormat(), HttpServletResponse.SC_OK);
+				}
+	    	}else{
+	    		//A parameter is not valid in the request
+	    		logger.error( OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE+tileAllowed);
+				owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE+tileAllowed,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, tileAllowed, HttpServletResponse.SC_OK);
+	    	}
 			return;
 	    }
 
@@ -453,8 +465,8 @@ public class WMTSProxyServlet extends ProxyServlet{
 		if (tileCol == null)
 		    return "tileCol";
 		
-		if(sdiPolicy.isAnyservice() && sdiPolicy.getSdiWmtsSpatialpolicy() == null)
-			return "true";
+//		if(sdiPolicy.isAnyservice() && sdiPolicy.getSdiWmtsSpatialpolicy() == null)
+//			return "true";
 		
 		boolean isServerFound = false;
 		for(SdiPhysicalservicePolicy physicalServicePolicy:sdiPolicy.getSdiPhysicalservicePolicies()){
@@ -462,9 +474,9 @@ public class WMTSProxyServlet extends ProxyServlet{
 			if(serverUrl.equalsIgnoreCase(physicalService.getResourceurl())){
 				isServerFound = true;
 				
-				//No spatial restriction on the service, all tiles allowed
-				if(physicalServicePolicy.isAnyitem() && physicalServicePolicy.getSdiWmtsSpatialpolicy() == null)
-					return "true";
+//				//No spatial restriction on the service, all tiles allowed
+//				if(physicalServicePolicy.isAnyitem() && physicalServicePolicy.getSdiWmtsSpatialpolicy() == null)
+//					return "true";
 				
 				boolean isLayerFound = false;
 				for(SdiWmtslayerPolicy wmtslayerPolicy :physicalServicePolicy.getSdiWmtslayerPolicies()){
@@ -473,16 +485,17 @@ public class WMTSProxyServlet extends ProxyServlet{
 						isLayerFound = true;
 						SdiWmtsSpatialpolicy wmtsSpatialpolicy = wmtslayerPolicy.getSdiWmtsSpatialpolicy();
 						//No spatial restriction for the layer, all tiles allowed
-						if(wmtsSpatialpolicy == null && wmtslayerPolicy.isAnytilematrixset()){
-							return "true";
-						}
+//						if(wmtsSpatialpolicy == null && wmtslayerPolicy.isAnytilematrixset()){
+//							return "true";
+//						}
 						
 						boolean isTileMatrixSetFound = false;
 						for(SdiTilematrixsetPolicy tilematrixsetPolicy : wmtslayerPolicy.getSdiTilematrixsetPolicies()){
 							if(tilematrixsetPolicy.getIdentifier().equalsIgnoreCase(pTileMatrixSet.getName())){
 								isTileMatrixSetFound = true;
-								//No spatial restriction on the matrixset, all tiles allowed
-								if(wmtsSpatialpolicy == null && tilematrixsetPolicy.isAnytilematrix()){
+								//The TileMatrixSet exists.
+								//If No spatial restriction on the TileMatrixSet, and no restriction on item, all tiles allowed
+								if(wmtsSpatialpolicy == null && (tilematrixsetPolicy.isAnytilematrix() || physicalServicePolicy.isAnyitem() || sdiPolicy.isAnyservice())){
 									return "true";
 								}
 								
@@ -490,7 +503,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 								for(SdiTilematrixPolicy tilematrixPolicy : tilematrixsetPolicy.getSdiTilematrixPolicies()){
 									if(tilematrixPolicy.getIdentifier().equalsIgnoreCase(tileMatrix)){
 										isTileMatrixFound = true;
-										if(wmtsSpatialpolicy == null && tilematrixPolicy.isAnytile()){
+										if(wmtsSpatialpolicy == null && tilematrixPolicy.isAnytile() ){
 											return "true";
 										}
 										
@@ -509,26 +522,26 @@ public class WMTSProxyServlet extends ProxyServlet{
 									}
 								}
 								if(!isTileMatrixFound){
-								    //TileMatrix is not allowed
+								    //TileMatrix is not valid
 								    return "TileMatrix";
 								}
 								
 							}
 						}
 						if(!isTileMatrixSetFound){
-						    //tileMatrixSet is not allowed
+						    //tileMatrixSet is not valid
 						    return "TileMatrixSet";
 						}
 					}
 				}
 				if(!isLayerFound){
-				    //layer is not allowed
+				    //layer is not valid
 				    return "Layer";
 				}
 			}
 		}
 		if(!isServerFound){
-		    //Server is not allowed
+		    //Server is not valid
 		    return "Server";
 		}
 		
@@ -537,10 +550,10 @@ public class WMTSProxyServlet extends ProxyServlet{
 
     /**
      * Detects if the layer is allowed or not against the rule.
-     * Overwrite the generic ProxyServlet method because in WMTS policy, 
-     * when all layer are allowed for a physical service or all physical services are allowed
-     * the name of the layer are not stored.
-     * This is a difference with the others policy, which contain all the layer name allowed 
+     * All available layers for each remote server are stored in the database.
+     * If a layer is not allowed by the policy, it is marked as disabled in the database.
+     * If a requested layer is not found in the database, that means this layer isn't exist
+     * in the remote server and the appropriate OGC exception should be send.
      * @param layer
      *            The layer to test
      * @param url
@@ -552,9 +565,6 @@ public class WMTSProxyServlet extends ProxyServlet{
     	if (layer == null)
 		    return false;
 	
-    	if(sdiPolicy.isAnyservice())
-    		return true;
-    	
     	Set<SdiPhysicalservicePolicy> physicalservicePolicies = sdiPolicy.getSdiPhysicalservicePolicies();
     	Iterator<SdiPhysicalservicePolicy> i = physicalservicePolicies.iterator();
     	while(i.hasNext())
@@ -562,15 +572,17 @@ public class WMTSProxyServlet extends ProxyServlet{
     		SdiPhysicalservicePolicy physicalservicePolicy = i.next();
     		if(physicalservicePolicy.getSdiPhysicalservice().getResourceurl().equals(url))
     		{
-    			if(physicalservicePolicy.isAnyitem())
-    				return true;
     			Set<SdiWmtslayerPolicy> wmtsLayerPolicies = physicalservicePolicy.getSdiWmtslayerPolicies();
 	    		Iterator<SdiWmtslayerPolicy> it = wmtsLayerPolicies.iterator();
 	    		while (it.hasNext())
 	    		{
 	    			SdiWmtslayerPolicy layerPolicy = it.next();
-	    			if(layerPolicy.getIdentifier().equals(layer) && layerPolicy.isEnabled())
-	    				return true;
+	    			if(layerPolicy.getIdentifier().equals(layer) ){
+	    				if(sdiPolicy.isAnyservice() || physicalservicePolicy.isAnyitem())
+    						return true;
+    					else
+    						return layerPolicy.isEnabled();
+	    			}
 	    		}
 	    		break;
     		}
