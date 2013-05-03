@@ -48,9 +48,9 @@ class plgUserEasysdi extends JPlugin {
 		$dbo = JFactory::getDBO();
 		$dbo->setQuery('SELECT id FROM #__sdi_user WHERE user_id = '. $user_id );
 		$id = $dbo->loadResult();
-		JFactory::getApplication()->enqueueMessage('SELECT id FROM #__sdi_user WHERE user_id = '. $user_id, 'error');
 		if($id){
-			JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDIUSER_ERR_CANT_DELETE'), 'error');
+			//JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDIUSER_ERR_CANT_DELETE'), 'error');
+			throw new Exception (JText::_('PLG_EASYSDIUSER_ERR_CANT_DELETE'));
 			return false;
 		}
 		return true;

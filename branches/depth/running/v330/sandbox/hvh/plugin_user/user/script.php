@@ -1,7 +1,7 @@
 <?php
 /**
- \* @version     3.3.0
- * @package     com_easysdi_service
+ * @version     3.3.0
+ * @package     plg_user_easysdi
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -9,8 +9,6 @@
 
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
-
-define( 'DS', DIRECTORY_SEPARATOR );
 
 class plgusereasysdiInstallerScript
 {
@@ -29,7 +27,7 @@ class plgusereasysdiInstallerScript
 			// Installing component manifest file version
 			$this->release = $parent->get( "manifest" )->version;
 			// Show the essential information at the install/update back-end
-			echo '<p>EasySDI plugin User [plg_easysdi]';
+			echo '<p>EasySDI plugin User [plg_user_easysdi]';
 			echo '<br />'.JText::_('Installing plugin manifest file version = ') . $this->release;
 		}
 	}

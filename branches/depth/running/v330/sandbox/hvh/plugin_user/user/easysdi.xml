@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="3.0" type="plugin" group="user">
-	<name>EasySDI plugin User</name>
+	<name>plg_user_easysdi</name>
 	<author>EasySDI Community</author>
 	<creationDate>15 August 2012</creationDate>
     <releaseDate>26 march 2013</releaseDate>
@@ -9,7 +9,7 @@
 	<authorEmail>contact@easysdi.org</authorEmail>
     <authorUrl>http://www.easysdi.org</authorUrl>
 	<version>3.3.0</version>
-	<description></description>
+	<description>PLG_USER_EASYSDI_XML_DESCRIPTION</description>
 	<scriptfile>script.php</scriptfile>
 	<files>
 		<filename plugin="easysdi">easysdi.php</filename>
