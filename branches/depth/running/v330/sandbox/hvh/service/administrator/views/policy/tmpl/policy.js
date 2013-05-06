@@ -1,6 +1,22 @@
 Joomla.submitbutton = function (task) {
 	if (task == 'policy.cancel' || document.formvalidator.isValid(document.id('policy-form'))) {
 		if ('policy.cancel' != task && 'WMS' == jQuery('#jform_layout').val()) {
+			if(jQuery('#jform_wms_maximumheight').val()!= '' && !jQuery.isNumeric(jQuery('#jform_wms_maximumheight').val()) ){
+				alert(Joomla.JText._('COM_EASYSDI_SERVICE_FORM_VALIDATION_FAILED_IMG_SIZE', 'Invalid value for : ')+Joomla.JText._('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MAXIMUMHEIGHT', 'Maximum Height'));
+				return;
+			}
+			if(jQuery('#jform_wms_minimumheight').val()!= '' &&  !jQuery.isNumeric(jQuery('#jform_wms_minimumheight').val()) ){
+				alert(Joomla.JText._('COM_EASYSDI_SERVICE_FORM_VALIDATION_FAILED_IMG_SIZE', 'Invalid value for : ')+Joomla.JText._('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MINIMUMHEIGHT','Minimum Height'));
+				return;
+			}
+			if(jQuery('#jform_wms_maximumwidth').val()!= '' &&  !jQuery.isNumeric(jQuery('#jform_wms_maximumwidth').val()) ){
+				alert(Joomla.JText._('COM_EASYSDI_SERVICE_FORM_VALIDATION_FAILED_IMG_SIZE', 'Invalid value for : ')+Joomla.JText._('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MAXIMUMWIDTH','Maximum Width'));
+				return;
+			}
+			if(jQuery('#jform_wms_minimumwidth').val()!= '' &&  !jQuery.isNumeric(jQuery('#jform_wms_minimumwidth').val()) ){
+				alert(Joomla.JText._('COM_EASYSDI_SERVICE_FORM_VALIDATION_FAILED_IMG_SIZE', 'Invalid value for : ')+Joomla.JText._('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMS_MINIMUMWIDTH','Minimum width')); 
+				return;
+			}
 			jQuery(document).trigger('recalculate', task);
 		}
 		else {
@@ -71,6 +87,7 @@ function popModalAlert (msg, cssClass) {
 }
 
 jQuery(document).ready(function (){
+
 	enableAccessScope();
 	initVisibility();
 	
