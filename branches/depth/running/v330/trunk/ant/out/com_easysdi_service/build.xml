@@ -3,16 +3,19 @@
 <project default="com_easysdi_service" basedir="../../../">
     
     <target name="package-service" description="Main target" >
-        <antcall target="common.copy-administrator">
-            <param name="component.name" value="com_easysdi_service"/>
-        </antcall>
-        <antcall target="common.copy-site">
-            <param name="component.name" value="com_easysdi_service"/>
-        </antcall>
         <antcall target="common.build-info">
             <param name="component.name" value="com_easysdi_service"/>
         </antcall>
         <antcall target="common.zip-package">
+            <param name="component.name" value="com_easysdi_service"/>
+        </antcall>
+    </target>
+    
+    <target name="synchronize-service" description="Sync target" >
+        <antcall target="common.copy-administrator">
+            <param name="component.name" value="com_easysdi_service"/>
+        </antcall>
+        <antcall target="common.copy-site">
             <param name="component.name" value="com_easysdi_service"/>
         </antcall>
     </target>
