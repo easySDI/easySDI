@@ -35,7 +35,7 @@
                                         map.package-map,
                                         monitor.package-monitor,
                                         plg-monitor.package-plg-monitor,
-                                        service.package-service,
+                                        service.synchronize-service,service.package-service,
                                         contact.package-contact,
                                         plg-user.package-plg-user,
                                         copy-sub-package,
