@@ -44,6 +44,8 @@
             <folder>controllers</folder>
             <folder>assets</folder>
             <folder>helpers</folder>
+			<folder>i18n</folder>
+            <folder>libraries</folder>
             <folder>models</folder>
             <folder>sql</folder>
             <folder>tables</folder>
