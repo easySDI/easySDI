@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<extension type="package" version="2.5" method="upgrade"> 
+    <name>EasySDI</name> 
+    <packager>EasySDI Community</packager> 
+    <packagename>easysdi</packagename>
+    <creationDate>15 August 2012</creationDate>
+    <releaseDate>14 february 2013</releaseDate>
+    <copyright>Copyright (C) 2012. All rights reserved.</copyright>
+    <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
+    <author>EasySDI Community</author>
+    <authorEmail>contact@easysdi.org</authorEmail>
+    <authorUrl>http://www.easysdi.org</authorUrl>
+    <version>3.1.3</version>
+    <description>PKG_EASYSDI_XML_DESCRIPTION</description> 
+    <files folder="easysdi"> 
+        <file type="component" id="com_easysdi_core">com_easysdi_core.zip</file> 
+        <file type="component" id="com_easysdi_user">com_easysdi_user.zip</file> 
+        <file type="component" id="com_easysdi_service">com_easysdi_service.zip</file>
+        <file type="component" id="com_easysdi_map">com_easysdi_map.zip</file>
+        <file type="plugin" id="easysdi" group="user">plg_easysdi_user.zip</file>
+        <file type="plugin" id="easysdi" group="content">plg_easysdi_monitor.zip</file> 
+    </files> 
+    <languages>
+        <language tag="en-GB">language/en-GB/en-GB.pkg_easysdi.sys.ini</language>
+        <language tag="fr-FR">language/fr-FR/fr-FR.pkg_easysdi.sys.ini</language>
+    </languages>
+    <updateservers>
+        <server type="collection">http://update.easysdi.org/packages/easysdi/manifest.xml</server>
+    </updateservers>
+</extension> 
