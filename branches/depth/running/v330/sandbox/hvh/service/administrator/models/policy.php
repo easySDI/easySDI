@@ -494,50 +494,58 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		);
 		
 		//test whether that policy already have a spatialPolicy or not
-		if (-1 == $spatialPolicyID) {
-			//we create the spatial policy
-			$query = $db->getQuery(true);
-			$query->insert('#__sdi_wmts_spatialpolicy')->columns(
-				'northboundlatitude, westboundlongitude, eastboundlongitude, southboundlatitude, spatialoperator_id'
-			)->values($spatialPolicy['northBoundLatitude'] . ', ' . $spatialPolicy['westBoundLongitude'] . ', ' . $spatialPolicy['eastBoundLongitude'] . ', ' . $spatialPolicy['southBoundLatitude'] . ', ' . $spatialPolicy['spatialoperatorid']);
-			
-			try {
-				$db->setQuery($query);
-				$db->execute();
-				$spatialPolicyID = $db->insertid();
+		if ('null' != $spatialPolicy['northBoundLatitude'] ) {
+			if (-1 == $spatialPolicyID) {
+				//we create the spatial policy
+				$query = $db->getQuery(true);
+				$query->insert('#__sdi_wmts_spatialpolicy')->columns(
+					'northboundlatitude, westboundlongitude, eastboundlongitude, southboundlatitude, spatialoperator_id'
+				)->values($spatialPolicy['northBoundLatitude'] . ', ' . $spatialPolicy['westBoundLongitude'] . ', ' . $spatialPolicy['eastBoundLongitude'] . ', ' . $spatialPolicy['southBoundLatitude'] . ', ' . $spatialPolicy['spatialoperatorid']);
+				
+				try {
+					$db->setQuery($query);
+					$db->execute();
+					$spatialPolicyID = $db->insertid();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
+				
+				//we update the spatial policy foreign key in policy
+				$policyUpdates[] = 'wmts_spatialpolicy_id = ' . $spatialPolicyID;
+				
 			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
+			else {
+				//we update the spatial policy
+				$query = $db->getQuery(true);
+				$query->update('#__sdi_wmts_spatialpolicy')->set(Array(
+					'northboundlatitude = ' . $spatialPolicy['northBoundLatitude'],
+					'westboundlongitude = ' . $spatialPolicy['westBoundLongitude'],
+					'eastboundlongitude = ' . $spatialPolicy['eastBoundLongitude'],
+					'southboundlatitude = ' . $spatialPolicy['southBoundLatitude'],
+					'spatialoperator_id = ' . $spatialPolicy['spatialoperatorid'],
+				))->where('id = ' . $spatialPolicyID);
+				
+				try {
+					$db->setQuery($query);
+					$db->execute();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
 			}
+		}
 			
+		//If spatial policy was cleared
+		if($spatialPolicyID != -1 && 'null' == $spatialPolicy['northBoundLatitude'] ){
 			//we update the spatial policy foreign key in policy
-			$policyUpdates[] = 'wmts_spatialpolicy_id = ' . $spatialPolicyID;
-			
+			$policyUpdates[] = 'wmts_spatialpolicy_id = NULL';
 		}
-		else {
-			//we update the spatial policy
-			$query = $db->getQuery(true);
-			$query->update('#__sdi_wmts_spatialpolicy')->set(Array(
-				'northboundlatitude = ' . $spatialPolicy['northBoundLatitude'],
-				'westboundlongitude = ' . $spatialPolicy['westBoundLongitude'],
-				'eastboundlongitude = ' . $spatialPolicy['eastBoundLongitude'],
-				'southboundlatitude = ' . $spatialPolicy['southBoundLatitude'],
-				'spatialoperator_id = ' . $spatialPolicy['spatialoperatorid'],
-			))->where('id = ' . $spatialPolicyID);
-			
-			try {
-				$db->setQuery($query);
-				$db->execute();
-			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
-			}
-		}
-			
+		
 		//we update the anyservice switch
 		$query = $db->getQuery(true);
 		$query->update('#__sdi_policy')->set($policyUpdates)->where('id = ' . $data['id']);
@@ -550,6 +558,22 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			$je = new JException($e->getMessage());
 			$this->setError($je);
 			return false;
+		}
+		
+		//If spatial policy was cleared
+		if($spatialPolicyID != NULL && 'null' == $spatialPolicy['northBoundLatitude'] ){
+			//delete the no more used spatial policy
+			$query = $db->getQuery(true);
+			$query->delete('#__sdi_wmts_spatialpolicy')->where('id = ' . $spatialPolicyID);
+			try {
+				$db->setQuery($query);
+				$db->execute();
+			}
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
 		}
 		
 		//Save the server-wide inheritance
@@ -589,47 +613,49 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			$spatialPolicy['southBoundLatitude'] = ('' != $spatialPolicy['southBoundLatitude'])?$spatialPolicy['southBoundLatitude']:'null';
 			
 			//test whether that physicalservice_policy already have a spatialPolicy or not
-			if (empty($spatialPolicyID)) {
-				//create a spatial policy
-				$query = $db->getQuery(true);
-				$query->insert('#__sdi_wmts_spatialpolicy')->columns(
-					'northboundlatitude, westboundlongitude, eastboundlongitude, southboundlatitude, spatialoperator_id'
-				)->values($spatialPolicy['northBoundLatitude'] . ', ' . $spatialPolicy['westBoundLongitude'] . ', ' . $spatialPolicy['eastBoundLongitude'] . ', ' . $spatialPolicy['southBoundLatitude'] . ', ' . $spatialPolicy['spatialoperatorid']);
-				
-				try {
-					$db->setQuery($query);
-					$db->execute();
-					$spatialPolicyID = $db->insertid();
+			if ('null' != $spatialPolicy['northBoundLatitude'] ) {
+				if (empty($spatialPolicyID)) {
+					//create a spatial policy
+					$query = $db->getQuery(true);
+					$query->insert('#__sdi_wmts_spatialpolicy')->columns(
+						'northboundlatitude, westboundlongitude, eastboundlongitude, southboundlatitude, spatialoperator_id'
+					)->values($spatialPolicy['northBoundLatitude'] . ', ' . $spatialPolicy['westBoundLongitude'] . ', ' . $spatialPolicy['eastBoundLongitude'] . ', ' . $spatialPolicy['southBoundLatitude'] . ', ' . $spatialPolicy['spatialoperatorid']);
+					
+					try {
+						$db->setQuery($query);
+						$db->execute();
+						$spatialPolicyID = $db->insertid();
+					}
+					catch (JDatabaseException $e) {
+						$je = new JException($e->getMessage());
+						$this->setError($je);
+						return false;
+					}
+					
+					//update the spatial foreign key in physicalservice_policy
+					$physicalServicePolicyUpdates[] = 'wmts_spatialpolicy_id = ' . $spatialPolicyID;
+					
 				}
-				catch (JDatabaseException $e) {
-					$je = new JException($e->getMessage());
-					$this->setError($je);
-					return false;
-				}
-				
-				//update the spatial foreign key in physicalservice_policy
-				$physicalServicePolicyUpdates[] = 'wmts_spatialpolicy_id = ' . $spatialPolicyID;
-				
-			}
-			else {
-				//update the spatial policy
-				$query = $db->getQuery(true);
-				$query->update('#__sdi_wmts_spatialpolicy')->set(Array(
-					'northboundlatitude = ' . $spatialPolicy['northBoundLatitude'],
-					'westboundlongitude = ' . $spatialPolicy['westBoundLongitude'],
-					'eastboundlongitude = ' . $spatialPolicy['eastBoundLongitude'],
-					'southboundlatitude = ' . $spatialPolicy['southBoundLatitude'],
-					'spatialoperator_id = ' . $spatialPolicy['spatialoperatorid'],
-				))->where('id = ' . $spatialPolicyID);
-				
-				try {
-					$db->setQuery($query);
-					$db->execute();
-				}
-				catch (JDatabaseException $e) {
-					$je = new JException($e->getMessage());
-					$this->setError($je);
-					return false;
+				else {
+					//update the spatial policy
+					$query = $db->getQuery(true);
+					$query->update('#__sdi_wmts_spatialpolicy')->set(Array(
+						'northboundlatitude = ' . $spatialPolicy['northBoundLatitude'],
+						'westboundlongitude = ' . $spatialPolicy['westBoundLongitude'],
+						'eastboundlongitude = ' . $spatialPolicy['eastBoundLongitude'],
+						'southboundlatitude = ' . $spatialPolicy['southBoundLatitude'],
+						'spatialoperator_id = ' . $spatialPolicy['spatialoperatorid'],
+					))->where('id = ' . $spatialPolicyID);
+					
+					try {
+						$db->setQuery($query);
+						$db->execute();
+					}
+					catch (JDatabaseException $e) {
+						$je = new JException($e->getMessage());
+						$this->setError($je);
+						return false;
+					}
 				}
 			}
 			
@@ -645,6 +671,39 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				$je = new JException($e->getMessage());
 				$this->setError($je);
 				return false;
+			}
+			
+			//If spatial policy was cleared
+			if($spatialPolicyID != NULL && 'null' == $spatialPolicy['northBoundLatitude'] ){
+				//update the spatial foreign key in physicalservice_policy
+				$physicalServicePolicyUpdates[] = 'wmts_spatialpolicy_id = NULL';
+			
+				//update the anyitem switch
+				$query = $db->getQuery(true);
+				$query->update('#__sdi_physicalservice_policy')->set($physicalServicePolicyUpdates)->where('id = ' . $physicalServicePolicyID);
+			
+				try {
+					$db->setQuery($query);
+					$db->execute();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
+			
+				//delete the no more used spatial policy
+				$query = $db->getQuery(true);
+				$query->delete('#__sdi_wmts_spatialpolicy')->where('id = ' . $spatialPolicyID);
+				try {
+					$db->setQuery($query);
+					$db->execute();
+				}
+				catch (JDatabaseException $e) {
+					$je = new JException($e->getMessage());
+					$this->setError($je);
+					return false;
+				}
 			}
 		}
 		

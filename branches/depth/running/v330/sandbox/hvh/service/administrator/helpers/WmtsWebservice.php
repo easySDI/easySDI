@@ -93,7 +93,7 @@ class WmtsWebservice {
 			</table>
 			<hr />
 			<select name="spatialoperatorid">
-				<option value="">' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_SPATIAL_OPERATOR_LABEL') . '</option>';
+				';
 				foreach ($resultset as $spatialOperator) {
 					$html .= '<option value="' . $spatialOperator->id . '" ' . (($spatialOperator->id == $layerObj->spatialOperator)?'selected="selected"':'') . '>' . $spatialOperator->value . '</option>';
 				}
@@ -371,6 +371,15 @@ class WmtsWebservice {
 			return false;
 		}
 		
+                JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_service'.DS.'tables');
+                $dispatcher = JEventDispatcher::getInstance();
+                // Include the content plugins for the on save events.
+                JPluginHelper::importPlugin('content');
+                $table = JTable::getInstance("policy", "Easysdi_serviceTable", array());
+                $table->load($policyID);
+                // Trigger the onContentAfterSave event.
+                $dispatcher->trigger('onContentAfterSave', array('com_easysdi_service.policy', $table, false));
+                
 		return WmtsWebservice::setTileMatrixSettings($wmtslayerpolicy_id, $raw_GET);
 	}
 	

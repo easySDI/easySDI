@@ -78,7 +78,14 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	}
 	else {
 		$prefix .= '_server[' . $physicalServiceID . ']';
-		$anyItem = (isset($spatialpolicy->anyitem))?$spatialpolicy->anyitem:1;
+		$db->setQuery('
+				SELECT psp.anyitem
+				FROM #__sdi_physicalservice_policy psp
+				WHERE psp.physicalservice_id = ' . $physicalServiceID . '
+				AND psp.policy_id = ' . $data->id . ';
+				');
+		$db->execute();
+		$anyItem = $db->loadResult();
 		$html .= '
 			<label class="checkbox">
 				<input type="checkbox" name="' . $prefix . '[anyitem]" class="anyitem" data-ps_id="' . $physicalServiceID . '" value="1" ' . ((1 == $anyItem)?'checked="checked"':'') . ' /><label for="anyitem_' . $physicalServiceID . '">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WMTS_ANYITEM') . '</label>
@@ -113,8 +120,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 			</tr>
 		</table>
 		<br />
-		<select name="' . $prefix . '[spatialoperatorid]">
-			<option value="">' . JText::_('COM_EASYSDI_SERVICE_WMTS_LAYER_SPATIAL_OPERATOR_LABEL') . '</option>';
+		<select name="' . $prefix . '[spatialoperatorid]">';
 			foreach ($resultset as $spatialOperator) {
 				$wsp_value = (isset($spatialpolicy->spatialoperator_id))?$spatialpolicy->spatialoperator_id:'';
 				$html .= '<option value="' . $spatialOperator->id . '" ' . (($spatialOperator->id == $wsp_value)?'selected="selected"':'') . '>' . $spatialOperator->value . '</option>';
