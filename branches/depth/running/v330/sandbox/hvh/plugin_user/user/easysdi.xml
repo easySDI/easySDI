@@ -9,7 +9,7 @@
 	<authorEmail>contact@easysdi.org</authorEmail>
     <authorUrl>http://www.easysdi.org</authorUrl>
 	<version>3.3.0</version>
-	<description>PLG_USER_EASYSDI_XML_DESCRIPTION</description>
+	<description></description>
 	<scriptfile>script.php</scriptfile>
 	<files>
 		<filename plugin="easysdi">easysdi.php</filename>
