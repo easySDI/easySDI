@@ -17,7 +17,8 @@
 	  <file type="component"  id="com_easysdi_contact"  >com_easysdi_contact.zip</file> 
       <file type="component"  id="com_easysdi_service"  >com_easysdi_service.zip</file>
       <file type="component"  id="com_easysdi_map"      >com_easysdi_map.zip</file>
-	  <file type="plugin"  	  id="easysdi" group="user" >plg_easysdi.zip</file> 
+	  <file type="plugin"  	  id="easysdi" group="user" >plg_user_easysdi.zip</file> 
+	  <file type="plugin"  	  id="easysdi" group="content" >plg_content_easysdi.zip</file>
 	  <file type="template"   id="easysdi_template" client="site">easysdi_template.zip</file>
   </files> 
   <languages>
