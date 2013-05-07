@@ -142,9 +142,10 @@ class HTML_metadata {
 							  INNER JOIN #__sdi_object parent_o ON otl.parent_id=parent_o.objecttype_id
 							  INNER JOIN #__sdi_objectversion parent_ov ON parent_ov.object_id=parent_o.id
 							  INNER JOIN #__sdi_metadata parent_m ON parent_ov.metadata_id=parent_m.id
+							  INNER JOIN #__sdi_metadata child_m ON child_ov.metadata_id=child_m.id
 							  INNER JOIN #__sdi_objectversionlink ovl ON (ovl.parent_id=parent_ov.id and ovl.child_id=child_ov.id)
 							  WHERE otl.parentbound_upper=1
-							  		AND child_o.id=".$object_id);
+								AND child_m.guid='".$metadata_id."'");
 		$parentInfos = $database->loadObject();
 		
 		if (count($parentInfos) > 0)
