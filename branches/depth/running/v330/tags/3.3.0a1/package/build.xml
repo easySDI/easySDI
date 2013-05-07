@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="package" basedir=".">
+	<property name="projet.out.dir" value="out" />
+	<property name="projet.easysdi.dir" value="easysdi" />
+	<property name="projet.core.dir" value="../core/out" />
+	<property name="projet.service.dir" value="../service/out" />
+	<property name="projet.contact.dir" value="../contact/out" />
+	<property name="projet.map.dir" value="../map/out" />
+	<property name="projet.plg-user.dir" value="../plugin_user/out" />
+	<property name="projet.plg-content.dir" value="../plugin_content/out" />
+	<property name="projet.template.dir" value="../easysdi_template/out" />
+
+
+	<target name="package" depends="create-structure,include-component,compression"
+		description="Main target">
+	</target>
+
+	<target name="create-structure" description="Creating the working directory structure">
+		<mkdir dir="${projet.out.dir}" />
+		<mkdir dir="${projet.easysdi.dir}" />
+	</target>
+	
+	<target name="include-component" description="Include component installer">
+		<copy todir="${projet.easysdi.dir}">
+			<fileset dir="${projet.core.dir}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${projet.easysdi.dir}">
+			<fileset dir="${projet.service.dir}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${projet.easysdi.dir}">
+			<fileset dir="${projet.contact.dir}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${projet.easysdi.dir}">
+			<fileset dir="${projet.map.dir}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${projet.easysdi.dir}">
+			<fileset dir="${projet.plg-user.dir}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${projet.easysdi.dir}">
+			<fileset dir="${projet.plg-content.dir}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${projet.easysdi.dir}">
+			<fileset dir="${projet.template.dir}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+	</target>
+	
+    <target name="compression" description="Compression" depends="create-structure">
+		<jar compress="true" 
+		    jarfile="${projet.out.dir}/pkg_easysdi.zip"
+			basedir="." 
+			excludes=" 
+			        build.xml ;
+					out/** ; 
+					.cache/** ; 
+					.svn/** ; 
+					.settings/** ; 
+					.project ; 
+			 		.prefs ; 
+					.buildpath " />
+	</target>
+</project>

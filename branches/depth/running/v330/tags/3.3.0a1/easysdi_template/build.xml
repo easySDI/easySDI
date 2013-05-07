@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="package" basedir=".">
+	<property name="projet.out.dir" value="out" />
+
+
+	<target name="package" depends="create-structure,compression"
+		description="Main target">
+	</target>
+
+	<target name="create-structure" description="Creating the working directory structure">
+		<mkdir dir="${projet.out.dir}" />
+	</target>
+	
+    <target name="compression" description="Compression" depends="create-structure">
+		<jar compress="true" 
+		    jarfile="${projet.out.dir}/easysdi_template.zip"
+			basedir="." 
+			excludes=" 
+			        build.xml ; 
+					out/** ; 
+					.cache/** ; 
+					.svn/** ; 
+					.settings/** ; 
+					.project; 
+			 		.prefs; 
+					.buildpath" />
+	</target>
+
+
+</project>
