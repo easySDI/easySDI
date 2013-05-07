@@ -13,7 +13,6 @@
 	<scriptfile>script.php</scriptfile>
 	<files>
 		<filename plugin="easysdi">easysdi.php</filename>
-		<filename>index.html</filename>
 	</files>
 	<languages>
 		<language tag="en-GB">language/en-GB/en-GB.plg_content_easysdi.sys.ini</language>

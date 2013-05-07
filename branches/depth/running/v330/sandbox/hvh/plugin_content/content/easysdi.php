@@ -73,6 +73,7 @@ class plgContentEasysdi extends JPlugin
 	}
 	
 	/**
+	 * Method is called after a catch action (update, delete, state changed)
 	 * 
 	 * @param string	The context for the content passed to the plugin.
 	 * @param object	The data relating to the item.
@@ -84,7 +85,11 @@ class plgContentEasysdi extends JPlugin
 	}
 	
 	/**
-	 *
+	 * Method is called after a catch action (update, delete, state changed)
+	 * with the item id as parameter.
+	 * Perform a call to the EasySDI Proxy Cache Invalidation Servlet with the
+	 * required parameters to invalidate only the needed regions of the cache.
+	 * 
 	 * @param string	The context for the content passed to the plugin.
 	 * @param int		The data id relating to the item.
 	 * @param string	Operation performed on the item : UPDATE or DELETE
