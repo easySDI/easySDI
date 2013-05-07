@@ -108,22 +108,7 @@ public class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPageCachin
 			//No cache for this request
 			chain.doFilter(request, response);
 		}
-//		if (("GetMap").equalsIgnoreCase(operationValue) ||
-//				("GetRecords").equalsIgnoreCase(operationValue) ||
-//				("GetTile").equalsIgnoreCase(operationValue)||
-//				("DescribeRecord").equalsIgnoreCase(operationValue)||
-//				("GetRecordById").equalsIgnoreCase(operationValue)||
-//				("GetFeature").equalsIgnoreCase(operationValue) ||
-//				("GetFeatureInfo").equalsIgnoreCase(operationValue)||
-//				("Transaction").equalsIgnoreCase(operationValue))		{
-//			//No cache for this request
-//			chain.doFilter(request, response);
-//		}
-//		else
-//		{
-//			//Request response is put in cache
-//			super.doFilter(request, response, chain);
-//		}
+
 	}
 
 	@Override
@@ -148,17 +133,6 @@ public class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPageCachin
 	@Override
 	protected String calculateKey(HttpServletRequest httpRequest) throws PolicyNotFoundException, InvalidServiceNameException{
 		String servletName = httpRequest.getServletPath().substring(1);
-//		virtualserviceCache = cm.getCache("virtualserviceCache");
-//		String user = null;
-//		Principal principal = SecurityContextHolder.getContext().getAuthentication();
-//		if (principal != null)
-//			user = principal.getName();
-//		Element policyE = virtualserviceCache.get(servletName + user);
-//		if(policyE == null)
-//		{
-//			//No policy available
-//			throw new PolicyNotFoundException("No policy found.");
-//		}
 		
 		String username = null;
 		Authentication principal = SecurityContextHolder.getContext().getAuthentication();
@@ -201,35 +175,6 @@ public class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPageCachin
 
 	@Override
 	protected PageInfo buildPageInfo(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain) throws Exception {
-//		boolean cacheAllowed = false;
-
-//		//If it's a GetMap operation, vendor specific parameter CACHE prevails upon user's role
-//		if(("GetMap").equalsIgnoreCase(operationValue)){
-//			cacheAllowed = bCache;
-//		}else{
-			//HVH - 01.12.2010
-			//To allow the anonymous user to be handled as others users, we need to get throw the SecurityContextHolder
-			//to get the Authentication (httpRequest.getUserPrincipal() returns null in the case of anonymous authentication).
-			//For the same reasons, we can't use httpRequest.isUserInRole() which always returns false for anonymous user.
-//			Authentication  principal = SecurityContextHolder.getContext().getAuthentication();
-//			if ((principal == null)) {
-//				cacheAllowed = false;
-//			}
-//			Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>)principal.getAuthorities();
-//			if (authorities == null) {
-//				cacheAllowed = false;
-//			}
-//			else
-//			{
-//				cacheAllowed = true;
-//			}
-//			for (GrantedAuthority grantedAuthority : authorities) {
-//				if (("EASYSDI_CACHE").equals(grantedAuthority.getAuthority())) {
-//					cacheAllowed = true;
-//					break;
-//				}
-//			} 
-//		}
 		PageInfo pageInfo = null;
 		String originalThreadName = Thread.currentThread().getName();
 		try {
@@ -266,10 +211,11 @@ public class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPageCachin
 		}catch (PolicyNotFoundException e){
 			logger.error("No Policy found for the service. No request can be performed.");
 			new OWS200ExceptionReport().sendExceptionReport(request, response, "No Policy found for the service. No request can be performed.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "request", HttpServletResponse.SC_INTERNAL_SERVER_ERROR) ;
+			throw e;
 		}catch (InvalidServiceNameException e){
 			logger.error("Could not determine proxy request from http request. Service name is invalid.");
 			new OWS200ExceptionReport().sendExceptionReport(request, response, "Could not determine proxy request from http request. Service name is invalid.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "request", HttpServletResponse.SC_INTERNAL_SERVER_ERROR) ;
-			
+			throw e;
 			
 		} catch (LockTimeoutException e) {
 			// do not release the lock, because you never acquired it

@@ -27,8 +27,8 @@
       </layout>
    </appender>
 	
-	<logger name="net.sf.ehcache" level="ALL">
-		 <priority value="TRACE" /> 
+	<logger name="net.sf.ehcache">
+		 <level value="OFF" /> 
 		<appender-ref ref="console"/>
 	</logger>
 
@@ -38,12 +38,12 @@
   	</logger>
   	
   	<logger name="EasySdiConfigFilter" additivity="false">
-    	<level value="DEBUG" />
+    	<level value="INFO" />
     	<appender-ref ref="rootAppender"/>
   	</logger>
   	
   	<logger name="ProxyLogger" additivity="false">
-    	<level value="ERROR" />
+    	<level value="INFO" />
     	<appender-ref ref="logFileAppender"/>
   	</logger>
 	

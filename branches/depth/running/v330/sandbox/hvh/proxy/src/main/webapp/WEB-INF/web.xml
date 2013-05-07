@@ -2,8 +2,8 @@
 <web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
- <display-name>EasySDI Proxy 3.0.0</display-name>
-    <description>EasySDI Proxy 3.0.0</description>
+ <display-name>EasySDI Proxy 3.3.0a1</display-name>
+    <description>EasySDI Proxy 3.3.0a1</description>
     
 	<jsp-config>
 		<taglib>
@@ -46,12 +46,7 @@
 			<param-value>true</param-value>
 		</init-param>
 	</filter>
-	
-	<!-- <filter>
-		<filter-name>hibernateFilter</filter-name>
-		<filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
-	</filter>
- -->
+
 	<listener>
 		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
 	</listener>
@@ -74,11 +69,6 @@
 		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	
-	<!-- <filter-mapping>
-		<filter-name>hibernateFilter</filter-name>
-		<url-pattern>/ogc/*</url-pattern>
-	</filter-mapping> -->
 
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>

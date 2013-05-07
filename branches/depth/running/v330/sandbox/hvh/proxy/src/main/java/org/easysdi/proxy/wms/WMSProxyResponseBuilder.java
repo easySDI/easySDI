@@ -668,47 +668,45 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
     					if(layer.getName().equals(proxyLayer.getPrefixedName()))
 						{
 							SdiWmsSpatialpolicy spatialPolicy = layer.getSdiWmsSpatialpolicy();
-							if(spatialPolicy != null)
+							if(spatialPolicy != null && spatialPolicy.getSrssource()!= null && spatialPolicy.getSrssource() != "")
 							{
-								if(spatialPolicy.getSrssource()!= null)
+								if(spatialPolicy.getSrssource().equalsIgnoreCase("EPSG:4326"))
+				    			{
+				    				wgsMaxx = (spatialPolicy.getMaxx()).toString();
+				    				wgsMaxy = (spatialPolicy.getMaxy()).toString();
+				    				wgsMinx = (spatialPolicy.getMinx()).toString();
+				    				wgsMiny = (spatialPolicy.getMiny()).toString();
+				    			}	
+				    			else
+				    			{
+				    				
+					    				CoordinateReferenceSystem sourceCRS = CRS.decode(spatialPolicy.getSrssource());
+					    				MathTransform transform = CRS.findMathTransform(sourceCRS, wgsCRS);
+					    				Envelope sourceEnvelope = new Envelope(spatialPolicy.getMinx().doubleValue(),spatialPolicy.getMaxx().doubleValue(),spatialPolicy.getMiny().doubleValue(),spatialPolicy.getMaxy().doubleValue());
+					    				Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
+					    				wgsMaxx = (String.valueOf(targetEnvelope.getMaxX()));
+					    				wgsMaxy = (String.valueOf(targetEnvelope.getMaxY()));
+					    				wgsMinx = (String.valueOf(targetEnvelope.getMinX()));
+					    				wgsMiny = (String.valueOf(targetEnvelope.getMinY()));
+				    				
+				    			}
+								
+								if( !writeLatLonBBOX(elementLayer, wgsMinx, wgsMiny,wgsMaxx, wgsMaxy)) return false;
+				    			
+				    			parentCRS = writeCRSBBOX(elementLayer,spatialPolicy,wgsCRS,parentCRS,wgsMinx,wgsMiny,wgsMaxx,wgsMaxy);
+				    			
+				    			Filter filtre = new WMSProxyCapabilitiesLayerFilter();
+				    			Iterator<Element> itL = elementLayer.getDescendants(filtre);
+				    			List<org.jdom.Element> sublayersList = new ArrayList<org.jdom.Element>();
+						    	while(itL.hasNext())
 								{
-									if(spatialPolicy.getSrssource().equalsIgnoreCase("EPSG:4326"))
-					    			{
-					    				wgsMaxx = (spatialPolicy.getMaxx()).toString();
-					    				wgsMaxy = (spatialPolicy.getMaxy()).toString();
-					    				wgsMinx = (spatialPolicy.getMinx()).toString();
-					    				wgsMiny = (spatialPolicy.getMiny()).toString();
-					    			}	
-					    			else
-					    			{
-					    				
-						    				CoordinateReferenceSystem sourceCRS = CRS.decode(spatialPolicy.getSrssource());
-						    				MathTransform transform = CRS.findMathTransform(sourceCRS, wgsCRS);
-						    				Envelope sourceEnvelope = new Envelope(spatialPolicy.getMinx().doubleValue(),spatialPolicy.getMaxx().doubleValue(),spatialPolicy.getMiny().doubleValue(),spatialPolicy.getMaxy().doubleValue());
-						    				Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
-						    				wgsMaxx = (String.valueOf(targetEnvelope.getMaxX()));
-						    				wgsMaxy = (String.valueOf(targetEnvelope.getMaxY()));
-						    				wgsMinx = (String.valueOf(targetEnvelope.getMinX()));
-						    				wgsMiny = (String.valueOf(targetEnvelope.getMinY()));
-					    				
-					    			}
-									
-									if( !writeLatLonBBOX(elementLayer, wgsMinx, wgsMiny,wgsMaxx, wgsMaxy)) return false;
-					    			
-					    			parentCRS = writeCRSBBOX(elementLayer,spatialPolicy,wgsCRS,parentCRS,wgsMinx,wgsMiny,wgsMaxx,wgsMaxy);
-					    			
-					    			Filter filtre = new WMSProxyCapabilitiesLayerFilter();
-					    			Iterator<Element> itL = elementLayer.getDescendants(filtre);
-					    			List<org.jdom.Element> sublayersList = new ArrayList<org.jdom.Element>();
-							    	while(itL.hasNext())
-									{
-							    		sublayersList.add((org.jdom.Element)itL.next());
-									}
-					    			while(itL.hasNext())
-									{
-							    		if ( !rewriteBBOX(sublayersList, wgsCRS,parentCRS) ) return false;
-									}
+						    		sublayersList.add((org.jdom.Element)itL.next());
 								}
+				    			while(itL.hasNext())
+								{
+						    		if ( !rewriteBBOX(sublayersList, wgsCRS,parentCRS) ) return false;
+								}
+								
 							}
 						}
     				}

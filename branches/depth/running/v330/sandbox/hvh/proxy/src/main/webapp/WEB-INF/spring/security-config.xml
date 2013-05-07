@@ -43,14 +43,5 @@
 	<bean id="joomlaCookieAuthenticationFilter" class="org.easysdi.proxy.security.JoomlaCookieAuthenticationFilter" />
 	
 	<bean id="authenticatedVoter" class="org.springframework.security.access.vote.AuthenticatedVoter" />
-	
- <!-- 	<bean id="sessionFilterAdvice" class="org.easysdi.proxy.hibernate.SessionFilterAdvice" />
-	
-	<aop:config>
-	    <aop:aspect id="forceFilter" ref="sessionFilterAdvice">
-	        <aop:pointcut id="hibernateSessionFactoryGetSession" expression="execution(* org.hibernate.SessionFactory.openSession(..))" />
-	        <aop:after-returning method="setupFilter" pointcut-ref="hibernateSessionFactoryGetSession" returning="session" />
-	    </aop:aspect>
-	</aop:config>   -->
 		
 </beans>

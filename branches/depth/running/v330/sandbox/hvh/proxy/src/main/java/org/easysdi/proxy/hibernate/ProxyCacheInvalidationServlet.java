@@ -5,7 +5,6 @@ package org.easysdi.proxy.hibernate;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import javax.servlet.ServletException;
@@ -225,13 +224,30 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
 		for(SdiExcludedattribute attribute :policy.getSdiExcludedattributes()){
 			cache.evictEntity("org.easysdi.proxy.domain.SdiExcludedattribute", attribute.getId());
 		}
-		cache.evictCollection("org.easysdi.proxy.domain.SdiPolicy.sdiExcludedattributes", policy.getId());
+		cache.evictCollection("org.easysdi.proxy.domain.SdiPolicy.sdiExcludedattributes", id);
 		cache.evictCollection("org.easysdi.proxy.domain.SdiPolicy.sdiPhysicalservicePolicies", id);
 		cache.evictCollection("org.easysdi.proxy.domain.SdiPolicy.sdiOrganisms", id);
 		cache.evictCollection("org.easysdi.proxy.domain.SdiPolicy.sdiAllowedoperations", id);
 		cache.evictCollection("org.easysdi.proxy.domain.SdiPolicy.sdiUsers", id);
 		cache.evictCollection("org.easysdi.proxy.domain.SdiPolicy.sdiPolicyMetadatastates", id);
-		cache.evictCollection("org.easysdi.proxy.domain.SdiPolicy.sdiExcludedattributes", id);
+		
+		if(policy.getSdiWfsSpatialpolicy() != null){
+			cache.evictEntity("org.easysdi.proxy.domain.SdiWfsSpatialpolicy", policy.getSdiWfsSpatialpolicy().getId());
+			cache.evictCollection("org.easysdi.proxy.domain.SdiPolicy.sdiWfsSpatialpolicy",id);
+		}
+		if(policy.getSdiWmsSpatialpolicy() != null){
+			cache.evictEntity("org.easysdi.proxy.domain.SdiWfsSpatialpolicy", policy.getSdiWmsSpatialpolicy().getId());
+			cache.evictCollection("org.easysdi.proxy.domain.SdiPolicy.sdiWmsSpatialpolicy",id);
+		}
+		if(policy.getSdiWmtsSpatialpolicy() != null){
+			cache.evictEntity("org.easysdi.proxy.domain.SdiWfsSpatialpolicy", policy.getSdiWmtsSpatialpolicy().getId());
+			cache.evictCollection("org.easysdi.proxy.domain.SdiPolicy.sdiWmtsSpatialpolicy",id);
+		}
+		if(policy.getSdiCswSpatialpolicy() != null){
+			cache.evictEntity("org.easysdi.proxy.domain.SdiCswSpatialpolicy", policy.getSdiCswSpatialpolicy().getId());
+			cache.evictCollection("org.easysdi.proxy.domain.SdiPolicy.sdiCswSpatialpolicy",id);
+		}
+		
 		cache.evictEntity("org.easysdi.proxy.domain.SdiPolicy", id);
 	}
 	

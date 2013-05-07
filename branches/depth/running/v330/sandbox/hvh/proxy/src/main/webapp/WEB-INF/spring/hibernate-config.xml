@@ -9,9 +9,9 @@
 	
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://localhost:3306/install?zeroDateTimeBehavior=convertToNull" />
+		<property name="url" value="jdbc:mysql://localhost:3306/easysdi?zeroDateTimeBehavior=convertToNull" />
 		<property name="username" value="root" />
-		<property name="password" value="invulsion" />
+		<property name="password" value="root" />
 	</bean>
 
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
@@ -24,13 +24,13 @@
 		<property name="hibernateProperties">
 			<props>
 				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
-				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.show_sql">false</prop>
 				<prop key="hibernate.hbm2ddl.auto"></prop>
 				<prop key="hibernate.cache.use_second_level_cache">true</prop>
 				<prop key="hibernate.cache.use_query_cache">true</prop>
                 <prop key="hibernate.cache.region.factory_class">net.sf.ehcache.hibernate.SingletonEhCacheRegionFactory</prop>
-                <prop key="hibernate.generate_statistics">true</prop>
-                <prop key="hibernate.cache.use_structured_entries">true</prop>
+                <prop key="hibernate.generate_statistics">false</prop>
+                <prop key="hibernate.cache.use_structured_entries">false</prop>
                 <prop key="net.sf.ehcache.configurationResourceName">ehcache.xml</prop>
                 <prop key="hibernate.connection.isolation">1</prop>
 			</props>
@@ -40,7 +40,7 @@
 	
 	<bean id="namingStrategy" class="org.easysdi.proxy.namingStrategy.CustomNamingStrategy">
 		<property name="prefix">
-			<value>b6svl_</value>
+			<value>sdi_</value>
 		</property>
 	</bean>
 
