@@ -2861,7 +2861,7 @@ class ADMIN_metadata {
 							  WHERE a.id=".$editor );
 		$rowUser	= array_merge( $rowUser, $database->loadObjectList() );
 		$body 		= JText::sprintf("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY",$user->username,$rowObject->name, $rowObjectVersion->title)."\n\n".JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY_INFORMATION").":\n".$information;
-		$success 	= ADMIN_metadata::sendMailByEmail($rowUser[0]->email,JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_SUBJECT"),$body);
+		$success 	= ADMIN_metadata::sendMailByEmail($user->email, $rowUser[0]->email,JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_SUBJECT"),$body);
 		if (!$success) 
 		{
 			// Retour de la réponse au formulaire ExtJS
@@ -4147,14 +4147,21 @@ class ADMIN_metadata {
         return $output;
     }
 	
-	function sendMailByEmail($email,$subject,$body)
+	function sendMailByEmail($fromemail, $email,$subject,$body)
 	{
-		$mailer =& JFactory::getMailer();		
-		$mailer->addBCC($email);																				
+		$mailer =& JFactory::getMailer();
+		$mailer->setSender($fromemail);	
+		if(is_array($email)){
+			foreach ($email as $m)
+			{
+				$mailer->addRecipient($m->email);
+			}
+		}
+		else	
+			$mailer->addRecipient($email);																				
 		$mailer->setSubject($subject);
 		$user = JFactory::getUser();
 		$mailer->setBody($body);
-
 		if ($mailer->send() !==true){
 			return false;
 		}

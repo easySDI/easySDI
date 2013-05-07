@@ -229,16 +229,15 @@ class HTML_metadata {
 			}
 			//Config datetime format
 			$datetimedisplay = config_easysdi::getValue("CATALOG_VERSION_DATETIME_DISPLAY");
-			
 			?>		
 			<tr>
 				<td >
 					<?php echo $row->name;  ?>
 				</td>
 				<td >
-					<a class="" title="<?php echo addslashes(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&toolbar=1&task=showMetadata&type=<?php echo $previewtype;  ?>&context=<?php echo $previewcontext;  ?>&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php $date = new DateTime($row->version_title); echo $date->format($datetimedisplay) ;?></a>
+					<a class="" title="<?php echo addslashes(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&toolbar=1&task=showMetadata&type=<?php echo $previewtype;  ?>&context=<?php echo $previewcontext;  ?>&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php $date = new DateTime($row->version_title, new DateTimeZone('Europe/Paris')); echo $date->format($datetimedisplay) ;?></a>
 				</td>
-				<td >
+				<td>
 					<?php echo $row->objecttype;  ?>
 				</td>
 				<?php
@@ -516,16 +515,17 @@ class HTML_metadata {
 		
 		
 		// Recuperer les infos pour la metadonnee parente pour le lien entre les types d'objet ou cet objet est l'enfant et la borne parent max est egale a 1
-		$database->setQuery( "SELECT otl.class_id, otl.attribute_id, parent_m.guid as parent_guid 
-							  FROM #__sdi_objecttypelink otl
-							  INNER JOIN #__sdi_object child_o ON otl.child_id=child_o.objecttype_id
-							  INNER JOIN #__sdi_objectversion child_ov ON child_ov.object_id=child_o.id
-							  INNER JOIN #__sdi_object parent_o ON otl.parent_id=parent_o.objecttype_id
-							  INNER JOIN #__sdi_objectversion parent_ov ON parent_ov.object_id=parent_o.id
-							  INNER JOIN #__sdi_metadata parent_m ON parent_ov.metadata_id=parent_m.id
-							  INNER JOIN #__sdi_objectversionlink ovl ON (ovl.parent_id=parent_ov.id and ovl.child_id=child_ov.id)
-							  WHERE otl.parentbound_upper=1
-							  		AND child_o.id=".$object_id);
+		$database->setQuery( "SELECT otl.class_id, otl.attribute_id, parent_m.guid as parent_guid
+								FROM #__sdi_objecttypelink otl
+								INNER JOIN #__sdi_object child_o ON otl.child_id=child_o.objecttype_id
+								INNER JOIN #__sdi_objectversion child_ov ON child_ov.object_id=child_o.id
+								INNER JOIN #__sdi_object parent_o ON otl.parent_id=parent_o.objecttype_id
+								INNER JOIN #__sdi_objectversion parent_ov ON parent_ov.object_id=parent_o.id
+								INNER JOIN #__sdi_metadata parent_m ON parent_ov.metadata_id=parent_m.id
+								INNER JOIN #__sdi_metadata child_m ON child_ov.metadata_id=child_m.id
+								INNER JOIN #__sdi_objectversionlink ovl ON (ovl.parent_id=parent_ov.id and ovl.child_id=child_ov.id)
+								WHERE otl.parentbound_upper=1
+								AND child_m.guid='".$metadata_id."'");
 		$parentInfos = $database->loadObject();
 		
 		
