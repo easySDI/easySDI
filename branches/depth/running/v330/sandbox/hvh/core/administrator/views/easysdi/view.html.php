@@ -61,6 +61,16 @@ class Easysdi_coreViewEasysdi extends JViewLegacy
 					'access' 	=> array(	'core.manage'		 , 'com_easysdi_map')
 			));
 		}
+		
+		//com_easysdi_monitor
+		if($app->getUserState( 'com_easysdi_monitor-installed')){
+			array_push($this->buttons,array(
+					'link' 		=> JRoute::_('index.php?option=com_easysdi_monitor'),
+					'image' 	=> '../../../templates/hathor/images/header/icon-48-language.png',
+					'text' 		=> JText::_('COM_EASYSDI_CORE_ICON_SDI_MONITOR'),
+					'access' 	=> array(	'core.manage'		 , 'com_easysdi_monitor')
+			));
+		}
 					
 		// Display the view
 		$this->addToolbar();

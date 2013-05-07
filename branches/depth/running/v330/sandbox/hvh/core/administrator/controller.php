@@ -36,6 +36,8 @@ class Easysdi_coreController extends JControllerLegacy
 		$app->setUserState( 'com_easysdi_service-installed' ,$db->loadResult() == 0 ? false : true);
 		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = "com_easysdi_map"');
 		$app->setUserState( 'com_easysdi_map-installed' ,$db->loadResult() == 0 ? false : true);
+		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = "com_easysdi_monitor"');
+		$app->setUserState( 'com_easysdi_monitor-installed' ,$db->loadResult() == 0 ? false : true);
 		
 		$view		= JFactory::getApplication()->input->getCmd('view', 'easysdi');
 		$layout		= JFactory::getApplication()->input->getCmd('layout', 'edit');

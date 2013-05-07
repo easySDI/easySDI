@@ -20,5 +20,6 @@ DROP TABLE IF EXISTS `#__sdi_sys_exceptionlevel`;
 DROP TABLE IF EXISTS `#__sdi_sys_proxytype`;
 DROP TABLE IF EXISTS `#__sdi_sys_servicecon_authenticationcon`;
 DROP TABLE IF EXISTS `#__sdi_sys_servicescope`;
+DROP TABLE IF EXISTS `#__sdi_sys_metadataversion`;
 
 SET foreign_key_checks = 1;
