@@ -106,7 +106,9 @@ class WmtsPhysicalService extends PhysicalService{
 	
 	public function loadData ($data) {
 		foreach ($data as $key => $value) {
-			$this->layerList[$key]->loadData($value);
+			if (isset($this->layerList[$key])) {
+				$this->layerList[$key]->loadData($value);
+			}
 		}
 	}
 	
@@ -127,6 +129,46 @@ class WmtsPhysicalService extends PhysicalService{
 			}
 		}
 		$this->SRSList = array_unique($this->SRSList);
+	}
+	
+	/**
+	 * Set the bounding box of all the layers
+	 * 
+	 * @param array $bbox	ascociative array with keys north-east-south-west
+	 * 
+	 * @param boolean $override	when true, ignore if value are already set in the layer
+	 * 
+	 */
+	public function setAllBoundingBoxes ($bbox, $override = false) {
+		foreach ($this->layerList as $layerIdentifier => $layer) {
+			if (true === $override || (!isset($layer->northBoundLatitude) && !isset($layer->eastBoundLongitude) && !isset($layer->southBoundLatitude) && !isset($layer->westBoundLongitude))) {
+				$layer->northBoundLatitude = $bbox['north'];
+				$layer->eastBoundLongitude = $bbox['east'];
+				$layer->southBoundLatitude = $bbox['south'];
+				$layer->westBoundLongitude = $bbox['west'];
+			}
+		}
+	}
+	
+	/**
+	 * Set the srsUnit of all the layers
+	 * 
+	 * @param array $arr_unit	an associative array containing unit for each srs Array(srs=>unit)
+	 * 
+	 * @param boolean $override	when true, ignore if value are already set in the layer
+	 * 
+	 */
+	public function setAllSRSUnit ($arr_unit, $override = false) {
+		foreach ($this->layerList as $layerIdentifier => $layer) {
+			$layer->setAllSRSUnit($arr_unit);
+		}
+	}
+	
+	public function calculateAuthorizedTiles () {
+		foreach ($this->layerList as $layerIdentifier => $layer) {
+			$layer->calculateAuthorizedTiles();
+			break;
+		}
 	}
 	
 }

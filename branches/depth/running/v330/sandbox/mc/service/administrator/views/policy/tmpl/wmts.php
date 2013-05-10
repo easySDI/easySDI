@@ -327,6 +327,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	
 	<input type="hidden" name="layout" id="layout" value="wmts" />
 	<input type="hidden" name="task" value="" />
+	<input type="hidden" name="precalculatedData" id="precalculatedData" value="" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>
 

@@ -134,6 +134,7 @@ jQuery(document).ready(function () {
 				form_values['maxY[' + tms_identifier + ']'] = bbox.maxY;
 				form_values['maxX[' + tms_identifier + ']'] = bbox.maxX;
 				form_values['minY[' + tms_identifier + ']'] = bbox.minY;
+				form_values['srsUnit[' + tms_identifier + ']'] = bbox.unit;
 			}
 		}
 		else {
@@ -170,6 +171,7 @@ jQuery(document).ready(function () {
 		var form_values = {
 			inherit_policy : {},
 			inherit_server: {},
+			srs_units: {},
 		};
 		for (var i = 0; i < raw_form_array.length; i++) {
 			var key = raw_form_array[i].name;
@@ -210,6 +212,7 @@ jQuery(document).ready(function () {
 				form_values.inherit_policy.recalculated[SRSList[i]].maxY = destBBOX.maxY;
 				form_values.inherit_policy.recalculated[SRSList[i]].maxX = destBBOX.maxX;
 				form_values.inherit_policy.recalculated[SRSList[i]].minY = destBBOX.minY;
+				form_values.srs_units[SRSList[i]] = destBBOX.unit;
 			}
 		}
 		else {
@@ -251,8 +254,7 @@ jQuery(document).ready(function () {
 			}
 		}
 		
-		console.log(form_values);
-		
-		//Joomla.submitform(task, document.getElementById('policy-form'));
+		jQuery('#precalculatedData').val(JSON.stringify(form_values));
+		Joomla.submitform(task, document.getElementById('policy-form'));
 	});
 });

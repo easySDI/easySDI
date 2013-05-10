@@ -271,6 +271,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	*/
 	private function _getItemWMTS($pk, $virtualservice_id) {
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmtsPhysicalService.php');
+		set_time_limit(60);
 		$tab_physicalService = JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
 		$db = JFactory::getDbo();
 		
@@ -404,6 +405,11 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 						
 						if (!$this->saveWMTSEnabledLayers($data)) {
 							$this->setError('Failed to save enabled layers.');
+							return false;
+						}
+						
+						if (!$this->calculateAllTiles($data)) {
+							$this->setError('Failed to calculate authorized tiles.');
 							return false;
 						}
 						break;
@@ -1273,7 +1279,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 * @since EasySDI 3.0.0
 	 */
 	private function saveWMTSEnabledLayers ($data) {
-		$arrEnabled = $_POST['enabled'];
+		$arrEnabled = (isset($_POST['enabled']))?$_POST['enabled']:Array();
 		$policyID = $data['id'];
 		$db = $this->getDbo();
 		
@@ -1621,6 +1627,247 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		}
 	}
 	
-	
+	/**
+	 * Calculate the authorized Tiles based on the inherited bboxes
+	 *
+	 * @param array 	$data	data posted from the form
+	 *
+	 * @return boolean 	True on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	private function calculateAllTiles ($data) {
+		set_time_limit(300);
+		$db = JFactory::getDbo();
+		$policy_id = $data['id'];
+		$precalculatedData = json_decode($_POST['precalculatedData']);
+		
+		$query = '
+			SELECT ps.id, ps.resourceurl AS url, psp.id AS psp_id
+			FROM #__sdi_physicalservice_policy psp
+			JOIN #__sdi_physicalservice ps
+			ON ps.id = psp.physicalservice_id
+			WHERE psp.policy_id = ' . $policy_id . '
+		';
+		
+		try {
+			$db->setQuery($query);
+			$db->execute();
+			$arr_ps = $db->loadObjectList();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
+		$arr_wmtsObj = Array();
+		foreach ($arr_ps as $ps) {
+			$db->setQuery('
+				SELECT wp.*, wsp.*, wp.id AS wmtslayerpolicy_id, tms.identifier AS tms_identifier, tm.identifier AS tm_identifier
+				FROM #__sdi_wmtslayer_policy wp
+				JOIN #__sdi_physicalservice_policy pp
+				ON wp.physicalservicepolicy_id = pp.id
+				JOIN #__sdi_wmts_spatialpolicy wsp
+				ON wp.spatialpolicy_id = wsp.id
+				JOIN #__sdi_tilematrixset_policy tms
+				ON wp.id = tms.wmtslayerpolicy_id
+				LEFT JOIN #__sdi_tilematrix_policy tm
+				ON tms.id = tm.tilematrixsetpolicy_id
+				WHERE pp.id = ' . $ps->psp_id . ';
+			');
+			
+			try {
+				$db->execute();
+				$resultset = $db->loadObjectList();
+			}
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
+			
+			//preparing the object to be returned
+			$data = Array();
+			$tms_arr = Array();
+			foreach ($resultset as $tileMatrixSet) {
+				if (empty($data[$tileMatrixSet->identifier])) {
+					$data[$tileMatrixSet->identifier] = Array(
+						'enabled' => $tileMatrixSet->enabled,
+						'spatialOperator' => $tileMatrixSet->spatialoperator_id,
+						'westBoundLongitude' => $tileMatrixSet->westboundlongitude,
+						'eastBoundLongitude' => $tileMatrixSet->eastboundlongitude,
+						'northBoundLatitude' => $tileMatrixSet->northboundlatitude,
+						'southBoundLatitude' => $tileMatrixSet->southboundlatitude,
+						'tileMatrixSetList' => Array(),
+					);
+				}
+				$data[$tileMatrixSet->identifier]['tileMatrixSetList'][$tileMatrixSet->tms_identifier] = Array('maxTileMatrix' => $tileMatrixSet->tm_identifier);
+			}
+			
+			$wmtsObj = new WmtsPhysicalService($ps->id, $ps->url);
+			$wmtsObj->getCapabilities();
+			$wmtsObj->populate();
+			$wmtsObj->sortLists();
+			$wmtsObj->loadData($data);
+			
+			//we insert the inherited bbox set for the server
+			$wmtsObj->setAllBoundingBoxes(Array(
+				'north' => $precalculatedData->inherit_server->{$ps->id}->northBoundLatitude,
+				'east' => $precalculatedData->inherit_server->{$ps->id}->eastBoundLongitude,
+				'south' => $precalculatedData->inherit_server->{$ps->id}->southBoundLatitude,
+				'west' => $precalculatedData->inherit_server->{$ps->id}->westBoundLongitude,
+			));
+			//we insert the inherited bbox set for the all policy
+			$wmtsObj->setAllBoundingBoxes(Array(
+				'north' => $precalculatedData->inherit_policy->northBoundLatitude,
+				'east' => $precalculatedData->inherit_policy->eastBoundLongitude,
+				'south' => $precalculatedData->inherit_policy->southBoundLatitude,
+				'west' => $precalculatedData->inherit_policy->westBoundLongitude,
+			));
+			//we insert the srsUnits
+			$wmtsObj->setAllSRSUnit($precalculatedData->srs_units);
+			
+			//insert projected bboxes in each tms
+			foreach ($wmtsObj->getLayerList() as $layerObj) {
+				foreach ($layerObj->getTileMatrixSetList() as $tmsObj) {
+					if (isset($precalculatedData->inherit_server->{$ps->id}->recalculated->{$tmsObj->srs})) {
+						$bbox = $precalculatedData->inherit_server->{$ps->id}->recalculated->{$tmsObj->srs};
+						$tmsObj->minX = $bbox->minX;
+						$tmsObj->maxX = $bbox->maxX;
+						$tmsObj->minY = $bbox->minY;
+						$tmsObj->maxY = $bbox->maxY;
+					}
+				}
+			}
+			$wmtsObj->calculateAuthorizedTiles();
+			$arr_wmtsObj[] = $wmtsObj;
+		}
+		
+		foreach ($arr_wmtsObj as $wmtsObj) {
+			foreach ($wmtsObj->getLayerList() as $layerObj) {
+				foreach ($layerObj->getTileMatrixSetList() as $tmsObj) {
+					foreach ($tmsObj->getTileMatrixList() as $tmObj) {
+						$query = '
+							SELECT psp.id AS pspID, tm.id AS tmID, tms.id AS tmsID, wp.id AS wpID
+							FROM #__sdi_policy p
+							JOIN #__sdi_physicalservice_policy psp
+							ON p.id = psp.policy_id
+							LEFT JOIN #__sdi_wmtslayer_policy wp
+							ON (
+								psp.id = wp.physicalservicepolicy_id
+								AND (
+									wp.identifier = \'' . $layerObj->name . '\'
+									OR wp.identifier IS NULL
+								)
+							)
+							LEFT JOIN ugrva_sdi_tilematrixset_policy tms
+							ON (
+								wp.id = tms.wmtslayerpolicy_id
+								AND (
+									tms.identifier = \'' . $tmsObj->identifier . '\'
+									OR tms.identifier IS NULL
+								)
+							)
+							LEFT JOIN ugrva_sdi_tilematrix_policy tm
+							ON (
+								tms.id = tm.tilematrixsetpolicy_id
+								AND (
+									tm.identifier = \'' . $tmObj->identifier . '\'
+									OR tm.identifier IS NULL
+								)
+							)
+							WHERE p.id = ' . $policy_id . '
+							AND psp.physicalservice_id = ' . $wmtsObj->id . ';
+						';
+						
+						$db->setQuery($query);
+						try {
+							$db->execute();
+							$result = $db->loadObject();
+							$pspID = $result->pspID;
+							$wpID = $result->wpID;
+							$tmsID = $result->tmsID;
+							$tmID = $result->tmID;
+						}
+						catch (JDatabaseException $e) {
+							$je = new JException($e->getMessage());
+							$this->setError($je);
+							return false;
+						}
+						
+						//if the layer doesn't exist yet, we create it
+						if (is_null($wpID)) {
+							$query = $db->getQuery(true);
+							$query->insert('#__sdi_wmtslayer_policy')->columns(Array(
+								'identifier',
+								'physicalservicepolicy_id'
+							))->values('\'' . $layerObj->name . '\', ' . $pspID);
+							$db->setQuery($query);
+							try {
+								$db->execute();
+								$wpID = $db->insertid();
+							}
+							catch (JDatabaseException $e) {
+								$je = new JException($e->getMessage());
+								$this->setError($je);
+								return false;
+							}
+						}
+						
+						//if the tilematrixset doesn't exist yet, we create it
+						if (is_null($tmsID)) {
+							$query = $db->getQuery(true);
+							$query->insert('#__sdi_tilematrixset_policy')->columns(Array(
+								'identifier',
+								'wmtslayerpolicy_id',
+								'srssource',
+							))->values('\'' . $tmsObj->identifier . '\', ' . $wpID . ', \'' . $tmsObj->srs . '\'');
+							$db->setQuery($query);
+							try {
+								$db->execute();
+								$tmsID = $db->insertid();
+							}
+							catch (JDatabaseException $e) {
+								$je = new JException($e->getMessage());
+								$this->setError($je);
+								return false;
+							}
+						}
+						
+						$query = $db->getQuery(true);
+						if (isset($tmID) && is_numeric($tmID)) {
+							$query->update('#__sdi_tilematrix_policy')->set(Array(
+								'tileminrow = ' . ((isset($tmObj->minTileRow))?$tmObj->minTileRow:'\'null\''),
+								'tilemaxrow = ' . ((isset($tmObj->maxTileRow))?$tmObj->maxTileRow:'\'null\''),
+								'tilemincol = ' . ((isset($tmObj->minTileCol))?$tmObj->minTileCol:'\'null\''),
+								'tilemaxcol = ' . ((isset($tmObj->maxTileCol))?$tmObj->maxTileCol:'\'null\''),
+							))->where('id = ' . $tmID);
+						}
+						else {
+							$query->insert('#__sdi_tilematrix_policy')->columns(Array(
+								'tilematrixsetpolicy_id',
+								'identifier',
+								'tileminrow',
+								'tilemaxrow',
+								'tilemincol',
+								'tilemaxcol'
+							))->values($tmsID . ', \'' . $tmObj->identifier . '\', ' . ((isset($tmObj->minTileRow))?$tmObj->minTileRow:'\'null\'') . ', ' . ((isset($tmObj->maxTileRow))?$tmObj->maxTileRow:'\'null\'') . ', ' . ((isset($tmObj->minTileCol))?$tmObj->minTileCol:'\'null\'') . ', ' . ((isset($tmObj->maxTileCol))?$tmObj->maxTileCol:'\'null\''));
+						}
+						$db->setQuery($query);
+						try {
+							$db->execute();
+						}
+						catch (JDatabaseException $e) {
+							$je = new JException($e->getMessage());
+							$this->setError($je);
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
+	}
 	
 }

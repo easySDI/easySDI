@@ -60,6 +60,22 @@ class WmtsLayer extends Layer{
 		return $layer;
 	}
 	
+	/**
+	 * Set the srsUnit of all the layers
+	 * 
+	 * @param array $arr_unit	an associative array containing unit for each srs Array(srs=>unit)
+	 * 
+	 * @param boolean $override	when true, ignore if value are already set in the layer
+	 * 
+	 */
+	public function setAllSRSUnit ($arr_unit, $override = false) {
+		foreach ($this->tileMatrixSetList as $tileMatrixSetIdentifier => $tileMatrixSet) {
+			if (true === $override || (!isset($tileMatrixSet->northBoundLatitude))) {
+				$tileMatrixSet->srsUnit = (isset($arr_unit->{$tileMatrixSet->srs}))?$arr_unit->{$tileMatrixSet->srs}:null;
+			}
+		}
+	}
+	
 	public function calculateAuthorizedTiles () {
 		foreach ($this->tileMatrixSetList as $tmsObj) {
 			$tmsObj->calculateAuthorizedTiles($this->spatialOperator);
