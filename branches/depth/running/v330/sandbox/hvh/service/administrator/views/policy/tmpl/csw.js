@@ -25,30 +25,27 @@ function enableState(){
 	
 }
 
-jQuery(document).ready(function () {
-	onStateChange();
-	enableState();
+function onDeleteExcludedAttribute (index) {
+	var parent = jQuery('.div_ea_' + index);
+	parent.remove();
+}
 
-	//onClick on the button to add a new excluded attribute field
-	jQuery('#btn_add_excluded_attribute').click(function () {
-		var count = jQuery(this).data('count');
-		jQuery('#div_excluded_attributes').append(
-			'<div class="div_ea_' + count + ' span12">' + 
-				'<textarea name="excluded_attribute[' + count + ']" rows="5" class="span10"></textarea>' +
-				'<button type="button" class="btn btn-danger btn_ea_delete">' + Joomla.JText._('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE') + '</button>' +
+function onAddExcludedAttribute () {
+	var count = jQuery('#btn_add_excluded_attribute').data('count');
+	jQuery('#div_excluded_attributes').append(
+			'<div class="div_ea_' + count + ' input-xxlarge">' + 
+				'<input type="text" name="excluded_attribute[' + count + ']" class="span10" value="" />'+
+				'<button class="btn btn-danger btn-small btn_ea_delete" onClick="onDeleteExcludedAttribute(' +count+ ');return false;"><i class="icon-white icon-remove"></i></button>'+
 				'<br /><br />' +
 			'</div>'
 		);
-		count++;
-		jQuery(this).data('count', count);
-		return false;
-	});
-	
-	jQuery('button.btn_ea_delete').click(function () {
-		var parent = jQuery(this).parent();
-		parent.children('textarea').html('');
-		parent.hide();
-	});
+	count++;
+	jQuery('#btn_add_excluded_attribute').data('count', count);
+}
+
+jQuery(document).ready(function () {
+	onStateChange();
+	enableState();
 	
 	jQuery('input[name="jform[csw_anystate]"]').click(function () {
 		enableState();

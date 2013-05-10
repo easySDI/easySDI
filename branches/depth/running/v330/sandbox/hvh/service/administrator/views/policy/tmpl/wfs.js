@@ -2,9 +2,9 @@
 function onAddIncludedAttribute () {
 	var count = jQuery('#btn_add_included_attribute').data('count');
 	jQuery('#div_included_attributes').append(
-			'<div class="div_ia_' + count + ' span12">' + 
-				'<textarea name="included_attribute[' + count + ']" rows="1" class="span10"></textarea>' +
-				'<button type="button" class="btn btn-danger btn_ia_delete">' + Joomla.JText._('COM_EASYSDI_SERVICE_POLICY_WFS_BTN_DELETE_INCLUDED_ATTRIBUTE') + '</button>' +
+			'<div class="div_ia_' + count + ' input-xxlarge">' + 
+				'<input type="text" name="included_attribute[' + count + ']" class="input-xlarge" value="" />'+
+				'<button class="btn btn-danger btn-small btn_ia_delete" onClick="onDeleteIncludedAttribute(' +count+ ');return false;"><i class="icon-white icon-remove"></i></button>'+
 				'<br /><br />' +
 			'</div>'
 		);
@@ -13,9 +13,8 @@ function onAddIncludedAttribute () {
 }
 
 function onDeleteIncludedAttribute (index) {
-		var parent = jQuery('.div_ea_' + index);
-		parent.children('textarea').html('');
-		parent.hide();
+		var parent = jQuery('.div_ia_' + index);
+		parent.remove();
 }
 
 jQuery(document).ready(function () {
@@ -74,6 +73,8 @@ jQuery(document).ready(function () {
 					layerID: layerName,
 				},
 				success: function (data, textStatus, jqXHR) {
+					jQuery('#configured'+psID+layerName).removeClass('label-success');
+					jQuery('#configured'+psID+layerName).text(Joomla.JText._('COM_EASYSDI_SERVICE_POLICY_LAYER_SETTINGS_INHERITED'));
 					popAlert(Joomla.JText._('COM_EASYSDI_SERVICE_MSG_DELETION_COMPLETE'), 'alert-success');
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
@@ -92,7 +93,17 @@ jQuery(document).ready(function () {
 	//on submission of the modal
 	jQuery('#layer_settings_modal .modal-footer .btn-primary').click(function () {
 		var get_query = '?option=com_easysdi_service&task=wfsWebservice&method=setFeatureTypeSettings&' + jQuery('#modal_layer_form').serialize();
-		
+		var raw_form_array = jQuery('#modal_layer_form').serializeArray();
+		var psID= null;
+		var layerName= null;
+		for (var i = 0; i < raw_form_array.length; i++) {
+			if(raw_form_array[i].name == 'layerID'){
+				layerName = raw_form_array[i].value;
+			}
+			if(raw_form_array[i].name == 'psID'){
+				psID = raw_form_array[i].value;
+			}
+		}
 		jQuery.ajax({
 			dataType: 'html',
 			type: 'GET',
@@ -100,6 +111,8 @@ jQuery(document).ready(function () {
 			success: function (data, textStatus, jqXHR) {
 				//console.log(arguments);
 				jQuery('#layer_settings_modal').modal('hide');
+				jQuery('#configured'+psID+layerName).addClass('label-success');
+				jQuery('#configured'+psID+layerName).text(Joomla.JText._('COM_EASYSDI_SERVICE_POLICY_LAYER_SETTINGS_DEFINED'));
 				popAlert(Joomla.JText._('COM_EASYSDI_SERVICE_MSG_MODAL_SAVED'), 'alert-success');
 			},
 			error: function (jqXHR, textStatus, errorThrown) {

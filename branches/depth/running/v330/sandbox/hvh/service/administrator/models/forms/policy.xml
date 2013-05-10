@@ -76,24 +76,24 @@
 		<field name="allowfrom" type="calendar" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWFROM" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWFROM"  filter="safehtml" />
 		<field name="allowto" type="calendar" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWTO" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWTO"  filter="safehtml" />
 		<field name="anyoperation" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ANYOPERATION" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ANYOPERATION">
+			   <option value="1">JYES</option>
 			  <option value="0">JNO</option>
-			  <option value="1">JYES</option>
 			</field>
 	</fieldset>
 	
 	<fieldset name="csw_policy">
 		
 		<field name="csw_anycontext" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYCONTEXT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYCONTEXT" >
+			 <option value="1">JYES</option>
 			<option value="0">JNO</option>
-			<option value="1">JYES</option>
 		</field>
 		<field name="csw_anyvisibility" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYVISIBILITY" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYVISIBILITY" >
+			 <option value="1">JYES</option>
 			<option value="0">JNO</option>
-			<option value="1">JYES</option>
 		</field>
 		<field name="csw_includeharvested" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_INCLUDE_HARVESTED" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_INCLUDE_HARVESTED">
+		   <option value="1">JYES</option>
 		  <option value="0">JNO</option>
-			<option value="1">JYES</option>
 		</field>
 		
 	</fieldset>
@@ -104,8 +104,8 @@
 			default="1" 
 			label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYSTATE" 
 			description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYSTATE" >
+		 <option value="1">JYES</option>
 		<option value="0">JNO</option>
-		<option value="1">JYES</option>
 	</field>
 	<field  name="csw_state" 
 			type="sql" 

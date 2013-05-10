@@ -66,14 +66,27 @@ class WmsWebservice {
 		}
 		
 		$html = '
-			<label for="minimumscale">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MINIMUM_SCALE') . '</label>
-			<input type="text" name="minimumscale" value="' . $layerObj->minimumScale . '" />
-			<br />
-			<label for="maximumscale">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MAXIMUM_SCALE') . '</label>
-			<input type="text" name="maximumscale" value="' . $layerObj->maximumScale . '" />
-			<br />
-			<label for="geographicfilter">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_FILTER') . '</label>
-			<textarea name="geographicfilter" rows="10" class="span12">' . $layerObj->geographicFilter . '</textarea>
+		<div class="well">
+	    	<div class="control-group inline">
+				<label class="control-label" for="minimumscale">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MINIMUM_SCALE') . '</label>
+				<div class="controls">
+					<input type="text" name="minimumscale" value="' .  $layerObj->minimumScale . '" />
+				</div>
+			</div>
+	  		<div class="control-group">
+				<label class="control-label" for="maximumscale">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MAXIMUM_SCALE') . '</label>
+				<div class="controls">
+					<input type="text" name="maximumscale" value="' . $layerObj->maximumScale . '" />
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="geographicfilter">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_FILTER') . '</label>
+				<div class="controls">
+					<textarea name="geographicfilter" rows="8" class="input-xlarge">' . $layerObj->geographicFilter . '</textarea>
+				</div>
+			</div>
+		</div>
+
 			<input type="hidden" name="psID" value="' . $physicalServiceID . '"/>
 			<input type="hidden" name="vsID" value="' . $virtualServiceID . '"/>
 			<input type="hidden" name="policyID" value="' . $policyID . '"/>
@@ -179,7 +192,6 @@ class WmsWebservice {
 		
 		$query = $db->getQuery(true);
 		if (0 == $num_result) {
-			var_dump('insert');
 			$query->insert('#__sdi_wms_spatialpolicy')->columns('
 				geographicfilter, maxx, maxy, minx, miny, minimumscale, maximumscale, srssource
 			')->values('
@@ -187,7 +199,6 @@ class WmsWebservice {
 			');
 		}
 		else {
-			var_dump('update', $spatial_policy_id);
 			$query->update('#__sdi_wms_spatialpolicy')->set(Array(
 				'geographicfilter = \'' . $raw_GET['geographicfilter'] . '\'',
 				'maxx = ' . $raw_GET['maxX'],
@@ -258,14 +269,15 @@ class WmsWebservice {
 		}
                 
 		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_service'.DS.'tables');
-                $dispatcher = JEventDispatcher::getInstance();
-                // Include the content plugins for the on save events.
-                JPluginHelper::importPlugin('content');
-                $table = JTable::getInstance("policy", "Easysdi_serviceTable", array());
-                $table->load($policyID);
-                // Trigger the onContentAfterSave event.
-                $dispatcher->trigger('onContentAfterSave', array('com_easysdi_service.policy', $table, false));
+        $dispatcher = JEventDispatcher::getInstance();
+        // Include the content plugins for the on save events.
+        JPluginHelper::importPlugin('content');
+        $table = JTable::getInstance("policy", "Easysdi_serviceTable", array());
+        $table->load($policyID);
+        // Trigger the onContentAfterSave event.
+        $dispatcher->trigger('onContentAfterSave', array('com_easysdi_service.policy', $table, false));
 		return true;
+		
 	}
 	
 	/*

@@ -28,6 +28,8 @@ JText::script('COM_EASYSDI_SERVICE_MSG_MODAL_SAVED');
 JText::script('COM_EASYSDI_SERVICE_MSG_MODAL_MISSING_BBOX_BOUNDARIES');
 JText::script('COM_EASYSDI_SERVICE_MSG_MODAL_MALFORMED_BBOX_BOUNDARIES');
 JText::script('COM_EASYSDI_SERVICE_POLICY_WFS_BTN_DELETE_INCLUDED_ATTRIBUTE');
+JText::script('COM_EASYSDI_SERVICE_POLICY_LAYER_SETTINGS_DEFINED');
+JText::script('COM_EASYSDI_SERVICE_POLICY_LAYER_SETTINGS_INHERITED');
 
 function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	$db = JFactory::getDbo();
@@ -86,27 +88,40 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 		$psp = $db->loadObject();
 		
 		$html .= '
-			<label class="checkbox">
-				<input type="checkbox" name="' . $prefix . '[anyitem]" class="anyitem" data-ps_id="' . $physicalServiceID . '" value="1" ' . ((1 == $psp->anyitem)?'checked="checked"':'') . ' /><label for="' . $prefix . '[anyitem]">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WFS_ANYITEM') . '</label>
-			</label>
-			<label for="' . $prefix . '[prefix]" data-ps_id="' . $physicalServiceID . '">' . JText::_('COM_EASYSDI_SERVICE_WFS_SERVER_PREFIXE') . '</label>
-			<input type="text" name="' . $prefix . '[prefix]" data-ps_id="' . $physicalServiceID . '" value="' . $psp->prefix . '" />
-			<br />
-			<label for="' . $prefix . '[namespace]" data-ps_id="' . $physicalServiceID . '">' . JText::_('COM_EASYSDI_SERVICE_WFS_SERVER_NAMESPACE') . '</label>
-			<input type="text" name="' . $prefix . '[namespace]" data-ps_id="' . $physicalServiceID . '" value="' . $psp->namespace . '" />
-			<br />
+		<label class="checkbox">
+			<input type="checkbox" name="' . $prefix . '[anyitem]" class="anyitem" data-ps_id="' . $physicalServiceID . '" value="1" ' . ((1 == $psp->anyitem)?'checked="checked"':'') . ' /><label for="' . $prefix . '[anyitem]">' . JText::_('COM_EASYSDI_SERVICE_FORM_LBL_POLICY_WFS_ANYITEM') . '</label>
+		</label>
+		<div class="well">
+			<div class="control-group">
+	    		<label class="control-label" for="' . $prefix . '[prefix]" data-ps_id="' . $physicalServiceID . '">' . JText::_('COM_EASYSDI_SERVICE_WFS_SERVER_PREFIXE') . '</label>
+				<div class="controls">
+					<input type="text" name="' . $prefix . '[prefix]" data-ps_id="' . $physicalServiceID . '" value="' . $psp->prefix . '" />
+				</div>
+			</div>
+	  		<div class="control-group">
+				<label class="control-label" for="' . $prefix . '[namespace]" data-ps_id="' . $physicalServiceID . '">' . JText::_('COM_EASYSDI_SERVICE_WFS_SERVER_NAMESPACE') . '</label>
+				<div class="controls">
+					<input type="text" name="' . $prefix . '[namespace]" data-ps_id="' . $physicalServiceID . '" value="' . $psp->namespace . '" />
+				</div>
+			</div>
+		</div>
 		';
 	}
 	
-	$html .= '	<br />
-		<label for="' . $prefix . '[localgeographicfilter]">' . JText::_('COM_EASYSDI_SERVICE_WFS_LAYER_LOCAL_FILTER') . '</label>
-		<textarea name="' . $prefix . '[localgeographicfilter]" rows="10" class="span12">' . ((isset($spatialpolicy->localgeographicfilter))?$spatialpolicy->localgeographicfilter:'') . '</textarea>
-		<br />
-		<label for="' . $prefix . '[remotegeographicfilter]">' . JText::_('COM_EASYSDI_SERVICE_WFS_LAYER_REMOTE_FILTER') . '</label>
-		<textarea name="' . $prefix . '[remotegeographicfilter]" rows="10" class="span12">' . ((isset($spatialpolicy->remotegeographicfilter))?$spatialpolicy->remotegeographicfilter:'') . '</textarea>
-		<br />
-		<br />
-		<br />
+	$html .= '	<div class="well">
+					<div class="control-group">
+						<label class="control-label" for="' . $prefix . '[localgeographicfilter]">' . JText::_('COM_EASYSDI_SERVICE_WFS_LAYER_LOCAL_FILTER') . '</label>
+						<div class="controls">
+							<textarea name="' . $prefix . '[localgeographicfilter]" rows="5" class="input-xxlarge">' . ((isset($spatialpolicy->localgeographicfilter))?$spatialpolicy->localgeographicfilter:'') . '</textarea>
+						</div>
+					</div>
+	  				<div class="control-group">
+						<label  class="control-label" for="' . $prefix . '[remotegeographicfilter]">' . JText::_('COM_EASYSDI_SERVICE_WFS_LAYER_REMOTE_FILTER') . '</label>
+						<div class="controls">
+							<textarea name="' . $prefix . '[remotegeographicfilter]" rows="5" class="input-xxlarge">' . ((isset($spatialpolicy->remotegeographicfilter))?$spatialpolicy->remotegeographicfilter:'') . '</textarea>
+						</div>
+					</div>
+				</div>
 	';
 	echo $html;
 }
@@ -185,6 +200,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 													<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_POLICY_LAYER_ENABLED' );?></th>
 													<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_POLICY_LAYER_NAME' );?></th>
 													<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_POLICY_LAYER_DESCRIPTION' );?></th>
+													<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_POLICY_LAYER_SETTINGS' );?></th>
 													<th></th>
 												</tr>
 											</thead>
@@ -199,21 +215,32 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 													</td>
 													<td>
 														<?php echo $layer->name; ?>
-														&nbsp;
-														<?php
-															if ($layer->hasConfig()) {
-																echo '<span class="label label-info">' . JText::_('COM_EASYSDI_SERVICE_LAYER_HAS_CONFIG') . '</span>';
-															}
-														?>
 													</td>
 													<td><?php echo $layer->description; ?></td>
 													<td>
-														<button type="button" class="btn btn_modify_layer" data-toggle="modal" data-target="#layer_settings_modal" data-psid="<?php echo $ps->id;?>" data-vsid="<?php echo $this->item->virtualservice_id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>">
-															<?php echo JText::_('COM_EASYSDI_SERVICE_BTN_SETTINGS');?>
-														</button>
-														<button type="button" class="btn btn-danger btn_delete_layer" data-psid="<?php echo $ps->id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>" >
-															<?php echo JText::_('COM_EASYSDI_SERVICE_BTN_DELETE_SETTINGS');?>
-														</button>
+														<?php
+															if ($layer->hasConfig()) {
+																echo '<span id="configured' . $ps->id . '' . $layer->name . '" class="label label-success">' . JText::_('COM_EASYSDI_SERVICE_POLICY_LAYER_SETTINGS_DEFINED') . '</span>';
+															}else{
+																echo '<span id="configured' . $ps->id . '' . $layer->name . '" class="label">' . JText::_('COM_EASYSDI_SERVICE_POLICY_LAYER_SETTINGS_INHERITED') . '</span>';
+															}
+														?>
+													</td>
+													<td>
+														<div class="btn-group">
+														  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+														    <?php echo JText::_('COM_EASYSDI_SERVICE_ACTIN_SETTINGS');?>
+														    <span class="caret"></span>
+														  </a>
+														  <ul class="dropdown-menu">
+														   <li><a class="btn_modify_layer" data-toggle="modal" data-target="#layer_settings_modal" data-psid="<?php echo $ps->id;?>" data-vsid="<?php echo $this->item->virtualservice_id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>">
+																<?php echo JText::_('COM_EASYSDI_SERVICE_BTN_SETTINGS');?>
+															</a></li>
+															<li><a  class="btn_delete_layer" data-psid="<?php echo $ps->id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>">
+																<?php echo JText::_('COM_EASYSDI_SERVICE_BTN_DELETE_SETTINGS');?>
+															</a></li>
+														  </ul>
+														</div>
 													</td>
 												</tr>
 											<?php endforeach; ?>
@@ -304,7 +331,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	<?php echo JHtml::_('form.token'); ?>
 </form>
 
-<div id="layer_settings_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 712px;">
+<div id="layer_settings_modal" class="modal hide fade form-horizontal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 712px;">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 		<h3 id="myModalLabel"><?php echo JText::_('COM_EASYSDI_SERVICE_WFS_MODAL_TITLE');?> : <span id="layer_name"></span></h3>

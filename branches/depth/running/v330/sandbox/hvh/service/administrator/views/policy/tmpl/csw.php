@@ -107,17 +107,17 @@ JText::script('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE');
 							$paths = $db->loadColumn();
 							$path_count = 0;
 							foreach ($paths as $path) {
-								echo '<div class="div_ea_' . $path_count . ' span12">
-									<textarea name="excluded_attribute[' . $path_count . ']" rows="1" class="inputbox input-xxlarge">' . $path . '</textarea>
-									<button type="button" class="btn btn-danger btn_ea_delete">' .JText::_('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE') . '</button>
-									<br /><br />
-								</div>';
+								echo '<div class="div_ea_' . $path_count . ' input-xxlarge">
+										<input type="text" name="excluded_attribute[' . $path_count . ']" class="span10" value="'.$path.'" />
+										<button class="btn btn-danger btn-small btn_ea_delete" onClick="onDeleteExcludedAttribute(' .$path_count. ');return false;"><i class="icon-white icon-remove"></i></button>
+										<br /><br />
+									</div>';
 								$path_count++;
 							}
 						?>
 					</div>
-					<button class="btn" data-count="<?php echo $path_count; ?>" id="btn_add_excluded_attribute">
-						<?php echo JText::_('COM_EASYSDI_SERVICE_CSW_BTN_ADD_EXCLUDED_ATTRIBUTE');?>
+					<button class="btn " data-count="<?php echo $path_count; ?>" id="btn_add_excluded_attribute" onClick="onAddExcludedAttribute();return false;">
+						<i class="icon-white icon-pencil"></i> <?php echo JText::_('COM_EASYSDI_SERVICE_CSW_BTN_ADD_EXCLUDED_ATTRIBUTE');?>
 					</button>
 				</div>
 				
