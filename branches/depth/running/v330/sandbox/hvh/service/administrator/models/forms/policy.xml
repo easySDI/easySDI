@@ -86,7 +86,6 @@
 	</fieldset>
 	
 	<fieldset name="csw_policy">
-		
 		<field name="csw_anycontext" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYCONTEXT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYCONTEXT" >
 			 <option value="1">JYES</option>
 			<option value="0">JNO</option>
@@ -99,50 +98,89 @@
 		   <option value="1">JYES</option>
 		  <option value="0">JNO</option>
 		</field>
-		
-	</fieldset>
-	
-	<field 	name="csw_anystate" 
+		<field 	name="csw_anystate" 
 			type="radio" 
 			class="btn-group" 
 			default="1" 
 			label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYSTATE" 
 			description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYSTATE" >
-		 <option value="1">JYES</option>
-		<option value="0">JNO</option>
-	</field>
-	<field  name="csw_state" 
-			type="sql" 
-			class="multiselect input-xxlarge"
-			onchange="onStateChange();"
-			multiple="true"
-			label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_STATE" 
-			description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_STATE"
-			query="
-					SELECT id , value
-					FROM #__sdi_sys_metadatastate
-					WHERE state = 1
-					ORDER BY ordering;"
-			key_field="id" 
-			value_field="value" 
-			required="false"
-			translate="true"
-	/>
-	<field	name="csw_version_id"
-			type="sql" 
-			class="inputbox"
-			label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_VERSION"
-			description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_VERSION" 
-			query="
-				SELECT id, value
-				FROM #__sdi_sys_metadataversion
-				WHERE state=1
-				ORDER BY ordering" 
-			key_field="id" 
-			value_field="value"
-			translate="true"
-	/>
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field  name="csw_state" 
+				type="sql" 
+				class="multiselect input-xxlarge"
+				onchange="onStateChange();"
+				multiple="true"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_STATE" 
+				description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_STATE"
+				query="
+						SELECT id , value
+						FROM #__sdi_sys_metadatastate
+						WHERE state = 1
+						ORDER BY ordering;"
+				key_field="id" 
+				value_field="value" 
+				required="false"
+				translate="true"
+		/>
+		<field	name="csw_version_id"
+				type="sql" 
+				class="inputbox"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_VERSION"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_VERSION" 
+				query="
+					SELECT id, value
+					FROM #__sdi_sys_metadataversion
+					WHERE state=1
+					ORDER BY ordering" 
+				key_field="id" 
+				value_field="value"
+				translate="true"
+		/>
+	</fieldset>
 		
+	<fieldset name="csw_geographicfilter">
+		<field 	name="srssource" 
+				type="text" 
+				size="40" 
+				class="span4" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_SRSSOURCE" 
+				description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_SRSSOURCE"  
+				filter="safehtml" />
+		<field 	name="maxx" 
+				type="textwithplaceholder" 
+				size="40" 
+				class="input" 
+				placeholder="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_MAXX"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_MAXX" 
+				description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_MAXX"  
+				filter="safehtml" />
+		<field 	name="miny" 
+				type="textwithplaceholder" 
+				size="40" 
+				class="input" 
+				placeholder="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_MINY"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_MINY" 
+				description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_MINY"  
+				filter="safehtml" />
+		<field 	name="maxy" 
+				type="textwithplaceholder" 
+				size="40" 
+				class="input" 
+				placeholder="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_MAXY"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_MAXY" 
+				description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_MAXY"  
+				filter="safehtml" />
+		<field 	name="minx" 
+				type="textwithplaceholder" 
+				size="40" 
+				class="input" 
+				placeholder="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_MINX"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_MINX" 
+				description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_MINX"  
+				filter="safehtml" />
+	</fieldset>
 	<field name="csw_geographicfilter" type="textarea" rows="5" class="inputbox input-xxlarge" filter="safehtml" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_GEOGRAPHICFILTER" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_GEOGRAPHICFILTER"  />
 	
 	<fieldset name="wms_policy">
