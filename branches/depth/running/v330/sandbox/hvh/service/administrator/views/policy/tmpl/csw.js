@@ -3,8 +3,7 @@ function onStateChange () {
 	var values = jQuery('#jform_csw_state').val();
 	if (null != values) {
 		for (var i = 0; i < values.length; i++) {
-			var text = jQuery('#jform_csw_state option[value="' + values[i] + '"]').text();
-			if ('published' == text) {
+			if ('3' == values[i]) {
 				jQuery('#jform_csw_version_id').parent().parent().show();
 				return;
 			}
@@ -14,7 +13,7 @@ function onStateChange () {
 }
 
 function enableState(){
-	if(jQuery('#jform_csw_anystate1').is(":checked")){
+	if(jQuery('#jform_csw_anystate0').is(":checked")){
 		jQuery("#jform_csw_state").val("").trigger('liszt:updated');
 		jQuery('#jform_csw_state').parent().parent().hide();
 		jQuery('#jform_csw_version_id').parent().parent().hide();
@@ -35,7 +34,7 @@ function onAddExcludedAttribute () {
 	jQuery('#div_excluded_attributes').append(
 			'<div class="div_ea_' + count + ' input-xxlarge">' + 
 				'<input type="text" name="excluded_attribute[' + count + ']" class="span10" value="" />'+
-				'<button class="btn btn-danger btn-small btn_ea_delete" onClick="onDeleteExcludedAttribute(' +count+ ');return false;"><i class="icon-white icon-remove"></i></button>'+
+				'<span class="btn btn-danger btn-small btn_ea_delete" onClick="onDeleteExcludedAttribute(' +count+ ');return false;"><i class="icon-white icon-remove"></i></span>'+
 				'<br /><br />' +
 			'</div>'
 		);
@@ -44,8 +43,8 @@ function onAddExcludedAttribute () {
 }
 
 jQuery(document).ready(function () {
-	onStateChange();
 	enableState();
+	onStateChange();
 	
 	jQuery('input[name="jform[csw_anystate]"]').click(function () {
 		enableState();

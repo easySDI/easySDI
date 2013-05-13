@@ -130,6 +130,10 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				$item->physicalService = $this->{'_getItem' . $item->layout}($pk, $item->virtualservice_id);
 			}
 			$item->{'allowedoperation_' . strtolower($item->layout)} = $this->loadAllowedOperation($pk);
+			
+			if(strtolower($item->layout) == 'csw'){
+				$item->csw_state = $this->loadAllowedMetadatastate($pk);
+			}
 		}
 		
 		// Get the access scope
@@ -138,6 +142,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		
 		return $item;
 	}
+
 	
 	/**
 	 *
@@ -1337,7 +1342,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 *
 	 * @param int $pk the primary key of the current policy
 	 *
-	 * @return boolean 	True on success, False on error
+	 * @return object 	Array of results on success, False on error
 	 *
 	 * @since EasySDI 3.0.0
 	 */
@@ -1359,6 +1364,36 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			return false;
 		}
 		
+		return $db->loadColumn();
+	}
+	
+	/**
+	 * Load allowed metadata state
+	 *
+	 * @param int $pk the primary key of the current policy
+	 *
+	 * @return object 	Array of results on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	private function loadAllowedMetadatastate ($pk) {
+		if (empty($pk)) {
+			return Array();
+		}
+	
+		$db = JFactory::getDbo();
+		$db->setQuery('
+				SELECT metadatastate_id FROM #__sdi_policy_metadatastate
+				WHERE policy_id =' . $pk . '
+				');
+	
+		try {
+			$db->execute();
+		} catch (Exception $e) {
+			$this->setError($e->getMessage());
+			return false;
+		}
+	
 		return $db->loadColumn();
 	}
 	
@@ -1410,11 +1445,12 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		$db->setQuery('DELETE FROM #__sdi_policy_metadatastate WHERE policy_id = ' . $data['id']);
 		$db->execute();
 		
-		$arr_pks = $_POST['csw_state'];
+		$arr_pks = $data['csw_state'];
+		$version_id = $data['csw_version_id'];
 		foreach ($arr_pks as $pk) {
 			$db->setQuery('
-				INSERT INTO #__sdi_policy_metadatastate (policy_id, metadatastate_id)
-				VALUES (' . $data['id'] . ',\'' . $pk . '\');
+				INSERT INTO #__sdi_policy_metadatastate (policy_id, metadatastate_id, metadataversion_id)
+				VALUES (' . $data['id'] . ',\'' . $pk . '\', \'' . $version_id . '\');
 			');
 			try {
 				$db->execute();

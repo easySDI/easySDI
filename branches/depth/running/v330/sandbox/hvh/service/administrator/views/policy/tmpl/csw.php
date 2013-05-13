@@ -109,7 +109,7 @@ JText::script('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE');
 							foreach ($paths as $path) {
 								echo '<div class="div_ea_' . $path_count . ' input-xxlarge">
 										<input type="text" name="excluded_attribute[' . $path_count . ']" class="span10" value="'.$path.'" />
-										<button class="btn btn-danger btn-small btn_ea_delete" onClick="onDeleteExcludedAttribute(' .$path_count. ');return false;"><i class="icon-white icon-remove"></i></button>
+										<span class="btn btn-danger btn-small btn_ea_delete" onClick="onDeleteExcludedAttribute(' .$path_count. ');return false;"><i class="icon-white icon-remove"></i></span>
 										<br /><br />
 									</div>';
 								$path_count++;

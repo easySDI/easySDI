@@ -78,33 +78,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	$prefix = 'inherit';
 
 	
-	$html .= '	
-	<div class="well">
-    	<div class="control-group">
-			<label class="control-label" for="' . $prefix . '[minimumscale]">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MINIMUM_SCALE') . '</label>
-			<div class="controls">
-				<input type="text" name="' . $prefix . '[minimumscale]" value="' . ((isset($spatialpolicy->minimumscale))?$spatialpolicy->minimumscale:'') . '" />
-			</div>
-		</div>
-  		<div class="control-group">
-			<label class="control-label" for="' . $prefix . '[maximumscale]">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MAXIMUM_SCALE') . '</label>
-			<div class="controls">
-				<input type="text" name="' . $prefix . '[maximumscale]" value="' . ((isset($spatialpolicy->maximumscale))?$spatialpolicy->maximumscale:'') . '" />
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label" for="' . $prefix . '[geographicfilter]">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_FILTER') . '</label>
-			<div class="controls">
-				<textarea name="' . $prefix . '[geographicfilter]" rows="8" class="input-xxlarge">' . ((isset($spatialpolicy->geographicfilter))?$spatialpolicy->geographicfilter:'') . '</textarea>
-			</div>
-		</div>
-	</div>
-			<input type="hidden" name="' . $prefix . '[maxx]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'maxx" />
-			<input type="hidden" name="' . $prefix . '[maxy]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'maxy" />
-			<input type="hidden" name="' . $prefix . '[minx]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'minx" />
-			<input type="hidden" name="' . $prefix . '[miny]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'miny" />
-			<input type="hidden" name="' . $prefix . '[srssource]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'srssource" />
-	';
+	
 	
 	if (0 == $physicalServiceID) {
 		$prefix .= '_policy[' . $wmts_spatialpolicy_id . ']';
@@ -131,6 +105,34 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 		</label>
 		';
 	}
+	
+	$html .= '
+	<div class="well">
+	<div class="control-group">
+	<label class="control-label" for="' . $prefix . '[minimumscale]">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MINIMUM_SCALE') . '</label>
+	<div class="controls">
+	<input type="text" name="' . $prefix . '[minimumscale]" value="' . ((isset($spatialpolicy->minimumscale))?$spatialpolicy->minimumscale:'') . '" />
+	</div>
+	</div>
+	<div class="control-group">
+	<label class="control-label" for="' . $prefix . '[maximumscale]">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MAXIMUM_SCALE') . '</label>
+	<div class="controls">
+	<input type="text" name="' . $prefix . '[maximumscale]" value="' . ((isset($spatialpolicy->maximumscale))?$spatialpolicy->maximumscale:'') . '" />
+	</div>
+	</div>
+	<div class="control-group">
+	<label class="control-label" for="' . $prefix . '[geographicfilter]">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_FILTER') . '</label>
+	<div class="controls">
+	<textarea name="' . $prefix . '[geographicfilter]" rows="8" class="input-xxlarge">' . ((isset($spatialpolicy->geographicfilter))?$spatialpolicy->geographicfilter:'') . '</textarea>
+	</div>
+	</div>
+	</div>
+	<input type="hidden" name="' . $prefix . '[maxx]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'maxx" />
+	<input type="hidden" name="' . $prefix . '[maxy]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'maxy" />
+	<input type="hidden" name="' . $prefix . '[minx]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'minx" />
+	<input type="hidden" name="' . $prefix . '[miny]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'miny" />
+	<input type="hidden" name="' . $prefix . '[srssource]" id="' . str_replace(Array('[', ']'), '_', $prefix) . 'srssource" />
+	';
 	echo $html;
 }
 ?>
