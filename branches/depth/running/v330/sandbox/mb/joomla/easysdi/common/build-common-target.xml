@@ -16,10 +16,6 @@
         <property name="package.out.dir" value="${root.out.dir}/${component.name}/target"/>
     
         <echo>Copy administrator structure of ${component.name} component</echo>
-        <mkdir dir="${src.out.dir}/administrator" />
-        <delete>
-            <fileset dir="${src.out.dir}/administrator" includes="**/*"/>
-        </delete>
         <copy todir="${src.out.dir}/administrator">
             <fileset dir="${joomla.administrator.components.dir}/${component.name}">
                 <exclude name="easysdi_*.xml"/>
@@ -49,10 +45,7 @@
         <property name="package.out.dir" value="${root.out.dir}/${component.name}/target"/>
         
         <echo>Copy site structure of ${component.name} component</echo>
-        <mkdir dir="${src.out.dir}/site" />
-        <delete>
-            <fileset dir="${src.out.dir}/site" includes="**/*"/>
-        </delete>
+        
         <copy todir="${src.out.dir}/site">
             <fileset dir="${joomla.site.components.dir}/${component.name}"/>
         </copy>
