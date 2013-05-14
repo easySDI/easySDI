@@ -19,6 +19,17 @@ Joomla.submitbutton = function (task) {
 			}
 			jQuery(document).trigger('recalculate', task);
 		}
+		else if ('policy.cancel' != task && 'CSW' == jQuery('#jform_layout').val()) {
+			if(jQuery('#jform_srssource').val() == '' && jQuery('#jform_maxx').val() == '' && jQuery('#jform_maxy').val() == '' && jQuery('#jform_minx').val() == '' && jQuery('#jform_miny').val() == '') {
+				jQuery('#jform_eastboundlongitude').val('');
+				jQuery('#jform_westboundlongitude').val('');
+				jQuery('#jform_northboundlatitude').val('');
+				jQuery('#jform_southboundlatitude').val('');
+				Joomla.submitform(task, document.getElementById('policy-form'));
+				return;
+			}
+			jQuery(document).trigger('reproject', task);
+		}
 		else {
 			Joomla.submitform(task, document.getElementById('policy-form'));
 		}

@@ -51,3 +51,56 @@ jQuery(document).ready(function () {
 	});
 	
 });
+
+var waitFor = 0;
+var rtask;
+//event fired when the policy-form is submitted
+jQuery(document).on('reproject', function (e, task) {
+	rtask =task;
+		if (jQuery('#jform_srssource').val() == '' || 
+				jQuery('#jform_maxx').val() == '' ||  
+				jQuery('#jform_maxy').val() == ''  ||
+				jQuery('#jform_minx').val() == '' ||  
+				jQuery('#jform_miny').val() == ''){
+			alert ("Check your geographic filter definition.");
+			return;
+		}
+		try{
+			var source = new Proj4js.Proj(jQuery('#jform_srssource').val());
+			var dest = new Proj4js.Proj('EPSG:4326');
+			var maxx = jQuery('#jform_maxx').val() ;  
+			var maxy = jQuery('#jform_maxy').val() ;
+			var minx = jQuery('#jform_minx').val() ;  
+			var miny = jQuery('#jform_miny').val() ;
+			waitFor += 1;
+			checkProjLoaded(minx, miny,maxx,maxy, source, dest)
+			
+			
+		}catch (err){
+			alert ("Check your geographic filter definition.");
+			return;
+		}
+	});
+
+
+function checkProjLoaded(minx, miny,maxx,maxy, source, dest) {
+    if (!source.readyToUse || !dest.readyToUse) {
+      window.setTimeout(Proj4js.bind(checkProjLoaded, this, minx, miny,maxx,maxy, source, dest), 500);
+    } else {
+	    waitFor -= 1;
+	    calculateBBOX(minx, miny,maxx,maxy, source, dest);
+    }
+}
+
+function calculateBBOX(minx, miny,maxx,maxy, source, dest){
+	var pLowerWestCorner = new Proj4js.Point(new Array(minx,miny));   
+	Proj4js.transform(source, dest, pLowerWestCorner);
+	var pUpperEastCorner = new Proj4js.Point(new Array(maxx,maxy));   
+	Proj4js.transform(source, dest, pUpperEastCorner);
+
+	jQuery('#jform_eastboundlongitude').val(pUpperEastCorner.x);
+	jQuery('#jform_westboundlongitude').val(pLowerWestCorner.x);
+	jQuery('#jform_northboundlatitude').val(pUpperEastCorner.y);
+	jQuery('#jform_southboundlatitude').val(pLowerWestCorner.y);	
+	Joomla.submitform(rtask, document.getElementById('policy-form'));
+}

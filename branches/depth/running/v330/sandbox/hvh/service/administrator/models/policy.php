@@ -133,6 +133,14 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			
 			if(strtolower($item->layout) == 'csw'){
 				$item->csw_state = $this->loadAllowedMetadatastate($pk);
+				if($item->csw_spatialpolicy_id){
+					$spatialpolicy = $this->loadCSWSpatialPolicy($item->csw_spatialpolicy_id);
+					$item->srssource = $spatialpolicy->srssource;
+					$item->maxx = (float)$spatialpolicy->maxx;
+					$item->maxy = (float)$spatialpolicy->maxy;
+					$item->minx = (float)$spatialpolicy->minx;
+					$item->miny = (float)$spatialpolicy->miny;
+				}
 			}
 		}
 		
@@ -451,10 +459,16 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 							$this->setError('Failed to save excluded attributes.');
 							return false;
 						}
+						
+						if(!$this->saveCSWSpatialPolicy($data)){
+							$this->setError('Failed to save CSW spatial policy.');
+							return false;
+						}
 						break;
 				}
 			}
 			
+			//Allowed operations
 			if (!$this->saveAllowedOperation($data)) {
 				$this->setError('Failed to save allowed operations.');
 				return false;
@@ -1395,6 +1409,95 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		}
 	
 		return $db->loadColumn();
+	}
+	
+	/**
+	 * Method to save CSW spatial policy
+	 *
+	 * @param array 	$data	data posted from the form
+	 *
+	 * @return boolean 	True on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	private function saveCSWSpatialPolicy ($data) {
+		try{
+			$db = JFactory::getDbo();
+			
+			//Get the existing spatial policy id
+			$query = $db->getQuery(true);
+			$query->select('csw_spatialpolicy_id')
+					->from('#__sdi_policy')
+					->where('id = ' . $data['id']);
+			$db->setQuery($query);
+			$spatialpolicy_id = $db->loadResult();
+		
+			//Delete existing spatial policy
+			if($spatialpolicy_id && ($data['srssource'] == null || $data['srssource'] == '')){
+				$db->setQuery('UPDATE #__sdi_policy SET csw_spatialpolicy_id = NULL WHERE id = ' . $data['id']);
+				$db->execute();
+					
+				$spatial = JTable::getInstance('cswspatialpolicy', 'Easysdi_serviceTable');
+				$spatial->delete($spatialpolicy_id);
+				return true;
+			} 
+			
+			$spatialtable = JTable::getInstance('cswspatialpolicy', 'Easysdi_serviceTable');
+			$spatial = array();
+			$spatial['eastboundlongitude'] = $data['eastboundlongitude'];
+			$spatial['westboundlongitude'] = $data['westboundlongitude'];
+			$spatial['northboundlatitude'] = $data['northboundlatitude'];
+			$spatial['southboundlatitude'] = $data['southboundlatitude'];
+			$spatial['maxx'] = $data['maxx'];
+			$spatial['maxy'] = $data['maxy'];
+			$spatial['minx'] = $data['minx'];
+			$spatial['miny'] = $data['miny'];
+			$spatial['srssource'] = $data['srssource'];
+			
+			if($spatialpolicy_id){
+				$spatial['id'] = $spatialpolicy_id;
+				
+				if(!$spatialtable->bind($spatial))
+					throw new Exception('Cannot bind cswspatialpolicy');
+				if(!$spatialtable->store())
+						throw new Exception('Cannot save cswspatialpolicy');
+			}else{
+				if(!$spatialtable->bind($spatial))
+					throw new Exception('Cannot bind cswspatialpolicy');
+				if(!$spatialtable->store())
+					throw new Exception('Cannot save cswspatialpolicy');
+
+				$spatialpolicy_id = $spatialtable->id;
+				$data['csw_spatialpolicy_id'] = $spatialpolicy_id;
+				parent::save($data);
+			}
+			
+			return true;
+		}catch (Exception $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+	}
+	
+	/**
+	 * Load CSW spatial policy
+	 *
+	 * @param int $pk the primary key of the current policy
+	 *
+	 * @return object 	a CSW spatial policy object on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	private function loadCSWSpatialPolicy ($pk) {
+		if (empty($pk)) {
+			return null;
+		}
+	
+		$spatial = JTable::getInstance('cswspatialpolicy', 'Easysdi_serviceTable');
+		$spatial->load($pk);
+		
+		return $spatial;
 	}
 	
 	/**
