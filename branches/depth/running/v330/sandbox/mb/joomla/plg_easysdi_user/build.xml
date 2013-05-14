@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+
+<project default="plg_easysdi_user" basedir="../../../../">
+    
+    <target name="package-plg-user" description="Main target">
+        <antcall target="plg-common.plg_copy">
+            <param name="src.out.dir" value="${root.out.dir}/plg_easysdi_user/src"/>
+            <param name="package.out.dir" value="${root.out.dir}/plg_easysdi_user/target"/>
+            <param name="joomla.distinct.plugin.path" value="user/easysdi"/>
+            <param name="language.file.name" value="user_easysdi"/>
+        </antcall>
+        <antcall target="plg-common.plg_zip">
+            <param name="plugin.name" value="plg_easysdi_user"/>
+            <param name="src.out.dir" value="${root.out.dir}/plg_easysdi_user/src"/>
+            <param name="package.out.dir" value="${root.out.dir}/plg_easysdi_user/target"/>
+        </antcall>
+    </target>
+   
+</project>

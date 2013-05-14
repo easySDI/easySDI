@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+
+<project default="plg_easysdi_monitor" basedir="../../../../">
+    
+    <target name="package-plg-monitor" description="Main target">
+        <antcall target="plg-common.plg_copy">
+            <param name="src.out.dir" value="${root.out.dir}/plg_easysdi_monitor/src"/>
+            <param name="package.out.dir" value="${root.out.dir}/plg_easysdi_monitor/target"/>
+            <param name="joomla.distinct.plugin.path" value="content/sdimonitor"/>
+            <param name="language.file.name" value="sdi_monitor_easysdi"/>
+        </antcall>
+        <antcall target="plg-common.plg_zip">
+            <param name="plugin.name" value="plg_easysdi_monitor"/>
+            <param name="src.out.dir" value="${root.out.dir}/plg_easysdi_monitor/src"/>
+            <param name="package.out.dir" value="${root.out.dir}/plg_easysdi_monitor/target"/>
+        </antcall>
+    </target>
+   
+</project>
