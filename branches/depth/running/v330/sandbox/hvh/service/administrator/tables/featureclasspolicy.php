@@ -60,7 +60,7 @@ class Easysdi_serviceTablefeatureclasspolicy extends sdiTable {
 					VALUES ("' . $value['attributerestriction'] . '","' . $value['boundingboxfilter'] . '","' . $value['geographicfilter'] . '",' . $id . ',' . $src['id'] . ');
 				';
 			}
-			var_dump($query);
+// 			var_dump($query);
 			$db->setQuery($query);
 			$db->execute();
 		}

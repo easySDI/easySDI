@@ -534,7 +534,6 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				
 				//we update the spatial policy foreign key in policy
 				$policyUpdates[] = 'wmts_spatialpolicy_id = ' . $spatialPolicyID;
-				
 			}
 			else {
 				//we update the spatial policy
@@ -653,6 +652,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					
 					//update the spatial foreign key in physicalservice_policy
 					$physicalServicePolicyUpdates[] = 'wmts_spatialpolicy_id = ' . $spatialPolicyID;
+					//And set the inheritedspatialpolicy boolean value accordingly
+					$physicalServicePolicyUpdates[] = 'inheritedspatialpolicy = 0';
 					
 				}
 				else {
@@ -675,6 +676,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 						$this->setError($je);
 						return false;
 					}
+					//Set the inheritedspatialpolicy boolean value accordingly
+					$physicalServicePolicyUpdates[] = 'inheritedspatialpolicy = 0';
 				}
 			}
 			
@@ -696,6 +699,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			if($spatialPolicyID != NULL && 'null' == $spatialPolicy['northBoundLatitude'] ){
 				//update the spatial foreign key in physicalservice_policy
 				$physicalServicePolicyUpdates[] = 'wmts_spatialpolicy_id = NULL';
+				//And set the inheritedspatialpolicy boolean value accordingly
+				$physicalServicePolicyUpdates[] = 'inheritedspatialpolicy = 1';
 			
 				//update the anyitem switch
 				$query = $db->getQuery(true);
@@ -778,7 +783,6 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				
 				//we update the spatial policy foreign key in policy
 				$policyUpdates[] = 'wms_spatialpolicy_id = ' . $spatialPolicyID;
-				
 			}
 			else {
 				//we update the spatial policy
@@ -902,6 +906,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					
 					//update the spatial foreign key in physicalservice_policy
 					$physicalServicePolicyUpdates[] = 'wms_spatialpolicy_id = ' . $spatialPolicyID;
+					//And set the inheritedspatialpolicy boolean value accordingly
+					$physicalServicePolicyUpdates[] = 'inheritedspatialpolicy = 0';
 					
 				}
 				else {
@@ -927,6 +933,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 						$this->setError($je);
 						return false;
 					}
+					//Set the inheritedspatialpolicy boolean value accordingly
+					$physicalServicePolicyUpdates[] = 'inheritedspatialpolicy = 0';
 				}
 			}
 			
@@ -948,6 +956,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			if($spatialPolicyID != NULL && 'null' == $spatialPolicy['minimumscale'] && 'null' == $spatialPolicy['maximumscale'] && empty($spatialPolicy['geographicfilter'])){
 				//update the spatial foreign key in physicalservice_policy
 				$physicalServicePolicyUpdates[] = 'wms_spatialpolicy_id = NULL';
+				//And set the inheritedspatialpolicy boolean value accordingly
+				$physicalServicePolicyUpdates[] = 'inheritedspatialpolicy = 1';
 				
 				//update the anyitem switch
 				$query = $db->getQuery(true);
@@ -1023,7 +1033,6 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				
 				//we update the spatial policy foreign key in policy
 				$policyUpdates[] = 'wfs_spatialpolicy_id = ' . $spatialPolicyID;
-				
 			}
 			else {
 				//we update the spatial policy
@@ -1136,6 +1145,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					
 					//update the spatial foreign key in physicalservice_policy
 					$physicalServicePolicyUpdates[] = 'wfs_spatialpolicy_id = ' . $spatialPolicyID;
+					//And set the inheritedspatialpolicy boolean value accordingly
+					$physicalServicePolicyUpdates[] = 'inheritedspatialpolicy = 0';
 					
 				}
 				else {
@@ -1155,6 +1166,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 						$this->setError($je);
 						return false;
 					}
+					//Set the inheritedspatialpolicy boolean value accordingly
+					$physicalServicePolicyUpdates[] = 'inheritedspatialpolicy = 0';
 				}
 				
 				
@@ -1163,7 +1176,9 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			//If spatial policy was cleared
 			if(empty($spatialPolicy['localgeographicfilter']) && empty($spatialPolicy['remotegeographicfilter'])){
 				//we update the spatial policy foreign key in policy
-				$policyUpdates[] = 'wfs_spatialpolicy_id = NULL';
+				$physicalServicePolicyUpdates[] = 'wfs_spatialpolicy_id = NULL';
+				//And set the inheritedspatialpolicy boolean value accordingly
+				$physicalServicePolicyUpdates[] = 'inheritedspatialpolicy = 1';
 			}
 			
 			//update the anyitem switch
@@ -1439,6 +1454,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					
 				$spatial = JTable::getInstance('cswspatialpolicy', 'Easysdi_serviceTable');
 				$spatial->delete($spatialpolicy_id);
+				parent::save($data);
 				return true;
 			} 
 			

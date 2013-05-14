@@ -27,6 +27,12 @@ function enableState(){
 function onDeleteExcludedAttribute (index) {
 	var parent = jQuery('.div_ea_' + index);
 	parent.remove();
+	var count = jQuery('#btn_add_excluded_attribute').data('count');
+	jQuery('#btn_add_excluded_attribute').data('count', count -1);
+	if(jQuery('#btn_add_excluded_attribute').data('count') > 0)
+		jQuery('#jform_csw_anyattribute').val('0');
+	else
+		jQuery('#jform_csw_anyattribute').val('1');
 }
 
 function onAddExcludedAttribute () {
@@ -40,11 +46,19 @@ function onAddExcludedAttribute () {
 		);
 	count++;
 	jQuery('#btn_add_excluded_attribute').data('count', count);
+	if(jQuery('#btn_add_excluded_attribute').data('count') > 0)
+		jQuery('#jform_csw_anyattribute').val('0');
+	else
+		jQuery('#jform_csw_anyattribute').val('1');
 }
 
 jQuery(document).ready(function () {
 	enableState();
 	onStateChange();
+	if(jQuery('#btn_add_excluded_attribute').data('count') > 0)
+		jQuery('#jform_csw_anyattribute').val('0');
+	else
+		jQuery('#jform_csw_anyattribute').val('1');
 	
 	jQuery('input[name="jform[csw_anystate]"]').click(function () {
 		enableState();

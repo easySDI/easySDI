@@ -71,9 +71,9 @@ class Easysdi_serviceViewPhysicalService extends JViewLegacy
 			JToolBarHelper::apply('physicalservice.apply', 'JTOOLBAR_APPLY');
 			JToolBarHelper::save('physicalservice.save', 'JTOOLBAR_SAVE');
 		}
-		if (!$checkedOut && $this->canDo->get('core.edit')&& $this->canDo->get('core.create')){
-			JToolBarHelper::custom('physicalservice.save2new', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);
-		}
+// 		if (!$checkedOut && $this->canDo->get('core.edit')&& $this->canDo->get('core.create')){
+// 			JToolBarHelper::custom('physicalservice.save2new', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);
+// 		}
 
 		if (empty($this->item->id)) {
 			JToolBarHelper::cancel('physicalservice.cancel', 'JTOOLBAR_CANCEL');

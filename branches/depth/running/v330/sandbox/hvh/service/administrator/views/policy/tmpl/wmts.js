@@ -55,6 +55,8 @@ jQuery(document).ready(function () {
 				},
 				success: function (data, textStatus, jqXHR) {
 					popAlert(Joomla.JText._('COM_EASYSDI_SERVICE_MSG_DELETION_COMPLETE'), 'alert-success');
+					jQuery('#configured'+psID+layerName).removeClass('label-success');
+					jQuery('#configured'+psID+layerName).text(Joomla.JText._('COM_EASYSDI_SERVICE_POLICY_LAYER_SETTINGS_INHERITED'));
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
 					
@@ -74,8 +76,16 @@ jQuery(document).ready(function () {
 		//we pre-calculate the bbox (EPSG:4326 -> tile matrix set srs)
 		var raw_form_array = jQuery('#modal_layer_form').serializeArray();
 		var form_values = {};
+		var psID= null;
+		var layerName= null;
 		for (var i = 0; i < raw_form_array.length; i++) {
 			form_values[raw_form_array[i].name] = raw_form_array[i].value;
+			if(raw_form_array[i].name == 'layerID'){
+				layerName = raw_form_array[i].value;
+			}
+			if(raw_form_array[i].name == 'psID'){
+				psID = raw_form_array[i].value;
+			}
 		}
 		var tms_list = form_values.tms_list.split(';');
 		
@@ -136,6 +146,8 @@ jQuery(document).ready(function () {
 				//console.log(arguments);
 				jQuery('#layer_settings_modal').modal('hide');
 				popAlert(Joomla.JText._('COM_EASYSDI_SERVICE_MSG_MODAL_SAVED'), 'alert-success');
+				jQuery('#configured'+psID+layerName).addClass('label-success');
+				jQuery('#configured'+psID+layerName).text(Joomla.JText._('COM_EASYSDI_SERVICE_POLICY_LAYER_SETTINGS_DEFINED'));
 			},
 			error: function (jqXHR, textStatus, errorThrown) {
 				//console.log(arguments);

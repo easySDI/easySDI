@@ -28,6 +28,8 @@ JText::script('COM_EASYSDI_SERVICE_CONFIRM_DELETION');
 JText::script('COM_EASYSDI_SERVICE_MSG_MODAL_SAVED');
 JText::script('COM_EASYSDI_SERVICE_MSG_MODAL_MISSING_BBOX_BOUNDARIES');
 JText::script('COM_EASYSDI_SERVICE_MSG_MODAL_MALFORMED_BBOX_BOUNDARIES');
+JText::script('COM_EASYSDI_SERVICE_POLICY_LAYER_SETTINGS_DEFINED');
+JText::script('COM_EASYSDI_SERVICE_POLICY_LAYER_SETTINGS_INHERITED');
 
 function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	$debug = '';
@@ -64,8 +66,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	$db->setQuery($query);
 	$db->execute();
 	$spatialpolicy = $db->loadObject();
-	
-	
+		
 	$html = '';
 	$prefix = 'inherit';
 	if (0 == $physicalServiceID) {
@@ -93,7 +94,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 		';
 	}
 	
-	$html .= '	<br />
+	$html .= '	<div class="well">
 		<table>
 			<tr>
 				<td></td>
@@ -119,6 +120,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 				<td></td>
 			</tr>
 		</table>
+		
 		<br />
 		<select name="' . $prefix . '[spatialoperatorid]">';
 			foreach ($resultset as $spatialOperator) {
@@ -126,9 +128,8 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 				$html .= '<option value="' . $spatialOperator->id . '" ' . (($spatialOperator->id == $wsp_value)?'selected="selected"':'') . '>' . $spatialOperator->value . '</option>';
 			}
 	$html .= '</select>
-		<br />
-		<br />
-		<br />
+	</div>
+		
 	';
 	echo $html;
 }
@@ -207,6 +208,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 													<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_POLICY_LAYER_ENABLED' );?></th>
 													<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_POLICY_LAYER_NAME' );?></th>
 													<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_POLICY_LAYER_DESCRIPTION' );?></th>
+													<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_POLICY_LAYER_SETTINGS' );?></th>
 													<th></th>
 												</tr>
 											</thead>
@@ -221,21 +223,32 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 													</td>
 													<td>
 														<?php echo $layer->name; ?>
-														&nbsp;
-														<?php
-															if ($layer->hasConfig()) {
-																echo '<span class="label label-info">' . JText::_('COM_EASYSDI_SERVICE_LAYER_HAS_CONFIG') . '</span>';
-															}
-														?>
 													</td>
 													<td><?php echo $layer->description; ?></td>
 													<td>
-														<button type="button" class="btn btn_modify_layer" data-toggle="modal" data-target="#layer_settings_modal" data-psid="<?php echo $ps->id;?>" data-vsid="<?php echo $this->item->virtualservice_id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>">
-															<?php echo JText::_('COM_EASYSDI_SERVICE_BTN_SETTINGS');?>
-														</button>
-														<button type="button" class="btn btn-danger btn_delete_layer" data-psid="<?php echo $ps->id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>">
-															<?php echo JText::_('COM_EASYSDI_SERVICE_BTN_DELETE_SETTINGS');?>
-														</button>
+														<?php
+															if ($layer->hasConfig()) {
+																echo '<span id="configured' . $ps->id . '' . $layer->name . '" class="label label-success">' . JText::_('COM_EASYSDI_SERVICE_POLICY_LAYER_SETTINGS_DEFINED') . '</span>';
+															}else{
+																echo '<span id="configured' . $ps->id . '' . $layer->name . '" class="label">' . JText::_('COM_EASYSDI_SERVICE_POLICY_LAYER_SETTINGS_INHERITED') . '</span>';
+															}
+														?>
+													</td>
+													<td>
+														<div class="btn-group">
+														  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+														    <?php echo JText::_('COM_EASYSDI_SERVICE_ACTIN_SETTINGS');?>
+														    <span class="caret"></span>
+														  </a>
+														  <ul class="dropdown-menu">
+														   <li><a class="btn_modify_layer" data-toggle="modal" data-target="#layer_settings_modal" data-psid="<?php echo $ps->id;?>" data-vsid="<?php echo $this->item->virtualservice_id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>">
+																<?php echo JText::_('COM_EASYSDI_SERVICE_BTN_SETTINGS');?>
+															</a></li>
+															<li><a  class="btn_delete_layer" data-psid="<?php echo $ps->id;?>" data-policyid="<?php echo $this->item->id;?>" data-layername="<?php echo $layer->name;?>">
+																<?php echo JText::_('COM_EASYSDI_SERVICE_BTN_DELETE_SETTINGS');?>
+															</a></li>
+														  </ul>
+														</div>
 													</td>
 												</tr>
 											<?php endforeach; ?>

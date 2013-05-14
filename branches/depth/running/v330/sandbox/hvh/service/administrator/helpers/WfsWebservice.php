@@ -265,6 +265,7 @@ class WfsWebservice {
 			$query = $db->getQuery(true);
 			$query->update('#__sdi_featuretype_policy')->set(Array(
 				'spatialpolicy_id = \'' . $spatial_policy_id . '\'',
+				'inheritedspatialpolicy = 0',
 			))->where(Array(
 				'id = \'' . $featuretypepolicy_id . '\'',
 			));
@@ -346,7 +347,6 @@ class WfsWebservice {
 		}
 		
 		foreach ($resultset as $result) {
-			print_r($result);
 			$physicalServiceID = $result->id;
 			$wfsObj = new WfsPhysicalService($result->id, $result->url);
 			$wfsObj->getCapabilities();
@@ -456,6 +456,7 @@ class WfsWebservice {
 				$query = $db->getQuery(true);
 				$query->update('#__sdi_featuretype_policy')->set(Array(
 					'spatialpolicy_id = NULL',
+					'inheritedspatialpolicy = 1',
 				))->where('spatialpolicy_id = ' . $pk);
 				$db->setQuery($query);
 				$db->execute();
