@@ -27,9 +27,9 @@
     <import file="com_easysdi_map/build.xml" as="map"/>
     <import file="com_easysdi_monitor/build.xml" as="monitor"/>
     <import file="com_easysdi_service/build.xml" as="service"/>
-    <import file="com_easysdi_user/build.xml" as="user"/>
+    <import file="com_easysdi_contact/build.xml" as="user"/>
     <import file="plg_easysdi_monitor/build.xml" as="plg-monitor"/>
-    <import file="plg_easysdi_user/build.xml" as="plg-user"/>
+    <import file="plg_easysdi_contact/build.xml" as="plg-user"/>
     
     <target name="package-all" depends="core.package-core,map.package-map,monitor.package-monitor,plg-monitor.package-plg-monitor,service.package-service,user.package-user,plg-user.package-plg-user,copy-sub-package,package" description="Main target"/>
     
