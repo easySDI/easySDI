@@ -15,24 +15,54 @@
     <property name="joomla.administrator.language.dir" value="administrator/language" />
     <property name="joomla.site.components.dir" value="components" />
     <property name="joomla.site.language.dir" value="language" />
+    <property name="joomla.template.dir" value="templates" />
     
+    <!-- Joomla plugins path -->
     <property name="joomla.plugin.path" value="plugins"/>
     
-    <!-- Import common ant script -->
-    <import file="common/build-common-target.xml" as="common"/>
-    <import file="common/build-plg-common-target.xml" as="plg-common"/>
+    <!-- Java librairies path -->
+    <property name="lib.path" value="ant/easysdi/common/lib"/>
+    
+    <!-- Joomla xml properties -->
+    <property name="xml.packager" value="EasySDI Community"/>
+    <tstamp>
+        <format property="xml.releaseDate" pattern="dd MMMM yyyy"/>
+    </tstamp>
+    <property name="xml.copyright" value="Copyright (C) 2012. All rights reserved."/>
+    <property name="xml.license" value="GNU General Public License version 3 or later; see LICENSE.txt"/>
+    <property name="xml.author" value="EasySDI Community"/>
+    <property name="xml.authorEmail" value="contact@easysdi.org"/>
+    <property name="xml.authorUrl" value="http://www.easysdi.org"/>
+    
+    <taskdef name="jscomp" classname="com.google.javascript.jscomp.ant.CompileTask" classpath="${lib.path}/compiler.jar"/>
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="${lib.path}/ant-contrib-1.0b3.jar"/>
+    <taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${lib.path}/ant-contrib-1.0b3.jar"/>
+    <taskdef name="jsmin" classname="net.matthaynes.jsmin.JSMin_Task" classpath="${lib.path}/jsmin.0.2.4.jar"/>
     
     <!-- Import sub ant scripts -->
-    <import file="com_easysdi_core/build.xml" as="core"/>
-    <import file="com_easysdi_map/build.xml" as="map"/>
-    <import file="com_easysdi_monitor/build.xml" as="monitor"/>
-    <import file="com_easysdi_service/build.xml" as="service"/>
-    <import file="com_easysdi_contact/build.xml" as="user"/>
-    <import file="plg_easysdi_monitor/build.xml" as="plg-monitor"/>
-    <import file="plg_easysdi_contact/build.xml" as="plg-user"/>
+    <include file="com_easysdi_core/build.xml" as="core"/>
+    <include file="com_easysdi_map/build.xml" as="map"/>
+    <include file="com_easysdi_monitor/build.xml" as="monitor"/>
+    <include file="com_easysdi_service/build.xml" as="service"/>
+    <include file="com_easysdi_contact/build.xml" as="contact"/>
+    <include file="plg_easysdi_monitor/build.xml" as="plg-monitor"/>
+    <include file="plg_easysdi_contact/build.xml" as="plg-contact"/>
+    <include file="plg_easysdi_service/build.xml" as="plg-service"/>
+    <include file="tpl_easysdi/build.xml" as="tpl-easysdi"/>
     
-    <target name="package-all" depends="core.package-core,map.package-map,monitor.package-monitor,plg-monitor.package-plg-monitor,service.package-service,user.package-user,plg-user.package-plg-user,copy-sub-package,package" description="Main target"/>
+    <target name="package-all" depends="package-com-core,package-com-map,package-com-monitor,package-com-service,package-com-contact,package-plg-contact,package-plg-monitor,package-plg-service,copy-sub-package,write-xml,package" description="Main target"/>
     
+    <target name="package-com-core" depends="core.package" description="Main Target"/>
+    <target name="package-com-map" depends="map.package" description="Main Target"/>
+    <target name="package-com-monitor" depends="monitor.package" description="Main Target"/>
+    <target name="package-com-service" depends="service.package" description="Main Target"/>
+    <target name="package-com-contact" depends="contact.package" description="Main Target"/>
+    
+    <target name="package-plg-contact" depends="plg-contact.package" description="Main Target"/>
+    <target name="package-plg-monitor" depends="plg-monitor.package" description="Main Target"/>
+    <target name="package-plg-service" depends="plg-service.package" description="Main Target"/>
+    
+    <target name="package-tpl-easysdi" depends="tpl-easysdi.package" description="Main Target"/>
     
     <!-- Copy sub package in main package --> 
     <target name="copy-sub-package">
@@ -46,10 +76,47 @@
             <fileset dir="${root.out.dir}/com_easysdi_map/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/com_easysdi_monitor/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/com_easysdi_service/target" includes="*" erroronmissingdir="false"/>
-            <fileset dir="${root.out.dir}/com_easysdi_user/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/com_easysdi_contact/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/plg_easysdi_monitor/target" includes="*" erroronmissingdir="false"/>
-            <fileset dir="${root.out.dir}/plg_easysdi_user/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/plg_easysdi_contact/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/plg_easysdi_service/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/tpl_easysdi/target" includes="*" erroronmissingdir="false"/>
         </copy>
+    </target>
+    
+    <target name="write-xml">
+        <echoxml file="${parent.src.out.dir}/pkg_easysdi_test.xml">
+            <extension type="package" version="2.5" method="upgrade"> 
+                <name>EasySDI</name> 
+                <packager>${xml.packager}</packager> 
+                <packagename>easysdi</packagename>
+                <creationDate>15 August 2012</creationDate>
+                <releaseDate>${xml.releaseDate}</releaseDate>
+                <copyright>${xml.copyright}</copyright>
+                <license>${xml.license}</license>
+                <author>${xml.author}</author>
+                <authorEmail>${xml.authorEmail}</authorEmail>
+                <authorUrl>${xml.authorUrl}</authorUrl>
+                <version>${version}</version>
+                <description>PKG_EASYSDI_XML_DESCRIPTION</description> 
+                <files folder="easysdi"> 
+                    <file type="component" id="com_easysdi_core">com_easysdi_core.zip</file> 
+                    <file type="component" id="com_easysdi_contact">com_easysdi_contact.zip</file> 
+                    <file type="component" id="com_easysdi_service">com_easysdi_service.zip</file>
+                    <file type="component" id="com_easysdi_map">com_easysdi_map.zip</file>
+                    <file type="plugin" id="easysdi" group="user">plg_user_easysdi.zip</file> 
+                    <file type="plugin" id="easysdi" group="content">plg_content_easysdi.zip</file>
+                    <file type="template" id="easysdi_template" client="site">easysdi_template.zip</file>
+                </files> 
+                <languages>
+                    <language tag="en-GB">language/en-GB/en-GB.pkg_easysdi.sys.ini</language>
+                    <language tag="fr-FR">language/fr-FR/fr-FR.pkg_easysdi.sys.ini</language>
+                </languages>
+                <updateservers>
+                    <server type="collection">http://update.easysdi.org/packages/easysdi/manifest.xml</server>
+                </updateservers>
+            </extension> 
+        </echoxml>
     </target>
     
     <!-- Compress the complete package. --> 
