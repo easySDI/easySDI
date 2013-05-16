@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<project default="com_easysdi_monitor" basedir="../../../../">
+<project default="com_easysdi_monitor" basedir="../../../">
     
     <property name="monitor.component.name" value="com_easysdi_monitor"/>
     <property name="monitor.src.out.dir" value="${root.out.dir}/${monitor.component.name}/src"/>

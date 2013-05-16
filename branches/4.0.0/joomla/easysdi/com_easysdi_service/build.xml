@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<project default="com_easysdi_service" basedir="../../../../">
+<project default="com_easysdi_service" basedir="../../../">
     
     <property name="service.component.name" value="com_easysdi_service"/>
     <property name="service.src.out.dir" value="${root.out.dir}/${service.component.name}/src"/>

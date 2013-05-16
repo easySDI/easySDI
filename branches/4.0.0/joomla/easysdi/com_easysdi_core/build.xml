@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<project default="com_easysdi_core" basedir="../../../../">
+<project default="com_easysdi_core" basedir="../../../">
     
     <property name="core.component.name" value="com_easysdi_core"/>
     <property name="core.src.out.dir" value="${root.out.dir}/${core.component.name}/src"/>

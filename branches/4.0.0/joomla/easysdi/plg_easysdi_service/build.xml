@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<project default="plg_easysdi_service" basedir="../../../../">
+<project default="plg_easysdi_service" basedir="../../../">
     
     <property name="service.plugin.name" value="plg_easysdi_service"/>
     <property name="plg.service.src.out.dir" value="${root.out.dir}/${service.plugin.name}/src"/>

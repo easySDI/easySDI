@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<project default="com_easysdi_map" basedir="../../../../">
+<project default="com_easysdi_map" basedir="../../../">
     
     <property name="map.component.name" value="com_easysdi_map"/>
     <property name="map.src.out.dir" value="${root.out.dir}/${map.component.name}/src"/>

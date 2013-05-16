@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<project default="plg_easysdi_contact" basedir="../../../../">
+<project default="plg_easysdi_contact" basedir="../../../">
     
     <property name="contact.plugin.name" value="plg_easysdi_contact"/>
     <property name="plg.contact.src.out.dir" value="${root.out.dir}/${contact.plugin.name}/src"/>

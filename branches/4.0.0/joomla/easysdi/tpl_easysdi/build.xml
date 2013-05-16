@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project default="tpl_easysdi" basedir="../../../../">
+<project default="tpl_easysdi" basedir="../../../">
     
     <property name="tpl.name" value="tpl_easysdi"/>
     <property name="tpl.src.out.dir" value="${root.out.dir}/${tpl.name}/src"/>

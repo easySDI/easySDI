@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<project default="com_easysdi_contact" basedir="../../../../">
+<project default="com_easysdi_contact" basedir="../../../">
     
     <property name="contact.component.name" value="com_easysdi_contact"/>
     <property name="contact.src.out.dir" value="${root.out.dir}/${contact.component.name}/src"/>

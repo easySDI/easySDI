@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<project default="plg_easysdi_monitor" basedir="../../../../">
+<project default="plg_easysdi_monitor" basedir="../../../">
     
     <property name="monitor.plugin.name" value="plg_easysdi_monitor"/>
     <property name="plg.monitor.src.out.dir" value="${root.out.dir}/${monitor.plugin.name}/src"/>
