@@ -10,7 +10,8 @@
     <available file="${joomla.site.components.dir}/${contact.component.name}" type="dir" property="contact.site.exist"/>
     
     <target name="package" depends="copy-administrator, copy-site, write-xml, build-info, zip-package" description="Main target" />
-    
+    <target name="dev-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-dev-package" description="Main target" />
+    <target name="sync" depends="copy-administrator, copy-site, write-xml" description="Main target" />
     <!-- 
         Create the administrator folder if necessary.
         Empty the administrator folder, except svn files.
@@ -137,6 +138,20 @@
     
     <!-- Compresses the component package. --> 
     <target name="zip-package">
+        
+        <echo>Zip package ${contact.component.name}.zip</echo>
+        
+        <mkdir dir="${contact.package.out.dir}"/>
+        <delete>
+            <fileset dir="${contact.package.out.dir}" includes="*"/>
+        </delete>
+        <jar destfile="${contact.package.out.dir}/${contact.component.name}.zip">
+            <fileset dir="${contact.src.out.dir}" excludes="site/**"/>
+        </jar>
+    </target>
+    
+    <!-- Compresses the component package. --> 
+    <target name="zip-dev-package">
         
         <echo>Zip package ${contact.component.name}.zip</echo>
         

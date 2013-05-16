@@ -6,6 +6,8 @@
     <property name="tpl.package.out.dir" value="${root.out.dir}/${tpl.name}/target"/>
     
     <target name="package" depends="copy-tpl, write-xml, zip-package" description="Main Target"/>
+    <target name="dev-package" depends="copy-tpl, write-xml, zip-dev-package" description="Main Target"/>
+    <target name="sync" depends="copy-tpl, write-xml" description="Main Target"/>
     
     <target name="copy-tpl">
         <echo>Copy file for ${tpl.name}</echo>
@@ -426,6 +428,18 @@
     </target>
     
     <target name="zip-package">
+        <echo>Zip package ${tpl.name}.zip</echo>
+        
+        <mkdir dir="${tpl.package.out.dir}"/>
+        <delete>
+            <fileset dir="${tpl.package.out.dir}" includes="*"/>
+        </delete>
+        <jar destfile="${tpl.package.out.dir}/${tpl.name}.zip">
+            <fileset dir="${tpl.src.out.dir}"/>
+        </jar>
+    </target>
+    
+    <target name="zip-dev-package">
         <echo>Zip package ${tpl.name}.zip</echo>
         
         <mkdir dir="${tpl.package.out.dir}"/>

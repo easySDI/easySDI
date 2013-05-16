@@ -10,7 +10,8 @@
     <available file="${joomla.site.components.dir}/${core.component.name}" type="dir" property="core.site.exist"/>
     
     <target name="package" depends="copy-administrator, copy-site, geoext-concat, geoext-minify, gxp-concat, gxp-minify, sdi-concat, sdi-minify, write-xml, build-info, zip-package" description="Main target" />
-    
+    <target name="dev-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-dev-package" description="Main target" />
+    <target name="sync" depends="copy-administrator, copy-site, write-xml" description="Main target" />
     <!-- 
         Create the administrator folder if necessary.
         Empty the administrator folder, except svn files.
@@ -147,7 +148,20 @@
             <fileset dir="${core.package.out.dir}" includes="*"/>
         </delete>
         <jar destfile="${core.package.out.dir}/${core.component.name}.zip">
-            <fileset dir="${core.src.out.dir}"/>
+            <fileset dir="${core.src.out.dir}" excludes="site/**"/>
+        </jar>
+    </target>
+    
+    <target name="zip-dev-package">
+        
+        <echo>Zip package ${core.component.name}.zip</echo>
+        
+        <mkdir dir="${core.package.out.dir}"/>
+        <delete>
+            <fileset dir="${core.package.out.dir}" includes="*"/>
+        </delete>
+        <jar destfile="${core.package.out.dir}/${core.component.name}.zip">
+            <fileset dir="${core.src.out.dir}" />
         </jar>
     </target>
     
