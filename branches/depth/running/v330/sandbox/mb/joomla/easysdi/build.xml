@@ -153,7 +153,7 @@
         <delete>
             <fileset dir="${parent.package.out.dir}" includes="*"/>
         </delete>
-        <jar destfile="${parent.package.out.dir}/easysdi-${version}-full.zip">
+        <jar destfile="${parent.package.out.dir}/easysdi-${version}.zip">
             <fileset dir="${parent.src.out.dir}"/>
         </jar>
     </target>
