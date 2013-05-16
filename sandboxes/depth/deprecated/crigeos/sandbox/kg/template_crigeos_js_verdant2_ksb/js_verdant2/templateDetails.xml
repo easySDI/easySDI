@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE install PUBLIC "-//Joomla! 1.5//DTD template 1.0//EN" "http://www.joomla.org/xml/dtd/1.5/template-install.dtd">
+<install version="1.5" type="template" method="upgrade">
+	<name>js_verdant2</name>
+	<creationDate>March 2010</creationDate>
+	<author>Joomlashack</author>
+	<authorEmail>support@joomlashack.com</authorEmail>
+	<authorUrl>http://www.joomlashack.com</authorUrl>
+	<copyright>Copyright Joomlashack 2010. All rights reserved</copyright>
+	<license>Commercial license - single domain use only</license>
+	<version>1.0.2</version>
+    <description>
+			<![CDATA[
+			<h2>JS Verdant</h2>
+			<p>JS Verdant is built with options in mind. Tested to work in all modern browsers, delivering great features, a wide-range of color options, fast loading code; this is the template you've been wanting from JoomlaShack!</p>
+			<p>JS Verdant uses fully optimized CSS3 styles that degrade gracefully when needed.  It also includes a new JoomlaShack feature to choose between static look-feel or a full look-feel.</p>
+			<h3>Changelog</h3>
+						<b>1.0.2</b><br />
+						<ul>
+						<li>Added a new IE fix for rounded corners and option to disable</li>
+						</ul>
+						<b>1.0.1</b><br />
+						<ul>
+						<li>Fixed adjustable parameter for header</li>
+						<li>Added IE fix for rounded corners </li>
+						</ul>
+			]]> 	
+    </description>
+	<files>
+		<filename>index.php</filename>
+		<filename>functions.php</filename>
+		<filename>index.html</filename>
+		<filename>grid.php</filename>
+		<filename>params.ini</filename>
+		<filename>templateDetails.xml</filename>
+		<filename>template_thumbnail.png</filename>
+		<folder>css/</folder>
+		<folder>html/</folder>
+		<folder>js/</folder>
+		<folder>images/</folder>
+</files>
+	<positions>
+		<position>menu</position>
+		<position>menu2</position>
+		<position>logo</position>
+		<position>newsflash</position>
+		<position>left</position>
+		<position>right</position>
+		<position>user1</position>
+		<position>user2</position>
+		<position>user3</position>
+		<position>user4</position>
+		<position>copyright</position>
+		<position>debug</position>
+		<position>breadcrumb</position>
+	</positions>
+	<params>
+		<param name="headerstyle" type="list" default="text" label="Logo type" description="Display the logo as an image or text">
+			<option value="module">Use a module</option>
+			<option value="graphic">Use an Image</option>
+			<option value="text">Use Text (Headline and Slogan)</option>
+		</param>
+		<param name="headline" type="text" default="Wireframe Joomla Template" size="50" label="Logo text" description="Header text to be displayed or SEO text for image" />
+		<param name="slogan" type="text" default="Your Site Slogan" size="50" label="Slogan" description="Slogan text to be displayed or SEO text for image" />
+		<param name="logogridsize" type="list" default="3" label="Logo grid size" description="Size of the logo box (in grid units) if using text or graphic logo">
+			<option value="1">1 (60px)</option>
+			<option value="2">2 (140px)</option>
+			<option value="3">3 (220px)</option>
+			<option value="4">4 (300px)</option>
+			<option value="5">5 (380px)</option>
+			<option value="6">6 (460px)</option>
+			<option value="7">7 (540px)</option>
+			<option value="8">8 (620px)</option>
+			<option value="9">9 (700px)</option>
+			<option value="10">10 (780px)</option>
+			<option value="11">11 (860px)</option>
+			<option value="12">12 (940px)</option>		
+		</param>
+		<param name="logoheight" type="text" default="50" label="Logo Height" description="Enter your logo image height (ONLY enter numerical value)" size="3" />		
+		<param name="sidecolumnwidth" type="list" default="4" label="Side Column Widths" description="Sets the width of the side columns">
+			<option value="1">100px</option>
+			<option value="2">140px</option>
+			<option value="3">220px</option>
+			<option value="4">300px</option>
+		</param>
+		<param name="style" type="list" default="style6" label="Color Style" description="Select your color style">
+			<option value="style6">Crigeos</option>	
+		</param>
+		<param name="darklight" type="list" default="light" label="Dark/Light" description="Select the Content Area Style">
+			<option value="light">Light</option>
+		</param>
+		<param name="bodystyle" type="list" default="static" label="Body Style" description="Select to have the design background across the entire screen or limited to a 960px area">
+			<option value="static">Static</option>
+		</param>
+		<param name="body_color" type="text" default="#eee" size="7" label="Body Background Color" description="The background color of the body area (ONLY APPLICABLE IF BODY STYLE IS SET TO STATC).  Color in hex.  i.e. #eee" />		
+		<param name="layoutstyle" type="list" default="lmr" label="Column Layout" description="Allows for different layouts of columns, the middle column will ALWAYS appear first in the source code for SEO!">
+			<option value="lmr">left, middle, right</option>
+			<option value="lrm">left, right, middle</option>
+			<option value="mlr">middle left, right</option>
+		</param>
+		<param name="headerscript" type="textarea" default="" label="Header Script" description="If you need to add scripts to your header (like Google verification code, perhaps), you should enter them here." rows="5" cols="50" />
+		<param name="footerscript" type="textarea" default="" label="Footer Script" description="If you need to add scripts to your footer (like Google Analytics tracking code), you should enter them here." rows="5" cols="50" />
+		<param name="mootools_enabled" type="radio" default="1" label="Enable Mootools" description="Turn off Joomla core Mootools.js">
+			<option value="0">NO</option>
+			<option value="1">YES</option>
+		</param>
+		<param name="caption_enabled" type="radio" default="1" label="Enable caption.js" description="Turn off Joomla core caption.js">
+			<option value="0">NO</option>
+			<option value="1">YES</option>
+		</param>
+		<param name="ie_rounded" type="radio" default="1" label="Enable IE Rounded Edges" description="Turn off rounded edges in IE">
+			<option value="0">NO</option>
+			<option value="1">YES</option>
+		</param>
+		<param name="titleseparator" type="text" default="//" label="Title Separator" description="Enter in a separator to use for separating Joomla title styling" size="3" />
+	</params>
+</install>

@@ -1,0 +1,176 @@
+<project default="sync" basedir=".">
+	
+	<property name="projet.out.dir" value="out" />
+	<taskdef name="jscomp" classname="com.google.javascript.jscomp.ant.CompileTask"   classpath="js_minifier/compiler.jar"/>
+	<target name="com_easysdi" depends="create-structure,compression" description="Main target">
+	</target>
+	<taskdef name="jsmin"   classname="net.matthaynes.jsmin.JSMin_Task"  classpath="js_minifier/jsmin.0.2.4.jar"/>
+	
+	<target name="create-structure">
+		<echo>Creating the working directory structure</echo>
+		<delete failonerror="false">
+			<fileset dir="${projet.out.dir}" includes="*" />
+		</delete>
+		<mkdir dir="${projet.out.dir}" />
+	</target>
+	
+	<target name="build-component" description="build-component" depends="create-structure">
+		<copy todir="${projet.out.dir}/com_easysdi_map" overwrite="true">
+			<fileset refid="fsbase" />
+		</copy>
+		
+		<copy todir="${projet.out.dir}/com_easysdi_map/administrator" overwrite="true">
+			<fileset refid="fsadmin" />
+		</copy>
+		<copy todir="${projet.out.dir}/com_easysdi_map/components" overwrite="true">
+			<fileset refid="fscomp" />
+		</copy>
+	</target>
+	
+	<target name="upload" depends="compression">
+		<scp file="${projet.out.dir}/com_easysdi_map.zip" todir="admin:easysdi@10.11.224.49:/var/data/joomla15/tmp" trust="true" />
+		<sshexec host="10.11.224.49" username="admin" password="easysdi" trust="true" command="
+			cd /var/data/joomla15/tmp;
+			rm -r map;
+			mkdir map;
+			cd map;
+			unzip ../com_easysdi_map.zip;
+			cd ..;
+			rm com_easysdi_map.zip;" />
+	</target>
+	
+	<target name="compression" description="Compression" depends="create-structure,minifyAllClasses, minifyAllElements, minifyViewSrc">
+		<zip compress="true" destfile="${projet.out.dir}/com_easysdi_map.zip">
+			<zipfileset refid="fsbase" />
+			<zipfileset refid="fsadmin" prefix="administrator" />
+			<zipfileset refid="fscomp" prefix="components" />
+		</zip>
+	</target>
+	
+	<fileset id="fsbase" dir=".">
+		<include name="*.php" />
+		<include name="*.xml" />
+		<exclude name="build.xml" />
+	</fileset>
+	
+	<fileset id="fsadmin" dir="./administrator">
+		<include name="**/*.php" />
+		<include name="**/*.xsl" />
+		<include name="**/*.xslt" />
+		<include name="**/*.inc" />
+		<include name="**/*.ini" />
+		<include name="**/*.jar" />
+		<include name="**/*.xml" />
+		<include name="**/*.png" />
+		<include name="**/*.jpg" />
+		<include name="**/*.gif" />
+		<include name="**/*.ttf" />
+		<include name="**/*.txt" />
+		<include name="**/*.css" />
+		<include name="**/*.js" />
+	</fileset>
+	
+	<fileset id="fscomp" dir="./components">
+		<include name="**/*.php" />
+		<include name="**/*.xsl" />
+		<include name="**/*.xslt" />
+		<include name="**/*.inc" />
+		<include name="**/*.ini" />
+		<include name="**/*.jar" />
+		<include name="**/*.xml" />
+		<include name="**/*.png" />
+		<include name="**/*.jpg" />
+		<include name="**/*.gif" />
+		<include name="**/*.ttf" />
+		<include name="**/*.txt" />
+		<include name="**/*.css" />
+		<include name="**/*.js" />
+	    <exclude name="external/ext/examples/**" />
+	    <exclude name="external/ext/CHANGES.html" />
+	    <exclude name="external/ext/INCLUDE_ORDER.txt" />
+	    <exclude name="external/geoext/examples/**" />
+	    <exclude name="external/geoext/tests/**" />
+	    <exclude name="external/proj4js/docs/**" />
+	    <exclude name="external/proj4js/demo/**" />
+	    <exclude name="external/proj4js/test/**" />
+		<exclude name="js_minifier/**" />
+	</fileset>
+	
+	<fileset id="lafrFR" dir="./administrator/language">
+		<include name="**/fr-FR.com_easysdi_map.ini" />
+	</fileset>
+	
+	<fileset id="laenGB" dir="./administrator/language">
+		<include name="**/en-GB.com_easysdi_map.ini" />
+	</fileset>
+	
+	<fileset id="lcfrFR" dir="./components/language">
+		<include name="**/fr-FR.com_easysdi_map.ini" />
+	</fileset>
+	
+	<fileset id="lcenGB" dir="./components/language">
+		<include name="**/en-GB.com_easysdi_map.ini" />
+	</fileset>
+	
+	<target name="sync" description="Copy from here to apache" depends="minifyAllClasses, minifyAllElements, minifyViewSrc">
+		<copy todir="C:\www\Server\crigeos\administrator\components\com_easysdi_map">
+			<fileset refid="fsadmin" />
+		</copy>
+		<copy todir="C:\www\Server\crigeos\components\com_easysdi_map">
+			<fileset refid="fscomp" />
+		</copy>
+		<copy todir="C:\www\Server\crigeos\language\fr-FR">
+			<fileset refid="lcfrFR" />
+		</copy>
+		<copy todir="C:\www\Server\crigeos\language\en-GB">
+			<fileset refid="lcenGB" />
+		</copy>
+		<copy todir="C:\www\Server\crigeos\administrator\language\fr-FR">
+			<fileset refid="lafrFR" />
+		</copy>
+		<copy todir="C:\www\Server\crigeos\administrator\language\en-GB">
+			<fileset refid="laenGB" />
+		</copy>
+	</target>
+	
+	<target name="minifyAllClasses" >
+		<jsmin destdir="components/classes" force="true">
+			<fileset dir="components/classes/src" includes="**/*.js"/>
+		</jsmin>
+	</target>
+	
+	<target name="minifyAllElements"  >
+		<jsmin destdir="components/elements"  force="true">
+			<fileset dir="components/elements/src" includes="**/*.js"/>
+		</jsmin>
+	</target>	
+	
+	
+	<target name="minifyViewSrc" >
+		<jsmin destdir="components/views/featureDetails/tmpl"  force="true">
+			<fileset dir="components/views/featureDetails/tmpl/src" includes="**/*.js" />
+		</jsmin>
+		
+		<jsmin destdir="components/views/featureGrid/tmpl" force="true">
+			<fileset dir="components/views/featureGrid/tmpl/src" includes="**/*.js" />
+		</jsmin>
+		
+		<jsmin destdir="components/views/map/js" force="true">
+			<fileset dir="components/views/map/js/src" includes="**/*.js" />
+		</jsmin>
+		
+		<jsmin destdir="components/views/map/tmpl" force="true">
+			<fileset dir="components/views/map/tmpl/src" includes="**/*.js" />
+		</jsmin>
+		
+		<jsmin destdir="components/views/printGrid/tmpl" force="true">
+			<fileset dir="components/views/printGrid/tmpl/src" includes="**/*.js" />
+		</jsmin>
+		
+		<jsmin destdir="components/views/printMap/tmpl" force="true">
+			<fileset dir="components/views/printMap/tmpl/src" includes="**/*.js" />
+		</jsmin>
+	</target>
+	
+	
+</project>

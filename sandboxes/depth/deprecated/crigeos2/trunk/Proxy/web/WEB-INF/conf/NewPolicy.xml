@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PolicySet>
+	<Policy/>
+	<Policy Id="all_user" ConfigId="metacarta_open">
+		<Servers All="false"><Server><url>http://labs.metacarta.com/wms/vmap0</url><Prefix>topp</Prefix><Namespace>topp</Namespace><Metadata></Metadata><Layers All="false"><Layer><Name>Vmap0</Name></Layer><Layer><Name>basic</Name></Layer><Layer><Name>coastline_01</Name></Layer><Layer><Name>coastline_02</Name></Layer><Layer><Name>depthcontour</Name></Layer><Layer><Name>trail</Name></Layer></Layers><FeatureTypes></FeatureTypes></Server></Servers>
+		<Subjects All="true"></Subjects>
+		<Operations All="true"></Operations>
+		<AvailabilityPeriod>
+			<Mask>d-mm-yyyy</Mask>
+			<From>
+				<Date>28-01-2008</Date>
+			</From>
+			<To>
+				<Date>28-01-2108</Date>
+			</To>
+		</AvailabilityPeriod>
+		<ImageSize></ImageSize>
+	</Policy>
+	<Policy Id="gmap_all" ConfigId="gmap">
+		<Servers All="false">
+			<Server>
+				<url>http://www2.dmsolutions.ca/cgi-bin/mswms_gmap</url>
+				<Prefix>topp</Prefix>
+				<Namespace>topp</Namespace>
+				<Metadata All="true">
+					<Attributes All="true"/>
+				</Metadata>
+				<Layers All="False">
+					<Layer>
+						<Name>DEMO</Name>
+						<ScaleMax>0</ScaleMax>
+					</Layer>
+					<Layer>
+						<Name>bathymetry</Name>
+					</Layer>
+					<Layer>
+						<Name>land_fn</Name>
+					</Layer>
+					<Layer>
+						<Name>park</Name>
+					</Layer>
+					<Layer>
+						<Name>drain_fn</Name>
+					</Layer>
+					<Layer>
+						<Name>drainage</Name>
+					</Layer>
+					<Layer>
+						<Name>prov_bound</Name>
+					</Layer>
+					<Layer>
+						<Name>fedlimit</Name>
+					</Layer>
+					<Layer>
+						<Name>rail</Name>
+					</Layer>
+					<Layer>
+						<Name>road</Name>
+					</Layer>
+					<Layer>
+						<Name>popplace</Name>
+					</Layer>
+					<Layer>
+						<Name>grid</Name>
+					</Layer>
+				</Layers>
+			</Server>
+		</Servers>
+		<Subjects All="true"/>
+		<Operations All="true"/>
+		<AvailabilityPeriod>
+			<Mask>d-mm-yyyy</Mask>
+			<From>
+				<Date>28-01-2008</Date>
+			</From>
+			<To>
+				<Date>28-01-2108</Date>
+			</To>
+		</AvailabilityPeriod>
+		<ImageSize/>
+	</Policy>
+	<Policy Id="all_user0" ConfigId="mfwfs">
+		<Servers All="false">
+			<Server>
+				<url>http://www2.dmsolutions.ca/cgi-bin/mswfs_filter</url>
+				<Prefix>topp</Prefix>
+				<Namespace>topp</Namespace>
+				<Metadata All="true">
+					<Attributes All="true"/>
+				</Metadata>
+				<FeatureTypes All="false">
+					<FeatureType>
+						<Name>park</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>popplace</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>road</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+				</FeatureTypes>
+			</Server>
+		</Servers>
+		<Subjects All="true"/>
+		<Operations All="true"/>
+		<AvailabilityPeriod>
+			<Mask>d-mm-yyyy</Mask>
+			<From>
+				<Date>28-01-2008</Date>
+			</From>
+			<To>
+				<Date>28-01-2108</Date>
+			</To>
+		</AvailabilityPeriod>
+		<ImageSize/>
+	</Policy>
+	<Policy Id="all_user01" ConfigId="geosignal">
+		<Servers All="false">
+			<Server>
+				<url>http://www.geosignal.org/cgi-bin/wmsmap</url>
+				<Prefix>topp</Prefix>
+				<Namespace>topp</Namespace>
+				<Metadata All="true">
+					<Attributes All="true"/>
+				</Metadata>
+				<Layers All="False">
+					<Layer>
+						<Name>Serveur Geosignal</Name>
+					</Layer>
+					<Layer>
+						<Name>Monde</Name>
+					</Layer>
+					<Layer>
+						<Name>RASTER4000k</Name>
+					</Layer>
+					<Layer>
+						<Name>RASTER1000k</Name>
+					</Layer>
+					<Layer>
+						<Name>RASTER500k</Name>
+					</Layer>
+					<Layer>
+						<Name>RASTER250k</Name>
+					</Layer>
+					<Layer>
+						<Name>RASTER100k</Name>
+					</Layer>
+					<Layer>
+						<Name>RASTER50k</Name>
+					</Layer>
+					<Layer>
+						<Name>RASTER25k</Name>
+					</Layer>
+					<Layer>
+						<Name>RASTER5k</Name>
+					</Layer>
+					<Layer>
+						<Name>Communes</Name>
+					</Layer>
+					<Layer>
+						<Name>Cantons</Name>
+					</Layer>
+					<Layer>
+						<Name>Arrondissements</Name>
+					</Layer>
+					<Layer>
+						<Name>Departements</Name>
+					</Layer>
+					<Layer>
+						<Name>Regions</Name>
+					</Layer>
+					<Layer>
+						<Name>Voirie</Name>
+					</Layer>
+					<Layer>
+						<Name>Autres</Name>
+					</Layer>
+					<Layer>
+						<Name>Secondaires</Name>
+					</Layer>
+					<Layer>
+						<Name>Departementales</Name>
+					</Layer>
+					<Layer>
+						<Name>Nationales</Name>
+					</Layer>
+					<Layer>
+						<Name>Autoroutes</Name>
+					</Layer>
+					<Layer>
+						<Name>CommunesXY</Name>
+					</Layer>
+				</Layers>
+			</Server>
+		</Servers>
+		<Subjects All="true"/>
+		<Operations All="true"/>
+		<AvailabilityPeriod>
+			<Mask>d-mm-yyyy</Mask>
+			<From>
+				<Date>28-01-2008</Date>
+			</From>
+			<To>
+				<Date>28-01-2108</Date>
+			</To>
+		</AvailabilityPeriod>
+		<ImageSize/>
+	</Policy>
+	<Policy Id="WMTS-Policy" ConfigId="WMTS">
+    <Servers All="false">
+    	<Server>
+    		<url>http://v2.suite.opengeo.org/geoserver/gwc/service/wmts</url>
+    		<Prefix>v</Prefix>
+    		<Namespace>v</Namespace>
+    		<Layers All="false">
+    			<Layer>
+    				<Name>medford:hydro</Name>
+    			</Layer>
+    			<Layer>
+    				<Name>medford:firestations</Name>
+    			</Layer>
+    			<Layer>
+    				<Name>medford:buildings</Name>
+    			</Layer>
+    			<Layer>
+    				<Name>medford:citylimits</Name>
+    			</Layer>
+    		</Layers>
+    	</Server>
+    </Servers>
+    <Subjects All="true"/>
+    <Operations All="true"/>
+    <AvailabilityPeriod>
+      <Mask>d-mm-yyyy</Mask>
+      <From>
+        <Date>28-01-2008</Date>
+      </From>
+      <To>
+        <Date>28-01-2108</Date>
+      </To>
+    </AvailabilityPeriod>
+    <ImageSize/>
+  </Policy>
+</PolicySet>

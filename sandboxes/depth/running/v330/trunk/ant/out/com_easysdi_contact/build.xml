@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+
+<project default="com_easysdi_contact" basedir="../../../">
+    
+    <target name="package-contact" description="Main target" >
+        <antcall target="common.copy-administrator">
+            <param name="component.name" value="com_easysdi_contact"/>
+        </antcall>
+        <antcall target="common.copy-site">
+            <param name="component.name" value="com_easysdi_contact"/>
+        </antcall>
+        <antcall target="common.build-info">
+            <param name="component.name" value="com_easysdi_contact"/>
+        </antcall>
+        <antcall target="common.zip-package">
+            <param name="component.name" value="com_easysdi_contact"/>
+        </antcall>
+    </target>
+    
+</project>

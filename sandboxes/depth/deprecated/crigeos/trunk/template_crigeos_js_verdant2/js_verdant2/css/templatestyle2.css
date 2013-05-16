@@ -1,0 +1,189 @@
+/* @override 
+	http://localhost/verdant/templates/js_verdant/css/templatestyle2.css
+*/
+
+/*--HEADER--*/
+
+#logo-text h1 a { color: #eee; }
+
+#logo-text h2 { color: #ac956d; }
+
+#logo-graphic h1 a {
+	background:transparent url(../images/style2/logo.png) no-repeat scroll 0 0;
+}
+
+#logo-graphic h2 {
+	display: none;
+}
+
+/*--MAIN MENU--*/
+#menuWrapper {
+	background-color: #84723f;
+	border-top: 1px solid #ac9554;
+}
+
+#menu ul li a {
+	border-right: 1px solid #ac9554;
+	color: #fff;
+	text-shadow: #6c7263 0 1px 1px;
+}
+
+#menu ul li.active, #menu ul li.current, #menu ul li a:hover {
+	background-color: #ac9554;
+}
+
+#menu ul li.active a, #menu ul li.current a, #menu ul li a:hover {
+	color: #eee;
+}
+
+#menu ul li ul {
+	border-right: 1px solid #84723f;
+	border-top: 1px solid #84723f;
+	border-bottom: 1px solid #84723f;
+	border-left: 1px solid #84723f;
+	background: #ac9554;
+}
+ 
+#menu ul ul a, #menu ul li#current ul a {
+	color: #fff;
+	border-bottom: 1px solid #84723f;
+}
+ 
+#menu ul ul li a:hover, #menu ul li#current ul li a:hover {
+	background: #84723f;
+	color: #fff;
+}
+
+ul#topmenu li a {
+	color: #ccc;
+}
+
+ul#topmenu li.current a {
+	background-color: #333;
+	border: 1px solid #222;
+}
+
+ul#topmenu li a:hover {
+	color: #ac9554;
+}
+
+/*--BANNER--*/
+#banner_wrapper, #footerWrapper {
+	background: #3c130e url(../images/style2/gradients.png) repeat-x 0 -113px;
+}
+
+#banner .module, #footer .module {
+	background-color: #5c251f;
+	border-bottom: 1px solid #441611;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-box-shadow: 0 1px 0px #350f0c;
+	-moz-box-shadow: 0 1px 0px #350f0c;
+	box-shadow: 0 1px 0px #350f0c;
+	behavior: url('templates/crigeos/css/PIE.htc');
+}
+
+#banner h3, #footer h3 { color: #fff; }
+
+body.light #banner h3 span, body.light #footer h3 span { color: #ccc;}
+
+/*--SEC MENU--*/
+#menuWrapper2 {
+	background: #222 url(../images/style2/sub_gradient.png) repeat-x;
+}
+
+body.light #menuWrapper2 {
+	background: #eee url(../images/style2/sub_gradient_light.png) repeat-x;
+}
+
+/*--MAIN AREA--*/
+#main_wrapper {
+	background-color: #222;
+}
+
+#main_wrapper a {
+	color: #ffe082;
+	text-decoration: none;
+}
+
+#main_wrapper .maincontent h3 {
+	color: #fff;	
+}
+
+.left .moduletable h3, .right .moduletable h3 {
+	color: #d1dcbe;
+}
+
+body.light #main_wrapper a {
+	color: #57221c;
+}
+
+.leading {
+	background-color: #1f1f1f;	
+	border: 1px solid #333;
+}
+
+body.light #main_wrapper .maincontent h3 {
+	color: #999;	
+}
+
+#area_content h2 span, .moduletable h3 span, .module h3 span, .componentheading {
+	color: #ac9554;
+}
+
+.left .moduletable ul li, .right .moduletable ul li {
+	margin-bottom: 1px;
+}
+
+.left .moduletable ul li a, .right .moduletable ul li a {
+	background-color: #333;
+	display: block;
+	padding: 5px;
+	font-size: 11px;
+}
+
+body.light .leading {
+	background-color: #fff;
+	border: 1px solid #ccc;	
+}
+
+.left .moduletable ul li a:hover, .right .moduletable ul li a:hover {
+	background-color: #444;
+}
+
+/*--FOOTER--*/
+#banner a, #footer a { color: #ac9554; }
+
+body.light .left .moduletable ul li a, body.light .right .moduletable ul li a {
+	background-color: #fff;
+	display: block;
+	padding: 5px;
+	font-size: 11px;
+	color: #444 !important;
+}
+
+body.light .left .moduletable ul li a:hover, body.light .right .moduletable ul li a:hover {
+	background-color: #ccc;
+	color: #777 !important;
+}
+
+/*K2 Styles*/
+table.calendar tr td.calendarDateLinked a {color: #76acd9;}
+/* --- Zebra rows --- */
+.even {background: #f8f9fd;}
+.odd {background: #fff;}
+/* Article navigation */
+div.itemNavigation {background: #501e18;}
+div.itemNavigation span.itemNavigationTitle {color:#eee;}
+/* Author block */
+div.itemAuthorBlock {background: #3c130e url(../images/style2/gradients.png) repeat-x 0 -113px;}
+/* Comments */
+body.dark div.itemComments {background:#333;}
+/* --- Category block --- */
+#k2Container div.itemListCategory, #k2Container .leading {background: #3c130e url(../images/style2/gradients.png) repeat-x 0 -113px;}
+/* --- Sub-category block --- */
+div.subCategory {background: #f4f7fc;}
+/* User info block */
+div.userBlock {background: #3c130e url(../images/style2/gradients.png) repeat-x 0 -113px;}
+

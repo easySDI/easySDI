@@ -1,0 +1,58 @@
+/*.easysdi_shop_backend_form {width: auto;}
+.easysdi_shop_backend_fieldset {width: auto;}
+.easysdi_shop_backend_textarea {width: 520px !important;} /* important fait que ça prime sur tout le reste */
+/*.easysdi_shop_backend_textfield {width: 520px;}
+.easysdi_shop_backend_combobox {width: 520px;}
+.easysdi_shop_backend_multiselect {width: auto;}
+.easysdi_shop_backend_numberfield {width: auto;}
+.easysdi_shop_backend_datetimefield {width: auto;}
+.easysdi_shop_backend_datefield {width: auto;}
+.easysdi_shop_backend_checkboxgroup {width: auto;}
+.easysdi_shop_backend_radiogroup {width: auto;}
+.easysdi_shop_backend_choicebox {width: 300px !important;}*/
+
+.thes-term {color:#C00000; font-weight: bold; margin:4px; font-size:15px; text-align:center}
+.thes-description div div {font-family: arial,tahoma; font-size:11px; padding:4px; color:#505050}
+.thes-link a span {color:#0040D0}
+
+
+.date_label_to_style .x-form-item-label{
+    display:block;
+    float:left;
+    width:30px !important;
+    padding:3px;
+    padding-left:0;
+    clear:left;
+    z-index:2;
+    position:relative;
+}
+#content-col-main form fieldset label, #content-col-main form fieldset div.label {
+	display: block;
+	float: left;
+	width: auto !important;
+	padding-right: 10px;
+	text-align: right;
+}
+#content-col-main table {
+    margin: 0 !important;
+    padding: 0 !important;
+    width : auto !important;
+
+}
+.newCoord {
+
+    float: left !important;
+    height: 50px;
+    margin: 10px !important;
+    padding: 0 !important;
+    width: 100px;
+}
+.newCoordInputDiv {
+    padding: 0 !important;
+  	width : aito
+}
+
+.newCoordInput {
+    padding: 0 !important;
+  	width : 100px !important
+}

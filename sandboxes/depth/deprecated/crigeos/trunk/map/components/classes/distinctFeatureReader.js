@@ -1,0 +1,6 @@
+
+Ext.namespace("EasySDI_Map");EasySDI_Map.DistinctFeatureReader=Ext.extend(GeoExt.data.FeatureReader,{distinct:null,constructor:function(config){this.distinct=config.distinct;EasySDI_Map.DistinctFeatureReader.superclass.constructor.apply(this,arguments);},readRecords:function(features){var records=[];var distinctVals=[];if(features){var recordType=this.recordType,fields=recordType.prototype.fields;var i,lenI,j,lenJ,feature,values,field,v;for(i=0,lenI=features.length;i<lenI;i++){feature=features[i];if(distinctVals.indexOf(feature.data[this.distinct])==-1){values={};if(feature.attributes){for(j=0,lenJ=fields.length;j<lenJ;j++){field=fields.items[j];if(/[\[\.]/.test(field.mapping)){try{v=new Function("obj","return obj."+field.mapping)(feature.attributes);}catch(e){v=field.defaultValue;}}
+else{v=feature.attributes[field.mapping||field.name]||field.defaultValue;}
+v=field.convert(v);values[field.name]=v;}}
+values.feature=feature;values.state=feature.state;values.fid=feature.fid;distinctVals.push(feature.data[this.distinct]);records[records.length]=new recordType(values,feature.id);}}}
+return{records:records,totalRecords:this.totalRecords!=null?this.totalRecords:records.length};}});

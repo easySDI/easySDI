@@ -1,0 +1,74 @@
+
+.previousBtn {
+  background-image: url("../images/resultset_previous.png") !Important;
+  width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
+  
+}
+
+.nextBtn {
+  background-image: url("../images/resultset_next.png") !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
+}
+
+.navBtn {
+  background-image: url("../images/pan.png") !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
+}
+
+.selectBtn {
+  background-image: url("../images/information.png") !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
+}
+
+.printMapBtn {
+	background-image: url("../images/printer.png") !Important;
+	 width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
+}
+
+.pdfBtn {
+	background-image: url("../images/page_white_acrobat.png") !Important;
+	 width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
+}
+
+.saveMapBtn {
+	background-image: url("../images/disk.png") !Important;
+	 width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
+}
+
+.printLegendBtn {
+	background-image: url("../images/printer.png") !Important;
+	 width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
+}
+
+.zoomInBoxBtn {
+  background-image: url("../images/zoom_in.png") !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
+}
+
+.zoomOutBoxBtn {
+  background-image: url("../images/zoom_out.png") !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
+}
+
+
+

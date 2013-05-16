@@ -1,0 +1,21 @@
+#area_content p {text-align: left;}
+
+#inset { display: inline-block; margin: 0; }
+
+.side { background: none; }
+/*Blue corners*/
+.moduletables1 { background-color: #1e5d74; color: #fff; }
+.moduletables1 .side { background: none; }
+.moduletables1 h3 { color: #fff; }
+/*Red corners*/
+.moduletables2 { background-color: #aa2518; color: #fff; }
+.moduletables2 .side { background: none; }
+.moduletables2 h3 { color: #fff; }
+/*Green corners*/
+.moduletables3 { background-color: #54800c; color: #fff; }
+.moduletables3 .side { background: none; }
+.moduletables3 h3 { color: #fff; }
+/*Brown corners*/
+.moduletables4 { background-color: #3a2e2e; color: #fff; }
+.moduletables4 .side { background: none; }
+.moduletables4 h3 { color: #fff; }

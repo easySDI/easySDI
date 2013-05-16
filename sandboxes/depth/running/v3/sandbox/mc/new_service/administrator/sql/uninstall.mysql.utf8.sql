@@ -1,0 +1,36 @@
+DROP TABLE IF EXISTS `#__sdi_sys_serviceconnector`;
+DROP TABLE IF EXISTS `#__sdi_sys_serviceversion`;
+DROP TABLE IF EXISTS `#__sdi_sys_servicecompliance`;
+DROP TABLE IF EXISTS `#__sdi_sys_serviceoperation`;
+DROP TABLE IF EXISTS `#__sdi_sys_operationcompliance`;
+DROP TABLE IF EXISTS `#__sdi_sys_authenticationlevel`;
+DROP TABLE IF EXISTS `#__sdi_sys_authenticationconnector`;
+DROP TABLE IF EXISTS `#__sdi_service`;
+DROP TABLE IF EXISTS `#__sdi_service_servicecompliance`;
+DROP TABLE IF EXISTS `#__sdi_sys_servicecon_authenticationcon`;
+DROP TABLE IF EXISTS `#__sdi_virtualservice`;
+DROP TABLE IF EXISTS `#__sdi_virtualmetadata`;
+DROP TABLE IF EXISTS `#__sdi_physicalservice`;
+DROP TABLE IF EXISTS `#__sdi_policy`;
+DROP TABLE IF EXISTS `#__sdi_servicepolicy`;
+DROP TABLE IF EXISTS `#__sdi_wmslayer`;
+DROP TABLE IF EXISTS `#__sdi_wmslayerpolicy`;
+DROP TABLE IF EXISTS `#__sdi_allowedoperation`;
+DROP TABLE IF EXISTS `#__sdi_versiontype`;
+DROP TABLE IF EXISTS `#__sdi_visibilitytype`;
+DROP TABLE IF EXISTS `#__sdi_elementrestriction`;
+DROP TABLE IF EXISTS `#__sdi_featureclass`;
+DROP TABLE IF EXISTS `#__sdi_featureclasspolicy`;
+DROP TABLE IF EXISTS `#__sdi_wmtslayer`;
+DROP TABLE IF EXISTS `#__sdi_wmtslayerpolicy`;
+DROP TABLE IF EXISTS `#__sdi_tilematrixset`;
+DROP TABLE IF EXISTS `#__sdi_tilematrixsetpolicy`;
+DROP TABLE IF EXISTS `#__sdi_tilematrix`;
+DROP TABLE IF EXISTS `#__sdi_sys_logroll`;
+DROP TABLE IF EXISTS `#__sdi_sys_loglevel`;
+DROP TABLE IF EXISTS `#__sdi_sys_exceptionlevel`;
+DROP TABLE IF EXISTS `#__sdi_sys_proxytype`;
+
+
+
+
