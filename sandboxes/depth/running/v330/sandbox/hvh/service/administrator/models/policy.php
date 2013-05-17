@@ -105,7 +105,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	public function getItem($pk = null) {
 		if ($item = parent::getItem($pk)) {
 			//Do any procesing on fields here if needed
-			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'tables');
+			JTable::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/tables');
 			
 			$pk = $item->id;
 			
@@ -158,7 +158,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 *
 	*/
 	private function _getItemWMS($pk, $virtualservice_id) {
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmsPhysicalService.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.'/helpers/WmsPhysicalService.php');
 		$tab_physicalService = JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
 		$db = JFactory::getDbo();
 		$ps_list = $tab_physicalService->getListByVirtualService($virtualservice_id);
@@ -220,7 +220,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 *
 	*/
 	private function _getItemWFS($pk, $virtualservice_id) {
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WfsPhysicalService.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.'/helpers/WfsPhysicalService.php');
 		$tab_physicalService = JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
 		$db = JFactory::getDbo();
 		
@@ -282,7 +282,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 *
 	*/
 	private function _getItemWMTS($pk, $virtualservice_id) {
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmtsPhysicalService.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.'/helpers/WmtsPhysicalService.php');
 		$tab_physicalService = JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
 		$db = JFactory::getDbo();
 		
@@ -401,7 +401,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			}
 			
 			if ('WMS' == $serviceconnector_name) {
-				require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmsWebservice.php');
+				require_once(JPATH_COMPONENT_ADMINISTRATOR.'/helpers/WmsWebservice.php');
 				if (!WmsWebservice::saveAllLayers( $data['virtualservice_id'], $data['id'])) {
 					$this->setError('Failed to save all WMS layers.');
 					return false;
@@ -433,7 +433,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 						}
 						break;
 					case 'WFS':
-						require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WfsWebservice.php');
+						require_once(JPATH_COMPONENT_ADMINISTRATOR.'/helpers/WfsWebservice.php');
 						if (!WfsWebservice::saveAllFeatureTypes( $data['virtualservice_id'], $data['id'])) {
 							$this->setError('Failed to save all WFS layers.');
 							return false;

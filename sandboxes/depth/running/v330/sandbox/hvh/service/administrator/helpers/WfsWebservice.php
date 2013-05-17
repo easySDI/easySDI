@@ -3,7 +3,7 @@
 // No direct access
 defined('_JEXEC') or die;
 
-require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WfsPhysicalService.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.'/helpers/WfsPhysicalService.php');
 
 class WfsWebservice {
 	/*
@@ -303,7 +303,7 @@ class WfsWebservice {
 			}
 		}
 		
-		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_service'.DS.'tables');
+		JTable::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_easysdi_service/tables');
                 $dispatcher = JEventDispatcher::getInstance();
                 // Include the content plugins for the on save events.
                 JPluginHelper::importPlugin('content');

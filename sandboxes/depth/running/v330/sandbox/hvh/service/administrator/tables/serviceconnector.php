@@ -10,11 +10,6 @@
 // No direct access
 defined('_JEXEC') or die;
 
-if(!defined('DS')) {
-	define( 'DS', DIRECTORY_SEPARATOR );
-}
-
-
 /**
  * user Table class
  */

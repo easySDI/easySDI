@@ -24,7 +24,7 @@ class Easysdi_serviceController extends JControllerLegacy
 	public function display($cachable = false, $urlparams = false)
 	{
 		
-		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
+		require_once JPATH_COMPONENT.'/helpers/easysdi_service.php';
 
 		$view		= JFactory::getApplication()->input->getCmd('view', 'physicalservices');
 		JFactory::getApplication()->input->set('view', $view);
@@ -35,7 +35,7 @@ class Easysdi_serviceController extends JControllerLegacy
 	
 	public function negotiation ()
 	{
-		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
+		require_once JPATH_COMPONENT.'/helpers/easysdi_service.php';
 		Easysdi_serviceHelper::negotiation(JRequest::get( 'get' ));
 	}
 	
@@ -50,17 +50,17 @@ class Easysdi_serviceController extends JControllerLegacy
 	}
 	
 	public function wmtsWebservice () {
-		require_once JPATH_COMPONENT.DS.'helpers'.DS.'WmtsWebservice.php';
+		require_once JPATH_COMPONENT.'/helpers/WmtsWebservice.php';
 		WmtsWebservice::request($_GET);
 	}
 	
 	public function wfsWebservice () {
-		require_once JPATH_COMPONENT.DS.'helpers'.DS.'WfsWebservice.php';
+		require_once JPATH_COMPONENT.'/helpers/WfsWebservice.php';
 		WfsWebservice::request($_GET);
 	}
 	
 	public function wmsWebservice () {
-		require_once JPATH_COMPONENT.DS.'helpers'.DS.'WmsWebservice.php';
+		require_once JPATH_COMPONENT.'/helpers/WmsWebservice.php';
 		WmsWebservice::request($_GET);
 	}
 }

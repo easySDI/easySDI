@@ -50,7 +50,7 @@ class Easysdi_serviceViewPolicies extends JViewLegacy
 	 */
 	protected function addToolbar()
 	{
-		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
+		require_once JPATH_COMPONENT.'/helpers/easysdi_service.php';
 		
 		$virtualserviceModel 	= JModelLegacy::getInstance('virtualservices', 'Easysdi_serviceModel', array());
 		$virtualserviceList 	= $virtualserviceModel->getItemsRestricted($this->state->get('filter.connector'),$this->state->get('filter.virtualservice'));
@@ -61,7 +61,7 @@ class Easysdi_serviceViewPolicies extends JViewLegacy
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_HEADER_POLICIES'), 'policies.png');
 
         //Check if the form exists before showing the add/edit buttons
-        $formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'policy';
+        $formPath = JPATH_COMPONENT_ADMINISTRATOR.'/views/policy';
         if (file_exists($formPath)) {
 
             if ($canDo->get('core.create')) {

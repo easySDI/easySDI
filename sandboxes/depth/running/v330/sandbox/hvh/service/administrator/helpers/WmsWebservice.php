@@ -3,7 +3,7 @@
 // No direct access
 defined('_JEXEC') or die;
 
-require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmsPhysicalService.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.'/helpers/WmsPhysicalService.php');
 
 class WmsWebservice {
 	/*
@@ -239,7 +239,7 @@ class WmsWebservice {
 			}
 			
 		        
-			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_service'.DS.'tables');
+			JTable::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_easysdi_service/tables');
 	        $dispatcher = JEventDispatcher::getInstance();
 	        // Include the content plugins for the on save events.
 	        JPluginHelper::importPlugin('content');
@@ -394,8 +394,17 @@ class WmsWebservice {
 		
 		if (is_numeric($pk) && 0 < $pk) {
 			try {
-				$db->setQuery("UPDATE #__sdi_wmslayer_policy SET spatialpolicy_id = NULL AND inheritedspatialpolicy = 1 WHERE spatialpolicy_id = ".$pk);
+				$query = $db->getQuery(true);
+				$query->update('#__sdi_wmslayer_policy')->set(Array(
+						'spatialpolicy_id = NULL',
+						'inheritedspatialpolicy = 1',
+				))->where(Array(
+						'spatialpolicy_id = \'' . $pk . '\'',
+				));
+				$db->setQuery($query);
 				$db->execute();
+// 				$db->setQuery("UPDATE #__sdi_wmslayer_policy SET spatialpolicy_id = NULL AND inheritedspatialpolicy = 1 WHERE spatialpolicy_id = ".$pk);
+// 				$db->execute();
 				
 				$query = $db->getQuery(true);
 				$query->delete('#__sdi_wms_spatialpolicy')->where('id = ' . $pk);

@@ -10,7 +10,7 @@
 // No direct access
 defined('_JEXEC') or die;
 
-require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'libraries'.DS.'easysdi'.DS.'database'.DS.'sditable.php';
+require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/libraries/easysdi/database/sditable.php';
 
 /**
  * service Table class

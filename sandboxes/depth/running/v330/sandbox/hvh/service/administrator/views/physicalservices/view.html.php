@@ -57,7 +57,7 @@ class Easysdi_serviceViewPhysicalServices extends JViewLegacy
 	 */
 	protected function addToolbar()
 	{
-		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
+		require_once JPATH_COMPONENT.'/helpers/easysdi_service.php';
 		
 		$state	= $this->get('State');
 		
@@ -66,7 +66,7 @@ class Easysdi_serviceViewPhysicalServices extends JViewLegacy
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_HEADER_PHYSICALSERVICES'), 'links-cat.png');
 
         //Check if the form exists before showing the add/edit buttons
-		$formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'physicalservice';
+		$formPath = JPATH_COMPONENT_ADMINISTRATOR.'/views/physicalservice';
        
         if (file_exists($formPath)) {
 

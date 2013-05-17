@@ -142,7 +142,7 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 		}
 				
 		//inserting virtualmetadata content in virtualservice for display of edit form
-		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'tables');
+		JTable::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/tables');
 		$metadata = JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
 		$metadata->loadByVirtualServiceID(JRequest::getVar('id',null));
 		//Merging metadata object fields into virtualservice object 

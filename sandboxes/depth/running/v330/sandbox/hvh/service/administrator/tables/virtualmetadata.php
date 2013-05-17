@@ -9,7 +9,7 @@
 
 // No direct access
 defined('_JEXEC') or die;
-require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'libraries'.DS.'easysdi'.DS.'database'.DS.'sditable.php';
+require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/libraries/easysdi/database/sditable.php';
 /**
  * virtualmetadata Table class
  */
@@ -101,7 +101,7 @@ class Easysdi_serviceTablevirtualmetadata extends sdiTable {
 		return parent::save($data, $orderingFilter , $ignore );
 	}
 	
-	public function store (){
+	public function store ($updateNulls = false){
 		return parent::store(true);
 	}
 	

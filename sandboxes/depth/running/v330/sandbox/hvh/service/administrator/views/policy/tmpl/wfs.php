@@ -338,7 +338,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	</div>
 	<div class="modal-body">
 		<div id="modal_alert"></div>
-		<img class="loaderImg" src="<?php echo JURI::base(true).DS.'components'.DS.'com_easysdi_service'.DS.'assets'.DS.'images'.DS.'loader.gif'; ?>" />
+		<img class="loaderImg" src="<?php echo JURI::base(true).'/components/com_easysdi_service/assets/images/loader.gif'; ?>" />
 		<form id="modal_layer_form"></form>
 	</div>
 	<div class="modal-footer">
