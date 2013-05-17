@@ -18,15 +18,26 @@ $document = JFactory::getDocument();
 
 if( $this->item ) : 
 
-$document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/ux/ext/RowExpander.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/geoext/lib/geoext.min.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/ux/geoext/PrintPreview.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/gxp/script/gxp.min.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.min.js');
-
+if(JDEBUG){
+	//Load unminify files
+	$document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base.js');
+	$document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');
+	$document->addScript('administrator/components/com_easysdi_core/libraries/ux/ext/RowExpander.js');
+	$document->addScript('administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.js');
+	$document->addScript('administrator/components/com_easysdi_core/libraries/geoext/lib/geoext.min.js');
+	$document->addScript('administrator/components/com_easysdi_core/libraries/ux/geoext/PrintPreview.js');
+	$document->addScript('administrator/components/com_easysdi_core/libraries/gxp/script/gxp.min.js');
+	$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.min.js');
+}else{
+	$document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base.js');
+	$document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');
+	$document->addScript('administrator/components/com_easysdi_core/libraries/ux/ext/RowExpander.js');
+	$document->addScript('administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.js');
+	$document->addScript('administrator/components/com_easysdi_core/libraries/geoext/lib/geoext.min.js');
+	$document->addScript('administrator/components/com_easysdi_core/libraries/ux/geoext/PrintPreview.js');
+	$document->addScript('administrator/components/com_easysdi_core/libraries/gxp/script/gxp.min.js');
+	$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.min.js');
+}
 $files = glob('administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.{js}', GLOB_BRACE);
 foreach($files as $file) {
   $document->addScript($file);

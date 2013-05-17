@@ -50,7 +50,7 @@ class Easysdi_mapViewGroups extends JViewLegacy
 	 */
 	protected function addToolbar()
 	{
-		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_map.php';
+		require_once JPATH_COMPONENT.'/helpers/easysdi_map.php';
 
 		$state	= $this->get('State');
 		$canDo	= Easysdi_mapHelper::getActions();
@@ -58,7 +58,7 @@ class Easysdi_mapViewGroups extends JViewLegacy
 		JToolBarHelper::title(JText::_('COM_EASYSDI_MAP_HEADER_GROUPS'), 'layergroups.png');
 
 		//Check if the form exists before showing the add/edit buttons
-		$formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'group';
+		$formPath = JPATH_COMPONENT_ADMINISTRATOR.'/views/group';
 		if (file_exists($formPath)) {
 
 			if ($canDo->get('core.create')) {

@@ -12,8 +12,8 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
-require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_service'.DS.'tables'.DS.'physicalservice.php';
-require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_service'.DS.'tables'.DS.'virtualservice.php';
+require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_service/tables/physicalservice.php';
+require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_service/tables/virtualservice.php';
 
 /**
  * Easysdi_map model.

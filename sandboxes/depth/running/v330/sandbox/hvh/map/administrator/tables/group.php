@@ -10,12 +10,8 @@
 // No direct access
 defined('_JEXEC') or die;
 
-if(!defined('DS')) {
-	define( 'DS', DIRECTORY_SEPARATOR );
-}
-
-require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'libraries'.DS.'easysdi'.DS.'database'.DS.'sditable.php';
-require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_map'.DS.'tables'.DS.'layer.php';
+require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/libraries/easysdi/database/sditable.php';
+require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_map/tables/layer.php';
 
 /**
  * group Table class

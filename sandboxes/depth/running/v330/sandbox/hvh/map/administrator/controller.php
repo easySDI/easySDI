@@ -24,7 +24,7 @@ class Easysdi_mapController extends JControllerLegacy
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{
-		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_map.php';
+		require_once JPATH_COMPONENT.'/helpers/easysdi_map.php';
 
 		$view		= JRequest::getCmd('view', 'maps');
 		JRequest::setVar('view', $view);
