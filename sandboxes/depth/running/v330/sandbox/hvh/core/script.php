@@ -9,10 +9,6 @@
 
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
-
-if(!defined('DS')) {
-	define( 'DS', DIRECTORY_SEPARATOR );
-}
  
 class com_easysdi_coreInstallerScript
 {
@@ -60,7 +56,7 @@ class com_easysdi_coreInstallerScript
 	 */
 	function postflight( $type, $parent ) {
 		if ( $type == 'install' ) {
-			require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'helpers'.DS.'easysdi_core.php';
+			require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/helpers/easysdi_core.php';
 			$params['infrastructureID'] 	= Easysdi_coreHelper::uuid();
 				
 			$this->setParams( $params );

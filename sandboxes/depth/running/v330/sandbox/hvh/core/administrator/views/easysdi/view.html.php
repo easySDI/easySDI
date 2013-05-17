@@ -82,7 +82,7 @@ class Easysdi_coreViewEasysdi extends JViewLegacy
 	 */
 	protected function addToolbar()
 	{
-		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_core.php';
+		require_once JPATH_COMPONENT.'/helpers/easysdi_core.php';
 		JToolBarHelper::title(JText::_('COM_EASYSDI_CORE_TITLE'), 'easysdi.png');
 		
 		$canDo	= Easysdi_coreHelper::getActions();
