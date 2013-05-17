@@ -11,10 +11,6 @@ defined('_JEXEC') or die( 'Restricted access' );
 
 jimport('joomla.plugin.plugin');
 
-if(!defined('DS')) {
-	define( 'DS', DIRECTORY_SEPARATOR );
-}
-
 class plgUserEasysdi extends JPlugin {
 
 	public function __construct($subject, $config)
@@ -125,7 +121,7 @@ class plgUserEasysdi extends JPlugin {
 			return false; 
 		}
 		//Create new EasySDI User account
-		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_contact'.DS.'tables');
+		JTable::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_easysdi_contact/tables');
 		$newaccount = JTable::getInstance('user', 'easysdi_contactTable');	
 		
 		if (!$newaccount) {
