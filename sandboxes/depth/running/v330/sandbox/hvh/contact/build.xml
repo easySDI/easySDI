@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="sync" basedir=".">
 	<property name="projet.out.dir" value="out" />
-	<property name="projet.install.admin.dir" value="C:\www\sdi3300\administrator\components\com_easysdi_contact" />
+	<property name="projet.install.admin.dir" value="C:\www\install\administrator\components\com_easysdi_contact" />
 	<property name="projet.install.site.dir" value="C:\www\sdi3300\components\com_easysdi_contact" />
 	<property name="projet.install.langEN.dir" value="C:\www\sdi3300\administrator\language\en-GB" />
 	<property name="projet.install.langFR.dir" value="C:\www\sdi3300\administrator\language\fr-FR" />

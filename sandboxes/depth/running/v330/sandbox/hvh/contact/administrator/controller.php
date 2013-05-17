@@ -24,7 +24,7 @@ class Easysdi_contactController extends JControllerLegacy
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{
-		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_contact.php';
+		require_once JPATH_COMPONENT.'/helpers/easysdi_contact.php';
 		
 		$view		= JFactory::getApplication()->input->getCmd('view', 'users');
 		$layout		= JFactory::getApplication()->input->getCmd('layout', 'edit');

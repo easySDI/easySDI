@@ -27,7 +27,7 @@ class Easysdi_contactViewUser extends JViewLegacy
 	public function display($tpl = null)
 	{
 		//To avoid error in form but seems weird to have to add this registration here
-		JLoader::register('JTableUser', JPATH_LIBRARIES . DS . 'joomla' . DS .'database' . DS . 'table' . DS . 'user.php');
+		JLoader::register('JTableUser', JPATH_LIBRARIES . '/joomla/database/table/user.php');
 		
 		$this->state	= $this->get('State');
 		$this->item		= $this->get('Item');

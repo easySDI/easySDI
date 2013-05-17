@@ -23,7 +23,7 @@ class Easysdi_contactControllerUser extends JControllerForm
     function __construct() {
     	
     	//Need to be add here even if it is in administrator/controller.php l.27
-    	require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_contact.php';
+    	require_once JPATH_COMPONENT.'/helpers/easysdi_contact.php';
         
     	$this->view_list ='users';
         parent::__construct();

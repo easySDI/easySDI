@@ -57,7 +57,7 @@ class Easysdi_contactViewUsers extends JViewLegacy
 		JToolBarHelper::title(JText::_('COM_EASYSDI_CONTACT_HEADER_USERS'), 'user.png');
 
         //Check if the form exists before showing the add/edit buttons
-        $formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'user';
+        $formPath = JPATH_COMPONENT_ADMINISTRATOR.'/views/user';
         if (file_exists($formPath)) {
 
             if ($canDo->get('core.create')) {

@@ -136,7 +136,7 @@ class Easysdi_contactModeluser extends JModelAdmin
 	public function getItem($pk = null)
 	{
 		if ($item = parent::getItem($pk)) {
-			$role =& JTable::getInstance('role', 'Easysdi_contactTable');
+			$role = JTable::getInstance('role', 'Easysdi_contactTable');
 			$item->organismsRM = $role->loadByUserID($item->id, 1);
 			$item->organismsMM = $role->loadByUserID($item->id, 2);
 			$item->organismsME = $role->loadByUserID($item->id, 3);
