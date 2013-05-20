@@ -371,6 +371,7 @@ class WmtsWebservice {
 		$policyID = $raw_GET['policyID'];
 		$layerID = $raw_GET['layerID'];
 		$tileMatrixSet_arr = $raw_GET['select'];
+		$precalculatedData = json_decode($raw_GET['precalculated']);
 		
 		$db = JFactory::getDbo();
 		
@@ -433,6 +434,24 @@ class WmtsWebservice {
 			);
 		}
 		$wmtsObj->loadData($form_values);
+			
+		//we insert the inherited bbox set for the server
+		$wmtsObj->setAllBoundingBoxes(Array(
+			'north' => $precalculatedData->inherit_server->{$physicalServiceID}->northBoundLatitude,
+			'east' => $precalculatedData->inherit_server->{$physicalServiceID}->eastBoundLongitude,
+			'south' => $precalculatedData->inherit_server->{$physicalServiceID}->southBoundLatitude,
+			'west' => $precalculatedData->inherit_server->{$physicalServiceID}->westBoundLongitude,
+		));
+		//we insert the inherited bbox set for the all policy
+		$wmtsObj->setAllBoundingBoxes(Array(
+			'north' => $precalculatedData->inherit_policy->northBoundLatitude,
+			'east' => $precalculatedData->inherit_policy->eastBoundLongitude,
+			'south' => $precalculatedData->inherit_policy->southBoundLatitude,
+			'west' => $precalculatedData->inherit_policy->westBoundLongitude,
+		));
+		//we insert the srsUnits
+		$wmtsObj->setAllSRSUnit($precalculatedData->srs_units);
+		
 		$layerObj = $wmtsObj->getLayerByName($layerID);
 		$layerObj->calculateAuthorizedTiles();
 		
