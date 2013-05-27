@@ -46,9 +46,9 @@ class JFormFieldServicegroupedList extends JFormField
 		$label = 0;
 		
 		$db = JFactory::getDbo();
-		$db->setQuery('SELECT id, alias,serviceconnector_id FROM #__sdi_physicalservice WHERE state=1 AND serviceconnector_id IN (2,3,11,12,13,14)');
+		$db->setQuery('SELECT id, name,serviceconnector_id FROM #__sdi_physicalservice WHERE state=1 AND serviceconnector_id IN (2,3,11,12,13,14)');
 		$physicals = $db->loadObjectList();
-		$db->setQuery('SELECT id, alias,serviceconnector_id FROM #__sdi_virtualservice WHERE state=1 AND serviceconnector_id IN (2,3,11,12,13,14)');
+		$db->setQuery('SELECT id, name,serviceconnector_id FROM #__sdi_virtualservice WHERE state=1 AND serviceconnector_id IN (2,3,11,12,13,14)');
 		$virtuals = $db->loadObjectList();
 		
 		//Javascript Chosen library :
@@ -64,7 +64,7 @@ class JFormFieldServicegroupedList extends JFormField
 		$groups['Physical'] = array();
 		foreach ($physicals as $physical)
 		{
-			$tmp = JHtml::_('select.option', "physical_".$physical->id,	$physical->alias, 'value', 'text');
+			$tmp = JHtml::_('select.option', "physical_".$physical->id,	$physical->name, 'value', 'text');
 			$this->serviceconnector [] = json_encode(array("physical_".$physical->id, $physical->serviceconnector_id));
 			// Add the option.
 			$groups['Physical'][] = $tmp;
@@ -73,7 +73,7 @@ class JFormFieldServicegroupedList extends JFormField
 		$groups['Virtual'] = array();
 		foreach ($virtuals as $virtual)
 		{
-			$tmp = JHtml::_('select.option', "virtual_".$virtual->id,	$virtual->alias, 'value', 'text');
+			$tmp = JHtml::_('select.option', "virtual_".$virtual->id,	$virtual->name, 'value', 'text');
 			$this->serviceconnector [] = json_encode(array("virtual_".$virtual->id, $virtual->serviceconnector_id));
 			// Add the option.
 			$groups['Virtual'][] = $tmp;
@@ -87,7 +87,7 @@ class JFormFieldServicegroupedList extends JFormField
 	{
 		$text = '';
 		$db = JFactory::getDbo();
-		$db->setQuery('SELECT id, alias,serviceconnector_id FROM #__sdi_physicalservice WHERE state=1 AND serviceconnector_id IN (2,3,11,12,13,14)');
+		$db->setQuery('SELECT id, name,serviceconnector_id FROM #__sdi_physicalservice WHERE state=1 AND serviceconnector_id IN (2,3,11,12,13,14)');
 		$physicals = $db->loadObjectList();
 		foreach ($physicals as $physical)
 		{

@@ -71,7 +71,7 @@ class Easysdi_mapHelper
 	 * @param string $service : prefixed id of the service
 	 */
 	public static function getLayers ($params){
-		$service 				= $params['service'];
+		$service 	= $params['service'];
 		
 		if(empty($service))
 		{
@@ -79,8 +79,8 @@ class Easysdi_mapHelper
 			die();
 		}
 			
-		$db = JFactory::getDbo();
-		$pos 					= strstr ($service, 'physical_');
+		$db     = JFactory::getDbo();
+		$pos 	= strstr ($service, 'physical_');
 		if($pos){
 			$id = substr ($service, strrpos ($service, '_')+1);
 			$query = 'SELECT s.resourceurl as url, sc.value as connector, s.resourceusername as username, s.resourcepassword as password FROM #__sdi_physicalservice s 
@@ -112,7 +112,6 @@ class Easysdi_mapHelper
 			$Juser			= JFactory::getUser();
 			$user 			= $Juser->username;
 			$password		= $Juser->password;
-$password = "0924130db8ca6180a07ad12bcd534a6f:PZJMUuYk1YJ0vvMbLsmcLjTR42s8q10k";
 			//Url is deducted from the component Service config
 			$params = JComponentHelper::getParams('com_easysdi_service');
 			$resource->url = $params->get('proxyurl').$resource->alias;
@@ -137,6 +136,7 @@ $password = "0924130db8ca6180a07ad12bcd534a6f:PZJMUuYk1YJ0vvMbLsmcLjTR42s8q10k";
 		}
 		
 		$completeurl = $url.$separator."REQUEST=GetCapabilities&SERVICE=".$connector;
+               
 		if($compliance && $compliance->value){
 			$completeurl .= "&version=".$compliance->value;
 		}

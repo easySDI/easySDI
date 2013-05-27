@@ -74,14 +74,14 @@ class Easysdi_mapModellayer extends JModelAdmin
 		if (empty($data)) {
 			$data = $this->getItem();
 						
-			//Support for multiple or not foreign key field: group_id
-			$array = array();
-			foreach((array)$data->group_id as $value):
-			if(!is_array($value)):
-			$array[] = $value;
-			endif;
-			endforeach;
-			$data->group_id = implode(',',$array);
+// 			//Support for multiple or not foreign key field: group_id
+// 			$array = array();
+// 			foreach((array)$data->group_id as $value):
+// 			if(!is_array($value)):
+// 			$array[] = $value;
+// 			endif;
+// 			endforeach;
+// 			$data->group_id = implode(',',$array);
 
 		}
 
@@ -116,7 +116,7 @@ class Easysdi_mapModellayer extends JModelAdmin
 	 *
 	 * @since	1.6
 	 */
-	protected function prepareTable(&$table)
+	protected function prepareTable($table)
 	{
 		jimport('joomla.filter.output');
 

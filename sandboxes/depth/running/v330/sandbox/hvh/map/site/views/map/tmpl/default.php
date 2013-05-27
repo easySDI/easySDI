@@ -26,8 +26,8 @@ if(JDEBUG){
 	$document->addScript('administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.js');
 	$document->addScript('administrator/components/com_easysdi_core/libraries/geoext/lib/geoext.min.js');
 	$document->addScript('administrator/components/com_easysdi_core/libraries/ux/geoext/PrintPreview.js');
-	$document->addScript('administrator/components/com_easysdi_core/libraries/gxp/script/gxp.min.js');
-	$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.min.js');
+	$document->addScript('administrator/components/com_easysdi_core/libraries/gxp/script/gxp.js');
+	$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.js');
 }else{
 	$document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base.js');
 	$document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');
@@ -296,10 +296,21 @@ foreach($files as $file) {
                 			{
                 				ptype: "gxp_wmsgetfeatureinfo",
                 				toggleGroup: "interaction", 
-                				format: "grid", 
+                				format: "html", 
                 				actionTarget: "hiddentbar",
                 				defaultAction: 0
                 			},
+                                            { 
+                                            ptype: "gxp_featuremanager", 
+                                            id: "states_manager", 
+                                            paging: false, 
+                                            autoSetLayer: true
+                                            }, { 
+                                            ptype: "gxp_featureeditor", 
+                                            featureManager: "states_manager", 
+                                            autoLoadFeature: true, 
+                                            modifyOnly: true 
+                                            },
                 			<?php 
                 			break;
                 		case 'googlegeocoder':
@@ -413,30 +424,32 @@ foreach($files as $file) {
                     		}
                     		
                 	}
-                	foreach ($this->item->virtualservices as $service)
-                	{
-                		switch ($service->serviceconnector_id)
-                		{
-                		  	case 2 :
-                		   	?>
-                		       	"<?php echo $service->alias ?>":
-                        	 	{
-	                	            ptype: "gxp_wmssource",
-	                	            url: "<?php echo $service->url;?>"
-                        	 	},
-                		    <?php
-                		    break;
-                		    case 11 :
-                		    ?>
-                		       	"<?php echo $service->alias ?>":
-                        	 	{
-	                	            ptype: "gxp_wmscsource",
-	                	            url: "<?php echo $service->url;?>"
-                        	 	},
-                		    <?php
-                		}
-                		        
-                	}
+                	if(isset($this->item->virtualservices)){
+	                	foreach ($this->item->virtualservices as $service)
+	                	{
+	                		switch ($service->serviceconnector_id)
+	                		{
+	                		  	case 2 :
+	                		   	?>
+	                		       	"<?php echo $service->alias ?>":
+	                        	 	{
+		                	            ptype: "gxp_wmssource",
+		                	            url: "<?php echo $service->url;?>"
+	                        	 	},
+	                		    <?php
+	                		    break;
+	                		    case 11 :
+	                		    ?>
+	                		       	"<?php echo $service->alias ?>":
+	                        	 	{
+		                	            ptype: "gxp_wmscsource",
+		                	            url: "<?php echo $service->url;?>"
+	                        	 	},
+	                		    <?php
+	                		}
+	                		        
+	                	}
+					}
                 	?>
                    
                 },
@@ -455,6 +468,24 @@ foreach($files as $file) {
                 	units: "<?php echo $this->item->unit;?>",
                     layers: 
                     [
+                {
+                         						source : "ol",
+                         						type : "OpenLayers.Layer.Vector",
+                         						args: 
+                             					[{
+									strategies : [new OpenLayers.Strategy.Fixed()],
+                                                                        protocol : new OpenLayers.Protocol.WFS({
+                                                                        version : "1.1.0",
+                                                                        url : "http://localhost/proxy3300/topp", 
+                                                                        featurePrefix : "topp",
+                                                                        featureType : "states",
+                                                                        featureNS : "http://www.openplans.org/topp", 
+                                                                        geometryName: "the_geom"})
+                                                                }
+                                                                        			
+                                				],
+                                				group: "default"
+                     						},
                      <?php
                      //Layers have to be added the lowest before the highest
                      //To do that, the groups have to be looped in reverse order
@@ -590,6 +621,7 @@ foreach($files as $file) {
 			                     				metadataURL: "<?php echo $layer->metadatalink;  ?>",
 			                     				<?php }?>
 			                     				name: "<?php echo $layer->layername;?>",
+			                     				title: "<?php echo $layer->name;?>",
 			                     				group: "<?php if($group->isbackground)echo 'background'; else echo $group->alias;?>",
 			                     				<?php if ($group->alias == "background") echo "fixed: true,";?>
 			                     				visibility: <?php  if ($layer->isdefaultvisible == 1) echo "true"; else echo "false"; ?>,
