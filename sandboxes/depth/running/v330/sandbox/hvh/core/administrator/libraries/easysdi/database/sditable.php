@@ -112,7 +112,7 @@ abstract class sdiTable extends JTable
 	 */
 	public function bind($array, $ignore = '')
 	{
-		if(isset($array['created_by']) || $array['created_by'] == 0){
+		if(!isset($array['created_by']) || $array['created_by'] == 0){
 			$array['created_by'] = JFactory::getUser()->id;
 		}
 		
