@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.easysdi</groupId>
 	<artifactId>proxy</artifactId>
-	<version>3.3.0a1</version>
+	<version>3.3.0</version>
 	<packaging>war</packaging>
 	<name>proxy</name>
 
@@ -272,7 +272,7 @@
 				<configuration>
 					<url>http://localhost:8181/manager</url>
 					<server>TomcatServer</server>
-					<path>/proxy-3.3.0a1</path>
+					<path>/proxy-3.3.0</path>
 				</configuration>
 			</plugin>
 			

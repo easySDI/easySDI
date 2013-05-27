@@ -66,7 +66,7 @@ public class SdiPolicyMetadatastate implements java.io.Serializable {
 		return this.sdiSysMetadataversion;
 	}
 
-	public void setSdiSysMetadatastate(SdiSysMetadataversion sdiSysMetadataversion) {
+	public void setSdiSysMetadataversion(SdiSysMetadataversion sdiSysMetadataversion) {
 		this.sdiSysMetadataversion = sdiSysMetadataversion;
 	}
 

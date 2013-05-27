@@ -63,7 +63,7 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 				//Keep the service Metadata
 				//Overwrite OnLineResource
 				Element racine = document.getRootElement();
-				Element service = racine.getChild("service",nsWMS);
+				Element service = racine.getChild("Service",nsWMS);
 				service.removeContent(service.getChild("OnlineResource",nsWMS));
 				Element onlineResource = new Element("OnlineResource",nsWMS);
 				onlineResource.setAttribute("type", "simple",nsXLINK);
