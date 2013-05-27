@@ -151,7 +151,7 @@ class Easysdi_serviceHelper
 		$url 					= $params['resurl'];
 		$user 					= $params['resuser'];
 		$password 				= $params['respassword'];
-		$supported_versions 	= array();
+		$supported_versions                     = array();
 		$httpHeader				= array();
 		
 		if(isset($params['serurl']))

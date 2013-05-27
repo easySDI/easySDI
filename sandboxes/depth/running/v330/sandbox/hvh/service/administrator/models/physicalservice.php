@@ -119,6 +119,9 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 		// Check the session for previously entered form data.
 		$data = JFactory::getApplication()->getUserState('com_easysdi_service.edit.physicalservice.data', array());
 		
+		if (empty($data)) {
+			$data = $this->getItem();
+		}
 		return $data;
 	}
 
@@ -197,7 +200,6 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 			// Get the service scope
 			$item->organisms = $this->getServiceScopeOrganism($item->id);
 		}
-		
 		return $item;
 	}
 
