@@ -27,6 +27,7 @@ public class SdiPolicyMetadatastate implements java.io.Serializable {
 	private static final long serialVersionUID = 1514250916336817693L;
 	private Integer Id;
 	private SdiSysMetadatastate sdiSysMetadatastate;
+	private SdiSysMetadataversion sdiSysMetadataversion;
 	private SdiPolicy sdiPolicy;
 
 	public SdiPolicyMetadatastate() {
@@ -57,6 +58,16 @@ public class SdiPolicyMetadatastate implements java.io.Serializable {
 
 	public void setSdiSysMetadatastate(SdiSysMetadatastate sdiSysMetadatastate) {
 		this.sdiSysMetadatastate = sdiSysMetadatastate;
+	}
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "metadataversion_id", nullable = false)
+	public SdiSysMetadataversion getSdiSysMetadataversion() {
+		return this.sdiSysMetadataversion;
+	}
+
+	public void setSdiSysMetadatastate(SdiSysMetadataversion sdiSysMetadataversion) {
+		this.sdiSysMetadataversion = sdiSysMetadataversion;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
