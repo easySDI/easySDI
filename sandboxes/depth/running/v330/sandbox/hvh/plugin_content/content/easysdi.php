@@ -39,6 +39,10 @@ class plgContentEasysdi extends JPlugin
 	 */
 	public function onContentAfterSave($context, $data, $isNew)
 	{
+            $options = explode('.', $context);
+            if($options[0] != 'com_easysdi_service' && $options[0] != 'com_easysdi_contact')
+                    return true;
+            
 		return $this->onContentAfterAction($context, $data, 'UPDATE');
 	}
 	
@@ -52,6 +56,10 @@ class plgContentEasysdi extends JPlugin
 	 */
 	public function onContentChangeState ($context, $pks, $value)
 	{
+            $options = explode('.', $context);
+            if($options[0] != 'com_easysdi_service' && $options[0] != 'com_easysdi_contact')
+                    return true;
+            
 		foreach ($pks as $pk){
 			$this->onContentIdAfterAction($context, $pk, 'UPDATE');
 		}
@@ -69,6 +77,10 @@ class plgContentEasysdi extends JPlugin
 	 */
 	public function onContentAfterDelete($context, $data)
 	{
+            $options = explode('.', $context);
+            if($options[0] != 'com_easysdi_service' && $options[0] != 'com_easysdi_contact')
+                    return true;
+            
 		return $this->onContentAfterAction($context, $data, 'DELETE');
 	}
 	
