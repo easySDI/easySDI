@@ -30,6 +30,12 @@ JText::script('COM_EASYSDI_SERVICE_MSG_MODAL_MISSING_BBOX_BOUNDARIES');
 JText::script('COM_EASYSDI_SERVICE_MSG_MODAL_MALFORMED_BBOX_BOUNDARIES');
 JText::script('COM_EASYSDI_SERVICE_POLICY_LAYER_SETTINGS_DEFINED');
 JText::script('COM_EASYSDI_SERVICE_POLICY_LAYER_SETTINGS_INHERITED');
+$SRSList = Array();
+foreach($this->item->physicalService as $ps) {
+	$SRSList = array_merge($SRSList, $ps->getSRSList());
+}
+$SRSList = array_unique($SRSList);
+echo '<script> var SRSList = ' . json_encode($SRSList) . '; </script>';
 
 function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	$debug = '';
@@ -171,7 +177,10 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 					</fieldset>
 					
 					<div class="control-group">
-					<?php 
+					<?php foreach($this->form->getFieldset('wmts_policy_hidden') as $field):?> 
+						<div class="controls"><?php echo $field->input; ?></div>
+					<?php
+					endforeach;
 					foreach($this->form->getFieldset('hidden') as $field):
 					?> 
 						<div class="controls"><?php echo $field->input; ?></div>
@@ -336,6 +345,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	
 	<input type="hidden" name="layout" id="layout" value="wmts" />
 	<input type="hidden" name="task" value="" />
+	<input type="hidden" name="precalculatedData" id="precalculatedData" value="" />
 	<?php echo JHtml::_('form.token'); ?>
 </form>
 

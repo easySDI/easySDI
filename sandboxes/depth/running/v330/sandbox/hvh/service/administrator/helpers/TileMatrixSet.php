@@ -95,6 +95,10 @@ class TileMatrixSet {
 	 * @param String $spatialOperator : The spatial operator to use
 	 */
 	public function calculateAuthorizedTiles($spatialOperator){
+		if (empty($this->minX) || empty($this->maxX) || empty($this->minY) || empty($this->maxY)) {
+			return;
+		}
+		
 		//Calculate the meterPerUnit parameter
 		if ($this->srsUnit == "m" || $this->srsUnit == "metre") {
 			$meterPerUnit = 1;
@@ -122,9 +126,7 @@ class TileMatrixSet {
 			//- all SRS give the topLeftCorner as <TopLeftCorner>West North</TopLeftCorner>
 			//Others authorities are not supported.
 			
-			// TODO: vérifier pourquoi EPSG et OGC ont un topleft dans le meme ordre
-			//if (!strpos($this->srsUnit,'m') && strpos($this->srs,'EPSG')) {
-			if (!strpos($this->srsUnit,'m') && strpos($this->srs,'EPSG')) {
+			if ($this->srsUnit != "m" && $this->srsUnit != "metre" && strpos($this->srs, 'EPSG')) {
 				$topLeftCornerY = substr($tileMatrixObj->topLeftCorner, 0, strpos($tileMatrixObj->topLeftCorner," "));
 				$topLeftCornerX = substr($tileMatrixObj->topLeftCorner, strpos($tileMatrixObj->topLeftCorner," ")+1);
 			}
