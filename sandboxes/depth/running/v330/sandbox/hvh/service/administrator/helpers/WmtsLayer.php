@@ -44,7 +44,7 @@ class WmtsLayer extends Layer{
 		
 		if (isset($data['tileMatrixSetList'])) {
 			foreach ($data['tileMatrixSetList'] as $key => $value) {
-				$this->tileMatrixSetList[$key]->loadData($value);
+                            	$this->tileMatrixSetList[$key]->loadData($value);
 			}
 		}
 	}
@@ -71,7 +71,7 @@ class WmtsLayer extends Layer{
 	public function setAllSRSUnit ($arr_unit, $override = false) {
 		foreach ($this->tileMatrixSetList as $tileMatrixSetIdentifier => $tileMatrixSet) {
 			if (true === $override || (!isset($tileMatrixSet->northBoundLatitude))) {
-				$tileMatrixSet->srsUnit = (isset($arr_unit->{$tileMatrixSet->srs}))?$arr_unit->{$tileMatrixSet->srs}:null;
+			//	$tileMatrixSet->srsUnit = (isset($arr_unit->{$tileMatrixSet->srs}))?$arr_unit->{$tileMatrixSet->srs}:null;
 			}
 		}
 	}

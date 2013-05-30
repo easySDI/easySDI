@@ -10,9 +10,8 @@ class TileMatrixSet {
 	public $minY;
 	public $maxY;
 	public $maxTileMatrix;
-	private $tileMatrixList = Array();
-	
 	public $anyTileMatrix;
+        private $tileMatrixList = Array();
 	
 	public function __construct ($identifier, $srs) {
 		$this->identifier = $identifier;
@@ -59,12 +58,12 @@ class TileMatrixSet {
 	}
 	
 	public function loadData ($data) {
-		foreach ($data as $key => $value) {
-			if (property_exists('TileMatrixSet', $key)) {
-				$this->{$key} = $value;
+            	foreach ($data as $key => $value) {
+                    	if (property_exists('TileMatrixSet', $key)) {
+                            	$this->{$key} = $value;
 			}
 			else {
-				$this->tileMatrixList[$key]->loadData($value);
+                            	$this->tileMatrixList[$key]->loadData($value);
 			}
 		}
 	}
@@ -95,8 +94,11 @@ class TileMatrixSet {
 	 * @param String $spatialOperator : The spatial operator to use
 	 */
 	public function calculateAuthorizedTiles($spatialOperator){
-		if (empty($this->minX) || empty($this->maxX) || empty($this->minY) || empty($this->maxY)) {
-			return;
+                if (empty($this->minX) || empty($this->maxX) || empty($this->minY) || empty($this->maxY)) {
+                    foreach ($this->tileMatrixList as $tileMatrixObj) {   
+                        $tileMatrixObj->anyTile = true;
+                    }
+                    return;
 		}
 		
 		//Calculate the meterPerUnit parameter
@@ -106,7 +108,7 @@ class TileMatrixSet {
 		else if ($this->srsUnit == "grad") {
 			$meterPerUnit = 100187.54;
 		}
-		else if ($this->srsUnit == "degree" || $this->srsUnit == "Degree") {
+		else if ($this->srsUnit == "degree" || $this->srsUnit == "Degree"  || $this->srsUnit == "degrees") {
 			$meterPerUnit = 111319.49;
 		}
 		else if ($this->srsUnit == "rad" || $this->srsUnit == "radian" || $this->srsUnit == "Radian") {
@@ -142,7 +144,6 @@ class TileMatrixSet {
 			$tileMatrixMaxX = $topLeftCornerX + $tileSpanX * $tileMatrixObj->matrixWidth;
 			$tileMatrixMinY = $topLeftCornerY - $tileSpanY * $tileMatrixObj->matrixHeight;
 			$epsilon = 0.000001;
-			
 			//Calculate the range of tileset indexes included in the BBOX filter
 			if ($spatialOperator == "touch") {
 				$tileMinCol = floor(($this->minX - $topLeftCornerX)/$tileSpanX + $epsilon);
@@ -162,13 +163,13 @@ class TileMatrixSet {
 				$tileMinCol = 0;
 			}
 			if ($tileMaxCol < 0) {
-				continue;
+				$tileMaxCol = -1;
 			}
 			if ($tileMinCol > $tileMaxCol) {
-				continue;
+				$tileMinCol = -1;
 			}
 			if ($tileMinCol >= $tileMatrixObj->matrixWidth) {
-				continue;
+				$tileMinCol = -1;
 			}
 			if ($tileMaxCol >= $tileMatrixObj->matrixWidth) {
 				$tileMaxCol = $tileMatrixObj->matrixWidth -1;
@@ -177,13 +178,13 @@ class TileMatrixSet {
 				$tileMinRow = 0;
 			}
 			if ($tileMaxRow < 0) {
-				continue;
+				$tileMaxRow = -1;
 			}
 			if ($tileMinRow > $tileMaxRow) {
-				continue;
+				$tileMinRow = -1;
 			}
 			if ($tileMinRow >= $tileMatrixObj->matrixHeight) {
-				continue;
+				$tileMinRow = -1;
 			}
 			if ($tileMaxRow >= $tileMatrixObj->matrixHeight) {
 				$tileMaxRow = $tileMatrixObj->matrixHeight -1;
@@ -195,10 +196,10 @@ class TileMatrixSet {
 					|| $topLeftCornerY < $this->minY
 					|| $topLeftCornerX > $this->maxX){
 				//No intersection : none of the Tile is allowed
-				$tileMatrixObj->minTileRow = null;
-				$tileMatrixObj->maxTileRow = null;
-				$tileMatrixObj->minTileCol = null;
-				$tileMatrixObj->maxTileCol = null;
+				$tileMatrixObj->minTileRow = -1;
+				$tileMatrixObj->maxTileRow = -1;
+				$tileMatrixObj->minTileCol = -1;
+				$tileMatrixObj->maxTileCol = -1;
 				$tileMatrixObj->anyTile = false;
 				
 			}

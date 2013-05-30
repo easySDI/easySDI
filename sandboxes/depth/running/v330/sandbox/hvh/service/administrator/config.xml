@@ -2,7 +2,7 @@
 <config>
 	<fieldset name="component_service" 
 			  label="COM_EASYSDI_SERVICE_COMPONENT_LABEL"
-			  description="COM_EASYSDI_SERVICE_COMPONENT_DESC"	>
+			  description="COM_EASYSDI_SERVICE_COMPONENT_DESC">
  		 
  		 <field name="proxyurl"
              type="text"
@@ -100,4 +100,4 @@ http://docs.joomla.org/Usergroup_parameter_type
 <field name="myusergroups" type="usergroup" default="" label="Select a user group" description="" />
 
 
- -->
+-->

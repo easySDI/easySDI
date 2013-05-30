@@ -227,10 +227,17 @@ jQuery(document).ready(function () {
 		}
 		
 		if (form_values.eastBoundLongitude != '' && form_values.westBoundLongitude != '' && form_values.northBoundLatitude != '' && form_values.southBoundLatitude != '') {
-			for (var i = 0; i < tms_list.length; i++) {
+			var srcBBOX = {
+                                            north: form_values.northBoundLatitude,
+                                            east: form_values.eastBoundLongitude,
+                                            south: form_values.southBoundLatitude,
+                                            west: form_values.westBoundLongitude
+                                    };
+                        for (var i = 0; i < tms_list.length; i++) {
 				var tms_identifier = tms_list[i];
 				var SRS = form_values['srs[' + tms_identifier + ']'];
-				var bbox = calculateBBox(SRS);
+                                
+				var bbox = calculateBBox(srcBBOX,SRS);
 				
 				form_values['minX[' + tms_identifier + ']'] = bbox.minX;
 				form_values['maxY[' + tms_identifier + ']'] = bbox.maxY;

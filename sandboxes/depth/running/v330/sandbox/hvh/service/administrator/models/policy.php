@@ -321,7 +321,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				}
 				
 				foreach ($resultset as $row) {
-					if ((!is_null($row->spatialpolicy_id)) || (!is_null($row->tmsp_id)) || (!is_null($row->tmp_id))) {
+					//if ((!is_null($row->spatialpolicy_id)) || (!is_null($row->tmsp_id)) || (!is_null($row->tmp_id))) {
+                                        if ((!is_null($row->spatialpolicy_id))) {
 						$layerList[] = $row->identifier;
 					}
 					$data[$row->identifier] = Array(
@@ -2082,7 +2083,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 									OR wp.identifier IS NULL
 								)
 							)
-							LEFT JOIN ugrva_sdi_tilematrixset_policy tms
+							LEFT JOIN #__sdi_tilematrixset_policy tms
 							ON (
 								wp.id = tms.wmtslayerpolicy_id
 								AND (
@@ -2090,7 +2091,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 									OR tms.identifier IS NULL
 								)
 							)
-							LEFT JOIN ugrva_sdi_tilematrix_policy tm
+							LEFT JOIN #__sdi_tilematrix_policy tm
 							ON (
 								tms.id = tm.tilematrixsetpolicy_id
 								AND (
