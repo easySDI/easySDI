@@ -1,7 +1,7 @@
 <?php
 /**
-* @version     3.3.0
-* @package     plg_content_easysdi
+* @version     4.0.0
+* @package     plg_easysdi_content
 * @copyright   Copyright (C) 2013. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
 * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 /**
  * 
  *
- * @package     plg_content_easysdi
+ * @package     plg_easysdi_content
  * @subpackage  
  * @since       3.3.0
  */
