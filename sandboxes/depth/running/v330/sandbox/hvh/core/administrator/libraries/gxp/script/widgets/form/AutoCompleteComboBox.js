@@ -146,7 +146,7 @@ gxp.form.AutoCompleteComboBox = Ext.extend(Ext.form.ComboBox, {
             fields: fields,
             reader: new gxp.data.AutoCompleteReader({uniqueField: this.fieldName}, propertyNames),
             proxy: new gxp.data.AutoCompleteProxy({protocol: new OpenLayers.Protocol.WFS({
-                version: "1.1.0",
+                version: "1.0.0",
                 url: this.url,
                 featureType: this.featureType,
                 featurePrefix: this.featurePrefix,
