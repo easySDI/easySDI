@@ -141,12 +141,15 @@ class plgContentEasysdi extends JPlugin
 		$rawresponse = curl_exec($session);
 		curl_close($session);
 		$response = json_decode($rawresponse);
-		if($response->{"status"} == "OK"){
+		if(isset($response) && $response->{"status"} == "OK"){
 			JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDICONTENT_OK_INVALIDATION'), 'notice');
 			return true;
 		}else{
-			JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDICONTENT_ERR_INVALIDATION')." ".$response->{"message"}, 'error');
-			return false;
+                    if(isset ($response->{"message"}))
+                    	JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDICONTENT_ERR_INVALIDATION')." ".$response->{"message"}, 'error');
+                    else
+                        JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDICONTENT_ERR_PROXY_CONNECTION'), 'warning');
+                    return false;
 		}
 	}
 }
