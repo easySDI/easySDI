@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version     3.3.0
+ * @version     4.0.0
  * @package     com_easysdi_service
  * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -72,13 +72,21 @@ class Easysdi_serviceTablepolicy extends sdiTable {
     /**
      * Overloaded check function
      */
-    public function check() {
+  /*  public function check() {
+        
         //If there is an ordering column and this is a new row then get the next ordering value
         if (property_exists($this, 'ordering') && $this->id == 0) {
             $this->ordering = self::getNextOrder('virtualservice_id = ' . $this->virtualservice_id);
         }
 
         return true;
+    }*/
+    
+    /**
+     * Overloaded getNextOrder function
+     */
+    public function getNextOrder(){
+        return self::getNextOrder('virtualservice_id = ' . $this->virtualservice_id);
     }
 
 }
