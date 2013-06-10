@@ -85,8 +85,8 @@ class Easysdi_serviceTablepolicy extends sdiTable {
     /**
      * Overloaded getNextOrder function
      */
-    public function getNextOrder(){
-        return self::getNextOrder('virtualservice_id = ' . $this->virtualservice_id);
+    public function getNextOrder($where = ''){
+        return parent::getNextOrder('virtualservice_id = ' . $this->virtualservice_id);
     }
 
 }

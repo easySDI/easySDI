@@ -70,7 +70,7 @@ class com_easysdi_serviceInstallerScript
 	 * postflight is run after the extension is registered in the database.
 	 */
 	function postflight( $type, $parent ) {
-		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS."..".DS."libraries".DS."joomla".DS."database".DS."table");
+		JTable::addIncludePath(JPATH_ADMINISTRATOR."/../libraries/joomla/database/table");
 		JTable::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_easysdi_service/tables');
 		
 		if($type == 'install'){
