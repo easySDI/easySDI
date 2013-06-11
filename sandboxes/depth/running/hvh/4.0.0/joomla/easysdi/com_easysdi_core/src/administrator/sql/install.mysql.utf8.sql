@@ -423,7 +423,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_namespace` (
 `name` VARCHAR(255)  NOT NULL ,
 `prefix` VARCHAR(10)  NOT NULL ,
 `uri` VARCHAR(255)  NOT NULL ,
-`system` TINYINT(4)  NOT NULL ,
+`system` TINYINT(1)  NOT NULL DEFAULT '0' ,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;

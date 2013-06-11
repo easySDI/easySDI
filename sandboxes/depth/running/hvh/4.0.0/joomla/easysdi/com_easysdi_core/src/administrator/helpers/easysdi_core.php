@@ -19,7 +19,11 @@ class Easysdi_coreHelper {
      * Configure the Linkbar.
      */
     public static function addSubmenu($vName = '') {
-        
+        JHtmlSidebar::addEntry(
+                        JText::_('COM_EASYSDI_CORE_TITLE_NAMESPACES'),
+                        "index.php?option=com_easysdi_core&view=namespaces",
+                        $vName == 'namespaces'
+        );
     }
 
     /**

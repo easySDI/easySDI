@@ -38,7 +38,7 @@ DROP TABLE IF EXISTS `#__sdi_sys_productstate`;
 DROP TABLE IF EXISTS `#__sdi_sys_relationscope`;
 DROP TABLE IF EXISTS `#__sdi_sys_relationtype`;
 DROP TABLE IF EXISTS `#__sdi_sys_rendertype`;
-DROP TABLE IF EXISTS `#__sdi_sys_rendertype_attributetype`;
+DROP TABLE IF EXISTS `#__sdi_sys_rendertype_stereotype`;
 DROP TABLE IF EXISTS `#__sdi_sys_rendertype_criteriatype`;
 DROP TABLE IF EXISTS `#__sdi_sys_searchtab`;
 DROP TABLE IF EXISTS `#__sdi_sys_stereotype`;

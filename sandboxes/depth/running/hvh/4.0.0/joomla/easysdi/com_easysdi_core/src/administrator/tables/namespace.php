@@ -10,10 +10,12 @@
 // No direct access
 defined('_JEXEC') or die;
 
+require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/libraries/easysdi/database/sditable.php';
+
 /**
  * namespace Table class
  */
-class Easysdi_coreTablenamespace extends JTable {
+class Easysdi_coreTablenamespace extends sdiTable {
 
     /**
      * Constructor
@@ -73,7 +75,7 @@ class Easysdi_coreTablenamespace extends JTable {
      * This function convert an array of JAccessRule objects into an rules array.
      * @param type $jaccessrules an arrao of JAccessRule objects.
      */
-    private function JAccessRulestoArray($jaccessrules){
+    protected function JAccessRulestoArray($jaccessrules){
         $rules = array();
         foreach($jaccessrules as $action => $jaccess){
             $actions = array();
