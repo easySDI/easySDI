@@ -212,7 +212,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_relation` (
 `attributechild_id` INT NOT NULL ,
 `classchild_id` INT NOT NULL ,
 `lowerbound` INT(20)  NOT NULL ,
-`upperbound` INT(999)  NOT NULL ,
+`upperbound` INT(20)  NOT NULL ,
 `relationtype_id` INT(11)  NOT NULL ,
 `rendertype_id` INT(11)  NOT NULL ,
 `namespace_id` INT(11)  NOT NULL ,
@@ -382,3 +382,22 @@ CREATE TABLE IF NOT EXISTS `#__sdi_translation` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
+CREATE TABLE IF NOT EXISTS `#__sdi_namespace` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`guid` VARCHAR(36)  NOT NULL ,
+`alias` VARCHAR(20)  NOT NULL ,
+`created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL ,
+`modified_by` INT(11)  NOT NULL ,
+`modified` DATETIME NOT NULL ,
+`ordering` INT(11)  NOT NULL ,
+`state` TINYINT(1)  NOT NULL DEFAULT '1',
+`checked_out` INT(11)  NOT NULL ,
+`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`name` VARCHAR(255)  NOT NULL ,
+`prefix` VARCHAR(10)  NOT NULL ,
+`uri` VARCHAR(255)  NOT NULL ,
+`system` TINYINT(1)  NOT NULL DEFAULT '0' ,
+`asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;

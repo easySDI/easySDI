@@ -1,7 +1,7 @@
 <?php
 /**
  * @version     4.0.0
- * @package     com_easysdi_core
+ * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -15,19 +15,20 @@ JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
 JHtml::_('formbehavior.chosen', 'select');
 
+
 // Import CSS
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.css');
+$document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_catalog.css');
 
 $user	= JFactory::getUser();
 $userId	= $user->get('id');
 $listOrder	= $this->state->get('list.ordering');
 $listDirn	= $this->state->get('list.direction');
-$canOrder	= $user->authorise('core.edit.state', 'com_easysdi_core');
+$canOrder	= $user->authorise('core.edit.state', 'com_easysdi_catalog');
 $saveOrder	= $listOrder == 'a.ordering';
 if ($saveOrder)
 {
-	$saveOrderingUrl = 'index.php?option=com_easysdi_core&task=namespaces.saveOrderAjax&tmpl=component';
+	$saveOrderingUrl = 'index.php?option=com_easysdi_catalog&task=namespaces.saveOrderAjax&tmpl=component';
 	JHtml::_('sortablelist.sortable', 'namespaceList', 'adminForm', strtolower($listDirn), $saveOrderingUrl);
 }
 $sortFields = $this->getSortFields();
@@ -53,7 +54,7 @@ if (!empty($this->extra_sidebar)) {
 }
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=namespaces'); ?>" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=namespaces'); ?>" method="post" name="adminForm" id="adminForm">
 <?php if(!empty($this->sidebar)): ?>
 	<div id="j-sidebar-container" class="span2">
 		<?php echo $this->sidebar; ?>
@@ -111,19 +112,19 @@ if (!empty($this->extra_sidebar)) {
                 <?php endif; ?>
                     
 				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CORE_NAMESPACES_ALIAS', 'a.alias', $listDirn, $listOrder); ?>
+				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CATALOG_NAMESPACES_NAME', 'a.name', $listDirn, $listOrder); ?>
 				</th>
 				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CORE_NAMESPACES_NAME', 'a.name', $listDirn, $listOrder); ?>
+				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CATALOG_NAMESPACES_PREFIX', 'a.prefix', $listDirn, $listOrder); ?>
 				</th>
 				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CORE_NAMESPACES_PREFIX', 'a.prefix', $listDirn, $listOrder); ?>
+				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CATALOG_NAMESPACES_URI', 'a.uri', $listDirn, $listOrder); ?>
 				</th>
 				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CORE_NAMESPACES_URI', 'a.uri', $listDirn, $listOrder); ?>
+				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CATALOG_NAMESPACES_SYSTEM', 'a.system', $listDirn, $listOrder); ?>
 				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CORE_NAMESPACES_SYSTEM', 'a.system', $listDirn, $listOrder); ?>
+                                <th class='left'>
+				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CATALOG_NAMESPACES_ID', 'a.id', $listDirn, $listOrder); ?>
 				</th>
                     
                     
@@ -152,10 +153,10 @@ if (!empty($this->extra_sidebar)) {
 			<tbody>
 			<?php foreach ($this->items as $i => $item) :
 				$ordering   = ($listOrder == 'a.ordering');
-                $canCreate	= $user->authorise('core.create',		'com_easysdi_core');
-                $canEdit	= $user->authorise('core.edit',			'com_easysdi_core');
-                $canCheckin	= $user->authorise('core.manage',		'com_easysdi_core');
-                $canChange	= $user->authorise('core.edit.state',	'com_easysdi_core');
+                $canCreate	= $user->authorise('core.create',		'com_easysdi_catalog');
+                $canEdit	= $user->authorise('core.edit',			'com_easysdi_catalog');
+                $canCheckin	= $user->authorise('core.manage',		'com_easysdi_catalog');
+                $canChange	= $user->authorise('core.edit.state',	'com_easysdi_catalog');
 				?>
 				<tr class="row<?php echo $i % 2; ?>">
                     
@@ -189,12 +190,13 @@ if (!empty($this->extra_sidebar)) {
                 <?php endif; ?>
                     
 				<td>
-
-					<?php echo $item->alias; ?>
-				</td>
-				<td>
-
-					<?php echo $item->name; ?>
+                                <?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>
+							<a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=namespace.edit&id='.(int) $item->id); ?>">
+							<?php echo $this->escape($item->name); ?></a>
+						<?php else : ?>
+							<?php echo $this->escape($item->name); ?>
+						<?php endif; ?>
+					
 				</td>
 				<td>
 
@@ -204,9 +206,12 @@ if (!empty($this->extra_sidebar)) {
 
 					<?php echo $item->uri; ?>
 				</td>
-				<td>
+				<td class="center">
+                                        <?php echo JHtml::_('grid.boolean', $i, $item->system); ?>
+                                </td>
+                                <td>
 
-					<?php echo $item->system; ?>
+					<?php echo $item->id; ?>
 				</td>
 
 

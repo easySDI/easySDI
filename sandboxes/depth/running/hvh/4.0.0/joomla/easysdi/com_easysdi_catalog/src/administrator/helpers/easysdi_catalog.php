@@ -21,7 +21,7 @@ class Easysdi_catalogHelper
 	public static function addSubmenu($vName = '')
 	{
                 JHtmlSidebar::addEntry(
-                        JText::_('COM_EASYSDI_CORE_TITLE_NAMESPACES'),
+                        JText::_('COM_EASYSDI_CATALOG_TITLE_NAMESPACES'),
                         "index.php?option=com_easysdi_catalog&view=namespaces",
                         $vName == 'namespaces'
                 );

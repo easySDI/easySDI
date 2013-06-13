@@ -18,3 +18,4 @@ DROP TABLE IF EXISTS `#__sdi_boundarycategory`;
 DROP TABLE IF EXISTS `#__sdi_catalog_searchcriteria_tab`;
 DROP TABLE IF EXISTS `#__sdi_importref`;
 DROP TABLE IF EXISTS `#__sdi_translation`;
+DROP TABLE IF EXISTS `#__sdi_namespace`;

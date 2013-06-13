@@ -114,6 +114,10 @@ class com_easysdi_catalogInstallerScript {
                 return false;
             }
         }
+        
+        $db = JFactory::getDbo();
+        $db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_catalog'");
+	$db->query();
     }
 
     /*

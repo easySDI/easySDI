@@ -2,7 +2,7 @@
 
 /**
  * @version     4.0.0
- * @package     com_easysdi_core
+ * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -15,7 +15,7 @@ jimport('joomla.application.component.view');
 /**
  * View class for a list of Easysdi_core.
  */
-class Easysdi_coreViewNamespaces extends JViewLegacy {
+class Easysdi_catalogViewNamespaces extends JViewLegacy {
 
     protected $items;
     protected $pagination;
@@ -34,7 +34,7 @@ class Easysdi_coreViewNamespaces extends JViewLegacy {
             throw new Exception(implode("\n", $errors));
         }
 
-        Easysdi_coreHelper::addSubmenu('namespaces');
+        Easysdi_catalogHelper::addSubmenu('namespaces');
 
         $this->addToolbar();
 
@@ -48,12 +48,12 @@ class Easysdi_coreViewNamespaces extends JViewLegacy {
      * @since	1.6
      */
     protected function addToolbar() {
-        require_once JPATH_COMPONENT . '/helpers/easysdi_core.php';
+        require_once JPATH_COMPONENT . '/helpers/easysdi_catalog.php';
 
         $state = $this->get('State');
-        $canDo = Easysdi_coreHelper::getActions();
+        $canDo = Easysdi_catalogHelper::getActions();
 
-        JToolBarHelper::title(JText::_('COM_EASYSDI_CORE_TITLE_NAMESPACES'), 'namespaces.png');
+        JToolBarHelper::title(JText::_('COM_EASYSDI_CATALOG_TITLE_NAMESPACES'), 'namespaces.png');
 
         //Check if the form exists before showing the add/edit buttons
         $formPath = JPATH_COMPONENT_ADMINISTRATOR . '/views/namespace';
@@ -104,7 +104,7 @@ class Easysdi_coreViewNamespaces extends JViewLegacy {
         }
 
         //Set sidebar action - New in 3.0
-        JHtmlSidebar::setAction('index.php?option=com_easysdi_core&view=namespaces');
+        JHtmlSidebar::setAction('index.php?option=com_easysdi_catalog&view=namespaces');
 
         $this->extra_sidebar = '';
 
@@ -115,14 +115,13 @@ class Easysdi_coreViewNamespaces extends JViewLegacy {
 
     protected function getSortFields() {
         return array(
-            'a.id' => JText::_('JGRID_HEADING_ID'),
-            'a.alias' => JText::_('COM_EASYSDI_CORE_NAMESPACES_ALIAS'),
             'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
             'a.state' => JText::_('JSTATUS'),
-            'a.name' => JText::_('COM_EASYSDI_CORE_NAMESPACES_NAME'),
-            'a.prefix' => JText::_('COM_EASYSDI_CORE_NAMESPACES_PREFIX'),
-            'a.uri' => JText::_('COM_EASYSDI_CORE_NAMESPACES_URI'),
-            'a.system' => JText::_('COM_EASYSDI_CORE_NAMESPACES_SYSTEM'),
+            'a.name' => JText::_('COM_EASYSDI_CATALOG_NAMESPACES_NAME'),
+            'a.prefix' => JText::_('COM_EASYSDI_CATALOG_NAMESPACES_PREFIX'),
+            'a.uri' => JText::_('COM_EASYSDI_CATALOG_NAMESPACES_URI'),
+            'a.system' => JText::_('COM_EASYSDI_CATALOG_NAMESPACES_SYSTEM'),
+            'a.id' => JText::_('JGRID_HEADING_ID'),
         );
     }
 

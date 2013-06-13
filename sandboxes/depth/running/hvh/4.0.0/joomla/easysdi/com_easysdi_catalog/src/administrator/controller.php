@@ -26,7 +26,7 @@ class Easysdi_catalogController extends JControllerLegacy
 	{
 		require_once JPATH_COMPONENT.'/helpers/easysdi_catalog.php';
 
-		$view		= JFactory::getApplication()->input->getCmd('view', 'metadatas');
+		$view		= JFactory::getApplication()->input->getCmd('view', 'namespaces');
         JFactory::getApplication()->input->set('view', $view);
 
 		parent::display($cachable, $urlparams);
