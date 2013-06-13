@@ -47,10 +47,6 @@ class Easysdi_coreController extends JControllerLegacy
                 
                 JFactory::getApplication()->input->set('view', $view);
 	
-		
-		// Load the submenu.
-		//Easysdi_coreHelper::addSubmenu(JFactory::getApplication()->input->getCmd('view', 'easysdi'));
-	
 		parent::display($cachable, $urlparams);
 
 		return $this;

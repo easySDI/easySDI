@@ -31,14 +31,6 @@ class Easysdi_coreViewEasysdi extends JViewLegacy {
         $app = JFactory::getApplication();
         $this->buttons = array();
 
-        //com_easysdi_core
-        array_push($this->buttons, array(
-            'link' => JRoute::_('index.php?option=com_easysdi_core&view=namespaces'),
-            'image' => '48-easysdi-contact',
-            'text' => JText::_('COM_EASYSDI_CORE_ICON_SDI_CORE'),
-            'access' => array('core.manage', 'com_easysdi_contact')
-        ));
-
         //com_easysdi_user
         if ($app->getUserState('com_easysdi_contact-installed')) {
             array_push($this->buttons, array(

@@ -61,23 +61,6 @@ class com_easysdi_coreInstallerScript {
         if ($type == 'install') {
             require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_core.php';
             $params['infrastructureID'] = Easysdi_coreHelper::uuid();
-
-            $this->setParams($params);
-
-            JTable::addIncludePath(JPATH_ADMINISTRATOR."/components/com_easysdi_core/tables");
-            //Create system namespace
-            $row = JTable::getInstance('namespace', 'easysdi_coreTable');
-            $row->alias = 'gmd';
-            $row->state = 1;
-            $row->name = 1;
-            $row->prefix = 'gmd';
-            $row->uri = 'http://www.isotc211.org/2005/gmd';
-            $row->system = 1;
-
-            if (!$row->store(true)) {
-                JError::raiseWarning(null, JText::_('COM_EASYSDI_CORE_POSTFLIGHT_SCRIPT_NAMESPACE_ERROR'));
-                return false;
-            }
         }
     }
 
