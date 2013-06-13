@@ -53,22 +53,22 @@ class Easysdi_catalogViewBoundarycategory extends JViewLegacy
         } else {
             $checkedOut = false;
         }
-		$canDo		= Easysdi_catalogHelper::getActions();
+		$this->canDo		= Easysdi_catalogHelper::getActions();
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_CATALOG_TITLE_BOUNDARYCATEGORY'), 'boundarycategory.png');
 
 		// If not checked out, can save the item.
-		if (!$checkedOut && ($canDo->get('core.edit')||($canDo->get('core.create'))))
+		if (!$checkedOut && ($this->canDo->get('core.edit')||($this->canDo->get('core.create'))))
 		{
 
 			JToolBarHelper::apply('boundarycategory.apply', 'JTOOLBAR_APPLY');
 			JToolBarHelper::save('boundarycategory.save', 'JTOOLBAR_SAVE');
 		}
-		if (!$checkedOut && ($canDo->get('core.create'))){
+		if (!$checkedOut && ($this->canDo->get('core.create'))){
 			JToolBarHelper::custom('boundarycategory.save2new', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);
 		}
 		// If an existing item, can save to a copy.
-		if (!$isNew && $canDo->get('core.create')) {
+		if (!$isNew && $this->canDo->get('core.create')) {
 			JToolBarHelper::custom('boundarycategory.save2copy', 'save-copy.png', 'save-copy_f2.png', 'JTOOLBAR_SAVE_AS_COPY', false);
 		}
 		if (empty($this->item->id)) {

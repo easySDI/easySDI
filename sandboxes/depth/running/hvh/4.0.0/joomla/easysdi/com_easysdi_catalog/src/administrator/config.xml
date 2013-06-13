@@ -5,14 +5,16 @@
 		description="COM_EASYSDI_CATALOG_COMPONENT_DESC"
 	>
 
-        <field name="test"
-             type="radio"
-             default="1"
-             label="COM_EASYSDI_CATALOG_TEST_LABEL"
-             description="COM_EASYSDI_CATALOG_TEST_DESC">
-                 <option value="0">JHIDE</option>
-                 <option value="1">JSHOW</option>
-         </field>
+         <field name="languages" 
+                type="sql" 
+                class="multiselect input-xxlarge"
+                multiple="true"
+                label="COM_EASYSDI_CATALOG_LABEL_LANGUAGES"
+                description="COM_EASYSDI_CATALOG_DESC_LANGUAGES" 
+                query="SELECT id, value FROM #__sdi_language WHERE state=1 ORDER BY ordering" 
+                key_field="id" 
+                value_field="value"
+        /> 
 
 	</fieldset>
 

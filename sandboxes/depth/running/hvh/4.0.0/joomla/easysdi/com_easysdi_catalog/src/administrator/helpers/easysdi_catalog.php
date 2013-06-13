@@ -25,6 +25,17 @@ class Easysdi_catalogHelper
                         "index.php?option=com_easysdi_catalog&view=namespaces",
                         $vName == 'namespaces'
                 );
+                JHtmlSidebar::addEntry(
+			JText::_('COM_EASYSDI_CATALOG_TITLE_BOUNDARIESCATEGORY'),
+			'index.php?option=com_easysdi_catalog&view=boundariescategory',
+			$vName == 'boundariescategory'
+		);
+                JHtmlSidebar::addEntry(
+			JText::_('COM_EASYSDI_CATALOG_TITLE_BOUNDARIES'),
+			'index.php?option=com_easysdi_catalog&view=boundaries',
+			$vName == 'boundaries'
+		);
+		
 		JHtmlSidebar::addEntry(
 			JText::_('COM_EASYSDI_CATALOG_TITLE_METADATAS'),
 			'index.php?option=com_easysdi_catalog&view=metadatas',
@@ -65,16 +76,7 @@ class Easysdi_catalogHelper
 			'index.php?option=com_easysdi_catalog&view=relations',
 			$vName == 'relations'
 		);
-		JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_CATALOG_TITLE_BOUNDARIES'),
-			'index.php?option=com_easysdi_catalog&view=boundaries',
-			$vName == 'boundaries'
-		);
-		JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_CATALOG_TITLE_BOUNDARIESCATEGORY'),
-			'index.php?option=com_easysdi_catalog&view=boundariescategory',
-			$vName == 'boundariescategory'
-		);
+		
 		JHtmlSidebar::addEntry(
 			JText::_('COM_EASYSDI_CATALOG_TITLE_IMPORTREFS'),
 			'index.php?option=com_easysdi_catalog&view=importrefs',
