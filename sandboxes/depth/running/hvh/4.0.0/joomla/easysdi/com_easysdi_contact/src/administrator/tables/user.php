@@ -52,7 +52,7 @@ class Easysdi_contactTableuser extends sdiTable
      */
     protected function _getAssetTitle()
     {
-    	return $this->alias;
+    	return $this->_getAssetName();
     }    
     
     /**
