@@ -44,7 +44,7 @@ class Easysdi_catalogTabletranslation extends sdiTable {
      * @link	http://docs.joomla.org/JTable/save
      * @since   11.1
      */
-    public function save($src, $orderingFilter = '', $ignore = '') {
+    public function saveAll($src, $orderingFilter = '', $ignore = '') {
        
         if (isset($src['label']) && is_array($src['label'])) {
             $label = $src['label'];

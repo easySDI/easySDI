@@ -143,7 +143,7 @@ class Easysdi_catalogModelboundarycategory extends JModelAdmin
                $data['guid'] = $item->guid;
                 //Save translations
                 $translationtable = $this->getTable('Translation', 'Easysdi_catalogTable', array());
-                if(!$translationtable->save($data)){
+                if(!$translationtable->saveAll($data)){
                     $this->setError($translationtable->getError());
                     return false;
                 }
