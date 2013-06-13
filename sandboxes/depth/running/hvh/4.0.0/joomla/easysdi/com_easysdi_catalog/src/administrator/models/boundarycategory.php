@@ -12,6 +12,8 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.modeladmin');
 
+JTable::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_easysdi_catalog/tables');
+
 /**
  * Easysdi_catalog model.
  */
@@ -90,11 +92,14 @@ class Easysdi_catalogModelboundarycategory extends JModelAdmin
 	public function getItem($pk = null)
 	{
 		if ($item = parent::getItem($pk)) {
-
-			//Do any procesing on fields here if needed
-
+                    //Load translations
+                    $translationtable = $this->getTable('Translation', 'Easysdi_catalogTable', array());
+                    
+                    $rows = $translationtable->loadAll($item->guid);
+                    if(is_array ($rows)){
+                        $item->label = $rows['label'];
+                    }
 		}
-
 		return $item;
 	}
 
@@ -119,5 +124,58 @@ class Easysdi_catalogModelboundarycategory extends JModelAdmin
 
 		}
 	}
+        
+        /**
+	 * Method to save the form data.
+	 *
+	 * @param   array  $data  The form data.
+	 *
+	 * @return  boolean  True on success, False on error.
+	 *
+	 * @since   12.2
+	 */
+	public function save($data)
+	{
+          
+            if(parent::save($data)){
+                //Get the element guid
+               $item = parent::getItem($data->id);
+               $data['guid'] = $item->guid;
+                //Save translations
+                $translationtable = $this->getTable('Translation', 'Easysdi_catalogTable', array());
+                if(!$translationtable->save($data)){
+                    $this->setError($translationtable->getError());
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            return false;
+        }
+        
+        /**
+	 * Method to delete one or more records.
+	 *
+	 * @param   array  &$pks  An array of record primary keys.
+	 *
+	 * @return  boolean  True if successful, false if an error occurs.
+	 *
+	 * @since   12.2
+	 */
+	public function delete(&$pks)
+	{
+            $item = parent::getItem($pks[0]);
+            $guid = $item->guid;
+            if(parent::delete($pks)){
+                $translationtable = $this->getTable('Translation', 'Easysdi_catalogTable', array());
+                if(!$translationtable->deleteAll($guid)){
+                    $this->setError($translationtable->getError());
+                    return false;
+                }
+                return true;
+            }
+            return false;
+        }
 
 }

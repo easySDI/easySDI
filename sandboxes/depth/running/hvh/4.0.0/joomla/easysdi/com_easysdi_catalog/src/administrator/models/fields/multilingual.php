@@ -1,22 +1,16 @@
 <?php
 /**
- * @package     Joomla.Platform
- * @subpackage  Form
- *
- * @copyright   Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE
+ * @version     4.0.0
+ * @package     com_easysdi_catalog
+ * @copyright   Copyright (C) 2013. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org§> - http://www.easysdi.org
  */
 
 defined('JPATH_PLATFORM') or die;
 
 /**
- * Form Field class for the Joomla Platform.
- * Supports a one line text field.
- *
- * @package     Joomla.Platform
- * @subpackage  Form
- * @link        http://www.w3.org/TR/html-markup/input.text.html#input.text
- * @since       11.1
+ * Gives a form field for each supported EasySDI language
  */
 class JFormFieldMultilingual extends JFormField
 {
@@ -51,15 +45,26 @@ class JFormFieldMultilingual extends JFormField
 
                 $languages = JComponentHelper::getParams('com_easysdi_catalog')->get('languages');
                 $html = "";
+                $db = JFactory::getDbo();
                 foreach($languages as $language){
+                    
+                    $db->setQuery('
+                            SELECT value
+                            FROM #__sdi_language
+                            WHERE id='.$language);
+                    $db->execute();
+                    $lang = $db->loadResult();
+                    
+                    $value = (isset($this->value[$language]))? $this->value[$language] : "";
+                    
                     $html .= '<div class="control-group">';
                     $html .= '<div class="control-label">';
-                    $html .= '<label id="jform_'.$this->element['name'].'-lbl" for="jform_'.$this->element['name'].'['. $language.']" class="hasTip" title="">Label '.$language.'</label>';
+                    $html .= '<label id="jform_'.$this->element['name'].'-lbl" for="'. $language.'" class="hasTip" title="">'.$lang.'</label>';
                     $html .= '</div>';
                    
                     $html .= '<div class="controls">';
-                    $html .= '<input type="text" name="jform['.$this->element['name'].']" id="jform_'.$this->element['name'].'['.$language.']" 
-                              value="'. htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '"' . $class . $size . $disabled . $readonly . $onchange . $maxLength . $required . '/>';
+                    $html .= '<input type="text" name="jform['.$this->element['name'].']['.$language.']" id="'.$language.'" 
+                              value="'. htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '"' . $class . $size . $disabled . $readonly . $onchange . $maxLength . $required . '/>';
                     $html .= '</div>';
                     $html .= '</div>';
                 }

@@ -16,7 +16,7 @@
         <field name="label" type="multilingual" size="40" class="inputbox" 
               label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_LABEL"
               description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
-              filter="safehtml" /> 
+              filter="ARRAY" /> 
 
         <field name="created_by" type="createdby" default=""   class="readonly"
 				readonly="true"
