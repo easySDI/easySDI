@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset>
+
+              <field name="id" type="text" default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_ID"
+            readonly="true" class="readonly"
+            description="JGLOBAL_FIELD_ID_DESC" /> 
+
+       <field name="guid" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_GUID"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_GUID" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="alias" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_ALIAS"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_ALIAS" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="created_by" type="createdby" default="" 
+            label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_CREATED_BY"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_CREATED_BY"  /> 
+
+       <field name="created" type="timecreated" default="" 
+            label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_CREATED"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_CREATED"  /> 
+
+       <field name="modified_by" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_MODIFIED_BY"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_MODIFIED_BY" 
+         default="0" 
+        
+        
+        filter="safehtml" /> 
+
+       <field name="modified" type="timeupdated" default="" 
+            label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_MODIFIED"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_MODIFIED"  /> 
+
+       <field name="name" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_NAME"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_NAME" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="description" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_DESCRIPTION"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_DESCRIPTION" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="xsl4sdi" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_XSL4SDI"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_XSL4SDI" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="xsl4ext" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_XSL4EXT"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_XSL4EXT" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="cswurl" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_CSWURL"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_CSWURL" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="cswversion" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_CSWVERSION"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_CSWVERSION" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="cswoutputschema" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_CSWOUTPUTSCHEMA"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_CSWOUTPUTSCHEMA" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="importtype_id" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_IMPORTTYPE_ID"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_IMPORTTYPE_ID" 
+        
+        
+        
+        filter="safehtml" /> 
+
+         <field
+        name="state"
+        type="list"
+        label="JSTATUS"
+        description="JFIELD_PUBLISHED_DESC"
+        class="inputbox"
+        size="1"
+        default="1">
+        <option value="1">JPUBLISHED</option>
+        <option value="0">JUNPUBLISHED</option>
+    </field> 
+
+                        <field name="checked_out" type="hidden" filter="unset" />
+        <field name="checked_out_time" type="hidden" filter="unset" /> 
+
+ </fieldset> 
+
+ <fieldset 
+                        name="accesscontrol">
+                       <field name="asset_id" type="hidden" filter="unset" />
+                       <field name="rules"
+                            type="rules"
+                            label="JFIELD_RULES_LABEL"
+                            translate_label="false"
+                            filter="rules"
+                            validate="rules"
+                            class="inputbox"
+                            component="com_easysdi_catalog"
+                            section="importref"
+                        />
+
+	</fieldset>
+
+</form>

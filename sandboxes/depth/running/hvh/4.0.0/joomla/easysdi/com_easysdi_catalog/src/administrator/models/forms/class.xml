@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset>
+
+              <field name="id" type="text" default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_ID"
+            readonly="true" class="readonly"
+            description="JGLOBAL_FIELD_ID_DESC" /> 
+
+       <field name="guid" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_GUID"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_GUID" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="alias" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_ALIAS"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_ALIAS" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="created_by" type="createdby" default="" 
+            label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_CREATED_BY"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_CREATED_BY"  /> 
+
+       <field name="created" type="timecreated" default="" 
+            label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_CREATED"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_CREATED"  /> 
+
+       <field name="modified_by" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_MODIFIED_BY"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_MODIFIED_BY" 
+         default="0" 
+        
+        
+        filter="safehtml" /> 
+
+       <field name="modified" type="timeupdated" default="" 
+            label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_MODIFIED"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_MODIFIED"  /> 
+
+       <field name="name" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_NAME"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_NAME" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="description" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_DESCRIPTION"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_DESCRIPTION" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="issystem" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_ISSYSTEM"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_ISSYSTEM" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="isrootclass" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_ISROOTCLASS"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_ISROOTCLASS" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="namespace_id" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_NAMESPACE_ID"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_NAMESPACE_ID" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="isocode" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_ISOCODE"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_ISOCODE" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="stereotype_id" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_STEREOTYPE_ID"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_STEREOTYPE_ID" 
+        
+        
+        
+        filter="safehtml" /> 
+
+         <field
+        name="state"
+        type="list"
+        label="JSTATUS"
+        description="JFIELD_PUBLISHED_DESC"
+        class="inputbox"
+        size="1"
+        default="1">
+        <option value="1">JPUBLISHED</option>
+        <option value="0">JUNPUBLISHED</option>
+    </field> 
+
+                        <field name="checked_out" type="hidden" filter="unset" />
+        <field name="checked_out_time" type="hidden" filter="unset" /> 
+
+ </fieldset> 
+
+ <fieldset 
+                        name="accesscontrol">
+                       <field name="asset_id" type="hidden" filter="unset" />
+                       <field name="rules"
+                            type="rules"
+                            label="JFIELD_RULES_LABEL"
+                            translate_label="false"
+                            filter="rules"
+                            validate="rules"
+                            class="inputbox"
+                            component="com_easysdi_catalog"
+                            section="class"
+                        />
+
+	</fieldset>
+
+</form>
