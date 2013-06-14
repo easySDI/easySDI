@@ -74,17 +74,15 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                         <div class="controls"><?php echo $this->form->getInput('system'); ?></div>
                     </div>
                     <div class="control-group">
-                        <div class="control-label"><?php echo $this->form->getLabel('state'); ?></div>
-                        <div class="controls"><?php echo $this->form->getInput('state'); ?></div>
-                    </div>
-                    <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('id'); ?></div>
                     </div>
-                    <div class="control-group">
-                        <div class="control-label"><?php echo $this->form->getLabel('guid'); ?></div>
-                        <div class="controls"><?php echo $this->form->getInput('guid'); ?></div>
-                    </div>
+                    <?php
+                    foreach ($this->form->getFieldset('hidden') as $field):
+                        ?>
+                        <div class="controls"><?php echo $field->input; ?></div>
+
+                    <?php endforeach; ?>
                 </div>
                 <div class="tab-pane" id="publishing">
                     <div class="control-group">
@@ -120,6 +118,39 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
 
         <input type="hidden" name="task" value="" />
         <?php echo JHtml::_('form.token'); ?>
+        
+        <!-- Begin Sidebar -->
+        <div class="span2">
+            <h4><?php echo JText::_('JDETAILS'); ?></h4>
+            <hr />
+            <fieldset class="form-vertical">
+                <div class="control-group">
+                   
+                    <?php
+                    if ($this->canDo->get('core.edit.state')) {
+                        ?>
+                        <div class="control-label">
+                            <?php echo $this->form->getLabel('state'); ?>
+                        </div>
+                        <div class="controls">
+                            <?php echo $this->form->getInput('state'); ?>
+                        </div>
+                        <?php
+                    }
+                    ?>
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <?php echo $this->form->getLabel('access'); ?>
+                    </div>
+                    <div class="controls">
+                        <?php echo $this->form->getInput('access'); ?>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <!-- End Sidebar -->
 
     </div>
 </form>

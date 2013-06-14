@@ -32,14 +32,27 @@
 			<option value="1">JPUBLISHED</option>
 			<option value="0">JUNPUBLISHED</option>
 		</field> 
-                <field  name="guid" type="hidden" filter="SAFEHTML" />
-                <field  name="checked_out" type="hidden" filter="SAFEHTML" />
-		<field  name="checked_out_time" type="hidden" filter="SAFEHTML" />
+                
+                <field name="access"
+               type="accesslevel"
+               label="JFIELD_ACCESS_LABEL"
+               description="JFIELD_ACCESS_DESC"
+               class="inputbox span12 small"
+               size="1"
+        />
+                
+                
 
 	</fieldset> 
+        
+        <fieldset name="hidden">
+            <field name="asset_id" type="hidden" filter="SAFEHTML" />
+            <field name="guid" type="hidden" filter="SAFEHTML" />
+            <field name="checked_out" type="hidden" filter="SAFEHTML" />
+            <field name="checked_out_time" type="hidden" filter="SAFEHTML" /> 
+        </fieldset>
 
 	<fieldset name="accesscontrol">
-		<field name="asset_id" type="hidden" filter="unset"/>
 		<field name="rules" type="rules" label="JFIELD_RULES_LABEL" translate_label="false" filter="rules" validate="rules" class="inputbox" component="com_easysdi_core" section="namespace"/>
 
 	</fieldset>

@@ -46,6 +46,9 @@ class JFormFieldMultilingual extends JFormField
                 $languages = JComponentHelper::getParams('com_easysdi_catalog')->get('languages');
                 $html = "";
                 $db = JFactory::getDbo();
+                if(!is_array($languages))
+                    return $html;
+                
                 foreach($languages as $language){
                     
                     $db->setQuery('

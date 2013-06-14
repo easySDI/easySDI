@@ -65,7 +65,7 @@ class com_easysdi_catalogInstallerScript {
             $gmd = JTable::getInstance('namespace', 'easysdi_catalogTable');
             $gmd->alias = 'gmd';
             $gmd->state = 1;
-            $gmd->name = 1;
+            $gmd->name = 'gmd';
             $gmd->prefix = 'gmd';
             $gmd->uri = 'http://www.isotc211.org/2005/gmd';
             $gmd->system = 1;
@@ -78,7 +78,7 @@ class com_easysdi_catalogInstallerScript {
             $gco = JTable::getInstance('namespace', 'easysdi_catalogTable');
             $gco->alias = 'gco';
             $gco->state = 1;
-            $gco->name = 1;
+            $gco->name = 'gco';
             $gco->prefix = 'gco';
             $gco->uri = 'http://www.isotc211.org/2005/gco';
             $gco->system = 1;
@@ -91,7 +91,7 @@ class com_easysdi_catalogInstallerScript {
             $gml = JTable::getInstance('namespace', 'easysdi_catalogTable');
             $gml->alias = 'gml';
             $gml->state = 1;
-            $gml->name = 1;
+            $gml->name = 'gml';
             $gml->prefix = 'gml';
             $gml->uri = 'http://www.opengis.net/gml';
             $gml->system = 1;
@@ -104,7 +104,7 @@ class com_easysdi_catalogInstallerScript {
             $sdi = JTable::getInstance('namespace', 'easysdi_catalogTable');
             $sdi->alias = 'sdi';
             $sdi->state = 1;
-            $sdi->name = 1;
+            $sdi->name = 'sdi';
             $sdi->prefix = 'sdi';
             $sdi->uri = 'http://www.easysdi.org/2011/sdi';
             $sdi->system = 1;

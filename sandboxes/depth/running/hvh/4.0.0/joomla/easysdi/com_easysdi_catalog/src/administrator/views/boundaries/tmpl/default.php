@@ -110,12 +110,7 @@ if (!empty($this->extra_sidebar)) {
 					</th>
                 <?php endif; ?>
                     
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CATALOG_BOUNDARIES_CREATED_BY', 'a.created_by', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CATALOG_BOUNDARIES_MODIFIED_BY', 'a.modified_by', $listDirn, $listOrder); ?>
-				</th>
+	
 				<th class='left'>
 				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CATALOG_BOUNDARIES_NAME', 'a.name', $listDirn, $listOrder); ?>
 				</th>
@@ -182,14 +177,7 @@ if (!empty($this->extra_sidebar)) {
 					</td>
                 <?php endif; ?>
                     
-				<td>
-
-					<?php echo $item->created_by; ?>
-				</td>
-				<td>
-
-					<?php echo $item->modified_by; ?>
-				</td>
+	
 				<td>
 
 					<?php echo $item->name; ?>

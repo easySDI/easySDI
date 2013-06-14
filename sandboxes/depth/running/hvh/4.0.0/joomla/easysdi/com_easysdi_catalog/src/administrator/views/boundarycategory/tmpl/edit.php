@@ -21,19 +21,19 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
 ?>
 <script type="text/javascript">
     js = jQuery.noConflict();
-    js(document).ready(function(){
-        
+    js(document).ready(function() {
+
     });
-    
+
     Joomla.submitbutton = function(task)
     {
-        if(task == 'boundarycategory.cancel'){
+        if (task == 'boundarycategory.cancel') {
             Joomla.submitform(task, document.getElementById('boundarycategory-form'));
         }
-        else{
-            
+        else {
+
             if (task != 'boundarycategory.cancel' && document.formvalidator.isValid(document.id('boundarycategory-form'))) {
-                
+
                 Joomla.submitform(task, document.getElementById('boundarycategory-form'));
             }
             else {
@@ -53,37 +53,32 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                     <li><a href="#permissions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CATALOG_TAB_RULES'); ?></a></li>
                 <?php endif ?>
             </ul>
-             <div class="tab-content">
+            <div class="tab-content">
                 <div class="tab-pane active" id="details">
-                       <div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('name'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('name'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('alias'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('alias'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('parent_id'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('parent_id'); ?></div>
-			</div>
-                    
-                        <div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('state'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('state'); ?></div>
-			</div>
-                         <div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('id'); ?></div>
-			</div>
-                        <div class="well">
-                            <?php echo $this->form->getInput('label'); ?>
-                        </div>
+                    <div class="control-group">
+                        <div class="control-label"><?php echo $this->form->getLabel('name'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('name'); ?></div>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label"><?php echo $this->form->getLabel('alias'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('alias'); ?></div>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label"><?php echo $this->form->getLabel('parent_id'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('parent_id'); ?></div>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('id'); ?></div>
+                    </div>
+                    <div class="well">
+                        <?php echo $this->form->getInput('label'); ?>
+                    </div>
                     <?php
                     foreach ($this->form->getFieldset('hidden') as $field):
-                            ?>
-                            <div class="controls"><?php echo $field->input; ?></div>
-                            
+                        ?>
+                        <div class="controls"><?php echo $field->input; ?></div>
+
                     <?php endforeach; ?>
                 </div>
                 <div class="tab-pane" id="publishing">
@@ -106,7 +101,7 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                         </div>
                     <?php endif; ?>
                 </div>
-                <?php if ($this->canDo->get('core.admin')): ?>
+               <?php if (JFactory::getUser()->authorise('core.admin','easysdi_catalog')): ?>
                     <div class="tab-pane" id="permissions">
                         <fieldset>
                             <?php echo $this->form->getInput('rules'); ?>
@@ -120,6 +115,39 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
 
         <input type="hidden" name="task" value="" />
         <?php echo JHtml::_('form.token'); ?>
+
+        <!-- Begin Sidebar -->
+        <div class="span2">
+            <h4><?php echo JText::_('JDETAILS'); ?></h4>
+            <hr />
+            <fieldset class="form-vertical">
+                <div class="control-group">
+                   
+                    <?php
+                    if ($this->canDo->get('core.edit.state')) {
+                        ?>
+                        <div class="control-label">
+                            <?php echo $this->form->getLabel('state'); ?>
+                        </div>
+                        <div class="controls">
+                            <?php echo $this->form->getInput('state'); ?>
+                        </div>
+                        <?php
+                    }
+                    ?>
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <?php echo $this->form->getLabel('access'); ?>
+                    </div>
+                    <div class="controls">
+                        <?php echo $this->form->getInput('access'); ?>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <!-- End Sidebar -->
 
     </div>
 </form>
