@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_metadata` (
 `synchronized_by` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `notification` TINYINT(1)  NOT NULL ,
 `version_id` INT(11)  NOT NULL ,
+`access` INT(10)  NOT NULL DEFAULT '1',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -44,6 +45,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_catalog` (
 `xsldirectory` VARCHAR(255)  NOT NULL ,
 `oninitrunsearch` TINYINT(4)  NOT NULL ,
 `cswfilter` TEXT(1000)  NOT NULL ,
+`access` INT(10)  NOT NULL DEFAULT '1',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -76,6 +78,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_searchcriteria` (
 `issystem` TINYINT(1)  NOT NULL ,
 `criteriatype_id` INT(11)  NOT NULL ,
 `rendertype_id` INT(11)  NOT NULL ,
+`access` INT(10)  NOT NULL DEFAULT '1',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -113,6 +116,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_profile` (
 `description` VARCHAR(500)  NOT NULL ,
 `class_id` INT(11)  NOT NULL ,
 `metadataidentifier` INT(11)  NOT NULL ,
+`access` INT(10)  NOT NULL DEFAULT '1',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -138,6 +142,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_class` (
 `namespace_id` INT(11)  NOT NULL ,
 `isocode` VARCHAR(255)  NOT NULL ,
 `stereotype_id` INT(11)  NOT NULL ,
+`access` INT(10)  NOT NULL DEFAULT '1',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -167,6 +172,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_attribute` (
 `listnamespace_id` INT(11)  NOT NULL ,
 `type_isocode` VARCHAR(255)  NOT NULL ,
 `codelist` VARCHAR(255)  NOT NULL ,
+`access` INT(10)  NOT NULL DEFAULT '1',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -188,6 +194,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_attributevalue` (
 `name` VARCHAR(255)  NOT NULL ,
 `value` VARCHAR(255)  NOT NULL ,
 `attribute_id` INT NOT NULL ,
+`access` INT(10)  NOT NULL DEFAULT '1',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -222,6 +229,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_relation` (
 `relationscope_id` INT(11)  NOT NULL ,
 `editorrelationscope_id` INT(11)  NOT NULL ,
 `childresourcetype_id` INT(11)  NOT NULL ,
+`access` INT(10)  NOT NULL DEFAULT '1',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -302,6 +310,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_boundary` (
 `westbound` DOUBLE NOT NULL ,
 `category_id` INT(11)  NOT NULL ,
 `parent_id` INT(11)  NOT NULL ,
+`access` INT(10)  NOT NULL DEFAULT '1',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -322,6 +331,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_boundarycategory` (
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `name` VARCHAR(255)  NOT NULL ,
 `parent_id` INT(11)  NOT NULL ,
+`access` INT(10)  NOT NULL DEFAULT '1',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -359,6 +369,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_importref` (
 `cswversion` VARCHAR(10)  NOT NULL ,
 `cswoutputschema` VARCHAR(255)  NOT NULL ,
 `importtype_id` INT(11)  NOT NULL ,
+`access` INT(10)  NOT NULL DEFAULT '1',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -399,5 +410,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_namespace` (
 `uri` VARCHAR(255)  NOT NULL ,
 `system` TINYINT(1)  NOT NULL DEFAULT '0' ,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
+`access` INT(10)  NOT NULL DEFAULT '1',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
