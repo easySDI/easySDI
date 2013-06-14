@@ -64,7 +64,12 @@ class Easysdi_catalogTabletranslation extends sdiTable {
                     $this->label = $value;
                 }
                 if (isset($src['information']) && is_array($src['information'])) {
-                    $this->information = $src['information'][$key];
+                    foreach($src['information'] as $k => $v) {
+                        if($k == $key){
+                             $this->information = $v;
+                             break;
+                        }
+                    }
                 }
                 
                 if (!$this->store())

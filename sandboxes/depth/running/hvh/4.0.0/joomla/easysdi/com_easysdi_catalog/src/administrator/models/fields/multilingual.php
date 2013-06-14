@@ -48,7 +48,9 @@ class JFormFieldMultilingual extends JFormField
                 $db = JFactory::getDbo();
                 if(!is_array($languages))
                     return $html;
-                
+               
+                $html .= '<label >'.JText::_($this->element['label']).'</label>';
+               
                 foreach($languages as $language){
                     
                     $db->setQuery('

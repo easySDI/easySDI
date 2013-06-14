@@ -39,6 +39,17 @@
                description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARY_NAME" 
                filter="safehtml" /> 
 
+        <field name="label" type="multilingual" size="40" class="inputbox" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_LABEL"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
+               filter="ARRAY" /> 
+        
+        <field name="information" type="multilingual" size="40" class="inputbox" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_INFORMATION"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_INFORMATION" 
+               filter="ARRAY" /> 
+
+        
         <field name="northbound" type="text" size="40" class="inputbox"
                label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARY_NORTHBOUND"
                description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARY_NORTHBOUND" 

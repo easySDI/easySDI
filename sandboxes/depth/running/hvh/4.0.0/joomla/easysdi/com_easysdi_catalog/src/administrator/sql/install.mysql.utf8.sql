@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_searchcriteria` (
 `checked_out` INT(11)  NOT NULL DEFAULT '0' ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `name` VARCHAR(255)  NOT NULL ,
-`issystem` TINYINT(1)  NOT NULLDEFAULT '0' ,
+`issystem` TINYINT(1)  NOT NULL DEFAULT '0' ,
 `criteriatype_id` INT(11) UNSIGNED  NOT NULL ,
 `rendertype_id` INT(11) UNSIGNED NOT NULL ,
 `access` INT(10)  NOT NULL DEFAULT '1',
