@@ -318,16 +318,16 @@ CREATE TABLE IF NOT EXISTS `#__sdi_resource` (
 `alias` VARCHAR(20)  NOT NULL ,
 `created_by` INT(11)  NOT NULL ,
 `created` DATETIME NOT NULL ,
-`modified_by` INT(11)  NOT NULL ,
-`modified` DATETIME NOT NULL ,
-`ordering` INT(11)  NOT NULL ,
+`modified_by` INT(11)   ,
+`modified` DATETIME ,
+`ordering` INT(11)  NOT NULL DEFAULT '1',
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
-`checked_out` INT(11)  NOT NULL ,
-`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`checked_out` INT(11)   ,
+`checked_out_time` DATETIME ,
 `name` VARCHAR(255)  NOT NULL ,
 `description` VARCHAR(500)  NOT NULL ,
-`organism_id` INT(11)  NOT NULL ,
-`resourcetype_id` INT NOT NULL ,
+`organism_id` INT(11)  UNSIGNED NOT NULL ,
+`resourcetype_id` INT(11) UNSIGNED NOT NULL ,
 `access` INT(11)  NOT NULL ,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`)
@@ -354,6 +354,10 @@ CREATE TABLE IF NOT EXISTS `#__sdi_resourcetype` (
 `monitoring` BOOLEAN NOT NULL ,
 `predefined` BOOLEAN NOT NULL ,
 `versionning` BOOLEAN NOT NULL ,
+`profile_id` int(11) UNSIGNED  NOT NULL,
+`fragmentnamespace_id` int(11) UNSIGNED  ,
+`fragment` VARCHAR(255)   ,
+`sitemapparams` VARCHAR(1000)   ,
 `access` INT(11)  NOT NULL ,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`)
@@ -372,7 +376,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_version` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `name` VARCHAR(255)  NOT NULL ,
-`resource_id` INT NOT NULL ,
+`resource_id` int(11) UNSIGNED NOT NULL ,
 `access` INT(11)  NOT NULL ,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`)
@@ -408,25 +412,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_versionlink` (
 PRIMARY KEY (`id`)
 ) DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_namespace` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` VARCHAR(36)  NOT NULL ,
-`alias` VARCHAR(20)  NOT NULL ,
-`created_by` INT(11)  NOT NULL ,
-`created` DATETIME NOT NULL ,
-`modified_by` INT(11)  NOT NULL ,
-`modified` DATETIME NOT NULL ,
-`ordering` INT(11)  NOT NULL ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
-`checked_out` INT(11)  NOT NULL ,
-`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-`name` VARCHAR(255)  NOT NULL ,
-`prefix` VARCHAR(10)  NOT NULL ,
-`uri` VARCHAR(255)  NOT NULL ,
-`system` TINYINT(1)  NOT NULL DEFAULT '0' ,
-`asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
 
 CREATE TABLE IF NOT EXISTS `#__sdi_resourcetypelink` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,

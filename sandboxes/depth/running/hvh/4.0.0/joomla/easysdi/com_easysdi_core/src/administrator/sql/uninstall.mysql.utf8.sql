@@ -23,7 +23,6 @@ DROP TABLE IF EXISTS `#__sdi_sys_servicescope`;
 DROP TABLE IF EXISTS `#__sdi_sys_metadataversion`;
 DROP TABLE IF EXISTS `#__sdi_application`;
 DROP TABLE IF EXISTS `#__sdi_language`;
-DROP TABLE IF EXISTS `#__sdi_namespace`;
 DROP TABLE IF EXISTS `#__sdi_resource`;
 DROP TABLE IF EXISTS `#__sdi_resourcetype`;
 DROP TABLE IF EXISTS `#__sdi_resourcetypelink`;
