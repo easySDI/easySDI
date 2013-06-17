@@ -180,7 +180,12 @@ if (!empty($this->extra_sidebar)) {
 	
 				<td>
 
-					<?php echo $item->name; ?>
+					<?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>
+                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=boundary.edit&id=' . (int) $item->id); ?>">
+                                        <?php echo $this->escape($item->name); ?></a>
+                                <?php else : ?>
+                                    <?php echo $this->escape($item->name); ?>
+                                <?php endif; ?>
 				</td>
 
 

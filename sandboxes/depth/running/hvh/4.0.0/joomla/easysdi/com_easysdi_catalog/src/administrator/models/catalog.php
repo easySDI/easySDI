@@ -90,8 +90,20 @@ class Easysdi_catalogModelcatalog extends JModelAdmin
 	public function getItem($pk = null)
 	{
 		if ($item = parent::getItem($pk)) {
-
-			//Do any procesing on fields here if needed
+                    //Load translations
+                    $translationtable = $this->getTable('Translation', 'Easysdi_catalogTable', array());
+                    $rows = $translationtable->loadAll($item->guid);
+                    if(is_array ($rows)){
+                        $item->label = $rows['label'];
+                        $item->information = $rows['information'];
+                    }
+                    
+                    //Load searchsort
+                    $searchsorttable = $this->getTable('Searchsort', 'Easysdi_catalogTable', array());
+                    $rowssort = $searchsorttable->loadAll($item->id);
+                    if(is_array ($rowssort)){
+                        $item->searchsort = $rowssort['searchsort'];
+                    }
 
 		}
 
@@ -119,5 +131,71 @@ class Easysdi_catalogModelcatalog extends JModelAdmin
 
 		}
 	}
+        
+        /**
+	 * Method to save the form data.
+	 *
+	 * @param   array  $data  The form data.
+	 *
+	 * @return  boolean  True on success, False on error.
+	 *
+	 * @since   12.2
+	 */
+	public function save($data)
+	{
+          
+            if(parent::save($data)){
+                //Get the element guid
+               $item = parent::getItem($data['id']);
+               $data['guid'] = $item->guid;
+               $data['id'] = $item->id;
+                //Save translations
+                $translationtable = $this->getTable('Translation', 'Easysdi_catalogTable', array());
+                if(!$translationtable->saveAll($data)){
+                    $this->setError($translationtable->getError());
+                    return false;
+                }
+                
+                //Save sorting fields
+                 $searchsorttable = $this->getTable('Searchsort', 'Easysdi_catalogTable', array());
+                if(!$searchsorttable->saveAll($data)){
+                    $this->setError($searchsorttable->getError());
+                    return false;
+                }
+                return true;
+            }
+            
+            return false;
+        }
+        
+        /**
+	 * Method to delete one or more records.
+	 *
+	 * @param   array  &$pks  An array of record primary keys.
+	 *
+	 * @return  boolean  True if successful, false if an error occurs.
+	 *
+	 * @since   12.2
+	 */
+	public function delete(&$pks)
+	{
+            $item = parent::getItem($pks[0]);
+            $guid = $item->guid;
+            $id = $item->id;
+            if(parent::delete($pks)){
+                $translationtable = $this->getTable('Translation', 'Easysdi_catalogTable', array());
+                if(!$translationtable->deleteAll($guid)){
+                    $this->setError($translationtable->getError());
+                    return false;
+                }
+                 $searchsorttable = $this->getTable('Searchsort', 'Easysdi_catalogTable', array());
+                 if(!$searchsorttable->deleteAll($id)){
+                    $this->setError($searchsorttable->getError());
+                    return false;
+                }
+                return true;
+            }
+            return false;
+        }
 
 }

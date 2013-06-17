@@ -35,12 +35,6 @@ class Easysdi_catalogHelper
 			'index.php?option=com_easysdi_catalog&view=boundaries',
 			$vName == 'boundaries'
 		);
-		
-		JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_CATALOG_TITLE_METADATAS'),
-			'index.php?option=com_easysdi_catalog&view=metadatas',
-			$vName == 'metadatas'
-		);
 		JHtmlSidebar::addEntry(
 			JText::_('COM_EASYSDI_CATALOG_TITLE_CATALOGS'),
 			'index.php?option=com_easysdi_catalog&view=catalogs',
