@@ -46,16 +46,85 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&layout=edit&id=' . (int) $this->item->id); ?>" method="post" enctype="multipart/form-data" name="adminForm" id="profile-form" class="form-validate">
     <div class="row-fluid">
         <div class="span10 form-horizontal">
+             <ul class="nav nav-tabs">
+                <li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_CATALOG_TAB_NEW_BOUNDARY') : JText::sprintf('COM_EASYSDI_CATALOG_TAB_EDIT_BOUNDARY', $this->item->id); ?></a></li>
+                <li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CATALOG_TAB_PUBLISHING'); ?></a></li>
+                 <?php if (JFactory::getUser()->authorise('core.admin','easysdi_catalog')): ?>
+                    <li><a href="#permissions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CATALOG_TAB_RULES'); ?></a></li>
+                <?php endif ?>
+            </ul>
+             <div class="tab-content">
+                <div class="tab-pane active" id="details">
+                    <div class="control-group">
+                        <div class="control-label"><?php echo $this->form->getLabel('name'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('name'); ?></div>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label"><?php echo $this->form->getLabel('alias'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('alias'); ?></div>
+                    </div>
+                   <div class="control-group">
+				<div class="control-label"><?php echo $this->form->getLabel('description'); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('description'); ?></div>
+			</div>
+			<div class="control-group">
+				<div class="control-label"><?php echo $this->form->getLabel('class_id'); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('class_id'); ?></div>
+			</div>
+			<div class="control-group">
+				<div class="control-label"><?php echo $this->form->getLabel('metadataidentifier'); ?></div>
+				<div class="controls"><?php echo $this->form->getInput('metadataidentifier'); ?></div>
+                    <div class="well">
+                        <?php echo $this->form->getInput('label'); ?>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('id'); ?></div>
+                    </div>
+                    
+                    <?php
+                    foreach ($this->form->getFieldset('hidden') as $field):
+                        ?>
+                        <div class="controls"><?php echo $field->input; ?></div>
+
+                    <?php endforeach; ?>
+                </div>
+                <div class="tab-pane" id="publishing">
+                    <div class="control-group">
+                        <div class="control-label"><?php echo $this->form->getLabel('created_by'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('created_by'); ?></div>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label"><?php echo $this->form->getLabel('created'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('created'); ?></div>
+                    </div>
+                    <?php if ($this->item->modified_by) : ?>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('modified_by'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('modified_by'); ?></div>
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('modified'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('modified'); ?></div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                <?php if (JFactory::getUser()->authorise('core.admin','easysdi_catalog')): ?>
+                    <div class="tab-pane" id="permissions">
+                        <fieldset>
+                            <?php echo $this->form->getInput('rules'); ?>
+                        </fieldset>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
             <fieldset class="adminform">
 
                 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
 				<div class="controls"><?php echo $this->form->getInput('id'); ?></div>
 			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('guid'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('guid'); ?></div>
-			</div>
+			
 			<div class="control-group">
 				<div class="control-label"><?php echo $this->form->getLabel('alias'); ?></div>
 				<div class="controls"><?php echo $this->form->getInput('alias'); ?></div>

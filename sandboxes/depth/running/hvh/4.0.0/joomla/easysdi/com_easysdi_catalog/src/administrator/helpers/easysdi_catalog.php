@@ -45,11 +45,17 @@ class Easysdi_catalogHelper
 			'index.php?option=com_easysdi_catalog&view=search_criterias',
 			$vName == 'search_criterias'
 		);
-		JHtmlSidebar::addEntry(
+                JHtmlSidebar::addEntry(
 			JText::_('COM_EASYSDI_CATALOG_TITLE_PROFILES'),
 			'index.php?option=com_easysdi_catalog&view=profiles',
 			$vName == 'profiles'
 		);
+                JHtmlSidebar::addEntry(
+			JText::_('COM_EASYSDI_CATALOG_TITLE_RESOURCESTYPE'),
+			'index.php?option=com_easysdi_catalog&view=resourcestype',
+			$vName == 'resourcestype'
+		);
+		
 		JHtmlSidebar::addEntry(
 			JText::_('COM_EASYSDI_CATALOG_TITLE_CLASSES'),
 			'index.php?option=com_easysdi_catalog&view=classes',
