@@ -148,7 +148,7 @@
                filter="rules"
                validate="rules"
                class="inputbox"
-               component="com_easysdi_core"
+               component="com_easysdi_catalog"
                section="resourcetype"
         />
 
