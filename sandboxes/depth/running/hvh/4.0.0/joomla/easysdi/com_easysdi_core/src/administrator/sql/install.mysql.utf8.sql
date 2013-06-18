@@ -450,18 +450,14 @@ CREATE TABLE IF NOT EXISTS `#__sdi_resourcetypelinkinheritance` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_resourcetype_organism` (
+CREATE TABLE IF NOT EXISTS `#__sdi_accessscope` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`resourcetype_id` INT(11) UNSIGNED  NOT NULL ,
+`entity_guid` VARCHAR(36)  NOT NULL ,
 `organism_id` INT(11) UNSIGNED  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_resourcetype_user` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`resourcetype_id` INT(11) UNSIGNED  NOT NULL ,
 `user_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+
 
 
