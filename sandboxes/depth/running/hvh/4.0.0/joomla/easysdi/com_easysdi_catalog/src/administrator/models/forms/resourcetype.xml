@@ -155,8 +155,8 @@
     </fieldset>
 
     <field name="access" type="accesslevel"
-       label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_ACCESS"
-       description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_ACCESS" 
+       label="JFIELD_ACCESS_LABEL"
+       description="JFIELD_ACCESS_DESC" 
        filter="raw" /> 
 
     <field

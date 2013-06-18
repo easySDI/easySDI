@@ -47,7 +47,7 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
     <div class="row-fluid">
         <div class="span10 form-horizontal">
             <ul class="nav nav-tabs">
-                <li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_CATALOG_TAB_NEW_BOUNDARY') : JText::sprintf('COM_EASYSDI_CATALOG_TAB_EDIT_BOUNDARY', $this->item->id); ?></a></li>
+                <li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_CATALOG_TAB_NEW') : JText::sprintf('COM_EASYSDI_CATALOG_TAB_EDIT', $this->item->id); ?></a></li>
                 <li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CATALOG_TAB_PUBLISHING'); ?></a></li>
                 <?php if (JFactory::getUser()->authorise('core.admin', 'easysdi_catalog')): ?>
                     <li><a href="#permissions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CATALOG_TAB_RULES'); ?></a></li>

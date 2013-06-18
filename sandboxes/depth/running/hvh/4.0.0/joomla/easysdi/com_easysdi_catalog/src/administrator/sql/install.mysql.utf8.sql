@@ -129,6 +129,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_class` (
 `namespace_id` INT(11) UNSIGNED NOT NULL ,
 `isocode` VARCHAR(255)  ,
 `stereotype_id` INT(11) UNSIGNED  ,
+`accessscope_id` INT(11) UNSIGNED NOT NULL ,
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`)
@@ -382,3 +383,4 @@ CREATE TABLE IF NOT EXISTS `#__sdi_namespace` (
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
