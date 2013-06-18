@@ -32,8 +32,10 @@ abstract class sdiModel extends JModelAdmin {
                     $translationtable = $this->getTable('Translation', 'Easysdi_catalogTable', array());
                     $rows = $translationtable->loadAll($item->guid);
                     if(is_array ($rows)){
-                        $item->label = $rows['label'];
-                        $item->information = $rows['information'];
+                        if(isset($rows['text1']))
+                            $item->text1 = $rows['text1'];
+                        if(isset($rows['text2']))
+                            $item->text2 = $rows['text2'];
                     }
                     
                     // Get the access scope
