@@ -152,7 +152,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_attribute` (
 `issystem` TINYINT(1)  NOT NULL DEFAULT '0' ,
 `namespace_id` INT(11) UNSIGNED  NOT NULL ,
 `isocode` VARCHAR(255)  ,
-`attributetype_id` INT(11) UNSIGNED  NOT NULL ,
+`stereotype_id` INT(11) UNSIGNED  NOT NULL ,
 `length` INT(20)  ,
 `pattern` VARCHAR(500)  ,
 `listnamespace_id` INT(11) UNSIGNED  ,

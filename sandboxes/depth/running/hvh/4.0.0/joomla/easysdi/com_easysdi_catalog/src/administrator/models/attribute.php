@@ -12,10 +12,12 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.modeladmin');
 
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
+
 /**
  * Easysdi_catalog model.
  */
-class Easysdi_catalogModelattribute extends JModelAdmin
+class Easysdi_catalogModelattribute extends sdiModel
 {
 	/**
 	 * @var		string	The prefix to use with controller messages.

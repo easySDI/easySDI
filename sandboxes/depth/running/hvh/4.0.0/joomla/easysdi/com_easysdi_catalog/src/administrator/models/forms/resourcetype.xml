@@ -199,7 +199,7 @@
     
     <field name="fragmentnamespace_id" 
                type="sql" 
-               class="inputbox"
+               class="inputbox input-mini"
                query=" SELECT 0 AS id, '- None -' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
                key_field="id" 
                value_field="name"
@@ -212,7 +212,7 @@
                 description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_FRAGMENT" 
                 filter="safehtml" />
         
-        <field name="label" type="multilingual" size="40" class="inputbox" 
+        <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge"
                label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_LABEL"
                description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
                filter="ARRAY" /> 

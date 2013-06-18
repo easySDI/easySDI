@@ -87,10 +87,10 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                         <?php echo $this->form->getInput('searchsort'); ?>
                     </div>
                     <div class="well">
-                        <?php echo $this->form->getInput('label'); ?>
+                        <?php echo $this->form->getInput('text1'); ?>
                     </div>
                      <div class="well">
-                        <?php echo $this->form->getInput('information'); ?>
+                        <?php echo $this->form->getInput('text2'); ?>
                     </div>
                     <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>

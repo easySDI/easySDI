@@ -35,11 +35,10 @@ class Easysdi_catalogViewAttribute_values extends JViewLegacy
 			throw new Exception(implode("\n", $errors));
 		}
         
-		Easysdi_catalogHelper::addSubmenu('attribute_values');
+		Easysdi_catalogHelper::addSubmenu('attributes');
+        	$this->addToolbar();
         
-		$this->addToolbar();
-        
-        $this->sidebar = JHtmlSidebar::render();
+                $this->sidebar = JHtmlSidebar::render();
 		parent::display($tpl);
 	}
 
@@ -102,9 +101,11 @@ class Easysdi_catalogViewAttribute_values extends JViewLegacy
 		    }
         }
 
-		if ($canDo->get('core.admin')) {
-			JToolBarHelper::preferences('com_easysdi_catalog');
-		}
+        JToolBarHelper::divider();
+        JToolBarHelper::custom('attributes', 'chevron-left.png', 'chevron-left_f2.png', 'COM_EASYSDI_CATALOG_TOOLBAR_BACK', false);
+        
+        JToolBarHelper::divider();
+        JToolBarHelper::custom('easySDIHome', 'home.png', 'home_f2.png', 'COM_EASYSDI_CATALOG_TOOLBAR_HOME', false);
         
         //Set sidebar action - New in 3.0
 		JHtmlSidebar::setAction('index.php?option=com_easysdi_catalog&view=attribute_values');
@@ -127,15 +128,11 @@ class Easysdi_catalogViewAttribute_values extends JViewLegacy
 	protected function getSortFields()
 	{
 		return array(
-		'a.id' => JText::_('JGRID_HEADING_ID'),
-		'a.created_by' => JText::_('COM_EASYSDI_CATALOG_ATTRIBUTE_VALUES_CREATED_BY'),
-		'a.modified_by' => JText::_('COM_EASYSDI_CATALOG_ATTRIBUTE_VALUES_MODIFIED_BY'),
-		'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
-		'a.state' => JText::_('JSTATUS'),
-		'a.checked_out' => JText::_('COM_EASYSDI_CATALOG_ATTRIBUTE_VALUES_CHECKED_OUT'),
-		'a.checked_out_time' => JText::_('COM_EASYSDI_CATALOG_ATTRIBUTE_VALUES_CHECKED_OUT_TIME'),
-		'a.name' => JText::_('COM_EASYSDI_CATALOG_ATTRIBUTE_VALUES_NAME'),
-		);
+            'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
+            'a.state' => JText::_('JSTATUS'),
+            'a.name' => JText::_('COM_EASYSDI_CATALOG_BOUNDARIESCATEGORY_NAME'),
+            'a.id' => JText::_('JGRID_HEADING_ID'),
+        );
 	}
 
     

@@ -12,10 +12,11 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.modeladmin');
 
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
 /**
  * Easysdi_catalog model.
  */
-class Easysdi_catalogModelcatalog extends JModelAdmin
+class Easysdi_catalogModelcatalog extends sdiModel
 {
 	/**
 	 * @var		string	The prefix to use with controller messages.
@@ -90,13 +91,6 @@ class Easysdi_catalogModelcatalog extends JModelAdmin
 	public function getItem($pk = null)
 	{
 		if ($item = parent::getItem($pk)) {
-                    //Load translations
-                    $translationtable = $this->getTable('Translation', 'Easysdi_catalogTable', array());
-                    $rows = $translationtable->loadAll($item->guid);
-                    if(is_array ($rows)){
-                        $item->label = $rows['label'];
-                        $item->information = $rows['information'];
-                    }
                     
                     //Load searchsort
                     $searchsorttable = $this->getTable('Searchsort', 'Easysdi_catalogTable', array());
@@ -149,12 +143,7 @@ class Easysdi_catalogModelcatalog extends JModelAdmin
                $item = parent::getItem($data['id']);
                $data['guid'] = $item->guid;
                $data['id'] = $item->id;
-                //Save translations
-                $translationtable = $this->getTable('Translation', 'Easysdi_catalogTable', array());
-                if(!$translationtable->saveAll($data)){
-                    $this->setError($translationtable->getError());
-                    return false;
-                }
+                
                 
                 //Save sorting fields
                  $searchsorttable = $this->getTable('Searchsort', 'Easysdi_catalogTable', array());
@@ -183,11 +172,7 @@ class Easysdi_catalogModelcatalog extends JModelAdmin
             $guid = $item->guid;
             $id = $item->id;
             if(parent::delete($pks)){
-                $translationtable = $this->getTable('Translation', 'Easysdi_catalogTable', array());
-                if(!$translationtable->deleteAll($guid)){
-                    $this->setError($translationtable->getError());
-                    return false;
-                }
+                
                  $searchsorttable = $this->getTable('Searchsort', 'Easysdi_catalogTable', array());
                  if(!$searchsorttable->deleteAll($id)){
                     $this->setError($searchsorttable->getError());

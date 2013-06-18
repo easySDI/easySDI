@@ -68,8 +68,8 @@ class JFormFieldMultilingual extends JFormField
                     $html .= '</div>';
                    
                     $html .= '<div class="controls">';
-                    $html .= '<input type="text" name="jform['.$this->element['name'].']['.$language.']" id="'.$language.'" 
-                              value="'. htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '"' . $class . $size . $disabled . $readonly . $onchange . $maxLength . $required . '/>';
+                    $html .= '<textarea rows="'.$this->element['rows'].'" cols="'.$this->element['cols'].'" name="jform['.$this->element['name'].']['.$language.']" id="'.$language.'" 
+                              ' . $class . $size . $disabled . $readonly . $onchange . $maxLength . $required . '>'.htmlspecialchars($value, ENT_COMPAT, 'UTF-8').'</textarea>';
                     $html .= '</div>';
                     $html .= '</div>';
                 }

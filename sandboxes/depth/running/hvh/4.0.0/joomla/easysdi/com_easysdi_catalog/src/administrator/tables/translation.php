@@ -46,8 +46,8 @@ class Easysdi_catalogTabletranslation extends sdiTable {
      */
     public function saveAll($src, $orderingFilter = '', $ignore = '') {
        
-        if (isset($src['label']) && is_array($src['label'])) {
-            $label = $src['label'];
+        if (isset($src['text1']) && is_array($src['text1'])) {
+            $label = $src['text1'];
             foreach($label as $key => $value) {
                 $language_id = $key;
                 $element_guid = $src['guid'];
@@ -56,17 +56,17 @@ class Easysdi_catalogTabletranslation extends sdiTable {
                 $keys ['language_id'] = $language_id;
                 if($this->load($keys)){
                     //Update
-                    $this->label = $value;
+                    $this->text1 = $value;
                 }else{
                     //Create
                     $this->element_guid = $element_guid;
                     $this->language_id = $language_id;
-                    $this->label = $value;
+                    $this->text1 = $value;
                 }
-                if (isset($src['information']) && is_array($src['information'])) {
-                    foreach($src['information'] as $k => $v) {
+                if (isset($src['text2']) && is_array($src['text2'])) {
+                    foreach($src['text2'] as $k => $v) {
                         if($k == $key){
-                             $this->information = $v;
+                             $this->text2 = $v;
                              break;
                         }
                     }
@@ -128,8 +128,8 @@ class Easysdi_catalogTabletranslation extends sdiTable {
                 $result = array();
 		// Bind the object with the row and return.
                 foreach ($rows as $row){
-                   $result['label'] [$row['language_id']] = $row['label'];
-                   $result['information'] [$row['language_id']] = $row['information'];
+                   $result['text1'] [$row['language_id']] = $row['text1'];
+                   $result['text2'] [$row['language_id']] = $row['text2'];
                 }
                 
                 return $result;

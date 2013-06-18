@@ -109,13 +109,7 @@ if (!empty($this->extra_sidebar)) {
 						<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
 					</th>
                 <?php endif; ?>
-                    
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CATALOG_ATTRIBUTE_VALUES_CREATED_BY', 'a.created_by', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CATALOG_ATTRIBUTE_VALUES_MODIFIED_BY', 'a.modified_by', $listDirn, $listOrder); ?>
-				</th>
+  
 				<th class='left'>
 				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CATALOG_ATTRIBUTE_VALUES_NAME', 'a.name', $listDirn, $listOrder); ?>
 				</th>
@@ -183,17 +177,13 @@ if (!empty($this->extra_sidebar)) {
                 <?php endif; ?>
                     
 				<td>
-
-					<?php echo $item->created_by; ?>
-				</td>
-				<td>
-
-					<?php echo $item->modified_by; ?>
-				</td>
-				<td>
-
-					<?php echo $item->name; ?>
-				</td>
+                                <?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>
+                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=attribute_value.edit&id=' . (int) $item->id); ?>">
+                                        <?php echo $this->escape($item->name); ?></a>
+                                <?php else : ?>
+                                    <?php echo $this->escape($item->name); ?>
+                                <?php endif; ?>
+                            </td>
 
 
                 <?php if (isset($this->items[0]->id)): ?>

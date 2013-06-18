@@ -66,11 +66,7 @@ class Easysdi_catalogHelper
 			'index.php?option=com_easysdi_catalog&view=attributes',
 			$vName == 'attributes'
 		);
-		JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_CATALOG_TITLE_ATTRIBUTE_VALUES'),
-			'index.php?option=com_easysdi_catalog&view=attribute_values',
-			$vName == 'attribute_values'
-		);
+		
 		JHtmlSidebar::addEntry(
 			JText::_('COM_EASYSDI_CATALOG_TITLE_RELATIONS'),
 			'index.php?option=com_easysdi_catalog&view=relations',

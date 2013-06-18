@@ -58,11 +58,10 @@ class Easysdi_catalogViewAttribute extends JViewLegacy
 		JToolBarHelper::title(JText::_('COM_EASYSDI_CATALOG_TITLE_ATTRIBUTE'), 'attribute.png');
 
 		// If not checked out, can save the item.
-		if (!$checkedOut && ($canDo->get('core.edit')||($canDo->get('core.create'))))
-		{
+		if (!$checkedOut && ($canDo->get('core.edit') || ($canDo->get('core.create')))) {
 
-			JToolBarHelper::apply('attribute.apply', 'JTOOLBAR_APPLY');
-			JToolBarHelper::save('attribute.save', 'JTOOLBAR_SAVE');
+            JToolBarHelper::apply('attribute.apply', 'JTOOLBAR_APPLY');
+            JToolBarHelper::save('attribute.save', 'JTOOLBAR_SAVE');
 		}
 		if (!$checkedOut && ($canDo->get('core.create'))){
 			JToolBarHelper::custom('attribute.save2new', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);

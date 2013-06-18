@@ -42,7 +42,7 @@ class Easysdi_catalogModelattributes extends JModelList
                 'issystem', 'a.issystem',
                 'namespace_id', 'a.namespace_id',
                 'isocode', 'a.isocode',
-                'attributetype_id', 'a.attributetype_id',
+                'stereotype_id', 'a.stereotype_id',
                 'length', 'a.length',
                 'pattern', 'a.pattern',
                 'listnamespace_id', 'a.listnamespace_id',

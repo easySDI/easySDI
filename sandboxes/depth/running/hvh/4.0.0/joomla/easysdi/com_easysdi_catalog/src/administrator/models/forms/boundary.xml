@@ -39,12 +39,12 @@
                description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARY_NAME" 
                filter="safehtml" /> 
 
-        <field name="label" type="multilingual" size="40" class="inputbox" 
+        <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" 
                label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_LABEL"
                description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
                filter="ARRAY" /> 
         
-        <field name="information" type="multilingual" size="40" class="inputbox" 
+        <field name="text2" type="multilingual" cols="20" rows="5" class="inputbox input-xlarge" 
                label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_INFORMATION"
                description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_INFORMATION" 
                filter="ARRAY" /> 

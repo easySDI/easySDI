@@ -72,7 +72,7 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                         <div class="controls"><?php echo $this->form->getInput('id'); ?></div>
                     </div>
                     <div class="well">
-                        <?php echo $this->form->getInput('label'); ?>
+                        <?php echo $this->form->getInput('text1'); ?>
                     </div>
                     <?php
                     foreach ($this->form->getFieldset('hidden') as $field):

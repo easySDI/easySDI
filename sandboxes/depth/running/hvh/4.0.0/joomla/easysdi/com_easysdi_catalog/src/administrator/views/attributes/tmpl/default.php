@@ -109,17 +109,13 @@ if (!empty($this->extra_sidebar)) {
 						<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
 					</th>
                 <?php endif; ?>
-                    
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CATALOG_ATTRIBUTES_CREATED_BY', 'a.created_by', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CATALOG_ATTRIBUTES_MODIFIED_BY', 'a.modified_by', $listDirn, $listOrder); ?>
-				</th>
+         
 				<th class='left'>
 				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CATALOG_ATTRIBUTES_NAME', 'a.name', $listDirn, $listOrder); ?>
 				</th>
-                    
+                    <th class='left'>
+				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CATALOG_TITLE_ATTRIBUTE_VALUES', 'a.name', $listDirn, $listOrder); ?>
+				</th>
                     
                 <?php if (isset($this->items[0]->id)): ?>
 					<th width="1%" class="nowrap center hidden-phone">
@@ -183,17 +179,23 @@ if (!empty($this->extra_sidebar)) {
                 <?php endif; ?>
                     
 				<td>
-
-					<?php echo $item->created_by; ?>
-				</td>
-				<td>
-
-					<?php echo $item->modified_by; ?>
-				</td>
-				<td>
-
-					<?php echo $item->name; ?>
-				</td>
+                                <?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>
+                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=attribute.edit&id=' . (int) $item->id); ?>">
+                                        <?php echo $this->escape($item->name); ?></a>
+                                <?php else : ?>
+                                    <?php echo $this->escape($item->name); ?>
+                                <?php endif; ?>
+                            </td>
+                            
+                            <td >
+                                <?php if (($canEdit || $canEditOwn) && $canCheckin && ($item->stereotype_id == 6 || $item->stereotype_id == 9 || $item->stereotype_id == 10)) : ?>
+                                
+                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=attribute_values&filter_attribute='. (int) $item->id); ?>">
+                                       <div class="icon-edit"></div>
+                                <?php else : ?>
+                                   
+                                <?php endif; ?>
+                            </td>
 
 
                 <?php if (isset($this->items[0]->id)): ?>

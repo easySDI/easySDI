@@ -11,14 +11,14 @@
                description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_ALIAS" 
                filter="safehtml" /> 
 
-        <field name="description" type="text" size="40" class="inputbox"
+        <field name="description" type="textarea" rows="5" cols="10" class="inputbox"
                label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_DESCRIPTION"
                description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_DESCRIPTION" 
                filter="safehtml" /> 
  
         <field name="stereotype_id"
                type="sql" 
-            class="multiselect input-xxlarge"
+            class="multiselect"
             label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_STEREOTYPE_ID"
             description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_STEREOTYPE_ID" 
             multiple="false"
@@ -84,7 +84,7 @@
 
     <field name="namespace_id" 
                type="sql" 
-               class="inputbox"
+               class="inputbox input-mini"
                query=" SELECT 0 AS id, '- None -' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
                key_field="id" 
                value_field="name"
@@ -97,7 +97,7 @@
                description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_ISOCODE" 
                filter="safehtml" />
         
-     <field name="label" type="multilingual" size="40" class="inputbox" 
+     <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" 
                label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_INFORMATION"
                description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_INFORMATION" 
                filter="ARRAY" />

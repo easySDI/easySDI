@@ -13,11 +13,12 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.modeladmin');
 
 JTable::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_easysdi_catalog/tables');
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
 
 /**
  * Easysdi_catalog model.
  */
-class Easysdi_catalogModelboundary extends JModelAdmin
+class Easysdi_catalogModelboundary extends sdiModel
 {
 	/**
 	 * @var		string	The prefix to use with controller messages.
@@ -81,29 +82,7 @@ class Easysdi_catalogModelboundary extends JModelAdmin
 		return $data;
 	}
 
-	/**
-	 * Method to get a single record.
-	 *
-	 * @param	integer	The id of the primary key.
-	 *
-	 * @return	mixed	Object on success, false on failure.
-	 * @since	1.6
-	 */
-	public function getItem($pk = null)
-	{
-		if ($item = parent::getItem($pk)) {
-                    //Load translations
-                    $translationtable = $this->getTable('Translation', 'Easysdi_catalogTable', array());
-                    $rows = $translationtable->loadAll($item->guid);
-                    if(is_array ($rows)){
-                        $item->label = $rows['label'];
-                        $item->information = $rows['information'];
-                    }
 
-		}
-
-		return $item;
-	}
 
 	/**
 	 * Prepare and sanitise the table prior to saving.
@@ -126,58 +105,6 @@ class Easysdi_catalogModelboundary extends JModelAdmin
 
 		}
 	}
-        
-        /**
-	 * Method to save the form data.
-	 *
-	 * @param   array  $data  The form data.
-	 *
-	 * @return  boolean  True on success, False on error.
-	 *
-	 * @since   12.2
-	 */
-	public function save($data)
-	{
-          
-            if(parent::save($data)){
-                //Get the element guid
-               $item = parent::getItem($data['id']);
-               $data['guid'] = $item->guid;
-                //Save translations
-                $translationtable = $this->getTable('Translation', 'Easysdi_catalogTable', array());
-                if(!$translationtable->saveAll($data)){
-                    $this->setError($translationtable->getError());
-                    return false;
-                }
-                
-                return true;
-            }
-            
-            return false;
-        }
-        
-        /**
-	 * Method to delete one or more records.
-	 *
-	 * @param   array  &$pks  An array of record primary keys.
-	 *
-	 * @return  boolean  True if successful, false if an error occurs.
-	 *
-	 * @since   12.2
-	 */
-	public function delete(&$pks)
-	{
-            $item = parent::getItem($pks[0]);
-            $guid = $item->guid;
-            if(parent::delete($pks)){
-                $translationtable = $this->getTable('Translation', 'Easysdi_catalogTable', array());
-                if(!$translationtable->deleteAll($guid)){
-                    $this->setError($translationtable->getError());
-                    return false;
-                }
-                return true;
-            }
-            return false;
-        }
+
 
 }
