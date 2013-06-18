@@ -358,6 +358,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_resourcetype` (
 `fragmentnamespace_id` int(11) UNSIGNED  ,
 `fragment` VARCHAR(255)   ,
 `sitemapparams` VARCHAR(1000)   ,
+`accessscope_id` int(11) UNSIGNED  NOT NULL,
 `access` INT(11)  NOT NULL ,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`)
@@ -448,4 +449,19 @@ CREATE TABLE IF NOT EXISTS `#__sdi_resourcetypelinkinheritance` (
 `xpath` VARCHAR(500)  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_resourcetype_organism` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`resourcetype_id` INT(11) UNSIGNED  NOT NULL ,
+`organism_id` INT(11) UNSIGNED  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_resourcetype_user` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`resourcetype_id` INT(11) UNSIGNED  NOT NULL ,
+`user_id` INT(11) UNSIGNED  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
 
