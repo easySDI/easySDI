@@ -36,50 +36,48 @@ class Easysdi_catalogTableresourcetype extends sdiTable {
      */
     public function bind($array, $ignore = '') {
 
-        
-		$input = JFactory::getApplication()->input;
-		$task = $input->getString('task', '');
-		if(($task == 'save' || $task == 'apply') && (!JFactory::getUser()->authorise('core.edit.state','com_easysdi_catalog.resourcetype.'.$array['id']) && $array['state'] == 1)){
-			$array['state'] = 0;
-		}
 
-       
-        if(!JFactory::getUser()->authorise('core.admin', 'com_easysdi_catalog.resourcetype.'.$array['id'])){
-            $actions = JFactory::getACL()->getActions('com_easysdi_catalog','resourcetype');
-            $default_actions = JFactory::getACL()->getAssetRules('com_easysdi_catalog.resourcetype.'.$array['id'])->getData();
+        $input = JFactory::getApplication()->input;
+        $task = $input->getString('task', '');
+        if (($task == 'save' || $task == 'apply') && (!JFactory::getUser()->authorise('core.edit.state', 'com_easysdi_catalog.resourcetype.' . $array['id']) && $array['state'] == 1)) {
+            $array['state'] = 0;
+        }
+
+
+        if (!JFactory::getUser()->authorise('core.admin', 'com_easysdi_catalog.resourcetype.' . $array['id'])) {
+            $actions = JFactory::getACL()->getActions('com_easysdi_catalog', 'resourcetype');
+            $default_actions = JFactory::getACL()->getAssetRules('com_easysdi_catalog.resourcetype.' . $array['id'])->getData();
             $array_jaccess = array();
-            foreach($actions as $action){
+            foreach ($actions as $action) {
                 $array_jaccess[$action->name] = $default_actions[$action->name];
             }
             $array['rules'] = $this->JAccessRulestoArray($array_jaccess);
         }
         //Bind the rules for ACL where supported.
-		if (isset($array['rules']) && is_array($array['rules'])) {
-			$this->setRules($array['rules']);
-		}
+        if (isset($array['rules']) && is_array($array['rules'])) {
+            $this->setRules($array['rules']);
+        }
 
         return parent::bind($array, $ignore);
     }
-    
-    
-    
+
     /**
-      * Define a namespaced asset name for inclusion in the #__assets table
-      * @return string The asset name 
-      *
-      * @see JTable::_getAssetName 
-    */
+     * Define a namespaced asset name for inclusion in the #__assets table
+     * @return string The asset name 
+     *
+     * @see JTable::_getAssetName 
+     */
     protected function _getAssetName() {
         $k = $this->_tbl_key;
         return 'com_easysdi_catalog.resourcetype.' . (int) $this->$k;
     }
- 
+
     /**
-      * Returns the parrent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
-      *
-      * @see JTable::_getAssetParentId 
-    */
-    protected function _getAssetParentId($table = null, $id = null){
+     * Returns the parrent asset's id. If you have a tree structure, retrieve the parent's id using the external key field
+     *
+     * @see JTable::_getAssetParentId 
+     */
+    protected function _getAssetParentId($table = null, $id = null) {
         // We will retrieve the parent-asset from the Asset-table
         $assetParent = JTable::getInstance('Asset');
         // Default: if no asset-parent can be found we take the global asset
@@ -87,12 +85,10 @@ class Easysdi_catalogTableresourcetype extends sdiTable {
         // The item has the component as asset-parent
         $assetParent->loadByName('com_easysdi_catalog');
         // Return the found asset-parent-id
-        if ($assetParent->id){
-            $assetParentId=$assetParent->id;
+        if ($assetParent->id) {
+            $assetParentId = $assetParent->id;
         }
         return $assetParentId;
     }
-    
-    
 
 }
