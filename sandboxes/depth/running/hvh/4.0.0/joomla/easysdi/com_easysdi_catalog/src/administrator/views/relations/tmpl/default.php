@@ -110,12 +110,7 @@ if (!empty($this->extra_sidebar)) {
 					</th>
                 <?php endif; ?>
                     
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CATALOG_RELATIONS_CREATED_BY', 'a.created_by', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CATALOG_RELATIONS_MODIFIED_BY', 'a.modified_by', $listDirn, $listOrder); ?>
-				</th>
+				
 				<th class='left'>
 				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CATALOG_RELATIONS_NAME', 'a.name', $listDirn, $listOrder); ?>
 				</th>
@@ -182,18 +177,15 @@ if (!empty($this->extra_sidebar)) {
 					</td>
                 <?php endif; ?>
                     
-				<td>
-
-					<?php echo $item->created_by; ?>
-				</td>
-				<td>
-
-					<?php echo $item->modified_by; ?>
-				</td>
-				<td>
-
-					<?php echo $item->name; ?>
-				</td>
+				<td >
+                                <?php if (($canEdit || $canEditOwn) && $canCheckin && ($item->stereotype_id == 6 || $item->stereotype_id == 9 || $item->stereotype_id == 10)) : ?>
+                                
+                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=relation.edit&id='. (int) $item->id); ?>">
+                                       <div class="icon-edit"></div>
+                                <?php else : ?>
+                                   
+                                <?php endif; ?>
+                            </td>
 
 
                 <?php if (isset($this->items[0]->id)): ?>
