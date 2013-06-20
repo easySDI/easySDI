@@ -177,13 +177,13 @@ if (!empty($this->extra_sidebar)) {
 					</td>
                 <?php endif; ?>
                     
-				<td >
-                                <?php if (($canEdit || $canEditOwn) && $canCheckin && ($item->stereotype_id == 6 || $item->stereotype_id == 9 || $item->stereotype_id == 10)) : ?>
-                                
-                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=relation.edit&id='. (int) $item->id); ?>">
-                                       <div class="icon-edit"></div>
+				<td>
+
+                                <?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>
+                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=relation.edit&id=' . (int) $item->id); ?>">
+                                        <?php echo $this->escape($item->name); ?></a>
                                 <?php else : ?>
-                                   
+                                    <?php echo $this->escape($item->name); ?>
                                 <?php endif; ?>
                             </td>
 

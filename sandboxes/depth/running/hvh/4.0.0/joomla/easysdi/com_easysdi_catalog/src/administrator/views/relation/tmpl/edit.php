@@ -22,28 +22,28 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
 <script type="text/javascript">
     js = jQuery.noConflict();
     js(document).ready(function() {
-
-        js('input:hidden.parent_id').each(function() {
-            var name = js(this).attr('name');
-            if (name.indexOf('parent_idhidden')) {
-                js('#jform_parent_id option[value="' + js(this).val() + '"]').attr('selected', true);
-            }
-        });
-        js("#jform_parent_id").trigger("liszt:updated");
-        js('input:hidden.attributechild_id').each(function() {
-            var name = js(this).attr('name');
-            if (name.indexOf('attributechild_idhidden')) {
-                js('#jform_attributechild_id option[value="' + js(this).val() + '"]').attr('selected', true);
-            }
-        });
-        js("#jform_attributechild_id").trigger("liszt:updated");
-        js('input:hidden.classchild_id').each(function() {
-            var name = js(this).attr('name');
-            if (name.indexOf('classchild_idhidden')) {
-                js('#jform_classchild_id option[value="' + js(this).val() + '"]').attr('selected', true);
-            }
-        });
-        js("#jform_classchild_id").trigger("liszt:updated");
+            onChangeChildType();
+//        js('input:hidden.parent_id').each(function() {
+//            var name = js(this).attr('name');
+//            if (name.indexOf('parent_idhidden')) {
+//                js('#jform_parent_id option[value="' + js(this).val() + '"]').attr('selected', true);
+//            }
+//        });
+//        js("#jform_parent_id").trigger("liszt:updated");
+//        js('input:hidden.attributechild_id').each(function() {
+//            var name = js(this).attr('name');
+//            if (name.indexOf('attributechild_idhidden')) {
+//                js('#jform_attributechild_id option[value="' + js(this).val() + '"]').attr('selected', true);
+//            }
+//        });
+//        js("#jform_attributechild_id").trigger("liszt:updated");
+//        js('input:hidden.classchild_id').each(function() {
+//            var name = js(this).attr('name');
+//            if (name.indexOf('classchild_idhidden')) {
+//                js('#jform_classchild_id option[value="' + js(this).val() + '"]').attr('selected', true);
+//            }
+//        });
+//        js("#jform_classchild_id").trigger("liszt:updated");
     });
 
     Joomla.submitbutton = function(task)
@@ -61,6 +61,38 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                 alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED')); ?>');
             }
         }
+    }
+    
+    function onChangeChildType(){
+        var childtype = js("#jform_childtype_id :selected").val(); 
+        switch (childtype){
+            case "0":
+                js("#classchilddefinition").hide();
+                js("#commondefinition").hide();
+                js("#attributechilddefinition").hide();
+                js("#resourcetypedefinition").hide();
+                break;
+            case "1":
+                js("#classchilddefinition").show();
+                js("#commondefinition").show();
+                js("#attributechilddefinition").hide();
+                js("#resourcetypedefinition").hide();
+                break;
+            case "2":
+                js("#classchilddefinition").hide();
+                js("#commondefinition").hide();
+                js("#attributechilddefinition").show();
+                js("#resourcetypedefinition").hide();
+                break;
+            case "3":
+                js("#classchilddefinition").hide();
+                js("#commondefinition").show();
+                js("#attributechilddefinition").hide();
+                js("#resourcetypedefinition").show();
+                break;
+                
+        }
+        
     }
 </script>
 
@@ -110,13 +142,9 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                         <div class="controls"><?php echo $this->form->getInput('upperbound'); ?></div>
                     </div>
                     <div class="control-group">
-                        <div class="control-label"><?php echo $this->form->getLabel('childtype'); ?></div>
-                        <div class="controls"><?php echo $this->form->getInput('childtype'); ?></div>
+                        <div class="control-label"><?php echo $this->form->getLabel('childtype_id'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('childtype_id'); ?></div>
                     </div>
-
-
-
-                    
 
                     <div id="classchilddefinition">
                         <div class="control-group">
@@ -131,21 +159,21 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                             <div class="controls"><?php echo $this->form->getInput('childresourcetype_id'); ?></div>
                         </div>
                     </div>
-                    
+
                     <div id="commondefinition">
-                         <div class="control-group">
-                        <div class="control-label"><?php echo $this->form->getLabel('isocode'); ?></div>
-                        <div class="controls"><?php echo $this->form->getInput('namespace_id'); ?><?php echo $this->form->getInput('isocode'); ?></div>
-                    </div>
-                       
                         <div class="control-group">
-                        <div class="control-label"><?php echo $this->form->getLabel('relationtype_id'); ?></div>
-                        <div class="controls"><?php echo $this->form->getInput('relationtype_id'); ?></div>
-                    </div>
-                         <div class="control-group">
-                        <div class="control-label"><?php echo $this->form->getLabel('classassociation_id'); ?></div>
-                        <div class="controls"><?php echo $this->form->getInput('classassociation_id'); ?></div>
-                    </div>
+                            <div class="control-label"><?php echo $this->form->getLabel('isocode'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('namespace_id'); ?><?php echo $this->form->getInput('isocode'); ?></div>
+                        </div>
+
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('relationtype_id'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('relationtype_id'); ?></div>
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('classassociation_id'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('classassociation_id'); ?></div>
+                        </div>
                     </div>
 
                     <div id="attributechilddefinition">
@@ -162,7 +190,7 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                             <div class="controls"><?php echo $this->form->getInput('issearchfilter'); ?></div>
                         </div>
                     </div>
-<div class="well">
+                    <div class="well">
                         <?php echo $this->form->getInput('text1'); ?>
                     </div>
                     <div class="well">

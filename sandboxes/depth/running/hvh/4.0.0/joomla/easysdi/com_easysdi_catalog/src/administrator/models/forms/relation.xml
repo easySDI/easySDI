@@ -96,7 +96,6 @@
                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ISOCODE"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_ISOCODE" 
                filter="safehtml" /> 
- 
         
          <field name="classassociation_id" type="sql" class="inputbox"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CLASSASSOCIATION_ID"
@@ -130,18 +129,19 @@
                key_field="id" 
                value_field="name"/> 
  
-
          <field
-            name="childtype"
+            name="childtype_id"
             type="list"
+            onchange="onChangeChildType()"
             label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CHILDTYPE"
             description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_CHILDTYPE"
             class="inputbox"
             size="1"
-            default="1">
+            default="0">
+            <option value="0">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CHILDTYPE_SELECT</option>
             <option value="1">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CHILDTYPE_CLASS</option>
-            <option value="0">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CHILDTYPE_ATTRIBUTE</option>
-            <option value="0">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CHILDTYPE_RESOURCETYPE</option>
+            <option value="2">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CHILDTYPE_ATTRIBUTE</option>
+            <option value="3">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CHILDTYPE_RESOURCETYPE</option>
         </field> 
         
         <field
