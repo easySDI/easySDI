@@ -128,22 +128,24 @@ abstract class sdiModel extends JModelAdmin {
         $db->setQuery('DELETE FROM #__sdi_accessscope WHERE entity_guid = "' . $data['guid'] .'"');
         $db->query();
 
-        $pks = $data['organisms'];
-        foreach ($pks as $pk) {
-            try {
-                $db->setQuery(
-                        'INSERT INTO #__sdi_accessscope (entity_guid, organism_id) ' .
-                        ' VALUES ("' . $data['guid'] . '",' . $pk . ')'
-                );
-                if (!$db->query()) {
-                    throw new Exception($db->getErrorMsg());
+        if(isset($data['organisms'])){
+            $pks = $data['organisms'];
+            foreach ($pks as $pk) {
+                try {
+                    $db->setQuery(
+                            'INSERT INTO #__sdi_accessscope (entity_guid, organism_id) ' .
+                            ' VALUES ("' . $data['guid'] . '",' . $pk . ')'
+                    );
+                    if (!$db->query()) {
+                        throw new Exception($db->getErrorMsg());
+                    }
+                } catch (Exception $e) {
+                    $this->setError($e->getMessage());
+                    return false;
                 }
-            } catch (Exception $e) {
-                $this->setError($e->getMessage());
-                return false;
             }
         }
-
+if(isset($data['users'])){
         $pks = $data['users'];
         foreach ($pks as $pk) {
             try {
@@ -159,6 +161,7 @@ abstract class sdiModel extends JModelAdmin {
                 return false;
             }
         }
+}
         return true;
     }
 

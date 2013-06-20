@@ -559,6 +559,7 @@ INSERT INTO `#__sdi_sys_rendertype_criteriatype` VALUES ('2', '3', '6');
 INSERT INTO `#__sdi_sys_searchtab` VALUES ('1', '1', '1', 'simple');
 INSERT INTO `#__sdi_sys_searchtab` VALUES ('2', '2', '1', 'advanced');
 INSERT INTO `#__sdi_sys_searchtab` VALUES ('3', '3', '1', 'hidden');
+INSERT INTO `#__sdi_sys_searchtab` VALUES ('4', '4', '1', 'none');
 
 INSERT INTO `#__sdi_sys_topiccategory` VALUES ('1', '1', '1', 'farming');
 INSERT INTO `#__sdi_sys_topiccategory` VALUES ('2', '2', '1', 'biota');
