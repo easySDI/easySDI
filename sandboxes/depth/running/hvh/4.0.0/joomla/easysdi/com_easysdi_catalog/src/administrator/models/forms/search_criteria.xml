@@ -7,21 +7,13 @@
                      description="JGLOBAL_FIELD_ID_DESC" /> 
 
         <field name="guid" type="text" size="40" class="inputbox"
-        
               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_GUID"
               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_GUID" 
-        
-        
-        
               filter="safehtml" /> 
 
         <field name="alias" type="text" size="40" class="inputbox"
-        
               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_ALIAS"
               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_ALIAS" 
-        
-        
-        
               filter="safehtml" /> 
 
         <field name="created_by" type="createdby" default="" 

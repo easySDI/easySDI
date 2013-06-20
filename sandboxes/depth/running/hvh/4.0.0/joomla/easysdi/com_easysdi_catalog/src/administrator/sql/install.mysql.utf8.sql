@@ -216,17 +216,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_relation` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_catalog_searchcriteriafilter` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)   ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
-`catalog_id` INT(11) UNSIGNED NOT NULL ,
-`searchcriteria_id` INT(11) UNSIGNED NOT NULL ,
-`language_id` INT(11) UNSIGNED  NOT NULL ,
-`ogcsearchfilter` VARCHAR(255)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
 CREATE TABLE IF NOT EXISTS `#__sdi_catalog_searchsort` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)   ,
@@ -309,16 +298,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_boundarycategory` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_catalog_searchcriteria_tab` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)   ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
-`catalog_id` INT(11) UNSIGNED  NOT NULL ,
-`searchcriteria_id` INT(11) UNSIGNED NOT NULL ,
-`tab_id` INT(11)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
 CREATE TABLE IF NOT EXISTS `#__sdi_importref` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
@@ -384,3 +363,15 @@ CREATE TABLE IF NOT EXISTS `#__sdi_namespace` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
+
+CREATE TABLE IF NOT EXISTS `#__sdi_searchcriteriafilter` (
+`id`  int(11) UNSIGNED NOT NULL AUTO_INCREMENT ,
+`ordering`  int(11) NULL DEFAULT NULL ,
+`state`  tinyint(1) NOT NULL DEFAULT 1 ,
+`searchcriteria_id`  int(11) UNSIGNED NOT NULL ,
+`language_id`  int(11) UNSIGNED NOT NULL ,
+`ogcsearchfilter`  varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+PRIMARY KEY (`id`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci;

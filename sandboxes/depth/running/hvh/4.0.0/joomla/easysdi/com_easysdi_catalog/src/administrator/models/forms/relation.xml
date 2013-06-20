@@ -38,6 +38,12 @@
                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_DESCRIPTION"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_DESCRIPTION" 
                filter="safehtml" /> 
+        
+        <field name="profile_id" type="sql" class="inputbox" multiple="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_PROFILE_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_PROFILE_ID" 
+               query="SELECT `id`, `name` FROM `#__sdi_profile`" key_field="id" value_field="name"
+        />
 
         <field name="parent_id" type="sql" class="inputbox"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_PARENT_ID"
@@ -103,10 +109,7 @@
                query="SELECT 0 AS `id`, '- Select  -' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_class`" key_field="id" value_field="name"
         /> 
 
-        <field name="issearchfilter" type="text" size="40" class="inputbox"
-               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ISSEARCHFILTER"
-               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_ISSEARCHFILTER" 
-               filter="safehtml" /> 
+        
 
         <field name="relationscope_id" type="sql"  class="inputbox"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_RELATIONSCOPE_ID"
@@ -166,9 +169,9 @@
                description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
                filter="ARRAY" />
         
-        <field name="text2" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" 
-               label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_INFORMATION"
-               description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_INFORMATION" 
+        <field name="text2" type="multilingual" cols="20" rows="5" class="inputbox input-xlarge" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_HELP"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_HELP" 
                filter="ARRAY" />
     </fieldset> 
 
@@ -191,4 +194,24 @@
         <field name="checked_out" type="hidden" filter="SAFEHTML" />
         <field name="checked_out_time" type="hidden" filter="SAFEHTML" /> 
     </fieldset>
+    
+     <fieldset name="search">
+         <field name="issearchfilter"  type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ISSEARCHFILTER"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_ISSEARCHFILTER" > 
+            <option value="1" onclick="onChangeSearchFilter()">JYES</option>
+            <option value="0" onclick="onChangeSearchFilter()">JNO</option>
+        </field>
+       
+       <field name="catalog_id" type="sql" class="inputbox" multiple="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CATALOG_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_CATALOG_ID" 
+               query="SELECT `id`, `name` FROM `#__sdi_catalog`" key_field="id" value_field="name"
+        />
+    </fieldset>
+    <field name="searchfilter" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_SEARCH"
+               description="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_SEARCH" 
+               filter="ARRAY" /> 
+    
 </form>

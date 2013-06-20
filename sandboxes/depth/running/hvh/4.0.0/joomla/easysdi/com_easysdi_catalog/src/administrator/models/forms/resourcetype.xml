@@ -11,13 +11,11 @@
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_ALIAS"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_ALIAS" 
                filter="safehtml" /> 
-
         
         <field name="description" type="text" size="40" class="inputbox"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_DESCRIPTION"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_DESCRIPTION" 
                filter="safehtml" /> 
-
         
         <field
             name="accessscope_id" 

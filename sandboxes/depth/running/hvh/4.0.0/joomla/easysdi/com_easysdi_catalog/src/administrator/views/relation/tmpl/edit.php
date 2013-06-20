@@ -22,7 +22,8 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
 <script type="text/javascript">
     js = jQuery.noConflict();
     js(document).ready(function() {
-            onChangeChildType();
+        onChangeChildType();
+        onChangeSearchFilter();
 //        js('input:hidden.parent_id').each(function() {
 //            var name = js(this).attr('name');
 //            if (name.indexOf('parent_idhidden')) {
@@ -62,10 +63,10 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
             }
         }
     }
-    
-    function onChangeChildType(){
-        var childtype = js("#jform_childtype_id :selected").val(); 
-        switch (childtype){
+
+    function onChangeChildType() {
+        var childtype = js("#jform_childtype_id :selected").val();
+        switch (childtype) {
             case "0":
                 js("#classchilddefinition").hide();
                 js("#commondefinition").hide();
@@ -90,9 +91,20 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                 js("#attributechilddefinition").hide();
                 js("#resourcetypedefinition").show();
                 break;
-                
         }
-        
+
+
+    }
+    function onChangeSearchFilter() {
+        var isselected = js("#jform_issearchfilter0").prop("checked");
+        switch (isselected) {
+            case true:
+               js("#searchfilterdefinition").show();
+                break;
+            case false:
+                js("#searchfilterdefinition").hide();
+                break;
+        }
     }
 </script>
 
@@ -101,10 +113,12 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
         <div class="span10 form-horizontal">
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_CATALOG_TAB_NEW') : JText::sprintf('COM_EASYSDI_CATALOG_TAB_EDIT', $this->item->id); ?></a></li>
+                <li><a href="#search" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CATALOG_TAB_SEARCH'); ?></a></li>
                 <li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CATALOG_TAB_PUBLISHING'); ?></a></li>
                 <?php if (JFactory::getUser()->authorise('core.admin', 'easysdi_catalog')): ?>
                     <li><a href="#permissions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CATALOG_TAB_RULES'); ?></a></li>
                 <?php endif ?>
+
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="details">
@@ -128,6 +142,10 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                     <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('editorrelationscope_id'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('editorrelationscope_id'); ?></div>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label"><?php echo $this->form->getLabel('profile_id'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('profile_id'); ?></div>
                     </div>
                     <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('parent_id'); ?></div>
@@ -185,10 +203,7 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                             <div class="control-label"><?php echo $this->form->getLabel('rendertype_id'); ?></div>
                             <div class="controls"><?php echo $this->form->getInput('rendertype_id'); ?></div>
                         </div>
-                        <div class="control-group">
-                            <div class="control-label"><?php echo $this->form->getLabel('issearchfilter'); ?></div>
-                            <div class="controls"><?php echo $this->form->getInput('issearchfilter'); ?></div>
-                        </div>
+
                     </div>
                     <div class="well">
                         <?php echo $this->form->getInput('text1'); ?>
@@ -200,6 +215,21 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                         <div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('id'); ?></div>
                     </div>
+                </div>
+                <div class="tab-pane" id="search">
+                    <div class="control-group">
+                        <div class="control-label"><?php echo $this->form->getLabel('issearchfilter'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('issearchfilter'); ?></div>
+                    </div> 
+                    <div id="searchfilterdefinition">
+                    <div class="control-group">
+                        <div class="control-label"><?php echo $this->form->getLabel('catalog_id'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('catalog_id'); ?></div>
+                    </div> 
+                    <div class="well">
+                        <?php echo $this->form->getInput('searchfilter'); ?>
+                    </div>
+                        </div>
                 </div>
                 <div class="tab-pane" id="publishing">
                     <div class="control-group">
