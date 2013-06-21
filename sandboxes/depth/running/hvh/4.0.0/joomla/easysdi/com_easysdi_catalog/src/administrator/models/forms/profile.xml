@@ -17,7 +17,7 @@
                description="COM_EASYSDI_CATALOG_FORM_DESC_PROFILE_DESCRIPTION" 
                filter="safehtml" /> 
 
-        <field name="class_id" 
+        <field name="class_id"  required="true"
                 onchange="onClassChange()"
                type="sql" 
                class="inputbox"
@@ -29,7 +29,7 @@
         /> 
         
        <field
-        name="metadataidentifier"
+        name="metadataidentifier" required="true"
         type="list"
         label="COM_EASYSDI_CATALOG_FORM_LBL_PROFILE_METADATAIDENTIFIER"
         description="COM_EASYSDI_CATALOG_FORM_DESC_PROFILE_METADATAIDENTIFIER"

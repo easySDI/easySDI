@@ -120,6 +120,9 @@ class Easysdi_catalogModelattribute extends sdiModel
 			}
 
 		}
+                
+                if($table->listnamespace_id === '')
+                    $table->listnamespace_id = null;
 	}
 
 }

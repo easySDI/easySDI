@@ -120,6 +120,8 @@ class Easysdi_catalogModelclass extends sdiModel
 			}
 
 		}
+                if($table->stereotype_id === '')
+                    $table->stereotype_id = null;
 	}
 
 

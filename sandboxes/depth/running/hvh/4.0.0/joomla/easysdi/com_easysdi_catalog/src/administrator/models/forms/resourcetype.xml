@@ -2,7 +2,7 @@
 <form>
     <fieldset name="details">
 
-        <field name="name" type="text" size="40" class="inputbox"
+        <field name="name" type="text" size="40" class="inputbox" required="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_NAME"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_NAME" 
                filter="safehtml" />
@@ -108,7 +108,7 @@
         
         
         
-        <field name="profile_id" 
+        <field name="profile_id"  required="true"
                type="sql" 
                class="inputbox"
                query=" SELECT 0 AS id, '- None -' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_profile WHERE state=1 ORDER BY ordering" 
@@ -195,17 +195,17 @@
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_MODIFIED" 
                filter="safehtml" /> 
     
-    <field name="fragmentnamespace_id" 
+    <field name="fragmentnamespace_id"  
                type="sql" 
                class="inputbox input-mini"
-               query=" SELECT 0 AS id, '- None -' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
+               query=" SELECT NULL AS id, '- None -' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
                key_field="id" 
                value_field="name"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_NAMESPACE"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_NAMESPACE" 
         /> 
         
-        <field name="fragment" type="text" size="40" class="inputbox"
+        <field name="fragment" type="text" size="40" class="inputbox" 
                 label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_FRAGMENT"
                 description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_FRAGMENT" 
                 filter="safehtml" />

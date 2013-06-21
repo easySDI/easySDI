@@ -22,7 +22,7 @@
             label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_STEREOTYPE_ID"
             description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_STEREOTYPE_ID" 
             multiple="false"
-            query="SELECT 0 AS id, '- Select -' AS value, 0 as ordering UNION SELECT id, value, ordering FROM #__sdi_sys_stereotype WHERE state=1 AND entity_id = 2 ORDER BY ordering" 
+            query="SELECT NULL AS id, '- Select -' AS value, 0 as ordering UNION SELECT id, value, ordering FROM #__sdi_sys_stereotype WHERE state=1 AND entity_id = 2 ORDER BY ordering" 
             key_field="id" 
             value_field="value"
             translate="true"/> 

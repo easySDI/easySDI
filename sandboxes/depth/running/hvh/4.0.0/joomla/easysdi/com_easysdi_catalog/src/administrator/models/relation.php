@@ -124,6 +124,15 @@ class Easysdi_catalogModelrelation extends sdiModel {
                 $table->ordering = $max + 1;
             }
         }
+        
+        if($table->classchild_id === '')
+            $table->classchild_id = null;
+        if($table->relationtype_id === '')
+            $table->relationtype_id = null;
+        if($table->namespace_id === '')
+            $table->namespace_id = null;
+        if($table->classassociation_id === '')
+            $table->classassociation_id = null;
     }
 
     /**

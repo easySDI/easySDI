@@ -47,17 +47,7 @@ class Easysdi_catalogTableboundarycategory extends sdiTable {
 			$array['state'] = 0;
 		}
 
-        if (isset($array['params']) && is_array($array['params'])) {
-            $registry = new JRegistry();
-            $registry->loadArray($array['params']);
-            $array['params'] = (string) $registry;
-        }
-
-        if (isset($array['metadata']) && is_array($array['metadata'])) {
-            $registry = new JRegistry();
-            $registry->loadArray($array['metadata']);
-            $array['metadata'] = (string) $registry;
-        }
+     
         if(!JFactory::getUser()->authorise('core.admin', 'com_easysdi_catalog.boundarycategory.'.$array['id'])){
             $actions = JFactory::getACL()->getActions('com_easysdi_catalog','boundarycategory');
             $default_actions = JFactory::getACL()->getAssetRules('com_easysdi_catalog.boundarycategory.'.$array['id'])->getData();

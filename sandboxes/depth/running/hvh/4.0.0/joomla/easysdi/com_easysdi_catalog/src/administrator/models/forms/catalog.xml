@@ -38,9 +38,10 @@
                description="COM_EASYSDI_CATALOG_FORM_DESC_CATALOG_DESCRIPTION" 
                filter="safehtml" /> 
         
-        <field name="resourcetype_id" 
+        <field name="resourcetype_id"  required="true"
                type="sql" 
                class="inputbox"
+               multiple="true"
                 query="SELECT id, name, ordering FROM #__sdi_resourcetype WHERE state=1 ORDER BY ordering" 
                 key_field="id" 
                 value_field="name"
