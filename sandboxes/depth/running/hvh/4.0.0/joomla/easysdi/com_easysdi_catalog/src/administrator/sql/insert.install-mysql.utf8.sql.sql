@@ -1,11 +1,138 @@
-INSERT INTO `#__sdi_searchcriteria` VALUES ('1', '58dfe161-60c3-4b72-b768-e4a09bae8cdb', 'fulltext', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', null, 'fulltext', '1', null, '1', null, '0', '0');
-INSERT INTO `#__sdi_searchcriteria` VALUES ('2', '05b0fb40-459c-4ed2-a985-ce1611593969', 'objecttype', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', null, 'objecttype', '1', null, '1', null, '0', '0');
-INSERT INTO `#__sdi_searchcriteria` VALUES ('3', 'f839e3ae-d983-4366-b24f-2678f4cbe188', 'versions', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', null, 'versions', '1', null, '1', null, '0', '0');
-INSERT INTO `#__sdi_searchcriteria` VALUES ('4', '4d402bfd-b50a-42ae-8db4-af8ef940575b', 'object_name', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', null, 'code', '1', null, '1', null, '0', '0');
-INSERT INTO `#__sdi_searchcriteria` VALUES ('5', '2157fe2c-3705-4db9-a623-462ae38405fa', 'metadata_created', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', null, 'metadata_created', '1', null, '1', null, '0', '0');
-INSERT INTO `#__sdi_searchcriteria` VALUES ('6', '979a4e90-601e-46fe-9239-9080e4238c1e', 'metadata_published', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', null, 'metadata_published', '1', null, '1', null, '0', '0');
-INSERT INTO `#__sdi_searchcriteria` VALUES ('7', 'f761bc2d-57ac-4252-9cd2-17ae5e92793b', 'account_id', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', null, 'account_id', '1', null, '1', null, '0', '0');
-INSERT INTO `#__sdi_searchcriteria` VALUES ('8', 'b2a4c66a-f40c-473d-a03f-5b5e4f93f760', 'definedBoundary', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', null, 'definedBoundary', '1', null, '1', null, '0', '0');
-INSERT INTO `#__sdi_searchcriteria` VALUES ('9', '8a85ed55-6a9c-4af7-aba1-a3c0f8281453', 'isDownloadable', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', null, 'isDownloadable', '1', null, '1', null, '0', '0');
-INSERT INTO `#__sdi_searchcriteria` VALUES ('10', 'f80fcf1c-84df-4202-8838-6bbcb273a68d', 'isFree', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', null, 'isFree', '1', null, '1', null, '0', '0');
-INSERT INTO `#__sdi_searchcriteria` VALUES ('11', 'a9a44261-05da-4ee8-a3f2-4ec1c53bcb00', 'isOrderable', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', null, 'isOrderable', '1', null, '1', null, '0', '0');
+INSERT INTO `#__sdi_sys_criteriatype` VALUES ('1', '1', '1', 'system');
+INSERT INTO `#__sdi_sys_criteriatype` VALUES ('2', '2', '1', 'relation');
+INSERT INTO `#__sdi_sys_criteriatype` VALUES ('3', '3', '1', 'csw');
+
+INSERT INTO `#__sdi_sys_rendertype` VALUES ('1', '1', '1', 'textarea');
+INSERT INTO `#__sdi_sys_rendertype` VALUES ('2', '2', '1', 'checkbox');
+INSERT INTO `#__sdi_sys_rendertype` VALUES ('3', '3', '1', 'radiobutton');
+INSERT INTO `#__sdi_sys_rendertype` VALUES ('4', '4', '1', 'list');
+INSERT INTO `#__sdi_sys_rendertype` VALUES ('5', '5', '1', 'textbox');
+INSERT INTO `#__sdi_sys_rendertype` VALUES ('6', '6', '1', 'date');
+
+INSERT INTO `#__sdi_searchcriteria` VALUES ('1', '58dfe161-60c3-4b72-b768-e4a09bae8cdb', 'fulltext', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'fulltext', '1', '1', '1', null, '0', '0');
+INSERT INTO `#__sdi_searchcriteria` VALUES ('2', '05b0fb40-459c-4ed2-a985-ce1611593969', 'objecttype', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'objecttype', '1', '1', '1', null, '0', '0');
+INSERT INTO `#__sdi_searchcriteria` VALUES ('3', 'f839e3ae-d983-4366-b24f-2678f4cbe188', 'versions', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'versions', '1', '1', '1', null, '0', '0');
+INSERT INTO `#__sdi_searchcriteria` VALUES ('4', '4d402bfd-b50a-42ae-8db4-af8ef940575b', 'object_name', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'code', '1', '1', '1', null, '0', '0');
+INSERT INTO `#__sdi_searchcriteria` VALUES ('5', '2157fe2c-3705-4db9-a623-462ae38405fa', 'metadata_created', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'metadata_created', '1', '1', '1', null, '0', '0');
+INSERT INTO `#__sdi_searchcriteria` VALUES ('6', '979a4e90-601e-46fe-9239-9080e4238c1e', 'metadata_published', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'metadata_published', '1', '1', '1', null, '0', '0');
+INSERT INTO `#__sdi_searchcriteria` VALUES ('7', 'f761bc2d-57ac-4252-9cd2-17ae5e92793b', 'account_id', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'account_id', '1', '1', '1', null, '0', '0');
+INSERT INTO `#__sdi_searchcriteria` VALUES ('8', 'b2a4c66a-f40c-473d-a03f-5b5e4f93f760', 'definedBoundary', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'definedBoundary', '1', '1', '1', null, '0', '0');
+INSERT INTO `#__sdi_searchcriteria` VALUES ('9', '8a85ed55-6a9c-4af7-aba1-a3c0f8281453', 'isDownloadable', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'isDownloadable', '1', '1', '1', null, '0', '0');
+INSERT INTO `#__sdi_searchcriteria` VALUES ('10', 'f80fcf1c-84df-4202-8838-6bbcb273a68d', 'isFree', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'isFree', '1', '1', '1', null, '0', '0');
+INSERT INTO `#__sdi_searchcriteria` VALUES ('11', 'a9a44261-05da-4ee8-a3f2-4ec1c53bcb00', 'isOrderable', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'isOrderable', '1', '1', '1', null, '0', '0');
+
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('1', '1', '1', 'guid', '([A-Z0-9]{8}|-|[A-Z0-9]{4}|-|[A-Z0-9]{4}|-|[A-Z0-9]{4}|-|[A-Z0-9]{12})', 'CharacterString', '2','1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('2', '2', '1', 'text', '^[a-zA-Z0-9_]{1,}$', 'CharacterString', '2','1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('3', '3', '1', 'locale', '^[a-zA-Z0-9_]{1,}$', null, null,'1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('4', '4', '1', 'number', '[0-9.-]', 'Decimal', '2','1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('5', '5', '1', 'date', '(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)[0-9]{2}(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)[0-9]{2}', 'Date', '2','1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('6', '6', '1', 'list', '^[a-zA-Z0-9_]{1,}$', null, null,'1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('7', '7', '1', 'link', '^[a-zA-Z0-9_]{1,}$', 'CharacterString', '2','1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('8', '8', '1', 'datetime', '(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)[0-9]{2}(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)[0-9]{2}', 'DateTime', '2','1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('9', '9', '1', 'textchoice', '^[a-zA-Z0-9_]{1,}$', 'CharacterString', '2','1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('10', '10', '1', 'localechoice', '^[a-zA-Z0-9_]{1,}$', null, null,'1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('11', '11', '1', 'gemet', null, null, null,'1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('12', '12', '1', 'distance', '[0-9.-]', 'Distance', '2','1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('13', '13', '1', 'integer', '[0-9]', 'Integer', '2','1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('14', '14', '1', 'file', '', 'MI_Identifier', '1','1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('15', '15', '1', 'geographicextent', null, null, null,'2');
+
+
+INSERT INTO `#__sdi_sys_importtype` VALUES ('1', '1', '1', 'replace');
+INSERT INTO `#__sdi_sys_importtype` VALUES ('2', '2', '1', 'merge');
+
+INSERT INTO `#__sdi_sys_relationtype` VALUES ('1', '1', '1', 'association');
+INSERT INTO `#__sdi_sys_relationtype` VALUES ('2', '2', '1', 'aggregation');
+INSERT INTO `#__sdi_sys_relationtype` VALUES ('3', '3', '1', 'composition');
+INSERT INTO `#__sdi_sys_relationtype` VALUES ('4', '4', '1', 'generalization');
+
+
+
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('1', '1', '5');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('2', '2', '1');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('3', '2', '5');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('4', '3', '1');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('5', '3', '5');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('6', '4', '1');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('7', '4', '5');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('8', '5', '1');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('9', '6', '2');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('10', '6', '3');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('11', '6', '4');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('12', '7', '1');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('13', '7', '5');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('14', '8', '1');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('15', '8', '5');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('16', '9', '4');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('17', '10', '4');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('18', '12', '5');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('19', '13', '5');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('20', '14', '5');
+
+INSERT INTO `#__sdi_sys_rendertype_criteriatype` VALUES ('1', '3', '5');
+INSERT INTO `#__sdi_sys_rendertype_criteriatype` VALUES ('2', '3', '6');
+
+INSERT INTO `#__sdi_sys_searchtab` VALUES ('1', '1', '1', 'simple');
+INSERT INTO `#__sdi_sys_searchtab` VALUES ('2', '2', '1', 'advanced');
+INSERT INTO `#__sdi_sys_searchtab` VALUES ('3', '3', '1', 'hidden');
+INSERT INTO `#__sdi_sys_searchtab` VALUES ('4', '4', '1', 'none');
+
+INSERT INTO `#__sdi_sys_topiccategory` VALUES ('1', '1', '1', 'farming');
+INSERT INTO `#__sdi_sys_topiccategory` VALUES ('2', '2', '1', 'biota');
+INSERT INTO `#__sdi_sys_topiccategory` VALUES ('3', '3', '1', 'bounderies');
+INSERT INTO `#__sdi_sys_topiccategory` VALUES ('4', '4', '1', 'climatologyMeteorologyAtmosphere');
+INSERT INTO `#__sdi_sys_topiccategory` VALUES ('5', '5', '1', 'economy');
+INSERT INTO `#__sdi_sys_topiccategory` VALUES ('6', '6', '1', 'elevation');
+INSERT INTO `#__sdi_sys_topiccategory` VALUES ('7', '7', '1', 'environment');
+INSERT INTO `#__sdi_sys_topiccategory` VALUES ('8', '8', '1', 'geoscientificinformation');
+INSERT INTO `#__sdi_sys_topiccategory` VALUES ('9', '9', '1', 'health');
+INSERT INTO `#__sdi_sys_topiccategory` VALUES ('10', '10', '1', 'imageryBaseMapsEarthCover');
+INSERT INTO `#__sdi_sys_topiccategory` VALUES ('11', '11', '1', 'intelligenceMilitary');
+INSERT INTO `#__sdi_sys_topiccategory` VALUES ('12', '12', '1', 'inlandWaters');
+INSERT INTO `#__sdi_sys_topiccategory` VALUES ('13', '13', '1', 'location');
+INSERT INTO `#__sdi_sys_topiccategory` VALUES ('14', '14', '1', 'oceans');
+INSERT INTO `#__sdi_sys_topiccategory` VALUES ('15', '15', '1', 'planningCadastre');
+INSERT INTO `#__sdi_sys_topiccategory` VALUES ('16', '16', '1', 'society');
+INSERT INTO `#__sdi_sys_topiccategory` VALUES ('17', '17', '1', 'structure');
+INSERT INTO `#__sdi_sys_topiccategory` VALUES ('18', '18', '1', 'transportation');
+INSERT INTO `#__sdi_sys_topiccategory` VALUES ('19', '19', '1', 'utilitiesCommunication');
+
+INSERT INTO `#__sdi_sys_productmining` VALUES ('1', '1', '1', 'manual');
+INSERT INTO `#__sdi_sys_productmining` VALUES ('2', '2', '1', 'automatic');
+
+INSERT INTO `#__sdi_sys_relationscope` VALUES ('1', '1', '1', 'editable');
+INSERT INTO `#__sdi_sys_relationscope` VALUES ('2', '2', '1', 'visible');
+INSERT INTO `#__sdi_sys_relationscope` VALUES ('3', '3', '1', 'hidden');
+
+INSERT INTO `#__sdi_language` VALUES ('1', '0', '1', 'العربية', 'ar-DZ', 'ar', 'ara', 'ar', 'DZ');
+INSERT INTO `#__sdi_language` VALUES ('3', '0', '1', 'български език', 'bg-BG', 'bg', 'bul', 'bg', 'BG');
+INSERT INTO `#__sdi_language` VALUES ('4', '0', '1', 'català, valencià', 'ca-ES', 'ca', 'cat', 'ca', 'ES');
+INSERT INTO `#__sdi_language` VALUES ('5', '0', '1', 'čeština, český jazyk', 'cs-CZ', 'cs', 'ces', 'cs', 'CZ');
+INSERT INTO `#__sdi_language` VALUES ('6', '0', '1', 'dansk', 'da-DK', 'da', 'dan', 'da', 'DK');
+INSERT INTO `#__sdi_language` VALUES ('7', '0', '1', 'Deutsch', 'de-DE', 'de', 'deu', 'de', 'DE');
+INSERT INTO `#__sdi_language` VALUES ('8', '0', '1', 'ελληνικά', 'el-GR', 'el', 'ell', 'el', 'GR');
+INSERT INTO `#__sdi_language` VALUES ('9', '0', '1', 'English (United Kingdom)', 'en-GB', 'en', 'eng', 'en', 'GB');
+INSERT INTO `#__sdi_language` VALUES ('10', '0', '1', 'English (US)', 'en-US', 'en-US', 'eng', 'en', 'US');
+INSERT INTO `#__sdi_language` VALUES ('11', '0', '1', 'español, castellano', 'es-ES', 'es', 'spa', 'es', 'ES');
+INSERT INTO `#__sdi_language` VALUES ('12', '0', '1', 'eesti, eesti keel', 'et-EE', 'et', 'est', 'et', 'EE');
+INSERT INTO `#__sdi_language` VALUES ('13', '0', '1', 'euskara, euskera', 'eu-ES', 'eu', 'eus', 'eu', 'ES');
+INSERT INTO `#__sdi_language` VALUES ('14', '0', '1', 'suomi, suomen kieli', 'fi-FI', 'fi', 'fin', 'fi', 'FI');
+INSERT INTO `#__sdi_language` VALUES ('15', '0', '1', 'français, langue française', 'fr-FR', 'fr', 'fra', 'fr', 'FR');
+INSERT INTO `#__sdi_language` VALUES ('16', '0', '1', 'Gaeilge', 'ga-IE', 'ga', 'gle', 'ga', 'IE');
+INSERT INTO `#__sdi_language` VALUES ('17', '0', '1', 'hrvatski jezik', 'hr-HR', 'hr', 'hrv', 'hr', 'HR');
+INSERT INTO `#__sdi_language` VALUES ('18', '0', '1', 'magyar', 'hu-HU', 'hu', 'hun', 'hu', 'HU');
+INSERT INTO `#__sdi_language` VALUES ('19', '0', '1', 'italiano', 'it-IT', 'it', 'ita', 'it', 'IT');
+INSERT INTO `#__sdi_language` VALUES ('20', '0', '1', 'lietuvių kalba', 'lt-LT', 'lt', 'lit', 'lt', 'LT');
+INSERT INTO `#__sdi_language` VALUES ('21', '0', '1', 'latviešu valoda', 'lv-LV', 'lv', 'lav', 'lv', 'LV');
+INSERT INTO `#__sdi_language` VALUES ('22', '0', '1', 'Malti', 'mt-MT', 'mt', 'mlt', 'mt', 'MT');
+INSERT INTO `#__sdi_language` VALUES ('23', '0', '1', 'Nederlands, Vlaams', 'nl-NL', 'nl', 'nld', 'nl', 'NL');
+INSERT INTO `#__sdi_language` VALUES ('24', '0', '1', 'Norsk', 'no-NO', 'no', 'nor', 'no', 'NO');
+INSERT INTO `#__sdi_language` VALUES ('25', '0', '1', 'język polski, polszczyzna', 'pl-PL', 'pl', 'pol', 'pl', 'PL');
+INSERT INTO `#__sdi_language` VALUES ('26', '0', '1', 'português', 'pt-PT', 'pt', 'por', 'pt', 'PT');
+INSERT INTO `#__sdi_language` VALUES ('27', '0', '1', 'limba română', 'ro-RO', 'ro', 'ron', 'ro', 'RO');
+INSERT INTO `#__sdi_language` VALUES ('28', '0', '1', 'русский язык', 'ru-RU', 'ru', 'rus', 'ru', 'RU');
+INSERT INTO `#__sdi_language` VALUES ('29', '0', '1', 'slovenčina, slovenský jazyk', 'sk-SK', 'sk', 'slk', 'sk', 'SK');
+INSERT INTO `#__sdi_language` VALUES ('30', '0', '1', 'Svenska', 'sv-SE', 'sv', 'swe', 'sv', 'SE');
+INSERT INTO `#__sdi_language` VALUES ('31', '0', '1', 'Türkçe', 'tr-TR', 'tr', 'tur', 'tr', 'TR');
+INSERT INTO `#__sdi_language` VALUES ('32', '0', '1', 'українська мова', 'uk-UA', 'uk', 'ukr', 'uk', 'UA');
+INSERT INTO `#__sdi_language` VALUES ('33', '0', '1', 'Chinese', 'zh-CN', 'zh-CN', 'zho', 'zh', 'CN');
