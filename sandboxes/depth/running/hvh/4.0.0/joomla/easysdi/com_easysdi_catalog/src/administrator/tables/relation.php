@@ -47,44 +47,7 @@ class Easysdi_catalogTablerelation extends sdiTable {
 			$array['state'] = 0;
 		}
 
-		//Support for multiple or not foreign key field: parent_id
-			if(isset($array['parent_id'])){
-				if(is_array($array['parent_id'])){
-					$array['parent_id'] = implode(',',$array['parent_id']);
-				}
-				else if(strrpos($array['parent_id'], ',') != false){
-					$array['parent_id'] = explode(',',$array['parent_id']);
-				}
-				else if(empty($array['parent_id'])) {
-					$array['parent_id'] = '';
-				}
-			}
-
-		//Support for multiple or not foreign key field: attributechild_id
-			if(isset($array['attributechild_id'])){
-				if(is_array($array['attributechild_id'])){
-					$array['attributechild_id'] = implode(',',$array['attributechild_id']);
-				}
-				else if(strrpos($array['attributechild_id'], ',') != false){
-					$array['attributechild_id'] = explode(',',$array['attributechild_id']);
-				}
-				else if(empty($array['attributechild_id'])) {
-					$array['attributechild_id'] = '';
-				}
-			}
-
-		//Support for multiple or not foreign key field: classchild_id
-			if(isset($array['classchild_id'])){
-				if(is_array($array['classchild_id'])){
-					$array['classchild_id'] = implode(',',$array['classchild_id']);
-				}
-				else if(strrpos($array['classchild_id'], ',') != false){
-					$array['classchild_id'] = explode(',',$array['classchild_id']);
-				}
-				else if(empty($array['classchild_id'])) {
-					$array['classchild_id'] = '';
-				}
-			}
+		
 
         if(!JFactory::getUser()->authorise('core.admin', 'com_easysdi_catalog.relation.'.$array['id'])){
             $actions = JFactory::getACL()->getActions('com_easysdi_catalog','relation');

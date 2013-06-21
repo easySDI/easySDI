@@ -327,6 +327,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_relation` (
 `relationscope_id` INT(11) UNSIGNED  ,
 `editorrelationscope_id` INT(11) UNSIGNED  ,
 `childresourcetype_id` INT(11)  UNSIGNED,
+`childtype_id` INT(11)  UNSIGNED,
+
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,
@@ -387,7 +389,7 @@ PRIMARY KEY (`id`) ,
     ON UPDATE NO ACTION,
   CONSTRAINT `#__sdi_relation_fk10`
     FOREIGN KEY (`childresourcetype_id` )
-    REFERENCES `#__sdi_resource` (`id` )
+    REFERENCES `#__sdi_resourcetype` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -450,18 +452,18 @@ INDEX `#__sdi_catalog_searchcriteria_fk1` (`catalog_id` ASC) ,
  CONSTRAINT `#__sdi_catalog_searchcriteria_fk1`
     FOREIGN KEY (`catalog_id` )
     REFERENCES `#__sdi_catalog` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `#__sdi_catalog_searchcriteria_fk2`
     FOREIGN KEY (`searchcriteria_id` )
     REFERENCES `#__sdi_searchcriteria` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `#__sdi_catalog_searchcriteria_fk3`
     FOREIGN KEY (`searchtab_id` )
     REFERENCES `#__sdi_sys_searchtab` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_catalog_searchsort` (
@@ -694,13 +696,13 @@ PRIMARY KEY (`id`) ,
   CONSTRAINT `#__sdi_searchcriteriafilter_fk1`
     FOREIGN KEY (`searchcriteria_id`)
     REFERENCES `#__sdi_searchcriteria` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `#__sdi_searchcriteriafilter_fk2`
     FOREIGN KEY (`language_id`)
     REFERENCES `#__sdi_language` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 )
 ENGINE=InnoDB
 DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci;
