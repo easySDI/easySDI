@@ -88,3 +88,24 @@ CREATE TABLE IF NOT EXISTS `#__sdi_user_role_organism` (
 `organism_id` int(11) UNSIGNED ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+
+CREATE TABLE IF NOT EXISTS `#__sdi_accessscope` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`entity_guid` VARCHAR(36)  NOT NULL ,
+`organism_id` INT(11) UNSIGNED  NOT NULL ,
+`user_id` INT(11) UNSIGNED  NOT NULL ,
+PRIMARY KEY (`id`) ,
+  INDEX `#__sdi_accessscope_fk1` (`organism_id` ASC) ,
+  INDEX `#__sdi_accessscope_fk2` (`user_id` ASC) ,
+  CONSTRAINT `#__sdi_accessscope_fk1`
+    FOREIGN KEY (`organism_id` )
+    REFERENCES `#__sdi_organism` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `#__sdi_accessscope_fk2`
+    FOREIGN KEY (`user_id` )
+    REFERENCES `#__sdi_user` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
