@@ -106,6 +106,10 @@
             <option value="0">JNO</option>
         </field>
         
+        <field name="sitemapparams" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_SITEMAPPARAMS"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_SITEMAPPARAMS" 
+               filter="safehtml" />
         
         
         <field name="profile_id"  required="true"
@@ -122,10 +126,7 @@
         
         
         
-        <field name="sitemapparams" type="text" size="40" class="inputbox"
-               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_SITEMAPPARAMS"
-               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_SITEMAPPARAMS" 
-               filter="safehtml" />
+        
 
         
     </fieldset> 

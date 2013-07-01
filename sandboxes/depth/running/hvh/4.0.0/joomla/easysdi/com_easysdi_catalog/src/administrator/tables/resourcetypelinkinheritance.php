@@ -10,10 +10,12 @@
 // No direct access
 defined('_JEXEC') or die;
 
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/database/sditable.php';
+
 /**
- * importref Table class
+ * resourcetypelink Table class
  */
-class Easysdi_catalogTablecatalogresourcetype extends JTable {
+class Easysdi_catalogTableresourcetypelinkinheritance extends sdiTable {
 
     /**
      * Constructor
@@ -21,18 +23,17 @@ class Easysdi_catalogTablecatalogresourcetype extends JTable {
      * @param JDatabase A database connector object
      */
     public function __construct(&$db) {
-        parent::__construct('#__sdi_catalog_resourcetype', 'id', $db);
+        parent::__construct('#__sdi_resourcetypelinkinheritance', 'id', $db);
     }
 
-    
-     /**
-     * Delete all the entries for the specified catalog id
+    /**
+     * Delete all the entries for the specified resourcetypelink id
      * 
-     * @param integer $id  : catalog identifier 
+     * @param integer $id  : resourcetype identifier 
      * 
      * @return boolean           True if successful. 
      */
-    public function deleteByCatalogId($id){
+    public function deleteByResourceTypeLinkId($id){
     	if(is_null($id))
     		return false;
     	
@@ -40,7 +41,7 @@ class Easysdi_catalogTablecatalogresourcetype extends JTable {
     	$query = $this->_db->getQuery(true);
     	$query->select('id');
     	$query->from($this->_tbl);
-    	$query->where($this->_db->quoteName('catalog_id') . ' = ' . (int) $id);
+    	$query->where($this->_db->quoteName('resourcetypelink_id') . ' = ' . (int) $id);
     	 
     	$this->_db->setQuery($query);
     	
@@ -78,8 +79,8 @@ class Easysdi_catalogTablecatalogresourcetype extends JTable {
     	}
     	return true;
     }
-
-    public function loadByCatalogID($id = null, $reset = true)
+    
+    public function loadByResourceTypeLinkID($id = null, $reset = true)
     {
     	if ($reset)
     	{
@@ -88,9 +89,9 @@ class Easysdi_catalogTablecatalogresourcetype extends JTable {
     
     	// Initialise the query.
     	$query = $this->_db->getQuery(true);
-    	$query->select('resourcetype_id');
+    	$query->select('xpath');
     	$query->from($this->_tbl);
-    	$query->where($this->_db->quoteName('catalog_id') . ' = ' . (int) $id);
+    	$query->where($this->_db->quoteName('resourcetypelink_id') . ' = ' . (int) $id);
     	$this->_db->setQuery($query);
     
     	try
@@ -125,7 +126,5 @@ class Easysdi_catalogTablecatalogresourcetype extends JTable {
     	// Bind the object with the row and return.
     	return $rows;
     }
-    
-    
 
 }

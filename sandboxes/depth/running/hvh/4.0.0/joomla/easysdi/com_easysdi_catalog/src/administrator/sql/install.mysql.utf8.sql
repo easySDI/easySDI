@@ -839,12 +839,12 @@ INDEX `#__sdi_resourcetypelink_fk3` (`class_id` ASC) ,
 INDEX `#__sdi_resourcetypelink_fk4` (`attribute_id` ASC) ,
   CONSTRAINT `#__sdi_resourcetypelink_fk1`
     FOREIGN KEY (`parent_id` )
-    REFERENCES `#__sdi_resource` (`id` )
+    REFERENCES `#__sdi_resourcetype` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
 CONSTRAINT `#__sdi_resourcetypelink_fk2`
     FOREIGN KEY (`child_id` )
-    REFERENCES `#__sdi_resource` (`id` )
+    REFERENCES `#__sdi_resourcetype` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
 CONSTRAINT `#__sdi_resourcetypelink_fk3`

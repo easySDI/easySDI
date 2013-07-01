@@ -55,6 +55,11 @@ class Easysdi_catalogHelper
 			'index.php?option=com_easysdi_catalog&view=resourcestype',
 			$vName == 'resourcestype'
 		);
+                JHtmlSidebar::addEntry(
+			JText::_('COM_EASYSDI_CATALOG_TITLE_RESOURCETYPELINKS'),
+			'index.php?option=com_easysdi_catalog&view=resourcetypelinks',
+			$vName == 'resourcetypelinks'
+		);
 		
 		JHtmlSidebar::addEntry(
 			JText::_('COM_EASYSDI_CATALOG_TITLE_CLASSES'),
