@@ -124,19 +124,14 @@ class Easysdi_catalogViewImportrefs extends JViewLegacy
         
 	}
     
-	protected function getSortFields()
-	{
-		return array(
-		'a.id' => JText::_('JGRID_HEADING_ID'),
-		'a.created_by' => JText::_('COM_EASYSDI_CATALOG_IMPORTREFS_CREATED_BY'),
-		'a.modified_by' => JText::_('COM_EASYSDI_CATALOG_IMPORTREFS_MODIFIED_BY'),
-		'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
-		'a.state' => JText::_('JSTATUS'),
-		'a.checked_out' => JText::_('COM_EASYSDI_CATALOG_IMPORTREFS_CHECKED_OUT'),
-		'a.checked_out_time' => JText::_('COM_EASYSDI_CATALOG_IMPORTREFS_CHECKED_OUT_TIME'),
-		'a.name' => JText::_('COM_EASYSDI_CATALOG_IMPORTREFS_NAME'),
-		);
-	}
+	protected function getSortFields() {
+        return array(
+            'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
+            'a.state' => JText::_('JSTATUS'),
+            'a.name' => JText::_('COM_EASYSDI_CATALOG_BOUNDARIESCATEGORY_NAME'),
+            'a.id' => JText::_('JGRID_HEADING_ID'),
+        );
+    }
 
     
 }

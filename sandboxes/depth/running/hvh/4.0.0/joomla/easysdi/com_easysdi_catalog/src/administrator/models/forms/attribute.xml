@@ -64,7 +64,6 @@
                description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_NAMESPACE_ID" 
         />
        
-
         <field name="type_isocode" type="text" size="40" class="inputbox"
                label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_TYPE_ISOCODE"
                description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_TYPE_ISOCODE" 
