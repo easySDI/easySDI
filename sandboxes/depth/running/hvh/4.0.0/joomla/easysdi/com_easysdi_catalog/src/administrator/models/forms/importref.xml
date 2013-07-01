@@ -16,6 +16,19 @@
               description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_DESCRIPTION" 
               filter="safehtml" /> 
 
+        <field name="importtype_id" 
+                required="true"
+               type="sql" 
+               onchange="onTypeChange()"
+               class="inputbox"
+               translate="true"
+               query=" SELECT NULL AS id, '- None -' AS value, 0 as ordering UNION SELECT id, value, ordering FROM #__sdi_sys_importtype WHERE state=1 ORDER BY ordering" 
+               key_field="id" 
+               value_field="value"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_IMPORTTYPE_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_IMPORTTYPE_ID" 
+        />
+        
         <field name="xsl4sdi" type="text" size="40" class="inputbox"
               label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_XSL4SDI"
               description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_XSL4SDI" 
@@ -55,23 +68,18 @@
               description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_CSWOUTPUTSCHEMA" 
               filter="safehtml" /> 
         
-        <field name="importtype_id" 
-        required="true"
-               type="sql" 
-               class="inputbox"
-               translate="true"
-               query=" SELECT NULL AS id, '- None -' AS value, 0 as ordering UNION SELECT id, value, ordering FROM #__sdi_sys_importtype WHERE state=1 ORDER BY ordering" 
-               key_field="id" 
-               value_field="value"
-               label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_IMPORTTYPE_ID"
-               description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_IMPORTTYPE_ID" 
-        /> 
+         
 
         <field name="id" type="text" default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_ID"
                      readonly="true" class="readonly"
                      description="JGLOBAL_FIELD_ID_DESC" /> 
         
     </fieldset> 
+    
+    <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_LABEL"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
+               filter="ARRAY" />
 
     <fieldset 
         name="accesscontrol">

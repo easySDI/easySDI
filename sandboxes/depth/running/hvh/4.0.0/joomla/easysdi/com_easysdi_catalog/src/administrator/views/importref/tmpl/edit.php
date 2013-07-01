@@ -24,6 +24,8 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
     js = jQuery.noConflict();
     js(document).ready(function(){
         onServiceChange();
+        onTypeChange();
+        
     });
     
     Joomla.submitbutton = function(task)
@@ -69,6 +71,20 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 
         })
     }
+    
+    function  onTypeChange(){
+     var importtype = js("#jform_importtype_id :selected").val();
+        switch (importtype) {
+            case "1":
+                js("#jform_xsl4sdi").val('');
+                js("#xsl4sdi").hide();
+                break;
+            default :
+            case "2":
+                js("#xsl4sdi").show();
+                break;
+        }
+    }
 </script>
 
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&layout=edit&id=' . (int) $this->item->id); ?>" method="post" enctype="multipart/form-data" name="adminForm" id="importref-form" class="form-validate">
@@ -92,6 +108,9 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
                             <div class="controls"><?php echo $field->input; ?></div>
                         </div>
                     <?php endforeach; ?>
+                    <div class="well">
+                        <?php echo $this->form->getInput('text1'); ?>
+                    </div>
                 </div>
                 <div class="tab-pane" id="publishing">
                     <div class="control-group">
