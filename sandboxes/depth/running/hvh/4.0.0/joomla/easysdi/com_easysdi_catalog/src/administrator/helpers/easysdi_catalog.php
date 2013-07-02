@@ -26,6 +26,7 @@ class Easysdi_catalogHelper
 			'index.php?option=com_easysdi_catalog&view=attributes',
 			$vName == 'attributes'
 		);
+                
                 return;
             };
             
@@ -37,31 +38,14 @@ class Easysdi_catalogHelper
 		);
                 return;
             }
-                JHtmlSidebar::addEntry(
-                        JText::_('COM_EASYSDI_CATALOG_TITLE_NAMESPACES'),
-                        "index.php?option=com_easysdi_catalog&view=namespaces",
-                        $vName == 'namespaces'
-                );
-                JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_CATALOG_TITLE_BOUNDARIESCATEGORY'),
-			'index.php?option=com_easysdi_catalog&view=boundariescategory',
-			$vName == 'boundariescategory'
-		);
-                JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_CATALOG_TITLE_BOUNDARIES'),
-			'index.php?option=com_easysdi_catalog&view=boundaries',
-			$vName == 'boundaries'
-		);
+                
+                
 		JHtmlSidebar::addEntry(
 			JText::_('COM_EASYSDI_CATALOG_TITLE_CATALOGS'),
 			'index.php?option=com_easysdi_catalog&view=catalogs',
 			$vName == 'catalogs'
 		);
-                JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_CATALOG_TITLE_PROFILES'),
-			'index.php?option=com_easysdi_catalog&view=profiles',
-			$vName == 'profiles'
-		);
+                
                 JHtmlSidebar::addEntry(
 			JText::_('COM_EASYSDI_CATALOG_TITLE_RESOURCESTYPE'),
 			'index.php?option=com_easysdi_catalog&view=resourcestype',
@@ -90,10 +74,33 @@ class Easysdi_catalogHelper
 			$vName == 'relations'
 		);
 		
+                JHtmlSidebar::addEntry(
+			JText::_('COM_EASYSDI_CATALOG_TITLE_PROFILES'),
+			'index.php?option=com_easysdi_catalog&view=profiles',
+			$vName == 'profiles'
+		);
+                
 		JHtmlSidebar::addEntry(
 			JText::_('COM_EASYSDI_CATALOG_TITLE_IMPORTREFS'),
 			'index.php?option=com_easysdi_catalog&view=importrefs',
 			$vName == 'importrefs'
+		);
+                
+                JHtmlSidebar::addEntry(
+                        JText::_('COM_EASYSDI_CATALOG_TITLE_NAMESPACES'),
+                        "index.php?option=com_easysdi_catalog&view=namespaces",
+                        $vName == 'namespaces'
+                );
+                
+                JHtmlSidebar::addEntry(
+			JText::_('COM_EASYSDI_CATALOG_TITLE_BOUNDARIESCATEGORY'),
+			'index.php?option=com_easysdi_catalog&view=boundariescategory',
+			$vName == 'boundariescategory'
+		);
+                JHtmlSidebar::addEntry(
+			JText::_('COM_EASYSDI_CATALOG_TITLE_BOUNDARIES'),
+			'index.php?option=com_easysdi_catalog&view=boundaries',
+			$vName == 'boundaries'
 		);
 
 	}
