@@ -89,7 +89,7 @@ class Easysdi_catalogModelresourcetype extends sdiModel
 	 */
 	protected function prepareTable($table)
 	{
-		jimport('joomla.filter.output');
+           	jimport('joomla.filter.output');
 
 		if (empty($table->id)) {
 

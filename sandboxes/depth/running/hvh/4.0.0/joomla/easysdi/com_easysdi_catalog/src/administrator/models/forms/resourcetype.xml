@@ -74,7 +74,7 @@
                filter="raw"
                directory="logo" />
          
-        <field name="metadata" type="radio" class="btn-group" default="1"
+        <field name="meta" type="radio" class="btn-group" default="1"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_METADATA"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_METADATA" 
         > 
@@ -98,13 +98,13 @@
             <option value="0">JNO</option>
         </field>
 
-        <field name="monitoring" type="radio" class="btn-group" default="0"
+<!--        <field name="monitoring" type="radio" class="btn-group" default="0"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_MONITORING"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_MONITORING" 
         > 
             <option value="1">JYES</option>
             <option value="0">JNO</option>
-        </field>
+        </field>-->
         
         <field name="sitemapparams" type="text" size="40" class="inputbox"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_SITEMAPPARAMS"
@@ -121,14 +121,6 @@
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_PROFILE"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_PROFILE" 
         /> 
-
-        
-        
-        
-        
-        
-
-        
     </fieldset> 
 
     <fieldset name="hidden">

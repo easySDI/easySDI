@@ -230,7 +230,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_resourcetype` (
 `name` VARCHAR(255)  NOT NULL ,
 `description` VARCHAR(500)  NOT NULL ,
 `logo` VARCHAR(255)  NOT NULL ,
-`metadata` BOOLEAN NOT NULL DEFAULT 1,
+`meta` BOOLEAN NOT NULL ,
 `diffusion` BOOLEAN NOT NULL ,
 `view` BOOLEAN NOT NULL ,
 `monitoring` BOOLEAN NOT NULL ,
