@@ -10,12 +10,12 @@
 // No direct access
 defined('_JEXEC') or die;
 
-require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/database/sditable.php';
+
 
 /**
  * resourcetypelink Table class
  */
-class Easysdi_catalogTableresourcetypelinkinheritance extends sdiTable {
+class Easysdi_catalogTableresourcetypelinkinheritance extends JTable {
 
     /**
      * Constructor

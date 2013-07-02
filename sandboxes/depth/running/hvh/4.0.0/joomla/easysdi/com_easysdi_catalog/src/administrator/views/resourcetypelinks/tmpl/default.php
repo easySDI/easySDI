@@ -187,16 +187,12 @@ foreach ($this->items as $i => $item) :
                                 <?php endif; ?>
                                 <?php if ($canEdit) : ?>
                                     <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=resourcetypelink.edit&id=' . (int) $item->id); ?>">
-                                        <?php echo $this->escape($item->guid); ?></a>
+                                        <?php echo $item->parent; ?></a>
                                 <?php else : ?>
-                                    <?php echo $this->escape($item->guid); ?>
+                                    <?php echo $item->parent; ?>
                                 <?php endif; ?>
                             </td>
                             
-                            <td>
-
-                                <?php echo $item->parent; ?>
-                            </td>
                             <td>
 
                                 <?php echo $item->child; ?>

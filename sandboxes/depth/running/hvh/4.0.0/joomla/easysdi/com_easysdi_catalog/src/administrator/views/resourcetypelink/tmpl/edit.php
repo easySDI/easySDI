@@ -81,15 +81,16 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
         }
     }
 
-    var xpathindex = 0;
+
 
     function addXPath() {
-        xpathindex += 1;
-        html = "<div class='control-group' id='" + xpathindex + "'> <div class='controls'>";
-        html += "<input type='text' name='jform[xpath][]' id='jform_xpath[" + xpathindex + "]' value='' class='inputbox' size='40'>";
+
+        html = "<div class='control-group' id='" + xpathindex + "'> ";
+        html += "<input type='text' name='jform[xpath][]'  value='' class='inputbox' size='40'>  ";
         html += "<span class='btn btn-danger btn-small' name='xpathminus" + xpathindex + "' id='xpathminus" + xpathindex + "' onclick='removeXPath(" + xpathindex + ");'><i class='icon-white icon-minus'></i></span>";
-        html += "</div></div>";
+        html += "</div>";
         js('#xpath').append(html);
+        xpathindex += 1;
 
     }
 
@@ -164,11 +165,26 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
                         <div class="controls"><?php echo $this->form->getInput('inheritance'); ?></div>
                     </div>
 
-                    <div class="control-group" id="xpath">
+                    <div class="control-group well" id="xpath" >
                         <div class="control-group">
                             <div class="control-label"><?php echo $this->form->getLabel('addxpath'); ?></div>
                             <div class="controls"><?php echo $this->form->getInput('addxpath'); ?></div>
                         </div>
+                        <?php
+                        $index = 1;
+                        if (is_array($this->item->resourcetypelinkinheritance)) {
+                            foreach ($this->item->resourcetypelinkinheritance as $resourcetypelinkinheritance) {
+                                ?>
+                                <div class="control-group" id="<?php echo $index; ?>">
+                                    <input type='text' name='jform[xpath][]'  value='<?php echo $resourcetypelinkinheritance; ?> ' class='inputbox' size='40'>
+                                    <span class='btn btn-danger btn-small' name='xpathminus<?php echo $index; ?>' id='xpathminus<?php echo $index; ?>' onclick='removeXPath(<?php echo $index; ?>);' ><i class='icon-white icon-minus'></i></span>
+                                </div>
+                                <?php
+                                $index++;
+                            }
+                        }
+                        ?>
+                        <script>var xpathindex = <?php echo $index; ?></script>
                     </div>
 
                     <div class="control-group">

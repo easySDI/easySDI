@@ -99,6 +99,14 @@ class Easysdi_catalogModelboundary extends sdiModel {
             $table->parent_id = null;
         if ($table->category_id === '')
             $table->category_id = null;
+        if ($table->northbound == '')
+            $table->northbound = null;
+        if ($table->southbound == '')
+            $table->southbound = null;
+        if ($table->eastbound == '')
+            $table->eastbound = null;
+        if ($table->westbound == '')
+            $table->westbound = null;
     }
 
 }
