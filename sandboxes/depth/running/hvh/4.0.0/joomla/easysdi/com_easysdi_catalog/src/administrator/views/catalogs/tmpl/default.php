@@ -52,14 +52,14 @@ if (!empty($this->extra_sidebar)) {
 ?>
 
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=catalogs'); ?>" method="post" name="adminForm" id="adminForm">
-<?php if (!empty($this->sidebar)): ?>
+    <?php if (!empty($this->sidebar)): ?>
         <div id="j-sidebar-container" class="span2">
-        <?php echo $this->sidebar; ?>
+            <?php echo $this->sidebar; ?>
         </div>
         <div id="j-main-container" class="span10">
-<?php else : ?>
+        <?php else : ?>
             <div id="j-main-container">
-        <?php endif; ?>
+            <?php endif; ?>
 
             <div id="filter-bar" class="btn-toolbar">
                 <div class="filter-search btn-group pull-left">
@@ -73,7 +73,7 @@ if (!empty($this->extra_sidebar)) {
                 </div>
                 <div class="btn-group pull-right hidden-phone">
                     <label for="limit" class="element-invisible"><?php echo JText::_('JFIELD_PLG_SEARCH_SEARCHLIMIT_DESC'); ?></label>
-<?php echo $this->pagination->getLimitBox(); ?>
+                    <?php echo $this->pagination->getLimitBox(); ?>
                 </div>
                 <div class="btn-group pull-right hidden-phone">
                     <label for="directionTable" class="element-invisible"><?php echo JText::_('JFIELD_ORDERING_DESC'); ?></label>
@@ -87,7 +87,7 @@ if (!empty($this->extra_sidebar)) {
                     <label for="sortTable" class="element-invisible"><?php echo JText::_('JGLOBAL_SORT_BY'); ?></label>
                     <select name="sortTable" id="sortTable" class="input-medium" onchange="Joomla.orderTable()">
                         <option value=""><?php echo JText::_('JGLOBAL_SORT_BY'); ?></option>
-<?php echo JHtml::_('select.options', $sortFields, 'value', 'text', $listOrder); ?>
+                        <?php echo JHtml::_('select.options', $sortFields, 'value', 'text', $listOrder); ?>
                     </select>
                 </div>
             </div>        
@@ -95,69 +95,73 @@ if (!empty($this->extra_sidebar)) {
             <table class="table table-striped" id="catalogList">
                 <thead>
                     <tr>
-<?php if (isset($this->items[0]->ordering)): ?>
+                        <?php if (isset($this->items[0]->ordering)): ?>
                             <th width="1%" class="nowrap center hidden-phone">
-                            <?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'a.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
+                                <?php echo JHtml::_('grid.sort', '<i class="icon-menu-2"></i>', 'a.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
                             </th>
-                            <?php endif; ?>
+                        <?php endif; ?>
                         <th width="1%" class="hidden-phone">
                             <input type="checkbox" name="checkall-toggle" value="" title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
                         </th>
-<?php if (isset($this->items[0]->state)): ?>
+                        <?php if (isset($this->items[0]->state)): ?>
                             <th width="1%" class="nowrap center">
-                            <?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
+                                <?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
                             </th>
-                            <?php endif; ?>
+                        <?php endif; ?>
 
 
                         <th class='left'>
-<?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CATALOG_CATALOGS_NAME', 'a.name', $listDirn, $listOrder); ?>
+                            <?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CATALOG_CATALOGS_NAME', 'a.name', $listDirn, $listOrder); ?>
+                        </th>
+
+                        <th class='left'>
+                            <?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CATALOG_CATALOGS_SEARCHCRITERIA', 'a.name', $listDirn, $listOrder); ?>
                         </th>
 
 
-<?php if (isset($this->items[0]->id)): ?>
+                        <?php if (isset($this->items[0]->id)): ?>
                             <th width="1%" class="nowrap center hidden-phone">
-                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
+                                <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
                             </th>
-                            <?php endif; ?>
+                        <?php endif; ?>
                     </tr>
                 </thead>
                 <tfoot>
-<?php
-if (isset($this->items[0])) {
-    $colspan = count(get_object_vars($this->items[0]));
-} else {
-    $colspan = 10;
-}
-?>
+                    <?php
+                    if (isset($this->items[0])) {
+                        $colspan = count(get_object_vars($this->items[0]));
+                    } else {
+                        $colspan = 10;
+                    }
+                    ?>
                     <tr>
                         <td colspan="<?php echo $colspan ?>">
-                    <?php echo $this->pagination->getListFooter(); ?>
+                            <?php echo $this->pagination->getListFooter(); ?>
                         </td>
                     </tr>
                 </tfoot>
                 <tbody>
-<?php
-foreach ($this->items as $i => $item) :
-    $ordering = ($listOrder == 'a.ordering');
-    $canCreate = $user->authorise('core.create', 'com_easysdi_catalog');
-    $canEdit = $user->authorise('core.edit', 'com_easysdi_catalog');
-    $canCheckin = $user->authorise('core.manage', 'com_easysdi_catalog');
-    $canChange = $user->authorise('core.edit.state', 'com_easysdi_catalog');
-    ?>
+                    <?php
+                    foreach ($this->items as $i => $item) :
+                        $ordering = ($listOrder == 'a.ordering');
+                        $canCreate = $user->authorise('core.create', 'com_easysdi_catalog');
+                        $canEdit = $user->authorise('core.edit', 'com_easysdi_catalog');
+                        $canCheckin = $user->authorise('core.manage', 'com_easysdi_catalog');
+                        $canChange = $user->authorise('core.edit.state', 'com_easysdi_catalog');
+                        ?>
                         <tr class="row<?php echo $i % 2; ?>">
 
-    <?php if (isset($this->items[0]->ordering)): ?>
+                            <?php if (isset($this->items[0]->ordering)): ?>
                                 <td class="order nowrap center hidden-phone">
-                                <?php
-                                if ($canChange) :
-                                    $disableClassName = '';
-                                    $disabledLabel = '';
-                                    if (!$saveOrder) :
-                                        $disabledLabel = JText::_('JORDERINGDISABLED');
-                                        $disableClassName = 'inactive tip-top';
-                                    endif;
-                                    ?>
+                                    <?php
+                                    if ($canChange) :
+                                        $disableClassName = '';
+                                        $disabledLabel = '';
+                                        if (!$saveOrder) :
+                                            $disabledLabel = JText::_('JORDERINGDISABLED');
+                                            $disableClassName = 'inactive tip-top';
+                                        endif;
+                                        ?>
                                         <span class="sortable-handler hasTooltip <?php echo $disableClassName ?>" title="<?php echo $disabledLabel ?>">
                                             <i class="icon-menu"></i>
                                         </span>
@@ -187,6 +191,15 @@ foreach ($this->items as $i => $item) :
                                 <?php endif; ?>
                             </td>
 
+                            <td >
+                                <?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>
+
+                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=search_criterias&filter_catalog=' . (int) $item->id); ?>">
+                                        <div class="icon-edit"></div>
+                                    <?php else : ?>
+
+                                    <?php endif; ?>
+                            </td>
 
                             <?php if (isset($this->items[0]->id)): ?>
                                 <td class="center hidden-phone">

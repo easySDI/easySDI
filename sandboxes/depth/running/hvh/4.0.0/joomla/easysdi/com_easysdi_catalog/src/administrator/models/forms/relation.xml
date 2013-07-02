@@ -52,6 +52,7 @@
         /> 
 
         <field name="attributechild_id" type="sql" class="inputbox"
+        onchange="onChangeAttributeChild()"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ATTRIBUTECHILD_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_ATTRIBUTECHILD_ID" 
                query="SELECT null AS `id`, '- Select Attributechild Id -' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_attribute`" key_field="id" value_field="name"

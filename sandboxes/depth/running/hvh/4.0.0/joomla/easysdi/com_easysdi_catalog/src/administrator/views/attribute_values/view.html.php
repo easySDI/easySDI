@@ -35,7 +35,7 @@ class Easysdi_catalogViewAttribute_values extends JViewLegacy
 			throw new Exception(implode("\n", $errors));
 		}
         
-		Easysdi_catalogHelper::addSubmenu('attributes');
+		Easysdi_catalogHelper::addSubmenu('attribute_values');
         	$this->addToolbar();
         
                 $this->sidebar = JHtmlSidebar::render();

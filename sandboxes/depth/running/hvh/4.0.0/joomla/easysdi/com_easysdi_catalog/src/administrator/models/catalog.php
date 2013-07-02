@@ -132,13 +132,13 @@ class Easysdi_catalogModelcatalog extends sdiModel {
      * @since   12.2
      */
     public function save($data) {
+        $isNew = ($data['id'] == 0) ? true : false;
 
         if (parent::save($data)) {
             //Get the element guid
             $item = parent::getItem($data['id']);
             $data['guid'] = $item->guid;
             $data['id'] = $item->id;
-
 
             //Save sorting fields
             $searchsorttable = $this->getTable('Searchsort', 'Easysdi_catalogTable', array());
@@ -163,6 +163,20 @@ class Easysdi_catalogModelcatalog extends sdiModel {
                     $keys['resourcetype_id'] = $resourcetype;
                     $catalogresourcetype->load($keys);
                     $catalogresourcetype->save($array);
+                }
+            }
+
+            //If it is a new catalog, save the default system search criterias
+            if ($isNew) {
+                for ($i = 1; $i <= 11; $i++) {
+                    $catalogsearchcriteria = JTable::getInstance('catalogsearchcriteria', 'Easysdi_catalogTable');
+                    $array = array();
+                    $array['catalog_id'] = $data['id'];
+                    $array['searchcriteria_id'] = $i;
+                    $array['searchtab_id'] = 4;
+                    $array['state'] = 1;
+                    $array['ordering'] = $i;
+                    $catalogsearchcriteria->save($array);
                 }
             }
 

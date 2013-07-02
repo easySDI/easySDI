@@ -35,4 +35,8 @@ class Easysdi_catalogController extends JControllerLegacy {
     public function attributes (){
         $this->setRedirect('index.php?option=com_easysdi_catalog&view=attributes');
     }
+    
+    public function catalogs (){
+        $this->setRedirect('index.php?option=com_easysdi_catalog&view=catalogs');
+    }
 }

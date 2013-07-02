@@ -20,6 +20,23 @@ class Easysdi_catalogHelper
 	 */
 	public static function addSubmenu($vName = '')
 	{
+            if($vName == 'attribute_values'){
+                JHtmlSidebar::addEntry(
+			JText::_('COM_EASYSDI_CATALOG_TITLE_ATTRIBUTES'),
+			'index.php?option=com_easysdi_catalog&view=attributes',
+			$vName == 'attributes'
+		);
+                return;
+            };
+            
+            if($vName == 'search_criterias'){
+                JHtmlSidebar::addEntry(
+			JText::_('COM_EASYSDI_CATALOG_TITLE_CATALOGS'),
+			'index.php?option=com_easysdi_catalog&view=catalogs',
+			$vName == 'catalogs'
+		);
+                return;
+            }
                 JHtmlSidebar::addEntry(
                         JText::_('COM_EASYSDI_CATALOG_TITLE_NAMESPACES'),
                         "index.php?option=com_easysdi_catalog&view=namespaces",
@@ -39,11 +56,6 @@ class Easysdi_catalogHelper
 			JText::_('COM_EASYSDI_CATALOG_TITLE_CATALOGS'),
 			'index.php?option=com_easysdi_catalog&view=catalogs',
 			$vName == 'catalogs'
-		);
-		JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_CATALOG_TITLE_SEARCH_CRITERIAS'),
-			'index.php?option=com_easysdi_catalog&view=search_criterias',
-			$vName == 'search_criterias'
 		);
                 JHtmlSidebar::addEntry(
 			JText::_('COM_EASYSDI_CATALOG_TITLE_PROFILES'),

@@ -18,33 +18,14 @@ JHtml::_('behavior.keepalive');
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_catalog.css');
+$document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.css');
 ?>
 <script type="text/javascript">
     js = jQuery.noConflict();
     js(document).ready(function() {
         onChangeChildType();
         onChangeSearchFilter();
-//        js('input:hidden.parent_id').each(function() {
-//            var name = js(this).attr('name');
-//            if (name.indexOf('parent_idhidden')) {
-//                js('#jform_parent_id option[value="' + js(this).val() + '"]').attr('selected', true);
-//            }
-//        });
-//        js("#jform_parent_id").trigger("liszt:updated");
-//        js('input:hidden.attributechild_id').each(function() {
-//            var name = js(this).attr('name');
-//            if (name.indexOf('attributechild_idhidden')) {
-//                js('#jform_attributechild_id option[value="' + js(this).val() + '"]').attr('selected', true);
-//            }
-//        });
-//        js("#jform_attributechild_id").trigger("liszt:updated");
-//        js('input:hidden.classchild_id').each(function() {
-//            var name = js(this).attr('name');
-//            if (name.indexOf('classchild_idhidden')) {
-//                js('#jform_classchild_id option[value="' + js(this).val() + '"]').attr('selected', true);
-//            }
-//        });
-//        js("#jform_classchild_id").trigger("liszt:updated");
+        onChangeAttributeChild();
     });
 
     Joomla.submitbutton = function(task)
@@ -92,9 +73,34 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                 js("#resourcetypedefinition").show();
                 break;
         }
-
-
     }
+    
+    function onChangeAttributeChild(){
+        js('#loader').show();
+        var attributechild_id = js("#jform_attributechild_id :selected").val();
+        if (attributechild_id == '') {
+            js('#loader').hide();
+            return;
+        }
+        var uriencoded = 'http://localhost/sdi4/administrator/index.php?option=com_easysdi_catalog&task=relation.getRenderType&attributechild=' + attributechild_id;
+        js.ajax({
+            type: 'Get',
+            url: uriencoded,
+            success: function(data) {
+                var attributes = js.parseJSON(data);
+                js('#jform_rendertype_id').empty().trigger("liszt:updated");
+
+                js.each(attributes, function(key, value) {
+                    js('#jform_rendertype_id')
+                            .append('<option value="' + value.id + '">' + value.value + '</option>')
+                            .trigger("liszt:updated")
+                            ;
+                });
+                js('#loader').hide();
+            }
+        })
+    }
+    
     function onChangeSearchFilter() {
         var isselected = js("#jform_issearchfilter0").prop("checked");
         switch (isselected) {
@@ -109,6 +115,9 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
 </script>
 
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&layout=edit&id=' . (int) $this->item->id); ?>" method="post" enctype="multipart/form-data" name="adminForm" id="relation-form" class="form-validate">
+    <div id="loader" style="">
+        <img id="loader_image"  src="components/com_easysdi_core/assets/images/loader.gif" alt="">
+    </div>
     <div class="row-fluid">
         <div class="span10 form-horizontal">
             <ul class="nav nav-tabs">

@@ -23,4 +23,19 @@ class Easysdi_catalogControllerRelation extends JControllerForm
         parent::__construct();
     }
 
+    function getRenderType() {
+        $jinput = JFactory::getApplication()->input;
+        $attributechild_id = $jinput->get('attributechild', '0', 'string');
+        $db = JFactory::getDbo();
+        $db->setQuery('SELECT rt.id , rt.value
+                        FROM #__sdi_sys_rendertype rt 
+                        INNER JOIN #__sdi_sys_rendertype_stereotype rts ON rts.rendertype_id = rt.id
+                        INNER JOIN #__sdi_attribute a ON a.stereotype_id = rts.stereotype_id
+                        WHERE a.id='.$attributechild_id.' 
+                        ORDER BY rt.value');
+       
+        $rendertype = $db->loadObjectList();
+        echo json_encode($rendertype);
+        die();
+    }
 }
