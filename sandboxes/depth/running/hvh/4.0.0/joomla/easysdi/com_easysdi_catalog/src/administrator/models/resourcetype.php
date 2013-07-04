@@ -107,8 +107,4 @@ class Easysdi_catalogModelresourcetype extends sdiModel
                     $table->fragmentnamespace_id =null;
 	}
         
-    
-  
-
-        
 }

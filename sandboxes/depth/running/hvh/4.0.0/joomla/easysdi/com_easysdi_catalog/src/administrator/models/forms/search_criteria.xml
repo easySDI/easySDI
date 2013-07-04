@@ -85,16 +85,28 @@
                description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_RESOURCETYPE_ID" 
         />
         
-        <field name="manager_id" 
+        <field name="resourcetype_id" 
                type="sql" 
                class="multiselect"
                multiple="true" 
-               query="SELECT null as id , '' as name UNION SELECT id, name FROM #__sdi_organism WHERE state=1" 
+               query="SELECT null as id , '' as name UNION SELECT id, name FROM #__sdi_resourcetype WHERE state=1" 
                key_field="id" 
                value_field="name"
                translate="false"
-               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_MANAGER_ID"
-               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_MANAGER_ID" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_RESOURCETYPE_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_RESOURCETYPE_ID" 
+        />
+        
+        <field name="defaultvalues" 
+               type="sql" 
+               class="multiselect"
+               multiple="true" 
+               query="SELECT id, value FROM #__sdi_attributevalue WHERE state=1" 
+               key_field="id" 
+               value_field="value"
+               translate="false"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_DEFAULTVALUE"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_DEFAULTVALUE" 
         />
         
         <field name="version" type="radio" class="btn-group" default="0"

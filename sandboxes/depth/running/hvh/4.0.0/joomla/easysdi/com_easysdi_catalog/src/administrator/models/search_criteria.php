@@ -12,10 +12,12 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.modeladmin');
 
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
+
 /**
  * Easysdi_catalog model.
  */
-class Easysdi_catalogModelsearch_criteria extends JModelAdmin {
+class Easysdi_catalogModelsearch_criteria extends sdiModel {
 
     /**
      * @var		string	The prefix to use with controller messages.
@@ -113,7 +115,9 @@ class Easysdi_catalogModelsearch_criteria extends JModelAdmin {
                         FROM #__sdi_attributevalue av 
                         WHERE av.attribute_id=' . $attribute->id . ' 
                         ORDER BY av.value');
-                        $item->attributevalue = $db->loadObjectList();
+                        $item->attributevalues = $db->loadObjectList();
+                        //Decode defaultvalue
+                        $item->defaultvalues = json_decode($catalogsearchcriteria->defaultvalue, true);
                     }
                 }
             }
@@ -142,6 +146,47 @@ class Easysdi_catalogModelsearch_criteria extends JModelAdmin {
                 $table->ordering = $max + 1;
             }
         }
+    }
+    
+    /**
+     * Method to save the form data.
+     *
+     * @param   array  $data  The form data.
+     *
+     * @return  boolean  True on success, False on error.
+     *
+     * @since   12.2
+     */
+    public function save($data) {
+        if (parent::save($data)) {
+            
+            //Save default value in catalogsearchcriteria object
+            $catalogsearchcriteria = JTable::getInstance('catalogsearchcriteria', 'Easysdi_catalogTable');
+            $catalogsearchcriteria->load($data['catalogsearchcriteria_id']);
+
+            $array = array();
+            $array['id'] = $data['catalogsearchcriteria_id'];
+            $array['searchtab_id']  = $data['searchtab_id'];
+           
+            if (isset($data['defaultvalues']))
+                $array['defaultvalue'] = json_encode($data['defaultvalues']);
+            else if(isset($data['defaultvalue']))
+                $array['defaultvalue'] = $data['defaultvalue'];
+            else
+                $array['defaultvalue'] = null;
+            if(isset($data['from']))
+                $array['defaultvaluefrom'] = $data['from'];
+            else
+                $array['defaultvaluefrom'] = null;
+            if(isset($data['to']))
+                $array['defaultvalueto'] = $data['to'];
+            else
+                $array['defaultvalueto'] = null;
+            $catalogsearchcriteria->save($array);
+            return true;
+        }
+
+        return false;
     }
 
 }
