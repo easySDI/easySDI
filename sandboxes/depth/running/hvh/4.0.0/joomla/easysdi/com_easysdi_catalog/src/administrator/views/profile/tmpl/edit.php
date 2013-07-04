@@ -43,8 +43,15 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
         }
     }
     function onClassChange() {
-        js('#loader').show();
+       js('#loader').show();
         var class_id = js("#jform_class_id :selected").val();
+        
+        if(class_id == ''){
+            js('#loader').hide();
+            return;
+        }
+        
+         
         var uriencoded = 'http://localhost/sdi4/administrator/index.php?option=com_easysdi_catalog&task=profile.getAttributeIdentifier&class_id=' + class_id;
         js.ajax({
             type: 'Get',

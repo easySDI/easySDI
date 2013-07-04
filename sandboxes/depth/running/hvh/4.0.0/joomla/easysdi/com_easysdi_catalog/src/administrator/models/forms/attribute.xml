@@ -19,15 +19,16 @@
 
          <field name="namespace_id" 
                type="sql" 
+               required="true"
                class="inputbox input-mini"
-               query=" SELECT NULL AS id, '- None -' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
+               query=" SELECT NULL AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
                key_field="id" 
                value_field="name"
                label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_NAMESPACE_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_NAMESPACE_ID" 
         /> 
 
-        <field name="isocode" type="text" size="40" class="inputbox"
+        <field name="isocode" type="text" size="40" class="inputbox" required="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_ISOCODE"
                description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_ISOCODE" 
                filter="safehtml" /> 
@@ -35,12 +36,13 @@
         <field name="stereotype_id"
                type="sql" 
                onchange="onStereotypeChange()"
-            class="multiselect"
+            class="inputbox"
             label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_ATTRIBUTETYPE_ID"
             description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_ATTRIBUTETYPE_ID" 
-            multiple="false"
-            query="SELECT NULL AS id, '- Select -' AS value, 0 as ordering UNION SELECT id, value, ordering FROM #__sdi_sys_stereotype WHERE state=1 AND entity_id = 1 ORDER BY ordering" 
+           
+            query="SELECT NULL AS id, '' AS value, 0 as ordering UNION SELECT id, value, ordering FROM #__sdi_sys_stereotype WHERE state=1 AND entity_id = 1 ORDER BY ordering" 
             key_field="id" 
+            required ="true"
             value_field="value"
             translate="true"/> 
 

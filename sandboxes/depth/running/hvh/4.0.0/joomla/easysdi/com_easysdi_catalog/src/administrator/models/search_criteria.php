@@ -115,22 +115,34 @@ class Easysdi_catalogModelsearch_criteria extends sdiModel {
                     //Resource type criteria
                     $item->resourcetype_id = json_decode($catalogsearchcriteria->defaultvalue, true);
                 }
-                
+
                 if ($item->id == 3) {
                     //Version criteria
                     $item->version = $catalogsearchcriteria->defaultvalue;
                 }
-                
+
                 if ($item->id == 7) {
-                    //Resource type criteria
+                    //Organism criteria
                     $item->organism_id = json_decode($catalogsearchcriteria->defaultvalue, true);
                 }
-                
+
+                if ($item->id == 8) {
+                    //Defined boundary criteria
+                    $item->boundary_id = json_decode($catalogsearchcriteria->defaultvalue, true);
+                    //Saved params
+                    if (isset($catalogsearchcriteria->params)) {
+                        $params = json_decode($catalogsearchcriteria->params, false);
+                        $item->boundarycategory_id = $params->boundarycategory_id;
+                        $item->searchboundarytype = $params->searchboundarytype;
+                        $item->categorysearchfield = $params->categorysearchfield;
+                        $item->boundarysearchfield = $params->boundarysearchfield;
+                    }
+                }
+
                 if ($item->id == 9 || $item->id == 10 || $item->id == 11) {
-                    //Version criteria
                     $item->is = $catalogsearchcriteria->defaultvalue;
                 }
-                
+
                 if ($item->criteriatype_id == 2) {
                     //Search criteria on a relation
                     $relation = JTable::getInstance('relation', 'Easysdi_catalogTable');
@@ -188,39 +200,58 @@ class Easysdi_catalogModelsearch_criteria extends sdiModel {
      * @since   12.2
      */
     public function save($data) {
+        
         if (parent::save($data)) {
-
+         
             //Save default value in catalogsearchcriteria object
             $catalogsearchcriteria = JTable::getInstance('catalogsearchcriteria', 'Easysdi_catalogTable');
             $catalogsearchcriteria->load($data['catalogsearchcriteria_id']);
 
-            $array = array();
-            $array['id'] = $data['catalogsearchcriteria_id'];
-            $array['searchtab_id'] = $data['searchtab_id'];
+            $catalogsearchcriteria->searchtab_id = $data['searchtab_id'];
 
+            if ($data['id'] == 8) {
+                $params = new stdClass();
+                if (isset($data['boundarycategory_id'])) {
+                    $params->boundarycategory_id = $data['boundarycategory_id'];
+                }
+                if (isset($data['searchboundarytype'])) {
+                    $params->searchboundarytype = $data['searchboundarytype'];
+                }
+                if (isset($data['categorysearchfield'])) {
+                    $params->categorysearchfield = $data['categorysearchfield'];
+                }
+                if (isset($data['boundarysearchfield'])) {
+                    $params->boundarysearchfield = $data['boundarysearchfield'];
+                }
+                $catalogsearchcriteria->params = json_encode($params);
+            }
             if (isset($data['defaultvalues']))
-                $array['defaultvalue'] = json_encode($data['defaultvalues']);
+                $catalogsearchcriteria->defaultvalue = json_encode($data['defaultvalues']);
             else if (isset($data['resourcetype_id']))
-                $array['defaultvalue'] = json_encode($data['resourcetype_id']);
+                $catalogsearchcriteria->defaultvalue = json_encode($data['resourcetype_id']);
             else if (isset($data['organism_id']))
-                $array['defaultvalue'] = json_encode($data['organism_id']);
+                $catalogsearchcriteria->defaultvalue = json_encode($data['organism_id']);
+            else if (isset($data['boundary_id']))
+                $catalogsearchcriteria->defaultvalue = json_encode($data['boundary_id']);
             else if (isset($data['version']))
-                $array['defaultvalue'] = $data['version'];
+                 $catalogsearchcriteria->defaultvalue = $data['version'];
             else if (isset($data['is']))
-                $array['defaultvalue'] = $data['is'];
+                 $catalogsearchcriteria->defaultvalue = $data['is'];
             else if (isset($data['defaultvalue']))
-                $array['defaultvalue'] = $data['defaultvalue'];
+                 $catalogsearchcriteria->defaultvalue = $data['defaultvalue'];
             else
-                $array['defaultvalue'] = null;
+                 $catalogsearchcriteria->defaultvalue = null;
+            
             if (isset($data['from']))
-                $array['defaultvaluefrom'] = $data['from'];
+                $catalogsearchcriteria->defaultvaluefrom = $data['from'];
             else
-                $array['defaultvaluefrom'] = null;
+                $catalogsearchcriteria->defaultvaluefrom = null;
             if (isset($data['to']))
-                $array['defaultvalueto'] = $data['to'];
+               $catalogsearchcriteria->defaultvalueto = $data['to'];
             else
-                $array['defaultvalueto'] = null;
-            $catalogsearchcriteria->save($array);
+                $catalogsearchcriteria->defaultvalueto = null;
+            
+            $catalogsearchcriteria->store(true);
 
             //Save translations
             $translationtable = $this->getTable('Translation', 'Easysdi_catalogTable', array());

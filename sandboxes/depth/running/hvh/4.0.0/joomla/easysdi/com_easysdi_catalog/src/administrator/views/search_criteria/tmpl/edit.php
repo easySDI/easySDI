@@ -18,32 +18,34 @@ JHtml::_('behavior.keepalive');
 // Import CSS
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_catalog.css');
+$document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.css');
 ?>
 <script type="text/javascript">
     js = jQuery.noConflict();
     js(document).ready(function() {
         onRenderTypeChange();
+        onBoundaryCategoryChange();
+        js('#loader').hide();
 
-<?php if (isset($this->item->attributevalues)): ?>
-
-            js('#jform_defaultvalues').empty().trigger("liszt:updated");
-    <?php
-    foreach ($this->item->attributevalues as $attributevalue) :
-
-        if (in_array($attributevalue->id, $this->item->defaultvalues))
-            $selected = 'selected="selected"';
-        else
-            $selected = '';
-        ?>
-                js('#jform_defaultvalues')
-                        .append('<option value="<?php echo $attributevalue->id; ?>" <?php echo $selected; ?> ><?php echo $attributevalue->value; ?></option>')
-                        .trigger("liszt:updated")
-                        ;
-
+    <?php if (isset($this->item->attributevalues)): ?>
+        js('#jform_defaultvalues').empty().trigger("liszt:updated");
         <?php
-    endforeach;
-endif;
-?>
+        foreach ($this->item->attributevalues as $attributevalue) :
+
+            if (isset($this->item->defaultvalues) && in_array($attributevalue->id, $this->item->defaultvalues))
+                $selected = 'selected="selected"';
+            else
+                $selected = '';
+            ?>
+                    js('#jform_defaultvalues')
+                            .append('<option value="<?php echo $attributevalue->id; ?>" <?php echo $selected; ?> ><?php echo $attributevalue->value; ?></option>')
+                            .trigger("liszt:updated")
+                            ;
+
+            <?php
+        endforeach;
+    endif;
+    ?>
 
     });
 
@@ -77,9 +79,44 @@ endif;
                 break;
         }
     }
+
+    function onBoundaryCategoryChange() {
+        var selectedValues = js('#jform_boundarycategory_id').val();
+
+        var selectedBoundaries = js('#jform_boundary_id').val();
+
+        if (selectedValues == null)
+            return;
+
+        js('#loader').show();
+        var uriencoded = 'http://localhost/sdi4/administrator/index.php?option=com_easysdi_catalog&task=search_criteria.getBoundaries&categories=' + JSON.stringify(selectedValues);
+        js.ajax({
+            type: 'Get',
+            url: uriencoded,
+            success: function(data) {
+                var attributes = js.parseJSON(data);
+                js('#jform_boundary_id').empty().trigger("liszt:updated");
+
+                js.each(attributes, function(key, value) {
+                    var selected = '';
+                    if (js.inArray(value, selectedBoundaries))
+                        selected = 'selected="selected"';
+                    js('#jform_boundary_id')
+                            .append('<option value="' + value.id + '" ' + selected + ' >' + value.name + '</option>')
+                            .trigger("liszt:updated")
+                            ;
+                });
+                js('#loader').hide();
+            }
+        })
+
+    }
 </script>
 
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&layout=edit&id=' . (int) $this->item->id); ?>" method="post" enctype="multipart/form-data" name="adminForm" id="search_criteria-form" class="form-validate">
+    <div id="loader" style="">
+        <img id="loader_image"  src="components/com_easysdi_core/assets/images/loader.gif" alt="">
+    </div>
     <div class="row-fluid">
         <div class="span10 form-horizontal">
             <ul class="nav nav-tabs">
@@ -107,6 +144,24 @@ endif;
                         <div class="control-group">
                             <div class="control-label"><?php echo $this->form->getLabel('rendertype_id'); ?></div>
                             <div class="controls"><?php echo $this->form->getInput('rendertype_id'); ?></div>
+                        </div>
+                    <?php endif ?>
+                    <?php if ($this->item->id == 8) : ?>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('boundarycategory_id'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('boundarycategory_id'); ?></div>
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('searchboundarytype'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('searchboundarytype'); ?></div>
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('categorysearchfield'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('categorysearchfield'); ?></div>
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('boundarysearchfield'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('boundarysearchfield'); ?></div>
                         </div>
                     <?php endif ?>
                     <div class="well">
@@ -145,6 +200,12 @@ endif;
                             <div class="control-group">
                                 <div class="control-label"><?php echo $this->form->getLabel('defaultvalue'); ?></div>
                                 <div class="controls"><?php echo $this->form->getInput('organism_id'); ?></div>
+                            </div>
+                        <?php endif ?>
+                        <?php if ($this->item->id == 8) : ?>
+                            <div class="control-group">
+                                <div class="control-label"><?php echo $this->form->getLabel('defaultvalue'); ?></div>
+                                <div class="controls"><?php echo $this->form->getInput('boundary_id'); ?></div>
                             </div>
                         <?php endif ?>
                         <?php if ($this->item->id == 9 || $this->item->id == 10 || $this->item->id == 11) : ?>
@@ -190,15 +251,15 @@ endif;
                                     <div class="control-label"><?php echo $this->form->getLabel('defaultvalues'); ?></div>
                                     <div class="controls"><?php echo $this->form->getInput('defaultvalues'); ?></div>
                                 </div>
-                            
-                        <?php else: ?>
-                            <div class="control-group">
-                                <div class="control-label"><?php echo $this->form->getLabel('defaultvalue'); ?></div>
-                                <div class="controls"><?php echo $this->form->getInput('defaultvalue'); ?></div>
-                            </div>
+
+                            <?php else: ?>
+                                <div class="control-group">
+                                    <div class="control-label"><?php echo $this->form->getLabel('defaultvalue'); ?></div>
+                                    <div class="controls"><?php echo $this->form->getInput('defaultvalue'); ?></div>
+                                </div>
+                            <?php endif ?>
                         <?php endif ?>
-                    <?php endif ?>
-</div>
+                    </div>
 
                     <?php if ($this->item->criteriatype_id == 3) : ?>
                         <div class="well">

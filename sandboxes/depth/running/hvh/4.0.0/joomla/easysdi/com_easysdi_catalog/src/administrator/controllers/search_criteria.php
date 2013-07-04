@@ -23,4 +23,22 @@ class Easysdi_catalogControllerSearch_criteria extends JControllerForm
         parent::__construct();
     }
 
+    
+     function getBoundaries() {
+        $jinput = JFactory::getApplication()->input;
+        $categories = $jinput->get('categories', '0', 'string');
+       
+        $categories = json_decode($categories); 
+        $categories = implode(',', $categories);
+        
+        $db = JFactory::getDbo();
+        $db->setQuery('SELECT id, name
+                        FROM #__sdi_boundary  
+                        WHERE category_id IN ('.$categories.' )
+                        ORDER BY ordering');
+       
+        $boundaries = $db->loadObjectList();
+        echo json_encode($boundaries);
+        die();
+    }
 }

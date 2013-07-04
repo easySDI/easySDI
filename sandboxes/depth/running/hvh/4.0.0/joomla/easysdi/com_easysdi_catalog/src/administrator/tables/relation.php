@@ -98,6 +98,16 @@ class Easysdi_catalogTablerelation extends sdiTable {
         return $assetParentId;
     }
     
+    /**
+     * Overriden JTable::store to set $updateNulls.
+     *
+     * @param	boolean	True to update fields even if they are null.
+     * @return	boolean	True on success.
+     * @since	1.6
+     */
+    public function store($updateNulls = true) {
+       return  parent::store($updateNulls);
+    }
     
 
 }

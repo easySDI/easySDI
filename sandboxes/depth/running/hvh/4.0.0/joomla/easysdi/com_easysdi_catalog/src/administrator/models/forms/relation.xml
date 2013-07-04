@@ -48,20 +48,20 @@
         <field name="parent_id" type="sql" class="inputbox" required="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_PARENT_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_PARENT_ID" 
-               query="SELECT null AS `id`, '- Select Parent Id -' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_class`" key_field="id" value_field="name"
+               query="SELECT null AS `id`, '' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_class`" key_field="id" value_field="name"
         /> 
 
         <field name="attributechild_id" type="sql" class="inputbox"
         onchange="onChangeAttributeChild()"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ATTRIBUTECHILD_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_ATTRIBUTECHILD_ID" 
-               query="SELECT null AS `id`, '- Select Attributechild Id -' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_attribute`" key_field="id" value_field="name"
+               query="SELECT null AS `id`, '' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_attribute`" key_field="id" value_field="name"
         /> 
 
         <field name="classchild_id" type="sql" class="inputbox"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CLASSCHILD_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_CLASSCHILD_ID" 
-               query="SELECT null AS `id`, '- Select Classchild Id -' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_class`" key_field="id" value_field="name"
+               query="SELECT null AS `id`, '' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_class`" key_field="id" value_field="name"
         /> 
 
         <field name="lowerbound" type="text" size="40" class="inputbox"
@@ -78,21 +78,21 @@
          <field name="relationtype_id" type="sql"  class="inputbox"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_RELATIONTYPE_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_RELATIONTYPE_ID" 
-               query=" SELECT null AS id, '- None -' AS value, 0 as ordering UNION SELECT id, value, ordering FROM #__sdi_sys_relationtype WHERE state=1 ORDER BY ordering" 
+               query=" SELECT null AS id, '' AS value, 0 as ordering UNION SELECT id, value, ordering FROM #__sdi_sys_relationtype WHERE state=1 ORDER BY ordering" 
                key_field="id" 
                value_field="value"/> 
         
         <field name="rendertype_id" type="sql"  class="inputbox"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_RENDERTYPE_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_RENDERTYPE_ID" 
-               query=" SELECT null AS id, '- None -' AS value, 0 as ordering UNION SELECT id, value, ordering FROM #__sdi_sys_rendertype WHERE state=1 ORDER BY ordering" 
+               query=" SELECT null AS id, '' AS value, 0 as ordering UNION SELECT id, value, ordering FROM #__sdi_sys_rendertype WHERE state=1 ORDER BY ordering" 
                key_field="id" 
                value_field="value"/>
 
         <field name="namespace_id" 
                type="sql" 
                class="inputbox input-mini"
-               query=" SELECT null AS id, '- None -' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
+               query=" SELECT null AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
                key_field="id" 
                value_field="name"
                label="COM_EASYSDI_CATALOG_FORM_LBL_REALTION_NAMESPACE_ID"
@@ -107,7 +107,7 @@
          <field name="classassociation_id" type="sql" class="inputbox"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CLASSASSOCIATION_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_CLASSASSOCIATION_ID" 
-               query="SELECT null AS `id`, '- Select  -' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_class`" key_field="id" value_field="name"
+               query="SELECT null AS `id`, '' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_class`" key_field="id" value_field="name"
         /> 
 
         
@@ -115,14 +115,14 @@
         <field name="relationscope_id" type="sql"  class="inputbox" required="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_RELATIONSCOPE_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_RELATIONSCOPE_ID" 
-               query=" SELECT null AS id, '- None -' AS value, 0 as ordering UNION SELECT id, value, ordering FROM #__sdi_sys_relationscope WHERE state=1 ORDER BY ordering" 
+               query=" SELECT null AS id, '' AS value, 0 as ordering UNION SELECT id, value, ordering FROM #__sdi_sys_relationscope WHERE state=1 ORDER BY ordering" 
                key_field="id" 
                value_field="value"/> 
         
          <field name="editorrelationscope_id" type="sql"  class="inputbox" required="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_EDITORRELATIONSCOPE_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_EDITORRELATIONSCOPE_ID" 
-               query=" SELECT null AS id, '- None -' AS value, 0 as ordering UNION SELECT id, value, ordering FROM #__sdi_sys_relationscope WHERE state=1 ORDER BY ordering" 
+               query=" SELECT null AS id, '' AS value, 0 as ordering UNION SELECT id, value, ordering FROM #__sdi_sys_relationscope WHERE state=1 ORDER BY ordering" 
                key_field="id" 
                value_field="value"/> 
          

@@ -70,6 +70,7 @@
         
         <field name="boundarycategory_id" 
                type="sql" 
+               onchange="onBoundaryCategoryChange()"
                query="SELECT id, name FROM #__sdi_boundarycategory WHERE state=1 ORDER by ordering" 
                key_field="id" 
                value_field="name"
@@ -97,6 +98,18 @@
          label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_BOUNDARYSEARCHFIELD"
          description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_BOUNDARYSEARCHFIELD" 
          filter="safehtml" />
+        
+        <field name="boundary_id" 
+               type="sql" 
+               query="SELECT id, name FROM #__sdi_boundary WHERE state=1 ORDER by ordering" 
+               key_field="id" 
+               value_field="name"
+               translate="true"
+               class="multiselect"
+               multiple="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_BOUNDARY_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_BOUNDARY_ID" 
+        />
         
         <field name="rendertype_id" 
                type="sql" 

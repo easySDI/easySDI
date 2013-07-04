@@ -114,6 +114,10 @@ if (!empty($this->extra_sidebar)) {
 				<th class='left'>
 				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CATALOG_BOUNDARIES_NAME', 'a.name', $listDirn, $listOrder); ?>
 				</th>
+                                
+                                <th class='left'>
+				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CATALOG_BOUNDARIES_CATEGORY_ID', 'category', $listDirn, $listOrder); ?>
+				</th>
                     
                     
                 <?php if (isset($this->items[0]->id)): ?>
@@ -187,7 +191,9 @@ if (!empty($this->extra_sidebar)) {
                                     <?php echo $this->escape($item->name); ?>
                                 <?php endif; ?>
 				</td>
-
+<td>
+						<?php echo  $item->category; ?>
+					</td>
 
                 <?php if (isset($this->items[0]->id)): ?>
 					<td class="center hidden-phone">

@@ -21,7 +21,7 @@
                 onchange="onClassChange()"
                type="sql" 
                class="inputbox"
-               query=" SELECT 0 AS id, '- None -' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_class WHERE isrootclass=1  ORDER BY ordering" 
+               query=" SELECT NULL AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_class WHERE isrootclass=1  ORDER BY ordering" 
                key_field="id" 
                value_field="name"
                label="COM_EASYSDI_CATALOG_FORM_LBL_PROFILE_CLASS_ID"

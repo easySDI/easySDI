@@ -126,6 +126,10 @@ class Easysdi_catalogModelrelation extends sdiModel {
 
         if ($table->classchild_id === '')
             $table->classchild_id = null;
+        if ($table->rendertype_id === '')
+            $table->rendertype_id = null;
+        if ($table->attributechild_id === '')
+            $table->attributechild_id = null;
         if ($table->relationtype_id === '')
             $table->relationtype_id = null;
         if ($table->namespace_id === '')

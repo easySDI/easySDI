@@ -21,19 +21,19 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
 ?>
 <script type="text/javascript">
     js = jQuery.noConflict();
-    js(document).ready(function(){
-        
+    js(document).ready(function() {
+
     });
-    
+
     Joomla.submitbutton = function(task)
     {
-        if(task == 'boundary.cancel'){
+        if (task == 'boundary.cancel') {
             Joomla.submitform(task, document.getElementById('boundary-form'));
         }
-        else{
-            
+        else {
+
             if (task != 'boundary.cancel' && document.formvalidator.isValid(document.id('boundary-form'))) {
-                
+
                 Joomla.submitform(task, document.getElementById('boundary-form'));
             }
             else {
@@ -49,11 +49,11 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_CATALOG_TAB_NEW_BOUNDARY') : JText::sprintf('COM_EASYSDI_CATALOG_TAB_EDIT_BOUNDARY', $this->item->id); ?></a></li>
                 <li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CATALOG_TAB_PUBLISHING'); ?></a></li>
-                 <?php if (JFactory::getUser()->authorise('core.admin','easysdi_catalog')): ?>
+                <?php if (JFactory::getUser()->authorise('core.admin', 'easysdi_catalog')): ?>
                     <li><a href="#permissions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CATALOG_TAB_RULES'); ?></a></li>
                 <?php endif ?>
             </ul>
-             <div class="tab-content">
+            <div class="tab-content">
                 <div class="tab-pane active" id="details">
                     <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('name'); ?></div>
@@ -64,9 +64,9 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                         <div class="controls"><?php echo $this->form->getInput('alias'); ?></div>
                     </div>
                     <div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('category_id'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('category_id'); ?></div>
-			</div>
+                        <div class="control-label"><?php echo $this->form->getLabel('category_id'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('category_id'); ?></div>
+                    </div>
                     <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('parent_id'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('parent_id'); ?></div>
@@ -74,31 +74,31 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                     <div class="well">
                         <?php echo $this->form->getInput('text1'); ?>
                     </div>
-                     <div class="well">
+                    <div class="well">
                         <?php echo $this->form->getInput('text2'); ?>
                     </div>
                     <div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('northbound'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('northbound'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('southbound'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('southbound'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('eastbound'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('eastbound'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('westbound'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('westbound'); ?></div>
-			</div>
-			
+                        <div class="control-label"><?php echo $this->form->getLabel('northbound'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('northbound'); ?></div>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label"><?php echo $this->form->getLabel('southbound'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('southbound'); ?></div>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label"><?php echo $this->form->getLabel('eastbound'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('eastbound'); ?></div>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label"><?php echo $this->form->getLabel('westbound'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('westbound'); ?></div>
+                    </div>
+
                     <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('id'); ?></div>
                     </div>
-                    
+
                     <?php
                     foreach ($this->form->getFieldset('hidden') as $field):
                         ?>
@@ -126,7 +126,7 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                         </div>
                     <?php endif; ?>
                 </div>
-                <?php if (JFactory::getUser()->authorise('core.admin','easysdi_catalog')): ?>
+                <?php if (JFactory::getUser()->authorise('core.admin', 'easysdi_catalog')): ?>
                     <div class="tab-pane" id="permissions">
                         <fieldset>
                             <?php echo $this->form->getInput('rules'); ?>
@@ -147,7 +147,7 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
             <hr />
             <fieldset class="form-vertical">
                 <div class="control-group">
-                   
+
                     <?php
                     if ($this->canDo->get('core.edit.state')) {
                         ?>

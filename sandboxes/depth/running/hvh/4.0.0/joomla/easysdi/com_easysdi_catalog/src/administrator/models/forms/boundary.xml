@@ -34,7 +34,7 @@
                label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARY_MODIFIED"
                description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARY_MODIFIED"  /> 
 
-        <field name="name" type="text" size="40" class="inputbox"
+        <field name="name" type="text" size="40" class="inputbox" required="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARY_NAME"
                description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARY_NAME" 
                filter="safehtml" /> 
@@ -44,28 +44,28 @@
                description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
                filter="ARRAY" /> 
         
-        <field name="text2" type="multilingual" cols="20" rows="5" class="inputbox input-xlarge" 
+        <field name="text2" type="multilingual" cols="20" rows="5" class="inputbox input-xlarge"  
                label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_INFORMATION"
                description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_INFORMATION" 
                filter="ARRAY" /> 
 
         
-        <field name="northbound" type="text" size="40" class="inputbox"
+        <field name="northbound" type="text" size="40" class="inputbox" 
                label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARY_NORTHBOUND"
                description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARY_NORTHBOUND" 
                filter="safehtml" /> 
 
-        <field name="southbound" type="text" size="40" class="inputbox"
+        <field name="southbound" type="text" size="40" class="inputbox" 
                label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARY_SOUTHBOUND"
                description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARY_SOUTHBOUND" 
                filter="safehtml" /> 
 
-        <field name="eastbound" type="text" size="40" class="inputbox"
+        <field name="eastbound" type="text" size="40" class="inputbox" 
                label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARY_EASTBOUND"
                description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARY_EASTBOUND" 
                filter="safehtml" /> 
 
-        <field name="westbound" type="text" size="40" class="inputbox"
+        <field name="westbound" type="text" size="40" class="inputbox" 
                label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARY_WESTBOUND"
                description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARY_WESTBOUND" 
                filter="safehtml" /> 
@@ -73,7 +73,7 @@
         <field name="category_id" 
                type="sql" 
                class="inputbox"
-                query=" SELECT NULL AS id, '- None -' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_boundarycategory WHERE state=1 ORDER BY ordering" 
+                query=" SELECT NULL AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_boundarycategory WHERE state=1 ORDER BY ordering" 
                 key_field="id" 
                 value_field="name"
                label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARY_CATEGORY_ID"
@@ -85,7 +85,7 @@
                 class="inputbox"
                 label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARY_PARENT_ID"
                 description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARY_PARENT_ID" 
-                query=" SELECT NULL AS id, '- None -' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_boundary WHERE state=1 ORDER BY ordering" 
+                query=" SELECT NULL AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_boundary WHERE state=1 ORDER BY ordering" 
                 key_field="id" 
                 value_field="name"
         /> 

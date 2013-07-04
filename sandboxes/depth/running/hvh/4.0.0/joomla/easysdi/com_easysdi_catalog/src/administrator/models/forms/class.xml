@@ -22,7 +22,7 @@
             label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_STEREOTYPE_ID"
             description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_STEREOTYPE_ID" 
             multiple="false"
-            query="SELECT NULL AS id, '- Select -' AS value, 0 as ordering UNION SELECT id, value, ordering FROM #__sdi_sys_stereotype WHERE state=1 AND entity_id = 2 ORDER BY ordering" 
+            query="SELECT NULL AS id, '' AS value, 0 as ordering UNION SELECT id, value, ordering FROM #__sdi_sys_stereotype WHERE state=1 AND entity_id = 2 ORDER BY ordering" 
             key_field="id" 
             value_field="value"
             translate="true"/> 
@@ -85,7 +85,7 @@
     <field name="namespace_id" 
                type="sql" 
                class="inputbox input-mini"
-               query=" SELECT 0 AS id, '- None -' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
+               query=" SELECT NULL AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
                key_field="id" 
                value_field="name"
                label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_NAMESPACE_ID"
