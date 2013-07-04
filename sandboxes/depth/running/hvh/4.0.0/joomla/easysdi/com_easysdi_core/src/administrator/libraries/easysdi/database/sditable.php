@@ -152,7 +152,7 @@ abstract class sdiTable extends JTable {
      * @return	boolean	True on success.
      * @since	1.6
      */
-    public function store($updateNulls = false) {
+    public function store($updateNulls = true) {
         $date = JFactory::getDate();
         $user = JFactory::getUser();
         if ($this->id) {
@@ -166,23 +166,126 @@ abstract class sdiTable extends JTable {
         if (empty($this->guid)) {
             $this->guid = Easysdi_coreHelper::uuid();
         }
-        
-        //Alias can be used in SEF URL, check that this field is filled and url safe
- /*       jimport( 'joomla.filter.output' );
-        if(empty($this->alias)) {
-                $this->alias = $this->name;
-        }
-       // if (!empty($this->alias)) {
-            $this->alias = preg_replace('/\s+/', '-', $this->alias);
-            $this->alias = str_replace(array('Ã ', 'Ã¡', 'Ã¢', 'Ã£', 'Ã¤', 'Ã§', 'Ã¨', 'Ã©', 'Ãª', 'Ã«', 'Ã¬', 'Ã­', 'Ã®', 'Ã¯', 'Ã±', 'Ã²', 'Ã³', 'Ã´', 'Ãµ', 'Ã¶', 'Ã¹', 'Ãº', 'Ã»', 'Ã¼', 'Ã½', 'Ã¿', 'Ã€', 'Ã�', 'Ã‚', 'Ãƒ', 'Ã„', 'Ã‡', 'Ãˆ', 'Ã‰', 'ÃŠ', 'Ã‹', 'ÃŒ', 'Ã�', 'ÃŽ', 'Ã�', 'Ã‘', 'Ã’', 'Ã“', 'Ã”', 'Ã•', 'Ã–', 'Ã™', 'Ãš', 'Ã›', 'Ãœ', 'Ã�'), array('a', 'a', 'a', 'a', 'a', 'c', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'n', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u', 'y', 'y', 'A', 'A', 'A', 'A', 'A', 'C', 'E', 'E', 'E', 'E', 'I', 'I', 'I', 'I', 'N', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'Y'), $this->alias);
-            $this->alias = str_replace("'", "_", $this->alias);
-            $this->alias = strtolower($this->alias);
-            $this->alias = $this::getUniqueAlias($this->alias);
-            $this->alias = JFilterOutput::stringURLSafe($this->alias);
-      //  }*/
 
-        return parent::store($updateNulls);
+
+        return $this->storeOverwrite($updateNulls);
     }
+    
+    /**
+	 * Method to store a row in the database from the JTable instance properties.
+	 * If a primary key value is set the row with that primary key value will be
+	 * updated with the instance property values.  If no primary key value is set
+	 * a new row will be inserted into the database with the properties from the
+	 * JTable instance.
+	 *
+	 * @param   boolean  $updateNulls  True to update fields even if they are null.
+	 *
+	 * @return  boolean  True on success.
+	 *
+	 * @link    http://docs.joomla.org/JTable/store
+	 * @since   11.1
+	 */
+	public function storeOverwrite($updateNulls = false)
+	{
+		$k = $this->_tbl_key;
+		if (!empty($this->asset_id))
+		{
+			$currentAssetId = $this->asset_id;
+		}
+
+		if (0 == $this->$k)
+		{
+			$this->$k = null;
+		}
+
+		// The asset id field is managed privately by this class.
+		if ($this->_trackAssets)
+		{
+			unset($this->asset_id);
+		}
+
+		// If a primary key exists update the object, otherwise insert it.
+		if ($this->$k)
+		{
+			$this->_db->updateObject($this->_tbl, $this, $this->_tbl_key, $updateNulls);
+		}
+		else
+		{
+			$this->_db->insertObject($this->_tbl, $this, $this->_tbl_key);
+		}
+
+		// If the table is not set to track assets return true.
+		if (!$this->_trackAssets)
+		{
+			return true;
+		}
+
+		if ($this->_locked)
+		{
+			$this->_unlock();
+		}
+
+		/*
+		 * Asset Tracking
+		 */
+
+		$parentId = $this->_getAssetParentId();
+		$name = $this->_getAssetName();
+		$title = $this->_getAssetTitle();
+
+		$asset = self::getInstance('Asset', 'JTable', array('dbo' => $this->getDbo()));
+		$asset->loadByName($name);
+
+		// Re-inject the asset id.
+		$this->asset_id = $asset->id;
+
+		// Check for an error.
+		$error = $asset->getError();
+		if ($error)
+		{
+			$this->setError($error);
+			return false;
+		}
+
+		// Specify how a new or moved node asset is inserted into the tree.
+		if (empty($this->asset_id) || $asset->parent_id != $parentId)
+		{
+			$asset->setLocation($parentId, 'last-child');
+		}
+
+		// Prepare the asset to be stored.
+		$asset->parent_id = $parentId;
+		$asset->name = $name;
+		$asset->title = $title;
+
+		if ($this->_rules instanceof JAccessRules)
+		{
+			$asset->rules = (string) $this->_rules;
+		}
+
+		if (!$asset->check() || !$asset->store(false))
+		{
+			$this->setError($asset->getError());
+			return false;
+		}
+
+		// Create an asset_id or heal one that is corrupted.
+		if (empty($this->asset_id) || ($currentAssetId != $this->asset_id && !empty($this->asset_id)))
+		{
+			// Update the asset_id field in this table.
+			$this->asset_id = (int) $asset->id;
+
+			$query = $this->_db->getQuery(true)
+				->update($this->_db->quoteName($this->_tbl))
+				->set('asset_id = ' . (int) $this->asset_id)
+				->where($this->_db->quoteName($k) . ' = ' . (int) $this->$k);
+			$this->_db->setQuery($query);
+
+			$this->_db->execute();
+		}
+
+		return true;
+	}
 
     private function getUniqueAlias($alias) {
         $query = $this->_db->getQuery(true);

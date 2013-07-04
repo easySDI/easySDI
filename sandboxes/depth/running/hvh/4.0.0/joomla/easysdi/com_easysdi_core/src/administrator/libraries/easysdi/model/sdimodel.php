@@ -56,6 +56,7 @@ abstract class sdiModel extends JModelAdmin {
     public function save($data) {
 
         if (parent::save($data)) {
+
             //Get the element guid
             $item = parent::getItem($data['id']);
             $data['guid'] = $item->guid;
