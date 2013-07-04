@@ -24,17 +24,26 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
     js(document).ready(function() {
         onRenderTypeChange();
 
-        <?php 
-        if(isset($this->item->defaultvalues)):?>
-       js('#jform_defaultvalues').empty().trigger("liszt:updated");  
-        <?php foreach ($this->item->attributevalues as $attributevalue) :;?>
-                    js('#jform_defaultvalues')
-                            .append('<option value="<?php echo $attributevalue->id; ?>"><?php echo $attributevalue->value; ?></option>')
-                            .trigger("liszt:updated")
-                            ;
-                
-        <?php endforeach; 
-        endif; ?>
+<?php if (isset($this->item->attributevalues)): ?>
+
+            js('#jform_defaultvalues').empty().trigger("liszt:updated");
+    <?php
+    foreach ($this->item->attributevalues as $attributevalue) :
+
+        if (in_array($attributevalue->id, $this->item->defaultvalues))
+            $selected = 'selected="selected"';
+        else
+            $selected = '';
+        ?>
+                js('#jform_defaultvalues')
+                        .append('<option value="<?php echo $attributevalue->id; ?>" <?php echo $selected; ?> ><?php echo $attributevalue->value; ?></option>')
+                        .trigger("liszt:updated")
+                        ;
+
+        <?php
+    endforeach;
+endif;
+?>
 
     });
 
@@ -82,12 +91,10 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="details">
-
                     <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('name'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('name'); ?></div>
                     </div>
-
                     <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('alias'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('alias'); ?></div>
@@ -137,7 +144,7 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                         <?php if ($this->item->id == 7) : ?>
                             <div class="control-group">
                                 <div class="control-label"><?php echo $this->form->getLabel('defaultvalue'); ?></div>
-                                <div class="controls"><?php echo $this->form->getInput('manager_id'); ?></div>
+                                <div class="controls"><?php echo $this->form->getInput('organism_id'); ?></div>
                             </div>
                         <?php endif ?>
                         <?php if ($this->item->id == 9 || $this->item->id == 10 || $this->item->id == 11) : ?>
@@ -178,12 +185,12 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                                     <div class="control-label"><?php echo $this->form->getLabel('to'); ?></div>
                                     <div class="controls"><?php echo $this->form->getInput('to'); ?></div>
                                 </div>
-                            <?php elseif ($this->item->attributestereotype_id == 6) : print_r ($this->item->defaultvalues); ?>
+                            <?php elseif ($this->item->attributestereotype_id == 6) : ?>
                                 <div class="control-group">
                                     <div class="control-label"><?php echo $this->form->getLabel('defaultvalues'); ?></div>
                                     <div class="controls"><?php echo $this->form->getInput('defaultvalues'); ?></div>
                                 </div>
-                            </div>
+                            
                         <?php else: ?>
                             <div class="control-group">
                                 <div class="control-label"><?php echo $this->form->getLabel('defaultvalue'); ?></div>
@@ -191,89 +198,91 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                             </div>
                         <?php endif ?>
                     <?php endif ?>
-               
+</div>
 
-                <?php if ($this->item->criteriatype_id == 3) : ?>
+                    <?php if ($this->item->criteriatype_id == 3) : ?>
+                        <div class="well">
+                            <?php echo $this->form->getInput('searchfilter'); ?>
+                        </div>
+                    <?php endif ?>
+
                     <div class="well">
-                        <?php echo $this->form->getInput('searchfilter'); ?>
+                        <?php echo $this->form->getInput('text1'); ?>
                     </div>
-                <?php endif ?>
 
-                <div class="well">
-                    <?php echo $this->form->getInput('text1'); ?>
-                </div>
-
-                <div class="control-group">
-                    <div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
-                    <div class="controls"><?php echo $this->form->getInput('id'); ?></div>
-                </div>
-                 </div>
-           
-            <div class="tab-pane" id="publishing">
-                <div class="control-group">
-                    <div class="control-label"><?php echo $this->form->getLabel('created_by'); ?></div>
-                    <div class="controls"><?php echo $this->form->getInput('created_by'); ?></div>
-                </div>
-                <div class="control-group">
-                    <div class="control-label"><?php echo $this->form->getLabel('created'); ?></div>
-                    <div class="controls"><?php echo $this->form->getInput('created'); ?></div>
-                </div>
-                <?php if ($this->item->modified_by) : ?>
                     <div class="control-group">
-                        <div class="control-label"><?php echo $this->form->getLabel('modified_by'); ?></div>
-                        <div class="controls"><?php echo $this->form->getInput('modified_by'); ?></div>
+                        <div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('id'); ?></div>
+                    </div>
+
+                </div>
+
+
+                <div class="tab-pane" id="publishing">
+                    <div class="control-group">
+                        <div class="control-label"><?php echo $this->form->getLabel('created_by'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('created_by'); ?></div>
                     </div>
                     <div class="control-group">
-                        <div class="control-label"><?php echo $this->form->getLabel('modified'); ?></div>
-                        <div class="controls"><?php echo $this->form->getInput('modified'); ?></div>
+                        <div class="control-label"><?php echo $this->form->getLabel('created'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('created'); ?></div>
+                    </div>
+                    <?php if ($this->item->modified_by) : ?>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('modified_by'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('modified_by'); ?></div>
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('modified'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('modified'); ?></div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                <?php if (JFactory::getUser()->authorise('core.admin', 'easysdi_catalog')): ?>
+                    <div class="tab-pane" id="permissions">
+                        <fieldset>
+                            <?php echo $this->form->getInput('rules'); ?>
+                        </fieldset>
                     </div>
                 <?php endif; ?>
             </div>
-            <?php if (JFactory::getUser()->authorise('core.admin', 'easysdi_catalog')): ?>
-                <div class="tab-pane" id="permissions">
-                    <fieldset>
-                        <?php echo $this->form->getInput('rules'); ?>
-                    </fieldset>
-                </div>
-            <?php endif; ?>
-                 </div>
         </div>
-    
-    <div class="clr"></div>
 
-    <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
-        <div class="controls"><?php echo $field->input; ?></div>
-    <?php endforeach; ?>    
-    <input type="hidden" name="task" value="" />
-    <?php echo JHtml::_('form.token'); ?>
+        <div class="clr"></div>
 
-    <!-- Begin Sidebar -->
-    <div class="span2">
-        <h4><?php echo JText::_('JDETAILS'); ?></h4>
-        <hr />
-        <fieldset class="form-vertical">
-            <div class="control-group">
-                <?php if (JFactory::getUser()->authorise('core.edit.state', 'easysdi_catalog')): ?>
+        <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
+            <div class="controls"><?php echo $field->input; ?></div>
+        <?php endforeach; ?>    
+        <input type="hidden" name="task" value="" />
+        <?php echo JHtml::_('form.token'); ?>
+
+        <!-- Begin Sidebar -->
+        <div class="span2">
+            <h4><?php echo JText::_('JDETAILS'); ?></h4>
+            <hr />
+            <fieldset class="form-vertical">
+                <div class="control-group">
+                    <?php if (JFactory::getUser()->authorise('core.edit.state', 'easysdi_catalog')): ?>
+                        <div class="control-label">
+                            <?php echo $this->form->getLabel('state'); ?>
+                        </div>
+                        <div class="controls">
+                            <?php echo $this->form->getInput('state'); ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <div class="control-group">
                     <div class="control-label">
-                        <?php echo $this->form->getLabel('state'); ?>
+                        <?php echo $this->form->getLabel('access'); ?>
                     </div>
                     <div class="controls">
-                        <?php echo $this->form->getInput('state'); ?>
+                        <?php echo $this->form->getInput('access'); ?>
                     </div>
-                <?php endif; ?>
-            </div>
+                </div>
+            </fieldset>
+        </div>
+        <!-- End Sidebar -->
 
-            <div class="control-group">
-                <div class="control-label">
-                    <?php echo $this->form->getLabel('access'); ?>
-                </div>
-                <div class="controls">
-                    <?php echo $this->form->getInput('access'); ?>
-                </div>
-            </div>
-        </fieldset>
     </div>
-    <!-- End Sidebar -->
-
-</div>
 </form>

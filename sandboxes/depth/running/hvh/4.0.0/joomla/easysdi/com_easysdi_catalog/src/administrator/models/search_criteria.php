@@ -98,9 +98,39 @@ class Easysdi_catalogModelsearch_criteria extends sdiModel {
                 $item->catalogsearchcriteria_id = $catalogsearchcriteria->id;
                 $item->searchtab_id = $catalogsearchcriteria->searchtab_id;
                 $item->defaultvalue = $catalogsearchcriteria->defaultvalue;
-                $item->defaultvaluefrom = $catalogsearchcriteria->defaultvaluefrom;
-                $item->defaultvalueto = $catalogsearchcriteria->defaultvalueto;
+                $item->from = $catalogsearchcriteria->defaultvaluefrom;
+                $item->to = $catalogsearchcriteria->defaultvalueto;
 
+                //Load translations
+                $translationtable = $this->getTable('Translation', 'Easysdi_catalogTable', array());
+                $rows = $translationtable->loadAll($catalogsearchcriteria->guid);
+                if (is_array($rows)) {
+                    if (isset($rows['text1']))
+                        $item->text1 = $rows['text1'];
+                    if (isset($rows['text2']))
+                        $item->text2 = $rows['text2'];
+                }
+
+                if ($item->id == 2) {
+                    //Resource type criteria
+                    $item->resourcetype_id = json_decode($catalogsearchcriteria->defaultvalue, true);
+                }
+                
+                if ($item->id == 3) {
+                    //Version criteria
+                    $item->version = $catalogsearchcriteria->defaultvalue;
+                }
+                
+                if ($item->id == 7) {
+                    //Resource type criteria
+                    $item->organism_id = json_decode($catalogsearchcriteria->defaultvalue, true);
+                }
+                
+                if ($item->id == 9 || $item->id == 10 || $item->id == 11) {
+                    //Version criteria
+                    $item->is = $catalogsearchcriteria->defaultvalue;
+                }
+                
                 if ($item->criteriatype_id == 2) {
                     //Search criteria on a relation
                     $relation = JTable::getInstance('relation', 'Easysdi_catalogTable');
@@ -147,7 +177,7 @@ class Easysdi_catalogModelsearch_criteria extends sdiModel {
             }
         }
     }
-    
+
     /**
      * Method to save the form data.
      *
@@ -159,30 +189,47 @@ class Easysdi_catalogModelsearch_criteria extends sdiModel {
      */
     public function save($data) {
         if (parent::save($data)) {
-            
+
             //Save default value in catalogsearchcriteria object
             $catalogsearchcriteria = JTable::getInstance('catalogsearchcriteria', 'Easysdi_catalogTable');
             $catalogsearchcriteria->load($data['catalogsearchcriteria_id']);
 
             $array = array();
             $array['id'] = $data['catalogsearchcriteria_id'];
-            $array['searchtab_id']  = $data['searchtab_id'];
-           
+            $array['searchtab_id'] = $data['searchtab_id'];
+
             if (isset($data['defaultvalues']))
                 $array['defaultvalue'] = json_encode($data['defaultvalues']);
-            else if(isset($data['defaultvalue']))
+            else if (isset($data['resourcetype_id']))
+                $array['defaultvalue'] = json_encode($data['resourcetype_id']);
+            else if (isset($data['organism_id']))
+                $array['defaultvalue'] = json_encode($data['organism_id']);
+            else if (isset($data['version']))
+                $array['defaultvalue'] = $data['version'];
+            else if (isset($data['is']))
+                $array['defaultvalue'] = $data['is'];
+            else if (isset($data['defaultvalue']))
                 $array['defaultvalue'] = $data['defaultvalue'];
             else
                 $array['defaultvalue'] = null;
-            if(isset($data['from']))
+            if (isset($data['from']))
                 $array['defaultvaluefrom'] = $data['from'];
             else
                 $array['defaultvaluefrom'] = null;
-            if(isset($data['to']))
+            if (isset($data['to']))
                 $array['defaultvalueto'] = $data['to'];
             else
                 $array['defaultvalueto'] = null;
             $catalogsearchcriteria->save($array);
+
+            //Save translations
+            $translationtable = $this->getTable('Translation', 'Easysdi_catalogTable', array());
+            $data['guid'] = $catalogsearchcriteria->guid;
+            if (!$translationtable->saveAll($data)) {
+                $this->setError($translationtable->getError());
+                return false;
+            }
+
             return true;
         }
 

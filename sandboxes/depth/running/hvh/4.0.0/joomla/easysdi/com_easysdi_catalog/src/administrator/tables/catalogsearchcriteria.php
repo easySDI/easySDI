@@ -10,10 +10,12 @@
 // No direct access
 defined('_JEXEC') or die;
 
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/database/sditable.php';
+
 /**
  * attribute Table class
  */
-class Easysdi_catalogTablecatalogsearchcriteria extends JTable {
+class Easysdi_catalogTablecatalogsearchcriteria extends sdiTable {
 
     /**
      * Constructor

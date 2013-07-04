@@ -436,6 +436,11 @@ PRIMARY KEY (`id`) ,
 
 CREATE TABLE IF NOT EXISTS `#__sdi_catalog_searchcriteria` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`guid` VARCHAR(36)  NOT NULL ,
+`created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`modified_by` INT(11)   ,
+`modified` DATETIME ,
 `ordering` INT(11)   ,
 `state` INT(11)  NOT NULL DEFAULT '1',
 `catalog_id` INT UNSIGNED NOT NULL ,

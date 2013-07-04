@@ -56,6 +56,48 @@
                description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_CRITERIATYPE_ID" 
         />
         
+        <field name="organism_id" 
+               type="sql" 
+               query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER by ordering" 
+               key_field="id" 
+               value_field="name"
+               translate="true"
+               class="multiselect"
+               multiple="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_ORGANISM_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_ORGANISM_ID" 
+        />
+        
+        <field name="boundarycategory_id" 
+               type="sql" 
+               query="SELECT id, name FROM #__sdi_boundarycategory WHERE state=1 ORDER by ordering" 
+               key_field="id" 
+               value_field="name"
+               translate="true"
+               class="multiselect"
+               multiple="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_BOUNDARYCATEGORY_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_BOUNDARYCATEGORY_ID" 
+        />
+        
+        <field name="searchboundarytype" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_SEARCHBOUNDARYTYPE"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_SEARCHBOUNDARYTYPE" 
+        > 
+            <option value="0">BBOX</option>
+            <option value="1">ID</option>
+        </field>
+
+        <field name="categorysearchfield" type="text" size="40" class="inputbox"
+        label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_CATEGORYSEARCHFIELD"
+        description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_CATEGORYSEARCHFIELD" 
+        filter="safehtml" />
+ 
+        <field name="boundarysearchfield" type="text" size="40" class="inputbox"
+         label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_BOUNDARYSEARCHFIELD"
+         description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_BOUNDARYSEARCHFIELD" 
+         filter="safehtml" />
+        
         <field name="rendertype_id" 
                type="sql" 
                class="inputbox"
