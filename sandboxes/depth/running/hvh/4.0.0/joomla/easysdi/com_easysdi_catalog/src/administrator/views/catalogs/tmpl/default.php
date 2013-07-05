@@ -114,7 +114,7 @@ if (!empty($this->extra_sidebar)) {
                             <?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CATALOG_CATALOGS_NAME', 'a.name', $listDirn, $listOrder); ?>
                         </th>
 
-                        <th class='left'>
+                        <th class='center'>
                             <?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CATALOG_CATALOGS_SEARCHCRITERIA', 'a.name', $listDirn, $listOrder); ?>
                         </th>
 
@@ -189,9 +189,12 @@ if (!empty($this->extra_sidebar)) {
                                 <?php else : ?>
                                     <?php echo $this->escape($item->name); ?>
                                 <?php endif; ?>
+                                 <div class="small">
+                                    <?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($item->alias)); ?>
+                                </div>
                             </td>
 
-                            <td >
+                            <td class='center'>
                                 <?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>
 
                                     <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=search_criterias&filter_catalog=' . (int) $item->id); ?>">

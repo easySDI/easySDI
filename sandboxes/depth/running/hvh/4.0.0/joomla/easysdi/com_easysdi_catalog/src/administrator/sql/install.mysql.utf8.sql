@@ -199,13 +199,20 @@ CREATE TABLE IF NOT EXISTS `#__sdi_attributevalue` (
 `name` VARCHAR(255)  NOT NULL ,
 `value` VARCHAR(255)   ,
 `attribute_id` INT UNSIGNED NOT NULL ,
+`accessscope_id` int(11) UNSIGNED  NOT NULL,
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_attributevalue` (`attribute_id` ASC) ,
+    INDEX `#__sdi_attributevalue_fk2` (`accessscope_id` ASC) ,
   CONSTRAINT `#__sdi_attributevalue`
     FOREIGN KEY (`attribute_id` )
     REFERENCES `#__sdi_attribute` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+CONSTRAINT `#__sdi_attributevalue_fk2`
+    FOREIGN KEY (`accessscope_id` )
+    REFERENCES `#__sdi_sys_accessscope` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -230,7 +237,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_resourcetype` (
 `view` BOOLEAN NOT NULL ,
 `monitoring` BOOLEAN NOT NULL ,
 `predefined` BOOLEAN NOT NULL ,
-`versionning` BOOLEAN NOT NULL ,
+`versioning` BOOLEAN NOT NULL ,
 `profile_id` int(11) UNSIGNED  NOT NULL,
 `fragmentnamespace_id` int(11) UNSIGNED  ,
 `fragment` VARCHAR(255)   ,

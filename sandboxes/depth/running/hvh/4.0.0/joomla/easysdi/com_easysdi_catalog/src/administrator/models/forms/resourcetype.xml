@@ -61,9 +61,9 @@
             <option value="0">JNO</option>
         </field>
 
-        <field name="versionning" type="radio" class="btn-group" default="0"
-               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_VERSIONNING"
-               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_VERSIONNING" > 
+        <field name="versioning" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_VERSIONING"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_VERSIONING" > 
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
@@ -106,7 +106,7 @@
             <option value="0">JNO</option>
         </field>-->
         
-        <field name="sitemapparams" type="text" size="40" class="inputbox"
+        <field name="sitemapparams" type="text" size="40" class="inputbox input-xxlarge"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_SITEMAPPARAMS"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_SITEMAPPARAMS" 
                filter="safehtml" />
@@ -191,9 +191,9 @@
     <field name="fragmentnamespace_id"  
                type="sql" 
                class="inputbox input-mini"
-               query=" SELECT NULL AS id, '- None -' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
+               query=" SELECT NULL AS id, '' AS prefix, 0 as ordering UNION SELECT id, prefix, ordering FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
                key_field="id" 
-               value_field="name"
+               value_field="prefix"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_NAMESPACE"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_NAMESPACE" 
         /> 
@@ -203,7 +203,7 @@
                 description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_FRAGMENT" 
                 filter="safehtml" />
         
-        <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge"
+        <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" required="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_LABEL"
                description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
                filter="ARRAY" /> 

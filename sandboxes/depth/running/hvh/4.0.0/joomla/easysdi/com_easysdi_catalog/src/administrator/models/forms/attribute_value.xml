@@ -11,7 +11,7 @@
                description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_VALUE_ALIAS" 
                filter="safehtml" /> 
         
-        <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xxlarge" 
+        <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" required="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_LABEL"
                description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
                filter="ARRAY" />
@@ -34,21 +34,19 @@
                label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_MODIFIED"
                description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_VALUE_MODIFIED"  /> 
 
-        <field name="name" type="text" size="40" class="inputbox"
+        <field name="name" type="text" size="40" class="inputbox" required="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_NAME"
                description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_VALUE_NAME" 
                filter="safehtml" /> 
 
-        <field name="value" type="text" size="40" class="inputbox"
+        <field name="value" type="text" size="40" class="inputbox" required="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_VALUE"
                description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_VALUE_VALUE" 
                filter="safehtml" /> 
 
-        <field name="attribute_id" type="sql" readonly="true" class="readonly"
-               label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_ATTRIBUTE_ID"
-               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_VALUE_ATTRIBUTE_ID" 
-               query="SELECT `id`, `name` FROM `#__sdi_attribute` WHERE state=1 ORDER BY ordering" key_field="id" value_field="name"
-        /> 
+        <field name="attributename" type="text" default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_VALUE_ATTRIBUTE_ID"
+               readonly="true" class="readonly"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_VALUE_ATTRIBUTE_ID" />
 
         <field
             name="accessscope_id" 
@@ -127,6 +125,7 @@
     <fieldset name="hidden">
         <field name="asset_id" type="hidden" filter="SAFEHTML" />
         <field name="guid" type="hidden" filter="SAFEHTML" />
+        <field name="attribute_id" type="hidden" filter="SAFEHTML" />
         <field name="checked_out" type="hidden" filter="SAFEHTML" />
         <field name="checked_out_time" type="hidden" filter="SAFEHTML" /> 
     </fieldset>

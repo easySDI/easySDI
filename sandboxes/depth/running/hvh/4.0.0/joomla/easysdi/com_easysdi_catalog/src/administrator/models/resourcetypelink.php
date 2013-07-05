@@ -124,7 +124,10 @@ class Easysdi_catalogModelresourcetypelink extends JModelAdmin {
     public function save($data) {
 
         if (parent::save($data)) {
-
+            
+            $item = parent::getItem($data['id']);
+            $data['id'] = $item->id;
+ 
             //Delete existing inheritance
             $resourcetypelinkinheritance = JTable::getInstance('resourcetypelinkinheritance', 'Easysdi_catalogTable');
             $resourcetypelinkinheritance->deleteByResourceTypeLinkId($data['id']);

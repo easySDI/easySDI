@@ -74,10 +74,13 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
             <div class="tab-content">
                 <div class="tab-pane active" id="details">
                     <div class="control-group">
+                        <div class="control-label"><?php echo $this->form->getLabel('attributename'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('attributename'); ?></div>
+                    </div>
+                    <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('name'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('name'); ?></div>
                     </div>
-
                     <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('alias'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('alias'); ?></div>
@@ -103,10 +106,6 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                     <div class="control-group" id="users">
                         <div class="control-label"><?php echo $this->form->getLabel('users'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('users'); ?></div>
-                    </div>
-                    <div class="control-group">
-                        <div class="control-label"><?php echo $this->form->getLabel('attribute_id'); ?></div>
-                        <div class="controls"><?php echo $this->form->getInput('attribute_id'); ?></div>
                     </div>
                     <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>

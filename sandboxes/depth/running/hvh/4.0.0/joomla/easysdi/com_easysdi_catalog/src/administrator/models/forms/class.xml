@@ -84,6 +84,7 @@
 
     <field name="namespace_id" 
                type="sql" 
+               required = "true"
                class="inputbox input-mini"
                query=" SELECT NULL AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
                key_field="id" 
@@ -92,14 +93,14 @@
                description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_NAMESPACE_ID" 
         />  
 
-        <field name="isocode" type="text" size="40" class="inputbox"
+        <field name="isocode" type="text" size="40" class="inputbox"  required = "true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_ISOCODE"
                description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_ISOCODE" 
                filter="safehtml" />
         
      <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" 
-               label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_INFORMATION"
-               description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_INFORMATION" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_HELP"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_HELP" 
                filter="ARRAY" />
      
      <field name="id" type="text" default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_ID"

@@ -37,7 +37,7 @@ class Easysdi_catalogModelattribute_values extends JModelList {
                 'state', 'a.state',
                 'name', 'a.name',
                 'value', 'a.value',
-                'attribute_id', 'a.attribute_id',
+                'attribute_id', 'a.attribute_id', 'attributename',
             );
         }
 
@@ -118,10 +118,14 @@ class Easysdi_catalogModelattribute_values extends JModelList {
         // Join over the user field 'created_by'
         $query->select('created_by.name AS created_by');
         $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
+        
         // Join over the foreign key 'attribute_id'
         $query->select('#__sdi_attribute_593639.name AS attributes_name_593639');
         $query->join('LEFT', '#__sdi_attribute AS #__sdi_attribute_593639 ON #__sdi_attribute_593639.id = a.attribute_id');
 
+        // Join over the attribute .
+        $query->select('at.name AS attributename');
+        $query->join('LEFT', '#__sdi_attribute AS at ON at.id=a.attribute_id');
 
         // Filter by published state
         $published = $this->getState('filter.state');
@@ -130,7 +134,6 @@ class Easysdi_catalogModelattribute_values extends JModelList {
         } else if ($published === '') {
             $query->where('(a.state IN (0, 1))');
         }
-
 
         // Filter by search in title
         $search = $this->getState('filter.search');
@@ -146,9 +149,7 @@ class Easysdi_catalogModelattribute_values extends JModelList {
         $attribute = $this->getState('filter.attribute');
         if (is_numeric($attribute)) {
             $query->where('a.attribute_id = ' . (int) $attribute);
-        } 
-
-
+        }
 
         // Add the list ordering clause.
         $orderCol = $this->state->get('list.ordering');
@@ -160,4 +161,10 @@ class Easysdi_catalogModelattribute_values extends JModelList {
         return $query;
     }
 
+    public function getAttributeName(){
+        $attribute = $this->getState('filter.attribute');
+        $attributetable = JTable::getInstance('attribute', 'Easysdi_catalogTable');
+        $attributetable->load($attribute);
+        return $attributetable->name;                    
+    }
 }

@@ -55,7 +55,7 @@ class Easysdi_catalogViewAttribute_value extends JViewLegacy
         }
 		$canDo		= Easysdi_catalogHelper::getActions();
 
-		JToolBarHelper::title(JText::_('COM_EASYSDI_CATALOG_TITLE_ATTRIBUTE_VALUE'), 'attribute_value.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_CATALOG_TITLE_ATTRIBUTE_VALUE'). $this->item->attributename, 'attribute_value.png');
 
 		// If not checked out, can save the item.
 		if (!$checkedOut && ($canDo->get('core.edit')||($canDo->get('core.create'))))

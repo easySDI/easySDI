@@ -4,7 +4,7 @@
         <field name="parent_id"  required="true"
                 type="sql" 
                 class="inputbox"
-                query=" SELECT null AS id, '- None -' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_resourcetype WHERE state=1  ORDER BY ordering" 
+                query=" SELECT null AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_resourcetype WHERE state=1  ORDER BY ordering" 
                 key_field="id" 
                 value_field="name"
                 label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_PARENT_ID"
@@ -14,7 +14,7 @@
         <field name="child_id"  required="true"
                 type="sql" 
                 class="inputbox"
-                query=" SELECT null AS id, '- None -' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_resourcetype WHERE state=1  ORDER BY ordering" 
+                query=" SELECT null AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_resourcetype WHERE state=1  ORDER BY ordering" 
                 key_field="id" 
                 value_field="name"
                 label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_CHILD_ID"
@@ -31,7 +31,7 @@
            type="sql" 
            class="inputbox"
            onchange="onClassChange()"
-           query=" SELECT null AS id, '- None -' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_class WHERE state=1 AND isrootclass= 1 ORDER BY ordering" 
+           query=" SELECT null AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_class WHERE state=1 AND isrootclass= 1 ORDER BY ordering" 
            key_field="id" 
            value_field="name"
            label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_CLASS_ID"
@@ -41,29 +41,29 @@
     <field name="attribute_id"  required="true"
                type="sql" 
                class="inputbox"
-               query=" SELECT null AS id, '- None -' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_attribute WHERE state=1 ORDER BY ordering" 
+               query=" SELECT null AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_attribute WHERE state=1 ORDER BY ordering" 
                key_field="id" 
                value_field="name"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_ATTRIBUTE_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_ATTRIBUTE_ID" 
     /> 
     
-    <field name="parentboundlower" type="text" size="40" class="inputbox"
+    <field name="parentboundlower" type="text" size="40" class="inputbox" required="true"
            label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_PARENTBOUNDLOWER"
            description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_PARENTBOUNDLOWER" 
            filter="safehtml" /> 
 
-    <field name="parentboundupper" type="text" size="40" class="inputbox"
+    <field name="parentboundupper" type="text" size="40" class="inputbox" required="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_PARENTBOUNDUPPER"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_PARENTBOUNDUPPER" 
                filter="safehtml" /> 
 
-    <field name="childboundlower" type="text" size="40" class="inputbox"
+    <field name="childboundlower" type="text" size="40" class="inputbox" required="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_CHILDBOUNDLOWER"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_CHILDBOUNDLOWER" 
                filter="safehtml" /> 
 
-    <field name="childboundupper" type="text" size="40" class="inputbox"
+    <field name="childboundupper" type="text" size="40" class="inputbox" required="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_CHILDBOUNDUPPER"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_CHILDBOUNDUPPER" 
                filter="safehtml" /> 

@@ -113,6 +113,18 @@ if (!empty($this->extra_sidebar)) {
                         <th class='left'>
                             <?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CATALOG_RESOURCESTYPE_NAME', 'a.name', $listDirn, $listOrder); ?>
                         </th>
+                         <th class='center'>
+                            <?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CATALOG_RESOURCESTYPE_PREDEFINED', 'a.predefined', $listDirn, $listOrder); ?>
+                        </th>
+                         <th class='center'>
+                            <?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CATALOG_RESOURCESTYPE_VERSIONING', 'a.versioning', $listDirn, $listOrder); ?>
+                        </th>
+                        <th class='center'>
+                            <?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CATALOG_RESOURCESTYPE_DIFFUSION', 'a.diffusion', $listDirn, $listOrder); ?>
+                        </th>
+                        <th class='center'>
+                            <?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CATALOG_RESOURCESTYPE_VIEW', 'a.view', $listDirn, $listOrder); ?>
+                        </th>
 
 
                         <?php if (isset($this->items[0]->id)): ?>
@@ -186,9 +198,23 @@ if (!empty($this->extra_sidebar)) {
                                 <?php else : ?>
                                     <?php echo $this->escape($item->name); ?>
                                 <?php endif; ?>
-
+                                <div class="small">
+                                    <?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($item->alias)); ?>
+                                </div>
                             </td>
 
+                            <td class="center">
+                                <?php echo JHtml::_('grid.boolean', $i, $item->predefined); ?>
+                            </td>
+                            <td class="center">
+                                <?php echo JHtml::_('grid.boolean', $i, $item->versioning); ?>
+                            </td>
+                            <td class="center">
+                                <?php echo JHtml::_('grid.boolean', $i, $item->diffusion); ?>
+                            </td>
+                            <td class="center">
+                                <?php echo JHtml::_('grid.boolean', $i, $item->view); ?>
+                            </td>
 
                             <?php if (isset($this->items[0]->id)): ?>
                                 <td class="center hidden-phone">

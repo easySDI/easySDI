@@ -21,9 +21,9 @@
                type="sql" 
                required="true"
                class="inputbox input-mini"
-               query=" SELECT NULL AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
+               query="SELECT id, prefix, ordering FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
                key_field="id" 
-               value_field="name"
+               value_field="prefix"
                label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_NAMESPACE_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_NAMESPACE_ID" 
         /> 
@@ -59,7 +59,7 @@
          <field name="listnamespace_id" 
                type="sql" 
                class="inputbox input-mini"
-               query=" SELECT NULL AS id, '- None -' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
+               query=" SELECT NULL AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
                key_field="id" 
                value_field="name"
                label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_NAMESPACE_ID"
@@ -76,12 +76,12 @@
                description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_CODELIST" 
                filter="safehtml" /> 
 
-        <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xxlarge" 
+        <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" 
                label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_FORMAT_HELP"
                description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_FORMAT_HELP" 
                filter="ARRAY" />
         
-        <field name="text2" type="multilingual" cols="20" rows="5" class="inputbox input-xxlarge"  
+        <field name="text2" type="multilingual" cols="20" rows="5" class="inputbox input-xlarge"  
                label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_HELP"
                description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_HELP" 
                filter="ARRAY" />

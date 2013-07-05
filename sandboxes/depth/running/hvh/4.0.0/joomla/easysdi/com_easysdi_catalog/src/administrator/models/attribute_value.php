@@ -101,9 +101,11 @@ class Easysdi_catalogModelattribute_value extends sdiModel {
             //Do any procesing on fields here if needed
             
         }
-        $app = JFactory::getApplication('administrator');
+       $app = JFactory::getApplication('administrator');
        $item->attribute_id =  $app->getUserState( 'com_easysdi_catalog.attribute_values.filter.attribute','filter_attribute');
-       
+       $attributetable = JTable::getInstance('attribute', 'Easysdi_catalogTable');
+       $attributetable->load($item->attribute_id);
+       $item->attributename = $attributetable->name ;  
        return $item;
     }
 
