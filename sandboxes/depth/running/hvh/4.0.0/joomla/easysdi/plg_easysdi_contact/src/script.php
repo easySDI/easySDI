@@ -10,7 +10,7 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
 
-class plgusereasysdiInstallerScript
+class plg_user_easysdicontactInstallerScript
 {
 
 	function preflight( $type, $parent ) {

@@ -11,7 +11,7 @@ defined('_JEXEC') or die( 'Restricted access' );
 
 jimport('joomla.plugin.plugin');
 
-class plgUserEasysdi extends JPlugin {
+class plgUserEasysdicontact extends JPlugin {
 
 	public function __construct($subject, $config)
 	{
