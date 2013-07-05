@@ -49,7 +49,7 @@ class JFormFieldMultilingual extends JFormField
                 if(!is_array($languages))
                     return $html;
                
-                $html .= '<label >'.JText::_($this->element['label']).'</label>';
+               // $html .= '<label >'.JText::_($this->element['label']).'</label>';
                
                 foreach($languages as $language){
                     
@@ -62,13 +62,13 @@ class JFormFieldMultilingual extends JFormField
                     
                     $value = (isset($this->value[$language]))? $this->value[$language] : "";
                     
-                    $html .= '<div class="control-group">';
+                    $html .= '<div class="control-group" name="' . $this->name . '">';
                     $html .= '<div class="control-label">';
-                    $html .= '<label id="jform_'.$this->element['name'].'-lbl" for="'. $language.'" class="hasTip" title="">'.$lang.'</label>';
+                    $html .= '<label id="jform_'.$this->element['name'].'-lbl'. $language.'" for="jform_'.$this->element['name'].'_'.$language.'" class="hasTip" title="">'.$lang.'</label>';
                     $html .= '</div>';
                    
                     $html .= '<div class="controls">';
-                    $html .= '<textarea rows="'.$this->element['rows'].'" cols="'.$this->element['cols'].'" name="jform['.$this->element['name'].']['.$language.']" id="'.$language.'" 
+                    $html .= '<textarea rows="'.$this->element['rows'].'" cols="'.$this->element['cols'].'" name="jform['.$this->element['name'].']['.$language.']" id="jform_'.$this->element['name'].'_'.$language.'" 
                               ' . $class . $size . $disabled . $readonly . $onchange . $maxLength . $required . '>'.htmlspecialchars($value, ENT_COMPAT, 'UTF-8').'</textarea>';
                     $html .= '</div>';
                     $html .= '</div>';

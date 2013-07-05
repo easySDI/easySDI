@@ -151,18 +151,19 @@ class Easysdi_catalogModelrelation extends sdiModel {
      */
     public function save($data) {
         if (parent::save($data)) {
+            $item = parent::getItem($data['id']);
             //Delete existing links for this relation
             $relationprofile = JTable::getInstance('relationprofile', 'Easysdi_catalogTable');
-            $relationprofile->deleteByRelationId($data['id']);
+            $relationprofile->deleteByRelationId($item->id);
             if (is_array($data['profile_id'])) {
                 //Insert/update relation profile links
                 foreach ($data['profile_id'] as $profile) {
                     $array = array();
-                    $array['relation_id'] = $data['id'];
+                    $array['relation_id'] = $item->id;
                     $array['profile_id'] = $profile;
                     $relationprofile = JTable::getInstance('relationprofile', 'Easysdi_catalogTable');
                     $keys = array();
-                    $keys['relation_id'] = $data['id'];
+                    $keys['relation_id'] = $item->id;
                     $keys['profile_id'] = $profile;
                     $relationprofile->load($keys);
                     $relationprofile->save($array);
@@ -171,7 +172,7 @@ class Easysdi_catalogModelrelation extends sdiModel {
 
             //Delete searchcriteria
                 $searchcriteria = JTable::getInstance('search_criteria', 'Easysdi_catalogTable');
-                $searchcriteria->deleteByRelationId($data['id']);
+                $searchcriteria->deleteByRelationId($item->id);
                  //Delete existing searcriteriafilter with SQL constraints
                 //Delete existing catalogsearchcriteria with SQL constraints
                 
@@ -179,14 +180,14 @@ class Easysdi_catalogModelrelation extends sdiModel {
                 
                 //Save search criteria
                 $array = array();
-                $array['relation_id'] = $data['id'];
+                $array['relation_id'] = $item->id;
                 $array['rendertype_id'] = $data['rendertype_id'];
                 $array['criteriatype_id'] = '2';
                 $array['name'] = $data['name'];
                 $array['issystem'] = '0';
                 $searchcriteria = JTable::getInstance('search_criteria', 'Easysdi_catalogTable');
                 $keys = array();
-                $keys['relation_id'] = $data['id'];
+                $keys['relation_id'] = $item->id;
                 $searchcriteria->load($keys);
                 if(!$searchcriteria->save($array)){
                     $this->setError($searchcriteria->getError());

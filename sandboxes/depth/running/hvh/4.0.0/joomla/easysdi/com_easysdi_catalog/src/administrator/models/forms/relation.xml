@@ -165,7 +165,7 @@
        description="JFIELD_ACCESS_DESC" 
        filter="raw" /> 
         
-        <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" 
+        <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge"  required="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_LABEL"
                description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
                filter="ARRAY" />

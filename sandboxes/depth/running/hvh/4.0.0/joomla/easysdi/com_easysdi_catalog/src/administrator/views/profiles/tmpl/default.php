@@ -176,19 +176,17 @@ foreach ($this->items as $i => $item) :
                                     <?php echo JHtml::_('jgrid.published', $item->state, $i, 'profiles.', $canChange, 'cb'); ?>
                                 </td>
                             <?php endif; ?>
-
-
                             <td>
-
                                 <?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>
                                     <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=profile.edit&id=' . (int) $item->id); ?>">
                                         <?php echo $this->escape($item->name); ?></a>
                                 <?php else : ?>
                                     <?php echo $this->escape($item->name); ?>
                                 <?php endif; ?>
+                                <div class="small">
+                                    <?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($item->alias)); ?>
+                                </div>
                             </td>
-
-
                             <?php if (isset($this->items[0]->id)): ?>
                                 <td class="center hidden-phone">
                                     <?php echo (int) $item->id; ?>

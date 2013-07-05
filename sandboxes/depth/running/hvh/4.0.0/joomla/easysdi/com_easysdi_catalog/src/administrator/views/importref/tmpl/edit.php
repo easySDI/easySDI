@@ -22,21 +22,21 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 ?>
 <script type="text/javascript">
     js = jQuery.noConflict();
-    js(document).ready(function(){
+    js(document).ready(function() {
         onServiceChange();
         onTypeChange();
-        
+
     });
-    
+
     Joomla.submitbutton = function(task)
     {
-        if(task == 'importref.cancel'){
+        if (task == 'importref.cancel') {
             Joomla.submitform(task, document.getElementById('importref-form'));
         }
-        else{
-            
+        else {
+
             if (task != 'importref.cancel' && document.formvalidator.isValid(document.id('importref-form'))) {
-                
+
                 Joomla.submitform(task, document.getElementById('importref-form'));
             }
             else {
@@ -44,11 +44,13 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
             }
         }
     }
-    
+
     function onServiceChange() {
         js('#loader').show();
         var service_id = js("#jform_cswservice_id :selected").val();
-        if(service_id === ''){
+        var selectedversion = js('#jform_cswversion_id').val();
+        
+        if (service_id === '') {
             js('#loader').hide();
             return;
         }
@@ -59,10 +61,16 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
             success: function(data) {
                 var attributes = js.parseJSON(data);
                 js('#jform_cswversion_id').empty().trigger("liszt:updated");
-
+                js('#jform_cswversion_id')
+                        .append('<option value="null"></option>')
+                        .trigger("liszt:updated")
+                        ;
                 js.each(attributes, function(key, value) {
+                     var selected = '';
+                    if (js.inArray(value, selectedversion))
+                        selected = 'selected="selected"';
                     js('#jform_cswversion_id')
-                            .append('<option value="' + value.id + '">' + value.value + '</option>')
+                            .append('<option value="' + value.id + '" ' + selected + '>' + value.value + '</option>')
                             .trigger("liszt:updated")
                             ;
                 });
@@ -71,9 +79,9 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 
         })
     }
-    
-    function  onTypeChange(){
-     var importtype = js("#jform_importtype_id :selected").val();
+
+    function  onTypeChange() {
+        var importtype = js("#jform_importtype_id :selected").val();
         switch (importtype) {
             case "1":
                 js("#jform_xsl4sdi").val('');
@@ -89,8 +97,8 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&layout=edit&id=' . (int) $this->item->id); ?>" method="post" enctype="multipart/form-data" name="adminForm" id="importref-form" class="form-validate">
     <div id="loader" style="">
-            <img id="loader_image"  src="components/com_easysdi_core/assets/images/loader.gif" alt="">
-        </div>
+        <img id="loader_image"  src="components/com_easysdi_core/assets/images/loader.gif" alt="">
+    </div>
     <div class="row-fluid">
         <div class="span10 form-horizontal">
             <ul class="nav nav-tabs">
@@ -143,8 +151,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
         </div>
         <div class="clr"></div>
 
-        <?php
-        foreach ($this->form->getFieldset('hidden') as $field): ?>
+        <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
             <div class="controls"><?php echo $field->input; ?></div>
         <?php endforeach; ?>    
         <input type="hidden" name="task" value="" />

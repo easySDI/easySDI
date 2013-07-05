@@ -93,5 +93,13 @@ class Easysdi_catalogTableboundary extends sdiTable {
         }
         return $assetParentId;
     }
+    
+    
+     /**
+     * Overloaded getNextOrder function
+     */
+    public function getNextOrder($where = ''){
+        return parent::getNextOrder('category_id = ' . $this->category_id);
+    }
 
 }

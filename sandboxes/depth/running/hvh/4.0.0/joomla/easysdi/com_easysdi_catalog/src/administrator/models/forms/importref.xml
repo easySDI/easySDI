@@ -22,7 +22,7 @@
                onchange="onTypeChange()"
                class="inputbox"
                translate="true"
-               query=" SELECT NULL AS id, '- None -' AS value, 0 as ordering UNION SELECT id, value, ordering FROM #__sdi_sys_importtype WHERE state=1 ORDER BY ordering" 
+               query=" SELECT NULL AS id, '' AS value, 0 as ordering UNION SELECT id, value, ordering FROM #__sdi_sys_importtype WHERE state=1 ORDER BY ordering" 
                key_field="id" 
                value_field="value"
                label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_IMPORTTYPE_ID"
@@ -40,11 +40,10 @@
               filter="safehtml" /> 
  
         <field name="cswservice_id" 
-                required="true"
                type="sql" 
                 onchange="onServiceChange()"
                class="inputbox"
-               query=" SELECT NULL AS id, '- None -' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_physicalservice WHERE state=1 AND serviceconnector_id = 1 ORDER BY ordering" 
+               query=" SELECT NULL AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_physicalservice WHERE state=1 AND serviceconnector_id = 1 ORDER BY ordering" 
                key_field="id" 
                value_field="name"
                label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_CSWURL"
@@ -52,10 +51,9 @@
         /> 
         
         <field name="cswversion_id" 
-                required="true"
                type="sql" 
                class="inputbox"
-               query=" SELECT NULL AS id, '- None -' AS name, 0 as ordering" 
+               query=" SELECT NULL AS id, '' AS name, 0 as ordering" 
                key_field="id" 
                value_field="name"
                label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_CSWVERSION"
@@ -76,7 +74,7 @@
         
     </fieldset> 
     
-    <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" 
+    <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge"  required="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_LABEL"
                description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
                filter="ARRAY" />

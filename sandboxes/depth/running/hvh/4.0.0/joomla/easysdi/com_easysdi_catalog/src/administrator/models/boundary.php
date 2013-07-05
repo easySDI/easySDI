@@ -101,4 +101,19 @@ class Easysdi_catalogModelboundary extends sdiModel {
         if ($table->category_id == '')
             $table->category_id = null;
     }
+    
+    /**
+	 * A protected method to get a set of ordering conditions.
+	 *
+	 * @param	object	A record object.
+	 *
+	 * @return	array	An array of conditions to add to add to ordering queries.
+	 * @since	1.6
+	 */
+	protected function getReorderConditions($table)
+	{
+		$condition = array();
+		$condition[] = 'category_id = '.(int) $table->category_id;
+		return $condition;
+	}
 }

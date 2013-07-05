@@ -68,11 +68,6 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
-
-
-
-
-
 CREATE TABLE IF NOT EXISTS `#__sdi_class` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
@@ -534,12 +529,12 @@ PRIMARY KEY (`id`) ,
   CONSTRAINT `#__sdi_relation_profile_fk1`
     FOREIGN KEY (`relation_id` )
     REFERENCES `#__sdi_relation` (`id` )
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
   CONSTRAINT `#__sdi_relation_profile_fk2`
     FOREIGN KEY (`profile_id` )
     REFERENCES `#__sdi_profile` (`id` )
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -555,12 +550,12 @@ PRIMARY KEY (`id`) ,
   CONSTRAINT `#__sdi_relation_catalog_fk1`
     FOREIGN KEY (`relation_id` )
     REFERENCES `#__sdi_relation` (`id` )
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
   CONSTRAINT `#__sdi_relation_catalog_fk2`
     FOREIGN KEY (`catalog_id` )
     REFERENCES `#__sdi_catalog` (`id` )
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -933,12 +928,12 @@ PRIMARY KEY (`id`) ,
   CONSTRAINT `#__sdi_catalog_resourcetype_fk1`
     FOREIGN KEY (`catalog_id` )
     REFERENCES `#__sdi_catalog` (`id` )
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
   CONSTRAINT `#__sdi_catalog_resourcetype_fk2`
     FOREIGN KEY (`resourcetype_id` )
     REFERENCES `#__sdi_resourcetype` (`id` )
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION
 
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -951,7 +946,7 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 ALTER TABLE `#__sdi_sys_rendertype_criteriatype`
-ADD CONSTRAINT `#__sdi_sys_rendertype_criteriatype_fk1` FOREIGN KEY (`criteriatype_id`) REFERENCES `#__sdi_sys_criteriatype` (`id`);
+ADD CONSTRAINT `#__sdi_sys_rendertype_criteriatype_fk1` FOREIGN KEY (`criteriatype_id`) REFERENCES `#__sdi_sys_criteriatype` (`id`) ON DELETE CASCADE;
 
 ALTER TABLE `#__sdi_sys_rendertype_criteriatype`
-ADD CONSTRAINT `#__sdi_sys_rendertype_criteriatype_fk2` FOREIGN KEY (`rendertype_id`) REFERENCES `#__sdi_sys_rendertype` (`id`);
+ADD CONSTRAINT `#__sdi_sys_rendertype_criteriatype_fk2` FOREIGN KEY (`rendertype_id`) REFERENCES `#__sdi_sys_rendertype` (`id`) ON DELETE CASCADE;

@@ -70,10 +70,6 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                         <div class="controls"><?php echo $this->form->getInput('uri'); ?></div>
                     </div>
                     <div class="control-group">
-                        <div class="control-label"><?php echo $this->form->getLabel('system'); ?></div>
-                        <div class="controls"><?php echo $this->form->getInput('system'); ?></div>
-                    </div>
-                    <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('id'); ?></div>
                     </div>

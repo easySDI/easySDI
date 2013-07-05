@@ -182,7 +182,9 @@ if (!empty($this->extra_sidebar)) {
                                 <?php else : ?>
                                     <?php echo $this->escape($item->name); ?>
                                 <?php endif; ?>
-
+                                <div class="small">
+                                    <?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($item->alias)); ?>
+                                </div>
                             </td>
 
 

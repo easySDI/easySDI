@@ -24,10 +24,7 @@
 
 		<field name="uri" type="text" size="40" class="inputbox" label="COM_EASYSDI_CATALOG_FORM_LBL_NAMESPACE_URI" description="COM_EASYSDI_CATALOG_FORM_DESC_NAMESPACE_URI" filter="safehtml"/> 
 
-		<field name="system" type="radio" class="btn-group" default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_NAMESPACE_SYSTEM" description="COM_EASYSDI_CATALOG_FORM_DESC_NAMESPACE_SYSTEM">
-                    <option value="1">JYES</option>
-                    <option value="0">JNO</option>
-                 </field>
+		
 		<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox" size="1" default="1">
 			<option value="1">JPUBLISHED</option>
 			<option value="0">JUNPUBLISHED</option>
@@ -47,6 +44,7 @@
         
         <fieldset name="hidden">
             <field name="asset_id" type="hidden" filter="SAFEHTML" />
+            <field name="system" type="hidden" filter="SAFEHTML" />
             <field name="guid" type="hidden" filter="SAFEHTML" />
             <field name="checked_out" type="hidden" filter="SAFEHTML" />
             <field name="checked_out_time" type="hidden" filter="SAFEHTML" /> 
