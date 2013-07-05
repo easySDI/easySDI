@@ -141,8 +141,7 @@
             description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_CHILDTYPE"
             class="inputbox"
             size="1"
-            default="0">
-            <option value="0">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CHILDTYPE_SELECT</option>
+            default="1">
             <option value="1">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CHILDTYPE_CLASS</option>
             <option value="2">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CHILDTYPE_ATTRIBUTE</option>
             <option value="3">COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CHILDTYPE_RESOURCETYPE</option>

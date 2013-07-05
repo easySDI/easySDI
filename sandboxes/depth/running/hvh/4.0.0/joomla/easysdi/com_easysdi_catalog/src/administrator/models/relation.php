@@ -124,6 +124,24 @@ class Easysdi_catalogModelrelation extends sdiModel {
             }
         }
 
+        if($table->childtype_id == 1){
+            $table->attributechild_id =null;
+            $table->childresourcetype_id = null;
+            $table->rendertype_id = null;
+        }
+        elseif($table->childtype_id == 2){
+            $table->classchild_id =null;
+            $table->childresourcetype_id = null;
+            $table->relationtype_id = null;
+            $table->classassociation_id = null;
+            $table->namespace_id = null;
+            $table->isocode = null;
+        }
+        elseif($table->childtype_id == 3){
+            $table->attributechild_id =null;
+            $table->classchild_id =null;
+            $table->rendertype_id = null;
+        }
         if ($table->classchild_id === '')
             $table->classchild_id = null;
         if ($table->rendertype_id === '')

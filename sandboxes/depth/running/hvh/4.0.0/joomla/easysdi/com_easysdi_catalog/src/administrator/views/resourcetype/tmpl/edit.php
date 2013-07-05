@@ -85,8 +85,11 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                         <div class="control-label"><?php echo $this->form->getLabel('fragment'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('fragmentnamespace_id'); ?><?php echo $this->form->getInput('fragment'); ?></div>
                     </div>
-                    <div class="well">
-                        <?php echo $this->form->getInput('text1'); ?>
+                   <div class="well">
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('text1'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('text1'); ?></div>
+                        </div>
                     </div>
                     
                     <?php

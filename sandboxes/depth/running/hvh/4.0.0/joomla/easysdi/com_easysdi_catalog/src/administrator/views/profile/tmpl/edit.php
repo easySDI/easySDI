@@ -97,7 +97,10 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
                     <?php endforeach; ?>
 
                     <div class="well">
-                        <?php echo $this->form->getInput('text1'); ?>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('text1'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('text1'); ?></div>
+                        </div>
                     </div>
                     <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>

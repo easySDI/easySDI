@@ -262,13 +262,19 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
                     </div>
 
                     <?php if ($this->item->criteriatype_id == 3) : ?>
-                        <div class="well">
-                            <?php echo $this->form->getInput('searchfilter'); ?>
+                    <div class="well">
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('searchfilter'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('searchfilter'); ?></div>
                         </div>
+                    </div>
                     <?php endif ?>
 
                     <div class="well">
-                        <?php echo $this->form->getInput('text1'); ?>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('text1'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('text1'); ?></div>
+                        </div>
                     </div>
 
                     <div class="control-group">

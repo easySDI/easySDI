@@ -86,9 +86,12 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                         <div class="control-label"><?php echo $this->form->getLabel('value'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('value'); ?></div>
                     </div>
-                    <div class="well">
-                        <?php echo $this->form->getInput('text1'); ?>
-                    </div> 
+                   <div class="well">
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('text1'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('text1'); ?></div>
+                        </div>
+                    </div>
                     <div class="control-group" id="accessscope_id">
                         <div class="control-label"><?php echo $this->form->getLabel('accessscope_id'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('accessscope_id'); ?></div>

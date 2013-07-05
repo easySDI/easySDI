@@ -72,10 +72,16 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                         <div class="controls"><?php echo $this->form->getInput('parent_id'); ?></div>
                     </div>
                     <div class="well">
-                        <?php echo $this->form->getInput('text1'); ?>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('text1'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('text1'); ?></div>
+                        </div>
                     </div>
                     <div class="well">
-                        <?php echo $this->form->getInput('text2'); ?>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('text2'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('text2'); ?></div>
+                        </div>
                     </div>
                     <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('northbound'); ?></div>
