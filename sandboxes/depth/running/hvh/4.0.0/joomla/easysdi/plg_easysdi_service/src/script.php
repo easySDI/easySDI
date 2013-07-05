@@ -10,7 +10,7 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
 
-class plgcontenteasysdiInstallerScript
+class plg_content_easysdiserviceInstallerScript
 {
 
 	function preflight( $type, $parent ) {
@@ -42,7 +42,7 @@ class plgcontenteasysdiInstallerScript
 		if($type == 'install'){
 			//Activate the plugin
 			$db = JFactory::getDbo();
-			$db->setQuery("UPDATE #__extensions SET enabled=1 WHERE type='plugin' AND element='easysdi' AND folder='content'");
+			$db->setQuery("UPDATE #__extensions SET enabled=1 WHERE type='plugin' AND element='easysdi_service' AND folder='content'");
 			$db->query();
 		}
 	}

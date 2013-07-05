@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="3.0" type="plugin" group="content">
-    <name>plg_easysdi_content</name>
+    <name>plg_easysdi_service</name>
     <author>EasySDI Community</author>
     <creationDate>15 August 2012</creationDate>
     <releaseDate>26 march 2013</releaseDate>
@@ -12,13 +12,13 @@
     <description>PLG_CONTENT_EASYSDI_XML_DESCRIPTION</description>
     <scriptfile>script.php</scriptfile>
     <files>
-        <filename plugin="easysdi">easysdi.php</filename>
+        <filename plugin="easysdiservice">easysdiservice.php</filename>
     </files>
     <languages>
-        <language tag="en-GB">language/en-GB/en-GB.plg_content_easysdi.sys.ini</language>
-        <language tag="en-GB">language/en-GB/en-GB.plg_content_easysdi.ini</language>
-        <language tag="fr-FR">language/fr-FR/fr-FR.plg_content_easysdi.sys.ini</language>
-        <language tag="fr-FR">language/fr-FR/fr-FR.plg_content_easysdi.ini</language>
+        <language tag="en-GB">language/en-GB/en-GB.plg_content_easysdiservice.sys.ini</language>
+        <language tag="en-GB">language/en-GB/en-GB.plg_content_easysdiservice.ini</language>
+        <language tag="fr-FR">language/fr-FR/fr-FR.plg_content_easysdiservice.sys.ini</language>
+        <language tag="fr-FR">language/fr-FR/fr-FR.plg_content_easysdiservice.ini</language>
     </languages>
 
 </extension>

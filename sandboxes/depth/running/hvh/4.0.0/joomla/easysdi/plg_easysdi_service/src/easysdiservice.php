@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
  * @subpackage  
  * @since       3.3.0
  */
-class plgContentEasysdi extends JPlugin
+class plgContentEasysdiservice extends JPlugin
 {
 	/**
 	 * 
