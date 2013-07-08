@@ -89,6 +89,7 @@ class Easysdi_catalogModelsearch_criteria extends sdiModel {
             $app = JFactory::getApplication('administrator');
             $catalog = $app->getUserStateFromRequest('com_easysdi_catalog.search_criterias.filter.catalog', 'filter_catalog');
             if (isset($catalog)) {
+                $item->catalog_id = $catalog;
                 //Merge search_criteria object with catalog_searchcriteria object
                 $catalogsearchcriteria = JTable::getInstance('catalogsearchcriteria', 'Easysdi_catalogTable');
                 $keys = array();
@@ -202,11 +203,15 @@ class Easysdi_catalogModelsearch_criteria extends sdiModel {
     public function save($data) {
         
         if (parent::save($data)) {
-         
+            $item = parent::getItem($data['id']);
+            $data['id'] = $item->id;
+            
             //Save default value in catalogsearchcriteria object
             $catalogsearchcriteria = JTable::getInstance('catalogsearchcriteria', 'Easysdi_catalogTable');
             $catalogsearchcriteria->load($data['catalogsearchcriteria_id']);
 
+            $catalogsearchcriteria->catalog_id = $data['catalog_id'];
+            $catalogsearchcriteria->searchcriteria_id =  $data['id'];
             $catalogsearchcriteria->searchtab_id = $data['searchtab_id'];
 
             if ($data['id'] == 8) {

@@ -73,12 +73,12 @@
                description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
                filter="ARRAY" /> 
         
-        <field name="text2" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" 
+        <field name="text2" type="multilingual" cols="20" rows="3" class="inputbox input-xlarge" 
                label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_INFORMATION"
                description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_INFORMATION" 
                filter="ARRAY" /> 
         
-        <field name="searchsort" type="multilingual" size="40" class="inputbox" 
+        <field name="searchsort" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge" 
                label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_SORT"
                description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_SORT" 
                filter="ARRAY" /> 

@@ -235,6 +235,7 @@
         <field name="checked_out" type="hidden" filter="SAFEHTML" />
         <field name="checked_out_time" type="hidden" filter="SAFEHTML" /> 
         <field name="issystem" type="hidden" filter="SAFEHTML" />
+        <field name="catalog_id" type="hidden" filter="SAFEHTML" />
         <field name="catalogsearchcriteria_id" type="hidden" filter="SAFEHTML" />
         <field name="criteriatype_id" type="hidden" filter="SAFEHTML" />
         

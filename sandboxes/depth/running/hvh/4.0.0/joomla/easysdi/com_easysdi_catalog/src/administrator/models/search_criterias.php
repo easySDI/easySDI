@@ -37,7 +37,7 @@ class Easysdi_catalogModelsearch_criterias extends JModelList {
                 'state', 'a.state',
                 'name', 'a.name',
                 'issystem', 'a.issystem',
-                'criteriatype_id', 'a.criteriatype_id',
+                'criteriatype_id', 'a.criteriatype_id','criteriatypename', 'searchtabname',
                 'rendertype_id', 'a.rendertype_id',
             );
         }
@@ -115,6 +115,12 @@ class Easysdi_catalogModelsearch_criterias extends JModelList {
         // Join over the users for the checked out user.
         $query->select('uc.name AS editor');
         $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
+        
+        // Join over the criteria type.
+        $query->select('ct.value AS criteriatypename');
+        $query->join('LEFT', '#__sdi_sys_criteriatype AS ct ON ct.id=a.criteriatype_id');
+        
+        
 
         // Join over the user field 'created_by'
         $query->select('created_by.name AS created_by');
@@ -143,10 +149,14 @@ class Easysdi_catalogModelsearch_criterias extends JModelList {
         // Filter by catalog
         $catalog = $this->getState('filter.catalog');
         if (is_numeric($catalog)) {
-            $query->select('created_by.name AS created_by');
+            $query->select('csc.id AS catalogsearchcriteria_id');
             $query->join('LEFT', '#__sdi_catalog_searchcriteria AS csc ON csc.searchcriteria_id = a.id');
             $query->where('csc.catalog_id = ' . (int) $catalog);
         }
+        
+        // Join over the search tab.
+        $query->select('st.value AS searchtabname, st.id AS searchtab_id');
+        $query->join('LEFT', '#__sdi_sys_searchtab AS st ON st.id=csc.searchtab_id');
 
 
         // Add the list ordering clause.

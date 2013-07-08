@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
+JHtml::_('dropdown.init');
 JHtml::_('formbehavior.chosen', 'select');
 
 // Import CSS
@@ -22,6 +23,9 @@ $user = JFactory::getUser();
 $userId = $user->get('id');
 $listOrder = $this->state->get('list.ordering');
 $listDirn = $this->state->get('list.direction');
+$archived = $this->state->get('filter.published') == 2 ? true : false;
+$trashed = $this->state->get('filter.published') == -2 ? true : false;
+
 $canOrder = $user->authorise('core.edit.state', 'com_easysdi_catalog');
 $saveOrder = $listOrder == 'a.ordering';
 if ($saveOrder) {
@@ -31,6 +35,7 @@ if ($saveOrder) {
 $sortFields = $this->getSortFields();
 ?>
 <script type="text/javascript">
+    js = jQuery.noConflict();
     Joomla.orderTable = function() {
         table = document.getElementById("sortTable");
         direction = document.getElementById("directionTable");
@@ -41,6 +46,25 @@ $sortFields = $this->getSortFields();
             dirn = direction.options[direction.selectedIndex].value;
         }
         Joomla.tableOrdering(order, dirn, '');
+    }
+
+    function changeTab(i, tab) {
+        var uriencoded = 'http://localhost/sdi4/administrator/index.php?option=com_easysdi_catalog&task=search_criterias.changeTab&id=' + i + '&tab=' + tab;
+        js.ajax({
+            type: 'Get',
+            url: uriencoded,
+            success: function(data) {
+                if(tab == 1)
+                   js('#searchtab'+i).html("<?php echo JText::_('simple'); ?>");
+               if(tab == 2)
+                   js('#searchtab'+i).html("<?php echo JText::_('advanced'); ?>");
+               if(tab == 3)
+                   js('#searchtab'+i).html("<?php echo JText::_('hidden'); ?>");
+               if(tab == 4)
+                   js('#searchtab'+i).html("<?php echo JText::_('none'); ?>");
+            }
+
+        })
     }
 </script>
 
@@ -112,6 +136,13 @@ if (!empty($this->extra_sidebar)) {
                         <th class='left'>
                             <?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CATALOG_SEARCH_CRITERIAS_NAME', 'a.name', $listDirn, $listOrder); ?>
                         </th>
+
+                        <th class='left'>
+                            <?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CATALOG_SEARCH_CRITERIAS_CRITERIATYPE_ID', 'criteriatypename', $listDirn, $listOrder); ?>
+                        </th>
+                        <th class='left'>
+                            <?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CATALOG_SEARCH_CRITERIAS_CRITERIATYPE_ID', 'searchtabname', $listDirn, $listOrder); ?>
+                        </th>
                         <?php if (isset($this->items[0]->id)): ?>
                             <th width="1%" class="nowrap center hidden-phone">
                                 <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
@@ -175,7 +206,7 @@ if (!empty($this->extra_sidebar)) {
                                 </td>
                             <?php endif; ?>
 
-                             <td>
+                            <td>
                                 <?php if (isset($item->checked_out) && $item->checked_out) : ?>
                                     <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'resourcetypelinks.', $canCheckin); ?>
                                 <?php endif; ?>
@@ -186,15 +217,56 @@ if (!empty($this->extra_sidebar)) {
                                     <?php echo $item->name; ?>
                                 <?php endif; ?>
                             </td>
+                            <td>
+                                <?php echo JText::_($item->criteriatypename); ?>
+                            </td>
+                            <td class="nowrap has-context">
+                                <div class="pull-left" id='searchtab<?php echo $item->catalogsearchcriteria_id; ?>'>
+                                    <?php echo JText::_($item->searchtabname); ?>
+                                </div>
+                                <div class="pull-left" >
+                                    <?php
+                                    // Create dropdown items
+                                    if ($canEdit) {
+                                        if ($item->searchtab_id == 1) :
+                                            JHtml::_('dropdown.addCustomItem', JText::_('advanced'), 'javascript:changeTab(' . $item->catalogsearchcriteria_id . ', 2)', '', 'search_criterias.', false, null);
+                                            JHtml::_('dropdown.addCustomItem', JText::_('hidden'), 'javascript:changeTab(' . $item->catalogsearchcriteria_id . ', 3)', '', 'search_criterias.', false, null);
+                                            JHtml::_('dropdown.addCustomItem', JText::_('none'), 'javascript:changeTab(' . $item->catalogsearchcriteria_id . ', 4)', '', 'search_criterias.', false, null);
+                                        endif;
+                                        if ($item->searchtab_id == 2) :
+                                            JHtml::_('dropdown.addCustomItem', JText::_('simple'), 'javascript:changeTab(' . $item->catalogsearchcriteria_id . ', 1)', '', 'search_criterias.', false, null);
+                                            JHtml::_('dropdown.addCustomItem', JText::_('hidden'), 'javascript:changeTab(' . $item->catalogsearchcriteria_id . ', 3)', '', 'search_criterias.', false, null);
+                                            JHtml::_('dropdown.addCustomItem', JText::_('none'), 'javascript:changeTab(' . $item->catalogsearchcriteria_id . ', 4)', '', 'search_criterias.', false, null);
+                                        endif;
+                                        if ($item->searchtab_id == 3) :
+                                            JHtml::_('dropdown.addCustomItem', JText::_('simple'), 'javascript:changeTab(' . $item->catalogsearchcriteria_id . ', 1)', '', 'search_criterias.', false, null);
+                                            JHtml::_('dropdown.addCustomItem', JText::_('advanced'), 'javascript:changeTab(' . $item->catalogsearchcriteria_id . ', 2)', '', 'search_criterias.', false, null);
+                                            JHtml::_('dropdown.addCustomItem', JText::_('none'), 'javascript:changeTab(' . $item->catalogsearchcriteria_id . ', 4)', '', 'search_criterias.', false, null);
+                                        endif;
+                                        if ($item->searchtab_id == 4) :
+                                            JHtml::_('dropdown.addCustomItem', JText::_('simple'), 'javascript:changeTab(' . $item->catalogsearchcriteria_id . ', 1)', '', 'search_criterias.', false, null);
+                                            JHtml::_('dropdown.addCustomItem', JText::_('advanced'), 'javascript:changeTab(' . $item->catalogsearchcriteria_id . ', 2)', '', 'search_criterias.', false, null);
+                                            JHtml::_('dropdown.addCustomItem', JText::_('hidden'), 'javascript:changeTab(' . $item->catalogsearchcriteria_id . ', 3)', '', 'search_criterias.', false, null);
+                                        endif;
+                                        JHtml::_('dropdown.divider');
+                                    }
 
+                                    if ($item->checked_out && $canCheckin) :
+                                        JHtml::_('dropdown.checkin', 'cb' . $i, 'physicalservices.');
+                                    endif;
 
-                            <?php if (isset($this->items[0]->id)): ?>
+                                    // render dropdown list
+                                    echo JHtml::_('dropdown.render');
+                                    ?>
+                                </div>
+                            </td>
+    <?php if (isset($this->items[0]->id)): ?>
                                 <td class="center hidden-phone">
-                                    <?php echo (int) $item->id; ?>
+                                <?php echo (int) $item->id; ?>
                                 </td>
-                            <?php endif; ?>
+                                <?php endif; ?>
                         </tr>
-                    <?php endforeach; ?>
+                        <?php endforeach; ?>
                 </tbody>
             </table>
 
@@ -202,7 +274,7 @@ if (!empty($this->extra_sidebar)) {
             <input type="hidden" name="boxchecked" value="0" />
             <input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" />
             <input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
-            <?php echo JHtml::_('form.token'); ?>
+<?php echo JHtml::_('form.token'); ?>
         </div>
 </form>        
 
