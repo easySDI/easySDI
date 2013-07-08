@@ -957,3 +957,33 @@ ADD CONSTRAINT `#__sdi_sys_rendertype_criteriatype_fk1` FOREIGN KEY (`criteriaty
 
 ALTER TABLE `#__sdi_sys_rendertype_criteriatype`
 ADD CONSTRAINT `#__sdi_sys_rendertype_criteriatype_fk2` FOREIGN KEY (`rendertype_id`) REFERENCES `#__sdi_sys_rendertype` (`id`) ON DELETE CASCADE;
+
+
+CREATE TABLE IF NOT EXISTS `#__sdi_assignment` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`guid` VARCHAR(36)  NOT NULL ,
+`assigned` DATETIME ,
+`assigned_by` INT(11) UNSIGNED  NOT NULL,
+`assigned_to` INT(11) UNSIGNED NOT NULL ,
+`version_id` INT(11) UNSIGNED NOT NULL ,
+`text` VARCHAR (500),
+PRIMARY KEY (`id`) ,
+  INDEX `#__sdi_assignment_fk1` (`assigned_by`) ,
+INDEX `#__sdi_assignment_fk2` (`assigned_to`) ,
+INDEX `#__sdi_assignment_fk3` (`version_id`) ,
+  CONSTRAINT `#__sdi_assignment_fk1`
+    FOREIGN KEY (`assigned_by` )
+    REFERENCES `#__sdi_user` (`id` )
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+ CONSTRAINT `#__sdi_assignment_fk2`
+    FOREIGN KEY (`assigned_to` )
+    REFERENCES `#__sdi_user` (`id` )
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+ CONSTRAINT `#__sdi_assignment_fk3`
+    FOREIGN KEY (`version_id` )
+    REFERENCES `#__sdi_version` (`id` )
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
