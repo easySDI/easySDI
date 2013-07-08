@@ -27,7 +27,7 @@
     <target name="write-xml">
         <echoxml file="${plg.monitor.src.out.dir}/sdimonitor.xml">
             <extension version="3.0" type="plugin" group="content">
-                <name>plg_easysdiservice</name>
+                <name>plg_easysdi_service</name>
                 <author>EasySDI Community</author>
                 <creationDate>15 August 2012</creationDate>
                 <releaseDate>${xml.releaseDate}</releaseDate>
