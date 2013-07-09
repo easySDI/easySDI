@@ -99,13 +99,14 @@ PRIMARY KEY (`id`) ,
   INDEX `#__sdi_accessscope_fk1` (`organism_id` ASC) ,
   INDEX `#__sdi_accessscope_fk2` (`user_id` ASC) ,
   CONSTRAINT `#__sdi_accessscope_fk1`
-    FOREIGN KEY (`organism_id` )
-    REFERENCES `#__sdi_organism` (`id` )
-    ON DELETE NO ACTION
+    FOREIGN KEY (`organism_id`)
+    REFERENCES `#__sdi_organism` (`id`)
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
   CONSTRAINT `#__sdi_accessscope_fk2`
-    FOREIGN KEY (`user_id` )
-    REFERENCES `#__sdi_user` (`id` )
-    ON DELETE NO ACTION
+    FOREIGN KEY (`user_id`)
+    REFERENCES `#__sdi_user` (`id`)
+    ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
