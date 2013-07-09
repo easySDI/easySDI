@@ -44,5 +44,7 @@ DROP TABLE IF EXISTS `#__sdi_sys_stereotype`;
 DROP TABLE IF EXISTS `#__sdi_sys_topiccategory`;
 DROP TABLE IF EXISTS `#__sdi_version`;
 DROP TABLE IF EXISTS `#__sdi_versionlink`;
+DROP TABLE IF EXISTS `#__sdi_sys_productstorage`;
+DROP TABLE IF EXISTS `#__sdi_sys_pricing`;
 
 SET foreign_key_checks = 1;

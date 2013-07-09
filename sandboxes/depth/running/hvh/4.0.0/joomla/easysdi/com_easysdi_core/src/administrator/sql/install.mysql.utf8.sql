@@ -292,17 +292,7 @@ CREATE TABLE `#__sdi_language` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE `#__sdi_accessscope` (
-`id`  int(11) UNSIGNED NOT NULL AUTO_INCREMENT ,
-`entity_guid`  varchar(36)  NOT NULL ,
-`organism_id`  int(11) UNSIGNED NULL DEFAULT NULL ,
-`user_id`  int(11) UNSIGNED NULL DEFAULT NULL ,
-PRIMARY KEY (`id`),
-FOREIGN KEY (`organism_id`) REFERENCES `sdi_sdi_organism` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-FOREIGN KEY (`user_id`) REFERENCES `sdi_sdi_user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-INDEX `sdi_sdi_accessscope_fk1` USING BTREE (`organism_id`) ,
-INDEX `sdi_sdi_accessscope_fk2` USING BTREE (`user_id`) 
-) ENGINE=InnoDB DEFAULT  COLLATE=utf8_general_ci;
+
 
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_pricing` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
