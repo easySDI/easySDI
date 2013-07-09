@@ -502,4 +502,14 @@ INSERT INTO `#__sdi_sys_productstate` VALUES ('1', '1', '1', 'available');
 INSERT INTO `#__sdi_sys_productstate` VALUES ('2', '2', '1', 'await');
 
 
+INSERT INTO `#__sdi_sys_pricing` VALUES ('1', '1', '1', 'free');
+INSERT INTO `#__sdi_sys_pricing` VALUES ('2', '2', '1', 'fee');
+
+INSERT INTO `#__sdi_sys_productstorage` VALUES ('1', '1', '1', 'upload');
+INSERT INTO `#__sdi_sys_productstorage` VALUES ('2', '2', '1', 'url');
+INSERT INTO `#__sdi_sys_productstorage` VALUES ('3', '3', '1', 'wfs');
+
+INSERT INTO `#__sdi_sys_productmining` VALUES ('1', '1', '1', 'automatic');
+INSERT INTO `#__sdi_sys_productmining` VALUES ('2', '2', '1', 'manual');
+
 
