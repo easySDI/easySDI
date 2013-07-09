@@ -2,7 +2,7 @@
 <extension method="upgrade" type="component" version="1.6.0">
   <name>com_easysdi_core</name>
   <creationDate>15 August 2012</creationDate>
-  <releaseDate>11 juin 2013</releaseDate>
+  <releaseDate>09 juillet 2013</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
@@ -15,6 +15,7 @@
     <sql>
       <file charset="utf8" driver="mysql">sql/install.mysql.utf8.sql</file>
       <file charset="utf8" driver="mysql">sql/insert.install.mysql.utf8.sql</file>
+      <file charset="utf8" driver="mysql">sql/alter.install.mysql.utf8.sql</file>
     </sql>
   </install>
   <uninstall>
@@ -27,6 +28,20 @@
       <schemapath type="mysql">sql/updates</schemapath>
     </schemas>
   </update>
+  <files folder="site">
+    <filename>index.html</filename>
+    <filename>easysdi_core.php</filename>
+    <filename>controller.php</filename>
+    <filename>router.php</filename>
+    <folder>views</folder>
+    <folder>models</folder>
+    <folder>controllers</folder>
+    <folder>helpers</folder>
+  </files>
+  <languages folder="site">
+    <language tag="en-GB">language/en-GB.com_easysdi_core.ini</language>
+    <language tag="fr-FR">language/fr-FR.com_easysdi_core.ini</language>
+  </languages>
   <administration>
     <menu img="components/com_easysdi_core/assets/images/s_com_easysdi_core.ico">COM_EASYSDI_SOLUTION</menu>
     <files folder="administrator">
