@@ -159,7 +159,7 @@
             <fileset dir="${contact.package.out.dir}" includes="*"/>
         </delete>
         <jar destfile="${contact.package.out.dir}/${contact.component.name}.zip">
-            <fileset dir="${contact.src.out.dir}" excludes="site/**"/>
+            <fileset dir="${contact.src.out.dir}" />
         </jar>
     </target>
     

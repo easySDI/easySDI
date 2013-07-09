@@ -25,7 +25,6 @@
                         label="com_easysdi_contact_FORM_LBL_USER_DESCRIPTION"
                         description="com_easysdi_contact_FORM_DESC_USER_DESCRIPTION" 
         /> 
-                
         <field  name="id" 
                 type="text" 
                 default="0" 
