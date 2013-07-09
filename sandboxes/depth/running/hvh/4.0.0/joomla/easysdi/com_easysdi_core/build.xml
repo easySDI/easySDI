@@ -163,7 +163,7 @@
             <fileset dir="${core.package.out.dir}" includes="*"/>
         </delete>
         <jar destfile="${core.package.out.dir}/${core.component.name}.zip">
-            <fileset dir="${core.src.out.dir}" excludes="site/**"/>
+            <fileset dir="${core.src.out.dir}" />
         </jar>
     </target>
     
