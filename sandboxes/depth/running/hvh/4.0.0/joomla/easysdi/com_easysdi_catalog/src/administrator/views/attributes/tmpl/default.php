@@ -193,7 +193,7 @@ foreach ($this->items as $i => $item) :
 
                             <td >
                                 <?php if (($canEdit || $canEditOwn) && $canCheckin && ($item->stereotype_id == 6 || $item->stereotype_id == 9 || $item->stereotype_id == 10)) : ?>
-                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=attribute_values&filter_attribute=' . (int) $item->id); ?>">
+                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=attributevalues&filter_attribute=' . (int) $item->id); ?>">
                                         <div class="icon-edit"></div>
                                     <?php else : ?>
                                     <?php endif; ?>
