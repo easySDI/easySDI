@@ -35,7 +35,7 @@ class Easysdi_coreModelResources extends JModelList {
      * @since	1.6
      */
     protected function populateState($ordering = null, $direction = null) {
-        
+
         // Initialise variables.
         $app = JFactory::getApplication();
 
@@ -45,12 +45,12 @@ class Easysdi_coreModelResources extends JModelList {
 
         $limitstart = JFactory::getApplication()->input->getInt('limitstart', 0);
         $this->setState('list.start', $limitstart);
-        
-        
-		if(empty($ordering)) {
-			$ordering = 'a.ordering';
-		}
-        
+
+
+        if (empty($ordering)) {
+            $ordering = 'a.ordering';
+        }
+
         // List state information.
         parent::populateState($ordering, $direction);
     }
@@ -72,35 +72,41 @@ class Easysdi_coreModelResources extends JModelList {
                         'list.select', 'a.*'
                 )
         );
-        
+
         $query->from('`#__sdi_resource` AS a');
-        
 
-    // Join over the users for the checked out user.
-    $query->select('uc.name AS editor');
-    $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
-    
-		// Join over the created by field 'created_by'
-		$query->select('created_by.name AS created_by');
-		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
-		// Join over the foreign key 'resourcetype_id'
-		$query->select('#__sdi_resourcetype_587854.name AS resourcestype_name_587854');
-		$query->join('LEFT', '#__sdi_resourcetype AS #__sdi_resourcetype_587854 ON #__sdi_resourcetype_587854.id = a.resourcetype_id');
+        // Join over the users for the checked out user.
+        $query->select('uc.name AS editor');
+        $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
+
+        // Join over the created by field 'created_by'
+        $query->select('created_by.name AS created_by');
+        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
+        
+        // Join over the foreign key 'resourcetype_id'
+        $query->select('#__sdi_resourcetype_587854.name AS resourcestype_name_587854');
+        $query->join('LEFT', '#__sdi_resourcetype AS #__sdi_resourcetype_587854 ON #__sdi_resourcetype_587854.id = a.resourcetype_id');
+        
+        require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/libraries/easysdi/user/sdiuser.php';
+        $user = new sdiUser(JFactory::getUser()->id);
+        
+//        // Join over the user role
+//        $query->select('rru.role_id as role_id');
+//        $query->join('LEFT', '#__sdi_resource_role_user AS rru ON rru.resource_id = a.id');
+//        $query->where('rru.user_id = '.$user->id);
+
+        // Filter by search in title
+        $search = $this->getState('filter.search');
+        if (!empty($search)) {
+            if (stripos($search, 'id:') === 0) {
+                $query->where('a.id = ' . (int) substr($search, 3));
+            } else {
+                $search = $db->Quote('%' . $db->escape($search, true) . '%');
+            }
+        }
 
 
-		// Filter by search in title
-		$search = $this->getState('filter.search');
-		if (!empty($search)) {
-			if (stripos($search, 'id:') === 0) {
-				$query->where('a.id = '.(int) substr($search, 3));
-			} else {
-				$search = $db->Quote('%'.$db->escape($search, true).'%');
-                
-			}
-		}
-        
-        
-        
+
         return $query;
     }
 

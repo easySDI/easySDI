@@ -318,13 +318,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_productmining` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_productstate` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)  NOT NULL DEFAULT '1' ,
-`state` INT(11)  NOT NULL DEFAULT '1',
-`value` VARCHAR(150)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
 
 
 
