@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:TalendMetadata="http://www.talend.org/metadata/connection/2010" xmlns:orgomg.cwm.resource.relational="http:///orgomg/cwm/resource/relational.ecore">
+  <TalendMetadata:DatabaseConnection xmi:id="_MjHusOlDEeKBqfdsBsKH6w" name="destination" id="__rFsUOlCEeKBqfdsBsKH6w" label="destination" dataPackage="_MkUBgOlDEeKBqfdsBsKH6w" ContextMode="true" ContextId="_L_W6UOlDEeKBqfdsBsKH6w" contextName="Default" DatabaseType="MySQL" DriverClass="org.gjt.mm.mysql.Driver" URL="jdbc:mysql://localhost:3306/joomla31?noDatetimeStringSync=true" dbVersionString="MYSQL_5" Port="context.destination_Port" Username="context.destination_Login" Password="context.destination_Password" ServerName="context.destination_Server" DatasourceName="" FileFieldName="" SID="context.destination_Database" SqlSynthax="SQL Syntax" DbmsId="mysql_id" ProductId="MYSQL" AdditionalParams="context.destination_AdditionalParams" StandardSQL="true" SQLMode="false" UiSchema="">
+    <taggedValue xmi:id="_MjHuselDEeKBqfdsBsKH6w" tag="Is Conn Need Reload" value="false"/>
+    <taggedValue xmi:id="_MkBGkOlDEeKBqfdsBsKH6w" tag="package filter" value=""/>
+    <taggedValue xmi:id="_MkK3kOlDEeKBqfdsBsKH6w" tag="Status" value=""/>
+    <taggedValue xmi:id="_MkK3kelDEeKBqfdsBsKH6w" tag="Version" value="0.1"/>
+    <taggedValue xmi:id="_MkK3kulDEeKBqfdsBsKH6w" tag="Purpose" value=""/>
+    <taggedValue xmi:id="_MkK3k-lDEeKBqfdsBsKH6w" tag="Description" value=""/>
+    <taggedValue xmi:id="_MkK3lOlDEeKBqfdsBsKH6w" tag="Author" value=""/>
+    <taggedValue xmi:id="_MkK3lelDEeKBqfdsBsKH6w" tag="otherParameter"/>
+    <taggedValue xmi:id="_MkK3lulDEeKBqfdsBsKH6w" tag="DB ProductName" value="MySQL"/>
+    <taggedValue xmi:id="_MkK3l-lDEeKBqfdsBsKH6w" tag="DB ProductVersion" value="5.5.24-log"/>
+    <taggedValue xmi:id="_MkK3mOlDEeKBqfdsBsKH6w" tag="DB IdentifierQuoteString" value="`"/>
+  </TalendMetadata:DatabaseConnection>
+  <orgomg.cwm.resource.relational:Catalog xmi:id="_MkUBgOlDEeKBqfdsBsKH6w" name="joomla31" dataManager="_MjHusOlDEeKBqfdsBsKH6w"/>
+</xmi:XMI>
