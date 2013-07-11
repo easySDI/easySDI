@@ -49,7 +49,7 @@ $sortFields = $this->getSortFields();
     }
 
     function changeTab(i, tab) {
-        var uriencoded = 'http://localhost/sdi4/administrator/index.php?option=com_easysdi_catalog&task=searchcriterias.changeTab&id=' + i + '&tab=' + tab;
+        var uriencoded = '<?php echo JURI::root() ; ?>administrator/index.php?option=com_easysdi_catalog&task=searchcriterias.changeTab&id=' + i + '&tab=' + tab;
         js.ajax({
             type: 'Get',
             url: uriencoded,

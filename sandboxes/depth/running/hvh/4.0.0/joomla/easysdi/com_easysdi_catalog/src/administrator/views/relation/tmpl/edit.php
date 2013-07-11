@@ -82,7 +82,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
             js('#loader').hide();
             return;
         }
-        var uriencoded = 'http://localhost/sdi4/administrator/index.php?option=com_easysdi_catalog&task=relation.getRenderType&attributechild=' + attributechild_id;
+        var uriencoded = '<?php echo JURI::root() ; ?>administrator/index.php?option=com_easysdi_catalog&task=relation.getRenderType&attributechild=' + attributechild_id;
         js.ajax({
             type: 'Get',
             url: uriencoded,

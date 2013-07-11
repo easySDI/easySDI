@@ -52,7 +52,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
         }
         
          
-        var uriencoded = 'http://localhost/sdi4/administrator/index.php?option=com_easysdi_catalog&task=profile.getAttributeIdentifier&class_id=' + class_id;
+        var uriencoded = '<?php echo JURI::root() ; ?>administrator/index.php?option=com_easysdi_catalog&task=profile.getAttributeIdentifier&class_id=' + class_id;
         js.ajax({
             type: 'Get',
             url: uriencoded,
