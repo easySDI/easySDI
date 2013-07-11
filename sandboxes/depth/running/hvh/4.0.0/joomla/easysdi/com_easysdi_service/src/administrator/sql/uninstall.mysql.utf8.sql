@@ -1,0 +1,30 @@
+SET foreign_key_checks = 0;
+
+DROP TABLE IF EXISTS `#__sdi_physicalservice_servicecompliance`;
+DROP TABLE IF EXISTS `#__sdi_virtualservice_servicecompliance`;
+DROP TABLE IF EXISTS `#__sdi_layer`;
+DROP TABLE IF EXISTS `#__sdi_physicalservice`;
+DROP TABLE IF EXISTS `#__sdi_virtualservice`;
+DROP TABLE IF EXISTS `#__sdi_virtualmetadata`;
+DROP TABLE IF EXISTS `#__sdi_virtual_physical`;
+DROP TABLE IF EXISTS `#__sdi_policy`;
+DROP TABLE IF EXISTS `#__sdi_policy_organism`;
+DROP TABLE IF EXISTS `#__sdi_policy_user`;
+DROP TABLE IF EXISTS `#__sdi_allowedoperation`;
+DROP TABLE IF EXISTS `#__sdi_policy_metadatastate`;
+DROP TABLE IF EXISTS `#__sdi_physicalservice_policy`;
+DROP TABLE IF EXISTS `#__sdi_csw_spatialpolicy`;
+DROP TABLE IF EXISTS `#__sdi_wmts_spatialpolicy`;
+DROP TABLE IF EXISTS `#__sdi_wms_spatialpolicy`;
+DROP TABLE IF EXISTS `#__sdi_wfs_spatialpolicy`;
+DROP TABLE IF EXISTS `#__sdi_excludedattribute`;
+DROP TABLE IF EXISTS `#__sdi_wmtslayer_policy`;
+DROP TABLE IF EXISTS `#__sdi_tilematrixset_policy`;
+DROP TABLE IF EXISTS `#__sdi_tilematrix_policy`;
+DROP TABLE IF EXISTS `#__sdi_wmslayer_policy`;
+DROP TABLE IF EXISTS `#__sdi_featuretype_policy`;
+DROP TABLE IF EXISTS `#__sdi_includedattribute`;
+DROP TABLE IF EXISTS `#__sdi_virtualservice_organism`;
+DROP TABLE IF EXISTS `#__sdi_physicalservice_organism`;
+
+SET foreign_key_checks = 1;
