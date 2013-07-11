@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     3.3.0
+ * @version     4.0.0
  * @package     com_easysdi_map
  * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -9,10 +9,6 @@
 
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
-
-if(!defined('DS')) {
-	define( 'DS', DIRECTORY_SEPARATOR );
-}
 
 class com_easysdi_mapInstallerScript
 {
@@ -69,7 +65,7 @@ class com_easysdi_mapInstallerScript
 	*/
 	function postflight( $type, $parent ) {
 		if($type == 'install'){
-			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_map'.DS.'tables');
+			JTable::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_easysdi_map/tables');
 
 			//Create a 'background' layer group
 // 			$row 					= JTable::getInstance('group','easysdi_mapTable');

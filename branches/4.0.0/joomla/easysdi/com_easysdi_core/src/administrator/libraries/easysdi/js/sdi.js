@@ -1,6 +1,6 @@
 /**
- \* @version     3.3.0
-* @package     com_easysdi_core
+ * @version     4.0.0
+* * @package     com_easysdi_core
 * @copyright   Copyright (C) 2012. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
 * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -207,8 +207,8 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
 Ext.preg(sdi.gxp.plugins.LayerTree.prototype.ptype,sdi.gxp.plugins.LayerTree);
 
 /**
- \* @version     3.3.0
-* @package     com_easysdi_core
+ * @version     4.0.0
+* * @package     com_easysdi_core
 * @copyright   Copyright (C) 2012. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
 * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -572,8 +572,8 @@ sdi.gxp.plugins.Print = Ext.extend(gxp.plugins.Print, {
 Ext.preg(sdi.gxp.plugins.Print.prototype.ptype, sdi.gxp.plugins.Print);
 
 /**
- \* @version     3.3.0
-* @package     com_easysdi_core
+ * @version     4.0.0
+* * @package     com_easysdi_core
 * @copyright   Copyright (C) 2012. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
 * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -694,8 +694,8 @@ sdi.gxp.plugins.LayerManager = Ext.extend(sdi.gxp.plugins.LayerTree, {
 Ext.preg(sdi.gxp.plugins.LayerManager.prototype.ptype, sdi.gxp.plugins.LayerManager);
 
 /**
- \* @version     3.3.0
-* @package     com_easysdi_core
+ * @version     4.0.0
+* * @package     com_easysdi_core
 * @copyright   Copyright (C) 2012. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
 * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -754,8 +754,8 @@ sdi.gxp.plugins.BingSource = Ext.extend(gxp.plugins.BingSource, {
 
 Ext.preg(sdi.gxp.plugins.BingSource.prototype.ptype, sdi.gxp.plugins.BingSource);
 /**
- \* @version     3.3.0
-* @package     com_easysdi_core
+ * @version     4.0.0
+* * @package     com_easysdi_core
 * @copyright   Copyright (C) 2012. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
 * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -816,8 +816,8 @@ sdi.gxp.plugins.GoogleSource = Ext.extend(gxp.plugins.GoogleSource, {
 
 Ext.preg(sdi.gxp.plugins.GoogleSource.prototype.ptype, sdi.gxp.plugins.GoogleSource);
 /**
- \* @version     3.3.0
-* @package     com_easysdi_core
+ * @version     4.0.0
+* * @package     com_easysdi_core
 * @copyright   Copyright (C) 2012. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
 * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -875,8 +875,8 @@ sdi.gxp.plugins.OSMSource = Ext.extend(gxp.plugins.OSMSource, {
 
 Ext.preg(sdi.gxp.plugins.OSMSource.prototype.ptype, sdi.gxp.plugins.OSMSource);
 /**
- \* @version     3.3.0
-* @package     com_easysdi_core
+ * @version     4.0.0
+* * @package     com_easysdi_core
 * @copyright   Copyright (C) 2012. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
 * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -958,8 +958,8 @@ sdi.gxp.plugins.LoadingIndicator = Ext.extend(gxp.plugins.LoadingIndicator, {
 Ext.preg(sdi.gxp.plugins.LoadingIndicator.prototype.ptype, sdi.gxp.plugins.LoadingIndicator);
 
 /**
- \* @version     3.3.0
-* @package     com_easysdi_core
+ * @version     4.0.0
+* * @package     com_easysdi_core
 * @copyright   Copyright (C) 2012. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
 * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -1024,8 +1024,8 @@ sdi.geoext.data.PrintProvider = Ext.extend(GeoExt.data.PrintProvider, {
 });
 
 /**
- \* @version     3.3.0
-* @package     com_easysdi_core
+ * @version     4.0.0
+* * @package     com_easysdi_core
 * @copyright   Copyright (C) 2012. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
 * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -1111,8 +1111,8 @@ sdi.geoext.ux.PrintPreview = Ext.extend(GeoExt.ux.PrintPreview, {
 
 
 /**
- \* @version     3.3.0
-* @package     com_easysdi_core
+ * @version     4.0.0
+* * @package     com_easysdi_core
 * @copyright   Copyright (C) 2012. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
 * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org

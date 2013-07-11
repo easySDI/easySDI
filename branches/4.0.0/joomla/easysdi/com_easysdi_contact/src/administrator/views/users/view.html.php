@@ -1,6 +1,6 @@
 <?php
 /**
-* @version     3.3.0
+*** @version     4.0.0
 * @package     com_easysdi_contact
  * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -57,7 +57,7 @@ class Easysdi_contactViewUsers extends JViewLegacy
 		JToolBarHelper::title(JText::_('COM_EASYSDI_CONTACT_HEADER_USERS'), 'user.png');
 
         //Check if the form exists before showing the add/edit buttons
-        $formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'user';
+        $formPath = JPATH_COMPONENT_ADMINISTRATOR.'/views/user';
         if (file_exists($formPath)) {
 
             if ($canDo->get('core.create')) {

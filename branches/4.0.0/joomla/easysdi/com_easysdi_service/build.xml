@@ -11,7 +11,7 @@
     
     <target name="package" depends="copy-administrator, copy-site, write-xml, build-info, zip-package" description="Main target" />
     <target name="dev-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-dev-package" description="Main target" />
-    <target name="sync" depends="copy-administrator, copy-site, write-xml" description="Main target" />
+    <target name="sync" depends="copy-administrator, copy-site" description="Main target" />
     <!-- 
         Create the administrator folder if necessary.
         Empty the administrator folder, except svn files.
@@ -89,7 +89,20 @@
                         <schemapath type="mysql">sql/updates</schemapath> 
                     </schemas> 
                 </update>
-    
+                <files folder="site">
+                    <filename>index.html</filename>
+                    <filename>easysdi_service.php</filename>
+                    <filename>controller.php</filename>
+                    <filename>router.php</filename>
+                    <folder>views</folder>
+                    <folder>models</folder>
+                    <folder>controllers</folder>
+                    <folder>helpers</folder>
+                </files>
+                <languages folder="site">
+                    <language tag="en-GB">language/en-GB.com_easysdi_service.ini</language>
+                    <language tag="fr-FR">language/fr-FR.com_easysdi_service.ini</language>
+                </languages>
                 <administration>
                     <files folder="administrator">
                         <filename>access.xml</filename>

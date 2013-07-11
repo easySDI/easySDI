@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     3.3.0
+ * @version     4.0.0
  * @package     com_easysdi_map
  * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -19,10 +19,12 @@ JHtml::_('formbehavior.chosen', 'select');
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css');
 
-$user	= JFactory::getUser();
-$userId	= $user->get('id');
+$user		= JFactory::getUser();
+$userId		= $user->get('id');
 $listOrder	= $this->state->get('list.ordering');
 $listDirn	= $this->state->get('list.direction');
+$archived	= $this->state->get('filter.published') == 2 ? true : false;
+$trashed	= $this->state->get('filter.published') == -2 ? true : false;
 $canOrder	= $user->authorise('core.edit.state', 'com_easysdi_map');
 $saveOrder	= $listOrder == 'a.ordering';
 if ($saveOrder)
@@ -171,7 +173,7 @@ if (!empty($this->extra_sidebar)) {
 				</td>
                 <?php if (isset($this->items[0]->state)): ?>
 				<td class="center">
-					<?php echo JHtml::_('jgrid.published', $item->state, $i, 'users.', $canChange, 'cb',$item->publish_up, $item->publish_down); ?>
+					<?php echo JHtml::_('jgrid.published', $item->state, $i, 'users.', $canChange, 'cb'); ?>
 				</td>
                 <?php endif; ?>
                 <td class="nowrap has-context">

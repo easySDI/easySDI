@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     3.3.0
+ * @version     4.0.0
  * @package     com_easysdi_service
  * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -9,7 +9,7 @@
 
 // No direct access
 defined('_JEXEC') or die;
-require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'libraries'.DS.'easysdi'.DS.'database'.DS.'sditable.php';
+require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/libraries/easysdi/database/sditable.php';
 /**
  * virtualmetadata Table class
  */
@@ -101,7 +101,7 @@ class Easysdi_serviceTablevirtualmetadata extends sdiTable {
 		return parent::save($data, $orderingFilter , $ignore );
 	}
 	
-	public function store (){
+	public function store ($updateNulls = false){
 		return parent::store(true);
 	}
 	

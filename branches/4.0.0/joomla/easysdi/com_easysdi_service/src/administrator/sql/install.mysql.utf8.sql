@@ -212,6 +212,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_policy_metadatastate` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `metadatastate_id` INT(11) UNSIGNED  NOT NULL ,
 `policy_id` INT(11) UNSIGNED  NOT NULL ,
+`metadataversion_id` INT(11) UNSIGNED   ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 

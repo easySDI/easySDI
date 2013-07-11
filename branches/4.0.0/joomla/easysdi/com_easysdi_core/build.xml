@@ -11,7 +11,7 @@
     
     <target name="package" depends="copy-administrator, copy-site, geoext-concat, geoext-minify, gxp-concat, gxp-minify, sdi-concat, sdi-minify, write-xml, build-info, zip-package" description="Main target" />
     <target name="dev-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-dev-package" description="Main target" />
-    <target name="sync" depends="copy-administrator, copy-site, write-xml" description="Main target" />
+    <target name="sync" depends="copy-administrator, copy-site" description="Main target" />
     <!-- 
         Create the administrator folder if necessary.
         Empty the administrator folder, except svn files.
@@ -76,6 +76,7 @@
                     <sql>
                         <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
                         <file driver="mysql" charset="utf8">sql/insert.install.mysql.utf8.sql</file>
+                         <file driver="mysql" charset="utf8">sql/alter.install.mysql.utf8.sql</file>
                     </sql>
                 </install>
                 <uninstall> <!-- Runs on uninstall -->
@@ -89,6 +90,20 @@
                     </schemas> 
                 </update>
 
+                <files folder="site">
+                    <filename>index.html</filename>
+                    <filename>easysdi_core.php</filename>
+                    <filename>controller.php</filename>
+                    <filename>router.php</filename>
+                    <folder>views</folder>
+                    <folder>models</folder>
+                    <folder>controllers</folder>
+                    <folder>helpers</folder>
+                </files>
+                <languages folder="site">
+                    <language tag="en-GB">language/en-GB.com_easysdi_core.ini</language>
+                    <language tag="fr-FR">language/fr-FR.com_easysdi_core.ini</language>
+                </languages>
                 <administration>
                     <menu img="components/com_easysdi_core/assets/images/s_com_easysdi_core.ico" >COM_EASYSDI_SOLUTION</menu>
         
@@ -148,7 +163,7 @@
             <fileset dir="${core.package.out.dir}" includes="*"/>
         </delete>
         <jar destfile="${core.package.out.dir}/${core.component.name}.zip">
-            <fileset dir="${core.src.out.dir}" excludes="site/**"/>
+            <fileset dir="${core.src.out.dir}" />
         </jar>
     </target>
     

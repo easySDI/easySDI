@@ -3,7 +3,7 @@
 // No direct access
 defined('_JEXEC') or die;
 
-require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WfsPhysicalService.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.'/helpers/WfsPhysicalService.php');
 
 class WfsWebservice {
 	/*
@@ -66,11 +66,20 @@ class WfsWebservice {
 		}
 		
 		$html = '
-			<label for="localgeographicfilter">' . JText::_('COM_EASYSDI_SERVICE_WFS_LAYER_LOCAL_FILTER') . '</label>
-			<textarea name="localgeographicfilter" rows="10" class="span12">' . $layerObj->localFilterGML . '</textarea>
-			<br />
-			<label for="remotegeographicfilter">' . JText::_('COM_EASYSDI_SERVICE_WFS_LAYER_REMOTE_FILTER') . '</label>
-			<textarea name="remotegeographicfilter" rows="10" class="span12">' . $layerObj->remoteFilterGML . '</textarea>
+		<div class="well">
+	    	<div class="control-group inline">
+				<label class="control-label" for="localgeographicfilter">' . JText::_('COM_EASYSDI_SERVICE_WFS_LAYER_LOCAL_FILTER') . '</label>
+				<div class="controls">
+					<textarea name="localgeographicfilter" rows="5" class="input-xlarge">' . $layerObj->localFilterGML . '</textarea>
+				</div>
+			</div>
+			<div class="control-group inline">
+				<label class="control-label" for="remotegeographicfilter">' . JText::_('COM_EASYSDI_SERVICE_WFS_LAYER_REMOTE_FILTER') . '</label>
+				<div class="controls">
+					<textarea name="remotegeographicfilter" rows="5" class="input-xlarge">' . $layerObj->remoteFilterGML . '</textarea>
+				</div>
+			</div>
+		</div>
 			<hr />
 			<div id="div_included_attributes">
 		';
@@ -86,11 +95,13 @@ class WfsWebservice {
 		$items = $db->loadColumn();
 		$item_count = 0;
 		foreach ($items as $item) {
-			$html.= '<div class="div_ea_' . $item_count . ' span12">
-				<textarea name="excluded_attribute[' . $item_count . ']" rows="1" class="span10">' . $item . '</textarea>
-				<button type="button" class="btn btn-danger btn_ea_delete" onClick="onDeleteIncludedAttribute(' . $item_count . ');return false;">' .JText::_('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE') . '</button>
+			$html.= '
+			<div class="div_ia_' . $item_count . ' input-xxlarge">
+				<input type="text" name="included_attribute[' . $item_count . ']" class="input-xlarge" value="'.$item.'" />
+				<button class="btn btn-danger btn-small btn_ia_delete" onClick="onDeleteIncludedAttribute(' . $item_count . ');return false;"><i class="icon-white icon-remove"></i></button>
 				<br /><br />
 			</div>';
+			$item_count ++;
 		}
 		
 		$html .= '</div>
@@ -254,6 +265,7 @@ class WfsWebservice {
 			$query = $db->getQuery(true);
 			$query->update('#__sdi_featuretype_policy')->set(Array(
 				'spatialpolicy_id = \'' . $spatial_policy_id . '\'',
+				'inheritedspatialpolicy = 0',
 			))->where(Array(
 				'id = \'' . $featuretypepolicy_id . '\'',
 			));
@@ -291,7 +303,7 @@ class WfsWebservice {
 			}
 		}
 		
-		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_service'.DS.'tables');
+		JTable::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_easysdi_service/tables');
                 $dispatcher = JEventDispatcher::getInstance();
                 // Include the content plugins for the on save events.
                 JPluginHelper::importPlugin('content');
@@ -335,7 +347,6 @@ class WfsWebservice {
 		}
 		
 		foreach ($resultset as $result) {
-			print_r($result);
 			$physicalServiceID = $result->id;
 			$wfsObj = new WfsPhysicalService($result->id, $result->url);
 			$wfsObj->getCapabilities();
@@ -445,6 +456,7 @@ class WfsWebservice {
 				$query = $db->getQuery(true);
 				$query->update('#__sdi_featuretype_policy')->set(Array(
 					'spatialpolicy_id = NULL',
+					'inheritedspatialpolicy = 1',
 				))->where('spatialpolicy_id = ' . $pk);
 				$db->setQuery($query);
 				$db->execute();

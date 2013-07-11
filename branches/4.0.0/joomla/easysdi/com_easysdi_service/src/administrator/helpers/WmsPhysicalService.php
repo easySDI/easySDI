@@ -56,6 +56,7 @@ class WmsPhysicalService extends PhysicalService{
 	
 	public function loadData ($data) {
 		foreach ($data as $key => $value) {
+                    if(isset ($this->layerList[$key]))
 			$this->layerList[$key]->loadData($value);
 		}
 	}

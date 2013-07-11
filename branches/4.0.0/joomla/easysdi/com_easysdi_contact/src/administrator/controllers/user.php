@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     3.3.0
+ * @version     4.0.0
  * @package     com_easysdi_contact
  * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -23,7 +23,7 @@ class Easysdi_contactControllerUser extends JControllerForm
     function __construct() {
     	
     	//Need to be add here even if it is in administrator/controller.php l.27
-    	require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_contact.php';
+    	require_once JPATH_COMPONENT.'/helpers/easysdi_contact.php';
         
     	$this->view_list ='users';
         parent::__construct();

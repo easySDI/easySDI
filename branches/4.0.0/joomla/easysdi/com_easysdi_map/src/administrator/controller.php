@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     3.3.0
+ * @version     4.0.0
  * @package     com_easysdi_map
  * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -24,7 +24,7 @@ class Easysdi_mapController extends JControllerLegacy
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{
-		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_map.php';
+		require_once JPATH_COMPONENT.'/helpers/easysdi_map.php';
 
 		$view		= JRequest::getCmd('view', 'maps');
 		JRequest::setVar('view', $view);

@@ -4,12 +4,14 @@ VALUES
 (2,1,'dd','degree')
 ;
 
-INSERT INTO `#__sdi_sys_role` VALUES ('1','1','1','resourcemanager' );
-INSERT INTO `#__sdi_sys_role` VALUES ('2','2','1','metadatamanager' );
-INSERT INTO `#__sdi_sys_role` VALUES ('3','3','1','metadataeditor' );
-INSERT INTO `#__sdi_sys_role` VALUES ('4','4','1','productmanager' );
-INSERT INTO `#__sdi_sys_role` VALUES ('5','5','1','previewmanager' );
-INSERT INTO `#__sdi_sys_role` VALUES ('6','6','1','member' );
+INSERT INTO `#__sdi_sys_role` VALUES ('1','1','1','member' );
+INSERT INTO `#__sdi_sys_role` VALUES ('2','2','1','resourcemanager' );
+INSERT INTO `#__sdi_sys_role` VALUES ('3','3','1','metadataresponsible' );
+INSERT INTO `#__sdi_sys_role` VALUES ('4','4','1','metadataeditor' );
+INSERT INTO `#__sdi_sys_role` VALUES ('5','5','1','diffusionmanager' );
+INSERT INTO `#__sdi_sys_role` VALUES ('6','6','1','previewmanager' );
+INSERT INTO `#__sdi_sys_role` VALUES ('7','7','1','extractionresponsible' );
+INSERT INTO `#__sdi_sys_role` VALUES ('8','8','1','ordereligible' );
 
 INSERT INTO `#__sdi_sys_versiontype` (ordering,state,value) 
 VALUES 
@@ -479,3 +481,35 @@ INSERT INTO `#__sdi_sys_country` VALUES ('238', '238', '1', 'Western Sahara (for
 INSERT INTO `#__sdi_sys_country` VALUES ('239', '239', '1', 'Yemen (Arab Republic)', 'YE', 'YEM');
 INSERT INTO `#__sdi_sys_country` VALUES ('240', '240', '1', 'Zambia', 'ZM', 'ZMB');
 INSERT INTO `#__sdi_sys_country` VALUES ('241', '241', '1', 'Zimbabwe', 'ZW', 'ZWE');
+
+INSERT INTO `#__sdi_sys_entity` VALUES ('1', '1', '1', 'attribute');
+INSERT INTO `#__sdi_sys_entity` VALUES ('2', '2', '1', 'class');
+
+
+
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('1', '1', '1', 'archived');
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('2', '2', '1', 'historized');
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('3', '3', '1', 'finish');
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('4', '4', '1', 'await');
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('5', '5', '1', 'progress');
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('6', '6', '1', 'sent');
+INSERT INTO `#__sdi_sys_orderstate` VALUES ('7', '7', '1', 'saved');
+
+INSERT INTO `#__sdi_sys_ordertype` VALUES ('1', '1', '1', 'order');
+INSERT INTO `#__sdi_sys_ordertype` VALUES ('2', '2', '1', 'estimate');
+
+INSERT INTO `#__sdi_sys_productstate` VALUES ('1', '1', '1', 'available');
+INSERT INTO `#__sdi_sys_productstate` VALUES ('2', '2', '1', 'await');
+
+
+INSERT INTO `#__sdi_sys_pricing` VALUES ('1', '1', '1', 'free');
+INSERT INTO `#__sdi_sys_pricing` VALUES ('2', '2', '1', 'fee');
+
+INSERT INTO `#__sdi_sys_productstorage` VALUES ('1', '1', '1', 'upload');
+INSERT INTO `#__sdi_sys_productstorage` VALUES ('2', '2', '1', 'url');
+INSERT INTO `#__sdi_sys_productstorage` VALUES ('3', '3', '1', 'wfs');
+
+INSERT INTO `#__sdi_sys_productmining` VALUES ('1', '1', '1', 'automatic');
+INSERT INTO `#__sdi_sys_productmining` VALUES ('2', '2', '1', 'manual');
+
+

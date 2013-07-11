@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     3.3.0
+ *** @version     4.0.0
  * @package     com_easysdi_contact
  * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -180,7 +180,7 @@ if (!empty($this->extra_sidebar)) {
 				</td>
                 <?php if (isset($this->items[0]->state)): ?>
 				<td class="center">
-					<?php echo JHtml::_('jgrid.published', $item->state, $i, 'users.', $canChange, 'cb',$item->publish_up, $item->publish_down); ?>
+					<?php echo JHtml::_('jgrid.published', $item->state, $i, 'users.', $canChange, 'cb'); ?>
 				</td>
                 <?php endif; ?>
                 <td class="nowrap has-context">

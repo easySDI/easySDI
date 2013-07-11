@@ -10,10 +10,6 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
 
-if(!defined('DS')) {
-	define( 'DS', DIRECTORY_SEPARATOR );
-}
-
 class com_easysdi_serviceInstallerScript
 {
 	/*
@@ -74,8 +70,8 @@ class com_easysdi_serviceInstallerScript
 	 * postflight is run after the extension is registered in the database.
 	 */
 	function postflight( $type, $parent ) {
-		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS."..".DS."libraries".DS."joomla".DS."database".DS."table");
-		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_service'.DS.'tables');
+		JTable::addIncludePath(JPATH_ADMINISTRATOR."/../libraries/joomla/database/table");
+		JTable::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_easysdi_service/tables');
 		
 		if($type == 'install'){
 			//Create a default EasySDI Service Category

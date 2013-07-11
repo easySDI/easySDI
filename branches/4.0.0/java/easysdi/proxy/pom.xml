@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>proxy</artifactId>
-    <packaging>war</packaging>
+	<artifactId>proxy</artifactId>
+	<packaging>war</packaging>
     <name>proxy</name>
     <parent>
         <groupId>org.easysdi</groupId>
@@ -11,14 +11,14 @@
     </parent>
 	
     <scm>
-        <connection>scm:svn:http://www.easysdi.org/easysdi/branches/depth/running/v330/sandbox/mb/easysdi330/proxy</connection>
+        <connection>scm:svn://www.easysdi.org/easysdi/branches/4.0.0/java/easysdi/proxy</connection>
     </scm>
         
     <properties>
         <gt.version>2.7.0</gt.version>
         <gt2.version>2.4.1</gt2.version>
     </properties>
-        
+    
     <dependencies>
         <!-- Log4J -->
         <dependency>
@@ -71,27 +71,46 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt2-shapefile</artifactId>
-            <version>${gt2.version}</version>
+	        <version>${gt2.version}</version>
         </dependency>
         
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt2-api</artifactId>
+	        <version>${gt2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+			<artifactId>gt2-shapefile-renderer</artifactId>
             <version>${gt2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
-            <artifactId>gt2-render</artifactId>
+			<artifactId>gt2-wms</artifactId>
+			<version>${geotools.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jaxb-api</artifactId>
+					<groupId>jaxb</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jaxb-impl</artifactId>
+					<groupId>jaxb</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jaxb-libs</artifactId>
+					<groupId>jaxb</groupId>
+				</exclusion>
+			</exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+			<artifactId>gt2-render</artifactId>
             <version>${gt2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
-            <artifactId>gt2-wfs</artifactId>
-            <version>${gt2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt2-shapefile-renderer</artifactId>
+			<artifactId>gt2-wfs</artifactId>
             <version>${gt2.version}</version>
         </dependency>
         <dependency>
@@ -102,9 +121,9 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt2-epsg-hsql</artifactId>
-            <version>${gt2.version}</version>
-        </dependency>
-        <dependency>
+            <version>${gt.version}</version>
+        </dependency>     
+		<dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-xml</artifactId>
             <version>${gt.version}</version>
@@ -114,7 +133,6 @@
             <artifactId>gt-wms</artifactId>
             <version>${gt.version}</version>
         </dependency>
-        
 		
         <!-- Divers -->
         <dependency>
@@ -139,6 +157,11 @@
             <version>1.5.11</version>
         </dependency>
         <dependency>
+			<groupId>javax.media</groupId>
+			<artifactId>jai-core</artifactId>
+			<version>1.1.3</version>
+		</dependency>
+		<dependency>
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>fop</artifactId>
             <version>0.95-1</version>
@@ -164,6 +187,11 @@
             <artifactId>commons-dbcp</artifactId>
             <version>1.2.2</version>
         </dependency>
+		<dependency>
+			<groupId>jaxen</groupId>
+			<artifactId>jaxen</artifactId>
+			<version>1.1.4</version>
+		</dependency>
 
         <!-- Hibernate -->
         <dependency>
@@ -225,7 +253,7 @@
                 <configuration>
                     <url>http://localhost:8181/manager</url>
                     <server>TomcatServer</server>
-                    <path>/proxy-3.3.0</path>
+				    <path>/proxy-3.3.0</path>
                 </configuration>
             </plugin>
 			
@@ -242,5 +270,5 @@
                 </configuration>
             </plugin>
         </plugins>
-    </build>-->
+	</build>-->
 </project>

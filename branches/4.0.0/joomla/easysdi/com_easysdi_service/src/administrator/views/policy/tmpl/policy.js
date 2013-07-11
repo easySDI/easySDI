@@ -19,6 +19,17 @@ Joomla.submitbutton = function (task) {
 			}
 			jQuery(document).trigger('recalculate', task);
 		}
+		else if ('policy.cancel' != task && 'CSW' == jQuery('#jform_layout').val()) {
+			if(jQuery('#jform_srssource').val() == '' && jQuery('#jform_maxx').val() == '' && jQuery('#jform_maxy').val() == '' && jQuery('#jform_minx').val() == '' && jQuery('#jform_miny').val() == '') {
+				jQuery('#jform_eastboundlongitude').val('');
+				jQuery('#jform_westboundlongitude').val('');
+				jQuery('#jform_northboundlatitude').val('');
+				jQuery('#jform_southboundlatitude').val('');
+				Joomla.submitform(task, document.getElementById('policy-form'));
+				return;
+			}
+			jQuery(document).trigger('reproject', task);
+		}
 		else {
 			Joomla.submitform(task, document.getElementById('policy-form'));
 		}
@@ -58,7 +69,7 @@ function initVisibility () {
 		jQuery('#ps_accordion').show();
 	}
 	
-	if (jQuery('#jform_anyoperation1').is(":checked")) {
+	if (jQuery('#jform_anyoperation0').is(":checked")) {
 		jQuery('.allowedoperation').parent().parent().hide();
 	}
 	else {
@@ -128,7 +139,7 @@ jQuery(document).ready(function (){
 	});
 	
 	jQuery('input[name="jform[anyoperation]"]').click(function () {
-		if (jQuery('#jform_anyoperation1').is(":checked")) {
+		if (jQuery('#jform_anyoperation0').is(":checked")) {
 			jQuery(".allowedoperation").val("").trigger('liszt:updated');
 			jQuery('.allowedoperation').parent().parent().hide();
 		}

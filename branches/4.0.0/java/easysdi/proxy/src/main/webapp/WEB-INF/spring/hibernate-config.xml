@@ -9,9 +9,9 @@
 	
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://localhost:3306/easysdi?zeroDateTimeBehavior=convertToNull" />
+		<property name="url" value="jdbc:mysql://localhost:3306/install?zeroDateTimeBehavior=convertToNull" />
 		<property name="username" value="root" />
-		<property name="password" value="root" />
+		<property name="password" value="invulsion" />
 	</bean>
 
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
@@ -30,7 +30,7 @@
 				<prop key="hibernate.cache.use_query_cache">true</prop>
                 <prop key="hibernate.cache.region.factory_class">net.sf.ehcache.hibernate.SingletonEhCacheRegionFactory</prop>
                 <prop key="hibernate.generate_statistics">false</prop>
-                <prop key="hibernate.cache.use_structured_entries">false</prop>
+                <prop key="hibernate.cache.use_structured_entries">true</prop>
                 <prop key="net.sf.ehcache.configurationResourceName">ehcache.xml</prop>
                 <prop key="hibernate.connection.isolation">1</prop>
 			</props>
@@ -40,7 +40,7 @@
 	
 	<bean id="namingStrategy" class="org.easysdi.proxy.namingStrategy.CustomNamingStrategy">
 		<property name="prefix">
-			<value>sdi_</value>
+			<value>b6svl_</value>
 		</property>
 	</bean>
 

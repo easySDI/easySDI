@@ -21,6 +21,8 @@ $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/policy.js');
 $document->addScript('components/com_easysdi_service/views/policy/tmpl/csw.js');
+$document->addScript('components/com_easysdi_service/libraries/openlayers/OpenLayers.js' );
+$document->addScript('components/com_easysdi_service/libraries/proj4js/lib/proj4js-combined.js' );
 JText::script('JGLOBAL_VALIDATION_FORM_FAILED');
 JText::script('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE');
 
@@ -31,7 +33,7 @@ JText::script('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE');
 		<div class="span10 form-horizontal">
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_SERVICE_TAB_NEW_POLICY') : JText::sprintf('COM_EASYSDI_SERVICE_TAB_EDIT_POLICY', $this->item->id); ?></a></li>
-				<li><a href="#excluded_attribute" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_CSW_TAB_EXCLUDED_ATTRIBUTE');?></a></li>
+				<li><a href="#restrictions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_FILTER');?></a></li>
 				<li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_PUBLISHING');?></a></li>
 				<?php if ($this->canDo->get('core.admin')): ?>
 					<li><a href="#permissions" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SERVICE_TAB_RULES');?></a></li>
@@ -42,47 +44,31 @@ JText::script('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE');
 				<div class="tab-pane active" id="details">
 					<fieldset>
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_DETAILS' );?></legend>
-					<?php foreach($this->form->getFieldset('policy') as $field): 
-					?> 
-						<div class="control-group" id="<?php echo $field->fieldname;?>">
-							<div class="control-label"><?php echo $field->label; ?></div>
-							<div class="controls"><?php echo $field->input; ?></div>
-						</div>
-					<?php endforeach; ?>
-					<div class="control-group">
-						<div class="control-label"><?php echo $this->form->getLabel('allowedoperation_csw'); ?></div>
-						<div class="controls"><?php echo $this->form->getInput('allowedoperation_csw'); ?></div>
-					</div>
-					<?php foreach($this->form->getFieldset('csw_policy') as $field): 
-					?> 
+						<?php foreach($this->form->getFieldset('policy') as $field): 
+						?> 
+							<div class="control-group" id="<?php echo $field->fieldname;?>">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+						<?php endforeach; ?>
 						<div class="control-group">
-							<div class="control-label"><?php echo $field->label; ?></div>
-							<div class="controls"><?php echo $field->input; ?></div>
+							<div class="control-label"><?php echo $this->form->getLabel('allowedoperation_csw'); ?></div>
+							<div class="controls"><?php echo $this->form->getInput('allowedoperation_csw'); ?></div>
 						</div>
-					<?php endforeach; ?>
-					
-					<div class="control-group">
-						<div class="control-label"><?php echo $this->form->getLabel('csw_anystate'); ?></div>
-						<div class="controls"><?php echo $this->form->getInput('csw_anystate'); ?></div>
-					</div>
-					<div class="control-group">
-						<div class="control-label"><?php echo $this->form->getLabel('csw_state'); ?></div>
-						<div class="controls"><?php echo $this->form->getInput('csw_state'); ?></div>
-					</div>
-					<div class="control-group">
-						<div class="control-label"><?php echo $this->form->getLabel('csw_version_id'); ?></div>
-						<div class="controls"><?php echo $this->form->getInput('csw_version_id'); ?></div>
-					</div>
-					<div class="control-group">
-						<div class="control-label"><?php echo $this->form->getLabel('csw_geographicfilter'); ?></div>
-						<div class="controls"><?php echo $this->form->getInput('csw_geographicfilter'); ?></div>
-					</div>
-					
-					<div class="control-group">
-						<div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
-						<div class="controls"><?php echo $this->form->getInput('id'); ?></div>
-					</div>
-					
+						<div class="control-group">
+							<div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
+							<div class="controls"><?php echo $this->form->getInput('id'); ?></div>
+						</div>
+					</fieldset>
+					<fieldset>
+					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_AUTORISATIONS' );?></legend>
+						<?php foreach($this->form->getFieldset('csw_policy') as $field): 
+						?> 
+							<div class="control-group">
+								<div class="control-label"><?php echo $field->label; ?></div>
+								<div class="controls"><?php echo $field->input; ?></div>
+							</div>
+						<?php endforeach; ?>
 					</fieldset>
 					
 					<div class="control-group">
@@ -94,31 +80,57 @@ JText::script('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE');
 					</div>
 				</div>
 				
-				<div class="tab-pane" id="excluded_attribute">
-					<div id="div_excluded_attributes">
-						<?php
-							$policy_id = (!empty($this->item->id))?$this->item->id:-1;
-							$db = JFactory::getDbo();
-							$db->setQuery('
-								SELECT path FROM #__sdi_excludedattribute
-								WHERE policy_id = ' . $policy_id . ';
-							');
-							$db->execute();
-							$paths = $db->loadColumn();
-							$path_count = 0;
-							foreach ($paths as $path) {
-								echo '<div class="div_ea_' . $path_count . ' span12">
-									<textarea name="excluded_attribute[' . $path_count . ']" rows="1" class="inputbox input-xxlarge">' . $path . '</textarea>
-									<button type="button" class="btn btn-danger btn_ea_delete">' .JText::_('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE') . '</button>
-									<br /><br />
-								</div>';
-								$path_count++;
-							}
-						?>
-					</div>
-					<button class="btn" data-count="<?php echo $path_count; ?>" id="btn_add_excluded_attribute">
-						<?php echo JText::_('COM_EASYSDI_SERVICE_CSW_BTN_ADD_EXCLUDED_ATTRIBUTE');?>
-					</button>
+				<div class="tab-pane" id="restrictions">
+					<fieldset>
+						<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_GEOGRAPHIC_FILTER' );?></legend>
+						<div class="control-group">
+							<div class="control-label"><?php echo $this->form->getLabel('srssource'); ?></div>
+							<div class="controls"><?php echo $this->form->getInput('srssource'); ?></div>
+						</div>
+						<div class="control-group">
+							<div class="control-label"><?php echo JText::_( 'COM_EASYSDI_SERVICE_FORM_LBL_POLICY_BBOX' ); ?></div>
+							<div class="controls">
+								<div class="row-fluid">
+									<div class="controls span3 offset3"><?php echo $this->form->getInput('maxy'); ?></div>
+								</div>
+								<div class="row-fluid">
+									<div class="controls span3"><?php echo $this->form->getInput('minx'); ?></div>
+									<div class="controls span3 offset3"><?php echo $this->form->getInput('maxx'); ?></div>
+								</div>
+								<div class="row-fluid">
+									<div class="controls span3 offset3"><?php echo $this->form->getInput('miny'); ?></div>
+								</div>
+							</div>
+						</div>
+						
+					</fieldset>
+					<fieldset>
+						<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_EXCLUDED_ATTRIBUTE' );?></legend>
+						<div id="div_excluded_attributes">
+							<?php
+								$policy_id = (!empty($this->item->id))?$this->item->id:-1;
+								$db = JFactory::getDbo();
+								$db->setQuery('
+									SELECT path FROM #__sdi_excludedattribute
+									WHERE policy_id = ' . $policy_id . ';
+								');
+								$db->execute();
+								$paths = $db->loadColumn();
+								$path_count = 0;
+								foreach ($paths as $path) {
+									echo '<div class="div_ea_' . $path_count . ' input-xxlarge">
+											<input type="text" name="excluded_attribute[' . $path_count . ']" class="span10" value="'.$path.'" />
+											<span class="btn btn-danger btn-small btn_ea_delete" onClick="onDeleteExcludedAttribute(' .$path_count. ');return false;"><i class="icon-white icon-remove"></i></span>
+											<br /><br />
+										</div>';
+									$path_count++;
+								}
+							?>
+						</div>
+						<button class="btn " data-count="<?php echo $path_count; ?>" id="btn_add_excluded_attribute" onClick="onAddExcludedAttribute();return false;">
+							<i class="icon-white icon-pencil"></i> <?php echo JText::_('COM_EASYSDI_SERVICE_CSW_BTN_ADD_EXCLUDED_ATTRIBUTE');?>
+						</button>
+					</fieldset>
 				</div>
 				
 				<div class="tab-pane" id="publishing">

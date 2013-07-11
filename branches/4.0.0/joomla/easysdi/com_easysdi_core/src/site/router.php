@@ -1,8 +1,8 @@
 <?php
 /**
- \* @version     3.3.0
-  * @package     com_easysdi_user
- * @copyright   Copyright (C) 2012. All rights reserved.
+ * @version     4.0.0
+ * @package     com_easysdi_core
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
@@ -17,9 +17,9 @@ defined('_JEXEC') or die;
 function Easysdi_coreBuildRoute(&$query)
 {
 	$segments = array();
-
+    
 	if (isset($query['task'])) {
-		$segments[] = $query['task'];
+		$segments[] = implode('/',explode('.',$query['task']));
 		unset($query['task']);
 	}
 	if (isset($query['id'])) {
@@ -43,29 +43,26 @@ function Easysdi_coreBuildRoute(&$query)
 function Easysdi_coreParseRoute($segments)
 {
 	$vars = array();
-
+    
 	// view is always the first element of the array
 	$count = count($segments);
-
-	if ($count)
+    
+    if ($count)
 	{
 		$count--;
-		$segment = array_shift($segments);
-		if (is_numeric($segment)) {
-			$vars['id'] = $segment;
-		} else {
-			$vars['task'] = $segment;
-		}
-	}
-
-	if ($count)
-	{
-		$count--;
-		$segment = array_shift($segments) ;
+		$segment = array_pop($segments) ;
 		if (is_numeric($segment)) {
 			$vars['id'] = $segment;
 		}
+        else{
+            $count--;
+            $vars['task'] = array_pop($segments) . '.' . $segment;
+        }
 	}
 
+	if ($count)
+	{   
+        $vars['task'] = implode('.',$segments);
+	}
 	return $vars;
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     3.3.0
+ * @version     4.0.0
  * @package     com_easysdi_service
  * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -105,7 +105,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	public function getItem($pk = null) {
 		if ($item = parent::getItem($pk)) {
 			//Do any procesing on fields here if needed
-			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'tables');
+			JTable::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/tables');
 			
 			$pk = $item->id;
 			
@@ -130,6 +130,18 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				$item->physicalService = $this->{'_getItem' . $item->layout}($pk, $item->virtualservice_id);
 			}
 			$item->{'allowedoperation_' . strtolower($item->layout)} = $this->loadAllowedOperation($pk);
+			
+			if(strtolower($item->layout) == 'csw'){
+				$item->csw_state = $this->loadAllowedMetadatastate($pk);
+				if($item->csw_spatialpolicy_id){
+					$spatialpolicy = $this->loadCSWSpatialPolicy($item->csw_spatialpolicy_id);
+					$item->srssource = $spatialpolicy->srssource;
+					$item->maxx = (float)$spatialpolicy->maxx;
+					$item->maxy = (float)$spatialpolicy->maxy;
+					$item->minx = (float)$spatialpolicy->minx;
+					$item->miny = (float)$spatialpolicy->miny;
+				}
+			}
 		}
 		
 		// Get the access scope
@@ -138,6 +150,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		
 		return $item;
 	}
+
 	
 	/**
 	 *
@@ -145,7 +158,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 *
 	*/
 	private function _getItemWMS($pk, $virtualservice_id) {
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmsPhysicalService.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.'/helpers/WmsPhysicalService.php');
 		$tab_physicalService = JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
 		$db = JFactory::getDbo();
 		$ps_list = $tab_physicalService->getListByVirtualService($virtualservice_id);
@@ -207,7 +220,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 *
 	*/
 	private function _getItemWFS($pk, $virtualservice_id) {
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WfsPhysicalService.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.'/helpers/WfsPhysicalService.php');
 		$tab_physicalService = JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
 		$db = JFactory::getDbo();
 		
@@ -269,7 +282,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 *
 	*/
 	private function _getItemWMTS($pk, $virtualservice_id) {
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmtsPhysicalService.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.'/helpers/WmtsPhysicalService.php');
+		set_time_limit(60);
 		$tab_physicalService = JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
 		$db = JFactory::getDbo();
 		
@@ -307,7 +321,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				}
 				
 				foreach ($resultset as $row) {
-					if ((!is_null($row->spatialpolicy_id)) || (!is_null($row->tmsp_id)) || (!is_null($row->tmp_id))) {
+					//if ((!is_null($row->spatialpolicy_id)) || (!is_null($row->tmsp_id)) || (!is_null($row->tmp_id))) {
+                                        if ((!is_null($row->spatialpolicy_id))) {
 						$layerList[] = $row->identifier;
 					}
 					$data[$row->identifier] = Array(
@@ -322,6 +337,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			$wmtsObj->loadData($data);
 			$wmtsObj->sortLists();
 			$wmtsObj->setLayerAsConfigured($layerList);
+			$wmtsObj->compileAllSRS();
 			$wmtsObjList[] = $wmtsObj;
 			
 			$this->cacheXMLCapabilities($wmtsObj->getRawXml(), $ps->id, $virtualservice_id);
@@ -388,7 +404,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			}
 			
 			if ('WMS' == $serviceconnector_name) {
-				require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmsWebservice.php');
+				require_once(JPATH_COMPONENT_ADMINISTRATOR.'/helpers/WmsWebservice.php');
 				if (!WmsWebservice::saveAllLayers( $data['virtualservice_id'], $data['id'])) {
 					$this->setError('Failed to save all WMS layers.');
 					return false;
@@ -407,6 +423,11 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 							$this->setError('Failed to save enabled layers.');
 							return false;
 						}
+						
+						if (!$this->calculateAllTiles($data)) {
+							$this->setError('Failed to calculate authorized tiles.');
+							return false;
+						}
 						break;
 					case 'WMS':
 						if (!$this->saveWMSInheritance($data)) {
@@ -420,7 +441,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 						}
 						break;
 					case 'WFS':
-						require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WfsWebservice.php');
+						require_once(JPATH_COMPONENT_ADMINISTRATOR.'/helpers/WfsWebservice.php');
 						if (!WfsWebservice::saveAllFeatureTypes( $data['virtualservice_id'], $data['id'])) {
 							$this->setError('Failed to save all WFS layers.');
 							return false;
@@ -446,10 +467,16 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 							$this->setError('Failed to save excluded attributes.');
 							return false;
 						}
+						
+						if(!$this->saveCSWSpatialPolicy($data)){
+							$this->setError('Failed to save CSW spatial policy.');
+							return false;
+						}
 						break;
 				}
 			}
 			
+			//Allowed operations
 			if (!$this->saveAllowedOperation($data)) {
 				$this->setError('Failed to save allowed operations.');
 				return false;
@@ -515,7 +542,6 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				
 				//we update the spatial policy foreign key in policy
 				$policyUpdates[] = 'wmts_spatialpolicy_id = ' . $spatialPolicyID;
-				
 			}
 			else {
 				//we update the spatial policy
@@ -634,6 +660,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					
 					//update the spatial foreign key in physicalservice_policy
 					$physicalServicePolicyUpdates[] = 'wmts_spatialpolicy_id = ' . $spatialPolicyID;
+					//And set the inheritedspatialpolicy boolean value accordingly
+					$physicalServicePolicyUpdates[] = 'inheritedspatialpolicy = 0';
 					
 				}
 				else {
@@ -656,6 +684,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 						$this->setError($je);
 						return false;
 					}
+					//Set the inheritedspatialpolicy boolean value accordingly
+					$physicalServicePolicyUpdates[] = 'inheritedspatialpolicy = 0';
 				}
 			}
 			
@@ -677,6 +707,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			if($spatialPolicyID != NULL && 'null' == $spatialPolicy['northBoundLatitude'] ){
 				//update the spatial foreign key in physicalservice_policy
 				$physicalServicePolicyUpdates[] = 'wmts_spatialpolicy_id = NULL';
+				//And set the inheritedspatialpolicy boolean value accordingly
+				$physicalServicePolicyUpdates[] = 'inheritedspatialpolicy = 1';
 			
 				//update the anyitem switch
 				$query = $db->getQuery(true);
@@ -759,7 +791,6 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				
 				//we update the spatial policy foreign key in policy
 				$policyUpdates[] = 'wms_spatialpolicy_id = ' . $spatialPolicyID;
-				
 			}
 			else {
 				//we update the spatial policy
@@ -883,6 +914,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					
 					//update the spatial foreign key in physicalservice_policy
 					$physicalServicePolicyUpdates[] = 'wms_spatialpolicy_id = ' . $spatialPolicyID;
+					//And set the inheritedspatialpolicy boolean value accordingly
+					$physicalServicePolicyUpdates[] = 'inheritedspatialpolicy = 0';
 					
 				}
 				else {
@@ -908,6 +941,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 						$this->setError($je);
 						return false;
 					}
+					//Set the inheritedspatialpolicy boolean value accordingly
+					$physicalServicePolicyUpdates[] = 'inheritedspatialpolicy = 0';
 				}
 			}
 			
@@ -929,6 +964,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			if($spatialPolicyID != NULL && 'null' == $spatialPolicy['minimumscale'] && 'null' == $spatialPolicy['maximumscale'] && empty($spatialPolicy['geographicfilter'])){
 				//update the spatial foreign key in physicalservice_policy
 				$physicalServicePolicyUpdates[] = 'wms_spatialpolicy_id = NULL';
+				//And set the inheritedspatialpolicy boolean value accordingly
+				$physicalServicePolicyUpdates[] = 'inheritedspatialpolicy = 1';
 				
 				//update the anyitem switch
 				$query = $db->getQuery(true);
@@ -1004,7 +1041,6 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 				
 				//we update the spatial policy foreign key in policy
 				$policyUpdates[] = 'wfs_spatialpolicy_id = ' . $spatialPolicyID;
-				
 			}
 			else {
 				//we update the spatial policy
@@ -1117,6 +1153,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 					
 					//update the spatial foreign key in physicalservice_policy
 					$physicalServicePolicyUpdates[] = 'wfs_spatialpolicy_id = ' . $spatialPolicyID;
+					//And set the inheritedspatialpolicy boolean value accordingly
+					$physicalServicePolicyUpdates[] = 'inheritedspatialpolicy = 0';
 					
 				}
 				else {
@@ -1136,6 +1174,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 						$this->setError($je);
 						return false;
 					}
+					//Set the inheritedspatialpolicy boolean value accordingly
+					$physicalServicePolicyUpdates[] = 'inheritedspatialpolicy = 0';
 				}
 				
 				
@@ -1144,7 +1184,9 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			//If spatial policy was cleared
 			if(empty($spatialPolicy['localgeographicfilter']) && empty($spatialPolicy['remotegeographicfilter'])){
 				//we update the spatial policy foreign key in policy
-				$policyUpdates[] = 'wfs_spatialpolicy_id = NULL';
+				$physicalServicePolicyUpdates[] = 'wfs_spatialpolicy_id = NULL';
+				//And set the inheritedspatialpolicy boolean value accordingly
+				$physicalServicePolicyUpdates[] = 'inheritedspatialpolicy = 1';
 			}
 			
 			//update the anyitem switch
@@ -1337,7 +1379,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 *
 	 * @param int $pk the primary key of the current policy
 	 *
-	 * @return boolean 	True on success, False on error
+	 * @return object 	Array of results on success, False on error
 	 *
 	 * @since EasySDI 3.0.0
 	 */
@@ -1360,6 +1402,126 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		}
 		
 		return $db->loadColumn();
+	}
+	
+	/**
+	 * Load allowed metadata state
+	 *
+	 * @param int $pk the primary key of the current policy
+	 *
+	 * @return object 	Array of results on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	private function loadAllowedMetadatastate ($pk) {
+		if (empty($pk)) {
+			return Array();
+		}
+	
+		$db = JFactory::getDbo();
+		$db->setQuery('
+				SELECT metadatastate_id FROM #__sdi_policy_metadatastate
+				WHERE policy_id =' . $pk . '
+				');
+	
+		try {
+			$db->execute();
+		} catch (Exception $e) {
+			$this->setError($e->getMessage());
+			return false;
+		}
+	
+		return $db->loadColumn();
+	}
+	
+	/**
+	 * Method to save CSW spatial policy
+	 *
+	 * @param array 	$data	data posted from the form
+	 *
+	 * @return boolean 	True on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	private function saveCSWSpatialPolicy ($data) {
+		try{
+			$db = JFactory::getDbo();
+			
+			//Get the existing spatial policy id
+			$query = $db->getQuery(true);
+			$query->select('csw_spatialpolicy_id')
+					->from('#__sdi_policy')
+					->where('id = ' . $data['id']);
+			$db->setQuery($query);
+			$spatialpolicy_id = $db->loadResult();
+		
+			//Delete existing spatial policy
+			if($spatialpolicy_id && ($data['srssource'] == null || $data['srssource'] == '')){
+				$db->setQuery('UPDATE #__sdi_policy SET csw_spatialpolicy_id = NULL WHERE id = ' . $data['id']);
+				$db->execute();
+					
+				$spatial = JTable::getInstance('cswspatialpolicy', 'Easysdi_serviceTable');
+				$spatial->delete($spatialpolicy_id);
+				parent::save($data);
+				return true;
+			} 
+			
+			$spatialtable = JTable::getInstance('cswspatialpolicy', 'Easysdi_serviceTable');
+			$spatial = array();
+			$spatial['eastboundlongitude'] = $data['eastboundlongitude'];
+			$spatial['westboundlongitude'] = $data['westboundlongitude'];
+			$spatial['northboundlatitude'] = $data['northboundlatitude'];
+			$spatial['southboundlatitude'] = $data['southboundlatitude'];
+			$spatial['maxx'] = $data['maxx'];
+			$spatial['maxy'] = $data['maxy'];
+			$spatial['minx'] = $data['minx'];
+			$spatial['miny'] = $data['miny'];
+			$spatial['srssource'] = $data['srssource'];
+			
+			if($spatialpolicy_id){
+				$spatial['id'] = $spatialpolicy_id;
+				
+				if(!$spatialtable->bind($spatial))
+					throw new Exception('Cannot bind cswspatialpolicy');
+				if(!$spatialtable->store())
+						throw new Exception('Cannot save cswspatialpolicy');
+			}else{
+				if(!$spatialtable->bind($spatial))
+					throw new Exception('Cannot bind cswspatialpolicy');
+				if(!$spatialtable->store())
+					throw new Exception('Cannot save cswspatialpolicy');
+
+				$spatialpolicy_id = $spatialtable->id;
+				$data['csw_spatialpolicy_id'] = $spatialpolicy_id;
+				parent::save($data);
+			}
+			
+			return true;
+		}catch (Exception $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+	}
+	
+	/**
+	 * Load CSW spatial policy
+	 *
+	 * @param int $pk the primary key of the current policy
+	 *
+	 * @return object 	a CSW spatial policy object on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	private function loadCSWSpatialPolicy ($pk) {
+		if (empty($pk)) {
+			return null;
+		}
+	
+		$spatial = JTable::getInstance('cswspatialpolicy', 'Easysdi_serviceTable');
+		$spatial->load($pk);
+		
+		return $spatial;
 	}
 	
 	/**
@@ -1410,11 +1572,12 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		$db->setQuery('DELETE FROM #__sdi_policy_metadatastate WHERE policy_id = ' . $data['id']);
 		$db->execute();
 		
-		$arr_pks = $_POST['csw_state'];
+		$arr_pks = $data['csw_state'];
+		$version_id = $data['csw_version_id'];
 		foreach ($arr_pks as $pk) {
 			$db->setQuery('
-				INSERT INTO #__sdi_policy_metadatastate (policy_id, metadatastate_id)
-				VALUES (' . $data['id'] . ',\'' . $pk . '\');
+				INSERT INTO #__sdi_policy_metadatastate (policy_id, metadatastate_id, metadataversion_id)
+				VALUES (' . $data['id'] . ',\'' . $pk . '\', \'' . $version_id . '\');
 			');
 			try {
 				$db->execute();
@@ -1438,7 +1601,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 	 * @since EasySDI 3.0.0
 	 */
 	private function saveWMTSEnabledLayers ($data) {
-		$arrEnabled = $_POST['enabled'];
+		$arrEnabled = (isset($_POST['enabled']))?$_POST['enabled']:Array();
 		$policyID = $data['id'];
 		$db = $this->getDbo();
 		
@@ -1786,6 +1949,247 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		}
 	}
 	
-	
+	/**
+	 * Calculate the authorized Tiles based on the inherited bboxes
+	 *
+	 * @param array 	$data	data posted from the form
+	 *
+	 * @return boolean 	True on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	private function calculateAllTiles ($data) {
+		set_time_limit(300);
+		$db = JFactory::getDbo();
+		$policy_id = $data['id'];
+		$precalculatedData = json_decode($_POST['precalculatedData']);
+		
+		$query = '
+			SELECT ps.id, ps.resourceurl AS url, psp.id AS psp_id
+			FROM #__sdi_physicalservice_policy psp
+			JOIN #__sdi_physicalservice ps
+			ON ps.id = psp.physicalservice_id
+			WHERE psp.policy_id = ' . $policy_id . '
+		';
+		
+		try {
+			$db->setQuery($query);
+			$db->execute();
+			$arr_ps = $db->loadObjectList();
+		}
+		catch (JDatabaseException $e) {
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
+		$arr_wmtsObj = Array();
+		foreach ($arr_ps as $ps) {
+			$db->setQuery('
+				SELECT wp.*, wsp.*, wp.id AS wmtslayerpolicy_id, tms.identifier AS tms_identifier, tm.identifier AS tm_identifier
+				FROM #__sdi_wmtslayer_policy wp
+				JOIN #__sdi_physicalservice_policy pp
+				ON wp.physicalservicepolicy_id = pp.id
+				JOIN #__sdi_wmts_spatialpolicy wsp
+				ON wp.spatialpolicy_id = wsp.id
+				JOIN #__sdi_tilematrixset_policy tms
+				ON wp.id = tms.wmtslayerpolicy_id
+				LEFT JOIN #__sdi_tilematrix_policy tm
+				ON tms.id = tm.tilematrixsetpolicy_id
+				WHERE pp.id = ' . $ps->psp_id . ';
+			');
+			
+			try {
+				$db->execute();
+				$resultset = $db->loadObjectList();
+			}
+			catch (JDatabaseException $e) {
+				$je = new JException($e->getMessage());
+				$this->setError($je);
+				return false;
+			}
+			
+			//preparing the object to be returned
+			$data = Array();
+			$tms_arr = Array();
+			foreach ($resultset as $tileMatrixSet) {
+				if (empty($data[$tileMatrixSet->identifier])) {
+					$data[$tileMatrixSet->identifier] = Array(
+						'enabled' => $tileMatrixSet->enabled,
+						'spatialOperator' => $tileMatrixSet->spatialoperator_id,
+						'westBoundLongitude' => $tileMatrixSet->westboundlongitude,
+						'eastBoundLongitude' => $tileMatrixSet->eastboundlongitude,
+						'northBoundLatitude' => $tileMatrixSet->northboundlatitude,
+						'southBoundLatitude' => $tileMatrixSet->southboundlatitude,
+						'tileMatrixSetList' => Array(),
+					);
+				}
+				$data[$tileMatrixSet->identifier]['tileMatrixSetList'][$tileMatrixSet->tms_identifier] = Array('maxTileMatrix' => $tileMatrixSet->tm_identifier);
+			}
+			
+			$wmtsObj = new WmtsPhysicalService($ps->id, $ps->url);
+			$wmtsObj->getCapabilities();
+			$wmtsObj->populate();
+			$wmtsObj->sortLists();
+			$wmtsObj->loadData($data);
+			
+			//we insert the inherited bbox set for the server
+			$wmtsObj->setAllBoundingBoxes(Array(
+				'north' => $precalculatedData->inherit_server->{$ps->id}->northBoundLatitude,
+				'east' => $precalculatedData->inherit_server->{$ps->id}->eastBoundLongitude,
+				'south' => $precalculatedData->inherit_server->{$ps->id}->southBoundLatitude,
+				'west' => $precalculatedData->inherit_server->{$ps->id}->westBoundLongitude,
+			));
+			//we insert the inherited bbox set for the all policy
+			$wmtsObj->setAllBoundingBoxes(Array(
+				'north' => $precalculatedData->inherit_policy->northBoundLatitude,
+				'east' => $precalculatedData->inherit_policy->eastBoundLongitude,
+				'south' => $precalculatedData->inherit_policy->southBoundLatitude,
+				'west' => $precalculatedData->inherit_policy->westBoundLongitude,
+			));
+			//we insert the srsUnits
+			$wmtsObj->setAllSRSUnit($precalculatedData->srs_units);
+			
+			//insert projected bboxes in each tms
+			foreach ($wmtsObj->getLayerList() as $layerObj) {
+				foreach ($layerObj->getTileMatrixSetList() as $tmsObj) {
+					if (isset($precalculatedData->inherit_server->{$ps->id}->recalculated->{$tmsObj->srs})) {
+						$bbox = $precalculatedData->inherit_server->{$ps->id}->recalculated->{$tmsObj->srs};
+						$tmsObj->minX = $bbox->minX;
+						$tmsObj->maxX = $bbox->maxX;
+						$tmsObj->minY = $bbox->minY;
+						$tmsObj->maxY = $bbox->maxY;
+					}
+				}
+			}
+			$wmtsObj->calculateAuthorizedTiles();
+			$arr_wmtsObj[] = $wmtsObj;
+		}
+		
+		foreach ($arr_wmtsObj as $wmtsObj) {
+			foreach ($wmtsObj->getLayerList() as $layerObj) {
+				foreach ($layerObj->getTileMatrixSetList() as $tmsObj) {
+					foreach ($tmsObj->getTileMatrixList() as $tmObj) {
+						$query = '
+							SELECT psp.id AS pspID, tm.id AS tmID, tms.id AS tmsID, wp.id AS wpID
+							FROM #__sdi_policy p
+							JOIN #__sdi_physicalservice_policy psp
+							ON p.id = psp.policy_id
+							LEFT JOIN #__sdi_wmtslayer_policy wp
+							ON (
+								psp.id = wp.physicalservicepolicy_id
+								AND (
+									wp.identifier = \'' . $layerObj->name . '\'
+									OR wp.identifier IS NULL
+								)
+							)
+							LEFT JOIN #__sdi_tilematrixset_policy tms
+							ON (
+								wp.id = tms.wmtslayerpolicy_id
+								AND (
+									tms.identifier = \'' . $tmsObj->identifier . '\'
+									OR tms.identifier IS NULL
+								)
+							)
+							LEFT JOIN #__sdi_tilematrix_policy tm
+							ON (
+								tms.id = tm.tilematrixsetpolicy_id
+								AND (
+									tm.identifier = \'' . $tmObj->identifier . '\'
+									OR tm.identifier IS NULL
+								)
+							)
+							WHERE p.id = ' . $policy_id . '
+							AND psp.physicalservice_id = ' . $wmtsObj->id . ';
+						';
+						
+						$db->setQuery($query);
+						try {
+							$db->execute();
+							$result = $db->loadObject();
+							$pspID = $result->pspID;
+							$wpID = $result->wpID;
+							$tmsID = $result->tmsID;
+							$tmID = $result->tmID;
+						}
+						catch (JDatabaseException $e) {
+							$je = new JException($e->getMessage());
+							$this->setError($je);
+							return false;
+						}
+						
+						//if the layer doesn't exist yet, we create it
+						if (is_null($wpID)) {
+							$query = $db->getQuery(true);
+							$query->insert('#__sdi_wmtslayer_policy')->columns(Array(
+								'identifier',
+								'physicalservicepolicy_id'
+							))->values('\'' . $layerObj->name . '\', ' . $pspID);
+							$db->setQuery($query);
+							try {
+								$db->execute();
+								$wpID = $db->insertid();
+							}
+							catch (JDatabaseException $e) {
+								$je = new JException($e->getMessage());
+								$this->setError($je);
+								return false;
+							}
+						}
+						
+						//if the tilematrixset doesn't exist yet, we create it
+						if (is_null($tmsID)) {
+							$query = $db->getQuery(true);
+							$query->insert('#__sdi_tilematrixset_policy')->columns(Array(
+								'identifier',
+								'wmtslayerpolicy_id',
+								'srssource',
+							))->values('\'' . $tmsObj->identifier . '\', ' . $wpID . ', \'' . $tmsObj->srs . '\'');
+							$db->setQuery($query);
+							try {
+								$db->execute();
+								$tmsID = $db->insertid();
+							}
+							catch (JDatabaseException $e) {
+								$je = new JException($e->getMessage());
+								$this->setError($je);
+								return false;
+							}
+						}
+						
+						$query = $db->getQuery(true);
+						if (isset($tmID) && is_numeric($tmID)) {
+							$query->update('#__sdi_tilematrix_policy')->set(Array(
+								'tileminrow = ' . ((isset($tmObj->minTileRow))?$tmObj->minTileRow:'\'null\''),
+								'tilemaxrow = ' . ((isset($tmObj->maxTileRow))?$tmObj->maxTileRow:'\'null\''),
+								'tilemincol = ' . ((isset($tmObj->minTileCol))?$tmObj->minTileCol:'\'null\''),
+								'tilemaxcol = ' . ((isset($tmObj->maxTileCol))?$tmObj->maxTileCol:'\'null\''),
+							))->where('id = ' . $tmID);
+						}
+						else {
+							$query->insert('#__sdi_tilematrix_policy')->columns(Array(
+								'tilematrixsetpolicy_id',
+								'identifier',
+								'tileminrow',
+								'tilemaxrow',
+								'tilemincol',
+								'tilemaxcol'
+							))->values($tmsID . ', \'' . $tmObj->identifier . '\', ' . ((isset($tmObj->minTileRow))?$tmObj->minTileRow:'\'null\'') . ', ' . ((isset($tmObj->maxTileRow))?$tmObj->maxTileRow:'\'null\'') . ', ' . ((isset($tmObj->minTileCol))?$tmObj->minTileCol:'\'null\'') . ', ' . ((isset($tmObj->maxTileCol))?$tmObj->maxTileCol:'\'null\''));
+						}
+						$db->setQuery($query);
+						try {
+							$db->execute();
+						}
+						catch (JDatabaseException $e) {
+							$je = new JException($e->getMessage());
+							$this->setError($je);
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
+	}
 	
 }

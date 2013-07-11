@@ -3,7 +3,7 @@
 // No direct access
 defined('_JEXEC') or die;
 
-require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'helpers'.DS.'WmsPhysicalService.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.'/helpers/WmsPhysicalService.php');
 
 class WmsWebservice {
 	/*
@@ -66,14 +66,27 @@ class WmsWebservice {
 		}
 		
 		$html = '
-			<label for="minimumscale">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MINIMUM_SCALE') . '</label>
-			<input type="text" name="minimumscale" value="' . $layerObj->minimumScale . '" />
-			<br />
-			<label for="maximumscale">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MAXIMUM_SCALE') . '</label>
-			<input type="text" name="maximumscale" value="' . $layerObj->maximumScale . '" />
-			<br />
-			<label for="geographicfilter">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_FILTER') . '</label>
-			<textarea name="geographicfilter" rows="10" class="span12">' . $layerObj->geographicFilter . '</textarea>
+		<div class="well">
+	    	<div class="control-group inline">
+				<label class="control-label" for="minimumscale">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MINIMUM_SCALE') . '</label>
+				<div class="controls">
+					<input type="text" name="minimumscale" value="' .  $layerObj->minimumScale . '" />
+				</div>
+			</div>
+	  		<div class="control-group">
+				<label class="control-label" for="maximumscale">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_MAXIMUM_SCALE') . '</label>
+				<div class="controls">
+					<input type="text" name="maximumscale" value="' . $layerObj->maximumScale . '" />
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="geographicfilter">' . JText::_('COM_EASYSDI_SERVICE_WMS_LAYER_FILTER') . '</label>
+				<div class="controls">
+					<textarea name="geographicfilter" rows="8" class="input-xlarge">' . $layerObj->geographicFilter . '</textarea>
+				</div>
+			</div>
+		</div>
+
 			<input type="hidden" name="psID" value="' . $physicalServiceID . '"/>
 			<input type="hidden" name="vsID" value="' . $virtualServiceID . '"/>
 			<input type="hidden" name="policyID" value="' . $policyID . '"/>
@@ -153,83 +166,88 @@ class WmsWebservice {
 		$raw_GET['maximumscale'] = ('' != $raw_GET['maximumscale'])?$raw_GET['maximumscale']:'null';
 		$db = JFactory::getDbo();
 		
-		//save Spatial Policy
-		$db->setQuery('
-			SELECT sp.id
-			FROM #__sdi_wms_spatialpolicy sp
-			JOIN #__sdi_wmslayer_policy wlp
-			ON sp.id = wlp.spatialpolicy_id
-			JOIN #__sdi_physicalservice_policy psp
-			ON psp.id = wlp.physicalservicepolicy_id
-			WHERE psp.physicalservice_id = ' . $physicalServiceID . '
-			AND psp.policy_id = ' . $policyID . '
-			AND wlp.name = \'' . $layerID . '\';
-		');
-		
-		try {
+		try{
+			//save Spatial Policy
+			$db->setQuery('
+				SELECT sp.id
+				FROM #__sdi_wms_spatialpolicy sp
+				JOIN #__sdi_wmslayer_policy wlp
+				ON sp.id = wlp.spatialpolicy_id
+				JOIN #__sdi_physicalservice_policy psp
+				ON psp.id = wlp.physicalservicepolicy_id
+				WHERE psp.physicalservice_id = ' . $physicalServiceID . '
+				AND psp.policy_id = ' . $policyID . '
+				AND wlp.name = \'' . $layerID . '\';
+			');
 			$db->execute();
 			$num_result = $db->getNumRows();
 			$spatial_policy_id = $db->loadResult();
-		}
-		catch (JDatabaseException $e) {
-			$je = new JException($e->getMessage());
-			$this->setError($je);
-			return false;
-		}
 		
-		$query = $db->getQuery(true);
-		if (0 == $num_result) {
-			var_dump('insert');
-			$query->insert('#__sdi_wms_spatialpolicy')->columns('
-				geographicfilter, maxx, maxy, minx, miny, minimumscale, maximumscale, srssource
-			')->values('
-				\'' . $raw_GET['geographicfilter'] . '\', ' . $raw_GET['maxX'] . ', ' . $raw_GET['maxY'] . ', ' . $raw_GET['minX'] . ', ' . $raw_GET['minY'] . ', ' . $raw_GET['minimumscale'] . ', ' . $raw_GET['maximumscale'] . ', \'' . $raw_GET['srs'] . '\'
-			');
-		}
-		else {
-			var_dump('update', $spatial_policy_id);
-			$query->update('#__sdi_wms_spatialpolicy')->set(Array(
-				'geographicfilter = \'' . $raw_GET['geographicfilter'] . '\'',
-				'maxx = ' . $raw_GET['maxX'],
-				'maxy = ' . $raw_GET['maxY'],
-				'minx = ' . $raw_GET['minX'],
-				'miny = ' . $raw_GET['minY'],
-				'minimumscale = ' . $raw_GET['minimumscale'],
-				'maximumscale = ' . $raw_GET['maximumscale'],
-				'srssource = \'' . $raw_GET['srs'] . '\'',
-			))->where(Array(
-				'id = \'' . $spatial_policy_id . '\'',
-			));
-		}
-		$db->setQuery($query);
-		
-		try {
+			$query = $db->getQuery(true);
+			if (0 == $num_result) {
+				$query->insert('#__sdi_wms_spatialpolicy')->columns('
+					geographicfilter, maxx, maxy, minx, miny, minimumscale, maximumscale, srssource
+				')->values('
+					\'' . $raw_GET['geographicfilter'] . '\', ' . $raw_GET['maxX'] . ', ' . $raw_GET['maxY'] . ', ' . $raw_GET['minX'] . ', ' . $raw_GET['minY'] . ', ' . $raw_GET['minimumscale'] . ', ' . $raw_GET['maximumscale'] . ', \'' . $raw_GET['srs'] . '\'
+				');
+			}
+			else {
+				$query->update('#__sdi_wms_spatialpolicy')->set(Array(
+					'geographicfilter = \'' . $raw_GET['geographicfilter'] . '\'',
+					'maxx = ' . $raw_GET['maxX'],
+					'maxy = ' . $raw_GET['maxY'],
+					'minx = ' . $raw_GET['minX'],
+					'miny = ' . $raw_GET['minY'],
+					'minimumscale = ' . $raw_GET['minimumscale'],
+					'maximumscale = ' . $raw_GET['maximumscale'],
+					'srssource = \'' . $raw_GET['srs'] . '\'',
+				))->where(Array(
+					'id = \'' . $spatial_policy_id . '\'',
+				));
+			}
+			$db->setQuery($query);
 			$db->execute();
 			if (0 == $num_result) {
 				$spatial_policy_id = $db->insertid();
 			}
-		}
-		catch (JDatabaseException $e) {
-			$je = new JException($e->getMessage());
-			$this->setError($je);
-			return false;
-		}
 		
-		//save Wms Layer Policy
-		$db->setQuery('
-			SELECT wlp.id
-			FROM #__sdi_wmslayer_policy wlp
-			JOIN #__sdi_physicalservice_policy psp
-			ON psp.id = wlp.physicalservicepolicy_id
-			WHERE psp.physicalservice_id = ' . $physicalServiceID . '
-			AND psp.policy_id = ' . $policyID . '
-			AND wlp.name = \'' . $layerID . '\';
-		');
-		
-		try {
+			//save Wms Layer Policy
+			$db->setQuery('
+				SELECT wlp.id
+				FROM #__sdi_wmslayer_policy wlp
+				JOIN #__sdi_physicalservice_policy psp
+				ON psp.id = wlp.physicalservicepolicy_id
+				WHERE psp.physicalservice_id = ' . $physicalServiceID . '
+				AND psp.policy_id = ' . $policyID . '
+				AND wlp.name = \'' . $layerID . '\';
+			');
 			$db->execute();
 			$num_result = $db->getNumRows();
 			$wmslayerpolicy_id = $db->loadResult();
+		
+			
+			if (0 != $num_result) {//Update the spatialpolicy_id in the wmslayer object
+				$query = $db->getQuery(true);
+				$query->update('#__sdi_wmslayer_policy')->set(Array(
+					'spatialpolicy_id = \'' . $spatial_policy_id . '\'',
+					'inheritedspatialpolicy = 0',
+				))->where(Array(
+					'id = \'' . $wmslayerpolicy_id . '\'',
+				));
+				$db->setQuery($query);
+				$db->execute();
+			}
+			
+		        
+			JTable::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_easysdi_service/tables');
+	        $dispatcher = JEventDispatcher::getInstance();
+	        // Include the content plugins for the on save events.
+	        JPluginHelper::importPlugin('content');
+	        $table = JTable::getInstance("policy", "Easysdi_serviceTable", array());
+	        $table->load($policyID);
+	        // Trigger the onContentAfterSave event.
+	        $dispatcher->trigger('onContentAfterSave', array('com_easysdi_service.policy', $table, false));
+			return true;
 		}
 		catch (JDatabaseException $e) {
 			$je = new JException($e->getMessage());
@@ -237,35 +255,6 @@ class WmsWebservice {
 			return false;
 		}
 		
-		
-		if (0 != $num_result) {
-			$query = $db->getQuery(true);
-			$query->update('#__sdi_wmslayer_policy')->set(Array(
-				'spatialpolicy_id = \'' . $spatial_policy_id . '\'',
-			))->where(Array(
-				'id = \'' . $wmslayerpolicy_id . '\'',
-			));
-			$db->setQuery($query);
-			
-			try {
-				$db->execute();
-			}
-			catch (JDatabaseException $e) {
-				$je = new JException($e->getMessage());
-				$this->setError($je);
-				return false;
-			}
-		}
-                
-		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_service'.DS.'tables');
-                $dispatcher = JEventDispatcher::getInstance();
-                // Include the content plugins for the on save events.
-                JPluginHelper::importPlugin('content');
-                $table = JTable::getInstance("policy", "Easysdi_serviceTable", array());
-                $table->load($policyID);
-                // Trigger the onContentAfterSave event.
-                $dispatcher->trigger('onContentAfterSave', array('com_easysdi_service.policy', $table, false));
-		return true;
 	}
 	
 	/*
@@ -405,8 +394,17 @@ class WmsWebservice {
 		
 		if (is_numeric($pk) && 0 < $pk) {
 			try {
-				$db->setQuery("UPDATE #__sdi_wmslayer_policy SET spatialpolicy_id = NULL WHERE spatialpolicy_id = ".$pk);
+				$query = $db->getQuery(true);
+				$query->update('#__sdi_wmslayer_policy')->set(Array(
+						'spatialpolicy_id = NULL',
+						'inheritedspatialpolicy = 1',
+				))->where(Array(
+						'spatialpolicy_id = \'' . $pk . '\'',
+				));
+				$db->setQuery($query);
 				$db->execute();
+// 				$db->setQuery("UPDATE #__sdi_wmslayer_policy SET spatialpolicy_id = NULL AND inheritedspatialpolicy = 1 WHERE spatialpolicy_id = ".$pk);
+// 				$db->execute();
 				
 				$query = $db->getQuery(true);
 				$query->delete('#__sdi_wms_spatialpolicy')->where('id = ' . $pk);

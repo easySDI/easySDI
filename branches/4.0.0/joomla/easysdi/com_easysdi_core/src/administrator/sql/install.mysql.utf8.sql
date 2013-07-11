@@ -177,23 +177,149 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_servicescope` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-ALTER TABLE `#__sdi_sys_servicecompliance`
-ADD CONSTRAINT `#__sdi_sys_servicecompliance_fk1` FOREIGN KEY (`serviceconnector_id`) REFERENCES `#__sdi_sys_serviceconnector` (`id`) ON DELETE CASCADE ;
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_entity` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` INT(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-ALTER TABLE `#__sdi_sys_servicecompliance`
-ADD CONSTRAINT `#__sdi_sys_servicecompliance_fk2` FOREIGN KEY (`serviceversion_id`) REFERENCES `#__sdi_sys_serviceversion` (`id`) ON DELETE CASCADE ;
 
-ALTER TABLE `#__sdi_sys_servicecon_authenticationcon`
-ADD CONSTRAINT `#__sdi_sys_servicecon_authenticationcon_fk1` FOREIGN KEY (`serviceconnector_id`) REFERENCES `#__sdi_sys_serviceconnector` (`id`) ON DELETE CASCADE ;
 
-ALTER TABLE `#__sdi_sys_servicecon_authenticationcon`
-ADD CONSTRAINT `#__sdi_sys_servicecon_authenticationcon_fk2` FOREIGN KEY (`authenticationconnector_id`) REFERENCES `#__sdi_sys_authenticationconnector` (`id`) ON DELETE CASCADE ;
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_criteriatype` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` INT(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-ALTER TABLE `#__sdi_sys_operationcompliance`
-ADD CONSTRAINT `#__sdi_sys_operationcompliance_fk1` FOREIGN KEY (`servicecompliance_id`) REFERENCES `#__sdi_sys_servicecompliance` (`id`);
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_importtype` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` INT(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-ALTER TABLE `#__sdi_sys_operationcompliance`
-ADD CONSTRAINT `#__sdi_sys_operationcompliance_fk2` FOREIGN KEY (`serviceoperation_id`) REFERENCES `#__sdi_sys_serviceoperation` (`id`);
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_orderstate` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` INT(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-ALTER TABLE `#__sdi_sys_authenticationconnector`
-ADD CONSTRAINT `#__sdi_sys_authenticationconnector_fk1` FOREIGN KEY (`authenticationlevel_id`) REFERENCES `#__sdi_sys_authenticationlevel` (`id`);
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_ordertype` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` INT(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_productstate` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` INT(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_relationtype` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` INT(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_rendertype` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` INT(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+
+
+
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_searchtab` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` INT(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_topiccategory` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` INT(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_productmining` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` INT(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_relationscope` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` INT(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE `#__sdi_language` (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `ordering` bigint(20) NOT NULL DEFAULT '0',
+  `state` int(11) DEFAULT '1',
+  `value` varchar(50) NOT NULL,
+  `code` varchar(20) NOT NULL,
+  `gemet` varchar(10) NOT NULL DEFAULT '',
+  `iso639-2T` varchar(10) DEFAULT NULL,
+  `iso639-1` varchar(10) DEFAULT NULL,
+  `iso3166-1-alpha2` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_pricing` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` int(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_productstorage` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` int(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_productmining` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` int(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+
+
+
+
+

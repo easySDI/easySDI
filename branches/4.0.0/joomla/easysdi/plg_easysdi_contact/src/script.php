@@ -1,7 +1,7 @@
 <?php
 /**
- * @version     3.3.0
- * @package     plg_user_easysdi
+ * @version     4.0.0
+ * @package     plg_easysdi_user
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -10,7 +10,7 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
 
-class plgusereasysdiInstallerScript
+class plg_user_easysdicontactInstallerScript
 {
 
 	function preflight( $type, $parent ) {

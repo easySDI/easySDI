@@ -5,7 +5,7 @@
     <property name="contact.plugin.name" value="plg_easysdi_contact"/>
     <property name="plg.contact.src.out.dir" value="${root.out.dir}/${contact.plugin.name}/src"/>
     <property name="plg.contact.package.out.dir" value="${root.out.dir}/${contact.plugin.name}/target"/>
-    <property name="joomla.contact.plugin.path" value="user/easysdi"/>
+    <property name="joomla.contact.plugin.path" value="user/easysdicontact"/>
     
     <available file="${joomla.plugin.path}/${joomla.contact.plugin.path}" type="dir" property="contact.plg.exist"/>
     
@@ -39,13 +39,13 @@
                 <description></description>
                 <scriptfile>script.php</scriptfile>
                 <files>
-                    <filename plugin="easysdi">easysdi.php</filename>
+                    <filename plugin="easysdicontact">easysdicontact.php</filename>
                 </files>
                 <languages>
-                    <language tag="en-GB">language/en-GB/en-GB.plg_user_easysdi.sys.ini</language>
-                    <language tag="en-GB">language/en-GB/en-GB.plg_user_easysdi.ini</language>
-                    <language tag="fr-FR">language/fr-FR/fr-FR.plg_user_easysdi.sys.ini</language>
-                    <language tag="fr-FR">language/fr-FR/fr-FR.plg_user_easysdi.ini</language>
+                    <language tag="en-GB">language/en-GB/en-GB.plg_user_easysdicontact.sys.ini</language>
+                    <language tag="en-GB">language/en-GB/en-GB.plg_user_easysdicontact.ini</language>
+                    <language tag="fr-FR">language/fr-FR/fr-FR.plg_user_easysdicontact.sys.ini</language>
+                    <language tag="fr-FR">language/fr-FR/fr-FR.plg_user_easysdicontact.ini</language>
                 </languages>
             </extension>
         </echoxml>

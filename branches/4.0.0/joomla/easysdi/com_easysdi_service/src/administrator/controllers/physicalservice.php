@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     3.3.0
+ * @version     4.0.0
  * @package     com_easysdi_service
  * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -21,7 +21,7 @@ class Easysdi_serviceControllerPhysicalService extends JControllerForm
     function __construct() {
     	
     	//Need to be add here even if it is in administrator/controller.php 
-    	require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
+    	require_once JPATH_COMPONENT.'/helpers/easysdi_service.php';
     	
         $this->view_list = 'physicalservices';
         parent::__construct();

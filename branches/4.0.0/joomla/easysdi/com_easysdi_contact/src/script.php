@@ -1,7 +1,7 @@
 <?php
 /**
- * @version     3.3.0
-  * @package     com_easysdi_contact
+ * @version     4.0.0
+ * @package     com_easysdi_contact
  * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -9,10 +9,6 @@
 
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
-
-if(!defined('DS')) {
-	define( 'DS', DIRECTORY_SEPARATOR );
-}
 
 class com_easysdi_contactInstallerScript
 {
@@ -70,7 +66,7 @@ class com_easysdi_contactInstallerScript
 	 */
 	function postflight( $type, $parent ) {
 		if ( $type == 'install' ) {
-			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS."..".DS."libraries".DS."joomla".DS."database".DS."table");
+			JTable::addIncludePath(JPATH_ADMINISTRATOR."/../libraries/joomla/database/table");
 			
 			//Create a default EasySDI User Category
 			$row 					= JTable::getInstance('category');
@@ -93,7 +89,7 @@ class com_easysdi_contactInstallerScript
 			
 			//Create new EasySDI User account
 			$user	= JFactory::getUser();
-			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS."components".DS."com_easysdi_contact".DS."tables");
+			JTable::addIncludePath(JPATH_ADMINISTRATOR."/components/com_easysdi_contact/tables");
 			$newaccount = JTable::getInstance('user', 'easysdi_contactTable');
 			if (!$newaccount) {
 				JError::raiseWarning(null, JText::_('COM_EASYSDI_CONTACT_POSTFLIGHT_SCRIPT_USER_ERROR_INSTANCIATE'));

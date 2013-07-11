@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     3.3.0
+ *** @version     4.0.0
  * @package     com_easysdi_contact
  * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -148,16 +148,7 @@ $document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_cont
 							</div>
 						<?php endforeach; ?>
 					</div>
-					<?php if($this->shop){?>
-					<div class="tab-pane" id="orderingoptions">
-						<?php foreach($this->form->getFieldset('orderingoptions') as $field): ?>
-							<div class="control-group">
-								<div class="control-label"><?php echo $field->label; ?></div>
-								<div class="controls"><?php echo $field->input; ?></div>
-							</div>
-						<?php endforeach; ?>
-					</div>
-					<?php }?>
+
 					<div class="tab-pane" id="publishing">
 						<div class="control-group">
 							<div class="control-label"><?php echo $this->form->getLabel('created_by'); ?></div>
