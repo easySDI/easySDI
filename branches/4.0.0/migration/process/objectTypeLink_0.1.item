@@ -30,7 +30,6 @@
     <elementParameter field="CHECK" name="MULTI_THREAD_EXECATION" value="false"/>
     <elementParameter field="FILE" name="IMPLICIT_TCONTEXTLOAD_FILE" value="&quot;&quot;"/>
     <elementParameter field="TEXT" name="FIELDSEPARATOR" value="&quot;&quot;"/>
-    <elementParameter field="TECHNICAL" name="PROPERTY_TYPE_IMPLICIT_CONTEXT:REPOSITORY_PROPERTY_TYPE" value=""/>
     <elementParameter field="CLOSED_LIST" name="DB_VERSION_IMPLICIT_CONTEXT" value=""/>
     <elementParameter field="CHECK" name="DISABLE_WARNINGS" value="false"/>
     <elementParameter field="CHECK" name="DISABLE_INFO" value="false"/>
@@ -337,13 +336,13 @@
         <mapperTableEntries name="checked_out_time" expression="row1.checked_out_time" type="id_Date"/>
         <mapperTableEntries name="parent_id" expression="row1.parent_id" type="id_Long"/>
         <mapperTableEntries name="child_id" expression="row1.child_id" type="id_Long"/>
-        <mapperTableEntries name="parentboundlower" type="id_Integer"/>
-        <mapperTableEntries name="parentboundupper" type="id_Integer"/>
-        <mapperTableEntries name="childboundlower" type="id_Integer"/>
-        <mapperTableEntries name="childboundupper" type="id_Integer"/>
+        <mapperTableEntries name="parentboundlower" expression="row1.parentbound_lower " type="id_Integer"/>
+        <mapperTableEntries name="parentboundupper" expression="row1.parentbound_upper " type="id_Integer"/>
+        <mapperTableEntries name="childboundlower" expression="row1.childbound_lower " type="id_Integer"/>
+        <mapperTableEntries name="childboundupper" expression="row1.childbound_upper " type="id_Integer"/>
         <mapperTableEntries name="class_id" expression="row1.class_id" type="id_Long"/>
         <mapperTableEntries name="attribute_id" expression="row1.attribute_id" type="id_Long"/>
-        <mapperTableEntries name="viralversioning" type="id_Boolean"/>
+        <mapperTableEntries name="viralversioning" expression="row1.flowdown_versioning " type="id_Boolean"/>
         <mapperTableEntries name="inheritance" expression="row1.inheritance" type="id_Boolean"/>
         <mapperTableEntries name="asset_id" type="id_Long"/>
       </outputTables>

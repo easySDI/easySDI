@@ -296,10 +296,10 @@
       <outputTables sizeState="INTERMEDIATE" name="write">
         <mapperTableEntries name="id" expression="row1.id" type="id_Long"/>
         <mapperTableEntries name="guid" expression="row1.guid" type="id_String"/>
-        <mapperTableEntries name="alias" type="id_String"/>
-        <mapperTableEntries name="created_by" type="id_Integer"/>
+        <mapperTableEntries name="alias" expression="row1.code " type="id_String"/>
+        <mapperTableEntries name="created_by" expression="row1.createdby " type="id_Integer"/>
         <mapperTableEntries name="created" expression="row1.created" type="id_Date"/>
-        <mapperTableEntries name="modified_by" type="id_Integer"/>
+        <mapperTableEntries name="modified_by" expression="row1.updatedby " type="id_Integer"/>
         <mapperTableEntries name="modified" expression="row1.updated " type="id_Date"/>
         <mapperTableEntries name="ordering" expression="row1.ordering" type="id_Integer"/>
         <mapperTableEntries name="state" type="id_Boolean"/>
@@ -307,12 +307,12 @@
         <mapperTableEntries name="checked_out_time" expression="row1.checked_out_time" type="id_Date"/>
         <mapperTableEntries name="name" expression="row1.name" type="id_String"/>
         <mapperTableEntries name="description" expression="row1.description" type="id_String"/>
-        <mapperTableEntries name="resource_id" type="id_Long"/>
+        <mapperTableEntries name="resource_id" expression="row1.object_id " type="id_Long"/>
         <mapperTableEntries name="options" expression="row1.options" type="id_String"/>
         <mapperTableEntries name="url" expression="row1.url" type="id_String"/>
         <mapperTableEntries name="windowname" expression="row1.windowname" type="id_String"/>
-        <mapperTableEntries name="access" type="id_Integer"/>
-        <mapperTableEntries name="asset_id" type="id_Long"/>
+        <mapperTableEntries name="access" expression="1" type="id_Integer"/>
+        <mapperTableEntries name="asset_id" expression="" type="id_Long"/>
       </outputTables>
       <inputTables sizeState="INTERMEDIATE" name="row1" matchingMode="UNIQUE_MATCH" lookupMode="LOAD_ONCE">
         <mapperTableEntries name="id" type="id_Long"/>

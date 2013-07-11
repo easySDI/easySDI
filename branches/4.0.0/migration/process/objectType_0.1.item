@@ -30,7 +30,6 @@
     <elementParameter field="CHECK" name="MULTI_THREAD_EXECATION" value="false"/>
     <elementParameter field="FILE" name="IMPLICIT_TCONTEXTLOAD_FILE" value="&quot;&quot;"/>
     <elementParameter field="TEXT" name="FIELDSEPARATOR" value="&quot;&quot;"/>
-    <elementParameter field="TECHNICAL" name="PROPERTY_TYPE_IMPLICIT_CONTEXT:REPOSITORY_PROPERTY_TYPE" value=""/>
     <elementParameter field="CLOSED_LIST" name="DB_VERSION_IMPLICIT_CONTEXT" value=""/>
     <elementParameter field="CHECK" name="DISABLE_WARNINGS" value="false"/>
     <elementParameter field="CHECK" name="DISABLE_INFO" value="false"/>
@@ -343,17 +342,17 @@
         <mapperTableEntries name="modified" type="id_Date"/>
         <mapperTableEntries name="ordering" expression="row1.ordering" type="id_Integer"/>
         <mapperTableEntries name="state" type="id_Boolean"/>
-        <mapperTableEntries name="checked_out" type="id_Integer"/>
+        <mapperTableEntries name="checked_out" expression="0" type="id_Integer"/>
         <mapperTableEntries name="checked_out_time" type="id_Date"/>
         <mapperTableEntries name="name" expression="row1.name" type="id_String"/>
         <mapperTableEntries name="description" expression="row1.description" type="id_String"/>
         <mapperTableEntries name="logo" expression="row1.logo" type="id_String"/>
-        <mapperTableEntries name="meta" type="id_Boolean"/>
-        <mapperTableEntries name="diffusion" type="id_Boolean"/>
-        <mapperTableEntries name="view" type="id_Boolean"/>
-        <mapperTableEntries name="monitoring" type="id_Boolean"/>
+        <mapperTableEntries name="meta" expression="true" type="id_Boolean"/>
+        <mapperTableEntries name="diffusion" expression="true" type="id_Boolean"/>
+        <mapperTableEntries name="view" expression="false" type="id_Boolean"/>
+        <mapperTableEntries name="monitoring" expression="false" type="id_Boolean"/>
         <mapperTableEntries name="predefined" expression="row1.predefined" type="id_Boolean"/>
-        <mapperTableEntries name="versioning" type="id_Boolean"/>
+        <mapperTableEntries name="versioning" expression="row1.hasVersioning " type="id_Boolean"/>
         <mapperTableEntries name="profile_id" expression="row1.profile_id" type="id_Long"/>
         <mapperTableEntries name="fragmentnamespace_id" expression="row1.fragmentnamespace_id" type="id_Long" nullable="true"/>
         <mapperTableEntries name="fragment" expression="row1.fragment" type="id_String" nullable="true"/>
