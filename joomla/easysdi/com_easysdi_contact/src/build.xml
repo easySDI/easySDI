@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="sync" basedir=".">
+	<property name="projet.out.dir" value="out" />
+	<property name="projet.install.admin.dir" value="C:\www\sdi3300\administrator\components\com_easysdi_contact" />
+	<property name="projet.install.site.dir" value="C:\www\sdi3300\components\com_easysdi_contact" />
+	<property name="projet.install.langEN.dir" value="C:\www\sdi3300\administrator\language\en-GB" />
+	<property name="projet.install.langFR.dir" value="C:\www\sdi3300\administrator\language\fr-FR" />
+	
+	<target name="package" depends="create-structure,compression"
+		description="Main target">
+	</target>
+
+	<target name="create-structure" description="Creating the working directory structure">
+		<mkdir dir="${projet.out.dir}" />
+	</target>
+
+	
+    <target name="compression" description="Compression" depends="create-structure">
+		<jar compress="true" 
+		    jarfile="${projet.out.dir}/com_easysdi_contact.zip"
+			basedir="." 
+			excludes=" 
+			        build.xml ; 
+			        easysdi.xml ;
+			        manifest.xml ;
+					site/** ;
+					out/** ; 
+					.cache/** ; 
+					.svn/** ; 
+					.settings/** ; 
+					.project; 
+			 		.prefs; 
+					.buildpath" />
+	</target>
+
+	<target name="sync" description="Copy from here to apache">
+		<copy todir="${projet.install.admin.dir}">
+			<fileset dir="./administrator">
+				<include name="**/*.*" />
+				<exclude name="language/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${projet.install.site.dir}">
+			<fileset dir="./site">
+				<include name="**/*.*" />
+				<exclude name="language/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${projet.install.langEN.dir}">
+		     <fileset dir="./administrator/language/en-GB">
+		      <include name="**/en-GB.com_easysdi_contact.ini" />
+		       <include name="**/en-GB.com_easysdi_contact.sys.ini" />
+		     </fileset>
+		    </copy>
+		<copy todir="${projet.install.langFR.dir}">
+	     <fileset dir="./administrator/language/fr-FR">
+	      <include name="**/fr-FR.com_easysdi_contact.ini" />
+	       <include name="**/fr-FR.com_easysdi_contact.sys.ini" />
+	     </fileset>
+	    </copy>
+	</target>
+</project>
