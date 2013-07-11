@@ -87,8 +87,7 @@ class Easysdi_coreModelResources extends JModelList {
         $query->select('#__sdi_resourcetype_587854.name AS resourcestype_name_587854');
         $query->join('LEFT', '#__sdi_resourcetype AS #__sdi_resourcetype_587854 ON #__sdi_resourcetype_587854.id = a.resourcetype_id');
         
-        require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/libraries/easysdi/user/sdiuser.php';
-        $user = new sdiUser(JFactory::getUser()->id);
+        $user = sdiFactory::getSdiUser();
         
 //        // Join over the user role
 //        $query->select('rru.role_id as role_id');

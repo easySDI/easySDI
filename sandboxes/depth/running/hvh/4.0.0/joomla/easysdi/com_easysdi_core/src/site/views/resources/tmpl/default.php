@@ -25,9 +25,11 @@ defined('_JEXEC') or die;
                     <?php
                     if (JFactory::getUser()->authorise('core.edit.state', 'com_easysdi_core.resource.' . $item->id)):
                         ?>
-                        <a href="javascript:document.getElementById('form-resource-state-<?php echo $item->id; ?>').submit()"><?php if ($item->state == 1): echo JText::_("COM_EASYSDI_CORE_UNPUBLISH_ITEM");
-            else: echo JText::_("COM_EASYSDI_CORE_PUBLISH_ITEM");
-            endif; ?></a>
+                        <a href="javascript:document.getElementById('form-resource-state-<?php echo $item->id; ?>').submit()"><?php
+                            if ($item->state == 1): echo JText::_("COM_EASYSDI_CORE_UNPUBLISH_ITEM");
+                            else: echo JText::_("COM_EASYSDI_CORE_PUBLISH_ITEM");
+                            endif;
+                            ?></a>
                         <form id="form-resource-state-<?php echo $item->id ?>" style="display:inline" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.save'); ?>" method="post" class="form-validate" enctype="multipart/form-data">
                             <input type="hidden" name="jform[id]" value="<?php echo $item->id; ?>" />
                             <input type="hidden" name="jform[guid]" value="<?php echo $item->guid; ?>" />
@@ -46,7 +48,7 @@ defined('_JEXEC') or die;
                             <input type="hidden" name="jform[access]" value="<?php echo $item->access; ?>" />
                             <input type="hidden" name="option" value="com_easysdi_core" />
                             <input type="hidden" name="task" value="resource.save" />
-                        <?php echo JHtml::_('form.token'); ?>
+                            <?php echo JHtml::_('form.token'); ?>
                         </form>
                         <?php
                     endif;
@@ -72,7 +74,7 @@ defined('_JEXEC') or die;
                             <input type="hidden" name="jform[access]" value="<?php echo $item->access; ?>" />
                             <input type="hidden" name="option" value="com_easysdi_core" />
                             <input type="hidden" name="task" value="resource.remove" />
-                        <?php echo JHtml::_('form.token'); ?>
+                            <?php echo JHtml::_('form.token'); ?>
                         </form>
                         <?php
                     endif;
@@ -88,36 +90,42 @@ defined('_JEXEC') or die;
         ?>
     </ul>
 </div>
-        <?php if ($show): ?>
+<?php if ($show): ?>
     <div class="pagination">
         <p class="counter">
-        <?php echo $this->pagination->getPagesCounter(); ?>
+            <?php echo $this->pagination->getPagesCounter(); ?>
         </p>
-    <?php echo $this->pagination->getPagesLinks(); ?>
+        <?php echo $this->pagination->getPagesLinks(); ?>
     </div>
 <?php endif; ?>
 
 <?php
-if($this->user->isResourceManager()):?>
-<div class="btn-group">
-                                           <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
-    <i class="icon-white icon-plus-sign"></i> New
-    <span class="caret"></span>
-  </a>
-                                            <ul class="dropdown-menu">
-                                                <li>
-                                                    <a href="#">Product</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#">Contact</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#">Layer</a>
-                                                </li>
-                                            </ul>
-                                        </div>
-
-<?php endif;?>
-<?php if (JFactory::getUser()->authorise('core.create', 'com_easysdi_core')): ?>
-    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.edit&id=0'); ?>"><?php echo JText::_("COM_EASYSDI_CORE_ADD_ITEM"); ?></a>
-<?php endif; ?>
+if (isset($this->user)):
+    if ($this->user->isResourceManager()):
+        $resourcetypes = $this->user->getResourceType();
+        ?>
+        <div class="btn-group">
+            <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="icon-white icon-plus-sign"></i> New
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <?php
+                foreach ($resourcetypes as $resourcetype):
+                    ?>
+                    <li>
+                        <a href="index.php/component/easysdi_core/?view=resourceform&layout=edit&resourcetype=<?php echo $resourcetype->id;?>"><?php echo $resourcetype->label; ?></a>
+                    </li>
+                    <?php
+                endforeach;
+                ?>
+            </ul>
+        </div>
+        <?php endif;
+    ?>
+    <?php if (JFactory::getUser()->authorise('core.create', 'com_easysdi_core')): ?>
+        <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.edit&id=0'); ?>"><?php echo JText::_("COM_EASYSDI_CORE_ADD_ITEM"); ?></a>
+        <?php
+    endif;
+endif;
+?>

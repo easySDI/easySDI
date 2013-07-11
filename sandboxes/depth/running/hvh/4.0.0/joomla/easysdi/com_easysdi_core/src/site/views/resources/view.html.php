@@ -28,16 +28,17 @@ class Easysdi_coreViewResources extends JViewLegacy {
     public function display($tpl = null) {
         $app = JFactory::getApplication();
 
-        require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/libraries/easysdi/user/sdiuser.php';
-        $this->user = new sdiUser(JFactory::getUser()->id);
+        try{
+            $this->user = sdiFactory::getSdiUser();
+        }catch (Exception $e){
+            throw new Exception("Not allowed");
+        }
         
         $this->state = $this->get('State');
         $this->items = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_easysdi_core');
         
-        
-
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));

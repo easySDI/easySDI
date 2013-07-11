@@ -68,21 +68,7 @@ class Easysdi_coreModelResourceForm extends JModelForm {
 
             // Attempt to load the row.
             if ($table->load($id)) {
-
-                $user = JFactory::getUser();
                 $id = $table->id;
-                if ($id) {
-                    $canEdit = $user->authorise('core.edit', 'com_easysdi_core.resource.' . $id) || $user->authorise('core.create', 'com_easysdi_core.resource.' . $id);
-                } else {
-                    $canEdit = $user->authorise('core.edit', 'com_easysdi_core') || $user->authorise('core.create', 'com_easysdi_core');
-                }
-                if (!$canEdit && $user->authorise('core.edit.own', 'com_easysdi_core.resource.' . $id)) {
-                    $canEdit = $user->id == $table->created_by;
-                }
-
-                if (!$canEdit) {
-                    JError::raiseError('500', JText::_('JERROR_ALERTNOAUTHOR'));
-                }
 
                 // Check published state.
                 if ($published = $this->getState('filter.published')) {
@@ -98,6 +84,21 @@ class Easysdi_coreModelResourceForm extends JModelForm {
                 $this->setError($error);
             }
         }
+
+        //Get resourcetype from GET
+        $jinput = JFactory::getApplication()->input;
+        if ($this->_item->resourcetype_id == '') {
+            $this->_item->resourcetype_id = $jinput->get('resourcetype', '', 'INT');
+        }
+        $null = null;
+        if ($this->_item->resourcetype_id == '') {
+            $this->setError('Resource type is not defined');
+            return $null;
+        }
+        require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/resourcetype.php';
+        $resourcetype = JTable::getInstance('resourcetype', 'Easysdi_catalogTable');
+        $resourcetype->load($this->_item->resourcetype_id);
+        $this->_item->resourcetype = $resourcetype->localname;
 
         return $this->_item;
     }
@@ -210,30 +211,36 @@ class Easysdi_coreModelResourceForm extends JModelForm {
      */
     public function save($data) {
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('resource.id');
-        $state = (!empty($data['state'])) ? 1 : 0;
-        $user = JFactory::getUser();
 
-        if ($id) {
-            //Check the user can edit this item
-            $authorised = $user->authorise('core.edit', 'com_easysdi_core.resource.' . $id) || $authorised = $user->authorise('core.edit.own', 'com_easysdi_core.resource.' . $id);
-            if ($user->authorise('core.edit.state', 'com_easysdi_core.resource.' . $id) !== true && $state == 1) { //The user cannot edit the state of the item.
-                $data['state'] = 0;
-            }
-        } else {
-            //Check the user can create new items in this section
-            $authorised = $user->authorise('core.create', 'com_easysdi_core');
-            if ($user->authorise('core.edit.state', 'com_easysdi_core.resource.' . $id) !== true && $state == 1) { //The user cannot edit the state of the item.
-                $data['state'] = 0;
-            }
-        }
-
-        if ($authorised !== true) {
-            JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
-            return false;
-        }
+        //Check user right here
+        //...
 
         $table = $this->getTable();
         if ($table->save($data) === true) {
+            
+            $db = JFactory::getDbo();
+            $columns = array('user_id', 'role_id', 'resource_id');
+
+            //Save users rights
+            $jinput = JFactory::getApplication()->input;
+            $jform = $jinput->get('jform', '', 'ARRAY');
+            for ($index = 2; $index < 9; $index++) {
+                $users = $jform[$index];
+                foreach ($users as $user) {
+                    
+                    $query = $db->getQuery(true)
+                            ->insert($db->quoteName('#__sdi_user_role_resource'))
+                            ->columns($db->quoteName($columns))
+                            ->values($user . ',' . $index . ',' . $table->id);
+                    $db->setQuery($query);
+                    try {
+                        $result = $db->execute();
+                    } catch (Exception $e) {
+                        $this->setError($e->getMessage());
+                        return false;
+                    }
+                }
+            }
             return $id;
         } else {
             return false;
@@ -242,10 +249,10 @@ class Easysdi_coreModelResourceForm extends JModelForm {
 
     function delete($data) {
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('resource.id');
-        if (JFactory::getUser()->authorise('core.delete', 'com_easysdi_core.resource.' . $id) !== true) {
-            JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
-            return false;
-        }
+
+        //Check user right here
+        //...
+
         $table = $this->getTable();
         if ($table->delete($data['id']) === true) {
             return $id;
