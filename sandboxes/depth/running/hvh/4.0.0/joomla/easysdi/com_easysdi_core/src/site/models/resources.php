@@ -63,6 +63,7 @@ class Easysdi_coreModelResources extends JModelList {
      */
     protected function getListQuery() {
         // Create a new query object.
+        $lang = JFactory::getLanguage();
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -84,16 +85,12 @@ class Easysdi_coreModelResources extends JModelList {
         $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
         
         // Join over the foreign key 'resourcetype_id'
-        $query->select('#__sdi_resourcetype_587854.name AS resourcestype_name_587854');
-        $query->join('LEFT', '#__sdi_resourcetype AS #__sdi_resourcetype_587854 ON #__sdi_resourcetype_587854.id = a.resourcetype_id');
+        $query->select('trans.text1 AS resourcetype_name');
+        $query->join('LEFT', '#__sdi_resourcetype AS rt ON rt.id = a.resourcetype_id');
+        $query->join('LEFT', '#__sdi_translation AS trans ON trans.element_guid = rt.guid');
+        $query->join('LEFT', '#__sdi_language AS lang ON lang.id = trans.language_id');
+        $query->where('lang.code = "'.$lang->getTag().'"');
         
-        $user = sdiFactory::getSdiUser();
-        
-//        // Join over the user role
-//        $query->select('rru.role_id as role_id');
-//        $query->join('LEFT', '#__sdi_resource_role_user AS rru ON rru.resource_id = a.id');
-//        $query->where('rru.user_id = '.$user->id);
-
         // Filter by search in title
         $search = $this->getState('filter.search');
         if (!empty($search)) {

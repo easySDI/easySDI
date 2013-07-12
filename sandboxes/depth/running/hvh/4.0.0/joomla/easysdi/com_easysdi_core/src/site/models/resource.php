@@ -194,23 +194,26 @@ class Easysdi_coreModelResource extends JModelForm {
         $state = (!empty($data['state'])) ? 1 : 0;
         $user = JFactory::getUser();
 
-        if ($id) {
-            //Check the user can edit this item
-            $authorised = $user->authorise('core.edit', 'com_easysdi_core.resource.' . $id) || $authorised = $user->authorise('core.edit.own', 'com_easysdi_core.resource.' . $id);
-            if ($user->authorise('core.edit.state', 'com_easysdi_core.resource.' . $id) !== true && $state == 1) { //The user cannot edit the state of the item.
-                $data['state'] = 0;
-            }
-        } else {
-            //Check the user can create new items in this section
-            $authorised = $user->authorise('core.create', 'com_easysdi_core');
-            if ($user->authorise('core.edit.state', 'com_easysdi_core.resource.' . $id) !== true && $state == 1) { //The user cannot edit the state of the item.
-                $data['state'] = 0;
-            }
-        }
-
-        if ($authorised !== true) {
+        try{
+            $user = sdiFactory::getSdiUser();
+        }catch (Exception $e){
+            //Not an EasySDI user = not allowed
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return false;
+        }
+        
+        if(!isset($id)){
+            if (!$user->isResourceManager()){
+                //Try to create a resource but not a resource manager
+                JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+                return false;
+            }
+        }else{
+            if (!$user->authorize($id, sdiUser::resourcemanager)){
+                //Try to update a resource but not its resource manager
+                JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+                return false;
+            }       
         }
 
         $table = $this->getTable();
@@ -223,7 +226,8 @@ class Easysdi_coreModelResource extends JModelForm {
 
     function delete($data) {
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('resource.id');
-        if (JFactory::getUser()->authorise('core.delete', 'com_easysdi_core.resource.' . $id) !== true) {
+        $user = JFactory::getUser();
+        if (!$user->authorize($id, sdiUser::resourcemanager)){
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return false;
         }

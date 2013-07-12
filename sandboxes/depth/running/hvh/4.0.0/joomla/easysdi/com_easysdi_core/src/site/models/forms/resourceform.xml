@@ -81,5 +81,6 @@
         <field name="checked_out_time" type="hidden" filter="safehtml" /> 
         <field name="guid" type="hidden" filter="safehtml" /> 
         <field name="resourcetype_id" type="hidden" filter="safehtml" /> 
+        <field name="rights" type="hidden" filter="safehtml" /> 
     </fieldset>
 </form>

@@ -107,25 +107,47 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
                 url: uriencoded,
                 success: function(data) {
                     var users = js.parseJSON(data);
-
+                     var rightsarray = js.parseJSON(js("#jform_rights").val());
+                    
                     js.each(users, function (k,v){
-                    js('#jform_'+k+'option:selected').removeAttr("selected");                
-                    js('#jform_'+k).empty().trigger("liszt:updated");
-                        selected = "";
+                        js('#jform_'+k+'option:selected').removeAttr("selected");                
+                        js('#jform_'+k).empty().trigger("liszt:updated");
+                        
                         js.each(v, function(key, value) {
-                            if(<?php echo $this->user->id ; ?> == value.id)
-                            selected = "selected = selected";
-                                js('#jform_'+k)
-                                        .append('<option value="' + value.id + '" '+selected+'>' + value.name + '</option>')
-                                        .trigger("liszt:updated")
-                                        ;
-                            });
-                            
+                            selected = "";
+                            js.each(rightsarray, function (i, r){
+                                if(r.user_id == value.id && r.role_id == k){
+                                    selected = "selected = selected";
+                                    return false;
+                                }
+                            })
+                            js('#jform_'+k).append('<option value="' + value.id + '" '+selected+'>' + value.name + '</option>')
+                                           .trigger("liszt:updated");
+                        }); 
                     });
+//                    var rightsarray = js.parseJSON(js.parseJSON(js("#jform_rights").val()));
+//                    
+//                    js.each(users, function (k,v){
+//                        js('#jform_'+k+'option:selected').removeAttr("selected");                
+//                        js('#jform_'+k).empty().trigger("liszt:updated");
+//                        
+//                        js.each(v, function(key, value) {
+//                            selected = "";
+//                            js.each(rightsarray, function (i, rightsobject){
+//                                js.each(rightsobject, function (j,right ){
+//                                    if(right.user_id == value.id && right.role_id == k){
+//                                        selected = "selected = selected";
+//                                        return false;
+//                                    }
+//                                })
+//                            })
+//                            js('#jform_'+k).append('<option value="' + value.id + '" '+selected+'>' + value.name + '</option>')
+//                                           .trigger("liszt:updated");
+//                        }); 
+//                    });
              }})
         }
 </script>
-
 <div class="resource-edit front-end-edit">
     <?php if (!empty($this->item->id)): ?>
         <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_EDIT_RESOURCE') . ' ' . $this->item->name; ?></h1>

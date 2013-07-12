@@ -44,9 +44,9 @@ class Easysdi_coreControllerResourceForm extends Easysdi_coreController {
         if ($previousId) {
             $model->checkin($previousId);
         }
-
+        
         // Redirect to the edit screen.
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resource&layout=edit', false));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resourceform&layout=edit&resourcetype='.$app->input->get('resourcetype', '', 'INT'), false));
     }
 
     /**

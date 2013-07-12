@@ -19,7 +19,7 @@ abstract class sdiFactory
     /**
 	 * Get an sdiuser object.
 	 *
-	 * Returns the global {@link sdiUser} object, only creating it if it doesn't already exist.
+	 * Returns the global {@link sdiUser} object
 	 *
 	 * @param   integer  $id  The juser id to load.
 	 *
@@ -28,15 +28,14 @@ abstract class sdiFactory
 	 * @see     sdiUser
 	 * @since   4.0.0
 	 */
-	public static function getSdiUser($id = null)
+	public static function getSdiUser($juser = null)
 	{
-		if (is_null($id))
+		if (!isset($juser))
 		{
-                    $user = JFactory::getUser();
-                    $id = $user->id;
+                    $juser = JFactory::getUser();
 		}
 		
-		return new sdiUser($id);
+		return new sdiUser($juser);
 	}
 }
 ?>

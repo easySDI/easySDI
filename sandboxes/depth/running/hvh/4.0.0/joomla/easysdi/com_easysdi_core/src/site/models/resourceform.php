@@ -87,8 +87,8 @@ class Easysdi_coreModelResourceForm extends JModelForm {
 
         //Get resourcetype from GET
         $jinput = JFactory::getApplication()->input;
-        
-        if ($this->_item->resourcetype_id == '') {
+
+        if (!isset($this->_item->resourcetype_id )) {
             $this->_item->resourcetype_id = $jinput->get('resourcetype', '', 'INT');
         }
         $null = null;
@@ -100,7 +100,42 @@ class Easysdi_coreModelResourceForm extends JModelForm {
         $resourcetype = JTable::getInstance('resourcetype', 'Easysdi_catalogTable');
         $resourcetype->load($this->_item->resourcetype_id);
         $this->_item->resourcetype = $resourcetype->localname;
+        
+        //Load rights
+        if(isset($this->_item->id)){
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true)
+                ->select('urr.user_id as user_id, urr.role_id as role_id')
+                ->from('#__sdi_user_role_resource urr')
+                ->where('urr.resource_id = '.$this->_item->id);
+            $db->setQuery($query);
+            $rows = $db->loadObjectList();
+            $this->_item->rights = json_encode($rows);
+        }else{
+            //Set current user as default selection for all role
+            try {
+                $user = sdiFactory::getSdiUser();
+                $rows = array();
+                $row = array("role_id" => "2","user_id" => $user->id); 
+                $rows [] = (object) $row;
+                $row = array("role_id" => "3","user_id" => $user->id); 
+                $rows [] = (object) $row;
+                $row = array("role_id" => "4","user_id" => $user->id); 
+                $rows [] = (object) $row;
+                $row = array("role_id" => "5","user_id" => $user->id); 
+                $rows [] = (object) $row;
+                $row = array("role_id" => "6","user_id" => $user->id); 
+                $rows [] = (object) $row;
+                $row = array("role_id" => "7","user_id" => $user->id); 
+                $rows [] = (object) $row;
+                $row = array("role_id" => "8","user_id" => $user->id);
+                $rows [] = (object) $row;
+                $this->_item->rights = json_encode($rows);
+            } catch (Exception $e) {
 
+            }
+            
+        }
         return $this->_item;
     }
 
@@ -213,36 +248,49 @@ class Easysdi_coreModelResourceForm extends JModelForm {
     public function save($data) {
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('resource.id');
 
-        //Check user right here
-        //...
+        try {
+            $user = sdiFactory::getSdiUser();
+        } catch (Exception $e) {
+            //Not an EasySDI user = not allowed
+            JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+            return false;
+        }
+
+        if ($id==0) {
+            if (!$user->isResourceManager()) {
+                //Try to create a resource but not a resource manager
+                JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+                return false;
+            }
+        } else {
+            if (!$user->authorize($id, sdiUser::resourcemanager)) {
+                //Try to update a resource but not its resource manager
+                JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+                return false;
+            }
+        }
 
         $table = $this->getTable();
         if ($table->save($data) === true) {
-            
-            $db = JFactory::getDbo();
-            $columns = array('user_id', 'role_id', 'resource_id');
 
             //Save users rights
             $jinput = JFactory::getApplication()->input;
             $jform = $jinput->get('jform', '', 'ARRAY');
+
+            $userroleresource = JTable::getInstance('userroleresource', 'Easysdi_coreTable');
+            $userroleresource->deleteByResourceId($table->id);
+
             for ($index = 2; $index < 9; $index++) {
-                if(!isset($jform[$index]))
+                if (!isset($jform[$index]))
                     continue;
-                
+
                 $users = $jform[$index];
                 foreach ($users as $user) {
-                    
-                    $query = $db->getQuery(true)
-                            ->insert($db->quoteName('#__sdi_user_role_resource'))
-                            ->columns($db->quoteName($columns))
-                            ->values($user . ',' . $index . ',' . $table->id);
-                    $db->setQuery($query);
-                    try {
-                        $result = $db->execute();
-                    } catch (Exception $e) {
-                        $this->setError($e->getMessage());
-                        return false;
-                    }
+                    $userroleresource = JTable::getInstance('userroleresource', 'Easysdi_coreTable');
+                    $userroleresource->user_id = $user;
+                    $userroleresource->role_id = $index;
+                    $userroleresource->resource_id = $table->id;
+                    $userroleresource->store();
                 }
             }
             return $id;
@@ -254,8 +302,19 @@ class Easysdi_coreModelResourceForm extends JModelForm {
     function delete($data) {
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('resource.id');
 
-        //Check user right here
-        //...
+        try {
+            $user = sdiFactory::getSdiUser();
+        } catch (Exception $e) {
+            //Not an EasySDI user = not allowed
+            JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+            return false;
+        }
+
+        if (!$user->authorize($id, sdiUser::resourcemanager)) {
+            //Try to delete a resource but not its resource manager
+            JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+            return false;
+        }
 
         $table = $this->getTable();
         if ($table->delete($data['id']) === true) {

@@ -15,11 +15,18 @@ class sdiUser {
      * @var    integer
      */
     public $id = null;
+    
+    /**
+     * Unique name
+     *
+     * @var    varchar
+     */
+    public $name = null;
 
     /**
      * Unique juser
      *
-     * @var    integer
+     * @var    JUser
      */
     public $juser = null;
 
@@ -42,24 +49,25 @@ class sdiUser {
     const metadataresponsible = 3;
     const metadataeditor = 4;
     const diffusionmanager = 5;
-    const previewmanager = 6;
+    const viewmanager = 6;
     const extractionresponsible = 7;
     const ordereligible = 8;
     
 
     function __construct($juser = null) {
 
-        if ($juser == null || $juser == 0)
+        if ($juser == null)
             throw new Exception('Not an EasySDI user');
 
         $this->juser = $juser;
+        $this->name = $juser->name;
         $this->lang = JFactory::getLanguage();
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
                 ->select('u.*')
                 ->from('#__sdi_user AS u')
-                ->where('u.user_id = ' . $juser)
+                ->where('u.user_id = ' . $juser->id)
         ;
         $db->setQuery($query);
         $user = $db->loadObject();
