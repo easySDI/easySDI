@@ -36,6 +36,16 @@ class sdiUser {
      * @var    object
      */
     public $lang = null;
+    
+    const member = 1;
+    const resourcemanager = 2;
+    const metadataresponsible = 3;
+    const metadataeditor = 4;
+    const diffusionmanager = 5;
+    const previewmanager = 6;
+    const extractionresponsible = 7;
+    const ordereligible = 8;
+    
 
     function __construct($juser = null) {
 
@@ -142,6 +152,38 @@ class sdiUser {
 
     public function getOrderEligibleOrganisms() {
         return $this->role[8];
+    }
+    
+    public function authorize ($item, $right=null){
+        if(is_null($item))
+            return false;
+        
+        if($right == null){
+            //Return all rights on the item
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true)
+                ->select('urr.role_id')
+                ->from('#__sdi_user_role_resource urr')
+                ->where('urr.user_id = '.$this->id)
+                ->where('urr.resource_id = '.$item);
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        }else{
+            //Return if the user has the specific right on the specific item
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true)
+                ->select('urr.id')
+                ->from('#__sdi_user_role_resource urr')
+                ->where('urr.user_id = '.$this->id)
+                ->where('urr.resource_id = '.$item)
+                ->where('urr.role_id = '.$right);
+            $db->setQuery($query);
+            $result = $db->loadObject();
+            if($result != null)
+                return true;
+            else 
+                return false;
+        }
     }
 
 }

@@ -21,6 +21,7 @@ class Easysdi_coreViewResources extends JViewLegacy {
     protected $pagination;
     protected $state;
     protected $params;
+    protected $user;
 
     /**
      * Display the view

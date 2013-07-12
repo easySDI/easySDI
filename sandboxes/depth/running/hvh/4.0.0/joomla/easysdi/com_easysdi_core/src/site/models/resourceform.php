@@ -87,6 +87,7 @@ class Easysdi_coreModelResourceForm extends JModelForm {
 
         //Get resourcetype from GET
         $jinput = JFactory::getApplication()->input;
+        
         if ($this->_item->resourcetype_id == '') {
             $this->_item->resourcetype_id = $jinput->get('resourcetype', '', 'INT');
         }
@@ -225,6 +226,9 @@ class Easysdi_coreModelResourceForm extends JModelForm {
             $jinput = JFactory::getApplication()->input;
             $jform = $jinput->get('jform', '', 'ARRAY');
             for ($index = 2; $index < 9; $index++) {
+                if(!isset($jform[$index]))
+                    continue;
+                
                 $users = $jform[$index];
                 foreach ($users as $user) {
                     

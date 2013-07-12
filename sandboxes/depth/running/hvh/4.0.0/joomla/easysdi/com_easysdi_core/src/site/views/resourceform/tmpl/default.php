@@ -167,7 +167,7 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
                                     <option value="" ></option>
                                     <?php foreach ($this->user->getResourceManagerOrganisms() as $organism) : ?>
                                         <option value="<?php echo $organism->id; ?>" <?php
-                                        if ($this->item->organism_id == $organism->id) : echo 'selected="selected"';
+                                        if (isset($this->item->organism_id) && $this->item->organism_id == $organism->id) : echo 'selected="selected"';
                                         endif;
                                         ?>>
                                         <?php echo $organism->name; ?>
