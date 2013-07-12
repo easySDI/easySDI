@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset>
+
+              <field name="id" type="text" default="0" label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPERELATION_ID"
+            readonly="true" class="readonly"
+            description="JGLOBAL_FIELD_ID_DESC" /> 
+
+       <field name="guid" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPERELATION_GUID"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPERELATION_GUID" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="alias" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPERELATION_ALIAS"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPERELATION_ALIAS" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="created_by" type="createdby" default="" 
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPERELATION_CREATED_BY"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPERELATION_CREATED_BY"  /> 
+
+       <field name="created" type="calendar" class="inputbox"
+        
+        
+         default="0" 
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPERELATION_CREATED"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPERELATION_CREATED" 
+        filter="safehtml" /> 
+
+       <field name="modified_by" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPERELATION_MODIFIED_BY"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPERELATION_MODIFIED_BY" 
+         default="0" 
+        
+        
+        filter="safehtml" /> 
+
+       <field name="modified" type="calendar" class="inputbox"
+        
+        
+         default="0" 
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPERELATION_MODIFIED"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPERELATION_MODIFIED" 
+        filter="safehtml" /> 
+
+       <field name="parent_id" type="sql" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPERELATION_PARENT_ID"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPERELATION_PARENT_ID" 
+        
+        
+        
+         required="true" 
+        query="SELECT 0 AS `id`, '- Please select -' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_resource`" key_field="id" value_field="name"
+         /> 
+
+       <field name="child_id" type="sql" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPERELATION_CHILD_ID"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPERELATION_CHILD_ID" 
+        
+        
+        
+         required="true" 
+        query="SELECT 0 AS `id`, '- Please select -' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_resource`" key_field="id" value_field="name"
+         /> 
+
+       <field name="parentboundlower" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPERELATION_PARENTBOUNDLOWER"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPERELATION_PARENTBOUNDLOWER" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="parentboundupper" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPERELATION_PARENTBOUNDUPPER"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPERELATION_PARENTBOUNDUPPER" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="childboundlower" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPERELATION_CHILDBOUNDLOWER"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPERELATION_CHILDBOUNDLOWER" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="childboundupper" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPERELATION_CHILDBOUNDUPPER"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPERELATION_CHILDBOUNDUPPER" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="class_id" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPERELATION_CLASS_ID"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPERELATION_CLASS_ID" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="attribute_id" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPERELATION_ATTRIBUTE_ID"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPERELATION_ATTRIBUTE_ID" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="viralversioning" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPERELATION_VIRALVERSIONING"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPERELATION_VIRALVERSIONING" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="inheritance" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPERELATION_INHERITANCE"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPERELATION_INHERITANCE" 
+        
+        
+        
+        filter="safehtml" /> 
+
+         <field
+        name="state"
+        type="list"
+        label="JSTATUS"
+        description="JFIELD_PUBLISHED_DESC"
+        class="inputbox"
+        size="1"
+        default="1">
+        <option value="1">JPUBLISHED</option>
+        <option value="0">JUNPUBLISHED</option>
+    </field> 
+
+                        <field name="checked_out" type="hidden" filter="unset" />
+        <field name="checked_out_time" type="hidden" filter="unset" /> 
+
+ </fieldset> 
+
+ <fieldset 
+                        name="accesscontrol">
+                       <field name="asset_id" type="hidden" filter="unset" />
+                       <field name="rules"
+                            type="rules"
+                            label="JFIELD_RULES_LABEL"
+                            translate_label="false"
+                            filter="rules"
+                            validate="rules"
+                            class="inputbox"
+                            component="com_easysdi_core"
+                            section="resourcetyperelation"
+                        />
+
+	</fieldset>
+
+</form>
