@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
+JHtml::_('formbehavior.chosen', 'select');
 
 //Load admin language file
 $lang = JFactory::getLanguage();
@@ -66,16 +67,16 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
     }
 </style>
 <script type="text/javascript">
-    function getScript(url,success) {
+    function getScript(url, success) {
         var script = document.createElement('script');
         script.src = url;
         var head = document.getElementsByTagName('head')[0],
-        done = false;
+                done = false;
         // Attach handlers for all browsers
         script.onload = script.onreadystatechange = function() {
             if (!done && (!this.readyState
-                || this.readyState == 'loaded'
-                || this.readyState == 'complete')) {
+                    || this.readyState == 'loaded'
+                    || this.readyState == 'complete')) {
                 done = true;
                 success();
                 script.onload = script.onreadystatechange = null;
@@ -84,137 +85,188 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
         };
         head.appendChild(script);
     }
-    getScript('//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',function() {
-        js = jQuery.noConflict();
-        js(document).ready(function(){
-            js('#form-resource').submit(function(event){
-                 
-            }); 
-        
-            
-					js('input:hidden.resourcetype_id').each(function(){
-						var name = js(this).attr('name');
-						if(name.indexOf('resourcetype_idhidden')){
-							js('#jform_resourcetype_id option[value="'+js(this).val()+'"]').attr('selected',true);
-						}
-					});
-					js("#jform_resourcetype_id").trigger("liszt:updated");
-        });
-    });
-    
-</script>
 
+    js = jQuery.noConflict();
+    js(document).ready(function() {
+        onChangeOrganism();
+        js('#form-resource').submit(function(event) {
+
+        });
+    })
+
+    function onChangeOrganism() {
+            js('#loader').show();
+            var organism_id = js("#jform_organism_id :selected").val();
+            if (organism_id == '') {
+                js('#loader').hide();
+                return;
+            }
+            var uriencoded = '<?php echo JURI::root(); ?>index.php?option=com_easysdi_core&task=resourceform.getUsers&organism=' + organism_id;
+            js.ajax({
+                type: 'Get',
+                url: uriencoded,
+                success: function(data) {
+                    var users = js.parseJSON(data);
+                     var rightsarray = js.parseJSON(js("#jform_rights").val());
+                    
+                    js.each(users, function (k,v){
+                        js('#jform_'+k+'option:selected').removeAttr("selected");                
+                        js('#jform_'+k).empty().trigger("liszt:updated");
+                        
+                        js.each(v, function(key, value) {
+                            selected = "";
+                            js.each(rightsarray, function (i, r){
+                                if(r.user_id == value.id && r.role_id == k){
+                                    selected = "selected = selected";
+                                    return false;
+                                }
+                            })
+                            js('#jform_'+k).append('<option value="' + value.id + '" '+selected+'>' + value.name + '</option>')
+                                           .trigger("liszt:updated");
+                        }); 
+                    });
+//                    var rightsarray = js.parseJSON(js.parseJSON(js("#jform_rights").val()));
+//                    
+//                    js.each(users, function (k,v){
+//                        js('#jform_'+k+'option:selected').removeAttr("selected");                
+//                        js('#jform_'+k).empty().trigger("liszt:updated");
+//                        
+//                        js.each(v, function(key, value) {
+//                            selected = "";
+//                            js.each(rightsarray, function (i, rightsobject){
+//                                js.each(rightsobject, function (j,right ){
+//                                    if(right.user_id == value.id && right.role_id == k){
+//                                        selected = "selected = selected";
+//                                        return false;
+//                                    }
+//                                })
+//                            })
+//                            js('#jform_'+k).append('<option value="' + value.id + '" '+selected+'>' + value.name + '</option>')
+//                                           .trigger("liszt:updated");
+//                        }); 
+//                    });
+             }})
+        }
+</script>
 <div class="resource-edit front-end-edit">
     <?php if (!empty($this->item->id)): ?>
-        <h1>Edit <?php echo $this->item->id; ?></h1>
+        <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_EDIT_RESOURCE') . ' ' . $this->item->name; ?></h1>
     <?php else: ?>
-        <h1>Add</h1>
+        <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_NEW_RESOURCE'); ?></h1>
     <?php endif; ?>
+    <div id="loader" style="">
 
+    </div>
     <form id="form-resource" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.save'); ?>" method="post" class="form-validate" enctype="multipart/form-data">
-        <ul>
-            			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('id'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('guid'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('guid'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('alias'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('alias'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('created_by'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('created_by'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('created'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('created'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('modified_by'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('modified_by'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('modified'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('modified'); ?></div>
-			</div>
+        <div class="row-fluid">
+            <div >
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#details" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CORE_TAB_DETAILS'); ?></a></li>
+                    <li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CORE_TAB_PUBLISHING'); ?></a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="details">
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('name'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('name'); ?></div>
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('alias'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('alias'); ?></div>
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('description'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('description'); ?></div>
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('state'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('state'); ?></div>					
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('organism_id'); ?></div>
+                            <div class="controls">
+                                <select id="jform_organism_id" name="jform[organism_id]" class="inputbox" size="1" onchange="onChangeOrganism()">
+                                    <option value="" ></option>
+                                    <?php foreach ($this->user->getResourceManagerOrganisms() as $organism) : ?>
+                                        <option value="<?php echo $organism->id; ?>" <?php
+                                        if (isset($this->item->organism_id) && $this->item->organism_id == $organism->id) : echo 'selected="selected"';
+                                        endif;
+                                        ?>>
+                                        <?php echo $organism->name; ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('resourcetype'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('resourcetype'); ?></div>
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('id'); ?></div>
+                        </div>
 
-			<div class="control-group">
-				<?php $canState = false; ?>
-				<?php if($this->item->id): ?>
-					<?php $canState = $canState = JFactory::getUser()->authorise('core.edit.state','com_easysdi_core.resource'); ?>
-				<?php else: ?>
-					<?php $canState = JFactory::getUser()->authorise('core.edit.state','com_easysdi_core.resource.'.$this->item->id); ?>
-				<?php endif; ?>				<?php if(!$canState): ?>
-				<div class="control-label"><?php echo $this->form->getLabel('state'); ?></div>
-					<?php
-						$state_string = 'Unpublish';
-						$state_value = 0;
-						if($this->item->state == 1):
-							$state_string = 'Publish';
-							$state_value = 1;
-						endif;
-					?>
-					<div class="controls"><?php echo $state_string; ?></div>
-					<input type="hidden" name="jform[state]" value="<?php echo $state_value; ?>" />
-				<?php else: ?>
-					<div class="control-label"><?php echo $this->form->getLabel('state'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('state'); ?></div>					<?php endif; ?>
-				</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('name'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('name'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('description'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('description'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('organism_id'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('organism_id'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('resourcetype_id'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('resourcetype_id'); ?></div>
-			</div>
+                        <div class="accordion" id="rights">
+                            <?php for ($index = 2; $index < 9; $index++) {
+                            ?>
+                                <div class="accordion-group">
+                                    <div class="accordion-heading">
+                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#rights" href="#collapse<?php echo $index;?>">
+                                            <?php echo JText::_('COM_EASYSDI_CORE_FORM_DESC_RESOURCE_'.$index); ?>
+                                        </a>
+                                    </div>
+                                    <div id="collapse<?php echo $index;?>" class="accordion-body collapse <?php if ($index == 2 ) echo 'in';?>">
+                                        <div class="accordion-inner">
+                                            <div class="controls">
+                                                <select id="jform_<?php echo $index; ?>" name="jform[<?php echo $index; ?>][]" class="multiselect input-xxlarge" multiple="multiple">
 
-			<?php
-				foreach((array)$this->item->resourcetype_id as $value): 
-					if(!is_array($value)):
-						echo '<input type="hidden" name="jform[resourcetype_idhidden]['.$value.']" value="'.$value.'" />';
-					endif;
-				endforeach;
-			?>			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('access'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('access'); ?></div>
-			</div>
-				
-				<?php if (!JFactory::getUser()->authorise('core.admin','easysdi_core')): ?>
-                <script type="text/javascript">
-                    jQuery.noConflict();
-                    jQuery('.tab-pane select').each(function(){
-                       var option_selected = jQuery(this).find(':selected');
-                       var input = document.createElement("input");
-                       input.setAttribute("type", "hidden");
-                       input.setAttribute("name", jQuery(this).attr('name'));
-                       input.setAttribute("value", option_selected.val());
-                       document.getElementById("form-resource").appendChild(input);
-                       jQuery(this).attr('disabled',true);
-                    });
-                </script>
-             <?php endif; ?>
-        </ul>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php
+                            } ?>
+                            
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="publishing">
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('created_by'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('created_by'); ?></div>
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('created'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('created'); ?></div>
+                        </div>
+                        <?php if ($this->item->modified_by) : ?>
+                            <div class="control-group">
+                                <div class="control-label"><?php echo $this->form->getLabel('modified_by'); ?></div>
+                                <div class="controls"><?php echo $this->form->getInput('modified_by'); ?></div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label"><?php echo $this->form->getLabel('modified'); ?></div>
+                                <div class="controls"><?php echo $this->form->getInput('modified'); ?></div>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+            </div>
+        </div>
 
         <div>
             <button type="submit" class="validate"><span><?php echo JText::_('JSUBMIT'); ?></span></button>
-            <?php echo JText::_('or'); ?>
+                    <?php echo JText::_('or'); ?>
             <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.cancel'); ?>" title="<?php echo JText::_('JCANCEL'); ?>"><?php echo JText::_('JCANCEL'); ?></a>
 
             <input type="hidden" name="option" value="com_easysdi_core" />
             <input type="hidden" name="task" value="resourceform.save" />
+            <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
+                <?php echo $field->input; ?>
+            <?php endforeach; ?>  
             <?php echo JHtml::_('form.token'); ?>
         </div>
     </form>

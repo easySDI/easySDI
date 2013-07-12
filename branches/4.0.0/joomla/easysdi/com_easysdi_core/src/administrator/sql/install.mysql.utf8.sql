@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_unit` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL ,
 `state` int(11)  NOT NULL DEFAULT '1',
-`alias` VARCHAR(20)  NOT NULL ,
+`alias` VARCHAR(50)  NOT NULL ,
 `name` VARCHAR(255)  NOT NULL ,
 PRIMARY KEY (`id`),
 INDEX `alias` USING BTREE (`alias`) 

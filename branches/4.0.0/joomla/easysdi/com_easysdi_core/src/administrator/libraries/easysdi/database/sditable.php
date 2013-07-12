@@ -296,7 +296,7 @@ abstract class sdiTable extends JTable {
             return "";
         }
 
-        if ($this->_db->loadResult() == 1) {
+        if ($this->_db->loadResult() > 0) {
             //alias is already used
             $pos = strrpos($alias, "_");
             if ($pos === false) {
