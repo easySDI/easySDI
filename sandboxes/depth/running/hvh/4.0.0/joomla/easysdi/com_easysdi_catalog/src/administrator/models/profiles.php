@@ -136,6 +136,7 @@ class Easysdi_catalogModelprofiles extends JModelList {
                 $query->where('a.id = ' . (int) substr($search, 3));
             } else {
                 $search = $db->Quote('%' . $db->escape($search, true) . '%');
+                $query->where('( a.name LIKE '.$search.' ) OR (a.prefix LIKE '.$search.' ) OR (a.uri LIKE '.$search.' ) ');
             }
         }
 

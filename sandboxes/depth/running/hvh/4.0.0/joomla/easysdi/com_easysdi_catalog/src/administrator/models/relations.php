@@ -170,6 +170,7 @@ class Easysdi_catalogModelrelations extends JModelList {
                 $query->where('a.id = ' . (int) substr($search, 3));
             } else {
                 $search = $db->Quote('%' . $db->escape($search, true) . '%');
+                $query->where('( a.name LIKE '.$search.' ) OR ( parentclass.name LIKE '.$search.' ) OR ( childclass.name LIKE '.$search.' ) OR ( childattribute.name LIKE '.$search.' ) ');
             }
         }
 
