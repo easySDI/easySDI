@@ -432,7 +432,7 @@ PRIMARY KEY (`id`) ,
   CONSTRAINT `#__sdi_searchcriteria_fk3`
     FOREIGN KEY (`relation_id` )
     REFERENCES `#__sdi_relation` (`id` )
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 

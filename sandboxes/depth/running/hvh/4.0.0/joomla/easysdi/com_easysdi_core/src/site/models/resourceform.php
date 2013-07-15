@@ -88,7 +88,7 @@ class Easysdi_coreModelResourceForm extends JModelForm {
 
         //Get resourcetype from GET
         $jinput = JFactory::getApplication()->input;
-        if (!isset($this->_item->resourcetype_id )) {
+        if (!isset($this->_item->resourcetype_id)) {
             $this->_item->resourcetype_id = $jinput->get('resourcetype', '', 'INT');
         }
         $null = null;
@@ -101,43 +101,42 @@ class Easysdi_coreModelResourceForm extends JModelForm {
         $resourcetype->load($this->_item->resourcetype_id);
         $resourcetype->loadLocalname();
         $this->_item->resourcetype = $resourcetype->localname;
-        
+
         //Load rights
-        if(isset($this->_item->id)){
-            
+        if (isset($this->_item->id)) {
+
             $query = $db->getQuery(true)
-                ->select('urr.user_id as user_id, urr.role_id as role_id')
-                ->from('#__sdi_user_role_resource urr')
-                ->where('urr.resource_id = '.$this->_item->id);
+                    ->select('urr.user_id as user_id, urr.role_id as role_id')
+                    ->from('#__sdi_user_role_resource urr')
+                    ->where('urr.resource_id = ' . $this->_item->id);
             $db->setQuery($query);
             $rows = $db->loadObjectList();
             $this->_item->rights = json_encode($rows);
-        }else{
+        } else {
             //Set current user as default selection for all role
             try {
                 $user = sdiFactory::getSdiUser();
                 $rows = array();
-                $row = array("role_id" => "2","user_id" => $user->id); 
+                $row = array("role_id" => "2", "user_id" => $user->id);
                 $rows [] = (object) $row;
-                $row = array("role_id" => "3","user_id" => $user->id); 
+                $row = array("role_id" => "3", "user_id" => $user->id);
                 $rows [] = (object) $row;
-                $row = array("role_id" => "4","user_id" => $user->id); 
+                $row = array("role_id" => "4", "user_id" => $user->id);
                 $rows [] = (object) $row;
-                $row = array("role_id" => "5","user_id" => $user->id); 
+                $row = array("role_id" => "5", "user_id" => $user->id);
                 $rows [] = (object) $row;
-                $row = array("role_id" => "6","user_id" => $user->id); 
+                $row = array("role_id" => "6", "user_id" => $user->id);
                 $rows [] = (object) $row;
-                $row = array("role_id" => "7","user_id" => $user->id); 
+                $row = array("role_id" => "7", "user_id" => $user->id);
                 $rows [] = (object) $row;
-                $row = array("role_id" => "8","user_id" => $user->id);
+                $row = array("role_id" => "8", "user_id" => $user->id);
                 $rows [] = (object) $row;
                 $this->_item->rights = json_encode($rows);
             } catch (Exception $e) {
-
+                
             }
-            
         }
-                    
+
         return $this->_item;
     }
 
@@ -249,9 +248,9 @@ class Easysdi_coreModelResourceForm extends JModelForm {
      */
     public function save($data) {
         ($data['id'] == 0) ? $new = true : $new = false;
-        
+
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('resource.id');
-        
+
         try {
             $user = sdiFactory::getSdiUser();
         } catch (Exception $e) {
@@ -260,7 +259,7 @@ class Easysdi_coreModelResourceForm extends JModelForm {
             return false;
         }
 
-        if ($id==0) {
+        if ($id == 0) {
             if (!$user->isResourceManager()) {
                 //Try to create a resource but not a resource manager
                 JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
@@ -297,14 +296,14 @@ class Easysdi_coreModelResourceForm extends JModelForm {
                     $userroleresource->store();
                 }
             }
-            
+
             //If it is a new resource, create the first version and its associated metadata
-            if ($new){
+            if ($new) {
                 $version = JTable::getInstance('version', 'Easysdi_coreTable');
                 $version->resource_id = $table->id;
                 $version->name = date("Y-m-d H:i:s");
                 $version->store();
-                
+
                 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/metadata.php';
                 $metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
                 $metadata->metadatastate_id = 2;
@@ -312,7 +311,7 @@ class Easysdi_coreModelResourceForm extends JModelForm {
                 $metadata->version_id = $version->id;
                 $metadata->store();
             }
-            
+
             return $id;
         } else {
             return false;
