@@ -56,6 +56,7 @@ class Easysdi_coreModelResourceForm extends JModelForm {
      * @return	mixed	Object on success, false on failure.
      */
     public function &getData($id = null) {
+        $db = JFactory::getDbo();
         if ($this->_item === null) {
             $this->_item = false;
 
@@ -87,7 +88,6 @@ class Easysdi_coreModelResourceForm extends JModelForm {
 
         //Get resourcetype from GET
         $jinput = JFactory::getApplication()->input;
-
         if (!isset($this->_item->resourcetype_id )) {
             $this->_item->resourcetype_id = $jinput->get('resourcetype', '', 'INT');
         }
@@ -99,11 +99,12 @@ class Easysdi_coreModelResourceForm extends JModelForm {
         require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/resourcetype.php';
         $resourcetype = JTable::getInstance('resourcetype', 'Easysdi_catalogTable');
         $resourcetype->load($this->_item->resourcetype_id);
+        $resourcetype->loadLocalname();
         $this->_item->resourcetype = $resourcetype->localname;
         
         //Load rights
         if(isset($this->_item->id)){
-            $db = JFactory::getDbo();
+            
             $query = $db->getQuery(true)
                 ->select('urr.user_id as user_id, urr.role_id as role_id')
                 ->from('#__sdi_user_role_resource urr')
@@ -136,6 +137,7 @@ class Easysdi_coreModelResourceForm extends JModelForm {
             }
             
         }
+                    
         return $this->_item;
     }
 
@@ -246,8 +248,10 @@ class Easysdi_coreModelResourceForm extends JModelForm {
      * @since	1.6
      */
     public function save($data) {
+        ($data['id'] == 0) ? $new = true : $new = false;
+        
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('resource.id');
-
+        
         try {
             $user = sdiFactory::getSdiUser();
         } catch (Exception $e) {
@@ -293,6 +297,22 @@ class Easysdi_coreModelResourceForm extends JModelForm {
                     $userroleresource->store();
                 }
             }
+            
+            //If it is a new resource, create the first version and its associated metadata
+            if ($new){
+                $version = JTable::getInstance('version', 'Easysdi_coreTable');
+                $version->resource_id = $table->id;
+                $version->name = date("Y-m-d H:i:s");
+                $version->store();
+                
+                require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/metadata.php';
+                $metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
+                $metadata->metadatastate_id = 2;
+                $metadata->accessscope_id = 1;
+                $metadata->version_id = $version->id;
+                $metadata->store();
+            }
+            
             return $id;
         } else {
             return false;

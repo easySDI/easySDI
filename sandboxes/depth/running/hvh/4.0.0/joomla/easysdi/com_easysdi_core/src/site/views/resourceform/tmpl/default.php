@@ -27,7 +27,7 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
     }
     .front-end-edit li {
         list-style: none;
-        margin-bottom: 6px !important;
+      
     }
     .front-end-edit label {
         margin-right: 10px;

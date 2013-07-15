@@ -85,7 +85,7 @@ class Easysdi_coreModelResources extends JModelList {
         $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
         
         // Join over the foreign key 'resourcetype_id'
-        $query->select('trans.text1 AS resourcetype_name');
+        $query->select('trans.text1 AS resourcetype_name, rt.versioning as versioning');
         $query->join('LEFT', '#__sdi_resourcetype AS rt ON rt.id = a.resourcetype_id');
         $query->join('LEFT', '#__sdi_translation AS trans ON trans.element_guid = rt.guid');
         $query->join('LEFT', '#__sdi_language AS lang ON lang.id = trans.language_id');

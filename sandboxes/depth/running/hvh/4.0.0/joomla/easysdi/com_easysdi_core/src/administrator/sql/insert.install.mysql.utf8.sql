@@ -28,11 +28,11 @@ VALUES
 
 INSERT INTO `#__sdi_sys_metadatastate` (ordering,state,value) 
 VALUES 
-(1,1,'archived'),
-(2,1,'inprogress'),
+(1,1,'inprogress'),
+(2,1,'validated'),
 (3,1,'published'),
-(3,1,'trashed'),
-(3,1,'validated')
+(4,1,'archived'),
+(5,1,'trashed')
 ;
 
 INSERT INTO `#__sdi_sys_spatialoperator` (ordering,state,value) 
