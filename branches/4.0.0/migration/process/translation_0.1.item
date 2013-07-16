@@ -259,7 +259,7 @@
       <column comment="" defaultValue="1" key="false" length="10" name="ordering" nullable="false" pattern="" precision="0" sourceType="INT" type="id_Integer" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
-      <column comment="" defaultValue="1" key="false" length="10" name="state" nullable="false" pattern="" precision="0" sourceType="INT" type="id_Integer" usefulColumn="true">
+      <column comment="" defaultValue="1" key="false" length="10" name="state" nullable="false" pattern="" precision="0" sourceType="INT" type="id_Boolean" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
       <column comment="" defaultValue="0" key="false" length="10" name="checked_out" nullable="false" pattern="" precision="0" sourceType="INT" type="id_Integer" usefulColumn="true">
@@ -295,7 +295,7 @@
         <mapperTableEntries name="modified_by" expression="row1.updatedby " type="id_Integer" nullable="true"/>
         <mapperTableEntries name="modified" expression="row1.updated " type="id_Date" nullable="true"/>
         <mapperTableEntries name="ordering" expression="context.ordering" type="id_Integer"/>
-        <mapperTableEntries name="state" type="id_Integer"/>
+        <mapperTableEntries name="state" expression="true" type="id_Boolean"/>
         <mapperTableEntries name="checked_out" expression="0" type="id_Integer"/>
         <mapperTableEntries name="checked_out_time" expression="new Date()" type="id_Date"/>
         <mapperTableEntries name="element_guid" expression="row1.element_guid" type="id_String"/>
@@ -466,7 +466,7 @@
       <column comment="" defaultValue="1" key="false" length="10" name="ordering" nullable="false" pattern="" precision="0" sourceType="INT" type="id_Integer" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
-      <column comment="" defaultValue="1" key="false" length="10" name="state" nullable="false" pattern="" precision="0" sourceType="INT" type="id_Integer" usefulColumn="true">
+      <column comment="" defaultValue="1" key="false" length="10" name="state" nullable="false" pattern="" precision="0" sourceType="BIT" type="id_Boolean" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
       <column comment="" defaultValue="0" key="false" length="10" name="checked_out" nullable="false" pattern="" precision="0" sourceType="INT" type="id_Integer" usefulColumn="true">
@@ -513,7 +513,7 @@
       <column comment="" defaultValue="1" key="false" length="10" name="ordering" nullable="false" pattern="" precision="0" sourceType="INT" type="id_Integer" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
-      <column comment="" defaultValue="1" key="false" length="10" name="state" nullable="false" pattern="" precision="0" sourceType="INT" type="id_Integer" usefulColumn="true">
+      <column comment="" defaultValue="1" key="false" length="10" name="state" nullable="false" pattern="" precision="0" sourceType="BIT" type="id_Boolean" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
       <column comment="" defaultValue="0" key="false" length="10" name="checked_out" nullable="false" pattern="" precision="0" sourceType="INT" type="id_Integer" usefulColumn="true">

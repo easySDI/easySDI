@@ -209,7 +209,7 @@
       <outputTables sizeState="INTERMEDIATE" name="write">
         <mapperTableEntries name="id" expression="row1.id" type="id_Long"/>
         <mapperTableEntries name="ordering" expression="context.ordering" type="id_Integer" nullable="true"/>
-        <mapperTableEntries name="state" type="id_Boolean"/>
+        <mapperTableEntries name="state" expression="true" type="id_Boolean"/>
         <mapperTableEntries name="relation_id" expression="row1.relation_id" type="id_Long"/>
         <mapperTableEntries name="profile_id" expression="row1.profile_id" type="id_Long"/>
       </outputTables>

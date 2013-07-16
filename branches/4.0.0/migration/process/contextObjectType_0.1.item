@@ -204,12 +204,12 @@
       </column>
     </metadata>
     <nodeData xsi:type="MapperData">
-      <uiProperties/>
+      <uiProperties shellMaximized="true"/>
       <varTables sizeState="INTERMEDIATE" name="Var" minimized="true"/>
       <outputTables sizeState="INTERMEDIATE" name="write">
         <mapperTableEntries name="id" expression="row1.id" type="id_Long"/>
         <mapperTableEntries name="ordering" expression="context.ordering" type="id_Integer" nullable="true"/>
-        <mapperTableEntries name="state" type="id_Boolean"/>
+        <mapperTableEntries name="state" expression="true" type="id_Boolean"/>
         <mapperTableEntries name="catalog_id" expression="row1.context_id " type="id_Long"/>
         <mapperTableEntries name="resourcetype_id" expression="row1.objecttype_id " type="id_Long"/>
       </outputTables>

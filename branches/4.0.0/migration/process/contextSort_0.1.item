@@ -217,7 +217,7 @@
       <outputTables sizeState="INTERMEDIATE" name="write">
         <mapperTableEntries name="id" expression="row1.id" type="id_Long"/>
         <mapperTableEntries name="ordering" expression="context.ordering" type="id_Integer" nullable="true"/>
-        <mapperTableEntries name="state" type="id_Boolean"/>
+        <mapperTableEntries name="state" expression="true" type="id_Boolean"/>
         <mapperTableEntries name="catalog_id" expression="row1.context_id " type="id_Long"/>
         <mapperTableEntries name="language_id" expression="row1.language_id" type="id_Long"/>
         <mapperTableEntries name="ogcsearchsorting" expression="row1.ogcsearchsorting" type="id_String" nullable="true"/>
