@@ -186,7 +186,7 @@
       <column comment="" key="false" length="36" name="element_guid" nullable="false" pattern="" precision="0" sourceType="VARCHAR" type="id_String" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
-      <column comment="" key="false" length="19" name="language_id" nullable="false" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">
+      <column comment="" key="false" length="19" name="language_id" nullable="false" pattern="" precision="0" sourceType="BIGINT" type="id_Integer" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
       <column comment="" key="false" length="200" name="label" nullable="true" pattern="" precision="0" sourceType="VARCHAR" type="id_String" usefulColumn="true">
@@ -271,7 +271,7 @@
       <column comment="" key="false" length="36" name="element_guid" nullable="false" pattern="" precision="0" sourceType="VARCHAR" type="id_String" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
-      <column comment="" key="false" length="10" name="language_id" nullable="true" pattern="" precision="0" sourceType="INT UNSIGNED" type="id_Long" usefulColumn="true">
+      <column comment="" key="false" length="10" name="language_id" nullable="true" pattern="" precision="0" sourceType="INT UNSIGNED" type="id_Integer" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
       <column comment="" key="false" length="255" name="text1" nullable="true" pattern="" precision="0" sourceType="VARCHAR" type="id_String" usefulColumn="true">
@@ -285,6 +285,7 @@
       <uiProperties shellMaximized="true"/>
       <varTables sizeState="INTERMEDIATE" name="Var">
         <mapperTableEntries name="createdby" expression="row1.createdby!=null?row1.createdby:1 " type="id_Integer"/>
+        <mapperTableEntries name="language_id" expression="row1.language_id==1?15:7 " type="id_Integer"/>
       </varTables>
       <outputTables sizeState="INTERMEDIATE" name="write">
         <mapperTableEntries name="id" expression="row1.id" type="id_Long"/>
@@ -299,14 +300,14 @@
         <mapperTableEntries name="checked_out" expression="0" type="id_Integer"/>
         <mapperTableEntries name="checked_out_time" expression="new Date()" type="id_Date"/>
         <mapperTableEntries name="element_guid" expression="row1.element_guid" type="id_String"/>
-        <mapperTableEntries name="language_id" expression="row1.language_id" type="id_Long" nullable="true"/>
+        <mapperTableEntries name="language_id" expression="Var.language_id " type="id_Integer" nullable="true"/>
         <mapperTableEntries name="text1" expression="row1.label + row1.title " type="id_String" nullable="true"/>
         <mapperTableEntries name="text2" expression="row1.information + row1.content " type="id_String" nullable="true"/>
       </outputTables>
       <inputTables sizeState="INTERMEDIATE" name="row1" matchingMode="UNIQUE_MATCH" lookupMode="LOAD_ONCE">
         <mapperTableEntries name="id" type="id_Long"/>
         <mapperTableEntries name="element_guid" type="id_String"/>
-        <mapperTableEntries name="language_id" type="id_Long"/>
+        <mapperTableEntries name="language_id" type="id_Integer"/>
         <mapperTableEntries name="label" type="id_String" nullable="true"/>
         <mapperTableEntries name="defaultvalue" type="id_String" nullable="true"/>
         <mapperTableEntries name="information" type="id_String" nullable="true"/>
@@ -478,7 +479,7 @@
       <column comment="" key="false" length="36" name="element_guid" nullable="false" pattern="" precision="0" sourceType="VARCHAR" type="id_String" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
-      <column comment="" key="false" length="10" name="language_id" nullable="true" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">
+      <column comment="" key="false" length="10" name="language_id" nullable="true" pattern="" precision="0" sourceType="INT" type="id_Integer" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
       <column comment="" key="false" length="255" name="text1" nullable="true" pattern="" precision="0" sourceType="VARCHAR" type="id_String" usefulColumn="true">
@@ -525,7 +526,7 @@
       <column comment="" key="false" length="36" name="element_guid" nullable="false" pattern="" precision="0" sourceType="VARCHAR" type="id_String" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
-      <column comment="" key="false" length="10" name="language_id" nullable="true" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">
+      <column comment="" key="false" length="10" name="language_id" nullable="true" pattern="" precision="0" sourceType="INT" type="id_Integer" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
       <column comment="" key="false" length="255" name="text1" nullable="true" pattern="" precision="0" sourceType="VARCHAR" type="id_String" usefulColumn="true">
