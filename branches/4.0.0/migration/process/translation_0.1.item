@@ -296,7 +296,7 @@
         <mapperTableEntries name="modified" expression="row1.updated " type="id_Date" nullable="true"/>
         <mapperTableEntries name="ordering" expression="context.ordering" type="id_Integer"/>
         <mapperTableEntries name="state" type="id_Integer"/>
-        <mapperTableEntries name="checked_out" type="id_Integer"/>
+        <mapperTableEntries name="checked_out" expression="0" type="id_Integer"/>
         <mapperTableEntries name="checked_out_time" expression="new Date()" type="id_Date"/>
         <mapperTableEntries name="element_guid" expression="row1.element_guid" type="id_String"/>
         <mapperTableEntries name="language_id" expression="row1.language_id" type="id_Long" nullable="true"/>

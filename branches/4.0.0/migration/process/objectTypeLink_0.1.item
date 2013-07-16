@@ -344,8 +344,8 @@
         <mapperTableEntries name="modified" expression="row1.updated " type="id_Date"/>
         <mapperTableEntries name="ordering" expression="row1.ordering" type="id_Integer"/>
         <mapperTableEntries name="state" type="id_Boolean"/>
-        <mapperTableEntries name="checked_out" expression="row1.checked_out" type="id_Integer"/>
-        <mapperTableEntries name="checked_out_time" expression="row1.checked_out_time" type="id_Date"/>
+        <mapperTableEntries name="checked_out" expression="0" type="id_Integer"/>
+        <mapperTableEntries name="checked_out_time" expression="new Date()" type="id_Date"/>
         <mapperTableEntries name="parent_id" expression="row1.parent_id" type="id_Long"/>
         <mapperTableEntries name="child_id" expression="row1.child_id" type="id_Long"/>
         <mapperTableEntries name="parentboundlower" expression="row1.parentbound_lower " type="id_Integer"/>

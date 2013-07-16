@@ -329,8 +329,8 @@
         <mapperTableEntries name="modified" expression="row1.updated " type="id_Date" nullable="true"/>
         <mapperTableEntries name="ordering" expression="row1.ordering" type="id_Integer"/>
         <mapperTableEntries name="state" type="id_Boolean"/>
-        <mapperTableEntries name="checked_out" expression="row1.checked_out" type="id_Integer" nullable="true"/>
-        <mapperTableEntries name="checked_out_time" expression="row1.checked_out_time" type="id_Date" nullable="true"/>
+        <mapperTableEntries name="checked_out" expression="0" type="id_Integer" nullable="true"/>
+        <mapperTableEntries name="checked_out_time" expression="new Date()" type="id_Date" nullable="true"/>
         <mapperTableEntries name="name" expression="row1.name" type="id_String"/>
         <mapperTableEntries name="description" expression="Var.description " type="id_String"/>
         <mapperTableEntries name="organism_id" expression="row1.account_id " type="id_Long"/>

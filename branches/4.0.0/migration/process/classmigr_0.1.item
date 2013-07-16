@@ -325,7 +325,7 @@
       </column>
     </metadata>
     <nodeData xsi:type="MapperData">
-      <uiProperties/>
+      <uiProperties shellMaximized="true"/>
       <varTables sizeState="INTERMEDIATE" name="Var">
         <mapperTableEntries name="alias" expression="Utils.sansAccent(row1.name) " type="id_String"/>
         <mapperTableEntries name="checked_out_time" expression="row1.checked_out_time!=null?row1.checked_out_time:new Date() " type="id_Date"/>
@@ -340,8 +340,8 @@
         <mapperTableEntries name="modified" expression="row1.updated " type="id_Date" nullable="true"/>
         <mapperTableEntries name="ordering" expression="row1.ordering" type="id_Integer" nullable="true"/>
         <mapperTableEntries name="state" type="id_Integer"/>
-        <mapperTableEntries name="checked_out" expression="row1.checked_out" type="id_Integer"/>
-        <mapperTableEntries name="checked_out_time" expression="Var.checked_out_time " type="id_Date"/>
+        <mapperTableEntries name="checked_out" expression="0" type="id_Integer"/>
+        <mapperTableEntries name="checked_out_time" expression="new Date()" type="id_Date"/>
         <mapperTableEntries name="name" expression="row1.name" type="id_String"/>
         <mapperTableEntries name="description" expression="row1.description" type="id_String" nullable="true"/>
         <mapperTableEntries name="issystem" expression="row1.issystem" type="id_Boolean"/>
