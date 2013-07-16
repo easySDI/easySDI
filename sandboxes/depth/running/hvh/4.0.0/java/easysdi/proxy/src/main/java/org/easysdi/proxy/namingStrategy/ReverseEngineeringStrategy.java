@@ -1,6 +1,6 @@
 package org.easysdi.proxy.namingStrategy;
 
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang.WordUtils; 
 import org.hibernate.cfg.reveng.DelegatingReverseEngineeringStrategy;
 import org.hibernate.cfg.reveng.TableIdentifier;
 
