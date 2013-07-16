@@ -685,7 +685,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_translation` (
 `text2` VARCHAR(500) ,
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_translation_fk1` (`language_id` ASC) ,
-
   CONSTRAINT `#__sdi_translation_fk1`
     FOREIGN KEY (`language_id` )
     REFERENCES `#__sdi_language` (`id` )

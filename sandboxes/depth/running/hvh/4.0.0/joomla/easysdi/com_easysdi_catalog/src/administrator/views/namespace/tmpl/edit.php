@@ -76,7 +76,7 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                     <?php
                     foreach ($this->form->getFieldset('hidden') as $field):
                         ?>
-                        <div class="controls"><?php echo $field->input; ?></div>
+                        <?php echo $field->input; ?>
 
                     <?php endforeach; ?>
                 </div>

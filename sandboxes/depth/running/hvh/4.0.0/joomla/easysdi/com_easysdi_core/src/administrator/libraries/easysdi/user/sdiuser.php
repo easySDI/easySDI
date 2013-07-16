@@ -77,6 +77,9 @@ class sdiUser {
         $db->setQuery($query);
         $user = $db->loadObject();
 
+        if(!$user)
+            throw new Exception('Not an EasySDI user');
+        
         $this->id = $user->id;
 
         $query = $db->getQuery(true)
@@ -241,6 +244,47 @@ class sdiUser {
             else 
                 return false;
         }
+    }
+    
+    /**
+     * Is the user authorized to do action on the metadata specified by the given id
+     * @param type $item
+     * @param type $right
+     * @return boolean
+     */
+    public function authorizeOnMetadata ($item, $right=null){
+        if(is_null($item))
+            return false;
+        
+        $db = JFactory::getDbo();
+            $query = $db->getQuery(true)
+                    ->select ('v.resource_id')
+                    ->from('#__sdi_version v')
+                    ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
+                    ->where('m.id = '.$item);
+            $db->setQuery($query);
+         
+        return $this->authorize($db->loadResult(), $right);
+    }
+    
+    /**
+     * Is the user authorized to do action on the version specified by the given id
+     * @param type $item
+     * @param type $right
+     * @return boolean
+     */
+    public function authorizeOnVersion ($item, $right=null){
+        if(is_null($item))
+            return false;
+        
+        $db = JFactory::getDbo();
+            $query = $db->getQuery(true)
+                    ->select ('v.resource_id')
+                    ->from('#__sdi_version v')
+                    ->where('v.id = '.$item);
+            $db->setQuery($query);
+         
+        return $this->authorize($db->loadResult(), $right);
     }
 
 }

@@ -125,9 +125,7 @@ class Easysdi_coreControllerResourceForm extends Easysdi_coreController {
 
         // Redirect to the list screen.
         $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_SAVED_SUCCESSFULLY'));
-        $menu = $app->getMenu();
-        $item = $menu->getActive();
-        $this->setRedirect(JRoute::_($item->link, false));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
         
 
         // Flush the data from the session.
@@ -135,10 +133,7 @@ class Easysdi_coreControllerResourceForm extends Easysdi_coreController {
     }
 
     function cancel() {
-         $app = JFactory::getApplication();
-        $menu = $app->getMenu();
-        $item = $menu->getActive();
-        $this->setRedirect(JRoute::_($item->link, false));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
     }
 
     public function remove() {
@@ -211,9 +206,7 @@ class Easysdi_coreControllerResourceForm extends Easysdi_coreController {
 
         // Redirect to the list screen.
         $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_DELETED_SUCCESSFULLY'));
-        $menu = $app->getMenu();
-        $item = $menu->getActive();
-        $this->setRedirect(JRoute::_($item->link, false));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
 
         // Flush the data from the session.
         $app->setUserState('com_easysdi_core.edit.resource.data', null);

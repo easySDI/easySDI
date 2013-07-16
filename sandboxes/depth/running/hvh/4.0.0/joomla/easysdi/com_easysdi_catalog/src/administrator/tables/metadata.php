@@ -117,7 +117,14 @@ class Easysdi_catalogTablemetadata extends sdiTable {
         return false;
     }
 
-    public function update(){
+    public function delete($pk = null) {
         
+        $CSWmetadata = new sdiMetadata($pk);
+        
+        if(parent::delete($pk)){
+//            return $CSWmetadata->delete();
+            return true;
+        }
+        return false;
     }
 }

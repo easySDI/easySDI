@@ -262,13 +262,15 @@ class Easysdi_coreModelResourceForm extends JModelForm {
         if ($id == 0) {
             if (!$user->isResourceManager()) {
                 //Try to create a resource but not a resource manager
-                JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+                JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
                 return false;
             }
         } else {
             if (!$user->authorize($id, sdiUser::resourcemanager)) {
                 //Try to update a resource but not its resource manager
-                JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+                JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
                 return false;
             }
         }
@@ -309,7 +311,21 @@ class Easysdi_coreModelResourceForm extends JModelForm {
                 $metadata->metadatastate_id = 2;
                 $metadata->accessscope_id = 1;
                 $metadata->version_id = $version->id;
-                $metadata->store();
+                if (!$metadata->store()) {
+                    //Saving metadata in database or metadata in CSW catalog failed
+                    //Version and resource must deleted
+                    if (!$version->delete()) {
+                        //Can not delete version, it's a mess in the database from now...
+                        JFactory::getApplication()->enqueueMessage('Saving metatada failed and rollback version creation failed too. Database is corrupted.', 'error');
+                        return false;
+                    }
+                    if (!$table->delete($table->id)) {
+                        //Can not delete resource, it's a mess in the database from now...
+                        JFactory::getApplication()->enqueueMessage('Saving metatada failed and rollback resource creation failed too. Database is corrupted.', 'error');
+                        return false;
+                    }
+                    return false;
+                }
             }
 
             return $id;
@@ -325,13 +341,15 @@ class Easysdi_coreModelResourceForm extends JModelForm {
             $user = sdiFactory::getSdiUser();
         } catch (Exception $e) {
             //Not an EasySDI user = not allowed
-            JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
         }
 
         if (!$user->authorize($id, sdiUser::resourcemanager)) {
             //Try to delete a resource but not its resource manager
-            JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
         }
 

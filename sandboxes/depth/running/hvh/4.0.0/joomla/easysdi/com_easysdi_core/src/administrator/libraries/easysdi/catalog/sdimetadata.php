@@ -7,7 +7,9 @@
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
-require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_contact/tables/user.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_contact/tables/user.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/version.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/resource.php';
 
 class sdiMetadata {
 
@@ -24,11 +26,19 @@ class sdiMetadata {
      * @var    Easysdi_catalogTablemetadata
      */
     public $metadata = null;
-    
+
+    /**
+     *
+     * @var Easysdi_coreTableversion 
+     */
     public $version = null;
-            
+
+    /**
+     *
+     * @var Easysdi_coreTableresource 
+     */
     public $resource = null;
-    
+
     /**
      * database
      *
@@ -36,6 +46,11 @@ class sdiMetadata {
      */
     public $db = null;
 
+    /**
+     * 
+     */
+    public $catalogurl = null;
+        
     /**
      * 
      */
@@ -47,15 +62,57 @@ class sdiMetadata {
         $this->version->load($this->metadata->version_id);
         $this->resource = JTable::getInstance('resource', 'Easysdi_coreTable');
         $this->resource->load($this->version->resource_id);
-        
+
         $this->db = JFactory::getDbo();
+
+        $params = JComponentHelper::getParams('com_easysdi_catalog');
+        $this->catalogurl = $params->get('catalogurl');
     }
 
     /**
      * 
      */
     public function load() {
+
+        $catalogUrlGetRecordById = $this->catalogurl . "?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=" . $this->metadata->guid;
+
+        $response = $this->CURLRequest("GET", $catalogUrlGetRecordById);
         
+        $doc = new DOMDocument();
+        $doc->loadXML($response);
+
+        if ($doc <> false and $doc->childNodes->item(0)->hasChildNodes()){
+
+        }
+        else if ($doc->childNodes->item(0)->nodeName == "ows:ExceptionReport") {
+            $msg = $doc->childNodes->item(0)->nodeValue;
+            JFactory::getApplication()->enqueueMessage($msg, 'error');
+            return false;
+        } 
+        else {
+            $msg = JText::_('CATALOG_METADATA_EDIT_NOMETADATA_MSG');
+            JFactory::getApplication()->enqueueMessage('No such metadata in the catalog.', 'error');
+            return false;
+        }
+//        $xpathResults->registerNamespace('csw', 'http://www.opengis.net/cat/csw/2.0.2');
+//        $xpathResults->registerNamespace('srv', 'http://www.isotc211.org/2005/srv');
+//        $xpathResults->registerNamespace('xlink', 'http://www.w3.org/1999/xlink');
+//        $xpathResults->registerNamespace('gts', 'http://www.isotc211.org/2005/gts');
+//
+//        // Récupération des namespaces à inclure
+//        $query = $this->db->getQuery(true)
+//                ->select('prefix, uri')
+//                ->from('#__sdi_namespace')
+//                ->order('prefix');
+//        $this->db->setQuery($query);
+//        $namespaces = $this->db->loadObjectList();
+//        foreach ($namespaces as $namespace) {
+//            $xpathResults->registerNamespace($namespace->prefix, $namespace->uri);
+//        }
+        
+        
+        
+        return $response;
     }
 
     /**
@@ -80,7 +137,7 @@ class sdiMetadata {
                         WHERE rt.id=" . $this->resource->resourcetype_id;
             $this->db->setQuery($query);
             $attributeIdentifier = $this->db->loadObject();
-            
+
             //Get from the metadata structure the root classe
             $query = $this->db->getQuery(true);
             $query = "SELECT CONCAT(ns.prefix,':',c.isocode) as isocode 
@@ -91,7 +148,6 @@ class sdiMetadata {
                                 WHERE rt.id=" . $this->resource->resourcetype_id;
             $this->db->setQuery($query);
             $rootclass = $this->db->loadObject();
-            
         } catch (Exception $e) {
             JFactory::getApplication()->enqueueMessage('Error when building metadata CSW structure.', 'error');
             return false;
@@ -134,14 +190,12 @@ class sdiMetadata {
 				</csw:Insert>
 			</csw:Transaction>";
 
-        $params = JComponentHelper::getParams('com_easysdi_catalog');
-        $catalogurl = $params->get('catalogurl');
 
-        $result = $this->CURLRequest("POST", $catalogurl, $xmlstr);
+
+        $result = $this->CURLRequest("POST", $this->catalogurl, $xmlstr);
 
         $insertResults = new DOMDocument();
-        $insertResults->load($result);
-        print_r($insertResults); die();
+        $insertResults->loadXML($result);
         $xpathInsert = new DOMXPath($insertResults);
         $xpathInsert->registerNamespace('csw', 'http://www.opengis.net/cat/csw/2.0.2');
         $inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
@@ -156,15 +210,15 @@ class sdiMetadata {
     /**
      * 
      */
-    public function update() {
-        
+    public function update($xml) {
+        return true;
     }
 
     /**
      * 
      */
     public function updateSDIElement() {
-        
+        return true;
     }
 
     private function CURLRequest($type, $url, $xmlBody = "") {
@@ -199,7 +253,7 @@ class sdiMetadata {
         $params = JComponentHelper::getParams('com_easysdi_contact');
         $serviceaccount_id = $params->get('serviceaccount');
         $juser = JFactory::getUser($serviceaccount_id);
-        
+
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($ch, CURLOPT_USERPWD, $juser->username . ":" . $juser->password);
 
