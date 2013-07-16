@@ -120,6 +120,12 @@ class Easysdi_catalogModelimportref extends sdiModel
 			}
 
 		}
+                
+                if($table->cswservice_id == 0)
+                    $table->cswservice_id = null;
+                
+                if($table->cswversion_id == 0)
+                    $table->cswversion_id = null;
 	}
 
 }

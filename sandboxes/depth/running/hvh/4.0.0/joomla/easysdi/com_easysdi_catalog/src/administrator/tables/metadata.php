@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/database/sditable.php';
+require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
 
 /**
  * metadata Table class
@@ -101,101 +102,15 @@ class Easysdi_catalogTablemetadata extends sdiTable {
         (empty($this->id) ) ? $new = true : $new = false;
 
         if (parent::store($updateNulls)) {
+            $CSWmetadata = new sdiMetadata($this->id);
             if ($new) {
-                //Insert new Metadata into CSW catalog
-                try {
-                    //Get from the metadata structure, the attribute to store the metadata ID
-                    $db = JFactory::getDbo();
-                    $query = $db->getQuery(true);
-                    $query = "SELECT a.name as name, ns.prefix as ns, 
-                        CONCAT(ns.prefix, ':', a.isocode) as attribute_isocode, 
-                        CONCAT(atns.prefix, ':', at.isocode) as type_isocode 
-                        FROM #__sdi_profile p
-                            INNER JOIN #__sdi_resourcetype rt on p.id=rt.profile_id 
-                            INNER JOIN #__sdi_attribute a on a.id=p.metadataidentifier 
-                            INNER JOIN #__sdi_relation rel on rel.attributechild_id=a.id
-                            INNER JOIN #__sdi_sys_stereotype as at ON at.id=a.stereotype_id 
-                            LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id 
-                            LEFT OUTER JOIN #__sdi_namespace atns ON at.namespace_id=atns.id 
-                        WHERE rt.id=" . $table->resourcetype_id;
-                    $db->setQuery($query);
-                    $attributeIdentifier = $db->loadObject();
-
-                    //Get from the metadata structure the root classe
-                    $query = $db->getQuery(true);
-                    $query = "SELECT CONCAT(ns.prefix,':',c.isocode) as isocode 
-                                FROM #__sdi_profile p 
-                                INNER JOIN #__sdi_resourcetype rt ON p.id=rt.profile_id
-                                INNER JOIN #__sdi_class c ON c.id=p.class_id  
-                                LEFT OUTER JOIN #__sdi_namespace as ns ON c.namespace_id=ns.id 
-                                WHERE rt.id=" . $table->resourcetype_id;
-                    $db->setQuery($query);
-                    $rootclass = $db->loadObject();
-                } catch (Exception $e) {
-                    $this->setError($e->getMessage());
+                if(!$CSWmetadata->insert()){
                     return false;
                 }
-
-                /*
-                 * <sdi:platform guid ="" harvested="false">
-                  <rsdi:esource guid="" alias="" name="" type="" organism="" scope="">
-                  <sdi:organisms>
-                  <sdi:organism guid=""/>
-                  </sdi:organisms>
-                  <sdi:users>
-                  <sdi:user guid=""/>
-                  </sdi:users>
-                  <sdi:metadata lastVersion="true" guid="" created="" published="" state="">
-                  <sdi:diffusion isFree="false" osDownloadable="false" isOrderable="true"/>
-                  </sdi:metadata>
-                  </sdi:resource>
-                  </sdi:platform>
-                 */
-                //Create metadata XML
-                $xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-			<csw:Transaction service=\"CSW\"
-			version=\"2.0.2\"
-			xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" >
-				<csw:Insert>
-					<" . $rootclass->isocode . "
-						xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" 
-						xmlns:gco=\"http://www.isotc211.org/2005/gco\" 
-						xmlns:xlink=\"http://www.w3.org/1999/xlink\" 
-						xmlns:gml=\"http://www.opengis.net/gml\" 
-						xmlns:gts=\"http://www.isotc211.org/2005/gts\" 
-						xmlns:srv=\"http://www.isotc211.org/2005/srv\"
-						xmlns:ext=\"http://www.depth.ch/2008/ext\">
-						
-						<" . $attributeIdentifier->attribute_isocode . ">
-							<" . $attributeIdentifier->type_isocode . ">" . $metadata->guid . "</" . $attributeIdentifier->type_isocode . ">
-						</" . $attributeIdentifier->attribute_isocode . ">
-					</" . $rootclass->isocode . ">
-				</csw:Insert>
-			</csw:Transaction>";
-
-
-                require_once(JPATH_ADMINISTRATOR . DS . 'components' . DS . 'com_easysdi_core' . DS . 'common' . DS . 'easysdi.config.php');
-                $catalogUrlBase = config_easysdi::getValue("catalog_url");
-
-                $result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
-
-                $insertResults = DOMDocument::loadXML($result);
-
-                $xpathInsert = new DOMXPath($insertResults);
-                $xpathInsert->registerNamespace('csw', 'http://www.opengis.net/cat/csw/2.0.2');
-                $inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
-
-                if ($inserted <> 1) {
-                    //$mainframe->enqueueMessage(htmlspecialchars($xmlstr),"INFO");
-                    //$mainframe->enqueueMessage($catalogUrlBase,"INFO");
-                    //$mainframe->enqueueMessage(uniqid(),"INFO");
-                    //$mainframe->enqueueMessage(htmlspecialchars($result),"INFO");
-                    //$mainframe->enqueueMessage('Error on metadata insert',"ERROR");
-                    $mainframe->redirect("index.php?option=$option&task=listObject");
-                    exit();
-                }
             }else{
-                $this->update();
+                if(!$CSWmetadata->update()){
+                    return false;
+                }
             }
             return true;
         }

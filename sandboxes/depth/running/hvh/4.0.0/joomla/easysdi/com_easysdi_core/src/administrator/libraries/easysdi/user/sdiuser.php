@@ -54,6 +54,11 @@ class sdiUser {
     const ordereligible = 8;
     
 
+    /**
+     * 
+     * @param interger $juser Joomla user identifier
+     * @throws Exception
+     */
     function __construct($juser = null) {
 
         if ($juser == null)
@@ -94,6 +99,10 @@ class sdiUser {
         }
     }
 
+    /**
+     * 
+     * @return boolean
+     */
     public function isResourceManager() {
         if (isset($this->role[2])) {
             return true;
@@ -101,6 +110,10 @@ class sdiUser {
         return false;
     }
 
+    /**
+     * Get the resource type the user can manage
+     * @return type
+     */
     public function getResourceType() {
         $db = JFactory::getDbo();
 
@@ -130,38 +143,74 @@ class sdiUser {
         return $resourcetypes;
     }
 
+    /**
+     * Get the organism the user is member of
+     * @return type
+     */
     public function getMemberOrganisms() {
         return $this->role[1];
     }
 
+    /**
+     * Get the Organisms for which the user is resource manager
+     * @return type
+     */
     public function getResourceManagerOrganisms() {
         return $this->role[2];
     }
 
+    /**
+     * Get the Organisms for which the user is metadata responsible
+     * @return type
+     */
     public function getMetadataResponsibleOrganisms() {
         return $this->role[3];
     }
 
+    /**
+     * Get the Organisms for which the user is metadata editor
+     * @return type
+     */
     public function getMetadataEditorOrganisms() {
         return $this->role[4];
     }
 
+    /**
+     * Get the Organisms for which the user is diffusion manager
+     * @return type
+     */
     public function getDiffusionManagerOrganisms() {
         return $this->role[5];
     }
 
+    /**
+     * Get the Organisms for which the user is preview manager
+     * @return type
+     */
     public function getPreviewManagerOrganisms() {
         return $this->role[6];
     }
 
+    /**
+     * Get the Organisms for which the user is extraction responsible
+     * @return type
+     */
     public function getExtractionResponsibleOrganisms() {
         return $this->role[7];
     }
 
+    /**
+     * Get the Organisms for which the user is allowed to order
+     * @return type
+     */
     public function getOrderEligibleOrganisms() {
         return $this->role[8];
     }
     
+    /**
+     * Get if a user has the specific right on the specific item, or all the right on an item
+     * @return type
+     */
     public function authorize ($item, $right=null){
         if(is_null($item))
             return false;

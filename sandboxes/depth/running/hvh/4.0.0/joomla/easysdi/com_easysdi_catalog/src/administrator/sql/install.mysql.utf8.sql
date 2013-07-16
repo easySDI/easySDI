@@ -645,8 +645,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_importref` (
 `description` VARCHAR(500)   ,
 `xsl4sdi` VARCHAR(255)   ,
 `xsl4ext` VARCHAR(255)  ,
-`cswservice_id` VARCHAR(255)  NOT NULL ,
-`cswversion_id` VARCHAR(10)  NOT NULL ,
+`cswservice_id` INT(11)  UNSIGNED   ,
+`cswversion_id` INT(11)  UNSIGNED   ,
 `cswoutputschema` VARCHAR(255)  ,
 `importtype_id` INT(11)  UNSIGNED ,
 `access` INT(10)  NOT NULL DEFAULT '1',
@@ -660,6 +660,12 @@ PRIMARY KEY (`id`) ,
     ON UPDATE NO ACTION
 
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+ALTER TABLE `#__sdi_importref`
+ADD CONSTRAINT `#__sdi_importref_fk2` FOREIGN KEY (`cswservice_id`) REFERENCES `#__sdi_physicalservice` (`id`) ON DELETE CASCADE ;
+
+ALTER TABLE `#__sdi_importref`
+ADD CONSTRAINT `#__sdi_importref_fk3` FOREIGN KEY (`cswversion_id`) REFERENCES `#__sdi_sys_serviceversion` (`id`) ON DELETE CASCADE ;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_translation` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
