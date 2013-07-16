@@ -1027,7 +1027,7 @@ public class CSWProxyServlet extends ProxyServlet {
 				}
 			}
 			
-			if (currentOperation.equalsIgnoreCase("Transaction") && physicalService.getSdiSysAuthenticationconnectorByServiceauthenticationId() != null && physicalService.getSdiSysAuthenticationconnectorByServiceauthenticationId().getValue().equals("geonetwork")) 
+			if (currentOperation.equalsIgnoreCase("Transaction") && physicalService.getSdiSysAuthenticationconnectorByServiceauthenticationId() != null && physicalService.getSdiSysAuthenticationconnectorByServiceauthenticationId().getValue().equalsIgnoreCase("geonetwork")) 
 			{
 				// Send the xml
 				StringBuffer response = sendFile(physicalService.getResourceurl(), param, physicalService.getServiceurl());

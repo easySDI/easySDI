@@ -17,6 +17,7 @@
     <properties>
         <gt.version>2.7.0</gt.version>
         <gt2.version>2.4.1</gt2.version>
+        <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
     </properties>
     
     <dependencies>

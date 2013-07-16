@@ -54,6 +54,7 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 		this.sdiUserHome = sdiUserHome;
 	}
 
+        @Override
 	public void destroy() {
 
 	}
