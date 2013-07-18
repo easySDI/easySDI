@@ -10,7 +10,7 @@
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
   <version>4.0.0-alpha-3</version>
-  <description />
+  <description>PLG_USER_EASYSDI</description>
   <scriptfile>script.php</scriptfile>
   <files>
     <filename plugin="easysdicontact">easysdicontact.php</filename>

@@ -991,28 +991,28 @@ INDEX `#__sdi_assignment_fk3` (`version_id`) ,
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_resource_role_user` (
+CREATE TABLE IF NOT EXISTS `#__sdi_user_role_resource` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`resource_id` int(11) UNSIGNED ,
-`role_id` int(11) UNSIGNED ,
 `user_id` int(11) UNSIGNED ,
+`role_id` int(11) UNSIGNED ,
+`resource_id` int(11) UNSIGNED ,
 PRIMARY KEY (`id`),
-INDEX `#__sdi_resource_role_user_fk1` (`resource_id`) ,
-INDEX `#__sdi_resource_role_user_fk2` (`role_id`) ,
-INDEX `#__sdi_resource_role_user_fk3` (`user_id`) ,
-CONSTRAINT `#__sdi_resource_role_user_fk1`
-    FOREIGN KEY (`resource_id` )
-    REFERENCES `#__sdi_resource` (`id` )
+    INDEX `#__sdi_user_role_resource_fk1` (`user_id` ASC) ,
+    INDEX `#__sdi_user_role_resource_fk2` (`role_id` ASC) ,
+    INDEX `#__sdi_user_role_resource_fk3` (`resource_id` ASC) ,
+CONSTRAINT `#__sdi_user_role_resource_fk1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `#__sdi_user` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
- CONSTRAINT `#__sdi_resource_role_user_fk2`
-    FOREIGN KEY (`role_id` )
-    REFERENCES `#__sdi_sys_role` (`id` )
+  CONSTRAINT `#__sdi_user_role_resource_fk2`
+    FOREIGN KEY (`role_id`)
+    REFERENCES `#__sdi_sys_role` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
- CONSTRAINT `#__sdi_resource_role_user_fk3`
-    FOREIGN KEY (`user_id` )
-    REFERENCES `#__sdi_user` (`id` )
+CONSTRAINT `#__sdi_user_role_resource_fk3`
+    FOREIGN KEY (`resource_id`)
+    REFERENCES `#__sdi_resource` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;

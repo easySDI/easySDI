@@ -132,8 +132,8 @@
                 <description>PKG_EASYSDI_XML_DESCRIPTION</description> 
                 <files folder="easysdi"> 
                     <file type="component" id="com_easysdi_core">com_easysdi_core.zip</file> 
-                    <file type="component" id="com_easysdi_service">com_easysdi_service.zip</file>
                     <file type="component" id="com_easysdi_contact">com_easysdi_contact.zip</file>
+                    <file type="component" id="com_easysdi_service">com_easysdi_service.zip</file>
                     <file type="component" id="com_easysdi_catalog">com_easysdi_catalog.zip</file> 
                     <file type="component" id="com_easysdi_map">com_easysdi_map.zip</file>
                     <file type="plugin" id="easysdicontact" group="user">plg_easysdi_contact.zip</file> 

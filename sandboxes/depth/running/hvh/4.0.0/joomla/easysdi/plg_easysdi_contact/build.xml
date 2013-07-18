@@ -36,7 +36,7 @@
                 <authorEmail>${xml.authorEmail}</authorEmail>
                 <authorUrl>${xml.authorUrl}</authorUrl>
                 <version>${version}</version>
-                <description></description>
+                <description>PLG_USER_EASYSDI</description>
                 <scriptfile>script.php</scriptfile>
                 <files>
                     <filename plugin="easysdicontact">easysdicontact.php</filename>
