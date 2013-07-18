@@ -194,6 +194,9 @@ class sdiMetadata {
 
         $result = $this->CURLRequest("POST", $this->catalogurl, $xmlstr);
 
+        if(empty($result))
+            return false;
+        
         $insertResults = new DOMDocument();
         $insertResults->loadXML($result);
         $xpathInsert = new DOMXPath($insertResults);

@@ -107,7 +107,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
     }
 
     public function getTable($type = 'Metadata', $prefix = 'Easysdi_catalogTable', $config = array()) {
-        $this->addTablePath(JPATH_COMPONENT_ADMINISTRATOR . '/tables');
+        $this->addTablePath(JPATH_ADMINISTRATOR .'/components/com_easysdi_catalog/tables');
         return JTable::getInstance($type, $prefix, $config);
     }
 
@@ -215,8 +215,9 @@ class Easysdi_catalogModelMetadata extends JModelForm {
      * @since	1.6
      */
     public function save($data) {
+        (empty($data['id']) ) ? $new = true : $new = false;
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('metadata.id');
-
+                
         try {
             $user = sdiFactory::getSdiUser();
         } catch (Exception $e) {
@@ -226,16 +227,27 @@ class Easysdi_catalogModelMetadata extends JModelForm {
             return false;
         }
 
-        if (!$user->authorizeOnMetadata($id, sdiUser::metadataeditor) || !$user->authorizeOnMetadata($id, sdiUser::metadataresponsible)) {
+        if (!empty($id) && (!$user->authorizeOnMetadata($id, sdiUser::metadataeditor) || !$user->authorizeOnMetadata($id, sdiUser::metadataresponsible))) {
             //Try to update a resource but not its resource manager
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
         }
 
-
         $table = $this->getTable();
         if ($table->save($data) === true) {
+            $CSWmetadata = new sdiMetadata($table->id);
+            if ($new) {
+                if(!$CSWmetadata->insert()){
+                    $table->delete();
+                    return false;
+                }
+            }else{
+                if(!$CSWmetadata->update()){
+                    return false;
+                }
+            }
+            
             return $id;
         } else {
             return false;

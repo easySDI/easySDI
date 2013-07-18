@@ -93,8 +93,8 @@ class Easysdi_coreModelResourceForm extends JModelForm {
         }
         $null = null;
         if ($this->_item->resourcetype_id == '') {
-            $this->setError('Resource type is not defined');
-            return $null;
+            JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+            return;
         }
         require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/resourcetype.php';
         $resourcetype = JTable::getInstance('resourcetype', 'Easysdi_catalogTable');
@@ -306,24 +306,23 @@ class Easysdi_coreModelResourceForm extends JModelForm {
                 $version->name = date("Y-m-d H:i:s");
                 $version->store();
 
-                require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/metadata.php';
-                $metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
-                $metadata->metadatastate_id = 2;
-                $metadata->accessscope_id = 1;
-                $metadata->version_id = $version->id;
-                if (!$metadata->store()) {
+                require_once JPATH_SITE . '/components/com_easysdi_catalog/models/metadata.php';
+                $metadata = JModelLegacy::getInstance('metadata', 'Easysdi_catalogModel');
+                $mddata = array("metadatastate_id" => 2, "accessscope_id" => 1,"version_id" => $version->id);
+                if(!$metadata->save($mddata)){
                     //Saving metadata in database or metadata in CSW catalog failed
-                    //Version and resource must deleted
+                    //Version and resource must be deleted
                     if (!$version->delete()) {
                         //Can not delete version, it's a mess in the database from now...
-                        JFactory::getApplication()->enqueueMessage('Saving metatada failed and rollback version creation failed too. Database is corrupted.', 'error');
+                        JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CORE_RESOURCES_ITEM_SAVED_ERROR_ROLLBACK_VERSION_ERROR'), 'error');
                         return false;
                     }
                     if (!$table->delete($table->id)) {
                         //Can not delete resource, it's a mess in the database from now...
-                        JFactory::getApplication()->enqueueMessage('Saving metatada failed and rollback resource creation failed too. Database is corrupted.', 'error');
+                        JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CORE_RESOURCES_ITEM_SAVED_ERROR_ROLLBACK_RESOURCE_ERROR'), 'error');
                         return false;
                     }
+                    JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CORE_RESOURCES_ITEM_SAVED_ERROR'), 'error');
                     return false;
                 }
             }

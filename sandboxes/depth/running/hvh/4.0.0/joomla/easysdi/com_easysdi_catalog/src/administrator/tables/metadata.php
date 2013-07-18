@@ -36,28 +36,10 @@ class Easysdi_catalogTablemetadata extends sdiTable {
      * @since	1.5
      */
     public function bind($array, $ignore = '') {
-
-
         $task = JRequest::getVar('task');
         if ($task == 'apply' || $task == 'save') {
             $array['modified'] = date("Y-m-d H:i:s");
         }
-
-
-        if (!JFactory::getUser()->authorise('core.admin', 'com_easysdi_catalog.metadata.' . $array['id'])) {
-            $actions = JFactory::getACL()->getActions('com_easysdi_catalog', 'metadata');
-            $default_actions = JFactory::getACL()->getAssetRules('com_easysdi_catalog.metadata.' . $array['id'])->getData();
-            $array_jaccess = array();
-            foreach ($actions as $action) {
-                $array_jaccess[$action->name] = $default_actions[$action->name];
-            }
-            $array['rules'] = $this->JAccessRulestoArray($array_jaccess);
-        }
-        //Bind the rules for ACL where supported.
-        if (isset($array['rules']) && is_array($array['rules'])) {
-            $this->setRules($array['rules']);
-        }
-
         return parent::bind($array, $ignore);
     }
 
@@ -98,24 +80,24 @@ class Easysdi_catalogTablemetadata extends sdiTable {
      * @return	boolean	True on success.
      * @since	1.6
      */
-    public function store($updateNulls = true) {
-        (empty($this->id) ) ? $new = true : $new = false;
-
-        if (parent::store($updateNulls)) {
-            $CSWmetadata = new sdiMetadata($this->id);
-            if ($new) {
-                if(!$CSWmetadata->insert()){
-                    return false;
-                }
-            }else{
-                if(!$CSWmetadata->update()){
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
-    }
+//    public function store($updateNulls = true) {
+//        (empty($this->id) ) ? $new = true : $new = false;
+//
+//        if (parent::store($updateNulls)) {
+//            $CSWmetadata = new sdiMetadata($this->id);
+//            if ($new) {
+//                if(!$CSWmetadata->insert()){
+//                    return false;
+//                }
+//            }else{
+//                if(!$CSWmetadata->update()){
+//                    return false;
+//                }
+//            }
+//            return true;
+//        }
+//        return false;
+//    }
 
     public function delete($pk = null) {
         
