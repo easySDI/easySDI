@@ -24,7 +24,7 @@
                label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARY_CREATED"
                description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARY_CREATED"  /> 
 
-        <field name="modified_by" type="text" size="40" class="inputbox"
+        <field name="modified_by" type="createdby" size="40" class="inputbox"
                label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARY_MODIFIED_BY"
                description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARY_MODIFIED_BY" 
                default="0" 

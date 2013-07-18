@@ -91,13 +91,7 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                             <div class="controls"><?php echo $this->form->getInput('text1'); ?></div>
                         </div>
                     </div>
-                    
-                    <?php
-                    foreach ($this->form->getFieldset('hidden') as $field):
-                        ?>
-                        <div class="controls"><?php echo $field->input; ?></div>
-
-                    <?php endforeach; ?>
+                   
                         <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('id'); ?></div>
@@ -135,6 +129,10 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
 
 
         <div class="clr"></div>
+        <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
+            <?php echo $field->input; ?>
+        <?php endforeach; ?>   
+        
 
         <input type="hidden" name="task" value="" />
         <?php echo JHtml::_('form.token'); ?>

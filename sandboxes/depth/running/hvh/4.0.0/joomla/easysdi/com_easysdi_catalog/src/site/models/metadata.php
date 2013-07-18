@@ -197,9 +197,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
      * @since	1.6
      */
     protected function loadFormData() {
-
         $data = JFactory::getApplication()->getUserState('com_easysdi_catalog.edit.metadata.data', array());
-
         if (empty($data)) {
             $data = $this->getData();
         }

@@ -318,7 +318,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
         <div class="clr"></div>
 
         <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
-            <div class="controls"><?php echo $field->input; ?></div>
+            <?php echo $field->input; ?>
         <?php endforeach; ?>    
         <input type="hidden" name="task" value="" />
         <?php echo JHtml::_('form.token'); ?>
