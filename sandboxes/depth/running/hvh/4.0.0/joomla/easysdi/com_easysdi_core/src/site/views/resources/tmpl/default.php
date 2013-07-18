@@ -55,7 +55,7 @@ endif;
 <div class="items">
     <div class="well">
         <?php $show = false; ?>
-        <table class="table">
+        <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Ressource name</th>
@@ -81,6 +81,9 @@ endif;
                             <?php else : ?>
                                 <td>
                                     <?php echo $item->name; ?>
+                                    <div class="small">
+                                        <?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($item->alias)); ?>
+                                    </div>
                                 </td>
                             <?php endif; ?>
                             <td>
@@ -199,7 +202,7 @@ endif;
                                             <li class="divider"></li>
                                             <li>
                                                 <?php if ($item->versioning) : ?>
-                                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $metadata[0]->version); ?>"><i class="icon-remove"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_VERSION'); ?></a>
+                                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $metadata[0]->version); ?>"><i class="icon-remove"></i> <?php if(count($metadata) > 1 ) echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_VERSION') ; else echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE'); ?></a>
                                                 <?php else : ?>
                                                     <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $metadata[0]->version); ?>"><i class="icon-remove"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE'); ?></a>
                                                 <?php endif; ?>

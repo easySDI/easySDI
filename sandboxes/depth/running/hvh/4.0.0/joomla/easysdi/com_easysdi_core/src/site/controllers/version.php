@@ -30,7 +30,6 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
         $keys = array("version_id" => $data['id']);
         $metadata->load($keys);
-        
         if (!$metadata->delete($metadata->id)) {
             // Redirect back to the list screen.
             $this->setMessage(JText::_('Metadata can not be deleted.'), 'error');
@@ -47,13 +46,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 ->where('resource_id = ' . $version->resource_id);
         $dbo->setQuery($query);
         $num = $dbo->loadResult();
-
-        if($num == 1){
-            //This is the last version of the resource
-            //The resource can be deleted
-            $lastversion = true;
-        }
-        
+   
         // Attempt to delete the version.
         $return = $model->delete($data);
         // Check for errors.
@@ -65,7 +58,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         }
 
         //Delete resource if needed
-        if ($lastversion){
+        if ($num == 1){
             $resource = JTable::getInstance('resource', 'Easysdi_coreTable');
             $resource->load($version->resource_id);
             if(!$resource->delete($resource->id)){

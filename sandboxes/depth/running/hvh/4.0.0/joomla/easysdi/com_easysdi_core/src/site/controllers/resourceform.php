@@ -68,6 +68,7 @@ class Easysdi_coreControllerResourceForm extends Easysdi_coreController {
 
         // Validate the posted data.
         $form = $model->getForm();
+         
         if (!$form) {
             JError::raiseError(500, $model->getError());
             return false;

@@ -155,7 +155,7 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
     <div id="loader" style="">
         <img id="loader_image"  src="administrator/components/com_easysdi_core/assets/images/loader.gif" alt="">
     </div>
-    <form id="form-resource" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.save'); ?>" method="post" class="form-validate" enctype="multipart/form-data">
+    <form id="form-resource" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resourceform.save'); ?>" method="post" class="form-validate" enctype="multipart/form-data">
         <div class="row-fluid">
             <div >
                 <ul class="nav nav-tabs">

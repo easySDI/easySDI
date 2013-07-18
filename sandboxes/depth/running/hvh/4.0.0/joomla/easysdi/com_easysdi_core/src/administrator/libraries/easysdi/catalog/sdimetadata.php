@@ -190,8 +190,6 @@ class sdiMetadata {
 				</csw:Insert>
 			</csw:Transaction>";
 
-
-
         $result = $this->CURLRequest("POST", $this->catalogurl, $xmlstr);
 
         if(empty($result))
@@ -207,6 +205,7 @@ class sdiMetadata {
             JFactory::getApplication()->enqueueMessage('Metadata insertion failed.', 'error');
             return false;
         }
+        
         return true;
     }
 
@@ -214,6 +213,36 @@ class sdiMetadata {
      * 
      */
     public function update($xml) {
+        return true;
+    }
+    
+    /**
+     * 
+     */
+    public function delete() {
+        
+//         $xmlstr = "
+//			<csw:Transaction service=\"CSW\"
+//			version=\"2.0.2\"
+//			xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" >
+//				<csw:Delete>
+//                                    <csw:Constraint version=\"1.1.0\"
+//                                    xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" 
+//						xmlns:gco=\"http://www.isotc211.org/2005/gco\" 
+//						xmlns:xlink=\"http://www.w3.org/1999/xlink\" 
+//						xmlns:gml=\"http://www.opengis.net/gml\" 
+//						xmlns:gts=\"http://www.isotc211.org/2005/gts\" 
+//						xmlns:srv=\"http://www.isotc211.org/2005/srv\"
+//						xmlns:ext=\"http://www.depth.ch/2008/ext\">
+//                                        <ogc:Filter>
+//                                          <ogc:PropertyIsEqualTo>
+//                                            <ogc:PropertyName>fileID</ogc:PropertyName>
+//                                            <ogc:Literal>" . $this->metadata->guid . "</ogc:Literal>
+//                                          </ogc:PropertyIsEqualTo>
+//                                        </ogc:Filter>
+//                                      </csw:Constraint>
+//				</csw:Delete>
+//			</csw:Transaction>"
         return true;
     }
 
