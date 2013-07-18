@@ -42,7 +42,7 @@ class plg_content_easysdiserviceInstallerScript
 		if($type == 'install'){
 			//Activate the plugin
 			$db = JFactory::getDbo();
-			$db->setQuery("UPDATE #__extensions SET enabled=1 WHERE type='plugin' AND element='easysdi_service' AND folder='content'");
+			$db->setQuery("UPDATE #__extensions SET enabled=1 WHERE type='plugin' AND element='easysdiservice' AND folder='content'");
 			$db->query();
 		}
 	}

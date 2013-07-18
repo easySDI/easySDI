@@ -42,7 +42,7 @@ class plg_user_easysdicontactInstallerScript
 		if($type == 'install'){
 			//Activate the plugin
 			$db = JFactory::getDbo();
-			$db->setQuery("UPDATE #__extensions SET enabled=1 WHERE type='plugin' AND element='easysdi' AND folder='user'");
+			$db->setQuery("UPDATE #__extensions SET enabled=1 WHERE type='plugin' AND element='easysdicontact' AND folder='user'");
 			$db->query();
 		}
 	}
