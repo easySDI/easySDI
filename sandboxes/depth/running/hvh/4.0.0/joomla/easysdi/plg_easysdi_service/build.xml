@@ -2,7 +2,7 @@
 
 <project default="plg_content_easysdiservice" basedir="../../../">
     
-    <property name="service.plugin.name" value="plg_content_easysdiservice"/>
+    <property name="service.plugin.name" value="plg_easysdi_service"/>
     <property name="plg.service.src.out.dir" value="${root.out.dir}/${service.plugin.name}/src"/>
     <property name="plg.service.package.out.dir" value="${root.out.dir}/${service.plugin.name}/target"/>
     <property name="joomla.service.plugin.path" value="content/easysdiservice"/>
@@ -25,7 +25,7 @@
     </target>
     
     <target name="write-xml">
-        <echoxml file="${plg.monitor.src.out.dir}/sdimonitor.xml">
+        <echoxml file="${plg.service.src.out.dir}/easysdiservice.xml">
             <extension version="3.0" type="plugin" group="content">
                 <name>plg_easysdi_service</name>
                 <author>EasySDI Community</author>
