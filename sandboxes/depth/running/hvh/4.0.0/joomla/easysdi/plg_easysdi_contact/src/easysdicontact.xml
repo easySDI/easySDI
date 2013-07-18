@@ -16,9 +16,9 @@
     <filename plugin="easysdicontact">easysdicontact.php</filename>
   </files>
   <languages>
-    <language tag="en-GB">language/en-GB/en-GB.plg_easysdi_contact.sys.ini</language>
-    <language tag="en-GB">language/en-GB/en-GB.plg_easysdi_contact.ini</language>
-    <language tag="fr-FR">language/fr-FR/fr-FR.plg_easysdi_contact.sys.ini</language>
-    <language tag="fr-FR">language/fr-FR/fr-FR.plg_easysdi_contact.ini</language>
+    <language tag="en-GB">language/en-GB/en-GB.plg_user_easysdicontact.sys.ini</language>
+    <language tag="en-GB">language/en-GB/en-GB.plg_user_easysdicontact.ini</language>
+    <language tag="fr-FR">language/fr-FR/fr-FR.plg_user_easysdicontact.sys.ini</language>
+    <language tag="fr-FR">language/fr-FR/fr-FR.plg_user_easysdicontact.ini</language>
   </languages>
 </extension>
