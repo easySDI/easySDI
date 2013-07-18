@@ -51,7 +51,7 @@
     <include file="tpl_easysdi/build.xml" as="tpl-easysdi"/>
     
     <!-- Packaging targets -->
-    <target name="package-all" depends="package-com-core,package-com-map,package-com-monitor,package-com-service,package-com-contact,package-plg-contact,package-plg-monitor,package-plg-service,copy-sub-package,write-xml,package" description="Main target"/>
+    <target name="package-all" depends="package-com-core,dev-package-com-catalog,package-com-map,package-com-monitor,package-com-service,package-com-contact,package-plg-contact,package-plg-monitor,package-plg-service,copy-sub-package,write-xml,package" description="Main target"/>
     
     <target name="package-com-core" depends="core.package" description="Main Target"/>
     <target name="package-com-catalog" depends="catalog.package" description="Main Target"/>
@@ -67,7 +67,7 @@
     <target name="package-tpl-easysdi" depends="tpl-easysdi.package" description="Main Target"/>
     
     <!-- Dev Packaging targets -->
-    <target name="dev-package-all" depends="dev-package-com-core,dev-package-com-map,dev-package-com-monitor,dev-package-com-service,dev-package-com-contact,package-plg-contact,package-plg-monitor,package-plg-service,copy-sub-package,write-xml,package" description="Main target"/>
+    <target name="dev-package-all" depends="dev-package-com-core,dev-package-com-catalog,dev-package-com-map,dev-package-com-monitor,dev-package-com-service,dev-package-com-contact,package-plg-contact,package-plg-monitor,package-plg-service,copy-sub-package,write-xml,package" description="Main target"/>
     
     <target name="dev-package-com-core" depends="core.dev-package" description="Main Target"/>
     <target name="dev-package-com-catalog" depends="catalog.dev-package" description="Main Target"/>

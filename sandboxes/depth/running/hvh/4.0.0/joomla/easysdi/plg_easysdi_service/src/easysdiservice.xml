@@ -16,9 +16,9 @@
     <filename plugin="easysdiservice">easysdiservice.php</filename>
   </files>
   <languages>
-    <language tag="en-GB">language/en-GB/en-GB.plg_content_easysdiservice.sys.ini</language>
-    <language tag="en-GB">language/en-GB/en-GB.plg_content_easysdiservice.ini</language>
-    <language tag="fr-FR">language/fr-FR/fr-FR.plg_content_easysdiservice.sys.ini</language>
-    <language tag="fr-FR">language/fr-FR/fr-FR.plg_content_easysdiservice.ini</language>
+    <language tag="en-GB">language/en-GB/en-GB.plg_easysdi_service.sys.ini</language>
+    <language tag="en-GB">language/en-GB/en-GB.plg_easysdi_service.ini</language>
+    <language tag="fr-FR">language/fr-FR/fr-FR.plg_easysdi_service.sys.ini</language>
+    <language tag="fr-FR">language/fr-FR/fr-FR.plg_easysdi_service.ini</language>
   </languages>
 </extension>

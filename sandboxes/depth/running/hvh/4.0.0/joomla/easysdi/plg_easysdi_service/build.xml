@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<project default="plg_content_easysdiservice" basedir="../../../">
+<project default="plg_easysdi_service" basedir="../../../">
     
     <property name="service.plugin.name" value="plg_easysdi_service"/>
     <property name="plg.service.src.out.dir" value="${root.out.dir}/${service.plugin.name}/src"/>
@@ -43,10 +43,10 @@
                     <filename plugin="easysdiservice">easysdiservice.php</filename>
                 </files>
                 <languages>
-                    <language tag="en-GB">language/en-GB/en-GB.plg_content_easysdiservice.sys.ini</language>
-                    <language tag="en-GB">language/en-GB/en-GB.plg_content_easysdiservice.ini</language>
-                    <language tag="fr-FR">language/fr-FR/fr-FR.plg_content_easysdiservice.sys.ini</language>
-                    <language tag="fr-FR">language/fr-FR/fr-FR.plg_content_easysdiservice.ini</language>
+                    <language tag="en-GB">language/en-GB/en-GB.plg_easysdi_service.sys.ini</language>
+                    <language tag="en-GB">language/en-GB/en-GB.plg_easysdi_service.ini</language>
+                    <language tag="fr-FR">language/fr-FR/fr-FR.plg_easysdi_service.sys.ini</language>
+                    <language tag="fr-FR">language/fr-FR/fr-FR.plg_easysdi_service.ini</language>
                 </languages>
 
             </extension>

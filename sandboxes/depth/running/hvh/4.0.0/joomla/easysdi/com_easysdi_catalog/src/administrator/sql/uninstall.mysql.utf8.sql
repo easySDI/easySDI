@@ -24,5 +24,6 @@ DROP TABLE IF EXISTS `#__sdi_namespace`;
 DROP TABLE IF EXISTS `#__sdi_accessscope`;
 DROP TABLE IF EXISTS `#__sdi_assignment`;
 DROP TABLE IF EXISTS `#__sdi_searchcriteriafilter`;
+DROP TABLE IF EXISTS `#__sdi_user_role_organism`;
 
 SET foreign_key_checks = 1;
