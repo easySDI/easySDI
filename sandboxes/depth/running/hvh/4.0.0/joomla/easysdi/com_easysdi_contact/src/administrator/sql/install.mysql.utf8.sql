@@ -72,10 +72,11 @@ CREATE TABLE IF NOT EXISTS `#__sdi_organism` (
 `checked_out` INT(11) NOT NULL DEFAULT '0'  ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `acronym` VARCHAR(150)   ,
-`description` TEXT  ,
+`description` VARCHAR(500)  ,
 `logo` VARCHAR(500) ,
 `name` VARCHAR(255)  NOT NULL ,
 `website` VARCHAR(500)  ,
+`gml` VARCHAR(10000)  ,
 `access` INT(11)  NOT NULL ,
 `asset_id` INT(10)  NOT NULL ,
 PRIMARY KEY (`id`)
