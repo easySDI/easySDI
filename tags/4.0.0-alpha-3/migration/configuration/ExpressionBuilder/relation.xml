@@ -1,0 +1,31 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<expression:EMFExpression xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:expression="http:///expression.ecore" id="null=>Var=>checked_out_time" expression="row1.checked_out_time!=null?row1.checked_out_time:new Date()">
+  <variables name="row1.id" value="0" talendType="id_Long"/>
+  <variables name="row1.guid" value="null" talendType="id_String"/>
+  <variables name="row1.parent_id" value="0" talendType="id_Long"/>
+  <variables name="row1.attributechild_id" value="null" talendType="id_Long" nullable="true"/>
+  <variables name="row1.classchild_id" value="null" talendType="id_Long" nullable="true"/>
+  <variables name="row1.name" value="null" talendType="id_String"/>
+  <variables name="row1.lowerbound" value="null" talendType="id_Integer" nullable="true"/>
+  <variables name="row1.upperbound" value="null" talendType="id_Integer" nullable="true"/>
+  <variables name="row1.rendertype_id" value="null" talendType="id_Long" nullable="true"/>
+  <variables name="row1.relationtype_id" value="null" talendType="id_Long" nullable="true"/>
+  <variables name="row1.isocode" value="null" talendType="id_String" nullable="true"/>
+  <variables name="row1.description" value="null" talendType="id_String" nullable="true"/>
+  <variables name="row1.created" value="null" talendType="id_Date"/>
+  <variables name="row1.updated" value="null" talendType="id_Date" nullable="true"/>
+  <variables name="row1.createdby" value="null" talendType="id_Integer" nullable="true"/>
+  <variables name="row1.updatedby" value="null" talendType="id_Integer" nullable="true"/>
+  <variables name="row1.ordering" value="0" talendType="id_Integer"/>
+  <variables name="row1.published" value="0" talendType="id_Byte"/>
+  <variables name="row1.classassociation_id" value="null" talendType="id_Long" nullable="true"/>
+  <variables name="row1.checked_out" value="0" talendType="id_Integer"/>
+  <variables name="row1.checked_out_time" value="null" talendType="id_Date" nullable="true"/>
+  <variables name="row1.objecttypechild_id" value="null" talendType="id_Long" nullable="true"/>
+  <variables name="row1.namespace_id" value="null" talendType="id_Long" nullable="true"/>
+  <variables name="row1.issearchfilter" value="false" talendType="id_Boolean"/>
+  <variables name="row1.editable" value="null" talendType="id_Long" nullable="true"/>
+  <variables name="row1.editoraccessibility" value="null" talendType="id_Long" nullable="true"/>
+  <variables name="row1.istitle" value="false" talendType="id_Boolean"/>
+  <variables name="" value="null" talendType="id_Date"/>
+</expression:EMFExpression>
