@@ -1,32 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <talendfile:ProcessType xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.talend.org/mapper" xmlns:talendfile="platform:/resource/org.talend.model/model/TalendFile.xsd" defaultContext="Default">
   <context confirmationNeeded="false" name="Default">
-    <contextParameter comment="" name="destination_Port" prompt="destination_Port?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="3306"/>
-    <contextParameter comment="" name="destination_Password" prompt="destination_Password?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_Password" value=""/>
     <contextParameter comment="" name="destination_AdditionalParams" prompt="destination_AdditionalParams?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="noDatetimeStringSync=true"/>
-    <contextParameter comment="" name="destination_Server" prompt="destination_Server?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="localhost"/>
-    <contextParameter comment="" name="destination_Login" prompt="destination_Login?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="root"/>
     <contextParameter comment="" name="destination_Database" prompt="destination_Database?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="destination"/>
+    <contextParameter comment="" name="destination_Login" prompt="destination_Login?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="root"/>
+    <contextParameter comment="" name="destination_Password" prompt="destination_Password?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_Password" value=""/>
+    <contextParameter comment="" name="destination_Port" prompt="destination_Port?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="3306"/>
+    <contextParameter comment="" name="destination_Server" prompt="destination_Server?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="localhost"/>
     <contextParameter comment="" name="source_AdditionalParams" prompt="source_AdditionalParams?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="noDatetimeStringSync=true"/>
-    <contextParameter comment="" name="source_Password" prompt="source_Password?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_Password" value=""/>
     <contextParameter comment="" name="source_Database" prompt="source_Database?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="agi_source"/>
-    <contextParameter comment="" name="source_Server" prompt="source_Server?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="localhost"/>
-    <contextParameter comment="" name="source_Port" prompt="source_Port?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="3306"/>
     <contextParameter comment="" name="source_Login" prompt="source_Login?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="root"/>
+    <contextParameter comment="" name="source_Password" prompt="source_Password?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_Password" value=""/>
+    <contextParameter comment="" name="source_Port" prompt="source_Port?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="3306"/>
+    <contextParameter comment="" name="source_Server" prompt="source_Server?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="localhost"/>
+    <contextParameter comment="" name="access" prompt="access?" promptNeeded="false" repositoryContextId="_gpId0OoLEeKUb5Y27QN5QQ" type="id_Integer" value="1"/>
+    <contextParameter comment="" name="accessscope_id" prompt="accessscope_id?" promptNeeded="false" repositoryContextId="_gpId0OoLEeKUb5Y27QN5QQ" type="id_Integer" value="1"/>
+    <contextParameter comment="" name="ordering" prompt="ordering?" promptNeeded="false" repositoryContextId="_gpId0OoLEeKUb5Y27QN5QQ" type="id_Integer" value="1"/>
   </context>
   <context confirmationNeeded="false" name="destination">
-    <contextParameter comment="" name="source_AdditionalParams" prompt="source_AdditionalParams?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="noDatetimeStringSync=true"/>
-    <contextParameter comment="" name="source_Password" prompt="source_Password?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_Password" value=""/>
-    <contextParameter comment="" name="source_Database" prompt="source_Database?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="agi_source"/>
-    <contextParameter comment="" name="source_Server" prompt="source_Server?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="localhost"/>
-    <contextParameter comment="" name="source_Port" prompt="source_Port?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="3306"/>
-    <contextParameter comment="" name="source_Login" prompt="source_Login?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="root"/>
-    <contextParameter comment="" name="destination_Port" prompt="destination_Port?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="3306"/>
-    <contextParameter comment="" name="destination_Password" prompt="destination_Password?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_Password" value=""/>
     <contextParameter comment="" name="destination_AdditionalParams" prompt="destination_AdditionalParams?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="noDatetimeStringSync=true"/>
-    <contextParameter comment="" name="destination_Server" prompt="destination_Server?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="localhost"/>
-    <contextParameter comment="" name="destination_Login" prompt="destination_Login?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="root"/>
     <contextParameter comment="" name="destination_Database" prompt="destination_Database?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="destination"/>
+    <contextParameter comment="" name="destination_Login" prompt="destination_Login?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="root"/>
+    <contextParameter comment="" name="destination_Password" prompt="destination_Password?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_Password" value=""/>
+    <contextParameter comment="" name="destination_Port" prompt="destination_Port?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="3306"/>
+    <contextParameter comment="" name="destination_Server" prompt="destination_Server?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="localhost"/>
+    <contextParameter comment="" name="source_AdditionalParams" prompt="source_AdditionalParams?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="noDatetimeStringSync=true"/>
+    <contextParameter comment="" name="source_Database" prompt="source_Database?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="agi_source"/>
+    <contextParameter comment="" name="source_Login" prompt="source_Login?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="root"/>
+    <contextParameter comment="" name="source_Password" prompt="source_Password?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_Password" value=""/>
+    <contextParameter comment="" name="source_Port" prompt="source_Port?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="3306"/>
+    <contextParameter comment="" name="source_Server" prompt="source_Server?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="localhost"/>
+    <contextParameter comment="" name="access" prompt="access?" promptNeeded="false" repositoryContextId="_gpId0OoLEeKUb5Y27QN5QQ" type="id_Integer" value="1"/>
+    <contextParameter comment="" name="accessscope_id" prompt="accessscope_id?" promptNeeded="false" repositoryContextId="_gpId0OoLEeKUb5Y27QN5QQ" type="id_Integer" value="1"/>
+    <contextParameter comment="" name="ordering" prompt="ordering?" promptNeeded="false" repositoryContextId="_gpId0OoLEeKUb5Y27QN5QQ" type="id_Integer" value="1"/>
   </context>
   <parameters>
     <elementParameter field="TEXT" name="JOB_RUN_VM_ARGUMENTS" value=" -Xms256M -Xmx1024M"/>
@@ -323,7 +329,7 @@
         <mapperTableEntries name="value" expression="row1.value" type="id_String" nullable="true"/>
         <mapperTableEntries name="attribute_id" expression="row1.attribute_id" type="id_Long"/>
         <mapperTableEntries name="accessscope_id" expression="1" type="id_Long"/>
-        <mapperTableEntries name="access" type="id_Integer"/>
+        <mapperTableEntries name="access" expression="context.access" type="id_Integer"/>
         <mapperTableEntries name="asset_id" type="id_Long"/>
       </outputTables>
       <inputTables sizeState="INTERMEDIATE" name="row1" matchingMode="UNIQUE_MATCH" lookupMode="LOAD_ONCE">

@@ -286,6 +286,8 @@
       <varTables sizeState="INTERMEDIATE" name="Var">
         <mapperTableEntries name="createdby" expression="row1.createdby!=null?row1.createdby:1 " type="id_Integer"/>
         <mapperTableEntries name="language_id" expression="row1.language_id==1?15:7 " type="id_Integer"/>
+        <mapperTableEntries name="text1" expression="row1.label!=null?row1.label:row1.title " type="id_String"/>
+        <mapperTableEntries name="text2" expression="row1.information!=null?row1.information:row1.content " type="id_String"/>
       </varTables>
       <outputTables sizeState="INTERMEDIATE" name="write">
         <mapperTableEntries name="id" expression="row1.id" type="id_Long"/>
@@ -301,8 +303,8 @@
         <mapperTableEntries name="checked_out_time" expression="new Date()" type="id_Date"/>
         <mapperTableEntries name="element_guid" expression="row1.element_guid" type="id_String"/>
         <mapperTableEntries name="language_id" expression="Var.language_id " type="id_Integer" nullable="true"/>
-        <mapperTableEntries name="text1" expression="row1.label + row1.title " type="id_String" nullable="true"/>
-        <mapperTableEntries name="text2" expression="row1.information + row1.content " type="id_String" nullable="true"/>
+        <mapperTableEntries name="text1" expression="Var.text1 " type="id_String" nullable="true"/>
+        <mapperTableEntries name="text2" expression="Var.text2 " type="id_String" nullable="true"/>
       </outputTables>
       <inputTables sizeState="INTERMEDIATE" name="row1" matchingMode="UNIQUE_MATCH" lookupMode="LOAD_ONCE">
         <mapperTableEntries name="id" type="id_Long"/>

@@ -218,13 +218,15 @@
     </metadata>
     <nodeData xsi:type="MapperData">
       <uiProperties shellMaximized="true"/>
-      <varTables sizeState="INTERMEDIATE" name="Var" minimized="true"/>
+      <varTables sizeState="INTERMEDIATE" name="Var">
+        <mapperTableEntries name="language_id" expression="row1.language_id==1?15:7 " type="id_Integer"/>
+      </varTables>
       <outputTables sizeState="INTERMEDIATE" name="write">
         <mapperTableEntries name="id" expression="row1.id" type="id_Long"/>
         <mapperTableEntries name="ordering" expression="context.ordering" type="id_Integer" nullable="true"/>
         <mapperTableEntries name="state" expression="true" type="id_Boolean"/>
         <mapperTableEntries name="searchcriteria_id" expression="row1.searchcriteria_id" type="id_Long"/>
-        <mapperTableEntries name="language_id" expression="row1.language_id" type="id_Long"/>
+        <mapperTableEntries name="language_id" expression="Var.language_id " type="id_Long"/>
         <mapperTableEntries name="ogcsearchfilter" expression="row1.ogcsearchfilter" type="id_String"/>
       </outputTables>
       <inputTables sizeState="INTERMEDIATE" name="row1" matchingMode="UNIQUE_MATCH" lookupMode="LOAD_ONCE">
