@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset>
+
+              <field name="id" type="text" default="0" label="COM_EASYSDI_SHOP_FORM_LBL_ORDERPROPERTYVALUE_ID"
+            readonly="true" class="readonly"
+            description="JGLOBAL_FIELD_ID_DESC" /> 
+
+       <field name="orderdiffusion_id" type="sql" class="inputbox"
+        
+            label="COM_EASYSDI_SHOP_FORM_LBL_ORDERPROPERTYVALUE_ORDERDIFFUSION_ID"
+            description="COM_EASYSDI_SHOP_FORM_DESC_ORDERPROPERTYVALUE_ORDERDIFFUSION_ID" 
+        
+        
+        
+        
+        query="SELECT 0 AS `id`, '- Please select -' AS `id` UNION SELECT `id`, `id` FROM `#__sdi_order_diffusion`" key_field="id" value_field="id"
+         /> 
+
+       <field name="property_id" type="sql" class="inputbox"
+        
+            label="COM_EASYSDI_SHOP_FORM_LBL_ORDERPROPERTYVALUE_PROPERTY_ID"
+            description="COM_EASYSDI_SHOP_FORM_DESC_ORDERPROPERTYVALUE_PROPERTY_ID" 
+        
+        
+        
+        
+        query="SELECT 0 AS `id`, '- Please select -' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_property`" key_field="id" value_field="name"
+         /> 
+
+       <field name="propertyvalue_id" type="sql" class="inputbox"
+        
+            label="COM_EASYSDI_SHOP_FORM_LBL_ORDERPROPERTYVALUE_PROPERTYVALUE_ID"
+            description="COM_EASYSDI_SHOP_FORM_DESC_ORDERPROPERTYVALUE_PROPERTYVALUE_ID" 
+        
+        
+        
+        
+        query="SELECT 0 AS `id`, '- Please select -' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_propertyvalue`" key_field="id" value_field="name"
+         /> 
+
+       <field name="propertyvalue" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_SHOP_FORM_LBL_ORDERPROPERTYVALUE_PROPERTYVALUE"
+            description="COM_EASYSDI_SHOP_FORM_DESC_ORDERPROPERTYVALUE_PROPERTYVALUE" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="created_by" type="createdby" default="" 
+            label="COM_EASYSDI_SHOP_FORM_LBL_ORDERPROPERTYVALUE_CREATED_BY"
+            description="COM_EASYSDI_SHOP_FORM_DESC_ORDERPROPERTYVALUE_CREATED_BY"  />
+
+	</fieldset>
+
+</form>
