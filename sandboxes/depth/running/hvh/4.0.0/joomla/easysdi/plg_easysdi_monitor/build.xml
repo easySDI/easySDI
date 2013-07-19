@@ -20,7 +20,7 @@
             <fileset dir="${joomla.plugin.path}/${joomla.monitor.plugin.path}" erroronmissingdir="false"/>
         </copy>
         <copy todir="${plg.monitor.src.out.dir}/language" overwrite="true">
-            <fileset dir="${joomla.administrator.language.dir}" includes="**/*_${monitor.plugin.name}.*" erroronmissingdir="false"/>
+            <fileset dir="${joomla.administrator.language.dir}" includes="**/*_${monitor.plugin.name}*" erroronmissingdir="false"/>
         </copy>
     </target>
     

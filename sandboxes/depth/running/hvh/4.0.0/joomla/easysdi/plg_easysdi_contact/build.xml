@@ -3,6 +3,7 @@
 <project default="plg_easysdi_contact" basedir="../../../">
     
     <property name="contact.plugin.name" value="plg_easysdi_contact"/>
+    <property name="contact.plugin.language.file" value="plg_user_easysdicontact"/>
     <property name="plg.contact.src.out.dir" value="${root.out.dir}/${contact.plugin.name}/src"/>
     <property name="plg.contact.package.out.dir" value="${root.out.dir}/${contact.plugin.name}/target"/>
     <property name="joomla.contact.plugin.path" value="user/easysdicontact"/>
@@ -19,7 +20,7 @@
             <fileset dir="${joomla.plugin.path}/${joomla.contact.plugin.path}" erroronmissingdir="false"/>
         </copy>
         <copy todir="${plg.contact.src.out.dir}/language" overwrite="true">
-            <fileset dir="${joomla.administrator.language.dir}" includes="**/*_${contact.plugin.name}.*" erroronmissingdir="false"/>
+            <fileset dir="${joomla.administrator.language.dir}" includes="**/*${contact.plugin.language.file}.ini **/*${contact.plugin.language.file}.sys.ini" erroronmissingdir="false"/>
         </copy>
     </target>
     

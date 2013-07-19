@@ -4,7 +4,7 @@
   <packager>EasySDI Community</packager>
   <packagename>easysdi</packagename>
   <creationDate>15 August 2012</creationDate>
-  <releaseDate>18 juillet 2013</releaseDate>
+  <releaseDate>19 juillet 2013</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
@@ -20,7 +20,7 @@
     <file id="com_easysdi_map" type="component">com_easysdi_map.zip</file>
     <file group="user" id="easysdicontact" type="plugin">plg_easysdi_contact.zip</file>
     <file group="content" id="easysdiservice" type="plugin">plg_easysdi_service.zip</file>
-    <file client="site" id="easysdi_template" type="template">easysdi_template.zip</file>
+    <file client="site" id="tpl_easysdi" type="template">tpl_easysdi.zip</file>
   </files>
   <languages>
     <language tag="en-GB">language/en-GB/en-GB.pkg_easysdi.sys.ini</language>
