@@ -19,7 +19,7 @@ abstract class sdiFactory
     /**
 	 * Get an sdiuser object.
 	 *
-	 * Returns the global {@link sdiUser} object
+	 * Returns the {@link sdiUser} object
 	 *
 	 * @param   integer  $id  The juser id to load.
 	 *
@@ -37,5 +37,6 @@ abstract class sdiFactory
 		
 		return new sdiUser($juser);
 	}
+        
 }
 ?>

@@ -1,13 +1,13 @@
 <?xml version="1.0" ?>
 
 <project default="easysdi" basedir="../">
-    <!-- Global export path -->
+    
     <!-- Global export path -->
     <property name="root.out.dir" value="easysdi" />
     <property name="parent.component.name" value="easysdi"/>
     <property name="parent.src.out.dir" value="${parent.component.name}/src"/>
     <property name="parent.package.out.dir" value="${parent.component.name}/target"/>
-    <property name="version" value="4.0.0-alpha-1"/>
+    <property name="version" value="4.0.0-alpha-3"/>
     
     <!-- Joomla component path -->
     <property name="joomla.administrator.components.dir" value="administrator/components" />
@@ -51,7 +51,7 @@
     <include file="tpl_easysdi/build.xml" as="tpl-easysdi"/>
     
     <!-- Packaging targets -->
-    <target name="package-all" depends="package-com-core,package-com-map,package-com-monitor,package-com-service,package-com-contact,package-plg-contact,package-plg-monitor,package-plg-service,copy-sub-package,write-xml,package" description="Main target"/>
+    <target name="package-all" depends="package-com-core,package-com-catalog,package-com-map,package-com-monitor,package-com-service,package-com-contact,package-plg-contact,package-plg-monitor,package-plg-service,package-tpl-easysdi,copy-sub-package,write-xml,package" description="Main target"/>
     
     <target name="package-com-core" depends="core.package" description="Main Target"/>
     <target name="package-com-catalog" depends="catalog.package" description="Main Target"/>
@@ -67,7 +67,7 @@
     <target name="package-tpl-easysdi" depends="tpl-easysdi.package" description="Main Target"/>
     
     <!-- Dev Packaging targets -->
-    <target name="dev-package-all" depends="dev-package-com-core,dev-package-com-map,dev-package-com-monitor,dev-package-com-service,dev-package-com-contact,package-plg-contact,package-plg-monitor,package-plg-service,copy-sub-package,write-xml,package" description="Main target"/>
+    <target name="dev-package-all" depends="dev-package-com-core,dev-package-com-catalog,dev-package-com-map,dev-package-com-monitor,dev-package-com-service,dev-package-com-contact,package-plg-contact,package-plg-monitor,package-plg-service,copy-sub-package,write-xml,package" description="Main target"/>
     
     <target name="dev-package-com-core" depends="core.dev-package" description="Main Target"/>
     <target name="dev-package-com-catalog" depends="catalog.dev-package" description="Main Target"/>
@@ -116,7 +116,7 @@
     </target>
     
     <target name="write-xml">
-        <echoxml file="${parent.src.out.dir}/pkg_easysdi_test.xml">
+        <echoxml file="${parent.src.out.dir}/pkg_easysdi.xml">
             <extension type="package" version="2.5" method="upgrade"> 
                 <name>EasySDI</name> 
                 <packager>${xml.packager}</packager> 
@@ -132,13 +132,13 @@
                 <description>PKG_EASYSDI_XML_DESCRIPTION</description> 
                 <files folder="easysdi"> 
                     <file type="component" id="com_easysdi_core">com_easysdi_core.zip</file> 
-                    <file type="component" id="com_easysdi_catalog">com_easysdi_catalog.zip</file> 
-                    <file type="component" id="com_easysdi_contact">com_easysdi_contact.zip</file> 
+                    <file type="component" id="com_easysdi_contact">com_easysdi_contact.zip</file>
                     <file type="component" id="com_easysdi_service">com_easysdi_service.zip</file>
+                    <file type="component" id="com_easysdi_catalog">com_easysdi_catalog.zip</file> 
                     <file type="component" id="com_easysdi_map">com_easysdi_map.zip</file>
-                    <file type="plugin" id="easysdi" group="user">plg_user_easysdi.zip</file> 
-                    <file type="plugin" id="easysdi" group="content">plg_content_easysdi.zip</file>
-                    <file type="template" id="easysdi_template" client="site">easysdi_template.zip</file>
+                    <file type="plugin" id="easysdicontact" group="user">plg_easysdi_contact.zip</file> 
+                    <file type="plugin" id="easysdiservice" group="content">plg_easysdi_service.zip</file>
+                    <file type="template" id="tpl_easysdi" client="site">tpl_easysdi.zip</file>
                 </files> 
                 <languages>
                     <language tag="en-GB">language/en-GB/en-GB.pkg_easysdi.sys.ini</language>

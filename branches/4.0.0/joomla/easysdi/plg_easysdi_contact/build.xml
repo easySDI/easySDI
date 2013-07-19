@@ -3,6 +3,7 @@
 <project default="plg_easysdi_contact" basedir="../../../">
     
     <property name="contact.plugin.name" value="plg_easysdi_contact"/>
+    <property name="contact.plugin.language.file" value="plg_user_easysdicontact"/>
     <property name="plg.contact.src.out.dir" value="${root.out.dir}/${contact.plugin.name}/src"/>
     <property name="plg.contact.package.out.dir" value="${root.out.dir}/${contact.plugin.name}/target"/>
     <property name="joomla.contact.plugin.path" value="user/easysdicontact"/>
@@ -19,12 +20,12 @@
             <fileset dir="${joomla.plugin.path}/${joomla.contact.plugin.path}" erroronmissingdir="false"/>
         </copy>
         <copy todir="${plg.contact.src.out.dir}/language" overwrite="true">
-            <fileset dir="${joomla.administrator.language.dir}" includes="**/*_${contact.plugin.name}.*" erroronmissingdir="false"/>
+            <fileset dir="${joomla.administrator.language.dir}" includes="**/*${contact.plugin.language.file}.ini **/*${contact.plugin.language.file}.sys.ini" erroronmissingdir="false"/>
         </copy>
     </target>
     
     <target name="write-xml">
-        <echoxml file="${plg.contact.src.out.dir}/easysdi.xml">
+        <echoxml file="${plg.contact.src.out.dir}/easysdicontact.xml">
             <extension version="3.0" type="plugin" group="user">
                 <name>plg_easysdi_contact</name>
                 <author>EasySDI Community</author>
@@ -36,7 +37,7 @@
                 <authorEmail>${xml.authorEmail}</authorEmail>
                 <authorUrl>${xml.authorUrl}</authorUrl>
                 <version>${version}</version>
-                <description></description>
+                <description>PLG_USER_EASYSDI</description>
                 <scriptfile>script.php</scriptfile>
                 <files>
                     <filename plugin="easysdicontact">easysdicontact.php</filename>

@@ -75,6 +75,7 @@ public class OgcProxyServlet extends HttpServlet {
 	/* (non-Javadoc)
 	 * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
 	 */
+        @Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 		context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
@@ -90,6 +91,7 @@ public class OgcProxyServlet extends HttpServlet {
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
+        @Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		servletResponse = resp;
 		servletRequest = req;
@@ -97,6 +99,8 @@ public class OgcProxyServlet extends HttpServlet {
 		ProxyServlet obj = null;
 
 		try {
+                    
+                    
 			obj = createProxy(req.getServletPath().substring(1), req, resp);
 			double maxRequestNumber = -1;
 	
@@ -114,7 +118,6 @@ public class OgcProxyServlet extends HttpServlet {
 			} catch (IOException ex) {
 				logger.error("Error occured processing doGet: ",ex);
 			} 
-			return;
 		} finally {
 			/**
 			 * What ever happens, always decrease the connection number when
@@ -129,12 +132,15 @@ public class OgcProxyServlet extends HttpServlet {
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
+        @Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		servletResponse = resp;
 		servletRequest = req;
 		ProxyServlet obj = null;
 		try {
-			obj = createProxy(req.getPathInfo().substring(1), req, resp);
+                    
+                    // String info  =req.getPathInfo();
+			obj = createProxy(req.getServletPath().substring(1), req, resp);
 			double maxRequestNumber = -1;
 			
 			waitWhenConnectionsExceed(req, maxRequestNumber);
@@ -150,7 +156,6 @@ public class OgcProxyServlet extends HttpServlet {
 			} catch (IOException ex) {
 				logger.error("Error occured processing doPost: ",ex);
 			} 
-			return;
 		} finally {
 			/**
 			 * What ever happens, always decrease the connection number when
@@ -469,9 +474,7 @@ public class OgcProxyServlet extends HttpServlet {
 		Double executed = new Double(0);
 
 		if (userPrincipalName != null) {
-			Double d2 = null;
-
-			d2 = executionCount.get(userPrincipalName);
+			Double d2 = executionCount.get(userPrincipalName);
 
 			if (d2 == null) {
 				d2 = new Double(0);

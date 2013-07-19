@@ -9,98 +9,115 @@
 // no direct access
 defined('_JEXEC') or die;
 
+JHtml::_('behavior.keepalive');
+JHtml::_('behavior.tooltip');
+JHtml::_('behavior.formvalidation');
+
 //Load admin language file
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
-$canEdit = JFactory::getUser()->authorise('core.edit', 'com_easysdi_catalog.' . $this->item->id);
-if (!$canEdit && JFactory::getUser()->authorise('core.edit.own', 'com_easysdi_catalog' . $this->item->id)) {
-	$canEdit = JFactory::getUser()->id == $this->item->created_by;
-}
 ?>
-<?php if ($this->item) : ?>
 
-    <div class="item_fields">
+<!-- Styling for making front end forms look OK -->
+<!-- This should probably be moved to the template CSS file -->
+<style>
+    .front-end-edit ul {
+        padding: 0 !important;
+    }
+    .front-end-edit li {
+        list-style: none;
+        margin-bottom: 6px !important;
+    }
+    .front-end-edit label {
+        margin-right: 10px;
+        display: block;
+        float: left;
+        width: 200px !important;
+    }
+    .front-end-edit .radio label {
+        float: none;
+    }
+    .front-end-edit .readonly {
+        border: none !important;
+        color: #666;
+    }    
+    .front-end-edit #editor-xtd-buttons {
+        height: 50px;
+        width: 600px;
+        float: left;
+    }
+    .front-end-edit .toggle-editor {
+        height: 50px;
+        width: 120px;
+        float: right;
+    }
 
-        <ul class="fields_list">
+    #jform_rules-lbl{
+        display:none;
+    }
 
-            			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_METADATA_ID'); ?>:
-			<?php echo $this->item->id; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_METADATA_GUID'); ?>:
-			<?php echo $this->item->guid; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_METADATA_ALIAS'); ?>:
-			<?php echo $this->item->alias; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_METADATA_CREATED_BY'); ?>:
-			<?php echo $this->item->created_by; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_METADATA_CREATED'); ?>:
-			<?php echo $this->item->created; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_METADATA_MODIFIED_BY'); ?>:
-			<?php echo $this->item->modified_by; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_METADATA_MODIFIED'); ?>:
-			<?php echo $this->item->modified; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_METADATA_ORDERING'); ?>:
-			<?php echo $this->item->ordering; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_METADATA_METADATASTATE_ID'); ?>:
-			<?php echo $this->item->metadatastate_id; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_METADATA_CHECKED_OUT'); ?>:
-			<?php echo $this->item->checked_out; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_METADATA_CHECKED_OUT_TIME'); ?>:
-			<?php echo $this->item->checked_out_time; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_METADATA_ACCESSSCOPE_ID'); ?>:
-			<?php echo $this->item->accessscope_id; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_METADATA_NAME'); ?>:
-			<?php echo $this->item->name; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_METADATA_PUBLISHED'); ?>:
-			<?php echo $this->item->published; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_METADATA_ARCHIVED'); ?>:
-			<?php echo $this->item->archived; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_METADATA_LASTSYNCHRONIZATION'); ?>:
-			<?php echo $this->item->lastsynchronization; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_METADATA_SYNCHRONIZED_BY'); ?>:
-			<?php echo $this->item->synchronized_by; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_METADATA_NOTIFICATION'); ?>:
-			<?php echo $this->item->notification; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_METADATA_VERSION_ID'); ?>:
-			<?php echo $this->item->version_id; ?></li>
+    #access-rules a:hover{
+        background:#f5f5f5 url('../images/slider_minus.png') right  top no-repeat;
+        color: #444;
+    }
 
+    fieldset.radio label{
+        width: 50px !important;
+    }
+</style>
+<script type="text/javascript">
+    function getScript(url,success) {
+        var script = document.createElement('script');
+        script.src = url;
+        var head = document.getElementsByTagName('head')[0],
+        done = false;
+        // Attach handlers for all browsers
+        script.onload = script.onreadystatechange = function() {
+            if (!done && (!this.readyState
+                || this.readyState == 'loaded'
+                || this.readyState == 'complete')) {
+                done = true;
+                success();
+                script.onload = script.onreadystatechange = null;
+                head.removeChild(script);
+            }
+        };
+        head.appendChild(script);
+    }
+    getScript('//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',function() {
+        js = jQuery.noConflict();
+        js(document).ready(function(){
+            js('#form-metadata').submit(function(event){
+                 
+            }); 
+        
+            
+        });
+    });
+    
+</script>
 
-        </ul>
+<div class="metadata-edit front-end-edit">
+    
+    <h2><?php echo JText::_('COM_EASYSDI_CATALOGE_TITLE_EDIT_METADATA') . ' ' . $this->item->guid; ?></h2>
+        
+    <form id="form-metadata" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate" enctype="multipart/form-data">
+        <div>
+             <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
+                    <?php echo $field->input; ?>
+            <?php endforeach; ?>
+        </div>
+        <div class ="well">
+        <?php echo htmlspecialchars($this->item->csw); ?>
+        </div>
+        <div>
+            <button type="submit" class="validate"><span><?php echo JText::_('JSUBMIT'); ?></span></button>
+            <?php echo JText::_('or'); ?>
+            <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.cancel'); ?>" title="<?php echo JText::_('JCANCEL'); ?>"><?php echo JText::_('JCANCEL'); ?></a>
 
-    </div>
-    <?php if($canEdit): ?>
-		<a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id='.$this->item->id); ?>"><?php echo JText::_("COM_EASYSDI_CATALOG_EDIT_ITEM"); ?></a>
-	<?php endif; ?>
-								<?php if(JFactory::getUser()->authorise('core.delete','com_easysdi_catalog.metadata.'.$this->item->id)):
-								?>
-									<a href="javascript:document.getElementById('form-metadata-delete-<?php echo $this->item->id ?>').submit()"><?php echo JText::_("COM_EASYSDI_CATALOG_DELETE_ITEM"); ?></a>
-									<form id="form-metadata-delete-<?php echo $this->item->id; ?>" style="display:inline" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.remove'); ?>" method="post" class="form-validate" enctype="multipart/form-data">
-										<input type="hidden" name="jform[id]" value="<?php echo $this->item->id; ?>" />
-										<input type="hidden" name="jform[guid]" value="<?php echo $this->item->guid; ?>" />
-										<input type="hidden" name="jform[alias]" value="<?php echo $this->item->alias; ?>" />
-										<input type="hidden" name="jform[created_by]" value="<?php echo $this->item->created_by; ?>" />
-										<input type="hidden" name="jform[created]" value="<?php echo $this->item->created; ?>" />
-										<input type="hidden" name="jform[modified_by]" value="<?php echo $this->item->modified_by; ?>" />
-										<input type="hidden" name="jform[modified]" value="<?php echo $this->item->modified; ?>" />
-										<input type="hidden" name="jform[ordering]" value="<?php echo $this->item->ordering; ?>" />
-										<input type="hidden" name="jform[metadatastate_id]" value="<?php echo $this->item->metadatastate_id; ?>" />
-										<input type="hidden" name="jform[checked_out]" value="<?php echo $this->item->checked_out; ?>" />
-										<input type="hidden" name="jform[checked_out_time]" value="<?php echo $this->item->checked_out_time; ?>" />
-										<input type="hidden" name="jform[accessscope_id]" value="<?php echo $this->item->accessscope_id; ?>" />
-										<input type="hidden" name="jform[name]" value="<?php echo $this->item->name; ?>" />
-										<input type="hidden" name="jform[published]" value="<?php echo $this->item->published; ?>" />
-										<input type="hidden" name="jform[archived]" value="<?php echo $this->item->archived; ?>" />
-										<input type="hidden" name="jform[lastsynchronization]" value="<?php echo $this->item->lastsynchronization; ?>" />
-										<input type="hidden" name="jform[synchronized_by]" value="<?php echo $this->item->synchronized_by; ?>" />
-										<input type="hidden" name="jform[notification]" value="<?php echo $this->item->notification; ?>" />
-										<input type="hidden" name="jform[version_id]" value="<?php echo $this->item->version_id; ?>" />
-										<input type="hidden" name="option" value="com_easysdi_catalog" />
-										<input type="hidden" name="task" value="metadata.remove" />
-										<?php echo JHtml::_('form.token'); ?>
-									</form>
-								<?php
-								endif;
-							?>
-<?php
-else:
-    echo JText::_('COM_EASYSDI_CATALOG_ITEM_NOT_LOADED');
-endif;
-?>
+            <input type="hidden" name="option" value="com_easysdi_catalog" />
+            <input type="hidden" name="task" value="metadata.save" />
+            <?php echo JHtml::_('form.token'); ?>
+        </div>
+    </form>
+</div>

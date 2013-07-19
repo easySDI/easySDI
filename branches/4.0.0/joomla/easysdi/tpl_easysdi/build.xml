@@ -13,14 +13,14 @@
         <echo>Copy file for ${tpl.name}</echo>
         
         <copy todir="${tpl.src.out.dir}" overwrite="true">
-            <fileset dir="${joomla.template.dir}/easysdi_template"/>
+            <fileset dir="${joomla.template.dir}/tpl_easysdi"/>
         </copy>
     </target>
     
     <target name="write-xml">
         <echoxml file="${tpl.src.out.dir}/templateDetails.xml">
             <extension version="3.0" type="template" client="site" method="upgrade">
-                <name>easysdi_template</name>
+                <name>tpl_easysdi</name>
                 <version>${version}</version>
                 <creationDate>26 march 2013</creationDate>
                 <releaseDate>${xml.releaseDate}</releaseDate>

@@ -140,6 +140,7 @@ class Easysdi_catalogModelclasses extends JModelList {
                 $query->where('a.id = ' . (int) substr($search, 3));
             } else {
                 $search = $db->Quote('%' . $db->escape($search, true) . '%');
+                $query->where('( a.name LIKE '.$search.' ) OR (CONCAT(ns.prefix, ":", a.isocode) LIKE '.$search.' ) ');
             }
         }
 
@@ -149,7 +150,6 @@ class Easysdi_catalogModelclasses extends JModelList {
         if ($orderCol && $orderDirn) {
             $query->order($db->escape($orderCol . ' ' . $orderDirn));
         }
-
         return $query;
     }
 

@@ -32,7 +32,9 @@ class Easysdi_coreViewResourceForm extends JViewLegacy {
         try{
             $this->user = sdiFactory::getSdiUser();
         }catch (Exception $e){
-            throw new Exception("Not allowed");
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+            return false;
         }
         $this->state = $this->get('State');
         $this->item = $this->get('Data');

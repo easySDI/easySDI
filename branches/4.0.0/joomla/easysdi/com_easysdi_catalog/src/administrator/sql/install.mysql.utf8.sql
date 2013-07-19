@@ -432,7 +432,7 @@ PRIMARY KEY (`id`) ,
   CONSTRAINT `#__sdi_searchcriteria_fk3`
     FOREIGN KEY (`relation_id` )
     REFERENCES `#__sdi_relation` (`id` )
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -645,8 +645,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_importref` (
 `description` VARCHAR(500)   ,
 `xsl4sdi` VARCHAR(255)   ,
 `xsl4ext` VARCHAR(255)  ,
-`cswservice_id` VARCHAR(255)  NOT NULL ,
-`cswversion_id` VARCHAR(10)  NOT NULL ,
+`cswservice_id` INT(11)  UNSIGNED   ,
+`cswversion_id` INT(11)  UNSIGNED   ,
 `cswoutputschema` VARCHAR(255)  ,
 `importtype_id` INT(11)  UNSIGNED ,
 `access` INT(10)  NOT NULL DEFAULT '1',
@@ -660,6 +660,12 @@ PRIMARY KEY (`id`) ,
     ON UPDATE NO ACTION
 
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+ALTER TABLE `#__sdi_importref`
+ADD CONSTRAINT `#__sdi_importref_fk2` FOREIGN KEY (`cswservice_id`) REFERENCES `#__sdi_physicalservice` (`id`) ON DELETE CASCADE ;
+
+ALTER TABLE `#__sdi_importref`
+ADD CONSTRAINT `#__sdi_importref_fk3` FOREIGN KEY (`cswversion_id`) REFERENCES `#__sdi_sys_serviceversion` (`id`) ON DELETE CASCADE ;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_translation` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -679,7 +685,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_translation` (
 `text2` VARCHAR(500) ,
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_translation_fk1` (`language_id` ASC) ,
-
   CONSTRAINT `#__sdi_translation_fk1`
     FOREIGN KEY (`language_id` )
     REFERENCES `#__sdi_language` (`id` )
@@ -742,16 +747,16 @@ CREATE TABLE IF NOT EXISTS `#__sdi_version` (
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
 `created_by` INT(11)  NOT NULL ,
-`created` DATETIME NOT NULL ,
-`modified_by` INT(11)  NOT NULL ,
-`modified` DATETIME NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' ,
+`modified_by` INT(11)   ,
+`modified` DATETIME ,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
-`checked_out` INT(11)  NOT NULL ,
+`checked_out` INT(11)  NOT NULL DEFAULT '0' ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `name` VARCHAR(255)  NOT NULL ,
 `resource_id` int(11) UNSIGNED NOT NULL ,
-`access` INT(11)  NOT NULL ,
+`access` INT(11)  NOT NULL DEFAULT '1' ,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_version_fk1` (`resource_id` ASC) ,
@@ -883,7 +888,6 @@ PRIMARY KEY (`id`) ,
 CREATE TABLE IF NOT EXISTS `#__sdi_metadata` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
-`alias` VARCHAR(50)  NOT NULL ,
 `created_by` INT(11)  NOT NULL ,
 `created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `modified_by` INT(11)   ,
@@ -893,7 +897,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_metadata` (
 `checked_out` INT(11)  NOT NULL DEFAULT '0' ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `accessscope_id` INT(11) UNSIGNED  NOT NULL ,
-`name` VARCHAR(255)  NOT NULL ,
 `published` DATETIME ,
 `archived` DATETIME ,
 `lastsynchronization` DATETIME ,
@@ -988,28 +991,28 @@ INDEX `#__sdi_assignment_fk3` (`version_id`) ,
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_resource_role_user` (
+CREATE TABLE IF NOT EXISTS `#__sdi_user_role_resource` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`resource_id` int(11) UNSIGNED ,
-`role_id` int(11) UNSIGNED ,
 `user_id` int(11) UNSIGNED ,
+`role_id` int(11) UNSIGNED ,
+`resource_id` int(11) UNSIGNED ,
 PRIMARY KEY (`id`),
-INDEX `#__sdi_resource_role_user_fk1` (`resource_id`) ,
-INDEX `#__sdi_resource_role_user_fk2` (`role_id`) ,
-INDEX `#__sdi_resource_role_user_fk3` (`user_id`) ,
-CONSTRAINT `#__sdi_resource_role_user_fk1`
-    FOREIGN KEY (`resource_id` )
-    REFERENCES `#__sdi_resource` (`id` )
+    INDEX `#__sdi_user_role_resource_fk1` (`user_id` ASC) ,
+    INDEX `#__sdi_user_role_resource_fk2` (`role_id` ASC) ,
+    INDEX `#__sdi_user_role_resource_fk3` (`resource_id` ASC) ,
+CONSTRAINT `#__sdi_user_role_resource_fk1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `#__sdi_user` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
- CONSTRAINT `#__sdi_resource_role_user_fk2`
-    FOREIGN KEY (`role_id` )
-    REFERENCES `#__sdi_sys_role` (`id` )
+  CONSTRAINT `#__sdi_user_role_resource_fk2`
+    FOREIGN KEY (`role_id`)
+    REFERENCES `#__sdi_sys_role` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
- CONSTRAINT `#__sdi_resource_role_user_fk3`
-    FOREIGN KEY (`user_id` )
-    REFERENCES `#__sdi_user` (`id` )
+CONSTRAINT `#__sdi_user_role_resource_fk3`
+    FOREIGN KEY (`resource_id`)
+    REFERENCES `#__sdi_resource` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;

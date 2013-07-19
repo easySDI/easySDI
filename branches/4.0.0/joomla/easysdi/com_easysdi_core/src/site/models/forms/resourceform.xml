@@ -10,17 +10,17 @@
               description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_ALIAS" 
               filter="safehtml" /> 
 
-        <field name="created_by" type="createdby" default="" 
+        <field name="created_by" type="createdby" default=""  class="readonly"
               label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_CREATED_BY"
               description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_CREATED_BY"  /> 
 
-        <field name="created" type="calendar" class="inputbox"
-              default="0" 
+        <field name="created" type="calendar" 
+              default="0" class="readonly"
               label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_CREATED"
               description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_CREATED" 
               filter="safehtml" /> 
 
-        <field name="modified_by" type="text" size="40" class="inputbox"
+        <field name="modified_by" type="text" size="40" class="readonly"
               label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_MODIFIED_BY"
               description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_MODIFIED_BY" 
               default="0" 
@@ -42,10 +42,15 @@
               description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_DESCRIPTION" 
               filter="safehtml" /> 
 
-        <field name="organism_id" type="text" size="40" class="inputbox"
+        <field name="organism_id" 
+                type="sql" 
+            class="inputbox"
+            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY ordering" 
+            key_field="id" 
+            value_field="name"
               label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_ORGANISM_ID"
               description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_ORGANISM_ID" 
-              filter="safehtml" /> 
+              /> 
 
         <field name="resourcetype" type="text" size="40" class="inputbox" readonly="true"
               label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_RESOURCETYPE_ID"

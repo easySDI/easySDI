@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @version     4.0.0
  * @package     com_easysdi_core
@@ -6,221 +7,75 @@
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
-
 // No direct access
 defined('_JEXEC') or die;
 
-require_once JPATH_COMPONENT.'/controller.php';
+require_once JPATH_COMPONENT . '/controller.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/metadata.php';
 
 /**
  * Version controller class.
  */
-class Easysdi_coreControllerVersion extends Easysdi_coreController
-{
+class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
-	/**
-	 * Method to check out an item for editing and redirect to the edit form.
-	 *
-	 * @since	1.6
-	 */
-	public function edit()
-	{
-		$app			= JFactory::getApplication();
+    public function remove() {
+        // Initialise variables.
+        $model = $this->getModel('Version', 'Easysdi_coreModel');
 
-		// Get the previous edit id (if any) and the current edit id.
-		$previousId = (int) $app->getUserState('com_easysdi_core.edit.version.id');
-		$editId	= JFactory::getApplication()->input->getInt('id', null, 'array');
+        // Get the user data.
+        $data = array();
+        $data['id'] = JFactory::getApplication()->input->get('id', null, 'int');
 
-		// Set the user id for the user to edit in the session.
-		$app->setUserState('com_easysdi_core.edit.version.id', $editId);
+        //First Delete the metadata
+        $metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
+        $keys = array("version_id" => $data['id']);
+        $metadata->load($keys);
+        if (!$metadata->delete($metadata->id)) {
+            // Redirect back to the list screen.
+            $this->setMessage(JText::_('Metadata can not be deleted.'), 'error');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+            return false;
+        }
+        
+        //Check how many versions left on the resource
+        $version = $model->getData($data['id']);
+        $dbo = JFactory::getDbo();
+        $query = $dbo->getQuery(true)
+                ->select('count(id)')
+                ->from('#__sdi_version')
+                ->where('resource_id = ' . $version->resource_id);
+        $dbo->setQuery($query);
+        $num = $dbo->loadResult();
+   
+        // Attempt to delete the version.
+        $return = $model->delete($data);
+        // Check for errors.
+        if ($return === false) {
+            // Redirect back to the list screen.
+            $this->setMessage(JText::sprintf('Delete failed', $model->getError()), 'warning');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+            return false;
+        }
 
-		// Get the model.
-		$model = $this->getModel('Version', 'Easysdi_coreModel');
-
-		// Check out the item
-		if ($editId) {
-            $model->checkout($editId);
-		}
-
-		// Check in the previous user.
-		if ($previousId) {
-            $model->checkin($previousId);
-		}
-
-		// Redirect to the edit screen.
-		$this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=versionform&layout=edit', false));
-	}
-
-	/**
-	 * Method to save a user's profile data.
-	 *
-	 * @return	void
-	 * @since	1.6
-	 */
-	public function save()
-	{
-		// Check for request forgeries.
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		// Initialise variables.
-		$app	= JFactory::getApplication();
-		$model = $this->getModel('Version', 'Easysdi_coreModel');
-
-		// Get the user data.
-		$data = JFactory::getApplication()->input->get('jform', array(), 'array');
-
-		// Validate the posted data.
-		$form = $model->getForm();
-		if (!$form) {
-			JError::raiseError(500, $model->getError());
-			return false;
-		}
-
-		// Validate the posted data.
-		$data = $model->validate($form, $data);
-
-		// Check for errors.
-		if ($data === false) {
-			// Get the validation messages.
-			$errors	= $model->getErrors();
-
-			// Push up to three validation messages out to the user.
-			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
-				if ($errors[$i] instanceof Exception) {
-					$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-				} else {
-					$app->enqueueMessage($errors[$i], 'warning');
-				}
-			}
-
-			// Save the data in the session.
-			$app->setUserState('com_easysdi_core.edit.version.data', JRequest::getVar('jform'),array());
-
-			// Redirect back to the edit screen.
-			$id = (int) $app->getUserState('com_easysdi_core.edit.version.id');
-			$this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=version&layout=edit&id='.$id, false));
-			return false;
-		}
-
-		// Attempt to save the data.
-		$return	= $model->save($data);
-
-		// Check for errors.
-		if ($return === false) {
-			// Save the data in the session.
-			$app->setUserState('com_easysdi_core.edit.version.data', $data);
-
-			// Redirect back to the edit screen.
-			$id = (int)$app->getUserState('com_easysdi_core.edit.version.id');
-			$this->setMessage(JText::sprintf('Save failed', $model->getError()), 'warning');
-			$this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=version&layout=edit&id='.$id, false));
-			return false;
-		}
-
-            
+        //Delete resource if needed
+        if ($num == 1){
+            $resource = JTable::getInstance('resource', 'Easysdi_coreTable');
+            $resource->load($version->resource_id);
+            if(!$resource->delete($resource->id)){
+                $this->setMessage(JText::_('Resource can not be deleted.'), 'error');
+                $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+                return false;
+            }
+        }
+        
         // Check in the profile.
         if ($return) {
             $model->checkin($return);
         }
-        
-        // Clear the profile id from the session.
-        $app->setUserState('com_easysdi_core.edit.version.id', null);
-
-        // Redirect to the list screen.
-        $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_SAVED_SUCCESSFULLY'));
-        $menu = & JSite::getMenu();
-        $item = $menu->getActive();
-        $this->setRedirect(JRoute::_($item->link, false));
-
-		// Flush the data from the session.
-		$app->setUserState('com_easysdi_core.edit.version.data', null);
-	}
-    
-    
-    function cancel() {
-		$menu = & JSite::getMenu();
-        $item = $menu->getActive();
-        $this->setRedirect(JRoute::_($item->link, false));
-    }
-    
-	public function remove()
-	{
-		// Check for request forgeries.
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-		// Initialise variables.
-		$app	= JFactory::getApplication();
-		$model = $this->getModel('Version', 'Easysdi_coreModel');
-
-		// Get the user data.
-		$data = JFactory::getApplication()->input->get('jform', array(), 'array');
-
-		// Validate the posted data.
-		$form = $model->getForm();
-		if (!$form) {
-			JError::raiseError(500, $model->getError());
-			return false;
-		}
-
-		// Validate the posted data.
-		$data = $model->validate($form, $data);
-
-		// Check for errors.
-		if ($data === false) {
-			// Get the validation messages.
-			$errors	= $model->getErrors();
-
-			// Push up to three validation messages out to the user.
-			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
-				if ($errors[$i] instanceof Exception) {
-					$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-				} else {
-					$app->enqueueMessage($errors[$i], 'warning');
-				}
-			}
-
-			// Save the data in the session.
-			$app->setUserState('com_easysdi_core.edit.version.data', $data);
-
-			// Redirect back to the edit screen.
-			$id = (int) $app->getUserState('com_easysdi_core.edit.version.id');
-			$this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=version&layout=edit&id='.$id, false));
-			return false;
-		}
-
-		// Attempt to save the data.
-		$return	= $model->delete($data);
-
-		// Check for errors.
-		if ($return === false) {
-			// Save the data in the session.
-			$app->setUserState('com_easysdi_core.edit.version.data', $data);
-
-			// Redirect back to the edit screen.
-			$id = (int)$app->getUserState('com_easysdi_core.edit.version.id');
-			$this->setMessage(JText::sprintf('Delete failed', $model->getError()), 'warning');
-			$this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=version&layout=edit&id='.$id, false));
-			return false;
-		}
-
-            
-        // Check in the profile.
-        if ($return) {
-            $model->checkin($return);
-        }
-        
-        // Clear the profile id from the session.
-        $app->setUserState('com_easysdi_core.edit.version.id', null);
 
         // Redirect to the list screen.
         $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_DELETED_SUCCESSFULLY'));
-        $menu = & JSite::getMenu();
-        $item = $menu->getActive();
-        $this->setRedirect(JRoute::_($item->link, false));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+    }
 
-		// Flush the data from the session.
-		$app->setUserState('com_easysdi_core.edit.version.data', null);
-	}
-    
-    
 }

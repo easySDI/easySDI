@@ -32,7 +32,8 @@ class Easysdi_coreViewResources extends JViewLegacy {
         try{
             $this->user = sdiFactory::getSdiUser();
         }catch (Exception $e){
-            throw new Exception("Not allowed");
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+           return; 
         }
         
         $this->state = $this->get('State');

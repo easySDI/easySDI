@@ -5,7 +5,7 @@
     <property name="monitor.plugin.name" value="plg_easysdi_monitor"/>
     <property name="plg.monitor.src.out.dir" value="${root.out.dir}/${monitor.plugin.name}/src"/>
     <property name="plg.monitor.package.out.dir" value="${root.out.dir}/${monitor.plugin.name}/target"/>
-    <property name="joomla.monitor.plugin.path" value="content/sdimonitor"/>
+    <property name="joomla.monitor.plugin.path" value="content/easysdimonitor"/>
     
     <available file="${joomla.plugin.path}/${joomla.monitor.plugin.path}" type="dir" property="monitor.plg.exist"/>
     
@@ -20,7 +20,7 @@
             <fileset dir="${joomla.plugin.path}/${joomla.monitor.plugin.path}" erroronmissingdir="false"/>
         </copy>
         <copy todir="${plg.monitor.src.out.dir}/language" overwrite="true">
-            <fileset dir="${joomla.administrator.language.dir}" includes="**/*_${monitor.plugin.name}.*" erroronmissingdir="false"/>
+            <fileset dir="${joomla.administrator.language.dir}" includes="**/*_${monitor.plugin.name}*" erroronmissingdir="false"/>
         </copy>
     </target>
     
@@ -39,8 +39,8 @@
                 <description><![CDATA[OGC EasySDI Monitor Plugin, display service's status in an article<br />]]></description>
                 <!-- Main File Copy Section -->
                 <files>
-                    <filename plugin="sdimonitor">sdimonitor.php</filename>
-                    <filename plugin="sdimonitor">sdimonitor.xml</filename>
+                    <filename plugin="easysdimonitor">sdimonitor.php</filename>
+                    <filename plugin="easysdimonitor">sdimonitor.xml</filename>
                 </files>
                 <params>
                     <!--

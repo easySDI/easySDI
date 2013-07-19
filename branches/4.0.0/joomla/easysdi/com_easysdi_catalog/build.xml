@@ -28,7 +28,7 @@
         </copy>
         <echo>Copy administrator language file of ${catalog.component.name} component</echo>
         <copy todir="${catalog.src.out.dir}/administrator/language" overwrite="true">
-            <fileset dir="${joomla.administrator.language.dir}" includes="**/*${catalog.component.name}.ini"/>
+            <fileset dir="${joomla.administrator.language.dir}" includes="**/*${catalog.component.name}.ini **/*${catalog.component.name}.sys.ini"/>
         </copy>
         <echo>Copy administrator deployement xml file of ${catalog.component.name} component</echo>
         <copy todir="${catalog.src.out.dir}" overwrite="true">

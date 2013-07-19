@@ -91,8 +91,7 @@ class Easysdi_catalogTableresourcetype extends sdiTable {
         return $assetParentId;
     }
 
-    public function load($keys = null, $reset = true) {
-        if (parent::load($keys, $reset)) {
+    public function loadLocalname() {
             $lang = JFactory::getLanguage();
 
             $query = $this->_db->getQuery(true)
@@ -106,8 +105,7 @@ class Easysdi_catalogTableresourcetype extends sdiTable {
             $this->localname = $this->_db->loadResult();
 
             return true;
-        }
-        return false;
+        
     }
 
 }

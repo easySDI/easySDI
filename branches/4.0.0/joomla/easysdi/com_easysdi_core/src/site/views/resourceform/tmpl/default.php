@@ -27,7 +27,7 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
     }
     .front-end-edit li {
         list-style: none;
-        margin-bottom: 6px !important;
+      
     }
     .front-end-edit label {
         margin-right: 10px;
@@ -65,6 +65,23 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
     fieldset.radio label{
         width: 50px !important;
     }
+    #loader{
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+       position:absolute; 
+	background-color: #B8B9BB;
+	opacity:0.3;
+	filter:alpha(opacity=30);
+	text-align : center; 
+	vertical-align:middle;
+	height:90%;
+	width:70%;
+	z-index:99;
+}
+#loader_image{
+	padding-left:60px;
+	padding-top:70px;
+}
 </style>
 <script type="text/javascript">
     function getScript(url, success) {
@@ -125,26 +142,7 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
                                            .trigger("liszt:updated");
                         }); 
                     });
-//                    var rightsarray = js.parseJSON(js.parseJSON(js("#jform_rights").val()));
-//                    
-//                    js.each(users, function (k,v){
-//                        js('#jform_'+k+'option:selected').removeAttr("selected");                
-//                        js('#jform_'+k).empty().trigger("liszt:updated");
-//                        
-//                        js.each(v, function(key, value) {
-//                            selected = "";
-//                            js.each(rightsarray, function (i, rightsobject){
-//                                js.each(rightsobject, function (j,right ){
-//                                    if(right.user_id == value.id && right.role_id == k){
-//                                        selected = "selected = selected";
-//                                        return false;
-//                                    }
-//                                })
-//                            })
-//                            js('#jform_'+k).append('<option value="' + value.id + '" '+selected+'>' + value.name + '</option>')
-//                                           .trigger("liszt:updated");
-//                        }); 
-//                    });
+                    js('#loader').hide();
              }})
         }
 </script>
@@ -155,9 +153,9 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
         <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_NEW_RESOURCE'); ?></h1>
     <?php endif; ?>
     <div id="loader" style="">
-
+        <img id="loader_image"  src="administrator/components/com_easysdi_core/assets/images/loader.gif" alt="">
     </div>
-    <form id="form-resource" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.save'); ?>" method="post" class="form-validate" enctype="multipart/form-data">
+    <form id="form-resource" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resourceform.save'); ?>" method="post" class="form-validate" enctype="multipart/form-data">
         <div class="row-fluid">
             <div >
                 <ul class="nav nav-tabs">
@@ -260,7 +258,7 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
         <div>
             <button type="submit" class="validate"><span><?php echo JText::_('JSUBMIT'); ?></span></button>
                     <?php echo JText::_('or'); ?>
-            <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.cancel'); ?>" title="<?php echo JText::_('JCANCEL'); ?>"><?php echo JText::_('JCANCEL'); ?></a>
+            <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resourceform.cancel'); ?>" title="<?php echo JText::_('JCANCEL'); ?>"><?php echo JText::_('JCANCEL'); ?></a>
 
             <input type="hidden" name="option" value="com_easysdi_core" />
             <input type="hidden" name="task" value="resourceform.save" />

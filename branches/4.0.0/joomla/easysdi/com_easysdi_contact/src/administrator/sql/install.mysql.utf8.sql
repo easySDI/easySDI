@@ -72,10 +72,11 @@ CREATE TABLE IF NOT EXISTS `#__sdi_organism` (
 `checked_out` INT(11) NOT NULL DEFAULT '0'  ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `acronym` VARCHAR(150)   ,
-`description` TEXT  ,
+`description` VARCHAR(500)  ,
 `logo` VARCHAR(500) ,
 `name` VARCHAR(255)  NOT NULL ,
 `website` VARCHAR(500)  ,
+`gml` VARCHAR(10000)  ,
 `access` INT(11)  NOT NULL ,
 `asset_id` INT(10)  NOT NULL ,
 PRIMARY KEY (`id`)
@@ -110,29 +111,5 @@ PRIMARY KEY (`id`) ,
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_user_role_resource` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`user_id` int(11) UNSIGNED ,
-`role_id` int(11) UNSIGNED ,
-`resource_id` int(11) UNSIGNED ,
-PRIMARY KEY (`id`),
-    INDEX `#__sdi_user_role_resource_fk1` (`user_id` ASC) ,
-    INDEX `#__sdi_user_role_resource_fk2` (`role_id` ASC) ,
-    INDEX `#__sdi_user_role_resource_fk3` (`resource_id` ASC) ,
-CONSTRAINT `#__sdi_user_role_resource_fk1`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `#__sdi_user` (`id`)
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_user_role_resource_fk2`
-    FOREIGN KEY (`role_id`)
-    REFERENCES `#__sdi_sys_role` (`id`)
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION,
-CONSTRAINT `#__sdi_user_role_resource_fk3`
-    FOREIGN KEY (`resource_id`)
-    REFERENCES `#__sdi_resource` (`id`)
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
 

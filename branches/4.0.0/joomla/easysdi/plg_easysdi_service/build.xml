@@ -1,8 +1,9 @@
 <?xml version="1.0" ?>
 
-<project default="plg_content_easysdiservice" basedir="../../../">
+<project default="plg_easysdi_service" basedir="../../../">
     
-    <property name="service.plugin.name" value="plg_content_easysdiservice"/>
+    <property name="service.plugin.name" value="plg_easysdi_service"/>
+    <property name="service.plugin.language.file" value="plg_content_easysdiservice"/>
     <property name="plg.service.src.out.dir" value="${root.out.dir}/${service.plugin.name}/src"/>
     <property name="plg.service.package.out.dir" value="${root.out.dir}/${service.plugin.name}/target"/>
     <property name="joomla.service.plugin.path" value="content/easysdiservice"/>
@@ -20,12 +21,12 @@
             <fileset dir="${joomla.plugin.path}/${joomla.service.plugin.path}" erroronmissingdir="false"/>
         </copy>
         <copy todir="${plg.service.src.out.dir}/language" overwrite="true">
-            <fileset dir="${joomla.administrator.language.dir}" includes="**/*_${service.plugin.name}.*" erroronmissingdir="false"/>
+            <fileset dir="${joomla.administrator.language.dir}" includes="**/*${service.plugin.language.file}.ini **/*${service.plugin.language.file}.sys.ini" erroronmissingdir="false"/>
         </copy>
     </target>
     
     <target name="write-xml">
-        <echoxml file="${plg.monitor.src.out.dir}/sdimonitor.xml">
+        <echoxml file="${plg.service.src.out.dir}/easysdiservice.xml">
             <extension version="3.0" type="plugin" group="content">
                 <name>plg_easysdi_service</name>
                 <author>EasySDI Community</author>

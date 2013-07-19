@@ -56,7 +56,10 @@ class Easysdi_coreModelResourceForm extends JModelForm {
      * @return	mixed	Object on success, false on failure.
      */
     public function &getData($id = null) {
-        if ($this->_item === null) {
+       $db = JFactory::getDbo();
+  
+       
+       if ($this->_item === null) {
             $this->_item = false;
 
             if (empty($id)) {
@@ -68,74 +71,65 @@ class Easysdi_coreModelResourceForm extends JModelForm {
 
             // Attempt to load the row.
             if ($table->load($id)) {
-                $id = $table->id;
-
-                // Check published state.
-                if ($published = $this->getState('filter.published')) {
-                    if ($table->state != $published) {
-                        return $this->_item;
-                    }
-                }
-
                 // Convert the JTable to a clean JObject.
                 $properties = $table->getProperties(1);
                 $this->_item = JArrayHelper::toObject($properties, 'JObject');
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
-        }
-
-        //Get resourcetype from GET
-        $jinput = JFactory::getApplication()->input;
-
-        if (!isset($this->_item->resourcetype_id )) {
-            $this->_item->resourcetype_id = $jinput->get('resourcetype', '', 'INT');
-        }
-        $null = null;
-        if ($this->_item->resourcetype_id == '') {
-            $this->setError('Resource type is not defined');
-            return $null;
-        }
-        require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/resourcetype.php';
-        $resourcetype = JTable::getInstance('resourcetype', 'Easysdi_catalogTable');
-        $resourcetype->load($this->_item->resourcetype_id);
-        $this->_item->resourcetype = $resourcetype->localname;
-        
-        //Load rights
-        if(isset($this->_item->id)){
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true)
-                ->select('urr.user_id as user_id, urr.role_id as role_id')
-                ->from('#__sdi_user_role_resource urr')
-                ->where('urr.resource_id = '.$this->_item->id);
-            $db->setQuery($query);
-            $rows = $db->loadObjectList();
-            $this->_item->rights = json_encode($rows);
-        }else{
-            //Set current user as default selection for all role
-            try {
-                $user = sdiFactory::getSdiUser();
-                $rows = array();
-                $row = array("role_id" => "2","user_id" => $user->id); 
-                $rows [] = (object) $row;
-                $row = array("role_id" => "3","user_id" => $user->id); 
-                $rows [] = (object) $row;
-                $row = array("role_id" => "4","user_id" => $user->id); 
-                $rows [] = (object) $row;
-                $row = array("role_id" => "5","user_id" => $user->id); 
-                $rows [] = (object) $row;
-                $row = array("role_id" => "6","user_id" => $user->id); 
-                $rows [] = (object) $row;
-                $row = array("role_id" => "7","user_id" => $user->id); 
-                $rows [] = (object) $row;
-                $row = array("role_id" => "8","user_id" => $user->id);
-                $rows [] = (object) $row;
-                $this->_item->rights = json_encode($rows);
-            } catch (Exception $e) {
-
+ 
+            //Get resourcetype from GET
+            $jinput = JFactory::getApplication()->input;
+            if (!isset($this->_item->resourcetype_id)) {
+                $this->_item->resourcetype_id = $jinput->get('resourcetype', '', 'INT');
             }
             
+            if (!empty($this->_item->resourcetype_id )) {
+                require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/resourcetype.php';
+                $resourcetype = JTable::getInstance('resourcetype', 'Easysdi_catalogTable');
+                $resourcetype->load($this->_item->resourcetype_id);
+                $resourcetype->loadLocalname();
+                $this->_item->resourcetype = $resourcetype->localname;
+            }
+            
+
+            //Load rights
+            if (isset($this->_item->id)) {
+                $query = $db->getQuery(true)
+                        ->select('urr.user_id as user_id, urr.role_id as role_id')
+                        ->from('#__sdi_user_role_resource urr')
+                        ->where('urr.resource_id = ' . $this->_item->id);
+                $db->setQuery($query);
+                $rows = $db->loadObjectList();
+                $this->_item->rights = json_encode($rows);
+            } else {
+                //Set current user as default selection for all role
+                try {
+                    $user = sdiFactory::getSdiUser();
+                    $rows = array();
+                    $row = array("role_id" => "2", "user_id" => $user->id);
+                    $rows [] = (object) $row;
+                    $row = array("role_id" => "3", "user_id" => $user->id);
+                    $rows [] = (object) $row;
+                    $row = array("role_id" => "4", "user_id" => $user->id);
+                    $rows [] = (object) $row;
+                    $row = array("role_id" => "5", "user_id" => $user->id);
+                    $rows [] = (object) $row;
+                    $row = array("role_id" => "6", "user_id" => $user->id);
+                    $rows [] = (object) $row;
+                    $row = array("role_id" => "7", "user_id" => $user->id);
+                    $rows [] = (object) $row;
+                    $row = array("role_id" => "8", "user_id" => $user->id);
+                    $rows [] = (object) $row;
+                    $this->_item->rights = json_encode($rows);
+                } catch (Exception $e) {
+                    JFactory::getApplication()->enqueueMessage(JText::_("Can't set current user as default for all roles"), 'error');
+                    JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+                    return;
+                }
+            }
         }
+
         return $this->_item;
     }
 
@@ -219,7 +213,6 @@ class Easysdi_coreModelResourceForm extends JModelForm {
         if (empty($form)) {
             return false;
         }
-
         return $form;
     }
 
@@ -231,6 +224,7 @@ class Easysdi_coreModelResourceForm extends JModelForm {
      */
     protected function loadFormData() {
         $data = JFactory::getApplication()->getUserState('com_easysdi_core.edit.resource.data', array());
+
         if (empty($data)) {
             $data = $this->getData();
         }
@@ -246,6 +240,8 @@ class Easysdi_coreModelResourceForm extends JModelForm {
      * @since	1.6
      */
     public function save($data) {
+        (empty($data['id'])) ? $new = true : $new = false;
+
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('resource.id');
 
         try {
@@ -256,23 +252,24 @@ class Easysdi_coreModelResourceForm extends JModelForm {
             return false;
         }
 
-        if ($id==0) {
+        if ($id == 0) {
             if (!$user->isResourceManager()) {
                 //Try to create a resource but not a resource manager
-                JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+                JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
                 return false;
             }
         } else {
             if (!$user->authorize($id, sdiUser::resourcemanager)) {
                 //Try to update a resource but not its resource manager
-                JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+                JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
                 return false;
             }
         }
 
         $table = $this->getTable();
         if ($table->save($data) === true) {
-
             //Save users rights
             $jinput = JFactory::getApplication()->input;
             $jform = $jinput->get('jform', '', 'ARRAY');
@@ -293,6 +290,35 @@ class Easysdi_coreModelResourceForm extends JModelForm {
                     $userroleresource->store();
                 }
             }
+
+            //If it is a new resource, create the first version and its associated metadata
+            if ($new) {
+                $version = JTable::getInstance('version', 'Easysdi_coreTable');
+                $version->resource_id = $table->id;
+                $version->name = date("Y-m-d H:i:s");
+                $version->store();
+
+                require_once JPATH_SITE . '/components/com_easysdi_catalog/models/metadata.php';
+                $metadata = JModelLegacy::getInstance('metadata', 'Easysdi_catalogModel');
+                $mddata = array("metadatastate_id" => 2, "accessscope_id" => 1, "version_id" => $version->id);
+                if ($metadata->save($mddata) === false) {
+                    //Saving metadata in database or metadata in CSW catalog failed
+                    //Version and resource must be deleted
+                    if (!$version->delete()) {
+                        //Can not delete version, it's a mess in the database from now...
+                        JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CORE_RESOURCES_ITEM_SAVED_ERROR_ROLLBACK_VERSION_ERROR'), 'error');
+                        return false;
+                    }
+                    if (!$table->delete($table->id)) {
+                        //Can not delete resource, it's a mess in the database from now...
+                        JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CORE_RESOURCES_ITEM_SAVED_ERROR_ROLLBACK_RESOURCE_ERROR'), 'error');
+                        return false;
+                    }
+                    JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CORE_RESOURCES_ITEM_SAVED_ERROR'), 'error');
+                    return false;
+                }
+            }
+
             return $id;
         } else {
             return false;
@@ -306,13 +332,15 @@ class Easysdi_coreModelResourceForm extends JModelForm {
             $user = sdiFactory::getSdiUser();
         } catch (Exception $e) {
             //Not an EasySDI user = not allowed
-            JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
         }
 
         if (!$user->authorize($id, sdiUser::resourcemanager)) {
             //Try to delete a resource but not its resource manager
-            JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
         }
 
