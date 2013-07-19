@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset>
+
+              <field name="id" type="text" default="0" label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPE_ID"
+            readonly="true" class="readonly"
+            description="JGLOBAL_FIELD_ID_DESC" /> 
+
+       <field name="guid" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPE_GUID"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPE_GUID" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="alias" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPE_ALIAS"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPE_ALIAS" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="created_by" type="createdby" default="" 
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPE_CREATED_BY"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPE_CREATED_BY"  /> 
+
+       <field name="created" type="calendar" class="inputbox"
+        
+        
+         default="0" 
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPE_CREATED"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPE_CREATED" 
+        filter="safehtml" /> 
+
+       <field name="modified_by" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPE_MODIFIED_BY"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPE_MODIFIED_BY" 
+         default="0" 
+        
+        
+        filter="safehtml" /> 
+
+       <field name="modified" type="calendar" class="inputbox"
+        
+        
+         default="0" 
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPE_MODIFIED"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPE_MODIFIED" 
+        filter="safehtml" /> 
+
+       <field name="name" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPE_NAME"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPE_NAME" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="description" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPE_DESCRIPTION"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPE_DESCRIPTION" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="logo" type="media"
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPE_LOGO"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPE_LOGO" 
+                
+                
+                
+            filter="raw"
+            directory="logo" /> 
+
+       <field name="metadata" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPE_METADATA"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPE_METADATA" 
+         default="1" 
+        
+         required="true" 
+        filter="safehtml" /> 
+
+       <field name="diffusion" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPE_DIFFUSION"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPE_DIFFUSION" 
+         default="0" 
+        
+         required="true" 
+        filter="safehtml" /> 
+
+       <field name="view" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPE_VIEW"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPE_VIEW" 
+         default="0" 
+        
+         required="true" 
+        filter="safehtml" /> 
+
+       <field name="monitoring" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPE_MONITORING"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPE_MONITORING" 
+         default="0" 
+        
+        
+        filter="safehtml" /> 
+
+       <field name="predefined" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPE_PREDEFINED"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPE_PREDEFINED" 
+         default="0" 
+        
+        
+        filter="safehtml" /> 
+
+       <field name="versionning" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPE_VERSIONNING"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPE_VERSIONNING" 
+         default="0" 
+        
+         required="true" 
+        filter="safehtml" /> 
+
+       <field name="access" type="accesslevel"
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCETYPE_ACCESS"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCETYPE_ACCESS" 
+                
+                
+                
+            filter="raw" /> 
+
+         <field
+        name="state"
+        type="list"
+        label="JSTATUS"
+        description="JFIELD_PUBLISHED_DESC"
+        class="inputbox"
+        size="1"
+        default="1">
+        <option value="1">JPUBLISHED</option>
+        <option value="0">JUNPUBLISHED</option>
+    </field> 
+
+                        <field name="checked_out" type="hidden" filter="unset" />
+        <field name="checked_out_time" type="hidden" filter="unset" /> 
+
+ </fieldset> 
+
+ <fieldset 
+                        name="accesscontrol">
+                       <field name="asset_id" type="hidden" filter="unset" />
+                       <field name="rules"
+                            type="rules"
+                            label="JFIELD_RULES_LABEL"
+                            translate_label="false"
+                            filter="rules"
+                            validate="rules"
+                            class="inputbox"
+                            component="com_easysdi_core"
+                            section="resourcetype"
+                        />
+
+	</fieldset>
+
+</form>
