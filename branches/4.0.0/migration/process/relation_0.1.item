@@ -63,6 +63,7 @@
     <routinesParameter id="_QKn-s-k0EeKpmZGESzd6ig" name="TalendDataGenerator"/>
     <routinesParameter id="_QKxvs-k0EeKpmZGESzd6ig" name="TalendDate"/>
     <routinesParameter id="_QLEqo-k0EeKpmZGESzd6ig" name="TalendString"/>
+    <routinesParameter id="_zntbIOogEeKUb5Y27QN5QQ" name="Utils"/>
   </parameters>
   <node componentName="tMysqlConnection" componentVersion="0.102" offsetLabelX="0" offsetLabelY="0" posX="96" posY="128">
     <elementParameter field="TEXT" name="UNIQUE_NAME" value="tMysqlConnection_1"/>
@@ -400,6 +401,7 @@
       <uiProperties shellMaximized="true"/>
       <varTables sizeState="INTERMEDIATE" name="Var">
         <mapperTableEntries name="checked_out_time" expression="row1.checked_out_time!=null?row1.checked_out_time:new Date() " type="id_Date"/>
+        <mapperTableEntries name="childtype_id" expression="Utils.getChildType_id(row1.classchild_id, row1.attributechild_id, row1.objecttypechild_id)  " type="id_Integer"/>
       </varTables>
       <outputTables sizeState="INTERMEDIATE" name="write">
         <mapperTableEntries name="id" expression="row1.id" type="id_Long"/>

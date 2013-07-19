@@ -152,5 +152,18 @@ public class Utils {
        }
        return Result.toString().replaceAll("\\s+", "");
    }
+    
+   public static int getChildType_id(Long classchild_id, Long attributechild_id, Long childresourcetype_id){
+	   
+	   if(classchild_id!=null){
+		   return 1;
+	   }else if (attributechild_id!=null) {
+		   return 2;
+	   }else{
+		   return 3;
+	   }
+	   
+	   
+   }
 
 }
