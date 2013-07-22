@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 jimport('joomla.application.component.modeladmin');
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/translation.php';
 
 /**
  * Easysdi_catalog model.
