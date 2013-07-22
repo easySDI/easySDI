@@ -131,6 +131,11 @@
                         required="true"
         />
         
+        <field name="featuretypename" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_FEATURETYPENAME"
+               description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_FEATURETYPENAME" 
+               filter="safehtml" />
+        
         <field name="prefix" type="text" size="40" class="inputbox"
                label="COM_EASYSDI_SHOP_FORM_LBL_PERIMETER_PREFIX"
                description="COM_EASYSDI_SHOP_FORM_DESC_PERIMETER_PREFIX" 

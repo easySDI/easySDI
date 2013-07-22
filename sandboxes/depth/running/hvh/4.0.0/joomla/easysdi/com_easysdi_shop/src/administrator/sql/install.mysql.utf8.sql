@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_perimeter` (
 `accessscope_id` INT(11) UNSIGNED NOT NULL ,
 `perimetertype_id` INT(11) UNSIGNED NOT NULL ,
 `wfsservice_id` INT(11) UNSIGNED NOT NULL ,
-`featuretype` VARCHAR(255)  NOT NULL ,
+`featuretypename` VARCHAR(255)  NOT NULL ,
 `prefix` VARCHAR(255)  NOT NULL ,
 `namespace` VARCHAR(255)  NOT NULL ,
 `featuretypefieldid` VARCHAR(255)  NOT NULL ,

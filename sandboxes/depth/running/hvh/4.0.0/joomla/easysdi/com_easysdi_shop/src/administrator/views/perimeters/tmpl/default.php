@@ -175,17 +175,6 @@ if (!empty($this->extra_sidebar)) {
                             <?php endif; ?>
 
                             <td>
-                                <?php if (isset($item->checked_out) && $item->checked_out) : ?>
-                                    <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'perimeters.', $canCheckin); ?>
-                                <?php endif; ?>
-                                <?php if ($canEdit) : ?>
-                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=perimeter.edit&id=' . (int) $item->id); ?>">
-                                        <?php echo $this->escape($item->guid); ?></a>
-                                <?php else : ?>
-                                    <?php echo $this->escape($item->guid); ?>
-                                <?php endif; ?>
-                            </td>
-                            <td>
                                 <?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>
                                     <a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=perimeter.edit&id=' . (int) $item->id); ?>">
                                         <?php echo $this->escape($item->name); ?></a>
