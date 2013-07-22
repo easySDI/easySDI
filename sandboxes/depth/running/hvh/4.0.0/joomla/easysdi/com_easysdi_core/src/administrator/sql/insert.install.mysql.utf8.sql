@@ -512,4 +512,11 @@ INSERT INTO `#__sdi_sys_productstorage` VALUES ('3', '3', '1', 'wfs');
 INSERT INTO `#__sdi_sys_productmining` VALUES ('1', '1', '1', 'automatic');
 INSERT INTO `#__sdi_sys_productmining` VALUES ('2', '2', '1', 'manual');
 
+INSERT INTO `#__sdi_sys_perimetertype` (ordering,state,value) 
+VALUES 
+(1,1,'extraction'),
+(2,1,'download'),
+(3,1,'both')
+;
+
 
