@@ -45,10 +45,20 @@ class JFormFieldServicegroupedList extends JFormField
 		$groups = array();
 		$label = 0;
 		
+                if($this->servicetype=='wfs'){
+                    $connectors= '4';
+                }
+                elseif ($this->servicetype=='wms'){
+                    $connectors= '2';
+                }
+                else{
+                    $connectors= '2,3,11,12,13,14';
+                }
+                        
 		$db = JFactory::getDbo();
-		$db->setQuery('SELECT id, name,serviceconnector_id FROM #__sdi_physicalservice WHERE state=1 AND serviceconnector_id IN (2,3,11,12,13,14)');
+		$db->setQuery('SELECT id, name,serviceconnector_id FROM #__sdi_physicalservice WHERE state=1 AND serviceconnector_id IN ('.$connectors.')');
 		$physicals = $db->loadObjectList();
-		$db->setQuery('SELECT id, name,serviceconnector_id FROM #__sdi_virtualservice WHERE state=1 AND serviceconnector_id IN (2,3,11,12,13,14)');
+		$db->setQuery('SELECT id, name,serviceconnector_id FROM #__sdi_virtualservice WHERE state=1 AND serviceconnector_id IN ('.$connectors.')');
 		$virtuals = $db->loadObjectList();
 		
 		//Javascript Chosen library :

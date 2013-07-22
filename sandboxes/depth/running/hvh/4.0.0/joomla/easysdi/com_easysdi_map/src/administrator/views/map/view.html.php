@@ -25,6 +25,9 @@ class Easysdi_mapViewMap extends JViewLegacy {
      * Display the view
      */
     public function display($tpl = null) {
+        
+        JForm::addFieldPath(JPATH_ADMINISTRATOR . '/components/com_easysdi_core/models/fields');
+        
         $this->state = $this->get('State');
         $this->item = $this->get('Item');
         $this->form = $this->get('Form');
