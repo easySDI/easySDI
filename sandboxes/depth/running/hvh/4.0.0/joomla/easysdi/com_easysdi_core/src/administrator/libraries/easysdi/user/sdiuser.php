@@ -138,6 +138,7 @@ class sdiUser {
                 ->innerJoin('#__sdi_translation t ON t.element_guid = rt.guid')
                 ->innerJoin('#__sdi_language l ON l.id = t.language_id')
                 ->where('l.code = "' . $this->lang->getTag() . '"')
+                ->where('rt.predefined = 0')
                 ->where($cls)
         ;
         $db->setQuery($query);

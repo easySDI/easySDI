@@ -90,6 +90,7 @@ class Easysdi_coreModelResources extends JModelList {
         $query->join('LEFT', '#__sdi_translation AS trans ON trans.element_guid = rt.guid');
         $query->join('LEFT', '#__sdi_language AS lang ON lang.id = trans.language_id');
         $query->where('lang.code = "'.$lang->getTag().'"');
+        $query->where('rt.predefined = 0');
         
         // Filter by search in title
         $search = $this->getState('filter.search');
