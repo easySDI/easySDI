@@ -20,10 +20,15 @@ class Easysdi_shopHelper
 	 */
 	public static function addSubmenu($vName = '')
 	{
+                JHtmlSidebar::addEntry(
+			JText::_('COM_EASYSDI_SHOP_TITLE_PERIMETERS'),
+			'index.php?option=com_easysdi_shop&view=perimeters',
+			$vName == 'perimeters'
+		);
 		JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_SHOP_TITLE_DIFFUSIONS'),
-			'index.php?option=com_easysdi_shop&view=diffusions',
-			$vName == 'diffusions'
+			JText::_('COM_EASYSDI_SHOP_TITLE_ORDERS'),
+			'index.php?option=com_easysdi_shop&view=orders',
+			$vName == 'orders'
 		);
 		JHtmlSidebar::addEntry(
 			JText::_('COM_EASYSDI_SHOP_TITLE_PROPERTIES'),
@@ -35,47 +40,6 @@ class Easysdi_shopHelper
 			'index.php?option=com_easysdi_shop&view=propertyvalues',
 			$vName == 'propertyvalues'
 		);
-		JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_SHOP_TITLE_DIFFUSIONPERIMETERS'),
-			'index.php?option=com_easysdi_shop&view=diffusionperimeters',
-			$vName == 'diffusionperimeters'
-		);
-		JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_SHOP_TITLE_DIFFUSIONNOTIFIEDUSERS'),
-			'index.php?option=com_easysdi_shop&view=diffusionnotifiedusers',
-			$vName == 'diffusionnotifiedusers'
-		);
-		JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_SHOP_TITLE_PERIMETERS'),
-			'index.php?option=com_easysdi_shop&view=perimeters',
-			$vName == 'perimeters'
-		);
-		JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_SHOP_TITLE_GRIDS'),
-			'index.php?option=com_easysdi_shop&view=grids',
-			$vName == 'grids'
-		);
-		JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_SHOP_TITLE_ORDERS'),
-			'index.php?option=com_easysdi_shop&view=orders',
-			$vName == 'orders'
-		);
-		JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_SHOP_TITLE_ORDERDIFFUSIONS'),
-			'index.php?option=com_easysdi_shop&view=orderdiffusions',
-			$vName == 'orderdiffusions'
-		);
-		JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_SHOP_TITLE_ORDERPROPERTYVALUES'),
-			'index.php?option=com_easysdi_shop&view=orderpropertyvalues',
-			$vName == 'orderpropertyvalues'
-		);
-		JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_SHOP_TITLE_ORDERPERIMETERS'),
-			'index.php?option=com_easysdi_shop&view=orderperimeters',
-			$vName == 'orderperimeters'
-		);
-
 	}
 
 	/**
