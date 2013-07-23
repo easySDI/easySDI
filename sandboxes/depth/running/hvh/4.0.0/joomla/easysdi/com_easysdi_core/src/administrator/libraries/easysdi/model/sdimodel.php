@@ -28,7 +28,7 @@ abstract class sdiModel extends JModelAdmin {
      */
     public function getItem($pk = null) {
         $item = parent::getItem($pk);
-        if ( !empty($pk) && $item) {
+        if ($item && $item->guid) {
             //Load translations
             $translationtable = $this->getTable('Translation', 'Easysdi_catalogTable', array());
             $rows = $translationtable->loadAll($item->guid);

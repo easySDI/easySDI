@@ -12,10 +12,12 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.modeladmin');
 
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
+
 /**
  * Easysdi_shop model.
  */
-class Easysdi_shopModelpropertyvalue extends JModelAdmin
+class Easysdi_shopModelpropertyvalue extends sdiModel
 {
 	/**
 	 * @var		string	The prefix to use with controller messages.
@@ -91,10 +93,13 @@ class Easysdi_shopModelpropertyvalue extends JModelAdmin
 	{
 		if ($item = parent::getItem($pk)) {
 
-			//Do any procesing on fields here if needed
-
 		}
 
+                $app = JFactory::getApplication('administrator');
+                $item->property_id =  $app->getUserState( 'com_easysdi_shop.propertyvalues.filter.property','filter_property');
+                $table = JTable::getInstance('property', 'Easysdi_shopTable');
+                $table->load($item->property_id);
+                $item->propertyname = $table->name ;  
 		return $item;
 	}
 

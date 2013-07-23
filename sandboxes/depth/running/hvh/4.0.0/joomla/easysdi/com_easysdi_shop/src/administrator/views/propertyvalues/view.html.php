@@ -126,22 +126,12 @@ class Easysdi_shopViewPropertyvalues extends JViewLegacy
     
 	protected function getSortFields()
 	{
-		return array(
-		'a.id' => JText::_('JGRID_HEADING_ID'),
-		'a.guid' => JText::_('COM_EASYSDI_SHOP_PROPERTYVALUES_GUID'),
-		'a.alias' => JText::_('COM_EASYSDI_SHOP_PROPERTYVALUES_ALIAS'),
-		'a.created_by' => JText::_('COM_EASYSDI_SHOP_PROPERTYVALUES_CREATED_BY'),
-		'a.created' => JText::_('COM_EASYSDI_SHOP_PROPERTYVALUES_CREATED'),
-		'a.modified_by' => JText::_('COM_EASYSDI_SHOP_PROPERTYVALUES_MODIFIED_BY'),
-		'a.modified' => JText::_('COM_EASYSDI_SHOP_PROPERTYVALUES_MODIFIED'),
-		'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
-		'a.state' => JText::_('JSTATUS'),
-		'a.checked_out' => JText::_('COM_EASYSDI_SHOP_PROPERTYVALUES_CHECKED_OUT'),
-		'a.checked_out_time' => JText::_('COM_EASYSDI_SHOP_PROPERTYVALUES_CHECKED_OUT_TIME'),
-		'a.name' => JText::_('COM_EASYSDI_SHOP_PROPERTYVALUES_NAME'),
-		'a.access' => JText::_('COM_EASYSDI_SHOP_PROPERTYVALUES_ACCESS'),
-		'a.asset_id' => JText::_('COM_EASYSDI_SHOP_PROPERTYVALUES_ASSET_ID'),
-		);
+            return array(
+                'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
+                'a.state' => JText::_('JSTATUS'),
+                'a.name' => JText::_('COM_EASYSDI_CATALOG_BOUNDARIESCATEGORY_NAME'),
+                'a.id' => JText::_('JGRID_HEADING_ID'),
+            );
 	}
 
     

@@ -26,7 +26,7 @@ class Easysdi_shopModelpropertyvalues extends JModelList {
     public function __construct($config = array()) {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                                'id', 'a.id',
+                'id', 'a.id',
                 'guid', 'a.guid',
                 'alias', 'a.alias',
                 'created_by', 'a.created_by',
@@ -40,7 +40,6 @@ class Easysdi_shopModelpropertyvalues extends JModelList {
                 'property_id', 'a.property_id',
                 'access', 'a.access',
                 'asset_id', 'a.asset_id',
-
             );
         }
 
@@ -63,7 +62,9 @@ class Easysdi_shopModelpropertyvalues extends JModelList {
         $published = $app->getUserStateFromRequest($this->context . '.filter.state', 'filter_published', '', 'string');
         $this->setState('filter.state', $published);
 
-        
+        $property = $app->getUserStateFromRequest($this->context . '.filter.property', 'filter_property', '', 'string');
+        $this->setState('filter.property', $property);
+        $app->setUserState($this->context . '.filter.property', $property);
 
         // Load the parameters.
         $params = JComponentHelper::getParams('com_easysdi_shop');
@@ -88,6 +89,7 @@ class Easysdi_shopModelpropertyvalues extends JModelList {
         // Compile the store id.
         $id.= ':' . $this->getState('filter.search');
         $id.= ':' . $this->getState('filter.state');
+        $id.= ':' . $this->getState('filter.property');
 
         return parent::getStoreId($id);
     }
@@ -111,24 +113,24 @@ class Easysdi_shopModelpropertyvalues extends JModelList {
         );
         $query->from('`#__sdi_propertyvalue` AS a');
 
-        
-    // Join over the users for the checked out user.
-    $query->select('uc.name AS editor');
-    $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
-    
-		// Join over the user field 'created_by'
-		$query->select('created_by.name AS created_by');
-		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
 
-        
-    // Filter by published state
-    $published = $this->getState('filter.state');
-    if (is_numeric($published)) {
-        $query->where('a.state = '.(int) $published);
-    } else if ($published === '') {
-        $query->where('(a.state IN (0, 1))');
-    }
-    
+        // Join over the users for the checked out user.
+        $query->select('uc.name AS editor');
+        $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
+
+        // Join over the user field 'created_by'
+        $query->select('created_by.name AS created_by');
+        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
+
+
+        // Filter by published state
+        $published = $this->getState('filter.state');
+        if (is_numeric($published)) {
+            $query->where('a.state = ' . (int) $published);
+        } else if ($published === '') {
+            $query->where('(a.state IN (0, 1))');
+        }
+
 
         // Filter by search in title
         $search = $this->getState('filter.search');
@@ -137,11 +139,15 @@ class Easysdi_shopModelpropertyvalues extends JModelList {
                 $query->where('a.id = ' . (int) substr($search, 3));
             } else {
                 $search = $db->Quote('%' . $db->escape($search, true) . '%');
-                
+                $query->where('( a.name LIKE ' . $search . ' )');
             }
         }
 
-        
+        // Filter by property
+        $property = $this->getState('filter.property');
+        if (is_numeric($property)) {
+            $query->where('a.property_id = ' . (int) $property);
+        }
 
 
         // Add the list ordering clause.
@@ -156,7 +162,7 @@ class Easysdi_shopModelpropertyvalues extends JModelList {
 
     public function getItems() {
         $items = parent::getItems();
-        
+
         return $items;
     }
 

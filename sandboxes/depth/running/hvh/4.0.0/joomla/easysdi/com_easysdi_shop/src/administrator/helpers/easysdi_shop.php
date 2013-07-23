@@ -20,26 +20,33 @@ class Easysdi_shopHelper
 	 */
 	public static function addSubmenu($vName = '')
 	{
+            if($vName == 'propertyvalues'){
                 JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_SHOP_TITLE_PERIMETERS'),
-			'index.php?option=com_easysdi_shop&view=perimeters',
-			$vName == 'perimeters'
-		);
-		JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_SHOP_TITLE_ORDERS'),
-			'index.php?option=com_easysdi_shop&view=orders',
-			$vName == 'orders'
-		);
-		JHtmlSidebar::addEntry(
 			JText::_('COM_EASYSDI_SHOP_TITLE_PROPERTIES'),
 			'index.php?option=com_easysdi_shop&view=properties',
 			$vName == 'properties'
 		);
-		JHtmlSidebar::addEntry(
-			JText::_('COM_EASYSDI_SHOP_TITLE_PROPERTYVALUES'),
-			'index.php?option=com_easysdi_shop&view=propertyvalues',
-			$vName == 'propertyvalues'
-		);
+                
+                return;
+            };
+            JHtmlSidebar::addEntry(
+                    JText::_('COM_EASYSDI_SHOP_TITLE_PERIMETERS'),
+                    'index.php?option=com_easysdi_shop&view=perimeters',
+                    $vName == 'perimeters'
+            );
+            
+            JHtmlSidebar::addEntry(
+                    JText::_('COM_EASYSDI_SHOP_TITLE_PROPERTIES'),
+                    'index.php?option=com_easysdi_shop&view=properties',
+                    $vName == 'properties'
+            );
+            
+            JHtmlSidebar::addEntry(
+                    JText::_('COM_EASYSDI_SHOP_TITLE_ORDERS'),
+                    'index.php?option=com_easysdi_shop&view=orders',
+                    $vName == 'orders'
+            );
+		
 	}
 
 	/**

@@ -55,7 +55,7 @@ class Easysdi_shopViewPropertyvalue extends JViewLegacy
         }
 		$canDo		= Easysdi_shopHelper::getActions();
 
-		JToolBarHelper::title(JText::_('COM_EASYSDI_SHOP_TITLE_PROPERTYVALUE'), 'propertyvalue.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_SHOP_TITLE_PROPERTYVALUE').$this->item->propertyname, 'propertyvalue.png');
 
 		// If not checked out, can save the item.
 		if (!$checkedOut && ($canDo->get('core.edit')||($canDo->get('core.create'))))

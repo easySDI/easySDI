@@ -20,6 +20,8 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_easysdi_shop'))
 // Include dependancies
 jimport('joomla.application.component.controller');
 
+JForm::addFieldPath(JPATH_ADMINISTRATOR . '/components/com_easysdi_core/models/fields');
+
 $controller	= JControllerLegacy::getInstance('Easysdi_shop');
 $controller->execute(JFactory::getApplication()->input->get('task'));
 $controller->redirect();
