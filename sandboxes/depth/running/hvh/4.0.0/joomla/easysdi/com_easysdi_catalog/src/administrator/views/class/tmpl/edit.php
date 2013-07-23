@@ -22,7 +22,7 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
 <script type="text/javascript">
     js = jQuery.noConflict();
     js(document).ready(function() {
-          enableAccessScope();
+          
     });
 
     Joomla.submitbutton = function(task)
@@ -41,24 +41,7 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
             }
         }
     }
-    function enableAccessScope(){
-	if(jQuery('#jform_accessscope_id').val() == 1){
-		jQuery("#jform_organisms").val("").trigger('liszt:updated');
-		jQuery("#jform_users").val("").trigger('liszt:updated');
-		jQuery("#organisms").hide();
-		jQuery("#users").hide();
-	}
-	else if(jQuery('#jform_accessscope_id').val() == 2){
-		jQuery("#organisms").show();
-		jQuery("#jform_users").val("").trigger('liszt:updated');
-		jQuery("#users").hide();
-	}
-	else if(jQuery('#jform_accessscope_id').val() == 3){
-		jQuery("#users").show();
-		jQuery("#jform_organisms").val("").trigger('liszt:updated');
-		jQuery("#organisms").hide();
-	}
-}
+   
 </script>
 
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&layout=edit&id=' . (int) $this->item->id); ?>" method="post" enctype="multipart/form-data" name="adminForm" id="class-form" class="form-validate">
