@@ -7,3 +7,9 @@ VALUES
 (5,1,'textarea'),
 (6,1,'message')
 ;
+
+INSERT INTO `#__sdi_sys_servicetype` (ordering,state,value) 
+VALUES 
+(1,1,'physical'),
+(2,1,'virtual')
+;

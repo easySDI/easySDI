@@ -24,6 +24,7 @@ $document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js
     js = jQuery.noConflict();
     js(document).ready(function() {
         enableAccessScope();
+        onChangePerimeterType();
     });
 
     Joomla.submitbutton = function(task)
@@ -41,6 +42,19 @@ $document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js
                 alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED')); ?>');
             }
         }
+    }
+    
+    function onChangePerimeterType(){
+        if(jQuery('#jform_perimetertype_id').val() == 1){
+		jQuery("#jform_featuretypefieldgeometry").val("");
+                jQuery("#featuretypefieldgeometry").hide();
+		jQuery("#jform_featuretypefieldresource").val("");
+                jQuery("#featuretypefieldresource").hide();
+	}
+	else {
+		jQuery("#featuretypefieldgeometry").show();
+		jQuery("#featuretypefieldresource").show();
+	}
     }
 </script>
 

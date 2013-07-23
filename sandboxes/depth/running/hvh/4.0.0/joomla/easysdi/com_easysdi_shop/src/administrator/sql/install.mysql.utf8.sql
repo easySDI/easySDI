@@ -69,6 +69,15 @@ PRIMARY KEY (`id`),
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_servicetype` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` int(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
 CREATE TABLE IF NOT EXISTS `#__sdi_perimeter` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(255)  NOT NULL ,
@@ -86,6 +95,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_perimeter` (
 `accessscope_id` INT(11) UNSIGNED NOT NULL ,
 `perimetertype_id` INT(11) UNSIGNED NOT NULL ,
 `wfsservice_id` INT(11) UNSIGNED NOT NULL ,
+`wfsservicetype_id` INT(11) UNSIGNED NOT NULL ,
 `featuretypename` VARCHAR(255)  NOT NULL ,
 `prefix` VARCHAR(255)  NOT NULL ,
 `namespace` VARCHAR(255)  NOT NULL ,
@@ -96,6 +106,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_perimeter` (
 `featuretypefieldgeometry` VARCHAR(255)  NOT NULL ,
 `featuretypefieldresource` VARCHAR(255)  NOT NULL ,
 `wmsservice_id` INT(11) UNSIGNED  NOT NULL ,
+`wmsservicetype_id` INT(11) UNSIGNED  NOT NULL ,
 `layername` VARCHAR(255)  NOT NULL ,
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
@@ -371,4 +382,10 @@ PRIMARY KEY (`id`),
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+
+
+
+
+
 
