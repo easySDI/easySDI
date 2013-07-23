@@ -1,31 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
-	<fieldset name="component"
-		label="COM_EASYSDI_SHOP_COMPONENT_LABEL"
-		description="COM_EASYSDI_SHOP_COMPONENT_DESC"
-	>
+	<fieldset name="component" label="COM_EASYSDI_SHOP_COMPONENT_LABEL" description="COM_EASYSDI_SHOP_COMPONENT_DESC" >
 
-        <field name="test"
-             type="radio"
-             default="1"
-             label="COM_EASYSDI_SHOP_TEST_LABEL"
-             description="COM_EASYSDI_SHOP_TEST_DESC">
-                 <option value="0">JHIDE</option>
-                 <option value="1">JSHOW</option>
-         </field>
-
+           <field name="proxyphp"
+                   type="text"
+                   default="index.php?option=com_easysdi_shop"
+                   class="inputbox input-xlarge"
+                   required ="true"
+                   size="500"
+                   label="COM_EASYSDI_SHOP_CONFIG_LBL_PROXYPHP"
+                   description="COM_EASYSDI_SHOP_CONFIG_DESC_PROXYPHP">
+           </field>
+           
+           <field name="maxuploadfilesize"
+                   type="text"
+                   default="32"
+                   class="inputbox input-xlarge"
+                   required ="true"
+                   size="500"
+                   label="COM_EASYSDI_SHOP_CONFIG_LBL_MAXUPLOADFILESIZE"
+                   description="COM_EASYSDI_SHOP_CONFIG_DESC_MAXUPLOADFILESIZE">
+           </field>
+           
+           <field name="archiveorderdelay"
+                   type="text"
+                   default="10"
+                   class="inputbox input-xlarge"
+                   required ="true"
+                   size="500"
+                   label="COM_EASYSDI_SHOP_CONFIG_LBL_ARCHIVEORDERDELAY"
+                   description="COM_EASYSDI_SHOP_CONFIG_DESC_ARCHIVEORDERDELAY">
+           </field>
+           
+            <field name="historyorderdelay"
+                   type="text"
+                   default="20"
+                   class="inputbox input-xlarge"
+                   required ="true"
+                   size="500"
+                   label="COM_EASYSDI_SHOP_CONFIG_LBL_HISTORYORDERDELAY"
+                   description="COM_EASYSDI_SHOP_CONFIG_DESC_HISTORYORDERDELAY">
+           </field>
+           
+           <field name="surfacedigit"
+                   type="text"
+                   default="2"
+                   class="inputbox input-xlarge"
+                   required ="true"
+                   size="500"
+                   label="COM_EASYSDI_SHOP_CONFIG_LBL_SURFACEDIGIT"
+                   description="COM_EASYSDI_SHOP_CONFIG_DESC_SURFACEDIGIT">
+           </field>
+           
+           <field name="maxmetervalue"
+                   type="text"
+                   default="1000000"
+                   class="inputbox input-xlarge"
+                   required ="true"
+                   size="500"
+                   label="COM_EASYSDI_SHOP_CONFIG_LBL_MAXMETERVALUE"
+                   description="COM_EASYSDI_SHOP_CONFIG_DESC_MAXMETERVALUE">
+           </field>
+           
+           <field name="termsofuse"
+                   type="text"
+                   default=""
+                   class="inputbox input-xlarge"
+                   required ="true"
+                   size="500"
+                   label="COM_EASYSDI_SHOP_CONFIG_LBL_TERMSOFUSE"
+                   description="COM_EASYSDI_SHOP_CONFIG_DESC_TERMSOFUSE">
+           </field>
+          
 	</fieldset>
 
-	<fieldset name="permissions"
-		description="JCONFIG_PERMISSIONS_DESC"
-		label="JCONFIG_PERMISSIONS_LABEL"
-	>
+	<fieldset name="permissions" description="JCONFIG_PERMISSIONS_DESC" label="JCONFIG_PERMISSIONS_LABEL" >
 
-		<field 
-            name="rules" 
-            type="rules"
+		<field  name="rules" 
+                        type="rules"
 			component="com_easysdi_shop"
-            class="inputbox"
+                        class="inputbox"
 			filter="rules"
 			validate="rules"
 			label="JCONFIG_PERMISSIONS_LABEL"
@@ -106,4 +160,4 @@ http://docs.joomla.org/Usergroup_parameter_type
 <field name="myusergroups" type="usergroup" default="" label="Select a user group" description="" />
 
 
- -->
+-->
