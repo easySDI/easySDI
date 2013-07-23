@@ -26,4 +26,10 @@ class Easysdi_coreControllerApplications extends Easysdi_coreController
 		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
 		return $model;
 	}
+        
+        function cancel() {
+            // Clear the resource id from the session.
+            JFactory::getApplication()->setUserState('com_easysdi_core.edit.applicationresource.id', null);
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+    }
 }

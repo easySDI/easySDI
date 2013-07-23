@@ -9,87 +9,54 @@
 // no direct access
 defined('_JEXEC') or die;
 ?>
-
+<div class="well">
+    <form class="form-inline" action="index.php" method="post" id="adminForm" name="adminForm">
+        <?php echo $this->getToolbar(); ?>
+        <input type = "hidden" name = "task" value = "" />
+        <input type = "hidden" name = "option" value = "com_easysdi_core" />
+    </form>
+</div>
+<div class="clr"></div>
 <div class="items">
-    <ul class="items_list">
-<?php $show = false; ?>
-        <?php foreach ($this->items as $item) : ?>
+    <div class="well">
+        <?php $show = false; ?>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th><?php echo JText::_('COM_EASYSDI_CORE_APPLICATIONS_NAME'); ?></th>
+                    <th><?php echo JText::_('COM_EASYSDI_CORE_APPLICATIONS_DESCRIPTION'); ?></th>
+                    <th><?php echo JText::_('COM_EASYSDI_CORE_APPLICATIONS_URL'); ?></th>
+                </tr>
+            </thead>
+            <tfoot>
 
-            
-				<?php
-					if($item->state == 1 || ($item->state == 0 && JFactory::getUser()->authorise('core.edit.own',' com_easysdi_core.application.'.$item->id))):
-						$show = true;
-						?>
-							<li>
-								<a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=application&id=' . (int)$item->id); ?>"><?php echo $item->guid; ?></a>
-								<?php
-									if(JFactory::getUser()->authorise('core.edit.state','com_easysdi_core.application.'.$item->id)):
-									?>
-										<a href="javascript:document.getElementById('form-application-state-<?php echo $item->id; ?>').submit()"><?php if($item->state == 1): echo JText::_("COM_EASYSDI_CORE_UNPUBLISH_ITEM"); else: echo JText::_("COM_EASYSDI_CORE_PUBLISH_ITEM"); endif; ?></a>
-										<form id="form-application-state-<?php echo $item->id ?>" style="display:inline" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=application.save'); ?>" method="post" class="form-validate" enctype="multipart/form-data">
-											<input type="hidden" name="jform[id]" value="<?php echo $item->id; ?>" />
-											<input type="hidden" name="jform[guid]" value="<?php echo $item->guid; ?>" />
-											<input type="hidden" name="jform[alias]" value="<?php echo $item->alias; ?>" />
-											<input type="hidden" name="jform[created]" value="<?php echo $item->created; ?>" />
-											<input type="hidden" name="jform[modified_by]" value="<?php echo $item->modified_by; ?>" />
-											<input type="hidden" name="jform[modified]" value="<?php echo $item->modified; ?>" />
-											<input type="hidden" name="jform[ordering]" value="<?php echo $item->ordering; ?>" />
-											<input type="hidden" name="jform[state]" value="<?php echo (int)!((int)$item->state); ?>" />
-											<input type="hidden" name="jform[checked_out]" value="<?php echo $item->checked_out; ?>" />
-											<input type="hidden" name="jform[checked_out_time]" value="<?php echo $item->checked_out_time; ?>" />
-											<input type="hidden" name="jform[name]" value="<?php echo $item->name; ?>" />
-											<input type="hidden" name="jform[description]" value="<?php echo $item->description; ?>" />
-											<input type="hidden" name="jform[resource_id]" value="<?php echo $item->resource_id; ?>" />
-											<input type="hidden" name="jform[options]" value="<?php echo $item->options; ?>" />
-											<input type="hidden" name="jform[url]" value="<?php echo $item->url; ?>" />
-											<input type="hidden" name="jform[windowname]" value="<?php echo $item->windowname; ?>" />
-											<input type="hidden" name="jform[access]" value="<?php echo $item->access; ?>" />
-											<input type="hidden" name="option" value="com_easysdi_core" />
-											<input type="hidden" name="task" value="application.save" />
-											<?php echo JHtml::_('form.token'); ?>
-										</form>
-									<?php
-									endif;
-									if(JFactory::getUser()->authorise('core.delete','com_easysdi_core.application.'.$item->id)):
-									?>
-										<a href="javascript:document.getElementById('form-application-delete-<?php echo $item->id; ?>').submit()"><?php echo JText::_("COM_EASYSDI_CORE_DELETE_ITEM"); ?></a>
-										<form id="form-application-delete-<?php echo $item->id; ?>" style="display:inline" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=application.remove'); ?>" method="post" class="form-validate" enctype="multipart/form-data">
-											<input type="hidden" name="jform[id]" value="<?php echo $item->id; ?>" />
-											<input type="hidden" name="jform[guid]" value="<?php echo $item->guid; ?>" />
-											<input type="hidden" name="jform[alias]" value="<?php echo $item->alias; ?>" />
-											<input type="hidden" name="jform[created_by]" value="<?php echo $item->created_by; ?>" />
-											<input type="hidden" name="jform[created]" value="<?php echo $item->created; ?>" />
-											<input type="hidden" name="jform[modified_by]" value="<?php echo $item->modified_by; ?>" />
-											<input type="hidden" name="jform[modified]" value="<?php echo $item->modified; ?>" />
-											<input type="hidden" name="jform[ordering]" value="<?php echo $item->ordering; ?>" />
-											<input type="hidden" name="jform[state]" value="<?php echo $item->state; ?>" />
-											<input type="hidden" name="jform[checked_out]" value="<?php echo $item->checked_out; ?>" />
-											<input type="hidden" name="jform[checked_out_time]" value="<?php echo $item->checked_out_time; ?>" />
-											<input type="hidden" name="jform[name]" value="<?php echo $item->name; ?>" />
-											<input type="hidden" name="jform[description]" value="<?php echo $item->description; ?>" />
-											<input type="hidden" name="jform[resource_id]" value="<?php echo $item->resource_id; ?>" />
-											<input type="hidden" name="jform[options]" value="<?php echo $item->options; ?>" />
-											<input type="hidden" name="jform[url]" value="<?php echo $item->url; ?>" />
-											<input type="hidden" name="jform[windowname]" value="<?php echo $item->windowname; ?>" />
-											<input type="hidden" name="jform[access]" value="<?php echo $item->access; ?>" />
-											<input type="hidden" name="option" value="com_easysdi_core" />
-											<input type="hidden" name="task" value="application.remove" />
-											<?php echo JHtml::_('form.token'); ?>
-										</form>
-									<?php
-									endif;
-								?>
-							</li>
-						<?php endif; ?>
-
-<?php endforeach; ?>
+            </tfoot>
+            <tbody>
+                <?php foreach ($this->items as $item) : ?>
+                    <?php $show = true; ?>;
+                    <tr>
+                        <td>
+                            <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=application.edit&id=' . (int) $item->id); ?>"><?php echo $item->name; ?></a>
+                        </td>
+                        <td>
+                            <?php echo $item->description; ?>
+                        </td>
+                        <td>
+                            <?php echo $item->url; ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
         <?php
         if (!$show):
             echo JText::_('COM_EASYSDI_CORE_NO_ITEMS');
         endif;
         ?>
-    </ul>
+    </div>
 </div>
+
+
 <?php if ($show): ?>
     <div class="pagination">
         <p class="counter">
@@ -100,5 +67,3 @@ defined('_JEXEC') or die;
 <?php endif; ?>
 
 
-									<?php if(JFactory::getUser()->authorise('core.create','com_easysdi_core')): ?><a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=application.edit&id=0'); ?>"><?php echo JText::_("COM_EASYSDI_CORE_ADD_ITEM"); ?></a>
-	<?php endif; ?>

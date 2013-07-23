@@ -1,107 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-    <fieldset>
-
-        <field name="id" type="text" default="0" label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_ID"
-                     readonly="true" class="readonly"
-                     description="JGLOBAL_FIELD_ID_DESC" /> 
-
-        <field name="guid" type="text" size="40" class="inputbox"
+    <fieldset name="details">
         
-              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_GUID"
-              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_GUID" 
-        
-        
-        
+        <field name="name" type="text" size="40" class="inputbox" required="true"
+              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_NAME"
+              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_NAME" 
               filter="safehtml" /> 
 
         <field name="alias" type="text" size="40" class="inputbox"
-        
               label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_ALIAS"
               description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_ALIAS" 
-        
-        
-        
-              filter="safehtml" /> 
-
-        <field name="created_by" type="createdby" default="" 
-              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_CREATED_BY"
-              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_CREATED_BY"  /> 
-
-        <field name="created" type="calendar" class="inputbox"
-        
-        
-              default="0" 
-        
-              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_CREATED"
-              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_CREATED" 
-              filter="safehtml" /> 
-
-        <field name="modified_by" type="text" size="40" class="inputbox"
-        
-              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_MODIFIED_BY"
-              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_MODIFIED_BY" 
-              default="0" 
-        
-        
-              filter="safehtml" /> 
-
-        <field name="modified" type="calendar" class="inputbox"
-        
-        
-              default="0" 
-        
-              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_MODIFIED"
-              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_MODIFIED" 
-              filter="safehtml" /> 
-
-        <field name="name" type="text" size="40" class="inputbox"
-        
-              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_NAME"
-              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_NAME" 
-        
-        
-        
               filter="safehtml" /> 
 
         <field name="description" type="text" size="40" class="inputbox"
-        
               label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_DESCRIPTION"
               description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_DESCRIPTION" 
-        
-        
-        
               filter="safehtml" /> 
 
-        <field name="organism_id" type="text" size="40" class="inputbox"
-        
-              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_ORGANISM_ID"
-              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_ORGANISM_ID" 
-        
-        
-        
-              filter="safehtml" /> 
-
-        <field name="resourcetype_id" type="sql" class="inputbox"
-        
+        <field name="resourcetype" type="text" size="40" class="inputbox" readonly="true"
               label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_RESOURCETYPE_ID"
               description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_RESOURCETYPE_ID" 
+              filter="safehtml" />
         
-        
-        
-              required="true" 
-              query="SELECT 0 AS `id`, '- Please select -' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_resourcetype`" key_field="id" value_field="name"
-        /> 
-
-        <field name="access" type="accesslevel"
-                
-              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_ACCESS"
-              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_ACCESS" 
-                
-                
-                
-              filter="raw" /> 
-
         <field
             name="state"
             type="list"
@@ -113,26 +33,60 @@
             <option value="1">JPUBLISHED</option>
             <option value="0">JUNPUBLISHED</option>
         </field> 
-
-        <field name="checked_out" type="hidden" filter="unset" />
-        <field name="checked_out_time" type="hidden" filter="unset" /> 
-
+        
     </fieldset> 
-
-    <fieldset 
-        name="accesscontrol">
-        <field name="asset_id" type="hidden" filter="unset" />
-        <field name="rules"
-                              type="rules"
-                              label="JFIELD_RULES_LABEL"
-                              translate_label="false"
-                              filter="rules"
-                              validate="rules"
-                              class="inputbox"
-                              component="com_easysdi_core"
-                              section="resource"
+    
+    <field 	name="resourceManager" 
+                        type="sql" 
+                        class="input-xxlarge"
+                        multiple="false"
+                        label="com_easysdi_contact_FORM_LBL_USER_ORGANISMS_MEMBER"
+                        description="com_easysdi_contact_FORM_DESC_USER_ORGANISMS_MEMBER" 
+                        translate="true" 
+                        query="SELECT id, name as value FROM #__sdi_organism WHERE state=1" key_field="id" value_field="value"
         />
-
+    
+    <field  name="organism_id" 
+            required="true"
+            type="sql" 
+            class="inputbox"
+            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY ordering" 
+            key_field="id" 
+            value_field="name"
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_ORGANISM_ID"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_ORGANISM_ID" 
+    />
+    
+    <fieldset name="hidden">
+        <field name="id" type="hidden" filter="safehtml" />
+        <field name="checked_out" type="hidden" filter="safehtml" />
+        <field name="checked_out_time" type="hidden" filter="safehtml" /> 
+        <field name="guid" type="hidden" filter="safehtml" /> 
+        <field name="resourcetype_id" type="hidden" filter="safehtml" /> 
+        <field name="rights" type="hidden" filter="safehtml" /> 
     </fieldset>
+    
+    <fieldset name="publishing">
+        <field name="created_by" type="createdby" default=""  readonly="true"
+              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_CREATED_BY"
+              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_CREATED_BY"  /> 
 
+        <field name="created" type="calendar" 
+              default="0" readonly="true"
+              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_CREATED"
+              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_CREATED" 
+              filter="safehtml" /> 
+
+        <field name="modified_by" type="createdby"  readonly="true"
+              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_MODIFIED_BY"
+              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_MODIFIED_BY" 
+              default="0" 
+              filter="safehtml" /> 
+
+        <field name="modified" type="calendar" class="inputbox"
+              default="0"  readonly="true"
+              label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_MODIFIED"
+              description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_MODIFIED" 
+              filter="safehtml" />
+    </fieldset>
 </form>
