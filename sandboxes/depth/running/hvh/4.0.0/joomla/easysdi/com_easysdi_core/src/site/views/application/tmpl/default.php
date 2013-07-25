@@ -104,7 +104,7 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
     <?php else: ?>
         <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_NEW_APPLICATION'); ?></h1>
     <?php endif; ?>
-    
+
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=application.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
 
         <div class="row-fluid">
@@ -132,17 +132,16 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
                                 <div class="controls"><?php echo $field->input; ?></div>
                             </div>
                         <?php endforeach; ?>
+                        <?php if (!empty($this->item->modified)) : ?>
+                            <?php foreach ($this->form->getFieldset('publishing_update') as $field): ?>
+                                <div class="control-group" id="<?php echo $field->fieldname; ?>">
+                                    <div class="control-label"><?php echo $field->label; ?></div>
+                                    <div class="controls"><?php echo $field->input; ?></div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
-                    <?php if(!empty($this->item->modified)) : ?>
-                    <div class="tab-pane" id="publishing_update">
-                        <?php foreach ($this->form->getFieldset('publishing_update') as $field): ?>
-                            <div class="control-group" id="<?php echo $field->fieldname; ?>">
-                                <div class="control-label"><?php echo $field->label; ?></div>
-                                <div class="controls"><?php echo $field->input; ?></div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                     <?php endif; ?>
+
                 </div>
             </div>
         </div>

@@ -22,14 +22,14 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 <!-- Styling for making front end forms look OK -->
 <!-- This should probably be moved to the template CSS file -->
 <style>
-    
+
     .front-end-edit label {
         margin-right: 10px;
         display: block;
         float: left;
         width: 200px !important;
     }
-  
+
     #loader{
         -moz-border-radius: 8px;
         border-radius: 8px;
@@ -138,7 +138,7 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
                                 <div class="controls"><?php echo $field->input; ?></div>
                             </div>
                         <?php endforeach; ?>
-                        
+
                         <div class="control-group">
                             <div class="control-label"><?php echo $this->form->getLabel('organism_id'); ?></div>
                             <div class="controls">
@@ -188,30 +188,29 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
                                 <div class="controls"><?php echo $field->input; ?></div>
                             </div>
                         <?php endforeach; ?>
+                        <?php if (!empty($this->item->modified)) : ?>
+                            <?php foreach ($this->form->getFieldset('publishing_update') as $field): ?>
+                                <div class="control-group" id="<?php echo $field->fieldname; ?>">
+                                    <div class="control-label"><?php echo $field->label; ?></div>
+                                    <div class="controls"><?php echo $field->input; ?></div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
-                    <?php if(!empty($this->item->modified)) : ?>
-                    <div class="tab-pane" id="publishing_update">
-                        <?php foreach ($this->form->getFieldset('publishing_update') as $field): ?>
-                            <div class="control-group" id="<?php echo $field->fieldname; ?>">
-                                <div class="control-label"><?php echo $field->label; ?></div>
-                                <div class="controls"><?php echo $field->input; ?></div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                     <?php endif; ?>
+
                 </div>
             </div>
         </div>
 
-<?php foreach ($this->form->getFieldset('hidden') as $field): ?>
-    <?php echo $field->input; ?>
-<?php endforeach; ?>  
+        <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
+            <?php echo $field->input; ?>
+        <?php endforeach; ?>  
 
-<?php echo $this->getToolbar(); ?>
-<input type = "hidden" name = "task" value = "" />
-<input type = "hidden" name = "option" value = "com_easysdi_core" />
-<?php echo JHtml::_('form.token'); ?>
-</form>
+        <?php echo $this->getToolbar(); ?>
+        <input type = "hidden" name = "task" value = "" />
+        <input type = "hidden" name = "option" value = "com_easysdi_core" />
+        <?php echo JHtml::_('form.token'); ?>
+    </form>
 
 
 
