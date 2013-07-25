@@ -57,14 +57,14 @@ INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('4', '3', '1');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('5', '3', '5');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('6', '4', '1');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('7', '4', '5');
-INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('8', '5', '1');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('8', '5', '6');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('9', '6', '2');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('10', '6', '3');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('11', '6', '4');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('12', '7', '1');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('13', '7', '5');
-INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('14', '8', '1');
-INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('15', '8', '5');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('14', '8', '6');
+
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('16', '9', '4');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('17', '10', '4');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('18', '12', '5');
