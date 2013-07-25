@@ -12,6 +12,8 @@ defined('_JEXEC') or die;
 // Include dependancies
 jimport('joomla.application.component.controller');
 
+require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/libraries/easysdi/factory/sdifactory.php';
+
 // Execute the task.
 $controller	= JControllerLegacy::getInstance('Easysdi_shop');
 $controller->execute(JFactory::getApplication()->input->get('task'));

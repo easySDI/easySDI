@@ -1,227 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-	<fieldset>
+    <fieldset name="details">
+        <field name="name" type="text"
+              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_NAME"
+              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_NAME" 
+        /> 
 
-              <field name="id" type="text" default="0" label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_ID"
-            readonly="true" class="readonly"
-            description="JGLOBAL_FIELD_ID_DESC" /> 
+        <field name="alias" type="text"
+              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_ALIAS"
+              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_ALIAS" 
+        /> 
+        
+        <field name="description" type="text" size="40" class="inputbox"
+              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_DESCRIPTION"
+              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_DESCRIPTION" 
+              filter="safehtml" /> 
 
-       <field name="guid" type="text"
-                
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_GUID"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_GUID" 
-                
-                
-                 /> 
-
-       <field name="alias" type="text"
-                
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_ALIAS"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_ALIAS" 
-                
-                
-                 /> 
-
-       <field name="created_by" type="createdby" default="" 
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_CREATED_BY"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_CREATED_BY"  /> 
-
-       <field name="created" type="calendar" class="inputbox"
-        
-        
-         default="0000-00-00" 
-        
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_CREATED"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_CREATED" 
-        filter="safehtml" /> 
-
-       <field name="modified_by" type="text" size="40" class="inputbox"
-        
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_MODIFIED_BY"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_MODIFIED_BY" 
-        
-        
-        
-        filter="safehtml" /> 
-
-       <field name="modified" type="calendar" class="inputbox"
-        
-        
-        
-        
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_MODIFIED"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_MODIFIED" 
-        filter="safehtml" /> 
-
-       <field name="version_id" type="text" size="40" class="inputbox"
-        
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_VERSION_ID"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_VERSION_ID" 
-        
-        
-        
-        filter="safehtml" /> 
-
-       <field name="name" type="text"
-                
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_NAME"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_NAME" 
-                
-                
-                 /> 
-
-       <field name="description" type="text" size="40" class="inputbox"
-        
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_DESCRIPTION"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_DESCRIPTION" 
-        
-        
-        
-        filter="safehtml" /> 
-
-       <field name="accessscope_id" type="text" size="40" class="inputbox"
-        
+        <field
+            name="accessscope_id" 
+            onchange="enableAccessScope();"
+            type="sql" 
+            class="inputbox"
             label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_ACCESSSCOPE_ID"
             description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_ACCESSSCOPE_ID" 
-        
-        
-        
-        filter="safehtml" /> 
+            query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 ORDER BY ordering" 
+            key_field="id" 
+            value_field="value"
+            translate="true"
+        /> 
+        <field
+            name="organisms" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY ordering" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        /> 
+        <field
+            name="users" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY ordering" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        /> 
+        <field name="pricing_id" type="text" size="40" class="inputbox"
+              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PRICING_ID"
+              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PRICING_ID" 
+              filter="safehtml" /> 
 
-       <field name="pricing_id" type="text" size="40" class="inputbox"
-        
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PRICING_ID"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PRICING_ID" 
-        
-        
-        
-        filter="safehtml" /> 
+        <field
+            name="state"
+            type="list"
+            label="JSTATUS"
+            description="JFIELD_PUBLISHED_DESC"
+            class="inputbox"
+            size="1"
+            default="1">
+            <option value="1">JPUBLISHED</option>
+            <option value="0">JUNPUBLISHED</option>
+        </field> 
+    </fieldset> 
 
-       <field name="deposit" type="file"
-                
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_DEPOSIT"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_DEPOSIT" 
-                
-                
-                
-            filter="raw"
-            upload_directory="/"
-            max_size="32" /> 
+    <fieldset name="download">
+         <field name="productstorage_id" type="text" size="40" class="inputbox"
+              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PRODUCTSTORAGE_ID"
+              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PRODUCTSTORAGE_ID" 
+              filter="safehtml" /> 
+         
+        <field name="file" type="file"
+              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_FILE"
+              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_FILE" 
+              filter="raw"
+              upload_directory="/"
+              max_size="32" /> 
+        
+        <field name="fileurl" type="text" size="40" class="inputbox"
+              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_FILEURL"
+              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_FILEURL" 
+              filter="safehtml" /> 
 
-       <field name="productmining_id" type="text" size="40" class="inputbox"
+        <field name="grid_id" type="text" size="40" class="inputbox"
+              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_GRID_ID"
+              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_GRID_ID" 
+              filter="safehtml" /> 
+    </fieldset>
+    
+    <fieldset name="extraction">
+        <field name="deposit" type="file"
+              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_DEPOSIT"
+              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_DEPOSIT" 
+              filter="raw"
+              upload_directory="/"
+              max_size="32" /> 
         
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PRODUCTMINING_ID"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PRODUCTMINING_ID" 
-        
-        
-        
-        filter="safehtml" /> 
+         <field name="productmining_id" type="text" size="40" class="inputbox"
+              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PRODUCTMINING_ID"
+              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PRODUCTMINING_ID" 
+              filter="safehtml" /> 
+         
+        <field name="surfacemin" type="text" size="40" class="inputbox"
+              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_SURFACEMIN"
+              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_SURFACEMIN" 
+              filter="safehtml" /> 
 
-       <field name="surfacemin" type="text" size="40" class="inputbox"
-        
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_SURFACEMIN"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_SURFACEMIN" 
-        
-        
-        
-        filter="safehtml" /> 
+        <field name="surfacemax" type="text" size="40" class="inputbox"
+              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_SURFACEMAX"
+              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_SURFACEMAX" 
+              filter="safehtml" /> 
+    </fieldset>
+    
+    <fieldset name="hidden">
+        <field name="id" type="hidden" filter="safehtml" />
+        <field name="version_id" type="hidden" filter="safehtml" />
+        <field name="checked_out" type="hidden" filter="safehtml" />
+        <field name="checked_out_time" type="hidden" filter="safehtml" /> 
+        <field name="guid" type="hidden" filter="safehtml" /> 
+    </fieldset>
+    
+    <fieldset name="publishing">
+        <field name="created_by" type="createdby" default=""  readonly="true"
+               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_CREATED_BY"
+               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_CREATED_BY"  /> 
 
-       <field name="surfacemax" type="text" size="40" class="inputbox"
-        
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_SURFACEMAX"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_SURFACEMAX" 
-        
-        
-        
-        filter="safehtml" /> 
+        <field name="created" type="calendar" 
+               default="0" readonly="true"
+               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_CREATED"
+               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_CREATED" 
+               filter="safehtml" /> 
+    </fieldset>
+    
+    <fieldset name="publishing_update">
+        <field name="modified_by" type="createdby"  readonly="true"
+               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_MODIFIED_BY"
+               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_MODIFIED_BY" 
+               default="0" 
+               filter="safehtml" /> 
 
-       <field name="productstorage_id" type="text" size="40" class="inputbox"
-        
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PRODUCTSTORAGE_ID"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PRODUCTSTORAGE_ID" 
-        
-        
-        
-        filter="safehtml" /> 
-
-       <field name="file" type="file"
-                
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_FILE"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_FILE" 
-                
-                
-                
-            filter="raw"
-            upload_directory="/"
-            max_size="32" /> 
-
-       <field name="fileurl" type="text" size="40" class="inputbox"
-        
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_FILEURL"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_FILEURL" 
-        
-        
-        
-        filter="safehtml" /> 
-
-       <field name="grid_id" type="text" size="40" class="inputbox"
-        
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_GRID_ID"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_GRID_ID" 
-        
-        
-        
-        filter="safehtml" /> 
-
-       <field name="access" type="text" size="40" class="inputbox"
-        
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_ACCESS"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_ACCESS" 
-         default="1" 
-        
-        
-        filter="safehtml" /> 
-
-       <field name="asset_id" type="text" size="40" class="inputbox"
-        
-            label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_ASSET_ID"
-            description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_ASSET_ID" 
-         default="0" 
-        
-        
-        filter="safehtml" /> 
-
-         <field
-        name="state"
-        type="list"
-        label="JSTATUS"
-        description="JFIELD_PUBLISHED_DESC"
-        class="inputbox"
-        size="1"
-        default="1">
-        <option value="1">JPUBLISHED</option>
-        <option value="0">JUNPUBLISHED</option>
-    </field> 
-
-                        <field name="checked_out" type="hidden" filter="unset" />
-        <field name="checked_out_time" type="hidden" filter="unset" /> 
-
- </fieldset> 
-
- <fieldset 
-                        name="accesscontrol">
-                       <field name="asset_id" type="hidden" filter="unset" />
-                       <field name="rules"
-                            type="rules"
-                            label="JFIELD_RULES_LABEL"
-                            translate_label="false"
-                            filter="rules"
-                            validate="rules"
-                            class="inputbox"
-                            component="com_easysdi_shop"
-                            section="diffusion"
-                        />
-
-	</fieldset>
-
+        <field name="modified" type="calendar" class="inputbox"
+               default="0"  readonly="true"
+               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_MODIFIED"
+               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_MODIFIED" 
+               filter="safehtml" />
+    </fieldset>
 </form>

@@ -9,125 +9,177 @@
 // no direct access
 defined('_JEXEC') or die;
 
+JHtml::_('behavior.keepalive');
+JHtml::_('behavior.tooltip');
+JHtml::_('behavior.formvalidation');
+JHtml::_('formbehavior.chosen', 'select');
+
 //Load admin language file
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
-$canEdit = JFactory::getUser()->authorise('core.edit', 'com_easysdi_shop.' . $this->item->id);
-if (!$canEdit && JFactory::getUser()->authorise('core.edit.own', 'com_easysdi_shop' . $this->item->id)) {
-	$canEdit = JFactory::getUser()->id == $this->item->created_by;
-}
+$document = JFactory::getDocument();
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/view/view.js')
 ?>
-<?php if ($this->item) : ?>
 
-    <div class="item_fields">
+<!-- Styling for making front end forms look OK -->
+<!-- This should probably be moved to the template CSS file -->
+<style>
+    .front-end-edit ul {
+        padding: 0 !important;
+    }
+    .front-end-edit li {
+        list-style: none;
+        margin-bottom: 6px !important;
+    }
+    .front-end-edit label {
+        margin-right: 10px;
+        display: block;
+        float: left;
+        width: 200px !important;
+    }
+    .front-end-edit .radio label {
+        float: none;
+    }
+    .front-end-edit .readonly {
+        border: none !important;
+        color: #666;
+    }    
+    .front-end-edit #editor-xtd-buttons {
+        height: 50px;
+        width: 600px;
+        float: left;
+    }
+    .front-end-edit .toggle-editor {
+        height: 50px;
+        width: 120px;
+        float: right;
+    }
 
-        <ul class="fields_list">
+    #jform_rules-lbl{
+        display:none;
+    }
 
-            			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_ID'); ?>:
-			<?php echo $this->item->id; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_GUID'); ?>:
-			<?php echo $this->item->guid; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_ALIAS'); ?>:
-			<?php echo $this->item->alias; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_CREATED_BY'); ?>:
-			<?php echo $this->item->created_by; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_CREATED'); ?>:
-			<?php echo $this->item->created; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_MODIFIED_BY'); ?>:
-			<?php echo $this->item->modified_by; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_MODIFIED'); ?>:
-			<?php echo $this->item->modified; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_ORDERING'); ?>:
-			<?php echo $this->item->ordering; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_STATE'); ?>:
-			<?php echo $this->item->state; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_CHECKED_OUT'); ?>:
-			<?php echo $this->item->checked_out; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_CHECKED_OUT_TIME'); ?>:
-			<?php echo $this->item->checked_out_time; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_VERSION_ID'); ?>:
-			<?php echo $this->item->version_id; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_NAME'); ?>:
-			<?php echo $this->item->name; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_DESCRIPTION'); ?>:
-			<?php echo $this->item->description; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_ACCESSSCOPE_ID'); ?>:
-			<?php echo $this->item->accessscope_id; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PRICING_ID'); ?>:
-			<?php echo $this->item->pricing_id; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_DEPOSIT'); ?>:
+    #access-rules a:hover{
+        background:#f5f5f5 url('../images/slider_minus.png') right  top no-repeat;
+        color: #444;
+    }
 
-			<?php 
-				$uploadPath = 'administrator' . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_easysdi_shop' . DIRECTORY_SEPARATOR . '/' . DIRECTORY_SEPARATOR . $this->item->deposit;
-			?>
-			<a href="<?php echo JRoute::_(JUri::base() . $uploadPath, false); ?>" target="_blank"><?php echo $this->item->deposit; ?></a></li>			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PRODUCTMINING_ID'); ?>:
-			<?php echo $this->item->productmining_id; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_SURFACEMIN'); ?>:
-			<?php echo $this->item->surfacemin; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_SURFACEMAX'); ?>:
-			<?php echo $this->item->surfacemax; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PRODUCTSTORAGE_ID'); ?>:
-			<?php echo $this->item->productstorage_id; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_FILE'); ?>:
+    fieldset.radio label{
+        width: 50px !important;
+    }
+</style>
+<script type="text/javascript">
+    function getScript(url, success) {
+        var script = document.createElement('script');
+        script.src = url;
+        var head = document.getElementsByTagName('head')[0],
+                done = false;
+        // Attach handlers for all browsers
+        script.onload = script.onreadystatechange = function() {
+            if (!done && (!this.readyState
+                    || this.readyState == 'loaded'
+                    || this.readyState == 'complete')) {
+                done = true;
+                success();
+                script.onload = script.onreadystatechange = null;
+                head.removeChild(script);
+            }
+        };
+        head.appendChild(script);
+    }
+    getScript('//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js', function() {
+        js = jQuery.noConflict();
+        js(document).ready(function() {
+            js('#form-diffusion').submit(function(event) {
 
-			<?php 
-				$uploadPath = 'administrator' . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_easysdi_shop' . DIRECTORY_SEPARATOR . '/' . DIRECTORY_SEPARATOR . $this->item->file;
-			?>
-			<a href="<?php echo JRoute::_(JUri::base() . $uploadPath, false); ?>" target="_blank"><?php echo $this->item->file; ?></a></li>			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_FILEURL'); ?>:
-			<?php echo $this->item->fileurl; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_GRID_ID'); ?>:
-			<?php echo $this->item->grid_id; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_ACCESS'); ?>:
-			<?php echo $this->item->access; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_ASSET_ID'); ?>:
-			<?php echo $this->item->asset_id; ?></li>
+                if (js('#jform_deposit').val() != '') {
+                    js('#jform_deposit_hidden').val(js('#jform_deposit').val());
+                }
+                if (js('#jform_file').val() != '') {
+                    js('#jform_file_hidden').val(js('#jform_file').val());
+                }
+            });
 
 
-        </ul>
+        });
+    });
 
-    </div>
-    <?php if($canEdit): ?>
-		<a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.edit&id='.$this->item->id); ?>"><?php echo JText::_("COM_EASYSDI_SHOP_EDIT_ITEM"); ?></a>
-	<?php endif; ?>
-								<?php if(JFactory::getUser()->authorise('core.delete','com_easysdi_shop.diffusion.'.$this->item->id)):
-								?>
-									<a href="javascript:document.getElementById('form-diffusion-delete-<?php echo $this->item->id ?>').submit()"><?php echo JText::_("COM_EASYSDI_SHOP_DELETE_ITEM"); ?></a>
-									<form id="form-diffusion-delete-<?php echo $this->item->id; ?>" style="display:inline" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.remove'); ?>" method="post" class="form-validate" enctype="multipart/form-data">
-										<input type="hidden" name="jform[id]" value="<?php echo $this->item->id; ?>" />
-										<input type="hidden" name="jform[guid]" value="<?php echo $this->item->guid; ?>" />
-										<input type="hidden" name="jform[alias]" value="<?php echo $this->item->alias; ?>" />
-										<input type="hidden" name="jform[created_by]" value="<?php echo $this->item->created_by; ?>" />
-										<input type="hidden" name="jform[created]" value="<?php echo $this->item->created; ?>" />
-										<input type="hidden" name="jform[modified_by]" value="<?php echo $this->item->modified_by; ?>" />
-										<input type="hidden" name="jform[modified]" value="<?php echo $this->item->modified; ?>" />
-										<input type="hidden" name="jform[ordering]" value="<?php echo $this->item->ordering; ?>" />
-										<input type="hidden" name="jform[state]" value="<?php echo $this->item->state; ?>" />
-										<input type="hidden" name="jform[checked_out]" value="<?php echo $this->item->checked_out; ?>" />
-										<input type="hidden" name="jform[checked_out_time]" value="<?php echo $this->item->checked_out_time; ?>" />
-										<input type="hidden" name="jform[version_id]" value="<?php echo $this->item->version_id; ?>" />
-										<input type="hidden" name="jform[name]" value="<?php echo $this->item->name; ?>" />
-										<input type="hidden" name="jform[description]" value="<?php echo $this->item->description; ?>" />
-										<input type="hidden" name="jform[accessscope_id]" value="<?php echo $this->item->accessscope_id; ?>" />
-										<input type="hidden" name="jform[pricing_id]" value="<?php echo $this->item->pricing_id; ?>" />
-										<input type="hidden" name="jform[deposit]" value="<?php echo $this->item->deposit; ?>" />
-										<input type="hidden" name="jform[productmining_id]" value="<?php echo $this->item->productmining_id; ?>" />
-										<input type="hidden" name="jform[surfacemin]" value="<?php echo $this->item->surfacemin; ?>" />
-										<input type="hidden" name="jform[surfacemax]" value="<?php echo $this->item->surfacemax; ?>" />
-										<input type="hidden" name="jform[productstorage_id]" value="<?php echo $this->item->productstorage_id; ?>" />
-										<input type="hidden" name="jform[file]" value="<?php echo $this->item->file; ?>" />
-										<input type="hidden" name="jform[fileurl]" value="<?php echo $this->item->fileurl; ?>" />
-										<input type="hidden" name="jform[grid_id]" value="<?php echo $this->item->grid_id; ?>" />
-										<input type="hidden" name="jform[access]" value="<?php echo $this->item->access; ?>" />
-										<input type="hidden" name="jform[asset_id]" value="<?php echo $this->item->asset_id; ?>" />
-										<input type="hidden" name="option" value="com_easysdi_shop" />
-										<input type="hidden" name="task" value="diffusion.remove" />
-										<?php echo JHtml::_('form.token'); ?>
-									</form>
-								<?php
-								endif;
-							?>
-<?php
-else:
-    echo JText::_('COM_EASYSDI_SHOP_ITEM_NOT_LOADED');
-endif;
-?>
+</script>
+
+<div class="diffusion-edit front-end-edit">
+    <?php if (!empty($this->item->id)): ?>
+        <h1><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_EDIT_DIFFUSION') . ' ' . $this->item->name; ?></h1>
+    <?php else: ?>
+        <h1><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_NEW_DIFFUSION'); ?></h1>
+    <?php endif; ?>
+
+    <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+
+        <div class="row-fluid">
+            <div >
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#details" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SHOP_TAB_DETAILS'); ?></a></li>
+                    <li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_SHOP_TAB_PUBLISHING'); ?></a></li>
+                </ul>
+
+                <div class="tab-content">
+                    <!-- Begin Tabs -->
+                    <div class="tab-pane active" id="details">
+                        <?php foreach ($this->form->getFieldset('details') as $field): ?>
+                            <div class="control-group" id="<?php echo $field->fieldname; ?>">
+                                <div class="control-label"><?php echo $field->label; ?></div>
+                                <div class="controls"><?php echo $field->input; ?></div>
+                            </div>
+                        <?php endforeach; ?>
+                        <fieldset>
+                            <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_DOWNLOAD'); ?></legend>
+                            <?php foreach ($this->form->getFieldset('download') as $field): ?>
+                                <div class="control-group" id="<?php echo $field->fieldname; ?>">
+                                    <div class="control-label"><?php echo $field->label; ?></div>
+                                    <div class="controls"><?php echo $field->input; ?></div>
+                                </div>
+                            <?php endforeach; ?>
+                        </fieldset>
+                        <fieldset>
+                            <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_EXTRACTION'); ?></legend>
+                            <?php foreach ($this->form->getFieldset('extraction') as $field): ?>
+                                <div class="control-group" id="<?php echo $field->fieldname; ?>">
+                                    <div class="control-label"><?php echo $field->label; ?></div>
+                                    <div class="controls"><?php echo $field->input; ?></div>
+                                </div>
+                            <?php endforeach; ?>
+                        </fieldset>
+                    </div>
+
+                    <div class="tab-pane" id="publishing">
+                        <?php foreach ($this->form->getFieldset('publishing') as $field): ?>
+                            <div class="control-group" id="<?php echo $field->fieldname; ?>">
+                                <div class="control-label"><?php echo $field->label; ?></div>
+                                <div class="controls"><?php echo $field->input; ?></div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php if(!empty($this->item->modified)) : ?>
+                    <div class="tab-pane" id="publishing_update">
+                        <?php foreach ($this->form->getFieldset('publishing_update') as $field): ?>
+                            <div class="control-group" id="<?php echo $field->fieldname; ?>">
+                                <div class="control-label"><?php echo $field->label; ?></div>
+                                <div class="controls"><?php echo $field->input; ?></div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                     <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+        <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
+            <?php echo $field->input; ?>
+        <?php endforeach; ?>  
+
+        <?php echo $this->getToolbar(); ?>
+        <input type = "hidden" name = "task" value = "" />
+        <input type = "hidden" name = "option" value = "com_easysdi_shop" />
+        <?php echo JHtml::_('form.token'); ?>
+    </form>
+</div>
