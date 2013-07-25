@@ -38,6 +38,9 @@ class Easysdi_shopTablediffusion extends sdiTable {
         $input = JFactory::getApplication()->input;
         $task = $input->getString('task', '');
 
+        $params = JFactory::getApplication()->getParams('com_easysdi_shop');
+        $fileFolder = $params->get('fileFolder');
+        $depositFolder = $params->get('depositFolder');
         //Support for file field: deposit
         if (isset($_FILES['jform']['name']['deposit'])):
             jimport('joomla.filesystem.file');
@@ -84,7 +87,7 @@ class Easysdi_shopTablediffusion extends sdiTable {
 
                 //Add Timestamp MD5 to avoid overwriting
                 $filename = md5(time()) . '-' . implode('.', $filename);
-                $uploadPath = JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_easysdi_shop' . DIRECTORY_SEPARATOR . '/' . DIRECTORY_SEPARATOR . $filename;
+                $uploadPath = $depositFolder . '/' . $filename;
                 $fileTemp = $file['tmp_name']['deposit'];
 
                 if (!JFile::exists($uploadPath)):
@@ -148,7 +151,7 @@ class Easysdi_shopTablediffusion extends sdiTable {
 
                 //Add Timestamp MD5 to avoid overwriting
                 $filename = md5(time()) . '-' . implode('.', $filename);
-                $uploadPath = JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_easysdi_shop' . DIRECTORY_SEPARATOR . '/' . DIRECTORY_SEPARATOR . $filename;
+                $uploadPath = $fileFolder . '/' . $filename;
                 $fileTemp = $file['tmp_name']['file'];
 
                 if (!JFile::exists($uploadPath)):

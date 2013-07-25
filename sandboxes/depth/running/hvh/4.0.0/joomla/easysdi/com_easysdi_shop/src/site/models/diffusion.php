@@ -14,6 +14,8 @@ jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
 
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/resource.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/version.php';
 
 /**
  * Easysdi_shop model.
@@ -70,8 +72,6 @@ class Easysdi_shopModelDiffusion extends JModelForm {
 
             // Attempt to load the row.
             if ($table->load($id)) {
-                
-
                 // Convert the JTable to a clean JObject.
                 $properties = $table->getProperties(1);
                 $this->_item = JArrayHelper::toObject($properties, 'JObject');
@@ -82,8 +82,15 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 $this->setError($error);
             }
         }
-        if(empty($id))
+        if(empty($id)){
             $this->_item->version_id = JFactory::getApplication()->getUserState ('com_easysdi_shop.edit.diffusionversion.id');
+            
+            $resource = JTable::getInstance('resource', 'Easysdi_coreTable');
+            $version = JTable::getInstance('version', 'Easysdi_coreTable');
+            $version->load($this->_item->version_id);
+            $resource->load($version->resource_id);
+            $this->_item->name= $resource->name;
+        }
         
         return $this->_item;
     }
@@ -209,7 +216,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return false;
         }
-
+        
         $table = $this->getTable();
         if ($table->save($data) === true) {
             if(!sdiModel::saveAccessScope($data))

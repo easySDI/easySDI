@@ -69,46 +69,91 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
     }
 </style>
 <script type="text/javascript">
-    function getScript(url, success) {
-        var script = document.createElement('script');
-        script.src = url;
-        var head = document.getElementsByTagName('head')[0],
-                done = false;
-        // Attach handlers for all browsers
-        script.onload = script.onreadystatechange = function() {
-            if (!done && (!this.readyState
-                    || this.readyState == 'loaded'
-                    || this.readyState == 'complete')) {
-                done = true;
-                success();
-                script.onload = script.onreadystatechange = null;
-                head.removeChild(script);
+//    function getScript(url, success) {
+//        var script = document.createElement('script');
+//        script.src = url;
+//        var head = document.getElementsByTagName('head')[0],
+//                done = false;
+//        // Attach handlers for all browsers
+//        script.onload = script.onreadystatechange = function() {
+//            if (!done && (!this.readyState
+//                    || this.readyState == 'loaded'
+//                    || this.readyState == 'complete')) {
+//                done = true;
+//                success();
+//                script.onload = script.onreadystatechange = null;
+//                head.removeChild(script);
+//            }
+//        };
+//        head.appendChild(script);
+//    }
+    js = jQuery.noConflict();
+    js(document).ready(function() {
+        enableAccessScope();
+        onProductStorageChange();
+        onPricingChange();
+        js('#adminForm').submit(function(event) {
+
+            if (js('#jform_deposit').val() != '') {
+                js('#jform_deposit_hidden').val(js('#jform_deposit').val());
             }
-        };
-        head.appendChild(script);
-    }
-    getScript('//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js', function() {
-        js = jQuery.noConflict();
-        js(document).ready(function() {
-            js('#form-diffusion').submit(function(event) {
-
-                if (js('#jform_deposit').val() != '') {
-                    js('#jform_deposit_hidden').val(js('#jform_deposit').val());
-                }
-                if (js('#jform_file').val() != '') {
-                    js('#jform_file_hidden').val(js('#jform_file').val());
-                }
-            });
-
-
+            if (js('#jform_file').val() != '') {
+                js('#jform_file_hidden').val(js('#jform_file').val());
+            }
         });
     });
+    function onProductStorageChange() {
+        var storage = js("#jform_productstorage_id :selected").val();
+        switch (storage) {
+            case "1":
+                js('#file').show();
+                js('#jform_file_hidden_href').show();
+                js('#fileurl').hide();
+                js('#jform_fileurl').val('');
+                js('#perimeter_id').hide();
+                js('#jform_perimeter_id :selected').removeAttr('selected');
+                break;
+            case "2":
+                js('#file').hide();
+                js('#jform_file_hidden_href').hide();
+                js('#jform_file').val('');
+                js('#jform_file_hidden').val('');
+                js('#fileurl').show();
+                js('#perimeter_id').hide();
+                js('#jform_perimeter_id :selected').removeAttr('selected');
+                break;
+            case "3":
+                js('#file').hide();
+                js('#jform_file_hidden_href').hide();
+                js('#jform_file').val('');
+                js('#jform_file_hidden').val('');
+                js('#fileurl').hide();
+                js('#jform_fileurl').val('');
+                js('#perimeter_id').show();
+                break;
+        }
+
+    }
+
+    function onPricingChange() {
+        if (js('#jform_pricing_id').val() == 1) {
+            js('#fieldset_download').show();
+        } else {
+            js('#fieldset_download').hide();
+            js('#jform_file').val('');
+            js('#jform_file_hidden').val('');
+            js('#jform_fileurl').val('');
+            js('#jform_perimeter_id :selected').removeAttr('selected');
+            js('#jform_productstorage_id :selected').removeAttr('selected');
+
+        }
+    }
 
 </script>
 
 <div class="diffusion-edit front-end-edit">
     <?php if (!empty($this->item->id)): ?>
-        <h1><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_EDIT_DIFFUSION') . ' ' . $this->item->name; ?></h1>
+        <h1><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_EDIT_DIFFUSION'); ?></h1>
     <?php else: ?>
         <h1><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_NEW_DIFFUSION'); ?></h1>
     <?php endif; ?>
@@ -131,7 +176,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                 <div class="controls"><?php echo $field->input; ?></div>
                             </div>
                         <?php endforeach; ?>
-                        <fieldset>
+                        <fieldset id ="fieldset_download">
                             <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_DOWNLOAD'); ?></legend>
                             <?php foreach ($this->form->getFieldset('download') as $field): ?>
                                 <div class="control-group" id="<?php echo $field->fieldname; ?>">
@@ -139,8 +184,17 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                     <div class="controls"><?php echo $field->input; ?></div>
                                 </div>
                             <?php endforeach; ?>
+                            <div class="control-group" id="file">
+                                <div class="control-label"><?php echo $this->form->getLabel('file'); ?></div>
+                                <div class="controls"><?php echo $this->form->getInput('file'); ?>
+                                    <?php if (!empty($this->item->file)) : ?>
+                                        <a id="jform_file_hidden_href" href="<?php echo JRoute::_($this->params->get('fileFolder') . '/' . $this->item->file, false); ?>"><?php echo JText::_("COM_EASYSDI_SHOP_VIEW_FILE"); ?></a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <input type="hidden" name="jform[file]" id="jform_file_hidden" value="<?php echo $this->item->file ?>" />			
                         </fieldset>
-                        <fieldset>
+                        <fieldset id ="fieldset_extraction">
                             <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_EXTRACTION'); ?></legend>
                             <?php foreach ($this->form->getFieldset('extraction') as $field): ?>
                                 <div class="control-group" id="<?php echo $field->fieldname; ?>">
@@ -148,6 +202,16 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                     <div class="controls"><?php echo $field->input; ?></div>
                                 </div>
                             <?php endforeach; ?>
+                            <div class="control-group" id="deposit">
+                                <div class="control-label"><?php echo $this->form->getLabel('file'); ?></div>
+                                <div class="controls"><?php echo $this->form->getInput('file'); ?>
+                                    <?php if (!empty($this->item->deposit)) : ?>
+                                        <a id="jform_deposit_hidden_href" href="<?php echo JRoute::_($this->params->get('depositFolder') . '/' . $this->item->deposit, false); ?>"><?php echo JText::_("COM_EASYSDI_SHOP_VIEW_FILE"); ?></a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <input type="hidden" name="jform[deposit]" id="jform_deposit_hidden" value="<?php echo $this->item->deposit ?>" />			
+
                         </fieldset>
                     </div>
 
@@ -158,17 +222,16 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                 <div class="controls"><?php echo $field->input; ?></div>
                             </div>
                         <?php endforeach; ?>
+                        <?php if ($this->item->modified_by) : ?>
+                            <?php foreach ($this->form->getFieldset('publishing_update') as $field): ?>
+                                <div class="control-group" id="<?php echo $field->fieldname; ?>">
+                                    <div class="control-label"><?php echo $field->label; ?></div>
+                                    <div class="controls"><?php echo $field->input; ?></div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
-                    <?php if(!empty($this->item->modified)) : ?>
-                    <div class="tab-pane" id="publishing_update">
-                        <?php foreach ($this->form->getFieldset('publishing_update') as $field): ?>
-                            <div class="control-group" id="<?php echo $field->fieldname; ?>">
-                                <div class="control-label"><?php echo $field->label; ?></div>
-                                <div class="controls"><?php echo $field->input; ?></div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                     <?php endif; ?>
+
                 </div>
             </div>
         </div>

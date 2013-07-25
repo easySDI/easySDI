@@ -22,6 +22,10 @@
                    description="COM_EASYSDI_SHOP_CONFIG_DESC_MAXUPLOADFILESIZE">
            </field>
            
+           <field name="fileFolder" type="folderlist" default="" label="COM_EASYSDI_SHOP_CONFIG_LBL_DOWNLOADFOLDER" description="COM_EASYSDI_SHOP_CONFIG_DESC_DOWNLOADFOLDER" directory="" filter="" exclude="" stripext="" />
+           
+           <field name="depositFolder" type="folderlist" default="" label="COM_EASYSDI_SHOP_CONFIG_LBL_DEPOSITFOLDER" description="COM_EASYSDI_SHOP_CONFIG_DESC_DEPOSITFOLDER" directory="" filter="" exclude="" stripext="" />
+           
            <field name="archiveorderdelay"
                    type="text"
                    default="10"

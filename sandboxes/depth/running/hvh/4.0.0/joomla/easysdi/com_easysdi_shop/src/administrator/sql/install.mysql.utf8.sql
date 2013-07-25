@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_diffusion` (
 `productmining_id` INT(11) UNSIGNED NOT NULL ,
 `surfacemin` VARCHAR(50)    ,
 `surfacemax` VARCHAR(50)    ,
-`productstorage_id` INT(11) UNSIGNED NOT NULL ,
+`productstorage_id` INT(11) UNSIGNED ,
 `file` VARCHAR(255)   ,
 `fileurl` VARCHAR(500)   ,
 `perimeter_id` INT(11) UNSIGNED  ,
