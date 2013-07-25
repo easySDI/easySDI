@@ -82,6 +82,11 @@ class Easysdi_coreModelApplication extends JModelForm {
                 $this->setError($error);
             }
         }
+        
+        if(empty($this->_item->resource_id)){
+            //New item
+            $this->_item->resource_id = JFactory::getApplication()->getUserState('com_easysdi_core.edit.applicationresource.id');
+        }
 
         return $this->_item;
     }

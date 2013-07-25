@@ -26,6 +26,7 @@ defined('_JEXEC') or die;
                     <th><?php echo JText::_('COM_EASYSDI_CORE_APPLICATIONS_NAME'); ?></th>
                     <th><?php echo JText::_('COM_EASYSDI_CORE_APPLICATIONS_DESCRIPTION'); ?></th>
                     <th><?php echo JText::_('COM_EASYSDI_CORE_APPLICATIONS_URL'); ?></th>
+                    <th></th>
                 </tr>
             </thead>
             <tfoot>
@@ -33,7 +34,7 @@ defined('_JEXEC') or die;
             </tfoot>
             <tbody>
                 <?php foreach ($this->items as $item) : ?>
-                    <?php $show = true; ?>;
+                    <?php $show = true; ?>
                     <tr>
                         <td>
                             <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=application.edit&id=' . (int) $item->id); ?>"><?php echo $item->name; ?></a>
@@ -43,6 +44,15 @@ defined('_JEXEC') or die;
                         </td>
                         <td>
                             <?php echo $item->url; ?>
+                        </td>
+                        <td>
+                            <a href="javascript:document.getElementById('form-application-delete-<?php echo $item->id; ?>').submit()" class="btn btn-danger btn-mini"><i class="icon-white icon-remove"></i></a>
+                            <form id="form-application-delete-<?php echo $item->id ?>" style="display:inline" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=application.remove'); ?>" method="post" class="form-validate" enctype="multipart/form-data">
+                                <input type="hidden" name="jform[id]" value="<?php echo $item->id; ?>" />
+                                <input type="hidden" name="option" value="com_easysdi_core" />
+                                <input type="hidden" name="task" value="application.remove" />
+                                <?php echo JHtml::_('form.token'); ?>
+                            </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>

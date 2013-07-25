@@ -35,7 +35,7 @@ class Easysdi_coreModelApplications extends JModelList {
      * @since	1.6
      */
     protected function populateState($ordering = null, $direction = null) {
-        
+
         // Initialise variables.
         $app = JFactory::getApplication();
 
@@ -46,11 +46,14 @@ class Easysdi_coreModelApplications extends JModelList {
         $limitstart = JFactory::getApplication()->input->getInt('limitstart', 0);
         $this->setState('list.start', $limitstart);
         
-        
-		if(empty($ordering)) {
-			$ordering = 'a.ordering';
-		}
-        
+        $resource = $app->getUserState('com_easysdi_core.edit.applicationresource.id');
+        $this->setState('applicationresource.id', $resource);
+
+
+        if (empty($ordering)) {
+            $ordering = 'a.ordering';
+        }
+
         // List state information.
         parent::populateState($ordering, $direction);
     }
@@ -72,32 +75,36 @@ class Easysdi_coreModelApplications extends JModelList {
                         'list.select', 'a.*'
                 )
         );
-        
+
         $query->from('`#__sdi_application` AS a');
-        
-
-    // Join over the users for the checked out user.
-    $query->select('uc.name AS editor');
-    $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
-    
-		// Join over the created by field 'created_by'
-		$query->select('created_by.name AS created_by');
-		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
 
 
-		// Filter by search in title
-		$search = $this->getState('filter.search');
-		if (!empty($search)) {
-			if (stripos($search, 'id:') === 0) {
-				$query->where('a.id = '.(int) substr($search, 3));
-			} else {
-				$search = $db->Quote('%'.$db->escape($search, true).'%');
-                
-			}
-		}
-        
-        
-        
+        // Join over the users for the checked out user.
+        $query->select('uc.name AS editor');
+        $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
+
+        // Join over the created by field 'created_by'
+        $query->select('created_by.name AS created_by');
+        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
+
+
+        // Filter by search in title
+        $search = $this->getState('filter.search');
+        if (!empty($search)) {
+            if (stripos($search, 'id:') === 0) {
+                $query->where('a.id = ' . (int) substr($search, 3));
+            } else {
+                $search = $db->Quote('%' . $db->escape($search, true) . '%');
+            }
+        }
+
+        $resource = $this->getState('applicationresource.id');
+        if(!empty($resource)){
+            $query->join('LEFT', '#__sdi_resource AS resource ON resource.id = a.resource_id');
+            $query->where('resource.id = ' . (int) $resource);
+        }
+
+
         return $query;
     }
 

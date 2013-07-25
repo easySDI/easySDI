@@ -127,9 +127,7 @@ class Easysdi_coreControllerApplication extends Easysdi_coreController {
         
         // Redirect to the list screen.
         $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_SAVED_SUCCESSFULLY'));
-        $menu = & JSite::getMenu();
-        $item = $menu->getActive();
-        $this->setRedirect(JRoute::_($item->link, false));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=applications&resource='.$app->getUserState('com_easysdi_core.edit.applicationresource.id'), false));
 
         // Flush the data from the session.
         $app->setUserState('com_easysdi_core.edit.application.data', null);
@@ -151,39 +149,6 @@ class Easysdi_coreControllerApplication extends Easysdi_coreController {
         // Get the user data.
         $data = JFactory::getApplication()->input->get('jform', array(), 'array');
 
-        // Validate the posted data.
-        $form = $model->getForm();
-        if (!$form) {
-            JError::raiseError(500, $model->getError());
-            return false;
-        }
-
-        // Validate the posted data.
-        $data = $model->validate($form, $data);
-
-        // Check for errors.
-        if ($data === false) {
-            // Get the validation messages.
-            $errors = $model->getErrors();
-
-            // Push up to three validation messages out to the user.
-            for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
-                if ($errors[$i] instanceof Exception) {
-                    $app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-                } else {
-                    $app->enqueueMessage($errors[$i], 'warning');
-                }
-            }
-
-            // Save the data in the session.
-            $app->setUserState('com_easysdi_core.edit.application.data', $data);
-
-            // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_easysdi_core.edit.application.id');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=application&layout=edit&id=' . $id, false));
-            return false;
-        }
-
         // Attempt to save the data.
         $return = $model->delete($data);
 
@@ -195,10 +160,9 @@ class Easysdi_coreControllerApplication extends Easysdi_coreController {
             // Redirect back to the edit screen.
             $id = (int) $app->getUserState('com_easysdi_core.edit.application.id');
             $this->setMessage(JText::sprintf('Delete failed', $model->getError()), 'warning');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=application&layout=edit&id=' . $id, false));
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=applications&resource='.$app->getUserState('com_easysdi_core.edit.applicationresource.id'), false));
             return false;
         }
-
 
         // Check in the profile.
         if ($return) {
@@ -210,9 +174,7 @@ class Easysdi_coreControllerApplication extends Easysdi_coreController {
         
         // Redirect to the list screen.
         $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_DELETED_SUCCESSFULLY'));
-        $menu = & JSite::getMenu();
-        $item = $menu->getActive();
-        $this->setRedirect(JRoute::_($item->link, false));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=applications&resource='.$app->getUserState('com_easysdi_core.edit.applicationresource.id'), false));
 
         // Flush the data from the session.
         $app->setUserState('com_easysdi_core.edit.application.data', null);

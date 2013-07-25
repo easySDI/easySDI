@@ -46,9 +46,6 @@ class Easysdi_coreViewApplications extends JViewLegacy {
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_easysdi_core');
 
-
-
-
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
