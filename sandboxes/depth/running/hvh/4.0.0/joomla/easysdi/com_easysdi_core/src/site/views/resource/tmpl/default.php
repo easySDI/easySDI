@@ -189,6 +189,16 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
                             </div>
                         <?php endforeach; ?>
                     </div>
+                    <?php if(!empty($this->item->modified)) : ?>
+                    <div class="tab-pane" id="publishing_update">
+                        <?php foreach ($this->form->getFieldset('publishing_update') as $field): ?>
+                            <div class="control-group" id="<?php echo $field->fieldname; ?>">
+                                <div class="control-label"><?php echo $field->label; ?></div>
+                                <div class="controls"><?php echo $field->input; ?></div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                     <?php endif; ?>
                 </div>
             </div>
         </div>

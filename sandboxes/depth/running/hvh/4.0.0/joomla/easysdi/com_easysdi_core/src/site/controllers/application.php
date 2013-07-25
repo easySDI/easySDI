@@ -31,8 +31,7 @@ class Easysdi_coreControllerApplication extends Easysdi_coreController {
 
         // Set the user id for the user to edit in the session.
         $app->setUserState('com_easysdi_core.edit.application.id', $editId);
-        
-        
+               
 
         // Get the model.
         $model = $this->getModel('Application', 'Easysdi_coreModel');

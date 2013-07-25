@@ -197,26 +197,23 @@ class Easysdi_coreModelApplication extends JModelForm {
     public function save($data) {
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('application.id');
         $state = (!empty($data['state'])) ? 1 : 0;
-        $user = JFactory::getUser();
-
-        if ($id) {
-            //Check the user can edit this item
-            $authorised = $user->authorise('core.edit', 'com_easysdi_core.application.' . $id) || $authorised = $user->authorise('core.edit.own', 'com_easysdi_core.application.' . $id);
-            if ($user->authorise('core.edit.state', 'com_easysdi_core.application.' . $id) !== true && $state == 1) { //The user cannot edit the state of the item.
-                $data['state'] = 0;
+        
+        //Check the user right
+        try {
+            $user = sdiFactory::getSdiUser();
+            if (!$user->authorize($data['resource_id'], sdiUser::resourcemanager)) {
+                //Try to save an application but not a resource manager
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+                JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+                return false;
             }
-        } else {
-            //Check the user can create new items in this section
-            $authorised = $user->authorise('core.create', 'com_easysdi_core');
-            if ($user->authorise('core.edit.state', 'com_easysdi_core.application.' . $id) !== true && $state == 1) { //The user cannot edit the state of the item.
-                $data['state'] = 0;
-            }
-        }
-
-        if ($authorised !== true) {
+        } catch (Exception $e) {
+            //Not an EasySDI user = not allowed
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return false;
         }
+
+  
 
         $table = $this->getTable();
         if ($table->save($data) === true) {

@@ -76,7 +76,9 @@
               label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_CREATED"
               description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_CREATED" 
               filter="safehtml" /> 
-
+    </fieldset>
+    
+    <fieldset name="publishing_update">
         <field name="modified_by" type="createdby"  readonly="true"
               label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_MODIFIED_BY"
               description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_MODIFIED_BY" 

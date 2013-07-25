@@ -97,7 +97,7 @@ endif;
                                 //Load versions
                                 $db = JFactory::getDbo();
                                 $query = $db->getQuery(true)
-                                        ->select('m.id, v.name, s.value, s.id AS state, v.id as version ')
+                                        ->select('m.id, v.name, s.value, s.id AS state, v.id as version')
                                         ->from('#__sdi_version v')
                                         ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
                                         ->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id')
