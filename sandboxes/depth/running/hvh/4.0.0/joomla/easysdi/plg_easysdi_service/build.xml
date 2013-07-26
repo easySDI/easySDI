@@ -27,7 +27,7 @@
     
     <target name="write-xml">
         <echoxml file="${plg.service.src.out.dir}/easysdiservice.xml">
-            <extension version="3.0" type="plugin" group="content">
+            <extension version="3.0" type="plugin" group="content" method="upgrade">
                 <name>plg_easysdi_service</name>
                 <author>EasySDI Community</author>
                 <creationDate>15 August 2012</creationDate>

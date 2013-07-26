@@ -76,57 +76,57 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
 <script type="text/javascript">
     js = jQuery.noConflict();
     js(document).ready(function() {
-        enableAccessScope();
-        onProductStorageChange();
-        onPricingChange();
-        js('#adminForm').submit(function(event) {
+    enableAccessScope();
+    onProductStorageChange();
+    onPricingChange();
+    js('#adminForm').submit(function(event) {
 
-            if (js('#jform_deposit').val() != '') {
-                js('#jform_deposit_hidden').val(js('#jform_deposit').val());
-            }
-            if (js('#jform_file').val() != '') {
-                js('#jform_file_hidden').val(js('#jform_file').val());
-            }
-        });
+    if (js('#jform_deposit').val() != '') {
+    js('#jform_deposit_hidden').val(js('#jform_deposit').val());
+    }
+    if (js('#jform_file').val() != '') {
+    js('#jform_file_hidden').val(js('#jform_file').val());
+    }
+    });
     });
     function onProductStorageChange() {
-        var storage = js("#jform_productstorage_id :selected").val();
-        switch (storage) {
-            case "1":
-                
-                js('#fileurl').hide();
-                js('#jform_fileurl').val('');
-                js('#perimeter_id').hide();
-                js('#jform_perimeter_id :selected').removeAttr('selected');
-                break;
-            case "2":
-                
-                js('#fileurl').show();
-                js('#perimeter_id').hide();
-                js('#jform_perimeter_id :selected').removeAttr('selected');
-                break;
-            case "3":
-                
-                js('#fileurl').hide();
-                js('#jform_fileurl').val('');
-                js('#perimeter_id').show();
-                break;
-        }
+    var storage = js("#jform_productstorage_id :selected").val();
+    switch (storage) {
+    case "1":
+
+    js('#fileurl').hide();
+    js('#jform_fileurl').val('');
+    js('#perimeter_id').hide();
+    js('#jform_perimeter_id :selected').removeAttr('selected');
+    break;
+    case "2":
+
+    js('#fileurl').show();
+    js('#perimeter_id').hide();
+    js('#jform_perimeter_id :selected').removeAttr('selected');
+    break;
+    case "3":
+
+    js('#fileurl').hide();
+    js('#jform_fileurl').val('');
+    js('#perimeter_id').show();
+    break;
+    }
 
     }
 
     function onPricingChange() {
-        if (js('#jform_pricing_id').val() == 1) {
-            js('#fieldset_download').show();
-        } else {
-            js('#fieldset_download').hide();
-            js('#jform_file').val('');
-            js('#jform_file_hidden').val('');
-            js('#jform_fileurl').val('');
-            js('#jform_perimeter_id :selected').removeAttr('selected');
-            js('#jform_productstorage_id :selected').removeAttr('selected');
+    if (js('#jform_pricing_id').val() == 1) {
+    js('#fieldset_download').show();
+    } else {
+    js('#fieldset_download').hide();
+    js('#jform_file').val('');
+    js('#jform_file_hidden').val('');
+    js('#jform_fileurl').val('');
+    js('#jform_perimeter_id :selected').removeAttr('selected');
+    js('#jform_productstorage_id :selected').removeAttr('selected');
 
-        }
+    }
     }
 
 </script>
@@ -276,46 +276,8 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                     <div class="controls"><?php echo $field->input; ?></div>
                                 </div>
                             <?php endforeach; ?>
-                            <!-- The file upload div used as target for the file upload widget -->
-                            <div id="fileupload" class="offset1" >
-                                <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
-                                <div class="row fileupload-buttonbar">
-                                    <div class="span10">
-                                        <!-- The fileinput-button span is used to style the file input field as button -->
-                                        <span class="btn btn-success fileinput-button">
-                                            <i class="icon-plus icon-white"></i>
-                                            <span>Add files...</span>
-                                            <input type="file" name="files[]" multiple>
-                                        </span>
-                                        <button type="submit" class="btn btn-primary start">
-                                            <i class="icon-upload icon-white"></i>
-                                            <span>Start upload</span>
-                                        </button>
-                                        <button type="reset" class="btn btn-warning cancel">
-                                            <i class="icon-ban-circle icon-white"></i>
-                                            <span>Cancel upload</span>
-                                        </button>
-                                        <button id="btn-delete" type="button" class="btn btn-danger delete">
-                                            <i class="icon-trash icon-white"></i>
-                                            <span>Delete</span>
-                                        </button>
-                                        <input type="checkbox" class="toggle">
-                                        <!-- The loading indicator is shown during file processing -->
-                                        <span class="fileupload-loading"></span>
-                                    </div>
-                                    <!-- The global progress information -->
-                                    <div class="span10 fileupload-progress fade">
-                                        <!-- The global progress bar -->
-                                        <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-                                            <div class="bar" style="width:0%;"></div>
-                                        </div>
-                                        <!-- The extended global progress information -->
-                                        <div class="progress-extended">&nbsp;</div>
-                                    </div>
-                                </div>
-                                <!-- The table listing the files available for upload/download -->
-                                <table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
-                            </div>
+                            <a href="#myModal" role="button" class="btn" data-toggle="modal">Launch demo modal</a>
+
                         </fieldset>
                         <fieldset id ="fieldset_extraction">
                             <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_EXTRACTION'); ?>
@@ -335,7 +297,6 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                 </div>
                             </div>
                             <input type="hidden" name="jform[deposit]" id="jform_deposit_hidden" value="<?php echo $this->item->deposit ?>" />			
-
                         </fieldset>
                     </div>
 
@@ -355,8 +316,61 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
-
                 </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div id="myModal" class="modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel">Modal header</h3>
+            </div>
+            <div class="modal-body">
+                <!-- The file upload div used as target for the file upload widget -->
+                <div id="fileupload" class="offset1" >
+                    <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+                    <div class="row fileupload-buttonbar">
+                        <div class="span12">
+                            <!-- The fileinput-button span is used to style the file input field as button -->
+                            <span class="btn btn-success fileinput-button">
+                                <i class="icon-plus icon-white"></i>
+                                <span>Add files...</span>
+                                <input type="file" name="files[]" multiple>
+                            </span>
+                            <button type="submit" class="btn btn-primary start">
+                                <i class="icon-upload icon-white"></i>
+                                <span>Start upload</span>
+                            </button>
+                            <button type="reset" class="btn btn-warning cancel">
+                                <i class="icon-ban-circle icon-white"></i>
+                                <span>Cancel upload</span>
+                            </button>
+                            <button id="btn-delete" type="button" class="btn btn-danger delete">
+                                <i class="icon-trash icon-white"></i>
+                                <span>Delete</span>
+                            </button>
+                            <input type="checkbox" class="toggle">
+                            <!-- The loading indicator is shown during file processing -->
+                            <span class="fileupload-loading"></span>
+                        </div>
+                        <!-- The global progress information -->
+                        <div class="span10 fileupload-progress fade">
+                            <!-- The global progress bar -->
+                            <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                                <div class="bar" style="width:0%;"></div>
+                            </div>
+                            <!-- The extended global progress information -->
+                            <div class="progress-extended">&nbsp;</div>
+                        </div>
+                    </div>
+                    <!-- The table listing the files available for upload/download -->
+                    <table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                <button class="btn btn-primary">Save changes</button>
             </div>
         </div>
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extension group="user" type="plugin" version="3.0">
+<extension group="user" method="upgrade" type="plugin" version="3.0">
   <name>plg_easysdi_contact</name>
   <author>EasySDI Community</author>
   <creationDate>15 August 2012</creationDate>

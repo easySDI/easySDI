@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extension method="upgrade" type="component" version="1.6.0">
+<extension method="upgrade" type="component" version="3.0.0">
   <name>com_easysdi_core</name>
   <creationDate>15 August 2012</creationDate>
   <releaseDate>26 juillet 2013</releaseDate>

@@ -60,7 +60,7 @@
     
     <target name="write-xml">
         <echoxml file="${core.src.out.dir}/easysdi_core.xml">
-            <extension type="component" version="1.6.0" method="upgrade">
+            <extension type="component" version="3.0.0" method="upgrade">
                 <name>com_easysdi_core</name>
                 <creationDate>15 August 2012</creationDate>
                 <releaseDate>${xml.releaseDate}</releaseDate>

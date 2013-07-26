@@ -122,7 +122,7 @@
     
     <target name="write-xml">
         <echoxml file="${parent.src.out.dir}/pkg_easysdi.xml">
-            <extension type="package" version="2.5" method="upgrade"> 
+            <extension type="package" version="3.0.0" method="upgrade"> 
                 <name>EasySDI</name> 
                 <packager>${xml.packager}</packager> 
                 <packagename>easysdi</packagename>
@@ -141,7 +141,7 @@
                     <file type="component" id="com_easysdi_service">com_easysdi_service.zip</file>
                     <file type="component" id="com_easysdi_catalog">com_easysdi_catalog.zip</file> 
                     <file type="component" id="com_easysdi_map">com_easysdi_map.zip</file>
-                    <file type="component" id="com_easysdi_shop">com_easysdi_map.zip</file>
+                    
                     <file type="plugin" id="easysdicontact" group="user">plg_easysdi_contact.zip</file> 
                     <file type="plugin" id="easysdiservice" group="content">plg_easysdi_service.zip</file>
                     <file type="template" id="tpl_easysdi" client="site">tpl_easysdi.zip</file>

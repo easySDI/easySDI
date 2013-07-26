@@ -19,7 +19,7 @@ $(function() {
     $('#fileupload').fileupload({
         // Uncomment the following to send cross-domain cookies:
         //xhrFields: {withCredentials: true},
-        url: 'http://localhost/sdi4/components/com_easysdi_shop/views/diffusion/tmpl/server/php/'
+        url: 'http://localhost/sdi4/index.php?option=com_easysdi_shop&task=diffusion.upload'
     });
 
     // Enable iframe cross-domain access via redirect option:

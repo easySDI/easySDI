@@ -27,7 +27,7 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
 
         // Get the previous edit id (if any) and the current edit id.
         $previousId = (int) $app->getUserState('com_easysdi_shop.edit.diffusion.id');
-        
+
         $metadataId = JFactory::getApplication()->input->getInt('id', null, 'array');
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
@@ -35,12 +35,12 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
                 ->from('#__sdi_version v')
                 ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
                 ->leftJoin('#__sdi_diffusion d ON d.version_id = v.id')
-                ->where('m.id = ' . (int)$metadataId);
+                ->where('m.id = ' . (int) $metadataId);
         $db->setQuery($query);
         $item = $db->loadObject();
 
         $editId = $item->id;
-        
+
         // Set the user id for the user to edit in the session.
         $app->setUserState('com_easysdi_shop.edit.diffusion.id', $editId);
         $app->setUserState('com_easysdi_shop.edit.diffusionversion.id', $item->version_id);
@@ -146,7 +146,7 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
     }
 
     function cancel() {
-         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
     }
 
     public function remove() {
@@ -224,6 +224,12 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
 
         // Flush the data from the session.
         $app->setUserState('com_easysdi_shop.edit.diffusion.data', null);
+    }
+
+    public function upload() {
+        error_reporting(E_ALL | E_STRICT);
+        require('UploadHandler.php');
+        $upload_handler = new UploadHandler();
     }
 
 }

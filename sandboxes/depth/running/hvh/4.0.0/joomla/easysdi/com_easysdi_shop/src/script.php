@@ -10,7 +10,7 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
 
-class com_easysdi_catalogInstallerScript {
+class com_easysdi_shopInstallerScript {
     /*
      * $parent is the class calling this method.
      * $type is the type of change (install, update or discover_install, not uninstall).

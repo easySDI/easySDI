@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extension method="upgrade" type="component" version="1.6.0">
+<extension method="upgrade" type="component" version="3.0.0">
   <name>com_easysdi_contact</name>
   <creationDate>14 february 2013</creationDate>
   <releaseDate>26 juillet 2013</releaseDate>
