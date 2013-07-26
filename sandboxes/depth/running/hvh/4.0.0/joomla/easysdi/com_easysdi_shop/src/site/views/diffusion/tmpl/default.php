@@ -67,26 +67,13 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
     fieldset.radio label{
         width: 50px !important;
     }
+
+    .bar {
+        height: 18px;
+        background: green;
+    }
 </style>
 <script type="text/javascript">
-//    function getScript(url, success) {
-//        var script = document.createElement('script');
-//        script.src = url;
-//        var head = document.getElementsByTagName('head')[0],
-//                done = false;
-//        // Attach handlers for all browsers
-//        script.onload = script.onreadystatechange = function() {
-//            if (!done && (!this.readyState
-//                    || this.readyState == 'loaded'
-//                    || this.readyState == 'complete')) {
-//                done = true;
-//                success();
-//                script.onload = script.onreadystatechange = null;
-//                head.removeChild(script);
-//            }
-//        };
-//        head.appendChild(script);
-//    }
     js = jQuery.noConflict();
     js(document).ready(function() {
         enableAccessScope();
@@ -106,27 +93,20 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         var storage = js("#jform_productstorage_id :selected").val();
         switch (storage) {
             case "1":
-                js('#file').show();
-                js('#jform_file_hidden_href').show();
+                
                 js('#fileurl').hide();
                 js('#jform_fileurl').val('');
                 js('#perimeter_id').hide();
                 js('#jform_perimeter_id :selected').removeAttr('selected');
                 break;
             case "2":
-                js('#file').hide();
-                js('#jform_file_hidden_href').hide();
-                js('#jform_file').val('');
-                js('#jform_file_hidden').val('');
+                
                 js('#fileurl').show();
                 js('#perimeter_id').hide();
                 js('#jform_perimeter_id :selected').removeAttr('selected');
                 break;
             case "3":
-                js('#file').hide();
-                js('#jform_file_hidden_href').hide();
-                js('#jform_file').val('');
-                js('#jform_file_hidden').val('');
+                
                 js('#fileurl').hide();
                 js('#jform_fileurl').val('');
                 js('#perimeter_id').show();
@@ -150,6 +130,116 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
     }
 
 </script>
+<link rel="stylesheet" href="http://blueimp.github.io/cdn/css/bootstrap.min.css">
+<!-- Generic page styles -->
+<link rel="stylesheet" href="components/com_easysdi_shop/views/diffusion/tmpl/css/style.css">
+<!-- Bootstrap styles for responsive website layout, supporting different screen sizes -->
+<link rel="stylesheet" href="http://blueimp.github.io/cdn/css/bootstrap-responsive.min.css">
+<!-- Bootstrap CSS fixes for IE6 -->
+<!--[if lt IE 7]><link rel="stylesheet" href="http://blueimp.github.io/cdn/css/bootstrap-ie6.min.css"><![endif]-->
+<!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
+<link rel="stylesheet" href="components/com_easysdi_shop/views/diffusion/tmpl/css/jquery.fileupload-ui.css">
+<!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>-->
+<!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
+<!-- The Templates plugin is included to render the upload/download listings -->
+<script src="http://blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
+<!-- The Load Image plugin is included for the preview images and image resizing functionality -->
+<script src="http://blueimp.github.io/JavaScript-Load-Image/js/load-image.min.js"></script>
+<!-- The Canvas to Blob plugin is included for image resizing functionality -->
+<script src="http://blueimp.github.io/JavaScript-Canvas-to-Blob/js/canvas-to-blob.min.js"></script>
+<!-- Bootstrap JS is not required, but included for the responsive demo navigation -->
+<script src="http://blueimp.github.io/cdn/js/bootstrap.min.js"></script>
+<!-- blueimp Gallery script -->
+<script src="http://blueimp.github.io/Gallery/js/jquery.blueimp-gallery.min.js"></script>
+<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+<script src="components/com_easysdi_shop/views/diffusion/tmpl/js/vendor/jquery.ui.widget.js"></script>
+<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+<script src="components/com_easysdi_shop/views/diffusion/tmpl/js/jquery.iframe-transport.js"></script>
+<!-- The basic File Upload plugin -->
+<script src="components/com_easysdi_shop/views/diffusion/tmpl/js/jquery.fileupload.js"></script>
+<!-- The File Upload processing plugin -->
+<script src="components/com_easysdi_shop/views/diffusion/tmpl/js/jquery.fileupload-process.js"></script>
+<!-- The File Upload image preview & resize plugin -->
+<script src="components/com_easysdi_shop/views/diffusion/tmpl/js/jquery.fileupload-image.js"></script>
+<!-- The File Upload audio preview plugin -->
+<script src="components/com_easysdi_shop/views/diffusion/tmpl/js/jquery.fileupload-audio.js"></script>
+<!-- The File Upload video preview plugin -->
+<script src="components/com_easysdi_shop/views/diffusion/tmpl/js/jquery.fileupload-video.js"></script>
+<!-- The File Upload validation plugin -->
+<script src="components/com_easysdi_shop/views/diffusion/tmpl/js/jquery.fileupload-validate.js"></script>
+<!-- The template to display files available for upload -->
+<!-- The File Upload user interface plugin -->
+<script src="components/com_easysdi_shop/views/diffusion/tmpl/js/jquery.fileupload-ui.js"></script>
+<!-- The main application script -->
+<script src="components/com_easysdi_shop/views/diffusion/tmpl/js/main.js"></script>
+<script id="template-upload" type="text/x-tmpl">
+    {% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-upload fade">
+    <td>
+    <span class="preview"></span>
+    </td>
+    <td>
+    <p class="name">{%=file.name%}</p>
+    {% if (file.error) { %}
+    <div><span class="label label-important">Error</span> {%=file.error%}</div>
+    {% } %}
+    </td>
+    <td>
+    <p class="size">{%=o.formatFileSize(file.size)%}</p>
+    {% if (!o.files.error) { %}
+    <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="bar" style="width:0%;"></div></div>
+    {% } %}
+    </td>
+    <td>
+    {% if (!o.files.error && !i && !o.options.autoUpload) { %}
+    <button class="btn btn-primary start">
+    <i class="icon-upload icon-white"></i>
+    <span>Start</span>
+    </button>
+    {% } %}
+    {% if (!i) { %}
+    <button class="btn btn-warning cancel">
+    <i class="icon-ban-circle icon-white"></i>
+    <span>Cancel</span>
+    </button>
+    {% } %}
+    </td>
+    </tr>
+    {% } %}
+</script>
+<!-- The template to display files available for download -->
+<script id="template-download" type="text/x-tmpl">
+    {% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-download fade">
+    <td>
+    <span class="preview">
+    {% if (file.thumbnailUrl) { %}
+    <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" data-gallery><img src="{%=file.thumbnailUrl%}"></a>
+    {% } %}
+    </span>
+    </td>
+    <td>
+    <p class="name">
+    <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" {%=file.thumbnailUrl?'data-gallery':''%}>{%=file.name%}</a>
+    </p>
+    {% if (file.error) { %}
+    <div><span class="label label-important">Error</span> {%=file.error%}</div>
+    {% } %}
+    </td>
+    <td>
+    <span class="size">{%=o.formatFileSize(file.size)%}</span>
+    </td>
+    <td>
+    <button id="btn-delete" class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}"{% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>
+    <i class="icon-trash icon-white"></i>
+    <span>Delete</span>
+    </button>
+    <input type="checkbox" name="delete" value="1" class="toggle">
+    </td>
+    </tr>
+    {% } %}
+</script>
+
 
 <div class="diffusion-edit front-end-edit">
     <?php if (!empty($this->item->id)): ?>
@@ -158,8 +248,9 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         <h1><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_NEW_DIFFUSION'); ?></h1>
     <?php endif; ?>
 
-    <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
 
+
+    <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
         <div class="row-fluid">
             <div >
                 <ul class="nav nav-tabs">
@@ -177,25 +268,58 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                             </div>
                         <?php endforeach; ?>
                         <fieldset id ="fieldset_download">
-                            <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_DOWNLOAD'); ?></legend>
+                            <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_DOWNLOAD'); ?>
+                                <?php echo $this->form->getInput('hasdownload'); ?></legend>
                             <?php foreach ($this->form->getFieldset('download') as $field): ?>
                                 <div class="control-group" id="<?php echo $field->fieldname; ?>">
                                     <div class="control-label"><?php echo $field->label; ?></div>
                                     <div class="controls"><?php echo $field->input; ?></div>
                                 </div>
                             <?php endforeach; ?>
-                            <div class="control-group" id="file">
-                                <div class="control-label"><?php echo $this->form->getLabel('file'); ?></div>
-                                <div class="controls"><?php echo $this->form->getInput('file'); ?>
-                                    <?php if (!empty($this->item->file)) : ?>
-                                        <a id="jform_file_hidden_href" href="<?php echo JRoute::_($this->params->get('fileFolder') . '/' . $this->item->file, false); ?>"><?php echo JText::_("COM_EASYSDI_SHOP_VIEW_FILE"); ?></a>
-                                    <?php endif; ?>
+                            <!-- The file upload div used as target for the file upload widget -->
+                            <div id="fileupload" class="offset1" >
+                                <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+                                <div class="row fileupload-buttonbar">
+                                    <div class="span10">
+                                        <!-- The fileinput-button span is used to style the file input field as button -->
+                                        <span class="btn btn-success fileinput-button">
+                                            <i class="icon-plus icon-white"></i>
+                                            <span>Add files...</span>
+                                            <input type="file" name="files[]" multiple>
+                                        </span>
+                                        <button type="submit" class="btn btn-primary start">
+                                            <i class="icon-upload icon-white"></i>
+                                            <span>Start upload</span>
+                                        </button>
+                                        <button type="reset" class="btn btn-warning cancel">
+                                            <i class="icon-ban-circle icon-white"></i>
+                                            <span>Cancel upload</span>
+                                        </button>
+                                        <button id="btn-delete" type="button" class="btn btn-danger delete">
+                                            <i class="icon-trash icon-white"></i>
+                                            <span>Delete</span>
+                                        </button>
+                                        <input type="checkbox" class="toggle">
+                                        <!-- The loading indicator is shown during file processing -->
+                                        <span class="fileupload-loading"></span>
+                                    </div>
+                                    <!-- The global progress information -->
+                                    <div class="span10 fileupload-progress fade">
+                                        <!-- The global progress bar -->
+                                        <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                                            <div class="bar" style="width:0%;"></div>
+                                        </div>
+                                        <!-- The extended global progress information -->
+                                        <div class="progress-extended">&nbsp;</div>
+                                    </div>
                                 </div>
+                                <!-- The table listing the files available for upload/download -->
+                                <table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
                             </div>
-                            <input type="hidden" name="jform[file]" id="jform_file_hidden" value="<?php echo $this->item->file ?>" />			
                         </fieldset>
                         <fieldset id ="fieldset_extraction">
-                            <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_EXTRACTION'); ?></legend>
+                            <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_EXTRACTION'); ?>
+                                <?php echo $this->form->getInput('hasextraction'); ?></legend>
                             <?php foreach ($this->form->getFieldset('extraction') as $field): ?>
                                 <div class="control-group" id="<?php echo $field->fieldname; ?>">
                                     <div class="control-label"><?php echo $field->label; ?></div>

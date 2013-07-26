@@ -176,4 +176,8 @@
                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_MODIFIED" 
                filter="safehtml" />
     </fieldset>
+    
+    <field name="hasdownload" type="checkbox" label="Show title" description="Show the title of the item" value="1" default="0" />
+    
+    <field name="hasextraction" type="checkbox" label="Show title" description="Show the title of the item" value="1" default="0" />
 </form>
