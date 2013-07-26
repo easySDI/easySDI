@@ -66,16 +66,16 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
     }
 </style>
 <script type="text/javascript">
-    function getScript(url,success) {
+    function getScript(url, success) {
         var script = document.createElement('script');
         script.src = url;
         var head = document.getElementsByTagName('head')[0],
-        done = false;
+                done = false;
         // Attach handlers for all browsers
         script.onload = script.onreadystatechange = function() {
             if (!done && (!this.readyState
-                || this.readyState == 'loaded'
-                || this.readyState == 'complete')) {
+                    || this.readyState == 'loaded'
+                    || this.readyState == 'complete')) {
                 done = true;
                 success();
                 script.onload = script.onreadystatechange = null;
@@ -84,140 +84,65 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
         };
         head.appendChild(script);
     }
-    getScript('//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',function() {
+    getScript('//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js', function() {
         js = jQuery.noConflict();
-        js(document).ready(function(){
-            js('#form-application').submit(function(event){
-                 
-            }); 
-        
-            
+        js(document).ready(function() {
+            js('#form-application').submit(function(event) {
+
+            });
+
+
         });
     });
-    
+
 </script>
 
 <div class="application-edit front-end-edit">
     <?php if (!empty($this->item->id)): ?>
-        <h1>Edit <?php echo $this->item->id; ?></h1>
+        <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_EDIT_APPLICATION') . ' ' . $this->item->name; ?></h1>
     <?php else: ?>
-        <h1>Add</h1>
+        <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_NEW_APPLICATION'); ?></h1>
     <?php endif; ?>
+    
+    <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=application.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
 
-    <form id="form-application" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=application.save'); ?>" method="post" class="form-validate" enctype="multipart/form-data">
-        <ul>
-            			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('id'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('guid'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('guid'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('alias'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('alias'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('created_by'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('created_by'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('created'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('created'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('modified_by'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('modified_by'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('modified'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('modified'); ?></div>
-			</div>
+        <div class="row-fluid">
+            <div >
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#details" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CORE_TAB_DETAILS'); ?></a></li>
+                    <li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CORE_TAB_PUBLISHING'); ?></a></li>
+                </ul>
 
-			<div class="control-group">
-				<?php $canState = false; ?>
-				<?php if($this->item->id): ?>
-					<?php $canState = $canState = JFactory::getUser()->authorise('core.edit.state','com_easysdi_core.application'); ?>
-				<?php else: ?>
-					<?php $canState = JFactory::getUser()->authorise('core.edit.state','com_easysdi_core.application.'.$this->item->id); ?>
-				<?php endif; ?>				<?php if(!$canState): ?>
-				<div class="control-label"><?php echo $this->form->getLabel('state'); ?></div>
-					<?php
-						$state_string = 'Unpublish';
-						$state_value = 0;
-						if($this->item->state == 1):
-							$state_string = 'Publish';
-							$state_value = 1;
-						endif;
-					?>
-					<div class="controls"><?php echo $state_string; ?></div>
-					<input type="hidden" name="jform[state]" value="<?php echo $state_value; ?>" />
-				<?php else: ?>
-					<div class="control-label"><?php echo $this->form->getLabel('state'); ?></div>
-					<div class="controls"><?php echo $this->form->getInput('state'); ?></div>					<?php endif; ?>
-				</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('name'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('name'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('description'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('description'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('resource_id'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('resource_id'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('options'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('options'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('url'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('url'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('windowname'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('windowname'); ?></div>
-			</div>
-			<div class="control-group">
-				<div class="control-label"><?php echo $this->form->getLabel('access'); ?></div>
-				<div class="controls"><?php echo $this->form->getInput('access'); ?></div>
-			</div>
-				<div class="fltlft" <?php if (!JFactory::getUser()->authorise('core.admin','easysdi_core')): ?> style="display:none;" <?php endif; ?> >
-                <?php echo JHtml::_('sliders.start', 'permissions-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
-                <?php echo JHtml::_('sliders.panel', JText::_('ACL Configuration'), 'access-rules'); ?>
-                <fieldset class="panelform">
-                    <?php echo $this->form->getLabel('rules'); ?>
-                    <?php echo $this->form->getInput('rules'); ?>
-                </fieldset>
-                <?php echo JHtml::_('sliders.end'); ?>
+                <div class="tab-content">
+                    <!-- Begin Tabs -->
+                    <div class="tab-pane active" id="details">
+                        <?php foreach ($this->form->getFieldset('details') as $field): ?>
+                            <div class="control-group" id="<?php echo $field->fieldname; ?>">
+                                <div class="control-label"><?php echo $field->label; ?></div>
+                                <div class="controls"><?php echo $field->input; ?></div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <div class="tab-pane" id="publishing">
+                        <?php foreach ($this->form->getFieldset('publishing') as $field): ?>
+                            <div class="control-group" id="<?php echo $field->fieldname; ?>">
+                                <div class="control-label"><?php echo $field->label; ?></div>
+                                <div class="controls"><?php echo $field->input; ?></div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
             </div>
-				<?php if (!JFactory::getUser()->authorise('core.admin','easysdi_core')): ?>
-                <script type="text/javascript">
-                    jQuery.noConflict();
-                    jQuery('.tab-pane select').each(function(){
-                       var option_selected = jQuery(this).find(':selected');
-                       var input = document.createElement("input");
-                       input.setAttribute("type", "hidden");
-                       input.setAttribute("name", jQuery(this).attr('name'));
-                       input.setAttribute("value", option_selected.val());
-                       document.getElementById("form-application").appendChild(input);
-                       jQuery(this).attr('disabled',true);
-                    });
-                </script>
-             <?php endif; ?>
-        </ul>
-
-        <div>
-            <button type="submit" class="validate"><span><?php echo JText::_('JSUBMIT'); ?></span></button>
-            <?php echo JText::_('or'); ?>
-            <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=application.cancel'); ?>" title="<?php echo JText::_('JCANCEL'); ?>"><?php echo JText::_('JCANCEL'); ?></a>
-
-            <input type="hidden" name="option" value="com_easysdi_core" />
-            <input type="hidden" name="task" value="applicationform.save" />
-            <?php echo JHtml::_('form.token'); ?>
         </div>
+
+        <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
+            <?php echo $field->input; ?>
+        <?php endforeach; ?>  
+
+        <?php echo $this->getToolbar(); ?>
+        <input type = "hidden" name = "task" value = "" />
+        <input type = "hidden" name = "option" value = "com_easysdi_core" />
+        <?php echo JHtml::_('form.token'); ?>
     </form>
 </div>

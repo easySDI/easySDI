@@ -7,7 +7,7 @@
                description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_ALIAS" 
                filter="safehtml" /> 
 
-        <field name="name" type="text" size="40" class="inputbox"
+        <field name="name" type="text" size="40" class="inputbox" required ="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_ATTRIBUTE_NAME"
                description="COM_EASYSDI_CATALOG_FORM_DESC_ATTRIBUTE_NAME" 
                filter="safehtml" /> 

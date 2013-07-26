@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 jimport('joomla.application.component.modeladmin');
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/translation.php';
 
 /**
  * Easysdi_catalog model.
@@ -26,7 +27,8 @@ abstract class sdiModel extends JModelAdmin {
      * @since	1.6
      */
     public function getItem($pk = null) {
-        if ($item = parent::getItem($pk)) {
+        $item = parent::getItem($pk);
+        if ($item && $item->guid) {
             //Load translations
             $translationtable = $this->getTable('Translation', 'Easysdi_catalogTable', array());
             $rows = $translationtable->loadAll($item->guid);
@@ -38,8 +40,8 @@ abstract class sdiModel extends JModelAdmin {
             }
 
             // Get the access scope
-            $item->organisms = $this->getAccessScopeOrganism($item->guid);
-            $item->users = $this->getAccessScopeUser($item->guid);
+            $item->organisms = sdiModel::getAccessScopeOrganism($item->guid);
+            $item->users = sdiModel::getAccessScopeUser($item->guid);
         }
         return $item;
     }
@@ -69,7 +71,7 @@ abstract class sdiModel extends JModelAdmin {
             }
 
             //Access Scope
-            if (!$this->saveAccessScope($data)) {
+            if (!sdiModel::saveAccessScope($data)) {
                 $this->setError('Failed to save access scope.');
                 return false;
             }
@@ -102,7 +104,7 @@ abstract class sdiModel extends JModelAdmin {
             }
 
             //Delete Access scope
-            if (!$this->deleteAccessScope($guid)) {
+            if (!sdiModel::deleteAccessScope($guid)) {
                 return false;
             }
 
@@ -120,7 +122,7 @@ abstract class sdiModel extends JModelAdmin {
      *
      * @since EasySDI 3.3.0
      */
-    public function saveAccessScope($data) {
+    public static function saveAccessScope($data) {
         //Delete previously saved access
         $db = JFactory::getDbo();
         $db->setQuery('DELETE FROM #__sdi_accessscope WHERE entity_guid = "' . $data['guid'] . '"');
@@ -168,7 +170,7 @@ abstract class sdiModel extends JModelAdmin {
      *
      * @since EasySDI 3.0.0
      */
-    public function getAccessScopeOrganism($guid) {
+    public static function getAccessScopeOrganism($guid) {
         if (!isset($guid))
             return null;
 
@@ -197,7 +199,7 @@ abstract class sdiModel extends JModelAdmin {
      *
      * @since EasySDI 3.0.0
      */
-    public function getAccessScopeUser($guid) {
+    public static function getAccessScopeUser($guid) {
         if (!isset($guid))
             return null;
 
@@ -217,7 +219,7 @@ abstract class sdiModel extends JModelAdmin {
         }
     }
 
-    public function deleteAccessScope($guid) {
+    public static function deleteAccessScope($guid) {
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);

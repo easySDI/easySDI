@@ -121,11 +121,11 @@ class sdiUser {
         $db = JFactory::getDbo();
 
         $cls = '(rt.accessscope_id = 1 
-                            OR ((rt.accessscope_id = 3) AND (' . $this->id . ' IN (select a.user_id from sdi_sdi_accessscope a where a.entity_guid = rt.guid)))';
+                            OR ((rt.accessscope_id = 3) AND (' . $this->id . ' IN (select a.user_id from #__sdi_accessscope a where a.entity_guid = rt.guid)))';
 
         foreach ($this->role[2] as $organism):
             $cls .= 'OR ((rt.accessscope_id = 2) AND (';
-            $cls .= $organism->id . ' in (select a.organism_id from sdi_sdi_accessscope a where a.entity_guid = rt.guid)';
+            $cls .= $organism->id . ' in (select a.organism_id from #__sdi_accessscope a where a.entity_guid = rt.guid)';
             $cls .= '))';
         endforeach;
 
@@ -138,6 +138,7 @@ class sdiUser {
                 ->innerJoin('#__sdi_translation t ON t.element_guid = rt.guid')
                 ->innerJoin('#__sdi_language l ON l.id = t.language_id')
                 ->where('l.code = "' . $this->lang->getTag() . '"')
+                ->where('rt.predefined = 0')
                 ->where($cls)
         ;
         $db->setQuery($query);

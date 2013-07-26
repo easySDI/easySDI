@@ -7,7 +7,7 @@
     <property name="parent.component.name" value="easysdi"/>
     <property name="parent.src.out.dir" value="${parent.component.name}/src"/>
     <property name="parent.package.out.dir" value="${parent.component.name}/target"/>
-    <property name="version" value="4.0.0-alpha-3"/>
+    <property name="version" value="4.0.0-alpha-4"/>
     
     <!-- Joomla component path -->
     <property name="joomla.administrator.components.dir" value="administrator/components" />
@@ -45,19 +45,21 @@
     <include file="com_easysdi_monitor/build.xml" as="monitor"/>
     <include file="com_easysdi_service/build.xml" as="service"/>
     <include file="com_easysdi_contact/build.xml" as="contact"/>
+    <include file="com_easysdi_shop/build.xml" as="shop"/>
     <include file="plg_easysdi_monitor/build.xml" as="plg-monitor"/>
     <include file="plg_easysdi_contact/build.xml" as="plg-contact"/>
     <include file="plg_easysdi_service/build.xml" as="plg-service"/>
     <include file="tpl_easysdi/build.xml" as="tpl-easysdi"/>
     
     <!-- Packaging targets -->
-    <target name="package-all" depends="package-com-core,package-com-catalog,package-com-map,package-com-monitor,package-com-service,package-com-contact,package-plg-contact,package-plg-monitor,package-plg-service,package-tpl-easysdi,copy-sub-package,write-xml,package" description="Main target"/>
+    <target name="package-all" depends="package-com-core,package-com-catalog,package-com-map,package-com-monitor,package-com-service,package-com-contact,package-com-shop,package-plg-contact,package-plg-monitor,package-plg-service,package-tpl-easysdi,copy-sub-package,write-xml,package" description="Main target"/>
     
     <target name="package-com-core" depends="core.package" description="Main Target"/>
     <target name="package-com-catalog" depends="catalog.package" description="Main Target"/>
     <target name="package-com-map" depends="map.package" description="Main Target"/>
     <target name="package-com-monitor" depends="monitor.package" description="Main Target"/>
     <target name="package-com-service" depends="service.package" description="Main Target"/>
+    <target name="package-com-shop" depends="shop.package" description="Main Target"/>
     <target name="package-com-contact" depends="contact.package" description="Main Target"/>
     
     <target name="package-plg-contact" depends="plg-contact.package" description="Main Target"/>
@@ -67,19 +69,20 @@
     <target name="package-tpl-easysdi" depends="tpl-easysdi.package" description="Main Target"/>
     
     <!-- Dev Packaging targets -->
-    <target name="dev-package-all" depends="dev-package-com-core,dev-package-com-catalog,dev-package-com-map,dev-package-com-monitor,dev-package-com-service,dev-package-com-contact,package-plg-contact,package-plg-monitor,package-plg-service,copy-sub-package,write-xml,package" description="Main target"/>
+    <target name="dev-package-all" depends="dev-package-com-core,dev-package-com-catalog,dev-package-com-map,dev-package-com-monitor,dev-package-com-service,dev-package-com-contact,dev-package-com-shop,package-plg-contact,package-plg-monitor,package-plg-service,copy-sub-package,write-xml,package" description="Main target"/>
     
     <target name="dev-package-com-core" depends="core.dev-package" description="Main Target"/>
     <target name="dev-package-com-catalog" depends="catalog.dev-package" description="Main Target"/>
     <target name="dev-package-com-map" depends="map.dev-package" description="Main Target"/>
     <target name="dev-package-com-monitor" depends="monitor.dev-package" description="Main Target"/>
     <target name="dev-package-com-service" depends="service.dev-package" description="Main Target"/>
+    <target name="dev-package-com-shop" depends="shop.dev-package" description="Main Target"/>
     <target name="dev-package-com-contact" depends="contact.dev-package" description="Main Target"/>
     
     <target name="dev-package-tpl-easysdi" depends="tpl-easysdi.dev-package" description="Main Target"/>
     
     <!-- Sycronysing targets-->
-    <target name="sync-all" depends="sync-com-core,sync-com-map,sync-com-monitor,sync-com-service,sync-com-contact,sync-plg-contact,sync-plg-monitor,sync-plg-service" description="Main target"/>
+    <target name="sync-all" depends="sync-com-core,sync-com-map,sync-com-monitor,sync-com-service,sync-com-contact,sync-com-shop,sync-plg-contact,sync-plg-monitor,sync-plg-service" description="Main target"/>
     
     <target name="sync-com-core" depends="core.sync" description="Main Target"/>
     <target name="sync-com-catalog" depends="catalog.sync" description="Main Target"/>
@@ -87,6 +90,7 @@
     <target name="sync-com-monitor" depends="monitor.sync" description="Main Target"/>
     <target name="sync-com-service" depends="service.sync" description="Main Target"/>
     <target name="sync-com-contact" depends="contact.sync" description="Main Target"/>
+    <target name="sync-com-shop" depends="shop.sync" description="Main Target"/>
     
     <target name="sync-plg-contact" depends="plg-contact.sync" description="Main Target"/>
     <target name="sync-plg-monitor" depends="plg-monitor.sync" description="Main Target"/>
@@ -108,6 +112,7 @@
             <fileset dir="${root.out.dir}/com_easysdi_monitor/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/com_easysdi_service/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/com_easysdi_contact/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/com_easysdi_shop/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/plg_easysdi_monitor/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/plg_easysdi_contact/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/plg_easysdi_service/target" includes="*" erroronmissingdir="false"/>
@@ -136,6 +141,7 @@
                     <file type="component" id="com_easysdi_service">com_easysdi_service.zip</file>
                     <file type="component" id="com_easysdi_catalog">com_easysdi_catalog.zip</file> 
                     <file type="component" id="com_easysdi_map">com_easysdi_map.zip</file>
+                    <file type="component" id="com_easysdi_shop">com_easysdi_map.zip</file>
                     <file type="plugin" id="easysdicontact" group="user">plg_easysdi_contact.zip</file> 
                     <file type="plugin" id="easysdiservice" group="content">plg_easysdi_service.zip</file>
                     <file type="template" id="tpl_easysdi" client="site">tpl_easysdi.zip</file>

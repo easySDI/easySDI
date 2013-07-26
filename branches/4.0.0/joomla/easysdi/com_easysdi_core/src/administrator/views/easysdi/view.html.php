@@ -50,6 +50,16 @@ class Easysdi_coreViewEasysdi extends JViewLegacy {
                 'access' => array('core.manage', 'com_easysdi_catalog')
             ));
         }
+        
+        //com_easysdi_shop
+        if ($app->getUserState('com_easysdi_shop-installed')) {
+            array_push($this->buttons, array(
+                'link' => JRoute::_('index.php?option=com_easysdi_shop'),
+                'image' => '../../../templates/hathor/images/header/icon-48-language.png',
+                'text' => JText::_('COM_EASYSDI_CORE_ICON_SDI_SHOP'),
+                'access' => array('core.manage', 'com_easysdi_shop')
+            ));
+        }
 
         //com_easysdi_service
         if ($app->getUserState('com_easysdi_service-installed')) {

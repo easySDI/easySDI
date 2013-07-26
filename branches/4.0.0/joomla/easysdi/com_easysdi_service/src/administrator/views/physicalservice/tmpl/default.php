@@ -58,17 +58,17 @@ JText::script('COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION_ERROR');
                                 <div class="control-label"><?php echo $field->label; ?></div>
                                 <div class="row controls form-inline"><?php echo $this->form->getInput('negotiation'); ?><?php echo $field->input; ?></div>
                             </div>
-        <?php
-    } else {
-        ?>
+                            <?php
+                        } else {
+                            ?>
                             <div class="control-group" id="<?php echo $field->fieldname; ?>">
                                 <div class="control-label"><?php echo $field->label; ?></div>
                                 <div class="controls"><?php echo $field->input; ?></div>
                             </div>
-    <?php } ?>
-<?php endforeach; ?>
+                        <?php } ?>
+                    <?php endforeach; ?>
                 </div>
-                    <?php if (count($this->item->currentserviceauthenticationconnectorlist) > 1): ?>
+                <?php if (count($this->item->currentserviceauthenticationconnectorlist) > 1): ?>
                     <div class="tab-pane" id="provider">
                         <?php
                         foreach ($this->form->getFieldset('provideroptions') as $field):
@@ -78,17 +78,17 @@ JText::script('COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION_ERROR');
                                     <div class="control-label"><?php echo $field->label; ?></div>
                                     <div class="controls"><?php echo JHTML::_("select.genericlist", $this->item->currentserviceauthenticationconnectorlist, 'jform[serviceauthentication_id]', 'size="1" ', 'id', 'value', $this->item->serviceauthentication_id); ?></div>
                                 </div>
-            <?php
-        } else {
-            ?>
+                                <?php
+                            } else {
+                                ?>
                                 <div class="control-group">
                                     <div class="control-label"><?php echo $field->label; ?></div>
                                     <div class="controls"><?php echo $field->input; ?></div>
                                 </div>
                             <?php } ?>
-    <?php endforeach; ?>
+                        <?php endforeach; ?>
                     </div>
-<?php endif; ?>
+                <?php endif; ?>
                 <div class="tab-pane" id="publishing">
                     <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('created_by'); ?></div>
@@ -98,7 +98,7 @@ JText::script('COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION_ERROR');
                         <div class="control-label"><?php echo $this->form->getLabel('created'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('created'); ?></div>
                     </div>
-<?php if ($this->item->modified_by) : ?>
+                    <?php if ($this->item->modified_by) : ?>
                         <div class="control-group">
                             <div class="control-label"><?php echo $this->form->getLabel('modified_by'); ?></div>
                             <div class="controls"><?php echo $this->form->getInput('modified_by'); ?></div>
@@ -107,22 +107,22 @@ JText::script('COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION_ERROR');
                             <div class="control-label"><?php echo $this->form->getLabel('modified'); ?></div>
                             <div class="controls"><?php echo $this->form->getInput('modified'); ?></div>
                         </div>
-<?php endif; ?>
+                    <?php endif; ?>
                 </div>
 
-<?php if ($this->canDo->get('core.admin')): ?>
+                <?php if ($this->canDo->get('core.admin')): ?>
                     <div class="tab-pane" id="permissions">
                         <fieldset>
-    <?php echo $this->form->getInput('rules'); ?>
+                            <?php echo $this->form->getInput('rules'); ?>
                         </fieldset>
                     </div>
-<?php endif; ?>
+                <?php endif; ?>
             </div>
             <!-- End Tabs -->
         </div>
 
         <input type="hidden" name="task" value="" />
-<?php echo JHtml::_('form.token'); ?>
+        <?php echo JHtml::_('form.token'); ?>
 
         <!-- Begin Sidebar -->
         <div class="span2">
@@ -132,29 +132,29 @@ JText::script('COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION_ERROR');
                 <div class="control-group">
                     <div class="control-group">
                         <div class="controls">
-<?php echo $this->form->getValue('name'); ?>
+                            <?php echo $this->form->getValue('name'); ?>
                         </div>
                     </div>
-<?php
-if ($this->canDo->get('core.edit.state')) {
-    ?>
+                    <?php
+                    if ($this->canDo->get('core.edit.state')) {
+                        ?>
                         <div class="control-label">
-                        <?php echo $this->form->getLabel('state'); ?>
+                            <?php echo $this->form->getLabel('state'); ?>
                         </div>
                         <div class="controls">
-                        <?php echo $this->form->getInput('state'); ?>
+                            <?php echo $this->form->getInput('state'); ?>
                         </div>
-                            <?php
-                        }
-                        ?>
+                        <?php
+                    }
+                    ?>
                 </div>
 
                 <div class="control-group">
                     <div class="control-label">
-                    <?php echo $this->form->getLabel('access'); ?>
+                        <?php echo $this->form->getLabel('access'); ?>
                     </div>
                     <div class="controls">
-<?php echo $this->form->getInput('access'); ?>
+                        <?php echo $this->form->getInput('access'); ?>
                     </div>
                 </div>
             </fieldset>

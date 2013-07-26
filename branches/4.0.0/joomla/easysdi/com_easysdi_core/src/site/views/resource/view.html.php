@@ -26,85 +26,80 @@ class Easysdi_coreViewResource extends JViewLegacy {
      * Display the view
      */
     public function display($tpl = null) {
+
+        $app = JFactory::getApplication();
         
-		$app	= JFactory::getApplication();
-        $user		= JFactory::getUser();
-        
+        try{
+            $this->user = sdiFactory::getSdiUser();
+        }catch (Exception $e){
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+            return false;
+        }
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_core');
-   		
-		$this->form		= $this->get('Form');
+        $this->form = $this->get('Form');
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
-        
-        if(!in_array($this->item->access, $user->getAuthorisedViewLevels())){
-                return JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
-            }
-        
-        
-        if($this->_layout == 'edit') {
-            
-            $authorised = $user->authorise('core.create', 'com_easysdi_core');
 
-            if ($authorised !== true) {
-                throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'));
-            }
-        }
-        
         $this->_prepareDocument();
 
         parent::display($tpl);
     }
 
+    /**
+     * Prepares the document
+     */
+    protected function _prepareDocument() {
+        $app = JFactory::getApplication();
+        $menus = $app->getMenu();
+        $title = null;
 
-	/**
-	 * Prepares the document
-	 */
-	protected function _prepareDocument()
-	{
-		$app	= JFactory::getApplication();
-		$menus	= $app->getMenu();
-		$title	= null;
+        // Because the application sets a default page title,
+        // we need to get it from the menu item itself
+        $menu = $menus->getActive();
+        if ($menu) {
+            $this->params->def('page_heading', $this->params->get('page_title', $menu->title));
+        } else {
+            $this->params->def('page_heading', JText::_('com_easysdi_core_DEFAULT_PAGE_TITLE'));
+        }
+        $title = $this->params->get('page_title', '');
+        if (empty($title)) {
+            $title = $app->getCfg('sitename');
+        } elseif ($app->getCfg('sitename_pagetitles', 0) == 1) {
+            $title = JText::sprintf('JPAGETITLE', $app->getCfg('sitename'), $title);
+        } elseif ($app->getCfg('sitename_pagetitles', 0) == 2) {
+            $title = JText::sprintf('JPAGETITLE', $title, $app->getCfg('sitename'));
+        }
+        $this->document->setTitle($title);
 
-		// Because the application sets a default page title,
-		// we need to get it from the menu item itself
-		$menu = $menus->getActive();
-		if($menu)
-		{
-			$this->params->def('page_heading', $this->params->get('page_title', $menu->title));
-		} else {
-			$this->params->def('page_heading', JText::_('com_easysdi_core_DEFAULT_PAGE_TITLE'));
-		}
-		$title = $this->params->get('page_title', '');
-		if (empty($title)) {
-			$title = $app->getCfg('sitename');
-		}
-		elseif ($app->getCfg('sitename_pagetitles', 0) == 1) {
-			$title = JText::sprintf('JPAGETITLE', $app->getCfg('sitename'), $title);
-		}
-		elseif ($app->getCfg('sitename_pagetitles', 0) == 2) {
-			$title = JText::sprintf('JPAGETITLE', $title, $app->getCfg('sitename'));
-		}
-		$this->document->setTitle($title);
+        if ($this->params->get('menu-meta_description')) {
+            $this->document->setDescription($this->params->get('menu-meta_description'));
+        }
 
-		if ($this->params->get('menu-meta_description'))
-		{
-			$this->document->setDescription($this->params->get('menu-meta_description'));
-		}
+        if ($this->params->get('menu-meta_keywords')) {
+            $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+        }
 
-		if ($this->params->get('menu-meta_keywords'))
-		{
-			$this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
-		}
-
-		if ($this->params->get('robots'))
-		{
-			$this->document->setMetadata('robots', $this->params->get('robots'));
-		}
-	}        
+        if ($this->params->get('robots')) {
+            $this->document->setMetadata('robots', $this->params->get('robots'));
+        }
+    }
     
+    function getToolbar() {
+        //load the JToolBar library and create a toolbar
+        jimport('joomla.html.toolbar');
+        $bar = new JToolBar('toolbar');
+        //and make whatever calls you require
+        $bar->appendButton('Standard', 'save', 'Save', 'resource.save', false);
+        $bar->appendButton('Separator');
+        $bar->appendButton('Standard', 'cancel', 'Cancel', 'resource.cancel', false);
+        //generate the html and return
+        return $bar->render();
+    }
+
 }

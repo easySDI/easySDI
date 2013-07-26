@@ -27,13 +27,7 @@
             value_field="value"
             translate="true"/> 
         
-        <field name="issystem" type="radio" class="btn-group" default="0"
-               label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_ISSYSTEM"
-               description="COM_EASYSDI_CATALOG_FORM_DESC_CLASS_ISSYSTEM" 
-               > 
-            <option value="1">JYES</option>
-            <option value="0">JNO</option>
-        </field>
+        
 
         <field name="isrootclass" type="radio" class="btn-group" default="0"
                label="COM_EASYSDI_CATALOG_FORM_LBL_CLASS_ISROOTCLASS"
@@ -42,43 +36,8 @@
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
-        
-        <field
-            name="accessscope_id" 
-            onchange="enableAccessScope();"
-            type="sql" 
-            class="inputbox"
-            label="COM_EASYSDI_CATALOG_FORM_LBL_ACCESSSCOPE"
-            description="COM_EASYSDI_CATALOG_FORM_DESC_ACCESSSCOPE" 
-            query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 ORDER BY ordering" 
-            key_field="id" 
-            value_field="value"
-            translate="true"
-        /> 
-        <field
-            name="organisms" 
-            type="sql" 
-            class="multiselect input-xxlarge"
-            multiple="true"
-            label=""
-            description="" 
-            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY ordering" 
-            key_field="id" 
-            value_field="name"
-            translate="true"
-        /> 
-        <field
-            name="users" 
-            type="sql" 
-            class="multiselect input-xxlarge"
-            multiple="true"
-            label=""
-            description="" 
-            query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY ordering" 
-            key_field="id" 
-            value_field="name"
-            translate="true"
-        /> 
+       
+       
         
     </fieldset> 
 

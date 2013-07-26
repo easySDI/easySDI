@@ -71,16 +71,6 @@ class Easysdi_catalogModelattributevalue extends sdiModel {
 
         if (empty($data)) {
             $data = $this->getItem();
-
-
-            //Support for multiple or not foreign key field: attribute_id
-            $array = array();
-            foreach ((array) $data->attribute_id as $value):
-                if (!is_array($value)):
-                    $array[] = $value;
-                endif;
-            endforeach;
-            $data->attribute_id = implode(',', $array);
         }
 
         return $data;

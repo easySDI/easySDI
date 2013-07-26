@@ -28,9 +28,11 @@ if (isset($this->user)):
     if ($this->user->isResourceManager()):
         $resourcetypes = $this->user->getResourceType();
         ?>
+ <div class="well">
+     <form class="form-inline">
         <div class="btn-group">
             <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
-                <i class="icon-white icon-plus-sign"></i> New
+                <i class="icon-white icon-plus-sign"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW');?>
                 <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
@@ -38,7 +40,7 @@ if (isset($this->user)):
                 foreach ($resourcetypes as $resourcetype):
                     ?>
                     <li>
-                        <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resourceform.edit&id=0&resourcetype=' . $resourcetype->id); ?>">
+                        <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.edit&id=0&resourcetype=' . $resourcetype->id); ?>">
                             <?php echo $resourcetype->label; ?></a>
                     </li>
                     <?php
@@ -46,9 +48,10 @@ if (isset($this->user)):
                 ?>
             </ul>
         </div>
+ </form>
+ </div>
         <?php
     endif;
-
 endif;
 ?>
 
@@ -58,10 +61,10 @@ endif;
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Ressource name</th>
-                    <th>Ressource type</th>
-                    <th>Statut</th>
-                    <th>Action</th>
+                    <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NAME');?></th>
+                    <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESOURCETYPE');?></th>
+                    <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_STATE');?></th>
+                    <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ACTIONS');?></th>
                     <th></th>
                 </tr>
             </thead>
@@ -76,7 +79,7 @@ endif;
                         <tr>
                             <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>
                                 <td>
-                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resourceform.edit&id=' . (int) $item->id); ?>"><?php echo $item->name; ?></a>
+                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.edit&id=' . (int) $item->id); ?>"><?php echo $item->name; ?></a>
                                 </td>
                             <?php else : ?>
                                 <td>
@@ -94,7 +97,7 @@ endif;
                                 //Load versions
                                 $db = JFactory::getDbo();
                                 $query = $db->getQuery(true)
-                                        ->select('m.id, v.name, s.value, s.id AS state, v.id as version ')
+                                        ->select('m.id, v.name, s.value, s.id AS state, v.id as version')
                                         ->from('#__sdi_version v')
                                         ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
                                         ->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id')
@@ -128,7 +131,7 @@ endif;
                             <td>
                                 <div class="btn-group">
                                     <a class="btn btn-success btn-small dropdown-toggle" data-toggle="dropdown" href="#">
-                                        Metadata
+                                        <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_METADATA');?>
                                         <span class="caret"></span>
                                     </a>
                                     <ul class="dropdown-menu">
@@ -174,7 +177,7 @@ endif;
                             <td>
                                 <div class="btn-group">
                                     <a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#">
-                                        Manage
+                                        <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_MANAGE');?>
                                         <span class="caret"></span>
                                     </a>
                                     <ul class="dropdown-menu">
@@ -185,10 +188,15 @@ endif;
                                             <li>
                                                 <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.editrelations&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RELATIONS'); ?></a>
                                             </li>               
-                                            <li class="divider"></li>
+                                        <?php endif; ?>
+                                        <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>
+                                            <li>
+                                                <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=applications&resource='. $item->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_APPLICATIONS'); ?></a>
+                                            </li>
                                         <?php endif; ?>
 
                                         <?php if ($this->user->authorize($item->id, sdiUser::diffusionmanager)): ?>
+                                            <li class="divider"></li>
                                             <li>
                                                 <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.edit&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_DIFFUSION'); ?></a>
                                             </li>
