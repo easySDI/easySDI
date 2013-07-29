@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
+require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/libraries/easysdi/factory/sdimultilingual.php';
 
 /**
  * View to edit
@@ -22,6 +23,8 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
     protected $form;
     protected $params;
     protected $user;
+    protected $properties;
+    protected $propertyvalues;
 
     /**
      * Display the view
@@ -35,6 +38,21 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_shop');
         $this->form = $this->get('Form');
+        
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('*')
+                ->from('#__sdi_property')
+                ->where('state = 1');
+        $db->setQuery($query);
+        $this->properties = $db->loadObjectList();
+        
+        $query = $db->getQuery(true);
+        $query->select('*')
+                ->from('#__sdi_propertyvalue')
+                ->where('state = 1');
+        $db->setQuery($query);
+        $this->propertyvalues = $db->loadObjectList();
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {

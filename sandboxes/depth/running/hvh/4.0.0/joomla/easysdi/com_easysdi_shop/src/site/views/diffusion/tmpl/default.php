@@ -204,12 +204,6 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                             <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_EXTRACTION'); ?>
                                 <?php echo $this->form->getInput('hasextraction'); ?></legend>
                             <div id="div_extraction">
-                                <?php foreach ($this->form->getFieldset('extraction') as $field): ?>
-                                    <div class="control-group" id="<?php echo $field->fieldname; ?>">
-                                        <div class="control-label"><?php echo $field->label; ?></div>
-                                        <div class="controls"><?php echo $field->input; ?></div>
-                                    </div>
-                                <?php endforeach; ?>
                                 <div class="control-group" id="deposit">
                                     <div class="control-label"><?php echo $this->form->getLabel('deposit'); ?></div>
                                     <div class="controls"><?php echo $this->form->getInput('deposit'); ?>
@@ -218,7 +212,27 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                         <?php endif; ?>
                                     </div>
                                 </div>
-                                <input type="hidden" name="jform[deposit]" id="jform_deposit_hidden" value="<?php echo $this->item->deposit ?>" />			
+                                <input type="hidden" name="jform[deposit]" id="jform_deposit_hidden" value="<?php echo $this->item->deposit ?>" />	
+                                <?php foreach ($this->form->getFieldset('extraction') as $field): ?>
+                                    <div class="control-group" id="<?php echo $field->fieldname; ?>">
+                                        <div class="control-label"><?php echo $field->label; ?></div>
+                                        <div class="controls"><?php echo $field->input; ?></div>
+                                    </div>
+                                <?php endforeach; ?>
+                                <fieldset id ="fieldset_properties" class="offset1">
+                                    <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_PROPERTIES'); ?></legend>
+                                    <?php foreach ($this->properties as $property):?>
+                                        <div class="control-group" >
+                                            <div class="control-label">
+                                                <label id="jform_<?php echo $property->alias ?>-lbl" for="jform_<?php echo $property->alias ?>" class="hasTip" title=""><?php echo sdiMultilingual::getTranslation($property->guid); ?></label>
+                                            </div>
+                                            <div class="controls">
+                                                
+                                                <input type="text" name="jform[<?php echo $property->alias ?>]" id="jform_<?php echo $property->alias ?>" value="" class="inputbox" size="40">
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </fieldset>
                             </div>
                         </fieldset>
                     </div>

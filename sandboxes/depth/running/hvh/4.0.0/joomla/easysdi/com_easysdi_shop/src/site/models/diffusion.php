@@ -77,8 +77,13 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 $properties = $table->getProperties(1);
                 $this->_item = JArrayHelper::toObject($properties, 'JObject');
 
+                //Load accessscope
                 $this->_item->organisms = sdiModel::getAccessScopeOrganism($this->_item->guid);
                 $this->_item->users = sdiModel::getAccessScopeUser($this->_item->guid);
+                //Load perimeter available for extraction
+                
+                //Load properties and properties values
+                
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
