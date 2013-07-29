@@ -42,6 +42,7 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
         $editId = $item->id;
 
         // Set the user id for the user to edit in the session.
+        $app->setUserState('com_easysdi_shop.edit.diffusionmetadata.id', $metadataId);
         $app->setUserState('com_easysdi_shop.edit.diffusion.id', $editId);
         $app->setUserState('com_easysdi_shop.edit.diffusionversion.id', $item->version_id);
 
@@ -107,7 +108,7 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
             $app->setUserState('com_easysdi_shop.edit.diffusion.data', JRequest::getVar('jform'), array());
 
             // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_easysdi_shop.edit.diffusion.id');
+            $id = (int) $app->getUserState('com_easysdi_shop.edit.diffusionmetadata.id');
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=diffusion&layout=edit&id=' . $id, false));
             return false;
         }
@@ -121,9 +122,9 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
             $app->setUserState('com_easysdi_shop.edit.diffusion.data', $data);
 
             // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_easysdi_shop.edit.diffusion.id');
+            $id = (int) $app->getUserState('com_easysdi_shop.edit.diffusionmetadata.id');
             $this->setMessage(JText::sprintf('Save failed', $model->getError()), 'warning');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=diffusion&layout=edit&id=' . $id, false));
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.edit&id=' . $id, false));
             return false;
         }
 
@@ -134,6 +135,7 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
         }
 
         // Clear the profile id from the session.
+        $app->setUserState('com_easysdi_shop.edit.diffusionmetadata.id', null);
         $app->setUserState('com_easysdi_shop.edit.diffusion.id', null);
         $app->setUserState('com_easysdi_shop.edit.diffusionversion.id', null);
 
@@ -188,8 +190,8 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
             $app->setUserState('com_easysdi_shop.edit.diffusion.data', $data);
 
             // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_easysdi_shop.edit.diffusion.id');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=diffusion&layout=edit&id=' . $id, false));
+            $id = (int) $app->getUserState('com_easysdi_shop.edit.diffusionmetadata.id');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.edit&id=' . $id, false));
             return false;
         }
 
@@ -202,9 +204,9 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
             $app->setUserState('com_easysdi_shop.edit.diffusion.data', $data);
 
             // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_easysdi_shop.edit.diffusion.id');
+            $id = (int) $app->getUserState('com_easysdi_shop.edit.diffusionmetadata.id');
             $this->setMessage(JText::sprintf('Delete failed', $model->getError()), 'warning');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=diffusion&layout=edit&id=' . $id, false));
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.edit&id=' . $id, false));
             return false;
         }
 
@@ -215,6 +217,7 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
         }
 
         // Clear the profile id from the session.
+        $app->setUserState('com_easysdi_shop.edit.diffusionmetadata.id', null);
         $app->setUserState('com_easysdi_shop.edit.diffusion.id', null);
         $app->setUserState('com_easysdi_shop.edit.diffusionversion.id', null);
 

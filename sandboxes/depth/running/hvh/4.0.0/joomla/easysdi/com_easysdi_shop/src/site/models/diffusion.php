@@ -39,6 +39,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
             $id = JFactory::getApplication()->getUserState('com_easysdi_shop.edit.diffusion.id');
         } else {
             $id = JFactory::getApplication()->input->get('id');
+            
             JFactory::getApplication()->setUserState('com_easysdi_shop.edit.diffusion.id', $id);
         }
         $this->setState('diffusion.id', $id);
@@ -75,23 +76,23 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 // Convert the JTable to a clean JObject.
                 $properties = $table->getProperties(1);
                 $this->_item = JArrayHelper::toObject($properties, 'JObject');
-                
+
                 $this->_item->organisms = sdiModel::getAccessScopeOrganism($this->_item->guid);
                 $this->_item->users = sdiModel::getAccessScopeUser($this->_item->guid);
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
         }
-        if(empty($id)){
-            $this->_item->version_id = JFactory::getApplication()->getUserState ('com_easysdi_shop.edit.diffusionversion.id');
-            
+        if (empty($id)) {
+            $this->_item->version_id = JFactory::getApplication()->getUserState('com_easysdi_shop.edit.diffusionversion.id');
+
             $resource = JTable::getInstance('resource', 'Easysdi_coreTable');
             $version = JTable::getInstance('version', 'Easysdi_coreTable');
             $version->load($this->_item->version_id);
             $resource->load($version->resource_id);
-            $this->_item->name= $resource->name;
+            $this->_item->name = $resource->name;
         }
-        
+
         return $this->_item;
     }
 
@@ -201,6 +202,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
     public function save($data) {
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('diffusion.id');
         $state = (!empty($data['state'])) ? 1 : 0;
+
         
         //Check the user right
         try {
@@ -216,10 +218,52 @@ class Easysdi_shopModelDiffusion extends JModelForm {
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return false;
         }
-        
+
+        //Clean data
+        (empty($data['hasdownload']))? $data['hasdownload'] = "0" :  $data['hasdownload'] = "1";
+        (empty($data['hasextraction']))? $data['hasextraction'] = "0" :  $data['hasextraction'] = "1";
+        if($data['hasdownload'] == 0){
+            $data['productstorage_id']=null;
+            $data['file']=null;
+            $data['file_hidden']=null;
+            $data['fileurl']=null;
+            $data['perimeter_id']=null;
+        }else{
+            switch ($data['productstorage_id']){
+                case 1:
+                    $data['fileurl']=null;
+                    $data['perimeter_id']=null;
+                    break;
+                case 2:
+                    $data['file']=null;
+                    $data['file_hidden']=null;
+                    $data['perimeter_id']=null;
+                    break;
+                case 3:
+                    $data['file']=null;
+                    $data['file_hidden']=null;
+                    $data['fileurl']=null;
+                    break;
+            }
+        }
+        if($data['hasextraction'] == 0){
+            $data['surfacemin']=null;
+            $data['surfacemax']=null;
+            $data['productmining_id']=null;
+            $data['deposit']=null;
+            $data['deposit_hidden']=null;
+        }
+        if($data['pricing_id'] == 2){
+            $data['hasdownload'] = "0";
+            $data['productstorage_id']=null;
+            $data['file']=null;
+            $data['file_hidden']=null;
+            $data['fileurl']=null;
+            $data['perimeter_id']=null;
+        }
         $table = $this->getTable();
         if ($table->save($data) === true) {
-            if(!sdiModel::saveAccessScope($data))
+            if (!sdiModel::saveAccessScope($data))
                 return false;
             return $id;
         } else {

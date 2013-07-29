@@ -143,7 +143,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_diffusion` (
 `accessscope_id` INT(11) UNSIGNED NOT NULL ,
 `pricing_id` INT(11) UNSIGNED NOT NULL ,
 `deposit` VARCHAR(255)   ,
-`productmining_id` INT(11) UNSIGNED NOT NULL ,
+`productmining_id` INT(11) UNSIGNED ,
 `surfacemin` VARCHAR(50)    ,
 `surfacemax` VARCHAR(50)    ,
 `productstorage_id` INT(11) UNSIGNED ,

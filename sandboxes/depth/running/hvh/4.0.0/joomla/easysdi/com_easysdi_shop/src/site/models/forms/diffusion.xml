@@ -110,9 +110,7 @@
     <field name="file" type="file"
               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_FILE"
               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_FILE" 
-              filter="raw"
-              
-              max_size="32" />
+              filter="raw" />
     
     <fieldset name="extraction">
          <field name="productmining_id" 
@@ -139,9 +137,7 @@
      <field name="deposit" type="file"
               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_DEPOSIT"
               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_DEPOSIT" 
-              filter="raw"
-              
-              max_size="32" /> 
+              filter="raw" /> 
          
     <fieldset name="hidden">
         <field name="id" type="hidden" filter="safehtml" />
@@ -177,7 +173,7 @@
                filter="safehtml" />
     </fieldset>
     
-    <field name="hasdownload" type="checkbox" label="Show title" description="Show the title of the item" value="1" default="0" />
+    <field name="hasdownload" type="checkbox"  onclick="enableDownload()" label="Show title" description="Show the title of the item" value="1" default="0" />
     
-    <field name="hasextraction" type="checkbox" label="Show title" description="Show the title of the item" value="1" default="0" />
+    <field name="hasextraction" type="checkbox" onclick="enableExtraction()" label="Show title" description="Show the title of the item" value="1" default="0" />
 </form>

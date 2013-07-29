@@ -41,6 +41,7 @@ class Easysdi_shopTablediffusion extends sdiTable {
         $params = JFactory::getApplication()->getParams('com_easysdi_shop');
         $fileFolder = $params->get('fileFolder');
         $depositFolder = $params->get('depositFolder');
+        $maxfilesize = $params->get('maxuploadfilesize');
         //Support for file field: deposit
         if (isset($_FILES['jform']['name']['deposit'])):
             jimport('joomla.filesystem.file');
@@ -53,13 +54,13 @@ class Easysdi_shopTablediffusion extends sdiTable {
             if ($fileError > 0 && $fileError != 4) {
                 switch ($fileError) :
                     case 1:
-                        $message = JText::_('File size exceeds allowed by the server');
+                        $message = JText::_('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_ERROR_SERVER_SIZE_MAX');
                         break;
                     case 2:
-                        $message = JText::_('File size exceeds allowed by the html form');
+                        $message = JText::_('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_ERROR_HTML_SIZE_MAX');
                         break;
                     case 3:
-                        $message = JText::_('Partial upload error');
+                        $message = JText::_('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_ERROR_UPLOAD');
                         break;
                 endswitch;
                 if ($message != '') :
@@ -70,17 +71,30 @@ class Easysdi_shopTablediffusion extends sdiTable {
             else if ($fileError == 4) {
                 if (isset($array['deposit_hidden'])):;
                     $array['deposit'] = $array['deposit_hidden'];
+                else :
+                    //delete existing file
+                    if (isset($array['id'])) {
+                        $db = JFactory::getDbo();
+                        $query = $db->getQuery(true)
+                                ->select('deposit')
+                                ->from('#__sdi_diffusion')
+                                ->where('id = ' . (int) $array['id']);
+                        $db->setQuery($query);
+                        $deposit = $db->loadResult();
+                        if (!empty($deposit)) {
+                            $uploadPath = $depositFolder . '/' . $deposit;
+                            if (JFile::exists($uploadPath))
+                                JFile::delete($uploadPath);
+                        }
+                    }
                 endif;
-            }
-            else {
-
+            } else {
                 //Check for filesize
                 $fileSize = $file['size']['deposit'];
-                if ($fileSize > 33554432):
-                    JError::raiseWarning(500, 'File bigger than 32MB');
+                if ($fileSize > $maxfilesize * 1048576):
+                    JError::raiseWarning(500, JText::sprintf('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_ERROR_PARAMS_SIZE_MAX', $maxfilesize));
                     return false;
                 endif;
-
                 //Replace any special characters in the filename
                 $filename = explode('.', $file['name']['deposit']);
                 $filename[0] = preg_replace("/[^A-Za-z0-9]/i", "-", $filename[0]);
@@ -91,19 +105,13 @@ class Easysdi_shopTablediffusion extends sdiTable {
                 $fileTemp = $file['tmp_name']['deposit'];
 
                 if (!JFile::exists($uploadPath)):
-
                     if (!JFile::upload($fileTemp, $uploadPath)):
-
-                        JError::raiseWarning(500, 'Error moving file');
-
+                        JError::raiseWarning(500, JText::_('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_ERROR_MOVING_FILE'));
                         return false;
-
                     endif;
-
                 endif;
                 $array['deposit'] = $filename;
             }
-
         endif;
         //Support for file field: file
         if (isset($_FILES['jform']['name']['file'])):
@@ -117,13 +125,13 @@ class Easysdi_shopTablediffusion extends sdiTable {
             if ($fileError > 0 && $fileError != 4) {
                 switch ($fileError) :
                     case 1:
-                        $message = JText::_('File size exceeds allowed by the server');
+                        $message = JText::_('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_ERROR_SERVER_SIZE_MAX');
                         break;
                     case 2:
-                        $message = JText::_('File size exceeds allowed by the html form');
+                        $message = JText::_('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_ERROR_HTML_SIZE_MAX');
                         break;
                     case 3:
-                        $message = JText::_('Partial upload error');
+                        $message = JText::_('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_ERROR_UPLOAD');
                         break;
                 endswitch;
                 if ($message != '') :
@@ -134,14 +142,29 @@ class Easysdi_shopTablediffusion extends sdiTable {
             else if ($fileError == 4) {
                 if (isset($array['file_hidden'])):;
                     $array['file'] = $array['file_hidden'];
+                else :
+                    //delete existing file
+                    if (isset($array['id'])) {
+                        $db = JFactory::getDbo();
+                        $query = $db->getQuery(true)
+                                ->select('file')
+                                ->from('#__sdi_diffusion')
+                                ->where('id = ' . (int) $array['id']);
+                        $db->setQuery($query);
+                        $file = $db->loadResult();
+                        if (!empty($deposit)) {
+                            $uploadPath = $fileFolder . '/' . $file;
+                            if (JFile::exists($uploadPath))
+                                JFile::delete($uploadPath);
+                        }
+                    }
                 endif;
             }
             else {
-
                 //Check for filesize
                 $fileSize = $file['size']['file'];
-                if ($fileSize > 33554432):
-                    JError::raiseWarning(500, 'File bigger than 32MB');
+                if ($fileSize > $maxfilesize * 1048576):
+                    JError::raiseWarning(500, JText::sprintf('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_ERROR_PARAMS_SIZE_MAX', $maxfilesize));
                     return false;
                 endif;
 
@@ -155,21 +178,27 @@ class Easysdi_shopTablediffusion extends sdiTable {
                 $fileTemp = $file['tmp_name']['file'];
 
                 if (!JFile::exists($uploadPath)):
-
                     if (!JFile::upload($fileTemp, $uploadPath)):
-
-                        JError::raiseWarning(500, 'Error moving file');
-
+                        JError::raiseWarning(500, JText::_('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_ERROR_MOVING_FILE'));
                         return false;
-
                     endif;
-
                 endif;
                 $array['file'] = $filename;
             }
-
+        else:
+            //delete existing file
+            if (isset($_FILES['jform']['id'])) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true)
+                        ->select('file')
+                        ->from('#__sdi_diffusion')
+                        ->where('id = ' . (int) $_FILES['jform']['id']);
+                $db->setQuery($query);
+                $file = $db->loadResult();
+                $uploadPath = $fileFolder . '/' . $file;
+                JFile::delete($uploadPath);
+            }
         endif;
-
         return parent::bind($array, $ignore);
     }
 
