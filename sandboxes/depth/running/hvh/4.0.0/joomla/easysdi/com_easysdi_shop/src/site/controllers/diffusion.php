@@ -225,11 +225,4 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
         // Flush the data from the session.
         $app->setUserState('com_easysdi_shop.edit.diffusion.data', null);
     }
-
-    public function upload() {
-        error_reporting(E_ALL | E_STRICT);
-        require('UploadHandler.php');
-        $upload_handler = new UploadHandler();
-    }
-
 }
