@@ -207,7 +207,6 @@ class Easysdi_shopModelDiffusion extends JModelForm {
     public function save($data) {
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('diffusion.id');
         $state = (!empty($data['state'])) ? 1 : 0;
-
         
         //Check the user right
         try {
@@ -224,7 +223,9 @@ class Easysdi_shopModelDiffusion extends JModelForm {
             return false;
         }
 
-        //Clean data
+        //Clean and prepare data
+        $jinput = JFactory::getApplication()->input;
+        $form = $jinput->get('jform', 'null', 'ARRAY');
         (empty($data['hasdownload']))? $data['hasdownload'] = "0" :  $data['hasdownload'] = "1";
         (empty($data['hasextraction']))? $data['hasextraction'] = "0" :  $data['hasextraction'] = "1";
         if($data['hasdownload'] == 0){
@@ -257,6 +258,9 @@ class Easysdi_shopModelDiffusion extends JModelForm {
             $data['productmining_id']=null;
             $data['deposit']=null;
             $data['deposit_hidden']=null;
+        }else{
+            $data['perimeter'] = $form['perimeter'];
+            $data['property'] = $form['property'];
         }
         if($data['pricing_id'] == 2){
             $data['hasdownload'] = "0";
@@ -270,6 +274,25 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         if ($table->save($data) === true) {
             if (!sdiModel::saveAccessScope($data))
                 return false;
+            
+            //Perimeter
+            foreach ($data['perimeter'] as $key=>$perimeter){
+                $diffusionperimeter = JTable::getInstance('diffusionperimeter', 'Easysdi_shopTable');
+                $keys = array("diffusion_id" => $id,"perimeter_id" => $key );
+                $diffusionperimeter->load($keys);
+                if($perimeter == -1){
+                    $diffusionperimeter->delete();
+                    continue;
+                }
+               
+                $array = array();
+                $array['diffusion_id'] = $id;
+                $array['perimeter_id'] = $key;
+                ($perimeter == 1)? $array['buffer'] = 0 : $array['buffer'] = 1;
+                $diffusionperimeter->save($array);
+            }
+            
+            //
             return $id;
         } else {
             return false;

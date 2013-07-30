@@ -219,16 +219,91 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                         <div class="controls"><?php echo $field->input; ?></div>
                                     </div>
                                 <?php endforeach; ?>
-                                <fieldset id ="fieldset_properties" class="offset1">
-                                    <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_PROPERTIES'); ?></legend>
-                                    <?php foreach ($this->properties as $property):?>
+                                <fieldset id ="fieldset_perimeters" class="span0 offset1">
+                                    <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_PERIMETERS'); ?></legend>
+                                    <?php foreach ($this->orderperimeters as $orderperimeter): ?>
                                         <div class="control-group" >
                                             <div class="control-label">
-                                                <label id="jform_<?php echo $property->alias ?>-lbl" for="jform_<?php echo $property->alias ?>" class="hasTip" title=""><?php echo sdiMultilingual::getTranslation($property->guid); ?></label>
+                                                <label id="jform_perimeter<?php echo $orderperimeter->id; ?>-lbl" for="jform_perimeter<?php echo $orderperimeter->id; ?>" class="hasTip" title=""><?php echo $orderperimeter->name; ?></label>
                                             </div>
                                             <div class="controls">
-                                                
-                                                <input type="text" name="jform[<?php echo $property->alias ?>]" id="jform_<?php echo $property->alias ?>" value="" class="inputbox" size="40">
+                                                <select id="jform_perimeter<?php echo $orderperimeter->id ?>" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" class="inputbox"  >
+                                                    <option value="-1"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_PERIMETER"); ?></option>
+                                                    <option value="1"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER"); ?></option>
+                                                    <option value="2"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER_WITH_BUFFER"); ?></option>
+                                                </select>
+                                            </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    
+                                </fieldset>
+                                <fieldset id ="fieldset_properties" class="span0 offset1">
+                                    <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_PROPERTIES'); ?></legend>
+                                    <?php foreach ($this->properties as $property): ?>
+                                        <div class="control-group" >
+                                            <div class="control-label">
+                                                <label id="jform_property<?php echo $property->id ?>-lbl" for="jform_property<?php echo $property->id ?>" class="hasTip" title=""><?php echo sdiMultilingual::getTranslation($property->guid); ?></label>
+                                            </div>
+                                            <div class="controls">
+                                                <?php
+                                                switch ($property->propertytype_id):
+                                                    case 1:
+                                                    case 2:
+                                                    case 3:
+                                                        ?>
+                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>][]" class="inputbox" multiple="multiple" >
+                                                            <?php
+                                                            foreach ($this->propertyvalues as $propertyvalue):
+                                                                if ($propertyvalue->property_id == $property->id):
+                                                                    ?>
+                                                                    <option value="<?php echo $propertyvalue->id; ?>"><?php echo sdiMultilingual::getTranslation($propertyvalue->guid); ?></option>
+                                                                    <?php
+                                                                endif;
+                                                            endforeach;
+                                                            ?>
+                                                        </select>
+                                                        <?php
+                                                        break;
+                                                    case 4:
+                                                        ?>
+                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>]" class="inputbox"  >
+                                                            <?php if ($property->mandatory): ?>
+                                                                <option value="-1"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_FIELD"); ?></option>
+                                                            <?php endif; ?>
+                                                            <?php
+                                                            foreach ($this->propertyvalues as $propertyvalue):
+                                                                if ($propertyvalue->property_id == $property->id):
+                                                                    ?>
+                                                                    <option value="<?php echo $propertyvalue->id; ?>"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_FIELD"); ?></option>
+                                                                    <?php
+                                                                    break;
+                                                                endif;
+                                                            endforeach;
+                                                            ?>
+                                                        </select>
+                                                        <?php
+                                                        break;
+                                                    case 5:
+                                                    case 6 :
+                                                        ?>
+                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>]" class="inputbox"  >
+                                                            <?php if ($property->mandatory): ?>
+                                                                <option value="-1"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_FIELD"); ?></option>
+                                                            <?php endif; ?>
+                                                            <?php
+                                                            foreach ($this->propertyvalues as $propertyvalue):
+                                                                if ($propertyvalue->property_id == $property->id):
+                                                                    ?>
+                                                                    <option value="<?php echo $propertyvalue->id; ?>"><?php echo sdiMultilingual::getTranslation($propertyvalue->guid); ?></option>
+                                                                    <?php
+                                                                endif;
+                                                            endforeach;
+                                                            ?>
+                                                        </select>
+                                                        <?php
+                                                        break;
+                                                endswitch;
+                                                ?>
                                             </div>
                                         </div>
                                     <?php endforeach; ?>

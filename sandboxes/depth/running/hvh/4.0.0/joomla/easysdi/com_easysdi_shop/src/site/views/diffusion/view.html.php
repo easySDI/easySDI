@@ -33,11 +33,27 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
 
         $app = JFactory::getApplication();
         $user = JFactory::getUser();
-
+        
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_shop');
         $this->form = $this->get('Form');
+        
+        $this->user = null;
+        if (!empty($this->item->id)) {
+            try {
+                $this->user = sdiFactory::getSdiUser();
+                if (!$this->user->authorizeOnVersion($this->item->version_id, sdiUser::diffusionmanager)) {
+                    JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+                    JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+                    return false;
+                }
+            } catch (Exception $e) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+                JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+                return false;
+            }
+        }
         
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -53,26 +69,30 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
                 ->where('state = 1');
         $db->setQuery($query);
         $this->propertyvalues = $db->loadObjectList();
+        
+        $organisms = $this->user->getDiffusionManagerOrganisms();
+        $query = $db->getQuery(true);
+//        $query =  "SELECT p.id, p.name FROM #__sdi_perimeter p WHERE p.state=1 AND p.perimetertype_id IN (1,3)";
+//        $query .= ' AND (p.accessscope_id = 1 ';
+//        $query .= 'OR (p.accessscope_id = 2 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = '.$organisms[0]->id.' AND a.entity_guid = p.guid ) = 1)';
+//        $query .= 'OR (p.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = '.$this->user->id.' AND a.entity_guid = p.guid ) = 1)';
+//        $query .= ')';
+        $query->select('p.id, p.name')
+                ->from('#__sdi_perimeter p')
+                ->where('p.state = 1')
+                ->where("p.perimetertype_id IN (1,3)")
+                ->where("(p.accessscope_id = 1 OR (p.accessscope_id = 2 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = ".$organisms[0]->id." AND a.entity_guid = p.guid ) = 1) OR (p.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = ". $this->user->id ." AND a.entity_guid = p.guid ) = 1))");
+        $db->setQuery($query);
+        $this->orderperimeters = $db->loadObjectList();
+        
+        
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
 
-        if (!empty($this->item->id)) {
-            try {
-                $this->user = sdiFactory::getSdiUser();
-                if (!$this->user->authorizeOnVersion($this->item->version_id, sdiUser::diffusionmanager)) {
-                    JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-                    JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-                    return false;
-                }
-            } catch (Exception $e) {
-                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-                JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-                return false;
-            }
-        }
+        
 
         $this->_prepareDocument();
 
