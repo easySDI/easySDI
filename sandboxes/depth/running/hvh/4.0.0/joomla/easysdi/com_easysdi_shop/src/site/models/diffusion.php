@@ -292,6 +292,24 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 $diffusionperimeter->save($array);
             }
             
+            //Property
+            foreach ($data['property'] as $key=>$property){
+                $diffusionpropertyvalue = JTable::getInstance('diffusionpropertyvalue', 'Easysdi_shopTable');
+                $keys = array("diffusion_id" => $id,"property_id" => $property );
+                $diffusionpropertyvalue->load($keys);
+                if($perimeter == -1){
+                    $diffusionperimeter->delete();
+                    continue;
+                }
+               
+                $array = array();
+                $array['diffusion_id'] = $id;
+                $array['perimeter_id'] = $key;
+                ($perimeter == 1)? $array['buffer'] = 0 : $array['buffer'] = 1;
+                $diffusionperimeter->save($array);
+            }
+            //Delete other entry related to other properties that are no more available for the user
+            
             //
             return $id;
         } else {
