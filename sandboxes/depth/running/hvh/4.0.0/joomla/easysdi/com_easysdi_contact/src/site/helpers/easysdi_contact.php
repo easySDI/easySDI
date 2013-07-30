@@ -7,7 +7,7 @@
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 
-abstract class Easysdi_coreHelper
+abstract class Easysdi_contactHelper
 {
 	public static function myFunction()
 	{

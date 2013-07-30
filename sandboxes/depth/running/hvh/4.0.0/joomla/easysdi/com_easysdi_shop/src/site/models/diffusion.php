@@ -80,8 +80,27 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 //Load accessscope
                 $this->_item->organisms = sdiModel::getAccessScopeOrganism($this->_item->guid);
                 $this->_item->users = sdiModel::getAccessScopeUser($this->_item->guid);
+                //Load notified user
+                $diffusionnotifieduser = JTable::getInstance('diffusionnotifieduser', 'Easysdi_shopTable');
+                $this->_item->notifieduser_id = $diffusionnotifieduser->loadBydiffusionID($this->_item->id);
                 //Load perimeter available for extraction
+                $diffusionperimeter = JTable::getInstance('diffusionperimeter', 'Easysdi_shopTable');
+                $perimeters = $diffusionperimeter->loadBydiffusionID($this->_item->id);
+                $this->_item->perimeter = array();
+                if ($perimeters) {
+                    foreach ($perimeters as $perimeter) {
+                        $this->_item->perimeter [$perimeter->perimeter_id] = $perimeter->buffer;
+                    }
+                }
                 //Load properties and properties values
+                $diffusionpropertyvalue = JTable::getInstance('diffusionpropertyvalue', 'Easysdi_shopTable');
+                $properties = $diffusionpropertyvalue->loadBydiffusionID($this->_item->id);
+                $this->_item->property = array();
+                if ($properties) {
+                    foreach ($properties as $property) {
+                        $this->_item->property [$property->property_id][] = $property->propertyvalue_id;
+                    }
+                }
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
@@ -256,6 +275,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
             $data['productmining_id'] = null;
             $data['deposit'] = null;
             $data['deposit_hidden'] = null;
+            $data['notifieduser_id'] = null;
         } else {
             $data['perimeter'] = $form['perimeter'];
             $data['property'] = $form['property'];
@@ -288,7 +308,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                     $ids .= $diffusionnotifieduser->id;
             }
             //Delete entries no more usefull
-            if (!$this->cleanTable($id,'#__sdi_diffusion_notifieduser', $ids))
+            if (!$this->cleanTable($id, '#__sdi_diffusion_notifieduser', $ids))
                 return false;
 
             //Perimeter
@@ -309,7 +329,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 $array = array();
                 $array['diffusion_id'] = $id;
                 $array['perimeter_id'] = $key;
-                ($perimeter == 1) ? $array['buffer'] = 0 : $array['buffer'] = 1;
+                ($perimeter == 1) ? $array['buffer'] = 1 : $array['buffer'] = 0;
                 if (!$diffusionperimeter->save($array))
                     return false;
 
@@ -319,7 +339,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                     $ids .= $diffusionperimeter->id;
             }
             //Delete entries no more usefull
-            if (!$this->cleanTable($id,'#__sdi_diffusion_perimeter', $ids))
+            if (!$this->cleanTable($id, '#__sdi_diffusion_perimeter', $ids))
                 return false;
 
 
@@ -337,9 +357,9 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 }
             }
             //Delete entries no more usefull
-            if (!$this->cleanTable($id,'#__sdi_diffusion_propertyvalue', $ids))
+            if (!$this->cleanTable($id, '#__sdi_diffusion_propertyvalue', $ids))
                 return false;
-            
+
 
             return $id;
         } else {
@@ -375,7 +395,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         return true;
     }
 
-    private function cleanTable($id,$table, $ids) {
+    private function cleanTable($id, $table, $ids) {
         //Delete entries no more usefull
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -389,7 +409,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         $db->setQuery($query);
         if (!$db->execute())
             return false;
-        
+
         return true;
     }
 

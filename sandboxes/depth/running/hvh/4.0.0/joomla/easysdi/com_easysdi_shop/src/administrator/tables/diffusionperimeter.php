@@ -26,7 +26,44 @@ class Easysdi_shopTablediffusionperimeter extends JTable {
         parent::__construct('#__sdi_diffusion_perimeter', 'id', $db);
     }
 
-    
+    public function loadByDiffusionID($id = null, $reset = true) {
+        if ($reset) {
+            $this->reset();
+        }
+
+        // Initialise the query.
+        $query = $this->_db->getQuery(true);
+        $query->select('perimeter_id, buffer ');
+        $query->from($this->_tbl.' as p');        
+        $query->where($this->_db->quoteName('p.diffusion_id') . ' = ' . (int) $id);
+        $this->_db->setQuery($query);
+
+        try {
+            $rows = $this->_db->loadObjectList();
+        } catch (JDatabaseException $e) {
+            $je = new JException($e->getMessage());
+            $this->setError($je);
+            return false;
+        }
+
+        // Legacy error handling switch based on the JError::$legacy switch.
+        // @deprecated  12.1
+        if (JError::$legacy && $this->_db->getErrorNum()) {
+            $e = new JException($this->_db->getErrorMsg());
+            $this->setError($e);
+            return false;
+        }
+
+        // Check that we have a result.
+        if (empty($rows)) {
+            $e = new JException(JText::_('JLIB_DATABASE_ERROR_EMPTY_ROW_RETURNED'));
+            $this->setError($e);
+            return false;
+        }
+
+        // Bind the object with the row and return.
+        return $rows;
+    }
     /**
       * Define a namespaced asset name for inclusion in the #__assets table
       * @return string The asset name 

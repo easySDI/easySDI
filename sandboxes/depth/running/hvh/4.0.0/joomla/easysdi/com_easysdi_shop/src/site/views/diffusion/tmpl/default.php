@@ -228,9 +228,9 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                             </div>
                                             <div class="controls">
                                                 <select id="jform_perimeter<?php echo $orderperimeter->id ?>" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" class="inputbox"  >
-                                                    <option value="-1"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_PERIMETER"); ?></option>
-                                                    <option value="1"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER"); ?></option>
-                                                    <option value="2"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER_WITH_BUFFER"); ?></option>
+                                                    <option value="-1" ><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_PERIMETER"); ?></option>
+                                                    <option value="1" <?php if(array_key_exists($orderperimeter->id,$this->item->perimeter ) && $this->item->perimeter[$orderperimeter->id] == 1) echo 'selected';  ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER"); ?></option>
+                                                    <option value="0" <?php if(array_key_exists($orderperimeter->id,$this->item->perimeter ) && $this->item->perimeter[$orderperimeter->id] == 0) echo 'selected';  ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER_WITH_BUFFER"); ?></option>
                                                 </select>
                                             </div>
                                         </div>
@@ -242,7 +242,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                     <?php foreach ($this->properties as $property): ?>
                                         <div class="control-group" >
                                             <div class="control-label">
-                                                <label id="jform_property<?php echo $property->id ?>-lbl" for="jform_property<?php echo $property->id ?>" class="hasTip <?php if($property->mandatory) echo 'required' ; ?>" title=""><?php echo sdiMultilingual::getTranslation($property->guid); ?></label>
+                                                <label id="jform_property<?php echo $property->id ?>-lbl" for="jform_property<?php echo $property->id ?>" class="hasTip <?php if($property->mandatory) echo 'required' ; ?>" title=""><?php echo sdiMultilingual::getTranslation($property->guid); ?><?php if($property->mandatory) echo '<span class="star">&#160;*</span>' ; ?></label>
                                             </div>
                                             <div class="controls">
                                                 <?php
@@ -256,7 +256,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                                             foreach ($this->propertyvalues as $propertyvalue):
                                                                 if ($propertyvalue->property_id == $property->id):
                                                                     ?>
-                                                                    <option value="<?php echo $propertyvalue->id; ?>"><?php echo sdiMultilingual::getTranslation($propertyvalue->guid); ?></option>
+                                                                    <option value="<?php echo $propertyvalue->id; ?>" <?php if(array_key_exists($property->id,$this->item->property ) && in_array($propertyvalue->id, $this->item->property[$property->id])) echo 'selected';  ?>><?php echo sdiMultilingual::getTranslation($propertyvalue->guid); ?></option>
                                                                     <?php
                                                                 endif;
                                                             endforeach;
@@ -273,7 +273,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                                                 foreach ($this->propertyvalues as $propertyvalue):
                                                                     if ($propertyvalue->property_id == $property->id):
                                                                         ?>
-                                                                        <option value="<?php echo $propertyvalue->id; ?>"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_FIELD"); ?></option>
+                                                                        <option value="<?php echo $propertyvalue->id; ?>" <?php if(array_key_exists($property->id,$this->item->property ) && in_array($propertyvalue->id, $this->item->property[$property->id])) echo 'selected';  ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_FIELD"); ?></option>
                                                                         <?php
                                                                         break;
                                                                     endif;
@@ -284,7 +284,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                                                 foreach ($this->propertyvalues as $propertyvalue):
                                                                     if ($propertyvalue->property_id == $property->id):
                                                                         ?>
-                                                                        <option value="<?php echo $propertyvalue->id; ?>"><?php echo sdiMultilingual::getTranslation($propertyvalue->guid); ?></option>
+                                                                        <option value="<?php echo $propertyvalue->id; ?>" <?php if(array_key_exists($property->id,$this->item->property ) && in_array($propertyvalue->id, $this->item->property[$property->id])) echo 'selected';  ?>><?php echo sdiMultilingual::getTranslation($propertyvalue->guid); ?></option>
                                                                         <?php
                                                                     endif;
                                                                 endforeach;
