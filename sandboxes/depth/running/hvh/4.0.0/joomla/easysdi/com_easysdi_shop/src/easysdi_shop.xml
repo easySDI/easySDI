@@ -1,67 +1,90 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<extension method="upgrade" type="component" version="3.0.0">
-  <name>com_easysdi_shop</name>
-  <creationDate>15 August 2012</creationDate>
-  <releaseDate>30 juillet 2013</releaseDate>
-  <copyright>Copyright (C) 2012. All rights reserved.</copyright>
-  <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
-  <author>EasySDI Community</author>
-  <authorEmail>contact@easysdi.org</authorEmail>
-  <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>4.0.0-alpha-5</version>
-  <description />
-  <scriptfile>script.php</scriptfile>
-  <install>
-    <sql>
-      <file charset="utf8" driver="mysql">sql/install.mysql.utf8.sql</file>
-      <file charset="utf8" driver="mysql">sql/insert.install.mysql.utf8.sql</file>
-    </sql>
-  </install>
-  <uninstall>
-    <sql>
-      <file charset="utf8" driver="mysql">sql/uninstall.mysql.utf8.sql</file>
-    </sql>
-  </uninstall>
-  <update>
-    <schemas>
-      <schemapath type="mysql">sql/updates</schemapath>
-    </schemas>
-  </update>
-  <files folder="site">
-    <filename>index.html</filename>
-    <filename>easysdi_shop.php</filename>
-    <filename>controller.php</filename>
-    <filename>router.php</filename>
-    <folder>views</folder>
-    <folder>models</folder>
-    <folder>controllers</folder>
-    <folder>helpers</folder>
-  </files>
-  <languages folder="site">
-    <language tag="en-GB">language/en-GB.com_easysdi_shop.ini</language>
-    <language tag="fr-FR">language/fr-FR.com_easysdi_shop.ini</language>
-  </languages>
-  <administration>
-    <files folder="administrator">
-      <filename>access.xml</filename>
-      <filename>config.xml</filename>
-      <filename>controller.php</filename>
-      <filename>index.html</filename>
-      <filename>easysdi_shop.php</filename>
-      <folder>controllers</folder>
-      <folder>assets</folder>
-      <folder>helpers</folder>
-      <folder>libraries</folder>
-      <folder>models</folder>
-      <folder>sql</folder>
-      <folder>tables</folder>
-      <folder>views</folder>
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="3.0" method="upgrade">
+    <name>com_easysdi_shop</name>
+    <creationDate>2013-07-19</creationDate>
+    <copyright>Copyright (C) 2013. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <author>EasySDI Community</author>
+    <authorEmail>contact@easysdi.org</authorEmail>
+    <authorUrl>http://www.easysdi.org</authorUrl>
+    <version>4.0.0-alpha-3</version>
+    <description></description>
+    
+    <install> <!-- Runs on install -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+        </sql>
+    </install>
+    <uninstall> <!-- Runs on uninstall -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+        </sql>
+    </uninstall>
+
+    <files folder="site">
+        <filename>index.html</filename>
+        <filename>easysdi_shop.php</filename>
+        <filename>controller.php</filename>
+        <filename>router.php</filename>
+        <folder>views</folder>
+        <folder>models</folder>
+        <folder>controllers</folder>
+        <folder>helpers</folder>
     </files>
-    <languages folder="administrator">
-      <language tag="en-GB">language/en-GB/en-GB.com_easysdi_shop.ini</language>
-      <language tag="en-GB">language/en-GB/en-GB.com_easysdi_shop.sys.ini</language>
-      <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_shop.ini</language>
-      <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_shop.sys.ini</language>
+    <languages folder="site">
+        
+			<language tag="en-GB">language/en-GB.com_easysdi_shop.ini</language>
+			<language tag="fr-FR">language/fr-FR.com_easysdi_shop.ini</language>
     </languages>
-  </administration>
+    <administration>
+        <menu img="components/com_easysdi_shop/assets/images/s_com_easysdi_shop.png" >COM_EASYSDI_SHOP</menu>
+        <submenu>
+            
+			<menu link="option=com_easysdi_shop&amp;view=diffusions" view="diffusions" img="components/com_easysdi_shop/assets/images/s_diffusions.png" alt="Easysdi_shop/Diffusions">COM_EASYSDI_SHOP_TITLE_DIFFUSIONS</menu>
+
+			<menu link="option=com_easysdi_shop&amp;view=properties" view="properties" img="components/com_easysdi_shop/assets/images/s_properties.png" alt="Easysdi_shop/Properties">COM_EASYSDI_SHOP_TITLE_PROPERTIES</menu>
+
+			<menu link="option=com_easysdi_shop&amp;view=propertyvalues" view="propertyvalues" img="components/com_easysdi_shop/assets/images/s_propertyvalues.png" alt="Easysdi_shop/Propertyvalues">COM_EASYSDI_SHOP_TITLE_PROPERTYVALUES</menu>
+
+			<menu link="option=com_easysdi_shop&amp;view=diffusionperimeters" view="diffusionperimeters" img="components/com_easysdi_shop/assets/images/s_diffusionperimeters.png" alt="Easysdi_shop/Diffusionperimeters">COM_EASYSDI_SHOP_TITLE_DIFFUSIONPERIMETERS</menu>
+
+			<menu link="option=com_easysdi_shop&amp;view=diffusionnotifiedusers" view="diffusionnotifiedusers" img="components/com_easysdi_shop/assets/images/s_diffusionnotifiedusers.png" alt="Easysdi_shop/Diffusionnotifiedusers">COM_EASYSDI_SHOP_TITLE_DIFFUSIONNOTIFIEDUSERS</menu>
+
+			<menu link="option=com_easysdi_shop&amp;view=perimeters" view="perimeters" img="components/com_easysdi_shop/assets/images/s_perimeters.png" alt="Easysdi_shop/Perimeters">COM_EASYSDI_SHOP_TITLE_PERIMETERS</menu>
+
+			<menu link="option=com_easysdi_shop&amp;view=grids" view="grids" img="components/com_easysdi_shop/assets/images/s_grids.png" alt="Easysdi_shop/Grids">COM_EASYSDI_SHOP_TITLE_GRIDS</menu>
+
+			<menu link="option=com_easysdi_shop&amp;view=orders" view="orders" img="components/com_easysdi_shop/assets/images/s_orders.png" alt="Easysdi_shop/Orders">COM_EASYSDI_SHOP_TITLE_ORDERS</menu>
+
+			<menu link="option=com_easysdi_shop&amp;view=orderdiffusions" view="orderdiffusions" img="components/com_easysdi_shop/assets/images/s_orderdiffusions.png" alt="Easysdi_shop/Orderdiffusions">COM_EASYSDI_SHOP_TITLE_ORDERDIFFUSIONS</menu>
+
+			<menu link="option=com_easysdi_shop&amp;view=orderpropertyvalues" view="orderpropertyvalues" img="components/com_easysdi_shop/assets/images/s_orderpropertyvalues.png" alt="Easysdi_shop/Orderpropertyvalues">COM_EASYSDI_SHOP_TITLE_ORDERPROPERTYVALUES</menu>
+
+			<menu link="option=com_easysdi_shop&amp;view=orderperimeters" view="orderperimeters" img="components/com_easysdi_shop/assets/images/s_orderperimeters.png" alt="Easysdi_shop/Orderperimeters">COM_EASYSDI_SHOP_TITLE_ORDERPERIMETERS</menu>
+
+        </submenu>
+        <files folder="administrator">
+            <filename>access.xml</filename>
+            <filename>config.xml</filename>
+            <filename>controller.php</filename>
+            <filename>index.html</filename>
+            <filename>easysdi_shop.php</filename>
+            <folder>controllers</folder>
+            <folder>assets</folder>
+            <folder>helpers</folder>
+            <folder>models</folder>
+            <folder>sql</folder>
+            <folder>tables</folder>
+            <folder>views</folder>
+        </files>
+        <languages folder="administrator">
+            
+			<language tag="en-GB">language/en-GB.com_easysdi_shop.ini</language>
+			<language tag="en-GB">language/en-GB.com_easysdi_shop.sys.ini</language>
+			<language tag="fr-FR">language/fr-FR.com_easysdi_shop.ini</language>
+			<language tag="fr-FR">language/fr-FR.com_easysdi_shop.sys.ini</language>
+        </languages>
+    </administration>
 </extension>
+<!-- Component built by the Joomla Component Creator -->
+<!-- http://www.notwebdesign.com/joomla-component-creator/ -->

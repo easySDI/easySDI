@@ -233,16 +233,16 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                                     <option value="2"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER_WITH_BUFFER"); ?></option>
                                                 </select>
                                             </div>
-                                            </div>
-                                        <?php endforeach; ?>
-                                    
+                                        </div>
+                                    <?php endforeach; ?>
+
                                 </fieldset>
                                 <fieldset id ="fieldset_properties" class="span0 offset1">
                                     <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_PROPERTIES'); ?></legend>
                                     <?php foreach ($this->properties as $property): ?>
                                         <div class="control-group" >
                                             <div class="control-label">
-                                                <label id="jform_property<?php echo $property->id ?>-lbl" for="jform_property<?php echo $property->id ?>" class="hasTip" title=""><?php echo sdiMultilingual::getTranslation($property->guid); ?></label>
+                                                <label id="jform_property<?php echo $property->id ?>-lbl" for="jform_property<?php echo $property->id ?>" class="hasTip <?php if($property->mandatory) echo 'required' ; ?>" title=""><?php echo sdiMultilingual::getTranslation($property->guid); ?></label>
                                             </div>
                                             <div class="controls">
                                                 <?php
@@ -251,7 +251,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                                     case 2:
                                                     case 3:
                                                         ?>
-                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>][]" class="inputbox" multiple="multiple" >
+                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>][]" class="inputbox <?php if($property->mandatory) echo 'required' ; ?>" multiple="multiple" >
                                                             <?php
                                                             foreach ($this->propertyvalues as $propertyvalue):
                                                                 if ($propertyvalue->property_id == $property->id):
@@ -266,19 +266,29 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                                         break;
                                                     case 4:
                                                         ?>
-                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>]" class="inputbox"  >
-                                                            <?php if ($property->mandatory): ?>
+                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>]" class="inputbox <?php if($property->mandatory) echo 'required' ; ?>"  >
+                                                            <?php if (!$property->mandatory): ?>
                                                                 <option value="-1"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_FIELD"); ?></option>
-                                                            <?php endif; ?>
+                                                                <?php
+                                                                foreach ($this->propertyvalues as $propertyvalue):
+                                                                    if ($propertyvalue->property_id == $property->id):
+                                                                        ?>
+                                                                        <option value="<?php echo $propertyvalue->id; ?>"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_FIELD"); ?></option>
+                                                                        <?php
+                                                                        break;
+                                                                    endif;
+                                                                endforeach;
+                                                                ?>
                                                             <?php
-                                                            foreach ($this->propertyvalues as $propertyvalue):
-                                                                if ($propertyvalue->property_id == $property->id):
-                                                                    ?>
-                                                                    <option value="<?php echo $propertyvalue->id; ?>"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_FIELD"); ?></option>
-                                                                    <?php
-                                                                    break;
-                                                                endif;
-                                                            endforeach;
+                                                            else:
+                                                                foreach ($this->propertyvalues as $propertyvalue):
+                                                                    if ($propertyvalue->property_id == $property->id):
+                                                                        ?>
+                                                                        <option value="<?php echo $propertyvalue->id; ?>"><?php echo sdiMultilingual::getTranslation($propertyvalue->guid); ?></option>
+                                                                        <?php
+                                                                    endif;
+                                                                endforeach;
+                                                            endif;
                                                             ?>
                                                         </select>
                                                         <?php
@@ -286,8 +296,8 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                                     case 5:
                                                     case 6 :
                                                         ?>
-                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>]" class="inputbox"  >
-                                                            <?php if ($property->mandatory): ?>
+                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id; ?>]" class="inputbox <?php if($property->mandatory) echo 'required' ; ?>"  >
+                                                            <?php if (!$property->mandatory): ?>
                                                                 <option value="-1"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_FIELD"); ?></option>
                                                             <?php endif; ?>
                                                             <?php
@@ -306,27 +316,27 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                                 ?>
                                             </div>
                                         </div>
-                                    <?php endforeach; ?>
+<?php endforeach; ?>
                                 </fieldset>
                             </div>
                         </fieldset>
                     </div>
 
                     <div class="tab-pane" id="publishing">
-                        <?php foreach ($this->form->getFieldset('publishing') as $field): ?>
+<?php foreach ($this->form->getFieldset('publishing') as $field): ?>
                             <div class="control-group" id="<?php echo $field->fieldname; ?>">
                                 <div class="control-label"><?php echo $field->label; ?></div>
                                 <div class="controls"><?php echo $field->input; ?></div>
                             </div>
                         <?php endforeach; ?>
                         <?php if ($this->item->modified_by) : ?>
-                            <?php foreach ($this->form->getFieldset('publishing_update') as $field): ?>
+    <?php foreach ($this->form->getFieldset('publishing_update') as $field): ?>
                                 <div class="control-group" id="<?php echo $field->fieldname; ?>">
                                     <div class="control-label"><?php echo $field->label; ?></div>
                                     <div class="controls"><?php echo $field->input; ?></div>
                                 </div>
                             <?php endforeach; ?>
-                        <?php endif; ?>
+<?php endif; ?>
                     </div>
 
                 </div>
@@ -337,9 +347,9 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
             <?php echo $field->input; ?>
         <?php endforeach; ?>  
 
-        <?php echo $this->getToolbar(); ?>
+<?php echo $this->getToolbar(); ?>
         <input type = "hidden" name = "task" value = "" />
         <input type = "hidden" name = "option" value = "com_easysdi_shop" />
-        <?php echo JHtml::_('form.token'); ?>
+<?php echo JHtml::_('form.token'); ?>
     </form>
 </div>

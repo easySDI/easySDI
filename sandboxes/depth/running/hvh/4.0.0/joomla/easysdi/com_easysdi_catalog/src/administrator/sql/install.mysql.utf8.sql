@@ -92,7 +92,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_class` (
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_class_fk1` (`namespace_id` ASC) ,
   INDEX `#__sdi_class_fk2` (`stereotype_id` ASC) ,
-  INDEX `#__sdi_class_fk3` (`accessscope_id` ASC) ,
   CONSTRAINT `#__sdi_class_fk1`
     FOREIGN KEY (`namespace_id` )
     REFERENCES `#__sdi_namespace` (`id` )
@@ -101,11 +100,6 @@ PRIMARY KEY (`id`) ,
   CONSTRAINT `#__sdi_class_fk2`
     FOREIGN KEY (`stereotype_id` )
     REFERENCES `#__sdi_sys_stereotype` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_class_fk3`
-    FOREIGN KEY (`accessscope_id` )
-    REFERENCES `#__sdi_sys_accessscope` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -202,15 +196,9 @@ CREATE TABLE IF NOT EXISTS `#__sdi_attributevalue` (
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_attributevalue` (`attribute_id` ASC) ,
-    INDEX `#__sdi_attributevalue_fk2` (`accessscope_id` ASC) ,
   CONSTRAINT `#__sdi_attributevalue`
     FOREIGN KEY (`attribute_id` )
     REFERENCES `#__sdi_attribute` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-CONSTRAINT `#__sdi_attributevalue_fk2`
-    FOREIGN KEY (`accessscope_id` )
-    REFERENCES `#__sdi_sys_accessscope` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
