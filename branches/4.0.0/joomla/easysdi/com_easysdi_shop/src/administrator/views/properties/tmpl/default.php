@@ -112,6 +112,9 @@ if (!empty($this->extra_sidebar)) {
                             <?php echo JHtml::_('grid.sort', 'COM_EASYSDI_SHOP_PROPERTIES_NAME', 'a.name', $listDirn, $listOrder); ?>
                         </th>
                         <th class='left'>
+                            <?php echo JHtml::_('grid.sort', 'COM_EASYSDI_SHOP_PROPERTIES_PROPERTYTYPE_ID', 'propertytype', $listDirn, $listOrder); ?>
+                        </th>
+                        <th class='left'>
                             <?php echo JText::_('COM_EASYSDI_SHOP_PROPERTYVALUES_VALUE'); ?>
                         </th>
                         <?php if (isset($this->items[0]->id)): ?>
@@ -186,6 +189,9 @@ if (!empty($this->extra_sidebar)) {
                                 <div class="small">
                                     <?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($item->alias)); ?>
                                 </div>
+                            </td>
+                            <td>
+                                <?php echo JText::_($this->escape($item->propertytype)); ?>
                             </td>
                             <td >
                                 <?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>

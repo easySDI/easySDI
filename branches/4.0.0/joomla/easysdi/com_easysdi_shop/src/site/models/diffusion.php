@@ -39,6 +39,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
             $id = JFactory::getApplication()->getUserState('com_easysdi_shop.edit.diffusion.id');
         } else {
             $id = JFactory::getApplication()->input->get('id');
+
             JFactory::getApplication()->setUserState('com_easysdi_shop.edit.diffusion.id', $id);
         }
         $this->setState('diffusion.id', $id);
@@ -75,23 +76,45 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 // Convert the JTable to a clean JObject.
                 $properties = $table->getProperties(1);
                 $this->_item = JArrayHelper::toObject($properties, 'JObject');
-                
+
+                //Load accessscope
                 $this->_item->organisms = sdiModel::getAccessScopeOrganism($this->_item->guid);
                 $this->_item->users = sdiModel::getAccessScopeUser($this->_item->guid);
+                //Load notified user
+                $diffusionnotifieduser = JTable::getInstance('diffusionnotifieduser', 'Easysdi_shopTable');
+                $this->_item->notifieduser_id = $diffusionnotifieduser->loadBydiffusionID($this->_item->id);
+                //Load perimeter available for extraction
+                $diffusionperimeter = JTable::getInstance('diffusionperimeter', 'Easysdi_shopTable');
+                $perimeters = $diffusionperimeter->loadBydiffusionID($this->_item->id);
+                $this->_item->perimeter = array();
+                if ($perimeters) {
+                    foreach ($perimeters as $perimeter) {
+                        $this->_item->perimeter [$perimeter->perimeter_id] = $perimeter->buffer;
+                    }
+                }
+                //Load properties and properties values
+                $diffusionpropertyvalue = JTable::getInstance('diffusionpropertyvalue', 'Easysdi_shopTable');
+                $properties = $diffusionpropertyvalue->loadBydiffusionID($this->_item->id);
+                $this->_item->property = array();
+                if ($properties) {
+                    foreach ($properties as $property) {
+                        $this->_item->property [$property->property_id][] = $property->propertyvalue_id;
+                    }
+                }
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
         }
-        if(empty($id)){
-            $this->_item->version_id = JFactory::getApplication()->getUserState ('com_easysdi_shop.edit.diffusionversion.id');
-            
+        if (empty($id)) {
+            $this->_item->version_id = JFactory::getApplication()->getUserState('com_easysdi_shop.edit.diffusionversion.id');
+
             $resource = JTable::getInstance('resource', 'Easysdi_coreTable');
             $version = JTable::getInstance('version', 'Easysdi_coreTable');
             $version->load($this->_item->version_id);
             $resource->load($version->resource_id);
-            $this->_item->name= $resource->name;
+            $this->_item->name = $resource->name;
         }
-        
+
         return $this->_item;
     }
 
@@ -201,7 +224,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
     public function save($data) {
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('diffusion.id');
         $state = (!empty($data['state'])) ? 1 : 0;
-        
+
         //Check the user right
         try {
             $user = sdiFactory::getSdiUser();
@@ -216,15 +239,178 @@ class Easysdi_shopModelDiffusion extends JModelForm {
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return false;
         }
-        
+
+        //Clean and prepare data
+        $jinput = JFactory::getApplication()->input;
+        $form = $jinput->get('jform', 'null', 'ARRAY');
+        (empty($data['hasdownload'])) ? $data['hasdownload'] = "0" : $data['hasdownload'] = "1";
+        (empty($data['hasextraction'])) ? $data['hasextraction'] = "0" : $data['hasextraction'] = "1";
+        if ($data['hasdownload'] == 0) {
+            $data['productstorage_id'] = null;
+            $data['file'] = null;
+            $data['file_hidden'] = null;
+            $data['fileurl'] = null;
+            $data['perimeter_id'] = null;
+        } else {
+            switch ($data['productstorage_id']) {
+                case 1:
+                    $data['fileurl'] = null;
+                    $data['perimeter_id'] = null;
+                    break;
+                case 2:
+                    $data['file'] = null;
+                    $data['file_hidden'] = null;
+                    $data['perimeter_id'] = null;
+                    break;
+                case 3:
+                    $data['file'] = null;
+                    $data['file_hidden'] = null;
+                    $data['fileurl'] = null;
+                    break;
+            }
+        }
+        if ($data['hasextraction'] == 0) {
+            $data['surfacemin'] = null;
+            $data['surfacemax'] = null;
+            $data['productmining_id'] = null;
+            $data['deposit'] = null;
+            $data['deposit_hidden'] = null;
+            $data['notifieduser_id'] = null;
+        } else {
+            $data['perimeter'] = $form['perimeter'];
+            $data['property'] = $form['property'];
+        }
+        if ($data['pricing_id'] == 2) {
+            $data['hasdownload'] = "0";
+            $data['productstorage_id'] = null;
+            $data['file'] = null;
+            $data['file_hidden'] = null;
+            $data['fileurl'] = null;
+            $data['perimeter_id'] = null;
+        }
+
+        //Save
         $table = $this->getTable();
         if ($table->save($data) === true) {
-            if(!sdiModel::saveAccessScope($data))
+            if (!sdiModel::saveAccessScope($data))
                 return false;
+
+            //User
+            $ids = '';
+            foreach ($data['notifieduser_id'] as $user) {
+                $diffusionnotifieduser = JTable::getInstance('diffusionnotifieduser', 'Easysdi_shopTable');
+                $keys = array("diffusion_id" => $id, "user_id" => $user);
+                $diffusionnotifieduser->load($keys);
+                $diffusionnotifieduser->save($keys);
+                if (strlen($ids) > 0 && !empty($diffusionnotifieduser->id))
+                    $ids .= ',';
+                if (!empty($diffusionnotifieduser->id))
+                    $ids .= $diffusionnotifieduser->id;
+            }
+            //Delete entries no more usefull
+            if (!$this->cleanTable($id, '#__sdi_diffusion_notifieduser', $ids))
+                return false;
+
+            //Perimeter
+            $ids = '';
+            foreach ($data['perimeter'] as $key => $perimeter) {
+                $diffusionperimeter = JTable::getInstance('diffusionperimeter', 'Easysdi_shopTable');
+                $keys = array("diffusion_id" => $id, "perimeter_id" => $key);
+                $diffusionperimeter->load($keys);
+                if ($perimeter == -1) {
+                    try {
+                        $diffusionperimeter->delete();
+                    } catch (Exception $e) {
+                        //item didn't exist, keep going on
+                    }
+                    continue;
+                }
+
+                $array = array();
+                $array['diffusion_id'] = $id;
+                $array['perimeter_id'] = $key;
+                ($perimeter == 1) ? $array['buffer'] = 1 : $array['buffer'] = 0;
+                if (!$diffusionperimeter->save($array))
+                    return false;
+
+                if (strlen($ids) > 0 && !empty($diffusionperimeter->id))
+                    $ids .= ',';
+                if (!empty($diffusionperimeter->id))
+                    $ids .= $diffusionperimeter->id;
+            }
+            //Delete entries no more usefull
+            if (!$this->cleanTable($id, '#__sdi_diffusion_perimeter', $ids))
+                return false;
+
+
+            //Property
+            $ids = '';
+            foreach ($data['property'] as $key => $property) {
+                if (is_array($property)) {
+                    foreach ($property as $value) {
+                        if (!$this->saveDiffusionPropertyValue($id, $value, $ids))
+                            return false;
+                    }
+                } else {
+                    if (!$this->saveDiffusionPropertyValue($id, $property, $ids))
+                        return false;
+                }
+            }
+            //Delete entries no more usefull
+            if (!$this->cleanTable($id, '#__sdi_diffusion_propertyvalue', $ids))
+                return false;
+
+
             return $id;
         } else {
             return false;
         }
+    }
+
+    private function saveDiffusionPropertyValue($id, $property, &$ids) {
+        $diffusionpropertyvalue = JTable::getInstance('diffusionpropertyvalue', 'Easysdi_shopTable');
+        $keys = array("diffusion_id" => $id, "propertyvalue_id" => $property);
+        $diffusionpropertyvalue->load($keys);
+
+        if ($property == -1) {
+            try {
+                $diffusionpropertyvalue->delete();
+            } catch (Exception $e) {
+                //item didn't exist, keep going on
+            }
+            continue;
+        }
+
+        $array = array();
+        $array['diffusion_id'] = $id;
+        $array['propertyvalue_id'] = $property;
+        if (!$diffusionpropertyvalue->save($array))
+            return false;
+
+        if (strlen($ids) > 0 && !empty($diffusionpropertyvalue->id))
+            $ids .= ',';
+        if (!empty($diffusionpropertyvalue->id))
+            $ids .= $diffusionpropertyvalue->id;
+
+        return true;
+    }
+
+    private function cleanTable($id, $table, $ids) {
+        //Delete entries no more usefull
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        if (strlen($ids) > 0) {
+            $query->delete($table)
+                    ->where('id NOT IN (' . $ids . ')');
+        } else {
+            $query->delete($table)
+                    ->where('diffusion_id =' . $id);
+        }
+        $db->setQuery($query);
+        if (!$db->execute())
+            return false;
+
+        return true;
     }
 
     function delete($data) {

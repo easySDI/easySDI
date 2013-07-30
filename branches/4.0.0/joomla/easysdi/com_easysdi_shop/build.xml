@@ -60,7 +60,7 @@
     
     <target name="write-xml">
         <echoxml file="${shop.src.out.dir}/easysdi_shop.xml">
-            <extension type="component" version="1.6.0" method="upgrade">
+            <extension type="component" version="3.0.0" method="upgrade">
                 <name>com_easysdi_shop</name>
                 <creationDate>15 August 2012</creationDate>
                 <releaseDate>${xml.releaseDate}</releaseDate>
@@ -76,7 +76,6 @@
                     <sql>
                         <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
                         <file driver="mysql" charset="utf8">sql/insert.install.mysql.utf8.sql</file>
-                        <file driver="mysql" charset="utf8">sql/alter.install.mysql.utf8.sql</file>
                     </sql>
                 </install>
                 <uninstall> <!-- Runs on uninstall -->
@@ -100,8 +99,8 @@
                     <folder>helpers</folder>
                 </files>
                 <languages folder="site">
-                    <language tag="en-GB">language/en-GB.com_easysdi_shop.ini</language>
-                    <language tag="fr-FR">language/fr-FR.com_easysdi_shop.ini</language>
+                    <language tag="en-GB">language/en-GB/en-GB.com_easysdi_shop.ini</language>
+                    <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_shop.ini</language>
                 </languages>
                 <administration>
                     <files folder="administrator">
@@ -113,7 +112,6 @@
                         <folder>controllers</folder>
                         <folder>assets</folder>
                         <folder>helpers</folder>
-                        <folder>libraries</folder>
                         <folder>models</folder>
                         <folder>sql</folder>
                         <folder>tables</folder>

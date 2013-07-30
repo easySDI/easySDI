@@ -60,7 +60,7 @@
     
     <target name="write-xml">
         <echoxml file="${contact.src.out.dir}/easysdi_contact.xml">
-            <extension type="component" version="1.6.0" method="upgrade">
+            <extension type="component" version="3.0.0" method="upgrade">
                 <name>com_easysdi_contact</name>
                 <creationDate>14 february 2013</creationDate>
                 <releaseDate>${xml.releaseDate}</releaseDate>

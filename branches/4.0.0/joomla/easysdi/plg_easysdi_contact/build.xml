@@ -26,7 +26,7 @@
     
     <target name="write-xml">
         <echoxml file="${plg.contact.src.out.dir}/easysdicontact.xml">
-            <extension version="3.0" type="plugin" group="user">
+            <extension version="3.0" type="plugin" group="user" method="upgrade">
                 <name>plg_easysdi_contact</name>
                 <author>EasySDI Community</author>
                 <creationDate>15 August 2012</creationDate>

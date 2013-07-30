@@ -152,7 +152,7 @@ if (!empty($this->extra_sidebar)) {
 			$canCheckin	= $user->authorise('core.manage',		'com_easysdi_map');
 			$canChange	= $user->authorise('core.edit.state',	'com_easysdi_map');
 			?>
-			<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->catid?>">
+			<tr class="row<?php echo $i % 2; ?>" >
 			<td class="order nowrap center hidden-phone">
 				<?php if (isset($item->mapordering)): ?>
 					<?php if ($canChange) :

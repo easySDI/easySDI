@@ -60,7 +60,7 @@
     
     <target name="write-xml">
         <echoxml file="${monitor.src.out.dir}/easysdi_monitor.xml">
-            <extension type="component" version="1.6.0" method="upgrade">
+            <extension type="component" version="3.0.0" method="upgrade">
                 <name>com_easysdi_monitor</name>
                 <creationDate>2013-04-08</creationDate>
                 <releaseDate>${xml.releaseDate}</releaseDate>

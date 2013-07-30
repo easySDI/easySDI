@@ -151,7 +151,7 @@ if (!empty($this->extra_sidebar)) {
 				$canCheckin	= $user->authorise('core.manage',		'com_easysdi_map');
 				$canChange	= $user->authorise('core.edit.state',	'com_easysdi_map');
 			 ?>
-				<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->catid?>">
+				<tr class="row<?php echo $i % 2; ?>" >
                     
                 
 				<td class="order nowrap center hidden-phone">
@@ -184,13 +184,13 @@ if (!empty($this->extra_sidebar)) {
 				</td>
                 <?php if (isset($this->items[0]->state)): ?>
 				<td class="center">
-					<?php echo JHtml::_('jgrid.published', $item->state, $i, 'users.', $canChange, 'cb'); ?>
+					<?php echo JHtml::_('jgrid.published', $item->state, $i, 'layers.', $canChange, 'cb'); ?>
 				</td>
                 <?php endif; ?>
                 <td class="nowrap has-context">
 					<div class="pull-left">
 						<?php if (isset($item->checked_out) && $item->checked_out) : ?>
-							<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'users.', $canCheckin); ?>
+							<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'layers.', $canCheckin); ?>
 						<?php endif; ?>
 						<?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>
 							<a href="<?php echo JRoute::_('index.php?option=com_easysdi_map&task=layer.edit&id='.(int) $item->id); ?>">

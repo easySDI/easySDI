@@ -60,7 +60,7 @@
     
     <target name="write-xml">
         <echoxml file="${map.src.out.dir}/easysdi_map.xml">
-            <extension type="component" version="1.6.0" method="upgrade">
+            <extension type="component" version="3.0.0" method="upgrade">
                 <name>com_easysdi_map</name>
                 <creationDate>18 december 2012</creationDate>
                 <releaseDate>${xml.releaseDate}</releaseDate>

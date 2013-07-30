@@ -104,9 +104,9 @@ class Easysdi_coreViewApplication extends JViewLegacy {
         jimport('joomla.html.toolbar');
         $bar = new JToolBar('toolbar');
         //and make whatever calls you require
-        $bar->appendButton('Standard', 'save', 'Save', 'application.save', false);
+        $bar->appendButton('Standard', 'save', JText::_('JSave'), 'application.save', false);
         $bar->appendButton('Separator');
-        $bar->appendButton('Standard', 'cancel', 'Cancel', 'application.cancel', false);
+        $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'application.cancel', false);
         //generate the html and return
         return $bar->render();
     }
