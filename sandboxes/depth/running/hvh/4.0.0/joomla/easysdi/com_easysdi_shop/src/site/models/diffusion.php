@@ -74,8 +74,8 @@ class Easysdi_shopModelDiffusion extends JModelForm {
             // Attempt to load the row.
             if ($table->load($id)) {
                 // Convert the JTable to a clean JObject.
-                $properties = $table->getProperties(1);
-                $this->_item = JArrayHelper::toObject($properties, 'JObject');
+                $_properties = $table->getProperties(1);
+                $this->_item = JArrayHelper::toObject($_properties, 'JObject');
 
                 //Load accessscope
                 $this->_item->organisms = sdiModel::getAccessScopeOrganism($this->_item->guid);

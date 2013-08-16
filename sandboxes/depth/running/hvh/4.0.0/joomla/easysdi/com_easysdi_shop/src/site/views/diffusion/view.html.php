@@ -57,11 +57,16 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
         }
 
 
+        
         $db = JFactory::getDbo();
+        
+         $organisms = $this->user->getDiffusionManagerOrganisms();
+         
         $query = $db->getQuery(true);
-        $query->select('*')
-                ->from('#__sdi_property')
-                ->where('state = 1');
+        $query->select('p.*')
+                ->from('#__sdi_property p')
+                ->where('p.state = 1')
+                ->where("(p.accessscope_id = 1 OR (p.accessscope_id = 2 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = " . $organisms[0]->id . " AND a.entity_guid = p.guid ) = 1) OR (p.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = " . $this->user->id . " AND a.entity_guid = p.guid ) = 1))");
         $db->setQuery($query);
         $this->properties = $db->loadObjectList();
 
@@ -72,13 +77,8 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
         $db->setQuery($query);
         $this->propertyvalues = $db->loadObjectList();
 
-        $organisms = $this->user->getDiffusionManagerOrganisms();
+       
         $query = $db->getQuery(true);
-//        $query =  "SELECT p.id, p.name FROM #__sdi_perimeter p WHERE p.state=1 AND p.perimetertype_id IN (1,3)";
-//        $query .= ' AND (p.accessscope_id = 1 ';
-//        $query .= 'OR (p.accessscope_id = 2 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.organism_id = '.$organisms[0]->id.' AND a.entity_guid = p.guid ) = 1)';
-//        $query .= 'OR (p.accessscope_id = 3 AND (SELECT COUNT(*) FROM #__sdi_accessscope a WHERE a.user_id = '.$this->user->id.' AND a.entity_guid = p.guid ) = 1)';
-//        $query .= ')';
         $query->select('p.id, p.name')
                 ->from('#__sdi_perimeter p')
                 ->where('p.state = 1')
