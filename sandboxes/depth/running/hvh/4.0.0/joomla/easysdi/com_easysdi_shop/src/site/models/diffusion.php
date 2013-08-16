@@ -292,6 +292,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         //Save
         $table = $this->getTable();
         if ($table->save($data) === true) {
+            $data['guid'] = $table->guid;
             if (!sdiModel::saveAccessScope($data))
                 return false;
 
@@ -437,17 +438,6 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         }
 
         return true;
-    }
-
-    function getCategoryName($id) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        $query
-                ->select('title')
-                ->from('#__categories')
-                ->where('id = ' . $id);
-        $db->setQuery($query);
-        return $db->loadObject();
     }
 
 }

@@ -203,7 +203,7 @@ endif;
                                         <?php endif; ?>
                                         <?php if ($this->user->authorize($item->id, sdiUser::viewmanager)): ?>
                                             <li>
-                                                <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_map&task=view.edit&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_VIEW'); ?></a>
+                                                <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_map&task=visualization.edit&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_VIEW'); ?></a>
                                             </li>
                                         <?php endif; ?>
                                         <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>

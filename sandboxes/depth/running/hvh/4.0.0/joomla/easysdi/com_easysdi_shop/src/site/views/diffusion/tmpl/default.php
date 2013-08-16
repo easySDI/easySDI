@@ -85,6 +85,22 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
             }
         });
     });
+    Joomla.submitbutton = function(task)
+    {
+        if (task == 'diffusion.cancel') {
+            Joomla.submitform(task, document.getElementById('adminForm'));
+        }
+        else {
+
+            if (task != 'diffusion.cancel' && document.formvalidator.isValid(document.id('adminForm'))) {
+
+                Joomla.submitform(task, document.getElementById('adminForm'));
+            }
+            else {
+                alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED')); ?>');
+            }
+        }
+    }
     function onProductStorageChange() {
         var storage = js("#jform_productstorage_id :selected").val();
         switch (storage) {
@@ -347,9 +363,11 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
             <?php echo $field->input; ?>
         <?php endforeach; ?>  
 
-<?php echo $this->getToolbar(); ?>
+
         <input type = "hidden" name = "task" value = "" />
         <input type = "hidden" name = "option" value = "com_easysdi_shop" />
 <?php echo JHtml::_('form.token'); ?>
     </form>
+        
+        <?php echo $this->getToolbar(); ?>
 </div>
