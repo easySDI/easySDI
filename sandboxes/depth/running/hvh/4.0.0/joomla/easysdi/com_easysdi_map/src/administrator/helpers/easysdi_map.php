@@ -186,15 +186,15 @@ class Easysdi_mapHelper {
             case "WMSC" :
                 switch ($version) {
                     case "1.3.0":
-                        $layers_array = $xmlCapa->xpath('//dflt:Layer/dflt:Name');
+                        $layers_array = $xmlCapa->xpath('//dflt:Layer/dflt:Title');
                         break;
                     default:
-                        $layers_array = $xmlCapa->xpath('//Layer/Name');
+                        $layers_array = $xmlCapa->xpath('//Layer/Title');
                         break;
                 }
                 break;
             case "WMTS" :
-                $layers_array = $xmlCapa->xpath('//dflt:Layer/ows:Identifier');
+                $layers_array = $xmlCapa->xpath('//dflt:Layer/ows:Title');
                 break;
         }
 
