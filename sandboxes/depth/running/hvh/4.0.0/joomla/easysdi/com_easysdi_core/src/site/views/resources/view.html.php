@@ -47,12 +47,10 @@ class Easysdi_coreViewResources extends JViewLegacy {
         }
 
         require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
-        require_once JPATH_SITE . '/components/com_easysdi_map/models/map.php';
-        require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_map/tables/map.php';
-        $params = $app->getParams('com_easysdi_map');
+        
         $this->itemmap = JModelForm::getInstance('map', 'easysdi_mapModel');
         $this->itemmap->getData(1);
-        $config = Easysdi_mapHelper::getMapConfig($this->itemmap->_item, $params);
+        $config = Easysdi_mapHelper::getMapConfig($this->itemmap->_item);
         $this->itemmap->_item->text= '';
         $dispatcher	= JEventDispatcher::getInstance();
         JPluginHelper::importPlugin('content');

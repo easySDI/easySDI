@@ -9,10 +9,14 @@
  */
 defined('_JEXEC') or die;
 
+require_once JPATH_SITE . '/components/com_easysdi_map/models/map.php';
+
 abstract class Easysdi_mapHelper {
 
-    public static function getMapConfig($item, $params) {
+    public static function getMapConfig($item) {
         $user = JFactory::getUser();
+         $app = JFactory::getApplication();
+         $params = $app->getParams('com_easysdi_map');
         
         $config = '{';
         $proxyhost = $params->get('proxyhost');

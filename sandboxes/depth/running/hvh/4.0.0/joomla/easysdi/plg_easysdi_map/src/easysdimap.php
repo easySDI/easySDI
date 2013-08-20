@@ -54,7 +54,7 @@ class plgContentEasysdimap extends JPlugin {
             $document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');
             $document->addScript('administrator/components/com_easysdi_core/libraries/ux/ext/RowExpander.js');
             $document->addScript('administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.js');
-            $document->addScript('administrator/components/com_easysdi_core/libraries/geoext/lib/geoext.min.js');
+            $document->addScript('administrator/components/com_easysdi_core/libraries/geoext/lib/GeoExt.js');
             $document->addScript('administrator/components/com_easysdi_core/libraries/ux/geoext/PrintPreview.js');
             $document->addScript('administrator/components/com_easysdi_core/libraries/gxp/script/gxp.js');
             $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.js');

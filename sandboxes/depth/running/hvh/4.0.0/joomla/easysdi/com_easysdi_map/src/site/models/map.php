@@ -16,6 +16,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_service/tables/physi
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_service/tables/virtualservice.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_map/tables/group.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_map/tables/tool.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_map/tables/map.php';
 
 /**
  * Easysdi_map model.
