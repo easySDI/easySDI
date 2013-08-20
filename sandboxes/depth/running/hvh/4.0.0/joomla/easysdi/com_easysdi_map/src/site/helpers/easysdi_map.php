@@ -15,9 +15,9 @@ abstract class Easysdi_mapHelper {
 
     public static function getMapConfig($item) {
         $user = JFactory::getUser();
-         $app = JFactory::getApplication();
-         $params = $app->getParams('com_easysdi_map');
-        
+        $app = JFactory::getApplication();
+        $params = $app->getParams('com_easysdi_map');
+
         $config = '{';
         $proxyhost = $params->get('proxyhost');
         if (!empty($proxyhost)) {
@@ -52,83 +52,102 @@ abstract class Easysdi_mapHelper {
                                         mapPanel: "sdimap"
                                     }
                                 ]
-                            }, 
-                            {
-                                id: "westpanel",
-                                xtype: "panel",
-                                header: false,
-                                split: true,
-                                collapsible: true,
-                                collapseMode: "mini",
-                                hideCollapseTool: true,
-                                layout: "fit",
-                                region: "west",
-                                width: 200
-                            },
-                            {
+                            }, ';
+
+                            foreach ($item->tools as $tool) {
+                                if ($tool->alias == 'layertree') {
+                                    $config .= '{
+                                                    id: "westpanel",
+                                                    xtype: "panel",
+                                                    header: false,
+                                                    split: true,
+                                                    collapsible: true,
+                                                    collapseMode: "mini",
+                                                    hideCollapseTool: true,
+                                                    layout: "fit",
+                                                    region: "west",
+                                                    width: 200
+                                                },';
+                                    break;
+                                }
+                            }
+                            foreach ($item->tools as $tool) {
+                                if ($tool->alias == 'getfeatureinfo') {
+                            $config .= '{
                                 id:"hiddentbar",
                                 xtype:"toolbar",
                                 border: false,
                                 height:0,
                                 region:"south",
                                 items:[]
+                            }';
+                            break;
+                                }
                             }
-                    ]
+                    $config .= ']
                     },                   
-                    tools: [
-                        {
+                    tools: [';
+        $layertreeactivated = false;
+        foreach ($item->tools as $tool) {
+            if ($tool->alias == 'layertree') {
+                $config .= '{
                             ptype: "sdi_gxp_layermanager",
-                             rootNodeText: "' . $item->rootnodetext . '",';
+                            rootNodeText: "' . $item->rootnodetext . '",';
 
-        foreach ($item->groups as $group) :
-            if ($group->isdefault) {
-                //Acces not allowed
-                if (!in_array($group->access, $user->getAuthorisedViewLevels()))
-                    break;
-                $config .= 'defaultGroup: "' . $group->alias . '",';
+                foreach ($item->groups as $group) :
+                    if ($group->isdefault) {
+                        //Acces not allowed
+                        if (!in_array($group->access, $user->getAuthorisedViewLevels()))
+                            break;
+                        $config .= 'defaultGroup: "' . $group->alias . '",';
+                        break;
+                    }
+                endforeach;
+
+                $config .= 'outputConfig: {
+                            id: "tree",
+                            border: true,
+                            tbar: [] 
+                            },
+                            groups: {';
+
+
+                //Groups are added in the order saved in the database
+                foreach ($item->groups as $group) :
+                    //Acces not allowed
+                    if (!in_array($group->access, $user->getAuthorisedViewLevels()))
+                        continue;
+
+                    if ($group->isbackground) {
+                        $config .= '
+                                    "background": {
+                                    title: "' . $group->name . '", 
+                                    exclusive: true,';
+                        if ($group->isdefaultopen) :
+                            $config .= 'expanded: true},';
+                        else :
+                            $config .= 'expanded: false},';
+                        endif;
+                    }
+                    else {
+                        $config .= '"' . $group->alias . '" : {
+                                        title : "' . $group->name . '",';
+                        if ($group->isdefaultopen) :
+                            $config .= 'expanded: true},';
+                        else :
+                            $config .= 'expanded: false},';
+                        endif;
+                    }
+                endforeach;
+
+                $config .= '},';
+                $config .= ' outputTarget: "westpanel"
+                        },';
+                $layertreeactivated = true;
                 break;
             }
-        endforeach;
+        }
 
-        $config .= 'outputConfig: {
-        id: "tree",
-        border: true,
-        tbar: [] 
-        },
-        groups: {';
-
-
-        //Groups are added in the order saved in the database
-        foreach ($item->groups as $group) :
-            //Acces not allowed
-            if (!in_array($group->access, $user->getAuthorisedViewLevels()))
-                continue;
-
-            if ($group->isbackground) {
-                $config .= '
-                "background": {
-                title: "' . $group->name . '", 
-                exclusive: true,';
-                if ($group->isdefaultopen) :
-                    $config .= 'expanded: true},';
-                else :
-                    $config .= 'expanded: false},';
-                endif;
-            }
-            else {
-                $config .= '"' . $group->alias . '" : {
-                    title : "' . $group->name . '",';
-                if ($group->isdefaultopen) :
-                    $config .= 'expanded: true},';
-                else :
-                    $config .= 'expanded: false},';
-                endif;
-            }
-        endforeach;
-
-        $config .= '},';
-        $config .= ' outputTarget: "westpanel"
-        },';
 
         foreach ($item->tools as $tool) {
             switch ($tool->alias) {
@@ -173,16 +192,18 @@ abstract class Easysdi_mapHelper {
                     ';
                     break;
                 case 'zoomtoextent':
-                    $config .= '
-                    {
-                    ptype: "gxp_zoomtoextent",
-                    actionTarget: "map.tbar"
-                    },
-                    {
-                    ptype: "gxp_zoomtolayerextent",
-                    actionTarget: {target: "tree.contextMenu", index: 0}
-                    },
-                    ';
+                    if ($layertreeactivated) {
+                        $config .= '
+                        {
+                        ptype: "gxp_zoomtoextent",
+                        actionTarget: "map.tbar"
+                        },
+                        {
+                        ptype: "gxp_zoomtolayerextent",
+                        actionTarget: {target: "tree.contextMenu", index: 0}
+                        },
+                        ';
+                    }
                     break;
                 case 'measure':
                     $config .= '
@@ -198,30 +219,36 @@ abstract class Easysdi_mapHelper {
                     ';
                     break;
                 case 'addlayer':
-                    $config .= '
-                    {
-                    ptype: "gxp_addlayers",
-                    actionTarget: "tree.tbar"
-                    },
-                    ';
+                    if ($layertreeactivated) {
+                        $config .= '
+                        {
+                        ptype: "gxp_addlayers",
+                        actionTarget: "tree.tbar"
+                        },
+                        ';
+                    }
                     break;
                 case 'removelayer':
-                    $config .= '
-                    {
-                    ptype: "gxp_removelayer",
-                    actionTarget: ["tree.tbar", "tree.contextMenu"]
-                    },
-                    ';
+                    if ($layertreeactivated) {
+                        $config .= '
+                        {
+                        ptype: "gxp_removelayer",
+                        actionTarget: ["tree.contextMenu"]
+                        },
+                        ';
+                    }
                     break;
 
                 case 'layerproperties':
-                    $config .= '
-                    {
-                    ptype: "gxp_layerproperties",
-                    id: "layerproperties",
-                    actionTarget: ["tree.tbar", "tree.contextMenu"]
-                    },
-                    ';
+                    if ($layertreeactivated) {
+                        $config .= '
+                        {
+                        ptype: "gxp_layerproperties",
+                        id: "layerproperties",
+                        actionTarget: ["tree.contextMenu"]
+                        },
+                        ';
+                    }
                     break;
 
                 case 'getfeatureinfo':
@@ -381,6 +408,7 @@ abstract class Easysdi_mapHelper {
         {
         id: "sdimap",
         title: "Map",
+        
         header:false,
         projection: "' . $item->srs . '",
         center: [' . $item->centercoordinates . '],

@@ -28,3 +28,11 @@ CONSTRAINT `#__sdi_visualization_fk1`
     ON UPDATE NO ACTION,
 UNIQUE (`alias`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+INSERT INTO `#__sdi_sys_maptool` (alias,ordering,state,name) 
+VALUES ('layertree',13,1,'Layer tree');
+
+ALTER TABLE `#__sdi_map_tool` ADD `params` VARCHAR (500);
+
+INSERT INTO `#__sdi_sys_maptool` (alias,ordering,state,name) 
+VALUES ('scaleline',14,1,'Scale line');

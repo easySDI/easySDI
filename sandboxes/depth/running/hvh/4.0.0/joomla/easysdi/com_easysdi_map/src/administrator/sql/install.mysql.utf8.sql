@@ -92,6 +92,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_map_tool` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `map_id` INT(11) UNSIGNED  NOT NULL ,
 `tool_id` INT(11) UNSIGNED NOT NULL ,
+`params` VARCHAR(500) ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 

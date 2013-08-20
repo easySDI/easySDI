@@ -11,7 +11,9 @@ VALUES
 ('addlayer',9,1,'Add layer'),
 ('removelayer',10,1,'Remove layer'),
 ('layerproperties',11,1,'Layer properties'),
-('getfeatureinfo',12,1,'Get feature info')
+('getfeatureinfo',12,1,'Get feature info'),
+('layertree',13,1,'Layer tree'),
+('scaleline',14,1,'Scale line')
 ;
 
 

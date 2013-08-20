@@ -56,8 +56,9 @@ class plgContentEasysdimap extends JPlugin {
             $document->addScript('administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.js');
             $document->addScript('administrator/components/com_easysdi_core/libraries/geoext/lib/GeoExt.js');
             $document->addScript('administrator/components/com_easysdi_core/libraries/ux/geoext/PrintPreview.js');
-            $document->addScript('administrator/components/com_easysdi_core/libraries/gxp/script/gxp.js');
+            $document->addScript('administrator/components/com_easysdi_core/libraries/gxp/script/loader.js');
             $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.js');
+            $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/widgets/ScaleOverlay.js');
         } else {
             $document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base.js');
             $document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');
@@ -67,6 +68,7 @@ class plgContentEasysdimap extends JPlugin {
             $document->addScript('administrator/components/com_easysdi_core/libraries/ux/geoext/PrintPreview.js');
             $document->addScript('administrator/components/com_easysdi_core/libraries/gxp/script/gxp.min.js');
             $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.min.js');
+            $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/widgets/ScaleOverlay.js');
         }
         $document->addStyleSheet(JURI::base() . 'administrator/components/com_easysdi_core/libraries/ext/resources/css/ext-all.css');
         $document->addStyleSheet(JURI::base() . 'administrator/components/com_easysdi_core/libraries/ext/resources/css/xtheme-gray.css');
@@ -84,8 +86,8 @@ class plgContentEasysdimap extends JPlugin {
             $document->addScript($file);
         }
 
-        $output = '<div id="sdimapcontainer" class="cls-sdimapcontainer">
-    </div><script>';
+        $output = '<div id="sdimapcontainer" class="cls-sdimapcontainer"></div>
+            <script>';
         $output .= '
             var app;
             var loadingMask;
@@ -98,23 +100,32 @@ class plgContentEasysdimap extends JPlugin {
             });
             loadingMask.show();
             var height = Ext.get("sdimapcontainer").getHeight();
-            if(!height)  height = Ext.get("sdimapcontainer").getWidth() * 2/3;
+            if(!height)  height = Ext.get("sdimapcontainer").getWidth() * 1/2;
             var width = Ext.get("sdimapcontainer").getWidth();
             OpenLayers.ImgPath = "administrator/components/com_easysdi_core/libraries/openlayers/img/";
             GeoExt.Lang.set("';
         $output .= $lang->getTag();
         $output .= '");
             app = new gxp.Viewer(' . $params . ');
+                
             app.on("ready", function (){
                 loadingMask.hide();
             });
 
+ SdiScaleLineParams= { 
+                
+   bottomInUnits :"' . $row->bottomInUnits . '",
+                bottomOutUnits :"' . $row->bottomOutUnits . '",
+                topInUnits :"' . $row->topInUnits . '",
+                topOutUnits :"' . $row->topOutUnits . '"
+}; 
             Ext.QuickTips.init();
             Ext.apply(Ext.QuickTips.getQuickTip(), {
                 maxWidth: 1000
             });
             Ext.EventManager.onWindowResize(function() {
                 app.portal.setWidth(Ext.get("sdimapcontainer").getWidth());
+                app.portal.setHeight(Ext.get("sdimapcontainer").getWidth() * 1/2);
             });
     	});';
         $output .= '</script>';
