@@ -118,11 +118,11 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 $item->default = $db->loadResult();
 
                 //Tools activation
-                $db->setQuery('SELECT tool_id FROM #__sdi_map_tool WHERE map_id = ' . $item->id);
-                $tools = $db->loadColumn();
+                $db->setQuery('SELECT tool_id, params FROM #__sdi_map_tool WHERE map_id = ' . $item->id);
+                $tools = $db->loadObjectList();
                 foreach ($tools as $tool):
-                    $n = 'tool' . $tool;
-                    $item->$n = "1";
+                    $n = 'tool' . $tool->tool_id;
+                    (empty($tool->params))?$item->$n = "1" : $item->$n = $tool->params;
                 endforeach;
 
                 //Scale line parameters
@@ -197,6 +197,14 @@ class Easysdi_mapModelmap extends JModelAdmin {
                     if ($value == 1) {
                         $tool = substr($key, 4);
                         $db->setQuery('INSERT INTO #__sdi_map_tool (map_id, tool_id) VALUES (' . $this->getItem()->get('id') . ', ' . $tool . ')');
+                        if (!$db->query()) {
+                            $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
+                            return false;
+                        }
+                    }
+                    if ($value == "html" || $value == "grid") {
+                        $tool = substr($key, 4);
+                        $db->setQuery('INSERT INTO #__sdi_map_tool (map_id, tool_id, params) VALUES (' . $this->getItem()->get('id') . ', ' . $tool . ', "'.$value.'")');
                         if (!$db->query()) {
                             $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
                             return false;

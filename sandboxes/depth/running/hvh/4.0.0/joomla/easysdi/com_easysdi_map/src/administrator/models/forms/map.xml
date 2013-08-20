@@ -253,7 +253,8 @@
                label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_getfeatureinfo"
                description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_getfeatureinfo" 
         > 
-            <option value="1">JYES</option>
+            <option value="html">Html</option>
+            <option value="grid">Grid</option>
             <option value="0">JNO</option>
         </field>
         <field name="tool13" type="radio" class="btn-group" default="0"
