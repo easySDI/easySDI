@@ -263,6 +263,13 @@
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
+         <field name="tool15" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_MOUSEPOSITION"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_MOUSEPOSITION" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
 <!--        <field 	name="tools"
                         type="sdidatabasecheckboxes"
                         class="inputbox"

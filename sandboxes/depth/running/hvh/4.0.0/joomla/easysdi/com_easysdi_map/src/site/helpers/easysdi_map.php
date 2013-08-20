@@ -408,7 +408,6 @@ abstract class Easysdi_mapHelper {
         {
         id: "sdimap",
         title: "Map",
-        
         header:false,
         projection: "' . $item->srs . '",
         center: [' . $item->centercoordinates . '],
@@ -619,22 +618,22 @@ abstract class Easysdi_mapHelper {
         ,
         mapItems: 
         [
-        {
-        xtype: "gx_zoomslider",
-        vertical: true,
-        height: 100
-        },
-        {
-        xtype: "gxp_scaleoverlay"
-        }
+            {
+                xtype: "gx_zoomslider",
+                vertical: true,
+                height: 100
+            },
+            {
+                xtype: "gxp_scaleoverlay"
+            }
         ],
         mapPlugins:
         [
-        {
-        ptype: "sdi_gxp_loadingindicator",
-        loadingMapMessage: "' . JText::_('COM_EASYSDI_MAP_LAYER_LOAD_MESSAGE') . '"
-}
-]
+            {
+                ptype: "sdi_gxp_loadingindicator",
+                loadingMapMessage: "' . JText::_('COM_EASYSDI_MAP_LAYER_LOAD_MESSAGE') . '"
+            }
+        ]
 ';
         $config .='}';
 

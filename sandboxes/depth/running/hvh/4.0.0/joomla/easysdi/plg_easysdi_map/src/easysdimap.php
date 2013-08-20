@@ -106,19 +106,27 @@ class plgContentEasysdimap extends JPlugin {
             GeoExt.Lang.set("';
         $output .= $lang->getTag();
         $output .= '");
-            app = new gxp.Viewer(' . $params . ');
-                
-            app.on("ready", function (){
+            app = new gxp.Viewer(' . $params . ');';
+        
+        //Add the mouseposition control if activated in the map configuration
+        //Can not be done in the gxp.Viewer instanciation because it has to be done on the openlayers map object
+        foreach ($row->tools as $tool)   {
+            if($tool->alias == 'mouseposition'){
+                $output .= 'app.mapPanel.map.addControl(new OpenLayers.Control.MousePosition());';
+                break;
+            }
+        }
+            $output .= 'app.on("ready", function (){
                 loadingMask.hide();
             });
+            
 
- SdiScaleLineParams= { 
-                
-   bottomInUnits :"' . $row->bottomInUnits . '",
+        SdiScaleLineParams= { 
+                bottomInUnits :"' . $row->bottomInUnits . '",
                 bottomOutUnits :"' . $row->bottomOutUnits . '",
                 topInUnits :"' . $row->topInUnits . '",
                 topOutUnits :"' . $row->topOutUnits . '"
-}; 
+        }; 
             Ext.QuickTips.init();
             Ext.apply(Ext.QuickTips.getQuickTip(), {
                 maxWidth: 1000

@@ -147,13 +147,19 @@ class Easysdi_mapModelMap extends JModelForm {
                 
                 //Load the scaleline parameters
                 $db->setQuery('SELECT params FROM #__sdi_map_tool WHERE tool_id=14 AND map_id = ' . $id);
-                $scalelineparams = $db->loadResult();
+                try {
+                    $scalelineparams = $db->loadResult();
                 if(!empty($scalelineparams)){
                     $params = json_decode($scalelineparams);
                     $this->_item->topOutUnits = $params->topOutUnits;
                     $this->_item->topInUnits = $params->topInUnits;
                     $this->_item->bottomOutUnits = $params->bottomOutUnits;
                     $this->_item->bottomInUnits = $params->bottomInUnits;
+                }
+                } catch (JDatabaseException $e) {
+                    $je = new JException($e->getMessage());
+                    $this->setError($je);
+                    return false;
                 }
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
