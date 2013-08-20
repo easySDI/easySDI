@@ -1,21 +1,613 @@
 <?php
+
 /**
- \* @version     4.0.0
+  \* @version     4.0.0
  * @package     com_easysdi_map
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
-
 defined('_JEXEC') or die;
 
-abstract class Easysdi_mapHelper
-{
-	public static function myFunction()
-	{
-		$result = 'Something';
-		return $result;
-	}
+abstract class Easysdi_mapHelper {
+
+    public static function getMapConfig($item, $params) {
+        $user = JFactory::getUser();
+        
+        $config = '{';
+        $proxyhost = $params->get('proxyhost');
+        if (!empty($proxyhost)) {
+            $config .= 'proxy :"' . $proxyhost . '"';
+        }
+        $config .= 'about: 
+                        { 
+                            title: "' . $item->title . '", 
+                            "abstract": "' . $item->abstract . '"
+                         },
+                    portalConfig: 
+                        {
+                        renderTo:"sdimapcontainer",
+                        width: width, 
+                        height: height,
+                        layout: "border",
+                        region: "center",
+                        items: [
+                            {
+                                id: "centerpanel",
+                                xtype: "panel",
+                                layout: "card",
+                                region: "center",
+                                border: false,
+                                activeItem: 0, 
+                                items: [
+                                    "sdimap",
+                                    {
+                                        xtype: "gxp_googleearthpanel",
+                                        id: "globe",
+                                        tbar: [],
+                                        mapPanel: "sdimap"
+                                    }
+                                ]
+                            }, 
+                            {
+                                id: "westpanel",
+                                xtype: "panel",
+                                header: false,
+                                split: true,
+                                collapsible: true,
+                                collapseMode: "mini",
+                                hideCollapseTool: true,
+                                layout: "fit",
+                                region: "west",
+                                width: 200
+                            },
+                            {
+                                id:"hiddentbar",
+                                xtype:"toolbar",
+                                border: false,
+                                height:0,
+                                region:"south",
+                                items:[]
+                            }
+                    ]
+                    },                   
+                    tools: [
+                        {
+                            ptype: "sdi_gxp_layermanager",
+                             rootNodeText: "' . $item->rootnodetext . '",';
+
+        foreach ($item->groups as $group) :
+            if ($group->isdefault) {
+                //Acces not allowed
+                if (!in_array($group->access, $user->getAuthorisedViewLevels()))
+                    break;
+                $config .= 'defaultGroup: "' . $group->alias . '",';
+                break;
+            }
+        endforeach;
+
+        $config .= 'outputConfig: {
+        id: "tree",
+        border: true,
+        tbar: [] 
+        },
+        groups: {';
+
+
+        //Groups are added in the order saved in the database
+        foreach ($item->groups as $group) :
+            //Acces not allowed
+            if (!in_array($group->access, $user->getAuthorisedViewLevels()))
+                continue;
+
+            if ($group->isbackground) {
+                $config .= '
+                "background": {
+                title: "' . $group->name . '", 
+                exclusive: true,';
+                if ($group->isdefaultopen) :
+                    $config .= 'expanded: true},';
+                else :
+                    $config .= 'expanded: false},';
+                endif;
+            }
+            else {
+                $config .= '"' . $group->alias . '" : {
+                    title : "' . $group->name . '",';
+                if ($group->isdefaultopen) :
+                    $config .= 'expanded: true},';
+                else :
+                    $config .= 'expanded: false},';
+                endif;
+            }
+        endforeach;
+
+        $config .= '},';
+        $config .= ' outputTarget: "westpanel"
+        },';
+
+        foreach ($item->tools as $tool) {
+            switch ($tool->alias) {
+                case 'googleearth':
+                    $config .= '
+                    {
+                    ptype: "gxp_googleearth",
+                    actionTarget: ["map.tbar", "globe.tbar"]
+                    },
+                    {
+                    actions: ["-"],
+                    actionTarget: "map.tbar"
+                    },
+                    ';
+                    break;
+                case 'navigationhistory':
+                    $config .= '
+                    {
+                    ptype: "gxp_navigationhistory",
+                    actionTarget: "map.tbar"
+                    },
+                    ';
+                    break;
+                case 'navigation':
+                    $config .= '
+                    {
+                    ptype: "gxp_navigation",
+                    actionTarget: "map.tbar", 
+                    toggleGroup: "navigation"
+                    },
+                    ';
+                    break;
+                case 'zoom':
+                    $config .= '
+                    {
+                    ptype: "gxp_zoom",
+                    actionTarget: "map.tbar",
+                    toggleGroup: "navigation",
+                    showZoomBoxAction: true,
+                    controlOptions: {zoomOnClick: false}
+                    },
+                    ';
+                    break;
+                case 'zoomtoextent':
+                    $config .= '
+                    {
+                    ptype: "gxp_zoomtoextent",
+                    actionTarget: "map.tbar"
+                    },
+                    {
+                    ptype: "gxp_zoomtolayerextent",
+                    actionTarget: {target: "tree.contextMenu", index: 0}
+                    },
+                    ';
+                    break;
+                case 'measure':
+                    $config .= '
+                    {
+                    actions: ["-"],
+                    actionTarget: "map.tbar"
+                    },
+                    {
+                    ptype: "gxp_measure",
+                    toggleGroup: "measure",
+                    actionTarget: "map.tbar"
+                    },
+                    ';
+                    break;
+                case 'addlayer':
+                    $config .= '
+                    {
+                    ptype: "gxp_addlayers",
+                    actionTarget: "tree.tbar"
+                    },
+                    ';
+                    break;
+                case 'removelayer':
+                    $config .= '
+                    {
+                    ptype: "gxp_removelayer",
+                    actionTarget: ["tree.tbar", "tree.contextMenu"]
+                    },
+                    ';
+                    break;
+
+                case 'layerproperties':
+                    $config .= '
+                    {
+                    ptype: "gxp_layerproperties",
+                    id: "layerproperties",
+                    actionTarget: ["tree.tbar", "tree.contextMenu"]
+                    },
+                    ';
+                    break;
+
+                case 'getfeatureinfo':
+                    $config .= '
+                    {
+                    ptype: "gxp_wmsgetfeatureinfo",
+                    popupTitle: "Feature Info", 
+                    toggleGroup: "interaction", 
+                    format: "html", 
+                    actionTarget: "hiddentbar",
+                    defaultAction: 0
+                    },
+
+                    ';
+                    break;
+                case 'googlegeocoder':
+                    $config .= '
+                    {
+                    actions: ["-"],
+                    actionTarget: "map.tbar"
+                    },
+                    {
+                    ptype: "gxp_googlegeocoder",
+                    outputTarget: "map.tbar"
+                    },
+                    ';
+                    break;
+                case 'print':
+                    if (!$params->get('printserviceurl'))
+                        continue;
+                    else
+                        $config .= '
+                    {
+                    actions: ["-"],
+                    actionTarget: "map.tbar"
+                    },
+                    {
+                    ptype: "sdi_gxp_print",
+                    customParams: {outputFilename: "GeoExplorer-print"},
+                    printService: "' . $params->get('printserviceurl') . '",';
+                    if ($params->get('printserviceprinturl') == '')
+                        $config .= 'printURL : "' . $params->get('printserviceurl') . 'print.pdf",';
+                    else
+                        $config .= 'printURL : "' . $params->get('printserviceprinturl') . '",';
+                    if ($params->get('printservicecreateurl') == '')
+                        $config .= ' createURL : "' . $params->get('printserviceurl') . 'create.json",';
+                    else
+                        $config .= ' createURL : "' . $params->get('printservicecreateurl') . '",';
+
+                    $config .= 'includeLegend: true, 
+                    actionTarget: "map.tbar",
+                    showButtonText: false
+                    },
+                    ';
+                    break;
+            }
+        }
+        $config .= '
+        ],';
+
+        // layer sources
+        switch ($item->defaultserviceconnector_id) {
+            case 2 :
+                $config .= '
+                defaultSourceType: "gxp_wmssource",
+                ';
+                break;
+            case 11 :
+                $config .= '
+                defaultSourceType: "gxp_wmscsource",
+                ';
+                break;
+        }
+
+        $config .= '
+        sources: 
+        {
+        "ol": { ptype: "gxp_olsource" }, ';
+
+        foreach ($item->physicalservices as $service) {
+            //Acces not allowed
+            if (!in_array($service->access, $user->getAuthorisedViewLevels()))
+                continue;
+            switch ($service->serviceconnector_id) {
+                case 2 :
+                    $config .= ' 
+                    "' . $service->alias . '":
+                    {
+                    ptype: "gxp_wmssource",
+                    url: "' . $service->resourceurl . '"
+                    },
+                    ';
+                    break;
+                case 11 :
+                    $config .= ' 
+                    "' . $service->alias . '":
+                    {
+                    ptype: "gxp_wmscsource",
+                     url: "' . $service->resourceurl . '"
+                    },
+                    ';
+                    break;
+                case 12 :
+                    $config .= ' 
+                    "' . $service->alias . '":
+                    {
+                    ptype: "sdi_gxp_bingsource"
+                    },
+                    ';
+                    break;
+                case 13 :
+                    $config .= ' 
+                    "' . $service->alias . '":
+                    {
+                    ptype: "sdi_gxp_googlesource"
+                    },
+                    ';
+                    break;
+                case 14 :
+                    $config .= ' 
+                    "' . $service->alias . '":
+                    {
+                    ptype: "sdi_gxp_osmsource"
+                    },
+                    ';
+                    break;
+            }
+        }
+        if (isset($item->virtualservices)) {
+            foreach ($item->virtualservices as $service) {
+                switch ($service->serviceconnector_id) {
+                    case 2 :
+                        $config .= ' 
+                    "' . $service->alias . '":
+                        {
+                        ptype: "gxp_wmssource",
+                        url: "' . $service->url . '"
+                        },
+                        ';
+                        break;
+                    case 11 :
+                        $config .= ' 
+                    "' . $service->alias . '":
+                        {
+                        ptype: "gxp_wmscsource",
+                        url: "' . $service->url . '"
+                        },
+                    ';
+                }
+            }
+        }
+        $config .= ' 
+        },
+
+        // map and layers
+        map: 
+        {
+        id: "sdimap",
+        title: "Map",
+        header:false,
+        projection: "' . $item->srs . '",
+        center: [' . $item->centercoordinates . '],
+        maxExtent : [' . $item->maxextent . '],
+        restrictedExtent: [' . $item->maxextent . '],
+        maxResolution: ' . $item->maxresolution . ',
+        units: "' . $item->unit . '",
+        layers: 
+        [
+        ';
+
+        //Layers have to be added the lowest before the highest
+        //To do that, the groups have to be looped in reverse order
+        $groups_reverse = array_reverse($item->groups);
+        foreach ($groups_reverse as $group) {
+            //Acces not allowed
+            if (!in_array($group->access, $user->getAuthorisedViewLevels()))
+                continue;
+
+            if (!empty($group->layers)) {
+                foreach ($group->layers as $layer) {
+                    //Acces not allowed
+                    if (!in_array($layer->access, $user->getAuthorisedViewLevels()))
+                        continue;
+
+                    if ($layer->asOL || $layer->serviceconnector == 'WMTS') {
+                        switch ($layer->serviceconnector) {
+                            case 'WMTS' :
+                                $config .= ' 
+                                {
+                                source: "ol",
+                                type: "OpenLayers.Layer.WMTS",
+                                args: [
+                                {
+                                name:"' . $layer->name . '", 
+                                url : "' . $layer->serviceurl . '", 
+                                layer: "' . $layer->layername . '", ';
+
+                                if ($layer->isdefaultvisible == 1)
+                                    $config .= 'visibility: true,';
+                                else
+                                    $config .= 'visibility: false,';
+                                if ($layer->istiled == 1)
+                                    $config .= 'singleTile: true';
+                                else
+                                    $config .= 'singleTile: false';
+
+                                $config .= 'transitionEffect: "resize",
+                                opacity: ' . $layer->opacity . ',
+                                style: "' . $layer->asOLstyle . '",
+                                matrixSet: "' . $layer->asOLmatrixset . '",';
+                                if (!empty($layer->metadatalink)) {
+                                    $config .= 'metadataURL: "' . $layer->metadatalink . '",';
+                                }
+
+                                $config .= $layer->asOLoptions;
+
+                                $config .=' }
+                                ],';
+                                if ($group->isbackground)
+                                    $config .= 'group: "background"';
+                                else
+                                    $config .= 'group: "' . $group->alias . '"';
+                                $config .='
+                                },
+                                ';
+                                break;
+                            case 'WMS' :
+                                $config .= ' 
+                                {
+                                source : "ol",
+                                type : "OpenLayers.Layer.WMS",
+                                args: 
+                                [
+                                "' . $layer->name . '",
+                                "' . $layer->serviceurl . '",
+                                {
+                                layers: "' . $layer->layername . '", 
+                                version: "' . $layer->version . '"
+                                },
+                                {';
+
+
+                                if ($layer->isdefaultvisible == 1)
+                                    $config .= 'visibility :  true';
+                                else
+                                    $config .= 'visibility :  false';
+                                $config .= ',';
+
+                                if ($layer->istiled == 1)
+                                    $config .= 'singleTile :  true';
+                                else
+                                    $config .= 'singleTile :  false';
+                                $config .=',
+                                opacity: ' . $layer->opacity . ',
+                                transitionEffect: "resize",
+                                style: "' . $layer->asOLstyle . '",';
+
+                                if (!empty($layer->metadatalink)) {
+                                    $config .='metadataURL: "' . $layer->metadatalink . '",';
+                                }
+                                $config .= '}';
+                                $config .= $layer->asOLoptions;
+                                $config .= '}
+                                ],';
+
+                                if ($group->isbackground)
+                                    $config .= ' group : "background"';
+                                else
+                                    $config .= ' group : "' . $group->alias . '"';
+                                $config .= '
+                                },
+                                ';
+                                break;
+                            case 'WMSC' :
+                                $config .= ' 
+                                {
+                                source : "ol",
+                                type : "OpenLayers.Layer.WMS",
+                                args: 
+                                [
+                                "' . $layer->name . '",
+                                "' . $layer->serviceurl . '",
+                                {
+                                layers: "' . $layer->layername . '", 
+                                version: "' . $layer->version . '",
+                                tiled: true
+                                },
+                                {';
+
+                                if ($layer->isdefaultvisible == 1)
+                                    $config .= 'visibility :  true,';
+                                else
+                                    $config .= 'visibility :  false,';
+
+
+                                if ($layer->istiled == 1)
+                                    $config .= 'singleTile :  true,';
+                                else
+                                    $config .= 'singleTile :  false,';
+
+                                $config .= 'opacity: ' . $layer->opacity . ',
+                                transitionEffect: "resize",
+                                style: "' . $layer->asOLstyle . '",';
+
+                                if (!empty($layer->metadatalink)) {
+                                    $config .= 'metadataURL: "' . $layer->metadatalink . '",';
+                                }
+                                $config .=$layer->asOLoptions;
+
+                                $config .= '}],';
+                                if ($group->isbackground)
+                                    $config .= ' group : "background"';
+                                else
+                                    $config .= ' group : "' . $group->alias . '"';
+                                $config .= '
+                                },
+                                ';
+                                break;
+                        }
+                    }
+                    else {
+                        switch ($layer->serviceconnector) {
+                            case 'WMTS':
+                                break;
+                            default :
+                                $config .= '
+                                {
+                                source: "' . $layer->servicealias . '",';
+
+                                if ($layer->istiled == 1)
+                                    $config .= 'tiled :  true,';
+                                else
+                                    $config .= 'tiled :  false,';
+
+                                if (!empty($layer->version)) {
+                                    $config .= 'version: "' . $layer->version . '",';
+                                }
+                                if (!empty($layer->metadatalink)) {
+                                    $config .= 'metadataURL: "' . $layer->metadatalink . '",';
+                                }
+                                $config .= 'name: "' . $layer->layername . '",
+                                title: "' . $layer->name . '",';
+                                if ($group->isbackground)
+                                    $config .= ' group : "background",';
+                                else
+                                    $config .= ' group : "' . $group->alias . '",';
+                                if ($group->alias == "background")
+                                    $config .= 'fixed: true,';
+
+                                if ($layer->isdefaultvisible == 1)
+                                    $config .= 'visibility :  true,';
+                                else
+                                    $config .= 'visibility :  false,';
+
+                                $config .= 'opacity: ' . $layer->opacity . '
+                                },
+                                ';
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+        $config .= '
+        ]
+        }
+        ,
+        mapItems: 
+        [
+        {
+        xtype: "gx_zoomslider",
+        vertical: true,
+        height: 100
+        },
+        {
+        xtype: "gxp_scaleoverlay"
+        }
+        ],
+        mapPlugins:
+        [
+        {
+        ptype: "sdi_gxp_loadingindicator",
+        loadingMapMessage: "' . JText::_('COM_EASYSDI_MAP_LAYER_LOAD_MESSAGE') . '"
+}
+]
+';
+        $config .='}';
+
+        return $config;
+    }
 
 }
 

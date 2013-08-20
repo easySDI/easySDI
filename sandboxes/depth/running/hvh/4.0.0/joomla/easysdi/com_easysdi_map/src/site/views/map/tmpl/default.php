@@ -17,7 +17,7 @@ if ($this->item) :
     ?>
     <div id="sdimapcontainer" class="cls-sdimapcontainer">
     </div>
-    <hr class="sdi-map-plugin">
+    <?php echo $this->item->text; ?>
 
 <?php else: ?>
     Could not load the item
