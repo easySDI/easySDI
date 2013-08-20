@@ -43,10 +43,14 @@ class plgContentEasysdimap extends JPlugin {
             return;
         }
 
+        //Load admin language file
+        $lang = JFactory::getLanguage();
+        $lang->load('com_easysdi_map', JPATH_ADMINISTRATOR);
+
         $document = JFactory::getDocument();
         if (JDEBUG) {
             //Load unminify files
-            $document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base.js');
+            $document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base-debug.js');
             $document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');
             $document->addScript('administrator/components/com_easysdi_core/libraries/ux/ext/RowExpander.js');
             $document->addScript('administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.js');
@@ -80,15 +84,15 @@ class plgContentEasysdimap extends JPlugin {
             $document->addScript($file);
         }
 
-        $output = '<script>';
+        $output = '<div id="sdimapcontainer" class="cls-sdimapcontainer">
+    </div><script>';
         $output .= '
             var app;
             var loadingMask;
             Ext.Container.prototype.bufferResize = false;
             Ext.onReady(function(){
                 loadingMask = new Ext.LoadMask(Ext.getBody(), {
-                msg:"
-        ';
+                msg:"';
         $output .= JText::_('COM_EASYSDI_MAP_MAP_LOAD_MESSAGE');
         $output .= '"
             });
@@ -97,11 +101,10 @@ class plgContentEasysdimap extends JPlugin {
             if(!height)  height = Ext.get("sdimapcontainer").getWidth() * 2/3;
             var width = Ext.get("sdimapcontainer").getWidth();
             OpenLayers.ImgPath = "administrator/components/com_easysdi_core/libraries/openlayers/img/";
-            GeoExt.Lang.set("
-        ';
+            GeoExt.Lang.set("';
         $output .= $lang->getTag();
         $output .= '");
-            app = new gxp.Viewer('.$params.');
+            app = new gxp.Viewer(' . $params . ');
             app.on("ready", function (){
                 loadingMask.hide();
             });
@@ -115,13 +118,8 @@ class plgContentEasysdimap extends JPlugin {
             });
     	});';
         $output .= '</script>';
-        
-        // Expression to search for.
-	$regex = '#<hr(.*)class="sdi-map-plugin"(.*)\/>#iU';
-                
-        $row->text = preg_replace($regex, html_entity_decode($output), $row->text, 1);
-        
 
+        $row->text = html_entity_decode($output);
         return true;
     }
 

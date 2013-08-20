@@ -3,7 +3,7 @@
   <name>plg_easysdi_map</name>
   <author>EasySDI Community</author>
   <creationDate>15 August 2012</creationDate>
-  <releaseDate>16 août 2013</releaseDate>
+  <releaseDate>20 août 2013</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
@@ -15,5 +15,10 @@
   <files>
     <filename plugin="easysdimap">easysdimap.php</filename>
   </files>
-  
+  <languages>
+    <language tag="en-GB">language/en-GB/en-GB.plg_content_easysdimap.sys.ini</language>
+    <language tag="en-GB">language/en-GB/en-GB.plg_content_easysdimap.ini</language>
+    <language tag="fr-FR">language/fr-FR/fr-FR.plg_content_easysdimap.sys.ini</language>
+    <language tag="fr-FR">language/fr-FR/fr-FR.plg_content_easysdimap.ini</language>
+  </languages>
 </extension>

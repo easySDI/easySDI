@@ -15,8 +15,7 @@ $lang->load('com_easysdi_map', JPATH_ADMINISTRATOR);
 
 if ($this->item) :
     ?>
-    <div id="sdimapcontainer" class="cls-sdimapcontainer">
-    </div>
+    
     <?php echo $this->item->text; ?>
 
 <?php else: ?>
