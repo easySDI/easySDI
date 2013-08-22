@@ -186,30 +186,48 @@ class Easysdi_mapHelper {
             case "WMSC" :
                 switch ($version) {
                     case "1.3.0":
-                        $layers_array = $xmlCapa->xpath('//dflt:Layer/dflt:Title');
+                        $layers_array = $xmlCapa->xpath('//dflt:Layer/dflt:Name');
+                        if(!empty($layers_array)){
+                            foreach ($layers_array as $layer):
+                                $r = $xmlCapa->xpath('//dflt:Layer[dflt:Name="'.(string)$layer.'"]/dflt:Title[1]'); 
+                                $layers [(string)$layer] = (string) $r[0];
+                            endforeach;
+                        }
                         break;
                     default:
-                        $layers_array = $xmlCapa->xpath('//Layer/Title');
+                        $layers_array = $xmlCapa->xpath('//Layer/Name');
+                        if(!empty($layers_array)){
+                            foreach ($layers_array as $layer):
+                                $r = $xmlCapa->xpath('//Layer[Name="'.(string)$layer.'"]/Title[1]'); 
+                                $layers [(string)$layer] = (string) $r[0];
+                            endforeach;
+                        }
                         break;
                 }
                 break;
             case "WMTS" :
-                $layers_array = $xmlCapa->xpath('//dflt:Layer/ows:Title');
+                $layers_array = $xmlCapa->xpath('//dflt:Layer/ows:Identifier');
+                if(!empty($layers_array)){
+                            foreach ($layers_array as $layer):
+                                $r = $xmlCapa->xpath('//ows:Layer[ows:Identifier="'.(string)$layer.'"]/ows:Title[1]'); 
+                                $layers [(string)$layer] = (string) $r[0];
+                            endforeach;
+                        }
                 break;
         }
 
 
-        if (!$layers_array) {
+        if (!$layers) {
             $result['ERROR'] = JText::_('COM_EASYSDI_MAP_GET_CAPABILITIES_LAYERS_ERROR');
             echo json_encode($result);
             die();
         }
 
-        foreach ($layers_array as $layer) {
-            $result[] = (string) $layer;
-        }
+//        foreach ($layers as $layer) {
+//            $result[] = (string) $layer;
+//        }
 
-        $encoded = json_encode($result);
+        $encoded = json_encode($layers);
         echo $encoded;
         die();
     }

@@ -77,12 +77,12 @@ class Easysdi_mapTabletool extends sdiTable {
 	 *
 	 * @param   integer    	$map_id   			A context identifier
 	 *
-	 * @return  boolean  True if successful. False if row not found or on error (internal error state set in that case).
+	 * @return  array  array of result if successful. False if row not found or on error (internal error state set in that case).
 	 *
 	 * @link    http://docs.joomla.org/JTable/load
 	 * @since   EasySDI 3.0.0
 	 */
-	public function loadIdsByMapId($map_id = null, $reset = true)
+	public function loadByMapId($map_id = null, $reset = true)
 	{
 		if ($reset)
 		{
@@ -91,7 +91,7 @@ class Easysdi_mapTabletool extends sdiTable {
 		
 		// Initialise the query.
 		$query = $this->_db->getQuery(true);
-		$query->select('t.id');
+		$query->select('t.id, t.alias, ct.params');
 		$query->from($this->_tbl.'  AS t ');
 		$query->join('LEFT', '#__sdi_map_tool AS ct ON ct.tool_id=t.id');
 		$query->where('ct.map_id = ' . (int) $map_id);
@@ -101,7 +101,7 @@ class Easysdi_mapTabletool extends sdiTable {
 	
 		try
 		{
-			$rows = $this->_db->loadColumn();
+			$rows = $this->_db->loadObjectList();
 	
 		}
 		catch (JDatabaseException $e)

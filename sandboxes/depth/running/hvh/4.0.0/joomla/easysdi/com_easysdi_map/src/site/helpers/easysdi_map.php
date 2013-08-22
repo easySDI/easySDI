@@ -257,7 +257,7 @@ abstract class Easysdi_mapHelper {
                     ptype: "gxp_wmsgetfeatureinfo",
                     popupTitle: "Feature Info", 
                     toggleGroup: "interaction", 
-                    format: "html", 
+                    format: "'.$tool->params.'", 
                     actionTarget: "hiddentbar",
                     defaultAction: 0
                     },

@@ -16,7 +16,7 @@ require_once JPATH_COMPONENT . '/controller.php';
  * Group controller class.
  */
 class Easysdi_mapControllerVisualization extends Easysdi_mapController {
-
+    
     /**
      * Method to check out an item for editing and redirect to the edit form.
      *

@@ -135,14 +135,15 @@ class Easysdi_mapModelMap extends JModelForm {
                     }
                 }
                 //Load the tools
-                $toolTable = JTable::getInstance('tool', 'easysdi_mapTable');
+                $toolTable = JTable::getInstance('tool', 'easysdi_mapTable');                
                 $this->_item->tools = array();
-                if ($tools = $toolTable->loadIdsByMapId($id)) {
-                    foreach ($tools as $tool) {
-                        $toolTable = JTable::getInstance('tool', 'easysdi_mapTable');
-                        $toolTable->load($tool, true);
-                        $this->_item->tools[] = $toolTable;
-                    }
+                if ($tools = $toolTable->loadByMapId($id)) {
+                    $this->_item->tools = $tools;
+//                    foreach ($tools as $tool) {
+//                        $toolTable = JTable::getInstance('tool', 'easysdi_mapTable');
+//                        $toolTable->load($tool, true);
+//                        $this->_item->tools[] = $toolTable;
+//                    }
                 }
                 
                 //Load the scaleline parameters
