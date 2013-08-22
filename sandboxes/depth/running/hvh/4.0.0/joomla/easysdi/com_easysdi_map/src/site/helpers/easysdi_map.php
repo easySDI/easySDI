@@ -13,7 +13,12 @@ require_once JPATH_SITE . '/components/com_easysdi_map/models/map.php';
 
 abstract class Easysdi_mapHelper {
 
-    public static function getMapConfig($item) {
+    /**
+     * @param Object        Complete map object (with all linked objects embedded)
+     * 
+     * @return string       Config JSON object to initialize map
+     */
+    public static function getMapConfig($item, $layer = null) {
         $user = JFactory::getUser();
         $app = JFactory::getApplication();
         $params = $app->getParams('com_easysdi_map');
