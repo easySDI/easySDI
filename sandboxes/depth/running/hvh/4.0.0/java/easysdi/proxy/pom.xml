@@ -82,31 +82,31 @@
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
-			<artifactId>gt2-shapefile-renderer</artifactId>
+		<artifactId>gt2-shapefile-renderer</artifactId>
             <version>${gt2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
-			<artifactId>gt2-wms</artifactId>
-			<version>${gt2.version}</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>jaxb-api</artifactId>
-					<groupId>jaxb</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>jaxb-impl</artifactId>
-					<groupId>jaxb</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>jaxb-libs</artifactId>
-					<groupId>jaxb</groupId>
-				</exclusion>
-			</exclusions>
+            <artifactId>gt2-wms</artifactId>
+            <version>${gt2.version}</version>
+            <exclusions>
+                    <exclusion>
+                            <artifactId>jaxb-api</artifactId>
+                            <groupId>jaxb</groupId>
+                    </exclusion>
+                    <exclusion>
+                            <artifactId>jaxb-impl</artifactId>
+                            <groupId>jaxb</groupId>
+                    </exclusion>
+                    <exclusion>
+                            <artifactId>jaxb-libs</artifactId>
+                            <groupId>jaxb</groupId>
+                    </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
-			<artifactId>gt2-render</artifactId>
+		<artifactId>gt2-render</artifactId>
             <version>${gt2.version}</version>
         </dependency>
         <dependency>
@@ -117,23 +117,14 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt2-epsg-extension</artifactId>
-            <version>${gt2.version}</version>
+            <version>2.4.1-sdi</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt2-epsg-hsql</artifactId>
             <version>${gt2.version}</version>
         </dependency>     
-		<dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-xml</artifactId>
-            <version>${gt.version}</version>
-        </dependency>
-<!--        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-wms</artifactId>
-            <version>${gt.version}</version>
-        </dependency>-->
+        
 		
         <!-- Divers -->
         <dependency>
