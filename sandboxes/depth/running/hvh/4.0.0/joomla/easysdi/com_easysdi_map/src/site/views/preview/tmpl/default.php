@@ -13,11 +13,11 @@ defined('_JEXEC') or die;
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_map', JPATH_ADMINISTRATOR);
 
-if ($this->item) :
+if (!empty($this->mapscript)) :
     ?>
     
-    <?php echo $this->item->text; ?>
+    <?php echo $this->mapscript; ?>
 
-<?php else: ?>
-    Could not load the item
-<?php endif; ?>
+<?php else: 
+     echo JText::_('COM_EASYSDI_MAP_PREVIEW_NOT_FOUND'); 
+ endif; ?>

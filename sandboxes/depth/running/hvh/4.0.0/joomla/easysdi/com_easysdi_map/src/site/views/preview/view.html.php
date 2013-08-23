@@ -29,39 +29,44 @@ class Easysdi_mapViewPreview extends JViewLegacy {
      */
     public function display($tpl = null) {
         $app = JFactory::getApplication();
-        $user = JFactory::getUser();
-        $model = JModelLegacy::getInstance('map', 'Easysdi_mapModel');
-        $this->setModel($model, true);
-        $this->state = $this->get('State');
+        try{
+            $sdiuser = sdiFactory::getSdiUser();
+        }catch (Exception $e){
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+           return; 
+        }
         
-        $this->item = $this->get('Data','map');
+        $this->state = $this->get('State');
+        $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_map');
         $this->form = $this->get('Form');
-
+        
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
 
+        if(!$sdiuser->canView($this->item->id)){
+           JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+           return;
+        }
+        
         if (!$this->item) {
-            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_MAP_MAP_NOT_FOUND'), 'error');
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_MAP_PREVIEW_NOT_FOUND'), 'error');
             return;
         }
 
-        if (!in_array($this->item->access, $user->getAuthorisedViewLevels())) {
-            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'notice');
-            return;
-        }
-
-        $config = Easysdi_mapHelper::getMapConfig($this->item);
-        $this->item->text = '';
-        $dispatcher = JEventDispatcher::getInstance();
-        JPluginHelper::importPlugin('content');
-        $results = $dispatcher->trigger('onContentPrepare', array('com_easysdi_map', &$this->item, &$config));
-
+        if($this->item->map_id)
+            $this->mapscript = Easysdi_mapHelper::getMapScript($this->item->map_id);
+//        else{
+//            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_MAP_PREVIEW_NOT_FOUND'), 'error');
+//            return;
+//        }
+            
         $this->_prepareDocument();
 
         parent::display($tpl);
+        die();
         
     }
 

@@ -50,11 +50,7 @@ class Easysdi_mapViewMap extends JViewLegacy {
             return;
         }
 
-        $config = Easysdi_mapHelper::getMapConfig($this->item);
-        $this->item->text= '';
-        $dispatcher	= JEventDispatcher::getInstance();
-        JPluginHelper::importPlugin('content');
-        $results = $dispatcher->trigger('onContentPrepare', array('com_easysdi_map', &$this->item, &$config));
+        $this->mapscript = Easysdi_mapHelper::getMapScript($this->item->id);
 
         $this->_prepareDocument();
 

@@ -15,7 +15,7 @@ class sdiUser {
      * @var    integer
      */
     public $id = null;
-    
+
     /**
      * Unique name
      *
@@ -43,7 +43,7 @@ class sdiUser {
      * @var    object
      */
     public $lang = null;
-    
+
     const member = 1;
     const resourcemanager = 2;
     const metadataresponsible = 3;
@@ -52,7 +52,6 @@ class sdiUser {
     const viewmanager = 6;
     const extractionresponsible = 7;
     const ordereligible = 8;
-    
 
     /**
      * 
@@ -77,9 +76,9 @@ class sdiUser {
         $db->setQuery($query);
         $user = $db->loadObject();
 
-        if(!$user)
+        if (!$user)
             throw new Exception('Not an EasySDI user');
-        
+
         $this->id = $user->id;
 
         $query = $db->getQuery(true)
@@ -115,7 +114,7 @@ class sdiUser {
 
     /**
      * Get the resource type the user can manage
-     * @return type
+     * @return array
      */
     public function getResourceType() {
         $db = JFactory::getDbo();
@@ -210,82 +209,128 @@ class sdiUser {
     public function getOrderEligibleOrganisms() {
         return $this->role[8];
     }
-    
+
     /**
      * Get if a user has the specific right on the specific item, or all the right on an item
-     * @return type
+     * @param int $item
+     * @param string $right
+     * @return boolean
      */
-    public function authorize ($item, $right=null){
-        if(is_null($item))
+    public function authorize($item, $right = null) {
+        if (is_null($item))
             return false;
-        
-        if($right == null){
+
+        if ($right == null) {
             //Return all rights on the item
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
-                ->select('urr.role_id')
-                ->from('#__sdi_user_role_resource urr')
-                ->where('urr.user_id = '.$this->id)
-                ->where('urr.resource_id = '.$item);
+                    ->select('urr.role_id')
+                    ->from('#__sdi_user_role_resource urr')
+                    ->where('urr.user_id = ' . $this->id)
+                    ->where('urr.resource_id = ' . $item);
             $db->setQuery($query);
             return $db->loadObjectList();
-        }else{
+        } else {
             //Return if the user has the specific right on the specific item
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
-                ->select('urr.id')
-                ->from('#__sdi_user_role_resource urr')
-                ->where('urr.user_id = '.$this->id)
-                ->where('urr.resource_id = '.$item)
-                ->where('urr.role_id = '.$right);
+                    ->select('urr.id')
+                    ->from('#__sdi_user_role_resource urr')
+                    ->where('urr.user_id = ' . $this->id)
+                    ->where('urr.resource_id = ' . $item)
+                    ->where('urr.role_id = ' . $right);
             $db->setQuery($query);
             $result = $db->loadObject();
-            if($result != null)
+            if ($result != null)
                 return true;
-            else 
+            else
                 return false;
         }
     }
-    
+
     /**
      * Is the user authorized to do action on the metadata specified by the given id
-     * @param type $item
-     * @param type $right
+     * @param int $item
+     * @param string $right
      * @return boolean
      */
-    public function authorizeOnMetadata ($item, $right=null){
-        if(is_null($item))
+    public function authorizeOnMetadata($item, $right = null) {
+        if (is_null($item))
             return false;
-        
+
         $db = JFactory::getDbo();
-            $query = $db->getQuery(true)
-                    ->select ('v.resource_id')
-                    ->from('#__sdi_version v')
-                    ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                    ->where('m.id = '.$item);
-            $db->setQuery($query);
-         
+        $query = $db->getQuery(true)
+                ->select('v.resource_id')
+                ->from('#__sdi_version v')
+                ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
+                ->where('m.id = ' . $item);
+        $db->setQuery($query);
+
         return $this->authorize($db->loadResult(), $right);
     }
-    
+
     /**
      * Is the user authorized to do action on the version specified by the given id
-     * @param type $item
-     * @param type $right
+     * @param int $item
+     * @param string $right
      * @return boolean
      */
-    public function authorizeOnVersion ($item, $right=null){
-        if(is_null($item))
+    public function authorizeOnVersion($item, $right = null) {
+        if (is_null($item))
             return false;
-        
+
         $db = JFactory::getDbo();
-            $query = $db->getQuery(true)
-                    ->select ('v.resource_id')
-                    ->from('#__sdi_version v')
-                    ->where('v.id = '.$item);
-            $db->setQuery($query);
-         
+        $query = $db->getQuery(true)
+                ->select('v.resource_id')
+                ->from('#__sdi_version v')
+                ->where('v.id = ' . $item);
+        $db->setQuery($query);
+
         return $this->authorize($db->loadResult(), $right);
+    }
+
+    /**
+     * Is the user authorized to view or preview the item
+     * @param int $item    
+     * @return boolean
+     */
+    public function canView($item) {
+        if (is_null($item))
+            return false;
+
+        $cls = '(v.accessscope_id = 1 
+                            OR ((v.accessscope_id = 3) AND (' . $this->id . ' IN (select a.user_id from #__sdi_accessscope a where a.entity_guid = v.guid)))';
+
+        foreach ($this->role[1] as $organism):
+            $cls .= 'OR ((v.accessscope_id = 2) AND (';
+            $cls .= $organism->id . ' in (select a.organism_id from #__sdi_accessscope a where a.entity_guid = v.guid)';
+            $cls .= '))';
+        endforeach;
+        $cls .= ')';
+
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('v.id')
+                ->from('#__sdi_visualization v')
+                ->where($cls)
+                ->where('v.id = ' . $item);
+        $db->setQuery($query);
+        $result = $db->loadResult();
+        
+        return ($result)? true : false;
+    }
+
+    /**
+     * Is the user authorized to download or order the item
+     * @param int $item    
+     * @return boolean
+     */
+    public function canGet($item) {
+        if (is_null($item))
+            return false;
+
+        return true;
     }
 
 }

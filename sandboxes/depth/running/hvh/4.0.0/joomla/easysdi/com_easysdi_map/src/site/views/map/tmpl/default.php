@@ -16,7 +16,7 @@ $lang->load('com_easysdi_map', JPATH_ADMINISTRATOR);
 if ($this->item) :
     ?>
     
-    <?php echo $this->item->text; ?>
+    <?php echo $this->mapscript; ?>
 
 <?php else: ?>
     Could not load the item

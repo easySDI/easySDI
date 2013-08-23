@@ -38,7 +38,10 @@ class Easysdi_mapModelMap extends JModelForm {
         // Load state from the request userState on edit or from the passed variable on default
         if (JFactory::getApplication()->input->get('layout') == 'edit') {
             $id = JFactory::getApplication()->getUserState('com_easysdi_map.edit.map.id');
-        } else {
+        } else if (JFactory::getApplication()->input->get('mapid')) {
+            $id = JFactory::getApplication()->input->get('mapid');
+        }
+        else {
             $id = JFactory::getApplication()->input->get('id');
             JFactory::getApplication()->setUserState('com_easysdi_map.edit.map.id', $id);
         }

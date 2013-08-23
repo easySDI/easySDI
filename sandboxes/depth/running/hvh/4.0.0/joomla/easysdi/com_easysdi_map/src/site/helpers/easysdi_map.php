@@ -1,7 +1,7 @@
 <?php
 
 /**
-  \* @version     4.0.0
+ * @version     4.0.0
  * @package     com_easysdi_map
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -12,6 +12,182 @@ defined('_JEXEC') or die;
 require_once JPATH_SITE . '/components/com_easysdi_map/models/map.php';
 
 abstract class Easysdi_mapHelper {
+
+    public static function getMapScript($mapid) {
+        $model = JModelLegacy::getInstance('map', 'Easysdi_mapModel');
+        $item = $model->getData($mapid);
+
+        $config = Easysdi_mapHelper::getMapConfig($item);
+
+        //Load admin language file
+        $lang = JFactory::getLanguage();
+        $lang->load('com_easysdi_map', JPATH_ADMINISTRATOR);
+
+        if (JDEBUG) {
+            $output =
+                    '<link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/ext/resources/css/ext-all.css" type="text/css" />
+            <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/ext/resources/css/xtheme-gray.css" type="text/css" />
+            <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/openlayers/theme/default/style.css" type="text/css" />
+            <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/geoext/resources/css/popup.css" type="text/css" />
+            <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/geoext/resources/css/layerlegend.css" type="text/css" />
+            <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/geoext/resources/css/gxtheme-gray.css" type="text/css" />
+            <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/ux/geoext/resources/css/printpreview.css" type="text/css" />
+            <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/gxp/theme/all.css" type="text/css" />
+            <link rel="stylesheet" href="' . JURI::base() . 'components/com_easysdi_map/views/map/tmpl/easysdi.css" type="text/css" />
+
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base-debug.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/ux/ext/RowExpander.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/geoext/lib/GeoExt.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/ux/geoext/PrintPreview.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/gxp/script/loader.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/widgets/ScaleOverlay.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/widgets/Viewer.js" type="text/javascript"></script>';
+
+            $files = glob('administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.{js}', GLOB_BRACE);
+            foreach ($files as $file) {
+                $output .= '<script src="' . $file . '" type="text/javascript"></script>';
+            }
+
+            $output .=
+                    '<script src="' . JURI::base(true) . '/media/jui/js/jquery.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/media/jui/js/jquery-noconflict.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/media/jui/js/bootstrap.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/media/system/js/mootools-core-uncompressed.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/media/system/js/core-uncompressed.js" type="text/javascript"></script>';
+        } else {
+            $output =
+                    '<link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/ext/resources/css/ext-all.css" type="text/css" />
+            <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/ext/resources/css/xtheme-gray.css" type="text/css" />
+            <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/openlayers/theme/default/style.css" type="text/css" />
+            <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/geoext/resources/css/popup.css" type="text/css" />
+            <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/geoext/resources/css/layerlegend.css" type="text/css" />
+            <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/geoext/resources/css/gxtheme-gray.css" type="text/css" />
+            <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/ux/geoext/resources/css/printpreview.css" type="text/css" />
+            <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/gxp/theme/all.css" type="text/css" />
+            
+
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/ext/ext-all.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/ux/ext/RowExpander.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/geoext/lib/GeoExt.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/ux/geoext/PrintPreview.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/gxp/script/loader.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/widgets/ScaleOverlay.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/widgets/Viewer.js" type="text/javascript"></script>';
+
+            $files = glob('administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.{js}', GLOB_BRACE);
+            foreach ($files as $file) {
+                $output .= '<script src="' . $file . '" type="text/javascript"></script>';
+            }
+
+            $output .=
+                    '<script src="' . JURI::base(true) . '/media/jui/js/jquery.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/media/jui/js/jquery-noconflict.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/media/jui/js/bootstrap.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/media/system/js/mootools-core.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/media/system/js/core.js" type="text/javascript"></script>';
+        }
+
+        $output .= '<div id="sdimapcontainer" class="cls-sdimapcontainer"></div>';
+
+        $output .= '<script>
+            var app;
+            var loadingMask;
+            Ext.Container.prototype.bufferResize = false;
+            Ext.onReady(function(){
+                loadingMask = new Ext.LoadMask(Ext.getBody(), {
+                msg:"';
+        $output .= JText::_('COM_EASYSDI_MAP_MAP_LOAD_MESSAGE');
+        $output .= '"
+            });
+            loadingMask.show();
+            var height = Ext.get("sdimapcontainer").getHeight();
+            if(!height)  height = Ext.get("sdimapcontainer").getWidth() * 1/2;
+            var width = Ext.get("sdimapcontainer").getWidth();
+            OpenLayers.ImgPath = "administrator/components/com_easysdi_core/libraries/openlayers/img/";
+            GeoExt.Lang.set("';
+        $output .= $lang->getTag();
+        $output .= '");
+            app = new gxp.Viewer(' . $config . ');';
+
+        //Add the mouseposition control if activated in the map configuration
+        //Can not be done in the gxp.Viewer instanciation because it has to be done on the openlayers map object
+        foreach ($item->tools as $tool) {
+            if ($tool->alias == 'mouseposition') {
+                $output .= 'app.mapPanel.map.addControl(new OpenLayers.Control.MousePosition());';
+                break;
+            }
+        }
+
+//        $output .= ' 
+//       config = {
+//        projection: "EPSG:900913",
+//        ptype: "gxp_wmssource",
+//        url: "http://localhost/proxy-4.0.0/brgmwms"
+//        };
+//
+//        app.addLayerSource({
+//                id: "brgmwms",
+//                config: config,  
+//                callback: function () {
+//            app.activate();
+//        },
+//                fallback: function () {
+//            app.activate();
+//        },
+//                scope: app
+//            });
+//            
+//            app.addLayer ({group: "groupe-1",
+//                metadataURL: "http://www.brgm.fr",
+//                name: "brgmwms_BSS_ES_POINT",
+//                opacity: 1,
+//                source: "brgmwms",
+//                tiled: false,
+//                title: "BRGM ajouté",
+//                version: "1.3.0",
+//                visibility: true});';
+
+        $output .= 'app.on("ready", function (){
+                    loadingMask.hide();
+                    
+app.addLayer ({group: "groupe-1",
+                metadataURL: "http://www.brgm.fr",
+                name: "brgmwms_SCAN_F_GEOL1M",
+                opacity: 1,
+                source: "brgmwms",
+                tiled: false,
+                title: "BRGM ajouté",
+                version: "1.3.0",
+                visibility: true});
+                });
+            
+ 
+
+        SdiScaleLineParams= { 
+                bottomInUnits :"' . $item->bottomInUnits . '",
+                bottomOutUnits :"' . $item->bottomOutUnits . '",
+                topInUnits :"' . $item->topInUnits . '",
+                topOutUnits :"' . $item->topOutUnits . '"
+        }; 
+            Ext.QuickTips.init();
+            Ext.apply(Ext.QuickTips.getQuickTip(), {
+                maxWidth: 1000
+            });
+            Ext.EventManager.onWindowResize(function() {
+                app.portal.setWidth(Ext.get("sdimapcontainer").getWidth());
+                app.portal.setHeight(Ext.get("sdimapcontainer").getWidth() * 1/2);
+            });
+    	});';
+        $output .= '</script>';
+
+        return $output;
+    }
 
     /**
      * @param Object        Complete map object (with all linked objects embedded)
@@ -59,9 +235,9 @@ abstract class Easysdi_mapHelper {
                                 ]
                             }, ';
 
-                            foreach ($item->tools as $tool) {
-                                if ($tool->alias == 'layertree') {
-                                    $config .= '{
+        foreach ($item->tools as $tool) {
+            if ($tool->alias == 'layertree') {
+                $config .= '{
                                                     id: "westpanel",
                                                     xtype: "panel",
                                                     header: false,
@@ -73,12 +249,12 @@ abstract class Easysdi_mapHelper {
                                                     region: "west",
                                                     width: 200
                                                 },';
-                                    break;
-                                }
-                            }
-                            foreach ($item->tools as $tool) {
-                                if ($tool->alias == 'getfeatureinfo') {
-                            $config .= '{
+                break;
+            }
+        }
+        foreach ($item->tools as $tool) {
+            if ($tool->alias == 'getfeatureinfo') {
+                $config .= '{
                                 id:"hiddentbar",
                                 xtype:"toolbar",
                                 border: false,
@@ -86,10 +262,10 @@ abstract class Easysdi_mapHelper {
                                 region:"south",
                                 items:[]
                             }';
-                            break;
-                                }
-                            }
-                    $config .= ']
+                break;
+            }
+        }
+        $config .= ']
                     },                   
                     tools: [';
         $layertreeactivated = false;
@@ -262,7 +438,7 @@ abstract class Easysdi_mapHelper {
                     ptype: "gxp_wmsgetfeatureinfo",
                     popupTitle: "Feature Info", 
                     toggleGroup: "interaction", 
-                    format: "'.$tool->params.'", 
+                    format: "' . $tool->params . '", 
                     actionTarget: "hiddentbar",
                     defaultAction: 0
                     },

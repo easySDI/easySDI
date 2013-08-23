@@ -28,7 +28,7 @@ if (isset($this->user)):
     if ($this->user->isResourceManager()):
         $resourcetypes = $this->user->getResourceType();
         ?>
-<?php echo $this->itemmap->_item->text; ?>
+<?php // echo $this->itemmap->_item->text; ?>
  <div class="well">
      <form class="form-inline">
         <div class="btn-group">
