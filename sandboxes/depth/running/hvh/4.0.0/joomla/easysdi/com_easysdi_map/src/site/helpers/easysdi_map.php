@@ -124,34 +124,17 @@ abstract class Easysdi_mapHelper {
             }
         }
 
-//        $output .= ' 
-//       config = {
-//        projection: "EPSG:900913",
-//        ptype: "gxp_wmssource",
-//        url: "http://localhost/proxy-4.0.0/brgmwms"
-//        };
-//
-//        app.addLayerSource({
-//                id: "brgmwms",
-//                config: config,  
-//                callback: function () {
-//            app.activate();
-//        },
-//                fallback: function () {
-//            app.activate();
-//        },
-//                scope: app
-//            });
-//            
-//            app.addLayer ({group: "groupe-1",
-//                metadataURL: "http://www.brgm.fr",
-//                name: "brgmwms_BSS_ES_POINT",
-//                opacity: 1,
-//                source: "brgmwms",
-//                tiled: false,
-//                title: "BRGM ajouté",
-//                version: "1.3.0",
-//                visibility: true});';
+        $output .= ' 
+       
+            config = {id :"brgmwms",
+        projection: "EPSG:900913",
+        ptype: "gxp_wmssource",
+        bbox : [' . $item->maxextent . '],
+        url: "http://localhost/proxy-4.0.0/brgmwms"
+        };
+
+        app.addOtherLayerSource(config);
+            ';
 
         $output .= 'app.on("ready", function (){
                     loadingMask.hide();

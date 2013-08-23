@@ -24,4 +24,21 @@ gxp.Viewer.prototype.addLayer = function(layer) {
     }
 }
 
+gxp.Viewer.prototype.addOtherLayerSource = function(config) {
+    this.sources[config.id] = config;
+    
+    
+    
+        var queue = [];
+        
+        queue.push(this.createSourceLoader(config.id));
+        
+        
+        
+        
+        gxp.util.dispatch(queue, this.activate, this);
+}
+
+
+
 
