@@ -29,11 +29,11 @@ class Easysdi_coreViewResources extends JViewLegacy {
     public function display($tpl = null) {
         $app = JFactory::getApplication();
 
-        try{
-            $this->user = sdiFactory::getSdiUser();
-        }catch (Exception $e){
+        //Check user rights
+        $this->user = sdiFactory::getSdiUser();
+        if (!$this->user->isEasySDI || empty($this->user->role)) {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-           return; 
+            return;
         }
         
         $this->state = $this->get('State');
@@ -45,16 +45,6 @@ class Easysdi_coreViewResources extends JViewLegacy {
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
-
-//        require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
-//        
-//        $this->itemmap = JModelForm::getInstance('map', 'easysdi_mapModel');
-//        $this->itemmap->getData(1);
-//        $config = Easysdi_mapHelper::getMapConfig($this->itemmap->_item);
-//        $this->itemmap->_item->text= '';
-//        $dispatcher	= JEventDispatcher::getInstance();
-//        JPluginHelper::importPlugin('content');
-//        $results = $dispatcher->trigger('onContentPrepare', array('com_easysdi_map', &$this->itemmap->_item, &$config));
         
         $this->_prepareDocument();
         parent::display($tpl);

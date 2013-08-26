@@ -29,12 +29,9 @@ class Easysdi_mapViewPreview extends JViewLegacy {
      */
     public function display($tpl = null) {
         $app = JFactory::getApplication();
-        try{
-            $sdiuser = sdiFactory::getSdiUser();
-        }catch (Exception $e){
-            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-           return; 
-        }
+        
+        $sdiuser = sdiFactory::getSdiUser();
+        
         
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
@@ -62,6 +59,16 @@ class Easysdi_mapViewPreview extends JViewLegacy {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_MAP_PREVIEW_NOT_FOUND'), 'error');
             return;
         }
+        
+        //Get the default group to use to add the layer
+        $model = JModelLegacy::getInstance('map', 'Easysdi_mapModel');
+        $item = $model->getData($this->item->map_id);
+        foreach ($item->groups as $group):
+            if($group->isdefault){
+                $defaultgroup = $group->alias;
+                break;
+            }
+        endforeach;
             $this->addscript .= ' 
                 Ext.onReady(function(){
                     sourceConfig = {id :"'.$this->item->service->alias.'",
@@ -69,13 +76,12 @@ class Easysdi_mapViewPreview extends JViewLegacy {
                                     url: "'.$this->item->service->url.'"
                                     };
 
-                    layerConfig = { group: "groupe-1",
+                    layerConfig = { group: "'.$defaultgroup.'",
                                     name: "'.$this->item->layername.'",
                                     opacity: 1,
                                     source: "'.$this->item->service->alias.'",
                                     tiled: true,
                                     title: "'.$this->item->layername.'",
-                                    version: "1.3.0",
                                     visibility: true};
 
                     app.addExtraLayer(sourceConfig, layerConfig)

@@ -36,6 +36,11 @@ class sdiUser {
      * @var    array
      */
     public $role = null;
+    
+    /**
+     * @var boolean
+     */
+    public $isEasySDI = true;
 
     /**
      * Unique lang
@@ -62,11 +67,11 @@ class sdiUser {
 
         if ($juser == null)
             throw new Exception('Not an EasySDI user');
-
+        
         $this->juser = $juser;
         $this->name = $juser->name;
         $this->lang = JFactory::getLanguage();
-
+        
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
                 ->select('u.*')
@@ -76,28 +81,30 @@ class sdiUser {
         $db->setQuery($query);
         $user = $db->loadObject();
 
-        if (!$user)
-            throw new Exception('Not an EasySDI user');
+        if (!$user){
+            $this->isEasySDI = false;
+        }
+        else{
+            $this->id = $user->id;
 
-        $this->id = $user->id;
+            $query = $db->getQuery(true)
+                    ->select('uro.role_id as  role_id, o.name as organism_name, o.id as organism_id')
+                    ->from('#__sdi_user_role_organism  uro')
+                    ->innerJoin('#__sdi_organism o ON o.id = uro.organism_id')
+                    ->where('uro.user_id = ' . $this->id)
+            ;
+            $db->setQuery($query);
+            $roles = $db->loadObjectList();
 
-        $query = $db->getQuery(true)
-                ->select('uro.role_id as  role_id, o.name as organism_name, o.id as organism_id')
-                ->from('#__sdi_user_role_organism  uro')
-                ->innerJoin('#__sdi_organism o ON o.id = uro.organism_id')
-                ->where('uro.user_id = ' . $this->id)
-        ;
-        $db->setQuery($query);
-        $roles = $db->loadObjectList();
-
-        $this->role = array();
-        foreach ($roles as $role) {
-            if (!isset($this->role[$role->role_id]))
-                $this->role[$role->role_id] = array();
-            $organism = new stdClass();
-            $organism->id = $role->organism_id;
-            $organism->name = $role->organism_name;
-            array_push($this->role[$role->role_id], $organism);
+            $this->role = array();
+            foreach ($roles as $role) {
+                if (!isset($this->role[$role->role_id]))
+                    $this->role[$role->role_id] = array();
+                $organism = new stdClass();
+                $organism->id = $role->organism_id;
+                $organism->name = $role->organism_name;
+                array_push($this->role[$role->role_id], $organism);
+            }
         }
     }
 
@@ -106,6 +113,9 @@ class sdiUser {
      * @return boolean
      */
     public function isResourceManager() {
+        if(!$this->isEasySDI){
+            return false;
+        }
         if (isset($this->role[2])) {
             return true;
         }
@@ -117,6 +127,9 @@ class sdiUser {
      * @return array
      */
     public function getResourceType() {
+        if(!$this->isEasySDI){
+            return null;
+        }
         $db = JFactory::getDbo();
 
         $cls = '(rt.accessscope_id = 1 
@@ -151,6 +164,9 @@ class sdiUser {
      * @return type
      */
     public function getMemberOrganisms() {
+        if(!$this->isEasySDI){
+            return null;
+        }
         return $this->role[1];
     }
 
@@ -159,6 +175,9 @@ class sdiUser {
      * @return type
      */
     public function getResourceManagerOrganisms() {
+        if(!$this->isEasySDI){
+            return null;
+        }
         return $this->role[2];
     }
 
@@ -167,6 +186,9 @@ class sdiUser {
      * @return type
      */
     public function getMetadataResponsibleOrganisms() {
+        if(!$this->isEasySDI){
+            return null;
+        }
         return $this->role[3];
     }
 
@@ -175,6 +197,9 @@ class sdiUser {
      * @return type
      */
     public function getMetadataEditorOrganisms() {
+        if(!$this->isEasySDI){
+            return null;
+        }
         return $this->role[4];
     }
 
@@ -183,6 +208,9 @@ class sdiUser {
      * @return type
      */
     public function getDiffusionManagerOrganisms() {
+        if(!$this->isEasySDI){
+            return null;
+        }
         return $this->role[5];
     }
 
@@ -191,6 +219,9 @@ class sdiUser {
      * @return type
      */
     public function getPreviewManagerOrganisms() {
+        if(!$this->isEasySDI){
+            return null;
+        }
         return $this->role[6];
     }
 
@@ -199,6 +230,9 @@ class sdiUser {
      * @return type
      */
     public function getExtractionResponsibleOrganisms() {
+        if(!$this->isEasySDI){
+            return null;
+        }
         return $this->role[7];
     }
 
@@ -207,16 +241,22 @@ class sdiUser {
      * @return type
      */
     public function getOrderEligibleOrganisms() {
+        if(!$this->isEasySDI){
+            return null;
+        }
         return $this->role[8];
     }
 
     /**
      * Get if a user has the specific right on the specific item, or all the right on an item
      * @param int $item
-     * @param string $right
+     * @param int $right
      * @return boolean
      */
     public function authorize($item, $right = null) {
+        if(!$this->isEasySDI){
+            return false;
+        }
         if (is_null($item))
             return false;
 
@@ -251,10 +291,13 @@ class sdiUser {
     /**
      * Is the user authorized to do action on the metadata specified by the given id
      * @param int $item
-     * @param string $right
+     * @param int $right
      * @return boolean
      */
     public function authorizeOnMetadata($item, $right = null) {
+        if(!$this->isEasySDI){
+            return false;
+        }
         if (is_null($item))
             return false;
 
@@ -276,6 +319,10 @@ class sdiUser {
      * @return boolean
      */
     public function authorizeOnVersion($item, $right = null) {
+        if(!$this->isEasySDI){
+            return false;
+        }
+
         if (is_null($item))
             return false;
 
@@ -297,19 +344,26 @@ class sdiUser {
     public function canView($item) {
         if (is_null($item))
             return false;
-
-        $cls = '(v.accessscope_id = 1 
-                            OR ((v.accessscope_id = 3) AND (' . $this->id . ' IN (select a.user_id from #__sdi_accessscope a where a.entity_guid = v.guid)))';
-
-        foreach ($this->role[1] as $organism):
-            $cls .= 'OR ((v.accessscope_id = 2) AND (';
-            $cls .= $organism->id . ' in (select a.organism_id from #__sdi_accessscope a where a.entity_guid = v.guid)';
-            $cls .= '))';
-        endforeach;
-        $cls .= ')';
-
-
+        
         $db = JFactory::getDbo();
+
+        if(!$this->isEasySDI){
+            //Not an EasySDI user, usually it means current user is a Joomla guest (not logged user)
+            $cls = 'v.accessscope_id = 1';
+        }else{
+            $cls = '(v.accessscope_id = 1 
+                                OR ((v.accessscope_id = 3) AND (' . $this->id . ' IN (select a.user_id from #__sdi_accessscope a where a.entity_guid = v.guid)))';
+
+            foreach ($this->role[1] as $organism):
+                $cls .= 'OR ((v.accessscope_id = 2) AND (';
+                $cls .= $organism->id . ' in (select a.organism_id from #__sdi_accessscope a where a.entity_guid = v.guid)';
+                $cls .= '))';
+            endforeach;
+            $cls .= ')';
+        }
+
+
+        
         $query = $db->getQuery(true)
                 ->select('v.id')
                 ->from('#__sdi_visualization v')

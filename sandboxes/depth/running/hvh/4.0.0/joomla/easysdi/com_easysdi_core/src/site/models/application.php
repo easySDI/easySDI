@@ -199,21 +199,13 @@ class Easysdi_coreModelApplication extends JModelForm {
         $state = (!empty($data['state'])) ? 1 : 0;
         
         //Check the user right
-        try {
-            $user = sdiFactory::getSdiUser();
-            if (!$user->authorize($data['resource_id'], sdiUser::resourcemanager)) {
-                //Try to save an application but not a resource manager
-                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-                JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-                return false;
-            }
-        } catch (Exception $e) {
-            //Not an EasySDI user = not allowed
-            JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+        $user = sdiFactory::getSdiUser();
+        if (!$user->isEasySDI || !$user->authorize($data['resource_id'], sdiUser::resourcemanager)) {
+            //Try to save an application but not a resource manager
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
         }
-
-  
 
         $table = $this->getTable();
         if ($table->save($data) === true) {

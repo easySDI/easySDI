@@ -226,17 +226,11 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         $state = (!empty($data['state'])) ? 1 : 0;
 
         //Check the user right
-        try {
-            $user = sdiFactory::getSdiUser();
-            if (!$user->authorizeOnVersion($data['version_id'], sdiUser::diffusionmanager)) {
-                //Try to save a diffusion but not a diffusion manager for the related resource
-                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-                JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-                return false;
-            }
-        } catch (Exception $e) {
-            //Not an EasySDI user = not allowed
-            JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+        $user = sdiFactory::getSdiUser();
+        if (!$user->isEasySDI || !$user->authorizeOnVersion($data['version_id'], sdiUser::diffusionmanager)) {
+            //Try to save a diffusion but not a diffusion manager for the related resource
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
         }
 
@@ -417,17 +411,11 @@ class Easysdi_shopModelDiffusion extends JModelForm {
     function delete($data) {
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('diffusion.id');
         //Check the user right
-        try {
-            $user = sdiFactory::getSdiUser();
-            if (!$user->authorizeOnVersion($data['version_id'], sdiUser::diffusionmanager)) {
-                //Try to save a diffusion but not a diffusion manager for the related resource
-                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-                JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-                return false;
-            }
-        } catch (Exception $e) {
-            //Not an EasySDI user = not allowed
-            JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+        $user = sdiFactory::getSdiUser();
+        if (!$user->isEasySDI || !$user->authorizeOnVersion($data['version_id'], sdiUser::diffusionmanager)) {
+            //Try to save a diffusion but not a diffusion manager for the related resource
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
         }
         $table = $this->getTable();

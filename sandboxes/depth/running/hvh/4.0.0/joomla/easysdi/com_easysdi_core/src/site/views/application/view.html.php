@@ -21,6 +21,12 @@ class Easysdi_coreViewApplication extends JViewLegacy {
     protected $item;
     protected $form;
     protected $params;
+    
+    /**
+     *
+     * @var type sdiUser
+     */
+    protected $user;
 
     /**
      * Display the view
@@ -28,12 +34,10 @@ class Easysdi_coreViewApplication extends JViewLegacy {
     public function display($tpl = null) {
 
         $app = JFactory::getApplication();
-        $user = JFactory::getUser();
-
+        
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_core');
-
         $this->form = $this->get('Form');
 
         // Check for errors.
@@ -41,18 +45,19 @@ class Easysdi_coreViewApplication extends JViewLegacy {
             throw new Exception(implode("\n", $errors));
         }
 
-        if (!in_array($this->item->access, $user->getAuthorisedViewLevels())) {
-            return JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
+        //Check user rights
+        $this->user = sdiFactory::getSdiUser();
+        if (!$this->user->isEasySDI) {
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+            return;
         }
-
-
-        if ($this->_layout == 'edit') {
-
-            $authorised = $user->authorise('core.create', 'com_easysdi_core');
-
-            if ($authorised !== true) {
-                throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'));
-            }
+        
+        $resource = $app->input->get('resource', '', 'int');
+        if (!$this->user->authorize($resource, sdiUser::metadataresponsible)) {
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+            return;
         }
 
         $this->_prepareDocument();
