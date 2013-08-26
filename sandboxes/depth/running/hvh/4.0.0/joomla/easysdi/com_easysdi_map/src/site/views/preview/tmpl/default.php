@@ -15,8 +15,10 @@ $lang->load('com_easysdi_map', JPATH_ADMINISTRATOR);
 
 if (!empty($this->mapscript)) :
     ?>
-    
     <?php echo $this->mapscript; ?>
+    <script>
+       <?php echo $this->addscript; ?>
+    </script>
 
 <?php else: 
      echo JText::_('COM_EASYSDI_MAP_PREVIEW_NOT_FOUND'); 

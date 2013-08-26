@@ -148,6 +148,9 @@ class Easysdi_mapControllerVisualization extends Easysdi_mapController {
     }
 
     function cancel() {
+        $model = $this->getModel('Visualization', 'Easysdi_mapModel');
+        $data = JFactory::getApplication()->input->get('jform', array(), 'array');
+        $model->checkin($data['id']);
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
     }
 

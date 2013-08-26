@@ -102,72 +102,45 @@ abstract class Easysdi_mapHelper {
             Ext.onReady(function(){
                 loadingMask = new Ext.LoadMask(Ext.getBody(), {
                 msg:"';
-        $output .= JText::_('COM_EASYSDI_MAP_MAP_LOAD_MESSAGE');
-        $output .= '"
-            });
-            loadingMask.show();
-            var height = Ext.get("sdimapcontainer").getHeight();
-            if(!height)  height = Ext.get("sdimapcontainer").getWidth() * 1/2;
-            var width = Ext.get("sdimapcontainer").getWidth();
-            OpenLayers.ImgPath = "administrator/components/com_easysdi_core/libraries/openlayers/img/";
-            GeoExt.Lang.set("';
-        $output .= $lang->getTag();
-        $output .= '");
-            app = new gxp.Viewer(' . $config . ');';
-
-        //Add the mouseposition control if activated in the map configuration
-        //Can not be done in the gxp.Viewer instanciation because it has to be done on the openlayers map object
-        foreach ($item->tools as $tool) {
-            if ($tool->alias == 'mouseposition') {
-                $output .= 'app.mapPanel.map.addControl(new OpenLayers.Control.MousePosition());';
-                break;
-            }
-        }
-
-        $output .= ' 
-       
-            config = {id :"brgmwms",
-        projection: "EPSG:900913",
-        ptype: "gxp_wmssource",
-        bbox : [' . $item->maxextent . '],
-        url: "http://localhost/proxy-4.0.0/brgmwms"
-        };
-
-        app.addOtherLayerSource(config);
-            ';
-
-        $output .= 'app.on("ready", function (){
-                    loadingMask.hide();
-                    
-app.addLayer ({group: "groupe-1",
-                metadataURL: "http://www.brgm.fr",
-                name: "brgmwms_SCAN_F_GEOL1M",
-                opacity: 1,
-                source: "brgmwms",
-                tiled: false,
-                title: "BRGM ajouté",
-                version: "1.3.0",
-                visibility: true});
+                    $output .= JText::_('COM_EASYSDI_MAP_MAP_LOAD_MESSAGE');
+                    $output .= '"
                 });
-            
- 
+                loadingMask.show();
+                var height = Ext.get("sdimapcontainer").getHeight();
+                if(!height)  height = Ext.get("sdimapcontainer").getWidth() * 1/2;
+                var width = Ext.get("sdimapcontainer").getWidth();
+                OpenLayers.ImgPath = "administrator/components/com_easysdi_core/libraries/openlayers/img/";
+                GeoExt.Lang.set("';
+                    $output .= $lang->getTag();
+                    $output .= '");
+                app = new gxp.Viewer(' . $config . ');';
 
-        SdiScaleLineParams= { 
-                bottomInUnits :"' . $item->bottomInUnits . '",
-                bottomOutUnits :"' . $item->bottomOutUnits . '",
-                topInUnits :"' . $item->topInUnits . '",
-                topOutUnits :"' . $item->topOutUnits . '"
-        }; 
-            Ext.QuickTips.init();
-            Ext.apply(Ext.QuickTips.getQuickTip(), {
-                maxWidth: 1000
-            });
-            Ext.EventManager.onWindowResize(function() {
-                app.portal.setWidth(Ext.get("sdimapcontainer").getWidth());
-                app.portal.setHeight(Ext.get("sdimapcontainer").getWidth() * 1/2);
-            });
-    	});';
-        $output .= '</script>';
+                //Add the mouseposition control if activated in the map configuration
+                //Can not be done in the gxp.Viewer instanciation because it has to be done on the openlayers map object
+                foreach ($item->tools as $tool) {
+                    if ($tool->alias == 'mouseposition') {
+                        $output .= 'app.mapPanel.map.addControl(new OpenLayers.Control.MousePosition());';
+                        break;
+                    }
+                }
+
+                $output .= '
+                    app.on("ready", function (){ loadingMask.hide(); });
+
+                    SdiScaleLineParams= { 
+                            bottomInUnits :"' . $item->bottomInUnits . '",
+                            bottomOutUnits :"' . $item->bottomOutUnits . '",
+                            topInUnits :"' . $item->topInUnits . '",
+                            topOutUnits :"' . $item->topOutUnits . '"
+                    }; 
+                    Ext.QuickTips.init();
+                    Ext.apply(Ext.QuickTips.getQuickTip(), {maxWidth: 1000 });
+                    Ext.EventManager.onWindowResize(function() {
+                        app.portal.setWidth(Ext.get("sdimapcontainer").getWidth());
+                        app.portal.setHeight(Ext.get("sdimapcontainer").getWidth() * 1/2);
+                    });
+            });';
+            $output .= '</script>';
 
         return $output;
     }

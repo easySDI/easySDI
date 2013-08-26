@@ -13,7 +13,6 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
 
-
 /**
  * Easysdi_map model.
  */
@@ -30,9 +29,9 @@ class Easysdi_mapModelPreview extends JModelForm {
      */
     protected function populateState() {
         $db = JFactory::getDbo();
-        
+
         // Load state from the passed variable 
-        if (JFactory::getApplication()->input->get('versionid') ) {
+        if (JFactory::getApplication()->input->get('versionid')) {
             $versionid = JFactory::getApplication()->input->get('versionid');
             $query = $db->getQuery(true)
                     ->select('p.id')
@@ -41,27 +40,27 @@ class Easysdi_mapModelPreview extends JModelForm {
                     ->where('v.id = ' . (int) $versionid);
             $db->setQuery($query);
             $id = $db->loadResult();
-        }else if (JFactory::getApplication()->input->get('diffusionid') ) {
+        } else if (JFactory::getApplication()->input->get('diffusionid')) {
             $diffusionid = JFactory::getApplication()->input->get('diffusionid');
             $query = $db->getQuery(true)
-                ->select('p.id')
-                ->from('#__sdi_visualization p')
-                ->innerJoin('#__sdi_version v ON p.version_id = v.id')
-                ->innerJoin('#__sdi_diffusion d ON d.version_id = v.id')
-                ->where('d.id = ' . (int) $diffusionid);
+                    ->select('p.id')
+                    ->from('#__sdi_visualization p')
+                    ->innerJoin('#__sdi_version v ON p.version_id = v.id')
+                    ->innerJoin('#__sdi_diffusion d ON d.version_id = v.id')
+                    ->where('d.id = ' . (int) $diffusionid);
             $db->setQuery($query);
             $id = $db->loadResult();
-        }else if (JFactory::getApplication()->input->get('metadataid') ) {
+        } else if (JFactory::getApplication()->input->get('metadataid')) {
             $metadataid = JFactory::getApplication()->input->get('metadataid');
             $query = $db->getQuery(true)
-                ->select('p.id')
-                ->from('#__sdi_visualization p')
-                ->innerJoin('#__sdi_version v ON p.version_id = v.id')
-                ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                ->where('m.id = ' . (int) $metadataid);
+                    ->select('p.id')
+                    ->from('#__sdi_visualization p')
+                    ->innerJoin('#__sdi_version v ON p.version_id = v.id')
+                    ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
+                    ->where('m.id = ' . (int) $metadataid);
             $db->setQuery($query);
             $id = $db->loadResult();
-        }else {
+        } else {
             $id = JFactory::getApplication()->input->get('id');
         }
         $this->setState('preview.id', $id);
@@ -72,7 +71,6 @@ class Easysdi_mapModelPreview extends JModelForm {
         $this->setState('params', $params);
     }
 
-    
     /**
      * Method to get an ojbect.
      *
@@ -100,8 +98,21 @@ class Easysdi_mapModelPreview extends JModelForm {
                 // Convert the JTable to a clean JObject.
                 $properties = $table->getProperties(1);
                 $this->_item = JArrayHelper::toObject($properties, 'JObject');
-
-               
+                
+                //Load Layer source
+                //TODO : Do we have to check the service access scope?
+                if($this->_item->wmsservicetype_id == 1){
+                    $service = JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
+                }else{
+                    $service = JTable::getInstance('virtualservice', 'Easysdi_serviceTable');
+                }
+                $service->load($this->_item->wmsservice_id);
+                $serviceproperties = $service->getProperties(1);
+                
+                $service = JArrayHelper::toObject($serviceproperties, 'JObject');
+                
+                $this->_item->service = $service;
+                
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
@@ -110,35 +121,16 @@ class Easysdi_mapModelPreview extends JModelForm {
         return $this->_item;
     }
 
+    /**
+     * 
+     * @param type $type
+     * @param type $prefix
+     * @param type $config
+     * @return type
+     */
     public function getTable($type = 'Visualization', $prefix = 'Easysdi_mapTable', $config = array()) {
         $this->addTablePath(JPATH_COMPONENT_ADMINISTRATOR . '/tables');
         return JTable::getInstance($type, $prefix, $config);
-    }
-
-    /**
-     * Method to check in an item.
-     *
-     * @param	integer		The id of the row to check out.
-     * @return	boolean		True on success, false on failure.
-     * @since	1.6
-     */
-    public function checkin($id = null) {
-
-
-        return true;
-    }
-
-    /**
-     * Method to check out an item for editing.
-     *
-     * @param	integer		The id of the row to check out.
-     * @return	boolean		True on success, false on failure.
-     * @since	1.6
-     */
-    public function checkout($id = null) {
-
-
-        return true;
     }
 
     /**
@@ -157,7 +149,6 @@ class Easysdi_mapModelPreview extends JModelForm {
         if (empty($form)) {
             return false;
         }
-
         return $form;
     }
 
@@ -169,40 +160,7 @@ class Easysdi_mapModelPreview extends JModelForm {
      */
     protected function loadFormData() {
         $data = $this->getData();
-
         return $data;
-    }
-
-    /**
-     * Method to save the form data.
-     *
-     * @param	array		The form data.
-     * @return	mixed		The user id on success, false on failure.
-     * @since	1.6
-     */
-    public function save($data) {
-        $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('map.id');
-        $user = JFactory::getUser();
-
-        if ($id) {
-            //Check the user can edit this item
-            $authorised = $user->authorise('core.edit', 'map.' . $id);
-        } else {
-            //Check the user can create new items in this section
-            $authorised = $user->authorise('core.create', 'com_easysdi_map');
-        }
-
-        if ($authorised !== true) {
-            JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
-            return false;
-        }
-
-        $table = $this->getTable();
-        if ($table->save($data) === true) {
-            return $id;
-        } else {
-            return false;
-        }
     }
 
 }

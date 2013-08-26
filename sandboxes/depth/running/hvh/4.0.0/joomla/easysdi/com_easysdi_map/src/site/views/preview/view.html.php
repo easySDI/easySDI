@@ -58,10 +58,28 @@ class Easysdi_mapViewPreview extends JViewLegacy {
 
         if($this->item->map_id)
             $this->mapscript = Easysdi_mapHelper::getMapScript($this->item->map_id);
-//        else{
-//            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_MAP_PREVIEW_NOT_FOUND'), 'error');
-//            return;
-//        }
+        else{
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_MAP_PREVIEW_NOT_FOUND'), 'error');
+            return;
+        }
+            $this->addscript .= ' 
+                Ext.onReady(function(){
+                    sourceConfig = {id :"'.$this->item->service->alias.'",
+                                    ptype: "gxp_wmssource",
+                                    url: "'.$this->item->service->url.'"
+                                    };
+
+                    layerConfig = { group: "groupe-1",
+                                    name: "'.$this->item->layername.'",
+                                    opacity: 1,
+                                    source: "'.$this->item->service->alias.'",
+                                    tiled: true,
+                                    title: "'.$this->item->layername.'",
+                                    version: "1.3.0",
+                                    visibility: true};
+
+                    app.addExtraLayer(sourceConfig, layerConfig)
+                });';
             
         $this->_prepareDocument();
 

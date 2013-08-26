@@ -148,6 +148,9 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
     }
 
     function cancel() {
+        $model = $this->getModel('Diffusion', 'Easysdi_shopModel');
+        $data = JFactory::getApplication()->input->get('jform', array(), 'array');
+        $model->checkin($data['id']);
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
     }
 
