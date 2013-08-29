@@ -82,7 +82,9 @@
                 multiple ="false"
                 translate="true" 
                 required="true"
-                query="SELECT null AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector WHERE state=1" key_field="id" value_field="value"
+                query="SELECT null AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector WHERE state=1 AND value IN ('WMS', 'WMTS', 'WMSC')" 
+                key_field="id" 
+                value_field="value"
         />
                  
         <field 	name="srs" 
@@ -168,9 +170,108 @@
         <field name="checked_out_time" type="hidden" filter="unset" />
         <field name="asset_id" type="hidden" filter="SAFEHTML" />
     </fieldset>
-	
+
     <fieldset name="toolsstate">
-        <field 	name="tools"
+        <field name="tool1" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_GOOGLEEARTH"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_GOOGLEEARTH" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field name="tool2" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_navigation"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_navigation" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field name="tool3" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_zoom"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_zoom" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field name="tool4" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_navigationhistory"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_navigationhistory" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field name="tool5" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_zoomtoextent"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_zoomtoextent" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field name="tool6" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_measure"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_measure" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field name="tool7" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_googlegeocoder"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_googlegeocoder" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field name="tool8" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_print"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_print" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field name="tool9" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_addlayer"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_addlayer" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field name="tool10" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_removelayer"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_removelayer" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field name="tool11" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_layerproperties"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_layerproperties" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        <field name="tool12" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_getfeatureinfo"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_getfeatureinfo" 
+        > 
+            <option value="html">Html</option>
+            <option value="grid">Grid</option>
+            <option value="0">JNO</option>
+        </field>
+        <field name="tool13" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_layertree"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_layertree" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+         <field name="tool15" type="radio" class="btn-group" default="0"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_MOUSEPOSITION"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_MOUSEPOSITION" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+<!--        <field 	name="tools"
                         type="sdidatabasecheckboxes"
                         class="inputbox"
                         valuefield="id"
@@ -178,7 +279,7 @@
                         disable = "false"
                         sourcetable="#__sdi_sys_maptool"
                         label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS"
-                        description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS" />
+                        description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS" />-->
         <!-- 		<field 	name="tools"
                         type="sdidatabaseradio"
                         class="btn-group"
@@ -191,6 +292,37 @@
                 <option value="0">JNO</option>
                 <option value="1">JYES</option>
         </field> -->
+    </fieldset>
+    
+    <fieldset name="scaleline">
+        <field 	name="topOutUnits" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOPOUTUNITS"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOPOUTUNITS" 
+                filter="safehtml" />
+        <field 	name="topInUnits" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOPINUNITS"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOPINUNITS" 
+                filter="safehtml" />
+        <field 	name="bottomOutUnits" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_BOTTOMOUTUNITS"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_BOTTOMOUTUNITS" 
+                filter="safehtml" />
+        <field 	name="bottomInUnits" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_BOTTOMINUNITS"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_BOTTOMINUNITS" 
+                filter="safehtml" />
     </fieldset>
 	
     <field 	name="access"

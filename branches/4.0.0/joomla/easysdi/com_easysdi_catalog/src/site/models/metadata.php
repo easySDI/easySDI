@@ -70,9 +70,8 @@ class Easysdi_catalogModelMetadata extends JModelForm {
             if ($table->load($id)) {
                 //When saving metadata, getData is called once with an empty id.  Authorization doesn't have to be checked in this case.
                 if ($id) {
-                    try {
-                        $user = sdiFactory::getSdiUser();
-                    } catch (Exception $e) {
+                    $user = sdiFactory::getSdiUser();
+                    if (!$user->isEasySDI) {
                         //Not an EasySDI user = not allowed
                         JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
                         JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
@@ -216,9 +215,8 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         (empty($data['id']) ) ? $new = true : $new = false;
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('metadata.id');
                 
-        try {
-            $user = sdiFactory::getSdiUser();
-        } catch (Exception $e) {
+        $user = sdiFactory::getSdiUser();
+        if (!$user->isEasySDI) {
             //Not an EasySDI user = not allowed
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
@@ -255,9 +253,8 @@ class Easysdi_catalogModelMetadata extends JModelForm {
     function delete($data) {
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('metadata.id');
 
-        try {
-            $user = sdiFactory::getSdiUser();
-        } catch (Exception $e) {
+        $user = sdiFactory::getSdiUser();
+        if (!$user->isEasySDI) {
             //Not an EasySDI user = not allowed
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));

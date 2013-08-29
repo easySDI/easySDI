@@ -29,11 +29,11 @@ class Easysdi_coreViewResources extends JViewLegacy {
     public function display($tpl = null) {
         $app = JFactory::getApplication();
 
-        try{
-            $this->user = sdiFactory::getSdiUser();
-        }catch (Exception $e){
+        //Check user rights
+        $this->user = sdiFactory::getSdiUser();
+        if (!$this->user->isEasySDI || empty($this->user->role)) {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-           return; 
+            return;
         }
         
         $this->state = $this->get('State');
@@ -45,7 +45,7 @@ class Easysdi_coreViewResources extends JViewLegacy {
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
-
+        
         $this->_prepareDocument();
         parent::display($tpl);
     }

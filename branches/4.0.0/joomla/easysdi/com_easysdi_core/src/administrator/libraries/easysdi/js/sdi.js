@@ -957,6 +957,97 @@ sdi.gxp.plugins.LoadingIndicator = Ext.extend(gxp.plugins.LoadingIndicator, {
 
 Ext.preg(sdi.gxp.plugins.LoadingIndicator.prototype.ptype, sdi.gxp.plugins.LoadingIndicator);
 
+Ext.namespace("gxp");
+
+gxp.ScaleOverlay.prototype.addScaleLine = function() {
+        var scaleLinePanel = new Ext.BoxComponent({
+            autoEl: {
+                tag: "div",
+                cls: "olControlScaleLine overlay-element overlay-scaleline"
+            }
+        });
+        this.on("afterlayout", function(){
+            scaleLinePanel.getEl().dom.style.position = 'relative';
+            scaleLinePanel.getEl().dom.style.display = 'inline';
+
+            this.getEl().on("click", this.stopMouseEvents, this);
+            this.getEl().on("mousedown", this.stopMouseEvents, this);
+        }, this);
+        scaleLinePanel.on('render', function(){
+            var scaleLine = new OpenLayers.Control.ScaleLine({
+                bottomInUnits :SdiScaleLineParams.bottomInUnits,
+                bottomOutUnits :SdiScaleLineParams.bottomOutUnits,
+                topInUnits :SdiScaleLineParams.topInUnits,
+                topOutUnits :SdiScaleLineParams.topOutUnits,
+                geodesic: true,
+                div: scaleLinePanel.getEl().dom
+            });
+
+            this.map.addControl(scaleLine);
+            scaleLine.activate();
+        }, this);
+        this.add(scaleLinePanel);
+    };
+Ext.namespace("gxp");
+
+var sourceConfig;
+
+gxp.Viewer.prototype.addExtraLayer = function(sourceConfig, layerConfig) {
+    this.sources[sourceConfig.id] = sourceConfig;
+    this.initialConfig.map.layers.push(layerConfig);
+
+    var queue = [];
+    queue.push(this.createSourceLoader(sourceConfig.id));
+
+    gxp.util.dispatch(queue, this.reactivate, this);
+};
+
+gxp.Viewer.prototype.reactivate = function() {
+    // initialize tooltips
+    Ext.QuickTips.init();
+
+    var mapConfig = this.initialConfig.map;
+    if (mapConfig && mapConfig.layers) {
+        var conf, source, record, baseRecords = [], overlayRecords = [];
+        for (var i = 0; i < mapConfig.layers.length; ++i) {
+            conf = mapConfig.layers[i];
+            source = this.layerSources[conf.source];
+            if (source) {
+                if (source.id === sourceConfig.id) {
+                    // source may not have loaded properly (failure handled elsewhere)
+                    record = source.createLayerRecord(conf);
+                    if (record) {
+                        if (record.get("group") === "background") {
+                            baseRecords.push(record);
+                        } else {
+                            overlayRecords.push(record);
+                        }
+                    }
+                }
+            }
+        }
+
+        var panel = this.mapPanel;
+        var map = panel.map;
+
+        var records = baseRecords.concat(overlayRecords);
+        if (records.length) {
+            panel.layers.add(records);
+        }
+
+    }
+
+    // respond to any queued requests for layer records
+    this.checkLayerRecordQueue();
+
+    // broadcast ready state
+    this.fireEvent("ready");
+};
+
+
+
+
+
 /**
  * @version     4.0.0
 * * @package     com_easysdi_core

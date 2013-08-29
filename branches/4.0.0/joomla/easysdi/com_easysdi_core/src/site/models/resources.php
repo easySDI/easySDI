@@ -101,6 +101,7 @@ class Easysdi_coreModelResources extends JModelList {
                 $search = $db->Quote('%' . $db->escape($search, true) . '%');
             }
         }
+        $text = $query->__toString();
         return $query;
     }
 

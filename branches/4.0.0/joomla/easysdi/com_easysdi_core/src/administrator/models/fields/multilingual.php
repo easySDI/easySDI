@@ -44,6 +44,7 @@ class JFormFieldMultilingual extends JFormField
 		$onchange = $this->element['onchange'] ? ' onchange="' . (string) $this->element['onchange'] . '"' : '';
 
                 $languages = JComponentHelper::getParams('com_easysdi_catalog')->get('languages');
+                array_unshift($languages, JComponentHelper::getParams('com_easysdi_catalog')->get('defaultlanguage'));
                 $html = "";
                 $db = JFactory::getDbo();
                 if(!is_array($languages))

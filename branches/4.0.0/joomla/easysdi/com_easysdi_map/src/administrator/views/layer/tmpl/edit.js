@@ -31,9 +31,10 @@
 		{
 			var jsonalllayers = jQuery("#"+selectedservice).val();
 			var allayers = JSON.parse(jsonalllayers);
-			for(var i=0; i < allayers.length ; i++){
-				addLayerOption(allayers[i], allayers[i]);
-			}
+                        for(key in allayers){
+                            addLayerOption(key, allayers[key]);
+                        }
+			
 			if(jQuery("#jform_onloadlayername").val()){
 				jQuery("#jform_layername option[value='" + jQuery("#jform_onloadlayername").val() +"']").attr("selected","selected") ;
 				jQuery("#jform_layername").trigger("liszt:updated");

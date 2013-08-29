@@ -95,6 +95,23 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 
         });
     });
+    
+    Joomla.submitbutton = function(task)
+    {
+        if (task == 'application.cancel') {
+            Joomla.submitform(task, document.getElementById('adminForm'));
+        }
+        else {
+
+            if (task != 'application.cancel' && document.formvalidator.isValid(document.id('adminForm'))) {
+
+                Joomla.submitform(task, document.getElementById('adminForm'));
+            }
+            else {
+                alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED')); ?>');
+            }
+        }
+    }
 
 </script>
 
@@ -150,9 +167,11 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
             <?php echo $field->input; ?>
         <?php endforeach; ?>  
 
-        <?php echo $this->getToolbar(); ?>
+        
         <input type = "hidden" name = "task" value = "" />
         <input type = "hidden" name = "option" value = "com_easysdi_core" />
         <?php echo JHtml::_('form.token'); ?>
     </form>
+        
+        <?php echo $this->getToolbar(); ?>
 </div>

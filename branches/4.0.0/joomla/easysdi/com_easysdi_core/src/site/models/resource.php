@@ -56,10 +56,10 @@ class Easysdi_coreModelResource extends JModelForm {
      * @return	mixed	Object on success, false on failure.
      */
     public function &getData($id = null) {
-       $db = JFactory::getDbo();
-  
-       
-       if ($this->_item === null) {
+        $db = JFactory::getDbo();
+
+
+        if ($this->_item === null) {
             $this->_item = false;
 
             if (empty($id)) {
@@ -77,14 +77,14 @@ class Easysdi_coreModelResource extends JModelForm {
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
- 
+
             //Get resourcetype from GET
             $jinput = JFactory::getApplication()->input;
             if (!isset($this->_item->resourcetype_id)) {
                 $this->_item->resourcetype_id = $jinput->get('resourcetype', '', 'INT');
             }
-            
-            if (!empty($this->_item->resourcetype_id )) {
+
+            if (!empty($this->_item->resourcetype_id)) {
                 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/resourcetype.php';
                 $resourcetype = JTable::getInstance('resourcetype', 'Easysdi_catalogTable');
                 $resourcetype->load($this->_item->resourcetype_id);
@@ -103,29 +103,28 @@ class Easysdi_coreModelResource extends JModelForm {
                 $this->_item->rights = json_encode($rows);
             } else {
                 //Set current user as default selection for all role
-                try {
-                    $user = sdiFactory::getSdiUser();
-                    $rows = array();
-                    $row = array("role_id" => "2", "user_id" => $user->id);
-                    $rows [] = (object) $row;
-                    $row = array("role_id" => "3", "user_id" => $user->id);
-                    $rows [] = (object) $row;
-                    $row = array("role_id" => "4", "user_id" => $user->id);
-                    $rows [] = (object) $row;
-                    $row = array("role_id" => "5", "user_id" => $user->id);
-                    $rows [] = (object) $row;
-                    $row = array("role_id" => "6", "user_id" => $user->id);
-                    $rows [] = (object) $row;
-                    $row = array("role_id" => "7", "user_id" => $user->id);
-                    $rows [] = (object) $row;
-                    $row = array("role_id" => "8", "user_id" => $user->id);
-                    $rows [] = (object) $row;
-                    $this->_item->rights = json_encode($rows);
-                } catch (Exception $e) {
+                $user = sdiFactory::getSdiUser();
+                if (!$user->isEasySDI) {
                     JFactory::getApplication()->enqueueMessage(JText::_("Can't set current user as default for all roles"), 'error');
                     JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
                     return;
                 }
+                $rows = array();
+                $row = array("role_id" => "2", "user_id" => $user->id);
+                $rows [] = (object) $row;
+                $row = array("role_id" => "3", "user_id" => $user->id);
+                $rows [] = (object) $row;
+                $row = array("role_id" => "4", "user_id" => $user->id);
+                $rows [] = (object) $row;
+                $row = array("role_id" => "5", "user_id" => $user->id);
+                $rows [] = (object) $row;
+                $row = array("role_id" => "6", "user_id" => $user->id);
+                $rows [] = (object) $row;
+                $row = array("role_id" => "7", "user_id" => $user->id);
+                $rows [] = (object) $row;
+                $row = array("role_id" => "8", "user_id" => $user->id);
+                $rows [] = (object) $row;
+                $this->_item->rights = json_encode($rows);
             }
         }
 
@@ -243,10 +242,9 @@ class Easysdi_coreModelResource extends JModelForm {
 
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('resource.id');
 
-        try {
-            $user = sdiFactory::getSdiUser();
-        } catch (Exception $e) {
-            //Not an EasySDI user = not allowed
+
+        $user = sdiFactory::getSdiUser();
+        if (!$user->isEasySDI) {
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return false;
         }
@@ -327,9 +325,8 @@ class Easysdi_coreModelResource extends JModelForm {
     function delete($data) {
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('resource.id');
 
-        try {
-            $user = sdiFactory::getSdiUser();
-        } catch (Exception $e) {
+        $user = sdiFactory::getSdiUser();
+        if (!$user->isEasySDI) {
             //Not an EasySDI user = not allowed
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));

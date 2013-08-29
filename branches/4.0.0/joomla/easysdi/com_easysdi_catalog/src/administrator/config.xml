@@ -15,6 +15,18 @@
                    description="COM_EASYSDI_CATALOG_CONFIG_DESC_CATALOGURL">
            </field>
 
+            <field name="defaultlanguage" 
+                   type="sql" 
+                   class="inputbox input-xlarge"
+                   multiple="false"
+                   required ="true"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_LANGUAGE"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_LANGUAGE" 
+                   query="SELECT id, value FROM #__sdi_language WHERE state=1 ORDER BY ordering" 
+                   key_field="id" 
+                   value_field="value"
+           />
+
             <field name="languages" 
                    type="sql" 
                    class="multiselect input-xxlarge"

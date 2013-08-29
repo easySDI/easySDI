@@ -2,7 +2,7 @@
 
 /**
  * @version     4.0.0
- * @package     com_easysdi_core
+ * @package     com_easysdi_map
  * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -15,7 +15,7 @@ jimport('joomla.application.component.view');
 /**
  * View to edit
  */
-class Easysdi_coreViewResourceForm extends JViewLegacy {
+class Easysdi_mapViewVisualization extends JViewLegacy {
 
     protected $state;
     protected $item;
@@ -26,25 +26,36 @@ class Easysdi_coreViewResourceForm extends JViewLegacy {
      * Display the view
      */
     public function display($tpl = null) {
-
-        $app = JFactory::getApplication();
+        JForm::addFieldPath(JPATH_ADMINISTRATOR . '/components/com_easysdi_core/models/fields');
         
-        try{
-            $this->user = sdiFactory::getSdiUser();
-        }catch (Exception $e){
-            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-            JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-            return false;
-        }
-        $this->state = $this->get('State');
-        $this->item = $this->get('Data');
-        $this->params = $app->getParams('com_easysdi_core');
-        $this->form = $this->get('Form');
+        $app            = JFactory::getApplication();
+        
+        $this->state    = $this->get('State');
+        $this->item     = $this->get('Data');
+        $this->params   = $app->getParams('com_easysdi_map');
+        $this->form     = $this->get('Form');
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
+
+        //Check the user right
+        $this->user = sdiFactory::getSdiUser();
+        if (!$this->user->isEasySDI ) {
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+            return false;
+        }
+       
+        if (!empty($this->item->id)) {
+            if (!$this->user->authorizeOnVersion($this->item->version_id, sdiUser::viewmanager)) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+                JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+                return false;
+            }
+        }
+        
 
         $this->_prepareDocument();
 
@@ -65,7 +76,7 @@ class Easysdi_coreViewResourceForm extends JViewLegacy {
         if ($menu) {
             $this->params->def('page_heading', $this->params->get('page_title', $menu->title));
         } else {
-            $this->params->def('page_heading', JText::_('com_easysdi_core_DEFAULT_PAGE_TITLE'));
+            $this->params->def('page_heading', JText::_('com_easysdi_map_DEFAULT_PAGE_TITLE'));
         }
         $title = $this->params->get('page_title', '');
         if (empty($title)) {
@@ -88,6 +99,18 @@ class Easysdi_coreViewResourceForm extends JViewLegacy {
         if ($this->params->get('robots')) {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
+    }
+    
+    function getToolbar() {
+        //load the JToolBar library and create a toolbar
+        jimport('joomla.html.toolbar');
+        $bar = new JToolBar('toolbar');
+        //and make whatever calls you require
+        $bar->appendButton('Standard', 'save', JText::_('JSave'), 'visualization.save', false);
+        $bar->appendButton('Separator');
+        $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'visualization.cancel', false);
+        //generate the html and return
+        return $bar->render();
     }
 
 }

@@ -21,6 +21,12 @@ class Easysdi_coreViewApplications extends JViewLegacy {
     protected $pagination;
     protected $state;
     protected $params;
+    
+    /**
+     *
+     * @var type sdiUser
+     */
+    protected $user;
 
     /**
      * Display the view
@@ -29,18 +35,20 @@ class Easysdi_coreViewApplications extends JViewLegacy {
         $app = JFactory::getApplication();
 
         //Check user rights
-        try {
-            $this->user = sdiFactory::getSdiUser();
-            $resource = $app->input->get('resource', '', 'int');
-            if (!$this->user->authorize($resource, sdiUser::resourcemanager)) {
-                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-                return;
-            }
-        } catch (Exception $e) {
+        $this->user = sdiFactory::getSdiUser();
+        if (!$this->user->isEasySDI) {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return;
         }
-
+        
+        $resource = $app->input->get('resource', '', 'int');
+        if (!$this->user->authorize($resource, sdiUser::metadataresponsible)) {
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+            return;
+        }
+        
         $this->state = $this->get('State');
         $this->items = $this->get('Items');
         $this->pagination = $this->get('Pagination');

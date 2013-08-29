@@ -2,7 +2,7 @@
 
 /**
  * @version     4.0.0
- * @package     com_easysdi_core
+ * @package     com_easysdi_map
  * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -13,10 +13,10 @@ defined('_JEXEC') or die;
 require_once JPATH_COMPONENT . '/controller.php';
 
 /**
- * Resource controller class.
+ * Group controller class.
  */
-class Easysdi_coreControllerResourceForm extends Easysdi_coreController {
-
+class Easysdi_mapControllerVisualization extends Easysdi_mapController {
+    
     /**
      * Method to check out an item for editing and redirect to the edit form.
      *
@@ -26,14 +26,28 @@ class Easysdi_coreControllerResourceForm extends Easysdi_coreController {
         $app = JFactory::getApplication();
 
         // Get the previous edit id (if any) and the current edit id.
-        $previousId = (int) $app->getUserState('com_easysdi_core.edit.resource.id');
-        $editId = JFactory::getApplication()->input->getInt('id', null, 'array');
+        $previousId = (int) $app->getUserState('com_easysdi_map.edit.visualization.id');
+        
+        $metadataId = JFactory::getApplication()->input->getInt('id', null, 'array');
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('d.id, v.id as version_id')
+                ->from('#__sdi_version v')
+                ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
+                ->leftJoin('#__sdi_visualization d ON d.version_id = v.id')
+                ->where('m.id = ' . (int) $metadataId);
+        $db->setQuery($query);
+        $item = $db->loadObject();
+
+        $editId = $item->id;
 
         // Set the user id for the user to edit in the session.
-        $app->setUserState('com_easysdi_core.edit.resource.id', $editId);
+        $app->setUserState('com_easysdi_map.edit.visualizationmetadata.id', $metadataId);
+        $app->setUserState('com_easysdi_map.edit.visualization.id', $editId);
+        $app->setUserState('com_easysdi_map.edit.visualizationversion.id', $item->version_id);
 
         // Get the model.
-        $model = $this->getModel('ResourceForm', 'Easysdi_coreModel');
+        $model = $this->getModel('Visualization', 'Easysdi_mapModel');
 
         // Check out the item
         if ($editId) {
@@ -44,9 +58,9 @@ class Easysdi_coreControllerResourceForm extends Easysdi_coreController {
         if ($previousId) {
             $model->checkin($previousId);
         }
-        
+
         // Redirect to the edit screen.
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resourceform&layout=edit&resourcetype='.$app->input->get('resourcetype', '', 'INT'), false));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_map&view=visualization&layout=edit', false));
     }
 
     /**
@@ -61,14 +75,13 @@ class Easysdi_coreControllerResourceForm extends Easysdi_coreController {
 
         // Initialise variables.
         $app = JFactory::getApplication();
-        $model = $this->getModel('ResourceForm', 'Easysdi_coreModel');
+        $model = $this->getModel('Visualization', 'Easysdi_mapModel');
 
         // Get the user data.
         $data = JFactory::getApplication()->input->get('jform', array(), 'array');
 
         // Validate the posted data.
         $form = $model->getForm();
-         
         if (!$form) {
             JError::raiseError(500, $model->getError());
             return false;
@@ -92,11 +105,11 @@ class Easysdi_coreControllerResourceForm extends Easysdi_coreController {
             }
 
             // Save the data in the session.
-            $app->setUserState('com_easysdi_core.edit.resource.data', JRequest::getVar('jform'), array());
+            $app->setUserState('com_easysdi_map.edit.visualization.data', $data);
 
             // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_easysdi_core.edit.resource.id');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resourceform&layout=edit&id=' . $id, false));
+            $id = (int) $app->getUserState('com_easysdi_map.edit.visualizationmetadata.id');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_map&view=visualization&layout=edit&id=' . $id, false));
             return false;
         }
 
@@ -106,12 +119,12 @@ class Easysdi_coreControllerResourceForm extends Easysdi_coreController {
         // Check for errors.
         if ($return === false) {
             // Save the data in the session.
-            $app->setUserState('com_easysdi_core.edit.resource.data', $data);
+            $app->setUserState('com_easysdi_map.edit.visualization.data', $data);
 
             // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_easysdi_core.edit.resource.id');
+            $id = (int) $app->getUserState('com_easysdi_map.edit.visualizationmetadata.id');
             $this->setMessage(JText::sprintf('Save failed', $model->getError()), 'warning');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resourceform&layout=edit&id=' . $id, false));
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_map&view=visualization&layout=edit&id=' . $id, false));
             return false;
         }
 
@@ -122,18 +135,22 @@ class Easysdi_coreControllerResourceForm extends Easysdi_coreController {
         }
 
         // Clear the profile id from the session.
-        $app->setUserState('com_easysdi_core.edit.resource.id', null);
+        $app->setUserState('com_easysdi_map.edit.visualizationmetadata.id', null);
+        $app->setUserState('com_easysdi_map.edit.visualization.id', null);
+        $app->setUserState('com_easysdi_map.edit.visualizationversion.id', null);
 
         // Redirect to the list screen.
-        $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_SAVED_SUCCESSFULLY'));
+        $this->setMessage(JText::_('COM_EASYSDI_MAP_ITEM_SAVED_SUCCESSFULLY'));
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-        
 
         // Flush the data from the session.
-        $app->setUserState('com_easysdi_core.edit.resource.data', null);
+        $app->setUserState('com_easysdi_map.edit.visualization.data', null);
     }
 
     function cancel() {
+        $model = $this->getModel('Visualization', 'Easysdi_mapModel');
+        $data = JFactory::getApplication()->input->get('jform', array(), 'array');
+        $model->checkin($data['id']);
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
     }
 
@@ -143,7 +160,7 @@ class Easysdi_coreControllerResourceForm extends Easysdi_coreController {
 
         // Initialise variables.
         $app = JFactory::getApplication();
-        $model = $this->getModel('ResourceForm', 'Easysdi_coreModel');
+        $model = $this->getModel('Visualization', 'Easysdi_mapModel');
 
         // Get the user data.
         $data = JFactory::getApplication()->input->get('jform', array(), 'array');
@@ -173,11 +190,11 @@ class Easysdi_coreControllerResourceForm extends Easysdi_coreController {
             }
 
             // Save the data in the session.
-            $app->setUserState('com_easysdi_core.edit.resource.data', $data);
+            $app->setUserState('com_easysdi_map.edit.visualization.data', $data);
 
             // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_easysdi_core.edit.resource.id');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resource&layout=edit&id=' . $id, false));
+            $id = (int) $app->getUserState('com_easysdi_map.edit.visualizationmetadata.id');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_map&view=visualization&layout=edit&id=' . $id, false));
             return false;
         }
 
@@ -187,12 +204,12 @@ class Easysdi_coreControllerResourceForm extends Easysdi_coreController {
         // Check for errors.
         if ($return === false) {
             // Save the data in the session.
-            $app->setUserState('com_easysdi_core.edit.resource.data', $data);
+            $app->setUserState('com_easysdi_map.edit.visualization.data', $data);
 
             // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_easysdi_core.edit.resource.id');
+            $id = (int) $app->getUserState('com_easysdi_map.edit.visualizationmetadata.id');
             $this->setMessage(JText::sprintf('Delete failed', $model->getError()), 'warning');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resource&layout=edit&id=' . $id, false));
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_map&view=visualization&layout=edit&id=' . $id, false));
             return false;
         }
 
@@ -203,42 +220,16 @@ class Easysdi_coreControllerResourceForm extends Easysdi_coreController {
         }
 
         // Clear the profile id from the session.
-        $app->setUserState('com_easysdi_core.edit.resource.id', null);
+        $app->setUserState('com_easysdi_map.edit.visualizationmetadata.id', null);
+        $app->setUserState('com_easysdi_map.edit.visualization.id', null);
+        $app->setUserState('com_easysdi_map.edit.visualizationversion.id', null);
 
         // Redirect to the list screen.
-        $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_DELETED_SUCCESSFULLY'));
+        $this->setMessage(JText::_('COM_EASYSDI_MAP_ITEM_DELETED_SUCCESSFULLY'));
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
 
         // Flush the data from the session.
-        $app->setUserState('com_easysdi_core.edit.resource.data', null);
-    }
-    
-    public function  getUsers(){
-        $jinput = JFactory::getApplication()->input;
-        $organism_id = $jinput->get('organism', '0', 'string');
-
-        $all = array();
-        
-        $db = JFactory::getDbo();
-        $db->setQuery('SELECT uro.role_id, u.id, user.name
-                        FROM #__sdi_user_role_organism uro
-                        INNER JOIN #__sdi_user u ON u.id = uro.user_id
-                        INNER JOIN #__users user ON u.user_id = user.id
-                        WHERE organism_id=' . $organism_id );
-        $users = $db->loadObjectList();
-        
-        foreach ($users as $user) :
-            if (!isset($all[$user->role_id]))
-                $all[$user->role_id] = array();
-            $u = new stdClass();
-            $u->id = $user->id;
-            $u->name = $user->name;
-            array_push($all[$user->role_id], $u);
-        endforeach;
-        
-        
-        echo json_encode($all);
-        die();
+        $app->setUserState('com_easysdi_map.edit.visualization.data', null);
     }
 
 }

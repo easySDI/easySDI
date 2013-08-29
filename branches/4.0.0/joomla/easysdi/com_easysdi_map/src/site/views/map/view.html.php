@@ -12,6 +12,8 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
+require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
+
 /**
  * View to edit
  */
@@ -26,12 +28,11 @@ class Easysdi_mapViewMap extends JViewLegacy {
      * Display the view
      */
     public function display($tpl = null) {
-        $app            = JFactory::getApplication();
-        $user           = JFactory::getUser();
-        $this->state    = $this->get('State');
-        $this->item     = $this->get('Data');
-        $this->params   = $app->getParams('com_easysdi_map');
-        $this->form     = $this->get('Form');
+        $app = JFactory::getApplication();
+        $this->state = $this->get('State');
+        $this->item = $this->get('Data');
+        $this->params = $app->getParams('com_easysdi_map');
+        $this->form = $this->get('Form');
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
@@ -43,10 +44,7 @@ class Easysdi_mapViewMap extends JViewLegacy {
             return;
         }
 
-        if (!in_array($this->item->access, $user->getAuthorisedViewLevels())) {
-            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'notice');
-            return;
-        }
+        $this->mapscript = Easysdi_mapHelper::getMapScript($this->item->id);
 
         $this->_prepareDocument();
 
@@ -61,8 +59,8 @@ class Easysdi_mapViewMap extends JViewLegacy {
         $menus = $app->getMenu();
         $title = null;
 
-        // Because the application sets a default page title,
-        // we need to get it from the menu item itself
+// Because the application sets a default page title,
+// we need to get it from the menu item itself
         $menu = $menus->getActive();
         if ($menu) {
             $this->params->def('page_heading', $this->params->get('page_title', $menu->title));
@@ -70,7 +68,7 @@ class Easysdi_mapViewMap extends JViewLegacy {
             $this->params->def('page_heading', JText::_('COM_EASYSDI_MAP_DEFAULT_PAGE_TITLE'));
         }
 
-        //$title = $this->params->get('page_title', '');
+//$title = $this->params->get('page_title', '');
         $title = $this->item->name;
         if (empty($title)) {
             $title = $app->getCfg('sitename');

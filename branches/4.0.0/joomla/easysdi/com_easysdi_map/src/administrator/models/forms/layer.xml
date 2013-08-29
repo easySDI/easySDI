@@ -30,7 +30,7 @@
      
         <field 	name="layername" 
                 type="list" 
-                class="inputbox"
+                class="inputbox input-xxlarge"
                 label="COM_EASYSDI_MAP_FORM_LBL_LAYER_LAYERNAME"
                 description="COM_EASYSDI_MAP_FORM_DESC_LAYER_LAYERNAME" 
                 required="true" 

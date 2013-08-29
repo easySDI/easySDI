@@ -206,12 +206,12 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
             <?php echo $field->input; ?>
         <?php endforeach; ?>  
 
-        <?php echo $this->getToolbar(); ?>
+        
         <input type = "hidden" name = "task" value = "" />
         <input type = "hidden" name = "option" value = "com_easysdi_core" />
         <?php echo JHtml::_('form.token'); ?>
     </form>
 
-
+<?php echo $this->getToolbar(); ?>
 
 </div>

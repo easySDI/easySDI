@@ -28,14 +28,15 @@ class Easysdi_coreViewResource extends JViewLegacy {
     public function display($tpl = null) {
 
         $app = JFactory::getApplication();
-        
-        try{
-            $this->user = sdiFactory::getSdiUser();
-        }catch (Exception $e){
+       
+        //Check user rights
+        $this->user = sdiFactory::getSdiUser();
+        if (!$this->user->isEasySDI) {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-            return false;
+            return;
         }
+        
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_core');
@@ -44,6 +45,12 @@ class Easysdi_coreViewResource extends JViewLegacy {
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
+        }
+        
+        if (!$this->user->authorize($this->item->id, sdiUser::resourcemanager)) {
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+            return;
         }
 
         $this->_prepareDocument();
