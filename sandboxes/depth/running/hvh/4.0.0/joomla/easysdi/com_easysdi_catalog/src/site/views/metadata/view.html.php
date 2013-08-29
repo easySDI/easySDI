@@ -40,17 +40,6 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
             throw new Exception(implode("\n", $errors));
         }
 
-
-
-        if ($this->_layout == 'edit') {
-
-            $authorised = $user->authorise('core.create', 'com_easysdi_catalog');
-
-            if ($authorised !== true) {
-                throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'));
-            }
-        }
-
         $this->_prepareDocument();
 
         parent::display($tpl);
