@@ -25,7 +25,7 @@ abstract class Easysdi_mapHelper {
 
         if (JDEBUG) {
             $output =
-                    '<link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/ext/resources/css/ext-all.css" type="text/css" />
+            '<link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/ext/resources/css/ext-all.css" type="text/css" />
             <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/ext/resources/css/xtheme-gray.css" type="text/css" />
             <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/openlayers/theme/default/style.css" type="text/css" />
             <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/geoext/resources/css/popup.css" type="text/css" />
@@ -41,10 +41,8 @@ abstract class Easysdi_mapHelper {
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.js" type="text/javascript"></script>
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/geoext/lib/GeoExt.js" type="text/javascript"></script>
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/ux/geoext/PrintPreview.js" type="text/javascript"></script>
-            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/gxp/script/loader.js" type="text/javascript"></script>
-            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.js" type="text/javascript"></script>
-            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/widgets/ScaleOverlay.js" type="text/javascript"></script>
-            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/widgets/Viewer.js" type="text/javascript"></script>';
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/gxp/script/gxp.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.js" type="text/javascript"></script>';
 
             $files = glob('administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.{js}', GLOB_BRACE);
             foreach ($files as $file) {
@@ -73,12 +71,10 @@ abstract class Easysdi_mapHelper {
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/ext/ext-all.js" type="text/javascript"></script>
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/ux/ext/RowExpander.js" type="text/javascript"></script>
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.js" type="text/javascript"></script>
-            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/geoext/lib/GeoExt.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/geoext/lib/geoext.min.js" type="text/javascript"></script>
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/ux/geoext/PrintPreview.js" type="text/javascript"></script>
-            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/gxp/script/loader.js" type="text/javascript"></script>
-            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.js" type="text/javascript"></script>
-            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/widgets/ScaleOverlay.js" type="text/javascript"></script>
-            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/widgets/Viewer.js" type="text/javascript"></script>';
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/gxp/script/gxp.min.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.min.js" type="text/javascript"></script>';
 
             $files = glob('administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.{js}', GLOB_BRACE);
             foreach ($files as $file) {
@@ -126,6 +122,8 @@ abstract class Easysdi_mapHelper {
 
                 $output .= '
                     app.on("ready", function (){ loadingMask.hide(); });
+
+
 
                     SdiScaleLineParams= { 
                             bottomInUnits :"' . $item->bottomInUnits . '",
@@ -191,29 +189,45 @@ abstract class Easysdi_mapHelper {
                                 ]
                             }, ';
 
+        $layertreeactivated = false;
         foreach ($item->tools as $tool) {
             if ($tool->alias == 'layertree') {
-                $config .= '{
-                                                    id: "westpanel",
-                                                    xtype: "panel",
-                                                    header: false,
-                                                    split: true,
-                                                    collapsible: true,
-                                                    collapseMode: "mini",
-                                                    hideCollapseTool: true,
-                                                    layout: "fit",
-                                                    region: "west",
-                                                    width: 200
-                                                },';
+                 $layertreeactivated = true;
+                  $config .= '{
+                        id: "westpanel",
+                        xtype: "panel",
+                        header: false,
+                        split: true,
+                        collapsible: true,
+                        collapseMode: "mini",
+                        hideCollapseTool: true,
+                        layout: "fit",
+                        region: "west",
+                        width: 200
+                    },';
                 break;
             }
         }
+
+       if(!$layertreeactivated){
+           $config .= '{
+                        id: "westpanel",
+                        xtype: "panel",
+                        header: false,
+                        split: false,
+                        layout: "fit",
+                        region: "west",
+                        width: 0
+                    },';
+       }
+        
         foreach ($item->tools as $tool) {
             if ($tool->alias == 'getfeatureinfo') {
                 $config .= '{
                                 id:"hiddentbar",
-                                xtype:"toolbar",
-                                border: false,
+                                xtype:"panel",
+                                split: false,
+                                layout: "fit",
                                 height:0,
                                 region:"south",
                                 items:[]
@@ -224,9 +238,8 @@ abstract class Easysdi_mapHelper {
         $config .= ']
                     },                   
                     tools: [';
-        $layertreeactivated = false;
-        foreach ($item->tools as $tool) {
-            if ($tool->alias == 'layertree') {
+        
+       
                 $config .= '{
                             ptype: "sdi_gxp_layermanager",
                             rootNodeText: "' . $item->rootnodetext . '",';
@@ -280,10 +293,8 @@ abstract class Easysdi_mapHelper {
                 $config .= '},';
                 $config .= ' outputTarget: "westpanel"
                         },';
-                $layertreeactivated = true;
-                break;
-            }
-        }
+               
+               
 
 
         foreach ($item->tools as $tool) {

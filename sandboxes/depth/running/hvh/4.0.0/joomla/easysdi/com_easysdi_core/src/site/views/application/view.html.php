@@ -52,9 +52,8 @@ class Easysdi_coreViewApplication extends JViewLegacy {
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return;
         }
-        
-        $resource = $app->input->get('resource', '', 'int');
-        if (!$this->user->authorize($resource, sdiUser::metadataresponsible)) {
+                
+        if (!$this->user->authorize($this->item->resource_id, sdiUser::resourcemanager)) {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return;
