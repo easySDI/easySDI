@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_maplayer` (
 `asOLmatrixset` TEXT,
 `asOLoptions` TEXT,
 `metadatalink` TEXT  ,
+`attribution` VARCHAR(255)   ,
 `access` INT(11)  NOT NULL DEFAULT '1',
 `asset_id` INT(10),
 PRIMARY KEY (`id`), 

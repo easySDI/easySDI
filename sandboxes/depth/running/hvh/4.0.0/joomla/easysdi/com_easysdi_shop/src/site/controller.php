@@ -12,7 +12,18 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.controller');
 
+require_once JPATH_COMPONENT.'/helpers/easysdi_shop.php';
+
 class Easysdi_shopController extends JControllerLegacy
 {
-
+    public function addToBasket (){
+        $item = JFactory::getApplication()->input->getString('item', null);
+        //'{"id":5,"properties":[{"id": 1, "values" :[{"id" : 4, "value" : "foo"}]},{"id": 1, "values" :[{"id" : 5, "value" : "bar"}]}]}'
+        Easysdi_shopHelper::addToBasket($item);
+    }
+    
+    public function removeFromBasket (){
+        $id = JFactory::getApplication()->input->getInt('id', null);
+        Easysdi_shopHelper::removeFromBasket($id);
+    }
 }

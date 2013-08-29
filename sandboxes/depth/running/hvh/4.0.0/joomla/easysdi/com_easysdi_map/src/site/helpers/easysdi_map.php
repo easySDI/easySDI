@@ -41,8 +41,9 @@ abstract class Easysdi_mapHelper {
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.js" type="text/javascript"></script>
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/geoext/lib/GeoExt.js" type="text/javascript"></script>
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/ux/geoext/PrintPreview.js" type="text/javascript"></script>
-            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/gxp/script/gxp.js" type="text/javascript"></script>
-            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.js" type="text/javascript"></script>';
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/gxp/script/loader.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.js" type="text/javascript"></script>
+                <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/WMSSource.js" type="text/javascript"></script>';
 
             $files = glob('administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.{js}', GLOB_BRACE);
             foreach ($files as $file) {
@@ -74,7 +75,8 @@ abstract class Easysdi_mapHelper {
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/geoext/lib/geoext.min.js" type="text/javascript"></script>
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/ux/geoext/PrintPreview.js" type="text/javascript"></script>
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/gxp/script/gxp.min.js" type="text/javascript"></script>
-            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.min.js" type="text/javascript"></script>';
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.min.js" type="text/javascript"></script>
+                <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/plugins/WMSSource.js" type="text/javascript"></script>';
 
             $files = glob('administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.{js}', GLOB_BRACE);
             foreach ($files as $file) {
@@ -461,7 +463,7 @@ abstract class Easysdi_mapHelper {
         switch ($item->defaultserviceconnector_id) {
             case 2 :
                 $config .= '
-                defaultSourceType: "gxp_wmssource",
+                defaultSourceType: "sdi_gxp_wmssource",
                 ';
                 break;
             case 11 :
@@ -485,7 +487,7 @@ abstract class Easysdi_mapHelper {
                     $config .= ' 
                     "' . $service->alias . '":
                     {
-                    ptype: "gxp_wmssource",
+                    ptype: "sdi_gxp_wmssource",
                     url: "' . $service->resourceurl . '"
                     },
                     ';
@@ -532,7 +534,7 @@ abstract class Easysdi_mapHelper {
                         $config .= ' 
                     "' . $service->alias . '":
                         {
-                        ptype: "gxp_wmssource",
+                        ptype: "sdi_gxp_wmssource",
                         url: "' . $service->url . '"
                         },
                         ';
@@ -736,6 +738,9 @@ abstract class Easysdi_mapHelper {
                                 }
                                 if (!empty($layer->metadatalink)) {
                                     $config .= 'metadataURL: "' . $layer->metadatalink . '",';
+                                }
+                                if (!empty($layer->attribution)) {
+                                    $config .= 'attribution: "' . $layer->attribution . '",';
                                 }
                                 $config .= 'name: "' . $layer->layername . '",
                                 title: "' . $layer->name . '",';

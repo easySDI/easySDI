@@ -25,8 +25,8 @@
     </target>
     
     <target name="write-xml">
-        <echoxml file="${mod.basket.src.out.dir}/easysdibasket.xml">
-            <extension version="3.0" type="module" group="user" method="upgrade">
+        <echoxml file="${mod.basket.src.out.dir}/mod_easysdi_basket.xml">
+            <extension type="module" version="3.1.0" client="site" method="upgrade">
                 <name>mod_easysdi_basket</name>
                 <author>EasySDI Community</author>
                 <creationDate>15 August 2012</creationDate>
@@ -37,17 +37,17 @@
                 <authorEmail>${xml.authorEmail}</authorEmail>
                 <authorUrl>${xml.authorUrl}</authorUrl>
                 <version>${version}</version>
-                <description>PLG_USER_EASYSDI</description>
-                <scriptfile>script.php</scriptfile>
+                <description>MOD_EASYSDI_BASKET</description>
                 <files>
-                    <filename module="easysdibasket">easysdibasket.php</filename>
+                    <filename>mod_easysdi_basket.xml</filename>
+                    <filename module="mod_easysdi_basket">mod_easysdi_basket.php</filename>
+                    <filename>index.html</filename>
+                    <filename>helper.php</filename>
+                    <filename>tmpl/default.php</filename>
+                    <filename>tmpl/index.html</filename>
                 </files>
-                <languages>
-                    <language tag="en-GB">language/en-GB/en-GB.mod_user_easysdibasket.sys.ini</language>
-                    <language tag="en-GB">language/en-GB/en-GB.mod_user_easysdibasket.ini</language>
-                    <language tag="fr-FR">language/fr-FR/fr-FR.mod_user_easysdibasket.sys.ini</language>
-                    <language tag="fr-FR">language/fr-FR/fr-FR.mod_user_easysdibasket.ini</language>
-                </languages>
+                <config>
+                </config>
             </extension>
         </echoxml>
     </target>

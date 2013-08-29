@@ -72,7 +72,7 @@ class Easysdi_mapViewPreview extends JViewLegacy {
             $this->addscript .= ' 
                 Ext.onReady(function(){
                     sourceConfig = {id :"'.$this->item->service->alias.'",
-                                    ptype: "gxp_wmssource",
+                                    ptype: "sdi_gxp_wmssource",
                                     url: "'.$this->item->service->url.'"
                                     };
 

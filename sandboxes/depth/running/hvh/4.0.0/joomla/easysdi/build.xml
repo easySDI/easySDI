@@ -19,6 +19,9 @@
     <!-- Joomla plugins path -->
     <property name="joomla.plugin.path" value="plugins"/>
     
+    <!-- Joomla module path -->
+    <property name="joomla.module.path" value="modules"/>
+    
     <!-- Java librairies path -->
     <property name="lib.path" value="easysdi/utils/lib"/>
     
@@ -50,6 +53,7 @@
     <include file="plg_easysdi_contact/build.xml" as="plg-contact"/>
     <include file="plg_easysdi_service/build.xml" as="plg-service"/>
     <include file="tpl_easysdi/build.xml" as="tpl-easysdi"/>
+    <include file="mod_easysdi_basket/build.xml" as="mod_basket"/>
     
     <!-- Packaging targets -->
     <target name="package-all" depends="package-com-core,package-com-catalog,package-com-map,package-com-monitor,package-com-service,package-com-contact,package-com-shop,package-plg-contact,package-plg-monitor,package-plg-service,package-tpl-easysdi,copy-sub-package,write-xml,package" description="Main target"/>

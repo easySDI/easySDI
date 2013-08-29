@@ -39,6 +39,8 @@ gxp.Viewer.prototype.reactivate = function() {
 
         var panel = this.mapPanel;
         var map = panel.map;
+        extent = record.getLayer().maxExtent.clone();
+        map.zoomToExtent(extent);
 
         var records = baseRecords.concat(overlayRecords);
         if (records.length) {
