@@ -25,7 +25,7 @@ abstract class Easysdi_mapHelper {
 
         if (JDEBUG) {
             $output =
-            '<link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/ext/resources/css/ext-all.css" type="text/css" />
+                    '<link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/ext/resources/css/ext-all.css" type="text/css" />
             <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/ext/resources/css/xtheme-gray.css" type="text/css" />
             <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/openlayers/theme/default/style.css" type="text/css" />
             <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/geoext/resources/css/popup.css" type="text/css" />
@@ -100,8 +100,8 @@ abstract class Easysdi_mapHelper {
             Ext.onReady(function(){
                 loadingMask = new Ext.LoadMask(Ext.getBody(), {
                 msg:"';
-                    $output .= JText::_('COM_EASYSDI_MAP_MAP_LOAD_MESSAGE');
-                    $output .= '"
+        $output .= JText::_('COM_EASYSDI_MAP_MAP_LOAD_MESSAGE');
+        $output .= '"
                 });
                 loadingMask.show();
                 var height = Ext.get("sdimapcontainer").getHeight();
@@ -109,20 +109,20 @@ abstract class Easysdi_mapHelper {
                 var width = Ext.get("sdimapcontainer").getWidth();
                 OpenLayers.ImgPath = "administrator/components/com_easysdi_core/libraries/openlayers/img/";
                 GeoExt.Lang.set("';
-                    $output .= $lang->getTag();
-                    $output .= '");
+        $output .= $lang->getTag();
+        $output .= '");
                 app = new gxp.Viewer(' . $config . ');';
 
-                //Add the mouseposition control if activated in the map configuration
-                //Can not be done in the gxp.Viewer instanciation because it has to be done on the openlayers map object
-                foreach ($item->tools as $tool) {
-                    if ($tool->alias == 'mouseposition') {
-                        $output .= 'app.mapPanel.map.addControl(new OpenLayers.Control.MousePosition());';
-                        break;
-                    }
-                }
+        //Add the mouseposition control if activated in the map configuration
+        //Can not be done in the gxp.Viewer instanciation because it has to be done on the openlayers map object
+        foreach ($item->tools as $tool) {
+            if ($tool->alias == 'mouseposition') {
+                $output .= 'app.mapPanel.map.addControl(new OpenLayers.Control.MousePosition());';
+                break;
+            }
+        }
 
-                $output .= '
+        $output .= '
                     app.on("ready", function (){ loadingMask.hide(); });
 
 
@@ -140,7 +140,7 @@ abstract class Easysdi_mapHelper {
                         app.portal.setHeight(Ext.get("sdimapcontainer").getWidth() * 1/2);
                     });
             });';
-            $output .= '</script>';
+        $output .= '</script>';
 
         return $output;
     }
@@ -155,11 +155,15 @@ abstract class Easysdi_mapHelper {
         $app = JFactory::getApplication();
         $params = $app->getParams('com_easysdi_map');
 
+        //Load admin language file
+        $lang = JFactory::getLanguage();
+        $lang->load('com_easysdi_map', JPATH_ADMINISTRATOR);
+
         $config = '{';
         $proxyhost = $params->get('proxyhost');
-        if (!empty($proxyhost)) {
+        if (!empty($proxyhost)) :
             $config .= 'proxy :"' . $proxyhost . '"';
-        }
+        endif;
         $config .= 'about: 
                         { 
                             title: "' . $item->title . '", 
@@ -192,10 +196,10 @@ abstract class Easysdi_mapHelper {
                             }, ';
 
         $layertreeactivated = false;
-        foreach ($item->tools as $tool) {
-            if ($tool->alias == 'layertree') {
-                 $layertreeactivated = true;
-                  $config .= '{
+        foreach ($item->tools as $tool) :
+            if ($tool->alias == 'layertree') :
+                $layertreeactivated = true;
+                $config .= '{
                         id: "westpanel",
                         xtype: "panel",
                         header: false,
@@ -208,11 +212,11 @@ abstract class Easysdi_mapHelper {
                         width: 200
                     },';
                 break;
-            }
-        }
+            endif;
+        endforeach;
 
-       if(!$layertreeactivated){
-           $config .= '{
+        if (!$layertreeactivated) :
+            $config .= '{
                         id: "westpanel",
                         xtype: "panel",
                         header: false,
@@ -221,9 +225,9 @@ abstract class Easysdi_mapHelper {
                         region: "west",
                         width: 0
                     },';
-       }
-        
-        foreach ($item->tools as $tool) {
+        endif;
+
+        foreach ($item->tools as $tool) :
             if ($tool->alias == 'getfeatureinfo') {
                 $config .= '{
                                 id:"hiddentbar",
@@ -236,27 +240,28 @@ abstract class Easysdi_mapHelper {
                             }';
                 break;
             }
-        }
+        endforeach;
+        
         $config .= ']
                     },                   
                     tools: [';
-        
-       
-                $config .= '{
+
+
+        $config .= '{
                             ptype: "sdi_gxp_layermanager",
                             rootNodeText: "' . $item->rootnodetext . '",';
 
-                foreach ($item->groups as $group) :
-                    if ($group->isdefault) {
-                        //Acces not allowed
-                        if (!in_array($group->access, $user->getAuthorisedViewLevels()))
-                            break;
-                        $config .= 'defaultGroup: "' . $group->alias . '",';
-                        break;
-                    }
-                endforeach;
+        foreach ($item->groups as $group) :
+            if ($group->isdefault) {
+                //Acces not allowed
+                if (!in_array($group->access, $user->getAuthorisedViewLevels()))
+                    break;
+                $config .= 'defaultGroup: "' . $group->alias . '",';
+                break;
+            }
+        endforeach;
 
-                $config .= 'outputConfig: {
+        $config .= 'outputConfig: {
                             id: "tree",
                             border: true,
                             tbar: [] 
@@ -264,43 +269,43 @@ abstract class Easysdi_mapHelper {
                             groups: {';
 
 
-                //Groups are added in the order saved in the database
-                foreach ($item->groups as $group) :
-                    //Acces not allowed
-                    if (!in_array($group->access, $user->getAuthorisedViewLevels()))
-                        continue;
+        //Groups are added in the order saved in the database
+        foreach ($item->groups as $group) :
+            //Acces not allowed
+            if (!in_array($group->access, $user->getAuthorisedViewLevels()))
+                continue;
 
-                    if ($group->isbackground) {
-                        $config .= '
+            if ($group->isbackground) {
+                $config .= '
                                     "background": {
                                     title: "' . $group->name . '", 
                                     exclusive: true,';
-                        if ($group->isdefaultopen) :
-                            $config .= 'expanded: true},';
-                        else :
-                            $config .= 'expanded: false},';
-                        endif;
-                    }
-                    else {
-                        $config .= '"' . $group->alias . '" : {
+                if ($group->isdefaultopen) :
+                    $config .= 'expanded: true},';
+                else :
+                    $config .= 'expanded: false},';
+                endif;
+            }
+            else {
+                $config .= '"' . $group->alias . '" : {
                                         title : "' . $group->name . '",';
-                        if ($group->isdefaultopen) :
-                            $config .= 'expanded: true},';
-                        else :
-                            $config .= 'expanded: false},';
-                        endif;
-                    }
-                endforeach;
+                if ($group->isdefaultopen) :
+                    $config .= 'expanded: true},';
+                else :
+                    $config .= 'expanded: false},';
+                endif;
+            }
+        endforeach;
 
-                $config .= '},';
-                $config .= ' outputTarget: "westpanel"
+        $config .= '},';
+        $config .= ' outputTarget: "westpanel"
                         },';
-               
-               
 
 
-        foreach ($item->tools as $tool) {
-            switch ($tool->alias) {
+
+
+        foreach ($item->tools as $tool) :
+            switch ($tool->alias) :
                 case 'googleearth':
                     $config .= '
                     {
@@ -454,13 +459,13 @@ abstract class Easysdi_mapHelper {
                     },
                     ';
                     break;
-            }
-        }
+            endswitch;
+        endforeach;
         $config .= '
         ],';
 
         // layer sources
-        switch ($item->defaultserviceconnector_id) {
+        switch ($item->defaultserviceconnector_id) :
             case 2 :
                 $config .= '
                 defaultSourceType: "sdi_gxp_wmssource",
@@ -471,18 +476,18 @@ abstract class Easysdi_mapHelper {
                 defaultSourceType: "gxp_wmscsource",
                 ';
                 break;
-        }
+        endswitch;
 
         $config .= '
         sources: 
         {
         "ol": { ptype: "gxp_olsource" }, ';
 
-        foreach ($item->physicalservices as $service) {
+        foreach ($item->physicalservices as $service) :
             //Acces not allowed
             if (!in_array($service->access, $user->getAuthorisedViewLevels()))
                 continue;
-            switch ($service->serviceconnector_id) {
+            switch ($service->serviceconnector_id) :
                 case 2 :
                     $config .= ' 
                     "' . $service->alias . '":
@@ -525,9 +530,10 @@ abstract class Easysdi_mapHelper {
                     },
                     ';
                     break;
-            }
-        }
-        if (isset($item->virtualservices)) {
+            endswitch;
+        endforeach;
+        
+        if (isset($item->virtualservices)) :
             foreach ($item->virtualservices as $service) {
                 switch ($service->serviceconnector_id) {
                     case 2 :
@@ -549,25 +555,44 @@ abstract class Easysdi_mapHelper {
                     ';
                 }
             }
-        }
-        $config .= ' 
-        },
+        endif;
 
-        // map and layers
-        map: 
-        {
-        id: "sdimap",
-        title: "Map",
-        header:false,
-        projection: "' . $item->srs . '",
-        center: [' . $item->centercoordinates . '],
-        maxExtent : [' . $item->maxextent . '],
-        restrictedExtent: [' . $item->maxextent . '],
-        maxResolution: ' . $item->maxresolution . ',
-        units: "' . $item->unit . '",
-        layers: 
-        [
-        ';
+        if (!empty($item->restrictedextent)):
+            $config .= ' 
+            },
+
+            // map and layers
+            map: 
+            {
+            id: "sdimap",
+            title: "Map",
+            header:false,
+            projection: "' . $item->srs . '",        
+            maxExtent : [' . $item->maxextent . '],
+            restrictedExtent: [' . $item->restrictedextent . '],
+            maxResolution: ' . $item->maxresolution . ',
+            units: "' . $item->unit . '",
+            layers: 
+            [
+            ';
+        else:
+            $config .= ' 
+            },
+
+            // map and layers
+            map: 
+            {
+            id: "sdimap",
+            title: "Map",
+            header:false,
+            projection: "' . $item->srs . '",        
+            maxExtent : [' . $item->maxextent . '],
+            maxResolution: ' . $item->maxresolution . ',
+            units: "' . $item->unit . '",
+            layers: 
+            [
+            ';
+        endif;
 
         //Layers have to be added the lowest before the highest
         //To do that, the groups have to be looped in reverse order

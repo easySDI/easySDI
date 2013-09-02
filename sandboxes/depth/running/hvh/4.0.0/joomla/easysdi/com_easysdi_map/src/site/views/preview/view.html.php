@@ -31,8 +31,7 @@ class Easysdi_mapViewPreview extends JViewLegacy {
         $app = JFactory::getApplication();
         
         $sdiuser = sdiFactory::getSdiUser();
-        
-        
+                
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_map');
@@ -53,8 +52,10 @@ class Easysdi_mapViewPreview extends JViewLegacy {
             return;
         }
 
-        if($this->item->map_id)
-            $this->mapscript = Easysdi_mapHelper::getMapScript($this->item->map_id);
+        $params_array = $this->params->toArray();
+        if(isset($params_array['previewmap'])){
+            $this->mapscript = Easysdi_mapHelper::getMapScript($params_array['previewmap']);
+        }
         else{
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_MAP_PREVIEW_NOT_FOUND'), 'error');
             return;
@@ -62,7 +63,7 @@ class Easysdi_mapViewPreview extends JViewLegacy {
         
         //Get the default group to use to add the layer
         $model = JModelLegacy::getInstance('map', 'Easysdi_mapModel');
-        $item = $model->getData($this->item->map_id);
+        $item = $model->getData($params_array['previewmap']);
         foreach ($item->groups as $group):
             if($group->isdefault){
                 $defaultgroup = $group->alias;
@@ -78,6 +79,7 @@ class Easysdi_mapViewPreview extends JViewLegacy {
 
                     layerConfig = { group: "'.$defaultgroup.'",
                                     name: "'.$this->item->layername.'",
+                                    attribution: "'.addslashes ($this->item->attribution).'",
                                     opacity: 1,
                                     source: "'.$this->item->service->alias.'",
                                     tiled: true,

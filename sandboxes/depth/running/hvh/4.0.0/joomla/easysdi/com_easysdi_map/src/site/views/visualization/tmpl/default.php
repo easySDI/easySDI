@@ -133,15 +133,6 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                             <?php endforeach; ?>
                         </fieldset>
 
-                        <fieldset id ="fieldset_preview">
-                            <legend><?php echo JText::_('COM_EASYSDI_MAP_FORM_FIELDSET_LEGEND_PREVIEW'); ?></legend>
-                            <?php foreach ($this->form->getFieldset('preview') as $field): ?>
-                                <div class="control-group" id="<?php echo $field->fieldname; ?>">
-                                    <div class="control-label"><?php echo $field->label; ?></div>
-                                    <div class="controls"><?php echo $field->input; ?></div>
-                                </div>
-                            <?php endforeach; ?>
-                        </fieldset>
                     </div>
 
                     <div class="tab-pane" id="publishing">

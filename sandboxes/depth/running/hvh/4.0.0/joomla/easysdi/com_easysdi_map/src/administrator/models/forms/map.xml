@@ -106,15 +106,6 @@
                 query="SELECT null AS id, '- Please select -' AS name UNION SELECT id, name FROM #__sdi_sys_unit" key_field="id" value_field="name"
         /> 
 
-        <field 	name="centercoordinates" 
-                type="text" 
-                size="255" 
-                class="inputbox"
-                label="COM_EASYSDI_MAP_FORM_LBL_MAP_CENTERCOORDINATES"
-                description="COM_EASYSDI_MAP_FORM_DESC_MAP_CENTERCOORDINATES" 
-                required="true"
-                filter="safehtml" /> 
-
         <field 	name="maxresolution" 
                 type="text" 
                 size="255" class="inputbox"
@@ -126,10 +117,19 @@
         <field 	name="maxextent" 
                 type="text" 
                 size="255" 
-                class="inputbox"
+                class="input-xxlarge"
                 label="COM_EASYSDI_MAP_FORM_LBL_MAP_MAXEXTENT"
                 description="COM_EASYSDI_MAP_FORM_DESC_MAP_MAXEXTENT" 
                 required="true"
+                filter="safehtml" />
+        
+        <field 	name="restrictedextent" 
+                type="text" 
+                size="255" 
+                class="input-xxlarge"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_RESTRICTEDEXTENT"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_RESTRICTEDEXTENT" 
+                required="false"
                 filter="safehtml" />
                  
         <field 	name="rootnodetext" 
