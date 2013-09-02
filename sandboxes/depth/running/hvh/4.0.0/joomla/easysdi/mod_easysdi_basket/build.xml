@@ -17,7 +17,7 @@
         <echo>Copy module file for ${basket.module.name}</echo>
        
         <copy todir="${mod.basket.src.out.dir}" overwrite="true">
-            <fileset dir="${joomla.module.path}/${joomla.basket.module.path}" erroronmissingdir="false"/>
+            <fileset dir="${joomla.module.path}/${basket.module.name}" erroronmissingdir="false"/>
         </copy>
         <copy todir="${mod.basket.src.out.dir}/language" overwrite="true">
             <fileset dir="${joomla.administrator.language.dir}" includes="**/*${basket.module.language.file}.ini **/*${basket.module.language.file}.sys.ini" erroronmissingdir="false"/>

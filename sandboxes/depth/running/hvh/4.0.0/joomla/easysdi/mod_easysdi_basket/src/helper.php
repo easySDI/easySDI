@@ -21,10 +21,10 @@ class modEasysdiBasketHelper {
      * @access public
      */
     public static function getBasketContent($params) {
-        $json = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
-        $content = json_decode($json);
+        $content = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
+        
         if (!empty($content)){
-            return count($content). ' item(s)';
+            return count($content->extractions). ' item(s)';
         }
         else {
             return 'Empty!';
