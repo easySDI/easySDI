@@ -178,17 +178,23 @@ if (!empty($this->extra_sidebar)) {
                                     <?php echo JHtml::_('jgrid.published', $item->state, $i, 'propertyvalues.', $canChange, 'cb'); ?>
                                 </td>
                             <?php endif; ?>
-   
+
                             <td>
-                                <?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>
-                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=propertyvalue.edit&id=' . (int) $item->id); ?>">
-                                        <?php echo $this->escape($item->name); ?></a>
-                                <?php else : ?>
-                                    <?php echo $this->escape($item->name); ?>
-                                <?php endif; ?>
-                                <div class="small">
-                                    <?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($item->alias)); ?>
+                                <div class="pull-left">
+                                    <?php if (isset($item->checked_out) && $item->checked_out) : ?>
+                                        <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'propertyvalues.', $canCheckin); ?>
+                                    <?php endif; ?>
+                                    <?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>
+                                        <a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=propertyvalue.edit&id=' . (int) $item->id); ?>">
+                                            <?php echo $this->escape($item->name); ?></a>
+                                    <?php else : ?>
+                                        <?php echo $this->escape($item->name); ?>
+                                    <?php endif; ?>
+                                    <div class="small">
+                                        <?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($item->alias)); ?>
+                                    </div>
                                 </div>
+
                             </td>
                             <?php if (isset($this->items[0]->id)): ?>
                                 <td class="center hidden-phone">

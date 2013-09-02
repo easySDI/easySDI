@@ -18,8 +18,11 @@ abstract class Easysdi_shopHelper {
      * @param string $item : json {"id":5,"properties":[{"id": 1, "values" :[{"id" : 4, "value" : "foo"}]},{"id": 1, "values" :[{"id" : 5, "value" : "bar"}]}]}
      */
     public static function addToBasket($item) {
-        if (empty($item))
-            return true;
+        if (empty($item)):
+            $return['MESSAGE'] = 0;
+            echo json_encode($return);
+            die();
+        endif;
 
         $extraction = json_decode($item);
 
@@ -32,18 +35,14 @@ abstract class Easysdi_shopHelper {
             $basketcontent->perimeters = array();
         }
 
-        if (!is_array($basketcontent)) {
-            //Problem the session variable must be an array
-            JError::raiseError(500, 'Session variable corrupted');
-            return false;
-        }
-
         //Complete extraction object with allowed perimeters
         $diffusionperimeter = JTable::getInstance('diffusionperimeter', 'Easysdi_shopTable');
         $perimeters = $diffusionperimeter->loadBydiffusionID($extraction->id);
         if ($perimeters === false) {
             //Can't load linked perimeters
-            return false;
+            $return['ERROR'] = JText::_('COM_EASYSDI_SHOP_ADD_BASKET_ERROR_NO_PERIMETER');
+            echo json_encode($return);
+            die();
         }
         $extraction->perimeters = $perimeters;
 
@@ -51,7 +50,7 @@ abstract class Easysdi_shopHelper {
         if (count($basketcontent->extractions) == 0):
             //First add
             $basketcontent->extractions[] = $extraction;
-            $basketcontent->perimeters[] = $extraction->perimeters;
+            $basketcontent->perimeters = $extraction->perimeters;
         else:
             //There is already extractions in the basket
             //Check if there is at least one common perimeter within all the extractions in the basket
@@ -65,60 +64,81 @@ abstract class Easysdi_shopHelper {
                     endif;
                 endforeach;
             endforeach;
-            if(count($common) == 0):
+            if (count($common) == 0):
                 //There is no more common perimeter between the extraction in the basket
                 //Extraction can not be added, send a message to the user
-                return false;
+                $return['ERROR'] = JText::_('COM_EASYSDI_SHOP_ADD_BASKET_ERROR_NO_COMMON_PERIMETER');
+                echo json_encode($return);
+                die();
+            endif;
+            //If there is already a perimeter defined for the basket, check if this perimeter is allowed for the new extraction
+            if (!empty($basketcontent->extent)):
+                $return['ERROR'] = JText::_('COM_EASYSDI_SHOP_ADD_BASKET_ERROR_EXISTING_EXTENT');
+                echo json_encode($return);
+                die();
             endif;
             $basketcontent->extractions[] = $extraction;
             $basketcontent->perimeters = $common;
         endif;
 
-
-        
-        //If there is already a perimeter defined for the basket, check if this perimeter is allowed for the new extraction
-
-
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', $basketcontent);
 
-//        $result = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
-//        foreach ($result as $r){
-//            
-//            $v= $r;
-//        }
-
-        return true;
+        $return['MESSAGE'] = count($basketcontent->extractions);
+        echo json_encode($return);
+        die();
     }
 
+    /**
+     * 
+     * @param int $id
+     */
     public static function removeFromBasket($id) {
-        if (empty($id))
-            return true;
+        if (empty($id)):
+            $return['MESSAGE'] =0;
+            echo json_encode($return);
+            die();
+        endif;
 
         //Get the session basket content
-        $json = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
-        if (empty($json)) {
-            return true;
-        }
+        $basketcontent = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
+        if (empty($basketcontent)) :
+            $return['MESSAGE'] = 0;
+            echo json_encode($return);
+            die();
+        endif;
 
-        $basketcontent = json_decode($json);
-
-        if (!is_array($basketcontent)) {
-            //When there 
-            JError::raiseError(500, 'Session variable corrupted');
-            return false;
-        }
-
-        foreach ($basketcontent as $key => $encodedcontent):
-            $content = json_decode($encodedcontent);
-            if ($content->id == $id) {
-                unset($basketcontent[$key]);
+        foreach ($basketcontent->extractions as $key => $extraction):
+            if ($extraction->id == $id) {
+                unset($basketcontent->extractions[$key]);
                 break;
             }
         endforeach;
+        
+        $basketcontent->perimeters = Easysdi_shopHelper::getCommonPerimeter($basketcontent);
 
-        JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', json_encode($basketcontent));
+        JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', $basketcontent);
 
-        return true;
+        $return['MESSAGE'] = count($basketcontent->extractions);
+            echo json_encode($return);
+            die();
+    }
+    
+    /**
+     * 
+     * @param stdClass $basketcontent
+     * @return array common perimeter object
+     */
+    private static function getCommonPerimeter ($basketcontent){
+        $common = array();
+        foreach ($basketcontent->extractions as $extraction):
+            foreach ($extraction->perimeters as $perimeter):
+                    if (!in_array($perimeter, $common)):
+                        $common[] = $perimeter;
+                    endif;
+            endforeach;
+        endforeach;
+        
+        return $common;
     }
 
 }

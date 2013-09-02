@@ -195,6 +195,7 @@ abstract class sdiTable extends JTable {
      */
     public function storeOverwrite($updateNulls = false) {
         $k = $this->_tbl_key;
+        $currentAssetId = null;
         if (!empty($this->asset_id)) {
             $currentAssetId = $this->asset_id;
         }

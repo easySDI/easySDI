@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension client="site" method="upgrade" type="template" version="3.0">
   <name>tpl_easysdi</name>
-  <version>4.0.0-alpha-6</version>
+  <version>4.0.0-alpha-7</version>
   <creationDate>26 march 2013</creationDate>
-  <releaseDate>29 août 2013</releaseDate>
+  <releaseDate>02 septembre 2013</releaseDate>
   <author>GavickPro</author>
   <authorEmail>info@gavick.com</authorEmail>
   <copyright>Copyright (C) 2012 GavickPro. All rights reserved.</copyright>

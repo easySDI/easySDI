@@ -7,7 +7,7 @@
     <property name="parent.component.name" value="easysdi"/>
     <property name="parent.src.out.dir" value="${parent.component.name}/src"/>
     <property name="parent.package.out.dir" value="${parent.component.name}/target"/>
-    <property name="version" value="4.0.0-alpha-6"/>
+    <property name="version" value="4.0.0-alpha-7"/>
     
     <!-- Joomla component path -->
     <property name="joomla.administrator.components.dir" value="administrator/components" />
@@ -88,7 +88,7 @@
     <target name="dev-package-tpl-easysdi" depends="tpl-easysdi.dev-package" description="Main Target"/>
     
     <!-- Sycronysing targets-->
-    <target name="sync-all" depends="sync-com-core,sync-com-map,sync-com-monitor,sync-com-service,sync-com-contact,sync-com-shop,sync-plg-contact,sync-plg-monitor,sync-plg-service,sync-mod-basket" description="Main target"/>
+    <target name="sync-all" depends="sync-com-core,sync-com-map,sync-com-monitor,sync-com-service,sync-com-contact,sync-com-shop,sync-plg-contact,sync-plg-monitor,sync-plg-service,sync-mod-basket,write-xml" description="Main target"/>
     
     <target name="sync-com-core" depends="core.sync" description="Main Target"/>
     <target name="sync-com-catalog" depends="catalog.sync" description="Main Target"/>
