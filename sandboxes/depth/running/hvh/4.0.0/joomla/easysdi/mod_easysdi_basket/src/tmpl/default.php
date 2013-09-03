@@ -2,7 +2,6 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 JText::script('COM_EASYSDI_SHOP_BASKET_ITEM_SUCCESSFULLY_ADDED');
-JText::script('COM_EASYSDI_SHOP_BASKET_ITEM_SUCCESSFULLY_ADDED');
 ?>
 <script>
     function updateBasketContent() {
@@ -65,15 +64,11 @@ JText::script('COM_EASYSDI_SHOP_BASKET_ITEM_SUCCESSFULLY_ADDED');
     }
 </script>
 
-<div id="progress">
-		<img id="progress_image"  src="administrator/components/com_easysdi_service/assets/images/loader.gif" alt="">
-	</div>
-
 <div id="sdi-basket-content" class="sdi-basket-content">
     <a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=basket', false); ?>">
         <div class="row">
         <div class="span1 offset2" id="sdi-basket-content-display"><?php echo $basketcontent; ?></div>
-        <div class="span1"><?php echo JText::_("COM_EASYSDI_SHOP_BASKET_ITEMS"); ?></div>
+        <div class="span4"><?php echo JText::_("COM_EASYSDI_SHOP_BASKET_ITEMS"); ?></div>
         </div>
     </a>
 </div>
