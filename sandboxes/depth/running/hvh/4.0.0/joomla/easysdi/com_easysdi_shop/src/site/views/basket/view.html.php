@@ -21,31 +21,27 @@ class Easysdi_shopViewBasket extends JViewLegacy {
     protected $item;
     protected $form;
     protected $params;
+    
+    
 
     /**
      * Display the view
      */
     public function display($tpl = null) {
 
+        
+        //Load admin language file
+        $lang = JFactory::getLanguage();
+        $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
+
         $app = JFactory::getApplication();
-   
+
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_shop');
-        $this->form = $this->get('Form');
-        
-        $json = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
-        $content = json_decode($json);
-        $json = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.perimeter');
-        $perimeter = json_decode($json);
-        $json = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.thirdparty');
-        $thirdparty = json_decode($json);
-        
 
-        // Check for errors.
-        if (count($errors = $this->get('Errors'))) {
-            throw new Exception(implode("\n", $errors));
-        }
+        $pathway = $app->getPathway();
+        $pathway->addItem(JText::_("COM_EASYSDI_SHOP_BASKET_TITLE"), JRoute::_('index.php?option=com_easysdi_shop&view=basket', false));
 
         $this->_prepareDocument();
 
@@ -89,6 +85,40 @@ class Easysdi_shopViewBasket extends JViewLegacy {
         if ($this->params->get('robots')) {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
+    }
+
+    function getToolbar() {
+        //load the JToolBar library and create a toolbar
+        jimport('joomla.html.toolbar');
+        $bar = new JToolBar('toolbar');
+        //and make whatever calls you require
+        $bar->appendButton('Standard', '', JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ESTIMATE'), 'basket.estimate', false);
+        $bar->appendButton('Separator');
+        $bar->appendButton('Standard', '', JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ORDER'), 'basket.order', false);
+        //generate the html and return
+        return $bar->render();
+
+//        <div class = "btn-toolbar" id = "toolbar">
+//        <div class = "btn-group" id = "toolbar-save">
+//        <button href = "#" onclick = "Joomla.submitbutton('basket.estimate')" class = "btn btn-small">
+//        <i class = "icon-save ">
+//        </i>
+//        Devis
+//        </button>
+//        </div>
+//
+//        <div class = "btn-group">
+//        </div>
+//
+//        <div class = "btn-group" id = "toolbar-cancel">
+//        <button href = "#" onclick = "Joomla.submitbutton('basket.order')" class = "btn btn-small">
+//        <i class = "icon-cancel ">
+//        </i>
+//        Commander
+//        </button>
+//        </div>
+//
+//        </div>
     }
 
 }

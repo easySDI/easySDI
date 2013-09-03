@@ -14,9 +14,7 @@ JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('formbehavior.chosen', 'select');
 
-//Load admin language file
-$lang = JFactory::getLanguage();
-$lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
+
 $document = JFactory::getDocument();
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/view/view.js')
 ?>
