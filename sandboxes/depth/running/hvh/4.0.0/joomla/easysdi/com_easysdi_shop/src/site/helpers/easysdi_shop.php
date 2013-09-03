@@ -17,9 +17,12 @@ abstract class Easysdi_shopHelper {
      * 
      * @param string $item : json {"id":5,"properties":[{"id": 1, "values" :[{"id" : 4, "value" : "foo"}]},{"id": 1, "values" :[{"id" : 5, "value" : "bar"}]}]}
      */
-    public static function addToBasket($item) {
+    public static function addToBasket($item, $force = false) {
+        $lang = JFactory::getLanguage();
+        $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
+
         if (empty($item)):
-            $return['MESSAGE'] = 0;
+            $return['COUNT'] = 0;
             echo json_encode($return);
             die();
         endif;
@@ -54,28 +57,36 @@ abstract class Easysdi_shopHelper {
         else:
             //There is already extractions in the basket
             //Check if there is at least one common perimeter within all the extractions in the basket
-            $common = array();
-            foreach ($basketcontent->perimeters as $perimeter):
-                foreach ($extraction->perimeters as $newperimeter):
-                    if ($newperimeter->perimeter_id == $perimeter->perimeter_id):
-                        //Common perimeter
-                        $common[] = $perimeter;
-                        break;
-                    endif;
-                endforeach;
-            endforeach;
+            $tmp_basketcontent = clone $basketcontent;
+            $tmp_basketcontent->extractions[] = $extraction;            
+            $common = Easysdi_shopHelper::getCommonPerimeter($tmp_basketcontent);
+            
+//            foreach ($basketcontent->perimeters as $perimeter):
+//                foreach ($extraction->perimeters as $newperimeter):
+//                    if ($newperimeter->perimeter_id == $perimeter->perimeter_id):
+//                        //Common perimeter
+//                        $common[] = $perimeter;
+//                        break;
+//                    endif;
+//                endforeach;
+//            endforeach;
             if (count($common) == 0):
                 //There is no more common perimeter between the extraction in the basket
                 //Extraction can not be added, send a message to the user
-                $return['ERROR'] = JText::_('COM_EASYSDI_SHOP_ADD_BASKET_ERROR_NO_COMMON_PERIMETER');
+                $return['ERROR'] = JText::_('COM_EASYSDI_SHOP_BASKET_ERROR_NO_COMMON_PERIMETER');
                 echo json_encode($return);
                 die();
             endif;
             //If there is already a perimeter defined for the basket, check if this perimeter is allowed for the new extraction
-            if (!empty($basketcontent->extent)):
-                $return['ERROR'] = JText::_('COM_EASYSDI_SHOP_ADD_BASKET_ERROR_EXISTING_EXTENT');
+            if (!empty($basketcontent->extent) && !$force):
+                $return['DIALOG'] = JText::_('COM_EASYSDI_SHOP_BASKET_ERROR_EXISTING_EXTENT');
+                JFactory::getApplication()->setUserState('com_easysdi_shop.basket.suspend', $item);
                 echo json_encode($return);
                 die();
+            elseif (!empty($basketcontent->extent) && $force):
+                //Clean session
+                JFactory::getApplication()->setUserState('com_easysdi_shop.basket.suspend', null);         
+                $basketcontent->extent = null;
             endif;
             $basketcontent->extractions[] = $extraction;
             $basketcontent->perimeters = $common;
@@ -83,7 +94,7 @@ abstract class Easysdi_shopHelper {
 
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', $basketcontent);
 
-        $return['MESSAGE'] = count($basketcontent->extractions);
+        $return['COUNT'] = count($basketcontent->extractions);
         echo json_encode($return);
         die();
     }
@@ -93,8 +104,11 @@ abstract class Easysdi_shopHelper {
      * @param int $id
      */
     public static function removeFromBasket($id) {
+        $lang = JFactory::getLanguage();
+        $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
+
         if (empty($id)):
-            $return['MESSAGE'] =0;
+            $return['COUNT'] =0;
             echo json_encode($return);
             die();
         endif;
@@ -102,7 +116,7 @@ abstract class Easysdi_shopHelper {
         //Get the session basket content
         $basketcontent = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
         if (empty($basketcontent)) :
-            $return['MESSAGE'] = 0;
+            $return['COUNT'] = 0;
             echo json_encode($return);
             die();
         endif;
@@ -118,10 +132,18 @@ abstract class Easysdi_shopHelper {
 
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', $basketcontent);
 
-        $return['MESSAGE'] = count($basketcontent->extractions);
+        $return['COUNT'] = count($basketcontent->extractions);
             echo json_encode($return);
             die();
     }
+
+   public static function abortAdd(){
+       JFactory::getApplication()->setUserState('com_easysdi_shop.basket.suspend', null); 
+       $basketcontent = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
+       $return['ABORT'] = count($basketcontent->extractions);
+       echo json_encode($return);
+       die();
+   }
     
     /**
      * 

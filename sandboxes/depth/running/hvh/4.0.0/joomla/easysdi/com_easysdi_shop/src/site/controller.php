@@ -26,4 +26,11 @@ class Easysdi_shopController extends JControllerLegacy
         $id = JFactory::getApplication()->input->getInt('id', null);
         Easysdi_shopHelper::removeFromBasket($id);
     }
+    
+     public function abortAdd (){
+         Easysdi_shopHelper::abortAdd();
+     }
+     public function confirmAdd (){
+         Easysdi_shopHelper::addToBasket(JFactory::getApplication()->getUserState('com_easysdi_shop.basket.suspend'), true);
+     }
 }
