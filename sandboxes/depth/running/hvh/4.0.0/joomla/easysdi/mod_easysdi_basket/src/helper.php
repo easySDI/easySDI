@@ -27,7 +27,7 @@ class modEasysdiBasketHelper {
             return count($content->extractions);
         }
         else {
-            return 'Empty!';
+            return '0';
         }
     }
 

@@ -1,7 +1,7 @@
 <?php
 // no direct access
 defined('_JEXEC') or die('Restricted access');
-JText::script('COM_EASYSDI_SHOP_BASKET_ITEM_SUCCESSFULLY_ADDED');
+JText::script('COM_EASYSDI_SHOP_BASKET_SUCCESSFULLY_UPDATED');
 ?>
 <script>
     function updateBasketContent() {
@@ -25,7 +25,7 @@ JText::script('COM_EASYSDI_SHOP_BASKET_ITEM_SUCCESSFULLY_ADDED');
                 
                 if (key && typeof key === 'string' && key == 'COUNT') {
                     jQuery('#sdi-basket-content-display').text(value);
-                    jQuery('#modal-confirm-body-text').text(Joomla.JText._('COM_EASYSDI_SHOP_BASKET_ITEM_SUCCESSFULLY_ADDED'));
+                    jQuery('#modal-confirm-body-text').text(Joomla.JText._('COM_EASYSDI_SHOP_BASKET_SUCCESSFULLY_UPDATED'));
                     jQuery('#modal-confirm').modal('show');
                 }
                 

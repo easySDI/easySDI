@@ -133,8 +133,8 @@ abstract class Easysdi_shopHelper {
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', $basketcontent);
 
         $return['COUNT'] = count($basketcontent->extractions);
-            echo json_encode($return);
-            die();
+        echo json_encode($return);
+        die();
     }
 
    public static function abortAdd(){
