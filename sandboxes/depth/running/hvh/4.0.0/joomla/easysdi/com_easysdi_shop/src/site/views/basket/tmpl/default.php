@@ -9,6 +9,8 @@
 // no direct access
 defined('_JEXEC') or die;
 JText::script('COM_EASYSDI_SHOP_BASKET_CONFIRM_REMOVE_ITEM');
+$document = JFactory::getDocument();
+$document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
 ?>
 <?php if ($this->item->extractions) : ?>
     <script>
@@ -36,24 +38,11 @@ JText::script('COM_EASYSDI_SHOP_BASKET_CONFIRM_REMOVE_ITEM');
                 current_id = null;
             }
         }
-
-
-
     </script>
 
-    <div id="modal-dialog-remove" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h3 id="myModalLabel"><?php echo JText::_("COM_EASYSDI_SHOP_BASKET_DIALOG_HEADER") ?></h3>
-        </div>
-        <div class="modal-body">
-            <p><div id="modal-dialog-remove-body-text"></div></p>
-        </div>
-        <div class="modal-footer">
-            <button onClick="current_id = null;" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo JText::_("COM_EASYSDI_SHOP_BASKET_MODAL_BTN_CANCEL") ?></button>
-            <button onClick="actionRemove();" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo JText::_("COM_EASYSDI_SHOP_BASKET_MODAL_BTN_REMOVE") ?></button>
-        </div>
-    </div>
+
+
+
 
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=basket'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
 
@@ -64,7 +53,7 @@ JText::script('COM_EASYSDI_SHOP_BASKET_CONFIRM_REMOVE_ITEM');
                 <div class="row-fluid">
                     <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_EXTRACTION_NAME'); ?></h3>
                     <table class="table table-striped">
-                        
+
                         <tfoot>
                         </tfoot>
                         <tbody>
@@ -107,38 +96,129 @@ JText::script('COM_EASYSDI_SHOP_BASKET_CONFIRM_REMOVE_ITEM');
                                         </div>
                                     </td>
                                     <td>
-                                        <button class="btn btn-danger btn-mini pull-right " onClick="removeFromBasket(<?php echo $extraction->id; ?>);
-                    return false;"><i class="icon-white icon-remove"></i></button>
+                                        <a href="#" class="btn btn-danger btn-mini pull-right" onClick="removeFromBasket(<?php echo $extraction->id; ?>);
+                return false;"><i class="icon-white icon-remove"></i></a>
+
                                     </td>
                                 </tr>
-                            <?php endforeach; ?>
+    <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
-                
+
                 <div class="row-fluid" >
                     <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h3>
                     <div class="map-recap span6" >
-                         <?php echo $this->mapscript; ?>
+    <?php echo $this->minimapscript; ?>
                     </div>
-                   
+                    <div class="span5" >
+                        <a href="#modal-perimeter" class="btn btn-success" style="margin-bottom: 10px;" data-toggle="modal" >
+                            <i class="icon-white icon-location"></i>
+                            <span id="defineOrderBtn"> Define order perimeter</span></a>
+                    </div>
+
                 </div>
-                
+
                 <div class="row-fluid" >
                     <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY'); ?></h3>
                 </div>
-               
+
                 <div class="row-fluid " >
                     <div  class="pull-right" >
-                        <?php echo $this->getToolbar(); ?>
+    <?php echo $this->getToolbar(); ?>
                     </div>
                     <div class="pull-right">
                         <input type="text" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ORDER_NAME'); ?>">
                     </div>
-                    
+
                 </div>
             </div>
         </div>
+
+        <div id="modal-perimeter" style="margin-left:-45%;min-height:500px; width:90%" class="modal show fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel">Define perimeter</h3>
+            </div>
+            <div class="modal-body" style="max-height: 500px;">
+                <div class="container-fluid" >
+                    <div class="row-fluid">
+                        <div class="span8">
+                            <div  >
+                                <?php
+                                echo $this->mapscript;
+                                ?>
+                            </div>
+                        </div>
+
+                        <div class="span4">
+                            <div class="btn-group" data-toggle="buttons-radio">
+                                <?php
+                                foreach ($this->item->perimeters as $perimeter):
+                                    if ($perimeter->id == 1):
+                                        ?>
+                                        <a href="#" class="btn" onClick="selectRectangle();return false;"><i class=" icon-checkbox-unchecked"></i><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_RECTANGLE'); ?></a>
+                                        <br>
+                                        <br>
+                                        <a href="#" class="btn" onClick="selectPolygon();return false;"><i class="icon-chart"></i><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_POLYGON'); ?></a>
+
+                                        <br>
+                                        <br>                                        
+                                        <?php
+                                    elseif ($perimeter->id == 2):
+                                        ?>
+                                        <a href="#" class="btn" onClick="selectMyPerimeter();return false;"><i class="icon-user"></i><?php echo $perimeter->name; ?></a>
+                                        <script>
+                                            function selectMyPerimeter(){
+                                                alert('MyPerimeter');
+                                            }
+                                        </script>
+                                        <br>
+                                        <br>
+                                        <?php
+                                    else:
+                                        ?>
+                                        <a href="#" class="btn" onClick="selectPerimeter<?php echo $perimeter->id; ?>();return false;"><i class="icon-brush"></i><?php echo $perimeter->name; ?></a>
+                                        <script>
+                                            function selectPerimeter<?php echo $perimeter->id; ?> (){
+                                                alert('<?php echo $perimeter->name; ?>');
+                                            }
+                                        </script>
+                                        <br>
+                                        <br>
+                                    <?php
+                                    endif;
+                                endforeach;
+                                ?>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                    <button class="btn btn-primary" onclick="newPerim();
+            $('#modal-perimeter').modal('hide');">Save perimeter</button>
+                </div>
+            </div>
+
+            <div id="modal-dialog-remove" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 id="myModalLabel"><?php echo JText::_("COM_EASYSDI_SHOP_BASKET_DIALOG_HEADER") ?></h3>
+                </div>
+                <div class="modal-body">
+                    <p><div id="modal-dialog-remove-body-text"></div></p>
+                </div>
+                <div class="modal-footer">
+                    <button onClick="current_id = null;" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo JText::_("COM_EASYSDI_SHOP_BASKET_MODAL_BTN_CANCEL") ?></button>
+                    <button onClick="actionRemove();" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo JText::_("COM_EASYSDI_SHOP_BASKET_MODAL_BTN_REMOVE") ?></button>
+                </div>
+            </div>
+            <script>
+                app.on("ready", function (){ initDraw();  });
+           
+                </script>
     </form>
 
     <?php

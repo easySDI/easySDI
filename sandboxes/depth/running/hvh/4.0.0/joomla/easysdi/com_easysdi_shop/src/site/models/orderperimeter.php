@@ -17,7 +17,7 @@ require_once JPATH_COMPONENT."/libraries/easysdi/sdiBasket.php";
 /**
  * Easysdi_shop model.
  */
-class Easysdi_shopModelBasket extends JModelLegacy {
+class Easysdi_shopModelOrderPerimeter extends JModelLegacy {
 
     var $_item = null;
 
@@ -30,7 +30,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
      */
     protected function populateState() {
         $content = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
-        $this->setState('basket.content', $content);
+        $this->setState('orderperimeter.content', $content);
     }
 
     /**
@@ -45,7 +45,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             $this->_item = false;
 
             if (empty($content)) {
-                $content = $this->getState('basket.content');
+                $content = $this->getState('orderperimeter.content');
             }
             
             $this->_item = new sdiBasket($content);

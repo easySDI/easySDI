@@ -13,11 +13,11 @@ require_once JPATH_SITE . '/components/com_easysdi_map/models/map.php';
 
 abstract class Easysdi_mapHelper {
 
-    public static function getMapScript($mapid) {
+    public static function getMapScript($mapid, $renderto = "sdimapcontainer") {
         $model = JModelLegacy::getInstance('map', 'Easysdi_mapModel');
         $item = $model->getData($mapid);
 
-        $config = Easysdi_mapHelper::getMapConfig($item);
+        $config = Easysdi_mapHelper::getMapConfig($item, $renderto);
 
         //Load admin language file
         $lang = JFactory::getLanguage();
@@ -91,7 +91,7 @@ abstract class Easysdi_mapHelper {
             <script src="' . JURI::base(true) . '/media/system/js/core.js" type="text/javascript"></script>';
         }
 
-        $output .= '<div id="sdimapcontainer" class="cls-sdimapcontainer"></div>';
+        $output .= '<div id="'.$renderto.'" class="cls-'.$renderto.'"></div>';
 
         $output .= '<script>
             var app;
@@ -104,9 +104,9 @@ abstract class Easysdi_mapHelper {
         $output .= '"
                 });
                 loadingMask.show();
-                var height = Ext.get("sdimapcontainer").getHeight();
-                if(!height)  height = Ext.get("sdimapcontainer").getWidth() * 1/2;
-                var width = Ext.get("sdimapcontainer").getWidth();
+                var height = Ext.get("'.$renderto.'").getHeight();
+                if(!height)  height = Ext.get("'.$renderto.'").getWidth() * 1/2;
+                var width = Ext.get("'.$renderto.'").getWidth();
                 OpenLayers.ImgPath = "administrator/components/com_easysdi_core/libraries/openlayers/img/";
                 GeoExt.Lang.set("';
         $output .= $lang->getTag();
@@ -136,8 +136,8 @@ abstract class Easysdi_mapHelper {
                     Ext.QuickTips.init();
                     Ext.apply(Ext.QuickTips.getQuickTip(), {maxWidth: 1000 });
                     Ext.EventManager.onWindowResize(function() {
-                        app.portal.setWidth(Ext.get("sdimapcontainer").getWidth());
-                        app.portal.setHeight(Ext.get("sdimapcontainer").getWidth() * 1/2);
+                        app.portal.setWidth(Ext.get("'.$renderto.'").getWidth());
+                        app.portal.setHeight(Ext.get("'.$renderto.'").getWidth() * 1/2);
                     });
             });';
         $output .= '</script>';
@@ -150,7 +150,7 @@ abstract class Easysdi_mapHelper {
      * 
      * @return string       Config JSON object to initialize map
      */
-    public static function getMapConfig($item, $layer = null) {
+    public static function getMapConfig($item, $renderto) {
         $user = JFactory::getUser();
         $app = JFactory::getApplication();
         $params = $app->getParams('com_easysdi_map');
@@ -171,7 +171,7 @@ abstract class Easysdi_mapHelper {
                          },
                     portalConfig: 
                         {
-                        renderTo:"sdimapcontainer",
+                        renderTo:"'.$renderto.'",
                         width: width, 
                         height: height,
                         layout: "border",
