@@ -26,6 +26,18 @@
            
            <field name="depositFolder" type="folderlist" default="" label="COM_EASYSDI_SHOP_CONFIG_LBL_DEPOSITFOLDER" description="COM_EASYSDI_SHOP_CONFIG_DESC_DEPOSITFOLDER" directory="" filter="" exclude="" stripext="" />
            
+           <field name="ordermap" 
+                   type="sql" 
+                   class="inputbox input-xlarge"
+                   multiple="false"
+                   required ="true"
+                   label="COM_EASYSDI_SHOP_CONFIG_LBL_ORDERMAP"
+                   description="COM_EASYSDI_SHOP_CONFIG_DESC_ORDERMAP" 
+                   query="SELECT id, name FROM #__sdi_map WHERE state=1 ORDER BY ordering" 
+                   key_field="id" 
+                   value_field="name"
+           />
+           
            <field name="archiveorderdelay"
                    type="text"
                    default="10"

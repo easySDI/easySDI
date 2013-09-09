@@ -12,6 +12,8 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
+require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
+
 /**
  * View to edit
  */
@@ -21,15 +23,13 @@ class Easysdi_shopViewBasket extends JViewLegacy {
     protected $item;
     protected $form;
     protected $params;
-    
-    
 
     /**
      * Display the view
      */
     public function display($tpl = null) {
 
-        
+
         //Load admin language file
         $lang = JFactory::getLanguage();
         $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
@@ -40,6 +40,15 @@ class Easysdi_shopViewBasket extends JViewLegacy {
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_shop');
 
+        $params_array = $this->params->toArray();
+        if(isset($params_array['ordermap'])){
+            $this->mapscript = Easysdi_mapHelper::getMapScript($params_array['ordermap']);
+        }
+        else{
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_MAP_PREVIEW_NOT_FOUND'), 'error');
+            return;
+        }
+        
         $pathway = $app->getPathway();
         $pathway->addItem(JText::_("COM_EASYSDI_SHOP_BASKET_TITLE"), JRoute::_('index.php?option=com_easysdi_shop&view=basket', false));
 
@@ -88,13 +97,30 @@ class Easysdi_shopViewBasket extends JViewLegacy {
     }
 
     function getToolbar() {
+//        // add required stylesheets from admin template
+//        $document = JFactory::getDocument();
+//        $document->addStyleSheet('administrator/templates/system/css/system.css');
+//        //now we add the necessary stylesheets from the administrator template
+//        //in this case i make reference to the bluestork default administrator template in joomla 1.6
+//        $document->addCustomTag(
+//                '<link href="administrator/templates/isis/css/template.css" rel="stylesheet" type="text/css" />' . "\n\n" .
+//                '<!--[if IE 7]>' . "\n" .
+//                '<link href="administrator/templates/isis/css/ie7.css" rel="stylesheet" type="text/css" />' . "\n" .
+//                '<![endif]-->' . "\n" .
+//                '<!--[if gte IE 8]>' . "\n\n" .
+//                '<link href="administrator/templates/isis/css/ie8.css" rel="stylesheet" type="text/css" />' . "\n" .
+//                '<![endif]-->' . "\n" .
+//                '<link rel="stylesheet" href="administrator/templates/isis/css/rounded.css" type="text/css" />' . "\n"
+//        );
         //load the JToolBar library and create a toolbar
         jimport('joomla.html.toolbar');
         $bar = new JToolBar('toolbar');
         //and make whatever calls you require
-        $bar->appendButton('Standard', '', JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ESTIMATE'), 'basket.estimate', false);
+        $bar->appendButton('Standard', 'archive', JText::_('COM_EASYSDI_SHOP_BASKET_BTN_SAVE'), 'basket.save', false);
         $bar->appendButton('Separator');
-        $bar->appendButton('Standard', '', JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ORDER'), 'basket.order', false);
+        $bar->appendButton('Standard', 'edit', JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ESTIMATE'), 'basket.estimate', false);
+        $bar->appendButton('Separator');
+        $bar->appendButton('Standard', 'publish', JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ORDER'), 'basket.order', false);
         //generate the html and return
         return $bar->render();
 
