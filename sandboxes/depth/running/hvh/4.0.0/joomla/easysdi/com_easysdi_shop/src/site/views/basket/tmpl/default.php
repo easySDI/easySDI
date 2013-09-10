@@ -101,7 +101,7 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
 
                                     </td>
                                 </tr>
-    <?php endforeach; ?>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
@@ -109,7 +109,7 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
                 <div class="row-fluid" >
                     <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h3>
                     <div class="map-recap span6" >
-    <?php echo $this->minimapscript; ?>
+
                     </div>
                     <div class="span5" >
                         <a href="#modal-perimeter" class="btn btn-success" style="margin-bottom: 10px;" data-toggle="modal" >
@@ -125,7 +125,7 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
 
                 <div class="row-fluid " >
                     <div  class="pull-right" >
-    <?php echo $this->getToolbar(); ?>
+                        <?php echo $this->getToolbar(); ?>
                     </div>
                     <div class="pull-right">
                         <input type="text" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ORDER_NAME'); ?>">
@@ -157,32 +157,36 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
                                 foreach ($this->item->perimeters as $perimeter):
                                     if ($perimeter->id == 1):
                                         ?>
-                                        <a href="#" class="btn" onClick="selectRectangle();return false;"><i class=" icon-checkbox-unchecked"></i><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_RECTANGLE'); ?></a>
+                                        <a href="#" class="btn" onClick="toggleControl('box');
+                    return false;"><i class=" icon-checkbox-unchecked"></i><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_RECTANGLE'); ?></a>
                                         <br>
                                         <br>
-                                        <a href="#" class="btn" onClick="selectPolygon();return false;"><i class="icon-chart"></i><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_POLYGON'); ?></a>
+                                        <a href="#" class="btn" onClick="toggleControl('polygon');
+                    return false;"><i class="icon-chart"></i><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_POLYGON'); ?></a>
 
                                         <br>
                                         <br>                                        
                                         <?php
                                     elseif ($perimeter->id == 2):
                                         ?>
-                                        <a href="#" class="btn" onClick="selectMyPerimeter();return false;"><i class="icon-user"></i><?php echo $perimeter->name; ?></a>
+                                        <a href="#" class="btn" onClick="selectMyPerimeter();
+                    return false;"><i class="icon-user"></i><?php echo $perimeter->name; ?></a>
                                         <script>
-                                            function selectMyPerimeter(){
-                                                alert('MyPerimeter');
-                                            }
+                function selectMyPerimeter() {
+                    alert('MyPerimeter');
+                }
                                         </script>
                                         <br>
                                         <br>
                                         <?php
                                     else:
                                         ?>
-                                        <a href="#" class="btn" onClick="selectPerimeter<?php echo $perimeter->id; ?>();return false;"><i class="icon-brush"></i><?php echo $perimeter->name; ?></a>
+                                        <a href="#" class="btn" onClick="selectPerimeter<?php echo $perimeter->id; ?>();
+                    return false;"><i class="icon-brush"></i><?php echo $perimeter->name; ?></a>
                                         <script>
-                                            function selectPerimeter<?php echo $perimeter->id; ?> (){
-                                                alert('<?php echo $perimeter->name; ?>');
-                                            }
+                function selectPerimeter<?php echo $perimeter->id; ?>() {
+                    alert('<?php echo $perimeter->name; ?>');
+                }
                                         </script>
                                         <br>
                                         <br>
@@ -216,9 +220,13 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
                 </div>
             </div>
             <script>
-                app.on("ready", function (){ initDraw();  });
-           
-                </script>
+                Ext.onReady(function(){
+        app.on("ready", function() {
+            initDraw();
+        });});
+
+            </script>
+            </div>
     </form>
 
     <?php

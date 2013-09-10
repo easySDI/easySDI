@@ -60,16 +60,7 @@ abstract class Easysdi_shopHelper {
             $tmp_basketcontent = clone $basketcontent;
             $tmp_basketcontent->extractions[] = $extraction;            
             $common = Easysdi_shopHelper::getCommonPerimeter($tmp_basketcontent);
-            
-//            foreach ($basketcontent->perimeters as $perimeter):
-//                foreach ($extraction->perimeters as $newperimeter):
-//                    if ($newperimeter->perimeter_id == $perimeter->perimeter_id):
-//                        //Common perimeter
-//                        $common[] = $perimeter;
-//                        break;
-//                    endif;
-//                endforeach;
-//            endforeach;
+
             if (count($common) == 0):
                 //There is no more common perimeter between the extraction in the basket
                 //Extraction can not be added, send a message to the user

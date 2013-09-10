@@ -241,7 +241,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                                 <label id="jform_perimeter<?php echo $orderperimeter->id; ?>-lbl" for="jform_perimeter<?php echo $orderperimeter->id; ?>" class="hasTip" title=""><?php echo $orderperimeter->name; ?></label>
                                             </div>
                                             <div class="controls">
-                                                <select id="jform_perimeter<?php echo $orderperimeter->id ?>" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" class="inputbox"  >
+                                                <select id="jform_perimeter<?php echo $orderperimeter->id ?>" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" class="inputbox input-xlarge"  >
                                                     <option value="-1" ><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_PERIMETER"); ?></option>
                                                     <option value="1" <?php if(array_key_exists($orderperimeter->id,$this->item->perimeter ) && $this->item->perimeter[$orderperimeter->id] == 1) echo 'selected';  ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER"); ?></option>
                                                     <option value="0" <?php if(array_key_exists($orderperimeter->id,$this->item->perimeter ) && $this->item->perimeter[$orderperimeter->id] == 0) echo 'selected';  ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER_WITH_BUFFER"); ?></option>
@@ -265,7 +265,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                                     case 2:
                                                     case 3:
                                                         ?>
-                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>][]" class="inputbox <?php if($property->mandatory) echo 'required' ; ?>" multiple="multiple" >
+                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>][]" class="inputbox input-xlarge <?php if($property->mandatory) echo 'required' ; ?>" multiple="multiple" >
                                                             <?php
                                                             foreach ($this->propertyvalues as $propertyvalue):
                                                                 if ($propertyvalue->property_id == $property->id):
@@ -280,7 +280,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                                         break;
                                                     case 4:
                                                         ?>
-                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>]" class="inputbox <?php if($property->mandatory) echo 'required' ; ?>"  >
+                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>]" class="inputbox input-xlarge <?php if($property->mandatory) echo 'required' ; ?>"  >
                                                             <?php if (!$property->mandatory): ?>
                                                                 <option value="-1"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_FIELD"); ?></option>
                                                                 <?php

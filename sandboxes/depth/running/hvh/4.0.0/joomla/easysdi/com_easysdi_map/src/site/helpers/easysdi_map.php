@@ -111,7 +111,8 @@ abstract class Easysdi_mapHelper {
                 GeoExt.Lang.set("';
         $output .= $lang->getTag();
         $output .= '");
-                app = new gxp.Viewer(' . $config . ');';
+                app = new gxp.Viewer(' . $config . ');
+                   ';
 
         //Add the mouseposition control if activated in the map configuration
         //Can not be done in the gxp.Viewer instanciation because it has to be done on the openlayers map object
@@ -193,7 +194,38 @@ abstract class Easysdi_mapHelper {
                                         mapPanel: "sdimap"
                                     }
                                 ]
-                            }, ';
+                            },
+                            {
+                                id: "northpanel",
+                                xtype: "panel",
+                                layout: "card",
+                                region: "north",
+                                border: false,
+                                activeItem: 0,
+                                items: [
+                                    {
+                                xtype: "gxp_autocompletecombo",
+                                listeners:{
+                                select: function(list, record) {
+                                var extent = new OpenLayers.Bounds();
+                                extent.extend(record.data.feature.geometry.getBounds());
+                                        app.mapPanel.map.zoomToExtent(extent);
+                                    }
+
+                                },
+                                
+                                url: "http://localhost/si17",
+                                fieldName: "nom",
+                                featureType: "commune17",
+                                featurePrefix: "si17",
+                                fieldLabel: "nom",
+                                geometryName:"the_geom",
+                                maxFeatures:"10",
+                                emptyText: "Search..."
+                            }
+                                ]
+                                
+                            },';
 
         $layertreeactivated = false;
         foreach ($item->tools as $tool) :
@@ -237,13 +269,17 @@ abstract class Easysdi_mapHelper {
                                 height:0,
                                 region:"south",
                                 items:[]
-                            }';
+                            },';
                 break;
             }
         endforeach;
         
-        $config .= ']
-                    },                   
+        $config .= '
+              
+
+                        
+                            ]
+                    },                        
                     tools: [';
 
 
@@ -462,6 +498,7 @@ abstract class Easysdi_mapHelper {
             endswitch;
         endforeach;
         $config .= '
+                        
         ],';
 
         // layer sources
