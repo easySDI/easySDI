@@ -163,7 +163,9 @@ abstract class Easysdi_mapHelper {
         $config = '{';
         $proxyhost = $params->get('proxyhost');
         if (!empty($proxyhost)) :
-            $config .= 'proxy :"' . $proxyhost . '"';
+            $config .= 'proxy :"' . $proxyhost . '",';
+        else:
+            $config .= 'proxy :"' . JURI::base()."administrator/components/com_easysdi_core/libraries/proxy/proxy.php?=&=" . '",';
         endif;
         $config .= 'about: 
                         { 
@@ -663,9 +665,9 @@ abstract class Easysdi_mapHelper {
                                 else
                                     $config .= 'visibility: false,';
                                 if ($layer->istiled == 1)
-                                    $config .= 'singleTile: true';
+                                    $config .= 'singleTile: true,';
                                 else
-                                    $config .= 'singleTile: false';
+                                    $config .= 'singleTile: false,';
 
                                 $config .= 'transitionEffect: "resize",
                                 opacity: ' . $layer->opacity . ',

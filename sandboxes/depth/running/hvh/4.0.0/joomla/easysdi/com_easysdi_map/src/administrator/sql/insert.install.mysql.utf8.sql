@@ -13,7 +13,8 @@ VALUES
 ('layerproperties',11,1,'Layer properties'),
 ('getfeatureinfo',12,1,'Get feature info'),
 ('layertree',13,1,'Layer tree'),
-('scaleline',14,1,'Scale line')
+('scaleline',14,1,'Scale line'),
+('mouseposition',14,1,'Mouse position')
 ;
 
 
