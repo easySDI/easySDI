@@ -10,8 +10,12 @@
 // No direct access.
 defined('_JEXEC') or die;
 
-require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormGenerator.php';
+require_once JPATH_COMPONENT . '/libraries/easysdi/FormGenerator.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/SdiRelation.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/SdiClass.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/SdiAttribute.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/SdiNamespace.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/SdiStereotype.php';
 
 jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
@@ -19,28 +23,12 @@ jimport('joomla.event.dispatcher');
 /**
  * Easysdi_catalog model.
  */
-class Easysdi_catalogModelMetadata extends JModelForm {
+class Easysdi_catalogModelAjax extends JModelForm {
 
     var $_item = null;
-
-    /**
-     *
-     * @var SdiRelation[] 
-     */
     var $_classTree = array();
-
-    /**
-     *
-     * @var JDatabaseDriver 
-     */
     var $db = null;
-
-    /**
-     *
-     * @var stdClass[] 
-     */
-    var $_validators = array();
-
+    
     /**
      * Method to auto-populate the model state.
      *
@@ -69,14 +57,10 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         $this->setState('params', $params);
     }
 
-    public function getClassTree() {
-        return $this->_classTree;
+    public function getClassTree(){
+        return $this->_classTree ;
     }
-
-    public function getValidators() {
-        return $this->_validators;
-    }
-
+    
     /**
      * Method to get an ojbect.
      *
@@ -99,8 +83,9 @@ class Easysdi_catalogModelMetadata extends JModelForm {
             if ($table->load($id)) {
                 //When saving metadata, getData is called once with an empty id.  Authorization doesn't have to be checked in this case.
                 if ($id) {
-                    $user = sdiFactory::getSdiUser();
-                    if (!$user->isEasySDI) {
+                    try {
+                        $user = sdiFactory::getSdiUser();
+                    } catch (Exception $e) {
                         //Not an EasySDI user = not allowed
                         JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
                         JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
@@ -125,6 +110,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                     if ($result = $CSWmetadata->load())
                         $this->_item->csw = $result;
                 }
+                
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
@@ -134,7 +120,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
     }
 
     public function getTable($type = 'Metadata', $prefix = 'Easysdi_catalogTable', $config = array()) {
-        $this->addTablePath(JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables');
+        $this->addTablePath(JPATH_ADMINISTRATOR .'/components/com_easysdi_catalog/tables');
         return JTable::getInstance($type, $prefix, $config);
     }
 
@@ -208,26 +194,30 @@ class Easysdi_catalogModelMetadata extends JModelForm {
      * @since	1.6
      */
     public function getForm($data = array(), $loadData = true) {
-        $formGenerator = null;
-        if (isset($this->_item->csw)) {
-            $formGenerator = new FormGenerator($this->_item->csw);
-        } else {
-            $formGenerator = new FormGenerator();
-        }
-
-        $form = $this->loadForm('com_easysdi_catalog.metadata', $formGenerator->getForm(), array('control' => 'jform', 'load_data' => $loadData, 'file' => FALSE));
-
+        $session = JFactory::getSession();
+        $dce = new DomCswExtractor();
+        
+        $relations = unserialize($session->get('relations'));
+        
+        $rel = $relations[$_GET['uuid']];
+        $index = $session->get('attribute_index')+1;
+        $rel->setIndex($index);
+        $rel->setSerializedXpath($dce->getSerializedXpath($rel));
+        $session->set('attribute_index', $index);
+        
+        $formGenerator = new FormGenerator();
+        
+        $form = $this->loadForm('com_easysdi_catalog.metadata', $formGenerator->getForm($rel), array('control' => 'jform', 'load_data' => $loadData, 'file' => FALSE));
+        
         $this->_classTree = $formGenerator->relations;
-
-        $this->buildValidators();
-
+        
         if (empty($form)) {
             return false;
         }
 
         return $form;
     }
-
+    
     /**
      * Method to get the data that should be injected in the form.
      *
@@ -253,16 +243,10 @@ class Easysdi_catalogModelMetadata extends JModelForm {
     public function save($data) {
         (empty($data['id']) ) ? $new = true : $new = false;
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('metadata.id');
-<<<<<<< HEAD
-
+                
         try {
             $user = sdiFactory::getSdiUser();
         } catch (Exception $e) {
-=======
-                
-        $user = sdiFactory::getSdiUser();
-        if (!$user->isEasySDI) {
->>>>>>> remotes/git-svn
             //Not an EasySDI user = not allowed
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
@@ -280,16 +264,16 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         if ($table->save($data) === true) {
             $CSWmetadata = new sdiMetadata($table->id);
             if ($new) {
-                if (!$CSWmetadata->insert()) {
+                if(!$CSWmetadata->insert()){
                     $table->delete();
                     return false;
                 }
-            } else {
-                if (!$CSWmetadata->update()) {
+            }else{
+                if(!$CSWmetadata->update()){
                     return false;
                 }
             }
-
+            
             return $id;
         } else {
             return false;
@@ -299,8 +283,9 @@ class Easysdi_catalogModelMetadata extends JModelForm {
     function delete($data) {
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('metadata.id');
 
-        $user = sdiFactory::getSdiUser();
-        if (!$user->isEasySDI) {
+        try {
+            $user = sdiFactory::getSdiUser();
+        } catch (Exception $e) {
             //Not an EasySDI user = not allowed
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
@@ -313,7 +298,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
         }
-
+        
         $table = $this->getTable();
         if ($table->delete($data['id']) === true) {
             return $id;
@@ -322,57 +307,6 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         }
 
         return true;
-    }
-
-    /**
-     * Built validators depending on pattern of stereotype and attribute.
-     * @since  4.0.0
-     */
-    private function buildValidators() {
-        $tmpValidators = array();
-
-        foreach ($this->_classTree as $rel) {
-            if ($rel->childtype_id == SdiRelation::$ATTRIBUT) {
-                $patterns = array();
-                $validator = new stdClass();
-                if ($rel->getAttribut_child()->getStereotype()->defaultpattern != '') {
-                    $validator->name = $rel->getAttribut_child()->getStereotype()->value;
-                    $patterns[] = $rel->getAttribut_child()->getStereotype()->defaultpattern;
-                }
-
-                if ($rel->getAttribut_child()->pattern != '') {
-                    $validator->name = $rel->getAttribut_child()->guid;
-                    $patterns[] = $rel->getAttribut_child()->pattern;
-                }
-
-                $validator->patterns = $patterns;
-                if(isset($validator->name)){
-                    $tmpValidators[$validator->name] = $validator;
-                }
-            }
-        }
-
-        foreach ($tmpValidators as $v) {
-            $js = 'document.formvalidator.setHandler(\'sdi' . $v->name . '\', function(value) {
-                    ';
-            $condition = '';
-            for ($i = 0; $i < count($v->patterns); $i++) {
-                $js .= 'regex_' . $i . ' = /' . $v->patterns[$i] . '/;
-                        ';
-                $condition .= 'regex_' . $i . '.test(value) && ';
-            }
-
-            $js .= 'if(' . substr($condition, 0, -4) . '){
-                            return true;
-                        }else{
-                            return false;
-                        }';
-
-            $js .= '});
-                    ';
-
-            $this->_validators[] = $js;
-        }
     }
 
 }

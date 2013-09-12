@@ -80,9 +80,9 @@ class sdiMetadata {
         
         $doc = new DOMDocument();
         $doc->loadXML($response);
-
+        
         if ($doc <> false and $doc->childNodes->item(0)->hasChildNodes()){
-
+            return $doc;
         }
         else if ($doc->childNodes->item(0)->nodeName == "ows:ExceptionReport") {
             $msg = $doc->childNodes->item(0)->nodeValue;
@@ -109,10 +109,6 @@ class sdiMetadata {
 //        foreach ($namespaces as $namespace) {
 //            $xpathResults->registerNamespace($namespace->prefix, $namespace->uri);
 //        }
-        
-        
-        
-        return $response;
     }
 
     /**
@@ -213,7 +209,19 @@ class sdiMetadata {
      * 
      */
     public function update($xml) {
-        return true;
+        $reponse = $this->CURLRequest('POST', $this->catalogurl, $xml);
+        $dom = new DOMDocument();
+        $dom->loadXML($reponse);
+        $totalUpdated = $dom->getElementsByTagNameNS('http://www.opengis.net/cat/csw/2.0.2', 'totalUpdated')->item(0);
+        
+        if(isset($totalUpdated)){
+            if($totalUpdated->nodeValue == 1){
+                return true;
+            }
+            
+        }else{
+            return false;
+        }
     }
     
     /**
@@ -286,8 +294,8 @@ class sdiMetadata {
         $serviceaccount_id = $params->get('serviceaccount');
         $juser = JFactory::getUser($serviceaccount_id);
 
-        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($ch, CURLOPT_USERPWD, $juser->username . ":" . $juser->password);
+        //curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        //curl_setopt($ch, CURLOPT_USERPWD, $juser->username . ":" . $juser->password);
 
         $output = curl_exec($ch);
         curl_close($ch);

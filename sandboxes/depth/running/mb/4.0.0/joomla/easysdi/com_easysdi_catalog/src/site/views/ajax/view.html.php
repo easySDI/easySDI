@@ -17,15 +17,13 @@ require_once JPATH_COMPONENT . '/libraries/easysdi/FormHtmlGenerator.php';
 /**
  * View to edit
  */
-class Easysdi_catalogViewMetadata extends JViewLegacy {
+class Easysdi_catalogViewAjax extends JViewLegacy {
 
     protected $state;
     protected $item;
     protected $form;
     protected $params;
     public $formHtml = '';
-    public $classTree;
-    public $validators;
 
     /**
      * Display the view
@@ -50,7 +48,8 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         $this->buildForm();
         $this->_prepareDocument();
 
-        parent::display($tpl);
+        //parent::display($tpl);
+        echo $this->formHtml;die();
     }
 
     /**
@@ -91,17 +90,13 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
     }
-    
+
     protected function buildForm(){
         $classTree = $this->classTree = $this->get('ClassTree');
-        $this->validators = $this->get('Validators');
-
-        $fhg = new FormHtmlGenerator($this->form, $classTree);
-        $this->formHtml = $fhg->buildForm();
-    }
-    
-    protected function getStereotype(){
         
+        $fhg = new FormHtmlGenerator($this->form, $classTree);
+        
+        $this->formHtml = $fhg->buildForm();
     }
 
 }
