@@ -73,6 +73,17 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 
                     <?php endforeach; ?>
                     </fieldset>
+                    
+                    <fieldset id ="wfslocator">
+                    <legend><?php echo JText::_('COM_EASYSDI_MAP_FORM_FIELDSET_LEGEND_WFSLOCATOR'); ?></legend>
+                    <?php foreach ($this->form->getFieldset('wfslocator') as $field): ?>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $field->label; ?></div>
+                                <div class="controls"><?php echo $field->input; ?></div>
+                        </div>
+
+                    <?php endforeach; ?>
+                    </fieldset>
                 </div>
             
             <div class="tab-pane" id="publishing">

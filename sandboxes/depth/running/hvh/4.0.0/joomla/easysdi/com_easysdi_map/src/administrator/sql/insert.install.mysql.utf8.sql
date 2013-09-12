@@ -14,7 +14,8 @@ VALUES
 ('getfeatureinfo',12,1,'Get feature info'),
 ('layertree',13,1,'Layer tree'),
 ('scaleline',14,1,'Scale line'),
-('mouseposition',14,1,'Mouse position')
+('mouseposition',15,1,'Mouse position'),
+('wfslocator',16,1,'Wfs locator')
 ;
 
 

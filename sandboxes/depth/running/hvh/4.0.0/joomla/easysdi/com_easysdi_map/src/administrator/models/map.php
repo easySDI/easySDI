@@ -130,10 +130,19 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 $scalelineparams = $db->loadResult();
                 if(!empty($scalelineparams)){
                     $params = json_decode($scalelineparams);
-                    $item->topOutUnits = $params->topOutUnits;
-                    $item->topInUnits = $params->topInUnits;
-                    $item->bottomOutUnits = $params->bottomOutUnits;
-                    $item->bottomInUnits = $params->bottomInUnits;
+                    foreach ($params as $key => $value) {
+                        $item->$key = $value;
+                    } 
+                }
+                
+                //Wfs locator
+                $db->setQuery('SELECT params FROM #__sdi_map_tool WHERE tool_id=16 AND map_id = ' . $item->id);
+                $wfslocator = $db->loadResult();
+                if(!empty($wfslocator)){
+                    $params = json_decode($wfslocator);
+                    foreach ($params as $key => $value) {
+                        $item->$key = $value;
+                    }                    
                 }
                 
                 $db->setQuery('SELECT CONCAT ("physical_",physicalservice_id) FROM #__sdi_map_physicalservice WHERE map_id = ' . $item->id . ' 
@@ -220,6 +229,15 @@ class Easysdi_mapModelmap extends JModelAdmin {
                             $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
                             return false;
                         }
+                        
+            //Wfs locator
+            $locatorparamsparams = '{\"urlwfslocator\" :\"'.$data["urlwfslocator"].'\",\"fieldname\" :\"'.$data["fieldname"].'\",\"featuretype\" :\"'.$data["featuretype"].'\",\"featureprefix\" :\"'.$data["featureprefix"].'\",\"geometryname\" :\"'.$data["geometryname"].'\"}';
+            $db->setQuery('INSERT INTO #__sdi_map_tool (map_id, tool_id, params) VALUES (' . $this->getItem()->get('id') . ', 16, "'.$locatorparamsparams.'")');
+                        if (!$db->query()) {
+                            $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
+                            return false;
+                        }
+                        
             //Service
             $services = $data['services'];
             foreach ($services as $service) {

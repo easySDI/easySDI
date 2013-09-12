@@ -196,8 +196,9 @@ abstract class Easysdi_mapHelper {
                                         mapPanel: "sdimap"
                                     }
                                 ]
-                            },
-                            {
+                            }';
+        if(!empty($item->urlwfslocator)):
+               $config .= ',{
                                 id: "northpanel",
                                 xtype: "panel",
                                 layout: "card",
@@ -208,26 +209,25 @@ abstract class Easysdi_mapHelper {
                                     {
                                 xtype: "gxp_autocompletecombo",
                                 listeners:{
-                                select: function(list, record) {
-                                var extent = new OpenLayers.Bounds();
-                                extent.extend(record.data.feature.geometry.getBounds());
-                                        app.mapPanel.map.zoomToExtent(extent);
-                                    }
-
-                                },
-                                
-                                url: "http://localhost/si17",
-                                fieldName: "nom",
-                                featureType: "commune17",
-                                featurePrefix: "si17",
-                                fieldLabel: "nom",
-                                geometryName:"the_geom",
+                                            select: function(list, record) {
+                                                    var extent = new OpenLayers.Bounds();
+                                                    extent.extend(record.data.feature.geometry.getBounds());
+                                                    app.mapPanel.map.zoomToExtent(extent);
+                                                    }
+                                           },
+                                url: "'.$item->urlwfslocator.'",
+                                fieldName: "'.$item->fieldname.'",
+                                featureType: "'.$item->featuretype.'",
+                                featurePrefix: "'.$item->featureprefix.'",
+                                fieldLabel: "'.$item->fieldname.'",
+                                geometryName:"'.$item->geometryname.'",
                                 maxFeatures:"10",
                                 emptyText: "Search..."
-                            }
-                                ]
+                            }]
                                 
-                            },';
+                            }';
+           endif;
+               $config .= ' ,';
 
         $layertreeactivated = false;
         foreach ($item->tools as $tool) :
