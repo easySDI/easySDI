@@ -10,7 +10,8 @@
     
     <available file="${joomla.plugin.path}/${joomla.service.plugin.path}" type="dir" property="service.plg.exist"/>
     
-    <target name="package" depends="plg_copy, write-xml, plg_zip" description="Main target" if="${service.plg.exist}"/>
+    <target name="package" depends="write-xml, plg_zip" description="Main target" />
+    <target name="sync-package" depends="plg_copy, write-xml, plg_zip" description="Main target" if="${service.plg.exist}"/>
     <target name="sync" depends="plg_copy, write-xml" description="Main target" />
     
     <target name="plg_copy">

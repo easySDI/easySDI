@@ -9,7 +9,8 @@
     <available file="${joomla.administrator.components.dir}/${service.component.name}" type="dir" property="service.admin.exist"/>
     <available file="${joomla.site.components.dir}/${service.component.name}" type="dir" property="service.site.exist"/>
     
-    <target name="package" depends="copy-administrator, copy-site, write-xml, build-info, zip-package" description="Main target" />
+    <target name="package" depends="write-xml, build-info, zip-package" description="Main target" />
+    <target name="sync-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-package" description="Main target" />
     <target name="dev-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-dev-package" description="Main target" />
     <target name="sync" depends="copy-administrator, copy-site" description="Main target" />
     <!-- 
