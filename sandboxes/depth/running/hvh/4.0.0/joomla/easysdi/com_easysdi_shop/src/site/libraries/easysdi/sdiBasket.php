@@ -17,10 +17,13 @@ class sdiBasket {
     var $extractions;    
     var $perimeters;
     var $extent;
+    var $isrestrictedbyperimeter;
     
     function __construct($session_content) {
         if(empty($session_content))
             return;
+        
+        $isrestrictedbyperimeter = false;
         
         if (!isset($this->extractions))
             $this->extractions = array();
@@ -29,7 +32,11 @@ class sdiBasket {
             $this->perimeters = array();
         
         foreach($session_content->extractions as $extraction):
-            $this->extractions[] = new sdiExtraction($extraction);
+            $ex = new sdiExtraction($extraction);
+            if($ex->restrictedperimeter == '1')
+                $this->isrestrictedbyperimeter = true;
+        
+            $this->extractions[] = $ex;
         endforeach;
         
         foreach($session_content->perimeters as $perimeter):

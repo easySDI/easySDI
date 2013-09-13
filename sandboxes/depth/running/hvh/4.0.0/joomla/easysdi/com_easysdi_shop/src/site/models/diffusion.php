@@ -287,6 +287,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         $table = $this->getTable();
         if ($table->save($data) === true) {
             $data['guid'] = $table->guid;
+            $id = $table->id;
             if (!sdiModel::saveAccessScope($data))
                 return false;
 

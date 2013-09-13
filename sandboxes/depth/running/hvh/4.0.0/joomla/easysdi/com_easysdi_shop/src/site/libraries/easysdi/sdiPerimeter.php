@@ -14,7 +14,10 @@ class sdiPerimeter {
 
     var $id;
     var $name;
+    var $alias;
     var $buffer;
+    var $wmsurl;
+    var $wfsurl;
 
     function __construct($session_perimeter) {
         if (empty($session_perimeter))
@@ -44,6 +47,42 @@ class sdiPerimeter {
             foreach ($params as $key => $value){
                 $this->$key = $value;
             }
+
+            if(!empty($this->wmsservice_id)):
+                if($this->wmsservicetype_id == 1):
+                    $query = $db->getQuery(true)
+                        ->select('p.*')
+                        ->from('#__sdi_physicalservice p')
+                        ->where('p.id = '.$this->wmsservice_id);
+                else :
+                    $query = $db->getQuery(true)
+                        ->select('p.*')
+                        ->from('#__sdi_virtualservice p')
+                        ->where('p.id = '.$this->wmsservice_id);
+                endif;
+
+                $db->setQuery($query);
+                $wmsservice = $db->loadObject();
+                $this->wmsurl = $wmsservice->resourceurl;
+            endif;
+            
+            if(!empty($this->wfsservice_id)):
+                if($this->wfsservicetype_id == 1):
+                    $query = $db->getQuery(true)
+                        ->select('p.*')
+                        ->from('#__sdi_physicalservice p')
+                        ->where('p.id = '.$this->wfsservice_id);
+                else :
+                    $query = $db->getQuery(true)
+                        ->select('p.*')
+                        ->from('#__sdi_virtualservice p')
+                        ->where('p.id = '.$this->wfsservice_id);
+                endif;
+
+                $db->setQuery($query);
+                $wfsservice = $db->loadObject();
+                $this->wfsurl = $wfsservice->resourceurl;
+            endif;
             
         } catch (JDatabaseException $e) {
             

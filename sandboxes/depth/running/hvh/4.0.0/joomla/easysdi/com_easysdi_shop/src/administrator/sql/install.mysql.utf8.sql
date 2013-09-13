@@ -150,6 +150,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_diffusion` (
 `file` VARCHAR(255)   ,
 `fileurl` VARCHAR(500)   ,
 `perimeter_id` INT(11) UNSIGNED  ,
+`restrictedperimeter` TINYINT(1)  NOT NULL DEFAULT 0 ,
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`),

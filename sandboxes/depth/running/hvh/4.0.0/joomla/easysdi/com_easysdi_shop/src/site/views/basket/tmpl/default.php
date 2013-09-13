@@ -155,38 +155,108 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
                             <div class="btn-group" data-toggle="buttons-radio">
                                 <?php
                                 foreach ($this->item->perimeters as $perimeter):
-                                    if ($perimeter->id == 1):
+                                    if ($perimeter->id == 1 ):
+                                        if(!$this->item->isrestrictedbyperimeter):
                                         ?>
-                                        <a href="#" class="btn" onClick="toggleControl('box');
-                    return false;"><i class=" icon-checkbox-unchecked"></i><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_RECTANGLE'); ?></a>
+                                        <a href="#" class="btn" onClick="toggleControl('box');return false;"><i class=" icon-checkbox-unchecked"></i><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_RECTANGLE'); ?></a>
                                         <br>
                                         <br>
-                                        <a href="#" class="btn" onClick="toggleControl('polygon');
-                    return false;"><i class="icon-chart"></i><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_POLYGON'); ?></a>
+                                        <a href="#" class="btn" onClick="toggleControl('polygon');return false;"><i class="icon-chart"></i><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_POLYGON'); ?></a>
 
                                         <br>
                                         <br>                                        
                                         <?php
+                                        endif;
                                     elseif ($perimeter->id == 2):
+                                        if($this->user->isEasySDI):
                                         ?>
-                                        <a href="#" class="btn" onClick="selectMyPerimeter();
-                    return false;"><i class="icon-user"></i><?php echo $perimeter->name; ?></a>
+                                        <a href="#" class="btn" onClick="selectMyPerimeter();return false;"><i class="icon-user"></i><?php echo $perimeter->name; ?></a>
                                         <script>
-                function selectMyPerimeter() {
-                    alert('MyPerimeter');
-                }
+                                            function selectMyPerimeter() {
+                                                var gmlLayer = new OpenLayers.Layer.Vector("MyGMLLayer");
+
+
+                                                var strGML = "<?php echo addslashes ($this->user->gml); ?>";
+
+                                                var gmlOptions = {
+                                                    featureType: "feature",
+                                                    featureNS: "http://example.com/feature"
+                                                };
+                                                
+                                                var gmlOptionsIn = OpenLayers.Util.extend(
+                                                    OpenLayers.Util.extend({}, gmlOptions)
+                                                );
+
+                                                var format = new OpenLayers.Format.GML.v3(gmlOptionsIn);
+
+                                                var features = format.read(strGML);
+
+                                                var colors = ['#000000', '#ffffff', '#fefefe'];
+
+                                                for (var x in features) {
+                                                    features[x].style = { fillColor: colors[x] };
+                                                }
+
+
+                                                gmlLayer.addFeatures(features);
+                                                app.mapPanel.map.addLayer(gmlLayer);
+                                                app.mapPanel.map.zoomToExtent(gmlLayer.getDataExtent());
+                                            }
                                         </script>
                                         <br>
                                         <br>
                                         <?php
+                                        endif;
                                     else:
                                         ?>
-                                        <a href="#" class="btn" onClick="selectPerimeter<?php echo $perimeter->id; ?>();
-                    return false;"><i class="icon-brush"></i><?php echo $perimeter->name; ?></a>
+                                        <a href="#" class="btn" onClick="selectPerimeter<?php echo $perimeter->id; ?>();return false;"><i class="icon-brush"></i><?php echo $perimeter->name; ?></a>
                                         <script>
-                function selectPerimeter<?php echo $perimeter->id; ?>() {
-                    alert('<?php echo $perimeter->name; ?>');
-                }
+                                            function selectPerimeter<?php echo $perimeter->id; ?>() {
+                                                clearAll();
+                                            
+                                                if(app.mapPanel.map.getLayersByName("perimeterLayer").length > 0){
+                                                    app.mapPanel.map.removeLayer(perimeterLayer);
+                                                }
+                                                
+                                                perimeterLayer = new OpenLayers.Layer.WMS ("perimeterLayer", 
+                                                "<?php echo $perimeter->wmsurl; ?>",
+                                                {layers: '<?php echo $perimeter->layername; ?>'})
+                                                app.mapPanel.map.addLayer(perimeterLayer);
+                                                app.mapPanel.map.setLayerIndex(perimeterLayer, 0); 
+                                                
+
+                                                selectControl = new OpenLayers.Control.GetFeature({
+                                                    protocol: new OpenLayers.Protocol.WFS({
+                                                        version: "1.0.0",
+                                                        url:  "<?php echo $perimeter->wfsurl; ?>",
+                                                        srsName: "EPSG:900913",
+                                                        featureType: "<?php echo $perimeter->featuretypename; ?>",
+                                                        featureNS: "<?php echo $perimeter->namespace; ?>",
+                                                        geometryName: "<?php echo $perimeter->featuretypefieldgeometry; ?>"
+                                                    }),
+                                                    box: true,
+                                                    hover: true,
+                                                    multipleKey: "shiftKey",
+                                                    toggleKey: "ctrlKey"
+                                                });
+                                                
+                                                selectControl.events.register("featureselected", this, function(e) {
+                                                    selectLayer.addFeatures([e.feature]);
+                                                });
+                                                selectControl.events.register("featureunselected", this, function(e) {
+                                                    selectLayer.removeFeatures([e.feature]);
+                                                });
+                                                selectControl.events.register("hoverfeature", this, function(e) {
+                                                    hover.addFeatures([e.feature]);
+                                                });
+                                                selectControl.events.register("outfeature", this, function(e) {
+                                                    hover.removeFeatures([e.feature]);
+                                                });
+                                                app.mapPanel.map.addControl(selectControl);
+                                                selectControl.activate();
+                                                
+                                                return false;
+                                            }
                                         </script>
                                         <br>
                                         <br>
@@ -221,10 +291,9 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
             </div>
             <script>
                 Ext.onReady(function(){
-        app.on("ready", function() {
-            initDraw();
-        });});
-
+                    app.on("ready", function() {
+                        initDraw();
+                    });});
             </script>
             </div>
     </form>

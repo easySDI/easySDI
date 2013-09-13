@@ -37,3 +37,6 @@ ALTER TABLE `#__sdi_map_tool` ADD `params` VARCHAR (500);
 INSERT INTO `#__sdi_sys_maptool` (alias,ordering,state,name) 
 VALUES ('scaleline',14,1,'Scale line');
 
+INSERT INTO `#__sdi_sys_maptool` (alias,ordering,state,name) 
+VALUES ('mouseposition',15,1,'Mouse position');
+

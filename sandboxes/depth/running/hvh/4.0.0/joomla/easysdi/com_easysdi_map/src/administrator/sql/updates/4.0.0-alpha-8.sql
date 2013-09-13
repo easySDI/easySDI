@@ -1,6 +1,3 @@
-INSERT INTO `#__sdi_sys_maptool` (alias,ordering,state,name) 
-VALUES ('mouseposition',15,1,'Mouse position');
-
 ALTER TABLE `#__sdi_maplayer` ADD `attribution` VARCHAR (255);
 
 ALTER TABLE `#__sdi_map` DROP `centercoordinates` ;

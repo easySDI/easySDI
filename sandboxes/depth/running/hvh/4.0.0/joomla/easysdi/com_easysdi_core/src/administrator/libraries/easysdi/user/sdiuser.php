@@ -22,6 +22,13 @@ class sdiUser {
      * @var    varchar
      */
     public $name = null;
+    
+    /**
+     * Unique gml
+     *
+     * @var    varchar
+     */
+    public $gml = null;
 
     /**
      * Unique juser
@@ -29,6 +36,13 @@ class sdiUser {
      * @var    JUser
      */
     public $juser = null;
+    
+    /**
+     * Unique user
+     *
+     * @var    Object
+     */
+    public $user = null;
 
     /**
      * Unique role
@@ -74,8 +88,11 @@ class sdiUser {
         
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('u.*')
+                ->select('u.*, o.gml')
                 ->from('#__sdi_user AS u')
+                ->innerJoin("#__sdi_user_role_organism uro ON uro.user_id=u.id" )
+                ->innerJoin("#__sdi_organism o ON o.id = uro.organism_id")
+                ->where("uro.role_id = 1")
                 ->where('u.user_id = ' . $juser->id)
         ;
         $db->setQuery($query);
@@ -86,6 +103,8 @@ class sdiUser {
         }
         else{
             $this->id = $user->id;
+            $this->user = $user;
+            $this->gml = $user->gml;
 
             $query = $db->getQuery(true)
                     ->select('uro.role_id as  role_id, o.name as organism_name, o.id as organism_id')
