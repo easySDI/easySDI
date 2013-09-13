@@ -217,7 +217,7 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
                                                 if(app.mapPanel.map.getLayersByName("perimeterLayer").length > 0){
                                                     app.mapPanel.map.removeLayer(perimeterLayer);
                                                 }
-                                                
+                                                   
                                                 perimeterLayer = new OpenLayers.Layer.WMS ("perimeterLayer", 
                                                 "<?php echo $perimeter->wmsurl; ?>",
                                                 {layers: '<?php echo $perimeter->layername; ?>'})
@@ -227,9 +227,9 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
 
                                                 selectControl = new OpenLayers.Control.GetFeature({
                                                     protocol: new OpenLayers.Protocol.WFS({
-                                                        version: "1.0.0",
+                                                        version: "1.1.0",
                                                         url:  "<?php echo $perimeter->wfsurl; ?>",
-                                                        srsName: "EPSG:900913",
+                                                        srsName: app.mapPanel.map.projection,
                                                         featureType: "<?php echo $perimeter->featuretypename; ?>",
                                                         featureNS: "<?php echo $perimeter->namespace; ?>",
                                                         geometryName: "<?php echo $perimeter->featuretypefieldgeometry; ?>"

@@ -277,7 +277,7 @@ class sdiUser {
             return false;
         }
         if (is_null($item))
-            return false;
+            return $this->isResourceManager();
 
         if ($right == null) {
             //Return all rights on the item

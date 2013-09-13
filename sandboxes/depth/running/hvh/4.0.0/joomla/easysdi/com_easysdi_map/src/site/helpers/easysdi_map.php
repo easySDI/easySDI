@@ -125,9 +125,6 @@ abstract class Easysdi_mapHelper {
 
         $output .= '
                     app.on("ready", function (){ loadingMask.hide(); });
-
-
-
                     SdiScaleLineParams= { 
                             bottomInUnits :"' . $item->bottomInUnits . '",
                             bottomOutUnits :"' . $item->bottomOutUnits . '",
