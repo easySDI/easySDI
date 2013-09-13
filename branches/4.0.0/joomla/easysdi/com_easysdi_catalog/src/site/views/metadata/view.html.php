@@ -12,6 +12,8 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
+require_once JPATH_COMPONENT . '/libraries/easysdi/FormHtmlGenerator.php';
+
 /**
  * View to edit
  */
@@ -21,11 +23,15 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
     protected $item;
     protected $form;
     protected $params;
+    public $formHtml = '';
+    public $classTree;
+    public $validators;
 
     /**
      * Display the view
      */
     public function display($tpl = null) {
+
 
         $app = JFactory::getApplication();
         $user = JFactory::getUser();
@@ -35,11 +41,13 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         $this->params = $app->getParams('com_easysdi_catalog');
         $this->form = $this->get('Form');
 
+
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
 
+        $this->buildForm();
         $this->_prepareDocument();
 
         parent::display($tpl);
@@ -82,6 +90,18 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         if ($this->params->get('robots')) {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
+    }
+    
+    protected function buildForm(){
+        $classTree = $this->classTree = $this->get('ClassTree');
+        $this->validators = $this->get('Validators');
+
+        $fhg = new FormHtmlGenerator($this->form, $classTree);
+        $this->formHtml = $fhg->buildForm();
+    }
+    
+    protected function getStereotype(){
+        
     }
 
 }

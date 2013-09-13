@@ -7,7 +7,7 @@
     <property name="parent.component.name" value="easysdi"/>
     <property name="parent.src.out.dir" value="${parent.component.name}/src"/>
     <property name="parent.package.out.dir" value="${parent.component.name}/target"/>
-    <property name="version" value="4.0.0-alpha-6"/>
+    <property name="version" value="4.0.0-alpha-7"/>
     
     <!-- Joomla component path -->
     <property name="joomla.administrator.components.dir" value="administrator/components" />
@@ -97,6 +97,25 @@
     <target name="sync-plg-service" depends="plg-service.sync" description="Main Target"/>
     
     <target name="sync-tpl-easysdi" depends="tpl-easysdi.sync" description="Main Target"/>
+    
+    <!-- Sycronysing targets-->
+    <target name="sync-package-all" depends="sync-package-com-core,sync-package-com-map,sync-package-com-monitor,sync-package-com-service,sync-package-com-contact,sync-package-com-shop,sync-package-plg-contact,sync-package-plg-monitor,sync-package-plg-service" description="Main target"/>
+    
+    <target name="sync-package-com-core" depends="core.sync-package" description="Main Target"/>
+    <target name="sync-package-com-catalog" depends="catalog.sync-package" description="Main Target"/>
+    <target name="sync-package-com-map" depends="map.sync-package" description="Main Target"/>
+    <target name="sync-package-com-monitor" depends="monitor.sync-package" description="Main Target"/>
+    <target name="sync-package-com-service" depends="service.sync-package" description="Main Target"/>
+    <target name="sync-package-com-contact" depends="contact.sync-package" description="Main Target"/>
+    <target name="sync-package-com-shop" depends="shop.sync-package" description="Main Target"/>
+    
+    <target name="sync-package-plg-contact" depends="plg-contact.sync-package" description="Main Target"/>
+    <target name="sync-package-plg-monitor" depends="plg-monitor.sync-package" description="Main Target"/>
+    <target name="sync-package-plg-service" depends="plg-service.sync-package" description="Main Target"/>
+    
+    <target name="sync-package-tpl-easysdi" depends="tpl-easysdi.sync-package" description="Main Target"/>
+    
+    
     
     <!-- Copy sub package in main package --> 
     <target name="copy-sub-package">

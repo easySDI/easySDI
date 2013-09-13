@@ -9,7 +9,8 @@
     <available file="${joomla.administrator.components.dir}/${monitor.component.name}" type="dir" property="monitor.admin.exist"/>
     <available file="${joomla.site.components.dir}/${monitor.component.name}" type="dir" property="monitor.site.exist"/>
     
-    <target name="package" depends="copy-administrator, copy-site, js-concat, js-minify, write-xml, build-info, zip-package" description="Main target"/>
+    <target name="package" depends="js-concat, js-minify, write-xml, build-info, zip-package" description="Main target"/>
+    <target name="sync-package" depends="copy-administrator, copy-site, js-concat, js-minify, write-xml, build-info, zip-package" description="Main target"/>
     <target name="dev-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-dev-package" description="Main target" />
     <target name="sync" depends="copy-administrator, copy-site" description="Main target" />
     <!-- 
@@ -94,7 +95,7 @@
                     <folder>helpers</folder>
                 </files>
                 <languages folder="site">
-                    <language tag="en-GB">language/en-GB.com_easysdi_monitor.ini</language>
+                    <language tag="en-GB">language/en-GB/en-GB.com_easysdi_monitor.ini</language>
                 </languages>
                 <administration>
                     <menu img="components/com_easysdi_monitor/assets/images/s_com_easysdi_monitor.png" >COM_EASYSDI_MONITOR</menu>
@@ -118,9 +119,9 @@
                         <folder>views</folder>
                     </files>
                     <languages folder="administrator">
-                        <language tag="en-GB">language/en-GB.com_easysdi_monitor.ini
+                        <language tag="en-GB">language/en-GB/en-GB.com_easysdi_monitor.ini
                         </language>
-                        <language tag="en-GB">language/en-GB.com_easysdi_monitor.sys.ini
+                        <language tag="en-GB">language/en-GB/en-GB.com_easysdi_monitor.sys.ini
                         </language>
                     </languages>
                 </administration>
