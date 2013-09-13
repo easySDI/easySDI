@@ -36,6 +36,7 @@
     <folder>models</folder>
     <folder>controllers</folder>
     <folder>helpers</folder>
+    <folder>libraries</folder>
   </files>
   <languages folder="site">
     <language tag="en-GB">language/en-GB/en-GB.com_easysdi_catalog.ini</language>
@@ -55,6 +56,7 @@
       <folder>sql</folder>
       <folder>tables</folder>
       <folder>views</folder>
+      <folder>assets</folder>
     </files>
     <languages folder="administrator">
       <language tag="en-GB">language/en-GB/en-GB.com_easysdi_catalog.ini</language>
