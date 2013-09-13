@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fields name="ctrlpanel">
+	<fieldset name="user" text="COM_EASYSDI_CORE_LEGEND_EASYSDI">
+	    <field 	name="users" 
+	    		type="link" 
+	    		default="0" 
+	    		label="COM_EASYSDI_CORE_CTRLPANEL_LBL_USERSLINK"
+	          	readonly="true" 
+	         	class="readonly" 
+	          	component="com_easysdi_user"
+	          	description="COM_EASYSDI_CORE_CTRLPANEL_DESC_USERSLINK" />
+	</fieldset>
+	
+	<fieldset name="service" text="COM_EASYSDI_SERVICE_LEGEND_EASYSDI" >
+		<field name="services" 
+			type="link" 
+			default="0" 
+			label="COM_EASYSDI_CORE_CTRLPANEL_LBL_SERVICESLINK"
+			readonly="true" 
+			class="readonly" 
+			component="com_easysdi_service"
+			description="COM_EASYSDI_CORE_CTRLPANEL_DESC_SERVICESLINK" />
+	</fieldset>
+	
+	<fieldset name="map" text="COM_EASYSDI_MAP_LEGEND_EASYSDI" >
+		<field name="mapcontexts" 
+			type="link" 
+			default="0" 
+			label="COM_EASYSDI_CORE_CTRLPANEL_LBL_MAPSLINK"
+			readonly="true" 
+			class="readonly" 
+			component="com_easysdi_map"
+			description="COM_EASYSDI_CORE_CTRLPANEL_DESC_MAPSLINK" />
+	</fieldset>
+    </fields>
+</form>
