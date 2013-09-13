@@ -253,16 +253,10 @@ class Easysdi_catalogModelMetadata extends JModelForm {
     public function save($data) {
         (empty($data['id']) ) ? $new = true : $new = false;
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('metadata.id');
-<<<<<<< HEAD
 
-        try {
-            $user = sdiFactory::getSdiUser();
-        } catch (Exception $e) {
-=======
                 
         $user = sdiFactory::getSdiUser();
         if (!$user->isEasySDI) {
->>>>>>> remotes/git-svn
             //Not an EasySDI user = not allowed
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
