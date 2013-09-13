@@ -298,9 +298,6 @@
       <column comment="" key="false" length="10" name="attribute_id" nullable="false" pattern="" precision="0" sourceType="INT UNSIGNED" type="id_Long" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
-      <column comment="" key="false" length="10" name="accessscope_id" nullable="false" pattern="" precision="0" sourceType="INT UNSIGNED" type="id_Long" usefulColumn="true">
-        <additionalField key="Comment" value=""/>
-      </column>
       <column comment="" defaultValue="1" key="false" length="10" name="access" nullable="false" pattern="" precision="0" sourceType="INT" type="id_Integer" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
@@ -328,7 +325,6 @@
         <mapperTableEntries name="name" expression="row1.name" type="id_String"/>
         <mapperTableEntries name="value" expression="row1.value" type="id_String" nullable="true"/>
         <mapperTableEntries name="attribute_id" expression="row1.attribute_id" type="id_Long"/>
-        <mapperTableEntries name="accessscope_id" expression="1" type="id_Long"/>
         <mapperTableEntries name="access" expression="context.access" type="id_Integer"/>
         <mapperTableEntries name="asset_id" type="id_Long"/>
       </outputTables>
@@ -457,11 +453,6 @@
       <elementValue elementRef="DELETE_KEY" value="false"/>
       <elementValue elementRef="UPDATABLE" value="true"/>
       <elementValue elementRef="INSERTABLE" value="true"/>
-      <elementValue elementRef="SCHEMA_COLUMN" value="accessscope_id"/>
-      <elementValue elementRef="UPDATE_KEY" value="false"/>
-      <elementValue elementRef="DELETE_KEY" value="false"/>
-      <elementValue elementRef="UPDATABLE" value="true"/>
-      <elementValue elementRef="INSERTABLE" value="true"/>
       <elementValue elementRef="SCHEMA_COLUMN" value="access"/>
       <elementValue elementRef="UPDATE_KEY" value="false"/>
       <elementValue elementRef="DELETE_KEY" value="false"/>
@@ -527,9 +518,6 @@
       <column comment="" key="false" length="10" name="attribute_id" nullable="false" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
-      <column comment="" key="false" length="10" name="accessscope_id" nullable="false" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">
-        <additionalField key="Comment" value=""/>
-      </column>
       <column comment="" defaultValue="1" key="false" length="10" name="access" nullable="false" pattern="" precision="0" sourceType="INT" type="id_Integer" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
@@ -578,9 +566,6 @@
         <additionalField key="Comment" value=""/>
       </column>
       <column comment="" key="false" length="10" name="attribute_id" nullable="false" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">
-        <additionalField key="Comment" value=""/>
-      </column>
-      <column comment="" key="false" length="10" name="accessscope_id" nullable="false" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
       <column comment="" defaultValue="1" key="false" length="10" name="access" nullable="false" pattern="" precision="0" sourceType="INT" type="id_Integer" usefulColumn="true">

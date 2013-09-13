@@ -481,7 +481,7 @@
     <elementParameter field="TEXT" name="PASS" value="context.destination_Password"/>
     <elementParameter field="DBTABLE" name="TABLE" value="&quot;jos_sdi_relation&quot;"/>
     <elementParameter field="CLOSED_LIST" name="TABLE_ACTION" value="NONE"/>
-    <elementParameter field="CLOSED_LIST" name="DATA_ACTION" value="UPDATE"/>
+    <elementParameter field="CLOSED_LIST" name="DATA_ACTION" value="INSERT"/>
     <elementParameter field="LABEL" name="NOTE" value="This option only applies when deploying and running in the Talend Runtime"/>
     <elementParameter field="CHECK" name="SPECIFY_DATASOURCE_ALIAS" value="false"/>
     <elementParameter field="TEXT" name="DATASOURCE_ALIAS" value="&quot;&quot;"/>
@@ -916,7 +916,7 @@
       </column>
     </metadata>
     <nodeData xsi:type="MapperData">
-      <uiProperties shellMaximized="true"/>
+      <uiProperties/>
       <varTables sizeState="INTERMEDIATE" name="Var">
         <mapperTableEntries name="rendertype_id" expression="Utils.getRenderType_id(row2.stereotype_id) " type="id_Long" nullable="true"/>
       </varTables>
