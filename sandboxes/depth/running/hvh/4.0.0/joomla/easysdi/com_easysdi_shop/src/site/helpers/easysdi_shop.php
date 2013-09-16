@@ -58,7 +58,7 @@ abstract class Easysdi_shopHelper {
             //There is already extractions in the basket
             //Check if there is at least one common perimeter within all the extractions in the basket
             $tmp_basketcontent = clone $basketcontent;
-            $tmp_basketcontent->extractions[] = $extraction;            
+            $tmp_basketcontent->extractions[] = $extraction;
             $common = Easysdi_shopHelper::getCommonPerimeter($tmp_basketcontent);
 
             if (count($common) == 0):
@@ -76,7 +76,7 @@ abstract class Easysdi_shopHelper {
                 die();
             elseif (!empty($basketcontent->extent) && $force):
                 //Clean session
-                JFactory::getApplication()->setUserState('com_easysdi_shop.basket.suspend', null);         
+                JFactory::getApplication()->setUserState('com_easysdi_shop.basket.suspend', null);
                 $basketcontent->extent = null;
             endif;
             $basketcontent->extractions[] = $extraction;
@@ -99,7 +99,7 @@ abstract class Easysdi_shopHelper {
         $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
 
         if (empty($id)):
-            $return['COUNT'] =0;
+            $return['COUNT'] = 0;
             echo json_encode($return);
             die();
         endif;
@@ -118,7 +118,7 @@ abstract class Easysdi_shopHelper {
                 break;
             }
         endforeach;
-        
+
         $basketcontent->perimeters = Easysdi_shopHelper::getCommonPerimeter($basketcontent);
 
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', $basketcontent);
@@ -128,30 +128,54 @@ abstract class Easysdi_shopHelper {
         die();
     }
 
-   public static function abortAdd(){
-       JFactory::getApplication()->setUserState('com_easysdi_shop.basket.suspend', null); 
-       $basketcontent = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
-       $return['ABORT'] = count($basketcontent->extractions);
-       echo json_encode($return);
-       die();
-   }
-    
+    public static function abortAdd() {
+        JFactory::getApplication()->setUserState('com_easysdi_shop.basket.suspend', null);
+        $basketcontent = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
+        $return['ABORT'] = count($basketcontent->extractions);
+        echo json_encode($return);
+        die();
+    }
+
     /**
      * 
      * @param stdClass $basketcontent
      * @return array common perimeter object
      */
-    private static function getCommonPerimeter ($basketcontent){
+    private static function getCommonPerimeter($basketcontent) {
         $common = array();
         foreach ($basketcontent->extractions as $extraction):
             foreach ($extraction->perimeters as $perimeter):
-                    if (!in_array($perimeter, $common)):
-                        $common[] = $perimeter;
-                    endif;
+                if (!in_array($perimeter, $common)):
+                    $common[] = $perimeter;
+                endif;
             endforeach;
         endforeach;
-        
+
         return $common;
+    }
+
+    /**
+     * 
+     * @param string $item : json {"id":perimeter_id,"name":perimeter_name,"features":[{"id": feature_id, "name":feature_name}]}
+     */
+    public static function addPerimeterToBasket($item) {
+        if (empty($item)):
+            $basketcontent = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
+            $basketcontent->extent = null;
+            JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', $basketcontent);
+            $return['MESSAGE'] = 'OK';
+            echo json_encode($return);
+            die();
+        endif;
+
+        $perimeter = json_decode($item);
+        $basketcontent = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
+        $basketcontent->extent = $perimeter;
+        JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', $basketcontent);
+
+        $return['MESSAGE'] = 'OK';
+        echo json_encode($return);
+        die();
     }
 
 }

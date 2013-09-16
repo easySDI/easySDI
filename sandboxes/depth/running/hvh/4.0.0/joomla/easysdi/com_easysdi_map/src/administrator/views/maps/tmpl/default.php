@@ -173,13 +173,13 @@ if (!empty($this->extra_sidebar)) {
 				</td>
                 <?php if (isset($this->items[0]->state)): ?>
 				<td class="center">
-					<?php echo JHtml::_('jgrid.published', $item->state, $i, 'users.', $canChange, 'cb'); ?>
+					<?php echo JHtml::_('jgrid.published', $item->state, $i, 'maps.', $canChange, 'cb'); ?>
 				</td>
                 <?php endif; ?>
                 <td class="nowrap has-context">
 					<div class="pull-left">
 						<?php if (isset($item->checked_out) && $item->checked_out) : ?>
-							<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'users.', $canCheckin); ?>
+							<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'maps.', $canCheckin); ?>
 						<?php endif; ?>
 						<?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>
 							<a href="<?php echo JRoute::_('index.php?option=com_easysdi_map&task=map.edit&id='.(int) $item->id); ?>">

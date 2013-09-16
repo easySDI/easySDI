@@ -23,7 +23,7 @@ class modEasysdiBasketHelper {
     public static function getBasketContent($params) {
         $content = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
         
-        if (!empty($content)){
+        if (!empty($content) && !empty($content->extractions)){
             return count($content->extractions);
         }
         else {
