@@ -3,18 +3,23 @@ var map, perimeterLayer, drawControls, selectLayer, hover, polygonLayer, boxLaye
 function initDraw() {
     polygonLayer = new OpenLayers.Layer.Vector("Polygon Layer", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
     boxLayer = new OpenLayers.Layer.Vector("Box layer", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
-    
+
     polygonLayer.events.on({
-        featuresadded: onFeaturesAdded
+        featuresadded: onFeaturesAdded,
+        beforefeatureadded : beforeFeatureAdded
+    });
+    boxLayer.events.on({
+        featuresadded: onFeaturesAdded,
+        beforefeatureadded : beforeFeatureAdded
     });
 
     app.mapPanel.map.addLayers([polygonLayer, boxLayer]);
-    
-    polyOptions = {stopDown : true, stopUp : true};
+
+    polyOptions = {stopDown: true, stopUp: true};
 
     drawControls = {
-        polygon: new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.Polygon,{handlerOptions: polyOptions}),
-        box: new OpenLayers.Control.DrawFeature(boxLayer, OpenLayers.Handler.RegularPolygon,{handlerOptions: polyOptions})
+        polygon: new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.Polygon, {handlerOptions: polyOptions}),
+        box: new OpenLayers.Control.DrawFeature(boxLayer, OpenLayers.Handler.RegularPolygon, {handlerOptions: polyOptions})
     };
 
     for (var key in drawControls) {
@@ -33,15 +38,34 @@ function toggleControl(element) {
             control.deactivate();
         }
     }
+
+    jQuery('#t-perimeter').val( '1' );
+    jQuery('#t-perimetern').val('freeperimeter');
+    jQuery('#t-features').val('');
 }
 
 function onFeaturesAdded(event) {
-    var bounds = event.features[0].geometry.getBounds();
-    var answer = "bottom: " + bounds.bottom + "\n";
-    answer += "left: " + bounds.left + "\n";
-    answer += "right: " + bounds.right + "\n";
-    answer += "top: " + bounds.top + "\n";
-    alert(answer);
+    var vertices = event.features[0].geometry.getVertices();
+    var pointsAsString = '';
+    for(var i = 0; i < vertices.length; i++){
+        pointsAsString += vertices[i].x;
+        pointsAsString += ',';
+        pointsAsString += vertices[i].y;
+        pointsAsString += ' ';
+    }
+    jQuery('#t-features').val(JSON.stringify(pointsAsString));
+    jQuery('#t-surface').val(JSON.stringify(event.features[0].geometry.getArea()));
+    app.mapPanel.map.zoomToExtent(pointsAsString);
+}
+
+function beforeFeatureAdded(event){
+    for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
+        if (app.mapPanel.map.layers[j].__proto__.CLASS_NAME == "OpenLayers.Layer.Vector") {
+            app.mapPanel.map.layers[j].removeAllFeatures();
+        }
+    }
+    jQuery('#t-features').val('');
+    jQuery('#t-surface').val('');
 }
 
 function reinitAll() {
@@ -53,8 +77,9 @@ function reinitAll() {
 
     jQuery('#t-perimeter').val(jQuery('#perimeter').val());
     jQuery('#t-perimetern').val(jQuery('#perimetern').val());
+    jQuery('#t-surface').val(jQuery('#surface').val());
     jQuery('#t-features').val(jQuery('#features').val());
-    
+
     for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
         if (app.mapPanel.map.layers[j].__proto__.CLASS_NAME == "OpenLayers.Layer.Vector") {
             app.mapPanel.map.layers[j].removeAllFeatures();
@@ -90,7 +115,7 @@ function savePerimeter() {
         return;
     }
 
-    var extent = {"id": jQuery('#t-perimeter').val(), "name": jQuery('#t-perimetern').val(), "features": JSON.parse(jQuery('#t-features').val())};
+    var extent = {"id": jQuery('#t-perimeter').val(), "name": jQuery('#t-perimetern').val(),"surface" : jQuery('#t-surface').val(), "features": JSON.parse(jQuery('#t-features').val())};
     var query = "index.php?option=com_easysdi_shop&task=addExtentToBasket&item=" + JSON.stringify(extent);
     request.onreadystatechange = displayExtentRecap;
     request.open("GET", query, true);
@@ -101,9 +126,12 @@ function displayExtentRecap() {
     if (request.readyState === 4) {
         jQuery('#perimeter').val(jQuery('#t-perimeter').val());
         jQuery('#perimetern').val(jQuery('#t-perimetern').val());
+        jQuery('#surface').val(jQuery('#t-surface').val());
         jQuery('#features').val(jQuery('#t-features').val());
-    
+
         jQuery('#perimeter-recap').empty();
+        jQuery('#perimeter-recap').append("<div><h3>Surface</h3></div>");
+        jQuery('#perimeter-recap').append("<div>" + jQuery('#surface').val() + "</div>");
         jQuery('#perimeter-recap').append("<div><h3>" + jQuery('#perimetern').val() + "</h3></div>");
 
         var features_text = jQuery('#features').val();
@@ -119,13 +147,16 @@ function displayExtentRecap() {
     }
 }
 
-function cancel(){
+function cancel() {
     reinitAll();
-    eval('selectPerimeter'+jQuery('#perimeter').val()+'()');
-    eval('reloadFeatures'+jQuery('#perimeter').val()+'()');
     
     jQuery('#modal-perimeter [id^="btn-perimeter"]').removeClass('active');
-    jQuery('#btn-perimeter'+jQuery('#perimeter').val()).addClass('active');
+    
+    if(jQuery('#perimeter').val() != ''){
+        eval('selectPerimeter' + jQuery('#perimeter').val() + '()');
+        eval('reloadFeatures' + jQuery('#perimeter').val() + '()');
+        jQuery('#btn-perimeter' + jQuery('#perimeter').val()).addClass('active');
+    }
 }
 
 

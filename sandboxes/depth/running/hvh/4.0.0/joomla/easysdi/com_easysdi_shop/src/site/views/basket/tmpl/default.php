@@ -264,6 +264,11 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
                                                     features.push ({"id":e.feature.attributes.<?php echo $perimeter->featuretypefieldid; ?>, 
                                                                     "name": e.feature.attributes.<?php echo $perimeter->featuretypefieldname; ?>});
                                                     jQuery('#t-features').val(JSON.stringify(features));
+                                                    if (jQuery('#t-surface').val() != '')
+                                                        var surface = parseInt (jQuery('#t-surface').val()) ;
+                                                    else
+                                                        var surface = 0;
+                                                    jQuery('#t-surface').val(JSON.stringify(surface + e.feature.geometry.getArea()));
                                                 });
                                                 
                                                 selectControl.events.register("featureunselected", this, function(e) {
@@ -380,10 +385,12 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
             </script>
             <input type="hidden" name="perimeter" id="perimeter" value="<?php if (!empty($this->item->extent)): echo $this->item->extent->id; endif;?>" />
             <input type="hidden" name="perimetern" id="perimetern" value="<?php if (!empty($this->item->extent)): echo $this->item->extent->name; endif;?>" />
+            <input type="hidden" name="surface" id="surface" value="" />
             <input type="hidden" name="features" id="features" value='<?php if (!empty($this->item->extent)): echo json_encode($this->item->extent->features); endif;?>' />
             <input type="hidden" name="t-perimeter" id="t-perimeter" value="<?php if (!empty($this->item->extent)): echo $this->item->extent->id; endif;?>" />
             <input type="hidden" name="t-perimetern" id="t-perimetern" value="<?php if (!empty($this->item->extent)): echo $this->item->extent->name; endif;?>" />
             <input type="hidden" name="t-features" id="t-features" value='<?php if (!empty($this->item->extent)): echo json_encode($this->item->extent->features); endif;?>' />
+            <input type="hidden" name="t-surface" id="surface" value="" />
     </form>
 
     <?php

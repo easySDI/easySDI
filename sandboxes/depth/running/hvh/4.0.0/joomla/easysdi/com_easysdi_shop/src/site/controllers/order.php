@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @version     4.0.0
  * @package     com_easysdi_shop
@@ -6,123 +7,94 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
-
 // No direct access
 defined('_JEXEC') or die;
 
-require_once JPATH_COMPONENT.'/controller.php';
+require_once JPATH_COMPONENT . '/controller.php';
 
 /**
  * Order controller class.
  */
-class Easysdi_shopControllerOrder extends Easysdi_shopController
-{
+class Easysdi_shopControllerOrder extends Easysdi_shopController {
 
-	/**
-	 * Method to check out an item for editing and redirect to the edit form.
-	 *
-	 * @since	1.6
-	 */
-	public function edit()
-	{
-		$app			= JFactory::getApplication();
+    /**
+     * Method to check out an item for editing and redirect to the edit form.
+     *
+     * @since	1.6
+     */
+    public function edit() {
+        $app = JFactory::getApplication();
 
-		// Get the previous edit id (if any) and the current edit id.
-		$previousId = (int) $app->getUserState('com_easysdi_shop.edit.order.id');
-		$editId	= JFactory::getApplication()->input->getInt('id', null, 'array');
+        // Get the previous edit id (if any) and the current edit id.
+        $previousId = (int) $app->getUserState('com_easysdi_shop.edit.order.id');
+        $editId = JFactory::getApplication()->input->getInt('id', null, 'array');
 
-		// Set the user id for the user to edit in the session.
-		$app->setUserState('com_easysdi_shop.edit.order.id', $editId);
+        // Set the user id for the user to edit in the session.
+        $app->setUserState('com_easysdi_shop.edit.order.id', $editId);
 
-		// Get the model.
-		$model = $this->getModel('Order', 'Easysdi_shopModel');
+        // Get the model.
+        $model = $this->getModel('Order', 'Easysdi_shopModel');
 
-		// Check out the item
-		if ($editId) {
+        // Check out the item
+        if ($editId) {
             $model->checkout($editId);
-		}
+        }
 
-		// Check in the previous user.
-		if ($previousId) {
+        // Check in the previous user.
+        if ($previousId) {
             $model->checkin($previousId);
-		}
+        }
 
-		// Redirect to the edit screen.
-		$this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orderform&layout=edit', false));
-	}
+        // Redirect to the edit screen.
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orderform&layout=edit', false));
+    }
 
-	/**
-	 * Method to save a user's profile data.
-	 *
-	 * @return	void
-	 * @since	1.6
-	 */
-	public function save()
-	{
-		// Check for request forgeries.
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+    /**
+     * Method to save a user's profile data.
+     *
+     * @return	void
+     * @since	1.6
+     */
+    public function save() {
+        // Check for request forgeries.
+        JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-		// Initialise variables.
-		$app	= JFactory::getApplication();
-		$model = $this->getModel('Order', 'Easysdi_shopModel');
+        // Initialise variables.
+        $app = JFactory::getApplication();
+        $model = $this->getModel('Order', 'Easysdi_shopModel');
 
-		// Get the user data.
-		$data = JFactory::getApplication()->input->get('jform', array(), 'array');
+        // Get the user data.
+        $data = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
 
-		// Validate the posted data.
-		$form = $model->getForm();
-		if (!$form) {
-			JError::raiseError(500, $model->getError());
-			return false;
-		}
+        
 
-		// Validate the posted data.
-		$data = $model->validate($form, $data);
+        // Check for errors.
+        if (empty($data)) {
+            $this->setRedirect(JRoute::_('index.php?', false));
+            return false;
+        }
 
-		// Check for errors.
-		if ($data === false) {
-			// Get the validation messages.
-			$errors	= $model->getErrors();
+        // Attempt to save the data.
+        $return = $model->save($data);
 
-			// Push up to three validation messages out to the user.
-			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
-				if ($errors[$i] instanceof Exception) {
-					$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-				} else {
-					$app->enqueueMessage($errors[$i], 'warning');
-				}
-			}
+        // Check for errors.
+        if ($return === false) {
+            // Save the data in the session.
+            $app->setUserState('com_easysdi_shop.edit.order.data', $data);
 
-			// Save the data in the session.
-			$app->setUserState('com_easysdi_shop.edit.order.data', JRequest::getVar('jform'),array());
+            // Redirect back to the edit screen.
+            $id = (int) $app->getUserState('com_easysdi_shop.edit.order.id');
+            $this->setMessage(JText::sprintf('Save failed', $model->getError()), 'warning');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=edit&id=' . $id, false));
+            return false;
+        }
 
-			// Redirect back to the edit screen.
-			$id = (int) $app->getUserState('com_easysdi_shop.edit.order.id');
-			$this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=edit&id='.$id, false));
-			return false;
-		}
 
-		// Attempt to save the data.
-		$return	= $model->save($data);
-
-		// Check for errors.
-		if ($return === false) {
-			// Save the data in the session.
-			$app->setUserState('com_easysdi_shop.edit.order.data', $data);
-
-			// Redirect back to the edit screen.
-			$id = (int)$app->getUserState('com_easysdi_shop.edit.order.id');
-			$this->setMessage(JText::sprintf('Save failed', $model->getError()), 'warning');
-			$this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=edit&id='.$id, false));
-			return false;
-		}
-
-            
         // Check in the profile.
         if ($return) {
             $model->checkin($return);
         }
-        
+
         // Clear the profile id from the session.
         $app->setUserState('com_easysdi_shop.edit.order.id', null);
 
@@ -132,83 +104,81 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController
         $item = $menu->getActive();
         $this->setRedirect(JRoute::_($item->link, false));
 
-		// Flush the data from the session.
-		$app->setUserState('com_easysdi_shop.edit.order.data', null);
-	}
-    
-    
+        // Flush the data from the session.
+        $app->setUserState('com_easysdi_shop.edit.order.data', null);
+    }
+
     function cancel() {
-		$menu = & JSite::getMenu();
+        $menu = & JSite::getMenu();
         $item = $menu->getActive();
         $this->setRedirect(JRoute::_($item->link, false));
     }
-    
-	public function remove()
-	{
-		// Check for request forgeries.
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-		// Initialise variables.
-		$app	= JFactory::getApplication();
-		$model = $this->getModel('Order', 'Easysdi_shopModel');
+    public function remove() {
+        // Check for request forgeries.
+        JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-		// Get the user data.
-		$data = JFactory::getApplication()->input->get('jform', array(), 'array');
+        // Initialise variables.
+        $app = JFactory::getApplication();
+        $model = $this->getModel('Order', 'Easysdi_shopModel');
 
-		// Validate the posted data.
-		$form = $model->getForm();
-		if (!$form) {
-			JError::raiseError(500, $model->getError());
-			return false;
-		}
+        // Get the user data.
+        $data = JFactory::getApplication()->input->get('jform', array(), 'array');
 
-		// Validate the posted data.
-		$data = $model->validate($form, $data);
+        // Validate the posted data.
+        $form = $model->getForm();
+        if (!$form) {
+            JError::raiseError(500, $model->getError());
+            return false;
+        }
 
-		// Check for errors.
-		if ($data === false) {
-			// Get the validation messages.
-			$errors	= $model->getErrors();
+        // Validate the posted data.
+        $data = $model->validate($form, $data);
 
-			// Push up to three validation messages out to the user.
-			for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
-				if ($errors[$i] instanceof Exception) {
-					$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-				} else {
-					$app->enqueueMessage($errors[$i], 'warning');
-				}
-			}
+        // Check for errors.
+        if ($data === false) {
+            // Get the validation messages.
+            $errors = $model->getErrors();
 
-			// Save the data in the session.
-			$app->setUserState('com_easysdi_shop.edit.order.data', $data);
+            // Push up to three validation messages out to the user.
+            for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
+                if ($errors[$i] instanceof Exception) {
+                    $app->enqueueMessage($errors[$i]->getMessage(), 'warning');
+                } else {
+                    $app->enqueueMessage($errors[$i], 'warning');
+                }
+            }
 
-			// Redirect back to the edit screen.
-			$id = (int) $app->getUserState('com_easysdi_shop.edit.order.id');
-			$this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=edit&id='.$id, false));
-			return false;
-		}
+            // Save the data in the session.
+            $app->setUserState('com_easysdi_shop.edit.order.data', $data);
 
-		// Attempt to save the data.
-		$return	= $model->delete($data);
+            // Redirect back to the edit screen.
+            $id = (int) $app->getUserState('com_easysdi_shop.edit.order.id');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=edit&id=' . $id, false));
+            return false;
+        }
 
-		// Check for errors.
-		if ($return === false) {
-			// Save the data in the session.
-			$app->setUserState('com_easysdi_shop.edit.order.data', $data);
+        // Attempt to save the data.
+        $return = $model->delete($data);
 
-			// Redirect back to the edit screen.
-			$id = (int)$app->getUserState('com_easysdi_shop.edit.order.id');
-			$this->setMessage(JText::sprintf('Delete failed', $model->getError()), 'warning');
-			$this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=edit&id='.$id, false));
-			return false;
-		}
+        // Check for errors.
+        if ($return === false) {
+            // Save the data in the session.
+            $app->setUserState('com_easysdi_shop.edit.order.data', $data);
 
-            
+            // Redirect back to the edit screen.
+            $id = (int) $app->getUserState('com_easysdi_shop.edit.order.id');
+            $this->setMessage(JText::sprintf('Delete failed', $model->getError()), 'warning');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=edit&id=' . $id, false));
+            return false;
+        }
+
+
         // Check in the profile.
         if ($return) {
             $model->checkin($return);
         }
-        
+
         // Clear the profile id from the session.
         $app->setUserState('com_easysdi_shop.edit.order.id', null);
 
@@ -218,9 +188,8 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController
         $item = $menu->getActive();
         $this->setRedirect(JRoute::_($item->link, false));
 
-		// Flush the data from the session.
-		$app->setUserState('com_easysdi_shop.edit.order.data', null);
-	}
-    
-    
+        // Flush the data from the session.
+        $app->setUserState('com_easysdi_shop.edit.order.data', null);
+    }
+
 }
