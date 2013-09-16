@@ -56,10 +56,42 @@ $items = $db->loadObjectList();
         request.open("GET", query, true);
         request.send(null);
     }
+    
+    function addtobasket2() {
+        
+        request = false;
+        if (window.XMLHttpRequest) {
+            request = new XMLHttpRequest();
+        } else if (window.ActiveXObject) {
+            try {
+                request = new ActiveXObject("Msxml2.XMLHTTP");
+            } catch (e) {
+                try {
+                    request = new ActiveXObject("Microsoft.XMLHTTP");
+                } catch (e) {
+                    request = false;
+                }
+            }
+        }
+        if (!request)
+            return;
+
+        var properties = {"id":10,"properties":[{"id":2,"values":[{"id":2,"value":"valeur-1"}]},{"id":3,"values":[{"id":5,"value":"text-simpe"}]},{"id":4,"values":[{"id":8,"value":"check-box-3"}]}]};
+        var query = "index.php?option=com_easysdi_shop&task=addToBasket&item="+ JSON.stringify(properties);
+
+        jQuery("#progress").css('visibility', 'visible');
+        request.onreadystatechange = updateBasketContent;
+        request.open("GET", query, true);
+        request.send(null);
+    }
 
 </script>
 <div>
     <button class="btn btn-success btn-large" onclick="addtobasket();">Add to basket</button>
+</div>
+
+<div>
+    <button class="btn btn-success btn-large" onclick="addtobasket2();">Add to basket</button>
 </div>
 <?php
 

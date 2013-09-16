@@ -397,7 +397,8 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         $query = $db->getQuery(true);
         if (strlen($ids) > 0) {
             $query->delete($table)
-                    ->where('id NOT IN (' . $ids . ')');
+                    ->where('id NOT IN (' . $ids . ')')
+                    ->where('diffusion_id =' . $id);
         } else {
             $query->delete($table)
                     ->where('diffusion_id =' . $id);

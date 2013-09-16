@@ -35,9 +35,9 @@ class Easysdi_shopController extends JControllerLegacy {
         Easysdi_shopHelper::addToBasket(JFactory::getApplication()->getUserState('com_easysdi_shop.basket.suspend'), true);
     }
 
-    public function addPerimeterToBasket() {
+    public function addExtentToBasket() {
         $item = JFactory::getApplication()->input->getString('item', null);
-        Easysdi_shopHelper::addPerimeterToBasket($item);
+        Easysdi_shopHelper::addExtentToBasket($item);
     }
 
 }

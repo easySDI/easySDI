@@ -3,19 +3,18 @@ var map, perimeterLayer, drawControls, selectLayer, hover, polygonLayer, boxLaye
 function initDraw() {
     polygonLayer = new OpenLayers.Layer.Vector("Polygon Layer", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
     boxLayer = new OpenLayers.Layer.Vector("Box layer", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
-    selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
-    hover = new OpenLayers.Layer.Vector("Hover", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
-
+    
     polygonLayer.events.on({
         featuresadded: onFeaturesAdded
     });
 
-    app.mapPanel.map.addLayers([polygonLayer, boxLayer, selectLayer, hover]);
     app.mapPanel.map.addLayers([polygonLayer, boxLayer]);
+    
+    polyOptions = {stopDown : true, stopUp : true};
 
     drawControls = {
-        polygon: new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.Polygon),
-        box: new OpenLayers.Control.DrawFeature(boxLayer, OpenLayers.Handler.RegularPolygon)
+        polygon: new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.Polygon,{handlerOptions: polyOptions}),
+        box: new OpenLayers.Control.DrawFeature(boxLayer, OpenLayers.Handler.RegularPolygon,{handlerOptions: polyOptions})
     };
 
     for (var key in drawControls) {
@@ -24,10 +23,6 @@ function initDraw() {
 }
 
 function toggleControl(element) {
-    if (app.mapPanel.map.getLayersByName("perimeterLayer").length > 0) {
-        app.mapPanel.map.removeLayer(perimeterLayer);
-    }
-
     reinitAll();
 
     for (key in drawControls) {
@@ -50,18 +45,21 @@ function onFeaturesAdded(event) {
 }
 
 function reinitAll() {
+    if (app.mapPanel.map.getLayersByName("perimeterLayer").length > 0) {
+        app.mapPanel.map.removeLayer(perimeterLayer);
+        app.mapPanel.map.removeLayer(selectLayer);
+        app.mapPanel.map.removeLayer(hover);
+    }
 
     jQuery('#t-perimeter').val(jQuery('#perimeter').val());
     jQuery('#t-perimetern').val(jQuery('#perimetern').val());
     jQuery('#t-features').val(jQuery('#features').val());
     
-
     for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
         if (app.mapPanel.map.layers[j].__proto__.CLASS_NAME == "OpenLayers.Layer.Vector") {
             app.mapPanel.map.layers[j].removeAllFeatures();
         }
     }
-
     app.mapPanel.map.removeControl(selectControl);
 
     for (key in drawControls) {
@@ -71,7 +69,6 @@ function reinitAll() {
 }
 
 function savePerimeter() {
-    
     //Put in the session
     jQuery("#progress").css('visibility', 'visible');
     request = false;
@@ -93,14 +90,14 @@ function savePerimeter() {
         return;
     }
 
-    var perimeter = {"id": jQuery('#t-perimeter').val(), "name": jQuery('#t-perimetern').val(), "features": JSON.parse(jQuery('#t-features').val())};
-    var query = "index.php?option=com_easysdi_shop&task=addPerimeterToBasket&item=" + JSON.stringify(perimeter);
-    request.onreadystatechange = displayPerimeterRecap;
+    var extent = {"id": jQuery('#t-perimeter').val(), "name": jQuery('#t-perimetern').val(), "features": JSON.parse(jQuery('#t-features').val())};
+    var query = "index.php?option=com_easysdi_shop&task=addExtentToBasket&item=" + JSON.stringify(extent);
+    request.onreadystatechange = displayExtentRecap;
     request.open("GET", query, true);
     request.send(null);
 }
 
-function displayPerimeterRecap() {
+function displayExtentRecap() {
     if (request.readyState === 4) {
         jQuery('#perimeter').val(jQuery('#t-perimeter').val());
         jQuery('#perimetern').val(jQuery('#t-perimetern').val());
@@ -120,6 +117,15 @@ function displayPerimeterRecap() {
             jQuery('#perimeter-recap').append("<div>" + value.name + "</div>");
         });
     }
+}
+
+function cancel(){
+    reinitAll();
+    eval('selectPerimeter'+jQuery('#perimeter').val()+'()');
+    eval('reloadFeatures'+jQuery('#perimeter').val()+'()');
+    
+    jQuery('#modal-perimeter [id^="btn-perimeter"]').removeClass('active');
+    jQuery('#btn-perimeter'+jQuery('#perimeter').val()).addClass('active');
 }
 
 

@@ -169,10 +169,10 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
                                     if ($perimeter->id == 1 ):
                                         if(!$this->item->isrestrictedbyperimeter):
                                         ?>
-                                        <a href="#" class="btn" onClick="toggleControl('box');return false;"><i class=" icon-checkbox-unchecked"></i><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_RECTANGLE'); ?></a>
+                                        <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>a" class="btn" onClick="toggleControl('box');return false;"><i class=" icon-checkbox-unchecked"></i><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_RECTANGLE'); ?></a>
                                         <br>
                                         <br>
-                                        <a href="#" class="btn" onClick="toggleControl('polygon');return false;"><i class="icon-chart"></i><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_POLYGON'); ?></a>
+                                        <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>b"  class="btn" onClick="toggleControl('polygon');return false;"><i class="icon-chart"></i><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FREE_PERIMETER_POLYGON'); ?></a>
 
                                         <br>
                                         <br>                                        
@@ -181,7 +181,7 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
                                     elseif ($perimeter->id == 2):
                                         if($this->user->isEasySDI):
                                         ?>
-                                        <a href="#" class="btn" onClick="selectMyPerimeter();return false;"><i class="icon-user"></i><?php echo $perimeter->name; ?></a>
+                                        <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>" class="btn" onClick="selectMyPerimeter();return false;"><i class="icon-user"></i><?php echo $perimeter->name; ?></a>
                                         <script>
                                             function selectMyPerimeter() {
                                                 var gmlLayer = new OpenLayers.Layer.Vector("MyGMLLayer");
@@ -220,15 +220,11 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
                                         endif;
                                     else:
                                         ?>
-                                        <a href="#" class="btn <?php if(!empty($this->item->extent) && $this->item->extent->id== $perimeter->id) echo 'active'; ?>" onClick="selectPerimeter<?php echo $perimeter->id; ?>();return false;"><i class="icon-brush"></i><?php echo $perimeter->name; ?></a>
+                                        <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>" class="btn <?php if(!empty($this->item->extent) && $this->item->extent->id== $perimeter->id) echo 'active'; ?>" onClick="selectPerimeter<?php echo $perimeter->id; ?>();return false;"><i class="icon-brush"></i><?php echo $perimeter->name; ?></a>
                                         <script>
                                             function selectPerimeter<?php echo $perimeter->id; ?>() {
                                                 reinitAll();
-                                            
-                                                if(app.mapPanel.map.getLayersByName("perimeterLayer").length > 0){
-                                                    app.mapPanel.map.removeLayer(perimeterLayer);
-                                                }
-                                                   
+                                                                                               
                                                 jQuery('#t-perimeter').val(<?php echo $perimeter->id; ?>);
                                                 jQuery('#t-perimetern').val('<?php echo $perimeter->name; ?>');
                                                 jQuery('#t-features').val('');
@@ -239,10 +235,9 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
                                                 app.mapPanel.map.addLayer(perimeterLayer);
                                                 app.mapPanel.map.setLayerIndex(perimeterLayer, 0); 
                                                 
-
                                                 selectControl = new OpenLayers.Control.GetFeature({
                                                     protocol: new OpenLayers.Protocol.WFS({
-                                                        version: "1.1.0",
+                                                        version: "1.0.0",
                                                         url:  "<?php echo $perimeter->wfsurl; ?>",
                                                         srsName: app.mapPanel.map.projection,
                                                         featureType: "<?php echo $perimeter->featuretypename; ?>",
@@ -255,6 +250,10 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
                                                     toggleKey: "ctrlKey"
                                                 });
                                                 
+                                                selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
+                                                hover = new OpenLayers.Layer.Vector("Hover", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
+                                                app.mapPanel.map.addLayers([selectLayer, hover]);
+                                                
                                                 selectControl.events.register("featureselected", this, function(e) {
                                                     selectLayer.addFeatures([e.feature]);                                                    
                                                     var features_text = jQuery('#t-features').val();
@@ -266,6 +265,7 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
                                                                     "name": e.feature.attributes.<?php echo $perimeter->featuretypefieldname; ?>});
                                                     jQuery('#t-features').val(JSON.stringify(features));
                                                 });
+                                                
                                                 selectControl.events.register("featureunselected", this, function(e) {
                                                     selectLayer.removeFeatures([e.feature]);                                                    
                                                     var features_text = jQuery('#t-features').val();
@@ -285,16 +285,56 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
                                                     else
                                                         jQuery('#t-features').val(JSON.stringify(features));                                                    
                                                 });
+                                                
                                                 selectControl.events.register("hoverfeature", this, function(e) {
                                                     hover.addFeatures([e.feature]);
                                                 });
+                                                
                                                 selectControl.events.register("outfeature", this, function(e) {
                                                     hover.removeFeatures([e.feature]);
                                                 });
+                                                
                                                 app.mapPanel.map.addControl(selectControl);
                                                 selectControl.activate();
                                                 
                                                 return false;
+                                            }
+                                            
+                                            function reloadFeatures<?php echo $perimeter->id; ?>(){
+                                                var wfsUrl = '<?php echo $perimeter->wfsurl; ?>?request=GetFeature&SERVICE=WFS&TYPENAME=<?php echo $perimeter->featuretypename; ?>&VERSION=1.0.0';
+                                                var wfsUrlWithFilter = wfsUrl + '&FILTER=';
+                                                wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">');
+                                                var features_text = jQuery('#features').val();
+                                                if(features_text !== "")
+                                                    var features = JSON.parse(features_text);
+                                                else
+                                                    var features = new Array();
+
+                                                if(features.length>1)
+                                                {
+                                                        wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Or>');
+                                                }
+
+                                                for(var i=0; i<features.length ; i++) 
+                                                {
+
+                                                        wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:PropertyIsEqualTo><ogc:PropertyName><?php echo $perimeter->featuretypefieldid; ?></ogc:PropertyName><ogc:Literal>'+ features[i].id +'</ogc:Literal></ogc:PropertyIsEqualTo>');
+                                                }
+                                                if(features.length>1)
+                                                {
+                                                        wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Or>');
+                                                }
+                                                wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Filter>');
+
+                                                app.mapPanel.map.removeLayer(selectLayer);
+                                                selectLayer = new OpenLayers.Layer.Vector("Selection", {
+                                                    strategies: [new OpenLayers.Strategy.Fixed()],
+                                                    protocol: new OpenLayers.Protocol.HTTP({
+                                                        url: wfsUrlWithFilter,
+                                                        format: new OpenLayers.Format.GML()
+                                                    })
+                                                });
+                                                app.mapPanel.map.addLayer(selectLayer);
                                             }
                                         </script>
                                         <br>
@@ -310,7 +350,7 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
                 </div>
             </div>
                 <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal" onclick="reinitAll();" aria-hidden="true">Close</button>
+                    <button class="btn" data-dismiss="modal" onclick="cancel();" aria-hidden="true">Close</button>
                     <button class="btn btn-primary" onclick="savePerimeter();" data-dismiss="modal">Save perimeter</button>
                 </div>
             </div>
@@ -332,14 +372,18 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
                 Ext.onReady(function(){
                     app.on("ready", function() {
                         initDraw();
+                        <?php if(!empty($this->item->extent)) :?>
+                            selectPerimeter<?php echo $this->item->extent->id;?>();
+                            reloadFeatures<?php echo $this->item->extent->id; ?>();
+                        <?php endif;?>
                     });});
             </script>
             <input type="hidden" name="perimeter" id="perimeter" value="<?php if (!empty($this->item->extent)): echo $this->item->extent->id; endif;?>" />
             <input type="hidden" name="perimetern" id="perimetern" value="<?php if (!empty($this->item->extent)): echo $this->item->extent->name; endif;?>" />
-            <input type="hidden" name="features" id="features" value="<?php if (!empty($this->item->extent)): echo json_encode($this->item->extent->features); endif;?>" />
+            <input type="hidden" name="features" id="features" value='<?php if (!empty($this->item->extent)): echo json_encode($this->item->extent->features); endif;?>' />
             <input type="hidden" name="t-perimeter" id="t-perimeter" value="<?php if (!empty($this->item->extent)): echo $this->item->extent->id; endif;?>" />
             <input type="hidden" name="t-perimetern" id="t-perimetern" value="<?php if (!empty($this->item->extent)): echo $this->item->extent->name; endif;?>" />
-            <input type="hidden" name="t-features" id="t-features" value="<?php if (!empty($this->item->extent)): echo json_encode($this->item->extent->features); endif;?>" />
+            <input type="hidden" name="t-features" id="t-features" value='<?php if (!empty($this->item->extent)): echo json_encode($this->item->extent->features); endif;?>' />
     </form>
 
     <?php
