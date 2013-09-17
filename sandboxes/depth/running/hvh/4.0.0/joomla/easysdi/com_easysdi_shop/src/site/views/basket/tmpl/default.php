@@ -40,10 +40,6 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
         }
     </script>
 
-
-
-
-
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=basket'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
 
         <div class="basket-edit front-end-edit">
@@ -181,37 +177,29 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
                                     elseif ($perimeter->id == 2):
                                         if($this->user->isEasySDI):
                                         ?>
-                                        <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>" class="btn" onClick="selectMyPerimeter();return false;"><i class="icon-user"></i><?php echo $perimeter->name; ?></a>
+                                        <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>" class="btn" onClick="selectPerimeter<?php echo $perimeter->id; ?>();return false;"><i class="icon-user"></i><?php echo $perimeter->name; ?></a>
                                         <script>
-                                            function selectMyPerimeter() {
-                                                var gmlLayer = new OpenLayers.Layer.Vector("MyGMLLayer");
-
-
-                                                var strGML = "<?php echo addslashes ($this->user->gml); ?>";
-
-                                                var gmlOptions = {
-                                                    featureType: "feature",
-                                                    featureNS: "http://example.com/feature"
-                                                };
-                                                
-                                                var gmlOptionsIn = OpenLayers.Util.extend(
-                                                    OpenLayers.Util.extend({}, gmlOptions)
+                                            function selectPerimeter<?php echo $perimeter->id; ?>() {
+                                                resetAll();
+                                           
+                                                jQuery('#t-perimeter').val(<?php echo $perimeter->id; ?>);
+                                                jQuery('#t-perimetern').val('<?php echo $perimeter->name; ?>');
+                                                jQuery('#t-features').val('');
+                                            
+                                                var wkt = 'POLYGON((<?php echo $this->user->gml ;?>))';
+                                                var feature = new OpenLayers.Format.WKT().read(wkt);
+                                                var geometry = feature.geometry.transform(
+                                                    new OpenLayers.Projection('EPSG:4326'), 
+                                                    new OpenLayers.Projection('EPSG:900913')
                                                 );
-
-                                                var format = new OpenLayers.Format.GML.v3(gmlOptionsIn);
-
-                                                var features = format.read(strGML);
-
-                                                var colors = ['#000000', '#ffffff', '#fefefe'];
-
-                                                for (var x in features) {
-                                                    features[x].style = { fillColor: colors[x] };
-                                                }
-
-
-                                                gmlLayer.addFeatures(features);
-                                                app.mapPanel.map.addLayer(gmlLayer);
-                                                app.mapPanel.map.zoomToExtent(gmlLayer.getDataExtent());
+                                                
+                                                var transformedFeature = new OpenLayers.Feature.Vector(geometry);
+                                                myLayer = new OpenLayers.Layer.Vector("myLayer");
+                                                myLayer.addFeatures([transformedFeature]);
+                                               
+                                                app.mapPanel.map.addLayer(myLayer);
+                                                app.mapPanel.map.zoomToExtent(myLayer.getDataExtent());
+                                                putFeaturesVerticesInHiddenField(transformedFeature);
                                             }
                                         </script>
                                         <br>
@@ -220,127 +208,17 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
                                         endif;
                                     else:
                                         ?>
-                                        <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>" class="btn <?php if(!empty($this->item->extent) && $this->item->extent->id== $perimeter->id) echo 'active'; ?>" onClick="selectPerimeter<?php echo $perimeter->id; ?>();return false;"><i class="icon-brush"></i><?php echo $perimeter->name; ?></a>
+                                        <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>" class="btn <?php if(!empty($this->item->extent) && $this->item->extent->id== $perimeter->id) echo 'active'; ?>" onClick='selectPerimeter<?php echo $perimeter->id; ?>();return false;'><i class="icon-brush"></i><?php echo $perimeter->name; ?></a>
                                         <script>
+                                            
                                             function selectPerimeter<?php echo $perimeter->id; ?>() {
-                                                reinitAll();
-                                                                                               
-                                                jQuery('#t-perimeter').val(<?php echo $perimeter->id; ?>);
-                                                jQuery('#t-perimetern').val('<?php echo $perimeter->name; ?>');
-                                                jQuery('#t-features').val('');
-                                                                                                
-                                                perimeterLayer = new OpenLayers.Layer.WMS ("perimeterLayer", 
-                                                "<?php echo $perimeter->wmsurl; ?>",
-                                                {layers: '<?php echo $perimeter->layername; ?>'})
-                                                app.mapPanel.map.addLayer(perimeterLayer);
-                                                app.mapPanel.map.setLayerIndex(perimeterLayer, 0); 
-                                                
-                                                selectControl = new OpenLayers.Control.GetFeature({
-                                                    protocol: new OpenLayers.Protocol.WFS({
-                                                        version: "1.0.0",
-                                                        url:  "<?php echo $perimeter->wfsurl; ?>",
-                                                        srsName: app.mapPanel.map.projection,
-                                                        featureType: "<?php echo $perimeter->featuretypename; ?>",
-                                                        featureNS: "<?php echo $perimeter->namespace; ?>",
-                                                        geometryName: "<?php echo $perimeter->featuretypefieldgeometry; ?>"
-                                                    }),
-                                                    box: true,
-                                                    hover: true,
-                                                    multipleKey: "shiftKey",
-                                                    toggleKey: "ctrlKey"
-                                                });
-                                                
-                                                selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
-                                                hover = new OpenLayers.Layer.Vector("Hover", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
-                                                app.mapPanel.map.addLayers([selectLayer, hover]);
-                                                
-                                                selectControl.events.register("featureselected", this, function(e) {
-                                                    selectLayer.addFeatures([e.feature]);                                                    
-                                                    var features_text = jQuery('#t-features').val();
-                                                    if(features_text !== "")
-                                                        var features = JSON.parse(features_text);
-                                                    else
-                                                        var features = new Array();
-                                                    features.push ({"id":e.feature.attributes.<?php echo $perimeter->featuretypefieldid; ?>, 
-                                                                    "name": e.feature.attributes.<?php echo $perimeter->featuretypefieldname; ?>});
-                                                    jQuery('#t-features').val(JSON.stringify(features));
-                                                    if (jQuery('#t-surface').val() != '')
-                                                        var surface = parseInt (jQuery('#t-surface').val()) ;
-                                                    else
-                                                        var surface = 0;
-                                                    jQuery('#t-surface').val(JSON.stringify(surface + e.feature.geometry.getArea()));
-                                                });
-                                                
-                                                selectControl.events.register("featureunselected", this, function(e) {
-                                                    selectLayer.removeFeatures([e.feature]);                                                    
-                                                    var features_text = jQuery('#t-features').val();
-                                                    if(features_text !== "")
-                                                        var features = JSON.parse(features_text);
-                                                    else
-                                                        return;
-                                                    jQuery.each(features, function(index, value){
-                                                        if(typeof value === "undefined")
-                                                            return true;
-                                                        if(value.id == e.feature.attributes.<?php echo $perimeter->featuretypefieldid; ?>){
-                                                            features.splice(index,1);
-                                                        }
-                                                    });
-                                                    if(features.size == 0)
-                                                        jQuery('#t-features').val('');
-                                                    else
-                                                        jQuery('#t-features').val(JSON.stringify(features));                                                    
-                                                });
-                                                
-                                                selectControl.events.register("hoverfeature", this, function(e) {
-                                                    hover.addFeatures([e.feature]);
-                                                });
-                                                
-                                                selectControl.events.register("outfeature", this, function(e) {
-                                                    hover.removeFeatures([e.feature]);
-                                                });
-                                                
-                                                app.mapPanel.map.addControl(selectControl);
-                                                selectControl.activate();
-                                                
-                                                return false;
+                                                return selectPerimeter("<?php echo $perimeter->id; ?>", "<?php echo $perimeter->name; ?>", "<?php echo $perimeter->wmsurl; ?>", "<?php echo $perimeter->layername; ?>", "<?php echo $perimeter->wfsurl; ?>", "<?php echo $perimeter->featuretypename; ?>", "<?php echo $perimeter->namespace; ?>", "<?php echo $perimeter->featuretypefieldgeometry; ?>", "<?php echo $perimeter->featuretypefieldid; ?>", "<?php echo $perimeter->featuretypefieldname; ?>");
                                             }
                                             
                                             function reloadFeatures<?php echo $perimeter->id; ?>(){
-                                                var wfsUrl = '<?php echo $perimeter->wfsurl; ?>?request=GetFeature&SERVICE=WFS&TYPENAME=<?php echo $perimeter->featuretypename; ?>&VERSION=1.0.0';
-                                                var wfsUrlWithFilter = wfsUrl + '&FILTER=';
-                                                wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">');
-                                                var features_text = jQuery('#features').val();
-                                                if(features_text !== "")
-                                                    var features = JSON.parse(features_text);
-                                                else
-                                                    var features = new Array();
-
-                                                if(features.length>1)
-                                                {
-                                                        wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Or>');
-                                                }
-
-                                                for(var i=0; i<features.length ; i++) 
-                                                {
-
-                                                        wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:PropertyIsEqualTo><ogc:PropertyName><?php echo $perimeter->featuretypefieldid; ?></ogc:PropertyName><ogc:Literal>'+ features[i].id +'</ogc:Literal></ogc:PropertyIsEqualTo>');
-                                                }
-                                                if(features.length>1)
-                                                {
-                                                        wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Or>');
-                                                }
-                                                wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Filter>');
-
-                                                app.mapPanel.map.removeLayer(selectLayer);
-                                                selectLayer = new OpenLayers.Layer.Vector("Selection", {
-                                                    strategies: [new OpenLayers.Strategy.Fixed()],
-                                                    protocol: new OpenLayers.Protocol.HTTP({
-                                                        url: wfsUrlWithFilter,
-                                                        format: new OpenLayers.Format.GML()
-                                                    })
-                                                });
-                                                app.mapPanel.map.addLayer(selectLayer);
+                                                reloadFeatures ("<?php echo $perimeter->wfsurl; ?>","<?php echo $perimeter->featuretypename; ?>", "<?php echo $perimeter->featuretypefieldid; ?>");
                                             }
+                                                
                                         </script>
                                         <br>
                                         <br>
