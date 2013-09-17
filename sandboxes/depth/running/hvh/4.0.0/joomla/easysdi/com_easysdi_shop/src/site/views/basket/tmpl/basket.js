@@ -1,30 +1,25 @@
-var map, perimeterLayer, drawControls, selectLayer, hover, polygonLayer, boxLayer, selectControl, request, myLayer;
+var map, perimeterLayer, drawControls, selectLayer, polygonLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter;
 function initDraw() {
     polygonLayer = new OpenLayers.Layer.Vector("Polygon Layer", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
-    boxLayer = new OpenLayers.Layer.Vector("Box layer", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
     polygonLayer.events.on({
         featuresadded: onFeaturesAdded,
         beforefeatureadded: beforeFeatureAdded
     });
-    boxLayer.events.on({
-        featuresadded: onFeaturesAdded,
-        beforefeatureadded: beforeFeatureAdded
-    });
-    app.mapPanel.map.addLayers([polygonLayer, boxLayer]);
+    app.mapPanel.map.addLayers([polygonLayer]);
     polyOptions = {stopDown: true, stopUp: true};
     drawControls = {
         polygon: new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.Polygon, {handlerOptions: polyOptions}),
-        box: new OpenLayers.Control.DrawFeature(boxLayer, OpenLayers.Handler.RegularPolygon, {handlerOptions: polyOptions})
+        box: new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.RegularPolygon, {handlerOptions: polyOptions})
     };
     for (var key in drawControls) {
         app.mapPanel.map.addControl(drawControls[key]);
     }
 }
-function selectPerimeter1(){
-    
+function selectPerimeter1() {
+
 }
-function reloadFeatures1(){
-    
+function reloadFeatures1() {
+
 }
 function toggleControl(element) {
     resetAll();
@@ -70,27 +65,29 @@ function beforeFeatureAdded(event) {
 }
 
 function resetAll() {
-    
-
     jQuery('#t-perimeter').val(jQuery('#perimeter').val());
     jQuery('#t-perimetern').val(jQuery('#perimetern').val());
     jQuery('#t-surface').val(jQuery('#surface').val());
     jQuery('#t-features').val(jQuery('#features').val());
-    
     for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
         if (app.mapPanel.map.layers[j].__proto__.CLASS_NAME == "OpenLayers.Layer.Vector") {
             app.mapPanel.map.layers[j].removeAllFeatures();
         }
     }
+    if (typeof selectControl !== 'undefined') {
+        selectControl.events.unregister("featureselected", this, listenerFeatureSelected);
+        selectControl.events.unregister("featureunselected", this, listenerFeatureUnselected);
+        app.mapPanel.map.removeControl(selectControl);
+    }
     if (app.mapPanel.map.getLayersByName("perimeterLayer").length > 0) {
-        app.mapPanel.map.removeLayer(perimeterLayer);
-        app.mapPanel.map.removeLayer(selectLayer);
-        app.mapPanel.map.removeLayer(hover);        
+        perimeterLayer.events.unregister("loadend", perimeterLayer, listenerLoadEnd);
+//        app.mapPanel.map.removeLayer(perimeterLayer);
+//        app.mapPanel.map.removeLayer(selectLayer);        
     }
     if (app.mapPanel.map.getLayersByName("myLayer").length > 0) {
         app.mapPanel.map.removeLayer(myLayer);
     }
-    app.mapPanel.map.removeControl(selectControl);
+    
     for (key in drawControls) {
         var control = drawControls[key];
         control.deactivate();
@@ -159,17 +156,19 @@ function cancel() {
     }
 }
 
-function selectPerimeter(perimeterid, perimetername, wmsurl, wmslayername, wfsurl, featuretypename, namespace, featuretypefieldgeometry, featuretypefieldid, featuretypefieldname) {
+function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wmsurl, wmslayername, wfsurl, featuretypename, namespace, featuretypefieldgeometry, featuretypefieldid, featuretypefieldname) {
     resetAll();
+    fieldid = featuretypefieldid;
+    fieldname = featuretypefieldname;
     jQuery('#t-perimeter').val(perimeterid);
     jQuery('#t-perimetern').val(perimetername);
     jQuery('#t-features').val('');
-    perimeterLayer = new OpenLayers.Layer.WMS("perimeterLayer",
-            wmsurl,
-            {layers: wmslayername})
-    app.mapPanel.map.addLayer(perimeterLayer);
-    app.mapPanel.map.setLayerIndex(perimeterLayer, 0);
-    selectControl = new OpenLayers.Control.GetFeature({
+    if (isrestrictedbyperimeter === 0) {
+        perimeterLayer = new OpenLayers.Layer.WMS("perimeterLayer",
+                wmsurl,
+                {layers: wmslayername})
+                
+                selectControl = new OpenLayers.Control.GetFeature({
         protocol: new OpenLayers.Protocol.WFS({
             version: "1.0.0",
             url: wfsurl,
@@ -179,59 +178,108 @@ function selectPerimeter(perimeterid, perimetername, wmsurl, wmslayername, wfsur
             geometryName: featuretypefieldgeometry
         }),
         box: true,
-        hover: true,
         multipleKey: "shiftKey",
         toggleKey: "ctrlKey"
     });
-    selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
-    hover = new OpenLayers.Layer.Vector("Hover", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
-    app.mapPanel.map.addLayers([selectLayer, hover]);
-    selectControl.events.register("featureselected", this, function(e) {
-        selectLayer.addFeatures([e.feature]);
-        var features_text = jQuery('#t-features').val();
-        if (features_text !== "")
-            var features = JSON.parse(features_text);
-        else
-            var features = new Array();
 
-        features.push({"id": e.feature.attributes[featuretypefieldid], "name": e.feature.attributes[featuretypefieldname]});
-        jQuery('#t-features').val(JSON.stringify(features));
-        if (jQuery('#t-surface').val() != '')
-            var surface = parseInt(jQuery('#t-surface').val());
-        else
-            var surface = 0;
-        jQuery('#t-surface').val(JSON.stringify(surface + e.feature.geometry.getArea()));
-    });
-    selectControl.events.register("featureunselected", this, function(e) {
-        selectLayer.removeFeatures([e.feature]);
-        var features_text = jQuery('#t-features').val();
-        if (features_text !== "")
-            var features = JSON.parse(features_text);
-        else
-            return;
-        jQuery.each(features, function(index, value) {
-            if (typeof value === "undefined")
-                return true;
-            if (value.id == e.feature.attributes[featuretypefieldid]) {
-                features.splice(index, 1);
-            }
+    } else {
+        var featurerestriction = getUserRestrictedExtentFeature(userperimeter);
+        perimeterLayer = new OpenLayers.Layer.Vector("perimeterLayer", {
+            strategies: [new OpenLayers.Strategy.Fixed()],
+            protocol: new OpenLayers.Protocol.WFS({
+                url: wfsurl,
+                featureType: featuretypename,
+                featureNS: namespace,
+                srsName: app.mapPanel.map.projection
+            }),
+            styleMap: new OpenLayers.StyleMap({
+                strokeWidth: 3,
+                strokeColor: "#333333"
+            }),
+            filter: new OpenLayers.Filter.Spatial({
+                type: OpenLayers.Filter.Spatial.INTERSECTS,
+                value: featurerestriction.geometry
+            })
         });
-        if (features.size == 0)
-            jQuery('#t-features').val('');
-        else
-            jQuery('#t-features').val(JSON.stringify(features));
+        
+        selectControl = new OpenLayers.Control.GetFeature({
+        protocol: new OpenLayers.Protocol.WFS({
+            version: "1.0.0",
+            url: wfsurl,
+            srsName: app.mapPanel.map.projection,
+            featureType: featuretypename,
+            featureNS: namespace,
+            geometryName: featuretypefieldgeometry,
+            defaultFilter: new OpenLayers.Filter.Spatial({
+                type: OpenLayers.Filter.Spatial.INTERSECTS,
+                value: getUserRestrictedExtentFeature(userperimeter).geometry
+            })
+        }),
+        box: true,
+        multipleKey: "shiftKey",
+        toggleKey: "ctrlKey"
     });
-//    selectControl.events.register("hoverfeature", this, function(e) {
-//        hover.addFeatures([e.feature]);
-//    });
-//    selectControl.events.register("outfeature", this, function(e) {
-//        hover.removeFeatures([e.feature]);
-//    });
+    }
+    loadingPerimeter = new Ext.LoadMask(Ext.getBody(), {
+        msg: "Chargement de la couche de périmètre..."
+    });
+    loadingPerimeter.show();
+    app.mapPanel.map.addLayer(perimeterLayer);
+    perimeterLayer.events.register("loadend", perimeterLayer, listenerLoadEnd);
+    app.mapPanel.map.setLayerIndex(perimeterLayer, 0);
+    
+    selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
+    app.mapPanel.map.addLayer(selectLayer);
+    selectControl.events.register("featureselected", this, listenerFeatureSelected);
+    selectControl.events.register("featureunselected", this, listenerFeatureUnselected);
     app.mapPanel.map.addControl(selectControl);
     selectControl.activate();
     return false;
 }
+;
 
+var listenerLoadEnd = function() {
+    loadingPerimeter.hide();
+};
+var listenerFeatureSelected = function(e) {
+    var alreadySelected = selectLayer.features;
+    for (var i = 0; i < alreadySelected.length; i++) {
+        if (alreadySelected[i].attributes[fieldid] === e.feature.attributes[fieldid])
+            return;
+    }
+    selectLayer.addFeatures([e.feature]);
+    var features_text = jQuery('#t-features').val();
+    if (features_text !== "")
+        var features = JSON.parse(features_text);
+    else
+        var features = new Array();
+    features.push({"id": e.feature.attributes[fieldid], "name": e.feature.attributes[fieldname]});
+    jQuery('#t-features').val(JSON.stringify(features));
+    if (jQuery('#t-surface').val() !== '')
+        var surface = parseInt(jQuery('#t-surface').val());
+    else
+        var surface = 0;
+    jQuery('#t-surface').val(JSON.stringify(surface + e.feature.geometry.getArea()));
+};
+var listenerFeatureUnselected = function(e) {
+    selectLayer.removeFeatures([e.feature]);
+    var features_text = jQuery('#t-features').val();
+    if (features_text !== "")
+        var features = JSON.parse(features_text);
+    else
+        return;
+    jQuery.each(features, function(index, value) {
+        if (typeof value === "undefined")
+            return true;
+        if (value.id === e.feature.attributes[fieldid]) {
+            features.splice(index, 1);
+        }
+    });
+    if (features.size === 0)
+        jQuery('#t-features').val('');
+    else
+        jQuery('#t-features').val(JSON.stringify(features));
+};
 function reloadFeatures(wfsurl, featuretypename, featuretypefieldid) {
     var wfsUrl = wfsurl + '?request=GetFeature&SERVICE=WFS&TYPENAME=' + featuretypename + '&VERSION=1.0.0';
     var wfsUrlWithFilter = wfsUrl + '&FILTER=';
@@ -267,4 +315,12 @@ function reloadFeatures(wfsurl, featuretypename, featuretypefieldid) {
     app.mapPanel.map.addLayer(selectLayer);
 }
 
-
+function getUserRestrictedExtentFeature(text) {
+    var wkt = 'POLYGON((' + text + '))';
+    var feature = new OpenLayers.Format.WKT().read(wkt);
+    var geometry = feature.geometry.transform(
+            new OpenLayers.Projection('EPSG:4326'),
+            new OpenLayers.Projection(app.mapPanel.map.projection)
+            );
+    return new OpenLayers.Feature.Vector(geometry);
+}

@@ -64,13 +64,38 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         $model = $this->getModel('Order', 'Easysdi_shopModel');
 
         // Get the user data.
-        $data = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
+        $data = JFactory::getApplication()->input->get('jform', array(), 'array');
 
-        
+        // Validate the posted data.
+        $form = $model->getForm();
+        if (!$form) {
+            JError::raiseError(500, $model->getError());
+            return false;
+        }
+
+        // Validate the posted data.
+        $data = $model->validate($form, $data);
 
         // Check for errors.
-        if (empty($data)) {
-            $this->setRedirect(JRoute::_('index.php?', false));
+        if ($data === false) {
+            // Get the validation messages.
+            $errors = $model->getErrors();
+
+            // Push up to three validation messages out to the user.
+            for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
+                if ($errors[$i] instanceof Exception) {
+                    $app->enqueueMessage($errors[$i]->getMessage(), 'warning');
+                } else {
+                    $app->enqueueMessage($errors[$i], 'warning');
+                }
+            }
+
+            // Save the data in the session.
+            $app->setUserState('com_easysdi_shop.edit.order.data', JRequest::getVar('jform'), array());
+
+            // Redirect back to the edit screen.
+            $id = (int) $app->getUserState('com_easysdi_shop.edit.order.id');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=edit&id=' . $id, false));
             return false;
         }
 

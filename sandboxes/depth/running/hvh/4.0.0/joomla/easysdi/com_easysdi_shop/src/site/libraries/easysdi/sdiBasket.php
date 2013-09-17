@@ -24,7 +24,7 @@ class sdiBasket {
         if (empty($session_content))
             return;
 
-        $isrestrictedbyperimeter = false;
+        $this->isrestrictedbyperimeter = false;
 
         if (!isset($this->extractions))
             $this->extractions = array();

@@ -8,6 +8,11 @@
  */
 // no direct access
 defined('_JEXEC') or die;
+
+JHtml::_('behavior.keepalive');
+JHtml::_('behavior.tooltip');
+JHtml::_('behavior.formvalidation');
+
 JText::script('COM_EASYSDI_SHOP_BASKET_CONFIRM_REMOVE_ITEM');
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
@@ -185,15 +190,8 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
                                                 jQuery('#t-perimeter').val(<?php echo $perimeter->id; ?>);
                                                 jQuery('#t-perimetern').val('<?php echo $perimeter->name; ?>');
                                                 jQuery('#t-features').val('');
-                                            
-                                                var wkt = 'POLYGON((<?php echo $this->user->gml ;?>))';
-                                                var feature = new OpenLayers.Format.WKT().read(wkt);
-                                                var geometry = feature.geometry.transform(
-                                                    new OpenLayers.Projection('EPSG:4326'), 
-                                                    new OpenLayers.Projection('EPSG:900913')
-                                                );
-                                                
-                                                var transformedFeature = new OpenLayers.Feature.Vector(geometry);
+                                             
+                                                var transformedFeature = getUserRestrictedExtentFeature('<?php echo $this->user->gml ;?>');
                                                 myLayer = new OpenLayers.Layer.Vector("myLayer");
                                                 myLayer.addFeatures([transformedFeature]);
                                                
@@ -210,9 +208,11 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
                                         ?>
                                         <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>" class="btn <?php if(!empty($this->item->extent) && $this->item->extent->id== $perimeter->id) echo 'active'; ?>" onClick='selectPerimeter<?php echo $perimeter->id; ?>();return false;'><i class="icon-brush"></i><?php echo $perimeter->name; ?></a>
                                         <script>
-                                            
+                                            <?php if ($this->item->isrestrictedbyperimeter):
+                                                ?>var userperimeter = "<?php echo $this->user->gml ; ?>"; <?php
+                                            endif;?>
                                             function selectPerimeter<?php echo $perimeter->id; ?>() {
-                                                return selectPerimeter("<?php echo $perimeter->id; ?>", "<?php echo $perimeter->name; ?>", "<?php echo $perimeter->wmsurl; ?>", "<?php echo $perimeter->layername; ?>", "<?php echo $perimeter->wfsurl; ?>", "<?php echo $perimeter->featuretypename; ?>", "<?php echo $perimeter->namespace; ?>", "<?php echo $perimeter->featuretypefieldgeometry; ?>", "<?php echo $perimeter->featuretypefieldid; ?>", "<?php echo $perimeter->featuretypefieldname; ?>");
+                                                return selectPerimeter(<?php if ($this->item->isrestrictedbyperimeter && $this->user->isEasySDI) : echo 1; else : echo 0; endif; ?>,"<?php echo $perimeter->id; ?>", "<?php echo $perimeter->name; ?>", "<?php echo $perimeter->wmsurl; ?>", "<?php echo $perimeter->layername; ?>", "<?php echo $perimeter->wfsurl; ?>", "<?php echo $perimeter->featuretypename; ?>", "<?php echo $perimeter->namespace; ?>", "<?php echo $perimeter->featuretypefieldgeometry; ?>", "<?php echo $perimeter->featuretypefieldid; ?>", "<?php echo $perimeter->featuretypefieldname; ?>");
                                             }
                                             
                                             function reloadFeatures<?php echo $perimeter->id; ?>(){
@@ -269,6 +269,9 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
             <input type="hidden" name="t-perimetern" id="t-perimetern" value="<?php if (!empty($this->item->extent)): echo $this->item->extent->name; endif;?>" />
             <input type="hidden" name="t-features" id="t-features" value='<?php if (!empty($this->item->extent)): echo json_encode($this->item->extent->features); endif;?>' />
             <input type="hidden" name="t-surface" id="surface" value="" />
+            <input type = "hidden" name = "task" value = "" />
+            <input type = "hidden" name = "option" value = "com_easysdi_shop" />
+            <?php echo JHtml::_('form.token'); ?>
     </form>
 
     <?php

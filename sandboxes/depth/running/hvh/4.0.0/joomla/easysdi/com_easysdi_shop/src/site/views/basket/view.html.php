@@ -39,14 +39,16 @@ class Easysdi_shopViewBasket extends JViewLegacy {
         $this->params = $app->getParams('com_easysdi_shop');
         $this->user = sdiFactory::getSdiUser();
 
-        $params_array = $this->params->toArray();
-        if(isset($params_array['ordermap'])){
-            $this->mapscript = Easysdi_mapHelper::getMapScript($params_array['ordermap']);
-            $this->minimapscript = Easysdi_mapHelper::getMapScript($params_array['ordermap'], 'minisdicontainer');
-        }
-        else{
-            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_MAP_PREVIEW_NOT_FOUND'), 'error');
-            return;
+        if($this->_layout != 'confirm'){
+            $params_array = $this->params->toArray();
+            if(isset($params_array['ordermap'])){
+                $this->mapscript = Easysdi_mapHelper::getMapScript($params_array['ordermap']);
+                $this->minimapscript = Easysdi_mapHelper::getMapScript($params_array['ordermap'], 'minisdicontainer');
+            }
+            else{
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_MAP_PREVIEW_NOT_FOUND'), 'error');
+                return;
+            }
         }
         
         $pathway = $app->getPathway();
@@ -116,7 +118,7 @@ class Easysdi_shopViewBasket extends JViewLegacy {
         jimport('joomla.html.toolbar');
         $bar = new JToolBar('toolbar');
         //and make whatever calls you require
-        $bar->appendButton('Standard', 'archive', JText::_('COM_EASYSDI_SHOP_BASKET_BTN_SAVE'), 'basket.save', false);
+        $bar->appendButton('Standard', 'archive', JText::_('COM_EASYSDI_SHOP_BASKET_BTN_SAVE'), 'basket.draft', false);
         $bar->appendButton('Separator');
         $bar->appendButton('Standard', 'edit', JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ESTIMATE'), 'basket.estimate', false);
         $bar->appendButton('Separator');

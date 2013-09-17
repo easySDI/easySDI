@@ -190,17 +190,6 @@ class Easysdi_shopModelOrder extends JModelForm {
      * @since	1.6
      */
     public function save($data) {
-        
-        if(empty($data->extractions))
-            return false;
-        
-        if(empty($data->extent))
-            return false;
-        
-        foreach ($data->extractions as $extraction):
-            
-        endforeach;
-        
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('order.id');
         $state = (!empty($data['state'])) ? 1 : 0;
         $user = JFactory::getUser();
