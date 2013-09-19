@@ -16,6 +16,9 @@ JHtml::_('behavior.formvalidation');
 JText::script('COM_EASYSDI_SHOP_BASKET_CONFIRM_REMOVE_ITEM');
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
+$document->addScript('components/com_easysdi_shop/views/basket/tmpl/freeperimeter.js');
+$document->addScript('components/com_easysdi_shop/views/basket/tmpl/perimeter.js');
+$document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.js');
 JText::script('COM_EASYSDI_SHOP_BASKET_SURFACE');
 JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
 ?>
@@ -40,9 +43,14 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
 
         function reloadBasketContent() {
             if (request.readyState == 4) {
-                updateBasketContent();
                 jQuery('#' + current_id).remove();
                 current_id = null;
+                
+                if(jQuery('#table-extractions tr').length === 0){
+                    location.reload();
+                    return;
+                }                
+                updateBasketContent();
             }
         }
     </script>
@@ -55,7 +63,7 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
             <div class="well">
                 <div class="row-fluid">
                     <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_EXTRACTION_NAME'); ?></h3>
-                    <table class="table table-striped">
+                    <table id="table-extractions" class="table table-striped">
 
                         <tfoot>
                         </tfoot>
@@ -100,8 +108,7 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
                                     </td>
                                     <td>
                                         <a href="#" class="btn btn-danger btn-mini pull-right" onClick="removeFromBasket(<?php echo $extraction->id; ?>);
-                return false;"><i class="icon-white icon-remove"></i></a>
-
+                                        return false;"><i class="icon-white icon-remove"></i></a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -113,7 +120,7 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
                     <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h3>
                     <div class="row-fluid" >
                         <div class="map-recap span6" >
-
+                            <?php echo $this->minimapscript; ?>
                         </div>
                         <div  class="span6" >
                             <div id="perimeter-buffer" class="row-fluid" >
@@ -184,6 +191,7 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
                         </div>
 
                         <div class="span4">
+                            <a href="#" id="btn-selection" class="btn"  data-toggle="button" onClick="toggleSelectControl();return false;"><i class="icon-brush"></i></a>
                             <div class="btn-group" data-toggle="buttons-radio">
                                 <?php
                                 foreach ($this->item->perimeters as $perimeter):
@@ -191,7 +199,7 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
                                         if(!$this->item->isrestrictedbyperimeter):
                                         ?>
                                         <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>a" class="btn" 
-                                           onClick="toggleControl('box');
+                                           onClick="selectRectangle();
                                                jQuery('#allowedbuffer').val(<?php echo $perimeter->allowedbuffer; ?>);
                                                jQuery('#perimeter-buffer').<?php if($perimeter->allowedbuffer == 1): echo 'show'; else: echo 'hide'; endif;?>();
                                                return false;">
@@ -199,7 +207,7 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
                                         <br>
                                         <br>
                                         <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>b"  class="btn" 
-                                           onClick="toggleControl('polygon');
+                                           onClick="selectPolygon();
                                                jQuery('#allowedbuffer').val(<?php echo $perimeter->allowedbuffer; ?>);
                                                jQuery('#perimeter-buffer').<?php if($perimeter->allowedbuffer == 1): echo 'show'; else: echo 'hide'; endif;?>();
                                                return false;">
@@ -212,33 +220,17 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
                                         if($this->user->isEasySDI):
                                         ?>
                                         <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>" class="btn" 
-                                           onClick="selectPerimeter<?php echo $perimeter->id; ?>();
+                                           onClick="selectMyPerimeter('<?php echo $perimeter->id; ?>','<?php echo $perimeter->name; ?>', '<?php echo $this->user->gml ;?>');
                                                jQuery('#allowedbuffer').val(<?php echo $perimeter->allowedbuffer; ?>);
                                                jQuery('#perimeter-buffer').<?php if($perimeter->allowedbuffer == 1): echo 'show'; else: echo 'hide'; endif;?>();
                                                return false;"><i class="icon-user"></i><?php echo $perimeter->name; ?></a>
-                                        <script>
-                                            function selectPerimeter<?php echo $perimeter->id; ?>() {
-                                                resetAll();
-                                           
-                                                jQuery('#t-perimeter').val(<?php echo $perimeter->id; ?>);
-                                                jQuery('#t-perimetern').val('<?php echo $perimeter->name; ?>');
-                                                jQuery('#t-features').val('');
-                                             
-                                                var transformedFeature = getUserRestrictedExtentFeature('<?php echo $this->user->gml ;?>');
-                                                myLayer = new OpenLayers.Layer.Vector("myLayer");
-                                                myLayer.addFeatures([transformedFeature]);
-                                               
-                                                app.mapPanel.map.addLayer(myLayer);
-                                                app.mapPanel.map.zoomToExtent(myLayer.getDataExtent());
-                                                putFeaturesVerticesInHiddenField(transformedFeature);
-                                            }
-                                        </script>
                                         <br>
                                         <br>
                                         <?php
                                         endif;
                                     else:
                                         ?>
+                                        
                                         <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>" class="btn" 
                                            onClick="selectPerimeter<?php echo $perimeter->id; ?>();
                                                jQuery('#allowedbuffer').val(<?php echo $perimeter->allowedbuffer; ?>);
@@ -290,8 +282,11 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
             </div>
             <script>
                 Ext.onReady(function(){
+                    miniapp.on("ready", function() {
+                        initMiniMap(); });
+                
                     app.on("ready", function() {
-                        initDraw();
+                        initDraw();                        
                         jQuery('#perimeter-buffer').hide();                
                         <?php if(!empty($this->item->extent)):?>
                                 <?php if( !empty($this->item->extent->allowedbuffer) && $this->item->extent->allowedbuffer == 1 ): ?>

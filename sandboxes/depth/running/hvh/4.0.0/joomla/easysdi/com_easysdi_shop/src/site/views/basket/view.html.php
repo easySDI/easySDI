@@ -43,7 +43,7 @@ class Easysdi_shopViewBasket extends JViewLegacy {
             $params_array = $this->params->toArray();
             if(isset($params_array['ordermap'])){
                 $this->mapscript = Easysdi_mapHelper::getMapScript($params_array['ordermap']);
-                $this->minimapscript = Easysdi_mapHelper::getMapScript($params_array['ordermap'], 'minisdicontainer');
+                $this->minimapscript = Easysdi_mapHelper::getMapScript($params_array['ordermap'], true, 'miniapp', 'minisdicontainer');
             }
             else{
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_MAP_PREVIEW_NOT_FOUND'), 'error');

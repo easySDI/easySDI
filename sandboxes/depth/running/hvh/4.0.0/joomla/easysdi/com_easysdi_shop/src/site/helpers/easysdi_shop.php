@@ -29,17 +29,17 @@ abstract class Easysdi_shopHelper {
         endif;
 
         $extraction = json_decode($item);
-        
+
         //If not logged user, check if the extraction is not restricted by user extent
         $user = JFactory::getUser();
-        if($user->guest){
+        if ($user->guest) {
             $diffusion = JTable::getInstance('diffusion', 'Easysdi_shopTable');
             $diffusion->load($extraction->id);
-            if($diffusion->restrictedperimeter == 1){
+            if ($diffusion->restrictedperimeter == 1) {
                 $return['ERROR'] = JText::_('COM_EASYSDI_SHOP_BASKET_ERROR_TRY_TO_ADD_NOT_ALLOWED_DIFFUSION');
                 echo json_encode($return);
                 die();
-            }   
+            }
         }
 
         //Get the session basket content
@@ -146,19 +146,23 @@ abstract class Easysdi_shopHelper {
             }
         endforeach;
 
-
-        $common = array();
-        foreach ($basketcontent->extractions as $extraction):
-            foreach ($extraction->perimeters as $perimeter):
-                if (in_array($perimeter, $basketcontent->extractions[0]->perimeters)):
-                    if (!in_array($perimeter, $common)):
-                        $common[] = $perimeter;
+        if (count($basketcontent->extractions) == 0):
+            $basketcontent->perimeters = array();
+            $basketcontent->extent = null;
+        else:
+            $common = array();
+            foreach ($basketcontent->extractions as $extraction):
+                foreach ($extraction->perimeters as $perimeter):
+                    if (in_array($perimeter, $basketcontent->extractions[0]->perimeters)):
+                        if (!in_array($perimeter, $common)):
+                            $common[] = $perimeter;
+                        endif;
                     endif;
-                endif;
+                endforeach;
             endforeach;
-        endforeach;
 
-        $basketcontent->perimeters = $common;
+            $basketcontent->perimeters = $common;
+        endif;
 
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', $basketcontent);
 

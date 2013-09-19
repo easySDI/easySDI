@@ -13,11 +13,18 @@ require_once JPATH_SITE . '/components/com_easysdi_map/models/map.php';
 
 abstract class Easysdi_mapHelper {
 
-    public static function getMapScript($mapid, $renderto = "sdimapcontainer") {
+    public static function getMapScript($mapid, $cleared=false, $appname = "app", $renderto = "sdimapcontainer") {
         $model = JModelLegacy::getInstance('map', 'Easysdi_mapModel');
         $item = $model->getData($mapid);
 
-        $config = Easysdi_mapHelper::getMapConfig($item, $renderto);
+        //Clear the map from all the tools
+        //The goal is to have a clean map to use as a simple and quick data preview
+        if($cleared){
+            $item->tools = array();
+            $item->urlwfslocator = null;
+        }
+        
+        $config = Easysdi_mapHelper::getMapConfig($item, $cleared, $renderto);
 
         //Load admin language file
         $lang = JFactory::getLanguage();
@@ -38,7 +45,7 @@ abstract class Easysdi_mapHelper {
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base-debug.js" type="text/javascript"></script>
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js" type="text/javascript"></script>
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/ux/ext/RowExpander.js" type="text/javascript"></script>
-            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.js" type="text/javascript"></script>
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.debug.js" type="text/javascript"></script>
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/geoext/lib/GeoExt.js" type="text/javascript"></script>
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/ux/geoext/PrintPreview.js" type="text/javascript"></script>
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/gxp/script/loader.js" type="text/javascript"></script>
@@ -94,7 +101,7 @@ abstract class Easysdi_mapHelper {
         $output .= '<div id="'.$renderto.'" class="cls-'.$renderto.'"></div>';
 
         $output .= '<script>
-            var app;
+            var '.$appname.';
             var loadingMask;
             Ext.Container.prototype.bufferResize = false;
             Ext.onReady(function(){
@@ -111,31 +118,33 @@ abstract class Easysdi_mapHelper {
                 GeoExt.Lang.set("';
         $output .= $lang->getTag();
         $output .= '");
-                app = new gxp.Viewer(' . $config . ');
+                '.$appname.' = new gxp.Viewer(' . $config . ');
                    ';
 
         //Add the mouseposition control if activated in the map configuration
         //Can not be done in the gxp.Viewer instanciation because it has to be done on the openlayers map object
         foreach ($item->tools as $tool) {
             if ($tool->alias == 'mouseposition') {
-                $output .= 'app.mapPanel.map.addControl(new OpenLayers.Control.MousePosition());';
+                $output .= $appname.'.mapPanel.map.addControl(new OpenLayers.Control.MousePosition());';
                 break;
             }
         }
 
-        $output .= '
-                    app.on("ready", function (){ loadingMask.hide(); });
-                    SdiScaleLineParams= { 
+        $output .= $appname.'.on("ready", function (){ loadingMask.hide(); });';
+        
+        $output .= '        SdiScaleLineParams= { 
                             bottomInUnits :"' . $item->bottomInUnits . '",
                             bottomOutUnits :"' . $item->bottomOutUnits . '",
                             topInUnits :"' . $item->topInUnits . '",
                             topOutUnits :"' . $item->topOutUnits . '"
-                    }; 
+                    }; ';
+        
+        $output .= '
                     Ext.QuickTips.init();
                     Ext.apply(Ext.QuickTips.getQuickTip(), {maxWidth: 1000 });
                     Ext.EventManager.onWindowResize(function() {
-                        app.portal.setWidth(Ext.get("'.$renderto.'").getWidth());
-                        app.portal.setHeight(Ext.get("'.$renderto.'").getWidth() * 1/2);
+                        '.$appname.'.portal.setWidth(Ext.get("'.$renderto.'").getWidth());
+                        '.$appname.'.portal.setHeight(Ext.get("'.$renderto.'").getWidth() * 1/2);
                     });
             });';
         $output .= '</script>';
@@ -148,7 +157,7 @@ abstract class Easysdi_mapHelper {
      * 
      * @return string       Config JSON object to initialize map
      */
-    public static function getMapConfig($item, $renderto) {
+    public static function getMapConfig($item, $cleared, $renderto) {
         $user = JFactory::getUser();
         $app = JFactory::getApplication();
         $params = $app->getParams('com_easysdi_map');
@@ -831,15 +840,20 @@ abstract class Easysdi_mapHelper {
         }
         ,
         mapItems: 
-        [
+        [';
+        if(!$cleared){
+            $config .= '     
             {
                 xtype: "gx_zoomslider",
                 vertical: true,
                 height: 100
-            },
+            }        
+            ,
             {
                 xtype: "gxp_scaleoverlay"
-            }
+            }';
+        }
+        $config .= '
         ],
         mapPlugins:
         [
