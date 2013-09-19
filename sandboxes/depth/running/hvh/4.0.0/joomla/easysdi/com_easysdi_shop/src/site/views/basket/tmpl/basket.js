@@ -16,10 +16,15 @@ function initDraw() {
     }
 }
 function selectPerimeter1() {
-
+    drawControls['polygon'].activate();
 }
 function reloadFeatures1() {
-
+    var wkt = 'POLYGON((' + JSON.parse(jQuery('#features').val()) + '))';
+    var feature = new OpenLayers.Format.WKT().read(wkt);
+    polygonLayer.addFeatures([feature]);
+    app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
+    
+    putFeaturesVerticesInHiddenField(feature);
 }
 function toggleControl(element) {
     resetAll();
@@ -48,10 +53,10 @@ function putFeaturesVerticesInHiddenField(feature) {
         pointsAsString += vertices[i].x;
         pointsAsString += ' ';
         pointsAsString += vertices[i].y;
-        pointsAsString += ', ';
+        if(i < vertices.length-1) pointsAsString += ', ';
     }
     jQuery('#t-features').val(JSON.stringify(pointsAsString));
-    jQuery('#t-surface').val(JSON.stringify(feature.geometry.getArea()));
+    jQuery('#t-surface').val(JSON.stringify(feature.geometry.getGeodesicArea(app.mapPanel.map.projection)));
 }
 
 function beforeFeatureAdded(event) {
@@ -115,7 +120,12 @@ function savePerimeter() {
         return;
     }
 
-    var extent = {"id": jQuery('#t-perimeter').val(), "name": jQuery('#t-perimetern').val(), "surface": jQuery('#t-surface').val(), "features": JSON.parse(jQuery('#t-features').val())};
+    var extent = {"id": jQuery('#t-perimeter').val(), 
+                    "name": jQuery('#t-perimetern').val(), 
+                    "surface": jQuery('#t-surface').val(), 
+                    "allowedbuffer": jQuery('#allowedbuffer').val(),
+                    "buffer": jQuery('#buffer').val(),
+                    "features": JSON.parse(jQuery('#t-features').val())};
     var query = "index.php?option=com_easysdi_shop&task=addExtentToBasket&item=" + JSON.stringify(extent);
     request.onreadystatechange = displayExtentRecap;
     request.open("GET", query, true);
@@ -127,22 +137,35 @@ function displayExtentRecap() {
         jQuery('#perimeter').val(jQuery('#t-perimeter').val());
         jQuery('#perimetern').val(jQuery('#t-perimetern').val());
         jQuery('#surface').val(jQuery('#t-surface').val());
+        
         jQuery('#features').val(jQuery('#t-features').val());
+        
         jQuery('#perimeter-recap').empty();
-        jQuery('#perimeter-recap').append("<div><h3>Surface</h3></div>");
-        jQuery('#perimeter-recap').append("<div>" + jQuery('#surface').val() + "</div>");
+        jQuery('#perimeter-recap').append("<div><h3>"+Joomla.JText._('COM_EASYSDI_SHOP_BASKET_SURFACE', 'Surface')+"</h3>");
+        jQuery('#perimeter-recap').append("<div>" + jQuery('#surface').val() + "</div></div>");
+        
         jQuery('#perimeter-recap').append("<div><h3>" + jQuery('#perimetern').val() + "</h3></div>");
         var features_text = jQuery('#features').val();
-        jQuery('#perimeter-recap').append("<div>" + features_text + "</div>");
-//        if (features_text !== '')
-//            var features = JSON.parse(features_text);
-//        else
-//            return;
-//        jQuery.each(features, function(index, value) {
-//            if (typeof value === "undefined")
-//                return true;
-//            jQuery('#perimeter-recap').append("<div>" + value.name + "</div>");
-//        });
+        
+        if (features_text == '')
+            return;
+        
+        try {
+            var features = JSON.parse(features_text);
+            if(jQuery('#perimeter').val() == 1){
+                jQuery('#perimeter-recap').append("<div>" + features + "</div>");
+                return;
+            }
+            jQuery.each(features, function(index, value) {
+                if (typeof value === "undefined")
+                    return true;
+                jQuery('#perimeter-recap').append("<div>" + value.name + "</div>");
+            });
+        } catch (e) {
+            jQuery('#perimeter-recap').append("<div>" + features_text + "</div>");
+        }
+            
+        
     }
 }
 
@@ -259,7 +282,7 @@ var listenerFeatureSelected = function(e) {
         var surface = parseInt(jQuery('#t-surface').val());
     else
         var surface = 0;
-    jQuery('#t-surface').val(JSON.stringify(surface + e.feature.geometry.getArea()));
+    jQuery('#t-surface').val(JSON.stringify(surface + e.feature.geometry.getGeodesicArea(app.mapPanel.map.projection)));
 };
 var listenerFeatureUnselected = function(e) {
     selectLayer.removeFeatures([e.feature]);

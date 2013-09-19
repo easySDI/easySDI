@@ -10,6 +10,7 @@
 defined('_JEXEC') or die;
 
 require_once JPATH_COMPONENT_ADMINISTRATOR . '/tables/diffusionperimeter.php';
+require_once JPATH_COMPONENT_ADMINISTRATOR . '/tables/diffusion.php';
 
 abstract class Easysdi_shopHelper {
 
@@ -28,6 +29,18 @@ abstract class Easysdi_shopHelper {
         endif;
 
         $extraction = json_decode($item);
+        
+        //If not logged user, check if the extraction is not restricted by user extent
+        $user = JFactory::getUser();
+        if($user->guest){
+            $diffusion = JTable::getInstance('diffusion', 'Easysdi_shopTable');
+            $diffusion->load($extraction->id);
+            if($diffusion->restrictedperimeter == 1){
+                $return['ERROR'] = JText::_('COM_EASYSDI_SHOP_BASKET_ERROR_TRY_TO_ADD_NOT_ALLOWED_DIFFUSION');
+                echo json_encode($return);
+                die();
+            }   
+        }
 
         //Get the session basket content
         $basketcontent = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');

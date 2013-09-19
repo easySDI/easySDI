@@ -2,7 +2,7 @@
 <extension method="upgrade" type="component" version="3.0.0">
   <name>com_easysdi_map</name>
   <creationDate>18 december 2012</creationDate>
-  <releaseDate>17 septembre 2013</releaseDate>
+  <releaseDate>19 septembre 2013</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>

@@ -37,7 +37,6 @@ class sdiBasket {
                 $ex = new sdiExtraction($extraction);
                 if ($ex->restrictedperimeter == '1')
                     $this->isrestrictedbyperimeter = true;
-
                 $this->extractions[] = $ex;
             endforeach;
         }
@@ -46,7 +45,12 @@ class sdiBasket {
             foreach ($session_content->perimeters as $perimeter):
                 $this->perimeters[] = new sdiPerimeter($perimeter);
             endforeach;
+            
+            foreach ($this->perimeters as $perimeter):
+                $perimeter->setAllowedBuffer($this->extractions);
+            endforeach;
         }
+        
         if(isset ($session_content->extent))
             $this->extent = $session_content->extent;
     }

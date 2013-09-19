@@ -325,7 +325,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 $array = array();
                 $array['diffusion_id'] = $id;
                 $array['perimeter_id'] = $key;
-                ($perimeter == 1) ? $array['buffer'] = 1 : $array['buffer'] = 0;
+                ($perimeter == 1) ? $array['buffer'] = 0 : $array['buffer'] = 1;
                 if (!$diffusionperimeter->save($array))
                     return false;
 
