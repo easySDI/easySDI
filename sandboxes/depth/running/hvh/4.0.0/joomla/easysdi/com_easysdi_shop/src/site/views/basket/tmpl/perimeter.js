@@ -1,6 +1,6 @@
 function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wmsurl, wmslayername, wfsurl, featuretypename, namespace, featuretypefieldgeometry, featuretypefieldid, featuretypefieldname) {
     resetAll();
-    
+
     fieldid = featuretypefieldid;
     fieldname = featuretypefieldname;
     jQuery('#t-perimeter').val(perimeterid);
@@ -10,21 +10,21 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
         perimeterLayer = new OpenLayers.Layer.WMS("perimeterLayer",
                 wmsurl,
                 {layers: wmslayername,
-                transparent: true})
-                
-                selectControl = new OpenLayers.Control.GetFeature({
-        protocol: new OpenLayers.Protocol.WFS({
-            version: "1.0.0",
-            url: wfsurl,
-            srsName: app.mapPanel.map.projection,
-            featureType: featuretypename,
-            featureNS: namespace,
-            geometryName: featuretypefieldgeometry
-        }),
-        box: true,
-        multipleKey: "shiftKey",
-        toggleKey: "ctrlKey"
-    });
+                    transparent: true})
+
+        selectControl = new OpenLayers.Control.GetFeature({
+            protocol: new OpenLayers.Protocol.WFS({
+                version: "1.0.0",
+                url: wfsurl,
+                srsName: app.mapPanel.map.projection,
+                featureType: featuretypename,
+                featureNS: namespace,
+                geometryName: featuretypefieldgeometry
+            }),
+            box: true,
+            multipleKey: "shiftKey",
+            toggleKey: "ctrlKey"
+        });
 
     } else {
         var featurerestriction = getUserRestrictedExtentFeature(userperimeter);
@@ -47,43 +47,43 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
                 value: featurerestriction.geometry
             })
         });
-        
+
         selectControl = new OpenLayers.Control.GetFeature({
-        protocol: new OpenLayers.Protocol.WFS({
-            version: "1.0.0",
-            url: wfsurl,
-            srsName: app.mapPanel.map.projection,
-            featureType: featuretypename,
-            featureNS: namespace,
-            geometryName: featuretypefieldgeometry,
-            defaultFilter: new OpenLayers.Filter.Spatial({
-                type: OpenLayers.Filter.Spatial.INTERSECTS,
-                value: getUserRestrictedExtentFeature(userperimeter).geometry
-            })
-        }),
-        box: true,
-        multipleKey: "shiftKey",
-        toggleKey: "ctrlKey"
-    });
+            protocol: new OpenLayers.Protocol.WFS({
+                version: "1.0.0",
+                url: wfsurl,
+                srsName: app.mapPanel.map.projection,
+                featureType: featuretypename,
+                featureNS: namespace,
+                geometryName: featuretypefieldgeometry,
+                defaultFilter: new OpenLayers.Filter.Spatial({
+                    type: OpenLayers.Filter.Spatial.INTERSECTS,
+                    value: getUserRestrictedExtentFeature(userperimeter).geometry
+                })
+            }),
+            box: true,
+            multipleKey: "shiftKey",
+            toggleKey: "ctrlKey"
+        });
     }
-    loadingPerimeter = new Ext.LoadMask(Ext.getBody(), {
-        msg: "Chargement de la couche de périmètre..."
-    });
-    loadingPerimeter.show();
+    
+//    if(!jQuery('#modal-perimeter').isShown){
+        loadingPerimeter = new Ext.LoadMask(Ext.getBody(), {
+            msg: "Chargement de la couche de périmètre..."
+        });    
+        loadingPerimeter.show();
+//    }
     app.mapPanel.map.addLayer(perimeterLayer);
     perimeterLayer.events.register("loadend", perimeterLayer, listenerLoadEnd);
-    
+
     selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
     app.mapPanel.map.addLayer(selectLayer);
     selectControl.events.register("featureselected", this, listenerFeatureSelected);
     selectControl.events.register("featureunselected", this, listenerFeatureUnselected);
     app.mapPanel.map.addControl(selectControl);
-    
+
     return false;
-}
-;
-
-
+};
 
 var listenerLoadEnd = function() {
     loadingPerimeter.hide();
@@ -95,7 +95,8 @@ var listenerFeatureSelected = function(e) {
             return;
     }
     selectLayer.addFeatures([e.feature]);
-    miniLayer.addFeatures([e.feature]);
+    miniLayer.addFeatures([e.feature.clone()]);
+    
     var features_text = jQuery('#t-features').val();
     if (features_text !== "")
         var features = JSON.parse(features_text);
@@ -113,6 +114,7 @@ var listenerFeatureSelected = function(e) {
 var listenerFeatureUnselected = function(e) {
     selectLayer.removeFeatures([e.feature]);
     miniLayer.removeFeatures([e.feature]);
+    miniapp.mapPanel.map.zoomToExtent(miniLayer.getDataExtent());
     var features_text = jQuery('#t-features').val();
     if (features_text !== "")
         var features = JSON.parse(features_text);
@@ -155,6 +157,7 @@ function reloadFeatures(wfsurl, featuretypename, featuretypefieldid) {
     }
     wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Filter>');
     app.mapPanel.map.removeLayer(selectLayer);
+    miniapp.mapPanel.map.removeLayer(miniLayer);
     selectLayer = new OpenLayers.Layer.Vector("Selection", {
         strategies: [new OpenLayers.Strategy.Fixed()],
         protocol: new OpenLayers.Protocol.HTTP({
@@ -162,10 +165,16 @@ function reloadFeatures(wfsurl, featuretypename, featuretypefieldid) {
             format: new OpenLayers.Format.GML()
         })
     });
-    
-    app.mapPanel.map.addLayer(selectLayer);
-}
+    miniLayer = new OpenLayers.Layer.Vector("Selection", {
+        strategies: [new OpenLayers.Strategy.Fixed()],
+        protocol: new OpenLayers.Protocol.HTTP({
+            url: wfsUrlWithFilter,
+            format: new OpenLayers.Format.GML()
+        })
+    });
 
-function onReloadFeaturesAdded(event) {
-    miniLayer.addFeatures(event.features[0]);
+    app.mapPanel.map.addLayer(selectLayer);
+    app.mapPanel.map.zoomToExtent(selectLayer.getDataExtent());
+    miniapp.mapPanel.map.addLayer(miniLayer);
+    miniapp.mapPanel.map.zoomToExtent(miniLayer.getDataExtent());
 }

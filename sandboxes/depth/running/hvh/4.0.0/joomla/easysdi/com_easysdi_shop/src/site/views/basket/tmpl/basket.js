@@ -152,8 +152,6 @@ function displayExtentRecap() {
         } catch (e) {
             jQuery('#perimeter-recap').append("<div>" + features_text + "</div>");
         }
-            
-        
     }
 }
 
