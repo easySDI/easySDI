@@ -10,7 +10,7 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
         perimeterLayer = new OpenLayers.Layer.WMS("perimeterLayer",
                 wmsurl,
                 {layers: wmslayername,
-                    transparent: true})
+                    transparent: true});
 
         selectControl = new OpenLayers.Control.GetFeature({
             protocol: new OpenLayers.Protocol.WFS({
@@ -48,6 +48,16 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
             })
         });
 
+//         perimeterLayer = new OpenLayers.Layer.WMS("perimeterLayer",
+//                wmsurl,     
+//                {layers: wmslayername,
+//                    transparent: true,
+//                filter: new OpenLayers.Filter.Spatial({
+//                type: OpenLayers.Filter.Spatial.INTERSECTS,
+//                value: featurerestriction.geometry
+//            })}           
+//            );
+
         selectControl = new OpenLayers.Control.GetFeature({
             protocol: new OpenLayers.Protocol.WFS({
                 version: "1.0.0",
@@ -58,7 +68,7 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
                 geometryName: featuretypefieldgeometry,
                 defaultFilter: new OpenLayers.Filter.Spatial({
                     type: OpenLayers.Filter.Spatial.INTERSECTS,
-                    value: getUserRestrictedExtentFeature(userperimeter).geometry
+                    value: featurerestriction.geometry
                 })
             }),
             box: true,
@@ -84,6 +94,24 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
 
     return false;
 };
+
+function getWMSFilter(){
+    var filter = '<ogc:Filter>';
+   filter += '<ogc:Within>';
+   filter += '   <ogc:PropertyName>the_geom</ogc:PropertyName>';
+   filter += '   <gml:Polygon gid="pp9"';
+   filter += '      srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">';
+   filter += '      <gml:outerBoundaryIs>';
+   filter += '          <gml:LinearRing>';
+   filter += '          <gml:coordinates>'+userperimeter+'</gml:coordinates>';
+   filter += '          </gml:LinearRing>';
+   filter += '      </gml:outerBoundaryIs>';
+   filter += '   </gml:Polygon>';
+   filter += '</ogc:Within>';
+   filter += '</ogc:Filter>';
+   return filter;
+
+}
 
 var listenerLoadEnd = function() {
     loadingPerimeter.hide();
@@ -114,7 +142,7 @@ var listenerFeatureSelected = function(e) {
 var listenerFeatureUnselected = function(e) {
     selectLayer.removeFeatures([e.feature]);
     miniLayer.removeFeatures([e.feature]);
-    miniapp.mapPanel.map.zoomToExtent(miniLayer.getDataExtent());
+    
     var features_text = jQuery('#t-features').val();
     if (features_text !== "")
         var features = JSON.parse(features_text);
@@ -172,6 +200,7 @@ function reloadFeatures(wfsurl, featuretypename, featuretypefieldid) {
             format: new OpenLayers.Format.GML()
         })
     });
+    miniLayer.events.register("featuresadded", miniLayer, listenerMiniFeaturesAdded);
 
     app.mapPanel.map.addLayer(selectLayer);
     app.mapPanel.map.zoomToExtent(selectLayer.getDataExtent());

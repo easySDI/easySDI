@@ -131,14 +131,14 @@ abstract class Easysdi_mapHelper {
         }
 
         $output .= $appname.'.on("ready", function (){ loadingMask.hide(); });';
-        
+        if(!$cleared){
         $output .= '        SdiScaleLineParams= { 
                             bottomInUnits :"' . $item->bottomInUnits . '",
                             bottomOutUnits :"' . $item->bottomOutUnits . '",
                             topInUnits :"' . $item->topInUnits . '",
                             topOutUnits :"' . $item->topOutUnits . '"
                     }; ';
-        
+        }
         $output .= '
                     Ext.QuickTips.init();
                     Ext.apply(Ext.QuickTips.getQuickTip(), {maxWidth: 1000 });
@@ -838,11 +838,11 @@ abstract class Easysdi_mapHelper {
         $config .= '
         ]
         }
-        ,
-        mapItems: 
-        [';
+        ,';
         if(!$cleared){
-            $config .= '     
+            $config .= ' 
+        mapItems: 
+        [            
             {
                 xtype: "gx_zoomslider",
                 vertical: true,
@@ -851,10 +851,11 @@ abstract class Easysdi_mapHelper {
             ,
             {
                 xtype: "gxp_scaleoverlay"
-            }';
+            }
+        ],
+        ';
         }
         $config .= '
-        ],
         mapPlugins:
         [
             {

@@ -16,7 +16,7 @@ function initDraw() {
 }
 
 function onFeaturesAdded(event) {
-    miniLayer.addFeatures(event.features[0].clone());
+    miniLayer.addFeatures([event.features[0].clone()]);    
     putFeaturesVerticesInHiddenField(event.features[0]);
 }
 
@@ -44,8 +44,7 @@ function reloadFeatures1() {
     app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
     
     miniLayer.addFeatures([feature.clone]);
-    miniapp.mapPanel.map.zoomToExtent(miniLayer.getDataExtent());
-    
+        
     putFeaturesVerticesInHiddenField(feature);
 }
 

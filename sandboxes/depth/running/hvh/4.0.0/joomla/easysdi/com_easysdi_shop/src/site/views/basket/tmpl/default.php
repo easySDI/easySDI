@@ -63,6 +63,7 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
             <div class="well">
                 <div class="row-fluid">
                     <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_EXTRACTION_NAME'); ?></h3>
+                    <hr>
                     <table id="table-extractions" class="table table-striped">
 
                         <tfoot>
@@ -118,12 +119,18 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
 
                 <div class="row-fluid" >
                     <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h3>
+                    <hr>
+                    <div class="row-fluid" >
+                        <div class="span6" >                            
+                            <div id="minimap"></div>
+                        </div>
+                    </div>
                     <div class="row-fluid" >
                         <div class="map-recap span6" >
-                            <?php echo $this->minimapscript; ?>
+                            <?php echo $this->minimapscript; ?>                            
                         </div>
                         <div  class="span6" >
-                            <div id="perimeter-buffer" class="row-fluid" >
+                            <div id="perimeter-buffer" class="row-fluid hide" >
                                 <div><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BUFFER'); ?></h3>
                                 <input id="textinput" name="buffer" type="text" placeholder="" class="input-xlarge" value="<?php if(!empty($this->item->extent->buffer)) echo $this->item->extent->buffer; ?>">
                                 </div>                                
@@ -157,17 +164,25 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
                         </div>
                     </div>
                 </div>
-
+                <?php if (!empty($this->thirdParties)): ?>
                 <div class="row-fluid" >
                     <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY'); ?></h3>
+                    <hr>
+                    <select id="thirdparty" class="inputbox input-xlarge">
+                        <option value="null"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_NO_THIRD_PARTY'); ?></option>
+                        <?php foreach ($this->thirdParties as $thirdparty) :?>
+                            <option value="<?php echo $thirdparty->id; ?>"><?php echo $thirdparty->name; ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
-
+                <?php endif; ?>
                 <div class="row-fluid " >
-                    <div  class="pull-right" >
+                    <hr>
+                    <div  class="span5 pull-right" >
                         <?php echo $this->getToolbar(); ?>
                     </div>
                     <div class="pull-right">
-                        <input type="text" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ORDER_NAME'); ?>">
+                        <input class="btn-toolbar" type="text" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ORDER_NAME'); ?>">
                     </div>
 
                 </div>
@@ -224,6 +239,16 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
                                                jQuery('#allowedbuffer').val(<?php echo $perimeter->allowedbuffer; ?>);
                                                jQuery('#perimeter-buffer').<?php if($perimeter->allowedbuffer == 1): echo 'show'; else: echo 'hide'; endif;?>();
                                                return false;"><i class="icon-user"></i><?php echo $perimeter->name; ?></a>
+                                        
+                                        <script>
+                                            function selectPerimeter<?php echo $perimeter->id; ?>() {
+                                                selectMyPerimeter('<?php echo $perimeter->id; ?>','<?php echo $perimeter->name; ?>', '<?php echo $this->user->gml ;?>');
+                                            }
+                                            
+                                            function reloadFeatures<?php echo $perimeter->id; ?>(){
+                                                selectMyPerimeter('<?php echo $perimeter->id; ?>','<?php echo $perimeter->name; ?>', '<?php echo $this->user->gml ;?>');
+                                            }
+                                        </script>
                                         <br>
                                         <br>
                                         <?php
