@@ -130,7 +130,33 @@ abstract class Easysdi_mapHelper {
             }
         }
 
-        $output .= $appname.'.on("ready", function (){ loadingMask.hide(); });';
+        $output .= '
+            '.$appname.'.on("ready", function (){ ';
+        
+        if(!empty($item->urlwfslocator)):
+            $output .= '
+            var locator = { xtype: "gxp_autocompletecombo",
+                                        listeners:{
+                                                    select: function(list, record) {
+                                                            var extent = new OpenLayers.Bounds();
+                                                            extent.extend(record.data.feature.geometry.getBounds());
+                                                            app.mapPanel.map.zoomToExtent(extent);
+                                                            }
+                                                   },
+                                        url: "'.$item->urlwfslocator.'",
+                                        fieldName: "'.$item->fieldname.'",
+                                        featureType: "'.$item->featuretype.'",
+                                        featurePrefix: "'.$item->featureprefix.'",
+                                        fieldLabel: "'.$item->fieldname.'",
+                                        geometryName:"'.$item->geometryname.'",
+                                        maxFeatures:"10",
+                                        emptyText: "Search..."};
+                                        app.portal.items.items[0].items.items[0].toolbars[0].add(locator);
+                                        app.portal.items.items[0].items.items[0].toolbars[0].doLayout();';
+        endif;
+                
+          $output .= '      loadingMask.hide(); 
+                });';
         if(!$cleared){
         $output .= '        SdiScaleLineParams= { 
                             bottomInUnits :"' . $item->bottomInUnits . '",
@@ -203,36 +229,36 @@ abstract class Easysdi_mapHelper {
                                     }
                                 ]
                             }';
-        if(!empty($item->urlwfslocator)):
-               $config .= ',{
-                                id: "northpanel",
-                                xtype: "panel",
-                                layout: "card",
-                                region: "north",
-                                border: false,
-                                activeItem: 0,
-                                items: [
-                                    {
-                                xtype: "gxp_autocompletecombo",
-                                listeners:{
-                                            select: function(list, record) {
-                                                    var extent = new OpenLayers.Bounds();
-                                                    extent.extend(record.data.feature.geometry.getBounds());
-                                                    app.mapPanel.map.zoomToExtent(extent);
-                                                    }
-                                           },
-                                url: "'.$item->urlwfslocator.'",
-                                fieldName: "'.$item->fieldname.'",
-                                featureType: "'.$item->featuretype.'",
-                                featurePrefix: "'.$item->featureprefix.'",
-                                fieldLabel: "'.$item->fieldname.'",
-                                geometryName:"'.$item->geometryname.'",
-                                maxFeatures:"10",
-                                emptyText: "Search..."
-                            }]
-                                
-                            }';
-           endif;
+//        if(!empty($item->urlwfslocator)):
+//               $config .= ',{
+//                                id: "northpanel",
+//                                xtype: "panel",
+//                                layout: "card",
+//                                region: "north",
+//                                border: false,
+//                                activeItem: 0,
+//                                items: [{
+//                                        xtype: "gxp_autocompletecombo",
+//                                        listeners:{
+//                                                    select: function(list, record) {
+//                                                            var extent = new OpenLayers.Bounds();
+//                                                            extent.extend(record.data.feature.geometry.getBounds());
+//                                                            app.mapPanel.map.zoomToExtent(extent);
+//                                                            }
+//                                                   },
+//                                        url: "'.$item->urlwfslocator.'",
+//                                        fieldName: "'.$item->fieldname.'",
+//                                        featureType: "'.$item->featuretype.'",
+//                                        featurePrefix: "'.$item->featureprefix.'",
+//                                        fieldLabel: "'.$item->fieldname.'",
+//                                        geometryName:"'.$item->geometryname.'",
+//                                        maxFeatures:"10",
+//                                        emptyText: "Search..."
+//                                    }
+//                                   ]
+//                                
+//                            }';
+//           endif;
                $config .= ' ,';
 
         $layertreeactivated = false;
@@ -249,7 +275,8 @@ abstract class Easysdi_mapHelper {
                         hideCollapseTool: true,
                         layout: "fit",
                         region: "west",
-                        width: 200
+                        width: 200, 
+                        items:[ ]
                     },';
                 break;
             endif;
