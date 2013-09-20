@@ -19,6 +19,8 @@ class sdiBasket {
     var $perimeters;
     var $extent;
     var $isrestrictedbyperimeter;
+    var $surfacemin;
+    var $surfacemax;
 
     function __construct($session_content) {
         if (empty($session_content))
@@ -37,6 +39,11 @@ class sdiBasket {
                 $ex = new sdiExtraction($extraction);
                 if ($ex->restrictedperimeter == '1')
                     $this->isrestrictedbyperimeter = true;
+                 if((empty($this->surfacemin)&&!empty($ex->surfacemin)) || (!empty($ex->surfacemin) && $ex->surfacemin > $this->surfacemin))
+                    $this->surfacemin = $ex->surfacemin;
+                
+                if((empty($this->surfacemax)&&!empty($ex->surfacemax)) ||(!empty($ex->surfacemax) && $ex->surfacemax < $this->surfacemax))
+                    $this->surfacemax = $ex->surfacemax;
                 $this->extractions[] = $ex;
             endforeach;
         }

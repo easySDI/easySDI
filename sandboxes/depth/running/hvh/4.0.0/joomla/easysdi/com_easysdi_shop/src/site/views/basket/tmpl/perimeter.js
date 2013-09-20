@@ -145,8 +145,13 @@ var listenerFeatureSelected = function(e) {
 
 var listenerFeatureUnselected = function(e) {
     selectLayer.removeFeatures([e.feature]);
-    miniLayer.removeFeatures([e.feature]);
-    
+    var  features = miniLayer.features;
+    for (var i = 0; i < features.length ; i++){
+        if(features[i].attributes['id'] === e.feature.attributes['id']){
+            miniLayer.removeFeatures([features[i]]);
+            break;
+        }
+    }
     var features_text = jQuery('#t-features').val();
     if (features_text !== "")
         var features = JSON.parse(features_text);
@@ -210,33 +215,6 @@ function reloadFeatures(wfsurl, featuretypename, featuretypefieldid) {
 
 var listenerFeatureAddedToZoom = function (e){
     app.mapPanel.map.zoomToExtent(selectLayer.getDataExtent());
+//    miniLayer.addFeatures(selectLayer.features);
 };
 
-
-//function getWMSFilter(){
-//    var filter = '<ogc:Filter>';
-//   filter += '<ogc:Within>';
-//   filter += '   <ogc:PropertyName>the_geom</ogc:PropertyName>';
-//   filter += '   <gml:Polygon gid="pp9"';
-//   filter += '      srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">';
-//   filter += '      <gml:outerBoundaryIs>';
-//   filter += '          <gml:LinearRing>';
-//   filter += '          <gml:coordinates>'+userperimeter+'</gml:coordinates>';
-//   filter += '          </gml:LinearRing>';
-//   filter += '      </gml:outerBoundaryIs>';
-//   filter += '   </gml:Polygon>';
-//   filter += '</ogc:Within>';
-//   filter += '</ogc:Filter>';
-//   return filter;
-//
-//}
-
-//function getWMSFilter(text) {
-//    var wkt = 'POLYGON((' + text + '))';
-//    var feature = new OpenLayers.Format.WKT().read(wkt);
-//    var geometry = feature.geometry.transform(
-//            new OpenLayers.Projection('EPSG:4326'),
-//            new OpenLayers.Projection(app.mapPanel.map.projection)
-//            );
-//    return new OpenLayers.Feature.Vector(geometry);
-//}

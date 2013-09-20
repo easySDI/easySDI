@@ -43,6 +43,8 @@ function reloadFeatures1() {
     polygonLayer.addFeatures([feature]);
     app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
             
+ 
+//        miniLayer.addFeatures(polygonLayer.features);
     putFeaturesVerticesInHiddenField(feature);
 }
 

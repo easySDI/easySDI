@@ -40,7 +40,7 @@ class sdiExtraction {
         try {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
-                    ->select('r.id as resource, r.name as name, o.name as organism, d.restrictedperimeter')
+                    ->select('r.id as resource, r.name as name, o.name as organism, d.restrictedperimeter, d.surfacemin, d.surfacemax')
                     ->from('#__sdi_resource r')
                     ->innerJoin('#__sdi_version v ON v.resource_id = r.id')
                     ->innerJoin('#__sdi_diffusion d ON d.version_id = v.id')

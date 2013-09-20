@@ -1,6 +1,6 @@
 function selectMyPerimeter(perimeterid, perimetername, userextent) {
     resetAll();
-    jQuery('#btn-selection').hide();
+    jQuery('#btns-selection').hide();
 
     jQuery('#t-perimeter').val(perimeterid);
     jQuery('#t-perimetern').val(perimetername);
@@ -18,6 +18,9 @@ function selectMyPerimeter(perimeterid, perimetername, userextent) {
     app.mapPanel.map.addLayer(myLayer);
     app.mapPanel.map.zoomToExtent(transformedFeature.geometry.getBounds());
     
+    
+//        miniLayer.addFeatures(myLayer.features);
+        
     putFeaturesVerticesInHiddenField(transformedFeature);
 }
 
