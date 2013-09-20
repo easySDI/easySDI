@@ -1,3 +1,5 @@
+var fromreload = false;
+
 function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wmsurl, wmslayername, wfsurl, featuretypename, namespace, featuretypefieldgeometry, featuretypefieldid, featuretypefieldname) {
     resetAll();
 
@@ -6,6 +8,7 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
     jQuery('#t-perimeter').val(perimeterid);
     jQuery('#t-perimetern').val(perimetername);
     jQuery('#t-features').val('');
+    jQuery('#t-surface').val('');
     if (isrestrictedbyperimeter === 0) {
         perimeterLayer = new OpenLayers.Layer.WMS("perimeterLayer",
                 wmsurl,
@@ -27,37 +30,52 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
         });
 
     } else {
+//        if(jQuery('#modal-perimeter').is(':visible')){
+//            
+//        }else{
+//        loadingPerimeter = new Ext.LoadMask(Ext.getBody(), {
+//            msg: "Chargement de la couche de périmètre..."
+//        });
+//        loadingPerimeter.show();
+//        }
         var featurerestriction = getUserRestrictedExtentFeature(userperimeter);
-        perimeterLayer = new OpenLayers.Layer.Vector("perimeterLayer", {
-            strategies: [new OpenLayers.Strategy.Fixed()],
-            protocol: new OpenLayers.Protocol.WFS({
-                url: wfsurl,
-                featureType: featuretypename,
-                featureNS: namespace,
-                srsName: app.mapPanel.map.projection
-            }),
-            styleMap: new OpenLayers.StyleMap({
-                fillColor: "#ffcc66",
-                fillOpacity: 0,
-                strokeColor: "black",
-                strokeWidth: 2,
-            }),
-            filter: new OpenLayers.Filter.Spatial({
-                type: OpenLayers.Filter.Spatial.INTERSECTS,
-                value: featurerestriction.geometry
-            })
-        });
-
-//         perimeterLayer = new OpenLayers.Layer.WMS("perimeterLayer",
-//                wmsurl,     
-//                {layers: wmslayername,
-//                    transparent: true,
-//                filter: new OpenLayers.Filter.Spatial({
+        //----------------------------------------------------------------------
+        // The WFS version of the perimeter layer filtered 
+        // by user restricted perimeter
+        //----------------------------------------------------------------------
+//        perimeterLayer = new OpenLayers.Layer.Vector("perimeterLayer", {
+//            strategies: [new OpenLayers.Strategy.Fixed()],
+//            protocol: new OpenLayers.Protocol.WFS({
+//                url: wfsurl,
+//                featureType: featuretypename,
+//                featureNS: namespace,
+//                srsName: app.mapPanel.map.projection
+//            }),
+//            styleMap: new OpenLayers.StyleMap({
+//                fillColor: "#ffcc66",
+//                fillOpacity: 0,
+//                strokeColor: "black",
+//                strokeWidth: 2,
+//            }),
+//            filter: new OpenLayers.Filter.Spatial({
 //                type: OpenLayers.Filter.Spatial.INTERSECTS,
 //                value: featurerestriction.geometry
-//            })}           
-//            );
+//            })
+//        });
+        
+        //----------------------------------------------------------------------
+        // The WMS version of the perimeter layer filtered 
+        // by user restricted perimeter
+        //----------------------------------------------------------------------
+         perimeterLayer = new OpenLayers.Layer.WMS("perimeterLayer",
+                wmsurl,     
+                {layers: wmslayername,
+                    transparent: true,
+                CQL_FILTER: 'INTERSECTS(the_geom,' + new OpenLayers.Format.WKT().write(featurerestriction) + ')'}           
+            );
 
+        //----------------------------------------------------------------------
+        
         selectControl = new OpenLayers.Control.GetFeature({
             protocol: new OpenLayers.Protocol.WFS({
                 version: "1.0.0",
@@ -76,55 +94,38 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
             toggleKey: "ctrlKey"
         });
     }
-    
-//    if(!jQuery('#modal-perimeter').isShown){
-        loadingPerimeter = new Ext.LoadMask(Ext.getBody(), {
-            msg: "Chargement de la couche de périmètre..."
-        });    
-        loadingPerimeter.show();
-//    }
+
     app.mapPanel.map.addLayer(perimeterLayer);
     perimeterLayer.events.register("loadend", perimeterLayer, listenerLoadEnd);
 
     selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
+    selectLayer.events.register("featureadded", selectLayer, listenerFeatureAdded);
     app.mapPanel.map.addLayer(selectLayer);
     selectControl.events.register("featureselected", this, listenerFeatureSelected);
     selectControl.events.register("featureunselected", this, listenerFeatureUnselected);
+    
     app.mapPanel.map.addControl(selectControl);
 
     return false;
 };
 
-function getWMSFilter(){
-    var filter = '<ogc:Filter>';
-   filter += '<ogc:Within>';
-   filter += '   <ogc:PropertyName>the_geom</ogc:PropertyName>';
-   filter += '   <gml:Polygon gid="pp9"';
-   filter += '      srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">';
-   filter += '      <gml:outerBoundaryIs>';
-   filter += '          <gml:LinearRing>';
-   filter += '          <gml:coordinates>'+userperimeter+'</gml:coordinates>';
-   filter += '          </gml:LinearRing>';
-   filter += '      </gml:outerBoundaryIs>';
-   filter += '   </gml:Polygon>';
-   filter += '</ogc:Within>';
-   filter += '</ogc:Filter>';
-   return filter;
 
-}
 
 var listenerLoadEnd = function() {
-    loadingPerimeter.hide();
+//    loadingPerimeter.hide();
 };
 var listenerFeatureSelected = function(e) {
+    if(fromreload === true){
+        selectLayer.removeAllFeatures();
+        miniLayer.removeAllFeatures();
+        fromreload = false;
+    }
     var alreadySelected = selectLayer.features;
     for (var i = 0; i < alreadySelected.length; i++) {
         if (alreadySelected[i].attributes[fieldid] === e.feature.attributes[fieldid])
             return;
-    }
-    selectLayer.addFeatures([e.feature]);
-    miniLayer.addFeatures([e.feature.clone()]);
-    
+    }   
+        
     var features_text = jQuery('#t-features').val();
     if (features_text !== "")
         var features = JSON.parse(features_text);
@@ -136,7 +137,10 @@ var listenerFeatureSelected = function(e) {
         var surface = parseInt(jQuery('#t-surface').val());
     else
         var surface = 0;
+    
     jQuery('#t-surface').val(JSON.stringify(surface + e.feature.geometry.getGeodesicArea(app.mapPanel.map.projection)));
+    
+    selectLayer.addFeatures([e.feature]);
 };
 
 var listenerFeatureUnselected = function(e) {
@@ -159,6 +163,11 @@ var listenerFeatureUnselected = function(e) {
         jQuery('#t-features').val('');
     else
         jQuery('#t-features').val(JSON.stringify(features));
+    
+    if (jQuery('#t-surface').val() !== ''){
+        var surface = parseInt(jQuery('#t-surface').val());
+        jQuery('#t-surface').val(JSON.stringify(surface - e.feature.geometry.getGeodesicArea(app.mapPanel.map.projection)));
+    }
 };
 
 function reloadFeatures(wfsurl, featuretypename, featuretypefieldid) {
@@ -185,7 +194,6 @@ function reloadFeatures(wfsurl, featuretypename, featuretypefieldid) {
     }
     wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Filter>');
     app.mapPanel.map.removeLayer(selectLayer);
-    miniapp.mapPanel.map.removeLayer(miniLayer);
     selectLayer = new OpenLayers.Layer.Vector("Selection", {
         strategies: [new OpenLayers.Strategy.Fixed()],
         protocol: new OpenLayers.Protocol.HTTP({
@@ -193,17 +201,42 @@ function reloadFeatures(wfsurl, featuretypename, featuretypefieldid) {
             format: new OpenLayers.Format.GML()
         })
     });
-    miniLayer = new OpenLayers.Layer.Vector("Selection", {
-        strategies: [new OpenLayers.Strategy.Fixed()],
-        protocol: new OpenLayers.Protocol.HTTP({
-            url: wfsUrlWithFilter,
-            format: new OpenLayers.Format.GML()
-        })
-    });
-    miniLayer.events.register("featuresadded", miniLayer, listenerMiniFeaturesAdded);
 
     app.mapPanel.map.addLayer(selectLayer);
-    app.mapPanel.map.zoomToExtent(selectLayer.getDataExtent());
-    miniapp.mapPanel.map.addLayer(miniLayer);
-    miniapp.mapPanel.map.zoomToExtent(miniLayer.getDataExtent());
+    selectLayer.events.register("featureadded", selectLayer, listenerFeatureAdded);
+    selectLayer.events.register("loadend", selectLayer, listenerFeatureAddedToZoom);
+    fromreload = true;
 }
+
+var listenerFeatureAddedToZoom = function (e){
+    app.mapPanel.map.zoomToExtent(selectLayer.getDataExtent());
+};
+
+
+//function getWMSFilter(){
+//    var filter = '<ogc:Filter>';
+//   filter += '<ogc:Within>';
+//   filter += '   <ogc:PropertyName>the_geom</ogc:PropertyName>';
+//   filter += '   <gml:Polygon gid="pp9"';
+//   filter += '      srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">';
+//   filter += '      <gml:outerBoundaryIs>';
+//   filter += '          <gml:LinearRing>';
+//   filter += '          <gml:coordinates>'+userperimeter+'</gml:coordinates>';
+//   filter += '          </gml:LinearRing>';
+//   filter += '      </gml:outerBoundaryIs>';
+//   filter += '   </gml:Polygon>';
+//   filter += '</ogc:Within>';
+//   filter += '</ogc:Filter>';
+//   return filter;
+//
+//}
+
+//function getWMSFilter(text) {
+//    var wkt = 'POLYGON((' + text + '))';
+//    var feature = new OpenLayers.Format.WKT().read(wkt);
+//    var geometry = feature.geometry.transform(
+//            new OpenLayers.Projection('EPSG:4326'),
+//            new OpenLayers.Projection(app.mapPanel.map.projection)
+//            );
+//    return new OpenLayers.Feature.Vector(geometry);
+//}

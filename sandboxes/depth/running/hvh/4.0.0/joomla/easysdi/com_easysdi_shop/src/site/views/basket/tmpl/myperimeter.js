@@ -5,16 +5,18 @@ function selectMyPerimeter(perimeterid, perimetername, userextent) {
     jQuery('#t-perimeter').val(perimeterid);
     jQuery('#t-perimetern').val(perimetername);
     jQuery('#t-features').val('');
+    jQuery('#t-surface').val('');
 
     var transformedFeature = getUserRestrictedExtentFeature(userextent);
+    
+    var t = transformedFeature.geometry.getGeodesicArea(app.mapPanel.map.projection);
+    jQuery('#t-surface').val(JSON.stringify(transformedFeature.geometry.getGeodesicArea(app.mapPanel.map.projection)));
+    
     myLayer = new OpenLayers.Layer.Vector("myLayer");
+    myLayer.events.register("featureadded", myLayer, listenerFeatureAdded);
     myLayer.addFeatures([transformedFeature]);
-
     app.mapPanel.map.addLayer(myLayer);
     app.mapPanel.map.zoomToExtent(transformedFeature.geometry.getBounds());
-
-    miniLayer.removeAllFeatures();
-    miniLayer.addFeatures([transformedFeature.clone()]);
     
     putFeaturesVerticesInHiddenField(transformedFeature);
 }

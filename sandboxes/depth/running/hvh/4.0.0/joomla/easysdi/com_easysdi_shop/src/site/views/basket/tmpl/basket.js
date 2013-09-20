@@ -1,21 +1,50 @@
-var map, perimeterLayer, selectControl, selectLayer, polygonLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer;
+var map, perimeterLayer, selectControl, selectLayer, polygonLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap;
 function initMiniMap() {
-//    var map = new OpenLayers.Map('minimap');
-//    var wms = new OpenLayers.Layer.WMS(
-//            "OpenLayers WMS",
-//            "http://vmap0.tiles.osgeo.org/wms/vmap0",
-//            {'layers': 'basic'});
-//    map.addLayer(wms);
+    minimap = new OpenLayers.Map({div: 'minimap', controls:[]});
+    var layer = app.mapPanel.map.layers[1].clone();
+    minimap.addLayer(layer);
+    minimap.zoomToExtent(app.mapPanel.map.getExtent());
+    miniLayer = new OpenLayers.Layer.Vector("miniLayer");
+    minimap.addLayer(miniLayer);
+    miniLayer.events.register("featuresadded", miniLayer, listenerMiniFeaturesAdded);
+//    for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
+//            if(app.mapPanel.map.layers[j].isBaseLayer){
+//                map.addLayer(app.mapPanel.map.layers[j].clone);
+//            }
+//    }
+//    var gmap = new OpenLayers.Layer.Google(
+//                "Google Streets", // the default
+//                {numZoomLevels: 20}
+//            );
+//                map.addLayer(gmap);
 //    map.zoomToMaxExtent();
 
-    miniLayer = new OpenLayers.Layer.Vector("miniLayer", {srsName: miniapp.mapPanel.map.projection, projection: miniapp.mapPanel.map.projection});
-    miniapp.mapPanel.map.addLayer(miniLayer);
-    miniLayer.events.register("featuresadded", miniLayer, listenerMiniFeaturesAdded);
+//    miniLayer = new OpenLayers.Layer.Vector("miniLayer", {srsName: miniapp.mapPanel.map.projection, projection: miniapp.mapPanel.map.projection});
+//    miniapp.mapPanel.map.addLayer(miniLayer);
+//    miniLayer.events.register("featuresadded", miniLayer, listenerMiniFeaturesAdded);
 }
 
 var listenerMiniFeaturesAdded = function() {
-    miniapp.mapPanel.map.zoomToExtent(miniLayer.getDataExtent());
+    minimap.zoomToExtent(miniLayer.getDataExtent());
+    
 };
+
+var listenerFeatureAdded = function (e){
+    miniLayer.addFeatures([e.feature.clone()]);
+    var t = jQuery('#t-surface').val();
+    if(jQuery('#t-surface').val() > 3000000){
+        jQuery("#alert_template").empty();
+        jQuery("#alert_template").append('<span>Your current selection of '+jQuery('#t-surface').val() +' is to large.</span>');
+        jQuery('#alert_template').fadeIn('slow');
+        jQuery('#btn-saveperimeter').attr("disabled", "disabled");        
+    }else{
+        jQuery('#alert_template').fadeOut('slow');
+        jQuery('#btn-saveperimeter').removeAttr("disabled");
+    
+    }
+};
+
+
 
 function clearLayersVector() {
     for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
@@ -23,10 +52,9 @@ function clearLayersVector() {
             app.mapPanel.map.layers[j].removeAllFeatures();
         }
     }
-
-    for (var j = 0; j < miniapp.mapPanel.map.layers.length; j++) {
-        if (miniapp.mapPanel.map.layers[j].__proto__.CLASS_NAME === "OpenLayers.Layer.Vector") {
-            miniapp.mapPanel.map.layers[j].removeAllFeatures();
+    for (var j = 0; j < minimap.layers.length; j++) {
+        if (minimap.layers[j].__proto__.CLASS_NAME === "OpenLayers.Layer.Vector") {
+            minimap.layers[j].removeAllFeatures();
         }
     }
 }
@@ -36,6 +64,8 @@ function clearTemporaryFields() {
     jQuery('#t-perimetern').val('');
     jQuery('#t-surface').val('');
     jQuery('#t-features').val('');
+    jQuery('#alert_template').fadeOut('slow');
+    jQuery('#btn-saveperimeter').removeAttr("disabled");
 }
 
 function resetTemporaryFields() {
@@ -43,6 +73,8 @@ function resetTemporaryFields() {
     jQuery('#t-perimetern').val(jQuery('#perimetern').val());
     jQuery('#t-surface').val(jQuery('#surface').val());
     jQuery('#t-features').val(jQuery('#features').val());
+    jQuery('#alert_template').fadeOut('slow');
+    jQuery('#btn-saveperimeter').removeAttr("disabled");
 }
 
 function saveTemporaryFields() {
@@ -56,7 +88,7 @@ function beforeFeatureAdded(event) {
     clearLayersVector();
 
     jQuery('#t-features').val('');
-    jQuery('#t-surface').val('');
+    jQuery('#t-surface').val(JSON.stringify(event.feature.geometry.getGeodesicArea(app.mapPanel.map.projection)));
 }
 
 function resetAll() {
@@ -79,7 +111,6 @@ function resetAll() {
     if (app.mapPanel.map.getLayersByName("myLayer").length > 0) {
         app.mapPanel.map.removeLayer(myLayer);
     }
-
     for (key in drawControls) {
         var control = drawControls[key];
         control.deactivate();
@@ -87,16 +118,20 @@ function resetAll() {
 }
 
 function toggleSelectControl() {
-    if (selectControl.active)
+    if (selectControl.active){
+        jQuery('#modal-perimeter [id^="btn-selection"]').removeClass('active');
         selectControl.deactivate();
-    else
+    }
+    else{
+        jQuery('#modal-perimeter [id^="btn-selection"]').addClass('active');
         selectControl.activate();
+    }
 }
 
 function cancel() {
     resetAll();
     jQuery('#modal-perimeter [id^="btn-perimeter"]').removeClass('active');
-    if (jQuery('#perimeter').val() != '') {
+    if (jQuery('#perimeter').val() !== '') {
         eval('selectPerimeter' + jQuery('#perimeter').val() + '()');
         eval('reloadFeatures' + jQuery('#perimeter').val() + '()');
         jQuery('#btn-perimeter' + jQuery('#perimeter').val()).addClass('active');

@@ -4,6 +4,7 @@ function initDraw() {
         featuresadded: onFeaturesAdded,
         beforefeatureadded: beforeFeatureAdded
     });
+    polygonLayer.events.register("featureadded", polygonLayer, listenerFeatureAdded);
     app.mapPanel.map.addLayers([polygonLayer]);
     
     drawControls = {
@@ -16,7 +17,6 @@ function initDraw() {
 }
 
 function onFeaturesAdded(event) {
-    miniLayer.addFeatures([event.features[0].clone()]);    
     putFeaturesVerticesInHiddenField(event.features[0]);
 }
 
@@ -42,9 +42,7 @@ function reloadFeatures1() {
     var feature = new OpenLayers.Format.WKT().read(wkt);
     polygonLayer.addFeatures([feature]);
     app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
-    
-    miniLayer.addFeatures([feature.clone]);
-        
+            
     putFeaturesVerticesInHiddenField(feature);
 }
 

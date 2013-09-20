@@ -56,10 +56,8 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
     </script>
 
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=basket'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
-
         <div class="basket-edit front-end-edit">
             <h1><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TITLE'); ?></h1>
-
             <div class="well">
                 <div class="row-fluid">
                     <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_EXTRACTION_NAME'); ?></h3>
@@ -121,13 +119,8 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
                     <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h3>
                     <hr>
                     <div class="row-fluid" >
-                        <div class="span6" >                            
-                            <div id="minimap"></div>
-                        </div>
-                    </div>
-                    <div class="row-fluid" >
                         <div class="map-recap span6" >
-                            <?php echo $this->minimapscript; ?>                            
+                                <div id="minimap" class="minimap" style="height:250px"></div>                   
                         </div>
                         <div  class="span6" >
                             <div id="perimeter-buffer" class="row-fluid hide" >
@@ -196,6 +189,13 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
             </div>
             <div class="modal-body" style="max-height: 500px;">
                 <div class="container-fluid" >
+                    <div class="row-fluid">
+                        <div class="span8" >
+                            <div class="alert alert-info" id="alert_template" style="display: none;">
+                               
+                            </div>
+                        </div>
+                    </div>
                     <div class="row-fluid">
                         <div class="span8">
                             <div  >
@@ -288,7 +288,7 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
             </div>
                 <div class="modal-footer">
                     <button class="btn" data-dismiss="modal" onclick="cancel();" aria-hidden="true">Close</button>
-                    <button class="btn btn-primary" onclick="savePerimeter();" data-dismiss="modal">Save perimeter</button>
+                    <button class="btn btn-primary" id="btn-saveperimeter" onclick="savePerimeter();" data-dismiss="modal">Save perimeter</button>
                 </div>
             </div>
 
@@ -307,10 +307,8 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
             </div>
             <script>
                 Ext.onReady(function(){
-                    miniapp.on("ready", function() {
-                        initMiniMap(); });
-                
                     app.on("ready", function() {
+                        initMiniMap();
                         initDraw();                        
                         jQuery('#perimeter-buffer').hide();                
                         <?php if(!empty($this->item->extent)):?>
