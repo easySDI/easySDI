@@ -30,10 +30,23 @@ class FormHtmlGenerator {
      */
     private $ldao;
 
+    /**
+     *
+     * @var DOMDocument 
+     */
+    private $dom;
+
+    /**
+     *
+     * @var DOMElement[] 
+     */
+    private $domElements;
+
     function __construct(JForm $form, $classTree) {
         $this->form = $form;
         $this->classTree = $classTree;
         $this->ldao = new SdiLanguageDao();
+        $this->dom = new DOMDocument(null, 'utf-8');
     }
 
     /**
@@ -43,68 +56,211 @@ class FormHtmlGenerator {
      * @return string Description
      * @since 4.0
      */
+    /* public function buildForm() {
+
+      $this->getDomElements();
+
+      $html = '';
+      $lastRel = new SdiRelation(0, 'dummy', 1);
+
+      foreach ($this->classTree as $rel) {
+      switch ($rel->childtype_id) {
+      case SdiRelation::$CLASS:
+
+      if ($rel->level > $lastRel->level || $rel->level == 0) {
+      if ($lastRel->childtype_id == SdiRelation::$RELATIONTYPE) {
+      $html .= $this->getFieldsetFooter($rel);
+      }
+      $html .= $this->getActionHeader($rel);
+      $html .= $this->getFieldsetHeader($rel);
+      }
+
+      if ($rel->level < $lastRel->level) {
+      if ($lastRel->childtype_id == SdiRelation::$RELATIONTYPE) {
+      $html .= $this->getFieldsetFooter($rel);
+      }
+      for ($i = 0; $i <= $lastRel->level - $rel->level; $i++) {
+      $html .= $this->getFieldsetFooter($rel);
+      }
+      $html .= $this->getActionHeader($rel);
+      $html .= $this->getFieldsetHeader($rel);
+      }
+
+      if ($rel->level == $lastRel->level && $rel->level != 0) {
+      $html .= $this->getFieldsetFooter($rel);
+      $html .= $this->getActionHeader($rel);
+      $html .= $this->getFieldsetHeader($rel);
+      }
+
+      $lastRel = $rel;
+      break;
+
+      case SdiRelation::$ATTRIBUT:
+
+      $html .= $this->getFieldsetBody($rel);
+
+      break;
+
+      case SdiRelation::$RELATIONTYPE:
+      if ($lastRel->childtype_id == SdiRelation::$RELATIONTYPE) {
+      $html .= $this->getFieldsetFooter($rel);
+      }
+      $html .= $this->getActionHeader($rel);
+      $html .= $this->getFieldsetHeader($rel);
+
+      $lastRel = $rel;
+      break;
+      default:
+      break;
+      }
+      }
+
+      for ($i = 0; $i <= $lastRel->level; $i++) {
+      $html .= $this->getFieldsetFooter($rel);
+      }
+
+      return $html;
+      } */
+
     public function buildForm() {
+        $this->getDomElements();
 
-        $html = '';
-        $lastRel = new SdiRelation(0, 'dummy', 1);
+        $root = current($this->domElements);
 
-        foreach ($this->classTree as $rel) {
-            switch ($rel->childtype_id) {
-                case SdiRelation::$CLASS:
+        foreach ($this->domElements as $key => $element) {
+            $reverseIndex = 2;
+            if (array_key_exists($key, $this->classTree)) {
+                $rel = $this->classTree[$key];
+                switch ($rel->childtype_id) {
+                    case SdiRelation::$RELATIONTYPE:
+                    case SdiRelation::$CLASS:
+                        $reverseIndex = 2;
+                        break;
+                    case SdiRelation::$ATTRIBUT:
+                        $reverseIndex = 2;
+                        break;
+                }
+            } else {
+                $reverseIndex = 1;
+            }
 
-                    if ($rel->level > $lastRel->level || $rel->level == 0) {
-                        if ($lastRel->childtype_id == SdiRelation::$RELATIONTYPE) {
-                            $html .= $this->getFieldsetFooter($rel);
-                        }
-                        $html .= $this->getActionHeader($rel);
-                        $html .= $this->getFieldsetHeader($rel);
-                    }
+            if (array_key_exists($this->subXpath($key, $reverseIndex), $this->domElements)) {
+                $parent = $this->domElements[$this->subXpath($key, $reverseIndex)];
 
-                    if ($rel->level < $lastRel->level) {
-                        if ($lastRel->childtype_id == SdiRelation::$RELATIONTYPE) {
-                            $html .= $this->getFieldsetFooter($rel);
-                        }
-                        for ($i = 0; $i <= $lastRel->level - $rel->level; $i++) {
-                            $html .= $this->getFieldsetFooter($rel);
-                        }
-                        $html .= $this->getActionHeader($rel);
-                        $html .= $this->getFieldsetHeader($rel);
-                    }
+                $divInner = $parent->getElementsByTagName('div')->item(0);
 
-                    if ($rel->level == $lastRel->level && $rel->level != 0) {
-                        $html .= $this->getFieldsetFooter($rel);
-                        $html .= $this->getActionHeader($rel);
-                        $html .= $this->getFieldsetHeader($rel);
-                    }
-
-                    $lastRel = $rel;
-                    break;
-
-                case SdiRelation::$ATTRIBUT:
-                    
-                    $html .= $this->getFieldsetBody($rel);
-
-                    break;
-
-                case SdiRelation::$RELATIONTYPE:
-                    if ($lastRel->childtype_id == SdiRelation::$RELATIONTYPE) {
-                        $html .= $this->getFieldsetFooter($rel);
-                    }
-                    $html .= $this->getActionHeader($rel);
-                    $html .= $this->getFieldsetHeader($rel);
-
-                    $lastRel = $rel;
-                    break;
-                default:
-                    break;
+                if($rel->getIndex()==0 && $rel->childtype_id == SdiRelation::$CLASS){
+                    $divInner->appendChild($this->getAction($rel));
+                }
+                $divInner->appendChild($element);
             }
         }
 
-        for ($i = 0; $i <= $lastRel->level; $i++) {
-            $html .= $this->getFieldsetFooter($rel);
-        }
+        $this->dom->appendChild($root);
+
+        $html = $this->dom->saveHTML();
 
         return $html;
+    }
+
+    private function getDomElements() {
+        foreach ($this->classTree as $key => $rel) {
+            switch ($rel->childtype_id) {
+                case SdiRelation::$RELATIONTYPE:
+                case SdiRelation::$CLASS:
+                    $this->domElements[$key] = $this->getFieldset($rel);
+                    break;
+                case SdiRelation::$ATTRIBUT:
+                    $this->domElements[$key] = $this->getAttribute($rel);
+                    break;
+            }
+        }
+    }
+
+    private function getAction(SdiRelation $rel){
+        $divAction = $this->dom->createElement('div', EText::_($rel->guid));
+        $divAction->setAttribute('class', 'action-' . $rel->level);
+        
+        return $divAction;
+    }
+    
+    private function getFieldset(SdiRelation $rel) {
+
+        $imgCollapse = $this->dom->createElement('img');
+        $imgCollapse->setAttribute('id', 'collapse-btn-' . $rel->getSerializedXpath());
+        $imgCollapse->setAttribute('class', 'collapse-btn');
+        $imgCollapse->setAttribute('src', JUri::base(TRUE) . '/administrator/components/com_easysdi_catalog/assets/images/expand.png');
+        $imgCollapse->setAttribute('onclick', 'collapse(this.id)');
+        $imgCollapse->setAttribute('height', '15');
+        $imgCollapse->setAttribute('width', '15');
+
+        $imgRemove = $this->dom->createElement('img');
+        $imgRemove->setAttribute('id', 'remove-btn-' . $rel->getSerializedXpath());
+        $imgRemove->setAttribute('class', 'remove-btn-' . $rel->getSerializedXpath(false));
+        $imgRemove->setAttribute('src', JUri::base(TRUE) . '/administrator/components/com_easysdi_catalog/assets/images/circle_minus.png');
+        $imgRemove->setAttribute('onclick', 'removeFieldset(this.id, \'' . $rel->getSerializedXpath(false) . '\' , ' . $rel->lowerbound . ',' . $rel->upperbound . ')');
+        $imgRemove->setAttribute('height', '15');
+        $imgRemove->setAttribute('width', '15');
+
+        $divOuter = $this->dom->createElement('div');
+        $divOuter->setAttribute('id', 'outer-fds-' . $rel->getSerializedXpath());
+        $divOuter->setAttribute('class', 'outer-' . $rel->level . ' outer-fds-' . $rel->getSerializedXpath(false));
+
+        $fieldset = $this->dom->createElement('fieldset');
+        $fieldset->setAttribute('id', 'fds-' . $rel->getSerializedXpath());
+
+        $legend = $this->dom->createElement('legend', EText::_($rel->guid));
+
+        $divInner = $this->dom->createElement('div');
+        $divInner->setAttribute('id', 'inner-fds-' . $rel->getSerializedXpath());
+        $divInner->setAttribute('class', 'inner-fds');
+        if (!isset($_GET['uuid'])) {
+            $divInner->setAttribute('style', 'display:none;');
+        }
+
+        $legend->appendChild($imgCollapse);
+        $fieldset->appendChild($legend);
+        $fieldset->appendChild($divInner);
+        $divOuter->appendChild($fieldset);
+        
+        return $divOuter;
+    }
+
+    private function getAttribute(SdiRelation $rel) {
+        $source = $this->getFieldsetBody($rel);
+
+        $domlocal = new DOMDocument();
+        $domlocal->substituteEntities = false;
+        $domlocal->loadHTML($this->convert($source));
+        $element = $domlocal->getElementsByTagName('div')->item(0);
+
+        $cloned = $element->cloneNode(TRUE);
+
+        $imported = $this->dom->importNode($cloned, TRUE);
+
+        return $imported;
+    }
+
+    private function convert($text) {
+        $text = htmlentities($text, ENT_NOQUOTES, "UTF-8");
+        $text = htmlspecialchars_decode($text);
+        return $text;
+    }
+
+    private function subXpath($key, $reverseIndex) {
+        $subPath = '';
+
+        $keys = preg_split('/_/', $key);
+
+        for ($i = 0; $i < count($keys) - $reverseIndex; $i++) {
+            $subPath .= $keys[$i] . '_';
+        }
+
+        if ($keys > 2) {
+            return substr($subPath, 0, -1);
+        } else {
+            return false;
+        }
     }
 
     private function getActionHeader(SdiRelation $rel) {
@@ -210,7 +366,7 @@ class FormHtmlGenerator {
     private function buildField($field, $guid) {
         $html = '';
 
-        $html .= '<div class="control-group">
+        $html .= '<div><div class="control-group">
                         <div class="control-label">' . $field->label . '</div>
                         <div class="controls">' . $field->input . '</div>
                     </div>';
@@ -221,7 +377,7 @@ class FormHtmlGenerator {
                     js('document').ready(function() {
                         js('#" . $field->id . "').tooltip({'trigger':'focus', 'title': '" . addslashes(EText::_($guid, 2)) . "'});
                     });
-                </script>";
+                </script></div>";
 
         return $html;
     }
