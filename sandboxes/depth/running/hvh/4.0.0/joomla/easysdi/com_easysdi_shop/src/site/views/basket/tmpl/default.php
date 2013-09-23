@@ -43,14 +43,14 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
 
         function reloadBasketContent() {
             if (request.readyState == 4) {
-                jQuery('#' + current_id).remove();
-                current_id = null;
+//                jQuery('#' + current_id).remove();
+//                current_id = null;
                 
-                if(jQuery('#table-extractions tr').length === 0){
+//                if(jQuery('#table-extractions tr').length === 0){
                     location.reload();
-                    return;
-                }                
-                updateBasketContent();
+//                    return;
+//                }                
+//                updateBasketContent();
             }
         }
     </script>
@@ -191,8 +191,7 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
                 <div class="container-fluid" >
                     <div class="row-fluid">
                         <div class="span8" >
-                            <div class="alert alert-info" id="alert_template" style="display: none;">
-                               
+                            <div class="alert alert-info" id="alert_template" style="display: none;">                               
                             </div>
                         </div>
                     </div>

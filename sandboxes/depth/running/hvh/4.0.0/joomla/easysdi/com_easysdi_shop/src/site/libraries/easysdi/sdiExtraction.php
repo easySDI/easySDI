@@ -10,7 +10,7 @@
 // No direct access.
 defined('_JEXEC') or die;
 
-require_once JPATH_COMPONENT . "/libraries/easysdi/sdiProperty.php";
+require_once JPATH_SITE. '/components/com_easysdi_shop/libraries/easysdi/sdiProperty.php';
 
 class sdiExtraction {
 
@@ -20,6 +20,7 @@ class sdiExtraction {
     var $properties;
     var $resource;
     var $restrictedperimeter;
+    var $perimeters;
     
     function __construct($session_extraction) {
         if (empty($session_extraction))

@@ -10,8 +10,8 @@
 // No direct access.
 defined('_JEXEC') or die;
 
-require_once JPATH_COMPONENT . "/libraries/easysdi/sdiExtraction.php";
-require_once JPATH_COMPONENT . "/libraries/easysdi/sdiPerimeter.php";
+require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiExtraction.php';
+require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiPerimeter.php';
 
 class sdiBasket {
 
@@ -22,44 +22,50 @@ class sdiBasket {
     var $surfacemin;
     var $surfacemax;
 
-    function __construct($session_content) {
-        if (empty($session_content))
-            return;
+    function __construct() {
+        $this->extractions = array();
+        $this->perimeters = array();
+        $this->isrestrictedbyperimeter = false;
+    }
+
+    function addExtraction($extraction) {
+        if ($extraction->restrictedperimeter == '1')
+            $this->isrestrictedbyperimeter = true;
+
+        if ((empty($this->surfacemin) && !empty($extraction->surfacemin)) || (!empty($extraction->surfacemin) && $extraction->surfacemin > $this->surfacemin))
+            $this->surfacemin = $extraction->surfacemin;
+
+        if ((empty($this->surfacemax) && !empty($extraction->surfacemax)) || (!empty($extraction->surfacemax) && $extraction->surfacemax < $this->surfacemax))
+            $this->surfacemax = $extraction->surfacemax;
+        $this->extractions[] = $extraction;
+    }
+
+    function removeExtraction($id) {
+        foreach ($this->extractions as $key => $extraction):
+            if ($extraction->id == $id) {
+                unset($this->extractions[$key]);
+                break;
+            }
+        endforeach;
 
         $this->isrestrictedbyperimeter = false;
-
-        if (!isset($this->extractions))
-            $this->extractions = array();
-
-        if (!isset($this->perimeters))
-            $this->perimeters = array();
-
-        if (isset($session_content->extractions)) {
-            foreach ($session_content->extractions as $extraction):
-                $ex = new sdiExtraction($extraction);
-                if ($ex->restrictedperimeter == '1')
-                    $this->isrestrictedbyperimeter = true;
-                 if((empty($this->surfacemin)&&!empty($ex->surfacemin)) || (!empty($ex->surfacemin) && $ex->surfacemin > $this->surfacemin))
-                    $this->surfacemin = $ex->surfacemin;
-                
-                if((empty($this->surfacemax)&&!empty($ex->surfacemax)) ||(!empty($ex->surfacemax) && $ex->surfacemax < $this->surfacemax))
-                    $this->surfacemax = $ex->surfacemax;
-                $this->extractions[] = $ex;
-            endforeach;
-        }
-
-        if (isset($session_content->perimeters)) {
-            foreach ($session_content->perimeters as $perimeter):
-                $this->perimeters[] = new sdiPerimeter($perimeter);
-            endforeach;
+        foreach ($this->extractions as $key => $extraction):
+            if ($extraction->restrictedperimeter == '1')
+                $this->isrestrictedbyperimeter = true;
             
-            foreach ($this->perimeters as $perimeter):
-                $perimeter->setAllowedBuffer($this->extractions);
-            endforeach;
-        }
-        
-        if(isset ($session_content->extent))
-            $this->extent = $session_content->extent;
+            if ((empty($this->surfacemin) && !empty($extraction->surfacemin)) || (!empty($extraction->surfacemin) && $extraction->surfacemin > $this->surfacemin))
+                $this->surfacemin = $extraction->surfacemin;
+
+            if ((empty($this->surfacemax) && !empty($extraction->surfacemax)) || (!empty($extraction->surfacemax) && $extraction->surfacemax < $this->surfacemax))
+                $this->surfacemax = $extraction->surfacemax;
+        endforeach;
+    }
+
+    function setPerimeters($perimeters) {
+        $this->perimeters = $perimeters;
+        foreach ($this->perimeters as $perimeter):
+            $perimeter->setAllowedBuffer($this->extractions);
+        endforeach;
     }
 
 }

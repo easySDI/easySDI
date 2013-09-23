@@ -132,7 +132,7 @@
               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_SURFACEMAX" 
               filter="safehtml" /> 
         
-        <field name="restrictedperimeter" type="radio"  default="0"
+        <field name="restrictedperimeter" type="radio"  default="0" 
                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_RESTRICTEDPERIMETER"
                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_RESTRICTEDPERIMETER" 
         > 

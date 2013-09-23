@@ -10,7 +10,7 @@
 // No direct access.
 defined('_JEXEC') or die;
 
-require_once JPATH_COMPONENT . "/libraries/easysdi/sdiPropertyValue.php";
+require_once JPATH_SITE. '/components/com_easysdi_shop/libraries/easysdi/sdiPropertyValue.php';
 
 class sdiProperty {
 

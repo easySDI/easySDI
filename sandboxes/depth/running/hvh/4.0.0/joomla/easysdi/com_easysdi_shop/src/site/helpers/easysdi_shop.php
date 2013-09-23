@@ -11,6 +11,9 @@ defined('_JEXEC') or die;
 
 require_once JPATH_COMPONENT_ADMINISTRATOR . '/tables/diffusionperimeter.php';
 require_once JPATH_COMPONENT_ADMINISTRATOR . '/tables/diffusion.php';
+require_once JPATH_COMPONENT_SITE . '/libraries/easysdi/sdiBasket.php';
+require_once JPATH_COMPONENT_SITE . '/libraries/easysdi/sdiExtraction.php';
+require_once JPATH_COMPONENT_SITE . '/libraries/easysdi/sdiPerimeter.php';
 
 abstract class Easysdi_shopHelper {
 
@@ -28,27 +31,25 @@ abstract class Easysdi_shopHelper {
             die();
         endif;
 
-        $extraction = json_decode($item);
+        $decoded_item = json_decode($item);
 
         //If not logged user, check if the extraction is not restricted by user extent
         $user = JFactory::getUser();
         if ($user->guest) {
             $diffusion = JTable::getInstance('diffusion', 'Easysdi_shopTable');
-            $diffusion->load($extraction->id);
+            $diffusion->load($decoded_item->id);
             if ($diffusion->restrictedperimeter == 1) {
                 $return['ERROR'] = JText::_('COM_EASYSDI_SHOP_BASKET_ERROR_TRY_TO_ADD_NOT_ALLOWED_DIFFUSION');
                 echo json_encode($return);
                 die();
             }
         }
+        $extraction = new sdiExtraction($decoded_item);
 
         //Get the session basket content
-        $basketcontent = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
-        if (empty($basketcontent)) {
-            //Create the array
-            $basketcontent = new stdClass();
-            $basketcontent->extractions = array();
-            $basketcontent->perimeters = array();
+        $basket = unserialize(JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content'));
+        if (empty($basket) || !$basket) {
+            $basket = new sdiBasket();
         }
 
         //Complete extraction object with allowed perimeters
@@ -60,25 +61,29 @@ abstract class Easysdi_shopHelper {
             echo json_encode($return);
             die();
         }
-        $extraction->perimeters = $perimeters;
+
+        foreach ($perimeters as $perimeter):
+            $new_perimeter = new sdiPerimeter($perimeter);
+            $new_perimeter->setAllowedBuffer($basket->extractions);
+            $extraction->perimeters[] = $new_perimeter;
+        endforeach;
 
         //Add the new extraction to the basket
-        if (count($basketcontent->extractions) == 0):
+        if (count($basket->extractions) == 0):
             //First add
-            $basketcontent->extractions[] = $extraction;
-            $basketcontent->perimeters = $extraction->perimeters;
+            $basket->addExtraction($extraction);
+            $basket->setPerimeters($extraction->perimeters);
         else:
             //There is already extractions in the basket
             //Check if there is at least one common perimeter within all the extractions in the basket
             $common = array();
             foreach ($extraction->perimeters as $perimeter):
-                if (in_array($perimeter, $basketcontent->perimeters)):
+                if (in_array($perimeter, $basket->perimeters)):
                     if (!in_array($perimeter, $common)):
                         $common[] = $perimeter;
                     endif;
                 endif;
             endforeach;
-
 
             if (count($common) == 0):
                 //There is no more common perimeter between the extraction in the basket
@@ -88,10 +93,10 @@ abstract class Easysdi_shopHelper {
                 die();
             endif;
             //If there is already a perimeter defined for the basket, check if this perimeter is allowed for the new extraction
-            if (!empty($basketcontent->extent) && !$force):
+            if (!empty($basket->extent) && !$force):
                 $check = false;
                 foreach ($common as $p):
-                    if ($p->perimeter_id == $basketcontent->extent->id):
+                    if ($p->id == $basket->extent->id):
                         //New extraction is compatible with the already defined extent of the basket
                         $check = true;
                     endif;
@@ -102,17 +107,17 @@ abstract class Easysdi_shopHelper {
                     echo json_encode($return);
                     die();
                 endif;
-            elseif (!empty($basketcontent->extent) && $force):
+            elseif (!empty($basket->extent) && $force):
                 //Clean session
                 JFactory::getApplication()->setUserState('com_easysdi_shop.basket.suspend', null);
-                $basketcontent->extent = null;
+                $basket->extent = null;
             endif;
-            $basketcontent->extractions[] = $extraction;
-            $basketcontent->perimeters = $common;
+            $basket->addExtraction($extraction);
+            $basket->setPerimeters($common);
         endif;
 
-        JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', $basketcontent);
-        $return['COUNT'] = count($basketcontent->extractions);
+        JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
+        $return['COUNT'] = count($basket->extractions);
         echo json_encode($return);
         die();
     }
@@ -132,28 +137,23 @@ abstract class Easysdi_shopHelper {
         endif;
 
         //Get the session basket content
-        $basketcontent = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
-        if (empty($basketcontent)) :
+        $basket = unserialize(JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content'));
+        if (empty($basket)) :
             $return['COUNT'] = 0;
             echo json_encode($return);
             die();
         endif;
 
-        foreach ($basketcontent->extractions as $key => $extraction):
-            if ($extraction->id == $id) {
-                unset($basketcontent->extractions[$key]);
-                break;
-            }
-        endforeach;
+        $basket->removeExtraction($id);
 
-        if (count($basketcontent->extractions) == 0):
-            $basketcontent->perimeters = array();
-            $basketcontent->extent = null;
+        if (count($basket->extractions) == 0):
+            $basket->perimeters = array();
+            $basket->extent = null;
         else:
             $common = array();
-            foreach ($basketcontent->extractions as $extraction):
+            foreach ($basket->extractions as $extraction):
                 foreach ($extraction->perimeters as $perimeter):
-                    if (in_array($perimeter, $basketcontent->extractions[0]->perimeters)):
+                    if (in_array($perimeter, $basket->extractions[0]->perimeters)):
                         if (!in_array($perimeter, $common)):
                             $common[] = $perimeter;
                         endif;
@@ -161,20 +161,20 @@ abstract class Easysdi_shopHelper {
                 endforeach;
             endforeach;
 
-            $basketcontent->perimeters = $common;
+            $basket->setPerimeters($common);
         endif;
 
-        JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', $basketcontent);
+        JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
 
-        $return['COUNT'] = count($basketcontent->extractions);
+        $return['COUNT'] = count($basket->extractions);
         echo json_encode($return);
         die();
     }
 
     public static function abortAdd() {
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.suspend', null);
-        $basketcontent = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
-        $return['ABORT'] = count($basketcontent->extractions);
+        $basket = unserialize(JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content'));
+        $return['ABORT'] = count($basket->extractions);
         echo json_encode($return);
         die();
     }
@@ -185,18 +185,18 @@ abstract class Easysdi_shopHelper {
      */
     public static function addExtentToBasket($item) {
         if (empty($item)):
-            $basketcontent = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
-            $basketcontent->extent = null;
-            JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', $basketcontent);
+            $basket = unserialize(JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content'));
+            $basket->extent = null;
+            JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
             $return['MESSAGE'] = 'OK';
             echo json_encode($return);
             die();
         endif;
 
         $perimeter = json_decode($item);
-        $basketcontent = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
-        $basketcontent->extent = $perimeter;
-        JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', $basketcontent);
+        $basket = unserialize(JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content'));
+        $basket->extent = $perimeter;
+        JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
 
         $return['MESSAGE'] = 'OK';
         echo json_encode($return);

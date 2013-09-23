@@ -12,6 +12,9 @@
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  */
+
+require_once JPATH_SITE. '/components/com_easysdi_shop/libraries/easysdi/sdiBasket.php';
+
 class modEasysdiBasketHelper {
 
     /**
@@ -21,9 +24,9 @@ class modEasysdiBasketHelper {
      * @access public
      */
     public static function getBasketContent($params) {
-        $content = JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content');
+        $content = unserialize(JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content'));
         
-        if (!empty($content) && !empty($content->extractions)){
+        if ($content && !empty($content) && !empty($content->extractions)){
             return count($content->extractions);
         }
         else {

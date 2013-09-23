@@ -19,11 +19,11 @@ var listenerFeatureAdded = function (e){
     
     var toobig = false;
     var toosmall = false;
-    if(jQuery('#surfacemax').val() != ''){
+    if(jQuery('#surfacemax').val() !== ''){
         if(jQuery('#t-surface').val() > jQuery('#surfacemax').val())
             toobig =true;
     }
-    if(jQuery('#surfacemin').val() != ''){
+    if(jQuery('#surfacemin').val() !== ''){
         if(jQuery('#t-surface').val() < jQuery('#surfacemin').val())
             toosmall =true;
     }

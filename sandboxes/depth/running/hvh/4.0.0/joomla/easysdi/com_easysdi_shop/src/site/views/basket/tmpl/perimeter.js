@@ -176,6 +176,8 @@ var listenerFeatureUnselected = function(e) {
 };
 
 function reloadFeatures(wfsurl, featuretypename, featuretypefieldid) {
+    jQuery('#t-features').val(jQuery('#features').val());
+    jQuery('#t-surface').val(jQuery('#surface').val());
     var wfsUrl = wfsurl + '?request=GetFeature&SERVICE=WFS&TYPENAME=' + featuretypename + '&VERSION=1.0.0';
     var wfsUrlWithFilter = wfsUrl + '&FILTER=';
     wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">');

@@ -48,7 +48,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                 $content = $this->getState('basket.content');
             }
             
-            $this->_item = new sdiBasket($content);
+            $this->_item = unserialize($content);
         }
 
         return $this->_item;

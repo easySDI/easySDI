@@ -74,6 +74,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         onPricingChange();
         enableDownload();
         enableExtraction();
+        enableFreePerimeter();
         js('#adminForm').submit(function(event) {
             if (js('#jform_deposit').val() != '') {
                 js('#jform_deposit_hidden').val(js('#jform_deposit').val());
@@ -82,6 +83,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                 js('#jform_file_hidden').val(js('#jform_file').val());
             }
         });
+        js('#jform_restrictedperimeter').change(enableFreePerimeter);
     });
     Joomla.submitbutton = function(task)
     {
@@ -166,6 +168,16 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         js('#jform_deposit').val('');
         js('#jform_deposit_hidden').val('');
     }
+    
+    function enableFreePerimeter(){
+            if ( js('#jform_restrictedperimeter0').is(':checked') == true ){
+                js('#jform_perimeter1').attr('disabled', 'disabled');
+                js('#jform_perimeter1 option[value=-1]').attr("selected","selected") ;
+            }else{
+                js('#jform_perimeter1').removeAttr('disabled', 'disabled');
+            }
+            js('#jform_perimeter1').trigger("liszt:updated");
+        }
 </script>
 
 <div class="diffusion-edit front-end-edit">
