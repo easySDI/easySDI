@@ -43,15 +43,17 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
 
         function reloadBasketContent() {
             if (request.readyState == 4) {
-//                jQuery('#' + current_id).remove();
-//                current_id = null;
-                
-//                if(jQuery('#table-extractions tr').length === 0){
-                    location.reload();
-//                    return;
-//                }                
-//                updateBasketContent();
+               location.reload();
             }
+        }
+        
+        Joomla.submitbutton = function(task)
+        {
+            if (jQuery('#allowedbuffer').val() == 0)
+                jQuery('#perimeter-buffer').val('');
+            
+            Joomla.submitform(task, document.getElementById('adminForm'));
+            
         }
     </script>
 
@@ -120,12 +122,12 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
                     <hr>
                     <div class="row-fluid" >
                         <div class="map-recap span6" >
-                                <div id="minimap" class="minimap" style="height:250px"></div>                   
+                             <div id="minimap" class="minimap" style="height:250px"></div>                   
                         </div>
                         <div  class="span6" >
                             <div id="perimeter-buffer" class="row-fluid hide" >
                                 <div><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BUFFER'); ?></h3>
-                                <input id="textinput" name="buffer" type="text" placeholder="" class="input-xlarge" value="<?php if(!empty($this->item->extent->buffer)) echo $this->item->extent->buffer; ?>">
+                                <input id="buffer" name="buffer" type="text" placeholder="" class="input-xlarge" value="<?php if(!empty($this->item->buffer)) echo $this->item->buffer; ?>">
                                 </div>                                
                             </div>
                             <div id="perimeter-recap" class="row-fluid" >
@@ -161,10 +163,10 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
                 <div class="row-fluid" >
                     <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY'); ?></h3>
                     <hr>
-                    <select id="thirdparty" class="inputbox input-xlarge">
+                    <select id="thirdparty" name="thirdparty" class="inputbox input-xlarge">
                         <option value="null"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_NO_THIRD_PARTY'); ?></option>
                         <?php foreach ($this->thirdParties as $thirdparty) :?>
-                            <option value="<?php echo $thirdparty->id; ?>"><?php echo $thirdparty->name; ?></option>
+                            <option value="<?php echo $thirdparty->id; ?>" <?php if ($this->item->thirdparty == $thirdparty->id) echo 'selected' ?>><?php echo $thirdparty->name; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -175,7 +177,7 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
                         <?php echo $this->getToolbar(); ?>
                     </div>
                     <div class="pull-right">
-                        <input class="btn-toolbar" type="text" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ORDER_NAME'); ?>">
+                        <input class="btn-toolbar" id="ordername" name="ordername" type="text" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ORDER_NAME'); ?>" value="<?php if(!empty($this->item->name)) echo $this->item->name; ?>">
                     </div>
 
                 </div>

@@ -199,7 +199,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order` (
 `checked_out` INT(11)  NOT NULL DEFAULT '0' ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `name` VARCHAR(255)  NOT NULL ,
-`ordertype_id` INT(11) UNSIGNED NOT NULL ,
+`ordertype_id` INT(11) UNSIGNED NULL ,
 `orderstate_id` INT(11) UNSIGNED NOT NULL ,
 `user_id` INT(11) UNSIGNED  NOT NULL ,
 `thirdparty_id` INT(11) UNSIGNED  NOT NULL ,

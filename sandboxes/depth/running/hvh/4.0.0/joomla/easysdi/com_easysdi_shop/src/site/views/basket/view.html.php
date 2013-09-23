@@ -38,12 +38,12 @@ class Easysdi_shopViewBasket extends JViewLegacy {
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_shop');
         $this->user = sdiFactory::getSdiUser();
-$this->thirdParties = $this->user->getOrderEligibleOrganisms();
+        $this->thirdParties = $this->user->getOrderEligibleOrganisms();
+
         if($this->_layout != 'confirm'){
             $params_array = $this->params->toArray();
             if(isset($params_array['ordermap'])){
                 $this->mapscript = Easysdi_mapHelper::getMapScript($params_array['ordermap']);
-                $this->minimapscript = Easysdi_mapHelper::getMapScript($params_array['ordermap'], true, 'miniapp', 'minisdicontainer');
             }
             else{
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_MAP_PREVIEW_NOT_FOUND'), 'error');

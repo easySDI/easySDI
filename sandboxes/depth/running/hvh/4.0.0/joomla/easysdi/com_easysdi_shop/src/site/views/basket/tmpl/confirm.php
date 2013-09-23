@@ -16,19 +16,19 @@ $jinput = JFactory::getApplication()->input;
 $action = $jinput->get('action', '', 'STRING');
 switch ($action) {
     case 'draft':
-        $title = "Confirm your save";
-        $welltitle = "You must sign in";
-        $btnlabel = "Save";
+        $title = JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_DRAFT_TITLE');
+        $welltitle = JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_DRAFT_MSG');
+        $btnlabel = JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_DRAFT_LABEL');
         break;
     case 'estimate':
-        $title = "Confirm your estimate";
-        $welltitle = "You must sign in to confirm your estimate";
-        $btnlabel = "Confirm your estimate";
+        $title = JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_ESTIMATE_TITLE');
+        $welltitle = JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_ESTIMATE_TITLE');
+        $btnlabel = JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_ESTIMATE_TITLE');
         break;
     case 'order':
-        $title = "Confirm your order";
-        $welltitle = "You must sign in to confirm your order";
-        $btnlabel = "Confirm your order";
+        $title = JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_ORDER_TITLE');
+        $welltitle = JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_ORDER_TITLE');
+        $btnlabel = JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_ORDER_TITLE');
         break;
 }
 ?>
@@ -53,89 +53,20 @@ switch ($action) {
                                 <br/>
                                 <br/>
                                 <label class="checkbox">
-                                    <input type="checkbox" > I accept the <a>terms and conditions</a> blah blah
+                                    <input type="checkbox" > <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_I_ACCEPT') ?> <a><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_TERMS') ?></a> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_OF_USE') ?>
                                 </label>
                                 <br/>
                                 <br/>
                                 <button type="submit" id="loginSubmit" name="loginSubmit" class="btn btn btn-primary btn-block btn-large"><b><?php echo $btnlabel; ?></b></button>
                             </div>
                         </div>
-                        
-                            <div class="span10 offset1 well">
-                                <div class="row-fluid ">
-                                <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_EXTRACTION_NAME'); ?></h3>
-                                <table class="table table-striped">
-                                    <tfoot>
-                                    </tfoot>
-                                    <tbody>
-                                        <?php foreach ($this->item->extractions as $extraction) : ?>
-                                            <tr id="<?php echo $extraction->id; ?>">
-                                                <td>
-                                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.edit&id=' . (int) $extraction->resource); ?>"><?php echo $extraction->name; ?></a>
-                                                    <div class="small"><?php echo $extraction->organism; ?></div>
-                                                    <div class="accordion" id="accordion_<?php echo $extraction->id; ?>_properties">
-                                                        <div class="accordion-group">
-                                                            <div class="accordion-heading">
-                                                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_<?php echo $extraction->id; ?>_properties" href="#<?php echo $extraction->id; ?>_collapse">
-                                                                    <?php echo JText::_("COM_EASYSDI_SHOP_BASKET_EXTRACTION_PROPERTIES"); ?>
-                                                                </a>
-                                                            </div>
-                                                            <div id="<?php echo $extraction->id; ?>_collapse" class="accordion-body collapse">
-                                                                <div class="accordion-inner">
-                                                                    <?php
-                                                                    foreach ($extraction->properties as $property):
-                                                                        ?>
-                                                                        <div class="small"><?php echo $property->name; ?> : 
-                                                                            <?php
-                                                                            foreach ($property->values as $value) :
-                                                                                if (!empty($value->name)) :
-                                                                                    echo $value->name;
-                                                                                else :
-                                                                                    echo $value->value;
-                                                                                endif;
-                                                                                echo', ';
-                                                                            endforeach;
-                                                                            ?>
-                                                                        </div>
-                                                                        <?php
-                                                                    endforeach;
-                                                                    ?>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>                                                
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div class="row-fluid" >
-                                <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h3>
-                                <div class="row-fluid" >
-                                    <div id="perimeter-recap" >
-                                        <?php if (!empty($this->item->extent)): ?>
-                                            <div><h4><?php echo $this->item->extent->name; ?></h4></div>
-                                            <?php foreach ($this->item->extent->features as $feature): ?>
-                                                <div><?php echo $feature->name; ?></div>
-                                            <?php endforeach; ?>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row-fluid" >
-                                <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY'); ?></h3>
-                            </div>
-                        </div>
-
                     </div><!--/span-->
                 </div><!--/row-->
             </div>
         </div>
         <input type = "hidden" name = "task" value = "basket.save" />
-            <input type = "hidden" name = "option" value = "com_easysdi_shop" />
+        <input type = "hidden" name = "option" value = "com_easysdi_shop" />
+        <input type = "hidden" name = "action" value = "<?php echo JFactory::getApplication()->input->get('action', '', 'string') ?>" />
             <?php echo JHtml::_('form.token'); ?>
     </form>
 

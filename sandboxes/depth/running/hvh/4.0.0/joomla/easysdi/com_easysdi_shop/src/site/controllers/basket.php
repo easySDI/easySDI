@@ -19,19 +19,42 @@ require_once JPATH_COMPONENT . '/controller.php';
 class Easysdi_shopControllerBasket extends Easysdi_shopController {
 
     public function estimate() {
+        // Check for request forgeries.
+        JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+        $this->saveBasketToSession();
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=basket&layout=confirm&action=estimate', false));
     }
 
     public function order() {
+        // Check for request forgeries.
+        JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+        $this->saveBasketToSession();
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=basket&layout=confirm&action=order', false));
     }
 
     public function draft() {
+        // Check for request forgeries.
+        JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+        $this->saveBasketToSession();
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=basket&layout=confirm&action=draft', false));
+    }
+    
+    public function saveBasketToSession(){
+        $jinput = JFactory::getApplication()->input;
+        $buffer = $jinput->get('buffer', '', 'float');
+        $ordername = $jinput->get('ordername', '', 'string');
+        $thirdparty = $jinput->get('thirdparty', '', 'int');
+        
+        $basket = unserialize(JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content'));
+        $basket->name = $ordername;
+        $basket->buffer = $buffer;
+        $basket->thirdparty = $thirdparty;
+        
+        JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
     }
 
     /**
-     * Method to save a user's profile data.
+     * Method to save 
      *
      * @return	void
      * @since	1.6
@@ -42,37 +65,41 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
 
         $app = JFactory::getApplication();
 
-        // Populate the data array:
-        $authentication = array();
-        $authentication['return'] = 'index.php?option=com_easysdi_shop&view=basket&layout=confirm&action=estimate';
-        
-        $jinput = JFactory::getApplication()->input;
-        $authentication['username'] = $jinput->get('username', '', 'STRING');
-        $authentication['password'] = $jinput->get('password', '', 'STRING');
+        $sdiUser = sdiFactory::getSdiUser();
+        if($sdiUser->juser->guest){
+            // Authentication
+            // Populate the data array:
+            $authentication = array();
+            $authentication['return'] = 'index.php?option=com_easysdi_shop&view=basket&layout=confirm&action='.JFactory::getApplication()->input->get('action', 'save','string' );
 
-        // Get the log in options.
-        $options = array();
-        $options['remember'] = $this->input->getBool('remember', false);
-        $options['return'] = $authentication['return'];
+            $jinput = JFactory::getApplication()->input;
+            $authentication['username'] = $jinput->get('username', '', 'STRING');
+            $authentication['password'] = $jinput->get('password', '', 'STRING');
 
-        // Get the log in credentials.
-        $credentials = array();
-        $credentials['username'] = $authentication['username'];
-        $credentials['password'] = $authentication['password'];
+            // Get the log in options.
+            $options = array();
+            $options['remember'] = $this->input->getBool('remember', false);
+            $options['return'] = $authentication['return'];
 
-        // Perform the log in.
-        if (true === $app->login($credentials, $options)) {
-            // Success
-            $this->setMessage('Authentication done', 'info');
-            $app->setUserState('users.login.form.data', array());
-            
-        } else {
-            // Login failed !
-            $this->setMessage('Authentication failed', 'error');
-            $authentication['remember'] = (int) $options['remember'];
-            $app->setUserState('users.login.form.data', $authentication);
-            $app->redirect(JRoute::_($authentication['return'], false));
-            return;
+            // Get the log in credentials.
+            $credentials = array();
+            $credentials['username'] = $authentication['username'];
+            $credentials['password'] = $authentication['password'];
+
+            // Perform the log in.
+            if (true === $app->login($credentials, $options)) {
+                // Success
+                $this->setMessage('Authentication done', 'info');
+                $app->setUserState('users.login.form.data', array());
+
+            } else {
+                // Login failed !
+                $this->setMessage('Authentication failed', 'error');
+                $authentication['remember'] = (int) $options['remember'];
+                $app->setUserState('users.login.form.data', $authentication);
+                $app->redirect(JRoute::_($authentication['return'], false));
+                return;
+            }
         }
 
 
@@ -89,33 +116,17 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
 
         // Check for errors.
         if ($return === false) {
-            // Save the data in the session.
-            $app->setUserState('com_easysdi_shop.edit.basket.data', $data);
-
-            // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_easysdi_shop.edit.basket.id');
             $this->setMessage(JText::sprintf('Save failed', $model->getError()), 'warning');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=basket' . $id, false));
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=basket', false));
             return false;
         }
 
-
-        // Check in the profile.
-        if ($return) {
-            $model->checkin($return);
-        }
-
-        // Clear the profile id from the session.
-        $app->setUserState('com_easysdi_shop.edit.basket.id', null);
-
-        // Redirect to the list screen.
+        // Redirect to the oreder list screen.
         $this->setMessage(JText::_('COM_EASYSDI_SHOP_ITEM_SAVED_SUCCESSFULLY'));
-        $menu = & JSite::getMenu();
-        $item = $menu->getActive();
-        $this->setRedirect(JRoute::_($item->link, false));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
 
         // Flush the data from the session.
-        $app->setUserState('com_easysdi_shop.edit.basket.data', null);
+//        $app->setUserState('com_easysdi_shop.basket.content', null);
     }
 
 }

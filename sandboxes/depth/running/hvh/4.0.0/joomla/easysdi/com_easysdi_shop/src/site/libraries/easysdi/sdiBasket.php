@@ -15,13 +15,17 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiPer
 
 class sdiBasket {
 
+    var $id;
+    var $name;
+    var $buffer;
+    var $thirdparty;
     var $extractions;
     var $perimeters;
     var $extent;
     var $isrestrictedbyperimeter;
     var $surfacemin;
     var $surfacemax;
-
+    
     function __construct() {
         $this->extractions = array();
         $this->perimeters = array();
