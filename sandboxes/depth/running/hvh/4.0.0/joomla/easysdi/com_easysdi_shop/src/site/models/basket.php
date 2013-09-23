@@ -100,19 +100,19 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                 $this->cleanTables($basket->id);
             }
             $db = JFactory::getDbo();
-            
+
             //Save diffusions
-            foreach($basket->extractions as $diffusion):
+            foreach ($basket->extractions as $diffusion):
                 $orderdiffusion = JTable::getInstance('orderdiffusion', 'Easysdi_shopTable');
                 $od = array();
                 $od['order_id'] = $table->id;
                 $od['diffusion_id'] = $diffusion->id;
                 $od['productstate_id'] = 2;
                 $orderdiffusion->save($od);
-                
+
                 //Save properties
-                foreach($diffusion->properties as $property ):
-                    foreach($property->values as $value ):
+                foreach ($diffusion->properties as $property):
+                    foreach ($property->values as $value):
                         $orderpropertyvalue = JTable::getInstance('orderpropertyvalue', 'Easysdi_shopTable');
                         $v = array();
                         $v['orderdiffusion_id'] = $orderdiffusion->id;
@@ -121,18 +121,29 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                         $v['propertyvalue'] = $value->value;
                         $orderpropertyvalue->save($v);
                     endforeach;
-                endforeach;                
-            endforeach;           
-            
+                endforeach;
+            endforeach;
+
             //Save perimeters
-            $orderperimeter = JTable::getInstance('orderperimeter', 'Easysdi_shopTable');
-            $op = array();
-            $op['order_id'] = $table->id;
-            $op['perimeter_id'] = $basket->extent->id;
-            $op['value'] = 2;
-            $orderperimeter->save($op);
-             
             
+            if (is_array($basket->extent->features)):
+                foreach ($basket->extent->features as $feature):
+                    $orderperimeter = JTable::getInstance('orderperimeter', 'Easysdi_shopTable');
+                    $op = array();
+                    $op['order_id'] = $table->id;
+                    $op['perimeter_id'] = $basket->extent->id;
+                    $op['value'] = $feature->id;
+                    $op['text'] = $feature->name;
+                    $orderperimeter->save($op);
+                endforeach;
+            else:
+                $orderperimeter = JTable::getInstance('orderperimeter', 'Easysdi_shopTable');
+                $op = array();
+                $op['order_id'] = $table->id;
+                $op['perimeter_id'] = $basket->extent->id;
+                $op['value'] = $basket->extent->features;
+                $orderperimeter->save($op);
+            endif;
         }
 
 
@@ -165,7 +176,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         $db->setQuery($query);
         if (!$db->execute())
             return false;
-        
+
         $query = $db->getQuery(true);
         $query->delete('#__sdi_order_perimeter')
                 ->where('order_id = ' . $order_id);

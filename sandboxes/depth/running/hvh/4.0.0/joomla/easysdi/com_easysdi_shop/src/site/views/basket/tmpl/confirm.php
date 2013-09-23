@@ -33,11 +33,21 @@ switch ($action) {
 }
 ?>
 <?php if ($this->item) : ?>
+<script>
+    js = jQuery.noConflict();
+    js(document).ready(function() {        
+        js('#termsofuse').change(enableSave);
+    });
+    function enableSave(){
+        if ( js('#termsofuse').is(':checked') == true )
+            js('#saveSubmit').removeAttr('disabled', 'disabled');            
+        else
+            js('#saveSubmit').attr('disabled', 'disabled');        
+    }
+</script>
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=basket.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
-
         <div class="basket-confirm front-end-edit">
             <h1><?php echo $title; ?></h1>
-
             <div class="container-fluid">
                 <div class="row-fluid">
                     <div class="span12">
@@ -53,11 +63,11 @@ switch ($action) {
                                 <br/>
                                 <br/>
                                 <label class="checkbox">
-                                    <input type="checkbox" > <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_I_ACCEPT') ?> <a><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_TERMS') ?></a> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_OF_USE') ?>
+                                    <input type="checkbox" id="termsofuse" > <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_I_ACCEPT') ?> <a href="<?php echo $this->paramsarray['termsofuse'] ; ?>" target="_blank"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_TERMS') ?></a> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_OF_USE') ?>
                                 </label>
                                 <br/>
                                 <br/>
-                                <button type="submit" id="loginSubmit" name="loginSubmit" class="btn btn btn-primary btn-block btn-large"><b><?php echo $btnlabel; ?></b></button>
+                                <button type="submit" id="saveSubmit" name="saveSubmit" disabled="disabled" class="btn btn btn-primary btn-block btn-large"><b><?php echo $btnlabel; ?></b></button>
                             </div>
                         </div>
                     </div><!--/span-->

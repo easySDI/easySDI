@@ -23,6 +23,7 @@ class Easysdi_shopViewBasket extends JViewLegacy {
     protected $item;
     protected $form;
     protected $params;
+    protected $paramsarray;
 
     /**
      * Display the view
@@ -37,13 +38,13 @@ class Easysdi_shopViewBasket extends JViewLegacy {
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_shop');
+        $this->paramsarray = $this->params->toArray();
         $this->user = sdiFactory::getSdiUser();
         $this->thirdParties = $this->user->getOrderEligibleOrganisms();
 
-        if($this->_layout != 'confirm'){
-            $params_array = $this->params->toArray();
-            if(isset($params_array['ordermap'])){
-                $this->mapscript = Easysdi_mapHelper::getMapScript($params_array['ordermap']);
+        if($this->_layout != 'confirm'){            
+            if(isset($this->paramsarray['ordermap'])){
+                $this->mapscript = Easysdi_mapHelper::getMapScript($this->paramsarray['ordermap']);
             }
             else{
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_MAP_PREVIEW_NOT_FOUND'), 'error');

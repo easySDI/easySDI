@@ -114,9 +114,14 @@ function resetAll() {
 
 function toggleSelectControl(action) {
     if(action=='selection'){
-        jQuery('#modal-perimeter [id^="btn-selection"]').addClass('active');
-        jQuery('#modal-perimeter [id^="btn-pan"]').removeClass('active');
-        selectControl.activate();
+        if (typeof selectControl !== 'undefined') {
+            jQuery('#modal-perimeter [id^="btn-selection"]').addClass('active');
+            jQuery('#modal-perimeter [id^="btn-pan"]').removeClass('active');
+            selectControl.activate();
+        }else{
+            jQuery('#modal-perimeter [id^="btn-pan"]').addClass('active');
+            jQuery('#modal-perimeter [id^="btn-selection"]').removeClass('active');
+        }
     }else{
         jQuery('#modal-perimeter [id^="btn-pan"]').addClass('active');
         jQuery('#modal-perimeter [id^="btn-selection"]').removeClass('active');

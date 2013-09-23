@@ -170,14 +170,14 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
     }
     
     function enableFreePerimeter(){
-            if ( js('#jform_restrictedperimeter0').is(':checked') == true ){
-                js('#jform_perimeter1').attr('disabled', 'disabled');
-                js('#jform_perimeter1 option[value=-1]').attr("selected","selected") ;
-            }else{
-                js('#jform_perimeter1').removeAttr('disabled', 'disabled');
-            }
-            js('#jform_perimeter1').trigger("liszt:updated");
+        if ( js('#jform_restrictedperimeter0').is(':checked') == true ){
+            js('#jform_perimeter1').attr('disabled', 'disabled');
+            js('#jform_perimeter1 option[value=-1]').attr("selected","selected") ;
+        }else{
+            js('#jform_perimeter1').removeAttr('disabled', 'disabled');
         }
+        js('#jform_perimeter1').trigger("liszt:updated");
+    }
 </script>
 
 <div class="diffusion-edit front-end-edit">

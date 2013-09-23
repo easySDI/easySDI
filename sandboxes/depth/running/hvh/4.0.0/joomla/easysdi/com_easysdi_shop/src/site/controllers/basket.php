@@ -126,7 +126,7 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
 
         // Flush the data from the session.
-//        $app->setUserState('com_easysdi_shop.basket.content', null);
+        $app->setUserState('com_easysdi_shop.basket.content', null);
     }
 
 }

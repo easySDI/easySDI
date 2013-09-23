@@ -171,6 +171,13 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
                     </select>
                 </div>
                 <?php endif; ?>
+                <?php if (!empty($this->paramsarray['shopinfomessage'])): ?>
+                <div class="row-fluid" >
+                    <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_MESSAGE'); ?></h3>
+                    <hr>
+                    <div><?php echo $this->paramsarray['shopinfomessage'];  ?></div>
+                </div>
+                <?php endif; ?>
                 <div class="row-fluid " >
                     <hr>
                     <div  class="span5 pull-right" >
