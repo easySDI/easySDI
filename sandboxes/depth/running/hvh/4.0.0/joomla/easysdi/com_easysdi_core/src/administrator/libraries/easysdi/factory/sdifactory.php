@@ -38,5 +38,7 @@ abstract class sdiFactory
 		return new sdiUser($juser);
 	}
         
+        
+        
 }
 ?>

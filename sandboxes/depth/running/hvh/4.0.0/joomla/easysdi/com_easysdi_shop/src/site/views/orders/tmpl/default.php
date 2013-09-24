@@ -9,6 +9,8 @@
 // no direct access
 defined('_JEXEC') or die;
 
+JHTML::_('behavior.modal');
+
         const property_list = 1;
         const property_multiplelist = 2;
         const property_checkbox = 3;
@@ -93,12 +95,9 @@ $items = $db->loadObjectList();
 <div>
     <button class="btn btn-success btn-large" onclick="addtobasket2();">Add to basket</button>
 </div>
-<?php
 
-foreach ($items as $item):
-    var_dump($item);
-endforeach;
-?>
+<a href="<?php echo JRoute::_('index.php?option=com_easysdi_map&view=preview').'&id=6'; ?>" class="modal btn btn-success btn-mini pull-right"><i class="icon-eye"></i></a>
+
     
 <div class="items">
     <ul class="items_list">

@@ -99,10 +99,17 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             if (!empty($basket->id)) {
                 $this->cleanTables($basket->id);
             }
-            $db = JFactory::getDbo();
-
             //Save diffusions
             foreach ($basket->extractions as $diffusion):
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+                $query->select('user_id')
+                        ->from('#__sdi_diffusion_notifieduser')
+                        ->where('diffusion_id = ' . $diffusion->id);
+                $db->setQuery($query);
+                $notifieduser = $db->loadColumn();
+
+
                 $orderdiffusion = JTable::getInstance('orderdiffusion', 'Easysdi_shopTable');
                 $od = array();
                 $od['order_id'] = $table->id;
@@ -125,7 +132,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             endforeach;
 
             //Save perimeters
-            
+
             if (is_array($basket->extent->features)):
                 foreach ($basket->extent->features as $feature):
                     $orderperimeter = JTable::getInstance('orderperimeter', 'Easysdi_shopTable');

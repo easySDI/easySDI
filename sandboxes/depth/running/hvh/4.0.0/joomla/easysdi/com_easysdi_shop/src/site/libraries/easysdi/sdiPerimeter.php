@@ -12,12 +12,12 @@ defined('_JEXEC') or die;
 
 class sdiPerimeter {
 
-    var $id;
-    var $name;
-    var $alias;
-    var $wmsurl;
-    var $wfsurl;
-    var $allowedbuffer;
+    public $id;
+    public $name;
+    public $alias;
+    public $wmsurl;
+    public $wfsurl;
+    public $allowedbuffer;
 
     function __construct($session_perimeter) {
         if (empty($session_perimeter))

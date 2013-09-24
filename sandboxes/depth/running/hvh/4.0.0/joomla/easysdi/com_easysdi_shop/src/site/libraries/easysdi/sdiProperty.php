@@ -14,9 +14,9 @@ require_once JPATH_SITE. '/components/com_easysdi_shop/libraries/easysdi/sdiProp
 
 class sdiProperty {
 
-    var $id;
-    var $values;
-    var $name;
+    public $id;
+    public $values;
+    public $name;
 
     function __construct($session_property) {
         if (empty($session_property))

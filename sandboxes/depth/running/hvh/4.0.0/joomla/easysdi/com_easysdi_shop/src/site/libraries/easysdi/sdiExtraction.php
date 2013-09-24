@@ -14,13 +14,14 @@ require_once JPATH_SITE. '/components/com_easysdi_shop/libraries/easysdi/sdiProp
 
 class sdiExtraction {
 
-    var $id;
-    var $name;
-    var $organism;
-    var $properties;
-    var $resource;
-    var $restrictedperimeter;
-    var $perimeters;
+    public $id;
+    public $name;
+    public $organism;
+    public $properties;
+    public $resource;
+    public $restrictedperimeter;
+    public $perimeters;
+    public $visualization;
     
     function __construct($session_extraction) {
         if (empty($session_extraction))
@@ -41,11 +42,19 @@ class sdiExtraction {
         try {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
-                    ->select('r.id as resource, r.name as name, o.name as organism, d.restrictedperimeter, d.surfacemin, d.surfacemax, d.pricing_id as pricing')
+                    ->select('r.id as resource, 
+                        r.name as name, 
+                        o.name as organism, 
+                        d.restrictedperimeter, 
+                        d.surfacemin, 
+                        d.surfacemax, 
+                        d.pricing_id as pricing, 
+                        z.id as visualization')
                     ->from('#__sdi_resource r')
                     ->innerJoin('#__sdi_version v ON v.resource_id = r.id')
                     ->innerJoin('#__sdi_diffusion d ON d.version_id = v.id')
                     ->innerJoin('#__sdi_organism o ON r.organism_id = o.id')
+                    ->leftJoin('#__sdi_visualization z ON z.version_id = v.id')
                     ->where('d.id = ' . $this->id);
             $db->setQuery($query);
             $item = $db->loadObject();

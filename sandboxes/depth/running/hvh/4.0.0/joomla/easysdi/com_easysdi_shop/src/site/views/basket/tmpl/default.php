@@ -9,27 +9,22 @@
 // no direct access
 defined('_JEXEC') or die;
 
-JHtml::_('behavior.keepalive');
-JHtml::_('behavior.tooltip');
-JHtml::_('behavior.formvalidation');
-
-JText::script('COM_EASYSDI_SHOP_BASKET_CONFIRM_REMOVE_ITEM');
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/freeperimeter.js');
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/perimeter.js');
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.js');
-JText::script('COM_EASYSDI_SHOP_BASKET_SURFACE');
-JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
+
+JHTML::_('behavior.modal');
+
 ?>
-<?php if ($this->item->extractions) : ?>
+<?php if ($this->item && $this->item->extractions) : ?>
     <script>
         var request;
         var current_id;
 
         function removeFromBasket(id) {
             current_id = id;
-            jQuery('#modal-dialog-remove-body-text').text(Joomla.JText._('COM_EASYSDI_SHOP_BASKET_CONFIRM_REMOVE_ITEM'));
             jQuery('#modal-dialog-remove').modal('show');
         }
 
@@ -62,61 +57,75 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
             <h1><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TITLE'); ?></h1>
             <div class="well">
                 <div class="row-fluid">
-                    <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_EXTRACTION_NAME'); ?></h3>
-                    <hr>
-                    <table id="table-extractions" class="table table-striped">
-
-                        <tfoot>
-                        </tfoot>
-                        <tbody>
-                            <?php foreach ($this->item->extractions as $extraction) : ?>
-                                <tr id="<?php echo $extraction->id; ?>">
-                                    <td>
-                                        <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.edit&id=' . (int) $extraction->resource); ?>"><?php echo $extraction->name; ?></a>
-                                        <div class="small"><?php echo $extraction->organism; ?></div>
-                                        <div class="accordion" id="accordion_<?php echo $extraction->id; ?>_properties">
-                                            <div class="accordion-group">
-                                                <div class="accordion-heading">
-                                                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_<?php echo $extraction->id; ?>_properties" href="#<?php echo $extraction->id; ?>_collapse">
-                                                        <?php echo JText::_("COM_EASYSDI_SHOP_BASKET_EXTRACTION_PROPERTIES"); ?>
-                                                    </a>
-                                                </div>
-                                                <div id="<?php echo $extraction->id; ?>_collapse" class="accordion-body collapse">
-                                                    <div class="accordion-inner">
-                                                        <?php
-                                                        foreach ($extraction->properties as $property):
-                                                            ?>
-                                                            <div class="small"><?php echo $property->name; ?> : 
-                                                                <?php
-                                                                foreach ($property->values as $value) :
-                                                                    if (!empty($value->name)) :
-                                                                        echo $value->name;
-                                                                    else :
-                                                                        echo $value->value;
-                                                                    endif;
-                                                                    echo', ';
-                                                                endforeach;
-                                                                ?>
-                                                            </div>
+                     <div class="row-fluid" >
+                         <div class="span6" >
+                            <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_EXTRACTION_NAME'); ?></h3>
+                         </div>
+                         <div class="span6" >
+                            <?php if(!empty($this->item->visualization)):?>
+                            <div class="pull-right">
+                                <a href="<?php echo JRoute::_('index.php?option=com_easysdi_map&view=preview').'&id='.$this->item->visualization; ?>" target="_blank"
+                                    class="btn btn-success btn-mini pull-right" >
+                                    <i class="icon-eye"></i>
+                                </a>
+                            </div>
+                            <?php endif; ?>
+                         </div>
+                     </div>
+                     <div class="row-fluid" >
+                        <hr>
+                        <table id="table-extractions" class="table table-striped">
+                            <tfoot>
+                            </tfoot>
+                            <tbody>
+                                <?php foreach ($this->item->extractions as $extraction) : ?>
+                                    <tr id="<?php echo $extraction->id; ?>">
+                                        <td>
+                                            <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.edit&id=' . (int) $extraction->resource); ?>"><?php echo $extraction->name; ?></a>
+                                            <div class="small"><?php echo $extraction->organism; ?></div>
+                                            <div class="accordion" id="accordion_<?php echo $extraction->id; ?>_properties">
+                                                <div class="accordion-group">
+                                                    <div class="accordion-heading">
+                                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_<?php echo $extraction->id; ?>_properties" href="#<?php echo $extraction->id; ?>_collapse">
+                                                            <?php echo JText::_("COM_EASYSDI_SHOP_BASKET_EXTRACTION_PROPERTIES"); ?>
+                                                        </a>
+                                                    </div>
+                                                    <div id="<?php echo $extraction->id; ?>_collapse" class="accordion-body collapse">
+                                                        <div class="accordion-inner">
                                                             <?php
-                                                        endforeach;
-                                                        ?>
+                                                            foreach ($extraction->properties as $property):
+                                                                ?>
+                                                                <div class="small"><?php echo $property->name; ?> : 
+                                                                    <?php
+                                                                    foreach ($property->values as $value) :
+                                                                        if (!empty($value->name)) :
+                                                                            echo $value->name;
+                                                                        else :
+                                                                            echo $value->value;
+                                                                        endif;
+                                                                        echo', ';
+                                                                    endforeach;
+                                                                    ?>
+                                                                </div>
+                                                                <?php
+                                                            endforeach;
+                                                            ?>
+                                                        </div>
                                                     </div>
                                                 </div>
+
                                             </div>
-
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="btn btn-danger btn-mini pull-right" onClick="removeFromBasket(<?php echo $extraction->id; ?>);
-                                        return false;"><i class="icon-white icon-remove"></i></a>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                                        </td>
+                                        <td>
+                                            <a href="#" class="btn btn-danger btn-mini pull-right" onClick="removeFromBasket(<?php echo $extraction->id; ?>);
+                                            return false;"><i class="icon-white icon-remove"></i></a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-
                 <div class="row-fluid" >
                     <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h3>
                     <hr>
@@ -124,7 +133,7 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
                         <div class="map-recap span6" >
                              <div id="minimap" class="minimap" style="height:250px"></div>                   
                         </div>
-                        <div  class="span6" >
+                        <div  class="value-recap span6" >
                             <div id="perimeter-buffer" class="row-fluid hide" >
                                 <div><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BUFFER'); ?></h3>
                                 <input id="buffer" name="buffer" type="text" placeholder="" class="input-xlarge" value="<?php if(!empty($this->item->buffer)) echo $this->item->buffer; ?>">
@@ -175,7 +184,7 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
                 <div class="row-fluid" >
                     <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_MESSAGE'); ?></h3>
                     <hr>
-                    <div><?php echo $this->paramsarray['shopinfomessage'];  ?></div>
+                    <div class="shop-information"><?php echo $this->paramsarray['shopinfomessage'];  ?></div>
                 </div>
                 <?php endif; ?>
                 <div class="row-fluid " >
@@ -320,7 +329,7 @@ JText::script('COM_EASYSDI_SHOP_BASKET_BUFFER');
                     <h3 id="myModalLabel"><?php echo JText::_("COM_EASYSDI_SHOP_BASKET_DIALOG_HEADER") ?></h3>
                 </div>
                 <div class="modal-body">
-                    <p><div id="modal-dialog-remove-body-text"></div></p>
+                    <p><div id="modal-dialog-remove-body-text"><?php echo JText::_("COM_EASYSDI_SHOP_BASKET_CONFIRM_REMOVE_ITEM") ?></div></p>
                 </div>
                 <div class="modal-footer">
                     <button onClick="current_id = null;" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo JText::_("COM_EASYSDI_SHOP_BASKET_MODAL_BTN_CANCEL") ?></button>

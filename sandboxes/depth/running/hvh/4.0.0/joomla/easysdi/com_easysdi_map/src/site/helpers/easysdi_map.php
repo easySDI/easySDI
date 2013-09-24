@@ -52,7 +52,7 @@ abstract class Easysdi_mapHelper {
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.js" type="text/javascript"></script>
                 <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/WMSSource.js" type="text/javascript"></script>';
 
-            $files = glob('administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.{js}', GLOB_BRACE);
+            $files = glob(JURI::base(true) .'/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.{js}', GLOB_BRACE);
             foreach ($files as $file) {
                 $output .= '<script src="' . $file . '" type="text/javascript"></script>';
             }

@@ -15,38 +15,25 @@ require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiPer
 
 class sdiBasket {
 
-    var $id;
-    var $name;
-    var $buffer;
-    var $thirdparty;
-    var $extractions;
-    var $perimeters;
-    var $extent;
-    var $isrestrictedbyperimeter;
-    var $surfacemin;
-    var $surfacemax;
-    var $free;
-    
+    public $id;
+    public $name;
+    public $buffer;
+    public $thirdparty;
+    public $extractions= array();
+    public $perimeters= array();
+    public $extent;
+    public $isrestrictedbyperimeter = false;
+    public $surfacemin;
+    public $surfacemax;
+    public $free = true;
+    public $visualization = '';
+
     function __construct() {
-        $this->extractions = array();
-        $this->perimeters = array();
-        $this->isrestrictedbyperimeter = false;
-        $this->free = true;
+        $this->sdiUser = sdiFactory::getSdiUser();
     }
 
-    function addExtraction($extraction) {
-        if ($extraction->restrictedperimeter == '1')
-            $this->isrestrictedbyperimeter = true;
-
-        if ((empty($this->surfacemin) && !empty($extraction->surfacemin)) || (!empty($extraction->surfacemin) && $extraction->surfacemin > $this->surfacemin))
-            $this->surfacemin = $extraction->surfacemin;
-
-        if ((empty($this->surfacemax) && !empty($extraction->surfacemax)) || (!empty($extraction->surfacemax) && $extraction->surfacemax < $this->surfacemax))
-            $this->surfacemax = $extraction->surfacemax;
-        
-        if($extraction->pricing == 2)
-            $this->free = false;
-        
+    function addExtraction($extraction) {        
+        $this->setProperties ($extraction);
         $this->extractions[] = $extraction;
     }
 
@@ -60,17 +47,9 @@ class sdiBasket {
 
         $this->isrestrictedbyperimeter = false;
         $this->free = true;
+        $this->visualization = '';
         foreach ($this->extractions as $key => $extraction):
-            if ($extraction->restrictedperimeter == '1')
-                $this->isrestrictedbyperimeter = true;
-            
-            if ((empty($this->surfacemin) && !empty($extraction->surfacemin)) || (!empty($extraction->surfacemin) && $extraction->surfacemin > $this->surfacemin))
-                $this->surfacemin = $extraction->surfacemin;
-
-            if ((empty($this->surfacemax) && !empty($extraction->surfacemax)) || (!empty($extraction->surfacemax) && $extraction->surfacemax < $this->surfacemax))
-                $this->surfacemax = $extraction->surfacemax;
-            if($extraction->pricing == 2)
-                $this->free = false;
+            $this->setProperties ($extraction);
         endforeach;
     }
 
@@ -80,7 +59,24 @@ class sdiBasket {
             $perimeter->setAllowedBuffer($this->extractions);
         endforeach;
     }
+    
+    function setProperties ($extraction){
+        if (!empty ($extraction->visualization)):
+            if ($this->sdiUser->canView($extraction->visualization))
+                $this->visualization .= $extraction->visualization .',';
+        endif;
+        if ($extraction->restrictedperimeter == '1')
+            $this->isrestrictedbyperimeter = true;
 
+        if ((empty($this->surfacemin) && !empty($extraction->surfacemin)) || (!empty($extraction->surfacemin) && $extraction->surfacemin > $this->surfacemin))
+            $this->surfacemin = $extraction->surfacemin;
+
+        if ((empty($this->surfacemax) && !empty($extraction->surfacemax)) || (!empty($extraction->surfacemax) && $extraction->surfacemax < $this->surfacemax))
+            $this->surfacemax = $extraction->surfacemax;
+        
+        if($extraction->pricing == 2)
+            $this->free = false;
+    }
 }
 
 ?>

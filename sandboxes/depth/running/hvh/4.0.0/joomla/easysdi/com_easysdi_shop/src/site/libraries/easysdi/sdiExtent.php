@@ -12,9 +12,9 @@ defined('_JEXEC') or die;
 
 class sdiExtent {
 
-    var $id;
-    var $name;
-    var $features;    
+    public $id;
+    public $name;
+    public $features;    
 }
 
 ?>

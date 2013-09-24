@@ -10,9 +10,9 @@
 defined('_JEXEC') or die;
 
 class sdiPropertyValue {
-    var $id;
-    var $value;
-    var $name;
+    public $id;
+    public $value;
+    public $name;
         
     function __construct($session_value) {
         if (empty($session_value))
