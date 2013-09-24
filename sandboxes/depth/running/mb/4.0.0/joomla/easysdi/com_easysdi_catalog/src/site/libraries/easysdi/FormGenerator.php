@@ -255,8 +255,8 @@ class FormGenerator {
                             $indexedAttr = clone $indexedRel;
                             $indexedAttr->childtype_id = SdiRelation::$ATTRIBUT;
                             $indexedAttr->rendertype = SdiRelation::$LIST;
-                            $indexedAttr->setSerializedXpath($indexedRel->getSerializedXpath() . '_search');
-                            $attribute = new SdiAttribute($indexedRel->id . '_search', $indexedRel->name . '_search');
+                            $indexedAttr->setSerializedXpath($indexedRel->getSerializedXpath() . '_search_0');
+                            $attribute = new SdiAttribute($indexedRel->id . '_search_0', $indexedRel->name . '_search_0');
                             $indexedAttr->setAttribut_child($attribute);
                             $indexedAttr->getAttribut_child()->setStereotype(new SdiStereotype(500, 'resource', null, null, null));
                             $indexedAttr->getAttribut_child()->value = $dce->getValue($indexedAttr, $indexedAttr->getIndex());

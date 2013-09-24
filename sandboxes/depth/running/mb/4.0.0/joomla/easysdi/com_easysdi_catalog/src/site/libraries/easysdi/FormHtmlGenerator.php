@@ -133,6 +133,8 @@ class FormHtmlGenerator {
                 $rel = $this->classTree[$key];
                 switch ($rel->childtype_id) {
                     case SdiRelation::$RELATIONTYPE:
+                        $reverseIndex = 1;
+                        break;
                     case SdiRelation::$CLASS:
                         $reverseIndex = 2;
                         break;
@@ -144,15 +146,21 @@ class FormHtmlGenerator {
                 $reverseIndex = 1;
             }
 
-            if (array_key_exists($this->subXpath($key, $reverseIndex), $this->domElements)) {
-                $parent = $this->domElements[$this->subXpath($key, $reverseIndex)];
+            if ($this->subXpath($key, $reverseIndex)) {
+                if (array_key_exists($this->subXpath($key, $reverseIndex), $this->domElements)) {
+                    $parent = $this->domElements[$this->subXpath($key, $reverseIndex)];
 
-                $divInner = $parent->getElementsByTagName('div')->item(0);
+                    $divInner = $parent->getElementsByTagName('div')->item(0);
 
-                if($rel->getIndex()==0 && $rel->childtype_id == SdiRelation::$CLASS){
-                    $divInner->appendChild($this->getAction($rel));
+                    if (!isset($divInner)) {
+                        $divInner = $parent;
+                    }
+
+                    if ($rel->getIndex() == 0 && ($rel->childtype_id == SdiRelation::$CLASS || $rel->childtype_id == SdiRelation::$RELATIONTYPE)) {
+                        $divInner->appendChild($this->getAction($rel));
+                    }
+                    $divInner->appendChild($element);
                 }
-                $divInner->appendChild($element);
             }
         }
 
@@ -177,13 +185,30 @@ class FormHtmlGenerator {
         }
     }
 
-    private function getAction(SdiRelation $rel){
+    private function getAction(SdiRelation $rel) {
+        $imgAdd = $this->dom->createElement('img');
+        $imgAdd->setAttribute('id', 'add-btn-' . $rel->getSerializedXpath());
+        $imgAdd->setAttribute('class', 'add-btn-' . $rel->getSerializedXpath(false));
+        $imgAdd->setAttribute('src', JUri::base(TRUE) . '/administrator/components/com_easysdi_catalog/assets/images/circle_plus.png');
+        $imgAdd->setAttribute('onclick', 'addFieldset(this.id, \'' . $rel->getSerializedXpath(false) . '\' ,' . $rel->lowerbound . ',' . $rel->upperbound . ')');
+        $imgAdd->setAttribute('height', '15');
+        $imgAdd->setAttribute('width', '15');
+        if ($rel->upperbound <= $rel->occurance) {
+            $imgAdd->setAttribute('style', 'display:none;');
+        }
+
+        $divOuter = $this->dom->createElement('div');
+        $divOuter->setAttribute('id', 'outer-fds-' . $rel->getSerializedXpath());
+        $divOuter->setAttribute('class', 'outer-' . $rel->level . ' outer-fds-' . $rel->getSerializedXpath(false));
+
         $divAction = $this->dom->createElement('div', EText::_($rel->guid));
         $divAction->setAttribute('class', 'action-' . $rel->level);
-        
+
+        $divAction->appendChild($imgAdd);
+
         return $divAction;
     }
-    
+
     private function getFieldset(SdiRelation $rel) {
 
         $imgCollapse = $this->dom->createElement('img');
@@ -209,7 +234,8 @@ class FormHtmlGenerator {
         $fieldset = $this->dom->createElement('fieldset');
         $fieldset->setAttribute('id', 'fds-' . $rel->getSerializedXpath());
 
-        $legend = $this->dom->createElement('legend', EText::_($rel->guid));
+        $spanLegend = $this->dom->createElement('span', EText::_($rel->guid));
+        $legend = $this->dom->createElement('legend');
 
         $divInner = $this->dom->createElement('div');
         $divInner->setAttribute('id', 'inner-fds-' . $rel->getSerializedXpath());
@@ -218,11 +244,17 @@ class FormHtmlGenerator {
             $divInner->setAttribute('style', 'display:none;');
         }
 
-        $legend->appendChild($imgCollapse);
-        $fieldset->appendChild($legend);
-        $fieldset->appendChild($divInner);
+        if (!$rel->getClass_child()->isRoot) {
+            $legend->appendChild($imgCollapse);
+            $legend->appendChild($spanLegend);
+            if ($rel->lowerbound < $rel->occurance) {
+                $legend->appendChild($imgRemove);
+            }
+            $fieldset->appendChild($legend);
+            $fieldset->appendChild($divInner);
+        }
         $divOuter->appendChild($fieldset);
-        
+
         return $divOuter;
     }
 
