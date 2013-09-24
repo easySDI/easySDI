@@ -17,32 +17,43 @@ JHtml::_('formbehavior.chosen', 'select');
 //Load admin language file
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
+$document = JFactory::getDocument();
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/bootbox.min.js');
 ?>
 
 <style>
 
+    .action-1{
+        font-size: 15px;
+    }
+    .legend-1{
+        font-size: 16px;
+    }
+    
+    .action-2, .action-3{
+        font-size: 13px;
+    }
+    .legend-2, .legend-3{
+        font-size: 14px;
+    }
+    
     .inner-fds{
         padding-left:15px;
         border-left: 1px solid #BDBDBD;
     }
 
     .collapse-btn, .neutral-btn{
-        cursor: pointer;
         margin-right: 10px;
     }
 
-    .neutral-btn{
-        margin-right: 10px;
-    }
-
-    .add-btn, .remove-btn{
-        cursor: pointer;
+    .add-btn{
         margin-left: 10px;
     }
 
     legend{
         font-size: 12px;
     }
+    
 
 </style>
 
@@ -56,6 +67,12 @@ $lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
      echo $validator;
     
 } ?>
+
+        js(document).on("click", ".alert", function(e) {
+            bootbox.alert("Hello world!", function() {
+                console.log("Alert Callback");
+            });
+        });
 
 
         js('#btn_toogle_all').click(function() {

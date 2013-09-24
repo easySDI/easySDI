@@ -171,6 +171,9 @@ class FormHtmlGenerator {
         return $html;
     }
 
+    /**
+     * Build a array of DomElement using the same key for the array of Relation.
+     */
     private function getDomElements() {
         foreach ($this->classTree as $key => $rel) {
             switch ($rel->childtype_id) {
@@ -185,17 +188,23 @@ class FormHtmlGenerator {
         }
     }
 
+    /**
+     * Built on the action bar to add new relation instance.
+     * 
+     * @param SdiRelation $rel
+     * @return DOMElement
+     */
     private function getAction(SdiRelation $rel) {
-        $imgAdd = $this->dom->createElement('img');
-        $imgAdd->setAttribute('id', 'add-btn-' . $rel->getSerializedXpath());
-        $imgAdd->setAttribute('class', 'add-btn-' . $rel->getSerializedXpath(false));
-        $imgAdd->setAttribute('src', JUri::base(TRUE) . '/administrator/components/com_easysdi_catalog/assets/images/circle_plus.png');
-        $imgAdd->setAttribute('onclick', 'addFieldset(this.id, \'' . $rel->getSerializedXpath(false) . '\' ,' . $rel->lowerbound . ',' . $rel->upperbound . ')');
-        $imgAdd->setAttribute('height', '15');
-        $imgAdd->setAttribute('width', '15');
+        $aAdd = $this->dom->createElement('a');
+        $aAdd->setAttribute('id', 'add-btn-' . $rel->getSerializedXpath());
+        $aAdd->setAttribute('class', 'btn btn-success btn-mini add-btn');
+        $aAdd->setAttribute('onclick', 'addFieldset(this.id, \'' . $rel->getSerializedXpath(false) . '\' ,' . $rel->lowerbound . ',' . $rel->upperbound . ')');
         if ($rel->upperbound <= $rel->occurance) {
-            $imgAdd->setAttribute('style', 'display:none;');
+            $aAdd->setAttribute('style', 'display:none;');
         }
+
+        $iAdd = $this->dom->createElement('i');
+        $iAdd->setAttribute('class', 'icon-white icon-plus-2');
 
         $divOuter = $this->dom->createElement('div');
         $divOuter->setAttribute('id', 'outer-fds-' . $rel->getSerializedXpath());
@@ -204,28 +213,36 @@ class FormHtmlGenerator {
         $divAction = $this->dom->createElement('div', EText::_($rel->guid));
         $divAction->setAttribute('class', 'action-' . $rel->level);
 
-        $divAction->appendChild($imgAdd);
+        $aAdd->appendChild($iAdd);
+        $divAction->appendChild($aAdd);
 
         return $divAction;
     }
 
+    /**
+     * Constructs a fieldset corresponding to a Class.
+     * 
+     * @param SdiRelation $rel
+     * @return DOMElement
+     */
     private function getFieldset(SdiRelation $rel) {
 
-        $imgCollapse = $this->dom->createElement('img');
-        $imgCollapse->setAttribute('id', 'collapse-btn-' . $rel->getSerializedXpath());
-        $imgCollapse->setAttribute('class', 'collapse-btn');
-        $imgCollapse->setAttribute('src', JUri::base(TRUE) . '/administrator/components/com_easysdi_catalog/assets/images/expand.png');
-        $imgCollapse->setAttribute('onclick', 'collapse(this.id)');
-        $imgCollapse->setAttribute('height', '15');
-        $imgCollapse->setAttribute('width', '15');
+        $aCollapse = $this->dom->createElement('a');
+        $aCollapse->setAttribute('id', 'collapse-btn-' . $rel->getSerializedXpath());
+        $aCollapse->setAttribute('class', 'btn btn-mini collapse-btn');
+        $aCollapse->setAttribute('onclick', 'collapse(this.id)');
 
-        $imgRemove = $this->dom->createElement('img');
-        $imgRemove->setAttribute('id', 'remove-btn-' . $rel->getSerializedXpath());
-        $imgRemove->setAttribute('class', 'remove-btn-' . $rel->getSerializedXpath(false));
-        $imgRemove->setAttribute('src', JUri::base(TRUE) . '/administrator/components/com_easysdi_catalog/assets/images/circle_minus.png');
-        $imgRemove->setAttribute('onclick', 'removeFieldset(this.id, \'' . $rel->getSerializedXpath(false) . '\' , ' . $rel->lowerbound . ',' . $rel->upperbound . ')');
-        $imgRemove->setAttribute('height', '15');
-        $imgRemove->setAttribute('width', '15');
+        $iCollapse = $this->dom->createElement('i');
+        $iCollapse->setAttribute('class', 'icon-white icon-arrow-down');
+
+        $aRemove = $this->dom->createElement('a');
+        $aRemove->setAttribute('id', 'remove-btn-' . $rel->getSerializedXpath());
+        $aRemove->setAttribute('class', 'btn btn-danger btn-mini pull-right');
+        $aRemove->setAttribute('data-dismiss', 'alert');
+        $aRemove->setAttribute('onclick', 'removeFieldset(this.id, \'' . $rel->getSerializedXpath(false) . '\' , ' . $rel->lowerbound . ',' . $rel->upperbound . ')');
+
+        $iRemove = $this->dom->createElement('i');
+        $iRemove->setAttribute('class', 'icon-white icon-cancel-2');
 
         $divOuter = $this->dom->createElement('div');
         $divOuter->setAttribute('id', 'outer-fds-' . $rel->getSerializedXpath());
@@ -235,6 +252,7 @@ class FormHtmlGenerator {
         $fieldset->setAttribute('id', 'fds-' . $rel->getSerializedXpath());
 
         $spanLegend = $this->dom->createElement('span', EText::_($rel->guid));
+        $spanLegend->setAttribute('class', 'legend-' . $rel->level);
         $legend = $this->dom->createElement('legend');
 
         $divInner = $this->dom->createElement('div');
@@ -245,10 +263,12 @@ class FormHtmlGenerator {
         }
 
         if (!$rel->getClass_child()->isRoot) {
-            $legend->appendChild($imgCollapse);
+            $aCollapse->appendChild($iCollapse);
+            $legend->appendChild($aCollapse);
             $legend->appendChild($spanLegend);
             if ($rel->lowerbound < $rel->occurance) {
-                $legend->appendChild($imgRemove);
+                $aRemove->appendChild($iRemove);
+                $legend->appendChild($aRemove);
             }
             $fieldset->appendChild($legend);
             $fieldset->appendChild($divInner);
@@ -258,6 +278,12 @@ class FormHtmlGenerator {
         return $divOuter;
     }
 
+    /**
+     * Convert a string attribute in DomElement.
+     * 
+     * @param SdiRelation $rel
+     * @return DOMElement
+     */
     private function getAttribute(SdiRelation $rel) {
         $source = $this->getFieldsetBody($rel);
 
@@ -273,12 +299,25 @@ class FormHtmlGenerator {
         return $imported;
     }
 
+    /**
+     * Encode special characters into HTML entities. Unless the <> characters.
+     * 
+     * @param string $text
+     * @return string
+     */
     private function convert($text) {
         $text = htmlentities($text, ENT_NOQUOTES, "UTF-8");
         $text = htmlspecialchars_decode($text);
         return $text;
     }
 
+    /**
+     * If the parent key is found, return the key, otherwise false. 
+     * 
+     * @param string $key Child key
+     * @param int $reverseIndex Number of levels to rise.
+     * @return mixed Parent key or false 
+     */
     private function subXpath($key, $reverseIndex) {
         $subPath = '';
 
@@ -295,72 +334,12 @@ class FormHtmlGenerator {
         }
     }
 
-    private function getActionHeader(SdiRelation $rel) {
-        $img_add_relation = '<img onclick="addFieldset(this.id, \'' . $rel->getSerializedXpath(false) . '\' ,' . $rel->lowerbound . ',' . $rel->upperbound . ');" class="add-btn-' . $rel->getSerializedXpath(false) . '" id="add-btn-' . $rel->getSerializedXpath() . '" src="' . JUri::base(TRUE) . '/administrator/components/com_easysdi_catalog/assets/images/circle_plus.png" height="15" width="15" style="display:none;"/>';
-
-        $html = '';
-
-        if ($rel->upperbound > $rel->occurance) {
-            $img_add_relation = '<img onclick="addFieldset(this.id, \'' . $rel->getSerializedXpath(false) . '\' ,' . $rel->lowerbound . ',' . $rel->upperbound . ');" class="add-btn-' . $rel->getSerializedXpath(false) . '" id="add-btn-' . $rel->getSerializedXpath() . '" src="' . JUri::base(TRUE) . '/administrator/components/com_easysdi_catalog/assets/images/circle_plus.png" height="15" width="15" />';
-        }
-
-        if ($rel->getIndex() == 0 && $rel->level != 0) {
-            $html .= '<div class="action-' . $rel->level . '">' . EText::_($rel->guid) . $img_add_relation . '</div>';
-            $html .= '<div class="outer-fds-' . $rel->getSerializedXpath(false) . '"></div>';
-        }
-        return $html;
-    }
-
-    private function getFieldsetHeader(SdiRelation $rel) {
-
-        $img_collapse = '<img onclick="collapse(this.id)" class="collapse-btn" id="collapse-btn-' . $rel->getSerializedXpath() . '" src="' . JUri::base(TRUE) . '/administrator/components/com_easysdi_catalog/assets/images/expand.png" height="15" width="15"/>';
-        $img_remove_relation = '<img onclick="removeFieldset(this.id, \'' . $rel->getSerializedXpath(false) . '\' , ' . $rel->lowerbound . ',' . $rel->upperbound . ')" class="remove-btn-' . $rel->getSerializedXpath(false) . '" id="remove-btn-' . $rel->getSerializedXpath() . '" src="' . JUri::base(TRUE) . '/administrator/components/com_easysdi_catalog/assets/images/circle_minus.png" height="15" width="15"/>';
-
-        $debug = ' ' . $rel->lowerbound . ' ' . $rel->upperbound;
-
-        $debug .= ' ' . $rel->name;
-
-        $debug .= ' ' . $rel->level;
-
-        $html = '';
-        $html .= '<div id="outer-fds-' . $rel->getSerializedXpath() . '" class="outer-' . $rel->level . ' outer-fds-' . $rel->getSerializedXpath(false) . '">';
-
-        if ($rel->childtype_id == SdiRelation::$CLASS) {
-            if ($rel->getClass_child()->isRoot) {
-                $html .= '<fieldset>';
-                $html .= '<div>';
-                return $html;
-            }
-        }
-
-        $actions = '';
-        if ($rel->lowerbound < $rel->occurance) {
-            $actions = $img_remove_relation;
-        }
-
-
-        $html .= '<fieldset id="fds-' . $rel->getSerializedXpath() . '"><legend> ' . $img_collapse . EText::_($rel->guid) . ' [' . $rel->getIndex() . ']' . $actions . $debug . ' </legend>';
-
-        if (isset($_GET['uuid'])) {
-            $html .= '<div class="inner-fds" id="inner-fds-' . $rel->getSerializedXpath() . '">';
-        } else {
-            $html .= '<div class="inner-fds" id="inner-fds-' . $rel->getSerializedXpath() . '" style="display:none;">';
-        }
-
-
-        return $html;
-    }
-
-    private function getFieldsetFooter(SdiRelation $rel) {
-        $html = '';
-        $html .= '</div>';
-        $html .= '</fieldset>';
-        $html .= '</div>';
-
-
-        return $html;
-    }
-
+    /**
+     * Build a string with 
+     * 
+     * @param SdiRelation $rel
+     * @return string
+     */
     private function getFieldsetBody(SdiRelation $rel) {
 
         $languages = $this->ldao->get();
@@ -395,6 +374,12 @@ class FormHtmlGenerator {
         return $html;
     }
 
+    /**
+     * 
+     * @param JFile $field
+     * @param string $guid
+     * @return string
+     */
     private function buildField($field, $guid) {
         $html = '';
 
