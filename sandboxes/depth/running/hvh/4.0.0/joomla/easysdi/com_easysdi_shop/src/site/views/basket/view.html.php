@@ -121,8 +121,10 @@ class Easysdi_shopViewBasket extends JViewLegacy {
         //and make whatever calls you require
         $bar->appendButton('Standard', 'archive', JText::_('COM_EASYSDI_SHOP_BASKET_BTN_SAVE'), 'basket.draft', false);
         $bar->appendButton('Separator');
-        $bar->appendButton('Standard', 'edit', JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ESTIMATE'), 'basket.estimate', false);
-        $bar->appendButton('Separator');
+        if(!$this->item->free){
+            $bar->appendButton('Standard', 'edit', JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ESTIMATE'), 'basket.estimate', false);
+            $bar->appendButton('Separator');
+        }
         $bar->appendButton('Standard', 'publish', JText::_('COM_EASYSDI_SHOP_BASKET_BTN_ORDER'), 'basket.order', false);
         //generate the html and return
         return $bar->render();

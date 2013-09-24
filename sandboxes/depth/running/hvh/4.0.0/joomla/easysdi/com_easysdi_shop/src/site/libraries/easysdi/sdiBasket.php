@@ -25,11 +25,13 @@ class sdiBasket {
     var $isrestrictedbyperimeter;
     var $surfacemin;
     var $surfacemax;
+    var $free;
     
     function __construct() {
         $this->extractions = array();
         $this->perimeters = array();
         $this->isrestrictedbyperimeter = false;
+        $this->free = true;
     }
 
     function addExtraction($extraction) {
@@ -41,6 +43,10 @@ class sdiBasket {
 
         if ((empty($this->surfacemax) && !empty($extraction->surfacemax)) || (!empty($extraction->surfacemax) && $extraction->surfacemax < $this->surfacemax))
             $this->surfacemax = $extraction->surfacemax;
+        
+        if($extraction->pricing == 2)
+            $this->free = false;
+        
         $this->extractions[] = $extraction;
     }
 
@@ -53,6 +59,7 @@ class sdiBasket {
         endforeach;
 
         $this->isrestrictedbyperimeter = false;
+        $this->free = true;
         foreach ($this->extractions as $key => $extraction):
             if ($extraction->restrictedperimeter == '1')
                 $this->isrestrictedbyperimeter = true;
@@ -62,6 +69,8 @@ class sdiBasket {
 
             if ((empty($this->surfacemax) && !empty($extraction->surfacemax)) || (!empty($extraction->surfacemax) && $extraction->surfacemax < $this->surfacemax))
                 $this->surfacemax = $extraction->surfacemax;
+            if($extraction->pricing == 2)
+                $this->free = false;
         endforeach;
     }
 
