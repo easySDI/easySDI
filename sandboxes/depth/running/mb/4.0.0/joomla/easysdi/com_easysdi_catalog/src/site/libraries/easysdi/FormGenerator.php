@@ -49,12 +49,18 @@ class FormGenerator {
      * @var JSession 
      */
     private $session;
+    /**
+     *
+     * @var DomCswExtractor
+     */
+    private $dce;
 
     function __construct(DOMDocument $csw = NULL) {
         $this->db = JFactory::getDbo();
         $this->session = JFactory::getSession();
         $this->ldao = new SdiLanguageDao();
         $this->csw = $csw;
+        $this->dce = new DomCswExtractor($csw);
     }
 
     /**
@@ -89,8 +95,10 @@ class FormGenerator {
             $rel->setXpath(array($rel));
         }
 
-        $this->relations[$rel->id . '-0_' . $rel->getClass_child()->id . '-0'] = $rel;
-
+        $rel->setSerializedXpath($this->dce->getSerializedXpath($rel));
+        $this->relations[$rel->getSerializedXpath()] = $rel;
+        //$this->relations[$rel->id . '-0_' . $rel->getClass_child()->id . '-0'] = $rel;
+        
         $this->getChildTree($rel);
 
         if (!isset($_GET['uuid'])) {
@@ -130,7 +138,6 @@ class FormGenerator {
      * @since 4.0
      */
     private function getChildNode(SdiRelation $rel) {
-        $dce = new DomCswExtractor($this->csw);
 
         $query = $this->db->getQuery(true);
         $query->select('r.name, r.id, r.ordering, r.guid, r.childtype_id, r.parent_id, r.lowerbound, r.upperbound, r.rendertype_id');
@@ -213,10 +220,10 @@ class FormGenerator {
                 switch ($newRel->childtype_id) {
 
                     case SdiRelation::$CLASS:
-                        $occurance = $dce->getCountRelation($newRel);
+                        $occurance = $this->dce->getCountRelation($newRel);
                         $newRel->occurance = $occurance;
                         if ($occurance == 0) {
-                            $newRel->setSerializedXpath($dce->getSerializedXpath($newRel));
+                            $newRel->setSerializedXpath($this->dce->getSerializedXpath($newRel));
                             $newRel->isEmpty = true;
                             $relArray[] = $newRel;
                         }
@@ -225,23 +232,23 @@ class FormGenerator {
                             $indexedRel = clone $newRel;
                             $indexedRel->setIndex($i);
                             $indexedRel->replaceLastPath($indexedRel);
-                            $indexedRel->setSerializedXpath($dce->getSerializedXpath($indexedRel));
+                            $indexedRel->setSerializedXpath($this->dce->getSerializedXpath($indexedRel));
                             $relArray[] = $indexedRel;
                         }
 
                         break;
                     case SdiRelation::$ATTRIBUT:
                         $newRel->setIndex($rel->getIndex());
-                        $newRel->getAttribut_child()->value = $dce->getValue($newRel, $newRel->getIndex());
-                        $newRel->setSerializedXpath($dce->getSerializedXpath($newRel));
+                        $newRel->getAttribut_child()->value = $this->dce->getValue($newRel, $newRel->getIndex());
+                        $newRel->setSerializedXpath($this->dce->getSerializedXpath($newRel));
                         $relArray[] = $newRel;
                         break;
 
                     case SdiRelation::$RELATIONTYPE:
-                        $occurance = $dce->getCountRelation($newRel);
+                        $occurance = $this->dce->getCountRelation($newRel);
                         $newRel->occurance = $occurance;
                         if ($occurance == 0) {
-                            $newRel->setSerializedXpath($dce->getSerializedXpath($newRel));
+                            $newRel->setSerializedXpath($this->dce->getSerializedXpath($newRel));
                             $newRel->isEmpty = true;
                             $relArray[] = $newRel;
                         }
@@ -250,7 +257,7 @@ class FormGenerator {
                             $indexedRel = clone $newRel;
                             $indexedRel->setIndex($i);
                             $indexedRel->replaceLastPath($indexedRel);
-                            $indexedRel->setSerializedXpath($dce->getSerializedXpath($indexedRel));
+                            $indexedRel->setSerializedXpath($this->dce->getSerializedXpath($indexedRel));
 
                             $indexedAttr = clone $indexedRel;
                             $indexedAttr->childtype_id = SdiRelation::$ATTRIBUT;
@@ -259,12 +266,11 @@ class FormGenerator {
                             $attribute = new SdiAttribute($indexedRel->id . '_search_0', $indexedRel->name . '_search_0');
                             $indexedAttr->setAttribut_child($attribute);
                             $indexedAttr->getAttribut_child()->setStereotype(new SdiStereotype(500, 'resource', null, null, null));
-                            $indexedAttr->getAttribut_child()->value = $dce->getValue($indexedAttr, $indexedAttr->getIndex());
+                            $indexedAttr->getAttribut_child()->value = $this->dce->getValue($indexedAttr, $indexedAttr->getIndex());
 
-                            
+
                             $relArray[] = $indexedRel;
                             $relArray[] = $indexedAttr;
-                            
                         }
                         break;
                     default:
@@ -276,8 +282,7 @@ class FormGenerator {
                     case SdiRelation::$ATTRIBUT:
                         $newRel->getAttribut_child()->value = '';
                         $newRel->setIndex($rel->getIndex());
-                        break;
-                    default:
+                        $newRel->setSerializedXpath($this->dce->getSerializedXpath($newRel));
                         break;
                 }
 

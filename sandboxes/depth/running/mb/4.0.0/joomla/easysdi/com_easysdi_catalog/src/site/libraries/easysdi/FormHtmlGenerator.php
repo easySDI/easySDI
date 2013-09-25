@@ -49,78 +49,6 @@ class FormHtmlGenerator {
         $this->dom = new DOMDocument(null, 'utf-8');
     }
 
-    /**
-     * Construit le formulaire HTML en ajoutant l'inclusion des fieldset
-     * 
-     * @author Marc Battaglia <marc.battaglia@depth.ch>
-     * @return string Description
-     * @since 4.0
-     */
-    /* public function buildForm() {
-
-      $this->getDomElements();
-
-      $html = '';
-      $lastRel = new SdiRelation(0, 'dummy', 1);
-
-      foreach ($this->classTree as $rel) {
-      switch ($rel->childtype_id) {
-      case SdiRelation::$CLASS:
-
-      if ($rel->level > $lastRel->level || $rel->level == 0) {
-      if ($lastRel->childtype_id == SdiRelation::$RELATIONTYPE) {
-      $html .= $this->getFieldsetFooter($rel);
-      }
-      $html .= $this->getActionHeader($rel);
-      $html .= $this->getFieldsetHeader($rel);
-      }
-
-      if ($rel->level < $lastRel->level) {
-      if ($lastRel->childtype_id == SdiRelation::$RELATIONTYPE) {
-      $html .= $this->getFieldsetFooter($rel);
-      }
-      for ($i = 0; $i <= $lastRel->level - $rel->level; $i++) {
-      $html .= $this->getFieldsetFooter($rel);
-      }
-      $html .= $this->getActionHeader($rel);
-      $html .= $this->getFieldsetHeader($rel);
-      }
-
-      if ($rel->level == $lastRel->level && $rel->level != 0) {
-      $html .= $this->getFieldsetFooter($rel);
-      $html .= $this->getActionHeader($rel);
-      $html .= $this->getFieldsetHeader($rel);
-      }
-
-      $lastRel = $rel;
-      break;
-
-      case SdiRelation::$ATTRIBUT:
-
-      $html .= $this->getFieldsetBody($rel);
-
-      break;
-
-      case SdiRelation::$RELATIONTYPE:
-      if ($lastRel->childtype_id == SdiRelation::$RELATIONTYPE) {
-      $html .= $this->getFieldsetFooter($rel);
-      }
-      $html .= $this->getActionHeader($rel);
-      $html .= $this->getFieldsetHeader($rel);
-
-      $lastRel = $rel;
-      break;
-      default:
-      break;
-      }
-      }
-
-      for ($i = 0; $i <= $lastRel->level; $i++) {
-      $html .= $this->getFieldsetFooter($rel);
-      }
-
-      return $html;
-      } */
 
     public function buildForm() {
         $this->getDomElements();
@@ -198,7 +126,7 @@ class FormHtmlGenerator {
         $aAdd = $this->dom->createElement('a');
         $aAdd->setAttribute('id', 'add-btn-' . $rel->getSerializedXpath());
         $aAdd->setAttribute('class', 'btn btn-success btn-mini add-btn');
-        $aAdd->setAttribute('onclick', 'addFieldset(this.id, \'' . $rel->getSerializedXpath(false) . '\' ,' . $rel->lowerbound . ',' . $rel->upperbound . ')');
+        $aAdd->setAttribute('onclick', 'addFieldset(this.id, \'' . $this->subXpath($rel->getSerializedXpath(), 2) . '\' ,' . $rel->lowerbound . ',' . $rel->upperbound . ')');
         if ($rel->upperbound <= $rel->occurance) {
             $aAdd->setAttribute('style', 'display:none;');
         }
@@ -238,15 +166,14 @@ class FormHtmlGenerator {
         $aRemove = $this->dom->createElement('a');
         $aRemove->setAttribute('id', 'remove-btn-' . $rel->getSerializedXpath());
         $aRemove->setAttribute('class', 'btn btn-danger btn-mini pull-right');
-        $aRemove->setAttribute('data-dismiss', 'alert');
-        $aRemove->setAttribute('onclick', 'removeFieldset(this.id, \'' . $rel->getSerializedXpath(false) . '\' , ' . $rel->lowerbound . ',' . $rel->upperbound . ')');
+        $aRemove->setAttribute('onclick', 'confirm(this.id, \'' . $rel->getSerializedXpath() . '\' , ' . $rel->lowerbound . ',' . $rel->upperbound . ')');
 
         $iRemove = $this->dom->createElement('i');
         $iRemove->setAttribute('class', 'icon-white icon-cancel-2');
 
         $divOuter = $this->dom->createElement('div');
         $divOuter->setAttribute('id', 'outer-fds-' . $rel->getSerializedXpath());
-        $divOuter->setAttribute('class', 'outer-' . $rel->level . ' outer-fds-' . $rel->getSerializedXpath(false));
+        $divOuter->setAttribute('class', 'outer-' . $rel->level . ' outer-fds-' . $this->subXpath($rel->getSerializedXpath(), 2));
 
         $fieldset = $this->dom->createElement('fieldset');
         $fieldset->setAttribute('id', 'fds-' . $rel->getSerializedXpath());
@@ -261,6 +188,9 @@ class FormHtmlGenerator {
         if (!isset($_GET['uuid'])) {
             $divInner->setAttribute('style', 'display:none;');
         }
+        
+        $divBottom = $this->dom->createElement('div');
+        $divBottom->setAttribute('id', 'bottom-'.$this->subXpath($rel->getSerializedXpath(), 2));
 
         if (!$rel->getClass_child()->isRoot) {
             $aCollapse->appendChild($iCollapse);
@@ -274,6 +204,9 @@ class FormHtmlGenerator {
             $fieldset->appendChild($divInner);
         }
         $divOuter->appendChild($fieldset);
+        if($rel->getIndex() == $rel->occurance-1){
+            $divOuter->appendChild($divBottom);
+        }
 
         return $divOuter;
     }

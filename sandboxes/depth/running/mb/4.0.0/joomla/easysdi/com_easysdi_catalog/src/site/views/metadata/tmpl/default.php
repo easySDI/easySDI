@@ -29,14 +29,14 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
     .legend-1{
         font-size: 16px;
     }
-    
+
     .action-2, .action-3{
         font-size: 13px;
     }
     .legend-2, .legend-3{
         font-size: 14px;
     }
-    
+
     .inner-fds{
         padding-left:15px;
         border-left: 1px solid #BDBDBD;
@@ -53,7 +53,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
     legend{
         font-size: 12px;
     }
-    
+
 
 </style>
 
@@ -62,18 +62,12 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
 
     js('document').ready(function() {
 
-<?php foreach ($this->validators as $validator) { 
-    
-     echo $validator;
-    
-} ?>
+<?php
+foreach ($this->validators as $validator) {
 
-        js(document).on("click", ".alert", function(e) {
-            bootbox.alert("Hello world!", function() {
-                console.log("Alert Callback");
-            });
-        });
-
+    echo $validator;
+}
+?>
 
         js('#btn_toogle_all').click(function() {
             var btn = js(this);
@@ -113,8 +107,26 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
     function addFieldset(id, idwi, lowerbound, upperbound) {
         var uuid = getUuid('add-btn-', id);
 
-        js.get('http://localhost/joomla/index.php/ajax?uuid=' + uuid, function(data) {
-            js('.outer-fds-' + idwi).last().after(data);
+        js.get('<?php echo $_SERVER['PHP_SELF']; ?>' + '/?view=ajax&uuid=' + uuid, function(data) {
+            js('#bottom-' + idwi).before(data);
+
+            if (js(data).find('select') !== null) {
+                chosenRefresh();
+            }
+
+            js(data).find('button').each(function() {
+                idbtn = js(this).attr('id');
+
+                Calendar.setup({
+                    inputField: idbtn.replace('_img', ''),
+                    ifFormat: "%Y-%m-%d",
+                    button: idbtn,
+                    align: "Tl",
+                    singleClick: true,
+                    firstDay: 1
+                });
+
+            });
 
             var occurance = getOccuranceCount('.outer-fds-' + idwi);
 
@@ -132,6 +144,14 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         });
 
 
+    }
+
+    function confirm(id, idwi, lowerbound, upperbound) {
+        bootbox.confirm("Are you sure?", function(result) {
+            if (result) {
+                removeFieldset(id, idwi, lowerbound, upperbound);
+            }
+        });
     }
 
     function removeFieldset(id, idwi, lowerbound, upperbound) {
@@ -165,7 +185,14 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
 
     function getOccuranceCount(className) {
         var nbr = js(className).length;
-        return nbr - 1;
+        return nbr;
+    }
+
+    function chosenRefresh() {
+        js('select').chosen({
+            disable_search_threshold: 10,
+            allow_single_deselect: true
+        });
     }
 
 </script>
@@ -179,8 +206,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
             <?php echo $field->input; ?>
         <?php endforeach; ?>
         <div class ="well">
-
-            <?php //echo htmlspecialchars($this->item->csw);   ?>
+            <?php //echo htmlspecialchars($this->item->csw);    ?>
 
             <?php echo $this->formHtml; ?>
 
