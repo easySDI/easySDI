@@ -202,7 +202,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order` (
 `ordertype_id` INT(11) UNSIGNED NULL ,
 `orderstate_id` INT(11) UNSIGNED NOT NULL ,
 `user_id` INT(11) UNSIGNED  NOT NULL ,
-`thirdparty_id` INT(11) UNSIGNED  NOT NULL ,
+`thirdparty_id` INT(11) UNSIGNED  NULL ,
 `buffer` BIGINT(20)  NOT NULL ,
 `surface` BIGINT(20)  NOT NULL ,
 `remark` VARCHAR(500)  NOT NULL ,

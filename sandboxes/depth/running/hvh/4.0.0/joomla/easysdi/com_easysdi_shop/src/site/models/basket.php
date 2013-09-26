@@ -83,7 +83,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
 
         $data['buffer'] = $basket->buffer;
         $data['surface'] = $basket->extent->surface;
-        $data['thirdparty_id'] = $basket->thirdparty;
+        $data['thirdparty_id'] = ($basket->thirdparty != -1)? $basket->thirdparty : null;
         switch (JFactory::getApplication()->input->get('action', 'save', 'string')) {
             case 'order':
                 $data['ordertype_id'] = 1;
@@ -139,27 +139,27 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                     $db->setQuery($query);
                     $notifiedusers = $db->loadColumn();
 
-                    $diffusion = JTable::getInstance('diffusion', 'Easysdi_shopTable');
-                    $diffusion->load($diffusion->id);
+                    $diffusiontable = JTable::getInstance('diffusion', 'Easysdi_shopTable');
+                    $diffusiontable->load($diffusion->id);
 
                     //Send mail to notifieduser
                     foreach ($notifiedusers as $notifieduser):
                         $user = sdiFactory::getSdiUser($notifieduser);
-                        if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_BODY', $diffusion->name))):
+                        if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_BODY', $diffusiontable->name))):
                             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
                         endif;
                     endforeach;
 
-                    //Send mail to extraction responsible
+                    //Send mail to the responsible of extraction
                     $query = $db->getQuery(true);
-                    $query->select('user_id')
-                            ->from('#__sdi_user_role_resource')
-                            ->where('role_id = 7')
-                            ->where('resource_id = (SELECT id FROM #__sdi_resource r INNERJOIN #__sdi_version v ON v.resource_id = r.id WHERE v.id = ' . $diffusion->version_id . ')');
+                    $query->select('rr.user_id')
+                            ->from('#__sdi_user_role_resource rr')
+                            ->where('rr.role_id = 7')
+                            ->where('rr.resource_id = (SELECT r.id FROM #__sdi_resource r INNER JOIN #__sdi_version v ON v.resource_id = r.id WHERE v.id = ' . $diffusiontable->version_id . ')');
                     $db->setQuery($query);
                     $responsible = $db->loadResult();
                     $user = sdiFactory::getSdiUser($responsible);
-                    if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_RESPONSIBLE_BODY', $diffusion->name))):
+                    if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_RESPONSIBLE_BODY', $diffusiontable->name))):
                         JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
                     endif;
                 endif;
@@ -193,7 +193,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             $user = sdiFactory::getSdiUser();
             if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_CONFIRM_ORDER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_CONFIRM_ORDER_BODY', $data['name']))):
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
-            endif;
+            endif;        
         endif;
 
         return true;

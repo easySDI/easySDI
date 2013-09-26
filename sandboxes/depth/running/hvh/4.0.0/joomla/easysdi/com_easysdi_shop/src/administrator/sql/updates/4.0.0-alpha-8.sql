@@ -25,4 +25,5 @@ VALUES
 ALTER TABLE `#__sdi_diffusion` ADD `restrictedperimeter` TINYINT(1)  NOT NULL DEFAULT 0;
 
 ALTER TABLE `#__sdi_order` MODIFY COLUMN `ordertype_id` INT(11) UNSIGNED NULL ;
+ALTER TABLE `#__sdi_order` MODIFY COLUMN `thirdparty_id` INT(11) UNSIGNED NULL ;
 

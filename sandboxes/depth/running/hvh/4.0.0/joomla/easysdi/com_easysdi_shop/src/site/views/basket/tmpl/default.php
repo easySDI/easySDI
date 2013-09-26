@@ -173,7 +173,7 @@ JHTML::_('behavior.modal');
                     <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY'); ?></h3>
                     <hr>
                     <select id="thirdparty" name="thirdparty" class="inputbox input-xlarge">
-                        <option value="null"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_NO_THIRD_PARTY'); ?></option>
+                        <option value="-1"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_NO_THIRD_PARTY'); ?></option>
                         <?php foreach ($this->thirdParties as $thirdparty) :?>
                             <option value="<?php echo $thirdparty->id; ?>" <?php if ($this->item->thirdparty == $thirdparty->id) echo 'selected' ?>><?php echo $thirdparty->name; ?></option>
                         <?php endforeach; ?>
