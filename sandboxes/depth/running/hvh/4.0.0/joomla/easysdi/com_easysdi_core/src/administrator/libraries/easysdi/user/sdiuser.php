@@ -77,26 +77,14 @@ class sdiUser {
      * @param interger $juser Joomla user identifier
      * @throws Exception
      */
-    function __construct($juser = null) {
-
-        if ($juser == null)
-            throw new Exception('Not an EasySDI user');
+    function __construct($sdiId = null) {
+        if(!empty($sdiId)):
+            $user = $this->getUserById($sdiId);
+        else:
+            $user = $this->getCurrentUser();
+        endif;
         
-        $this->juser = $juser;
-        $this->name = $juser->name;
         $this->lang = JFactory::getLanguage();
-        
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true)
-                ->select('u.*, o.gml')
-                ->from('#__sdi_user AS u')
-                ->innerJoin("#__sdi_user_role_organism uro ON uro.user_id=u.id" )
-                ->innerJoin("#__sdi_organism o ON o.id = uro.organism_id")
-                ->where("uro.role_id = 1")
-                ->where('u.user_id = ' . $juser->id)
-        ;
-        $db->setQuery($query);
-        $user = $db->loadObject();
 
         if (!$user){
             $this->isEasySDI = false;
@@ -106,6 +94,7 @@ class sdiUser {
             $this->user = $user;
             $this->gml = $user->gml;
 
+            $db = JFactory::getDbo();
             $query = $db->getQuery(true)
                     ->select('uro.role_id as  role_id, o.name as organism_name, o.id as organism_id')
                     ->from('#__sdi_user_role_organism  uro')
@@ -127,6 +116,43 @@ class sdiUser {
         }
     }
 
+    private function getUserById($sdiId){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('u.*, o.gml, juser.id as jid')
+                ->from('#__sdi_user AS u')
+                ->innerJoin("#__sdi_user_role_organism uro ON uro.user_id=u.id" )
+                ->innerJoin("#__sdi_organism o ON o.id = uro.organism_id")
+                ->innerJoin("#__users juser ON juser.id = u.user_id")
+                ->where("uro.role_id = 1")
+                ->where('u.id = ' . $sdiId)
+        ;
+        $db->setQuery($query);
+        $user = $db->loadObject();
+        
+        $this->juser = JFactory::getUser($user->jid);
+        $this->name = $this->juser->name;        
+        
+        return $user;
+    }
+    
+    private function getCurrentUser(){
+        
+        $this->juser = JFactory::getUser();;
+        $this->name = $this->juser->name;
+                
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('u.*, o.gml')
+                ->from('#__sdi_user AS u')
+                ->innerJoin("#__sdi_user_role_organism uro ON uro.user_id=u.id" )
+                ->innerJoin("#__sdi_organism o ON o.id = uro.organism_id")
+                ->where("uro.role_id = 1")
+                ->where('u.user_id = ' . $this->juser->id)
+        ;
+        $db->setQuery($query);
+        return $db->loadObject();
+    }
     /**
      * 
      * @return boolean
@@ -404,6 +430,35 @@ class sdiUser {
             return false;
 
         return true;
+    }
+    
+    public function sendMail($subject, $body){
+        //Get mailer
+        $mailer = JFactory::getMailer();
+        $config = JFactory::getConfig();
+        
+        //Get sender
+        $sender = array( 
+            $config->get( 'config.mailfrom' ),
+            $config->get( 'config.fromname' ) );
+        $mailer->setSender($sender);
+        
+        //Get recipient
+        $recipient = $this->juser->email; 
+        $mailer->addRecipient($recipient);
+        
+        //Create the mail content
+        $body   = $body;
+        $mailer->setSubject($subject);
+        $mailer->setBody($body);
+        
+        //Send the mail
+        $send = $mailer->Send();
+        if ( $send !== true ) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 }

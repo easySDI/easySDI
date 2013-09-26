@@ -74,7 +74,13 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         else
             $data['id'] = $basket->id;
 
-        $data['name'] = $basket->name;
+        if (empty($basket->name)):
+            $data['name'] = JFactory::getUser()->name . ' - ' . JFactory::getDate();
+            ;
+        else:
+            $data['name'] = $basket->name;
+        endif;
+
         $data['buffer'] = $basket->buffer;
         $data['surface'] = $basket->extent->surface;
         $data['thirdparty_id'] = $basket->thirdparty;
@@ -99,17 +105,9 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             if (!empty($basket->id)) {
                 $this->cleanTables($basket->id);
             }
+
             //Save diffusions
             foreach ($basket->extractions as $diffusion):
-                $db = JFactory::getDbo();
-                $query = $db->getQuery(true);
-                $query->select('user_id')
-                        ->from('#__sdi_diffusion_notifieduser')
-                        ->where('diffusion_id = ' . $diffusion->id);
-                $db->setQuery($query);
-                $notifieduser = $db->loadColumn();
-
-
                 $orderdiffusion = JTable::getInstance('orderdiffusion', 'Easysdi_shopTable');
                 $od = array();
                 $od['order_id'] = $table->id;
@@ -129,10 +127,46 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                         $orderpropertyvalue->save($v);
                     endforeach;
                 endforeach;
+
+                //If the basket is not a draft
+                if ($data['orderstate_id'] != 7):
+                    //Get the user to notified when the order is saved
+                    $db = JFactory::getDbo();
+                    $query = $db->getQuery(true);
+                    $query->select('user_id')
+                            ->from('#__sdi_diffusion_notifieduser')
+                            ->where('diffusion_id = ' . $diffusion->id);
+                    $db->setQuery($query);
+                    $notifiedusers = $db->loadColumn();
+
+                    $diffusion = JTable::getInstance('diffusion', 'Easysdi_shopTable');
+                    $diffusion->load($diffusion->id);
+
+                    //Send mail to notifieduser
+                    foreach ($notifiedusers as $notifieduser):
+                        $user = sdiFactory::getSdiUser($notifieduser);
+                        if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_BODY', $diffusion->name))):
+                            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
+                        endif;
+                    endforeach;
+
+                    //Send mail to extraction responsible
+                    $query = $db->getQuery(true);
+                    $query->select('user_id')
+                            ->from('#__sdi_user_role_resource')
+                            ->where('role_id = 7')
+                            ->where('resource_id = (SELECT id FROM #__sdi_resource r INNERJOIN #__sdi_version v ON v.resource_id = r.id WHERE v.id = ' . $diffusion->version_id . ')');
+                    $db->setQuery($query);
+                    $responsible = $db->loadResult();
+                    $user = sdiFactory::getSdiUser($responsible);
+                    if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_RESPONSIBLE_BODY', $diffusion->name))):
+                        JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
+                    endif;
+                endif;
             endforeach;
 
-            //Save perimeters
 
+            //Save perimeters
             if (is_array($basket->extent->features)):
                 foreach ($basket->extent->features as $feature):
                     $orderperimeter = JTable::getInstance('orderperimeter', 'Easysdi_shopTable');
@@ -153,6 +187,14 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             endif;
         }
 
+        //If the basket is not a draft
+        if ($data['orderstate_id'] != 7):
+            //Send an email to the user to confirm his order
+            $user = sdiFactory::getSdiUser();
+            if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_CONFIRM_ORDER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_CONFIRM_ORDER_BODY', $data['name']))):
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
+            endif;
+        endif;
 
         return true;
     }

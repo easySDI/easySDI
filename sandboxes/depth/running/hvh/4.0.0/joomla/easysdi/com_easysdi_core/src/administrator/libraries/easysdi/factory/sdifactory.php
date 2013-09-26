@@ -28,14 +28,9 @@ abstract class sdiFactory
 	 * @see     sdiUser
 	 * @since   4.0.0
 	 */
-	public static function getSdiUser($juser = null)
+	public static function getSdiUser($sdiId = null)
 	{
-		if (!isset($juser))
-		{
-                    $juser = JFactory::getUser();
-		}
-		
-		return new sdiUser($juser);
+		return new sdiUser($sdiId);
 	}
         
         
