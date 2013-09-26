@@ -31,6 +31,10 @@ class sdiBasket {
     function __construct() {
         $this->sdiUser = sdiFactory::getSdiUser();
     }
+    
+    function loadOrder ($orderId){
+        
+    }
 
     function addExtraction($extraction) {        
         $this->setProperties ($extraction);

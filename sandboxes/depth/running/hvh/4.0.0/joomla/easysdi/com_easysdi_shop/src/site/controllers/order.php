@@ -46,7 +46,7 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         }
 
         // Redirect to the edit screen.
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orderform&layout=edit', false));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=edit', false));
     }
 
     /**

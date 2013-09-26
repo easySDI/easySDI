@@ -94,6 +94,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                 $data['orderstate_id'] = 6;
                 break;
             case 'draft':
+                $data['ordertype_id'] = 3;
                 $data['orderstate_id'] = 7;
                 break;
         }
