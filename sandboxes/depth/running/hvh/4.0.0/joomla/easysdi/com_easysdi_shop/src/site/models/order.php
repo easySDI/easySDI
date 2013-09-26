@@ -62,10 +62,10 @@ class Easysdi_shopModelOrder extends JModelForm {
             if (empty($id)) {
                 $id = $this->getState('order.id');
             }
-
+            
             // Get a level row instance.
             $table = $this->getTable();
-
+            
             // Attempt to load the row.
             if ($table->load($id)) {
                 // Check published state.
@@ -78,9 +78,19 @@ class Easysdi_shopModelOrder extends JModelForm {
                 // Convert the JTable to a clean JObject.
                 $properties = $table->getProperties(1);
                 $this->_item = JArrayHelper::toObject($properties, 'JObject');
+                
+                //Get constante value (to display)
+                $this->_item->orderstate = constant('Easysdi_shopTableorder::orderstate_'.$this->_item->orderstate_id);
+                $this->_item->ordertype = constant('Easysdi_shopTableorder::ordertype_'.$this->_item->ordertype_id);
+                                
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
+            
+            $basket = new sdiBasket();
+            $basket->loadOrder($id);
+            
+            $this->_item->basket = $basket;            
         }
 
         return $this->_item;

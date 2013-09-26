@@ -255,8 +255,8 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                             <div class="controls">
                                                 <select id="jform_perimeter<?php echo $orderperimeter->id ?>" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" class="inputbox input-xlarge"  >
                                                     <option value="-1" ><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_PERIMETER"); ?></option>
-                                                    <option value="1" <?php if(array_key_exists($orderperimeter->id,$this->item->perimeter ) && $this->item->perimeter[$orderperimeter->id] == 1) echo 'selected';  ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER"); ?></option>
-                                                    <option value="0" <?php if(array_key_exists($orderperimeter->id,$this->item->perimeter ) && $this->item->perimeter[$orderperimeter->id] == 0) echo 'selected';  ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER_WITH_BUFFER"); ?></option>
+                                                    <option value="1" <?php if(array_key_exists($orderperimeter->id,$this->item->perimeter ) && $this->item->perimeter[$orderperimeter->id] == 0) echo 'selected';  ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER"); ?></option>
+                                                    <option value="0" <?php if(array_key_exists($orderperimeter->id,$this->item->perimeter ) && $this->item->perimeter[$orderperimeter->id] == 1) echo 'selected';  ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER_WITH_BUFFER"); ?></option>
                                                 </select>
                                             </div>
                                         </div>

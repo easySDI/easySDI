@@ -23,6 +23,7 @@ class sdiPerimeter {
         if (empty($session_perimeter))
             return;
         $this->id = $session_perimeter->perimeter_id;
+        $this->allowedbuffer = $session_perimeter->buffer;
         $this->loadData();
     }
 
@@ -86,36 +87,18 @@ class sdiPerimeter {
     }
 
     public function setAllowedBuffer($extractions) {
-        $this->allowedbuffer = 1;
+        if(empty($extractions)) return;
         
-        if(empty($extractions)) return true;
-        
-        $incondition = '';        
         foreach ($extractions as $extraction):
-            if(strlen($incondition) != 0) $incondition .= ',';
-            $incondition .= $extraction->id;            
-        endforeach;
-        
-        $db = JFactory::getDbo();
-
-        $query = $db->getQuery(true)
-                ->select('*')
-                ->from('#__sdi_diffusion_perimeter dp')
-                ->where('dp.perimeter_id = ' . $this->id)
-                ->where('dp.diffusion_id IN ( '. $incondition .')')
-        ;
-
-        $db->setQuery($query);
-        $items = $db->loadObjectList();
-        
-        foreach($items as $item):
-            if($item->buffer == 0):
-                $this->allowedbuffer = 0;
-                return $this->allowedbuffer;
-            endif;
-        endforeach;
-        
-        return $this->allowedbuffer;
+            foreach ($extraction->perimeters as $perimeter):
+                if($perimeter->id == $this->id):
+                    if($perimeter->allowedbuffer == 0):
+                        $this->allowedbuffer = 0;
+                        return $this->allowedbuffer;
+                    endif;
+                endif;
+            endforeach;
+        endforeach;        
     }
 
 }

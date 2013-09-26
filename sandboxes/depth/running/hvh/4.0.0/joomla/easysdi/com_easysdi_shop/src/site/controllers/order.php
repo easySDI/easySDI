@@ -32,19 +32,6 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         // Set the user id for the user to edit in the session.
         $app->setUserState('com_easysdi_shop.edit.order.id', $editId);
 
-        // Get the model.
-        $model = $this->getModel('Order', 'Easysdi_shopModel');
-
-        // Check out the item
-        if ($editId) {
-            $model->checkout($editId);
-        }
-
-        // Check in the previous user.
-        if ($previousId) {
-            $model->checkin($previousId);
-        }
-
         // Redirect to the edit screen.
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=edit', false));
     }

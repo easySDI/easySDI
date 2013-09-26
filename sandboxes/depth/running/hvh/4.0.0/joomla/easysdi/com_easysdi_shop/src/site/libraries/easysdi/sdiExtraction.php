@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 require_once JPATH_SITE. '/components/com_easysdi_shop/libraries/easysdi/sdiProperty.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/diffusionperimeter.php';
 
 class sdiExtraction {
 
@@ -23,12 +24,24 @@ class sdiExtraction {
     public $perimeters;
     public $visualization;
     
+    /**
+     * 
+     * @param type $session_extraction : json {"id":5,"properties":[{"id": 1, "values" :[{"id" : 4, "value" : "foo"}]},{"id": 1, "values" :[{"id" : 5, "value" : "bar"}]}]}
+     * @return type
+     */
     function __construct($session_extraction) {
         if (empty($session_extraction))
             return;
 
         $this->id = $session_extraction->id;
         $this->loadData();
+        
+        $diffusionperimeter = JTable::getInstance('diffusionperimeter', 'Easysdi_shopTable');
+        $perimeters = $diffusionperimeter->loadBydiffusionID($this->id);
+        foreach ($perimeters as $perimeter):
+            $new_perimeter = new sdiPerimeter($perimeter);
+            $this->perimeters[] = $new_perimeter;
+        endforeach;
         
         if (!isset($this->properties))
             $this->properties = array();

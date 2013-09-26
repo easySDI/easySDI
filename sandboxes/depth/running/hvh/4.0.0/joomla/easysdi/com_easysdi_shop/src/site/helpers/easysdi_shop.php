@@ -9,7 +9,7 @@
  */
 defined('_JEXEC') or die;
 
-require_once JPATH_COMPONENT_ADMINISTRATOR . '/tables/diffusionperimeter.php';
+
 require_once JPATH_COMPONENT_ADMINISTRATOR . '/tables/diffusion.php';
 require_once JPATH_COMPONENT_SITE . '/libraries/easysdi/sdiBasket.php';
 require_once JPATH_COMPONENT_SITE . '/libraries/easysdi/sdiExtraction.php';
@@ -44,6 +44,7 @@ abstract class Easysdi_shopHelper {
                 die();
             }
         }
+
         $extraction = new sdiExtraction($decoded_item);
 
         //Get the session basket content
@@ -51,22 +52,6 @@ abstract class Easysdi_shopHelper {
         if (empty($basket) || !$basket) {
             $basket = new sdiBasket();
         }
-
-        //Complete extraction object with allowed perimeters
-        $diffusionperimeter = JTable::getInstance('diffusionperimeter', 'Easysdi_shopTable');
-        $perimeters = $diffusionperimeter->loadBydiffusionID($extraction->id);
-        if ($perimeters === false) {
-            //Can't load linked perimeters
-            $return['ERROR'] = JText::_('COM_EASYSDI_SHOP_ADD_BASKET_ERROR_NO_PERIMETER');
-            echo json_encode($return);
-            die();
-        }
-
-        foreach ($perimeters as $perimeter):
-            $new_perimeter = new sdiPerimeter($perimeter);
-            $new_perimeter->setAllowedBuffer($basket->extractions);
-            $extraction->perimeters[] = $new_perimeter;
-        endforeach;
 
         //Add the new extraction to the basket
         if (count($basket->extractions) == 0):
@@ -76,13 +61,26 @@ abstract class Easysdi_shopHelper {
         else:
             //There is already extractions in the basket
             //Check if there is at least one common perimeter within all the extractions in the basket
+            //Check if buffer is authorized
             $common = array();
             foreach ($extraction->perimeters as $perimeter):
-                if (in_array($perimeter, $basket->perimeters)):
-                    if (!in_array($perimeter, $common)):
-                        $common[] = $perimeter;
+                foreach ($basket->perimeters as $bperimeter):
+                    if($bperimeter->id == $perimeter->id):
+                        foreach ($common as $cperimeter):
+                            if($bperimeter->id == $cperimeter->id):
+                                if($bperimeter->allowedbuffer == 0 || $perimeter->allowedbuffer == 0):
+                                    $cperimeter->allowedbuffer = 0;
+                                    continue 2;
+                                endif;
+                            endif;
+                        endforeach;
+                        if($bperimeter->allowedbuffer == 0):
+                            $common[] = $bperimeter;
+                        else:
+                            $common[] = $perimeter;
+                        endif;
                     endif;
-                endif;
+                endforeach;
             endforeach;
 
             if (count($common) == 0):
@@ -153,11 +151,15 @@ abstract class Easysdi_shopHelper {
             $common = array();
             foreach ($basket->extractions as $extraction):
                 foreach ($extraction->perimeters as $perimeter):
-                    if (in_array($perimeter, $basket->extractions[0]->perimeters)):
-                        if (!in_array($perimeter, $common)):
-                            $common[] = $perimeter;
+                    foreach($common as $cperimeter):
+                        if($perimeter->id == $cperimeter->id):
+                            if($perimeter->allowedbuffer == 0 || $cperimeter->allowedbuffer == 0):
+                                $cperimeter->allowedbuffer = 0;
+                                continue 2;
+                            endif;
                         endif;
-                    endif;
+                    endforeach;
+                    $common[] = $perimeter;                       
                 endforeach;
             endforeach;
 

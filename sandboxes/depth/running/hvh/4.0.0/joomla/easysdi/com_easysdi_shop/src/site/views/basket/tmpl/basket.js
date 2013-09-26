@@ -20,11 +20,11 @@ var listenerFeatureAdded = function (e){
     var toobig = false;
     var toosmall = false;
     if(jQuery('#surfacemax').val() !== ''){
-        if(jQuery('#t-surface').val() > jQuery('#surfacemax').val())
+        if(parseFloat(jQuery('#t-surface').val()) > parseFloat(jQuery('#surfacemax').val()))
             toobig =true;
     }
     if(jQuery('#surfacemin').val() !== ''){
-        if(jQuery('#t-surface').val() < jQuery('#surfacemin').val())
+        if(parseFloat(jQuery('#t-surface').val()) < parseFloat(jQuery('#surfacemin').val()))
             toosmall =true;
     }
     if(toobig || toosmall){
