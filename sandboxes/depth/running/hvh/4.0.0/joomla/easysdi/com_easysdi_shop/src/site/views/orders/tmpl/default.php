@@ -31,22 +31,7 @@ $items = $db->loadObjectList();
 
     function addtobasket() {
 
-        request = false;
-        if (window.XMLHttpRequest) {
-            request = new XMLHttpRequest();
-        } else if (window.ActiveXObject) {
-            try {
-                request = new ActiveXObject("Msxml2.XMLHTTP");
-            } catch (e) {
-                try {
-                    request = new ActiveXObject("Microsoft.XMLHTTP");
-                } catch (e) {
-                    request = false;
-                }
-            }
-        }
-        if (!request)
-            return;
+        initRequest ();
 
         var properties = {"id": 6, "properties": [{"id": 2, "values": [{"id": 2, "value": "valeur-1"}, {"id": 3, "value": "valeur-2"}]}, {"id": 3, "values": [{"id": 5, "value": "text-simpe"}]}, {"id": 4, "values": [{"id": 8, "value": "check-box-3"}]}]};
         var query = "index.php?option=com_easysdi_shop&task=addToBasket&item=" + JSON.stringify(properties);
@@ -59,22 +44,7 @@ $items = $db->loadObjectList();
 
     function addtobasket2() {
 
-        request = false;
-        if (window.XMLHttpRequest) {
-            request = new XMLHttpRequest();
-        } else if (window.ActiveXObject) {
-            try {
-                request = new ActiveXObject("Msxml2.XMLHTTP");
-            } catch (e) {
-                try {
-                    request = new ActiveXObject("Microsoft.XMLHTTP");
-                } catch (e) {
-                    request = false;
-                }
-            }
-        }
-        if (!request)
-            return;
+       initRequest ();
 
         var properties = {"id": 10, "properties": [{"id": 2, "values": [{"id": 2, "value": "valeur-1"}]}, {"id": 3, "values": [{"id": 5, "value": "text-simpe"}]}, {"id": 4, "values": [{"id": 8, "value": "check-box-3"}]}]};
         var query = "index.php?option=com_easysdi_shop&task=addToBasket&item=" + JSON.stringify(properties);

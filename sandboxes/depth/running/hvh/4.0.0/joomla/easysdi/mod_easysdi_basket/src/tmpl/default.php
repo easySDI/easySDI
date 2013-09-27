@@ -2,10 +2,19 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 JText::script('COM_EASYSDI_SHOP_BASKET_SUCCESSFULLY_UPDATED');
+$document = JFactory::getDocument();
+$document->addStyleSheet(JURI::root().'/administrator/components/com_easysdi_core/assets/css/easysdi_loader.css');
+
 ?>
 <script>
+    jQuery(document).ready(function() {
+        jQuery('#content').prepend("<div id='sdi-loader' style='display : none'><img id='sdi-loader-image'  src='<?php echo JURI::root(); ?>administrator/components/com_easysdi_core/assets/images/loader.gif' alt=''></div>");
+    });
+    
     function updateBasketContent() {
         if (request.readyState == 4) {
+            jQuery('#sdi-loader').hide();
+            
             var JSONtext = request.responseText;
 
             if (JSONtext == null) {
@@ -31,12 +40,12 @@ JText::script('COM_EASYSDI_SHOP_BASKET_SUCCESSFULLY_UPDATED');
                 
             });
             
-            jQuery("#progress").css('visibility', 'hidden');
+            
 
         }
     }
     function initRequest (){
-        jQuery("#progress").css('visibility', 'visible');
+        jQuery('#sdi-loader').show();
         request = false;
         if (window.XMLHttpRequest) {
             request = new XMLHttpRequest();

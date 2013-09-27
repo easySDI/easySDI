@@ -42,14 +42,21 @@ JHTML::_('behavior.modal');
             }
         }
         
-        Joomla.submitbutton = function(task)
-        {
-            if (jQuery('#allowedbuffer').val() == 0)
-                jQuery('#perimeter-buffer').val('');
-            
-            Joomla.submitform(task, document.getElementById('adminForm'));
-            
-        }
+        jQuery(document).ready(function(){
+            Joomla.submitbutton = function(task)
+            {
+                if(jQuery('#features').val() === ''){
+                    jQuery('#modal-error').modal('show');
+                }else{
+                    if (jQuery('#allowedbuffer').val() == 0)
+                        jQuery('#perimeter-buffer').val('');
+
+                    Joomla.submitform(task, document.getElementById('adminForm'));
+                }
+
+            }
+        })
+        
     </script>
 
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=basket'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
@@ -336,6 +343,23 @@ JHTML::_('behavior.modal');
                     <button onClick="actionRemove();" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo JText::_("COM_EASYSDI_SHOP_BASKET_MODAL_BTN_REMOVE") ?></button>
                 </div>
             </div>
+        
+        <div id="modal-error" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 id="myModalLabel"><?php echo JText::_("COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_TITLE") ?></h3>
+                </div>               
+                <div class="modal-body">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_SELECTION_MISSING'); ?>
+                </div>                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary"><?php echo JText::_('JOK'); ?></button>
+                </div>              
+            </div>
+          </div>
+        
             <script>
                 Ext.onReady(function(){
                     app.on("ready", function() {
@@ -372,7 +396,7 @@ JHTML::_('behavior.modal');
             <input type="hidden" name="t-features" id="t-features" value='<?php if (!empty($this->item->extent)): echo json_encode($this->item->extent->features); endif;?>' />
             <input type="hidden" name="t-surface" id="t-surface" value="<?php if (!empty($this->item->extent)): echo $this->item->extent->surface; endif;?>" />
             <input type="hidden" name="surfacemin" id="surfacemin" value="<?php echo $this->item->surfacemin;?>" />
-            <input type="hidden" name="surfacemin" id="surfacemax" value="<?php echo $this->item->surfacemax;?>" />
+            <input type="hidden" name="surfacemax" id="surfacemax" value="<?php echo $this->item->surfacemax;?>" />
             
             <input type = "hidden" name = "task" value = "" />
             <input type = "hidden" name = "option" value = "com_easysdi_shop" />
