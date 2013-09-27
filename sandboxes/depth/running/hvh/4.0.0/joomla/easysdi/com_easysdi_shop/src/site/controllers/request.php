@@ -31,6 +31,19 @@ class Easysdi_shopControllerRequest extends Easysdi_shopController {
 
         // Set the user id for the user to edit in the session.
         $app->setUserState('com_easysdi_shop.edit.request.id', $editId);
+        
+        // Get the model.
+        $model = $this->getModel('Request', 'Easysdi_shopModel');
+
+        // Check out the item
+        if ($editId) {
+            $model->checkout($editId);
+        }
+
+        // Check in the previous user.
+        if ($previousId) {
+            $model->checkin($previousId);
+        }
 
         // Redirect to the edit screen.
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=request&layout=edit', false));
@@ -51,49 +64,15 @@ class Easysdi_shopControllerRequest extends Easysdi_shopController {
         $model = $this->getModel('Request', 'Easysdi_shopModel');
 
         // Get the user data.
-        $data = JFactory::getApplication()->input->get('jform', array(), 'array');
-
-        // Validate the posted data.
-        $form = $model->getForm();
-        if (!$form) {
-            JError::raiseError(500, $model->getError());
-            return false;
-        }
-
-        // Validate the posted data.
-        $data = $model->validate($form, $data);
-
-        // Check for errors.
-        if ($data === false) {
-            // Get the validation messages.
-            $errors = $model->getErrors();
-
-            // Push up to three validation messages out to the user.
-            for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
-                if ($errors[$i] instanceof Exception) {
-                    $app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-                } else {
-                    $app->enqueueMessage($errors[$i], 'warning');
-                }
-            }
-
-            // Save the data in the session.
-            $app->setUserState('com_easysdi_shop.edit.request.data', JRequest::getVar('jform'), array());
-
-            // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_easysdi_shop.edit.request.id');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=request&layout=edit&id=' . $id, false));
-            return false;
-        }
+        $data = $app->input->get('jform', array(), 'array');
+       
+        
 
         // Attempt to save the data.
         $return = $model->save($data);
 
         // Check for errors.
         if ($return === false) {
-            // Save the data in the session.
-            $app->setUserState('com_easysdi_shop.edit.request.data', $data);
-
             // Redirect back to the edit screen.
             $id = (int) $app->getUserState('com_easysdi_shop.edit.request.id');
             $this->setMessage(JText::sprintf('Save failed', $model->getError()), 'warning');
@@ -112,18 +91,17 @@ class Easysdi_shopControllerRequest extends Easysdi_shopController {
 
         // Redirect to the list screen.
         $this->setMessage(JText::_('COM_EASYSDI_SHOP_ITEM_SAVED_SUCCESSFULLY'));
-        $menu = & JSite::getMenu();
-        $item = $menu->getActive();
-        $this->setRedirect(JRoute::_($item->link, false));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=requests', false));
 
         // Flush the data from the session.
         $app->setUserState('com_easysdi_shop.edit.request.data', null);
     }
 
     function cancel() {
-        $menu = & JSite::getMenu();
-        $item = $menu->getActive();
-        $this->setRedirect(JRoute::_($item->link, false));
+        $model = $this->getModel('Request', 'Easysdi_shopModel');
+        $id = $app->getUserState('com_easysdi_shop.edit.request.id');
+        $model->checkin($id);
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=requests', false));
     }
 
     public function remove() {

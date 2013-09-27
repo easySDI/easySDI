@@ -90,7 +90,7 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <?php if ($extraction->productstate_id == 2) : ?>
+                                                    <?php if ($extraction->productstate_id == 2 || $extraction->productstate_id == 1) : ?>
                                                         <div class="row-fluid diffusion-order-result">
                                                             <div class="span2">
                                                                 <span class="badge badge-info"><i class="icon-white icon-upload"></i></span>
@@ -99,7 +99,7 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
                                                             <div class="span10">
                                                                 <div class="row-fluid">
                                                                     <div class="span8">
-                                                                        <input type="file" name="file" id="file" >                                                            
+                                                                        <input type="file" name="jform[file][<?php echo $extraction->id; ?>][]" id="file_<?php echo $extraction->id; ?>" >                                                            
                                                                     </div>
                                                                 </div>
                                                                 <div class="row-fluid">
@@ -108,7 +108,7 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
                                                                     </div>
 
                                                                     <div class="span6 order-edit-value" >
-                                                                        <input type="text" id="fee" name="fee" placeholder="">
+                                                                        <input type="text" id="fee_<?php echo $extraction->id; ?>" name="jform[fee][<?php echo $extraction->id; ?>]" placeholder="">
                                                                     </div>
                                                                 </div>
                                                                 <div class="row-fluid">
@@ -117,7 +117,7 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
                                                                     </div>
 
                                                                     <div class="span6 order-edit-value" >
-                                                                        <textarea id="remark" name="remark" rows="6" placeholder=""></textarea>
+                                                                        <textarea id="remark_<?php echo $extraction->id; ?>" name="jform[remark][<?php echo $extraction->id; ?>]" rows="6" placeholder=""></textarea>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -128,6 +128,7 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
 
                                                 </td>
                                             </tr>
+                                            <input type = "hidden" name = "jform[diffusion][]" value = "<?php echo $extraction->id; ?>" />
                                         <?php endif; ?>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -181,7 +182,7 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
                             <div class="row-fluid" >
                                 <h3><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_THIRDPARTY_ID'); ?></h3>
                                 <hr>
-                                <input id="thirdparty" name="thirdparty" type="text" placeholder="" class="input-xlarge" value="<?php $this->item->basket->thirdparty; ?>">                               
+                                <input id="thirdparty" name="thirdparty" type="text" placeholder="" class="input-xlarge" value="<?php echo $this->item->basket->thirdparty; ?>">                               
                             </div>
                         <?php endif; ?>
 
@@ -193,6 +194,12 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
         <script>
 
         </script>
+        <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
+            <?php echo $field->input; ?>
+        <?php endforeach; ?>  
+        <input type = "hidden" name = "task" value = "" />
+        <input type = "hidden" name = "option" value = "com_easysdi_shop" />
+<?php echo JHtml::_('form.token'); ?>
     </form>
     <?php echo $this->getToolbar(); ?>
 

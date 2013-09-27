@@ -36,7 +36,17 @@
                    query="SELECT id, name FROM #__sdi_map WHERE state=1 ORDER BY ordering" 
                    key_field="id" 
                    value_field="name"
-           />
+           />           
+           
+            <field name="orderresponseFolder"
+                   type="text"
+                   default=""
+                   class="inputbox input-xxlarge"
+                   required ="true"
+                   size="500"
+                   label="COM_EASYSDI_SHOP_CONFIG_LBL_ORDERRESPONSEFOLDER"
+                   description="COM_EASYSDI_SHOP_CONFIG_DESC_ORDERRESPONSEFOLDER">
+           </field>         
            
            <field name="archiveorderdelay"
                    type="text"
