@@ -11,6 +11,8 @@
 defined('_JEXEC') or die;
 
 require_once JPATH_COMPONENT . '/controller.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/order.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/orderdiffusion.php';
 
 /**
  * Order controller class.
@@ -37,87 +39,50 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
     }
 
     /**
-     * Method to save a user's profile data.
-     *
-     * @return	void
-     * @since	1.6
+     * 
      */
-    public function save() {
-        // Check for request forgeries.
-        JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+    function download() {
+        $diffusion_id = JFactory::getApplication()->input->getInt('id', null, 'int');
+        $order_id = JFactory::getApplication()->input->getInt('order', null, 'int');
 
-        // Initialise variables.
-        $app = JFactory::getApplication();
-        $model = $this->getModel('Order', 'Easysdi_shopModel');
+        if (empty($diffusion_id)):
+            $return['ERROR'] = JText::_('COM_EASYSDI_SHOP_ORDER_ERROR_EMPTY_ID');
+            echo json_encode($return);
+            die();
+        endif;
 
-        // Get the user data.
-        $data = JFactory::getApplication()->input->get('jform', array(), 'array');
+        //Check user right on this order
+        $order = JTable::getInstance('order', 'Easysdi_shopTable');
+        $order->load($order_id);
+        if ($order->user_id != sdiFactory::getSdiUser()->id):
+            $return['ERROR'] = JText::_('JERROR_ALERTNOAUTHOR');
+            echo json_encode($return);
+            die();
+        endif;
 
-        // Validate the posted data.
-        $form = $model->getForm();
-        if (!$form) {
-            JError::raiseError(500, $model->getError());
-            return false;
-        }
+        //Load order response
+        $orderdiffusion = JTable::getInstance('orderdiffusion', 'Easysdi_shopTable');
+        $keys = array();
+        $keys['order_id'] = $order_id;
+        $keys['diffusion_id'] = $diffusion_id;
+        $orderdiffusion->load($keys);
 
-        // Validate the posted data.
-        $data = $model->validate($form, $data);
-
-        // Check for errors.
-        if ($data === false) {
-            // Get the validation messages.
-            $errors = $model->getErrors();
-
-            // Push up to three validation messages out to the user.
-            for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
-                if ($errors[$i] instanceof Exception) {
-                    $app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-                } else {
-                    $app->enqueueMessage($errors[$i], 'warning');
-                }
-            }
-
-            // Save the data in the session.
-            $app->setUserState('com_easysdi_shop.edit.order.data', JRequest::getVar('jform'), array());
-
-            // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_easysdi_shop.edit.order.id');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=edit&id=' . $id, false));
-            return false;
-        }
-
-        // Attempt to save the data.
-        $return = $model->save($data);
-
-        // Check for errors.
-        if ($return === false) {
-            // Save the data in the session.
-            $app->setUserState('com_easysdi_shop.edit.order.data', $data);
-
-            // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_easysdi_shop.edit.order.id');
-            $this->setMessage(JText::sprintf('Save failed', $model->getError()), 'warning');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=edit&id=' . $id, false));
-            return false;
-        }
+        $folder = JFactory::getApplication()->getParams('com_easysdi_shop')->get('orderresponseFolder');
+        $file = $folder.'\\'.$order_id.'\\'.$diffusion_id.'\\'.$orderdiffusion->file;
 
 
-        // Check in the profile.
-        if ($return) {
-            $model->checkin($return);
-        }
+        error_reporting(0);
 
-        // Clear the profile id from the session.
-        $app->setUserState('com_easysdi_shop.edit.order.id', null);
+        ini_set('zlib.output_compression', 0);
+        header('Pragma: public');
+        header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+        header('Content-Transfer-Encoding: none');
+        header("Content-Length: " . filesize($file));
+        header('Content-Type: application/octetstream; name="' . $orderdiffusion->file . '"');
+        header('Content-Disposition: attachement; filename="' . $orderdiffusion->file . '"');
 
-        // Redirect to the list screen.
-        $this->setMessage(JText::_('COM_EASYSDI_SHOP_ITEM_SAVED_SUCCESSFULLY'));
-        $menu = & JSite::getMenu();
-        $item = $menu->getActive();
-        $this->setRedirect(JRoute::_($item->link, false));
-
-        // Flush the data from the session.
-        $app->setUserState('com_easysdi_shop.edit.order.data', null);
+        readfile($file);
+        die();
     }
 
     function cancel() {

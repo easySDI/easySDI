@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
 ?>
-<?php if ($this->item) : ?>
+<?php if ($this->item) : ?>    
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=order'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
         <div class="order-edit front-end-edit">
             <h1><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_TITLE'); ?></h1>
@@ -30,15 +30,15 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
                                     <?php echo $this->item->created; ?>
                                 </div>
                             </div>
-                                                           <div class="row-fluid">
+                            <div class="row-fluid">
                                 <div class="span4 order-edit-label" >
                                     <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_ORDERSTATE_ID'); ?>
                                 </div>
                                 <div class="span6 order-edit-value" >
                                     <?php echo JText::_($this->item->orderstate); ?>
                                 </div>
-                                                               </div>
-                                                           <div class="row-fluid">
+                            </div>
+                            <div class="row-fluid">
                                 <div class="span4 order-edit-label" >
                                     <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_ORDERTYPE_ID'); ?>
                                 </div>
@@ -92,14 +92,14 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
                                                 <?php if ($extraction->productstate_id == 1) : ?>
                                                     <div class="row-fluid diffusion-order-result">
                                                         <div class="span2">
-                                                            <a href="#" class="btn btn-success btn-mini pull-left" onClick=""><i class="icon-white icon-flag-2"></i></a>
+                                                            <a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=<?php echo $extraction->id; ?>&order=<?php echo $this->item->id; ?>" class="btn btn-success btn-mini pull-left" onClick=""><i class="icon-white icon-flag-2"></i></a>
                                                         </div>
                                                         <div class="span8">
                                                             <div class="row-fluid">
                                                                 <div class="span2 order-edit-label" >
                                                                     <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_FEE'); ?>
                                                                 </div>
-                                                            
+
                                                                 <div class="span4 order-edit-value" >
                                                                     <?php echo $extraction->fee; ?>
                                                                 </div>
@@ -108,7 +108,7 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
                                                                 <div class="span2 order-edit-label" >
                                                                     <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_COMPLETED'); ?>
                                                                 </div>
-                                                            
+
                                                                 <div class="span4 order-edit-value" >
                                                                     <?php echo $extraction->completed; ?>
                                                                 </div>
@@ -117,7 +117,7 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
                                                                 <div class="span2 order-edit-label" >
                                                                     <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_CREATED_BY'); ?>
                                                                 </div>
-                                                            
+
                                                                 <div class="span4 order-edit-value" >
                                                                     <?php echo $extraction->created_by; ?>
                                                                 </div>
@@ -126,7 +126,7 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
                                                                 <div class="span2 order-edit-label" >
                                                                     <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_REMARK'); ?>
                                                                 </div>
-                                                            
+
                                                                 <div class="span4 order-edit-value" >
                                                                     <?php echo $extraction->remark; ?>
                                                                 </div>
@@ -200,9 +200,12 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
                 </div>
             </div>
         </div>
-        <script>
-                
-            </script>
+        <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
+            <?php echo $field->input; ?>
+        <?php endforeach; ?>  
+        <input type = "hidden" name = "task" value = "" />
+        <input type = "hidden" name = "option" value = "com_easysdi_shop" />
+        <?php echo JHtml::_('form.token'); ?>
     </form>
 
     <?php

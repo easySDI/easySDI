@@ -90,47 +90,67 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <?php if ($extraction->productstate_id == 2 || $extraction->productstate_id == 1) : ?>
-                                                        <div class="row-fluid diffusion-order-result">
-                                                            <div class="span2">
-                                                                <span class="badge badge-info"><i class="icon-white icon-upload"></i></span>
-                                                                
-                                                            </div>
-                                                            <div class="span10">
-                                                                <div class="row-fluid">
+
+                                                    <div class="row-fluid diffusion-order-result">
+                                                        <div class="span2">
+                                                            <span class="badge badge-info"><i class="icon-white icon-upload"></i></span>                                                                
+                                                        </div>
+                                                        <div class="span10">
+                                                            <div class="row-fluid">
+                                                                <?php if ($extraction->productstate_id == 2) : ?>
                                                                     <div class="span8">
-                                                                        <input type="file" name="jform[file][<?php echo $extraction->id; ?>][]" id="file_<?php echo $extraction->id; ?>" >                                                            
+                                                                        <input type="file" name="jform[file][<?php echo $extraction->id; ?>][]" id="file_<?php echo $extraction->id; ?>" >                                                                             
                                                                     </div>
-                                                                </div>
-                                                                <div class="row-fluid">
+                                                                <?php else : ?>
                                                                     <div class="span2 order-edit-label" >
-                                                                        <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_FEE'); ?>
+                                                                        <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_FILE'); ?>
                                                                     </div>
 
                                                                     <div class="span6 order-edit-value" >
+                                                                        <?php echo $extraction->file .' ('. $extraction->size . ' B)'; ?>
+                                                                    </div>
+                                                                <?php endif; ?>
+
+
+                                                            </div>
+                                                            <div class="row-fluid">
+                                                                <div class="span2 order-edit-label" >
+                                                                    <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_FEE'); ?>
+                                                                </div>
+                                                                <div class="span6 order-edit-value" >
+                                                                    <?php if ($extraction->productstate_id == 2) : ?>
                                                                         <input type="text" id="fee_<?php echo $extraction->id; ?>" name="jform[fee][<?php echo $extraction->id; ?>]" placeholder="">
-                                                                    </div>
+                                                                    <?php else : ?>
+                                                                        <?php echo $extraction->fee; ?>
+                                                                    <?php endif; ?>
                                                                 </div>
-                                                                <div class="row-fluid">
-                                                                    <div class="span2 order-edit-label" >
-                                                                        <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_REMARK'); ?>
-                                                                    </div>
+                                                            </div>
 
-                                                                    <div class="span6 order-edit-value" >
+                                                            <div class="row-fluid">
+                                                                <div class="span2 order-edit-label" >
+                                                                    <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_REMARK'); ?>
+                                                                </div>
+
+                                                                <div class="span6 order-edit-value" >
+                                                                    <?php if ($extraction->productstate_id == 2) : ?>
                                                                         <textarea id="remark_<?php echo $extraction->id; ?>" name="jform[remark][<?php echo $extraction->id; ?>]" rows="6" placeholder=""></textarea>
-                                                                    </div>
+                                                                    <?php else : ?>
+                                                                        <?php echo $extraction->remark; ?>
+                                                                    <?php endif; ?>
+
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <?php endif; ?>
+                                                    </div>
+
                                                 </td>        
                                                 <td>
 
                                                 </td>
                                             </tr>
-                                            <input type = "hidden" name = "jform[diffusion][]" value = "<?php echo $extraction->id; ?>" />
-                                        <?php endif; ?>
-                                    <?php endforeach; ?>
+                                        <input type = "hidden" name = "jform[diffusion][]" value = "<?php echo $extraction->id; ?>" />
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -199,7 +219,7 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
         <?php endforeach; ?>  
         <input type = "hidden" name = "task" value = "" />
         <input type = "hidden" name = "option" value = "com_easysdi_shop" />
-<?php echo JHtml::_('form.token'); ?>
+        <?php echo JHtml::_('form.token'); ?>
     </form>
     <?php echo $this->getToolbar(); ?>
 

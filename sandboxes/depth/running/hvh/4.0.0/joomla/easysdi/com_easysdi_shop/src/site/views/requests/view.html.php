@@ -21,6 +21,7 @@ class Easysdi_shopViewRequests extends JViewLegacy {
     protected $pagination;
     protected $state;
     protected $params;
+    protected $user;
 
     /**
      * Display the view
@@ -29,7 +30,14 @@ class Easysdi_shopViewRequests extends JViewLegacy {
         //Load admin language file
         $lang = JFactory::getLanguage();
         $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
-        
+
+        $this->user = sdiFactory::getSdiUser();
+        if (!$this->user->isEasySDI) {
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            JFactory::getApplication()->redirect(JRoute::_('index.php?', false));
+            return false;
+        }
+
         $app = JFactory::getApplication();
         $this->state = $this->get('State');
         $this->items = $this->get('Items');

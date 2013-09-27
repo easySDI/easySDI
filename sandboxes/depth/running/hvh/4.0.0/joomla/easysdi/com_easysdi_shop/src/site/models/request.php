@@ -68,12 +68,7 @@ class Easysdi_shopModelRequest extends JModelForm {
 
             // Attempt to load the row.
             if ($table->load($id)) {
-                // Check published state.
-                if ($published = $this->getState('filter.published')) {
-                    if ($table->state != $published) {
-                        return $this->_item;
-                    }
-                }
+
 
                 // Convert the JTable to a clean JObject.
                 $properties = $table->getProperties(1);
@@ -200,7 +195,7 @@ class Easysdi_shopModelRequest extends JModelForm {
      */
     public function save($data) {
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('request.id');
-        
+
         //Check the user can edit this request (resource extraction responsible)
         $user = sdiFactory::getSdiUser();
         if (!$user->isEasySDI) {
@@ -208,16 +203,16 @@ class Easysdi_shopModelRequest extends JModelForm {
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=requests', false));
             return false;
         }
-        
+
         $authorizeddiffusion = $user->getResponsibleExtraction();
-        
+
         //Save order_diffusion
         $app = JFactory::getApplication();
         $files = $app->input->files->get('jform');
-        
+
         foreach ($data['diffusion'] as $diffusion_id):
-            if(!in_array($diffusion_id, $authorizeddiffusion)):
-                //This user is not supposed access this diffusion
+            if (!in_array($diffusion_id, $authorizeddiffusion)):
+                //This user is not supposed to access this diffusion
                 JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
                 JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=requests', false));
                 return false;
@@ -231,10 +226,19 @@ class Easysdi_shopModelRequest extends JModelForm {
             $orderdiffusion->remark = $data['remark'][$diffusion_id];
             if (!empty($files['file'][$diffusion_id][0]['name'])):
                 //Save uploaded file 
+                $folder = $app->getParams('com_easysdi_shop')->get('orderresponseFolder');
                 $orderdiffusion->size = $files['file'][$diffusion_id][0]['size'];
                 $orderdiffusion->file = $files['file'][$diffusion_id][0]['name'];
+                mkdir($folder . '\\' . $id . '\\' . $diffusion_id, 0777, true);
+                $file = $files['file'][$diffusion_id][0]['tmp_name'];
+                $newfile = $folder . '\\' . $id . '\\' . $diffusion_id . '\\' . $files['file'][$diffusion_id][0]['name'];
+                if (!move_uploaded_file($file, $newfile)):
+                    JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_REQUEST_COPY_FILE_ERROR_MESSAGE'), 'error');
+                    JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=request&id=' . $id, false));
+                    return false;
+                endif;
                 $orderdiffusion->completed = date('Y-m-d H:i:s');
-                $orderdiffusion->productstate_id = 1;                
+                $orderdiffusion->productstate_id = 1;
             endif;
             $orderdiffusion->created_by = sdiFactory::getSdiUser()->id;
             $orderdiffusion->store();
@@ -245,19 +249,33 @@ class Easysdi_shopModelRequest extends JModelForm {
         $query->select('COUNT(*)')
                 ->from('#__sdi_order_diffusion')
                 ->where('order_id = ' . (int) $id)
-                ->where('productstate_id = 2' );
+                ->where('productstate_id = 2');
         $db->setQuery($query);
         $orderdone = $db->loadResult();
-        
-        if($orderdone == 0):
+
+        $sdiUser = sdiFactory::getSdiUser($data['user_id']);
+        if ($orderdone == 0):
             $data['orderstate_id'] = 3;
             $data['completed'] = date('Y-m-d H:i:s');
-        endif;
-        if($orderdone < count($data['diffusion']))
+            if (!$sdiUser->sendMail(JText::_('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_DONE_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_DONE_BODY', $data['name']))):
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
+            endif;
+        elseif ($orderdone < count($data['diffusion'])):
             $data['orderstate_id'] = 5;
-        if($orderdone == count($data['diffusion']))
+            if (!$sdiUser->sendMail(JText::_('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_PROGRESS_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_PROGRESS_BODY', $data['name']))):
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
+            endif;
+        elseif ($orderdone == count($data['diffusion'])) :
             $data['orderstate_id'] = 4;
-        
+            if (!$sdiUser->sendMail(JText::_('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_PROGRESS_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_PROGRESS_BODY', $data['name']))):
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
+            endif;
+
+        endif;
+
+        if ($data['thirdparty_id'] == '')
+            $data['thirdparty_id'] = null;
+
         $table = $this->getTable();
         if ($table->save($data) === true) {
             return $id;
