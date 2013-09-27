@@ -432,6 +432,12 @@ class sdiUser {
         return true;
     }
     
+    /**
+     * Send mail to current user
+     * @param type $subject
+     * @param type $body
+     * @return boolean
+     */
     public function sendMail($subject, $body){
         //Get mailer
         $mailer = JFactory::getMailer();
@@ -459,6 +465,24 @@ class sdiUser {
         } else {
             return true;
         }
+    }
+    
+    public function getResponsibleExtraction(){
+        if(!$this->isEasySDI){
+            return false;
+        }
+        $db = JFactory::getDbo();
+        
+        $query = $db->getQuery(true)
+                ->select('d.id')
+                ->from('#__sdi_user_role_resource urr')
+                ->innerJoin('#__sdi_version v ON v.resource_id = urr.resource_id')
+                ->innerJoin('#__sdi_diffusion d ON d.version_id = v.id')
+                ->where('urr.user_id = ' . $this->id)
+                ->where('urr.role_id = 7');
+        $db->setQuery($query);
+
+        return $db->loadColumn();
     }
 
 }

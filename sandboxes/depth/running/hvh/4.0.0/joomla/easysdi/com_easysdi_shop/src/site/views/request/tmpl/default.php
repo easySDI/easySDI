@@ -14,7 +14,7 @@ $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
 ?>
 <?php if ($this->item) : ?>
-    <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=order'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+    <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=request'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
         <div class="order-edit front-end-edit">
             <h1><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_TITLE'); ?></h1>
             <div >
@@ -30,15 +30,15 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
                                     <?php echo $this->item->created; ?>
                                 </div>
                             </div>
-                                                           <div class="row-fluid">
+                            <div class="row-fluid">
                                 <div class="span4 order-edit-label" >
                                     <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_ORDERSTATE_ID'); ?>
                                 </div>
                                 <div class="span6 order-edit-value" >
                                     <?php echo JText::_($this->item->orderstate); ?>
                                 </div>
-                                                               </div>
-                                                           <div class="row-fluid">
+                            </div>
+                            <div class="row-fluid">
                                 <div class="span4 order-edit-label" >
                                     <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_ORDERTYPE_ID'); ?>
                                 </div>
@@ -54,91 +54,81 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
                                 </tfoot>
                                 <tbody>
                                     <?php foreach ($this->item->basket->extractions as $extraction) : ?>
-                                        <tr id="<?php echo $extraction->id; ?>">
-                                            <td>
-                                                <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.edit&id=' . (int) $extraction->resource); ?>"><?php echo $extraction->name; ?></a>
-                                                <div class="small"><?php echo $extraction->organism; ?></div>
-                                                <div class="accordion" id="accordion_<?php echo $extraction->id; ?>_properties">
-                                                    <div class="accordion-group">
-                                                        <div class="accordion-heading">
-                                                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_<?php echo $extraction->id; ?>_properties" href="#<?php echo $extraction->id; ?>_collapse">
-                                                                <?php echo JText::_("COM_EASYSDI_SHOP_BASKET_EXTRACTION_PROPERTIES"); ?>
-                                                            </a>
-                                                        </div>
-                                                        <div id="<?php echo $extraction->id; ?>_collapse" class="accordion-body collapse">
-                                                            <div class="accordion-inner">
-                                                                <?php
-                                                                foreach ($extraction->properties as $property):
-                                                                    ?>
-                                                                    <div class="small"><?php echo $property->name; ?> : 
-                                                                        <?php
-                                                                        foreach ($property->values as $value) :
-                                                                            if (!empty($value->name)) :
-                                                                                echo $value->name;
-                                                                            else :
-                                                                                echo $value->value;
-                                                                            endif;
-                                                                            echo', ';
-                                                                        endforeach;
-                                                                        ?>
-                                                                    </div>
+                                        <?php if (in_array($extraction->id, $this->authorizeddiffusion)) : ?>
+                                            <tr id="<?php echo $extraction->id; ?>">
+                                                <td>
+                                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.edit&id=' . (int) $extraction->resource); ?>"><?php echo $extraction->name; ?></a>
+                                                    <div class="small"><?php echo $extraction->organism; ?></div>
+                                                    <div class="accordion" id="accordion_<?php echo $extraction->id; ?>_properties">
+                                                        <div class="accordion-group">
+                                                            <div class="accordion-heading">
+                                                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_<?php echo $extraction->id; ?>_properties" href="#<?php echo $extraction->id; ?>_collapse">
+                                                                    <?php echo JText::_("COM_EASYSDI_SHOP_BASKET_EXTRACTION_PROPERTIES"); ?>
+                                                                </a>
+                                                            </div>
+                                                            <div id="<?php echo $extraction->id; ?>_collapse" class="accordion-body collapse">
+                                                                <div class="accordion-inner">
                                                                     <?php
-                                                                endforeach;
-                                                                ?>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <?php if ($extraction->productstate_id == 1) : ?>
-                                                    <div class="row-fluid diffusion-order-result">
-                                                        <div class="span2">
-                                                            <a href="#" class="btn btn-success btn-mini pull-left" onClick=""><i class="icon-white icon-flag-2"></i></a>
-                                                        </div>
-                                                        <div class="span8">
-                                                            <div class="row-fluid">
-                                                                <div class="span2 order-edit-label" >
-                                                                    <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_FEE'); ?>
-                                                                </div>
-                                                            
-                                                                <div class="span4 order-edit-value" >
-                                                                    <?php echo $extraction->fee; ?>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row-fluid">
-                                                                <div class="span2 order-edit-label" >
-                                                                    <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_COMPLETED'); ?>
-                                                                </div>
-                                                            
-                                                                <div class="span4 order-edit-value" >
-                                                                    <?php echo $extraction->completed; ?>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row-fluid">
-                                                                <div class="span2 order-edit-label" >
-                                                                    <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_CREATED_BY'); ?>
-                                                                </div>
-                                                            
-                                                                <div class="span4 order-edit-value" >
-                                                                    <?php echo $extraction->created_by; ?>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row-fluid">
-                                                                <div class="span2 order-edit-label" >
-                                                                    <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_REMARK'); ?>
-                                                                </div>
-                                                            
-                                                                <div class="span4 order-edit-value" >
-                                                                    <?php echo $extraction->remark; ?>
+                                                                    foreach ($extraction->properties as $property):
+                                                                        ?>
+                                                                        <div class="small"><?php echo $property->name; ?> : 
+                                                                            <?php
+                                                                            foreach ($property->values as $value) :
+                                                                                if (!empty($value->name)) :
+                                                                                    echo $value->name;
+                                                                                else :
+                                                                                    echo $value->value;
+                                                                                endif;
+                                                                                echo', ';
+                                                                            endforeach;
+                                                                            ?>
+                                                                        </div>
+                                                                        <?php
+                                                                    endforeach;
+                                                                    ?>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                <?php endif; ?>
-                                            </td>        
-                                            <td>
+                                                    <?php if ($extraction->productstate_id == 2) : ?>
+                                                        <div class="row-fluid diffusion-order-result">
+                                                            <div class="span2">
+                                                                <span class="badge badge-info"><i class="icon-white icon-upload"></i></span>
+                                                                
+                                                            </div>
+                                                            <div class="span10">
+                                                                <div class="row-fluid">
+                                                                    <div class="span8">
+                                                                        <input type="file" name="file" id="file" >                                                            
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row-fluid">
+                                                                    <div class="span2 order-edit-label" >
+                                                                        <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_FEE'); ?>
+                                                                    </div>
 
-                                            </td>
-                                        </tr>
+                                                                    <div class="span6 order-edit-value" >
+                                                                        <input type="text" id="fee" name="fee" placeholder="">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row-fluid">
+                                                                    <div class="span2 order-edit-label" >
+                                                                        <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_REMARK'); ?>
+                                                                    </div>
+
+                                                                    <div class="span6 order-edit-value" >
+                                                                        <textarea id="remark" name="remark" rows="6" placeholder=""></textarea>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <?php endif; ?>
+                                                </td>        
+                                                <td>
+
+                                                </td>
+                                            </tr>
+                                        <?php endif; ?>
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
@@ -201,9 +191,10 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
             </div>
         </div>
         <script>
-                
-            </script>
+
+        </script>
     </form>
+    <?php echo $this->getToolbar(); ?>
 
     <?php
 else:

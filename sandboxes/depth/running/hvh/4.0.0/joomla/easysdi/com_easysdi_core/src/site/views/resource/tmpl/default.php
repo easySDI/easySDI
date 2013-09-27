@@ -23,12 +23,6 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 <!-- This should probably be moved to the template CSS file -->
 <style>
 
-    .front-end-edit label {
-        margin-right: 10px;
-        display: block;
-        float: left;
-        width: 200px !important;
-    }
 
     #loader{
         -moz-border-radius: 8px;
@@ -120,7 +114,7 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
     <div id="loader" style="">
         <img id="loader_image"  src="administrator/components/com_easysdi_core/assets/images/loader.gif" alt="">
     </div>
-    <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+    <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
 
         <div class="row-fluid">
             <div >
