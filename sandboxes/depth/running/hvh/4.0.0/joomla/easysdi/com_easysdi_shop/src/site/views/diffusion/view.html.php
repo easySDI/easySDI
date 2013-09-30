@@ -96,7 +96,7 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
         }
 
         $pathway = $app->getPathway();
-        $pathway->addItem(JText::_("COM_EASYSDI_CORE_BREADCRUMBS_RESOURCES"), JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+        $pathway->addItem(JText::_("COM_EASYSDI_SHOP_BREADCRUMBS_RESOURCES"), JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
         $pathway->addItem(JText::_("COM_EASYSDI_SHOP_BREADCRUMBS_DIFFUSION"), '');
 
         $this->_prepareDocument();

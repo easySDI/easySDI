@@ -22,6 +22,8 @@ VALUES
 ('2', '9adc6d4e-262a-d6e4-e152-6de437ba80ed', 'myperimeter', '356', '2013-07-23 09:16:11','2', '1', 'My perimeter', '',1,1)
 ;
 
+ALTER TABLE `#__sdi_diffusion` ADD `hasdownload` TINYINT(1)  NOT NULL DEFAULT 0;
+ALTER TABLE `#__sdi_diffusion` ADD `hasextraction` TINYINT(1)  NOT NULL DEFAULT 0;
 ALTER TABLE `#__sdi_diffusion` ADD `restrictedperimeter` TINYINT(1)  NOT NULL DEFAULT 0;
 
 ALTER TABLE `#__sdi_order` MODIFY COLUMN `ordertype_id` INT(11) UNSIGNED NULL ;
