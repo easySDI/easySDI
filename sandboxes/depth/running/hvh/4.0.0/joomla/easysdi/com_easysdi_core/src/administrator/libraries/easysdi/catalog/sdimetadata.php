@@ -80,9 +80,9 @@ class sdiMetadata {
         
         $doc = new DOMDocument();
         $doc->loadXML($response);
-
+        
         if ($doc <> false and $doc->childNodes->item(0)->hasChildNodes()){
-
+            return $doc;
         }
         else if ($doc->childNodes->item(0)->nodeName == "ows:ExceptionReport") {
             $msg = $doc->childNodes->item(0)->nodeValue;
@@ -112,7 +112,7 @@ class sdiMetadata {
         
         
         
-        return $response;
+//        return $response;
     }
 
     /**
@@ -213,7 +213,19 @@ class sdiMetadata {
      * 
      */
     public function update($xml) {
+        $reponse = $this->CURLRequest('POST', $this->catalogurl, $xml);
+        $dom = new DOMDocument();
+        $dom->loadXML($reponse);
+        $totalUpdated = $dom->getElementsByTagNameNS('http://www.opengis.net/cat/csw/2.0.2', 'totalUpdated')->item(0);
+        
+        if(isset($totalUpdated)){
+            if($totalUpdated->nodeValue == 1){
         return true;
+    }
+    
+        }else{
+            return false;
+        }
     }
     
     /**
