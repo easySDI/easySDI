@@ -49,11 +49,18 @@ class FormGenerator {
      * @var JSession 
      */
     private $session;
+
     /**
      *
      * @var DomCswExtractor
      */
     private $dce;
+
+    /**
+     *
+     * @var DOMDocument 
+     */
+    private $dom;
 
     function __construct(DOMDocument $csw = NULL) {
         $this->db = JFactory::getDbo();
@@ -61,6 +68,7 @@ class FormGenerator {
         $this->ldao = new SdiLanguageDao();
         $this->csw = $csw;
         $this->dce = new DomCswExtractor($csw);
+        $this->dom = new DOMDocument('1.0', 'utf-8');
     }
 
     /**
@@ -87,7 +95,6 @@ class FormGenerator {
             $this->db->setQuery($query);
             $result = $this->db->loadObject();
 
-
             $rel = new SdiRelation(0, $result->class_name, SdiRelation::$CLASS);
             $rel->setNamespace(new SdiNamespace($result->ns_id, $result->ns_prefix, $result->ns_uri));
             $rel->setClass_child(new SdiClass($result->class_id, $result->class_name, $result->class_guid, $result->isrootclass, new SdiNamespace($result->ns_id, $result->ns_prefix, $result->ns_uri)));
@@ -98,7 +105,7 @@ class FormGenerator {
         $rel->setSerializedXpath($this->dce->getSerializedXpath($rel));
         $this->relations[$rel->getSerializedXpath()] = $rel;
         //$this->relations[$rel->id . '-0_' . $rel->getClass_child()->id . '-0'] = $rel;
-        
+
         $this->getChildTree($rel);
 
         if (!isset($_GET['uuid'])) {
@@ -283,10 +290,22 @@ class FormGenerator {
                         $newRel->getAttribut_child()->value = '';
                         $newRel->setIndex($rel->getIndex());
                         $newRel->setSerializedXpath($this->dce->getSerializedXpath($newRel));
+
+                        if ($rel->childtype_id == SdiRelation::$RELATIONTYPE) {
+                            $indexedAttr = clone $rel;
+                            $indexedAttr->childtype_id = SdiRelation::$ATTRIBUT;
+                            $indexedAttr->rendertype = SdiRelation::$LIST;
+                            $indexedAttr->setSerializedXpath($rel->getSerializedXpath() . '_search_0');
+                            $attribute = new SdiAttribute($rel->id . '_search_0', $rel->name . '_search_0');
+                            $indexedAttr->setAttribut_child($attribute);
+                            $indexedAttr->getAttribut_child()->setStereotype(new SdiStereotype(500, 'resource', null, null, null));
+
+                            $relArray[] = $indexedAttr;
+                        }
+
+                        $relArray[] = $newRel;
                         break;
                 }
-
-                $relArray[] = $newRel;
             }
         }
         return $relArray;
@@ -299,29 +318,40 @@ class FormGenerator {
      * @since 4.0
      */
     private function buildForm() {
-        $form = '<?xml version="1.0" encoding="utf-8"?>
-                    <form>';
-        $form .= $this->getHiddenFields();
+        $form = $this->dom->createElement('form');
+        $form->appendChild($this->getHiddenFields());
 
-        $form .= '<fieldset>';
+        $fieldset = $this->dom->createElement('fieldset');
 
         foreach ($this->getAttributes() as $attribute) {
-            $form .= $this->getFormField($attribute);
+            $fieldset->appendChild($this->getFormField($attribute));
         }
 
-        $form .= '</fieldset></form>';
-        return $form;
+        $form->appendChild($fieldset);
+        $this->dom->appendChild($form);
+        return $this->dom->saveXML();
     }
 
+    /**
+     * 
+     * @return DOMElement
+     */
     private function getHiddenFields() {
+        $fieldset = $this->dom->createElement('fieldset');
+        $id = $this->dom->createElement('field');
+        $id->setAttribute('name', 'id');
+        $id->setAttribute('type', 'hidden');
+        $id->setAttribute('filter', 'safehtml');
 
+        $guid = $this->dom->createElement('field');
+        $guid->setAttribute('name', 'guid');
+        $guid->setAttribute('type', 'hidden');
+        $guid->setAttribute('filter', 'safehtml');
 
-        $fields = '<fieldset name="hidden">
-                    <field name="id" type="hidden" filter="safehtml" />
-                    <field name="guid" type="hidden" filter="safehtml" />
-                </fieldset> ';
+        $fieldset->appendChild($id);
+        $fieldset->appendChild($guid);
 
-        return $fields;
+        return $fieldset;
     }
 
     /**
@@ -345,34 +375,37 @@ class FormGenerator {
      * Returns a field corresponding to RenderType Joomla format.
      * 
      * @param SdiRelation $rel Current node
-     * @return string Field corresponding to RenderType Joomla format.
+     * @return DOMElement Field corresponding to RenderType Joomla format.
      * @since 4.0
      */
     private function getFormField(SdiRelation $rel) {
+        $field = $this->dom->createElement('field');
+
         switch ($rel->rendertype) {
             case SdiRelation::$TEXTBOX:
-                return $this->getFormTextBoxField($rel);
+                return $this->getFormTextBoxField($rel, $field);
                 break;
             case SdiRelation::$TEXTAREA:
-                return $this->getFormTextAreaField($rel);
+                return $this->getFormTextAreaField($rel, $field);
                 break;
             case SdiRelation::$CHECKBOX:
-                return $this->getFormCheckboxField($rel);
+                return $this->getFormCheckboxField($rel, $field);
                 break;
             case SdiRelation::$RADIOBUTTON:
-                return $this->getFormRadioButtonField($rel);
+                return $this->getFormRadioButtonField($rel, $field);
                 break;
             case SdiRelation::$LIST:
-                return $this->getFormListField($rel);
+                return $this->getFormListField($rel, $field);
                 break;
             case SdiRelation::$DATE:
-                return $this->getFormDateField($rel);
+                return $this->getFormDateField($rel, $field);
                 break;
             case SdiRelation::$DATETIME:
-                return $this->getFormDateField($rel);
+                return $this->getFormDateField($rel, $field);
                 break;
 
             default:
+                return $field;
                 break;
         }
     }
@@ -381,33 +414,39 @@ class FormGenerator {
      * Create a field of type text.
      * 
      * @param SdiRelation $rel
-     * @return string
+     * @param DOMElement $field
+     * @return DOMElement
      * @since 4.0.0
      */
-    private function getFormTextBoxField(SdiRelation $rel) {
-        $field = '';
+    private function getFormTextBoxField(SdiRelation $rel, DOMElement $field) {
         $validator = $this->getValidatorClass($rel);
-        $maxlength = '';
-        $readonly = '';
+
+        $field->setAttribute('type', 'text');
+        $field->setAttribute('class', $validator);
+
         if ($rel->getAttribut_child()->length > 0) {
-            $maxlength .= 'maxlength = "' . $rel->getAttribut_child()->length . '"';
+            $field->setAttribute('maxlength', $rel->getAttribut_child()->length);
         }
         if ($rel->getAttribut_child()->issystem) {
-            $readonly = 'readonly = "true"';
+            $field->setAttribute('readonly', true);
         }
 
         if (is_array($rel->getAttribut_child()->value)) {
             $languages = $this->ldao->get();
             $values = $rel->getAttribut_child()->value;
             foreach ($languages as $key => $langValue) {
-                $value = '';
                 if (array_key_exists($key, $values)) {
-                    $value = $values[$key];
+                    $field->setAttribute('default', $values[$key]);
                 }
-                $field .= '<field name="' . $rel->getSerializedXpath() . '#' . $key . '" type="text" class="' . $validator . '" ' . $readonly . ' ' . $maxlength . ' default="' . $value . '" label="' . EText::_($rel->guid) . ' (' . $languages[$key]->value . ')" description="' . EText::_($rel->guid, 2) . '" ></field>';
+                $field->setAttribute('name', $rel->getSerializedXpath() . '#' . $key);
+                $field->setAttribute('label', EText::_($rel->guid) . ' (' . $languages[$key]->value . ')');
+                $field->setAttribute('description', EText::_($rel->guid, 2));
             }
         } else {
-            $field .= '<field name="' . $rel->getSerializedXpath() . '" type="text" class="' . $validator . '" ' . $readonly . ' ' . $maxlength . ' default="' . $rel->getAttribut_child()->value . '" label="' . EText::_($rel->guid) . '" description="' . EText::_($rel->guid, 2) . '" ></field>';
+            $field->setAttribute('default', $rel->getAttribut_child()->value);
+            $field->setAttribute('name', $rel->getSerializedXpath());
+            $field->setAttribute('label', EText::_($rel->guid));
+            $field->setAttribute('description', EText::_($rel->guid, 2));
         }
 
         return $field;
@@ -417,15 +456,20 @@ class FormGenerator {
      * Create a field of type textarea.
      * 
      * @param SdiRelation $rel
-     * @return string
+     * @param DOMElement $field
+     * @return DOMElement
      * @since 4.0.0
      */
-    private function getFormTextAreaField(SdiRelation $rel) {
-        $field = '';
+    private function getFormTextAreaField(SdiRelation $rel, DOMElement $field) {
         $validator = $this->getValidatorClass($rel);
-        $readonly = '';
+
+        $field->setAttribute('type', 'textarea');
+        $field->setAttribute('class', $validator);
+        $field->setAttribute('row', 10);
+        $field->setAttribute('cols', 5);
+
         if ($rel->getAttribut_child()->issystem) {
-            $readonly = 'readonly = "true"';
+            $field->setAttribute('readonly', 'true');
         }
         if (is_array($rel->getAttribut_child()->value)) {
             $languages = $this->ldao->get();
@@ -433,12 +477,21 @@ class FormGenerator {
             foreach ($languages as $key => $langValue) {
                 $value = '';
                 if (array_key_exists($key, $values)) {
-                    $value = $values[$key];
+                    $field->setAttribute('default', $values[$key]);
                 }
-                $field .= '<field name="' . $rel->getSerializedXpath() . '#' . $key . '" type="textarea" class="' . $validator . '" ' . $readonly . ' default="' . $value . '" label="' . EText::_($rel->guid) . ' (' . $languages[$key]->value . ')" description="' . EText::_($rel->guid, 2) . '" rows="10"  cols="5"></field>';
+                $field->setAttribute('name', $rel->getSerializedXpath() . '#' . $key);
+                $field->setAttribute('label', EText::_($rel->guid) . ' (' . $languages[$key]->value . ')');
+                $field->setAttribute('description', EText::_($rel->guid, 2));
+
+                //$field .= '<field name="' . $rel->getSerializedXpath() . '#' . $key . '" type="textarea" class="' . $validator . '" ' . $readonly . ' default="' . $value . '" label="' . EText::_($rel->guid) . ' (' . $languages[$key]->value . ')" description="' . EText::_($rel->guid, 2) . '" rows="10"  cols="5"></field>';
             }
         } else {
-            $field .= '<field name="' . $rel->getSerializedXpath() . '" type="textarea" class="' . $validator . '" ' . $readonly . '  default="' . $rel->getAttribut_child()->value . '" label="' . EText::_($rel->guid) . '" description="' . EText::_($rel->guid, 2) . '" rows="10"  cols="5"></field>';
+            $field->setAttribute('default', $rel->getAttribut_child()->value);
+            $field->setAttribute('name', $rel->getSerializedXpath());
+            $field->setAttribute('label', EText::_($rel->guid));
+            $field->setAttribute('description', EText::_($rel->guid, 2));
+
+            //$field .= '<field name="' . $rel->getSerializedXpath() . '" type="textarea" class="' . $validator . '" ' . $readonly . '  default="' . $rel->getAttribut_child()->value . '" label="' . EText::_($rel->guid) . '" description="' . EText::_($rel->guid, 2) . '" rows="10"  cols="5"></field>';
         }
 
         return $field;
@@ -451,14 +504,19 @@ class FormGenerator {
      * @return string
      * @since 4.0.0
      */
-    private function getFormCheckboxField(SdiRelation $rel) {
-        $options = '';
-        foreach ($this->getAttributValues($rel) as $value) {
-            $options .= '<option value="' . $value->value . '">' . EText::_($value->guid) . '</option>';
+    private function getFormCheckboxField(SdiRelation $rel, DOMElement $field) {
+        $field->setAttribute('type', 'checkboxes');
+        $field->setAttribute('name', $rel->getSerializedXpath());
+        if ($rel->getAttribut_child()->issystem) {
+            $field->setAttribute('readonly', true);
         }
-        $field = '<field name="' . $rel->getSerializedXpath() . '" readonly = "' . $rel->getAttribut_child()->issystem . '" type="checkboxes" default="" >';
-        $field .= $options;
-        $field .= '</field>';
+
+        foreach ($this->getAttributValues($rel) as $value) {
+            $option = $this->dom->createElement('option', EText::_($value->guid));
+            $option->setAttribute('value', $value->value);
+
+            $field->appendChild($option);
+        }
 
         return $field;
     }
@@ -470,14 +528,21 @@ class FormGenerator {
      * @return string
      * @since 4.0.0
      */
-    private function getFormRadioButtonField(SdiRelation $rel) {
-        $options = '';
-        foreach ($this->getAttributValues($rel) as $value) {
-            $options .= '<option value="' . $value->value . '">' . EText::_($value->guid) . '</option>';
+    private function getFormRadioButtonField(SdiRelation $rel, DOMElement $field) {
+        $field->setAttribute('type', 'radio');
+        $field->setAttribute('name', $rel->getSerializedXpath());
+        if ($rel->getAttribut_child()->issystem) {
+            $field->setAttribute('readonly', true);
         }
-        $field = '<field name="' . $rel->getSerializedXpath() . '" type="radio" readonly = "' . $rel->getAttribut_child()->issystem . '" default="" label="' . EText::_($rel->guid) . '" description="' . EText::_($rel->guid, 2) . '">';
-        $field .= $options;
-        $field .= '</field>';
+        $field->setAttribute('label', EText::_($rel->guid));
+        $field->setAttribute('description', EText::_($rel->guid, 2));
+
+        foreach ($this->getAttributValues($rel) as $value) {
+            $option = $this->dom->createElement('option', EText::_($value->guid));
+            $option->setAttribute('value', $value->value);
+
+            $field->appendChild($option);
+        }
 
         return $field;
     }
@@ -489,37 +554,52 @@ class FormGenerator {
      * @return string
      * @since 4.0.0
      */
-    private function getFormListField(SdiRelation $rel) {
-        $options = '';
-        $field = '';
-        $readonly = '';
-        if ($rel->getAttribut_child()->issystem) {
-            $readonly = 'readonly = "true"';
-        }
-
+    private function getFormListField(SdiRelation $rel, DOMElement $field) {
         $validator = $this->getValidatorClass($rel);
 
-        foreach ($this->getAttributOptions($rel) as $option) {
+        $field->setAttribute('name', $rel->getSerializedXpath());
+        $field->setAttribute('class', $validator);
+        if ($rel->getAttribut_child()->issystem) {
+            $field->setAttribute('readonly', true);
+        }
+        $field->setAttribute('default', $rel->getAttribut_child()->value);
+        $field->setAttribute('description', EText::_($rel->guid, 2));
+
+        foreach ($this->getAttributOptions($rel) as $opt) {
             switch ($rel->getAttribut_child()->getStereotype()->value) {
                 case 'localechoice':
-                    $field = '<field name="' . $rel->getSerializedXpath() . '" type="groupedlist" class="' . $validator . '" ' . $readonly . ' default="' . $rel->getAttribut_child()->value . '" label="' . EText::_($rel->guid) . '" description="' . EText::_($rel->guid, 2) . '">';
-                    $options .= '<group label="' . EText::_($option->guid) . '">';
-                    $options .= '<option value="' . $option->guid . '">' . EText::_($option->guid, 2) . '</option>';
-                    $options .= '</group>';
+                    $group = $this->dom->createElement('group');
+                    $group->setAttribute('label', EText::_($opt->guid));
+
+                    $option = $this->dom->createElement('option', EText::_($opt->guid, 2));
+                    $option->setAttribute('value', $opt->guid);
+
+                    $field->setAttribute('type', 'groupedlist');
+                    $field->setAttribute('label', EText::_($rel->guid));
+
+                    $group->appendChild($option);
+                    $field->appendChild($group);
                     break;
                 case 'resource':
-                    $field = '<field name="' . $rel->getSerializedXpath() . '" type="list" class="' . $validator . '" ' . $readonly . ' default="' . $rel->getAttribut_child()->value . '" label="Name" description="">';
-                    $options .= '<option value="' . $option->guid . '">' . $option->name . '</option>';
+                    $field->setAttribute('type', 'list');
+                    $field->setAttribute('label', 'Name');
+
+                    $option = $this->dom->createElement('option', $opt->name);
+                    $option->setAttribute('value', $opt->guid);
+
+                    $field->appendChild($option);
                     break;
                 default:
-                    $field = '<field name="' . $rel->getSerializedXpath() . '" type="list" class="' . $validator . '" ' . $readonly . ' default="' . $rel->getAttribut_child()->value . '" label="' . EText::_($rel->guid) . '" description="' . EText::_($rel->guid, 2) . '">';
-                    $options .= '<option value="' . $option->value . '">' . EText::_($option->guid) . '</option>';
+                    $field->setAttribute('type', 'list');
+                    $field->setAttribute('label', EText::_($rel->guid));
+
+                    $option = $this->dom->createElement('option', EText::_($opt->guid));
+                    $option->setAttribute('value', $opt->value);
+
+                    $field->appendChild($option);
                     break;
             }
         }
-
-        $field .= $options;
-        $field .= '</field>';
 
         return $field;
     }
@@ -531,15 +611,23 @@ class FormGenerator {
      * @return string
      * @since 4.0.0
      */
-    private function getFormDateField(SdiRelation $rel) {
-        $value = '';
+    private function getFormDateField(SdiRelation $rel, DOMElement $field) {
         $validator = $this->getValidatorClass($rel);
-
+        
+        $field->setAttribute('name', $rel->getSerializedXpath());
+        $field->setAttribute('type', 'calendar');
+        $field->setAttribute('class', $validator);
+        $field->setAttribute('format', '%Y-%m-%d');
+        $field->setAttribute('label', EText::_($rel->guid));
+        $field->setAttribute('description', EText::_($rel->guid, 2));
         if ($rel->getAttribut_child()->value != '') {
-            $value = substr($rel->getAttribut_child()->value, 0, 10);
+            $field->setAttribute('default', substr($rel->getAttribut_child()->value, 0, 10));
         }
-        $field = '<field name="' . $rel->getSerializedXpath() . '" type="calendar" class="' . $validator . '" readonly = "' . $rel->getAttribut_child()->issystem . '" default="' . $value . '" format="%Y-%m-%d" label="' . EText::_($rel->guid) . '" description="' . EText::_($rel->guid, 2) . '"  />';
-
+        
+        if($rel->getAttribut_child()->issystem){
+            $field->setAttribute('readonly', true);
+        }
+        
         return $field;
     }
 
