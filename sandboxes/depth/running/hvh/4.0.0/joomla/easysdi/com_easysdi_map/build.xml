@@ -9,9 +9,11 @@
     <available file="${joomla.administrator.components.dir}/${map.component.name}" type="dir" property="map.admin.exist"/>
     <available file="${joomla.site.components.dir}/${map.component.name}" type="dir" property="map.site.exist"/>
     
-    <target name="package" depends="copy-administrator, copy-site, write-xml, build-info, zip-package" description="Main target" />
+    <target name="package" depends="write-xml, build-info, zip-package" description="Main target" />
+    <target name="sync-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-package" description="Main target" />
     <target name="dev-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-dev-package" description="Main target" />
-    <target name="sync" depends="copy-administrator, write-xml, copy-site" description="Main target" />
+    <target name="sync" depends="copy-administrator, copy-site" description="Main target" />
+
     <!-- 
         Create the administrator folder if necessary.
         Empty the administrator folder, except svn files.

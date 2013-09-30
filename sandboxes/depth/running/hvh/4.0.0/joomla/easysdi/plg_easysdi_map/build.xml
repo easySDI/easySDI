@@ -10,8 +10,9 @@
     
     <available file="${joomla.plugin.path}/${joomla.map.plugin.path}" type="dir" property="map.plg.exist"/>
     
-    <target name="package" depends="plg_copy, write-xml, plg_zip" description="Main target" if="${map.plg.exist}"/>
-    <target name="sync" depends="plg_copy, write-xml" description="Main target" />
+    <target name="package" depends="write-xml, plg_zip" description="Main target"/>
+    <target name="sync-package" depends="plg_copy, write-xml, plg_zip" description="Main target" if="${map.plg.exist}"/>
+    <target name="sync" depends="plg_copy" description="Main target" />
     
     <target name="plg_copy">
         

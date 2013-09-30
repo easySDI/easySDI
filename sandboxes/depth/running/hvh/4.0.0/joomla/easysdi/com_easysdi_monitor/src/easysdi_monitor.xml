@@ -31,7 +31,7 @@
     <folder>helpers</folder>
   </files>
   <languages folder="site">
-    <language tag="en-GB">language/en-GB.com_easysdi_monitor.ini</language>
+    <language tag="en-GB">language/en-GB/en-GB.com_easysdi_monitor.ini</language>
   </languages>
   <administration>
     <menu img="components/com_easysdi_monitor/assets/images/s_com_easysdi_monitor.png">COM_EASYSDI_MONITOR</menu>
@@ -53,8 +53,8 @@
       <folder>views</folder>
     </files>
     <languages folder="administrator">
-      <language tag="en-GB">language/en-GB.com_easysdi_monitor.ini</language>
-      <language tag="en-GB">language/en-GB.com_easysdi_monitor.sys.ini</language>
+      <language tag="en-GB">language/en-GB/en-GB.com_easysdi_monitor.ini</language>
+      <language tag="en-GB">language/en-GB/en-GB.com_easysdi_monitor.sys.ini</language>
     </languages>
   </administration>
 </extension>

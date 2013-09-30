@@ -9,9 +9,10 @@
     <available file="${joomla.administrator.components.dir}/${catalog.component.name}" type="dir" property="catalog.admin.exist"/>
     <available file="${joomla.site.components.dir}/${catalog.component.name}" type="dir" property="catalog.site.exist"/>
     
-    <target name="package" depends="copy-administrator, copy-site, write-xml, build-info, zip-package" description="Main target" />
+    <target name="package" depends="write-xml, build-info, zip-package" description="Main target" />
+    <target name="sync-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-package" description="Main target" />
     <target name="dev-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-dev-package" description="Main target" />
-    <target name="sync" depends="copy-administrator, write-xml, copy-site" description="Main target" />
+    <target name="sync" depends="copy-administrator, copy-site" description="Main target" />
     <!-- 
         Create the administrator folder if necessary.
         Empty the administrator folder, except svn files.
@@ -97,6 +98,7 @@
                     <folder>models</folder>
                     <folder>controllers</folder>
                     <folder>helpers</folder>
+                    <folder>libraries</folder>
                 </files>
                 <languages folder="site">
                     <language tag="en-GB">language/en-GB/en-GB.com_easysdi_catalog.ini</language>
@@ -116,6 +118,8 @@
                         <folder>sql</folder>
                         <folder>tables</folder>
                         <folder>views</folder>
+                        <folder>assets</folder>
+                            
                     </files>
                     <languages folder="administrator">
                         <language tag="en-GB">language/en-GB/en-GB.com_easysdi_catalog.ini</language>

@@ -9,7 +9,8 @@
     <available file="${joomla.administrator.components.dir}/${core.component.name}" type="dir" property="core.admin.exist"/>
     <available file="${joomla.site.components.dir}/${core.component.name}" type="dir" property="core.site.exist"/>
     
-    <target name="package" depends="copy-administrator, copy-site, geoext-concat, geoext-minify, gxp-concat, gxp-minify, sdi-concat, sdi-minify, write-xml, build-info, zip-package" description="Main target" />
+    <target name="package" depends="geoext-concat, geoext-minify, gxp-concat, gxp-minify, sdi-concat, sdi-minify, write-xml, build-info, zip-package" description="Main target" />
+    <target name="sync-package" depends="copy-administrator, copy-site, geoext-concat, geoext-minify, gxp-concat, gxp-minify, sdi-concat, sdi-minify, write-xml, build-info, zip-package" description="Main target" />
     <target name="dev-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-dev-package" description="Main target" />
     <target name="sync" depends="copy-administrator, copy-site" description="Main target" />
     <!-- 

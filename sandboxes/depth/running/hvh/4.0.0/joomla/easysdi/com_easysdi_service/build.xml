@@ -9,9 +9,10 @@
     <available file="${joomla.administrator.components.dir}/${service.component.name}" type="dir" property="service.admin.exist"/>
     <available file="${joomla.site.components.dir}/${service.component.name}" type="dir" property="service.site.exist"/>
     
-    <target name="package" depends="copy-administrator, copy-site, write-xml, build-info, zip-package" description="Main target" />
+    <target name="package" depends="write-xml, build-info, zip-package" description="Main target" />
+    <target name="sync-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-package" description="Main target" />
     <target name="dev-package" depends="copy-administrator, copy-site, write-xml, build-info, zip-dev-package" description="Main target" />
-    <target name="sync" depends="copy-administrator, write-xml, copy-site" description="Main target" />
+    <target name="sync" depends="copy-administrator, copy-site" description="Main target" />
     <!-- 
         Create the administrator folder if necessary.
         Empty the administrator folder, except svn files.
@@ -100,8 +101,8 @@
                     <folder>helpers</folder>
                 </files>
                 <languages folder="site">
-                    <language tag="en-GB">language/en-GB.com_easysdi_service.ini</language>
-                    <language tag="fr-FR">language/fr-FR.com_easysdi_service.ini</language>
+                    <language tag="en-GB">language/en-GB/en-GB.com_easysdi_service.ini</language>
+                    <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_service.ini</language>
                 </languages>
                 <administration>
                     <files folder="administrator">
