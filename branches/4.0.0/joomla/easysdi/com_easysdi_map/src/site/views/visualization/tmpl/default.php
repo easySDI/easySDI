@@ -14,60 +14,11 @@ JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('formbehavior.chosen', 'select');
 
-//Load admin language file
-$lang = JFactory::getLanguage();
-$lang->load('com_easysdi_map', JPATH_ADMINISTRATOR);
+
 $document = JFactory::getDocument();
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/view/view.js')
 ?>
 
-<!-- Styling for making front end forms look OK -->
-<!-- This should probably be moved to the template CSS file -->
-<style>
-    .front-end-edit ul {
-        padding: 0 !important;
-    }
-    .front-end-edit li {
-        list-style: none;
-        margin-bottom: 6px !important;
-    }
-    .front-end-edit label {
-        margin-right: 10px;
-        display: block;
-        float: left;
-        width: 200px !important;
-    }
-    .front-end-edit .radio label {
-        float: none;
-    }
-    .front-end-edit .readonly {
-        border: none !important;
-        color: #666;
-    }    
-    .front-end-edit #editor-xtd-buttons {
-        height: 50px;
-        width: 600px;
-        float: left;
-    }
-    .front-end-edit .toggle-editor {
-        height: 50px;
-        width: 120px;
-        float: right;
-    }
-
-    #jform_rules-lbl{
-        display:none;
-    }
-
-    #access-rules a:hover{
-        background:#f5f5f5 url('../images/slider_minus.png') right  top no-repeat;
-        color: #444;
-    }
-
-    fieldset.radio label{
-        width: 50px !important;
-    }
-</style>
 
 <script type="text/javascript">
     js = jQuery.noConflict();
@@ -104,7 +55,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         <h1><?php echo JText::_('COM_EASYSDI_MAP_TITLE_NEW_VISUALIZATION'); ?></h1>
     <?php endif; ?>
 
-    <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_map&task=visualization.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+    <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_map&task=visualization.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
 
         <div class="row-fluid">
             <div >
@@ -133,15 +84,6 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                             <?php endforeach; ?>
                         </fieldset>
 
-                        <fieldset id ="fieldset_preview">
-                            <legend><?php echo JText::_('COM_EASYSDI_MAP_FORM_FIELDSET_LEGEND_PREVIEW'); ?></legend>
-                            <?php foreach ($this->form->getFieldset('preview') as $field): ?>
-                                <div class="control-group" id="<?php echo $field->fieldname; ?>">
-                                    <div class="control-label"><?php echo $field->label; ?></div>
-                                    <div class="controls"><?php echo $field->input; ?></div>
-                                </div>
-                            <?php endforeach; ?>
-                        </fieldset>
                     </div>
 
                     <div class="tab-pane" id="publishing">

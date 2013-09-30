@@ -94,8 +94,8 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__sdi_accessscope` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `entity_guid` VARCHAR(36)  NOT NULL ,
-`organism_id` INT(11) UNSIGNED  NOT NULL ,
-`user_id` INT(11) UNSIGNED  NOT NULL ,
+`organism_id` INT(11) UNSIGNED   ,
+`user_id` INT(11) UNSIGNED   ,
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_accessscope_fk1` (`organism_id` ASC) ,
   INDEX `#__sdi_accessscope_fk2` (`user_id` ASC) ,

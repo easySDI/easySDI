@@ -61,6 +61,7 @@ class com_easysdi_coreInstallerScript {
         if ($type == 'install') {
             require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_core.php';
             $params['infrastructureID'] = Easysdi_coreHelper::uuid();
+            $this->setParams($params);
         }
     }
 

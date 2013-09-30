@@ -8,99 +8,148 @@
  */
 // no direct access
 defined('_JEXEC') or die;
+
+JHTML::_('behavior.modal');
+
+        const property_list = 1;
+        const property_multiplelist = 2;
+        const property_checkbox = 3;
+        const property_text = 4;
+        const property_textarea = 5;
+        const property_message = 6;
+
+$db = JFactory::getDbo();
+$db->setQuery('SELECT  d.id as diffusion, pv.id as propertyvalue, p.id as property, p.mandatory as propertymandatory, p.propertytype_id as propertytype FROM #__sdi_diffusion d 
+    INNER JOIN #__sdi_diffusion_propertyvalue dpv ON dpv.diffusion_id = d.id
+    INNER JOIN #__sdi_propertyvalue pv ON pv.id = dpv.propertyvalue_id
+    INNER JOIN #__sdi_property p ON p.id = pv.property_id');
+
+$items = $db->loadObjectList();
 ?>
+<script>
+    var request;
 
-<div class="items">
-    <ul class="items_list">
-<?php $show = false; ?>
-        <?php foreach ($this->items as $item) : ?>
+    function addtobasket() {
 
-            
-				<?php
-					if($item->state == 1 || ($item->state == 0 && JFactory::getUser()->authorise('core.edit.own',' com_easysdi_shop.order.'.$item->id))):
-						$show = true;
-						?>
-							<li>
-								<a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=order&id=' . (int)$item->id); ?>"><?php echo $item->guid; ?></a>
-								<?php
-									if(JFactory::getUser()->authorise('core.edit.state','com_easysdi_shop.order.'.$item->id)):
-									?>
-										<a href="javascript:document.getElementById('form-order-state-<?php echo $item->id; ?>').submit()"><?php if($item->state == 1): echo JText::_("COM_EASYSDI_SHOP_UNPUBLISH_ITEM"); else: echo JText::_("COM_EASYSDI_SHOP_PUBLISH_ITEM"); endif; ?></a>
-										<form id="form-order-state-<?php echo $item->id ?>" style="display:inline" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.save'); ?>" method="post" class="form-validate" enctype="multipart/form-data">
-											<input type="hidden" name="jform[id]" value="<?php echo $item->id; ?>" />
-											<input type="hidden" name="jform[guid]" value="<?php echo $item->guid; ?>" />
-											<input type="hidden" name="jform[alias]" value="<?php echo $item->alias; ?>" />
-											<input type="hidden" name="jform[created]" value="<?php echo $item->created; ?>" />
-											<input type="hidden" name="jform[modified_by]" value="<?php echo $item->modified_by; ?>" />
-											<input type="hidden" name="jform[modified]" value="<?php echo $item->modified; ?>" />
-											<input type="hidden" name="jform[ordering]" value="<?php echo $item->ordering; ?>" />
-											<input type="hidden" name="jform[state]" value="<?php echo (int)!((int)$item->state); ?>" />
-											<input type="hidden" name="jform[checked_out]" value="<?php echo $item->checked_out; ?>" />
-											<input type="hidden" name="jform[checked_out_time]" value="<?php echo $item->checked_out_time; ?>" />
-											<input type="hidden" name="jform[name]" value="<?php echo $item->name; ?>" />
-											<input type="hidden" name="jform[access]" value="<?php echo $item->access; ?>" />
-											<input type="hidden" name="jform[asset_id]" value="<?php echo $item->asset_id; ?>" />
-											<input type="hidden" name="jform[ordertype_id]" value="<?php echo $item->ordertype_id; ?>" />
-											<input type="hidden" name="jform[orderstate_id]" value="<?php echo $item->orderstate_id; ?>" />
-											<input type="hidden" name="jform[user_id]" value="<?php echo $item->user_id; ?>" />
-											<input type="hidden" name="jform[thirdparty_id]" value="<?php echo $item->thirdparty_id; ?>" />
-											<input type="hidden" name="jform[buffer]" value="<?php echo $item->buffer; ?>" />
-											<input type="hidden" name="jform[surface]" value="<?php echo $item->surface; ?>" />
-											<input type="hidden" name="jform[remark]" value="<?php echo $item->remark; ?>" />
-											<input type="hidden" name="jform[sent]" value="<?php echo $item->sent; ?>" />
-											<input type="hidden" name="jform[completed]" value="<?php echo $item->completed; ?>" />
-											<input type="hidden" name="option" value="com_easysdi_shop" />
-											<input type="hidden" name="task" value="order.save" />
-											<?php echo JHtml::_('form.token'); ?>
-										</form>
-									<?php
-									endif;
-									if(JFactory::getUser()->authorise('core.delete','com_easysdi_shop.order.'.$item->id)):
-									?>
-										<a href="javascript:document.getElementById('form-order-delete-<?php echo $item->id; ?>').submit()"><?php echo JText::_("COM_EASYSDI_SHOP_DELETE_ITEM"); ?></a>
-										<form id="form-order-delete-<?php echo $item->id; ?>" style="display:inline" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.remove'); ?>" method="post" class="form-validate" enctype="multipart/form-data">
-											<input type="hidden" name="jform[id]" value="<?php echo $item->id; ?>" />
-											<input type="hidden" name="jform[guid]" value="<?php echo $item->guid; ?>" />
-											<input type="hidden" name="jform[alias]" value="<?php echo $item->alias; ?>" />
-											<input type="hidden" name="jform[created_by]" value="<?php echo $item->created_by; ?>" />
-											<input type="hidden" name="jform[created]" value="<?php echo $item->created; ?>" />
-											<input type="hidden" name="jform[modified_by]" value="<?php echo $item->modified_by; ?>" />
-											<input type="hidden" name="jform[modified]" value="<?php echo $item->modified; ?>" />
-											<input type="hidden" name="jform[ordering]" value="<?php echo $item->ordering; ?>" />
-											<input type="hidden" name="jform[state]" value="<?php echo $item->state; ?>" />
-											<input type="hidden" name="jform[checked_out]" value="<?php echo $item->checked_out; ?>" />
-											<input type="hidden" name="jform[checked_out_time]" value="<?php echo $item->checked_out_time; ?>" />
-											<input type="hidden" name="jform[name]" value="<?php echo $item->name; ?>" />
-											<input type="hidden" name="jform[access]" value="<?php echo $item->access; ?>" />
-											<input type="hidden" name="jform[asset_id]" value="<?php echo $item->asset_id; ?>" />
-											<input type="hidden" name="jform[ordertype_id]" value="<?php echo $item->ordertype_id; ?>" />
-											<input type="hidden" name="jform[orderstate_id]" value="<?php echo $item->orderstate_id; ?>" />
-											<input type="hidden" name="jform[user_id]" value="<?php echo $item->user_id; ?>" />
-											<input type="hidden" name="jform[thirdparty_id]" value="<?php echo $item->thirdparty_id; ?>" />
-											<input type="hidden" name="jform[buffer]" value="<?php echo $item->buffer; ?>" />
-											<input type="hidden" name="jform[surface]" value="<?php echo $item->surface; ?>" />
-											<input type="hidden" name="jform[remark]" value="<?php echo $item->remark; ?>" />
-											<input type="hidden" name="jform[sent]" value="<?php echo $item->sent; ?>" />
-											<input type="hidden" name="jform[completed]" value="<?php echo $item->completed; ?>" />
-											<input type="hidden" name="option" value="com_easysdi_shop" />
-											<input type="hidden" name="task" value="order.remove" />
-											<?php echo JHtml::_('form.token'); ?>
-										</form>
-									<?php
-									endif;
-								?>
-							</li>
-						<?php endif; ?>
+        initRequest ();
 
-<?php endforeach; ?>
-        <?php
-        if (!$show):
-            echo JText::_('COM_EASYSDI_SHOP_NO_ITEMS');
-        endif;
-        ?>
-    </ul>
+        var properties = {"id": 6, "properties": [{"id": 2, "values": [{"id": 2, "value": "valeur-1"}, {"id": 3, "value": "valeur-2"}]}, {"id": 3, "values": [{"id": 5, "value": "text-simpe"}]}, {"id": 4, "values": [{"id": 8, "value": "check-box-3"}]}]};
+        var query = "index.php?option=com_easysdi_shop&task=addToBasket&item=" + JSON.stringify(properties);
+
+        jQuery("#progress").css('visibility', 'visible');
+        request.onreadystatechange = updateBasketContent;
+        request.open("GET", query, true);
+        request.send(null);
+    }
+
+    function addtobasket2() {
+
+       initRequest ();
+
+        var properties = {"id": 10, "properties": [{"id": 2, "values": [{"id": 2, "value": "valeur-1"}]}, {"id": 3, "values": [{"id": 5, "value": "text-simpe"}]}, {"id": 4, "values": [{"id": 8, "value": "check-box-3"}]}]};
+        var query = "index.php?option=com_easysdi_shop&task=addToBasket&item=" + JSON.stringify(properties);
+
+        jQuery("#progress").css('visibility', 'visible');
+        request.onreadystatechange = updateBasketContent;
+        request.open("GET", query, true);
+        request.send(null);
+    }
+
+</script>
+<div>
+    <button class="btn btn-success btn-large" onclick="addtobasket();">Add to basket</button>
 </div>
-<?php if ($show): ?>
+
+<div>
+    <button class="btn btn-success btn-large" onclick="addtobasket2();">Add to basket</button>
+</div>
+
+<a href="<?php echo JRoute::_('index.php?option=com_easysdi_map&view=preview') . '&id=6'; ?>" class="modal btn btn-success btn-mini pull-right"><i class="icon-eye"></i></a>
+
+<?php
+if (empty($this->items)):
+    echo JText::_('COM_EASYSDI_SHOP_NO_ITEMS');
+else:
+?>
+    <div class="well">
+        <div class="items">                      
+            <table class="table table-striped">
+                
+                    <thead>
+                    <tr>
+                        <th><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_NAME') ?></th>
+                        <th></th>
+                        <th><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_CREATED') ?></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    
+                        <tbody>
+                    <?php foreach ($this->items as $item) : ?>
+                        <tr class="order-line order-line-new">
+                            <td><i><a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.edit&id=' . $item->id); ?>"><?php echo $item->name; ?></a></i></td>
+                            <td class="ordertype">
+                                <?php
+                                if($item->ordertype_id == 1):
+                                    $classicontype = 'icon-cart';
+                                elseif ($item->ordertype_id == 2):
+                                    $classicontype = 'icon-lamp';
+                                else:
+                                    $classicontype = 'icon-edit2';
+                                endif;
+                                ?>
+                                <i class="<?php echo $classicontype; ?>"></i> <?php echo JText::_($item->ordertype); ?>
+                            </td>
+                            <td class="ordercreated"><?php echo $item->created; ?></td>
+                            <td class="orderstate">
+                                <?php if ($item->ordertype_id != 3 ):?>
+                                <?php
+                                if($item->orderstate_id == 1):
+                                    $classlabel = '';
+                                elseif ($item->orderstate_id == 2):
+                                    $classlabel = '';
+                                elseif ($item->orderstate_id == 3):
+                                    $classlabel = 'label-success';
+                                elseif ($item->orderstate_id == 4):
+                                    $classlabel = 'label-warning';
+                                elseif ($item->orderstate_id == 5):
+                                    $classlabel = 'label-info';
+                                elseif ($item->orderstate_id == 6):
+                                    $classlabel = 'label-inverse';
+                                endif;
+                                ?>
+                                <span class="label <?php echo $classlabel; ?> "><?php echo JText::_($item->orderstate); ?></span>
+                                <?php endif; ?>
+                            </td>
+                            <td >
+                                <?php if ($item->orderstate_id == 5 || $item->orderstate_id == 3 ):?>
+                                 <i class="icon-flag-2"></i>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <div class="btn-group pull-right">
+                                    <a class="btn btn-success btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+                                        <?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_ACTIONS'); ?>
+                                        <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <?php if ($item->ordertype_id == 3 ):?>
+                                            <li>
+                                                <a  href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=basket.load&id=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_LOAD_DRAFT_INTO_BASKET'); ?></a>
+                                            </li>
+                                        <?php endif; ?>
+                                    </ul>                                    
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <div class="pagination">
         <p class="counter">
             <?php echo $this->pagination->getPagesCounter(); ?>
@@ -108,7 +157,3 @@ defined('_JEXEC') or die;
         <?php echo $this->pagination->getPagesLinks(); ?>
     </div>
 <?php endif; ?>
-
-
-									<?php if(JFactory::getUser()->authorise('core.create','com_easysdi_shop')): ?><a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.edit&id=0'); ?>"><?php echo JText::_("COM_EASYSDI_SHOP_ADD_ITEM"); ?></a>
-	<?php endif; ?>

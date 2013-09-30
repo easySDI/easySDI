@@ -2,21 +2,21 @@
 <form>
     <fieldset name="details">
         <field 	name="name" 
-                        type="text" 
-                        size="255" 
-                        class="inputbox"
-                        label="COM_EASYSDI_MAP_FORM_LBL_MAP_NAME"
-                        description="COM_EASYSDI_MAP_FORM_DESC_MAP_NAME" 
-                        required="true" 
-                        filter="safehtml" /> 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_NAME"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_NAME" 
+                required="true" 
+                filter="safehtml" /> 
                 
         <field 	name="alias" 
-                        type="text" 
-                        size="20" 
-                        class="inputbox"
-                        label="COM_EASYSDI_MAP_FORM_LBL_MAP_ALIAS"
-                        description="COM_EASYSDI_MAP_FORM_DESC_MAP_ALIAS" 
-                        filter="safehtml" />
+                type="text" 
+                size="20" 
+                class="inputbox"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_ALIAS"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_ALIAS" 
+                filter="safehtml" />
         
         <field 	name="url" 
                 readonly="true"
@@ -51,26 +51,26 @@
         />
 
         <field 	name="default" 
-                        type="sql" 
-                        class="inputbox"
-                        size="1"
-                        label="COM_EASYSDI_MAP_FORM_LBL_LAYER_DEFAULT_ID"
-                        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_DEFAULT_ID" 
-                        multiple ="false"
-                        translate="true" 
-                        required="false"
-                        query="SELECT null AS id, '- Please select -' AS name UNION SELECT id, name FROM #__sdi_layergroup WHERE state=1" key_field="id" value_field="name"
+                type="sql" 
+                class="inputbox"
+                size="1"
+                label="COM_EASYSDI_MAP_FORM_LBL_LAYER_DEFAULT_ID"
+                description="COM_EASYSDI_MAP_FORM_DESC_LAYER_DEFAULT_ID" 
+                multiple ="false"
+                translate="true" 
+                required="false"
+                query="SELECT null AS id, '- Please select -' AS name UNION SELECT id, name FROM #__sdi_layergroup WHERE state=1" key_field="id" value_field="name"
         />
                  
         <field 	name="services" 
-                        type="ServicegroupedList" 
-                        onchange=""
-                        multiple ="true"
-                        class="input-xxlarge"
-                        size="10"
-                        label="COM_EASYSDI_MAP_FORM_LBL_LAYER_SERVICE_ID"
-                        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_SERVICE_ID" 
-                        required="true"
+                type="ServicegroupedList" 
+                onchange=""
+                multiple ="true"
+                class="input-xxlarge"
+                size="10"
+                label="COM_EASYSDI_MAP_FORM_LBL_LAYER_SERVICE_ID"
+                description="COM_EASYSDI_MAP_FORM_DESC_LAYER_SERVICE_ID" 
+                required="true"
         />
                  
         <field 	name="defaultserviceconnector_id" 
@@ -106,15 +106,6 @@
                 query="SELECT null AS id, '- Please select -' AS name UNION SELECT id, name FROM #__sdi_sys_unit" key_field="id" value_field="name"
         /> 
 
-        <field 	name="centercoordinates" 
-                type="text" 
-                size="255" 
-                class="inputbox"
-                label="COM_EASYSDI_MAP_FORM_LBL_MAP_CENTERCOORDINATES"
-                description="COM_EASYSDI_MAP_FORM_DESC_MAP_CENTERCOORDINATES" 
-                required="true"
-                filter="safehtml" /> 
-
         <field 	name="maxresolution" 
                 type="text" 
                 size="255" class="inputbox"
@@ -126,10 +117,19 @@
         <field 	name="maxextent" 
                 type="text" 
                 size="255" 
-                class="inputbox"
+                class="input-xxlarge"
                 label="COM_EASYSDI_MAP_FORM_LBL_MAP_MAXEXTENT"
                 description="COM_EASYSDI_MAP_FORM_DESC_MAP_MAXEXTENT" 
                 required="true"
+                filter="safehtml" />
+        
+        <field 	name="restrictedextent" 
+                type="text" 
+                size="255" 
+                class="input-xxlarge"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_RESTRICTEDEXTENT"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_RESTRICTEDEXTENT" 
+                required="false"
                 filter="safehtml" />
                  
         <field 	name="rootnodetext" 
@@ -157,12 +157,12 @@
                 description="COM_EASYSDI_MAP_FORM_DESC_MAP_ABSTRACT"  /> 
 
         <field 	name="id" 
-                        type="text" 
-                        default="0" 
-                        label="JGLOBAL_FIELD_ID_LABEL"
-                        readonly="true" 
-                        class="readonly"
-                        description="JGLOBAL_FIELD_ID_DESC" /> 
+                type="text" 
+                default="0" 
+                label="JGLOBAL_FIELD_ID_LABEL"
+                readonly="true" 
+                class="readonly"
+                description="JGLOBAL_FIELD_ID_DESC" /> 
 		
         <field name="guid" type="hidden" filter="SAFEHTML" />
         <field name="checked_out" type="hidden" filter="unset" />
@@ -264,22 +264,22 @@
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
-         <field name="tool15" type="radio" class="btn-group" default="0"
-               label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_MOUSEPOSITION"
-               description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_MOUSEPOSITION" 
+        <field name="tool15" type="radio" class="btn-group" default="0"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_MOUSEPOSITION"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_MOUSEPOSITION" 
         > 
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
-<!--        <field 	name="tools"
-                        type="sdidatabasecheckboxes"
-                        class="inputbox"
-                        valuefield="id"
-                        textfield="name"
-                        disable = "false"
-                        sourcetable="#__sdi_sys_maptool"
-                        label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS"
-                        description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS" />-->
+        <!--        <field 	name="tools"
+        type="sdidatabasecheckboxes"
+        class="inputbox"
+        valuefield="id"
+        textfield="name"
+        disable = "false"
+        sourcetable="#__sdi_sys_maptool"
+        label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS"
+        description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS" />-->
         <!-- 		<field 	name="tools"
                         type="sdidatabaseradio"
                         class="btn-group"
@@ -324,6 +324,44 @@
                 description="COM_EASYSDI_MAP_FORM_DESC_MAP_BOTTOMINUNITS" 
                 filter="safehtml" />
     </fieldset>
+    
+    <fieldset name="wfslocator">
+        <field 	name="urlwfslocator" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_WFSLOCATOR_URL"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_WFSLOCATOR_URL" 
+                filter="safehtml" />
+        <field 	name="fieldname" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_WFSLOCATOR_FIELDNAME"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_WFSLOCATOR__FIELDNAME" 
+                filter="safehtml" />
+        <field 	name="featuretype" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_WFSLOCATOR_FEATURETYPE"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_WFSLOCATOR_FEATURETYPE" 
+                filter="safehtml" />
+        <field 	name="featureprefix" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_WFSLOCATOR_FEATUREPREFIX"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_WFSLOCATOR_FEATUREPREFIX" 
+                filter="safehtml" />
+        <field 	name="geometryname" 
+                type="text" 
+                size="255" 
+                class="inputbox"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_WFSLOCATOR_GEOMETRYNAME"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_WFSLOCATOR_GEOMETRYNAME" 
+                filter="safehtml" />
+    </fieldset>
 	
     <field 	name="access"
                 type="accesslevel"
@@ -333,33 +371,33 @@
                 size="1" /> 
 
     <field name="state"
-               type="list"
-               label="JSTATUS"
-               description="JFIELD_PUBLISHED_DESC"
-               class="inputbox"
-               size="1"
-               default="1">
+           type="list"
+           label="JSTATUS"
+           description="JFIELD_PUBLISHED_DESC"
+           class="inputbox"
+           size="1"
+           default="1">
         <option value="1">JPUBLISHED</option>
         <option value="0">JUNPUBLISHED</option>
     </field> 
 	
     <fieldset name="publishing">
         <field name="created_by" 
-                        type="user" 
-                        class="readonly"
-                        readonly="true"
-                        label="COM_EASYSDI_MAP_FORM_LBL_MAP_CREATED_BY"
-                        description="COM_EASYSDI_MAP_FORM_DESC_MAP_CREATED_BY"  
-                        filter="unset" /> 
+               type="user" 
+               class="readonly"
+               readonly="true"
+               label="COM_EASYSDI_MAP_FORM_LBL_MAP_CREATED_BY"
+               description="COM_EASYSDI_MAP_FORM_DESC_MAP_CREATED_BY"  
+               filter="unset" /> 
             	
         <field 	name="created" 
-                        type="calendar" 
-                        class="readonly"
-                        readonly="true"
-                        default="0000-00-00 00:00:00" 
-                        label="COM_EASYSDI_MAP_FORM_LBL_MAP_CREATED"
-                        description="COM_EASYSDI_MAP_FORM_DESC_MAP_CREATED"  
-                        filter="safehtml" /> 
+                type="calendar" 
+                class="readonly"
+                readonly="true"
+                default="0000-00-00 00:00:00" 
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_CREATED"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_CREATED"  
+                filter="safehtml" /> 
 
       
 
@@ -383,14 +421,14 @@
 	
     <fieldset name="rulesdefinition">
         <field 	name="rules" 
-                        type="rules" 
-                        label="JFIELD_RULES_LABEL"
-                        translate_label="true" 
-                        class="inputbox" 
-                        filter="rules"
-                        component="com_easysdi_map" 
-                        section="map" 
-                        validate="rules"
+                type="rules" 
+                label="JFIELD_RULES_LABEL"
+                translate_label="true" 
+                class="inputbox" 
+                filter="rules"
+                component="com_easysdi_map" 
+                section="map" 
+                validate="rules"
         />
     </fieldset>
 </form>

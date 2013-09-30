@@ -22,6 +22,10 @@ class com_easysdi_shopInstallerScript {
         // Installing component manifest file version
         $this->release = $parent->get("manifest")->version;
 
+        $db = JFactory::getDbo();
+        $db->setQuery('SELECT s.version_id FROM #__extensions e INNER JOIN #__schemas s ON e.extension_id = s.extension_id  WHERE e.name = "com_easysdi_shop"');
+        $this->previousrelease = $db->loadResult();
+
         // Show the essential information at the install/update back-end
         echo '<p>EasySDI component Shop [com_easysdi_shop]';
         echo '<br />' . JText::_('COM_EASYSDI_SHOP_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
@@ -58,13 +62,45 @@ class com_easysdi_shopInstallerScript {
      */
 
     function postflight($type, $parent) {
-        if ($type == 'install') {
+        if (($type == 'update' && strcmp($this->previousrelease, '4.0.0-alpha-6') < 0) || $type == 'install') {
+            JTable::addIncludePath(JPATH_ADMINISTRATOR . "/../libraries/joomla/database/table");
+            JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables');
 
+            //Create the free perimeter
+            $row = JTable::getInstance('perimeter', 'easysdi_shopTable');
+            $row->id = 1;
+            $row->alias = 'freeperimeter';
+            $row->ordering = 1;
+            $row->state = 1;
+            $row->name = 'Free perimeter';
+            $row->accessscope_id = 1;
+            $row->perimetertype_id = 1;
+            $row->access = 1;
+            $result1 = $row->store();
+            if (!(isset($result1)) || !$result1) {
+                JError::raiseError(42, JText::_('COM_EASYSDI_SHOP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR') . $row->getError());
+                return false;
+            }
+
+            //Create my perimeter
+            $row = JTable::getInstance('perimeter', 'easysdi_shopTable');
+            $row->id = 2;
+            $row->alias = 'myperimeter';
+            $row->ordering = 1;
+            $row->state = 1;
+            $row->name = 'My perimeter';
+            $row->accessscope_id = 1;
+            $row->perimetertype_id = 1;
+            $row->access = 1;
+            $result2 = $row->store();
+            if (!(isset($result2)) || !$result2) {
+                JError::raiseError(42, JText::_('COM_EASYSDI_SHOP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR') . $row->getError());
+                return false;
+            }
         }
-        
         $db = JFactory::getDbo();
         $db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_shop'");
-	$db->query();
+        $db->query();
     }
 
     /*

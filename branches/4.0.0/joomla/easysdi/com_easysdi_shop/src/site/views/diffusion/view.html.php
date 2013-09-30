@@ -31,6 +31,10 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
      */
     public function display($tpl = null) {
 
+        //Load admin language file
+        $lang = JFactory::getLanguage();
+        $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
+
         $app = JFactory::getApplication();
         $user = JFactory::getUser();
 
@@ -41,27 +45,24 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
 
         $this->user = null;
 
-        try {
-            $this->user = sdiFactory::getSdiUser();
-            if (!empty($this->item->id)) {
-                if (!$this->user->authorizeOnVersion($this->item->version_id, sdiUser::diffusionmanager)) {
-                    JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-                    JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-                    return false;
-                }
-            }
-        } catch (Exception $e) {
+        $this->user = sdiFactory::getSdiUser();
+        if (!$this->user->isEasySDI) {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
         }
+        if (!empty($this->item->id)) {
+            if (!$this->user->authorizeOnVersion($this->item->version_id, sdiUser::diffusionmanager)) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+                JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+                return false;
+            }
+        }
 
-
-        
         $db = JFactory::getDbo();
-        
-         $organisms = $this->user->getDiffusionManagerOrganisms();
-         
+
+        $organisms = $this->user->getDiffusionManagerOrganisms();
+
         $query = $db->getQuery(true);
         $query->select('p.*')
                 ->from('#__sdi_property p')
@@ -77,7 +78,7 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
         $db->setQuery($query);
         $this->propertyvalues = $db->loadObjectList();
 
-       
+
         $query = $db->getQuery(true);
         $query->select('p.id, p.name')
                 ->from('#__sdi_perimeter p')
@@ -94,7 +95,9 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
             throw new Exception(implode("\n", $errors));
         }
 
-
+        $pathway = $app->getPathway();
+        $pathway->addItem(JText::_("COM_EASYSDI_SHOP_BREADCRUMBS_RESOURCES"), JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+        $pathway->addItem(JText::_("COM_EASYSDI_SHOP_BREADCRUMBS_DIFFUSION"), '');
 
         $this->_prepareDocument();
 

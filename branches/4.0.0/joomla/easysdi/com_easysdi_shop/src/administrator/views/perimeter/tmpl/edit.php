@@ -46,13 +46,12 @@ $document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js
     
     function onChangePerimeterType(){
         if(jQuery('#jform_perimetertype_id').val() == 1){
-		jQuery("#jform_featuretypefieldgeometry").val("");
-                jQuery("#featuretypefieldgeometry").hide();
+		
 		jQuery("#jform_featuretypefieldresource").val("");
                 jQuery("#featuretypefieldresource").hide();
 	}
 	else {
-		jQuery("#featuretypefieldgeometry").show();
+		
 		jQuery("#featuretypefieldresource").show();
 	}
     }

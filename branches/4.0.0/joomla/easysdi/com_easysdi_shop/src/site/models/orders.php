@@ -46,10 +46,10 @@ class Easysdi_shopModelOrders extends JModelList {
         $limitstart = JFactory::getApplication()->input->getInt('limitstart', 0);
         $this->setState('list.start', $limitstart);
 
-        
-		if(empty($ordering)) {
-			$ordering = 'a.ordering';
-		}
+
+        if (empty($ordering)) {
+            $ordering = 'a.ordering';
+        }
 
         // List state information.
         parent::populateState($ordering, $direction);
@@ -75,15 +75,21 @@ class Easysdi_shopModelOrders extends JModelList {
 
         $query->from('`#__sdi_order` AS a');
 
+        // Join over the users for the checked out user.
+        $query->select('uc.name AS editor');
+        $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
+
+        // Join over the created by field 'created_by'
+        $query->select('created_by.name AS created_by');
+        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
         
-    // Join over the users for the checked out user.
-    $query->select('uc.name AS editor');
-    $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
-    
-		// Join over the created by field 'created_by'
-		$query->select('created_by.name AS created_by');
-		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
+        //Join over the order state value
+        $query->select('state.value AS orderstate');
+        $query->innerjoin('#__sdi_sys_orderstate AS state ON state.id = a.orderstate_id');
         
+        //Join over the order type value
+        $query->select('type.value AS ordertype');
+        $query->innerjoin('#__sdi_sys_ordertype AS type ON type.id = a.ordertype_id');
 
         // Filter by search in title
         $search = $this->getState('filter.search');
@@ -92,11 +98,11 @@ class Easysdi_shopModelOrders extends JModelList {
                 $query->where('a.id = ' . (int) substr($search, 3));
             } else {
                 $search = $db->Quote('%' . $db->escape($search, true) . '%');
-                
             }
         }
-
         
+        //Only order which belong to the current user
+        $query->where('a.user_id = ' . (int) sdiFactory::getSdiUser()->id);
 
         return $query;
     }

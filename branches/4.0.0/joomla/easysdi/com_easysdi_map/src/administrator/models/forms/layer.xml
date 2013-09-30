@@ -67,6 +67,15 @@
                 filter="safehtml"
                 label="COM_EASYSDI_MAP_FORM_LBL_LAYER_METADATALINK"
                 description="COM_EASYSDI_MAP_FORM_DESC_LAYER_METADATALINK"  /> 
+        
+        <field 	name="attribution" 
+                type="textarea" 
+                class="inputbox"
+                rows="1"
+                cols="15"
+                filter="safehtml"
+                label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ATTRIBUTION"
+                description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ATTRIBUTION"  /> 
 
         <field 	name="id" 
                         type="text" 

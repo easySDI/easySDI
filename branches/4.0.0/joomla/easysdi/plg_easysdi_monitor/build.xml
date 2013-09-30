@@ -11,7 +11,7 @@
     
     <target name="package" depends="write-xml, plg_zip" description="Main target"/>
     <target name="sync-package" depends="plg_copy, write-xml, plg_zip" description="Main target" if="${monitor.plg.exist}"/>
-    <target name="sync" depends="plg_copy, write-xml" description="Main target" />
+    <target name="sync" depends="plg_copy" description="Main target" />
     
     <target name="plg_copy" >
         

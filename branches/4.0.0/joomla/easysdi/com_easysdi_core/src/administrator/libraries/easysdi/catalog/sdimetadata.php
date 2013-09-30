@@ -109,6 +109,10 @@ class sdiMetadata {
 //        foreach ($namespaces as $namespace) {
 //            $xpathResults->registerNamespace($namespace->prefix, $namespace->uri);
 //        }
+        
+        
+        
+//        return $response;
     }
 
     /**
@@ -216,9 +220,9 @@ class sdiMetadata {
         
         if(isset($totalUpdated)){
             if($totalUpdated->nodeValue == 1){
-                return true;
-            }
-            
+        return true;
+    }
+    
         }else{
             return false;
         }
@@ -294,8 +298,8 @@ class sdiMetadata {
         $serviceaccount_id = $params->get('serviceaccount');
         $juser = JFactory::getUser($serviceaccount_id);
 
-        //curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        //curl_setopt($ch, CURLOPT_USERPWD, $juser->username . ":" . $juser->password);
+//        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+//        curl_setopt($ch, CURLOPT_USERPWD, $juser->username . ":" . $juser->password);
 
         $output = curl_exec($ch);
         curl_close($ch);

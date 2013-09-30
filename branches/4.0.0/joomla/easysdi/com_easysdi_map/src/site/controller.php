@@ -14,5 +14,5 @@ jimport('joomla.application.component.controller');
 
 class Easysdi_mapController extends JControllerLegacy
 {
-
+    
 }

@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHtml::_('bootstrap.tooltip');
 JHtml::_('behavior.multiselect');
+JHtml::_('dropdown.init');
 JHtml::_('formbehavior.chosen', 'select');
 
 // Import CSS
@@ -19,9 +20,10 @@ $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_shop/assets/css/easysdi_shop.css');
 
 $user = JFactory::getUser();
-$userId = $user->get('id');
 $listOrder = $this->state->get('list.ordering');
 $listDirn = $this->state->get('list.direction');
+$archived = $this->state->get('filter.published') == 2 ? true : false;
+$trashed = $this->state->get('filter.published') == -2 ? true : false;
 $canOrder = $user->authorise('core.edit.state', 'com_easysdi_shop');
 $saveOrder = $listOrder == 'a.ordering';
 if ($saveOrder) {
@@ -140,6 +142,7 @@ if (!empty($this->extra_sidebar)) {
                         $canEdit = $user->authorise('core.edit', 'com_easysdi_shop');
                         $canCheckin = $user->authorise('core.manage', 'com_easysdi_shop');
                         $canChange = $user->authorise('core.edit.state', 'com_easysdi_shop');
+                        $islocked = ($item->alias == 'myperimeter' || $item->alias == 'freeperimeter' ) ? true : false;
                         ?>
                         <tr class="row<?php echo $i % 2; ?>">
 
@@ -175,14 +178,62 @@ if (!empty($this->extra_sidebar)) {
                             <?php endif; ?>
 
                             <td>
-                                <?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>
-                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=perimeter.edit&id=' . (int) $item->id); ?>">
-                                        <?php echo $this->escape($item->name); ?></a>
-                                <?php else : ?>
-                                    <?php echo $this->escape($item->name); ?>
-                                <?php endif; ?>
-                                <div class="small">
-                                    <?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($item->alias)); ?>
+                                <div class="pull-left">
+                                    <?php if (isset($item->checked_out) && $item->checked_out) : ?>
+                                        <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'perimeters.', $canCheckin); ?>
+                                    <?php endif; ?>
+                                    <?php if (($canEdit || $canEditOwn) && $canCheckin && !$islocked) : ?>
+                                        <a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=perimeter.edit&id=' . (int) $item->id); ?>">
+                                            <?php echo $this->escape($item->name); ?></a>
+                                    <?php else : ?>
+                                        <?php echo $this->escape($item->name); ?>
+                                    <?php endif; ?>
+                                    <div class="small">
+                                        <?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($item->alias)); ?>
+                                    </div>
+                                </div>
+                                <div class="pull-left">
+                                    <?php
+                                    // Create dropdown items
+                                    if (!$islocked) {
+                                        // Create dropdown items
+                                        if ($canEdit) :
+                                            JHtml::_('dropdown.edit', $item->id, 'perimeter.');
+                                            JHtml::_('dropdown.divider');
+                                        endif;
+
+                                        if ($canChange) {
+                                            if ($item->state) :
+                                                JHtml::_('dropdown.unpublish', 'cb' . $i, 'perimeters.');
+                                            else :
+                                                JHtml::_('dropdown.publish', 'cb' . $i, 'perimeters.');
+                                            endif;
+                                            JHtml::_('dropdown.divider');
+
+
+                                            if ($archived) :
+                                                JHtml::_('dropdown.unarchive', 'cb' . $i, 'perimeters.');
+                                            else :
+                                                JHtml::_('dropdown.archive', 'cb' . $i, 'perimeters.');
+                                            endif;
+                                        }
+
+                                        if ($item->checked_out && $canCheckin) :
+                                            JHtml::_('dropdown.checkin', 'cb' . $i, 'perimeters.');
+                                        endif;
+
+                                        if ($canChange) {
+                                            if ($trashed) :
+                                                JHtml::_('dropdown.untrash', 'cb' . $i, 'perimeters.');
+                                            else :
+                                                JHtml::_('dropdown.trash', 'cb' . $i, 'perimeters.');
+                                            endif;
+                                        }
+
+                                        // render dropdown list
+                                        echo JHtml::_('dropdown.render');
+                                    }
+                                    ?>
                                 </div>
                             </td>
                             <?php if (isset($this->items[0]->id)): ?>

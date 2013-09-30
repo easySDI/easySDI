@@ -76,22 +76,18 @@
               label="COM_EASYSDI_MAP_FORM_LBL_VISUALIZATION_LAYERNAME"
               description="COM_EASYSDI_MAP_FORM_DESC_VISUALIZATION_LAYERNAME" 
               filter="safehtml" /> 
+        
+        <field 	name="attribution" 
+                type="textarea" 
+                class="input-xlarge"
+                rows="3"
+                cols="30"
+                filter="safehtml"
+                label="COM_EASYSDI_MAP_FORM_LBL_VISUALIZATION_ATTRIBUTION"
+                description="COM_EASYSDI_MAP_FORM_DESC_VISUALIZATION_ATTRIBUTION"  />
     </fieldset>
     
-    <fieldset name="preview">
-        <field
-            name="map_id" 
-            type="sql" 
-            class="input-large"
-            multiple="false"
-            label="COM_EASYSDI_MAP_FORM_LBL_VISUALIZATION_MAPID"
-            description="COM_EASYSDI_MAP_FORM_DESC_VISUALIZATION_MAPID" 
-            query="SELECT id , name  FROM #__sdi_map WHERE state=1 ORDER BY ordering" 
-            key_field="id" 
-            value_field="name"
-            translate="true"
-        /> 
-    </fieldset>
+    
          
     <fieldset name="hidden">
         <field name="id" type="hidden" filter="safehtml" />
