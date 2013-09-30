@@ -40,7 +40,7 @@
   </files>
   <languages folder="site">
     <language tag="en-GB">language/en-GB/en-GB.com_easysdi_contact.ini</language>
-    <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_contact.ini</language>
+    <language tag="fr-FR">language//fr-FR/fr-FR.com_easysdi_contact.ini</language>
   </languages>
   <administration>
     <files folder="administrator">
