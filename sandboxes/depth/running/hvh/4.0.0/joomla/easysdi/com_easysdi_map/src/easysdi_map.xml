@@ -2,13 +2,13 @@
 <extension method="upgrade" type="component" version="3.0.0">
   <name>com_easysdi_map</name>
   <creationDate>18 december 2012</creationDate>
-  <releaseDate>27 septembre 2013</releaseDate>
+  <releaseDate>30 septembre 2013</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>4.0.0-alpha-7</version>
+  <version>4.0.0-alpha-8</version>
   <description />
   <scriptfile>script.php</scriptfile>
   <install>

@@ -2,13 +2,13 @@
 <extension method="upgrade" type="component" version="3.0.0">
   <name>com_easysdi_core</name>
   <creationDate>15 August 2012</creationDate>
-  <releaseDate>02 septembre 2013</releaseDate>
+  <releaseDate>30 septembre 2013</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>4.0.0-alpha-7</version>
+  <version>4.0.0-alpha-8</version>
   <description />
   <scriptfile>script.php</scriptfile>
   <install>
@@ -39,8 +39,8 @@
     <folder>helpers</folder>
   </files>
   <languages folder="site">
-    <language tag="en-GB">language/en-GB.com_easysdi_core.ini</language>
-    <language tag="fr-FR">language/fr-FR.com_easysdi_core.ini</language>
+    <language tag="en-GB">language/en-GB/en-GB.com_easysdi_core.ini</language>
+    <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_core.ini</language>
   </languages>
   <administration>
     <menu img="components/com_easysdi_core/assets/images/s_com_easysdi_core.ico">COM_EASYSDI_SOLUTION</menu>
