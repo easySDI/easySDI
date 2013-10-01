@@ -13,6 +13,8 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
 
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
+
 /**
  * Easysdi_core model.
  */
@@ -74,6 +76,11 @@ class Easysdi_coreModelResource extends JModelForm {
                 // Convert the JTable to a clean JObject.
                 $properties = $table->getProperties(1);
                 $this->_item = JArrayHelper::toObject($properties, 'JObject');
+                
+                //Load accessscope
+                $this->_item->organisms = sdiModel::getAccessScopeOrganism($this->_item->guid);
+                $this->_item->users = sdiModel::getAccessScopeUser($this->_item->guid);
+                
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
@@ -267,6 +274,11 @@ class Easysdi_coreModelResource extends JModelForm {
 
         $table = $this->getTable();
         if ($table->save($data) === true) {
+            //Save accessscope
+            $data['guid'] = $table->guid;
+            if (!sdiModel::saveAccessScope($data))
+                return false;
+            
             //Save users rights
             $jinput = JFactory::getApplication()->input;
             $jform = $jinput->get('jform', '', 'ARRAY');
