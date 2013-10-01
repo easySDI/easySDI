@@ -178,6 +178,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_policy` (
 `csw_anyvisibility` BOOLEAN NOT NULL DEFAULT '1',
 `csw_includeharvested` BOOLEAN NOT NULL DEFAULT '1',
 `csw_anyresourcetype` TINYINT(1) NOT NULL DEFAULT 1,
+`csw_accessscope_id` TINYINT(1) NOT NULL DEFAULT 1,
 `wms_minimumwidth` VARCHAR (255)  ,
 `wms_minimumheight`VARCHAR (255) ,
 `wms_maximumwidth` VARCHAR (255),
@@ -363,5 +364,21 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualservice_organism` (
 `organism_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_policy_resourcetype` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`resourcetype_id` INT(11) UNSIGNED  NOT NULL ,
+`policy_id` INT(11) UNSIGNED  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_policy_visibility` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`policy_id` INT(11) UNSIGNED  NOT NULL ,
+`user_id` INT(11) UNSIGNED   NULL ,
+`organism_id` INT(11) UNSIGNED   NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
 
 

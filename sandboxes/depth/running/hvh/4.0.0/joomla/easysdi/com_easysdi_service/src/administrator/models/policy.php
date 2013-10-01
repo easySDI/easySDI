@@ -127,6 +127,9 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
 
             if (strtolower($item->layout) == 'csw') {
                 $item->csw_state = $this->loadAllowedMetadatastate($pk);
+                $item->csw_organisms = $this->loadAllowedVisibility($pk, 'organism');
+                $item->csw_users = $this->loadAllowedVisibility($pk, 'user');
+                $item->csw_resourcetype = $this->loadAllowedResourcetype($pk);
                 if ($item->csw_spatialpolicy_id) {
                     $spatialpolicy = $this->loadCSWSpatialPolicy($item->csw_spatialpolicy_id);
                     $item->srssource = $spatialpolicy->srssource;
@@ -162,16 +165,16 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
             //check layers that have settings
             if (!empty($pk)) {
                 $db->setQuery('
-					SELECT wlp.name, wlp.enabled, wlp.spatialpolicy_id
-					FROM #__sdi_policy p
-					JOIN #__sdi_physicalservice_policy psp
-					ON p.id = psp.policy_id
-					JOIN #__sdi_wmslayer_policy wlp
-					ON psp.id = wlp.physicalservicepolicy_id
-					WHERE p.id = ' . $pk . '
-					AND psp.physicalservice_id = ' . $ps->id . '
-					AND (wlp.spatialpolicy_id IS NOT NULL OR wlp.enabled = 1);
-				');
+                                SELECT wlp.name, wlp.enabled, wlp.spatialpolicy_id
+                                FROM #__sdi_policy p
+                                JOIN #__sdi_physicalservice_policy psp
+                                ON p.id = psp.policy_id
+                                JOIN #__sdi_wmslayer_policy wlp
+                                ON psp.id = wlp.physicalservicepolicy_id
+                                WHERE p.id = ' . $pk . '
+                                AND psp.physicalservice_id = ' . $ps->id . '
+                                AND (wlp.spatialpolicy_id IS NOT NULL OR wlp.enabled = 1);
+                        ');
 
                 try {
                     $db->execute();
@@ -403,6 +406,11 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
 
                 if (!$this->saveCSWState($data)) {
                     $this->setError('Failed to save state.');
+                    return false;
+                }
+                
+                if (!$this->saveCSWResourcetype($data)) {
+                    $this->setError('Failed to save resource type.');
                     return false;
                 }
                 
@@ -1385,9 +1393,69 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
 
         $db = JFactory::getDbo();
         $db->setQuery('
-				SELECT metadatastate_id FROM #__sdi_policy_metadatastate
-				WHERE policy_id =' . $pk . '
-				');
+                        SELECT metadatastate_id FROM #__sdi_policy_metadatastate
+                        WHERE policy_id =' . $pk . '
+                        ');
+
+        try {
+            $db->execute();
+        } catch (Exception $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+        return $db->loadColumn();
+    }
+    
+    /**
+     * Load allowed resourcetype
+     *
+     * @param int $pk the primary key of the current policy
+     *
+     * @return object 	Array of results on success, False on error
+     *
+     * @since EasySDI 3.0.0
+     */
+    private function loadAllowedResourcetype($pk) {
+        if (empty($pk)) {
+            return Array();
+        }
+
+        $db = JFactory::getDbo();
+        $db->setQuery('
+                        SELECT resourcetype_id FROM #__sdi_policy_resourcetype
+                        WHERE policy_id =' . $pk . '
+                        ');
+
+        try {
+            $db->execute();
+        } catch (Exception $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+        return $db->loadColumn();
+    }
+    
+    /**
+     * Load allowed visibility
+     *
+     * @param int $pk the primary key of the current policy
+     *
+     * @return object 	Array of results on success, False on error
+     *
+     * @since EasySDI 3.0.0
+     */
+    private function loadAllowedVisibility($pk, $target) {
+        if (empty($pk)) {
+            return Array();
+        }
+
+        $db = JFactory::getDbo();
+        $db->setQuery('
+                        SELECT '.$target.'_id FROM #__sdi_policy_visibility
+                        WHERE policy_id =' . $pk . '
+                        ');
 
         try {
             $db->execute();
@@ -1567,10 +1635,43 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
      *
      * @since EasySDI 3.0.0
      */
-	private function saveCSWVisibility ($data) {
-		
-		return true;
-	}
+    private function saveCSWVisibility ($data) {
+            $db = $this->getDbo();
+            $db->setQuery('DELETE FROM #__sdi_policy_visibility WHERE policy_id = ' . $data['id']);
+            $db->execute();
+
+            $arr_pks = $data['csw_organisms'];
+            foreach ($arr_pks as $pk) {
+                    $db->setQuery('
+                            INSERT INTO #__sdi_policy_visibility (policy_id, organism_id)
+                            VALUES (' . $data['id'] . ',\'' . $pk . '\');
+                    ');
+                    try {
+                            $db->execute();
+                    }
+                    catch (JDatabaseException $e) {
+                            $je = new JException($e->getMessage());
+                            $this->setError($je);
+                            return false;
+                    }
+            }
+            $arr_pks = $data['csw_users'];
+            foreach ($arr_pks as $pk) {
+                    $db->setQuery('
+                            INSERT INTO #__sdi_policy_visibility (policy_id, user_id)
+                            VALUES (' . $data['id'] . ',\'' . $pk . '\');
+                    ');
+                    try {
+                            $db->execute();
+                    }
+                    catch (JDatabaseException $e) {
+                            $je = new JException($e->getMessage());
+                            $this->setError($je);
+                            return false;
+                    }
+            }
+            return true;        
+    }
         
      /**
      * Method to save the authorized resource type of a csw policy
@@ -1581,10 +1682,28 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
      *
      * @since EasySDI 3.0.0
      */
-	private function saveCSWResourcetype ($data) {
-		
-		return true;
-	}
+    private function saveCSWResourcetype ($data) {
+            $db = $this->getDbo();
+            $db->setQuery('DELETE FROM #__sdi_policy_resourcetype WHERE policy_id = ' . $data['id']);
+            $db->execute();
+
+            $arr_pks = $data['csw_resourcetype'];
+            foreach ($arr_pks as $pk) {
+                    $db->setQuery('
+                            INSERT INTO #__sdi_policy_resourcetype (policy_id, resourcetype_id)
+                            VALUES (' . $data['id'] . ',\'' . $pk . '\');
+                    ');
+                    try {
+                            $db->execute();
+                    }
+                    catch (JDatabaseException $e) {
+                            $je = new JException($e->getMessage());
+                            $this->setError($je);
+                            return false;
+                    }
+            }
+            return true;
+    }
 
     /**
      * Method to save the enabled layers of a wmts policy

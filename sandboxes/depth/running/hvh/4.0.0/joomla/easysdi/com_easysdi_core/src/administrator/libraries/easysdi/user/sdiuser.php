@@ -24,11 +24,11 @@ class sdiUser {
     public $name = null;
     
     /**
-     * Unique gml
+     * Unique perimeter
      *
      * @var    varchar
      */
-    public $gml = null;
+    public $perimeter = null;
 
     /**
      * Unique juser
@@ -92,7 +92,7 @@ class sdiUser {
         else{
             $this->id = $user->id;
             $this->user = $user;
-            $this->gml = $user->gml;
+            $this->perimeter = $user->perimeter;
 
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
@@ -119,7 +119,7 @@ class sdiUser {
     private function getUserById($sdiId){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('u.*, o.gml, juser.id as jid')
+                ->select('u.*, o.perimeter, juser.id as jid')
                 ->from('#__sdi_user AS u')
                 ->innerJoin("#__sdi_user_role_organism uro ON uro.user_id=u.id" )
                 ->innerJoin("#__sdi_organism o ON o.id = uro.organism_id")
@@ -143,7 +143,7 @@ class sdiUser {
                 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('u.*, o.gml')
+                ->select('u.*, o.perimeter')
                 ->from('#__sdi_user AS u')
                 ->innerJoin("#__sdi_user_role_organism uro ON uro.user_id=u.id" )
                 ->innerJoin("#__sdi_organism o ON o.id = uro.organism_id")
