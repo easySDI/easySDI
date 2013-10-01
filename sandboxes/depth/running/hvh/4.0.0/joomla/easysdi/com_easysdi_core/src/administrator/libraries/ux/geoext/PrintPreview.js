@@ -244,7 +244,7 @@ GeoExt.ux.PrintPreview = Ext.extend(Ext.Container, {
             }
         }, "&nbsp;");
         items.push("->", {
-            text: this.printText,
+            /*text: this.printText,*/
             iconCls: "icon-print",
             handler: function(){
                 this.printMapPanel.print(this.includeLegend &&
