@@ -64,7 +64,7 @@ JText::script('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE');
 					<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_AUTORISATIONS' );?></legend>
 						<?php foreach($this->form->getFieldset('csw_policy') as $field): 
 						?> 
-							<div class="control-group">
+							<div class="control-group" id="<?php echo $field->fieldname;?>">
 								<div class="control-label"><?php echo $field->label; ?></div>
 								<div class="controls"><?php echo $field->input; ?></div>
 							</div>

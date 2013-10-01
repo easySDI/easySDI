@@ -177,6 +177,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_policy` (
 `csw_anystate` BOOLEAN NOT NULL DEFAULT '1',
 `csw_anyvisibility` BOOLEAN NOT NULL DEFAULT '1',
 `csw_includeharvested` BOOLEAN NOT NULL DEFAULT '1',
+`csw_anyresourcetype` TINYINT(1) NOT NULL DEFAULT 1,
 `wms_minimumwidth` VARCHAR (255)  ,
 `wms_minimumheight`VARCHAR (255) ,
 `wms_maximumwidth` VARCHAR (255),
