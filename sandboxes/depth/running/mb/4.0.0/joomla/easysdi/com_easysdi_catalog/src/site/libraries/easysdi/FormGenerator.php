@@ -153,11 +153,13 @@ class FormGenerator {
         $query->select('a.id as attribute_id, a.`name` AS attribute_name, a.guid AS attribute_guid, a.type_isocode as attribute_type_isocode, a.codelist as attribute_codelist, a.pattern as attribute_pattern, a.length as attribute_length, a.issystem as attribute_issystem');
         $query->select('rt.id as resourcetype_id, rt.name as resourcetype_name, rt.fragment as resourcetype_fragment');
         $query->select('st.id as stereotype_id, st.value as stereotype_value, st.isocode as stereotype_isocode, st.defaultpattern as stereotype_defaultpattern');
+        $query->select('stc.id as class_stereotype_id, stc.value as class_stereotype_value, stc.isocode as class_stereotype_isocode, stc.defaultpattern as class_stereotype_defaultpattern');
         $query->select('ns.id as ns_id, ns.prefix, ns.uri');
         $query->select('nsc.id as class_ns_id, nsc.prefix as class_ns_prefix, nsc.uri as class_ns_uri');
         $query->select('nsca.id as classass_ns_id, nsca.prefix as classass_ns_prefix, nsca.uri as classass_ns_uri');
         $query->select('nsa.id as attribute_ns_id, nsa.prefix as attribute_ns_prefix, nsa.uri as attribute_ns_uri');
         $query->select('nsst.id as stereotype_ns_id, nsst.prefix as stereotype_ns_prefix, nsst.uri as stereotype_ns_uri');
+        $query->select('nsstc.id as class_stereotype_ns_id, nsstc.prefix as class_stereotype_ns_prefix, nsstc.uri as class_stereotype_ns_uri');
         $query->select('nsl.id as list_ns_id, nsl.prefix as list_ns_prefix, nsl.uri as list_ns_uri');
         $query->select('nsrt.id as resourcetype_ns_id, nsrt.prefix as resourcetype_ns_prefix, nsrt.uri as resourcetype_ns_uri');
         $query->from('#__sdi_relation AS r');
@@ -167,11 +169,13 @@ class FormGenerator {
         $query->leftJoin('#__sdi_attribute AS a ON a.id = r.attributechild_id');
         $query->leftJoin('#__sdi_resourcetype AS rt ON rt.id = r.childresourcetype_id');
         $query->leftJoin('#__sdi_sys_stereotype AS st ON st.id = a.stereotype_id');
+        $query->leftJoin('#__sdi_sys_stereotype AS stc ON stc.id = c.stereotype_id');
         $query->leftJoin('#__sdi_namespace AS ns ON ns.id = r.namespace_id');
         $query->leftJoin('#__sdi_namespace AS nsc ON nsc.id = c.namespace_id');
         $query->leftJoin('#__sdi_namespace AS nsca ON nsca.id = ca.namespace_id');
         $query->leftJoin('#__sdi_namespace AS nsa ON nsa.id = a.namespace_id');
         $query->leftJoin('#__sdi_namespace AS nsst ON nsst.id = st.namespace_id');
+        $query->leftJoin('#__sdi_namespace AS nsstc ON nsstc.id = stc.namespace_id');
         $query->leftJoin('#__sdi_namespace AS nsl ON nsl.id = a.listnamespace_id');
         $query->leftJoin('#__sdi_namespace AS nsrt ON nsrt.id = rt.fragmentnamespace_id');
         $query->where('r.parent_id = ' . $rel->getClass_child()->id);
@@ -183,6 +187,22 @@ class FormGenerator {
         $this->db->setQuery($query);
 
         $relArray = array();
+
+        if ($rel->getClass_child()->getStereotype() != null) {
+            switch ($rel->getClass_child()->getStereotype()->value) {
+                case 'geographicextent':
+                    $indexedAttr = clone $rel;
+                    $indexedAttr->childtype_id = SdiRelation::$ATTRIBUT;
+                    $indexedAttr->rendertype = SdiRelation::$LIST;
+                    $indexedAttr->setSerializedXpath($rel->getSerializedXpath() . '_bounding_0');
+                    $attribute = new SdiAttribute($rel->id . '_bounding_0', $rel->name . '_bounding_0');
+                    $indexedAttr->setAttribut_child($attribute);
+                    $indexedAttr->getAttribut_child()->setStereotype($rel->getClass_child()->getStereotype());
+                    $indexedAttr->getAttribut_child()->value = $this->dce->getValue($indexedAttr, $indexedAttr->getIndex());
+                    $relArray[] = $indexedAttr;
+                    break;
+            }
+        }
 
         foreach ($this->db->loadObjectList() as $result) {
             $newRel = new SdiRelation($result->id, $result->name, $result->childtype_id, $result->guid, $result->rendertype_id);
@@ -199,6 +219,7 @@ class FormGenerator {
             switch ($newRel->childtype_id) {
                 case SdiRelation::$CLASS:
                     $newRel->setClass_child(new SdiClass($result->class_id, $result->class_name, $result->class_guid, false, new SdiNamespace($result->class_ns_id, $result->class_ns_prefix, $result->class_ns_uri)));
+                    $newRel->getClass_child()->setStereotype(new SdiStereotype($result->class_stereotype_id, $result->class_stereotype_value, $result->class_stereotype_isocode, $result->class_stereotype_defaultpattern, new SdiNamespace($result->class_stereotype_ns_id, $result->class_stereotype_ns_prefix, $result->class_stereotype_ns_uri)));
                     break;
 
                 case SdiRelation::$ATTRIBUT:
@@ -589,6 +610,15 @@ class FormGenerator {
 
                     $field->appendChild($option);
                     break;
+                case 'geographicextent':
+                    $field->setAttribute('type', 'list');
+                    $field->setAttribute('label', EText::_($rel->guid));
+
+                    $option = $this->dom->createElement('option', EText::_($opt->guid));
+                    $option->setAttribute('value', $opt->name);
+
+                    $field->appendChild($option);
+                    break;
                 default:
                     $field->setAttribute('type', 'list');
                     $field->setAttribute('label', EText::_($rel->guid));
@@ -613,7 +643,7 @@ class FormGenerator {
      */
     private function getFormDateField(SdiRelation $rel, DOMElement $field) {
         $validator = $this->getValidatorClass($rel);
-        
+
         $field->setAttribute('name', $rel->getSerializedXpath());
         $field->setAttribute('type', 'calendar');
         $field->setAttribute('class', $validator);
@@ -623,11 +653,11 @@ class FormGenerator {
         if ($rel->getAttribut_child()->value != '') {
             $field->setAttribute('default', substr($rel->getAttribut_child()->value, 0, 10));
         }
-        
-        if($rel->getAttribut_child()->issystem){
+
+        if ($rel->getAttribut_child()->issystem) {
             $field->setAttribute('readonly', true);
         }
-        
+
         return $field;
     }
 
@@ -645,18 +675,27 @@ class FormGenerator {
     private function getAttributOptions(SdiRelation $rel) {
         $query = $this->db->getQuery(true);
 
-        if ($rel->getAttribut_child()->getStereotype()->value == 'resource') {
-            $query->select('id, guid, name');
-            $query->from('#__sdi_resource');
-            $query->where('resourcetype_id = ' . $rel->getResoucetype()->id);
-            $query->order('name ASC');
-        } else {
+        switch ($rel->getAttribut_child()->getStereotype()->value) {
+            case 'resource':
+                $query->select('id, guid, name');
+                $query->from('#__sdi_resource');
+                $query->where('resourcetype_id = ' . $rel->getResoucetype()->id);
+                $query->order('name ASC');
+                break;
 
-            $query->select('id, guid, `name`, `value`');
-            $query->from('#__sdi_attributevalue');
-            $query->where('attribute_id = ' . $rel->getAttribut_child()->id);
-            $query->where('state = 1');
-            $query->order('ordering ASC');
+            case 'geographicextent':
+                $query->select('id, guid, name');
+                $query->from('#__sdi_boundary');
+                $query->order('name ASC');
+                break;
+
+            default:
+                $query->select('id, guid, `name`, `value`');
+                $query->from('#__sdi_attributevalue');
+                $query->where('attribute_id = ' . $rel->getAttribut_child()->id);
+                $query->where('state = 1');
+                $query->order('ordering ASC');
+                break;
         }
 
         $this->db->setQuery($query);

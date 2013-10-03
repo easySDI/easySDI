@@ -32,6 +32,11 @@ class SdiClass {
      * @var SdiNamespace 
      */
     private $namespace;
+    /**
+     *
+     * @var SdiStereotype 
+     */
+    private $stereotype;
     
     /**
      * @param int $id
@@ -39,12 +44,13 @@ class SdiClass {
      * @param string $guid
      * @param boolean $isRoot
      */
-    function __construct($id, $name, $guid = '', $isRoot = false, SdiNamespace $namespace = null) {
+    function __construct($id, $name, $guid = '', $isRoot = false, SdiNamespace $namespace = null, SdiStereotype $stereotype = null) {
         $this->id = $id;
         $this->name = $name;
         $this->guid = $guid;
         $this->isRoot = $isRoot;
         $this->namespace = $namespace;
+        $this->stereotype = $stereotype;
     }
 
     /**
@@ -59,7 +65,17 @@ class SdiClass {
         return $this;
     }
 
+    /**
+     * 
+     * @return SdiStereotype
+     */
+    public function getStereotype() {
+        return $this->stereotype;
+    }
 
+    public function setStereotype(SdiStereotype $stereotype) {
+        $this->stereotype = $stereotype;
+    }
     
 }
 
