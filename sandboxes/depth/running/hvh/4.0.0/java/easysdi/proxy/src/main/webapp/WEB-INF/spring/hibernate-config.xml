@@ -9,7 +9,7 @@
 	
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://localhost:3306/sdi4bis?zeroDateTimeBehavior=convertToNull" />
+		<property name="url" value="jdbc:mysql://localhost:3306/sdi4a8?zeroDateTimeBehavior=convertToNull" />
 		<property name="username" value="root" />
 		<property name="password" value="invulsion" />
 	</bean>
@@ -40,7 +40,7 @@
 	
 	<bean id="namingStrategy" class="org.easysdi.proxy.namingStrategy.CustomNamingStrategy">
 		<property name="prefix">
-			<value>sdi_</value>
+			<value>gh0jl_</value>
 		</property>
 	</bean>
 
