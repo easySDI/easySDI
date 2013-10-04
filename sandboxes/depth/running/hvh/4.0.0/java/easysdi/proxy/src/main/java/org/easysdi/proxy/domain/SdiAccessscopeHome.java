@@ -1,35 +1,39 @@
-package org.easysdi.proxy.domaintransitoire;
+package org.easysdi.proxy.domain;
 
-// Generated Oct 3, 2013 2:18:25 PM by Hibernate Tools 3.4.0.CR1
+// Generated Oct 4, 2013 10:20:01 AM by Hibernate Tools 3.4.0.CR1
 
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Home object for domain model class Gh0jlSdiResource.
- * @see org.easysdi.proxy.domaintransitoire.Gh0jlSdiResource
+ * Home object for domain model class SdiAccessscope.
+ * @see org.easysdi.proxy.domaintransitoire.SdiAccessscope
  * @author Hibernate Tools
  */
 
 @Transactional
 @Repository
-public class Gh0jlSdiResourceHome {
+public class SdiAccessscopeHome {
 
 	private static final Log log = LogFactory
-			.getLog(Gh0jlSdiResourceHome.class);
+			.getLog(SdiAccessscopeHome.class);
 
 	@Autowired
 	private SessionFactory sessionFactory;
 
-	public SdiResource findById(Integer id) {
-		log.debug("getting Gh0jlSdiResource instance with id: " + id);
+	public SdiAccessscope findById(Integer id) {
+		log.debug("getting SdiAccessscope instance with id: " + id);
 		try {
-			SdiResource instance = (SdiResource) sessionFactory
-					.getCurrentSession().get(SdiResource.class, id);
+			SdiAccessscope instance = (SdiAccessscope) sessionFactory
+					.getCurrentSession().get(SdiAccessscope.class, id);
 			log.debug("get successful");
 			return instance;
 		} catch (RuntimeException re) {
@@ -37,9 +41,31 @@ public class Gh0jlSdiResourceHome {
 			throw re;
 		}
 	}
+        
+        public List findByGuid(String guid) {
+		log.debug("getting SdiAccessscope instance with guid: " + guid);
+		try {
+			org.hibernate.Session session = sessionFactory.getCurrentSession();
+			session.enableFilter("entityState");
+			
+			if(guid != null){
+			
+				Query query = session.createQuery(
+						"SELECT a FROM SdiAccessscope a  WHERE a.entity_guid= :guid" );
+				query.setParameter("guid", guid);
+				
+				List results = query.list();
+				return results;
+			}
+                        return null;
+		} catch (RuntimeException re) {
+			log.error("get failed", re);
+			throw re;
+		}
+	}
 
-	public void save(SdiResource transientInstance) {
-		log.debug("save Gh0jlSdiResource instance");
+	public void save(SdiAccessscope transientInstance) {
+		log.debug("save SdiAccessscope instance");
 		try {
 			sessionFactory.getCurrentSession().save(transientInstance);
 			log.debug("save successful");
@@ -49,8 +75,8 @@ public class Gh0jlSdiResourceHome {
 		}
 	}
 
-	public void saveOrUpdate(SdiResource transientInstance) {
-		log.debug("saveOrUpdate Gh0jlSdiResource instance");
+	public void saveOrUpdate(SdiAccessscope transientInstance) {
+		log.debug("saveOrUpdate SdiAccessscope instance");
 		try {
 			sessionFactory.getCurrentSession().saveOrUpdate(transientInstance);
 			log.debug("saveOrUpdate successful");
@@ -60,8 +86,8 @@ public class Gh0jlSdiResourceHome {
 		}
 	}
 
-	public void update(SdiResource transientInstance) {
-		log.debug("update Gh0jlSdiResource instance");
+	public void update(SdiAccessscope transientInstance) {
+		log.debug("update SdiAccessscope instance");
 		try {
 			sessionFactory.getCurrentSession().update(transientInstance);
 			log.debug("update successful");
@@ -71,8 +97,8 @@ public class Gh0jlSdiResourceHome {
 		}
 	}
 
-	public void delete(SdiResource transientInstance) {
-		log.debug("delete Gh0jlSdiResource instance");
+	public void delete(SdiAccessscope transientInstance) {
+		log.debug("delete SdiAccessscope instance");
 		try {
 			sessionFactory.getCurrentSession().delete(transientInstance);
 			log.debug("delete successful");
@@ -82,8 +108,8 @@ public class Gh0jlSdiResourceHome {
 		}
 	}
 
-	public void merge(SdiResource transientInstance) {
-		log.debug("merge Gh0jlSdiResource instance");
+	public void merge(SdiAccessscope transientInstance) {
+		log.debug("merge SdiAccessscope instance");
 		try {
 			sessionFactory.getCurrentSession().merge(transientInstance);
 			log.debug("merge successful");

@@ -87,9 +87,7 @@ public class SdiVersion implements java.io.Serializable {
 		this.Name = Name;
 		this.Access = Access;
 		this.Asset_id = Asset_id;
-	
-		this.sdiMetadatas = sdiMetadatas;
-		this.sdiAssignments = sdiAssignments;
+                this.sdiMetadatas = sdiMetadatas;		
 	}
 
 	@Id

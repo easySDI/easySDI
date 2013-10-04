@@ -1,4 +1,4 @@
-package org.easysdi.proxy.domaintransitoire;
+package org.easysdi.proxy.domain;
 
 // Generated Oct 3, 2013 2:18:25 PM by Hibernate Tools 3.4.0.CR1
 
@@ -10,26 +10,26 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Home object for domain model class Gh0jlSdiResourcetype.
- * @see org.easysdi.proxy.domaintransitoire.Gh0jlSdiResourcetype
+ * Home object for domain model class SdiResource.
+ * @see org.easysdi.proxy.domaintransitoire.SdiResource
  * @author Hibernate Tools
  */
 
 @Transactional
 @Repository
-public class Gh0jlSdiResourcetypeHome {
+public class SdiResourceHome {
 
 	private static final Log log = LogFactory
-			.getLog(Gh0jlSdiResourcetypeHome.class);
+			.getLog(SdiResourceHome.class);
 
 	@Autowired
 	private SessionFactory sessionFactory;
 
-	public Gh0jlSdiResourcetype findById(Integer id) {
-		log.debug("getting Gh0jlSdiResourcetype instance with id: " + id);
+	public SdiResource findById(Integer id) {
+		log.debug("getting SdiResource instance with id: " + id);
 		try {
-			Gh0jlSdiResourcetype instance = (Gh0jlSdiResourcetype) sessionFactory
-					.getCurrentSession().get(Gh0jlSdiResourcetype.class, id);
+			SdiResource instance = (SdiResource) sessionFactory
+					.getCurrentSession().get(SdiResource.class, id);
 			log.debug("get successful");
 			return instance;
 		} catch (RuntimeException re) {
@@ -37,9 +37,9 @@ public class Gh0jlSdiResourcetypeHome {
 			throw re;
 		}
 	}
-
-	public void save(Gh0jlSdiResourcetype transientInstance) {
-		log.debug("save Gh0jlSdiResourcetype instance");
+        
+	public void save(SdiResource transientInstance) {
+		log.debug("save SdiResource instance");
 		try {
 			sessionFactory.getCurrentSession().save(transientInstance);
 			log.debug("save successful");
@@ -49,8 +49,8 @@ public class Gh0jlSdiResourcetypeHome {
 		}
 	}
 
-	public void saveOrUpdate(Gh0jlSdiResourcetype transientInstance) {
-		log.debug("saveOrUpdate Gh0jlSdiResourcetype instance");
+	public void saveOrUpdate(SdiResource transientInstance) {
+		log.debug("saveOrUpdate SdiResource instance");
 		try {
 			sessionFactory.getCurrentSession().saveOrUpdate(transientInstance);
 			log.debug("saveOrUpdate successful");
@@ -60,8 +60,8 @@ public class Gh0jlSdiResourcetypeHome {
 		}
 	}
 
-	public void update(Gh0jlSdiResourcetype transientInstance) {
-		log.debug("update Gh0jlSdiResourcetype instance");
+	public void update(SdiResource transientInstance) {
+		log.debug("update SdiResource instance");
 		try {
 			sessionFactory.getCurrentSession().update(transientInstance);
 			log.debug("update successful");
@@ -71,8 +71,8 @@ public class Gh0jlSdiResourcetypeHome {
 		}
 	}
 
-	public void delete(Gh0jlSdiResourcetype transientInstance) {
-		log.debug("delete Gh0jlSdiResourcetype instance");
+	public void delete(SdiResource transientInstance) {
+		log.debug("delete SdiResource instance");
 		try {
 			sessionFactory.getCurrentSession().delete(transientInstance);
 			log.debug("delete successful");
@@ -82,8 +82,8 @@ public class Gh0jlSdiResourcetypeHome {
 		}
 	}
 
-	public void merge(Gh0jlSdiResourcetype transientInstance) {
-		log.debug("merge Gh0jlSdiResourcetype instance");
+	public void merge(SdiResource transientInstance) {
+		log.debug("merge SdiResource instance");
 		try {
 			sessionFactory.getCurrentSession().merge(transientInstance);
 			log.debug("merge successful");

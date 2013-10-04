@@ -4,6 +4,7 @@ package org.easysdi.proxy.domain;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -31,6 +32,26 @@ public class SdiMetadataHome {
 			SdiMetadata instance = (SdiMetadata) sessionFactory
 					.getCurrentSession().get(SdiMetadata.class, id);
 			log.debug("get successful");
+			return instance;
+		} catch (RuntimeException re) {
+			log.error("get failed", re);
+			throw re;
+		}
+	}
+        
+        public SdiMetadata findByguid(String guid) {
+		log.debug("getting SdiMetadata instance with guid: " + guid);
+		try {
+			org.hibernate.Session session = sessionFactory.getCurrentSession();
+			session.enableFilter("entityState");
+			
+			Query q = session.createQuery("Select m FROM SdiMetadata m WHERE guid= :guid ");
+			q.setParameter("guid", guid);
+			SdiMetadata instance = (SdiMetadata) q.uniqueResult();
+			
+			if(instance == null)
+				return null;
+			
 			return instance;
 		} catch (RuntimeException re) {
 			log.error("get failed", re);
