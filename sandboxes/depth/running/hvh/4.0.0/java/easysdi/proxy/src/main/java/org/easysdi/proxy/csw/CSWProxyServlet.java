@@ -746,13 +746,12 @@ public class CSWProxyServlet extends ProxyServlet {
                 }
                 if (constraintLanguage.equalsIgnoreCase("CQL_TEXT")) {
                     //Add Geographical filter as CQL_TEXT additional parameter
-                    //Add policy restrictions filter
-                    constraint = cswDataManager.addCQLBBOXFilter(constraint);
+                    constraint = cswDataManager.addCQLFilter(constraint);                    
 
                 } else if (constraintLanguage.equalsIgnoreCase("FILTER")) {
                     //Add Geographical filter
                     //Add policy restrictions filter
-                    constraint = cswDataManager.addXMLBBOXFilter(constraint);
+                    constraint = cswDataManager.addXMLFilter(constraint);
 
                 } else {
                     //The constraint language specified in the request is not valid, or not yet supported by the proxy
@@ -1021,7 +1020,7 @@ public class CSWProxyServlet extends ProxyServlet {
                             || (sdiPolicy.getSdiCswSpatialpolicy() != null && sdiPolicy.getSdiCswSpatialpolicy().isValid())
                             || !sdiPolicy.isCsw_includeharvested()) {
                         //Add a filter on the data id in the request
-                        param = cswDataManager.addPolicyRestrictionFilters(sdiVirtualService.getIdentifiersearchattribute(), param);
+                        param = cswDataManager.addXMLFilterToPOST(sdiVirtualService.getIdentifiersearchattribute(), param);
                         if (param == null) {
                             owsExceptionReport.sendHttpServletResponse(request, response, cswDataManager.generateEmptyResponseForGetRecords(requestedVersion), "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
                             return;
