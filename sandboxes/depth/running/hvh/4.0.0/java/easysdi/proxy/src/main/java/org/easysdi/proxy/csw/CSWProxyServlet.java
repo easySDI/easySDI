@@ -17,7 +17,6 @@ package org.easysdi.proxy.csw;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -33,7 +32,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.Vector;
@@ -62,12 +60,9 @@ import org.easysdi.proxy.domain.SdiVirtualmetadata;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.proxy.jdom.filter.ElementFilter;
-import org.easysdi.proxy.jdom.filter.ElementMD_MetadataNonAuthorizedFilter;
-import org.easysdi.proxy.jdom.filter.ElementTransactionTypeFilter;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
 import org.easysdi.proxy.xml.handler.CswRequestHandler;
-import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -75,6 +70,7 @@ import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
@@ -90,8 +86,8 @@ public class CSWProxyServlet extends ProxyServlet {
     private String[] CSWOperation = {"GetCapabilities", "GetRecords", "GetRecordById", "Harvest", "DescribeRecord", "GetExtrinsicContent", "Transaction", "GetDomain"};
     private static final List<String> ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetRecords", "GetRecordById", "DescribeRecord", "Transaction");
 
-    public CSWProxyServlet(ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy) {
-        super(proxyRequest, virtualService, policy);
+    public CSWProxyServlet(ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy, ApplicationContext context) {
+        super(proxyRequest, virtualService, policy, context);
         owsExceptionReport = new OWS200ExceptionReport();
         cswDataManager = new CSWProxyDataAccessibilityManager(policy);
     }
@@ -724,7 +720,7 @@ public class CSWProxyServlet extends ProxyServlet {
             if (currentOperation.equalsIgnoreCase("GetRecordById")) {
                 logger.trace("Start - Data Accessibility");
 
-                if (!cswDataManager.isMetadataAccessible(requestedId)) {
+                if (!cswDataManager.isMetadataAccessible(this.context,requestedId)) {
                     logger.info(requestedId + " - Requested metadata version is not accessible regarding policy restriction. Method isMetadataAccessible returned false.");
                     requestedId = cswDataManager.getMetadataVersionAccessible();
                     logger.info(requestedId + " - Requested metadata id was change by method getMetadataVersionAccessible.");
@@ -975,7 +971,7 @@ public class CSWProxyServlet extends ProxyServlet {
                 else if (currentOperation.equalsIgnoreCase("GetRecordById")) {
                     logger.trace("Start - Data Accessibility");
                     String dataId = rh.getRecordId();
-                    if (!cswDataManager.isMetadataAccessible(dataId)) {
+                    if (!cswDataManager.isMetadataAccessible(this.context, dataId)) {
                         logger.info(dataId + " - Requested metadata version is not accessible regarding policy restriction. Method isMetadataAccessible returned false.");
                         dataId = cswDataManager.getMetadataVersionAccessible();
                         logger.info(dataId + " - Requested metadata id was change by method getMetadataVersionAccessible.");

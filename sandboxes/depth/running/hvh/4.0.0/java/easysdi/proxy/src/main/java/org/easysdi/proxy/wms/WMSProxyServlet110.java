@@ -21,6 +21,7 @@ import org.easysdi.proxy.domain.SdiPolicy;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.wms.v110.WMSExceptionReport110;
 import org.easysdi.proxy.wms.v110.WMSProxyResponseBuilder110;
+import org.springframework.context.ApplicationContext;
 
 /**
  * @author DEPTH SA
@@ -36,8 +37,8 @@ public class WMSProxyServlet110 extends WMSProxyServlet{
 	/**
 	 * 
 	 */
-	public WMSProxyServlet110(ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy) {
-		super(proxyRequest, virtualService, policy);
+	public WMSProxyServlet110(ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy, ApplicationContext context) {
+		super(proxyRequest, virtualService, policy, context);
 		docBuilder = new WMSProxyResponseBuilder110(this);
 		owsExceptionReport = new WMSExceptionReport110 ();
 	}

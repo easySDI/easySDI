@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.domain.SdiAccessscope;
 import org.easysdi.proxy.domain.SdiAccessscopeHome;
 import org.easysdi.proxy.domain.SdiMetadata;
@@ -50,6 +51,8 @@ import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Access the database to retreive accessible metadatas and rewrite request to
@@ -67,6 +70,15 @@ public class CSWProxyDataAccessibilityManager {
     final String CQL_TEXT = "CQL_TEXT";
     final String FILTER = "FILTER";
 
+    /**
+     *
+     * @param p_policy
+     * @param p_joomlaProvider
+     */
+    public CSWProxyDataAccessibilityManager(SdiPolicy p_policy) {
+        policy = p_policy;
+    }
+    
     /**
      * @param dataIdVersionAccessible the dataIdVersionAccessible to set
      */
@@ -111,14 +123,7 @@ public class CSWProxyDataAccessibilityManager {
         return dataIdVersionAccessible;
     }
 
-    /**
-     *
-     * @param p_policy
-     * @param p_joomlaProvider
-     */
-    public CSWProxyDataAccessibilityManager(SdiPolicy p_policy) {
-        policy = p_policy;
-    }
+    
 
     /**
      *
@@ -253,12 +258,13 @@ public class CSWProxyDataAccessibilityManager {
      *
      * @return
      */
-    public boolean isMetadataAccessible(String id) {
+    public boolean isMetadataAccessible(ApplicationContext context, String id) {
         if (isAllMetadataAccessible()) {
             return true;
         }
-
-        SdiMetadataHome metadataHome = new SdiMetadataHome();
+        
+                
+        SdiMetadataHome metadataHome = (SdiMetadataHome)context.getBean("sdiMetadataHome");
         SdiMetadata metadata = metadataHome.findByguid(id);
         if (metadata == null) {
             if (policy.isCsw_includeharvested()) {
@@ -283,8 +289,8 @@ public class CSWProxyDataAccessibilityManager {
             if (!policy.getCswSdiSysAccessscope().getValue().equals(resource.getSdiSysAccessscope().getValue())) {
                 return false;
             }
-
-            SdiAccessscopeHome accessscopeHome = new SdiAccessscopeHome();
+            
+            SdiAccessscopeHome accessscopeHome = (SdiAccessscopeHome)context.getBean("sdiAccessscopeHome");
             List resourceAccessScope = accessscopeHome.findByGuid(resource.getGuid());
 
             if (policy.getCswSdiSysAccessscope().getValue().equals("user")) {

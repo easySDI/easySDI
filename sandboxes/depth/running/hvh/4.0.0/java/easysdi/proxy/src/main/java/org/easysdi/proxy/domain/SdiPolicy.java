@@ -599,8 +599,8 @@ public class SdiPolicy implements java.io.Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "csw_accessscope_id", nullable = false)
     @Filter(name = "entityState", condition = "State = 1")
-    @Column(name = "csw_accessscope_id", nullable = false)
     public SdiSysAccessscope getCswSdiSysAccessscope() {
         return this.cswSdiSysAccessscope;
     }
@@ -619,7 +619,7 @@ public class SdiPolicy implements java.io.Serializable {
     }
     
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "sdiPolicyResourcetype", joinColumns = {@JoinColumn(name = "policy_id")}, inverseJoinColumns = {@JoinColumn (name = "resourcetype_id")})
+    @JoinTable(name = "SdiPolicyResourcetype", joinColumns = {@JoinColumn(name = "policy_id")}, inverseJoinColumns = {@JoinColumn (name = "resourcetype_id")})
     @Filter(name = "entityState",condition="State = 1")
     @Cache (usage=CacheConcurrencyStrategy.READ_ONLY)
     public Set<SdiResourcetype> getSdiResourcetypes() {

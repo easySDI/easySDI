@@ -59,5 +59,7 @@
 	<bean id="sdiUserHome" class="org.easysdi.proxy.domain.SdiUserHome" parent="abstractDao"/>
 	<bean id="usersHome" class="org.easysdi.proxy.domain.UsersHome" parent="abstractDao"/>
 	<bean id="extensionsHome" class="org.easysdi.proxy.domain.ExtensionsHome" parent="abstractDao"/>
+        <bean id="sdiMetadataHome" class="org.easysdi.proxy.domain.SdiMetadataHome" parent="abstractDao"/>
+        <bean id="sdiAccessscopeHome" class="org.easysdi.proxy.domain.SdiAccessscopeHome" parent="abstractDao"/>
 
 </beans>

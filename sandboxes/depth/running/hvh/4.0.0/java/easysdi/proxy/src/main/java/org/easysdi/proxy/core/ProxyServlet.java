@@ -71,6 +71,7 @@ import org.hibernate.metadata.CollectionMetadata;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.xml.sax.SAXException;
 
@@ -149,15 +150,21 @@ public abstract class ProxyServlet extends HttpServlet {
      * Logger
      */
     public Logger logger;
+    
+    /**
+     * 
+     */
+    protected ApplicationContext context;
 
     /**
      * 
      */
-    public ProxyServlet(ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy) {
+    public ProxyServlet(ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy, ApplicationContext context) {
     	super();
     	this.proxyRequest = proxyRequest;
     	this.sdiVirtualService = virtualService;
     	this.sdiPolicy = policy;
+        this.context = context;
     	
     	//Set the logger
     	Level level = Level.toLevel(sdiVirtualService.getSdiSysLoglevel().getValue()); 

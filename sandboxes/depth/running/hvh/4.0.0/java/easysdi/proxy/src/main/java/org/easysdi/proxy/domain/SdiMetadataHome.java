@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +43,7 @@ public class SdiMetadataHome {
         public SdiMetadata findByguid(String guid) {
 		log.debug("getting SdiMetadata instance with guid: " + guid);
 		try {
-			org.hibernate.Session session = sessionFactory.getCurrentSession();
+			Session session = sessionFactory.getCurrentSession();
 			session.enableFilter("entityState");
 			
 			Query q = session.createQuery("Select m FROM SdiMetadata m WHERE guid= :guid ");
