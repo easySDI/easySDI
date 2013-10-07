@@ -1542,7 +1542,7 @@ class ADMIN_proxy
 			{
 				$attributesArray[] = substr ($attributes,0,$index);
 				$em = substr($attributes,$index + 1);
-				ADMIN_proxy::getAttributesList($em, &$attributesArray);
+				ADMIN_proxy::getAttributesList($em, $attributesArray);
 			}
 			else
 			{

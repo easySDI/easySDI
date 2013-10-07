@@ -172,7 +172,7 @@ class ADMIN_codevalue {
 		// get list of published states for dropdown filter
 		$lists['state'] = JHTML::_('grid.state', $filter_state, 'Published', 'Unpublished');
 		
-		HTML_codevalue::listCodeValue(&$rows, $lists, $pagination, $option,  $filter_order_Dir, $filter_order, $attributeid);
+		HTML_codevalue::listCodeValue($rows, $lists, $pagination, $option,  $filter_order_Dir, $filter_order, $attributeid);
 	}
 	
 	function editCodeValue($id, $option)

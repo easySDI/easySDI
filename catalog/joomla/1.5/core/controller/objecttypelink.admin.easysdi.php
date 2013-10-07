@@ -123,7 +123,7 @@ class ADMIN_objecttypelink {
 			return false;
 		}		
 		
-		HTML_objecttypelink::listObjectTypeLink(&$rows, $pagination, $option,  $filter_order_Dir, $filter_order);
+		HTML_objecttypelink::listObjectTypeLink($rows, $pagination, $option,  $filter_order_Dir, $filter_order);
 	}
 	
 	function editObjectTypeLink($id, $option)
