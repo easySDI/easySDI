@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.domain.SdiAccessscope;
 import org.easysdi.proxy.domain.SdiAccessscopeHome;
@@ -279,7 +280,7 @@ public class CSWProxyDataAccessibilityManager {
         SdiResource resource = metadata.getSdiVersion().getSdiResource();
 
         if (!policy.isCsw_anyresourcetype()) {
-            HashSet<SdiResourcetype> resourceTypes = (HashSet<SdiResourcetype>) policy.getSdiResourcetypes();
+            Set<SdiResourcetype> resourceTypes = (Set<SdiResourcetype>) policy.getSdiResourcetypes();
             if (!resourceTypes.contains(resource.getSdiResourcetype())) {
                 //Resource type is not allowed
                 return false;
@@ -364,7 +365,7 @@ public class CSWProxyDataAccessibilityManager {
                     }
                 }
             }
-            
+            return false;
         }
 
         return true;
