@@ -64,7 +64,7 @@ class ADMIN_profile {
 			return false;
 		}		
 		
-		HTML_profile::listProfile(&$rows, $pagination, $option,  $filter_order_Dir, $filter_order);
+		HTML_profile::listProfile($rows, $pagination, $option,  $filter_order_Dir, $filter_order);
 	}
 	
 	function editProfile($id, $option)

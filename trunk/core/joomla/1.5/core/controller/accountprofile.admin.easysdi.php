@@ -86,7 +86,7 @@ class ADMIN_accountprofile {
 			return false;
 		}		
 		
-		HTML_accountprofile::listAccountProfile(&$rows, $pagination, $option,  $filter_order_Dir, $filter_order);
+		HTML_accountprofile::listAccountProfile($rows, $pagination, $option,  $filter_order_Dir, $filter_order);
 	}
 	
 	function editAccountProfile($id, $option)
