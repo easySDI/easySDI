@@ -14,6 +14,7 @@ jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
 
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
 
 /**
  * Easysdi_core model.
@@ -76,11 +77,10 @@ class Easysdi_coreModelResource extends JModelForm {
                 // Convert the JTable to a clean JObject.
                 $properties = $table->getProperties(1);
                 $this->_item = JArrayHelper::toObject($properties, 'JObject');
-                
+
                 //Load accessscope
                 $this->_item->organisms = sdiModel::getAccessScopeOrganism($this->_item->guid);
                 $this->_item->users = sdiModel::getAccessScopeUser($this->_item->guid);
-                
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
@@ -278,7 +278,7 @@ class Easysdi_coreModelResource extends JModelForm {
             $data['guid'] = $table->guid;
             if (!sdiModel::saveAccessScope($data))
                 return false;
-            
+
             //Save users rights
             $jinput = JFactory::getApplication()->input;
             $jform = $jinput->get('jform', '', 'ARRAY');
@@ -309,7 +309,7 @@ class Easysdi_coreModelResource extends JModelForm {
 
                 require_once JPATH_SITE . '/components/com_easysdi_catalog/models/metadata.php';
                 $metadata = JModelLegacy::getInstance('metadata', 'Easysdi_catalogModel');
-                $mddata = array("metadatastate_id" => 2, "accessscope_id" => 1, "version_id" => $version->id);
+                $mddata = array("metadatastate_id" => 1, "accessscope_id" => 1, "version_id" => $version->id);
                 if ($metadata->save($mddata) === false) {
                     //Saving metadata in database or metadata in CSW catalog failed
                     //Version and resource must be deleted
@@ -326,6 +326,23 @@ class Easysdi_coreModelResource extends JModelForm {
                     JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CORE_RESOURCES_ITEM_SAVED_ERROR'), 'error');
                     return false;
                 }
+            } else {
+                //Update the metadata stored in the remote catalog 
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+                $query->select('m.id')
+                        ->from('#__sdi_metadata m ')
+                        ->innerJoin('#__sdi_version v ON v.id = m.version_id')
+                        ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
+                        ->where('r.id = ' . $table->id);
+                $db->setQuery($query);
+                $metadatas = $db->loadColumn();
+                foreach($metadatas as $metadata):
+                    $csw = new sdiMetadata((int)$metadata);
+                    if (!$csw->updateSDIElement()):
+                        JFactory::getApplication()->enqueueMessage('Update CSW metadata failed.', 'error');                        
+                    endif;
+                endforeach;
             }
 
             return $id;
@@ -352,8 +369,11 @@ class Easysdi_coreModelResource extends JModelForm {
             return false;
         }
 
+
         $table = $this->getTable();
         if ($table->delete($data['id']) === true) {
+            sdiModel::deleteAccessScope($data['guid']);
+
             return $id;
         } else {
             return false;
