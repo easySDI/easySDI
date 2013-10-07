@@ -127,7 +127,7 @@ class ADMIN_importref {
 			return false;
 		}		
 		
-		HTML_importref::listImportRef(&$rows, $pagination, $option,  $filter_order_Dir, $filter_order);
+		HTML_importref::listImportRef($rows, $pagination, $option,  $filter_order_Dir, $filter_order);
 	}
 	
 	function editImportRef($id, $option)
