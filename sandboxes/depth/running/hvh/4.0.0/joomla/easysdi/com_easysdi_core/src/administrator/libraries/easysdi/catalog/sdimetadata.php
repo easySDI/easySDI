@@ -147,6 +147,7 @@ class sdiMetadata {
 
         $transaction = $this->dom->createElement('csw:Transaction');
         $transaction->setAttribute('xmlns:csw', 'http://www.opengis.net/cat/csw/2.0.2/');
+        $transaction->setAttribute('xmlns:ogc', 'http://www.opengis.net/ogc');
         $transaction->setAttribute('service', "CSW");
         $transaction->setAttribute('version', "2.0.2");
 
@@ -154,13 +155,10 @@ class sdiMetadata {
 
         $root = $this->dom->createElement($rootclass->isocode);
         $root->setAttribute('xmlns:gmd', 'http://www.isotc211.org/2005/gmd');
-        $root->setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
         $root->setAttribute('xmlns:gco', 'http://www.isotc211.org/2005/gco');
         $root->setAttribute('xmlns:gml', 'http://www.opengis.net/gml');
         $root->setAttribute('xmlns:sdi', 'http://www.easysdi.org/2011/sdi');
-        $root->setAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
-        $root->setAttribute('xmlns:geonet', 'http://www.fao.org/geonetwork');
-        $root->setAttribute('xsi:schemaLocation', 'http://www.isotc211.org/2005/srv http://schemas.opengis.net/iso/19139/20060504/srv/srv.xsd');
+       
 
         $identifier = $this->dom->createElement($attributeIdentifier->attribute_isocode);
         $identifiertype = $this->dom->createElement($attributeIdentifier->type_isocode, $this->metadata->guid);
@@ -223,6 +221,7 @@ class sdiMetadata {
 
         $transaction = $this->dom->createElement('csw:Transaction');
         $transaction->setAttribute('xmlns:csw', 'http://www.opengis.net/cat/csw/2.0.2');
+        $transaction->setAttribute('xmlns:ogc', 'http://www.opengis.net/ogc');
         $transaction->setAttribute('service', "CSW");
         $transaction->setAttribute('version', "2.0.2");
 
@@ -230,11 +229,7 @@ class sdiMetadata {
 
         $constraint = $this->dom->createElement('csw:Constraint');
         $constraint->setAttribute('version', '1.0.0');
-        $constraint->setAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
-        $constraint->setAttribute('xmlns:ogc', 'http://www.opengis.net/ogc');
-        $constraint->setAttribute('xmlns:sdi', 'http://www.easysdi.org/2011/sdi');
-        $constraint->setAttribute('xsi:schemaLocation', 'http://www.isotc211.org/2005/srv http://schemas.opengis.net/iso/19139/20060504/srv/srv.xsd');
-
+        
         $filter = $this->dom->createElement('ogc:Filter');
         $propertyEqual = $this->dom->createElement('ogc:PropertyIsLike');
         $propertyEqual->setAttribute('wildCard', '%');
