@@ -182,6 +182,7 @@ public class CSWProxyServlet extends ProxyServlet {
 
             CSWCapabilities200.append("<xsl:stylesheet version=\"1.00\" "
                     + "xmlns:dc=\"http://purl.org/dc/elements/1.1/\" "
+                    + "xmlns:sdi=\"http://www.easysdi.org/2011/sdi/\" "
                     + "xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" "
                     + "xmlns:gco=\"http://www.isotc211.org/2005/gco\" "
                     + "xmlns:ns3=\"http://www.isotc211.org/2005/gmx\" "
@@ -1016,7 +1017,7 @@ public class CSWProxyServlet extends ProxyServlet {
                             || (sdiPolicy.getSdiCswSpatialpolicy() != null && sdiPolicy.getSdiCswSpatialpolicy().isValid())
                             || !sdiPolicy.isCsw_includeharvested()) {
                         //Add a filter on the data id in the request
-                        param = cswDataManager.addXMLFilterToPOST(sdiVirtualService.getIdentifiersearchattribute(), param);
+                        param = cswDataManager.addXMLFilterToPOST(param);
                         if (param == null) {
                             owsExceptionReport.sendHttpServletResponse(request, response, cswDataManager.generateEmptyResponseForGetRecords(requestedVersion), "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
                             return;

@@ -173,8 +173,10 @@ public class CSWProxyDataAccessibilityManager {
         String xmlBBOXFilter = null;
         String xmlFilter = buildCSWXMLFilter();
 
-        if (policy.getSdiCswSpatialpolicy().isValid()) {
-            xmlBBOXFilter = buildXMLBBOXFilter();
+        if(policy.getSdiCswSpatialpolicy() != null){
+            if (policy.getSdiCswSpatialpolicy().isValid()) {
+                xmlBBOXFilter = buildXMLBBOXFilter();
+            }
         }
 
         if (xmlBBOXFilter == null && xmlFilter == null) {
@@ -214,11 +216,16 @@ public class CSWProxyDataAccessibilityManager {
         } else {
             //Build the XML filter
             constraint = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Filter xmlns='http://www.opengis.net/ogc' xmlns:gml='http://www.opengis.net/gml'>";
-            constraint += xmlBBOXFilter;
-            constraint += xmlFilter;
+            if(xmlBBOXFilter != null){
+                constraint += xmlBBOXFilter;
+            }
+            if(xmlFilter != null){
+                constraint += xmlFilter;
+            }
             constraint += "</Filter>";
         }
-        return URLEncoder.encode(constraint, "UTF-8");
+        return constraint;
+//        return URLEncoder.encode(constraint, "UTF-8");
     }
 
     /**
@@ -391,13 +398,12 @@ public class CSWProxyDataAccessibilityManager {
      * XML constraint with the filters The returned constraint is used in a XML
      * POST GetRecords request
      *
-     * @param ogcSearchFilter
      * @param param
      * @return
      * @throws JDOMException
      * @throws IOException
      */
-    public StringBuffer addXMLFilterToPOST(String ogcSearchFilter, StringBuffer param) throws JDOMException, IOException {
+    public StringBuffer addXMLFilterToPOST(StringBuffer param) throws JDOMException, IOException {
         SAXBuilder sxb = new SAXBuilder();
 
         InputStream xml = new StringBufferInputStream(param.toString());
@@ -408,7 +414,7 @@ public class CSWProxyDataAccessibilityManager {
         Element elementFilter = null;
         Element elementAnd = null;
 
-        ElementFilter filtre = new ElementFilter("csw:Constraint");
+        ElementFilter filtre = new ElementFilter("Constraint");
         Iterator it = docParent.getDescendants(filtre);
 
 
@@ -462,7 +468,7 @@ public class CSWProxyDataAccessibilityManager {
         }
 
         //Add the spatial policy restriction
-        if (policy.getSdiCswSpatialpolicy().isValid()) {
+        if (policy.getSdiCswSpatialpolicy() != null && policy.getSdiCswSpatialpolicy().isValid()) {
             SAXBuilder builder = new SAXBuilder();
             Reader in = new StringReader(buildXMLBBOXFilter());
             Document filterDoc = builder.build(in);
@@ -516,7 +522,7 @@ public class CSWProxyDataAccessibilityManager {
         if (isAllMetadataAccessible()) {
             return null;
         }
-        String filter = "<ogc:And>";
+        String filter = "<ogc:And xmlns:ogc=\"http://www.opengis.net/ogc\">";
         if (!policy.isCsw_includeharvested()) {
             filter += getIsHarvestedFilter(this.FILTER);
         }
@@ -587,7 +593,7 @@ public class CSWProxyDataAccessibilityManager {
             filter += "<ogc:Literal>false</ogc:Literal>";
             filter += "</ogc:PropertyIsEqualTo>";
         } else if (constraintlanguage.equals(this.CQL_TEXT)) {
-            filter = " harvested = false ";
+            filter = " harvested = 'false' ";
         }
         return filter;
     }
@@ -617,18 +623,18 @@ public class CSWProxyDataAccessibilityManager {
             for (SdiResourcetype resourcetype : policy.getSdiResourcetypes()) {
                 filter += "<ogc:PropertyIsEqualTo>";
                 filter += "<ogc:PropertyName>resourcetype</ogc:PropertyName>";
-                filter += "<ogc:Literal>" + resourcetype.getAlias() + "</ogc:Literal>";
+                filter += "<ogc:Literal>" + resourcetype.getAlias().toLowerCase() + "</ogc:Literal>";
                 filter += "</ogc:PropertyIsEqualTo>";
             }
             filter += "</ogc:Or>";
         } else if (constraintlanguage.equals(this.CQL_TEXT)) {
             for (SdiResourcetype resourcetype : policy.getSdiResourcetypes()) {
                 if (filter != null) {
-                    filter += " AND ";
+                    filter += " OR ";
                 } else {
                     filter = "";
                 }
-                filter += " resourcetype = " + resourcetype.getAlias();
+                filter += " resourcetype = '" + resourcetype.getAlias().toLowerCase() + "'";
             }
 
         }
@@ -661,9 +667,9 @@ public class CSWProxyDataAccessibilityManager {
             return null;
         }
 
-        if (policy.getCswSdiSysAccessscope().getValue().equals("public")) {
-            return null;
-        }
+//        if (policy.getCswSdiSysAccessscope().getValue().equals("public")) {
+//            return null;
+//        }
 
         String filter = null;
         if (constraintlanguage.equals(this.FILTER)) {
@@ -672,59 +678,63 @@ public class CSWProxyDataAccessibilityManager {
             filter += "<ogc:PropertyName>scope</ogc:PropertyName>";
             filter += "<ogc:Literal>" + policy.getCswSdiSysAccessscope().getValue() + "</ogc:Literal>";
             filter += "</ogc:PropertyIsEqualTo>";
-            filter += "<ogc:Or>";
-            if (policy.getCswSdiSysAccessscope().getValue().equals("user")) {
-                for (SdiPolicyVisibility policyVisibility : policy.getSdiPolicyVisibilities()) {
-                    if (policyVisibility.getSdiUser() != null) {
-                        filter += "<ogc:PropertyIsEqualTo>";
-                        filter += "<ogc:PropertyName>sdiuser</ogc:PropertyName>";
-                        filter += "<ogc:Literal>" + policyVisibility.getSdiUser().getGuid() + "</ogc:Literal>";
-                        filter += "</ogc:PropertyIsEqualTo>";
+            if (!policy.getCswSdiSysAccessscope().getValue().equals("public")) {
+                filter += "<ogc:Or>";
+                if (policy.getCswSdiSysAccessscope().getValue().equals("user")) {
+                    for (SdiPolicyVisibility policyVisibility : policy.getSdiPolicyVisibilities()) {
+                        if (policyVisibility.getSdiUser() != null) {
+                            filter += "<ogc:PropertyIsEqualTo>";
+                            filter += "<ogc:PropertyName>sdiuser</ogc:PropertyName>";
+                            filter += "<ogc:Literal>" + policyVisibility.getSdiUser().getGuid() + "</ogc:Literal>";
+                            filter += "</ogc:PropertyIsEqualTo>";
+                        }
+                    }
+                } else {
+                    for (SdiPolicyVisibility policyVisibility : policy.getSdiPolicyVisibilities()) {
+                        if (policyVisibility.getSdiOrganism() != null) {
+                            filter += "<ogc:PropertyIsEqualTo>";
+                            filter += "<ogc:PropertyName>sdiorganism</ogc:PropertyName>";
+                            filter += "<ogc:Literal>" + policyVisibility.getSdiOrganism().getGuid() + "</ogc:Literal>";
+                            filter += "</ogc:PropertyIsEqualTo>";
+                        }
                     }
                 }
-            } else {
-                for (SdiPolicyVisibility policyVisibility : policy.getSdiPolicyVisibilities()) {
-                    if (policyVisibility.getSdiOrganism() != null) {
-                        filter += "<ogc:PropertyIsEqualTo>";
-                        filter += "<ogc:PropertyName>sdiorganism</ogc:PropertyName>";
-                        filter += "<ogc:Literal>" + policyVisibility.getSdiOrganism().getGuid() + "</ogc:Literal>";
-                        filter += "</ogc:PropertyIsEqualTo>";
-                    }
-                }
+                filter += "</ogc:Or>";
             }
-            filter += "</ogc:Or>";
             filter += "</ogc:And>";
         } else if (constraintlanguage.equals(this.CQL_TEXT)) {
-            filter = "scope = " + policy.getCswSdiSysAccessscope().getValue();
-            filter += " AND ";
-            if (policy.getCswSdiSysAccessscope().getValue().equals("user")) {
-                boolean first = true;
-                filter += "( ";
-                for (SdiPolicyVisibility policyVisibility : policy.getSdiPolicyVisibilities()) {
-                    if (policyVisibility.getSdiUser() != null) {
-                        if (first) {
-                            first = false;
-                        } else {
-                            filter += " OR ";
+            filter = " scope = '" + policy.getCswSdiSysAccessscope().getValue()+ "'";
+            if (!policy.getCswSdiSysAccessscope().getValue().equals("public")) {
+                filter += " AND ";
+                if (policy.getCswSdiSysAccessscope().getValue().equals("user")) {
+                    boolean first = true;
+                    filter += "( ";
+                    for (SdiPolicyVisibility policyVisibility : policy.getSdiPolicyVisibilities()) {
+                        if (policyVisibility.getSdiUser() != null) {
+                            if (first) {
+                                first = false;
+                            } else {
+                                filter += " OR ";
+                            }
+                            filter += " sdiuser = '" + policyVisibility.getSdiUser().getGuid() + "'";
                         }
-                        filter += " sdiuser = " + policyVisibility.getSdiUser().getGuid();
                     }
-                }
 
-            } else {
-                boolean first = true;
-                filter += "( ";
-                for (SdiPolicyVisibility policyVisibility : policy.getSdiPolicyVisibilities()) {
-                    if (policyVisibility.getSdiOrganism() != null) {
-                        if (first) {
-                            first = false;
-                        } else {
-                            filter += " OR ";
+                } else {
+                    boolean first = true;
+                    filter += "( ";
+                    for (SdiPolicyVisibility policyVisibility : policy.getSdiPolicyVisibilities()) {
+                        if (policyVisibility.getSdiOrganism() != null) {
+                            if (first) {
+                                first = false;
+                            } else {
+                                filter += " OR ";
+                            }
+                            filter += " sdiorganism = '" + policyVisibility.getSdiOrganism().getGuid() + "'";
                         }
-                        filter += " sdiorganism = " + policyVisibility.getSdiOrganism().getGuid();
                     }
+                    filter += ") ";
                 }
-                filter += ") ";
             }
         }
         return filter;
@@ -800,22 +810,22 @@ public class CSWProxyDataAccessibilityManager {
                 }
                 if (policyMetadataState.getSdiSysMetadatastate().getValue().equals("published")) {
                     filter += "(";
-                    filter += " metadatastate = " + policyMetadataState.getSdiSysMetadatastate().getValue();
+                    filter += " metadatastate = '" + policyMetadataState.getSdiSysMetadatastate().getValue() + "'";
                     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    filter += " AND published >= " + dateFormat.format(new Date());
+                    filter += " AND published >= '" + dateFormat.format(new Date()) + "'";
                     if (policyMetadataState.getSdiSysMetadataversion().getValue().equals("last")) {
-                        filter += "AND lastversion = TRUE";
+                        filter += " AND lastversion = TRUE";
                     }
                     filter += ")";
 
                 } else {
                     filter += "(";
-                    filter += " metadatastate = " + policyMetadataState.getSdiSysMetadatastate().getValue();
+                    filter += " metadatastate = '" + policyMetadataState.getSdiSysMetadatastate().getValue() +"'";
                     filter += ")";
                 }
             }
         }
 
-        return null;
+        return filter;
     }
 }
