@@ -371,8 +371,8 @@ class sdiMetadata {
         $serviceaccount_id = $params->get('serviceaccount');
         $juser = JFactory::getUser($serviceaccount_id);
 
-//        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-//        curl_setopt($ch, CURLOPT_USERPWD, $juser->username . ":" . $juser->password);
+        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        curl_setopt($ch, CURLOPT_USERPWD, $juser->username . ":" . $juser->password);
 
         $output = curl_exec($ch);
         curl_close($ch);
