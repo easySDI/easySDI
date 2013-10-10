@@ -43,7 +43,7 @@ class JFormFieldMultilingual extends JFormField
 		// Initialize JavaScript field attributes.
 		$onchange = $this->element['onchange'] ? ' onchange="' . (string) $this->element['onchange'] . '"' : '';
 
-                $languages = JComponentHelper::getParams('com_easysdi_catalog')->get('languages');
+                $languages = JComponentHelper::getParams('com_easysdi_catalog')->get('languages', array());
                 array_unshift($languages, JComponentHelper::getParams('com_easysdi_catalog')->get('defaultlanguage'));
                 $html = "";
                 $db = JFactory::getDbo();

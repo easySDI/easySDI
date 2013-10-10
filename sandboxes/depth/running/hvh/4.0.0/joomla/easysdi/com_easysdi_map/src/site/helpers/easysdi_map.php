@@ -540,18 +540,23 @@ abstract class Easysdi_mapHelper {
         ],';
 
         // layer sources
-        switch ($item->defaultserviceconnector_id) :
-            case 2 :
-                $config .= '
+        
+        //Default service is always wms
+        $config .= '
                 defaultSourceType: "sdi_gxp_wmssource",
                 ';
-                break;
-            case 11 :
-                $config .= '
-                defaultSourceType: "gxp_wmscsource",
-                ';
-                break;
-        endswitch;
+//        switch ($item->defaultserviceconnector_id) :
+//            case 2 :
+//                $config .= '
+//                defaultSourceType: "sdi_gxp_wmssource",
+//                ';
+//                break;
+//            case 11 :
+//                $config .= '
+//                defaultSourceType: "gxp_wmscsource",
+//                ';
+//                break;
+//        endswitch;
 
         $config .= '
         sources: 
@@ -632,8 +637,7 @@ abstract class Easysdi_mapHelper {
             }
         endif;
 
-        if (!empty($item->restrictedextent)):
-            $config .= ' 
+         $config .= ' 
             },
 
             // map and layers
@@ -643,31 +647,22 @@ abstract class Easysdi_mapHelper {
             title: "Map",
             header:false,
             projection: "' . $item->srs . '",        
-            maxExtent : [' . $item->maxextent . '],
-            restrictedExtent: [' . $item->restrictedextent . '],
-            maxResolution: ' . $item->maxresolution . ',
+            maxExtent : [' . $item->maxextent . '],';
+         if (!empty($item->centercoordinates)):
+           $config .= '  center: [' . $item->centercoordinates . '],';
+         endif;
+         if (!empty($item->restrictedextent)):
+           $config .= '  restrictedExtent: [' . $item->restrictedextent . '],';
+         endif;
+         if (!empty($item->zoom)):
+           $config .= '  zoom : [' . $item->zoom . '],';
+         endif;
+            $config .= ' maxResolution: ' . $item->maxresolution . ',
             units: "' . $item->unit . '",
             layers: 
             [
             ';
-        else:
-            $config .= ' 
-            },
 
-            // map and layers
-            map: 
-            {
-            id: "sdimap",
-            title: "Map",
-            header:false,
-            projection: "' . $item->srs . '",        
-            maxExtent : [' . $item->maxextent . '],
-            maxResolution: ' . $item->maxresolution . ',
-            units: "' . $item->unit . '",
-            layers: 
-            [
-            ';
-        endif;
 
         //Layers have to be added the lowest before the highest
         //To do that, the groups have to be looped in reverse order

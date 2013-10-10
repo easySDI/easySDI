@@ -82,12 +82,13 @@ class sdiMetadata {
         $doc = new DOMDocument();
         $doc->loadXML($response);
 
-        if ($doc <> false and $doc->childNodes->item(0)->hasChildNodes()) {
-            return $doc;
-        } else if ($doc->childNodes->item(0)->nodeName == "ows:ExceptionReport") {
+        if ($doc <> false and $doc->childNodes->item(0)->hasChildNodes()) {            
+         if ($doc->childNodes->item(0)->nodeName == "ExceptionReport") {
             $msg = $doc->childNodes->item(0)->nodeValue;
             JFactory::getApplication()->enqueueMessage($msg, 'error');
             return false;
+         }
+         return $doc;
         } else {
             $msg = JText::_('CATALOG_METADATA_EDIT_NOMETADATA_MSG');
             JFactory::getApplication()->enqueueMessage('No such metadata in the catalog.', 'error');

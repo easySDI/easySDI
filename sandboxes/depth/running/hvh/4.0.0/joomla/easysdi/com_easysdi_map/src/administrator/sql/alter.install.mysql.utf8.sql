@@ -25,9 +25,6 @@ ADD CONSTRAINT `#__sdi_map_virtualservice_fk2` FOREIGN KEY (`virtualservice_id`)
 ALTER TABLE `#__sdi_map`
 ADD CONSTRAINT `#__sdi_map_fk2` FOREIGN KEY (`unit_id`) REFERENCES `#__sdi_sys_unit` (`id`);
 
-ALTER TABLE `#__sdi_map`
-ADD CONSTRAINT `#__sdi_map_fk3` FOREIGN KEY (`defaultserviceconnector_id`) REFERENCES `#__sdi_sys_serviceconnector` (`id`);
-
 ALTER TABLE `#__sdi_layer_layergroup`
 ADD CONSTRAINT `#__sdi_layer_layergroup_fk1` FOREIGN KEY (`layer_id`) REFERENCES `#__sdi_maplayer` (`id`) ON DELETE CASCADE;
 

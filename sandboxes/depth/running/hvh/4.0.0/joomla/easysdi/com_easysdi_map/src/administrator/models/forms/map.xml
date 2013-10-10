@@ -73,7 +73,7 @@
                 required="true"
         />
                  
-        <field 	name="defaultserviceconnector_id" 
+<!--        <field 	name="defaultserviceconnector_id" 
                 type="sql" 
                 class="inputbox"
                 size="1"
@@ -85,7 +85,7 @@
                 query="SELECT null AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector WHERE state=1 AND value IN ('WMS', 'WMTS', 'WMSC')" 
                 key_field="id" 
                 value_field="value"
-        />
+        />-->
                  
         <field 	name="srs" 
                 type="text" 
@@ -131,6 +131,24 @@
                 description="COM_EASYSDI_MAP_FORM_DESC_MAP_RESTRICTEDEXTENT" 
                 required="false"
                 filter="safehtml" />
+        
+         <field 	name="centercoordinates" 
+                type="text" 
+                size="255" 
+                class="input-xxlarge"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_CENTERCOORDINATES"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_CENTERCOORDINATES" 
+                required="false"
+                filter="safehtml" />
+        
+         <field 	name="zoom" 
+                type="text" 
+                size="255" 
+                class="input-xxlarge"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_ZOOM"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_ZOOM" 
+                required="false"
+                filter="safehtml" />
                  
         <field 	name="rootnodetext" 
                 type="text" 
@@ -168,7 +186,7 @@
         <field name="checked_out" type="hidden" filter="unset" />
         <field name="checked_out" type="hidden" filter="unset" />
         <field name="checked_out_time" type="hidden" filter="unset" />
-        <field name="asset_id" type="hidden" filter="SAFEHTML" />
+        <field name="asset_id" type="hidden" filter="SAFEHTML" />        
     </fieldset>
 
     <fieldset name="toolsstate">
