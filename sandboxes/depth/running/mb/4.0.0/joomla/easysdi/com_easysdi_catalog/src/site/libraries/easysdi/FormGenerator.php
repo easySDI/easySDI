@@ -442,6 +442,7 @@ class FormGenerator {
                 }
                 $this->getValue($node);
             } else {
+                $xpath = $node->getNodePath();
                 $nodeCsw = $this->domXpathCsw->query('/*' . $node->getNodePath())->item(0);
                 if (isset($nodeCsw)) {
                     $node->nodeValue = $nodeCsw->nodeValue;
@@ -465,6 +466,7 @@ class FormGenerator {
         $form->appendChild($this->getHiddenFields());
 
         $fieldset = $this->form->createElement('fieldset');
+        
         switch ($root->getAttributeNS($this->catalog_uri, 'childtypeId')) {
             case EnumChildtype::$RELATIONTYPE:
                 $query = 'descendant-or-self::*[@catalog:childtypeId="2"]|descendant-or-self::*[@catalog:childtypeId="3"]';
@@ -589,9 +591,9 @@ class FormGenerator {
         if ($readonly) {
             $field->setAttribute('readonly', 'true');
         }
-
+        
         $field->setAttribute('default', $attribute->firstChild->nodeValue);
-        $field->setAttribute('name', $this->serializeXpath($attribute->getNodePath()));
+        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
         $field->setAttribute('label', EText::_($guid));
         $field->setAttribute('description', EText::_($guid, 2));
 
@@ -620,7 +622,7 @@ class FormGenerator {
 
         return $fields;
     }
-
+    
     /**
      * Create a field of type textarea.
      * 
@@ -646,8 +648,8 @@ class FormGenerator {
             $field->setAttribute('readonly', 'true');
         }
 
-        $field->setAttribute('default', $attribute->nodeValue);
-        $field->setAttribute('name', $this->serializeXpath($attribute->getNodePath()));
+        $field->setAttribute('default', $attribute->firstChild->nodeValue);
+        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
         $field->setAttribute('label', EText::_($guid));
         $field->setAttribute('description', EText::_($guid, 2));
 
@@ -754,7 +756,7 @@ class FormGenerator {
 
         //$validator = $this->getValidatorClass($rel);
 
-        $field->setAttribute('name', $this->serializeXpath($attribute->getNodePath()));
+        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
         //$field->setAttribute('class', $validator);
         if ($readonly) {
             $field->setAttribute('readonly', 'true');
@@ -830,14 +832,14 @@ class FormGenerator {
 
 //$validator = $this->getValidatorClass($rel);
 
-        $field->setAttribute('name', $this->serializeXpath($attribute->getNodePath()));
+        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
         $field->setAttribute('type', 'calendar');
         //$field->setAttribute('class', $validator);
         $field->setAttribute('format', '%Y-%m-%d');
         $field->setAttribute('label', EText::_($guid));
         $field->setAttribute('description', EText::_($guid, 2));
 
-        $field->setAttribute('default', substr($attribute->nodeValue, 0, 10));
+        $field->setAttribute('default', substr($attribute->firstChild->nodeValue, 0, 10));
 
 
         return $field;

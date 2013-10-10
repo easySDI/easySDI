@@ -24,12 +24,33 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/SdiStereotype.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/SdiResourcetype.php';
 
-require_once JPATH_ADMINISTRATOR .'/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
 
 /**
  * Metadata controller class.
  */
 class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
+
+    /**
+     *
+     * @var JSession 
+     */
+    private $session;
+
+    /**
+     *
+     * @var SdiNamespaceDao 
+     */
+    private $nsdao;
+    
+    private $catalog_uri = 'http://www.easysdi.org/2011/sdi/catalog';
+    private $catalog_prefix = 'catalog';
+
+    function __construct() {
+        $this->session = JFactory::getSession();
+        $this->nsdao = new SdiNamespaceDao();
+        parent::__construct();
+    }
 
     /**
      * Method to check out an item for editing and redirect to the edit form.
@@ -70,25 +91,47 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * @since	1.6
      */
     public function save() {
-        $relations = $this->getRelations();
         $data = JFactory::getApplication()->input->get('jform', array(), 'array');
-        
-        $smda = new sdiMetadata($data['id']);
-        
-        foreach ($relations as $key => $rel) {
-            if ($rel->childtype_id == SdiRelation::$ATTRIBUT) {
-                if (array_key_exists($key, $data)) {
-                    $rel->getAttribut_child()->value = $data[$key];
+
+        $structure = new DOMDocument('1.0', 'utf-8');
+        $structure->loadXML(unserialize($this->session->get('structure')));
+
+        $domXpathStr = new DOMXPath($structure);
+        foreach ($this->nsdao->getAll() as $ns) {
+            $domXpathStr->registerNamespace($ns->prefix, $ns->uri);
+        }
+
+        foreach ($data as $xpath => $value) {
+            $xpatharray = explode('#', $xpath);
+            if (count($xpatharray) > 1) {
+                $query = $this->unSerializeXpath($xpatharray[0]) . '[@locale="#' . $xpatharray[1] . '"]';
+            } else {
+                $query = $this->unSerializeXpath($xpatharray[0]);
+            }
+            $element = $domXpathStr->query($query)->item(0);
+            if (isset($element)) {
+                if ($element->hasAttribute('codeList')) {
+                    $element->setAttribute('codeListValue', $value);
+                } elseif ($element->hasAttributeNS('http://www.w3.org/1999/xlink','href')) {
+                    echo '';
+                } else {
+                    $element->nodeValue = $value;
                 }
             }
         }
-        
-        $dcc = new DomCswCreator($relations, $data['id'], $data['guid']);
 
+        $structure->formatOutput = true;
+        $xml = $structure->saveXML();
+
+        echo '';
+
+        $smda = new sdiMetadata($data['id']);
         
         $smda->update($dcc->getCsw());
-    
-
+        
+        
+        //
+        //
 //        // Initialise variables.
 //        $app = JFactory::getApplication();
 //        $model = $this->getModel('Metadata', 'Easysdi_catalogModel');
@@ -167,21 +210,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
     }
 
-    protected function buildForm() {
-        $fhg = new FormHtmlGenerator($this->form);
-
-        $classTree = $this->classTree = $this->get('ClassTree');
-        return $fhg->buildForm($classTree);
-    }
-
-    /**
-     * 
-     * @return SdiRelation[]
-     */
-    private function getRelations() {
-        $session = JFactory::getSession();
-        $relations = unserialize($session->get('relations'));
-        return $relations;
+    private function unSerializeXpath($xpath) {
+        $xpath = str_replace('-la-', '[', $xpath);
+        $xpath = str_replace('-ra-', ']', $xpath);
+        $xpath = str_replace('-sla-', '/', $xpath);
+        $xpath = str_replace('-dp-', ':', $xpath);
+        return $xpath;
     }
 
 }

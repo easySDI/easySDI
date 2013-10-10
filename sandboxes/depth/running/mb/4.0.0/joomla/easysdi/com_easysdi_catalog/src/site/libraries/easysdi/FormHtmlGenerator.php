@@ -243,7 +243,7 @@ class FormHtmlGenerator {
         $occurance = $this->domXpathStr->query($this->removeIndex($element->getNodePath()))->length;
         $index = $element->getAttributeNS($this->catalog_uri, 'index');
         $exist = $element->getAttributeNS($this->catalog_uri, 'exist');
-        
+
         $elementname = $element->nodeName;
 
         $aCollapse = $this->formHtml->createElement('a');
@@ -362,7 +362,7 @@ class FormHtmlGenerator {
 
         switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
             case EnumStereotype::$LOCALE:
-                $nodePath = $attribute->getNodePath();
+                $nodePath = $attribute->firstChild->getNodePath();
                 $jfield = $this->form->getField($this->serializeXpath($nodePath));
                 $html .= $debug . ' ' . $this->buildField($jfield, $attribute->getAttributeNS($this->catalog_uri, 'id'));
 
@@ -377,11 +377,18 @@ class FormHtmlGenerator {
                 break;
 
             default:
-                $jfield = $this->form->getField($this->serializeXpath($attribute->getNodePath()));
+                if($attribute->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE){
+                    $nodePath = $attribute->getNodePath();
+                }else{
+                    $nodePath = $attribute->firstChild->getNodePath();
+                }
+                
+                $attributeName = $attribute->nodeName;
+                $jfield = $this->form->getField($this->serializeXpath($nodePath));
                 if ($jfield) {
                     $html .= $debug . ' ' . $this->buildField($jfield, $attribute->getAttributeNS($this->catalog_uri, 'id'));
                 } else {
-                    $html .= '<div>Champ ' . $attribute->getAttributeNS($this->catalog_uri, 'id') . ' non trouvé!</div>';
+                    $html .= '<div>Champ ' . $attribute->firstChild->getNodePath() . ' non trouvé!</div>';
                 }
                 break;
         }
