@@ -198,6 +198,5 @@
         <jar destfile="${parent.package.out.dir}/easysdi-${version}.zip">
             <fileset dir="${parent.src.out.dir}"/>
         </jar>
-    </target>
-    
+    </target>    
 </project>
