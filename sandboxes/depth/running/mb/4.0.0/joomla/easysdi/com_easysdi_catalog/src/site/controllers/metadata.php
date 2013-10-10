@@ -33,22 +33,35 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
     /**
      *
+     * @var JDatabaseDriver
+     */
+    private $db = null;
+
+    /**
+     *
      * @var JSession 
      */
     private $session;
-
+    /**
+     *
+     * @var DOMDocument 
+     */
+    private $structure;
     /**
      *
      * @var SdiNamespaceDao 
      */
     private $nsdao;
-    
     private $catalog_uri = 'http://www.easysdi.org/2011/sdi/catalog';
     private $catalog_prefix = 'catalog';
 
     function __construct() {
+        $this->db = JFactory::getDbo();
         $this->session = JFactory::getSession();
         $this->nsdao = new SdiNamespaceDao();
+        $this->structure = new DOMDocument('1.0', 'utf-8');
+        $this->structure->loadXML(unserialize($this->session->get('structure')));
+
         parent::__construct();
     }
 
@@ -93,10 +106,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     public function save() {
         $data = JFactory::getApplication()->input->get('jform', array(), 'array');
 
-        $structure = new DOMDocument('1.0', 'utf-8');
-        $structure->loadXML(unserialize($this->session->get('structure')));
-
-        $domXpathStr = new DOMXPath($structure);
+        $domXpathStr = new DOMXPath($this->structure);
         foreach ($this->nsdao->getAll() as $ns) {
             $domXpathStr->registerNamespace($ns->prefix, $ns->uri);
         }
@@ -112,24 +122,22 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             if (isset($element)) {
                 if ($element->hasAttribute('codeList')) {
                     $element->setAttribute('codeListValue', $value);
-                } elseif ($element->hasAttributeNS('http://www.w3.org/1999/xlink','href')) {
-                    echo '';
+                } elseif ($element->hasAttributeNS('http://www.w3.org/1999/xlink', 'href')) {
+                    $element->setAttributeNS('http://www.w3.org/1999/xlink','xlink:href', $this->getHref($value));
                 } else {
                     $element->nodeValue = $value;
                 }
             }
         }
 
-        $structure->formatOutput = true;
-        $xml = $structure->saveXML();
-
-        echo '';
+        $this->structure->formatOutput = true;
+        $xml = $this->structure->saveXML();
 
         $smda = new sdiMetadata($data['id']);
-        
-        $smda->update($dcc->getCsw());
-        
-        
+
+        //$smda->update($dcc->getCsw());
+
+
         //
         //
 //        // Initialise variables.
@@ -216,6 +224,77 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $xpath = str_replace('-sla-', '/', $xpath);
         $xpath = str_replace('-dp-', ':', $xpath);
         return $xpath;
+    }
+
+    private function getHref($guid) {
+        $query = $this->db->getQuery(true);
+        $query->select('ns.`prefix`, rt.fragment');
+        $query->from('#__sdi_resource as r');
+        $query->innerJoin('#__sdi_resourcetype as rt ON r.resourcetype_id = rt.id');
+        $query->innerJoin('#__sdi_namespace as ns ON rt.fragmentnamespace_id = ns.id');
+        $query->where('r.guid = \'' . $guid . '\'');
+
+        $this->db->setQuery($query);
+        $result = $this->db->loadObject();
+
+        $href = JComponentHelper::getParams('com_easysdi_catalog')->get('catalogurl');
+        $href.= '?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=' . $guid;
+        $href .= '&fragment=' . $result->prefix . '%3A' . $result->fragment;
+
+        return $href;
+    }
+    
+    /**
+     * 
+     * @param string $language
+     * @param string $encoding
+     * @return DOMElement[] 
+     * 
+     */
+    private function getHeader($default = 'deu', $encoding = 'utf8') {
+        $headers = array();
+
+        $language = $this->structure->createElement('gmd:language');
+        $characterString = $this->structure->createElement('gco:CharacterString', $default);
+        $language->appendChild($characterString);
+        $headers[] = $language;
+
+        $characterSet = $this->structure->createElement('gmd:characterSet');
+        $characterSetCode = $this->structure->createElement('gmd:MD_CharacterSetCode');
+        $characterSetCode->setAttribute('codeListValue', $encoding);
+        $characterSetCode->setAttribute('codeList', 'http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode');
+        $characterSet->appendChild($characterSetCode);
+
+        $headers[] = $characterSet;
+
+        $locale = $this->structure->createElement('gmd:locale');
+        $characterEncoding = $this->structure->createElement('gmd:characterEncoding');
+        $characterEncodingSetCode = $this->structure->createElement('gmd:MD_CharacterSetCode', strtoupper($encoding));
+        $characterEncodingSetCode->setAttribute('codeListeValue', $encoding);
+        $characterEncodingSetCode->setAttribute('codeList', '#MD_CharacterSetCode');
+        $characterEncoding->appendChild($characterEncodingSetCode);
+        foreach ($this->ldao->get() as $key => $value) {
+            if ($value->{'iso639-2T'} != $default) {
+                $pt_locale = $this->structure->createElement('gmd:PT_Locale');
+                $pt_locale->setAttribute('id', $key);
+
+                $languageCode = $this->structure->createElement('gmd:languageCode');
+                $languageCodeChild = $this->structure->createElement('gmd:LanguageCode', $value->value);
+                $languageCodeChild->setAttribute('codeListValue', $value->{'iso639-2T'});
+                $languageCodeChild->setAttribute('codeList', '#LanguageCode');
+
+                $languageCode->appendChild($languageCodeChild);
+
+                $pt_locale->appendChild($languageCode);
+                $pt_locale->appendChild($characterEncoding);
+
+                $locale->appendChild($pt_locale);
+            }
+        }
+
+        $headers[] = $locale;
+
+        return $headers;
     }
 
 }

@@ -253,9 +253,6 @@ class FormGenerator {
             }
         }
 
-
-
-
         $query = $this->getRelationQuery();
         $query->where('r.parent_id = ' . $parent->getAttributeNS($this->catalog_uri, 'dbid'));
         $query->where('rp.profile_id = 1');
@@ -500,6 +497,8 @@ class FormGenerator {
      */
     private function getHiddenFields() {
         $fieldset = $this->form->createElement('fieldset');
+        $fieldset->setAttribute('name', 'hidden');
+                
         $id = $this->form->createElement('field');
         $id->setAttribute('name', 'id');
         $id->setAttribute('type', 'hidden');
@@ -978,6 +977,8 @@ class FormGenerator {
             $this->domXpathCsw->registerNamespace($ns->prefix, $ns->uri);
         }
     }
+    
+    
 
     /**
      * 
