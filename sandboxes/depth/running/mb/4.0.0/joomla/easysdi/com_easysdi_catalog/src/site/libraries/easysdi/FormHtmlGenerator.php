@@ -55,6 +55,7 @@ class FormHtmlGenerator {
      * @var DOMXPath 
      */
     private $domXpathFormHtml;
+
     /**
      *
      * @var string 
@@ -84,19 +85,21 @@ class FormHtmlGenerator {
             $this->domXpathStr->registerNamespace($ns->prefix, $ns->uri);
         }
 
-        if(isset($this->ajaxXpath)){
+        if (isset($this->ajaxXpath)) {
             $root = $this->domXpathStr->query($this->ajaxXpath)->item(0);
             $rootFieldset = $this->getFieldset($root);
-        }  else {
+        } else {
             $root = $this->domXpathStr->query('/*')->item(0);
             $rootFieldset = $this->formHtml->createElement('fieldset');
         }
-        
+
+        $rootName = $root->nodeName;
+
         $this->structure->formatOutput = true;
         $xml = $this->structure->saveXML();
-        
+
         $this->formHtml->appendChild($rootFieldset);
-        
+
         $this->recBuildForm($root, $rootFieldset);
 
         $this->formHtml->formatOutput = true;
@@ -117,11 +120,22 @@ class FormHtmlGenerator {
                 break;
         }
 
+        switch ($parent->getAttributeNS($this->catalog_uri, 'childtypeId') && isset($_GET['relid'])) {
+            case EnumChildtype::$RELATIONTYPE:
+                $searchFields = $this->getAttribute($parent);
+
+                foreach ($searchFields as $searchField) {
+                    $parentHtml->getElementsByTagName('div')->item(0)->appendChild($searchField);
+                }
+
+                break;
+        }
+
         foreach ($this->domXpathStr->query($query, $parent) as $child) {
 
             switch ($child->getAttributeNS($this->catalog_uri, 'childtypeId')) {
                 case EnumChildtype::$RELATION:
-                    if (($child->getAttributeNS($this->catalog_uri, 'lowerbound')-$child->getAttributeNS($this->catalog_uri, 'upperbound'))!=0 && $child->getAttributeNS($this->catalog_uri, 'index') == 1) {
+                    if (($child->getAttributeNS($this->catalog_uri, 'lowerbound') - $child->getAttributeNS($this->catalog_uri, 'upperbound')) != 0 && $child->getAttributeNS($this->catalog_uri, 'index') == 1) {
                         $action = $this->getAction($child);
                         $parentInner->appendChild($action);
                     }
@@ -134,13 +148,13 @@ class FormHtmlGenerator {
                     }
                     break;
                 case EnumChildtype::$ATTRIBUT:
-                    
+
                     $fields = $this->getAttribute($child);
-                    
+
                     foreach ($fields as $field) {
                         $parentInner->appendChild($field);
                     }
-                    
+
                     break;
                 case EnumChildtype::$RELATIONTYPE:
                     if ($child->getAttributeNS($this->catalog_uri, 'index') == 1) {
@@ -174,6 +188,8 @@ class FormHtmlGenerator {
 
         $lowerbound = $relation->getAttributeNS($this->catalog_uri, 'lowerbound');
         $upperbound = $relation->getAttributeNS($this->catalog_uri, 'upperbound');
+        $exist = $relation->getAttributeNS($this->catalog_uri, 'exist');
+
         switch ($relation->getAttributeNS($this->catalog_uri, 'childtypeId')) {
             case EnumChildtype::$RELATIONTYPE:
                 $relid = $relation->getAttributeNS($this->catalog_uri, 'relationId');
@@ -183,20 +199,20 @@ class FormHtmlGenerator {
                 $relid = $relation->getAttributeNS($this->catalog_uri, 'dbid');
                 break;
         }
-        
 
         $occurance = $this->domXpathStr->query($this->removeIndex($relation->getNodePath()))->length;
 
-        //$debug = '[oc:' . $occurance . ' lb:' . $lowerbound . ' ub:' . $upperbound . '] [' . $relation->getNodePath() . ']';
-        $debug = '[oc:' . $occurance . ' lb:' . $lowerbound . ' ub:' . $upperbound . ']';
+        $debug = '[oc:' . $occurance . ' lb:' . $lowerbound . ' ub:' . $upperbound . '][' . $relation->nodeName . ']';
 
         $aAdd = $this->formHtml->createElement('a');
         $aAdd->setAttribute('id', 'add-btn-' . $this->serializeXpath($relation->getNodePath()));
         $aAdd->setAttribute('class', 'btn btn-success btn-mini add-btn add-btn-' . $this->serializeXpath($this->removeIndex($relation->getNodePath())));
-        $aAdd->setAttribute('onclick', 'addFieldset(this.id, \''. $this->serializeXpath($this->removeIndex($relation->getNodePath())) .'\',' . $relid . ', \'' . $this->serializeXpath($relation->parentNode->getNodePath()) . '\' ,' . $lowerbound . ',' . $upperbound . ')');
-        
-        if ($upperbound <= $occurance) {
-            $aAdd->setAttribute('style', 'display:none;');
+        $aAdd->setAttribute('onclick', 'addFieldset(this.id, \'' . $this->serializeXpath($this->removeIndex($relation->getNodePath())) . '\',' . $relid . ', \'' . $this->serializeXpath($relation->parentNode->getNodePath()) . '\' ,' . $lowerbound . ',' . $upperbound . ')');
+
+        if ($exist == 1) {
+            if ($upperbound <= $occurance) {
+                $aAdd->setAttribute('style', 'display:none;');
+            }
         }
 
         $iAdd = $this->formHtml->createElement('i');
@@ -226,6 +242,9 @@ class FormHtmlGenerator {
         $upperbound = $element->getAttributeNS($this->catalog_uri, 'upperbound');
         $occurance = $this->domXpathStr->query($this->removeIndex($element->getNodePath()))->length;
         $index = $element->getAttributeNS($this->catalog_uri, 'index');
+        $exist = $element->getAttributeNS($this->catalog_uri, 'exist');
+        
+        $elementname = $element->nodeName;
 
         $aCollapse = $this->formHtml->createElement('a');
         $aCollapse->setAttribute('id', 'collapse-btn-' . $this->serializeXpath($element->getNodePath()));
@@ -265,17 +284,19 @@ class FormHtmlGenerator {
         $divBottom->setAttribute('id', 'bottom-' . $this->serializeXpath($this->removeIndex($element->getNodePath())));
 
 
-        $aCollapse->appendChild($iCollapse);
-        $legend->appendChild($aCollapse);
-        $legend->appendChild($spanLegend);
-        if ($lowerbound < $occurance) {
-            $aRemove->appendChild($iRemove);
-            $legend->appendChild($aRemove);
-        }
-        $fieldset->appendChild($legend);
-        $fieldset->appendChild($divInner);
+        if ($exist == 1) {
+            $aCollapse->appendChild($iCollapse);
+            $legend->appendChild($aCollapse);
+            $legend->appendChild($spanLegend);
+            if ($lowerbound < $occurance) {
+                $aRemove->appendChild($iRemove);
+                $legend->appendChild($aRemove);
+            }
+            $fieldset->appendChild($legend);
+            $fieldset->appendChild($divInner);
 
-        $divOuter->appendChild($fieldset);
+            $divOuter->appendChild($fieldset);
+        }
         if ($index == $occurance) {
             $divOuter->appendChild($divBottom);
         }
@@ -294,9 +315,9 @@ class FormHtmlGenerator {
 
         $domlocal = new DOMDocument();
         $domlocal->loadHTML($this->convert($source));
-        
+
         $html = $domlocal->saveHTML();
-        
+
         $domXapth = new DOMXPath($domlocal);
         $elements = $domXapth->query('/*/*/*');
 

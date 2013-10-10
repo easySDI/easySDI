@@ -88,6 +88,9 @@ class FormGenerator {
         $this->csw = $csw;
         $this->form = new DOMDocument('1.0', 'utf-8');
         $this->structure = new DOMDocument('1.0', 'utf-8');
+        if (isset($csw)) {
+            $this->setDomXpathCsw();
+        }
     }
 
     /**
@@ -125,45 +128,11 @@ class FormGenerator {
         } else {
 
             $this->structure->loadXML(unserialize($this->session->get('structure')));
-            $this->domXpathStr = new DOMXPath($this->structure);
+            $this->setDomXpathStr();
 
-            foreach ($this->nsdao->getAll() as $ns) {
-                $this->domXpathStr->registerNamespace($ns->prefix, $ns->uri);
-            }
             $parent = $this->domXpathStr->query($this->unSerializeXpath($_GET['parent_path']))->item(0);
 
-            $query = $this->db->getQuery(true);
-            $query->select('r.name, r.id, r.ordering, r.guid, r.childtype_id, r.parent_id, r.lowerbound, r.upperbound, r.rendertype_id');
-            $query->select('c.id as class_id, c.`name` AS class_name, c.guid AS class_guid');
-            $query->select('ca.id as classass_id, ca.`name` AS classass_name, ca.guid AS classass_guid');
-            $query->select('a.id as attribute_id, a.`name` AS attribute_name, a.guid AS attribute_guid, a.isocode AS attribute_isocode, a.type_isocode as attribute_type_isocode, a.codelist as attribute_codelist, a.pattern as attribute_pattern, a.length as attribute_length, a.issystem as attribute_issystem');
-            $query->select('rt.id as resourcetype_id, rt.name as resourcetype_name, rt.fragment as resourcetype_fragment');
-            $query->select('st.id as stereotype_id, st.value as stereotype_value, st.isocode as stereotype_isocode, st.defaultpattern as stereotype_defaultpattern');
-            $query->select('stc.id as class_stereotype_id, stc.value as class_stereotype_value, stc.isocode as class_stereotype_isocode, stc.defaultpattern as class_stereotype_defaultpattern');
-            $query->select('ns.id as ns_id, ns.prefix, ns.uri');
-            $query->select('nsc.id as class_ns_id, nsc.prefix as class_ns_prefix, nsc.uri as class_ns_uri');
-            $query->select('nsca.id as classass_ns_id, nsca.prefix as classass_ns_prefix, nsca.uri as classass_ns_uri');
-            $query->select('nsa.id as attribute_ns_id, nsa.prefix as attribute_ns_prefix, nsa.uri as attribute_ns_uri');
-            $query->select('nsst.id as stereotype_ns_id, nsst.prefix as stereotype_ns_prefix, nsst.uri as stereotype_ns_uri');
-            $query->select('nsstc.id as class_stereotype_ns_id, nsstc.prefix as class_stereotype_ns_prefix, nsstc.uri as class_stereotype_ns_uri');
-            $query->select('nsl.id as list_ns_id, nsl.prefix as list_ns_prefix, nsl.uri as list_ns_uri');
-            $query->select('nsrt.id as resourcetype_ns_id, nsrt.prefix as resourcetype_ns_prefix, nsrt.uri as resourcetype_ns_uri');
-            $query->from('#__sdi_relation AS r');
-            $query->innerJoin('#__sdi_relation_profile AS rp ON r.id = rp.relation_id');
-            $query->leftJoin('#__sdi_class AS c ON c.id = r.classchild_id');
-            $query->leftJoin('#__sdi_class AS ca ON ca.id = r.classassociation_id');
-            $query->leftJoin('#__sdi_attribute AS a ON a.id = r.attributechild_id');
-            $query->leftJoin('#__sdi_resourcetype AS rt ON rt.id = r.childresourcetype_id');
-            $query->leftJoin('#__sdi_sys_stereotype AS st ON st.id = a.stereotype_id');
-            $query->leftJoin('#__sdi_sys_stereotype AS stc ON stc.id = c.stereotype_id');
-            $query->leftJoin('#__sdi_namespace AS ns ON ns.id = r.namespace_id');
-            $query->leftJoin('#__sdi_namespace AS nsc ON nsc.id = c.namespace_id');
-            $query->leftJoin('#__sdi_namespace AS nsca ON nsca.id = ca.namespace_id');
-            $query->leftJoin('#__sdi_namespace AS nsa ON nsa.id = a.namespace_id');
-            $query->leftJoin('#__sdi_namespace AS nsst ON nsst.id = st.namespace_id');
-            $query->leftJoin('#__sdi_namespace AS nsstc ON nsstc.id = stc.namespace_id');
-            $query->leftJoin('#__sdi_namespace AS nsl ON nsl.id = a.listnamespace_id');
-            $query->leftJoin('#__sdi_namespace AS nsrt ON nsrt.id = rt.fragmentnamespace_id');
+            $query = $this->getRelationQuery();
             $query->where('r.id = ' . $_GET['relid']);
 
             $this->db->setQuery($query);
@@ -171,14 +140,15 @@ class FormGenerator {
 
             switch ($result->childtype_id) {
                 case EnumChildtype::$CLASS:
-                    $relation = $this->getDomElement($result->uri, $result->prefix, $result->name, $result->id, EnumChildtype::$RELATION, $result->guid, $result->lowerbound, $result->upperbound);
-                    $root = $this->getDomElement($result->class_ns_uri, $result->class_ns_prefix, $result->class_name, $result->class_id, EnumChildtype::$CLASS, $result->class_guid);
-                    $relation->appendChild($root);
+                    $relation = $this->getDomElement($result->uri, $result->prefix, $result->name, $result->id, EnumChildtype::$RELATION, $result->guid, 1, $result->upperbound);
+                    $class = $this->getDomElement($result->class_ns_uri, $result->class_ns_prefix, $result->class_name, $result->class_id, EnumChildtype::$CLASS, $result->class_guid);
+                    $relation->appendChild($class);
 
-                    $this->getChildTree($root);
+                    $parent->appendChild($relation);
+                    $root = $class;
                     break;
                 case EnumChildtype::$RELATIONTYPE:
-                    $relation = $this->getDomElement($result->classass_ns_uri, $result->classass_ns_prefix, $result->name, $result->classass_id, EnumChildtype::$RELATIONTYPE, $result->guid, $result->lowerbound, $result->upperbound);
+                    $relation = $this->getDomElement($result->classass_ns_uri, $result->classass_ns_prefix, $result->name, $result->classass_id, EnumChildtype::$RELATIONTYPE, $result->guid, 1, $result->upperbound);
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:show', 'embed');
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:actuate', 'onLoad');
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:type', 'simple');
@@ -186,27 +156,31 @@ class FormGenerator {
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':resourcetypeId', $result->resourcetype_id);
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':relationId', $result->id);
 
-                    $this->getChildTree($relation);
+                    $parent->appendChild($relation);
+                    $root = $relation;
                     break;
                 default:
                     break;
             }
-
-
-            $parent->appendChild($relation);
+            
+            /*$this->structure->formatOutput = true;
+            $html = $this->structure->saveXML();*/
+            
+            $this->getChildTree($root);  
 
             $this->ajaxXpath = $relation->getNodePath();
         }
 
+        
+        $this->setDomXpathStr();
 
-
-        if ($this->csw != NULL) {
+        if (isset($this->csw)) {
+            $this->setDomXpathCsw();
             $this->mergeCsw();
         }
 
         $this->session->set('structure', serialize($this->structure->saveXML()));
-
-        $form = $this->buildForm();
+        $form = $this->buildForm($root);
 
         return $form;
     }
@@ -224,6 +198,7 @@ class FormGenerator {
 
         foreach ($childs as $child) {
             $parent->appendChild($child);
+
             if ($child->lastChild) {
                 $element = $child->lastChild;
             } else {
@@ -232,6 +207,9 @@ class FormGenerator {
 
             switch ($element->getAttributeNS($this->catalog_uri, 'childtypeId')) {
                 case EnumChildtype::$CLASS:
+                    $this->getChildTree($element);
+
+                    break;
                 case EnumChildtype::$RELATIONTYPE:
                     $this->getChildTree($element);
                     break;
@@ -247,41 +225,38 @@ class FormGenerator {
      * @since 4.0
      */
     private function getChildNode(DOMElement $parent) {
+        $childs = array();
+        $parentname = $parent->nodeName;
+        if ($parent->parentNode->nodeType == XML_ELEMENT_NODE) {
+            switch ($parent->getAttributeNS($this->catalog_uri, 'childtypeId')) {
+                case EnumChildtype::$RELATIONTYPE:
+                    $relationExist = $parent;
+                    break;
+                default :
+                    $relationExist = $parent->parentNode;
+                    break;
+            }
 
-        $name = $parent->nodeName;
+            $lowerbound = $relationExist->getAttributeNS($this->catalog_uri, 'lowerbound');
+            $occurance = 0;
+            if (isset($this->csw)) {
+                $occurance = $this->domXpathCsw->query('/*' . $relationExist->getNodePath())->length;
+            }
 
-        $query = $this->db->getQuery(true);
-        $query->select('r.name, r.id, r.ordering, r.guid, r.childtype_id, r.parent_id, r.lowerbound, r.upperbound, r.rendertype_id');
-        $query->select('c.id as class_id, c.`name` AS class_name, c.guid AS class_guid');
-        $query->select('ca.id as classass_id, ca.`name` AS classass_name, ca.guid AS classass_guid');
-        $query->select('a.id as attribute_id, a.`name` AS attribute_name, a.guid AS attribute_guid, a.isocode AS attribute_isocode, a.type_isocode as attribute_type_isocode, a.codelist as attribute_codelist, a.pattern as attribute_pattern, a.length as attribute_length, a.issystem as attribute_issystem');
-        $query->select('rt.id as resourcetype_id, rt.name as resourcetype_name, rt.fragment as resourcetype_fragment');
-        $query->select('st.id as stereotype_id, st.value as stereotype_value, st.isocode as stereotype_isocode, st.defaultpattern as stereotype_defaultpattern');
-        $query->select('stc.id as class_stereotype_id, stc.value as class_stereotype_value, stc.isocode as class_stereotype_isocode, stc.defaultpattern as class_stereotype_defaultpattern');
-        $query->select('ns.id as ns_id, ns.prefix, ns.uri');
-        $query->select('nsc.id as class_ns_id, nsc.prefix as class_ns_prefix, nsc.uri as class_ns_uri');
-        $query->select('nsca.id as classass_ns_id, nsca.prefix as classass_ns_prefix, nsca.uri as classass_ns_uri');
-        $query->select('nsa.id as attribute_ns_id, nsa.prefix as attribute_ns_prefix, nsa.uri as attribute_ns_uri');
-        $query->select('nsst.id as stereotype_ns_id, nsst.prefix as stereotype_ns_prefix, nsst.uri as stereotype_ns_uri');
-        $query->select('nsstc.id as class_stereotype_ns_id, nsstc.prefix as class_stereotype_ns_prefix, nsstc.uri as class_stereotype_ns_uri');
-        $query->select('nsl.id as list_ns_id, nsl.prefix as list_ns_prefix, nsl.uri as list_ns_uri');
-        $query->select('nsrt.id as resourcetype_ns_id, nsrt.prefix as resourcetype_ns_prefix, nsrt.uri as resourcetype_ns_uri');
-        $query->from('#__sdi_relation AS r');
-        $query->innerJoin('#__sdi_relation_profile AS rp ON r.id = rp.relation_id');
-        $query->leftJoin('#__sdi_class AS c ON c.id = r.classchild_id');
-        $query->leftJoin('#__sdi_class AS ca ON ca.id = r.classassociation_id');
-        $query->leftJoin('#__sdi_attribute AS a ON a.id = r.attributechild_id');
-        $query->leftJoin('#__sdi_resourcetype AS rt ON rt.id = r.childresourcetype_id');
-        $query->leftJoin('#__sdi_sys_stereotype AS st ON st.id = a.stereotype_id');
-        $query->leftJoin('#__sdi_sys_stereotype AS stc ON stc.id = c.stereotype_id');
-        $query->leftJoin('#__sdi_namespace AS ns ON ns.id = r.namespace_id');
-        $query->leftJoin('#__sdi_namespace AS nsc ON nsc.id = c.namespace_id');
-        $query->leftJoin('#__sdi_namespace AS nsca ON nsca.id = ca.namespace_id');
-        $query->leftJoin('#__sdi_namespace AS nsa ON nsa.id = a.namespace_id');
-        $query->leftJoin('#__sdi_namespace AS nsst ON nsst.id = st.namespace_id');
-        $query->leftJoin('#__sdi_namespace AS nsstc ON nsstc.id = stc.namespace_id');
-        $query->leftJoin('#__sdi_namespace AS nsl ON nsl.id = a.listnamespace_id');
-        $query->leftJoin('#__sdi_namespace AS nsrt ON nsrt.id = rt.fragmentnamespace_id');
+            $exist = $lowerbound + $occurance;
+
+            if ($exist < 1) {
+                $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
+                return $childs;
+            } else {
+                $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
+            }
+        }
+
+
+
+
+        $query = $this->getRelationQuery();
         $query->where('r.parent_id = ' . $parent->getAttributeNS($this->catalog_uri, 'dbid'));
         $query->where('rp.profile_id = 1');
         $query->where('r.state = 1');
@@ -290,7 +265,7 @@ class FormGenerator {
 
         $this->db->setQuery($query);
 
-        $childs = array();
+
         foreach ($this->db->loadObjectList() as $result) {
 
             switch ($result->childtype_id) {
@@ -433,13 +408,6 @@ class FormGenerator {
     }
 
     private function mergeCsw() {
-        $this->domXpathStr = new DOMXPath($this->structure);
-        $this->domXpathCsw = new DOMXPath($this->csw);
-
-        foreach ($this->nsdao->getAll() as $ns) {
-            $this->domXpathStr->registerNamespace($ns->prefix, $ns->uri);
-            $this->domXpathCsw->registerNamespace($ns->prefix, $ns->uri);
-        }
 
         foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="0"]|//*[@catalog:childtypeId="3"]') as $relation) {
             $xpath = $relation->getNodePath();
@@ -492,13 +460,22 @@ class FormGenerator {
      * @return string Form structure to Joomla format.
      * @since 4.0
      */
-    private function buildForm() {
+    private function buildForm(DOMElement $root) {
         $form = $this->form->createElement('form');
         $form->appendChild($this->getHiddenFields());
 
         $fieldset = $this->form->createElement('fieldset');
+        switch ($root->getAttributeNS($this->catalog_uri, 'childtypeId')) {
+            case EnumChildtype::$RELATIONTYPE:
+                $query = 'descendant-or-self::*[@catalog:childtypeId="2"]|descendant-or-self::*[@catalog:childtypeId="3"]';
+                break;
 
-        foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="2"]|//*[@catalog:childtypeId="3"]') as $attribute) {
+            default:
+                $query = 'descendant::*[@catalog:childtypeId="2"]|descendant::*[@catalog:childtypeId="3"]';
+                break;
+        }
+
+        foreach ($this->domXpathStr->query($query, $root) as $attribute) {
             $attributes = $this->getFormField($attribute);
             if (is_array($attributes)) {
                 foreach ($attributes as $attr) {
@@ -984,6 +961,61 @@ class FormGenerator {
         $xpath = str_replace('-sla-', '/', $xpath);
         $xpath = str_replace('-dp-', ':', $xpath);
         return $xpath;
+    }
+
+    private function setDomXpathStr() {
+        $this->domXpathStr = new DOMXPath($this->structure);
+        foreach ($this->nsdao->getAll() as $ns) {
+            $this->domXpathStr->registerNamespace($ns->prefix, $ns->uri);
+        }
+    }
+
+    private function setDomXpathCsw() {
+        $this->domXpathCsw = new DOMXPath($this->csw);
+        foreach ($this->nsdao->getAll() as $ns) {
+            $this->domXpathCsw->registerNamespace($ns->prefix, $ns->uri);
+        }
+    }
+
+    /**
+     * 
+     * @return JDatabaseQuery
+     */
+    private function getRelationQuery() {
+        $query = $this->db->getQuery(true);
+        $query->select('r.name, r.id, r.ordering, r.guid, r.childtype_id, r.parent_id, r.lowerbound, r.upperbound, r.rendertype_id');
+        $query->select('c.id as class_id, c.`name` AS class_name, c.guid AS class_guid');
+        $query->select('ca.id as classass_id, ca.`name` AS classass_name, ca.guid AS classass_guid');
+        $query->select('a.id as attribute_id, a.`name` AS attribute_name, a.guid AS attribute_guid, a.isocode AS attribute_isocode, a.type_isocode as attribute_type_isocode, a.codelist as attribute_codelist, a.pattern as attribute_pattern, a.length as attribute_length, a.issystem as attribute_issystem');
+        $query->select('rt.id as resourcetype_id, rt.name as resourcetype_name, rt.fragment as resourcetype_fragment');
+        $query->select('st.id as stereotype_id, st.value as stereotype_value, st.isocode as stereotype_isocode, st.defaultpattern as stereotype_defaultpattern');
+        $query->select('stc.id as class_stereotype_id, stc.value as class_stereotype_value, stc.isocode as class_stereotype_isocode, stc.defaultpattern as class_stereotype_defaultpattern');
+        $query->select('ns.id as ns_id, ns.prefix, ns.uri');
+        $query->select('nsc.id as class_ns_id, nsc.prefix as class_ns_prefix, nsc.uri as class_ns_uri');
+        $query->select('nsca.id as classass_ns_id, nsca.prefix as classass_ns_prefix, nsca.uri as classass_ns_uri');
+        $query->select('nsa.id as attribute_ns_id, nsa.prefix as attribute_ns_prefix, nsa.uri as attribute_ns_uri');
+        $query->select('nsst.id as stereotype_ns_id, nsst.prefix as stereotype_ns_prefix, nsst.uri as stereotype_ns_uri');
+        $query->select('nsstc.id as class_stereotype_ns_id, nsstc.prefix as class_stereotype_ns_prefix, nsstc.uri as class_stereotype_ns_uri');
+        $query->select('nsl.id as list_ns_id, nsl.prefix as list_ns_prefix, nsl.uri as list_ns_uri');
+        $query->select('nsrt.id as resourcetype_ns_id, nsrt.prefix as resourcetype_ns_prefix, nsrt.uri as resourcetype_ns_uri');
+        $query->from('#__sdi_relation AS r');
+        $query->innerJoin('#__sdi_relation_profile AS rp ON r.id = rp.relation_id');
+        $query->leftJoin('#__sdi_class AS c ON c.id = r.classchild_id');
+        $query->leftJoin('#__sdi_class AS ca ON ca.id = r.classassociation_id');
+        $query->leftJoin('#__sdi_attribute AS a ON a.id = r.attributechild_id');
+        $query->leftJoin('#__sdi_resourcetype AS rt ON rt.id = r.childresourcetype_id');
+        $query->leftJoin('#__sdi_sys_stereotype AS st ON st.id = a.stereotype_id');
+        $query->leftJoin('#__sdi_sys_stereotype AS stc ON stc.id = c.stereotype_id');
+        $query->leftJoin('#__sdi_namespace AS ns ON ns.id = r.namespace_id');
+        $query->leftJoin('#__sdi_namespace AS nsc ON nsc.id = c.namespace_id');
+        $query->leftJoin('#__sdi_namespace AS nsca ON nsca.id = ca.namespace_id');
+        $query->leftJoin('#__sdi_namespace AS nsa ON nsa.id = a.namespace_id');
+        $query->leftJoin('#__sdi_namespace AS nsst ON nsst.id = st.namespace_id');
+        $query->leftJoin('#__sdi_namespace AS nsstc ON nsstc.id = stc.namespace_id');
+        $query->leftJoin('#__sdi_namespace AS nsl ON nsl.id = a.listnamespace_id');
+        $query->leftJoin('#__sdi_namespace AS nsrt ON nsrt.id = rt.fragmentnamespace_id');
+
+        return $query;
     }
 
 }
