@@ -47,12 +47,16 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.core.ProxyServletRequest;
+import org.easysdi.proxy.domain.Extensions;
+import org.easysdi.proxy.domain.ExtensionsHome;
 import org.easysdi.proxy.domain.SdiExcludedattribute;
 import org.easysdi.proxy.domain.SdiPhysicalservice;
 import org.easysdi.proxy.domain.SdiPolicy;
@@ -89,7 +93,7 @@ public class CSWProxyServlet extends ProxyServlet {
     public CSWProxyServlet(ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy, ApplicationContext context) {
         super(proxyRequest, virtualService, policy, context);
         owsExceptionReport = new OWS200ExceptionReport();
-        cswDataManager = new CSWProxyDataAccessibilityManager(policy);
+        cswDataManager = new CSWProxyDataAccessibilityManager(this.context, policy);
     }
 
     public void init(ServletConfig config) throws ServletException {
@@ -376,12 +380,17 @@ public class CSWProxyServlet extends ProxyServlet {
 
                             //Add a new node to the metadata element
                             //<gmd:MD_Metadata xmlns:sdi="http://www.easysdi.org/2011/sdi">
-                            //<sdi:platform harvested="true" />
+                            //<sdi:platform guid="xxx-xxx-xxx-xxx" harvested="true" />
                             //</gmd:MD_Metadata>
                             //Or update the existing node if the remote catalog is driven by EasySDI too
                             Iterator<Element> resultStorageIterator = resultListStorage.iterator();
                             Element result = null;
-
+                            //Get the platform guid to insert in the harvested metadata
+                            ExtensionsHome extensionsHome = (ExtensionsHome) context.getBean("extensionsHome");
+                            Extensions extension = extensionsHome.findByName("com_easysdi_core");
+                            String params = extension.getParams();
+                            JSONObject json = (JSONObject) JSONSerializer.toJSON(params);
+                            String platformguid = json.getString("infrastructureID");
                             while (resultStorageIterator.hasNext()) {
                                 result = resultStorageIterator.next();
                                 List<Element> platformElementList = result.getChildren("platform", nsSDI);
@@ -389,10 +398,12 @@ public class CSWProxyServlet extends ProxyServlet {
                                     //Update the existing node
                                     Element e = platformElementList.get(0);
                                     e.setAttribute("harvested", "true");
+                                    e.setAttribute("guid", platformguid);
                                 } else {
                                     //Add a new node
                                     Element e = new Element("platform", nsSDI);
                                     e.setAttribute("harvested", "true");
+                                    e.setAttribute("guid", platformguid);
                                     result.addContent(e);
                                 }
                             }
@@ -415,110 +426,6 @@ public class CSWProxyServlet extends ProxyServlet {
                         //If the request was made in HTTP GET, response has to be rewrote to remove unauthorized metadatas
                         //NB : a geographic filter can't be applied to this kind of request
                         if (req.getMethod().equals("GET")) {
-
-//                            SAXBuilder sb = new SAXBuilder();
-//                            Document doc = null;
-//                            try {
-//                                List<Element> lElementUnauthorized = new ArrayList<Element>();
-//                                doc = sb.build(tempFile);
-//                                Element racine = doc.getRootElement();
-//                                Iterator<Element> searchResultIterator = racine.getDescendants(new ElementFilter("SearchResults"));
-//                                Attribute numberOfRecordsReturnedAttribute = null;
-//                                Attribute numberOfRecordsMatchedAttribute = null;
-//                                Attribute nextRecordAttribute = null;
-//                                while (searchResultIterator.hasNext()) {
-//                                    Element e = searchResultIterator.next();
-//                                    numberOfRecordsReturnedAttribute = e.getAttribute("numberOfRecordsReturned");
-//                                    numberOfRecordsMatchedAttribute = e.getAttribute("numberOfRecordsMatched");
-//                                    nextRecordAttribute = e.getAttribute("nextRecord");
-//                                }
-//
-//                                Boolean isAll = cswDataManager.isAllEasySDIDataAccessible();
-//                                List<String> authorizedGuidList = new ArrayList<String>();
-//                                Integer numberOfRecordsActuallyMatched = 0;
-//                                Integer numberOfEasySDIMetadatas = cswDataManager.getCountOfEasySDIMetadatas();
-//
-//                                if (isAll) {
-//                                    //All metadatas are authorized to be delivered
-//                                    authorizedGuidList = null;
-//                                    if (sdiPolicy.isCsw_includeharvested()) {
-//                                        if (numberOfRecordsMatchedAttribute == null) {
-//                                            numberOfRecordsActuallyMatched = 0;
-//                                        } else {
-//                                            numberOfRecordsActuallyMatched = numberOfRecordsMatchedAttribute.getIntValue();
-//                                        }
-//                                    } else {
-//                                        numberOfRecordsActuallyMatched = numberOfEasySDIMetadatas;
-//                                    }
-//
-//                                } else {
-//                                    //Get the list of authorized metadatas
-//                                    List<Map<String, Object>> accessibleDataIds = cswDataManager.getAccessibleDataIds();
-//                                    //Rewrite the result list to keep only the guid value
-//                                    if (accessibleDataIds != null) {
-//                                        for (int i = 0; i < accessibleDataIds.size(); i++) {
-//                                            authorizedGuidList.add((String) accessibleDataIds.get(i).get("guid"));
-//                                        }
-//                                        if (sdiPolicy.isCsw_includeharvested()) {
-//                                            numberOfRecordsActuallyMatched = numberOfRecordsMatchedAttribute.getIntValue() - (numberOfEasySDIMetadatas - authorizedGuidList.size());
-//                                        } else {
-//                                            numberOfRecordsActuallyMatched = authorizedGuidList.size();
-//                                        }
-//                                    } else {
-//                                        //accessibleDataIds null means all Metadatas are allowed 
-//                                        authorizedGuidList = null;
-//                                        if (sdiPolicy.isCsw_includeharvested()) {
-//                                            numberOfRecordsActuallyMatched = numberOfRecordsMatchedAttribute.getIntValue();
-//                                        } else {
-//                                            numberOfRecordsActuallyMatched = cswDataManager.getCountOfEasySDIMetadatas();
-//                                        }
-//                                    }
-//                                }
-//
-//                                //Get all the unauthorized metadata nodes in the result document 
-//                                Iterator<Element> resultIterator = racine.getDescendants(new ElementMD_MetadataNonAuthorizedFilter(authorizedGuidList, sdiPolicy.isCsw_includeharvested()));
-//                                while (resultIterator.hasNext()) {
-//                                    Element e = resultIterator.next();
-//                                    lElementUnauthorized.add(e);
-//                                }
-//
-//                                //Remove those nodes from the document
-//                                for (int i = 0; i < lElementUnauthorized.size(); i++) {
-//                                    lElementUnauthorized.get(i).getParent().removeContent(lElementUnauthorized.get(i));
-//                                }
-//
-//                                //Rewrite the attribute 'numberOfRecordsReturned' 
-//                                if (numberOfRecordsReturnedAttribute != null) {
-//                                    numberOfRecordsReturnedAttribute.setValue(String.valueOf(numberOfRecordsReturnedAttribute.getIntValue() - lElementUnauthorized.size()));
-//                                }
-//
-//                                //Rewrite the attribute 'numberOfRecordsMatched' only if the request didn't include a constraint
-//                                //(with a constraint, the number of records matched can not be calculated, so we keep the original one)
-//                                if (numberOfRecordsMatchedAttribute != null && !asConstraint) {
-//                                    numberOfRecordsMatchedAttribute.setValue(String.valueOf(numberOfRecordsActuallyMatched));
-//                                }
-//                                //If harvested MD are not included, we can set a value closer to the right one in place of the value returned by the remote server
-//                                //But, this value is not guaranteed to be right
-//                                if (numberOfRecordsMatchedAttribute != null && asConstraint && !sdiPolicy.isCsw_includeharvested()) {
-//                                    if (numberOfRecordsMatchedAttribute.getIntValue() > numberOfRecordsActuallyMatched) {
-//                                        numberOfRecordsMatchedAttribute.setValue(String.valueOf(numberOfRecordsActuallyMatched));
-//                                    }
-//                                }
-//
-//                                //Rewrite the attribute 'nextRecord'
-//                                if (!sdiPolicy.isCsw_includeharvested() && !asConstraint && numberOfRecordsReturnedAttribute != null && numberOfRecordsMatchedAttribute != null && numberOfRecordsActuallyMatched == numberOfRecordsReturnedAttribute.getIntValue()) {
-//                                    nextRecordAttribute.setValue(String.valueOf("0"));
-//                                }
-//                            } catch (JDOMException e) {
-//                                e.printStackTrace();
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
-//
-//                            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-//                            FileOutputStream outStream = new FileOutputStream(tempFile);
-//                            sortie.output(doc, outStream);
-//                            outStream.close();
                         }
                     }
                 } else if ("GetRecordById".equals(currentOperation)) {
@@ -549,23 +456,31 @@ public class CSWProxyServlet extends ProxyServlet {
 
                             //Add a new node to the metadata element
                             //<gmd:MD_Metadata xmlns:sdi="http://www.easysdi.org/2011/sdi">
-                            //<sdi:platform harvested="true" />
+                            //<sdi:platform guid="xxx-xxx-xxx-xxx" harvested="true" />
                             //</gmd:MD_Metadata>
                             //Or update the existing node if the remote catalog is driven by EasySDI too
                             Iterator<Element> metadataStorageIterator = metadataListStorage.iterator();
+
+                            //Get the platform guid to insert in the harvested metadata
+                            ExtensionsHome extensionsHome = (ExtensionsHome) context.getBean("extensionsHome");
+                            Extensions extension = extensionsHome.findByName("com_easysdi_core");
+                            String params = extension.getParams();
+                            JSONObject json = (JSONObject) JSONSerializer.toJSON(params);
+                            String platformguid = json.getString("infrastructureID");
                             while (metadataStorageIterator.hasNext()) {
                                 Element metadata = metadataStorageIterator.next();
-                                Namespace nsSDI = Namespace.getNamespace("sdi", "http://www.easysdi.org/2011/sdi");
                                 metadata.addNamespaceDeclaration(nsSDI);
                                 List<Element> platformElementList = metadata.getChildren("platform", nsSDI);
                                 if (platformElementList.size() > 0) {
                                     //Update the existing node
                                     Element e = platformElementList.get(0);
                                     e.setAttribute("harvested", "true");
+                                    e.setAttribute("guid", platformguid);
                                 } else {
                                     //Add a new node
                                     Element e = new Element("platform", nsSDI);
                                     e.setAttribute("harvested", "true");
+                                    e.setAttribute("guid", platformguid);
                                     metadata.addContent(e);
                                 }
                             }
@@ -719,47 +634,52 @@ public class CSWProxyServlet extends ProxyServlet {
 
             //GetRecordById
             if (currentOperation.equalsIgnoreCase("GetRecordById")) {
-                logger.trace("Start - Data Accessibility");
-
-                if (!cswDataManager.isMetadataAccessible(this.context,requestedId)) {
-                    logger.info(requestedId + " - Requested metadata version is not accessible regarding policy restriction. Method isMetadataAccessible returned false.");
-                    requestedId = cswDataManager.getMetadataVersionAccessible();
-                    logger.info(requestedId + " - Requested metadata id was change by method getMetadataVersionAccessible.");
-                }
-
-                if (requestedId == null) {
-                    owsExceptionReport.sendHttpServletResponse(request, response, cswDataManager.generateEmptyResponse(requestedVersion), "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
-                    return;
-                }
-
-                logger.trace("End - Data Accessibility");
-
-            } else if (currentOperation.equalsIgnoreCase("GetRecords")) {
-                //Get the constraint language
-                if (constraintLanguage == null) {
-                    //Use CQL_TEXT to build the constraint
-                    constraintLanguage = "CQL_TEXT";
-                    constraint_language_version = "1.1.0";
-                }
-                if (constraintLanguage.equalsIgnoreCase("CQL_TEXT")) {
-                    //Add Geographical filter as CQL_TEXT additional parameter
-                    constraint = cswDataManager.addCQLFilter(constraint);                    
-
-                } else if (constraintLanguage.equalsIgnoreCase("FILTER")) {
-                    //Add Geographical filter
-                    //Add policy restrictions filter
-                    constraint = cswDataManager.addXMLFilter(constraint);
-
+                if (sdiVirtualService.isHarvester()) {
+                    logger.trace("GetRecordById with a harvester virtual service.");
                 } else {
-                    //The constraint language specified in the request is not valid, or not yet supported by the proxy
-                    try {
-                        owsExceptionReport.sendExceptionReport(req, resp, OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE, OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "constraintLanguage", HttpServletResponse.SC_OK);
-                    } catch (IOException e1) {
-                        logger.error(OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+                    logger.trace("Start - Data Accessibility");
+
+                    if (!cswDataManager.isMetadataAccessible(requestedId)) {
+                        logger.info(requestedId + " - Requested metadata version is not accessible regarding policy restriction. Method isMetadataAccessible returned false.");
+                        requestedId = cswDataManager.getMetadataVersionAccessible();
+                        logger.info(requestedId + " - Requested metadata id was change by method getMetadataVersionAccessible.");
                     }
-                    return;
+
+                    if (requestedId == null) {
+                        owsExceptionReport.sendHttpServletResponse(request, response, cswDataManager.generateEmptyResponse(requestedVersion), "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+                        return;
+                    }
+
+                    logger.trace("End - Data Accessibility");
                 }
-            }
+
+            } else if (currentOperation.equalsIgnoreCase("GetRecords")) {                
+                    //Get the constraint language
+                    if (constraintLanguage == null) {
+                        //Use CQL_TEXT to build the constraint
+                        constraintLanguage = "CQL_TEXT";
+                        constraint_language_version = "1.1.0";
+                    }
+                    if (constraintLanguage.equalsIgnoreCase("CQL_TEXT")) {
+                        //Add Geographical filter as CQL_TEXT additional parameter
+                        constraint = cswDataManager.addCQLFilter(sdiVirtualService.isHarvester(),constraint);
+
+                    } else if (constraintLanguage.equalsIgnoreCase("FILTER")) {
+                        //Add Geographical filter
+                        //Add policy restrictions filter
+                        constraint = cswDataManager.addXMLFilter(sdiVirtualService.isHarvester(),constraint);
+
+                    } else {
+                        //The constraint language specified in the request is not valid, or not yet supported by the proxy
+                        try {
+                            owsExceptionReport.sendExceptionReport(req, resp, OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE, OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "constraintLanguage", HttpServletResponse.SC_OK);
+                        } catch (IOException e1) {
+                            logger.error(OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+                        }
+                        return;
+                    }
+                }
+            
 
             // Build the request to dispatch
             parameterNames = req.getParameterNames();
@@ -896,56 +816,9 @@ public class CSWProxyServlet extends ProxyServlet {
                 SdiPhysicalservice physicalService = getPhysicalServiceByIndex(0);
 
                 //Transaction
-                if (currentOperation.equalsIgnoreCase("Transaction") && !sdiVirtualService.isHarvester()) {
-                    //If the transaction is INSERT OR UPDATE, add the specific node to indicate that the metadata is handle by EasySDI
-                    //sdi:platform harvested="false"
-                    if (rh.isTransactionInsert() || rh.isTransactionUpdate()) {
-//                        SAXBuilder sb = new SAXBuilder();
-//                        Document doc = sb.build(new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes())));
-//
-//                        Element racine = doc.getRootElement();
-//
-//                        //Get the transaction type element (Update or Insert) from the complete response file
-//                        List<Element> resultListStorage = new ArrayList<Element>();
-//                        Iterator<Element> resultIterator = racine.getDescendants(new ElementTransactionTypeFilter());
-//                        while (resultIterator.hasNext()) {
-//                            Element result = resultIterator.next();
-//                            resultListStorage.addAll(result.getChildren());
-//                            for (int i = resultListStorage.size() - 1; i >= 0; i--) {
-//                                if (resultListStorage.get(i).getName().equalsIgnoreCase("Constraint") || resultListStorage.get(i).getName().equalsIgnoreCase("RecordProperty")) {
-//                                    resultListStorage.remove(i);
-//                                }
-//                            }
-//
-//                        }
-//
-//                        //Add a new node to the metadata element
-//                        //<gmd:MD_Metadata xmlns:sdi="http://www.easysdi.org/2011/sdi">
-//                        //<sdi:platform harvested="false" />
-//                        //</gmd:MD_Metadata>
-//                        Iterator<Element> resultStorageIterator = resultListStorage.iterator();
-//                        Element result = null;
-//                        Namespace nsSDI = Namespace.getNamespace("sdi", "http://www.easysdi.org/2011/sdi");
-//                        while (resultStorageIterator.hasNext()) {
-//                            result = resultStorageIterator.next();
-//                            if (result.getChild("harvested", nsSDI) == null) {
-//                                Element e = new Element("platform", nsSDI);
-//                                e.setAttribute("harvested", "false");
-//                                result.addContent(e);
-//                            }
-//                        }
-//                        if (result != null) {
-//                            result.addNamespaceDeclaration(nsSDI);
-//                        }
-//
-//                        XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-//                        ByteArrayOutputStream out = new ByteArrayOutputStream();
-//                        sortie.output(doc, out);
-//                        param = new StringBuffer(out.toString("UTF-8"));
-                    }
-                }
-
-                if (currentOperation.equalsIgnoreCase("Transaction") && physicalService.getSdiSysAuthenticationconnectorByServiceauthenticationId() != null && physicalService.getSdiSysAuthenticationconnectorByServiceauthenticationId().getValue().equalsIgnoreCase("geonetwork")) {
+                if (currentOperation.equalsIgnoreCase("Transaction")
+                        && physicalService.getSdiSysAuthenticationconnectorByServiceauthenticationId() != null
+                        && physicalService.getSdiSysAuthenticationconnectorByServiceauthenticationId().getValue().equalsIgnoreCase("geonetwork")) {
                     // Send the xml
                     StringBuffer response = sendFile(physicalService.getResourceurl(), param, physicalService.getServiceurl());
 
@@ -970,25 +843,28 @@ public class CSWProxyServlet extends ProxyServlet {
                     is = null;
                 } //GetRecordById
                 else if (currentOperation.equalsIgnoreCase("GetRecordById")) {
-                    logger.trace("Start - Data Accessibility");
-                    String dataId = rh.getRecordId();
-                    if (!cswDataManager.isMetadataAccessible(this.context, dataId)) {
-                        logger.info(dataId + " - Requested metadata version is not accessible regarding policy restriction. Method isMetadataAccessible returned false.");
-                        dataId = cswDataManager.getMetadataVersionAccessible();
-                        logger.info(dataId + " - Requested metadata id was change by method getMetadataVersionAccessible.");
+                    if (sdiVirtualService.isHarvester()) {
+                        logger.trace("GetRecordById with a harvester virtual service.");
+                    } else {
+                        logger.trace("Start - Data Accessibility");
+                        String dataId = rh.getRecordId();
+                        if (!cswDataManager.isMetadataAccessible(dataId)) {
+                            logger.info(dataId + " - Requested metadata version is not accessible regarding policy restriction. Method isMetadataAccessible returned false.");
+                            dataId = cswDataManager.getMetadataVersionAccessible();
+                            logger.info(dataId + " - Requested metadata id was change by method getMetadataVersionAccessible.");
+                        }
+                        if (dataId == null) {
+                            logger.debug("Metadata id is Null. Return an empty response");
+                            owsExceptionReport.sendHttpServletResponse(request, response, cswDataManager.generateEmptyResponse(requestedVersion), "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+                            return;
+                        }
+                        if (dataId.compareTo(rh.getRecordId()) != 0) {
+                            //Change the metadata's id in the request
+                            int start = param.indexOf(rh.getRecordId());
+                            int end = start + rh.getRecordId().length();
+                            param.replace(start, end, dataId);
+                        }
                     }
-                    if (dataId == null) {
-                        logger.debug("Metadata id is Null. Return an empty response");
-                        owsExceptionReport.sendHttpServletResponse(request, response, cswDataManager.generateEmptyResponse(requestedVersion), "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
-                        return;
-                    }
-                    if (dataId.compareTo(rh.getRecordId()) != 0) {
-                        //Change the metadata's id in the request
-                        int start = param.indexOf(rh.getRecordId());
-                        int end = start + rh.getRecordId().length();
-                        param.replace(start, end, dataId);
-                    }
-
 
                     logger.trace("End - Data Accessibility");
 
@@ -1012,20 +888,24 @@ public class CSWProxyServlet extends ProxyServlet {
                     transform(version, currentOperation, req, resp, filePathList);
                 } //GetRecords
                 else if (currentOperation.equalsIgnoreCase("GetRecords")) {
-                    logger.trace("Start - Data Accessibility");
-                    if (!cswDataManager.isAllDataAccessibleForGetRecords()
-                            || (sdiPolicy.getSdiCswSpatialpolicy() != null && sdiPolicy.getSdiCswSpatialpolicy().isValid())
-                            || !sdiPolicy.isCsw_includeharvested()) {
-                        //Add a filter on the data id in the request
-                        param = cswDataManager.addXMLFilterToPOST(param);
-                        if (param == null) {
-                            owsExceptionReport.sendHttpServletResponse(request, response, cswDataManager.generateEmptyResponseForGetRecords(requestedVersion), "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
-                            return;
+                    if (sdiVirtualService.isHarvester()) {
+                        logger.trace("GetRecords with a harvester virtual service.");
+                    } else {
+                        logger.trace("Start - Data Accessibility");
+                        if (!cswDataManager.isAllDataAccessibleForGetRecords()
+                                || (sdiPolicy.getSdiCswSpatialpolicy() != null && sdiPolicy.getSdiCswSpatialpolicy().isValid())
+                                || !sdiPolicy.isCsw_includeharvested()) {
+                            //Add a filter on the data id in the request
+                            param = cswDataManager.addXMLFilterToPOST(param);
+                            if (param == null) {
+                                owsExceptionReport.sendHttpServletResponse(request, response, cswDataManager.generateEmptyResponseForGetRecords(requestedVersion), "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+                                return;
+                            }
                         }
+                        //Add a filter on the data id in the request
+                        logger.trace("End - Data Accessibility");
                     }
-                    //Add a filter on the data id in the request
-                    logger.trace("End - Data Accessibility");
-
+                    
                     List<String> filePathList = new Vector<String>();
                     String filePath = sendData("POST", getPhysicalServiceURLByIndex(0), param.toString());
                     filePathList.add(filePath);

@@ -30,7 +30,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import org.easysdi.proxy.core.ProxyServlet;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+import org.easysdi.proxy.domain.Extensions;
+import org.easysdi.proxy.domain.ExtensionsHome;
 import org.easysdi.proxy.domain.SdiAccessscope;
 import org.easysdi.proxy.domain.SdiAccessscopeHome;
 import org.easysdi.proxy.domain.SdiMetadata;
@@ -44,6 +47,7 @@ import org.easysdi.proxy.domain.SdiResource;
 import org.easysdi.proxy.domain.SdiResourcetype;
 import org.easysdi.proxy.domain.SdiUser;
 import org.easysdi.proxy.domain.SdiVersion;
+import org.easysdi.proxy.domain.SdiVirtualserviceHome;
 import org.easysdi.proxy.jdom.filter.ElementFilter;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -53,7 +57,6 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Access the database to retreive accessible metadatas and rewrite request to
@@ -70,16 +73,18 @@ public class CSWProxyDataAccessibilityManager {
     Namespace nsOGC = Namespace.getNamespace("http://www.opengis.net/ogc");
     final String CQL_TEXT = "CQL_TEXT";
     final String FILTER = "FILTER";
+    private ApplicationContext context;
 
     /**
      *
      * @param p_policy
      * @param p_joomlaProvider
      */
-    public CSWProxyDataAccessibilityManager(SdiPolicy p_policy) {
+    public CSWProxyDataAccessibilityManager(ApplicationContext p_context, SdiPolicy p_policy) {
+        context = p_context;
         policy = p_policy;
     }
-    
+
     /**
      * @param dataIdVersionAccessible the dataIdVersionAccessible to set
      */
@@ -124,8 +129,6 @@ public class CSWProxyDataAccessibilityManager {
         return dataIdVersionAccessible;
     }
 
-    
-
     /**
      *
      * @param version
@@ -153,7 +156,9 @@ public class CSWProxyDataAccessibilityManager {
         sb.append("<csw:GetRecordsResponse xmlns:csw=\"http://www.opengis.net/cat/csw/");
         sb.append(version);
         sb.append("\">");
-        sb.append("<csw:SearchStatus timestamp=\"" + dateToSend + "\"/>");
+        sb.append("<csw:SearchStatus timestamp=\"");
+        sb.append(dateToSend);
+        sb.append("\"/>");
         sb.append("<csw:SearchResults numberOfRecordsMatched=\"0\" numberOfRecordsReturned=\"0\" nextRecord=\"0\"/>");
         sb.append("</csw:GetRecordsResponse>");
         return sb;
@@ -169,11 +174,16 @@ public class CSWProxyDataAccessibilityManager {
      * @throws IOException
      * @throws JDOMException
      */
-    public String addXMLFilter(String constraint) throws JDOMException, IOException {
+    public String addXMLFilter(Boolean isHarvester, String constraint) throws JDOMException, IOException {
         String xmlBBOXFilter = null;
-        String xmlFilter = buildCSWXMLFilter();
+        String xmlFilter = null;
 
-        if(policy.getSdiCswSpatialpolicy() != null){
+        //If the virtual service is used to harvest remote server, we don't add specific filter on sdi XML nodes
+        if (!isHarvester) {
+            xmlFilter = buildCSWXMLFilter();
+        }
+
+        if (policy.getSdiCswSpatialpolicy() != null) {
             if (policy.getSdiCswSpatialpolicy().isValid()) {
                 xmlBBOXFilter = buildXMLBBOXFilter();
             }
@@ -199,13 +209,12 @@ public class CSWProxyDataAccessibilityManager {
                 racine.addContent(and);
             }
 
-            if (xmlBBOXFilter != null) {
+            if (xmlFilter != null) {
                 Reader in = new StringReader(xmlFilter);
                 Document filterDoc = sxb.build(in);
                 and.addContent(filterDoc.getRootElement().detach());
                 racine.addContent(and);
             }
-
 
             XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
             ByteArrayOutputStream result = new ByteArrayOutputStream();
@@ -216,10 +225,10 @@ public class CSWProxyDataAccessibilityManager {
         } else {
             //Build the XML filter
             constraint = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Filter xmlns='http://www.opengis.net/ogc' xmlns:gml='http://www.opengis.net/gml'>";
-            if(xmlBBOXFilter != null){
+            if (xmlBBOXFilter != null) {
                 constraint += xmlBBOXFilter;
             }
-            if(xmlFilter != null){
+            if (xmlFilter != null) {
                 constraint += xmlFilter;
             }
             constraint += "</Filter>";
@@ -266,13 +275,13 @@ public class CSWProxyDataAccessibilityManager {
      *
      * @return
      */
-    public boolean isMetadataAccessible(ApplicationContext context, String id) {
+    public boolean isMetadataAccessible(String id) {
         if (isAllMetadataAccessible()) {
             return true;
         }
-        
-                
-        SdiMetadataHome metadataHome = (SdiMetadataHome)context.getBean("sdiMetadataHome");
+
+
+        SdiMetadataHome metadataHome = (SdiMetadataHome) context.getBean("sdiMetadataHome");
         SdiMetadata metadata = metadataHome.findByguid(id);
         if (metadata == null) {
             if (policy.isCsw_includeharvested()) {
@@ -297,8 +306,8 @@ public class CSWProxyDataAccessibilityManager {
             if (!policy.getCswSdiSysAccessscope().getValue().equals(resource.getSdiSysAccessscope().getValue())) {
                 return false;
             }
-            
-            SdiAccessscopeHome accessscopeHome = (SdiAccessscopeHome)context.getBean("sdiAccessscopeHome");
+
+            SdiAccessscopeHome accessscopeHome = (SdiAccessscopeHome) context.getBean("sdiAccessscopeHome");
             List resourceAccessScope = accessscopeHome.findByGuid(resource.getGuid());
 
             if (policy.getCswSdiSysAccessscope().getValue().equals("user")) {
@@ -333,7 +342,7 @@ public class CSWProxyDataAccessibilityManager {
             }
         }
 
-        if (!policy.isCsw_anystate()) {            
+        if (!policy.isCsw_anystate()) {
             for (SdiPolicyMetadatastate policyMetadatastate : policy.getSdiPolicyMetadatastates()) {
                 if (metadata.getSdiSysMetadatastate().getId().equals(policyMetadatastate.getSdiSysMetadatastate().getId())) {
                     if (metadata.getSdiSysMetadatastate().getValue().equals("published")) {
@@ -345,22 +354,23 @@ public class CSWProxyDataAccessibilityManager {
                                 //if is not, replace it by the lase one
                                 HashSet<SdiVersion> versions = (HashSet<SdiVersion>) resource.getSdiVersions();
                                 SdiMetadata lastmetadata = metadata;
-                                for (SdiVersion version : versions){
+                                for (SdiVersion version : versions) {
                                     SdiMetadata currentmetadata = version.getSdiMetadatas().iterator().next();
-                                    if(currentmetadata.getSdiSysMetadatastate().getValue().equals("published")){
-                                        if(currentmetadata.getPublished().after(lastmetadata.getPublished())){
+                                    if (currentmetadata.getSdiSysMetadatastate().getValue().equals("published")) {
+                                        if (currentmetadata.getPublished().after(lastmetadata.getPublished())) {
                                             lastmetadata = currentmetadata;
                                         }
                                     }
                                 }
                                 //The metadata is the last one
-                                if(lastmetadata.getGuid().equals(metadata.getGuid()))
+                                if (lastmetadata.getGuid().equals(metadata.getGuid())) {
                                     return true;
-                                
+                                }
+
                                 //the metadata is not the last one
                                 setDataIdVersionAccessible(lastmetadata.getGuid());
                                 return false;
-                            }else{
+                            } else {
                                 return true;
                             }
                         } else {
@@ -411,7 +421,7 @@ public class CSWProxyDataAccessibilityManager {
         Element racine = docParent.getRootElement();
         Element elementQuery = racine.getChild("Query", nsCSW);
         Element elementConstraint = null;
-        Element elementFilter = null;
+        Element elementFilter;
         Element elementAnd = null;
 
         ElementFilter filtre = new ElementFilter("Constraint");
@@ -491,7 +501,7 @@ public class CSWProxyDataAccessibilityManager {
      * @param filter
      * @return
      */
-    public String addCQLFilter(String constraint) throws UnsupportedEncodingException {
+    public String addCQLFilter(Boolean isHarvester, String constraint) throws UnsupportedEncodingException {
         if (policy.getSdiCswSpatialpolicy() != null && policy.getSdiCswSpatialpolicy().isValid()) {
             //Add a geographic filter if one defined in the loaded policy
             if (constraint.length() > 0) {
@@ -501,12 +511,15 @@ public class CSWProxyDataAccessibilityManager {
             }
         }
 
-        String filter = this.buildCSWCQLFilter();
-        if (filter.length() > 0) {
-            if (constraint.length() > 0) {
-                constraint += URLEncoder.encode(" AND " + filter, "UTF-8");
-            } else {
-                constraint = URLEncoder.encode(filter, "UTF-8");
+        //If the virtual service is used to harvest remote server, we don't add specific filter on sdi XMl nodes
+        if (!isHarvester) {
+            String filter = this.buildCSWCQLFilter();
+            if (filter.length() > 0) {
+                if (constraint.length() > 0) {
+                    constraint += URLEncoder.encode(" AND " + filter, "UTF-8");
+                } else {
+                    constraint = URLEncoder.encode(filter, "UTF-8");
+                }
             }
         }
         return constraint;
@@ -523,9 +536,34 @@ public class CSWProxyDataAccessibilityManager {
             return null;
         }
         String filter = "<ogc:And xmlns:ogc=\"http://www.opengis.net/ogc\">";
-        if (!policy.isCsw_includeharvested()) {
-            filter += getIsHarvestedFilter(this.FILTER);
+        ExtensionsHome extensionsHome = (ExtensionsHome) context.getBean("extensionsHome");
+        Extensions extension = extensionsHome.findByName("com_easysdi_core");
+        String params = extension.getParams();
+        JSONObject json = (JSONObject) JSONSerializer.toJSON(params);
+        String platformguid = json.getString("infrastructureID");
+        filter += "<ogc:PropertyIsEqualTo>";
+        filter += "<ogc:PropertyName>platform</ogc:PropertyName>";
+        filter += "<ogc:Literal>" + platformguid + "</ogc:Literal>";
+        filter += "</ogc:PropertyIsEqualTo>";
+        
+        if(policy.isCsw_includeharvested()){
+            filter += "<ogc:Or>";
+            filter += "<ogc:PropertyIsEqualTo>";
+            filter += "<ogc:PropertyName>harvested</ogc:PropertyName>";
+            filter += "<ogc:Literal>true</ogc:Literal>";
+            filter += "</ogc:PropertyIsEqualTo>";
+            filter += "<ogc:And>";
+            filter += "<ogc:PropertyIsEqualTo>";
+            filter += "<ogc:PropertyName>harvested</ogc:PropertyName>";
+            filter += "<ogc:Literal>false</ogc:Literal>";
+            filter += "</ogc:PropertyIsEqualTo>";
+        }else{
+            filter += "<ogc:PropertyIsEqualTo>";
+            filter += "<ogc:PropertyName>harvested</ogc:PropertyName>";
+            filter += "<ogc:Literal>false</ogc:Literal>";
+            filter += "</ogc:PropertyIsEqualTo>";
         }
+
         if (!policy.isCsw_anyresourcetype()) {
             filter += getResourceTypeFilter(this.FILTER);
         }
@@ -534,6 +572,10 @@ public class CSWProxyDataAccessibilityManager {
         }
         if (!policy.isCsw_anystate()) {
             filter += getMetadatastatefilter(this.FILTER);
+        }
+        if(policy.isCsw_includeharvested()){
+            filter += "</ogc:And>";
+            filter += "</ogc:Or>";            
         }
         filter += "</ogc:And>";
         return filter;
@@ -547,9 +589,22 @@ public class CSWProxyDataAccessibilityManager {
      */
     public String buildCSWCQLFilter() {
         String filter = "";
-        if (!policy.isCsw_includeharvested()) {
-            filter += "(" + getIsHarvestedFilter(this.CQL_TEXT) + ")";
+
+        ExtensionsHome extensionsHome = (ExtensionsHome) context.getBean("extensionsHome");
+        Extensions extension = extensionsHome.findByName("com_easysdi_core");
+        String params = extension.getParams();
+        JSONObject json = (JSONObject) JSONSerializer.toJSON(params);
+        String platformguid = json.getString("infrastructureID");
+        filter += " platform = '" + platformguid + "'";
+
+        filter += " AND ";
+        if(policy.isCsw_includeharvested()){
+            filter += " harvested = 'true' ";
+            filter += " OR (harvested = 'false' ";
+        }else{
+            filter += " harvested = 'false' ";
         }
+
         if (!policy.isCsw_anyresourcetype()) {
             if (filter.length() > 0) {
                 filter += " AND ";
@@ -568,33 +623,10 @@ public class CSWProxyDataAccessibilityManager {
             }
             filter += "(" + getMetadatastatefilter(this.CQL_TEXT) + ")";
         }
-
-        return filter;
-    }
-
-    /**
-     *
-     * <ogc:PropertyIsEqualTo>
-     * <ogc:PropertyName>harvested</ogc:PropertyName>
-     * <ogc:Literal>false</ogc:Literal>
-     * </ogc:PropertyIsEqualTo>
-     *
-     * @return
-     */
-    public String getIsHarvestedFilter(String constraintlanguage) {
-        if (policy.isCsw_includeharvested()) {
-            return null;
+        if(policy.isCsw_includeharvested()){
+            filter += " )";
         }
 
-        String filter = null;
-        if (constraintlanguage.equals(this.FILTER)) {
-            filter = "<ogc:PropertyIsEqualTo>";
-            filter += "<ogc:PropertyName>harvested</ogc:PropertyName>";
-            filter += "<ogc:Literal>false</ogc:Literal>";
-            filter += "</ogc:PropertyIsEqualTo>";
-        } else if (constraintlanguage.equals(this.CQL_TEXT)) {
-            filter = " harvested = 'false' ";
-        }
         return filter;
     }
 
@@ -703,7 +735,7 @@ public class CSWProxyDataAccessibilityManager {
             }
             filter += "</ogc:And>";
         } else if (constraintlanguage.equals(this.CQL_TEXT)) {
-            filter = " scope = '" + policy.getCswSdiSysAccessscope().getValue()+ "'";
+            filter = " scope = '" + policy.getCswSdiSysAccessscope().getValue() + "'";
             if (!policy.getCswSdiSysAccessscope().getValue().equals("public")) {
                 filter += " AND ";
                 if (policy.getCswSdiSysAccessscope().getValue().equals("user")) {
@@ -820,7 +852,7 @@ public class CSWProxyDataAccessibilityManager {
 
                 } else {
                     filter += "(";
-                    filter += " metadatastate = '" + policyMetadataState.getSdiSysMetadatastate().getValue() +"'";
+                    filter += " metadatastate = '" + policyMetadataState.getSdiSysMetadatastate().getValue() + "'";
                     filter += ")";
                 }
             }
