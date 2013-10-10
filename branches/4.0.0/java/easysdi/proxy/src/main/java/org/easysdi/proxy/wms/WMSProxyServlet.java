@@ -92,6 +92,7 @@ import org.xml.sax.SAXException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
+import org.springframework.context.ApplicationContext;
 
 
 /**
@@ -165,9 +166,9 @@ public class WMSProxyServlet extends ProxyServlet {
 	/**
 	 * Constructor
 	 */
-	public WMSProxyServlet (ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy)
+	public WMSProxyServlet (ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy, ApplicationContext context)
 	{
-		super(proxyRequest, virtualService, policy);
+		super(proxyRequest, virtualService, policy, context);
 	}
 
 	/**

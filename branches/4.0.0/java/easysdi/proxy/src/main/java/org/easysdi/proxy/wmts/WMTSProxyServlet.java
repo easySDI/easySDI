@@ -57,6 +57,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
+import org.springframework.context.ApplicationContext;
 
 /**
  * @author Depth SA
@@ -88,8 +89,8 @@ public class WMTSProxyServlet extends ProxyServlet{
     /**
      * 
      */
-    public WMTSProxyServlet(ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy) {
-		super(proxyRequest, virtualService, policy);
+    public WMTSProxyServlet(ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy, ApplicationContext context) {
+		super(proxyRequest, virtualService, policy, context);
     }
 
     /**

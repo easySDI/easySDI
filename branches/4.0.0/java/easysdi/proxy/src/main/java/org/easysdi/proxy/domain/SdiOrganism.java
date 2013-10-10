@@ -47,6 +47,7 @@ public class SdiOrganism implements java.io.Serializable {
 	private String Logo;
 	private String Name;
 	private String Website;
+        private String Perimeter;
 	private int Access;
 	private int Asset_id;
 	private Set<SdiPolicy> sdiPolicys = new HashSet<SdiPolicy>(
@@ -79,7 +80,7 @@ public class SdiOrganism implements java.io.Serializable {
 	public SdiOrganism(String Guid, int Created_by, Date Created,
 			Integer Modified_by, Date Modified, int Ordering, int State,
 			int Checked_out, Date Checked_out_time, String Acronym,
-			String Description, String Logo, String Name, String Website,
+			String Description, String Logo, String Name, String Website,String Perimeter,
 			int Access, int Asset_id,
 			Set<SdiPolicy> sdiPolicys,
 			Set<SdiVirtualservice> sdiVirtualservice,
@@ -99,6 +100,7 @@ public class SdiOrganism implements java.io.Serializable {
 		this.Logo = Logo;
 		this.Name = Name;
 		this.Website = Website;
+                this.Perimeter = Perimeter;
 		this.Access = Access;
 		this.Asset_id = Asset_id;
 		this.sdiPolicys = sdiPolicys;
@@ -245,6 +247,15 @@ public class SdiOrganism implements java.io.Serializable {
 
 	public void setWebsite(String Website) {
 		this.Website = Website;
+	}
+        
+        @Column(name = "perimeter", length = 10000)
+	public String getPerimeter() {
+		return this.Perimeter;
+	}
+
+	public void setPerimeter(String Perimeter) {
+		this.Perimeter = Perimeter;
 	}
 
 	@Column(name = "access", nullable = false)

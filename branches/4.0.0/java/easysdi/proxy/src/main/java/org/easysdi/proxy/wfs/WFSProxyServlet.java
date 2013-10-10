@@ -124,6 +124,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import org.springframework.context.ApplicationContext;
 
 /**
  * @author rmi
@@ -178,9 +179,9 @@ public class WFSProxyServlet extends ProxyServlet {
 	/**
 	 * Constructor
 	 */
-	public WFSProxyServlet (ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy)
+	public WFSProxyServlet (ProxyServletRequest proxyRequest, SdiVirtualservice virtualService, SdiPolicy policy, ApplicationContext context)
 	{
-		super(proxyRequest, virtualService, policy);
+		super(proxyRequest, virtualService, policy, context);
 		owsExceptionReport = new WFSExceptionReport();
 	}
 
