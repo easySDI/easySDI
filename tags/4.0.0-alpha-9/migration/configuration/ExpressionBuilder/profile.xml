@@ -1,0 +1,17 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<expression:EMFExpression xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:expression="http:///expression.ecore" id="null=>Var=>alias" expression="Utils.sansAccent(row1.name)">
+  <variables name="row1.id" value="0" talendType="id_Long"/>
+  <variables name="row1.guid" value="null" talendType="id_String" nullable="true"/>
+  <variables name="row1.code" value="null" talendType="id_String" nullable="true"/>
+  <variables name="row1.name" value="null" talendType="id_String"/>
+  <variables name="row1.description" value="null" talendType="id_String" nullable="true"/>
+  <variables name="row1.created" value="null" talendType="id_Date"/>
+  <variables name="row1.updated" value="null" talendType="id_Date" nullable="true"/>
+  <variables name="row1.createdby" value="null" talendType="id_Integer" nullable="true"/>
+  <variables name="row1.updatedby" value="null" talendType="id_Integer" nullable="true"/>
+  <variables name="row1.label" value="null" talendType="id_String" nullable="true"/>
+  <variables name="row1.ordering" value="0" talendType="id_Integer"/>
+  <variables name="row1.class_id" value="0" talendType="id_Long"/>
+  <variables name="row1.metadataid" value="0" talendType="id_Long"/>
+  <variables value="null" talendType="id_String"/>
+</expression:EMFExpression>
