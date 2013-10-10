@@ -17,6 +17,9 @@ JHtml::_('formbehavior.chosen', 'select');
 //Load admin language file
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
+$document = JFactory::getDocument();
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/view/view.js')
+
 ?>
 
 <!-- Styling for making front end forms look OK -->
@@ -64,6 +67,7 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 
     js = jQuery.noConflict();
     js(document).ready(function() {
+        enableAccessScope();
         onChangeOrganism();
         js('#form-resource').submit(function(event) {
 

@@ -24,6 +24,44 @@ function enableState(){
 	
 }
 
+function enableResourceType(){
+	if(jQuery('#jform_csw_anyresourcetype0').is(":checked")){
+		jQuery("#jform_csw_resourcetype").val("").trigger('liszt:updated');
+		jQuery('#jform_csw_resourcetype').parent().parent().hide();		
+	}else{
+		jQuery('#jform_csw_resourcetype').parent().parent().show();
+	}
+	
+}
+
+function enableVisibility(){
+    if(jQuery('#jform_csw_anyvisibility0').is(":checked")){
+        jQuery("#jform_csw_organisms").val("").trigger('liszt:updated');
+        jQuery("#jform_csw_users").val("").trigger('liszt:updated');
+        jQuery('#jform_csw_accessscope_id').parent().parent().hide();
+        jQuery("#csw_organisms").hide();
+        jQuery("#csw_users").hide();
+    }else{
+        jQuery('#jform_csw_accessscope_id').parent().parent().show();
+        if(jQuery('#jform_csw_accessscope_id').val() == 1){            
+		jQuery("#jform_csw_organisms").val("").trigger('liszt:updated');
+		jQuery("#jform_csw_users").val("").trigger('liszt:updated');
+		jQuery("#csw_organisms").hide();
+		jQuery("#csw_users").hide();
+	}
+	else if(jQuery('#jform_csw_accessscope_id').val() == 2){
+		jQuery("#csw_organisms").show();
+		jQuery("#jform_csw_users").val("").trigger('liszt:updated');
+		jQuery("#csw_users").hide();
+	}
+	else if(jQuery('#jform_csw_accessscope_id').val() == 3){
+		jQuery("#csw_users").show();
+		jQuery("#jform_csw_organisms").val("").trigger('liszt:updated');
+		jQuery("#csw_organisms").hide();
+	}
+    }	
+}
+
 function onDeleteExcludedAttribute (index) {
 	var parent = jQuery('.div_ea_' + index);
 	parent.remove();
@@ -53,7 +91,9 @@ function onAddExcludedAttribute () {
 }
 
 jQuery(document).ready(function () {
-	enableState();
+        enableVisibility();	
+        enableState();
+        enableResourceType();
 	onStateChange();
 	if(jQuery('#btn_add_excluded_attribute').data('count') > 0)
 		jQuery('#jform_csw_anyattribute').val('0');
@@ -62,6 +102,14 @@ jQuery(document).ready(function () {
 	
 	jQuery('input[name="jform[csw_anystate]"]').click(function () {
 		enableState();
+	});
+        
+        jQuery('input[name="jform[csw_anyvisibility]"]').click(function () {
+		enableVisibility();
+	});
+        
+        jQuery('input[name="jform[csw_anyresourcetype]"]').click(function () {
+		enableResourceType();
 	});
 	
 });

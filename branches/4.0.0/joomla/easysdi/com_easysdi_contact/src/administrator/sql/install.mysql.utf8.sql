@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_organism` (
 `logo` VARCHAR(500) ,
 `name` VARCHAR(255)  NOT NULL ,
 `website` VARCHAR(500)  ,
-`gml` VARCHAR(10000)  ,
+`perimeter` VARCHAR(10000)  ,
 `access` INT(11)  NOT NULL ,
 `asset_id` INT(10)  NOT NULL ,
 PRIMARY KEY (`id`)

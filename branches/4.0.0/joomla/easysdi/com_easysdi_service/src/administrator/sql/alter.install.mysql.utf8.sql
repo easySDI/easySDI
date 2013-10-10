@@ -174,6 +174,21 @@ ALTER TABLE `#__sdi_policy`
 ADD CONSTRAINT `#__sdi_policy_fk7` FOREIGN KEY (`csw_version_id`) REFERENCES `#__sdi_sys_metadataversion` (`id`) ;
 
 
+ALTER TABLE `#__sdi_policy_resourcetype`
+ADD CONSTRAINT `#__sdi_policy_resourcetype_fk1` FOREIGN KEY (`policy_id`) REFERENCES `#__sdi_policy` (`id`) ON DELETE CASCADE;
+
+ALTER TABLE `#__sdi_policy_resourcetype`
+ADD CONSTRAINT `#__sdi_policy_resourcetype_fk2` FOREIGN KEY (`resourcetype_id`) REFERENCES `#__sdi_resourcetype` (`id`)  ON DELETE CASCADE;
+
+ALTER TABLE `#__sdi_policy_visibility`
+ADD CONSTRAINT `#__sdi_policy_visibility_fk1` FOREIGN KEY (`policy_id`) REFERENCES `#__sdi_policy` (`id`) ON DELETE CASCADE;
+
+ALTER TABLE `#__sdi_policy_visibility`
+ADD CONSTRAINT `#__sdi_policy_visibility_fk2` FOREIGN KEY (`user_id`) REFERENCES `#__sdi_user` (`id`)  ON DELETE CASCADE;
+
+ALTER TABLE `#__sdi_policy_visibility`
+ADD CONSTRAINT `#__sdi_policy_visibility_fk3` FOREIGN KEY (`organism_id`) REFERENCES `#__sdi_organism` (`id`)  ON DELETE CASCADE;
+
 
 
 

@@ -273,7 +273,7 @@ gxp.plugins.WMSSource = Ext.extend(gxp.plugins.LayerSource, {
         }
 
         var lazy = this.isLazy();
-                
+        
         this.store = new GeoExt.data.WMSCapabilitiesStore({
             // Since we want our parameters (e.g. VERSION) to override any in the 
             // given URL, we need to remove corresponding paramters from the 
