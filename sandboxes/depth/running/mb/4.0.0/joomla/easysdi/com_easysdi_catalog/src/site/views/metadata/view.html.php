@@ -24,7 +24,11 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
     protected $form;
     protected $params;
     public $formHtml = '';
-    public $classTree;
+    /**
+     *
+     * @var DOMDocument 
+     */
+    public $structure;
     public $validators;
 
     /**
@@ -93,15 +97,12 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
     }
     
     protected function buildForm(){
-        $classTree = $this->classTree = $this->get('ClassTree');
-        $this->validators = $this->get('Validators');
+        $structure = $this->structure = $this->get('Structure');
+        //$this->validators = $this->get('Validators');
 
-        $fhg = new FormHtmlGenerator($this->form, $classTree);
+        $fhg = new FormHtmlGenerator($this->form, $structure);
         $this->formHtml = $fhg->buildForm();
     }
     
-    protected function getStereotype(){
-        
-    }
 
 }

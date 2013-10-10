@@ -26,9 +26,23 @@ jimport('joomla.event.dispatcher');
 class Easysdi_catalogModelAjax extends JModelForm {
 
     var $_item = null;
-    var $_classTree = array();
+    /**
+     *
+     * @var JDatabaseDriver 
+     */
     var $db = null;
     
+    /**
+     *
+     * @var DOMDocument 
+     */
+    private $_structure;
+    /**
+     *
+     * @var string 
+     */
+    private $_ajaxXpath;
+
     /**
      * Method to auto-populate the model state.
      *
@@ -57,10 +71,14 @@ class Easysdi_catalogModelAjax extends JModelForm {
         $this->setState('params', $params);
     }
 
-    public function getClassTree(){
-        return $this->_classTree ;
+    public function getStructure() {
+        return $this->_structure;
     }
     
+    public function getAjaxXpath(){
+        return $this->_ajaxXpath;
+    }
+
     /**
      * Method to get an ojbect.
      *
@@ -110,7 +128,6 @@ class Easysdi_catalogModelAjax extends JModelForm {
                     if ($result = $CSWmetadata->load())
                         $this->_item->csw = $result;
                 }
-                
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
@@ -120,7 +137,7 @@ class Easysdi_catalogModelAjax extends JModelForm {
     }
 
     public function getTable($type = 'Metadata', $prefix = 'Easysdi_catalogTable', $config = array()) {
-        $this->addTablePath(JPATH_ADMINISTRATOR .'/components/com_easysdi_catalog/tables');
+        $this->addTablePath(JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables');
         return JTable::getInstance($type, $prefix, $config);
     }
 
@@ -194,30 +211,20 @@ class Easysdi_catalogModelAjax extends JModelForm {
      * @since	1.6
      */
     public function getForm($data = array(), $loadData = true) {
-        $session = JFactory::getSession();
-        $dce = new DomCswExtractor();
-        
-        $relations = unserialize($session->get('relations'));
-        
-        $rel = $relations[$_GET['uuid']];
-        $index = $session->get('attribute_index')+1;
-        $rel->setIndex($index);
-        $rel->setSerializedXpath($dce->getSerializedXpath($rel));
-        $session->set('attribute_index', $index);
-        
         $formGenerator = new FormGenerator();
-        
-        $form = $this->loadForm('com_easysdi_catalog.metadata', $formGenerator->getForm($rel), array('control' => 'jform', 'load_data' => $loadData, 'file' => FALSE));
-        
-        $this->_classTree = $formGenerator->relations;
-        
+
+        $form = $this->loadForm('com_easysdi_catalog.metadata', $formGenerator->getForm(), array('control' => 'jform', 'load_data' => $loadData, 'file' => FALSE));
+
+        $this->_structure = $formGenerator->structure;
+        $this->_ajaxXpath = $formGenerator->ajaxXpath;
+
         if (empty($form)) {
             return false;
         }
 
         return $form;
     }
-    
+
     /**
      * Method to get the data that should be injected in the form.
      *
@@ -243,7 +250,7 @@ class Easysdi_catalogModelAjax extends JModelForm {
     public function save($data) {
         (empty($data['id']) ) ? $new = true : $new = false;
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('metadata.id');
-                
+
         try {
             $user = sdiFactory::getSdiUser();
         } catch (Exception $e) {
@@ -264,16 +271,16 @@ class Easysdi_catalogModelAjax extends JModelForm {
         if ($table->save($data) === true) {
             $CSWmetadata = new sdiMetadata($table->id);
             if ($new) {
-                if(!$CSWmetadata->insert()){
+                if (!$CSWmetadata->insert()) {
                     $table->delete();
                     return false;
                 }
-            }else{
-                if(!$CSWmetadata->update()){
+            } else {
+                if (!$CSWmetadata->update()) {
                     return false;
                 }
             }
-            
+
             return $id;
         } else {
             return false;
@@ -298,7 +305,7 @@ class Easysdi_catalogModelAjax extends JModelForm {
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
         }
-        
+
         $table = $this->getTable();
         if ($table->delete($data['id']) === true) {
             return $id;

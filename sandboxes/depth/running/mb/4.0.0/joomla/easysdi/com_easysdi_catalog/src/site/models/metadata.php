@@ -25,9 +25,9 @@ class Easysdi_catalogModelMetadata extends JModelForm {
 
     /**
      *
-     * @var SdiRelation[] 
+     * @var DOMDocument
      */
-    var $_classTree = array();
+    var $_structure;
 
     /**
      *
@@ -69,8 +69,8 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         $this->setState('params', $params);
     }
 
-    public function getClassTree() {
-        return $this->_classTree;
+    public function getStructure() {
+        return $this->_structure;
     }
 
     public function getValidators() {
@@ -208,16 +208,11 @@ class Easysdi_catalogModelMetadata extends JModelForm {
      * @since	1.6
      */
     public function getForm($data = array(), $loadData = true) {
-        $formGenerator = null;
-        if (isset($this->_item->csw)) {
-            $formGenerator = new FormGenerator($this->_item->csw);
-        } else {
-            $formGenerator = new FormGenerator();
-        }
+        $formGenerator = new FormGenerator($this->_item->csw);
 
         $form = $this->loadForm('com_easysdi_catalog.metadata', $formGenerator->getForm(), array('control' => 'jform', 'load_data' => $loadData, 'file' => FALSE));
 
-        $this->_classTree = $formGenerator->relations;
+        $this->_structure = $formGenerator->structure;
 
         $this->buildValidators();
 
@@ -325,7 +320,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
     private function buildValidators() {
         $tmpValidators = array();
 
-        foreach ($this->_classTree as $rel) {
+        foreach ($this->_structure as $rel) {
             if ($rel->childtype_id == SdiRelation::$ATTRIBUT) {
                 $patterns = array();
                 $validator = new stdClass();

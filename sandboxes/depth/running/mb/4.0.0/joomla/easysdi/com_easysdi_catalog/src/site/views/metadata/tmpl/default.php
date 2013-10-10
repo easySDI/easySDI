@@ -63,10 +63,10 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
     js('document').ready(function() {
 
 <?php
-foreach ($this->validators as $validator) {
+/* foreach ($this->validators as $validator) {
 
-    echo $validator;
-}
+  echo $validator;
+  } */
 ?>
 
         js('#btn_toogle_all').click(function() {
@@ -104,10 +104,10 @@ foreach ($this->validators as $validator) {
         });
     }
 
-    function addFieldset(id, idwi, lowerbound, upperbound) {
+    function addFieldset(id, idwi, relid, parent_path, lowerbound, upperbound) {
         var uuid = getUuid('add-btn-', id);
 
-        js.get('<?php echo $_SERVER['PHP_SELF']; ?>' + '/?view=ajax&uuid=' + uuid, function(data) {
+        js.get('<?php echo $_SERVER['PHP_SELF']; ?>' + '/?view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
             js('#bottom-' + idwi).before(data);
 
             if (js(data).find('select') !== null) {
@@ -156,20 +156,27 @@ foreach ($this->validators as $validator) {
 
     function removeFieldset(id, idwi, lowerbound, upperbound) {
         var uuid = getUuid('remove-btn-', id);
+        js.get('<?php echo $_SERVER['PHP_SELF']; ?>' + '/?task=ajax.removeNode&uuid=' + uuid, function(data) {
+            var response = js.parseJSON(data);
+            if (response.success) {
+                //alert('Success');
 
-        var toRemove = js('#outer-fds-' + uuid);
+                var toRemove = js('#outer-fds-' + uuid);
 
-        toRemove.remove();
+                toRemove.remove();
 
-        var occurance = getOccuranceCount('.outer-fds-' + idwi);
+                var occurance = getOccuranceCount('.outer-fds-' + idwi);
 
-        if (lowerbound == occurance) {
-            js('.remove-btn-' + idwi).hide();
-        }
+                if (lowerbound == occurance) {
+                    js('.remove-btn-' + idwi).hide();
+                }
 
-        if (upperbound > occurance) {
-            js('.add-btn-' + idwi).show();
-        }
+                if (upperbound > occurance) {
+                    js('.add-btn-' + idwi).show();
+                }
+            }
+        });
+
     }
 
     /**

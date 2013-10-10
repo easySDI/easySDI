@@ -1,5 +1,7 @@
 <?php
 
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -20,9 +22,9 @@ class FormHtmlGenerator {
 
     /**
      *
-     * @var SdiRelation[] 
+     * @var DOMDocument
      */
-    private $classTree;
+    private $structure;
 
     /**
      *
@@ -32,85 +34,131 @@ class FormHtmlGenerator {
 
     /**
      *
-     * @var DOMDocument 
+     * @var SdiNamespaceDao 
      */
-    private $dom;
+    private $nsdao;
 
     /**
      *
-     * @var DOMElement[] 
+     * @var DOMDocument 
      */
-    private $domElements;
+    private $formHtml;
 
-    function __construct(JForm $form, $classTree) {
+    /**
+     *
+     * @var DOMXPath 
+     */
+    private $domXpathStr;
+
+    /**
+     *
+     * @var DOMXPath 
+     */
+    private $domXpathFormHtml;
+    /**
+     *
+     * @var string 
+     */
+    private $ajaxXpath;
+    private $catalog_uri = 'http://www.easysdi.org/2011/sdi/catalog';
+    private $catalog_prefix = 'catalog';
+
+    function __construct(JForm $form, DOMDocument $structure, $ajaxXpath = null) {
         $this->form = $form;
-        $this->classTree = $classTree;
+        $this->structure = $structure;
         $this->ldao = new SdiLanguageDao();
-        $this->dom = new DOMDocument(null, 'utf-8');
+        $this->nsdao = new SdiNamespaceDao();
+        $this->formHtml = new DOMDocument(null, 'utf-8');
+        $this->ajaxXpath = $ajaxXpath;
     }
 
-
+    /**
+     * 
+     * @return string
+     */
     public function buildForm() {
-        $this->getDomElements();
+        $this->domXpathStr = new DOMXPath($this->structure);
+        $this->domXpathFormHtml = new DOMXPath($this->formHtml);
 
-        $root = current($this->domElements);
-
-        foreach ($this->domElements as $key => $element) {
-            $reverseIndex = 2;
-            if (array_key_exists($key, $this->classTree)) {
-                $rel = $this->classTree[$key];
-                switch ($rel->childtype_id) {
-                    case SdiRelation::$RELATIONTYPE:
-                        $reverseIndex = 1;
-                        break;
-                    case SdiRelation::$CLASS:
-                        $reverseIndex = 2;
-                        break;
-                    case SdiRelation::$ATTRIBUT:
-                        $reverseIndex = 2;
-                        break;
-                }
-            } else {
-                $reverseIndex = 1;
-            }
-
-            if ($this->subXpath($key, $reverseIndex)) {
-                if (array_key_exists($this->subXpath($key, $reverseIndex), $this->domElements)) {
-                    $parent = $this->domElements[$this->subXpath($key, $reverseIndex)];
-
-                    $divInner = $parent->getElementsByTagName('div')->item(0);
-
-                    if (!isset($divInner)) {
-                        $divInner = $parent;
-                    }
-
-                    if ($rel->getIndex() == 0 && ($rel->childtype_id == SdiRelation::$CLASS || $rel->childtype_id == SdiRelation::$RELATIONTYPE)) {
-                        $divInner->appendChild($this->getAction($rel));
-                    }
-                    $divInner->appendChild($element);
-                }
-            }
+        foreach ($this->nsdao->getAll() as $ns) {
+            $this->domXpathStr->registerNamespace($ns->prefix, $ns->uri);
         }
 
-        $this->dom->appendChild($root);
+        if(isset($this->ajaxXpath)){
+            $root = $this->domXpathStr->query($this->ajaxXpath)->item(0);
+            $rootFieldset = $this->getFieldset($root);
+        }  else {
+            $root = $this->domXpathStr->query('/*')->item(0);
+            $rootFieldset = $this->formHtml->createElement('fieldset');
+        }
+        
+        $this->structure->formatOutput = true;
+        $xml = $this->structure->saveXML();
+        
+        $this->formHtml->appendChild($rootFieldset);
+        
+        $this->recBuildForm($root, $rootFieldset);
 
-        $html = $this->dom->saveHTML();
+        $this->formHtml->formatOutput = true;
+        $html = $this->formHtml->saveHTML();
 
         return $html;
     }
 
-    /**
-     * Build a array of DomElement using the same key for the array of Relation.
-     */
-    private function getDomElements() {
-        foreach ($this->classTree as $key => $rel) {
-            switch ($rel->childtype_id) {
-                case SdiRelation::$RELATIONTYPE:
-                case SdiRelation::$CLASS:
-                    $this->domElements[$key] = $this->getFieldset($rel);
+    private function recBuildForm(DOMElement $parent, DOMElement $parentHtml) {
+        switch ($parent->parentNode->nodeType) {
+            case XML_DOCUMENT_NODE:
+                $query = '*[@catalog:childtypeId="0"]|*[@catalog:childtypeId="2"]|*[@catalog:childtypeId="3"]';
+                $parentInner = $parentHtml;
+                break;
+            case XML_ELEMENT_NODE:
+                $query = '*/*[@catalog:childtypeId="0"]|*/*[@catalog:childtypeId="2"]|*/*[@catalog:childtypeId="3"]|*[@catalog:childtypeId="2"]';
+                $parentInner = $parentHtml->getElementsByTagName('div')->item(0);
+                break;
+        }
+
+        foreach ($this->domXpathStr->query($query, $parent) as $child) {
+
+            switch ($child->getAttributeNS($this->catalog_uri, 'childtypeId')) {
+                case EnumChildtype::$RELATION:
+                    if (($child->getAttributeNS($this->catalog_uri, 'lowerbound')-$child->getAttributeNS($this->catalog_uri, 'upperbound'))!=0 && $child->getAttributeNS($this->catalog_uri, 'index') == 1) {
+                        $action = $this->getAction($child);
+                        $parentInner->appendChild($action);
+                    }
+                    $fieldset = $this->getFieldset($child);
+
+                    $parentInner->appendChild($fieldset);
+
+                    if ($this->domXpathStr->query('*/*[@catalog:childtypeId="0"]|*/*[@catalog:childtypeId="2"]|*[@catalog:childtypeId="2"]', $child)->length > 0) {
+                        $this->recBuildForm($child, $fieldset);
+                    }
                     break;
-                case SdiRelation::$ATTRIBUT:
-                    $this->domElements[$key] = $this->getAttribute($rel);
+                case EnumChildtype::$ATTRIBUT:
+                    
+                    $fields = $this->getAttribute($child);
+                    
+                    foreach ($fields as $field) {
+                        $parentInner->appendChild($field);
+                    }
+                    
+                    break;
+                case EnumChildtype::$RELATIONTYPE:
+                    if ($child->getAttributeNS($this->catalog_uri, 'index') == 1) {
+                        $action = $this->getAction($child);
+                        $parentInner->appendChild($action);
+                    }
+                    $searchFields = $this->getAttribute($child);
+                    $fieldset = $this->getFieldset($child);
+
+                    foreach ($searchFields as $searchField) {
+                        $fieldset->getElementsByTagName('div')->item(0)->appendChild($searchField);
+                    }
+
+                    $parentInner->appendChild($fieldset);
+
+                    if ($this->domXpathStr->query('*[@catalog:childtypeId="2"]', $child)->length > 0) {
+                        $this->recBuildForm($child, $fieldset);
+                    }
                     break;
             }
         }
@@ -122,24 +170,44 @@ class FormHtmlGenerator {
      * @param SdiRelation $rel
      * @return DOMElement
      */
-    private function getAction(SdiRelation $rel) {
-        $aAdd = $this->dom->createElement('a');
-        $aAdd->setAttribute('id', 'add-btn-' . $rel->getSerializedXpath());
-        $aAdd->setAttribute('class', 'btn btn-success btn-mini add-btn');
-        $aAdd->setAttribute('onclick', 'addFieldset(this.id, \'' . $this->subXpath($rel->getSerializedXpath(), 2) . '\' ,' . $rel->lowerbound . ',' . $rel->upperbound . ')');
-        if ($rel->upperbound <= $rel->occurance) {
+    private function getAction(DOMElement $relation) {
+
+        $lowerbound = $relation->getAttributeNS($this->catalog_uri, 'lowerbound');
+        $upperbound = $relation->getAttributeNS($this->catalog_uri, 'upperbound');
+        switch ($relation->getAttributeNS($this->catalog_uri, 'childtypeId')) {
+            case EnumChildtype::$RELATIONTYPE:
+                $relid = $relation->getAttributeNS($this->catalog_uri, 'relationId');
+                break;
+
+            default:
+                $relid = $relation->getAttributeNS($this->catalog_uri, 'dbid');
+                break;
+        }
+        
+
+        $occurance = $this->domXpathStr->query($this->removeIndex($relation->getNodePath()))->length;
+
+        //$debug = '[oc:' . $occurance . ' lb:' . $lowerbound . ' ub:' . $upperbound . '] [' . $relation->getNodePath() . ']';
+        $debug = '[oc:' . $occurance . ' lb:' . $lowerbound . ' ub:' . $upperbound . ']';
+
+        $aAdd = $this->formHtml->createElement('a');
+        $aAdd->setAttribute('id', 'add-btn-' . $this->serializeXpath($relation->getNodePath()));
+        $aAdd->setAttribute('class', 'btn btn-success btn-mini add-btn add-btn-' . $this->serializeXpath($this->removeIndex($relation->getNodePath())));
+        $aAdd->setAttribute('onclick', 'addFieldset(this.id, \''. $this->serializeXpath($this->removeIndex($relation->getNodePath())) .'\',' . $relid . ', \'' . $this->serializeXpath($relation->parentNode->getNodePath()) . '\' ,' . $lowerbound . ',' . $upperbound . ')');
+        
+        if ($upperbound <= $occurance) {
             $aAdd->setAttribute('style', 'display:none;');
         }
 
-        $iAdd = $this->dom->createElement('i');
+        $iAdd = $this->formHtml->createElement('i');
         $iAdd->setAttribute('class', 'icon-white icon-plus-2');
 
-        $divOuter = $this->dom->createElement('div');
-        $divOuter->setAttribute('id', 'outer-fds-' . $rel->getSerializedXpath());
-        $divOuter->setAttribute('class', 'outer-' . $rel->level . ' outer-fds-' . $rel->getSerializedXpath(false));
+        $divOuter = $this->formHtml->createElement('div');
+        $divOuter->setAttribute('id', 'outer-fds-' . $this->serializeXpath($relation->getNodePath()));
+        $divOuter->setAttribute('class', 'outer-level outer-fds-' . $this->serializeXpath($relation->getNodePath()));
 
-        $divAction = $this->dom->createElement('div', EText::_($rel->guid));
-        $divAction->setAttribute('class', 'action-' . $rel->level);
+        $divAction = $this->formHtml->createElement('div', EText::_($relation->getAttributeNS($this->catalog_uri, 'id')) . ' ' . $debug);
+        $divAction->setAttribute('class', 'action-level');
 
         $aAdd->appendChild($iAdd);
         $divAction->appendChild($aAdd);
@@ -153,58 +221,62 @@ class FormHtmlGenerator {
      * @param SdiRelation $rel
      * @return DOMElement
      */
-    private function getFieldset(SdiRelation $rel) {
+    private function getFieldset(DOMElement $element) {
+        $lowerbound = $element->getAttributeNS($this->catalog_uri, 'lowerbound');
+        $upperbound = $element->getAttributeNS($this->catalog_uri, 'upperbound');
+        $occurance = $this->domXpathStr->query($this->removeIndex($element->getNodePath()))->length;
+        $index = $element->getAttributeNS($this->catalog_uri, 'index');
 
-        $aCollapse = $this->dom->createElement('a');
-        $aCollapse->setAttribute('id', 'collapse-btn-' . $rel->getSerializedXpath());
+        $aCollapse = $this->formHtml->createElement('a');
+        $aCollapse->setAttribute('id', 'collapse-btn-' . $this->serializeXpath($element->getNodePath()));
         $aCollapse->setAttribute('class', 'btn btn-mini collapse-btn');
         $aCollapse->setAttribute('onclick', 'collapse(this.id)');
 
-        $iCollapse = $this->dom->createElement('i');
+        $iCollapse = $this->formHtml->createElement('i');
         $iCollapse->setAttribute('class', 'icon-white icon-arrow-down');
 
-        $aRemove = $this->dom->createElement('a');
-        $aRemove->setAttribute('id', 'remove-btn-' . $rel->getSerializedXpath());
-        $aRemove->setAttribute('class', 'btn btn-danger btn-mini pull-right');
-        $aRemove->setAttribute('onclick', 'confirm(this.id, \'' . $rel->getSerializedXpath() . '\' , ' . $rel->lowerbound . ',' . $rel->upperbound . ')');
+        $aRemove = $this->formHtml->createElement('a');
+        $aRemove->setAttribute('id', 'remove-btn-' . $this->serializeXpath($element->getNodePath()));
+        $aRemove->setAttribute('class', 'btn btn-danger btn-mini pull-right remove-btn-' . $this->serializeXpath($this->removeIndex($element->getNodePath())));
+        $aRemove->setAttribute('onclick', 'confirm(this.id, \'' . $this->serializeXpath($this->removeIndex($element->getNodePath())) . '\' , ' . $lowerbound . ',' . $upperbound . ')');
 
-        $iRemove = $this->dom->createElement('i');
+        $iRemove = $this->formHtml->createElement('i');
         $iRemove->setAttribute('class', 'icon-white icon-cancel-2');
 
-        $divOuter = $this->dom->createElement('div');
-        $divOuter->setAttribute('id', 'outer-fds-' . $rel->getSerializedXpath());
-        $divOuter->setAttribute('class', 'outer-' . $rel->level . ' outer-fds-' . $this->subXpath($rel->getSerializedXpath(), 2));
+        $divOuter = $this->formHtml->createElement('div');
+        $divOuter->setAttribute('id', 'outer-fds-' . $this->serializeXpath($element->getNodePath()));
+        $divOuter->setAttribute('class', 'outer-' . 0 . ' outer-fds-' . $this->serializeXpath($this->removeIndex($element->getNodePath())));
 
-        $fieldset = $this->dom->createElement('fieldset');
-        $fieldset->setAttribute('id', 'fds-' . $rel->getSerializedXpath());
+        $fieldset = $this->formHtml->createElement('fieldset');
+        $fieldset->setAttribute('id', 'fds-' . $this->serializeXpath($element->getNodePath()));
 
-        $spanLegend = $this->dom->createElement('span', EText::_($rel->guid));
-        $spanLegend->setAttribute('class', 'legend-' . $rel->level);
-        $legend = $this->dom->createElement('legend');
+        $spanLegend = $this->formHtml->createElement('span', EText::_($element->getAttributeNS($this->catalog_uri, 'id')));
+        $spanLegend->setAttribute('class', 'legend-' . 0);
+        $legend = $this->formHtml->createElement('legend');
 
-        $divInner = $this->dom->createElement('div');
-        $divInner->setAttribute('id', 'inner-fds-' . $rel->getSerializedXpath());
+        $divInner = $this->formHtml->createElement('div');
+        $divInner->setAttribute('id', 'inner-fds-' . $this->serializeXpath($element->getNodePath()));
         $divInner->setAttribute('class', 'inner-fds');
-        if (!isset($_GET['uuid'])) {
+        if (!isset($_GET['relid'])) {
             $divInner->setAttribute('style', 'display:none;');
         }
-        
-        $divBottom = $this->dom->createElement('div');
-        $divBottom->setAttribute('id', 'bottom-'.$this->subXpath($rel->getSerializedXpath(), 2));
 
-        if (!$rel->getClass_child()->isRoot) {
-            $aCollapse->appendChild($iCollapse);
-            $legend->appendChild($aCollapse);
-            $legend->appendChild($spanLegend);
-            if ($rel->lowerbound < $rel->occurance) {
-                $aRemove->appendChild($iRemove);
-                $legend->appendChild($aRemove);
-            }
-            $fieldset->appendChild($legend);
-            $fieldset->appendChild($divInner);
+        $divBottom = $this->formHtml->createElement('div');
+        $divBottom->setAttribute('id', 'bottom-' . $this->serializeXpath($this->removeIndex($element->getNodePath())));
+
+
+        $aCollapse->appendChild($iCollapse);
+        $legend->appendChild($aCollapse);
+        $legend->appendChild($spanLegend);
+        if ($lowerbound < $occurance) {
+            $aRemove->appendChild($iRemove);
+            $legend->appendChild($aRemove);
         }
+        $fieldset->appendChild($legend);
+        $fieldset->appendChild($divInner);
+
         $divOuter->appendChild($fieldset);
-        if($rel->getIndex() == $rel->occurance-1){
+        if ($index == $occurance) {
             $divOuter->appendChild($divBottom);
         }
 
@@ -217,19 +289,26 @@ class FormHtmlGenerator {
      * @param SdiRelation $rel
      * @return DOMElement
      */
-    private function getAttribute(SdiRelation $rel) {
-        $source = $this->getFieldsetBody($rel);
+    private function getAttribute(DOMElement $attribute) {
+        $source = $this->getFieldsetBody($attribute);
 
         $domlocal = new DOMDocument();
-        $domlocal->substituteEntities = false;
         $domlocal->loadHTML($this->convert($source));
-        $element = $domlocal->getElementsByTagName('div')->item(0);
+        
+        $html = $domlocal->saveHTML();
+        
+        $domXapth = new DOMXPath($domlocal);
+        $elements = $domXapth->query('/*/*/*');
 
-        $cloned = $element->cloneNode(TRUE);
+        $importeds = array();
+        foreach ($elements as $element) {
+            $cloned = $element->cloneNode(TRUE);
 
-        $imported = $this->dom->importNode($cloned, TRUE);
+            $imported = $this->formHtml->importNode($cloned, TRUE);
+            $importeds[] = $imported;
+        }
 
-        return $imported;
+        return $importeds;
     }
 
     /**
@@ -245,61 +324,43 @@ class FormHtmlGenerator {
     }
 
     /**
-     * If the parent key is found, return the key, otherwise false. 
-     * 
-     * @param string $key Child key
-     * @param int $reverseIndex Number of levels to rise.
-     * @return mixed Parent key or false 
-     */
-    private function subXpath($key, $reverseIndex) {
-        $subPath = '';
-
-        $keys = preg_split('/_/', $key);
-
-        for ($i = 0; $i < count($keys) - $reverseIndex; $i++) {
-            $subPath .= $keys[$i] . '_';
-        }
-
-        if ($keys > 2) {
-            return substr($subPath, 0, -1);
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * Build a string with 
      * 
      * @param SdiRelation $rel
      * @return string
      */
-    private function getFieldsetBody(SdiRelation $rel) {
+    private function getFieldsetBody(DOMElement $attribute) {
 
-        $languages = $this->ldao->get();
+        $languages = $this->ldao->getSupported();
 
         $html = '';
 
-        $debug = $rel->lowerbound . ' ' . $rel->upperbound;
-        $debug = $rel->level;
+        /* $debug = $rel->lowerbound . ' ' . $rel->upperbound;
+          $debug = $rel->level; */
+        $debug = '';
 
-        switch ($rel->getAttribut_child()->getStereotype()->value) {
-            case 'locale':
+        switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
+            case EnumStereotype::$LOCALE:
+                $nodePath = $attribute->getNodePath();
+                $jfield = $this->form->getField($this->serializeXpath($nodePath));
+                $html .= $debug . ' ' . $this->buildField($jfield, $attribute->getAttributeNS($this->catalog_uri, 'id'));
+
                 foreach ($languages as $key => $value) {
-                    $jfield = $this->form->getField($rel->getSerializedXpath() . '#' . $key);
+                    $jfield = $this->form->getField($this->serializeXpath($attribute->getNodePath() . '/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString#' . $key));
                     if ($jfield) {
-                        $html .= $debug . ' ' . $this->buildField($jfield, $rel->getAttribut_child()->guid);
+                        $html .= $debug . ' ' . $this->buildField($jfield, $attribute->getAttributeNS($this->catalog_uri, 'id'));
                     } else {
-                        $html .= '<div>Champ ' . $rel->getAttribut_child()->getStereotype()->value . ' ' . $rel->getSerializedXpath() . '#' . $key . 'non trouvé!</div>';
+                        $html .= '<div>Champ ' . $attribute->getAttributeNS($this->catalog_uri, 'id') . 'non trouvé!</div>';
                     }
                 }
                 break;
 
             default:
-                $jfield = $this->form->getField($rel->getSerializedXpath());
+                $jfield = $this->form->getField($this->serializeXpath($attribute->getNodePath()));
                 if ($jfield) {
-                    $html .= $debug . ' ' . $this->buildField($jfield, $rel->getAttribut_child()->guid);
+                    $html .= $debug . ' ' . $this->buildField($jfield, $attribute->getAttributeNS($this->catalog_uri, 'id'));
                 } else {
-                    $html .= '<div>Champ ' . $rel->getAttribut_child()->getStereotype()->value . ' ' . $rel->getSerializedXpath() . ' non trouvé!</div>';
+                    $html .= '<div>Champ ' . $attribute->getAttributeNS($this->catalog_uri, 'id') . ' non trouvé!</div>';
                 }
                 break;
         }
@@ -316,7 +377,7 @@ class FormHtmlGenerator {
     private function buildField($field, $guid) {
         $html = '';
 
-        $html .= '<div><div class="control-group">
+        $html .= '<div class="control-group">
                         <div class="control-label">' . $field->label . '</div>
                         <div class="controls">' . $field->input . '</div>
                     </div>';
@@ -327,9 +388,31 @@ class FormHtmlGenerator {
                     js('document').ready(function() {
                         js('#" . $field->id . "').tooltip({'trigger':'focus', 'title': '" . addslashes(EText::_($guid, 2)) . "'});
                     });
-                </script></div>";
+                </script>";
 
         return $html;
+    }
+
+    /**
+     * 
+     * @param string $xpath
+     * @return string
+     */
+    private function serializeXpath($xpath) {
+        $xpath = str_replace('[', '-la-', $xpath);
+        $xpath = str_replace(']', '-ra-', $xpath);
+        $xpath = str_replace('/', '-sla-', $xpath);
+        $xpath = str_replace(':', '-dp-', $xpath);
+        return $xpath;
+    }
+
+    /**
+     * 
+     * @param string $xpath
+     * @return string
+     */
+    private function removeIndex($xpath) {
+        return preg_replace('/[\[0-9\]*]/i', '', $xpath);
     }
 
 }

@@ -19,14 +19,34 @@ class SdiLanguageDao {
         $this->db = JFactory::getDbo();
     }
 
+    public function get(){
+        
+        return array_merge($this->getDefault(), $this->getSupported());
+    }
+    
     /**
      * 
      * @return array A table containing the list of supported languages
      */
-    public function get() {
+    public function getSupported() {
         
         $languageIds = implode(',', JComponentHelper::getParams('com_easysdi_catalog')->get('languages'));
 
+        $query = $this->db->getQuery(true);
+        
+        $query->select('*');
+        $query->from('#__sdi_language');
+        $query->where('id IN (' . $languageIds . ')');
+
+        $this->db->setQuery($query);
+        $languages = $this->db->loadObjectList('iso3166-1-alpha2');
+
+        return $languages;
+    }
+    
+    public function getDefault(){
+        $languageIds = JComponentHelper::getParams('com_easysdi_catalog')->get('defaultlanguage');
+        
         $query = $this->db->getQuery(true);
         
         $query->select('*');
