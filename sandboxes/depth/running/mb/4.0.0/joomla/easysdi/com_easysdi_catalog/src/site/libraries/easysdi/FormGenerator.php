@@ -159,19 +159,24 @@ class FormGenerator {
                     $parent->appendChild($relation);
                     $root = $relation;
                     break;
+                case EnumChildtype::$ATTRIBUT:
+                    $attribute = $parent->firstChild->cloneNode(true);
+                    
+                    
+                    break;
                 default:
                     break;
             }
-            
-            /*$this->structure->formatOutput = true;
-            $html = $this->structure->saveXML();*/
-            
-            $this->getChildTree($root);  
+
+            /* $this->structure->formatOutput = true;
+              $html = $this->structure->saveXML(); */
+
+            $this->getChildTree($root);
 
             $this->ajaxXpath = $relation->getNodePath();
         }
 
-        
+
         $this->setDomXpathStr();
 
         if (isset($this->csw)) {
@@ -276,13 +281,14 @@ class FormGenerator {
                     break;
 
                 case EnumChildtype::$ATTRIBUT:
-                    $attribut = $this->getDomElement($result->attribute_ns_uri, $result->attribute_ns_prefix, $result->attribute_isocode, $result->attribute_id, EnumChildtype::$ATTRIBUT, $result->attribute_guid, null, null, $result->stereotype_id, $result->rendertype_id);
+                    $attribut = $this->getDomElement($result->attribute_ns_uri, $result->attribute_ns_prefix, $result->attribute_isocode, $result->attribute_id, EnumChildtype::$ATTRIBUT, $result->attribute_guid, $result->lowerbound, $result->upperbound, $result->stereotype_id, $result->rendertype_id);
 
                     foreach ($this->getStereotype($result) as $st) {
                         $attribut->appendChild($st);
                     }
 
                     $attribut->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relGuid', $result->guid);
+                    $attribut->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relid', $result->id);
                     $attribut->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'maxlength', $result->attribute_length);
                     $attribut->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', $result->attribute_issystem);
 
@@ -463,7 +469,7 @@ class FormGenerator {
         $form->appendChild($this->getHiddenFields());
 
         $fieldset = $this->form->createElement('fieldset');
-        
+
         switch ($root->getAttributeNS($this->catalog_uri, 'childtypeId')) {
             case EnumChildtype::$RELATIONTYPE:
                 $query = 'descendant-or-self::*[@catalog:childtypeId="2"]|descendant-or-self::*[@catalog:childtypeId="3"]';
@@ -498,7 +504,7 @@ class FormGenerator {
     private function getHiddenFields() {
         $fieldset = $this->form->createElement('fieldset');
         $fieldset->setAttribute('name', 'hidden');
-                
+
         $id = $this->form->createElement('field');
         $id->setAttribute('name', 'id');
         $id->setAttribute('type', 'hidden');
@@ -590,7 +596,7 @@ class FormGenerator {
         if ($readonly) {
             $field->setAttribute('readonly', 'true');
         }
-        
+
         $field->setAttribute('default', $attribute->firstChild->nodeValue);
         $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
         $field->setAttribute('label', EText::_($guid));
@@ -613,7 +619,8 @@ class FormGenerator {
 
             $field->setAttribute('default', $i18nChild->nodeValue);
             $field->setAttribute('name', $this->serializeXpath($i18nChild->getNodePath()) . $i18nChild->getAttribute('locale'));
-            $field->setAttribute('label', EText::_($guid) . ' i18n');
+            $localeValue = str_replace('#', '', $i18nChild->getAttribute('locale'));
+            $field->setAttribute('label', EText::_($guid) . ' ' . $this->ldao->getByIso3166($localeValue)->value);
             $field->setAttribute('description', EText::_($guid, 2));
 
             $fields[] = $field;
@@ -621,7 +628,7 @@ class FormGenerator {
 
         return $fields;
     }
-    
+
     /**
      * Create a field of type textarea.
      * 
@@ -659,7 +666,7 @@ class FormGenerator {
 
             $field->setAttribute('type', 'textarea');
             //$field->setAttribute('class', $validator);
-            $field->setAttribute('row', 10);
+            $field->setAttribute('rows', 5);
             $field->setAttribute('cols', 5);
 
             if ($readonly) {
@@ -668,7 +675,8 @@ class FormGenerator {
 
             $field->setAttribute('default', $i18nChild->nodeValue);
             $field->setAttribute('name', $this->serializeXpath($i18nChild->getNodePath()) . $i18nChild->getAttribute('locale'));
-            $field->setAttribute('label', EText::_($guid));
+            $localeValue = str_replace('#', '', $i18nChild->getAttribute('locale'));
+            $field->setAttribute('label', EText::_($guid) . ' ' . $this->ldao->getByIso3166($localeValue)->value);
             $field->setAttribute('description', EText::_($guid, 2));
 
             $fields[] = $field;
@@ -977,8 +985,6 @@ class FormGenerator {
             $this->domXpathCsw->registerNamespace($ns->prefix, $ns->uri);
         }
     }
-    
-    
 
     /**
      * 

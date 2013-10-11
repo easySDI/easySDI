@@ -149,11 +149,9 @@ class FormHtmlGenerator {
                     break;
                 case EnumChildtype::$ATTRIBUT:
 
-                    $fields = $this->getAttribute($child);
+                    $field = $this->getAttribute($child);
 
-                    foreach ($fields as $field) {
-                        $parentInner->appendChild($field);
-                    }
+                    $parentInner->appendChild($field);
 
                     break;
                 case EnumChildtype::$RELATIONTYPE:
@@ -161,12 +159,11 @@ class FormHtmlGenerator {
                         $action = $this->getAction($child);
                         $parentInner->appendChild($action);
                     }
-                    $searchFields = $this->getAttribute($child);
+                    $searchField = $this->getAttribute($child);
                     $fieldset = $this->getFieldset($child);
 
-                    foreach ($searchFields as $searchField) {
-                        $fieldset->getElementsByTagName('div')->item(0)->appendChild($searchField);
-                    }
+                    $fieldset->getElementsByTagName('div')->item(0)->appendChild($searchField);
+
 
                     $parentInner->appendChild($fieldset);
 
@@ -305,34 +302,6 @@ class FormHtmlGenerator {
     }
 
     /**
-     * Convert a string attribute in DomElement.
-     * 
-     * @param SdiRelation $rel
-     * @return DOMElement
-     */
-    private function getAttribute(DOMElement $attribute) {
-        $source = $this->getFieldsetBody($attribute);
-
-        $domlocal = new DOMDocument();
-        $domlocal->loadHTML($this->convert($source));
-
-        $html = $domlocal->saveHTML();
-
-        $domXapth = new DOMXPath($domlocal);
-        $elements = $domXapth->query('/*/*/*');
-
-        $importeds = array();
-        foreach ($elements as $element) {
-            $cloned = $element->cloneNode(TRUE);
-
-            $imported = $this->formHtml->importNode($cloned, TRUE);
-            $importeds[] = $imported;
-        }
-
-        return $importeds;
-    }
-
-    /**
      * Encode special characters into HTML entities. Unless the <> characters.
      * 
      * @param string $text
@@ -350,51 +319,59 @@ class FormHtmlGenerator {
      * @param SdiRelation $rel
      * @return string
      */
-    private function getFieldsetBody(DOMElement $attribute) {
-
+    private function getAttribute(DOMElement $attribute) {
+        $lowerbound = $attribute->getAttributeNS($this->catalog_uri, 'lowerbound');
+        $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
+        
         $languages = $this->ldao->getSupported();
+        if($upperbound > 1){
+            $showButton = true;
+        }  else {
+            $showButton = false;
+        }
 
-        $html = '';
-
-        /* $debug = $rel->lowerbound . ' ' . $rel->upperbound;
-          $debug = $rel->level; */
-        $debug = '';
+        $attributeGroup = $this->formHtml->createElement('div');
+        $attributeGroup->setAttribute('class', 'attribute-group');
 
         switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
             case EnumStereotype::$LOCALE:
                 $nodePath = $attribute->firstChild->getNodePath();
                 $jfield = $this->form->getField($this->serializeXpath($nodePath));
-                $html .= $debug . ' ' . $this->buildField($jfield, $attribute->getAttributeNS($this->catalog_uri, 'id'));
+                foreach ($this->buildField($attribute, $jfield, $showButton) as $element) {
+                    $attributeGroup->appendChild($element);
+                }
 
                 foreach ($languages as $key => $value) {
                     $jfield = $this->form->getField($this->serializeXpath($attribute->getNodePath() . '/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString#' . $key));
                     if ($jfield) {
-                        $html .= $debug . ' ' . $this->buildField($jfield, $attribute->getAttributeNS($this->catalog_uri, 'id'));
-                    } else {
-                        $html .= '<div>Champ ' . $attribute->getAttributeNS($this->catalog_uri, 'id') . 'non trouvé!</div>';
+                        foreach ($this->buildField($attribute, $jfield) as $element) {
+                            $attributeGroup->appendChild($element);
+                        }
                     }
                 }
                 break;
 
             default:
-                if($attribute->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE){
+                if ($attribute->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE) {
                     $nodePath = $attribute->getNodePath();
-                }else{
+                    $showButton = false;
+                } else {
                     $nodePath = $attribute->firstChild->getNodePath();
                 }
-                
-                $attributeName = $attribute->nodeName;
+
                 $jfield = $this->form->getField($this->serializeXpath($nodePath));
                 if ($jfield) {
-                    $html .= $debug . ' ' . $this->buildField($jfield, $attribute->getAttributeNS($this->catalog_uri, 'id'));
-                } else {
-                    $html .= '<div>Champ ' . $attribute->firstChild->getNodePath() . ' non trouvé!</div>';
+                    foreach ($this->buildField($attribute, $jfield, $showButton) as $element) {
+                        $attributeGroup->appendChild($element);
+                    }
                 }
                 break;
         }
 
-        return $html;
+        return $attributeGroup;
     }
+
+    
 
     /**
      * 
@@ -402,25 +379,119 @@ class FormHtmlGenerator {
      * @param string $guid
      * @return string
      */
-    private function buildField($field, $guid) {
-        $html = '';
+    private function buildField($attribute, $field, $addButton = FALSE) {
+        $guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
 
-        $html .= '<div class="control-group">
-                        <div class="control-label">' . $field->label . '</div>
-                        <div class="controls">' . $field->input . '</div>
-                    </div>';
+        $elements = array();
 
-        $html .="<script type='text/javascript'>
-                    js = jQuery.noConflict();
+        $controlGroup = $this->formHtml->createElement('div');
+        $controlGroup->setAttribute('class', 'control-group');
+
+        $controlLabel = $this->formHtml->createElement('div');
+        $controlLabel->setAttribute('class', 'control-label');
+
+        $control = $this->formHtml->createElement('div');
+        $control->setAttribute('class', 'controls');
+
+        $controlLabel->appendChild($this->getLabel($field));
+      
+        $control->appendChild($this->getInput($field));
+        if($addButton){
+            $control->appendChild($this->getAttributeAction($attribute));
+        }
+
+        $controlGroup->appendChild($controlLabel);
+        $controlGroup->appendChild($control);
+
+        $elements[] = $controlGroup;
+        $elements[] = $this->getInputScript($field, $guid);
+
+        return $elements;
+    }
+
+    /**
+     * 
+     * @param type $field
+     * @return DOMElement
+     */
+    private function getLabel($field) {
+        $domlocal = new DOMDocument();
+        $domlocal->loadHTML($this->convert($field->label));
+
+        $domXapth = new DOMXPath($domlocal);
+        $label = $domXapth->query('/*/*/*')->item(0);
+
+        $cloned = $label->cloneNode(TRUE);
+
+        $imported = $this->formHtml->importNode($cloned, TRUE);
+
+        return $imported;
+    }
+
+    /**
+     * 
+     * @param type $field
+     * @return DOMElement
+     */
+    private function getInput($field) {
+        $domlocal = new DOMDocument();
+        $domlocal->loadHTML($this->convert($field->input));
+
+        $domXapth = new DOMXPath($domlocal);
+        $input = $domXapth->query('/*/*/*')->item(0);
+
+        $cloned = $input->cloneNode(TRUE);
+
+        $imported = $this->formHtml->importNode($cloned, TRUE);
+
+        return $imported;
+    }
+
+    /**
+     * 
+     * @param type $field
+     * @param string $guid
+     * @return DOMElement
+     */
+    private function getInputScript($field, $guid) {
+        $script_content = "js = jQuery.noConflict();
 
                     js('document').ready(function() {
                         js('#" . $field->id . "').tooltip({'trigger':'focus', 'title': '" . addslashes(EText::_($guid, 2)) . "'});
-                    });
-                </script>";
+                    });";
 
-        return $html;
+        $script = $this->formHtml->createElement('script', $script_content);
+        $script->setAttribute('type', 'text/javascript');
+
+        return $script;
     }
 
+    /**
+     * 
+     * @param DOMElement $attribute
+     * @return DOMElement Description
+     */
+    private function getAttributeAction(DOMElement $attribute) {
+        $lowerbound = $attribute->getAttributeNS($this->catalog_uri, 'lowerbound');
+        $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
+        $relid = $attribute->getAttributeNS($this->catalog_uri, 'relid');
+
+        $debug = ' [oc: lb:' . $lowerbound . ' ub:' . $upperbound . ']';
+        $action = $this->formHtml->createElement('div', 'attribute actions' . $debug);
+
+        $aAdd = $this->formHtml->createElement('a');
+        $aAdd->setAttribute('id', 'add-btn-' . $this->serializeXpath($attribute->getNodePath()));
+        $aAdd->setAttribute('class', 'btn btn-success btn-mini add-btn add-btn-' . $this->serializeXpath($this->removeIndex($attribute->getNodePath())));
+        $aAdd->setAttribute('onclick', 'addField(this.id, \'' . $this->serializeXpath($this->removeIndex($attribute->getNodePath())) . '\',' . $relid . ', \'' . $this->serializeXpath($attribute->parentNode->getNodePath()) . '\' ,' . $lowerbound . ',' . $upperbound . ')');
+
+        $iAdd = $this->formHtml->createElement('i');
+        $iAdd->setAttribute('class', 'icon-white icon-plus-2');
+
+        $aAdd->appendChild($iAdd);
+
+        return $aAdd;
+    }
+    
     /**
      * 
      * @param string $xpath

@@ -26,6 +26,9 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/
 
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
 
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
+
 /**
  * Metadata controller class.
  */
@@ -52,6 +55,11 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * @var SdiNamespaceDao 
      */
     private $nsdao;
+    /**
+     *
+     * @var SdiLanguageDao 
+     */
+    private $ldao;
     private $catalog_uri = 'http://www.easysdi.org/2011/sdi/catalog';
     private $catalog_prefix = 'catalog';
 
@@ -59,6 +67,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->db = JFactory::getDbo();
         $this->session = JFactory::getSession();
         $this->nsdao = new SdiNamespaceDao();
+        $this->ldao = new SdiLanguageDao();
         $this->structure = new DOMDocument('1.0', 'utf-8');
         $this->structure->loadXML(unserialize($this->session->get('structure')));
 
@@ -130,9 +139,19 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             }
         }
 
+        $root = $domXpathStr->query('/*')->item(0);
+        
+        foreach ($this->getHeader() as $header) {
+            $root->insertBefore($header, $root->firstChild);
+        }
+        
+        $root->insertBefore($this->getSdiHeader($data['id']), $root->firstChild);
+        
         $this->structure->formatOutput = true;
         $xml = $this->structure->saveXML();
 
+        
+        
         $smda = new sdiMetadata($data['id']);
 
         //$smda->update($dcc->getCsw());
@@ -296,5 +315,130 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         return $headers;
     }
+    
+    /**
+     * 
+     * @return DOMDocument
+     */
+    private function getSdiHeader($id) {
 
+        /**
+         * @todo Vérifier le nom du paramètre à remonter du core
+         */
+        $platformGuid = JComponentHelper::getParams('com_easysdi_core')->get('guid');
+
+        $query = $this->db->getQuery(true);
+        $query->select('v.`name` as md_lastVersion, m.guid as md_guid, m.created as md_created, m.published as md_published, ms.`value` as ms_value');
+        $query->select('r.id as r_id, r.guid as r_guid, r.`alias` as r_alias, r.`name` as r_name');
+        $query->select('rt.`alias` as rt_alias');
+        $query->select('o.name as o_name');
+        $query->from('jos_sdi_metadata as m');
+        $query->innerJoin('jos_sdi_sys_metadatastate as ms ON ms.id = m.metadatastate_id');
+        $query->innerJoin('jos_sdi_version as v ON v.id = m.version_id');
+        $query->innerJoin('jos_sdi_resource as r ON r.id = v.resource_id');
+        $query->innerJoin('jos_sdi_organism as o ON o.id = r.organism_id');
+        $query->innerJoin('jos_sdi_resourcetype as rt ON rt.id = r.resourcetype_id');
+        $query->where('m.id=' . $id);
+
+
+        $this->db->setQuery($query);
+        $result = $this->db->loadObject();
+
+        $query = $this->db->getQuery(true);
+        $query->select('o.guid, o.`name`');
+        $query->from('jos_sdi_accessscope as ac');
+        $query->innerJoin('jos_sdi_organism o ON o.id = ac.organism_id');
+        $query->where('ac.entity_guid=\'' . $result->r_guid.'\'');
+        $this->db->setQuery($query);
+        $resultOrganisms = $this->db->loadObjectList();
+
+        $query = $this->db->getQuery(true);
+        $query->select('u.guid, ju.`name`');
+        $query->from('jos_sdi_accessscope as ac');
+        $query->innerJoin('jos_sdi_user as u ON u.id = ac.user_id');
+        $query->innerJoin('jos_users as ju ON ju.id = u.user_id');
+        $query->where('ac.entity_guid=\'' . $result->r_guid.'\'');
+        $this->db->setQuery($query);
+        $resultUsers = $this->db->loadObjectList();
+
+        $platform = $this->structure->createElement('sdi:platform');
+        $platform->setAttribute('guid', $platformGuid);
+        $platform->setAttribute('harvested', 'false');
+
+        $resource = $this->structure->createElement('sdi:resource');
+        $resource->setAttribute('guid', $result->r_guid);
+        $resource->setAttribute('alias', $result->r_alias);
+        $resource->setAttribute('name', $result->r_name);
+        $resource->setAttribute('type', $result->rt_alias);
+        $resource->setAttribute('organism', $result->o_name);
+        $resource->setAttribute('scope', '');
+
+        $metadata = $this->structure->createElement('sdi:metadata');
+        $metadata->setAttribute('lastVersion', $result->md_lastVersion);
+        $metadata->setAttribute('guid', $result->md_guid);
+        $metadata->setAttribute('created', $result->md_created);
+        $metadata->setAttribute('published', $result->md_published);
+        $metadata->setAttribute('state', $result->ms_value);
+
+        $organisms = $this->structure->createElement('sdi:organisms');
+        foreach ($resultOrganisms as $o) {
+            $organism = $this->structure->createElement('sdi:organism');
+            $organism->setAttribute('guid', $o->guid);
+            $organism->setAttribute('alias', $o->name);
+            $organisms->appendChild($organism);
+        }
+
+        $users = $this->structure->createElement('sdi:users');
+        foreach ($resultUsers as $u) {
+            $user = $this->structure->createElement('sdi:user');
+            $user->setAttribute('guid', $u->guid);
+            $user->setAttribute('alias', $u->name);
+            $users->appendChild($user);
+        }
+        
+        $resource->appendChild($organisms);
+        $resource->appendChild($users);
+        $resource->appendChild($metadata);
+        $platform->appendChild($resource);
+        
+        return $platform;
+    }
+
+    /**
+     * @return DOMElement Description
+     */
+    private function getGeonetworkFooter($guid){
+        $constraint = $this->structure->createElement('csw:Constraint');
+        $constraint->setAttribute('version', '1.0.0');
+        
+        $filter = $this->structure->createElement('Filter');
+        $filter->setAttribute('xmlns', 'http://www.opengis.net/ogc');
+        $filter->setAttribute('xmlns:gml', 'http://www.opengis.net/gml');
+        $propertyIsLike = $this->structure->createElement('PropertyIsLike');
+        $propertyIsLike->setAttribute('wildCard', '%');
+        $propertyIsLike->setAttribute('singleChar', '_');
+        $propertyIsLike->setAttribute('escapeChar', '\\');
+        
+        $propertyName = $this->structure->createElement('PropertyName', 'apiso:identifier');
+        $literal = $this->structure->createElement('Literal', $guid);
+        
+        $propertyIsLike->appendChild($propertyName);
+        $propertyIsLike->appendChild($literal);
+        
+        $filter->appendChild($propertyIsLike);
+        $constraint->appendChild($filter);
+        
+        
+        $transaction = $this->structure->createElementNS('http://www.opengis.net/cat/csw/2.0.2', 'csw:Transaction');
+        $transaction->setAttribute('service', 'CSW');
+        $transaction->setAttribute('version', '2.0.2');
+                
+        $update = $this->structure->createElement('csw:Update');
+        $update->appendChild($root);
+        $update->appendChild($constraint);
+        $transaction->appendChild($update);
+        
+        return $transaction;
+        
+    }
 }

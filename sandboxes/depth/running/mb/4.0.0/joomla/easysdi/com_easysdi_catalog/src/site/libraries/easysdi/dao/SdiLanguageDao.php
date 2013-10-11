@@ -87,6 +87,20 @@ class SdiLanguageDao {
         
         return $language;
     }
+    
+    public function getByIso3166($code){
+        $query = $this->db->getQuery(true);
+
+        $query->select('*');
+        $query->select('`iso3166-1-alpha2` as iso3166');
+        $query->from('jos_sdi_language');
+        $query->where('`iso3166-1-alpha2` = \'' . $code . '\'');
+        $this->db->setQuery($query);
+        
+        $language = $this->db->loadObject();
+        
+        return $language;
+    }
 
 }
 

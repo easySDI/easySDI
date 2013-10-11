@@ -104,6 +104,30 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         });
     }
 
+    function addField(id, idwi, relid, parent_path, lowerbound, upperbound) {
+        js.get('<?php echo $_SERVER['PHP_SELF']; ?>' + '/?view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
+            
+            if (js(data).find('select') !== null) {
+                chosenRefresh();
+            }
+
+            js(data).find('button').each(function() {
+                idbtn = js(this).attr('id');
+
+                Calendar.setup({
+                    inputField: idbtn.replace('_img', ''),
+                    ifFormat: "%Y-%m-%d",
+                    button: idbtn,
+                    align: "Tl",
+                    singleClick: true,
+                    firstDay: 1
+                });
+
+            });
+            
+        });
+    }
+
     function addFieldset(id, idwi, relid, parent_path, lowerbound, upperbound) {
         var uuid = getUuid('add-btn-', id);
 

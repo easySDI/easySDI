@@ -123,17 +123,14 @@
            </field>
            
            <field name="linkedfilebaseurl"
-                   type="text"
+                   type="folderlist"
                    default=""
                    class="inputbox input-xlarge"
                    required ="false"
-                   size="500"
+                   directory="media"
                    label="COM_EASYSDI_CATALOG_CONFIG_LBL_LINKEDFILEBASEURL"
                    description="COM_EASYSDI_CATALOG_CONFIG_DESC_LINKEDFILEBASEURL">
            </field>
-           
-          
-	
 
 	</fieldset>
         
