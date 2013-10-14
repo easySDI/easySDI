@@ -113,7 +113,8 @@
            
            
            <field name="linkedfilerepository"
-                   type="text"
+                   type="folderlist"
+                   directory="media"
                    default=""
                    class="inputbox input-xlarge"
                    required ="false"
@@ -123,11 +124,10 @@
            </field>
            
            <field name="linkedfilebaseurl"
-                   type="folderlist"
+                   type="text"
                    default=""
                    class="inputbox input-xlarge"
                    required ="false"
-                   directory="media"
                    label="COM_EASYSDI_CATALOG_CONFIG_LBL_LINKEDFILEBASEURL"
                    description="COM_EASYSDI_CATALOG_CONFIG_DESC_LINKEDFILEBASEURL">
            </field>

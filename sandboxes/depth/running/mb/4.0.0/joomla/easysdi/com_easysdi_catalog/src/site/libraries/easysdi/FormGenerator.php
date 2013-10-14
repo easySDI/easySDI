@@ -101,6 +101,8 @@ class FormGenerator {
      */
     public function getForm() {
 
+
+
         if (!isset($_GET['relid'])) {
             $query = $this->db->getQuery(true);
             $query->select('r.id, r.name, r.childtype_id');
@@ -146,6 +148,7 @@ class FormGenerator {
 
                     $parent->appendChild($relation);
                     $root = $class;
+                    $this->ajaxXpath = $relation->getNodePath();
                     break;
                 case EnumChildtype::$RELATIONTYPE:
                     $relation = $this->getDomElement($result->classass_ns_uri, $result->classass_ns_prefix, $result->name, $result->classass_id, EnumChildtype::$RELATIONTYPE, $result->guid, 1, $result->upperbound);
@@ -158,31 +161,33 @@ class FormGenerator {
 
                     $parent->appendChild($relation);
                     $root = $relation;
+                    $this->ajaxXpath = $relation->getNodePath();
                     break;
                 case EnumChildtype::$ATTRIBUT:
-                    $attribute = $parent->firstChild->cloneNode(true);
-                    
-                    
-                    break;
-                default:
+                    $attribute = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $_GET['relid'] . '"]')->item(0);
+                    $cloned = $attribute->cloneNode(true);
+                    $parent->appendChild($cloned);
+
+                    $root = $cloned;
+                    $this->ajaxXpath = $cloned->getNodePath();
                     break;
             }
 
-            /* $this->structure->formatOutput = true;
-              $html = $this->structure->saveXML(); */
-
             $this->getChildTree($root);
-
-            $this->ajaxXpath = $relation->getNodePath();
         }
-
 
         $this->setDomXpathStr();
 
         if (isset($this->csw)) {
             $this->setDomXpathCsw();
             $this->mergeCsw();
+
+            $this->csw->formatOutput = true;
+            $response = $this->csw->saveXML();
         }
+
+        $this->structure->formatOutput = true;
+        $html = $this->structure->saveXML();
 
         $this->session->set('structure', serialize($this->structure->saveXML()));
         $form = $this->buildForm($root);
@@ -471,6 +476,7 @@ class FormGenerator {
         $fieldset = $this->form->createElement('fieldset');
 
         switch ($root->getAttributeNS($this->catalog_uri, 'childtypeId')) {
+            case EnumChildtype::$ATTRIBUT:
             case EnumChildtype::$RELATIONTYPE:
                 $query = 'descendant-or-self::*[@catalog:childtypeId="2"]|descendant-or-self::*[@catalog:childtypeId="3"]';
                 break;
@@ -538,7 +544,15 @@ class FormGenerator {
             case EnumChildtype::$ATTRIBUT:
                 switch ($attribute->getAttributeNS($this->catalog_uri, 'rendertypeId')) {
                     case EnumRendertype::$TEXTBOX:
-                        return $this->getFormTextBoxField($attribute);
+                        switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
+                            case EnumStereotype::$FILE:
+                                return $this->getFormFileField($attribute);
+                                break;
+
+                            default:
+                                return $this->getFormTextBoxField($attribute);
+                                break;
+                        }
                         break;
                     case EnumRendertype::$TEXTAREA:
                         return $this->getFormTextAreaField($attribute);
@@ -880,6 +894,33 @@ class FormGenerator {
         }
 
         return $field;
+    }
+
+    private function getFormFileField(DOMElement $attribute) {
+        $fields = array();
+
+        $maxlength = $attribute->getAttributeNS($this->catalog_uri, 'maxlength');
+        $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
+        $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
+
+        $field = $this->form->createElement('field');
+
+        $field->setAttribute('type', 'file');
+        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
+        $field->setAttribute('label', EText::_($guid));
+        $field->setAttribute('description', EText::_($guid, 2));
+        $field->setAttribute('default', $attribute->firstChild->nodeValue);
+
+        $fields[] = $field;
+
+        $hiddenField = $this->form->createElement('field');
+        $hiddenField->setAttribute('type', 'hidden');
+        $hiddenField->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()) . '_filehidden');
+        $hiddenField->setAttribute('default', $attribute->firstChild->nodeValue);
+
+        $fields[] = $hiddenField;
+
+        return $fields;
     }
 
     /**

@@ -40,14 +40,14 @@ INSERT INTO `#__sdi_sys_stereotype` VALUES ('3', '3', '1', 'locale', '^[a-zA-Z0-
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('4', '4', '1', 'number', '[0-9.-]', 'Decimal', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('5', '5', '1', 'date', '(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)[0-9]{2}(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)[0-9]{2}', 'Date', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('6', '6', '1', 'list', '^[a-zA-Z0-9_]{1,}$', null, null,'1');
-INSERT INTO `#__sdi_sys_stereotype` VALUES ('7', '7', '1', 'link', '^[a-zA-Z0-9_]{1,}$', 'CharacterString', '2','1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('7', '7', '1', 'link', '^[a-zA-Z0-9_]{1,}$', 'URL', '1','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('8', '8', '1', 'datetime', '(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)[0-9]{2}(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)[0-9]{2}', 'DateTime', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('9', '9', '1', 'textchoice', '^[a-zA-Z0-9_]{1,}$', 'CharacterString', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('10', '10', '1', 'localechoice', '^[a-zA-Z0-9_]{1,}$', null, null,'1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('11', '11', '1', 'gemet', null, null, null,'1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('12', '12', '1', 'distance', '[0-9.-]', 'Distance', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('13', '13', '1', 'integer', '[0-9]', 'Integer', '2','1');
-INSERT INTO `#__sdi_sys_stereotype` VALUES ('14', '14', '1', 'file', '', 'MI_Identifier', '1','1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('14', '14', '1', 'file', '', 'CharacterString', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('15', '15', '1', 'geographicextent', null, null, null,'2');
 
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('1', '1', '5');

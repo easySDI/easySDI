@@ -45,6 +45,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * @var JSession 
      */
     private $session;
+
     /**
      *
      * @var DOMDocument 
@@ -52,9 +53,15 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     private $structure;
     /**
      *
+     * @var DOMXPath 
+     */
+    private $domXpathStr;
+    /**
+     *
      * @var SdiNamespaceDao 
      */
     private $nsdao;
+
     /**
      *
      * @var SdiLanguageDao 
@@ -70,6 +77,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->ldao = new SdiLanguageDao();
         $this->structure = new DOMDocument('1.0', 'utf-8');
         $this->structure->loadXML(unserialize($this->session->get('structure')));
+        $this->structure->normalizeDocument();
+        $this->domXpathStr = new DOMXPath($this->structure);
 
         parent::__construct();
     }
@@ -113,11 +122,22 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * @since	1.6
      */
     public function save() {
+        $fileRepository = JPATH_BASE . '/media/' . JComponentHelper::getParams('com_easysdi_catalog')->get('linkedfilerepository');
+        $fileBaseUrl = JComponentHelper::getParams('com_easysdi_catalog')->get('linkedfilebaseurl');
+
         $data = JFactory::getApplication()->input->get('jform', array(), 'array');
 
-        $domXpathStr = new DOMXPath($this->structure);
+        //Upload file
+        foreach ($_FILES['jform']['name'] as $key => $value) {
+            if ($_FILES['jform']['error'][$key] == 0) {
+                $file_guid = $this->getGUID();
+                move_uploaded_file($_FILES['jform']['tmp_name'][$key], $fileRepository . '/' . $file_guid . '_' . $_FILES['jform']['name'][$key]);
+                $data[$key] = $fileBaseUrl . '/' . $file_guid . '_' . $_FILES['jform']['name'][$key];
+            }
+        }
+
         foreach ($this->nsdao->getAll() as $ns) {
-            $domXpathStr->registerNamespace($ns->prefix, $ns->uri);
+            $this->domXpathStr->registerNamespace($ns->prefix, $ns->uri);
         }
 
         foreach ($data as $xpath => $value) {
@@ -127,36 +147,44 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             } else {
                 $query = $this->unSerializeXpath($xpatharray[0]);
             }
-            $element = $domXpathStr->query($query)->item(0);
+            $element = $this->domXpathStr->query($query)->item(0);
             if (isset($element)) {
                 if ($element->hasAttribute('codeList')) {
                     $element->setAttribute('codeListValue', $value);
                 } elseif ($element->hasAttributeNS('http://www.w3.org/1999/xlink', 'href')) {
-                    $element->setAttributeNS('http://www.w3.org/1999/xlink','xlink:href', $this->getHref($value));
+                    $element->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', $this->getHref($value));
                 } else {
                     $element->nodeValue = $value;
                 }
             }
         }
 
-        $root = $domXpathStr->query('/*')->item(0);
-        
+        $root = $this->domXpathStr->query('/*')->item(0);
+
         foreach ($this->getHeader() as $header) {
             $root->insertBefore($header, $root->firstChild);
         }
-        
+
         $root->insertBefore($this->getSdiHeader($data['id']), $root->firstChild);
+
+        $transaction = $this->structure->createElementNS('http://www.opengis.net/cat/csw/2.0.2', 'csw:Transaction');
+        $transaction->setAttribute('service', 'CSW');
+        $transaction->setAttribute('version', '2.0.2');
+
+        $update = $this->structure->createElement('csw:Update');
+        $update->appendChild($root);
+        $update->appendChild($this->getConstraint($data['guid']));
+        $transaction->appendChild($update);
+        $this->structure->appendChild($transaction);
+        
+        $this->removeCatalogNS();
         
         $this->structure->formatOutput = true;
         $xml = $this->structure->saveXML();
 
-        
-        
         $smda = new sdiMetadata($data['id']);
 
-        //$smda->update($dcc->getCsw());
-
-
+        $result = $smda->update($xml);
         //
         //
 //        // Initialise variables.
@@ -262,7 +290,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         return $href;
     }
-    
+
     /**
      * 
      * @param string $language
@@ -315,7 +343,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         return $headers;
     }
-    
+
     /**
      * 
      * @return DOMDocument
@@ -331,7 +359,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query->select('v.`name` as md_lastVersion, m.guid as md_guid, m.created as md_created, m.published as md_published, ms.`value` as ms_value');
         $query->select('r.id as r_id, r.guid as r_guid, r.`alias` as r_alias, r.`name` as r_name');
         $query->select('rt.`alias` as rt_alias');
-        $query->select('o.name as o_name');
+        $query->select('o.name as o_name, o.guid as o_guid');
         $query->from('jos_sdi_metadata as m');
         $query->innerJoin('jos_sdi_sys_metadatastate as ms ON ms.id = m.metadatastate_id');
         $query->innerJoin('jos_sdi_version as v ON v.id = m.version_id');
@@ -348,7 +376,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query->select('o.guid, o.`name`');
         $query->from('jos_sdi_accessscope as ac');
         $query->innerJoin('jos_sdi_organism o ON o.id = ac.organism_id');
-        $query->where('ac.entity_guid=\'' . $result->r_guid.'\'');
+        $query->where('ac.entity_guid=\'' . $result->r_guid . '\'');
         $this->db->setQuery($query);
         $resultOrganisms = $this->db->loadObjectList();
 
@@ -357,7 +385,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query->from('jos_sdi_accessscope as ac');
         $query->innerJoin('jos_sdi_user as u ON u.id = ac.user_id');
         $query->innerJoin('jos_users as ju ON ju.id = u.user_id');
-        $query->where('ac.entity_guid=\'' . $result->r_guid.'\'');
+        $query->where('ac.entity_guid=\'' . $result->r_guid . '\'');
         $this->db->setQuery($query);
         $resultUsers = $this->db->loadObjectList();
 
@@ -370,7 +398,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $resource->setAttribute('alias', $result->r_alias);
         $resource->setAttribute('name', $result->r_name);
         $resource->setAttribute('type', $result->rt_alias);
-        $resource->setAttribute('organism', $result->o_name);
+        $resource->setAttribute('organism', $result->o_guid);
         $resource->setAttribute('scope', '');
 
         $metadata = $this->structure->createElement('sdi:metadata');
@@ -395,22 +423,22 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $user->setAttribute('alias', $u->name);
             $users->appendChild($user);
         }
-        
+
         $resource->appendChild($organisms);
         $resource->appendChild($users);
         $resource->appendChild($metadata);
         $platform->appendChild($resource);
-        
+
         return $platform;
     }
 
     /**
      * @return DOMElement Description
      */
-    private function getGeonetworkFooter($guid){
+    private function getConstraint($guid) {
         $constraint = $this->structure->createElement('csw:Constraint');
         $constraint->setAttribute('version', '1.0.0');
-        
+
         $filter = $this->structure->createElement('Filter');
         $filter->setAttribute('xmlns', 'http://www.opengis.net/ogc');
         $filter->setAttribute('xmlns:gml', 'http://www.opengis.net/gml');
@@ -418,27 +446,40 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $propertyIsLike->setAttribute('wildCard', '%');
         $propertyIsLike->setAttribute('singleChar', '_');
         $propertyIsLike->setAttribute('escapeChar', '\\');
-        
-        $propertyName = $this->structure->createElement('PropertyName', 'apiso:identifier');
+
+        $propertyName = $this->structure->createElement('PropertyName', JComponentHelper::getParams('com_easysdi_catalog')->get('idogcsearchfield'));
         $literal = $this->structure->createElement('Literal', $guid);
-        
+
         $propertyIsLike->appendChild($propertyName);
         $propertyIsLike->appendChild($literal);
-        
+
         $filter->appendChild($propertyIsLike);
         $constraint->appendChild($filter);
-        
-        
-        $transaction = $this->structure->createElementNS('http://www.opengis.net/cat/csw/2.0.2', 'csw:Transaction');
-        $transaction->setAttribute('service', 'CSW');
-        $transaction->setAttribute('version', '2.0.2');
-                
-        $update = $this->structure->createElement('csw:Update');
-        $update->appendChild($root);
-        $update->appendChild($constraint);
-        $transaction->appendChild($update);
-        
-        return $transaction;
-        
+
+        return $constraint;
     }
+
+    private function removeCatalogNS(){ 
+        $attributeNames = array('id','dbid','childtypeId','index','lowerbound','upperbound','rendertypeId','stereotypeId','relGuid','relid','maxlength','readonly','exist');
+        foreach ($this->domXpathStr->query('//*') as $element) {
+            foreach ($attributeNames as $attributeName) {
+                $element->removeAttributeNS($this->catalog_uri,$attributeName);
+            } 
+        }
+    }
+    
+    
+    private function getGUID() {
+        mt_srand((double) microtime() * 10000); //optional for php 4.2.0 and up.
+        $charid = strtoupper(md5(uniqid(rand(), true)));
+        $hyphen = chr(45); // "-"
+        $uuid = substr($charid, 0, 8) . $hyphen
+                . substr($charid, 8, 4) . $hyphen
+                . substr($charid, 12, 4) . $hyphen
+                . substr($charid, 16, 4) . $hyphen
+                . substr($charid, 20, 12);
+
+        return $uuid;
+    }
+
 }

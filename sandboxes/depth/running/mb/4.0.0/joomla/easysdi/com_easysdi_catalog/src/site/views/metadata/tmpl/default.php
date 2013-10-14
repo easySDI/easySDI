@@ -106,7 +106,9 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
 
     function addField(id, idwi, relid, parent_path, lowerbound, upperbound) {
         js.get('<?php echo $_SERVER['PHP_SELF']; ?>' + '/?view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
-            
+
+            js('#attribute-group-' + idwi + ':last').after(data);
+
             if (js(data).find('select') !== null) {
                 chosenRefresh();
             }
@@ -124,7 +126,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                 });
 
             });
-            
+
         });
     }
 
@@ -170,10 +172,31 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
 
     }
 
-    function confirm(id, idwi, lowerbound, upperbound) {
+    function confirmFieldset(id, idwi, lowerbound, upperbound) {
         bootbox.confirm("Are you sure?", function(result) {
             if (result) {
                 removeFieldset(id, idwi, lowerbound, upperbound);
+            }
+        });
+    }
+
+    function confirmField(id, idwi, lowerbound, upperbound) {
+        bootbox.confirm("Are you sure?", function(result) {
+            if (result) {
+                removeField(id, idwi, lowerbound, upperbound);
+            }
+        });
+    }
+
+    function removeField(id, idwi, lowerbound, upperbound) {
+        var uuid = getUuid('remove-btn-', id);
+
+        js.get('<?php echo $_SERVER['PHP_SELF']; ?>' + '/?task=ajax.removeNode&uuid=' + uuid, function(data) {
+            var response = js.parseJSON(data);
+            if (response.success) {
+                var toRemove = js('#attribute-group-' + uuid);
+
+                toRemove.remove();
             }
         });
     }
@@ -183,7 +206,6 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         js.get('<?php echo $_SERVER['PHP_SELF']; ?>' + '/?task=ajax.removeNode&uuid=' + uuid, function(data) {
             var response = js.parseJSON(data);
             if (response.success) {
-                //alert('Success');
 
                 var toRemove = js('#outer-fds-' + uuid);
 
@@ -201,6 +223,23 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
             }
         });
 
+    }
+
+    function confirmEmptyFile(id) {
+        bootbox.confirm("Are you sure?", function(result) {
+            if (result) {
+                emptyFile(id);
+            }
+        });
+    }
+
+    function emptyFile(id) {
+        var uuid = getUuid('empty-file-', id);
+        var replaceUuid = uuid.replace(/-/g, '_');
+
+        js('#jform_' + replaceUuid + '_filehidden').attr('value', '');
+        js('#preview-' + uuid).hide();
+        js('#empty-file-' + uuid).hide();
     }
 
     /**
