@@ -197,7 +197,7 @@ class Easysdi_contactModelusers extends JModelList
 				$query->where('a.id = '.(int) substr($search, 3));
 			} else {
 				$search = $db->Quote('%'.$db->escape($search, true).'%');
-                $query->where('( u.name LIKE '.$search.'   OR  u.username LIKE '.$search.'  )');
+                $query->where('( u.name LIKE ' . $search . '   OR  u.username LIKE ' . $search . '  )');
 			}
 		}
 		
