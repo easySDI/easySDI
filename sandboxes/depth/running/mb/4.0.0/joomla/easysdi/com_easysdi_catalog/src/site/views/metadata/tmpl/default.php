@@ -46,14 +46,13 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         margin-right: 10px;
     }
 
-    .add-btn{
+    .add-btn, .empty-btn, .preview-btn{
         margin-left: 10px;
     }
 
     legend{
         font-size: 12px;
     }
-
 
 </style>
 
@@ -234,10 +233,10 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
     }
 
     function emptyFile(id) {
-        var uuid = getUuid('empty-file-', id);
+        var uuid = getUuid('empty-btn-', id);
         var replaceUuid = uuid.replace(/-/g, '_');
 
-        js('#jform_' + replaceUuid + '_filehidden').attr('value', '');
+        js('#jform_' + replaceUuid + '_filetext').attr('value', '');
         js('#preview-' + uuid).hide();
         js('#empty-file-' + uuid).hide();
     }

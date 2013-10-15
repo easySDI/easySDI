@@ -402,19 +402,23 @@ class FormHtmlGenerator {
         if ($addButton) {
             $control->appendChild($this->getAttributeAction($attribute));
         }
-        if ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId') == EnumStereotype::$FILE) {
-            $control->appendChild($this->getPreviewAction($attribute));
-            $control->appendChild($this->getEmptyFileAction($attribute));
-
-            $xpath = $this->serializeXpath($attribute->firstChild->getNodePath()) . '_filehidden';
-            $jfield = $this->form->getField($xpath);
-
-            $controlGroup->appendChild($this->getInput($jfield));
-        }
+        
 
         $controlGroup->appendChild($controlLabel);
         $controlGroup->appendChild($control);
 
+        if ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId') == EnumStereotype::$FILE) {
+            $jfieldhidden = $this->form->getField($this->serializeXpath($attribute->firstChild->getNodePath()) . '_filehidden');
+            $jfieldtext = $this->form->getField($this->serializeXpath($attribute->firstChild->getNodePath()) . '_filetext');
+            
+            $br = $this->formHtml->createElement('br');
+            $control->appendChild($br);
+            $control->appendChild($this->getInput($jfieldtext));
+            $control->appendChild($this->getInput($jfieldhidden));
+            $control->appendChild($this->getPreviewAction($attribute));
+            $control->appendChild($this->getEmptyFileAction($attribute));
+        }
+        
         $elements[] = $controlGroup;
         $elements[] = $this->getInputScript($field, $guid);
 
@@ -519,7 +523,7 @@ class FormHtmlGenerator {
         
         $a->setAttribute('id', 'preview-' . $this->serializeXpath($attribute->firstChild->getNodePath()));
         $a->setAttribute('target', '_blank');
-        $a->setAttribute('class', 'btn btn-mini');
+        $a->setAttribute('class', 'btn btn-mini preview-btn');
         $a->setAttribute('href', $attribute->nodeValue);
         $a->setAttribute('target', '_blank');
             
@@ -534,8 +538,8 @@ class FormHtmlGenerator {
         $a = $this->formHtml->createElement('a');
         $i = $this->formHtml->createElement('i');
 
-        $a->setAttribute('id', 'empty-file-' . $this->serializeXpath($attribute->firstChild->getNodePath()));
-        $a->setAttribute('class', 'btn btn-danger btn-mini remove-btn remove-btn-' . $this->serializeXpath($this->removeIndex($attribute->getNodePath())));
+        $a->setAttribute('id', 'empty-btn-' . $this->serializeXpath($attribute->firstChild->getNodePath()));
+        $a->setAttribute('class', 'btn btn-danger btn-mini empty-btn empty-btn-' . $this->serializeXpath($this->removeIndex($attribute->getNodePath())));
         $a->setAttribute('onclick', 'confirmEmptyFile(this.id)');
 
         $i->setAttribute('class', 'icon-white icon-cancel-2');

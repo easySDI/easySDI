@@ -51,11 +51,13 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * @var DOMDocument 
      */
     private $structure;
+
     /**
      *
      * @var DOMXPath 
      */
     private $domXpathStr;
+
     /**
      *
      * @var SdiNamespaceDao 
@@ -129,11 +131,25 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         //Upload file
         foreach ($_FILES['jform']['name'] as $key => $value) {
-            if ($_FILES['jform']['error'][$key] == 0) {
-                $file_guid = $this->getGUID();
-                move_uploaded_file($_FILES['jform']['tmp_name'][$key], $fileRepository . '/' . $file_guid . '_' . $_FILES['jform']['name'][$key]);
-                $data[$key] = $fileBaseUrl . '/' . $file_guid . '_' . $_FILES['jform']['name'][$key];
-            }
+                if ($_FILES['jform']['name'][$key] != '') {
+
+                    $file_guid = $this->getGUID();
+                    if (move_uploaded_file($_FILES['jform']['tmp_name'][$key], $fileRepository . '/' . $file_guid . '_' . $_FILES['jform']['name'][$key])) {
+
+                        if ($data[$key . '_filehidden'] != '') {
+                            unlink($fileRepository . '/' . basename($data[$key . '_filehidden']));
+                        }
+                        $data[$key] = $fileBaseUrl . '/' . $file_guid . '_' . $_FILES['jform']['name'][$key];
+                    }
+                } else {
+                    if ($data[$key . '_filetext'] == '') {
+                        if ($data[$key . '_filehidden']!='') {
+                            unlink($fileRepository . '/' . basename($data[$key . '_filehidden']));
+                        }
+                        $data[$key] = '';
+                    }
+                }
+            
         }
 
         foreach ($this->nsdao->getAll() as $ns) {
@@ -176,9 +192,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $update->appendChild($this->getConstraint($data['guid']));
         $transaction->appendChild($update);
         $this->structure->appendChild($transaction);
-        
+
         $this->removeCatalogNS();
-        
+
         $this->structure->formatOutput = true;
         $xml = $this->structure->saveXML();
 
@@ -459,16 +475,15 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         return $constraint;
     }
 
-    private function removeCatalogNS(){ 
-        $attributeNames = array('id','dbid','childtypeId','index','lowerbound','upperbound','rendertypeId','stereotypeId','relGuid','relid','maxlength','readonly','exist');
+    private function removeCatalogNS() {
+        $attributeNames = array('id', 'dbid', 'childtypeId', 'index', 'lowerbound', 'upperbound', 'rendertypeId', 'stereotypeId', 'relGuid', 'relid', 'maxlength', 'readonly', 'exist');
         foreach ($this->domXpathStr->query('//*') as $element) {
             foreach ($attributeNames as $attributeName) {
-                $element->removeAttributeNS($this->catalog_uri,$attributeName);
-            } 
+                $element->removeAttributeNS($this->catalog_uri, $attributeName);
+            }
         }
     }
-    
-    
+
     private function getGUID() {
         mt_srand((double) microtime() * 10000); //optional for php 4.2.0 and up.
         $charid = strtoupper(md5(uniqid(rand(), true)));

@@ -917,7 +917,14 @@ class FormGenerator {
         $hiddenField->setAttribute('type', 'hidden');
         $hiddenField->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()) . '_filehidden');
         $hiddenField->setAttribute('default', $attribute->firstChild->nodeValue);
+        
+        $textField = $this->form->createElement('field');
+        $textField->setAttribute('type', 'text');
+        $textField->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()) . '_filetext');
+        $textField->setAttribute('default', $attribute->firstChild->nodeValue);
+        $textField->setAttribute('readonly', 'true');
 
+        $fields[] = $textField;
         $fields[] = $hiddenField;
 
         return $fields;
