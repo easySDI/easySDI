@@ -207,7 +207,7 @@ class DomCswCreator {
         /**
          * @todo Vérifier le nom du paramètre à remonter du core
          */
-        $platformGuid = JComponentHelper::getParams('com_easysdi_core')->get('guid');
+        $platformGuid = JComponentHelper::getParams('com_easysdi_core')->get('infrastructureID');
 
         $query = $this->db->getQuery(true);
         $query->select('v.`name` as md_lastVersion, m.guid as md_guid, m.created as md_created, m.published as md_published, ms.`value` as ms_value');

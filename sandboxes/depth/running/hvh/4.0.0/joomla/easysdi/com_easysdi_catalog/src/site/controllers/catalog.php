@@ -25,7 +25,7 @@ class Easysdi_catalogControllerCatalog extends Easysdi_catalogController
 	 */
 	public function edit()
 	{
-		$app			= JFactory::getApplication();
+            	$app			= JFactory::getApplication();
 
 		// Get the previous edit id (if any) and the current edit id.
 		$previousId = (int) $app->getUserState('com_easysdi_catalog.edit.catalog.id');

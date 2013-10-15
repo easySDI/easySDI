@@ -274,7 +274,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_resource` (
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_resource_fk1` (`organism_id` ASC) ,
   INDEX `#__sdi_resource_fk2` (`resourcetype_id` ASC) ,
-
+  INDEX `#__sdi_resource_fk3` (`accessscope_id` ASC) ,
   CONSTRAINT `#__sdi_resource_fk1`
     FOREIGN KEY (`organism_id` )
     REFERENCES `#__sdi_organism` (`id` )
@@ -283,6 +283,11 @@ PRIMARY KEY (`id`) ,
   CONSTRAINT `#__sdi_resource_fk2`
     FOREIGN KEY (`resourcetype_id` )
     REFERENCES `#__sdi_resourcetype` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+CONSTRAINT `#__sdi_resource_fk3`
+    FOREIGN KEY (`accessscope_id` )
+    REFERENCES `#__sdi_sys_accessscope` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
