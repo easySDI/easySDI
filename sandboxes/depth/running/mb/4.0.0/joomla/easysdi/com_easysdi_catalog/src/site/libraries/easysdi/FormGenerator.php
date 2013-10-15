@@ -178,6 +178,9 @@ class FormGenerator {
 
         $this->setDomXpathStr();
 
+        $this->structure->formatOutput = true;
+        $html = $this->structure->saveXML();
+
         if (isset($this->csw)) {
             $this->setDomXpathCsw();
             $this->mergeCsw();
@@ -186,8 +189,7 @@ class FormGenerator {
             $response = $this->csw->saveXML();
         }
 
-        $this->structure->formatOutput = true;
-        $html = $this->structure->saveXML();
+
 
         $this->session->set('structure', serialize($this->structure->saveXML()));
         $form = $this->buildForm($root);
@@ -280,24 +282,38 @@ class FormGenerator {
                     $relation = $this->getDomElement($result->uri, $result->prefix, $result->name, $result->id, EnumChildtype::$RELATION, $result->guid, $result->lowerbound, $result->upperbound);
                     $class = $this->getDomElement($result->class_ns_uri, $result->class_ns_prefix, $result->class_name, $result->class_id, EnumChildtype::$CLASS, $result->class_guid, null, null, $result->class_stereotype_id);
 
-                    $relation->appendChild($class);
+                    switch ($result->class_stereotype_id) {
+                        case EnumStereotype::$GEOGRAPHICEXTENT:
+                            $params = array();
+                            $params['stereotype_id'] = $result->class_stereotype_id;
+
+                            foreach ($this->getStereotype((object) $params) as $st) {
+                                $relation->appendChild($st);
+                            }
+
+                            break;
+                        default :
+                            $relation->appendChild($class);
+                            break;
+                    }
+
                     $childs[] = $relation;
 
                     break;
 
                 case EnumChildtype::$ATTRIBUT:
-                    $attribut = $this->getDomElement($result->attribute_ns_uri, $result->attribute_ns_prefix, $result->attribute_isocode, $result->attribute_id, EnumChildtype::$ATTRIBUT, $result->attribute_guid, $result->lowerbound, $result->upperbound, $result->stereotype_id, $result->rendertype_id);
+                    $attribute = $this->getDomElement($result->attribute_ns_uri, $result->attribute_ns_prefix, $result->attribute_isocode, $result->attribute_id, EnumChildtype::$ATTRIBUT, $result->attribute_guid, $result->lowerbound, $result->upperbound, $result->stereotype_id, $result->rendertype_id);
 
                     foreach ($this->getStereotype($result) as $st) {
-                        $attribut->appendChild($st);
+                        $attribute->appendChild($st);
                     }
 
-                    $attribut->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relGuid', $result->guid);
-                    $attribut->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relid', $result->id);
-                    $attribut->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'maxlength', $result->attribute_length);
-                    $attribut->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', $result->attribute_issystem);
+                    $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relGuid', $result->guid);
+                    $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relid', $result->id);
+                    $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'maxlength', $result->attribute_length);
+                    $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', $result->attribute_issystem);
 
-                    $childs[] = $attribut;
+                    $childs[] = $attribute;
 
                     break;
                 case EnumChildtype::$RELATIONTYPE:
@@ -398,7 +414,8 @@ class FormGenerator {
                 break;
 
             case EnumStereotype::$GEOGRAPHICEXTENT:
-                $elements[] = $this->structure->createElement('stereotype');
+                $element = $this->getExtendStereotype();
+                $elements[] = $element;
                 break;
             case EnumStereotype::$MAPGEOGRAPHICEXTENT:
                 $elements[] = $this->structure->createElement('stereotype');
@@ -413,6 +430,23 @@ class FormGenerator {
         }
 
         return $elements;
+    }
+
+    private function getExtendStereotype() {
+        $stereotype = '<root xmlns:bee="http://www.be.ch/bve/agi/2010/bee" xmlns:catalog="http://www.easysdi.org/2011/sdi/catalog" xmlns:che="http://www.geocat.ch/2008/che" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:sdi="http://www.easysdi.org/2011/sdi" xmlns:srv="http://www.isotc211.org/2005/srv"><gmd:EX_Extent catalog:dbid="36" catalog:id="b3534c08-8ce1-4975-89b3-2d38c1124642" catalog:childtypeId="1" catalog:index="1" catalog:stereotypeId="15"><sdi:extentType catalog:childtypeId="2" catalog:index="1" catalog:lowerbound="1" catalog:upperbound="1" catalog:rendertypeId="4" catalog:stereotypeId="15"><gco:CharacterString /></sdi:extentType><gmd:description catalog:dbid="277" catalog:id="825dbc36-f333-43e5-9e59-aa4a7d99ba39" catalog:childtypeId="2" catalog:index="1" catalog:lowerbound="1" catalog:upperbound="1" catalog:rendertypeId="4" catalog:stereotypeId="10" catalog:relGuid="b3d4120f-1e7e-4d66-8b38-4af07d43fd9e" catalog:relid="227" catalog:maxlength="0" catalog:readonly="0"><gco:CharacterString /></gmd:description><gmd:geographicElement catalog:dbid="414" catalog:id="50e57734-5c6a-4b78-96df-30a6a6096c69" catalog:childtypeId="0" catalog:index="1" catalog:lowerbound="1" catalog:upperbound="1" catalog:exist="1"><gmd:EX_GeographicBoundingBox catalog:dbid="118" catalog:id="7b341b1b-22b1-41a3-96ba-96c99227e11b" catalog:childtypeId="1" catalog:index="1"><gmd:extentTypeCode catalog:childtypeId="2"><Boolean>true</Boolean></gmd:extentTypeCode><gmd:northBoundLatitude catalog:dbid="207" catalog:id="17d26ec0-e8da-4d07-8700-94e685640238" catalog:childtypeId="2" catalog:index="1" catalog:lowerbound="1" catalog:upperbound="1" catalog:rendertypeId="5" catalog:stereotypeId="4" catalog:relGuid="5f2d2095-15ca-48c1-a4e0-ac27348632c5" catalog:relid="228" catalog:maxlength="0" catalog:readonly="0"><gco:Decimal /></gmd:northBoundLatitude><gmd:southBoundLatitude catalog:dbid="208" catalog:id="825f2a9f-3f9b-4b7d-8066-2ad6e8312e1a" catalog:childtypeId="2" catalog:index="1" catalog:lowerbound="1" catalog:upperbound="1" catalog:rendertypeId="5" catalog:stereotypeId="4" catalog:relGuid="3e00d054-7a97-450e-bf21-9ad3d2d747ce" catalog:relid="229" catalog:maxlength="0" catalog:readonly="0"><gco:Decimal /></gmd:southBoundLatitude><gmd:eastBoundLongitude catalog:dbid="209" catalog:id="840974e5-8842-4ffe-a1ee-0343d89a9864" catalog:childtypeId="2" catalog:index="1" catalog:lowerbound="1" catalog:upperbound="1" catalog:rendertypeId="5" catalog:stereotypeId="4" catalog:relGuid="78efa4ae-46df-432e-b4c3-15a39ea8e269" catalog:relid="230" catalog:maxlength="0" catalog:readonly="0"><gco:Decimal /></gmd:eastBoundLongitude><gmd:westBoundLongitude catalog:dbid="210" catalog:id="c9030ea5-5203-46f9-a717-41a7837949dc" catalog:childtypeId="2" catalog:index="1" catalog:lowerbound="1" catalog:upperbound="1" catalog:rendertypeId="5" catalog:stereotypeId="4" catalog:relGuid="059904f6-3dc1-4893-997b-1a4a10345828" catalog:relid="231" catalog:maxlength="0" catalog:readonly="0"><gco:Decimal /></gmd:westBoundLongitude></gmd:EX_GeographicBoundingBox></gmd:geographicElement><gmd:geographicElement catalog:dbid="414" catalog:id="50e57734-5c6a-4b78-96df-30a6a6096c69" catalog:childtypeId="0" catalog:index="1" catalog:lowerbound="1" catalog:upperbound="1" catalog:exist="0"><gmd:EX_GeographicDescription catalog:dbid="118" catalog:id="7b341b1b-22b1-41a3-96ba-96c99227e11b" catalog:childtypeId="1" catalog:index="1"><gmd:extentTypeCode catalog:childtypeId="2"><gco:Boolean>true</gco:Boolean></gmd:extentTypeCode><gmd:geographicIdentifier catalog:childtypeId="0" catalog:index="1" catalog:lowerbound="1" catalog:upperbound="1" catalog:exist="1"><gmd:MD_Identifier catalog:childtypeId="1" catalog:index="1"><gmd:code catalog:childtypeId="2" catalog:index="1" catalog:lowerbound="1" catalog:upperbound="1" catalog:rendertypeId="5" catalog:stereotypeId="2"><gco:CharacterString /></gmd:code></gmd:MD_Identifier></gmd:geographicIdentifier></gmd:EX_GeographicDescription></gmd:geographicElement></gmd:EX_Extent></root>';
+     
+        $domlocal = new DOMDocument();
+        $domlocal->loadXML($stereotype);
+
+        $domXapth = new DOMXPath($domlocal);
+        $input = $domXapth->query('/*/*')->item(0);
+
+        $cloned = $input->cloneNode(TRUE);
+
+        $imported = $this->structure->importNode($cloned, TRUE);
+
+        return $imported;
+        
     }
 
     private function mergeCsw() {
@@ -917,7 +951,7 @@ class FormGenerator {
         $hiddenField->setAttribute('type', 'hidden');
         $hiddenField->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()) . '_filehidden');
         $hiddenField->setAttribute('default', $attribute->firstChild->nodeValue);
-        
+
         $textField = $this->form->createElement('field');
         $textField->setAttribute('type', 'text');
         $textField->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()) . '_filetext');

@@ -264,6 +264,14 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         });
     }
 
+    function getBoundary(boundary_alias){
+        js.get('<?php echo $_SERVER['PHP_SELF']; ?>' + '/?task=ajax.getBoundary&boundary_alias=' + boundary_alias, function(data) {
+            var response = js.parseJSON(data);
+            
+            
+        });
+    }
+    
 </script>
 
 <div class="metadata-edit front-end-edit">

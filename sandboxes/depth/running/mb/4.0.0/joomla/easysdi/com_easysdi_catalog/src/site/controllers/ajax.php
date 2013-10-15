@@ -19,11 +19,20 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao
  * Metadata controller class.
  */
 class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
+
+    /**
+     * database
+     *
+     * @var JDatabaseDriver
+     */
+    private $db = null;
+
     /**
      *
      * @var JSession 
      */
     private $session;
+
     /**
      *
      * @var DOMDocument 
@@ -44,6 +53,7 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
 
     function __construct() {
         $this->session = JFactory::getSession();
+        $this->db = JFactory::getDbo();
         $this->structure = new DOMDocument('1.0', 'utf-8');
         $this->structure->loadXML(unserialize($this->session->get('structure')));
         $this->nsdao = new SdiNamespaceDao();
@@ -64,7 +74,7 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         try {
             $element->parentNode->removeChild($element);
             $response['success'] = 'true';
-            
+
             $this->session->set('structure', serialize($this->structure->saveXML()));
         } catch (Exception $exc) {
             $response['success'] = 'false';
@@ -72,6 +82,19 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         }
 
         echo json_encode($response);
+        die();
+    }
+
+    public function getBoundary() {
+        $query = $this->db->getQuery(true);
+        $query->select('b.`alias`, b.northbound, b.southbound, b.westbound, b.eastbound ');
+        $query->from('#__sdi_boundary AS b');
+        $query->where('b.`alias` = '.$_GET['boundary_alias']);
+
+        $this->db->setQuery($query);
+        $result = $this->db->loadObject();
+        
+        echo json_encode($result);
         die();
     }
 

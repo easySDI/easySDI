@@ -41,6 +41,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
      */
     var $_validators = array();
 
+  
     /**
      * Method to auto-populate the model state.
      *
@@ -69,6 +70,10 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         $this->setState('params', $params);
     }
 
+    /**
+     * 
+     * @return DOMDocument
+     */
     public function getStructure() {
         return $this->_structure;
     }
@@ -249,7 +254,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         (empty($data['id']) ) ? $new = true : $new = false;
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('metadata.id');
 
-                
+
         $user = sdiFactory::getSdiUser();
         if (!$user->isEasySDI) {
             //Not an EasySDI user = not allowed
@@ -335,7 +340,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                 }
 
                 $validator->patterns = $patterns;
-                if(isset($validator->name)){
+                if (isset($validator->name)) {
                     $tmpValidators[$validator->name] = $validator;
                 }
             }

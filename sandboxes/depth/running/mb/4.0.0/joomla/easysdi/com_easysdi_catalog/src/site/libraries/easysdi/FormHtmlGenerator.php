@@ -153,7 +153,7 @@ class FormHtmlGenerator {
                     }
                     break;
                 case EnumChildtype::$ATTRIBUT:
-
+                    $parentname = $parent->nodeName;
                     $field = $this->getAttribute($child);
                     $parentInner->appendChild($field);
 
