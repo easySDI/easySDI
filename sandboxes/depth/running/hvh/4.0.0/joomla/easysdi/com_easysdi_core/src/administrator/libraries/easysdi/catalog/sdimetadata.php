@@ -7,12 +7,10 @@
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
-require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_contact/tables/user.php';
-require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/version.php';
-require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/resource.php';
-require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/metadata.php';
 
-class sdiMetadata {
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/cswmetadata.php';
+
+class sdiMetadata extends cswmetadata{
 
     /**
      * Unique metadataid
@@ -21,24 +19,7 @@ class sdiMetadata {
      */
     public $id = null;
 
-    /**
-     * Easysdi_catalogTablemetadata
-     *
-     * @var    Easysdi_catalogTablemetadata
-     */
-    public $metadata = null;
-
-    /**
-     *
-     * @var Easysdi_coreTableversion 
-     */
-    public $version = null;
-
-    /**
-     *
-     * @var Easysdi_coreTableresource 
-     */
-    public $resource = null;
+    
 
     /**
      * database
@@ -59,6 +40,7 @@ class sdiMetadata {
         $this->id = $metadataid;
         $this->metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
         $this->metadata->load($this->id);
+        $this->guid = $this->metadata->guid;
         $this->version = JTable::getInstance('version', 'Easysdi_coreTable');
         $this->version->load($this->metadata->version_id);
         $this->resource = JTable::getInstance('resource', 'Easysdi_coreTable');
@@ -70,31 +52,7 @@ class sdiMetadata {
         $this->catalogurl = $params->get('catalogurl');
     }
 
-    /**
-     * 
-     */
-    public function load() {
-
-        $catalogUrlGetRecordById = $this->catalogurl . "?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=" . $this->metadata->guid;
-
-        $response = $this->CURLRequest("GET", $catalogUrlGetRecordById);
-
-        $doc = new DOMDocument();
-        $doc->loadXML($response);
-
-        if ($doc <> false and $doc->childNodes->item(0)->hasChildNodes()) {            
-         if ($doc->childNodes->item(0)->nodeName == "ExceptionReport") {
-            $msg = $doc->childNodes->item(0)->nodeValue;
-            JFactory::getApplication()->enqueueMessage($msg, 'error');
-            return false;
-         }
-         return $doc;
-        } else {
-            $msg = JText::_('CATALOG_METADATA_EDIT_NOMETADATA_MSG');
-            JFactory::getApplication()->enqueueMessage('No such metadata in the catalog.', 'error');
-            return false;
-        }
-    }
+    
 
     /**
      * Insert a newly created metadata into the CSW catalog
@@ -339,47 +297,7 @@ class sdiMetadata {
         endif;
     }
 
-    private function CURLRequest($type, $url, $xmlBody = "") {
-        // Get COOKIE as key=value
-        $cookiesList = array();
-        foreach ($_COOKIE as $key => $val) {
-            $cookiesList[] = $key . "=" . $val;
-        }
-        $cookies = implode(";", $cookiesList);
-
-        $ch = curl_init($url);
-        // Configuration
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset="UTF-8"', 'charset="UTF-8"'));
-        curl_setopt($ch, CURLOPT_COOKIE, $cookies);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_ENCODING, "");
-
-        // Specific POST
-        if ($type == "POST") {
-            curl_setopt($ch, CURLOPT_POST, 1);
-            //curl_setopt($ch, CURLOPT_MUTE, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, "$xmlBody");
-        }
-        // Specific GET
-        else if ($type == "GET") {
-            curl_setopt($ch, CURLOPT_POST, 0);
-        }
-
-        //User authentication
-        $params = JComponentHelper::getParams('com_easysdi_contact');
-        $serviceaccount_id = $params->get('serviceaccount');
-        $juser = JFactory::getUser($serviceaccount_id);
-
-        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($ch, CURLOPT_USERPWD, $juser->username . ":" . $juser->password);
-
-        $output = curl_exec($ch);
-        curl_close($ch);
-
-        return $output;
-    }
+    
 
     private function getPlatformNode($dom) {
         //Get the resourcetype alias
@@ -468,9 +386,9 @@ class sdiMetadata {
         $platform->appendChild($resource);
 
         return $platform;
-    }
-
-    private function getMetadataRootClass() {
+    }    
+    
+    protected function getMetadataRootClass() {
         //Get from the metadata structure the root classe
         $query = $this->db->getQuery(true);
         $query = "SELECT CONCAT(ns.prefix,':',c.isocode) as isocode 
