@@ -17,6 +17,7 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/SdiNamespace.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/SdiStereotype.php';
 
+
 jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
 

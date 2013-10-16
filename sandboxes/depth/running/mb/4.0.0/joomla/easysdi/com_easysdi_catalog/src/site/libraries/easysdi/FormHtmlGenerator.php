@@ -122,7 +122,12 @@ class FormHtmlGenerator {
                 break;
             case XML_ELEMENT_NODE:
                 $query = '*/*[@catalog:childtypeId="0"]|*/*[@catalog:childtypeId="2"]|*/*[@catalog:childtypeId="3"]|*[@catalog:childtypeId="2"]';
-                $parentInner = $parentHtml->getElementsByTagName('div')->item(0);
+                if ($parent->getAttributeNS($this->catalog_uri, 'exist') == 1) {
+                    $parentInner = $parentHtml->getElementsByTagName('div')->item(0);
+                } else {
+                    $parentInner = $parentHtml;
+                }
+
                 break;
         }
 
@@ -154,6 +159,7 @@ class FormHtmlGenerator {
                     break;
                 case EnumChildtype::$ATTRIBUT:
                     $parentname = $parent->nodeName;
+                    $childName = $child->nodeName;
                     $field = $this->getAttribute($child);
                     $parentInner->appendChild($field);
 
@@ -395,14 +401,16 @@ class FormHtmlGenerator {
 
         $control = $this->formHtml->createElement('div');
         $control->setAttribute('class', 'controls');
-
-        $controlLabel->appendChild($this->getLabel($field));
+        
+        if($field->label != ''){
+            $controlLabel->appendChild($this->getLabel($field));
+        }
 
         $control->appendChild($this->getInput($field));
         if ($addButton) {
             $control->appendChild($this->getAttributeAction($attribute));
         }
-        
+
 
         $controlGroup->appendChild($controlLabel);
         $controlGroup->appendChild($control);
@@ -410,7 +418,7 @@ class FormHtmlGenerator {
         if ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId') == EnumStereotype::$FILE) {
             $jfieldhidden = $this->form->getField($this->serializeXpath($attribute->firstChild->getNodePath()) . '_filehidden');
             $jfieldtext = $this->form->getField($this->serializeXpath($attribute->firstChild->getNodePath()) . '_filetext');
-            
+
             $br = $this->formHtml->createElement('br');
             $control->appendChild($br);
             $control->appendChild($this->getInput($jfieldtext));
@@ -418,7 +426,7 @@ class FormHtmlGenerator {
             $control->appendChild($this->getPreviewAction($attribute));
             $control->appendChild($this->getEmptyFileAction($attribute));
         }
-        
+
         $elements[] = $controlGroup;
         $elements[] = $this->getInputScript($field, $guid);
 
@@ -431,8 +439,9 @@ class FormHtmlGenerator {
      * @return DOMElement
      */
     private function getLabel($field) {
+        $labelString = $field->label;
         $domlocal = new DOMDocument();
-        $domlocal->loadHTML($this->convert($field->label));
+        $domlocal->loadHTML($this->convert($labelString));
 
         $domXapth = new DOMXPath($domlocal);
         $label = $domXapth->query('/*/*/*')->item(0);
@@ -520,21 +529,21 @@ class FormHtmlGenerator {
     private function getPreviewAction(DOMElement $attribute) {
         $a = $this->formHtml->createElement('a');
         $i = $this->formHtml->createElement('i');
-        
+
         $a->setAttribute('id', 'preview-' . $this->serializeXpath($attribute->firstChild->getNodePath()));
         $a->setAttribute('target', '_blank');
         $a->setAttribute('class', 'btn btn-mini preview-btn');
         $a->setAttribute('href', $attribute->nodeValue);
         $a->setAttribute('target', '_blank');
-            
+
         $i->setAttribute('class', 'icon-white icon-eye-open');
 
         $a->appendChild($i);
 
         return $a;
     }
-    
-    private function getEmptyFileAction(DOMElement $attribute){
+
+    private function getEmptyFileAction(DOMElement $attribute) {
         $a = $this->formHtml->createElement('a');
         $i = $this->formHtml->createElement('i');
 

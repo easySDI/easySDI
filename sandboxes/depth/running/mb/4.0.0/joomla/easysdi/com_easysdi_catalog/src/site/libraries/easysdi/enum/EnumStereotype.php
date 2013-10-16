@@ -28,6 +28,9 @@ class EnumStereotype {
     public static $GEOGRAPHICEXTENT = 15;
     public static $MAPGEOGRAPHICEXTENT = 16;
     public static $FREEMAPGEOGRAPHICEXTENT = 17;
+    
+    public static $BOUNDARY = 1001;
+    public static $BOUNDARYCATEGORY = 1002;
 }
 
 ?>

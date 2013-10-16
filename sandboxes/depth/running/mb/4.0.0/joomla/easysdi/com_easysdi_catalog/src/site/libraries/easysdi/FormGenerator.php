@@ -189,8 +189,6 @@ class FormGenerator {
             $response = $this->csw->saveXML();
         }
 
-
-
         $this->session->set('structure', serialize($this->structure->saveXML()));
         $form = $this->buildForm($root);
 
@@ -238,7 +236,8 @@ class FormGenerator {
      */
     private function getChildNode(DOMElement $parent) {
         $childs = array();
-        $parentname = $parent->nodeName;
+
+
         if ($parent->parentNode->nodeType == XML_ELEMENT_NODE) {
             switch ($parent->getAttributeNS($this->catalog_uri, 'childtypeId')) {
                 case EnumChildtype::$RELATIONTYPE:
@@ -433,20 +432,111 @@ class FormGenerator {
     }
 
     private function getExtendStereotype() {
-        $stereotype = '<root xmlns:bee="http://www.be.ch/bve/agi/2010/bee" xmlns:catalog="http://www.easysdi.org/2011/sdi/catalog" xmlns:che="http://www.geocat.ch/2008/che" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:sdi="http://www.easysdi.org/2011/sdi" xmlns:srv="http://www.isotc211.org/2005/srv"><gmd:EX_Extent catalog:dbid="36" catalog:id="b3534c08-8ce1-4975-89b3-2d38c1124642" catalog:childtypeId="1" catalog:index="1" catalog:stereotypeId="15"><sdi:extentType catalog:childtypeId="2" catalog:index="1" catalog:lowerbound="1" catalog:upperbound="1" catalog:rendertypeId="4" catalog:stereotypeId="15"><gco:CharacterString /></sdi:extentType><gmd:description catalog:dbid="277" catalog:id="825dbc36-f333-43e5-9e59-aa4a7d99ba39" catalog:childtypeId="2" catalog:index="1" catalog:lowerbound="1" catalog:upperbound="1" catalog:rendertypeId="4" catalog:stereotypeId="10" catalog:relGuid="b3d4120f-1e7e-4d66-8b38-4af07d43fd9e" catalog:relid="227" catalog:maxlength="0" catalog:readonly="0"><gco:CharacterString /></gmd:description><gmd:geographicElement catalog:dbid="414" catalog:id="50e57734-5c6a-4b78-96df-30a6a6096c69" catalog:childtypeId="0" catalog:index="1" catalog:lowerbound="1" catalog:upperbound="1" catalog:exist="1"><gmd:EX_GeographicBoundingBox catalog:dbid="118" catalog:id="7b341b1b-22b1-41a3-96ba-96c99227e11b" catalog:childtypeId="1" catalog:index="1"><gmd:extentTypeCode catalog:childtypeId="2"><Boolean>true</Boolean></gmd:extentTypeCode><gmd:northBoundLatitude catalog:dbid="207" catalog:id="17d26ec0-e8da-4d07-8700-94e685640238" catalog:childtypeId="2" catalog:index="1" catalog:lowerbound="1" catalog:upperbound="1" catalog:rendertypeId="5" catalog:stereotypeId="4" catalog:relGuid="5f2d2095-15ca-48c1-a4e0-ac27348632c5" catalog:relid="228" catalog:maxlength="0" catalog:readonly="0"><gco:Decimal /></gmd:northBoundLatitude><gmd:southBoundLatitude catalog:dbid="208" catalog:id="825f2a9f-3f9b-4b7d-8066-2ad6e8312e1a" catalog:childtypeId="2" catalog:index="1" catalog:lowerbound="1" catalog:upperbound="1" catalog:rendertypeId="5" catalog:stereotypeId="4" catalog:relGuid="3e00d054-7a97-450e-bf21-9ad3d2d747ce" catalog:relid="229" catalog:maxlength="0" catalog:readonly="0"><gco:Decimal /></gmd:southBoundLatitude><gmd:eastBoundLongitude catalog:dbid="209" catalog:id="840974e5-8842-4ffe-a1ee-0343d89a9864" catalog:childtypeId="2" catalog:index="1" catalog:lowerbound="1" catalog:upperbound="1" catalog:rendertypeId="5" catalog:stereotypeId="4" catalog:relGuid="78efa4ae-46df-432e-b4c3-15a39ea8e269" catalog:relid="230" catalog:maxlength="0" catalog:readonly="0"><gco:Decimal /></gmd:eastBoundLongitude><gmd:westBoundLongitude catalog:dbid="210" catalog:id="c9030ea5-5203-46f9-a717-41a7837949dc" catalog:childtypeId="2" catalog:index="1" catalog:lowerbound="1" catalog:upperbound="1" catalog:rendertypeId="5" catalog:stereotypeId="4" catalog:relGuid="059904f6-3dc1-4893-997b-1a4a10345828" catalog:relid="231" catalog:maxlength="0" catalog:readonly="0"><gco:Decimal /></gmd:westBoundLongitude></gmd:EX_GeographicBoundingBox></gmd:geographicElement><gmd:geographicElement catalog:dbid="414" catalog:id="50e57734-5c6a-4b78-96df-30a6a6096c69" catalog:childtypeId="0" catalog:index="1" catalog:lowerbound="1" catalog:upperbound="1" catalog:exist="0"><gmd:EX_GeographicDescription catalog:dbid="118" catalog:id="7b341b1b-22b1-41a3-96ba-96c99227e11b" catalog:childtypeId="1" catalog:index="1"><gmd:extentTypeCode catalog:childtypeId="2"><gco:Boolean>true</gco:Boolean></gmd:extentTypeCode><gmd:geographicIdentifier catalog:childtypeId="0" catalog:index="1" catalog:lowerbound="1" catalog:upperbound="1" catalog:exist="1"><gmd:MD_Identifier catalog:childtypeId="1" catalog:index="1"><gmd:code catalog:childtypeId="2" catalog:index="1" catalog:lowerbound="1" catalog:upperbound="1" catalog:rendertypeId="5" catalog:stereotypeId="2"><gco:CharacterString /></gmd:code></gmd:MD_Identifier></gmd:geographicIdentifier></gmd:EX_GeographicDescription></gmd:geographicElement></gmd:EX_Extent></root>';
-     
-        $domlocal = new DOMDocument();
-        $domlocal->loadXML($stereotype);
+        $namspaces = array();
+        foreach ($this->nsdao->getAll() as $ns) {
+            $namspaces[$ns->prefix] = $ns->uri;
+        }
 
-        $domXapth = new DOMXPath($domlocal);
-        $input = $domXapth->query('/*/*')->item(0);
+        $EX_Extent = $this->structure->createElementNS($namspaces['gmd'], 'gmd:EX_Extent');
+        $EX_Extent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':dbid', '0');
+        $EX_Extent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '1');
 
-        $cloned = $input->cloneNode(TRUE);
+        $extentType = $this->structure->createElementNS($namspaces['sdi'], 'sdi:extentType');
+        $extentType->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '2');
+        $extentType->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', '1002');
+        $extentType->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', '4');
 
-        $imported = $this->structure->importNode($cloned, TRUE);
+        $description = $this->structure->createElementNS($namspaces['gmd'], 'gmd:description');
+        $description->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '2');
+        $description->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', '1001');
+        $description->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', '4');
 
-        return $imported;
-        
+        $geographicElement = $this->structure->createElementNS($namspaces['gmd'], 'gmd:geographicElement');
+        $geographicElement->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '0');
+        $geographicElement->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':lowerbound', '3');
+        $geographicElement->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':upperbound', '3');
+
+        $geographicElement1 = $geographicElement->cloneNode();
+        $geographicElement1->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
+
+        $EX_GeographicBoundingBox = $this->structure->createElementNS($namspaces['gmd'], 'gmd:EX_GeographicBoundingBox');
+        $EX_GeographicBoundingBox->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '1');
+
+        $extentTypeCode = $this->structure->createElementNS($namspaces['gmd'], 'gmd:extentTypeCode');
+        $extentTypeCode->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '2');
+
+        $northBoundLatitude = $this->structure->createElementNS($namspaces['gmd'], 'gmd:northBoundLatitude');
+        $northBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '2');
+        $northBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', '5');
+        $northBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', '4');
+
+        $southBoundLatitude = $this->structure->createElementNS($namspaces['gmd'], 'gmd:southBoundLatitude');
+        $southBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '2');
+        $southBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', '5');
+        $southBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', '4');
+
+        $eastBoundLongitude = $this->structure->createElementNS($namspaces['gmd'], 'gmd:eastBoundLongitude');
+        $eastBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '2');
+        $eastBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', '5');
+        $eastBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', '4');
+
+        $westBoundLongitude = $this->structure->createElementNS($namspaces['gmd'], 'gmd:westBoundLongitude');
+        $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '2');
+        $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', '5');
+        $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', '4');
+
+        $geographicElement2 = $geographicElement->cloneNode();
+        $geographicElement2->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
+
+        $EX_GeographicDescription = $this->structure->createElementNS($namspaces['gmd'], 'gmd:EX_GeographicDescription');
+        $EX_GeographicDescription->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '1');
+
+        $geographicIdentifier = $this->structure->createElementNS($namspaces['gmd'], 'gmd:geographicIdentifier');
+        $geographicIdentifier->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '0');
+        $geographicIdentifier->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':lowerbound', '1');
+        $geographicIdentifier->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':upperbound', '1');
+        $geographicIdentifier->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
+
+        $MD_Identifier = $this->structure->createElementNS($namspaces['gmd'], 'gmd:MD_Identifier');
+        $MD_Identifier->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '1');
+
+        $code = $this->structure->createElementNS($namspaces['gmd'], 'gmd:code');
+        $code->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '2');
+
+        $CharacterString = $this->structure->createElementNS($namspaces['gco'], 'gco:CharacterString');
+        $Boolean = $this->structure->createElementNS($namspaces['gco'], 'gco:Boolean', 'true');
+        $Decimal = $this->structure->createElementNS($namspaces['gco'], 'gco:Decimal');
+
+        $extentType->appendChild($CharacterString->cloneNode());
+        $description->appendChild($CharacterString->cloneNode());
+        $extentTypeCode->appendChild($Boolean->cloneNode(true));
+        $northBoundLatitude->appendChild($Decimal->cloneNode());
+        $southBoundLatitude->appendChild($Decimal->cloneNode());
+        $eastBoundLongitude->appendChild($Decimal->cloneNode());
+        $westBoundLongitude->appendChild($Decimal->cloneNode());
+        $code->appendChild($CharacterString->cloneNode());
+
+        $MD_Identifier->appendChild($code);
+        $geographicIdentifier->appendChild($MD_Identifier);
+
+        $EX_GeographicBoundingBox->appendChild($extentTypeCode->cloneNode(true));
+        $EX_GeographicBoundingBox->appendChild($northBoundLatitude);
+        $EX_GeographicBoundingBox->appendChild($southBoundLatitude);
+        $EX_GeographicBoundingBox->appendChild($eastBoundLongitude);
+        $EX_GeographicBoundingBox->appendChild($westBoundLongitude);
+
+        $EX_GeographicDescription->appendChild($extentTypeCode->cloneNode(true));
+        $EX_GeographicDescription->appendChild($geographicIdentifier);
+
+        $geographicElement1->appendChild($EX_GeographicBoundingBox);
+        $geographicElement2->appendChild($EX_GeographicDescription);
+
+        $EX_Extent->appendChild($extentType);
+        $EX_Extent->appendChild($description);
+        $EX_Extent->appendChild($geographicElement1);
+        $EX_Extent->appendChild($geographicElement2);
+
+        return $EX_Extent;
     }
 
     private function mergeCsw() {
@@ -608,7 +698,8 @@ class FormGenerator {
                         break;
 
                     default:
-                        return $field;
+                        //return $field;
+                        return $this->getFormHiddenField($attribute);
                         break;
                 }
                 break;
@@ -844,7 +935,7 @@ class FormGenerator {
 
                     $field->appendChild($option);
                     break;
-                case EnumStereotype::$GEOGRAPHICEXTENT:
+                case EnumStereotype::$BOUNDARY:
                     $field->setAttribute('type', 'list');
                     $field->setAttribute('label', EText::_($guid));
 
@@ -852,6 +943,17 @@ class FormGenerator {
                     $option->setAttribute('value', $opt->name);
 
                     $field->appendChild($option);
+                    $field->setAttribute('onchange', 'setBoundary(\'' . $this->serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
+                    break;
+                case EnumStereotype::$BOUNDARYCATEGORY:
+                    $field->setAttribute('type', 'list');
+                    $field->setAttribute('label', EText::_($guid));
+
+                    $option = $this->form->createElement('option', EText::_($opt->guid));
+                    $option->setAttribute('value', $opt->name);
+
+                    $field->appendChild($option);
+                    $field->setAttribute('onchange', 'filterBoundary(\'' . $this->serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
                     break;
                 default:
                     $field->setAttribute('type', 'list');
@@ -902,6 +1004,18 @@ class FormGenerator {
 
     private function getFormDateTimeField(SdiRelation $rel) {
         // not yet implemented
+    }
+
+    private function getFormHiddenField(DOMElement $attribute) {
+        $attributename = $attribute->nodeName;
+        $field = $this->form->createElement('field');
+
+        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
+        $field->setAttribute('type', 'hidden');
+        $field->setAttribute('default', $attribute->firstChild->nodeValue);
+        $field->setAttribute('label', 'label');
+
+        return $field;
     }
 
     private function getRelationType(DOMElement $relationtype) {
@@ -984,9 +1098,15 @@ class FormGenerator {
             case EnumChildtype::$ATTRIBUT:
                 switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
 
-                    case EnumStereotype::$GEOGRAPHICEXTENT:
+                    case EnumStereotype::$BOUNDARY:
                         $query->select('id, guid, name');
                         $query->from('#__sdi_boundary');
+                        $query->order('name ASC');
+                        break;
+
+                    case EnumStereotype::$BOUNDARYCATEGORY:
+                        $query->select('id, guid, name');
+                        $query->from('#__sdi_boundarycategory');
                         $query->order('name ASC');
                         break;
 

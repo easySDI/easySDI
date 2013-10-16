@@ -264,14 +264,47 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         });
     }
 
-    function getBoundary(boundary_alias){
-        js.get('<?php echo $_SERVER['PHP_SELF']; ?>' + '/?task=ajax.getBoundary&boundary_alias=' + boundary_alias, function(data) {
+    function filterBoundary(parentPath, value) {
+        js.get('<?php echo $_SERVER['PHP_SELF']; ?>' + '/?task=ajax.getBoundaryByCategory&value=' + value, function(data) {
             var response = js.parseJSON(data);
-            
-            
+
+            var replaceId = parentPath.replace(/-/g, '_');
+            var selectList = js('#jform_' + replaceId + '_sla_gmd_dp_description_sla_gco_dp_CharacterString');
+            selectList.empty();
+
+            var items = "";
+
+            js.each(response, function() {
+                items += "<option value=\"" + this.option_value + "\">" + this.option_value + "</option>";
+            });
+
+            selectList.html(items);
+            selectList.trigger("liszt:updated");
+            selectList.change();
+
+
+            js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', response['0'].northbound);
+            js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', response['0'].southbound);
+            js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', response['0'].eastbound);
+            js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', response['0'].westbound);
+
         });
     }
-    
+
+    function setBoundary(parentPath, value) {
+        js.get('<?php echo $_SERVER['PHP_SELF']; ?>' + '/?task=ajax.getBoundaryByName&value=' + value, function(data) {
+            var response = js.parseJSON(data);
+            
+            var replaceId = parentPath.replace(/-/g, '_');
+
+            js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', response.northbound);
+            js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', response.southbound);
+            js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', response.eastbound);
+            js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', response.westbound);
+
+        });
+    }
+
 </script>
 
 <div class="metadata-edit front-end-edit">
