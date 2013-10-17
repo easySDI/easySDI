@@ -440,16 +440,19 @@ class FormGenerator {
         $EX_Extent = $this->structure->createElementNS($namspaces['gmd'], 'gmd:EX_Extent');
         $EX_Extent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':dbid', '0');
         $EX_Extent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '1');
+        $EX_Extent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', EnumStereotype::$GEOGRAPHICEXTENT);
 
         $extentType = $this->structure->createElementNS($namspaces['sdi'], 'sdi:extentType');
         $extentType->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '2');
         $extentType->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', '1002');
         $extentType->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', '4');
+        $extentType->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_TYPE');
 
         $description = $this->structure->createElementNS($namspaces['gmd'], 'gmd:description');
         $description->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '2');
         $description->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', '1001');
         $description->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', '4');
+        $description->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_DESCRIPTION');
 
         $geographicElement = $this->structure->createElementNS($namspaces['gmd'], 'gmd:geographicElement');
         $geographicElement->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '0');
@@ -458,6 +461,7 @@ class FormGenerator {
 
         $geographicElement1 = $geographicElement->cloneNode();
         $geographicElement1->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
+        $geographicElement1->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_GEOGRAPHICELEMENT');
 
         $EX_GeographicBoundingBox = $this->structure->createElementNS($namspaces['gmd'], 'gmd:EX_GeographicBoundingBox');
         $EX_GeographicBoundingBox->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '1');
@@ -469,21 +473,29 @@ class FormGenerator {
         $northBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '2');
         $northBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', '5');
         $northBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', '4');
+        $northBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_NORTHBOUNDLATITUDE');
+        $northBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':boundingbox', 'true');
 
         $southBoundLatitude = $this->structure->createElementNS($namspaces['gmd'], 'gmd:southBoundLatitude');
         $southBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '2');
         $southBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', '5');
         $southBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', '4');
+        $southBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_SOUTHBOUNDLATITUDE');
+        $southBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':boundingbox', 'true');
 
         $eastBoundLongitude = $this->structure->createElementNS($namspaces['gmd'], 'gmd:eastBoundLongitude');
         $eastBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '2');
         $eastBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', '5');
         $eastBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', '4');
+        $eastBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_EASTBOUNDLONGITUDE');
+        $eastBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':boundingbox', 'true');
 
         $westBoundLongitude = $this->structure->createElementNS($namspaces['gmd'], 'gmd:westBoundLongitude');
         $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', '2');
         $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', '5');
         $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', '4');
+        $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_WESTBOUNDLONGITUDE');
+        $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':boundingbox', 'true');
 
         $geographicElement2 = $geographicElement->cloneNode();
         $geographicElement2->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
@@ -720,6 +732,8 @@ class FormGenerator {
         $maxlength = $attribute->getAttributeNS($this->catalog_uri, 'maxlength');
         $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
+        $label = $attribute->getAttributeNS($this->catalog_uri, 'label');
+        $boundingbox = $attribute->getAttributeNS($this->catalog_uri, 'boundingbox');
 
         $fields = array();
         $field = $this->form->createElement('field');
@@ -736,9 +750,17 @@ class FormGenerator {
             $field->setAttribute('readonly', 'true');
         }
 
+        if ($boundingbox) {
+            $field->setAttribute('onchange', 'drawBB();');
+        }
+
         $field->setAttribute('default', $attribute->firstChild->nodeValue);
         $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
-        $field->setAttribute('label', EText::_($guid));
+        if ($guid != '') {
+            $field->setAttribute('label', EText::_($guid));
+        } else {
+            $field->setAttribute('label', JText::_($label));
+        }
         $field->setAttribute('description', EText::_($guid, 2));
 
         $fields[] = $field;
@@ -899,6 +921,7 @@ class FormGenerator {
 
         $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
+        $label = $attribute->getAttributeNS($this->catalog_uri, 'label');
 
         //$validator = $this->getValidatorClass($rel);
 
@@ -917,7 +940,12 @@ class FormGenerator {
                     $group = $this->form->createElement('group');
                     $group->setAttribute('label', EText::_($opt->guid));
 
-                    $option = $this->form->createElement('option', EText::_($opt->guid, 2));
+                    if ($opt->guid != '') {
+                        $option = $this->form->createElement('option', EText::_($opt->guid, 2));
+                    } else {
+                        $option = $this->form->createElement('option');
+                    }
+                    
                     $option->setAttribute('value', $opt->guid);
 
                     $field->setAttribute('type', 'groupedlist');
@@ -937,9 +965,18 @@ class FormGenerator {
                     break;
                 case EnumStereotype::$BOUNDARY:
                     $field->setAttribute('type', 'list');
-                    $field->setAttribute('label', EText::_($guid));
+                    if ($guid != '') {
+                        $field->setAttribute('label', EText::_($guid));
+                    } else {
+                        $field->setAttribute('label', JText::_($label));
+                    }
 
-                    $option = $this->form->createElement('option', EText::_($opt->guid));
+                    if ($opt->guid != '') {
+                        $option = $this->form->createElement('option', EText::_($opt->guid));
+                    } else {
+                        $option = $this->form->createElement('option');
+                    }
+                    
                     $option->setAttribute('value', $opt->name);
 
                     $field->appendChild($option);
@@ -947,9 +984,18 @@ class FormGenerator {
                     break;
                 case EnumStereotype::$BOUNDARYCATEGORY:
                     $field->setAttribute('type', 'list');
-                    $field->setAttribute('label', EText::_($guid));
+                    if ($guid != '') {
+                        $field->setAttribute('label', EText::_($guid));
+                    } else {
+                        $field->setAttribute('label', JText::_($label));
+                    }
 
-                    $option = $this->form->createElement('option', EText::_($opt->guid));
+                    if ($opt->guid != '') {
+                        $option = $this->form->createElement('option', EText::_($opt->guid));
+                    } else {
+                        $option = $this->form->createElement('option');
+                    }
+                    
                     $option->setAttribute('value', $opt->name);
 
                     $field->appendChild($option);
@@ -959,7 +1005,11 @@ class FormGenerator {
                     $field->setAttribute('type', 'list');
                     $field->setAttribute('label', EText::_($guid));
 
-                    $option = $this->form->createElement('option', EText::_($opt->guid));
+                    if ($opt->guid != '') {
+                        $option = $this->form->createElement('option', EText::_($opt->guid));
+                    } else {
+                        $option = $this->form->createElement('option');
+                    }
                     $option->setAttribute('value', $opt->value);
 
                     $field->appendChild($option);
@@ -1094,6 +1144,9 @@ class FormGenerator {
                 $query->from('#__sdi_resource');
                 $query->where('resourcetype_id = ' . $attribute->getAttributeNS($this->catalog_uri, 'resourcetypeId'));
                 $query->order('name ASC');
+
+                $this->db->setQuery($query);
+                $result = $this->db->loadObjectList();
                 break;
             case EnumChildtype::$ATTRIBUT:
                 switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
@@ -1102,12 +1155,24 @@ class FormGenerator {
                         $query->select('id, guid, name');
                         $query->from('#__sdi_boundary');
                         $query->order('name ASC');
+
+                        $this->db->setQuery($query);
+                        $result = $this->db->loadObjectList();
+
+                        $first = array('id' => '', 'guid' => '', 'name' => '');
+                        array_unshift($result, (object) $first);
                         break;
 
                     case EnumStereotype::$BOUNDARYCATEGORY:
                         $query->select('id, guid, name');
                         $query->from('#__sdi_boundarycategory');
                         $query->order('name ASC');
+
+                        $this->db->setQuery($query);
+                        $result = $this->db->loadObjectList();
+
+                        $first = array('id' => '', 'guid' => '', 'name' => '');
+                        array_unshift($result, (object) $first);
                         break;
 
                     default:
@@ -1116,15 +1181,18 @@ class FormGenerator {
                         $query->where('attribute_id = ' . $attribute->getAttributeNS($this->catalog_uri, 'dbid'));
                         $query->where('state = 1');
                         $query->order('ordering ASC');
+
+                        $this->db->setQuery($query);
+                        $result = $this->db->loadObjectList();
+
+                        $first = array('id' => '', 'guid' => '', 'name' => '', 'value' => '');
+                        array_unshift($result, (object) $first);
                         break;
                 }
                 break;
         }
 
-
-        $this->db->setQuery($query);
-
-        return $this->db->loadObjectList();
+        return $result;
     }
 
     /**

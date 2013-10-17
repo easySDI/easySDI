@@ -97,6 +97,7 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         $query->innerJoin('jos_sdi_language as l ON l.id = t.language_id');
         $query->where('bc.`name` = \'' . $_GET['value'] . '\'');
         $query->where('l.code = \'' . $default_lang . '\'');
+        
 
         $this->db->setQuery($query);
         $results = $this->db->loadObjectList();

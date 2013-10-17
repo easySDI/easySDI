@@ -250,6 +250,9 @@ class FormHtmlGenerator {
         $occurance = $this->domXpathStr->query($this->removeIndex($element->getNodePath()))->length;
         $index = $element->getAttributeNS($this->catalog_uri, 'index');
         $exist = $element->getAttributeNS($this->catalog_uri, 'exist');
+        $guid = $element->getAttributeNS($this->catalog_uri, 'id');
+        $legendAttribute = $element->getAttributeNS($this->catalog_uri, 'legend');
+        $stereotypeId = $element->firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId');
 
         $elementname = $element->nodeName;
 
@@ -276,7 +279,12 @@ class FormHtmlGenerator {
         $fieldset = $this->formHtml->createElement('fieldset');
         $fieldset->setAttribute('id', 'fds-' . $this->serializeXpath($element->getNodePath()));
 
-        $spanLegend = $this->formHtml->createElement('span', EText::_($element->getAttributeNS($this->catalog_uri, 'id')));
+        if ($guid != '') {
+            $spanLegend = $this->formHtml->createElement('span', EText::_($guid));
+        } else {
+            $spanLegend = $this->formHtml->createElement('span', JText::_($legendAttribute));
+        }
+
         $spanLegend->setAttribute('class', 'legend-' . 0);
         $legend = $this->formHtml->createElement('legend');
 
@@ -290,7 +298,17 @@ class FormHtmlGenerator {
         $divBottom = $this->formHtml->createElement('div');
         $divBottom->setAttribute('id', 'bottom-' . $this->serializeXpath($this->removeIndex($element->getNodePath())));
 
-
+        $divMap = $this->formHtml->createElement('div');
+        $divMap->setAttribute('id', 'map');
+        $divMap->setAttribute('style', 'width: 500px;height: 300px;');
+        
+        $btnEdit = $this->formHtml->createElement('button','Edition');
+        $btnEdit->setAttribute('type', 'button');
+        $btnEdit->setAttribute('class', 'btn btn-primary');
+        $btnEdit->setAttribute('id', 'editBtn');
+        $btnEdit->setAttribute('data-toggle', 'button');
+        $btnEdit->setAttribute('onclick', 'polygonControl.activate();');
+        
         if ($exist == 1) {
             $aCollapse->appendChild($iCollapse);
             $legend->appendChild($aCollapse);
@@ -305,6 +323,10 @@ class FormHtmlGenerator {
             $divOuter->appendChild($fieldset);
         }
         if ($index == $occurance) {
+            if($stereotypeId == EnumStereotype::$GEOGRAPHICEXTENT){
+                $divOuter->appendChild($btnEdit);
+                $divOuter->appendChild($divMap);
+            }
             $divOuter->appendChild($divBottom);
         }
 
@@ -401,8 +423,8 @@ class FormHtmlGenerator {
 
         $control = $this->formHtml->createElement('div');
         $control->setAttribute('class', 'controls');
-        
-        if($field->label != ''){
+
+        if ($field->label != '') {
             $controlLabel->appendChild($this->getLabel($field));
         }
 
@@ -482,7 +504,7 @@ class FormHtmlGenerator {
         $script_content = "js = jQuery.noConflict();
 
                     js('document').ready(function() {
-                        js('#" . $field->id . "').tooltip({'trigger':'focus', 'title': '" . addslashes(EText::_($guid, 2)) . "'});
+                        js('#" . $field->id . "').tooltip({'trigger':'focus', 'title': \"" . addslashes(EText::_($guid, 2)) . "\"});
                     });";
 
         $script = $this->formHtml->createElement('script', $script_content);
