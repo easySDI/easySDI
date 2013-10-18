@@ -67,8 +67,10 @@ class Easysdi_catalogModelSheet extends JModelForm {
 
             $metadata = new cswmetadata($id);
             $metadata->load();
-            $metadata->extend(true, 'fr-FR');
-            $this->_item = $metadata->applyXSL();
+            $metadata->extend('context', 'type', true, 'fr-FR');
+            
+            $this->_item = $metadata->getShopExtenstion() . $metadata->applyXSL();
+            
         }
 
         return $this->_item;
