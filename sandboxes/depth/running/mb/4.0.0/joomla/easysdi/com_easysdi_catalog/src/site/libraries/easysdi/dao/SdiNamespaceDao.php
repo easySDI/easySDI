@@ -1,6 +1,5 @@
 <?php
 
-require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/SdiNamespace.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiDao.php';
 
 /**
@@ -12,7 +11,7 @@ class SdiNamespaceDao extends SdiDao{
     
     /**
      * 
-     * @return SdiNamespace[]
+     * @return array
      */
     public function getAll(){
         $query = $this->db->getQuery(true);

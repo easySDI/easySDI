@@ -11,7 +11,6 @@
 defined('_JEXEC') or die;
 
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormGenerator.php';
-require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/SdiRelation.php';
 
 jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
