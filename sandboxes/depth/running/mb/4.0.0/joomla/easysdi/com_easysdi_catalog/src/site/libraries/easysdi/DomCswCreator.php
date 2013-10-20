@@ -315,7 +315,7 @@ class DomCswCreator {
         $characterEncodingSetCode->setAttribute('codeListeValue', $encoding);
         $characterEncodingSetCode->setAttribute('codeList', '#MD_CharacterSetCode');
         $characterEncoding->appendChild($characterEncodingSetCode);
-        foreach ($this->ldao->get() as $key => $value) {
+        foreach ($this->ldao->getAll() as $key => $value) {
             if ($value->{'iso639-2T'} != $default) {
                 $pt_locale = $this->dom->createElement('gmd:PT_Locale');
                 $pt_locale->setAttribute('id', $key);

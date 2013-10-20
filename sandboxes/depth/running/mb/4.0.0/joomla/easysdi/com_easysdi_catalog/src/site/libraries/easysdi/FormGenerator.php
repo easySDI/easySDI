@@ -496,6 +496,7 @@ class FormGenerator {
         $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', '4');
         $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_WESTBOUNDLONGITUDE');
         $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':boundingbox', 'true');
+        $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':map', 'true');
 
         $geographicElement2 = $geographicElement->cloneNode();
         $geographicElement2->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
@@ -1204,10 +1205,10 @@ class FormGenerator {
      * @return string
      * @since 4.0.0
      */
-    private function getValidatorClass(SdiRelation $rel) {
+    private function getValidatorClass(DOMElement $attribute) {
         $validator = '';
 
-        if ($rel->lowerbound > 0) {
+        if ($attribute->getAttributeNS($this->catalog_uri, 'lowerbound') > 0) {
             $validator .= ' required ';
         }
 

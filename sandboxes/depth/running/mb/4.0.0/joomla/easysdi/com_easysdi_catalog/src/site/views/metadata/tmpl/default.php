@@ -20,6 +20,7 @@ $lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
 $document = JFactory::getDocument();
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/bootbox.min.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.debug.js');
+$document->addScript('http://maps.google.com/maps/api/js?v=3&amp;sensor=false');
 ?>
 
 <style>
@@ -256,12 +257,11 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/openla
             var replaceId = parentPath.replace(/-/g, '_');
             var selectList = js('#jform_' + replaceId + '_sla_gmd_dp_description_sla_gco_dp_CharacterString');
             selectList.empty();
-            var items = "<option value=\"\"></option>";
+            var items = "";
             js.each(response, function() {
                 items += "<option value=\"" + this.option_value + "\">" + this.option_value + "</option>";
             });
             selectList.html(items);
-            chosenRefresh();
             selectList.trigger("liszt:updated");
             //selectList.change();
 
@@ -269,8 +269,8 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/openla
             js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', response['0'].southbound);
             js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', response['0'].eastbound);
             js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', response['0'].westbound);
-        
-            drawBB();
+
+            //drawBB();
         });
     }
 
@@ -283,56 +283,15 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/openla
             js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', response.eastbound);
             js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', response.westbound);
 
-            drawBB();
+            //drawBB();
         });
     }
 
 </script>
 
 <script type="text/javascript">
-    var map, layer, polygonLayer, polygonControl;
-    js('document').ready(function() {
-        var lon = 5;
-        var lat = 40;
-        var zoom = 5;
-        map = new OpenLayers.Map('map');
-        layer = new OpenLayers.Layer.WMS("OpenLayers WMS",
-                "http://vmap0.tiles.osgeo.org/wms/vmap0", {layers: 'basic'});
-
-        polygonLayer = new OpenLayers.Layer.Vector("Polygon Layer");
-        map.addLayers([layer, polygonLayer]);
-
-        map.setCenter(new OpenLayers.LonLat(lon, lat), zoom);
-
-        var polyOptions = {sides: 4,
-            irregular: true};
-        polygonControl = new OpenLayers.Control.DrawFeature(polygonLayer,
-                OpenLayers.Handler.RegularPolygon,
-                {handlerOptions: polyOptions});
-
-        map.addControl(polygonControl);
-
-        polygonLayer.events.register('featureadded', polygonLayer, function(e) {
-            polygonControl.deactivate();
-            js('#editBtn').removeClass('active');
-
-            var bounds = e.feature.geometry.getBounds();
-
-            js('#jform__sla_gmd_dp_MD_Metadata_sla_gmd_dp_identificationInfo_sla_gmd_dp_MD_DataIdentification_sla_gmd_dp_extent_sla_gmd_dp_EX_Extent_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', bounds.top);
-            js('#jform__sla_gmd_dp_MD_Metadata_sla_gmd_dp_identificationInfo_sla_gmd_dp_MD_DataIdentification_sla_gmd_dp_extent_sla_gmd_dp_EX_Extent_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', bounds.bottom);
-            js('#jform__sla_gmd_dp_MD_Metadata_sla_gmd_dp_identificationInfo_sla_gmd_dp_MD_DataIdentification_sla_gmd_dp_extent_sla_gmd_dp_EX_Extent_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', bounds.right);
-            js('#jform__sla_gmd_dp_MD_Metadata_sla_gmd_dp_identificationInfo_sla_gmd_dp_MD_DataIdentification_sla_gmd_dp_extent_sla_gmd_dp_EX_Extent_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', bounds.left);
-        
-            map.zoomToExtent(polygonLayer.getDataExtent());
-    });
-
-        polygonLayer.events.register('beforefeatureadded', polygonLayer, function(e) {
-            polygonLayer.removeAllFeatures();
-
-        });
-    });
-
-    function drawBB() {
+    
+    function drawBB(layer) {
         var top = js('#jform__sla_gmd_dp_MD_Metadata_sla_gmd_dp_identificationInfo_sla_gmd_dp_MD_DataIdentification_sla_gmd_dp_extent_sla_gmd_dp_EX_Extent_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value');
         var bottom = js('#jform__sla_gmd_dp_MD_Metadata_sla_gmd_dp_identificationInfo_sla_gmd_dp_MD_DataIdentification_sla_gmd_dp_extent_sla_gmd_dp_EX_Extent_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value');
         var right = js('#jform__sla_gmd_dp_MD_Metadata_sla_gmd_dp_identificationInfo_sla_gmd_dp_MD_DataIdentification_sla_gmd_dp_extent_sla_gmd_dp_EX_Extent_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value');
@@ -342,18 +301,8 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/openla
             var bounds = new OpenLayers.Bounds(left, bottom, right, top);
 
             var box = new OpenLayers.Feature.Vector(bounds.toGeometry());
-//            var points = [
-//                new OpenLayers.Geometry.Point(bottom, left),
-//                new OpenLayers.Geometry.Point(top, left),
-//                new OpenLayers.Geometry.Point(top, right),
-//                new OpenLayers.Geometry.Point(bottom, right)
-//            ];
-//            var ring = new OpenLayers.Geometry.LinearRing(points);
-//            var polygon = new OpenLayers.Geometry.Polygon([ring]);
 
-//            var feature = new OpenLayers.Feature.Vector(polygon);
-
-            polygonLayer.addFeatures([box]);
+            layer.addFeatures([box]);
         }
     }
 </script>

@@ -1,5 +1,7 @@
 <?php
 
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiDao.php';
+
 /**
  * @version     4.0.0
  * @package     com_easysdi_core
@@ -7,19 +9,9 @@
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
-class SdiLanguageDao {
+class SdiLanguageDao extends SdiDao{
 
-    /**
-     *
-     * @var JDatabaseDriver 
-     */
-    private $db;
-
-    function __construct() {
-        $this->db = JFactory::getDbo();
-    }
-
-    public function get(){
+    public function getAll(){
         
         return array_merge($this->getDefault(), $this->getSupported());
     }

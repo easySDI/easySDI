@@ -1,6 +1,8 @@
 <?php
 
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumLayerName.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumServiceConnector.php';
 
 /*
  * To change this template, choose Tools | Templates
@@ -58,6 +60,12 @@ class FormHtmlGenerator {
 
     /**
      *
+     * @var JDatabaseDriver 
+     */
+    protected $db;
+
+    /**
+     *
      * @var string 
      */
     private $ajaxXpath;
@@ -71,6 +79,7 @@ class FormHtmlGenerator {
         $this->nsdao = new SdiNamespaceDao();
         $this->formHtml = new DOMDocument(null, 'utf-8');
         $this->ajaxXpath = $ajaxXpath;
+        $this->db = JFactory::getDbo();
     }
 
     /**
@@ -298,17 +307,6 @@ class FormHtmlGenerator {
         $divBottom = $this->formHtml->createElement('div');
         $divBottom->setAttribute('id', 'bottom-' . $this->serializeXpath($this->removeIndex($element->getNodePath())));
 
-        $divMap = $this->formHtml->createElement('div');
-        $divMap->setAttribute('id', 'map');
-        $divMap->setAttribute('style', 'width: 500px;height: 300px;');
-        
-        $btnEdit = $this->formHtml->createElement('button','Edition');
-        $btnEdit->setAttribute('type', 'button');
-        $btnEdit->setAttribute('class', 'btn btn-primary');
-        $btnEdit->setAttribute('id', 'editBtn');
-        $btnEdit->setAttribute('data-toggle', 'button');
-        $btnEdit->setAttribute('onclick', 'polygonControl.activate();');
-        
         if ($exist == 1) {
             $aCollapse->appendChild($iCollapse);
             $legend->appendChild($aCollapse);
@@ -323,9 +321,9 @@ class FormHtmlGenerator {
             $divOuter->appendChild($fieldset);
         }
         if ($index == $occurance) {
-            if($stereotypeId == EnumStereotype::$GEOGRAPHICEXTENT){
-                $divOuter->appendChild($btnEdit);
-                $divOuter->appendChild($divMap);
+            if ($stereotypeId == EnumStereotype::$GEOGRAPHICEXTENT) {
+//                $divInner->appendChild($btnEdit);
+//                $divInner->appendChild($divMap);
             }
             $divOuter->appendChild($divBottom);
         }
@@ -401,7 +399,176 @@ class FormHtmlGenerator {
                 break;
         }
 
+        if ($attribute->getAttributeNS($this->catalog_uri, 'map')) {
+
+            $attributeGroup->appendChild($this->getMap($attribute));
+        }
+
         return $attributeGroup;
+    }
+
+    private function getMap(DOMElement $attribute) {
+        $div = $this->formHtml->createElement('div');
+
+        $btnEdit = $this->formHtml->createElement('button', 'Edition');
+        $btnEdit->setAttribute('type', 'button');
+        $btnEdit->setAttribute('class', 'btn btn-primary btn-small');
+        $btnEdit->setAttribute('id', 'editBtn');
+        $btnEdit->setAttribute('data-toggle', 'button');
+        $btnEdit->setAttribute('onclick', 'polygonControl.activate();');
+
+        $br = $this->formHtml->createElement('br');
+
+        $divMap = $this->formHtml->createElement('div');
+        $divMap->setAttribute('id', 'map');
+        $divMap->setAttribute('style', 'width: 550px;height: 300px;');
+
+        $script = $this->formHtml->createElement('script');
+        $script->setAttribute('type', 'text/javascript');
+
+        $map_id = JComponentHelper::getParams('com_easysdi_catalog')->get('catalogmap');
+
+        $query = $this->db->getQuery(true);
+
+        $query->select('m.srs, m.unit_id, m.maxresolution, m.maxextent, m.centercoordinates, l.layername, l.service_id, l.servicetype, l.asOLstyle, l.asOLoptions, l.asOLmatrixset, u.`alias` as unit_alias');
+        $query->from('#__sdi_map as m');
+        $query->innerJoin('#__sdi_map_layergroup mlg ON m.id = mlg.map_id');
+        $query->innerJoin('#__sdi_layer_layergroup llg ON llg.group_id = mlg.group_id');
+        $query->innerJoin('#__sdi_maplayer l ON l.id = llg.layer_id');
+        $query->innerJoin('#__sdi_sys_unit u ON u.id = m.unit_id');
+        $query->where('m.id=' . $map_id);
+        $query->where('mlg.isbackground = 1');
+
+        $this->db->setQuery($query);
+        $map_config = $this->db->loadObject();
+
+        $query = $this->db->getQuery(true);
+        switch ($map_config->servicetype) {
+            case 'physical':
+                $query->select('resourceurl as serviceurl, serviceconnector_id');
+                $query->from('#__sdi_physicalservice');
+                $query->where('id = ' . $map_config->service_id);
+                break;
+            case 'virtual':
+                $query->select('url, reflectedurl as serviceurl, serviceconnector_id');
+                $query->from('#__sdi_virtualservice');
+                $query->where('id = ' . $map_config->service_id);
+                break;
+        }
+
+        $this->db->setQuery($query);
+        $service = $this->db->loadObject();
+
+        if (empty($service->serviceurl)) {
+            $service->serviceurl = $service->url;
+        }
+
+        switch ($service->serviceconnector_id) {
+            case EnumServiceConnector::$GOOGLE:
+                switch ($map_config->layername) {
+                    case EnumLayerName::$ROADMAP:
+                        $layer_definition = "layer = new OpenLayers.Layer.Google(
+                                                'Google Streets',
+                                                {numZoomLevels: 20}
+                                            );";
+                        break;
+                    case EnumLayerName::$TERRAIN:
+                        $layer_definition = "layer = new OpenLayers.Layer.Google(
+                                                'Google Physicial',
+                                                {type: G_PHYSICAL_MAP}
+                                            );";
+                        break;
+                    case EnumLayerName::$SATELLITE:
+                        $layer_definition = "layer = new OpenLayers.Layer.Google(
+                                                'Google Satellite',
+                                                {type: G_SATELLITE_MAP, numZoomLevels: 22}
+                                            );";
+                        break;
+                    case EnumLayerName::$HYBRIDE:
+                        $layer_definition = "layer = new OpenLayers.Layer.Google(
+                                                'Google Hybrid',
+                                                {type: G_HYBRID_MAP, numZoomLevels: 20}
+                                            );";
+                        break;
+                }
+                break;
+            case EnumServiceConnector::$OSM:
+                $layer_definition = 'layer = new OpenLayers.Layer.OSM();';
+                break;
+            case EnumServiceConnector::$BING:
+                $layer_definition = "layer = new OpenLayers.Layer.Bing({
+                                        name: 'Bing',
+                                        key: apiKey,
+                                        type: " . $map_config->layername . "
+                                    });";
+                break;
+            case EnumServiceConnector::$WMS:
+                $layer_definition = "layer = new OpenLayers.Layer.WMS( 'WMS name',
+                                    " . $service->serviceurl . ",
+                                    {layers: " . $map_config->layername . "} );";
+                break;
+            case EnumServiceConnector::$WMTS:
+                $layer_definition = "layer = new OpenLayers.Layer.WMTS({
+                                        name: 'Couche WMTS',
+                                        url: " . $service->serviceurl . ",
+                                        layer: " . $map_config->layername . ",
+                                        matrixSet: " . $map_config->asOLmatrixset . ",
+                                        style: " . $map_config->asOLstyle . ",
+                                        " . $map_config->asOLoptions . "
+                                    });";
+                break;
+        }
+
+        $script->nodeValue = "var map, layer, polygonLayer, polygonControl;
+                            js('document').ready(function() {
+                                var lon = 5;
+                                var lat = 40;
+                                var zoom = 5;
+
+                                map = new OpenLayers.Map('map',{projection: '" . $map_config->srs . "' , maxResolution: " . $map_config->maxresolution . " , units: '" . $map_config->unit_alias . "', maxExtent: [" . $map_config->maxextent . "], restrictedExtent: [" . $map_config->maxextent . "], center: [" . $map_config->centercoordinates . "]});
+                                //layer = new OpenLayers.Layer.WMS('OpenLayers WMS', 'http://vmap0.tiles.osgeo.org/wms/vmap0', {layers: 'basic'});
+                                
+                                " . $layer_definition . "
+                                polygonLayer = new OpenLayers.Layer.Vector('Polygon Layer');
+
+                                map.addLayers([layer, polygonLayer]);
+                                map.setCenter(new OpenLayers.LonLat(lon, lat), zoom);
+
+                                var polyOptions = {sides: 4, irregular: true};
+                                polygonControl = new OpenLayers.Control.DrawFeature(polygonLayer,
+                                        OpenLayers.Handler.RegularPolygon,
+                                        {handlerOptions: polyOptions});
+
+                                map.addControl(polygonControl);
+
+                                drawBB(polygonLayer);
+
+                                polygonLayer.events.register('featureadded', polygonLayer, function(e) {
+                                    polygonControl.deactivate();
+                                    js('#editBtn').removeClass('active');
+
+                                    var bounds = e.feature.geometry.getBounds();
+
+                                    js('#jform__sla_gmd_dp_MD_Metadata_sla_gmd_dp_identificationInfo_sla_gmd_dp_MD_DataIdentification_sla_gmd_dp_extent_sla_gmd_dp_EX_Extent_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', bounds.top);
+                                    js('#jform__sla_gmd_dp_MD_Metadata_sla_gmd_dp_identificationInfo_sla_gmd_dp_MD_DataIdentification_sla_gmd_dp_extent_sla_gmd_dp_EX_Extent_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', bounds.bottom);
+                                    js('#jform__sla_gmd_dp_MD_Metadata_sla_gmd_dp_identificationInfo_sla_gmd_dp_MD_DataIdentification_sla_gmd_dp_extent_sla_gmd_dp_EX_Extent_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', bounds.right);
+                                    js('#jform__sla_gmd_dp_MD_Metadata_sla_gmd_dp_identificationInfo_sla_gmd_dp_MD_DataIdentification_sla_gmd_dp_extent_sla_gmd_dp_EX_Extent_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', bounds.left);
+
+                                    map.zoomToExtent(polygonLayer.getDataExtent());
+                                });
+
+                                polygonLayer.events.register('beforefeatureadded', polygonLayer, function(e) {
+                                    polygonLayer.removeAllFeatures();
+
+                                });
+                            });";
+
+        $div->appendChild($btnEdit);
+        $div->appendChild($br);
+        $div->appendChild($divMap);
+        $div->appendChild($script);
+
+        return $div;
     }
 
     /**

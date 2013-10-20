@@ -40,8 +40,15 @@ class Easysdi_catalogModelMetadata extends JModelForm {
      * @var stdClass[] 
      */
     var $_validators = array();
+    private $catalog_uri = 'http://www.easysdi.org/2011/sdi/catalog';
+    private $catalog_prefix = 'catalog';
 
-  
+    function __construct() {
+        $this->db = JFactory::getDbo();
+
+        parent::__construct();
+    }
+
     /**
      * Method to auto-populate the model state.
      *
@@ -367,6 +374,51 @@ class Easysdi_catalogModelMetadata extends JModelForm {
 
             $this->_validators[] = $js;
         }
+    }
+
+    private function buildValidator2() {
+        $domXpathStr = new DOMXPath($this->_structure);
+
+        $nsdao = new SdiNamespaceDao();
+        $patterns = $this->getPatterns();
+
+        foreach ($nsdao->getAll() as $ns) {
+            $domXpathStr->registerNamespace($ns->prefix, $ns->uri);
+        }
+
+        $tmpValidator = array();
+        foreach ($domXpathStr->query('//*[@catalog:childtypeId="2"') as $attribute) {
+            
+            $guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
+            $validator = new stdClass();
+            $validator_pattern = array();
+            
+            if($patterns[$guid]->stereotype_pattern!=''){
+                $validator->name = $patterns[$guid]->stereotype_name;
+                $validator_pattern[] = $patterns[$guid]->stereotype_pattern;
+            }
+            
+            if ($patterns[$guid]->attribute_pattern != '') {
+                $validator->name = $patterns[$guid]->guid;
+                $validator_pattern[] = $patterns[$guid]->attribute_pattern;
+            }
+            
+            $tmpValidator[] = $validator;
+            
+        }
+    }
+
+    private function getPatterns() {
+        $query = $this->db->getQuery(true);
+
+        $query->select('a.id, a.guid, a.pattern as attribute_pattern, s.defaultpattern as stereotype_pattern, s.`value` as stereotype_name');
+        $query->from('#__sdi_relation as r');
+        $query->innerJoin('jos_sdi_attribute as a on r.attributechild_id = a.id');
+        $query->leftJoin('jos_sdi_sys_stereotype as s on a.stereotype_id = s.id');
+        $query->where('r.`state` = 1');
+
+        $this->db->setQuery($query);
+        return $this->db->loadObjectList('guid');
     }
 
 }

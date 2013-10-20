@@ -140,7 +140,7 @@
                    class="inputbox input-xlarge"
                    label="COM_EASYSDI_CATALOG_CONFIG_LBL_CATALOGMAP"
                    description="COM_EASYSDI_CATALOG_CONFIG_DESC_CATALOGMAP" 
-                   query="SELECT null as id, null as name UNION SELECT id, name FROM #__sdi_map WHERE state=1 ORDER BY ordering" 
+                   query="SELECT null as id, null as name UNION SELECT id, name FROM #__sdi_map WHERE state=1" 
                    key_field="id" 
                    value_field="name"
            />
