@@ -739,10 +739,10 @@ class FormGenerator {
         $fields = array();
         $field = $this->form->createElement('field');
 
-        //$validator = $this->getValidatorClass($rel);
+        $validator = $this->getValidatorClass($attribute);
 
         $field->setAttribute('type', 'text');
-        //$field->setAttribute('class', $validator);
+        $field->setAttribute('class', $validator);
 
         if ($maxlength > 0) {
             $field->setAttribute('maxlength', $maxlength);
@@ -770,7 +770,7 @@ class FormGenerator {
             $field = $this->form->createElement('field');
 
             $field->setAttribute('type', 'text');
-            //$field->setAttribute('class', $validator);
+            $field->setAttribute('class', $validator);
 
             if ($maxlength > 0) {
                 $field->setAttribute('maxlength', $maxlength);
@@ -802,13 +802,13 @@ class FormGenerator {
     private function getFormTextAreaField(DOMElement $attribute) {
         $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
-        //$validator = $this->getValidatorClass($rel);
+        $validator = $this->getValidatorClass($attribute);
 
         $fields = array();
         $field = $this->form->createElement('field');
 
         $field->setAttribute('type', 'textarea');
-        //$field->setAttribute('class', $validator);
+        $field->setAttribute('class', $validator);
         $field->setAttribute('rows', 5);
         $field->setAttribute('cols', 5);
 
@@ -827,7 +827,7 @@ class FormGenerator {
             $field = $this->form->createElement('field');
 
             $field->setAttribute('type', 'textarea');
-            //$field->setAttribute('class', $validator);
+            $field->setAttribute('class', $validator);
             $field->setAttribute('rows', 5);
             $field->setAttribute('cols', 5);
 
@@ -924,10 +924,10 @@ class FormGenerator {
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
         $label = $attribute->getAttributeNS($this->catalog_uri, 'label');
 
-        //$validator = $this->getValidatorClass($rel);
+        $validator = $this->getValidatorClass($attribute);
 
         $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
-        //$field->setAttribute('class', $validator);
+        $field->setAttribute('class', $validator);
         if ($readonly) {
             $field->setAttribute('readonly', 'true');
         }
@@ -946,7 +946,7 @@ class FormGenerator {
                     } else {
                         $option = $this->form->createElement('option');
                     }
-                    
+
                     $option->setAttribute('value', $opt->guid);
 
                     $field->setAttribute('type', 'groupedlist');
@@ -977,7 +977,7 @@ class FormGenerator {
                     } else {
                         $option = $this->form->createElement('option');
                     }
-                    
+
                     $option->setAttribute('value', $opt->name);
 
                     $field->appendChild($option);
@@ -996,7 +996,7 @@ class FormGenerator {
                     } else {
                         $option = $this->form->createElement('option');
                     }
-                    
+
                     $option->setAttribute('value', $opt->name);
 
                     $field->appendChild($option);
@@ -1038,11 +1038,11 @@ class FormGenerator {
             $field->setAttribute('readonly', 'true');
         }
 
-//$validator = $this->getValidatorClass($rel);
+        $validator = $this->getValidatorClass($attribute);
 
         $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
         $field->setAttribute('type', 'calendar');
-        //$field->setAttribute('class', $validator);
+        $field->setAttribute('class', $validator);
         $field->setAttribute('format', '%Y-%m-%d');
         $field->setAttribute('label', EText::_($guid));
         $field->setAttribute('description', EText::_($guid, 2));
@@ -1104,9 +1104,12 @@ class FormGenerator {
 
         $field = $this->form->createElement('field');
 
+        $validator = $this->getValidatorClass($attribute);
+        
         $field->setAttribute('type', 'file');
         $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
         $field->setAttribute('label', EText::_($guid));
+        $field->setAttribute('class', $validator);
         $field->setAttribute('description', EText::_($guid, 2));
         $field->setAttribute('default', $attribute->firstChild->nodeValue);
 
@@ -1207,19 +1210,41 @@ class FormGenerator {
      */
     private function getValidatorClass(DOMElement $attribute) {
         $validator = '';
+        $guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
+        $patterns = $this->getPatterns();
 
         if ($attribute->getAttributeNS($this->catalog_uri, 'lowerbound') > 0) {
             $validator .= ' required ';
         }
 
-        if ($rel->getAttribut_child()->pattern != '') {
-            $validator .= ' validate-sdi' . $rel->getAttribut_child()->guid;
-        } elseif ($rel->getAttribut_child()->getStereotype()->defaultpattern != '') {
-            $validator .= ' validate-sdi' . $rel->getAttribut_child()->getStereotype()->value;
-        }
+        if (array_key_exists($guid, $patterns)) {
+            if ($patterns[$guid]->attribute_pattern != '') {
+                $validator .= ' validate-sdi' . $patterns[$guid]->guid;
+            } elseif ($patterns[$guid]->stereotype_pattern != '') {
+                $validator .= ' validate-sdi' . $patterns[$guid]->stereotype_name;
+            }
 
-        //return $validator;
-        return '';
+            return $validator;
+        } else {
+            return '';
+        }
+    }
+
+    /**
+     * 
+     * @return array
+     */
+    private function getPatterns() {
+        $query = $this->db->getQuery(true);
+
+        $query->select('a.id, a.guid, a.pattern as attribute_pattern, s.defaultpattern as stereotype_pattern, s.`value` as stereotype_name');
+        $query->from('#__sdi_relation as r');
+        $query->innerJoin('jos_sdi_attribute as a on r.attributechild_id = a.id');
+        $query->leftJoin('jos_sdi_sys_stereotype as s on a.stereotype_id = s.id');
+        $query->where('r.`state` = 1');
+
+        $this->db->setQuery($query);
+        return $this->db->loadObjectList('guid');
     }
 
     /**

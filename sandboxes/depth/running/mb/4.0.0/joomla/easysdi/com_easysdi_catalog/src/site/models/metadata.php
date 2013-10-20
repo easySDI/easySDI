@@ -39,7 +39,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
      *
      * @var stdClass[] 
      */
-    var $_validators = array();
+    public $_validators = array();
     private $catalog_uri = 'http://www.easysdi.org/2011/sdi/catalog';
     private $catalog_prefix = 'catalog';
 
@@ -329,7 +329,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
      * Built validators depending on pattern of stereotype and attribute.
      * @since  4.0.0
      */
-    private function buildValidators() {
+    private function buildValidators_old() {
         $tmpValidators = array();
 
         foreach ($this->_structure as $rel) {
@@ -376,7 +376,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         }
     }
 
-    private function buildValidator2() {
+    private function buildValidators() {
         $domXpathStr = new DOMXPath($this->_structure);
 
         $nsdao = new SdiNamespaceDao();
@@ -387,27 +387,58 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         }
 
         $tmpValidator = array();
-        foreach ($domXpathStr->query('//*[@catalog:childtypeId="2"') as $attribute) {
-            
+        foreach ($domXpathStr->query('//*[@catalog:childtypeId="2"]') as $attribute) {
+
             $guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
-            $validator = new stdClass();
-            $validator_pattern = array();
-            
-            if($patterns[$guid]->stereotype_pattern!=''){
-                $validator->name = $patterns[$guid]->stereotype_name;
-                $validator_pattern[] = $patterns[$guid]->stereotype_pattern;
+
+            if (array_key_exists($guid, $patterns)) {
+                $validator = new stdClass();
+                $validator_pattern = array();
+
+                if ($patterns[$guid]->stereotype_pattern != '') {
+                    $validator->name = $patterns[$guid]->stereotype_name;
+                    $validator_pattern[] = $patterns[$guid]->stereotype_pattern;
+                }
+
+                if ($patterns[$guid]->attribute_pattern != '') {
+                    $validator->name = $patterns[$guid]->guid;
+                    $validator_pattern[] = $patterns[$guid]->attribute_pattern;
+                }
+
+                $validator->patterns = $validator_pattern;
+                if(isset($validator->name)){
+                    $tmpValidator[$validator->name] = $validator;
+                }
             }
-            
-            if ($patterns[$guid]->attribute_pattern != '') {
-                $validator->name = $patterns[$guid]->guid;
-                $validator_pattern[] = $patterns[$guid]->attribute_pattern;
+        }
+
+        foreach ($tmpValidator as $v) {
+            $js = 'document.formvalidator.setHandler(\'sdi' . $v->name . '\', function(value) {
+                    ';
+            $condition = '';
+            for ($i = 0; $i < count($v->patterns); $i++) {
+                $js .= 'regex_' . $i . ' = /' . $v->patterns[$i] . '/;
+                        ';
+                $condition .= 'regex_' . $i . '.test(value) && ';
             }
-            
-            $tmpValidator[] = $validator;
-            
+
+            $js .= 'if(' . substr($condition, 0, -4) . '){
+                            return true;
+                        }else{
+                            return false;
+                        }';
+
+            $js .= '});
+                    ';
+
+            $this->_validators[] = $js;
         }
     }
 
+    /**
+     * 
+     * @return array
+     */
     private function getPatterns() {
         $query = $this->db->getQuery(true);
 

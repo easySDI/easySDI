@@ -72,10 +72,10 @@ $document->addScript('http://maps.google.com/maps/api/js?v=3&amp;sensor=false');
     js('document').ready(function() {
 
 <?php
-/* foreach ($this->validators as $validator) {
+foreach ($this->validators as $validator) {
 
-  echo $validator;
-  } */
+    echo $validator;
+}
 ?>
 
         js('#btn_toogle_all').click(function() {
@@ -270,7 +270,9 @@ $document->addScript('http://maps.google.com/maps/api/js?v=3&amp;sensor=false');
             js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', response['0'].eastbound);
             js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', response['0'].westbound);
 
-            //drawBB();
+            var map_parent_path = replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox';
+
+            drawBB(layer_ + map_parent_path, map_parent_path);
         });
     }
 
@@ -283,19 +285,21 @@ $document->addScript('http://maps.google.com/maps/api/js?v=3&amp;sensor=false');
             js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', response.eastbound);
             js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', response.westbound);
 
-            //drawBB();
+            var map_parent_path = replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox';
+
+            drawBB(layer_ + map_parent_path, map_parent_path);
         });
     }
 
 </script>
 
 <script type="text/javascript">
-    
-    function drawBB(layer) {
-        var top = js('#jform__sla_gmd_dp_MD_Metadata_sla_gmd_dp_identificationInfo_sla_gmd_dp_MD_DataIdentification_sla_gmd_dp_extent_sla_gmd_dp_EX_Extent_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value');
-        var bottom = js('#jform__sla_gmd_dp_MD_Metadata_sla_gmd_dp_identificationInfo_sla_gmd_dp_MD_DataIdentification_sla_gmd_dp_extent_sla_gmd_dp_EX_Extent_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value');
-        var right = js('#jform__sla_gmd_dp_MD_Metadata_sla_gmd_dp_identificationInfo_sla_gmd_dp_MD_DataIdentification_sla_gmd_dp_extent_sla_gmd_dp_EX_Extent_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value');
-        var left = js('#jform__sla_gmd_dp_MD_Metadata_sla_gmd_dp_identificationInfo_sla_gmd_dp_MD_DataIdentification_sla_gmd_dp_extent_sla_gmd_dp_EX_Extent_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value');
+
+    function drawBB(layer, parent_path) {
+        var top = js('#jform_' + parent_path + '_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value');
+        var bottom = js('#jform_' + parent_path + '_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value');
+        var right = js('#jform_' + parent_path + '_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value');
+        var left = js('#jform_' + parent_path + '_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value');
 
         if (top != '' && bottom != '' && left != '' && right != '') {
             var bounds = new OpenLayers.Bounds(left, bottom, right, top);

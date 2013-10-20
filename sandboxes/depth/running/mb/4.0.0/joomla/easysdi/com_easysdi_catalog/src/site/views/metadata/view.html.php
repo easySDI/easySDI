@@ -98,7 +98,7 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
     
     protected function buildForm(){
         $structure = $this->structure = $this->get('Structure');
-        //$this->validators = $this->get('Validators');
+        $this->validators = $this->get('Validators');
 
         $fhg = new FormHtmlGenerator($this->form, $structure);
         $this->formHtml = $fhg->buildForm();

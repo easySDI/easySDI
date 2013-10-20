@@ -408,19 +408,21 @@ class FormHtmlGenerator {
     }
 
     private function getMap(DOMElement $attribute) {
+        $parent_path = str_replace('-', '_', $this->serializeXpath($attribute->parentNode->getNodePath()));
+
         $div = $this->formHtml->createElement('div');
 
         $btnEdit = $this->formHtml->createElement('button', 'Edition');
         $btnEdit->setAttribute('type', 'button');
         $btnEdit->setAttribute('class', 'btn btn-primary btn-small');
-        $btnEdit->setAttribute('id', 'editBtn');
+        $btnEdit->setAttribute('id', 'editBtn_' . $parent_path);
         $btnEdit->setAttribute('data-toggle', 'button');
-        $btnEdit->setAttribute('onclick', 'polygonControl.activate();');
+        $btnEdit->setAttribute('onclick', 'polygonControl_' . $parent_path . '.activate();');
 
         $br = $this->formHtml->createElement('br');
 
         $divMap = $this->formHtml->createElement('div');
-        $divMap->setAttribute('id', 'map');
+        $divMap->setAttribute('id', 'map_' . $parent_path);
         $divMap->setAttribute('style', 'width: 550px;height: 300px;');
 
         $script = $this->formHtml->createElement('script');
@@ -467,25 +469,25 @@ class FormHtmlGenerator {
             case EnumServiceConnector::$GOOGLE:
                 switch ($map_config->layername) {
                     case EnumLayerName::$ROADMAP:
-                        $layer_definition = "layer = new OpenLayers.Layer.Google(
+                        $layer_definition = "layer_$parent_path = new OpenLayers.Layer.Google(
                                                 'Google Streets',
                                                 {numZoomLevels: 20}
                                             );";
                         break;
                     case EnumLayerName::$TERRAIN:
-                        $layer_definition = "layer = new OpenLayers.Layer.Google(
+                        $layer_definition = "layer_$parent_path = new OpenLayers.Layer.Google(
                                                 'Google Physicial',
                                                 {type: G_PHYSICAL_MAP}
                                             );";
                         break;
                     case EnumLayerName::$SATELLITE:
-                        $layer_definition = "layer = new OpenLayers.Layer.Google(
+                        $layer_definition = "layer_$parent_path = new OpenLayers.Layer.Google(
                                                 'Google Satellite',
                                                 {type: G_SATELLITE_MAP, numZoomLevels: 22}
                                             );";
                         break;
                     case EnumLayerName::$HYBRIDE:
-                        $layer_definition = "layer = new OpenLayers.Layer.Google(
+                        $layer_definition = "layer_$parent_path = new OpenLayers.Layer.Google(
                                                 'Google Hybrid',
                                                 {type: G_HYBRID_MAP, numZoomLevels: 20}
                                             );";
@@ -493,22 +495,22 @@ class FormHtmlGenerator {
                 }
                 break;
             case EnumServiceConnector::$OSM:
-                $layer_definition = 'layer = new OpenLayers.Layer.OSM();';
+                $layer_definition = "layer_$parent_path = new OpenLayers.Layer.OSM();";
                 break;
             case EnumServiceConnector::$BING:
-                $layer_definition = "layer = new OpenLayers.Layer.Bing({
+                $layer_definition = "layer_$parent_path = new OpenLayers.Layer.Bing({
                                         name: 'Bing',
                                         key: apiKey,
                                         type: " . $map_config->layername . "
                                     });";
                 break;
             case EnumServiceConnector::$WMS:
-                $layer_definition = "layer = new OpenLayers.Layer.WMS( 'WMS name',
+                $layer_definition = "layer_$parent_path = new OpenLayers.Layer.WMS( 'WMS name',
                                     " . $service->serviceurl . ",
-                                    {layers: " . $map_config->layername . "} );";
+                                    {layers: " . $map_config->layername . "});";
                 break;
             case EnumServiceConnector::$WMTS:
-                $layer_definition = "layer = new OpenLayers.Layer.WMTS({
+                $layer_definition = "layer_$parent_path = new OpenLayers.Layer.WMTS({
                                         name: 'Couche WMTS',
                                         url: " . $service->serviceurl . ",
                                         layer: " . $map_config->layername . ",
@@ -519,48 +521,48 @@ class FormHtmlGenerator {
                 break;
         }
 
-        $script->nodeValue = "var map, layer, polygonLayer, polygonControl;
+        $script->nodeValue = "var map_$parent_path, layer_$parent_path, polygonLayer_$parent_path, polygonControl_$parent_path ;
                             js('document').ready(function() {
                                 var lon = 5;
                                 var lat = 40;
                                 var zoom = 5;
 
-                                map = new OpenLayers.Map('map',{projection: '" . $map_config->srs . "' , maxResolution: " . $map_config->maxresolution . " , units: '" . $map_config->unit_alias . "', maxExtent: [" . $map_config->maxextent . "], restrictedExtent: [" . $map_config->maxextent . "], center: [" . $map_config->centercoordinates . "]});
-                                //layer = new OpenLayers.Layer.WMS('OpenLayers WMS', 'http://vmap0.tiles.osgeo.org/wms/vmap0', {layers: 'basic'});
-                                
+                                map_$parent_path = new OpenLayers.Map(\"map_$parent_path\",{projection: \"" . $map_config->srs . "\" , maxResolution: " . $map_config->maxresolution . " , units: \"" . $map_config->unit_alias . "\", maxExtent: [" . $map_config->maxextent . "], restrictedExtent: [" . $map_config->maxextent . "], center: [" . $map_config->centercoordinates . "]});
+                                 
                                 " . $layer_definition . "
-                                polygonLayer = new OpenLayers.Layer.Vector('Polygon Layer');
+                                polygonLayer_$parent_path = new OpenLayers.Layer.Vector('Polygon Layer');
 
-                                map.addLayers([layer, polygonLayer]);
-                                map.setCenter(new OpenLayers.LonLat(lon, lat), zoom);
+                                map_$parent_path.addLayers([layer_$parent_path, polygonLayer_$parent_path]);
+                                map_$parent_path.setCenter(new OpenLayers.LonLat(lon, lat), zoom);
 
                                 var polyOptions = {sides: 4, irregular: true};
-                                polygonControl = new OpenLayers.Control.DrawFeature(polygonLayer,
+                                polygonControl_$parent_path = new OpenLayers.Control.DrawFeature(polygonLayer_$parent_path,
                                         OpenLayers.Handler.RegularPolygon,
                                         {handlerOptions: polyOptions});
 
-                                map.addControl(polygonControl);
-
-                                drawBB(polygonLayer);
-
-                                polygonLayer.events.register('featureadded', polygonLayer, function(e) {
-                                    polygonControl.deactivate();
-                                    js('#editBtn').removeClass('active');
+                                map_$parent_path.addControl(polygonControl_$parent_path);
+                                    
+                               drawBB(polygonLayer_$parent_path, '$parent_path');
+                                    
+                               polygonLayer_$parent_path.events.register('featureadded', polygonLayer_$parent_path, function(e) {
+                                    polygonControl_$parent_path.deactivate();
+                                    js('#editBtn_$parent_path').removeClass('active');
 
                                     var bounds = e.feature.geometry.getBounds();
 
-                                    js('#jform__sla_gmd_dp_MD_Metadata_sla_gmd_dp_identificationInfo_sla_gmd_dp_MD_DataIdentification_sla_gmd_dp_extent_sla_gmd_dp_EX_Extent_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', bounds.top);
-                                    js('#jform__sla_gmd_dp_MD_Metadata_sla_gmd_dp_identificationInfo_sla_gmd_dp_MD_DataIdentification_sla_gmd_dp_extent_sla_gmd_dp_EX_Extent_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', bounds.bottom);
-                                    js('#jform__sla_gmd_dp_MD_Metadata_sla_gmd_dp_identificationInfo_sla_gmd_dp_MD_DataIdentification_sla_gmd_dp_extent_sla_gmd_dp_EX_Extent_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', bounds.right);
-                                    js('#jform__sla_gmd_dp_MD_Metadata_sla_gmd_dp_identificationInfo_sla_gmd_dp_MD_DataIdentification_sla_gmd_dp_extent_sla_gmd_dp_EX_Extent_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', bounds.left);
+                                    js('#jform_" . $parent_path . "_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', bounds.top);
+                                    js('#jform_" . $parent_path . "_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', bounds.bottom);
+                                    js('#jform_" . $parent_path . "_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', bounds.right);
+                                    js('#jform_" . $parent_path . "_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', bounds.left);
 
-                                    map.zoomToExtent(polygonLayer.getDataExtent());
+                                    map_$parent_path.zoomToExtent(polygonLayer_$parent_path.getDataExtent());
                                 });
 
-                                polygonLayer.events.register('beforefeatureadded', polygonLayer, function(e) {
-                                    polygonLayer.removeAllFeatures();
+                                polygonLayer_$parent_path.events.register('beforefeatureadded', polygonLayer_$parent_path, function(e) {
+                                    polygonLayer_$parent_path.removeAllFeatures();
 
                                 });
+                               
                             });";
 
         $div->appendChild($btnEdit);
