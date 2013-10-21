@@ -294,7 +294,10 @@ class cswmetadata {
         $this->db->setQuery($query);
         $properties = $this->db->loadObjectList();
 
-        $html = '<div class="sdi-shop-properties well">';
+        
+        $html = '
+<script src="'.JURI::root().'/administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js" type="text/javascript"></script>            
+<div class="sdi-shop-properties well">';
         foreach ($properties as $property):
             try {
                 if ($property->accessscope_id == 2):
@@ -328,7 +331,7 @@ class cswmetadata {
                         ->innerJoin('#__sdi_property p ON p.id = pv.property_id')
                         ->innerJoin('#__sdi_translation t ON t.element_guid = pv.guid')
                         ->innerJoin('#__sdi_language l ON l.id = t.language_id')
-                        ->where('dpv.diffusion_id = ' . $this->diffusion->id)
+                        ->where('dpv.diffusion_id = ' . (int) $this->diffusion->id)
                         ->where('p.id = ' . (int) $property->property_id)
                         ->where('l.code = "' . $language->getTag() . '"');
                 $this->db->setQuery($query);
@@ -344,7 +347,7 @@ class cswmetadata {
                     case self::LISTE:
                         $html .= '
                             <div class="controls">
-                                <select id="' . $property->property_id . '" name="' . $property->property_id . '"  class="inputbox" ' . $required . '>';
+                                <select id="' . $property->property_id . '" name="' . $property->property_id . '"  class="sdi-shop-property-list inputbox" ' . $required . '>';
                         foreach ($values as $value):
                             $html .= '<option value="' . $value->propertyvalue_id . '">' . $value->propertyvaluename . '</option>';
                         endforeach;
@@ -354,7 +357,7 @@ class cswmetadata {
                     case self::MULTIPLELIST:
                         $html .= '
                             <div class="controls">
-                                <select id="' . $property->property_id . '" name="' . $property->property_id . '[]"  class="inputbox" multiple="multiple" ' . $required . '>';
+                                <select id="' . $property->property_id . '" name="' . $property->property_id . '[]"  class="sdi-shop-property-list inputbox" multiple="multiple" ' . $required . '>';
                         foreach ($values as $value):
                             $html .= '<option value="' . $value->propertyvalue_id . '">' . $value->propertyvaluename . '</option>';
                         endforeach;
@@ -362,21 +365,33 @@ class cswmetadata {
                             </div>';
                         break;
                     case self::CHECKBOX:
-
+                        $html .='
+                            <div class="controls">
+                                <fieldset id="' . $property->property_id . '" class="sdi-shop-property-checkbox ">';
+                        $i = 0;
+                            foreach ($values as $value):
+                                $html .= '<input type="checkbox" id="' . $property->property_id . $i .'" name="' . $property->property_id . '" value="' . $value->propertyvalue_id . '" />
+                                          <label for="' . $property->property_id . $i .'">' . $value->propertyvaluename . '</label>';
+                            $i ++;
+                            endforeach;
+                        $html .='
+                            </fieldset>
+                        </div>
+                            ';
                         break;
                     case self::TEXT:
                         $html .= '
-                        <div class="controls"><input type="text" name="' . $property->property_id . '" id="' . $property->property_id . '" value="' . $text . '" class="inputbox" size="255" ' . $required . '></div>
+                        <div class="controls"><input type="text" name="' . $property->property_id . '" id="' . $property->property_id . '" value="' . $text . '" propertyvalue_id="'.$values[0]->propertyvalue_id.'" class="sdi-shop-property-text inputbox" size="255" ' . $required . '></div>
                         ';
                         break;
                     case self::TEXTAREA:
                         $html .= '
-                        <div class="controls"><textarea cols="100" id="' . $property->property_id . '" name="' . $property->property_id . '" rows="5" ' . $required . '>' . $text . '</textarea></div>
+                        <div class="controls"><textarea cols="100" id="' . $property->property_id . '" name="' . $property->property_id . '" propertyvalue_id="'.$values[0]->propertyvalue_id.'" rows="5" ' . $required . ' class="sdi-shop-property-text" >' . $text . '</textarea></div>
                         ';
                         break;
                     case self::MESSAGE:
                         $html .= '
-                        <div class="controls"><textarea cols="100" id="' . $property->property_id . '" name="' . $property->property_id . '" rows="5" ' . $required . '>' . $text . '</textarea></div>
+                        <div class="controls"><textarea cols="100" id="' . $property->property_id . '" name="' . $property->property_id . '" propertyvalue_id="'.$values[0]->propertyvalue_id.'"  rows="5" ' . $required . ' class="sdi-shop-property-text">' . $text . '</textarea></div>
                         ';
                         break;
                 endswitch;
@@ -386,6 +401,14 @@ class cswmetadata {
                 //User is not an EasySDI user
             }
         endforeach;
+        
+        //Submit to shop button
+        $html .= '
+            <div class="sdi-shop-toolbar-add-basket">
+                <button id="sdi-shop-btn-add-basket" class="btn btn-success btn-large" onclick="addtobasket(); return false;">Add to basket</button>
+                <input type="hidden" name="diffusion_id" id="diffusion_id" value="'.$this->diffusion->id.'" />
+            </div>
+            ';
         $html .='</div>';
 
         return $html;
