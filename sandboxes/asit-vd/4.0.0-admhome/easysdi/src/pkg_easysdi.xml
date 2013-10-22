@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension method="upgrade" type="package" version="3.0.0">
+  <name>EasySDI</name>
+  <packager>EasySDI Community</packager>
+  <packagename>easysdi</packagename>
+  <creationDate>15 August 2012</creationDate>
+  <releaseDate>10 octobre 2013</releaseDate>
+  <copyright>Copyright (C) 2012. All rights reserved.</copyright>
+  <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
+  <author>EasySDI Community</author>
+  <authorEmail>contact@easysdi.org</authorEmail>
+  <authorUrl>http://www.easysdi.org</authorUrl>
+  <version>4.0.0-alpha-9</version>
+  <description>PKG_EASYSDI_XML_DESCRIPTION</description>
+  <files folder="easysdi">
+    <file id="com_easysdi_core" type="component">com_easysdi_core.zip</file>
+    <file id="com_easysdi_contact" type="component">com_easysdi_contact.zip</file>
+    <file id="com_easysdi_service" type="component">com_easysdi_service.zip</file>
+    <file id="com_easysdi_catalog" type="component">com_easysdi_catalog.zip</file>
+    <file id="com_easysdi_map" type="component">com_easysdi_map.zip</file>
+    <file id="com_easysdi_shop" type="component">com_easysdi_shop.zip</file>
+    <file id="mod_easysdi_basket" type="module">mod_easysdi_basket.zip</file>
+    <file group="user" id="easysdicontact" type="plugin">plg_easysdi_contact.zip</file>
+    <file group="content" id="easysdiservice" type="plugin">plg_easysdi_service.zip</file>
+    <file client="site" id="tpl_easysdi" type="template">tpl_easysdi.zip</file>
+  </files>
+  <languages>
+    <language tag="en-GB">language/en-GB/en-GB.pkg_easysdi.sys.ini</language>
+    <language tag="fr-FR">language/fr-FR/fr-FR.pkg_easysdi.sys.ini</language>
+  </languages>
+  <updateservers>
+    <server type="collection">http://update.easysdi.org/packages/easysdi/manifest.xml</server>
+  </updateservers>
+</extension>
