@@ -12,6 +12,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/version.
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/resource.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/diffusion.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/metadata.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
 
 class cswmetadata {
 
@@ -88,6 +89,8 @@ class cswmetadata {
     public function load() {
         $catalogUrlGetRecordById = $this->catalogurl . "?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=" . $this->guid;
         $response = $this->CURLRequest("GET", $catalogUrlGetRecordById);
+        if (empty($response))
+            return false;
         $doc = new DOMDocument();
         $doc->loadXML($response);
 
@@ -141,13 +144,16 @@ class cswmetadata {
         endif;
     }
 
-    public function display($context, $type, $callfromJoomla, $lang) {
+    public function display($catalog, $type, $callfromJoomla, $lang) {
         $this->load();
-        $this->extend($context, $type, $callfromJoomla, $lang);
+        $this->extend($catalog, $type, $callfromJoomla, $lang);
         return $this->applyXSL();
     }
 
-    public function extend($context, $type, $callfromJoomla, $lang) {
+    /**
+     * Buils an extended Metadata containing EasySDI information fields for XSL transformation
+     */
+    public function extend($catalog, $type, $callfromJoomla, $lang) {
         //Is it an harvested metadata
         $xpath = new DomXPath($this->dom);
         $xpath->registerNamespace('sdi', 'http://www.easysdi.org/2011/sdi');
@@ -161,13 +167,14 @@ class cswmetadata {
         $gmdroot = $this->extendeddom->importNode($root, true);
 
         $extendedroot = $this->extendeddom->createElement("Metadata");
-        $this->extendeddom->appendChild($extendedroot);
+
         $extendedroot->appendChild($gmdroot);
 
         $extendedmetadata = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ExtendedMetadata');
         $extendedmetadata->setAttribute('lang', $lang);
         $extendedmetadata->setAttribute('callfromjoomla', (int) $callfromJoomla);
-        $extendedroot->appendChild($extendedmetadata);
+
+        $action = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:action');
 
         if ($isharvested == 'false') {
             $this->metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
@@ -185,26 +192,37 @@ class cswmetadata {
             $this->db->setQuery($query);
             $organism = $this->db->loadObject();
 
+            $params = JComponentHelper::getParams('com_easysdi_core');
+            $width = $params->get('logowidth');
+            $height = $params->get('logoheight');
+            $length = $params->get('descriptionlength');
+
             $exresource = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Resource');
             $exresource->setAttribute('name', $this->resource->name);
-            $exresource->setAttribute('descriptionLength', '300');
+            $exresource->setAttribute('descriptionLength', $length);
 
             $exorganism = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Organism');
             $exorganism->setAttribute('name', $organism->name);
 
             $exlogo = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Logo');
             $exlogo->setAttribute('path', $organism->logo);
-            $exlogo->setAttribute('width', '');
-            $exlogo->setAttribute('height', '');
+            $exlogo->setAttribute('width', $width);
+            $exlogo->setAttribute('height', $height);
 
+            $query = $this->db->getQuery(true)
+                    ->select('name, alias, logo')
+                    ->from('#__sdi_resourcetype')
+                    ->where('id = ' . $this->resource->resourcetype_id);
+            $this->db->setQuery($query);
+            $resourcetype = $this->db->loadObject();
             $exresourcetype = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Resourcetype');
-            $exresourcetype->setAttribute('name', '');
-            $exresourcetype->setAttribute('alias', '');
+            $exresourcetype->setAttribute('name', $resourcetype->name);
+            $exresourcetype->setAttribute('alias', $resourcetype->alias);
 
             $logo = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Logo');
-            $logo->setAttribute('path', '');
-            $logo->setAttribute('width', '');
-            $logo->setAttribute('height', '');
+            $logo->setAttribute('path', $resourcetype->logo);
+            $logo->setAttribute('width', $width);
+            $logo->setAttribute('height', $height);
 
             $exversion = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Version');
             $exversion->setAttribute('name', $this->version->name);
@@ -213,13 +231,22 @@ class cswmetadata {
             $exmetadata->setAttribute('created', $this->metadata->created);
             $exmetadata->setAttribute('updated', $this->metadata->modified);
 
+            $query = $this->db->getQuery(true)
+                    ->select('id,pricing_id, hasdownload, hasextraction, accessscope_id')
+                    ->from('#__sdi_diffusion')
+                    ->where('version_id = ' . $this->version->id);
+            $this->db->setQuery($query);
+            $diffusion = $this->db->loadObject();
+            $isfree = ($diffusion->pricing_id == 1 ) ? 'true' : 'false';
+            $isDownladable = ($diffusion->hasdownload == 1 ) ? 'true' : 'false';
+            $isOrderable = ($diffusion->hasextraction == 1 ) ? 'true' : 'false';
             $exdiffusion = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Diffusion');
-            $exdiffusion->setAttribute('isfree', 'true');
-            $exdiffusion->setAttribute('isDownladable', 'true');
-            $exdiffusion->setAttribute('isOrderable', 'true');
-            $exdiffusion->setAttribute('file_size', '1');
-            $exdiffusion->setAttribute('size_unit', 'MB');
-            $exdiffusion->setAttribute('file_type', 'zip');
+            $exdiffusion->setAttribute('isfree', $isfree);
+            $exdiffusion->setAttribute('isDownladable', $isDownladable);
+            $exdiffusion->setAttribute('isOrderable', $isOrderable);
+            $exdiffusion->setAttribute('file_size', '');
+            $exdiffusion->setAttribute('size_unit', '');
+            $exdiffusion->setAttribute('file_type', '');
 
             $exmetadata->appendChild($exdiffusion);
             $exresource->appendChild($exmetadata);
@@ -229,12 +256,106 @@ class cswmetadata {
             $exorganism->appendChild($exlogo);
             $exresource->appendChild($exorganism);
             $extendedmetadata->appendChild($exresource);
+
+            //Download
+            if ($diffusion->hasdownload == 1):
+                //check if the user has the right to download
+                $right = true;
+                if ($diffusion->accessscope_id != 1):
+                    if (!sdiFactory::getSdiUser()->isEasySDI):
+                        $right = false;
+                    else:
+                        if ($diffusion->accessscope_id == 2):
+                            $organisms = sdiModel::getAccessScopeOrganism($diffusion->guid);
+                            $organism = sdiFactory::getSdiUser()->getMemberOrganisms();
+                            if (!in_array($organism[0]->id, $organisms)):
+                                $right = false;
+                            endif;
+                        endif;
+                        if ($diffusion->accessscope_id == 3):
+                            $users = sdiModel::getAccessScopeUser($diffusion->guid);
+                            if (!in_array(sdiFactory::getSdiUser()->id, $users)):
+                                $right = false;
+                            endif;
+                        endif;
+                    endif;
+                endif;
+
+                if ($right):
+                    $download = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:download');
+                    $downloadlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=diffusion.download&id=' . $diffusion->id));
+                    $download->appendChild($downloadlink);
+                    $action->appendChild($download);
+                else:
+                    //Download right
+                    $downloadright = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:downloadright');
+                    $downloadrighttooltip = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:tooltip');
+                    $downloadright->appendChild($downloadrighttooltip);
+                    $action->appendChild($downloadright);
+                endif;
+            endif;
+
+            //View
+            $query = $this->db->getQuery(true)
+                    ->select('id, guid, accessscope_id')
+                    ->from('#__sdi_visualization')
+                    ->where('version_id = ' . $this->version->id);
+            $this->db->setQuery($query);
+            $visualization = $this->db->loadObject();
+            if (!empty($visualization)) :
+                //check if the user has the right to download
+                $right = true;
+                if ($visualization->accessscope_id != 1):
+                    if (!sdiFactory::getSdiUser()->isEasySDI):
+                        $right = false;
+                    else:
+                        if ($visualization->accessscope_id == 2):
+                            $organisms = sdiModel::getAccessScopeOrganism($visualization->guid);
+                            $organism = sdiFactory::getSdiUser()->getMemberOrganisms();
+                            if (!in_array($organism[0]->id, $organisms)):
+                                $right = false;
+                            endif;
+                        endif;
+                        if ($visualization->accessscope_id == 3):
+                            $users = sdiModel::getAccessScopeUser($visualization->guid);
+                            if (!in_array(sdiFactory::getSdiUser()->id, $users)):
+                                $right = false;
+                            endif;
+                        endif;
+                    endif;
+                endif;
+                if ($right):
+                    $view = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:view');
+                    $viewlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_map&view=preview&metadataid=' . $this->metadata->id));
+                    $view->appendChild($viewlink);
+                    $action->appendChild($view);
+                endif;
+            endif;
         }
+
+        //Make pdf
+        $exportpdf = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:exportpdf');
+        $exportpdflink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&task=sheet.exportPDF&id=' . $this->metadata->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&type=' . $type));
+        $exportpdf->appendChild($exportpdflink);
+        $action->appendChild($exportpdf);
+
+        //Export XML
+        $exportxml = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:exportxml');
+        $exportxmllink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&task=sheet.exportXML&id=' . $this->metadata->guid));
+        $exportxml->appendChild($exportxmllink);
+        $action->appendChild($exportxml);
+
+        $extendedmetadata->appendChild($action);
+
+        $extendedroot->appendChild($extendedmetadata);
+        $this->extendeddom->appendChild($extendedroot);
+
+        $string = $this->extendeddom->saveXML();
 
         return $this->extendeddom;
     }
 
-    public function applyXSL($dom = null) {
+    public function applyXSL($catalog, $type, $dom = null) {
         if (empty($dom)) {
             $dom = $this->extendeddom;
         }
@@ -245,13 +366,13 @@ class cswmetadata {
         endif;
         $processor = new xsltProcessor();
         $processor->importStylesheet($style);
+        $processor->setParameter("", 'catalog', $catalog);
+        $processor->setParameter("", 'type', $type);
         $html = $processor->transformToDoc($dom);
         $text = $html->saveXML();
         //Workaround to avoid printf problem with text with a "%", must
         //be changed to "%%".
         $text = str_replace("%", "%%", $text);
-        $text = str_replace("__ref_", "%", $text);
-
 
         return $text;
     }
@@ -280,6 +401,26 @@ class cswmetadata {
             return null;
         endif;
 
+        if ($this->diffusion->hasextraction == 0)
+            return null;
+
+        //Check access scope
+        if ($this->diffusion->accessscope_id != 1):
+            if ($this->diffusion->accessscope_id == 2):
+                $organisms = sdiModel::getAccessScopeOrganism($this->diffusion->guid);
+                $organism = sdiFactory::getSdiUser()->getMemberOrganisms();
+                if (!in_array($organism[0]->id, $organisms)):
+                    return null;
+                endif;
+            endif;
+            if ($this->diffusion->accessscope_id == 3):
+                $users = sdiModel::getAccessScopeUser($this->diffusion->guid);
+                if (!in_array(sdiFactory::getSdiUser()->id, $users)):
+                    return null;
+                endif;
+            endif;
+        endif;
+
         $language = JFactory::getLanguage();
 
         $query = $this->db->getQuery(true)
@@ -294,9 +435,9 @@ class cswmetadata {
         $this->db->setQuery($query);
         $properties = $this->db->loadObjectList();
 
-        
+
         $html = '
-<script src="'.JURI::root().'/administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js" type="text/javascript"></script>            
+<script src="' . JURI::root() . '/administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js" type="text/javascript"></script>            
 <div class="sdi-shop-properties well">';
         foreach ($properties as $property):
             try {
@@ -369,11 +510,11 @@ class cswmetadata {
                             <div class="controls">
                                 <fieldset id="' . $property->property_id . '" class="sdi-shop-property-checkbox ">';
                         $i = 0;
-                            foreach ($values as $value):
-                                $html .= '<input type="checkbox" id="' . $property->property_id . $i .'" name="' . $property->property_id . '" value="' . $value->propertyvalue_id . '" />
-                                          <label for="' . $property->property_id . $i .'">' . $value->propertyvaluename . '</label>';
-                            $i ++;
-                            endforeach;
+                        foreach ($values as $value):
+                            $html .= '<input type="checkbox" id="' . $property->property_id . $i . '" name="' . $property->property_id . '" value="' . $value->propertyvalue_id . '" />
+                                          <label for="' . $property->property_id . $i . '">' . $value->propertyvaluename . '</label>';
+                            $i++;
+                        endforeach;
                         $html .='
                             </fieldset>
                         </div>
@@ -381,17 +522,17 @@ class cswmetadata {
                         break;
                     case self::TEXT:
                         $html .= '
-                        <div class="controls"><input type="text" name="' . $property->property_id . '" id="' . $property->property_id . '" value="' . $text . '" propertyvalue_id="'.$values[0]->propertyvalue_id.'" class="sdi-shop-property-text inputbox" size="255" ' . $required . '></div>
+                        <div class="controls"><input type="text" name="' . $property->property_id . '" id="' . $property->property_id . '" value="' . $text . '" propertyvalue_id="' . $values[0]->propertyvalue_id . '" class="sdi-shop-property-text inputbox" size="255" ' . $required . '></div>
                         ';
                         break;
                     case self::TEXTAREA:
                         $html .= '
-                        <div class="controls"><textarea cols="100" id="' . $property->property_id . '" name="' . $property->property_id . '" propertyvalue_id="'.$values[0]->propertyvalue_id.'" rows="5" ' . $required . ' class="sdi-shop-property-text" >' . $text . '</textarea></div>
+                        <div class="controls"><textarea cols="100" id="' . $property->property_id . '" name="' . $property->property_id . '" propertyvalue_id="' . $values[0]->propertyvalue_id . '" rows="5" ' . $required . ' class="sdi-shop-property-text" >' . $text . '</textarea></div>
                         ';
                         break;
                     case self::MESSAGE:
                         $html .= '
-                        <div class="controls"><textarea cols="100" id="' . $property->property_id . '" name="' . $property->property_id . '" propertyvalue_id="'.$values[0]->propertyvalue_id.'"  rows="5" ' . $required . ' class="sdi-shop-property-text">' . $text . '</textarea></div>
+                        <div class="controls"><textarea cols="100" id="' . $property->property_id . '" name="' . $property->property_id . '" propertyvalue_id="' . $values[0]->propertyvalue_id . '"  rows="5" ' . $required . ' class="sdi-shop-property-text">' . $text . '</textarea></div>
                         ';
                         break;
                 endswitch;
@@ -401,12 +542,12 @@ class cswmetadata {
                 //User is not an EasySDI user
             }
         endforeach;
-        
+
         //Submit to shop button
         $html .= '
             <div class="sdi-shop-toolbar-add-basket">
                 <button id="sdi-shop-btn-add-basket" class="btn btn-success btn-large" onclick="addtobasket(); return false;">Add to basket</button>
-                <input type="hidden" name="diffusion_id" id="diffusion_id" value="'.$this->diffusion->id.'" />
+                <input type="hidden" name="diffusion_id" id="diffusion_id" value="' . $this->diffusion->id . '" />
             </div>
             ';
         $html .='</div>';

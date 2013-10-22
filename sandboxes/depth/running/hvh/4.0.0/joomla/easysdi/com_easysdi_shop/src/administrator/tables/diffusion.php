@@ -152,7 +152,7 @@ class Easysdi_shopTablediffusion extends sdiTable {
                                 ->where('id = ' . (int) $array['id']);
                         $db->setQuery($query);
                         $file = $db->loadResult();
-                        if (!empty($deposit)) {
+                        if (!empty($file)) {
                             $uploadPath = $fileFolder . '/' . $file;
                             if (JFile::exists($uploadPath))
                                 JFile::delete($uploadPath);

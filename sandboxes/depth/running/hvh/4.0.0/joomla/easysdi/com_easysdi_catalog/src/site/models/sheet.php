@@ -65,11 +65,39 @@ class Easysdi_catalogModelSheet extends JModelForm {
                 $id = $this->getState('sheet.id');
             }
 
+            //Load CSW metadata
             $metadata = new cswmetadata($id);
             $metadata->load();
-            $metadata->extend('context', 'type', true, 'fr-FR');
             
-            $this->_item = $metadata->getShopExtenstion() . $metadata->applyXSL();
+            $jinput = JFactory::getApplication()->input; 
+            $langtag = $jinput->get('lang', '', 'STRING');
+            if(empty($langtag)):
+                 //Current language
+                $lang = JFactory::getLanguage();  
+                $langtag = $lang->getTag();
+            endif;
+                       
+            //Is the call from joomla
+            $callfromjoomla = true;
+            //Current catalog context
+            $catalog = $jinput->get('catalog', '', 'STRING');
+            /* Current type view. Possible value :
+             * - result
+             * - complete
+             * - abstract
+             * - diffusion
+             */
+            $type = $jinput->get('type', 'abstract', 'STRING');
+                        
+            //Build extended metadata
+            $metadata->extend($catalog, $type, $callfromjoomla, $langtag);
+            
+            
+            //Apply XSL transformation and complete with shop order fields
+            if($callfromjoomla)
+                $this->_item = $metadata->getShopExtenstion(). $metadata->applyXSL($catalog, $type);
+            else
+                $this->_item = $metadata->applyXSL($catalog, $type);
             
         }
 

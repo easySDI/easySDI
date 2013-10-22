@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 require_once JPATH_COMPONENT . '/controller.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
 
 /**
  * Diffusion controller class.
@@ -231,4 +232,58 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
         // Flush the data from the session.
         $app->setUserState('com_easysdi_shop.edit.diffusion.data', null);
     }
+
+    public function download() {
+        $params = JFactory::getApplication()->getParams('com_easysdi_shop');
+        $fileFolder = $params->get('fileFolder');
+
+        $db = JFactory::getDBO();
+        $id = JFactory::getApplication()->input->getInt('id', null);
+        $query = $db->getQuery(true)
+                ->select('*')
+                ->from('#__sdi_diffusion')
+                ->where('id = ' . (int) $id);
+        $db->setQuery($query);
+        $diffusion = $db->loadObject();
+
+        //check if the user has the right to download
+        if ($diffusion->accessscope_id != 1):
+            if (!sdiFactory::getSdiUser()->isEasySDI)
+                if ($diffusion->accessscope_id == 2):
+                    $organisms = sdiModel::getAccessScopeOrganism($diffusion->guid);
+                    $organism = sdiFactory::getSdiUser()->getMemberOrganisms();
+                    if (!in_array($organism[0]->id, $organisms)):
+                        return null;
+                    endif;
+            endif;
+            if ($diffusion->accessscope_id == 3):
+                $users = sdiModel::getAccessScopeUser($diffusion->guid);
+                if (!in_array(sdiFactory::getSdiUser()->id, $users)):
+                    return null;
+                endif;
+            endif;
+        endif;
+
+        if (!empty($diffusion->file)):
+            $file = file_get_contents($fileFolder . '/' . $diffusion->file);
+        elseif (!empty($diffusion->fileurl)):
+            $file = file_get_contents($diffusion->fileurl);
+        elseif (!empty($diffusion->perimeter_id)) :
+
+        endif;
+
+        error_reporting(0);
+
+        ini_set('zlib.output_compression', 0);
+        header('Pragma: public');
+        header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+        header('Content-Transfer-Encoding: none');
+        header("Content-Length: " . strlen($file));
+        header('Content-Type: application/octetstream; name="zip"');
+        header('Content-Disposition: attachement; filename="' . $diffusion->name . '.zip"');
+
+        echo $file;
+        die();
+    }
+
 }

@@ -19,8 +19,8 @@
              default=""
              class="input"             
              size="40"
-             label="COM_EASYSDI_CORE_CONFIG_LBL_LOGO_LENGTH"
-             description="COM_EASYSDI_CORE_CONFIG_DESC_LOGO_LENGTH">
+             label="COM_EASYSDI_CORE_CONFIG_LBL_DESCRIPTION_LENGTH"
+             description="COM_EASYSDI_CORE_CONFIG_DESC_DESCRIPTION_LENGTH">
          </field>
          
          <field name="logowidth"

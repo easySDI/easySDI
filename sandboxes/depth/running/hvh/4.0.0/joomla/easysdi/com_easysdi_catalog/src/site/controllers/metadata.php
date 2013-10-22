@@ -183,5 +183,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $relations = unserialize($session->get('relations'));
         return $relations;
     }
+    
+
 
 }
