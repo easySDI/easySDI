@@ -333,6 +333,12 @@ class cswmetadata {
             endif;
         }
 
+        //Sheet view
+        $sheet = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:sheetview');
+        $sheetlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&id=' . $this->metadata->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&type=' . $type));
+        $sheet->appendChild($sheetlink);
+        $action->appendChild($sheet);
+        
         //Make pdf
         $exportpdf = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:exportpdf');
         $exportpdflink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&task=sheet.exportPDF&id=' . $this->metadata->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&type=' . $type));
@@ -346,6 +352,68 @@ class cswmetadata {
         $action->appendChild($exportxml);
 
         $extendedmetadata->appendChild($action);
+
+        //Links
+        $query = $this->db->getQuery(true)
+                ->select('vl.parent_id, v.guid as guid, r.name as name, rt.alias as type')
+                ->from('#__sdi_versionlink vl')
+                ->innerJoin('#__sdi_version v ON v.id = vl.parent_id')
+                ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
+                ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
+                ->where('vl.child_id = ' . $this->version->id);
+        $this->db->setQuery($query);
+        $parentsitem = $this->db->loadObjectList();
+        $links = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:links');
+        $parents = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:parents');
+        foreach ($parentsitem as $item):
+            $parent = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:parent');
+            $parent->setAttribute('guid', $item->guid);
+            $parent->setAttribute('title', '');
+            $parent->setAttribute('resourcename', $item->name);
+            $parent->setAttribute('resourcetype', $item->type);
+            $parents->appendChild($parent);
+        endforeach;
+
+        $query = $this->db->getQuery(true)
+                ->select('vl.parent_id, v.guid as guid, r.name as name, rt.alias as type')
+                ->from('#__sdi_versionlink vl')
+                ->innerJoin('#__sdi_version v ON v.id = vl.child_id')
+                ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
+                ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
+                ->where('vl.child_id = ' . $this->version->id);
+        $this->db->setQuery($query);
+        $childrenitem = $this->db->loadObjectList();
+        $children = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:children');
+        foreach ($childrenitem as $item):
+            $child = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:chld');
+            $child->setAttribute('guid', $item->guid);
+            $child->setAttribute('title', '');
+            $child->setAttribute('resourcename', $item->name);
+            $child->setAttribute('resourcetype', $item->type);
+            $children->appendChild($child);
+        endforeach;
+
+        $links->appendChild($parents);
+        $links->appendChild($children);
+        $extendedmetadata->appendChild($links);
+
+        //Applications
+        $query = $this->db->getQuery(true)
+                ->select('*')
+                ->from('#__sdi_application')
+                ->where('resource_id = ' . $this->resource->id);
+        $this->db->setQuery($query);
+        $applicationsitem = $this->db->loadObjectList();
+        $applications = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:applications');
+        foreach ($applicationsitem as $item):
+            $application = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:application', $item->url);
+            $application->setAttribute('name', $item->name);
+            $application->setAttribute('windowname', $item->windowname);
+            $application->setAttribute('options', $item->options);
+            $applications->appendChild($application);
+        endforeach;
+
+        $extendedmetadata->appendChild($applications);
 
         $extendedroot->appendChild($extendedmetadata);
         $this->extendeddom->appendChild($extendedroot);
