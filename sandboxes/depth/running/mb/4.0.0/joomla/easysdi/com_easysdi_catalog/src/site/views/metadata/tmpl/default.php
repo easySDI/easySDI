@@ -18,8 +18,18 @@ JHtml::_('formbehavior.chosen', 'select');
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
 $document = JFactory::getDocument();
+
+$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/ext/resources/css/ext-all.css');
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/bootbox.min.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.debug.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/proj4js-1.4.1/dist/proj4.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base-debug.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/thesaur.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/HS.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/translations.js');
+
 $document->addScript('http://maps.google.com/maps/api/js?v=3&amp;sensor=false');
 ?>
 
@@ -70,6 +80,8 @@ $document->addScript('http://maps.google.com/maps/api/js?v=3&amp;sensor=false');
 <script type="text/javascript">
     js = jQuery.noConflict();
     js('document').ready(function() {
+
+        
 
 <?php
 foreach ($this->validators as $validator) {
@@ -272,7 +284,7 @@ foreach ($this->validators as $validator) {
 
             var map_parent_path = replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox';
 
-            drawBB(layer_ + map_parent_path, map_parent_path);
+            drawBB(map_parent_path);
         });
     }
 
@@ -287,7 +299,7 @@ foreach ($this->validators as $validator) {
 
             var map_parent_path = replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox';
 
-            drawBB(layer_ + map_parent_path, map_parent_path);
+            drawBB(map_parent_path);
         });
     }
 
@@ -295,16 +307,30 @@ foreach ($this->validators as $validator) {
 
 <script type="text/javascript">
 
-    function drawBB(layer, parent_path) {
+    function drawBB(parent_path) {
         var top = js('#jform_' + parent_path + '_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value');
         var bottom = js('#jform_' + parent_path + '_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value');
         var right = js('#jform_' + parent_path + '_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value');
         var left = js('#jform_' + parent_path + '_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value');
 
         if (top != '' && bottom != '' && left != '' && right != '') {
-            var bounds = new OpenLayers.Bounds(left, bottom, right, top);
+
+            var map = window['map_' + parent_path];
+
+            var dest = new proj4.Proj(map.getProjection());
+            var source = new proj4.Proj("EPSG:4326");
+
+            var bottom_left = new proj4.Point(left, bottom);
+            var top_right = new proj4.Point(right, top);
+
+            proj4.transform(source, dest, bottom_left);
+            proj4.transform(source, dest, top_right);
+
+            var bounds = new OpenLayers.Bounds(bottom_left.x, bottom_left.y, top_right.x, top_right.y);
 
             var box = new OpenLayers.Feature.Vector(bounds.toGeometry());
+
+            var layer = window['polygonLayer_' + parent_path];
 
             layer.addFeatures([box]);
         }
@@ -312,6 +338,7 @@ foreach ($this->validators as $validator) {
 </script>
 
 <div class="metadata-edit front-end-edit">
+    
     <button id="btn_toogle_all" action="open" class="btn">Tout ouvrir</button>
     <h2><?php echo JText::_('COM_EASYSDI_CATALOGE_TITLE_EDIT_METADATA') . ' ' . $this->item->guid; ?></h2>
 
@@ -320,7 +347,7 @@ foreach ($this->validators as $validator) {
             <?php echo $field->input; ?>
         <?php endforeach; ?>
         <div class ="well">
-            <?php //echo htmlspecialchars($this->item->csw);     ?>
+            <?php //echo htmlspecialchars($this->item->csw);      ?>
 
             <?php echo $this->formHtml; ?>
 

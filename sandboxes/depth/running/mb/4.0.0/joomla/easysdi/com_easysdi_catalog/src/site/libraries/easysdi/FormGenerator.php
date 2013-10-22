@@ -703,7 +703,9 @@ class FormGenerator {
                     case EnumRendertype::$DATETIME:
                         return $this->getFormDateField($attribute);
                         break;
-
+                    case EnumRendertype::$GEMET:
+                        return $this->getFormGemetField($attribute);
+                        break;
                     default:
                         //return $field;
                         return $this->getFormHiddenField($attribute);
@@ -1051,6 +1053,55 @@ class FormGenerator {
         // not yet implemented
     }
 
+    private function getFormGemetField(DOMElement $attribute) {
+        $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
+        $label = $attribute->getAttributeNS($this->catalog_uri, 'label');
+
+        $fields = array();
+        $field = $this->form->createElement('field');
+
+        $validator = $this->getValidatorClass($attribute);
+
+        $field->setAttribute('type', 'list');
+        $field->setAttribute('multiple', 'true');
+        $field->setAttribute('class', $validator);
+
+        $field->setAttribute('default', $attribute->firstChild->nodeValue);
+        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
+        if ($guid != '') {
+            $field->setAttribute('label', EText::_($guid));
+        } else {
+            $field->setAttribute('label', JText::_($label));
+        }
+        $field->setAttribute('description', EText::_($guid, 2));
+
+        for ($index = 0; $index < 100; $index++) {
+            $option = $this->form->createElement('option', 'option-' . $index);
+            $option->setAttribute('value', 'option-' . $index);
+            $field->appendChild($option);
+        }
+
+        $fields[] = $field;
+
+        foreach ($this->domXpathStr->query('*/*/*', $attribute) as $i18nChild) {
+            $field = $this->form->createElement('field');
+
+            $field->setAttribute('type', 'list');
+            $field->setAttribute('multiple', 'true');
+            $field->setAttribute('class', $validator);
+
+            $field->setAttribute('default', $i18nChild->nodeValue);
+            $field->setAttribute('name', $this->serializeXpath($i18nChild->getNodePath()) . $i18nChild->getAttribute('locale'));
+            $localeValue = str_replace('#', '', $i18nChild->getAttribute('locale'));
+            $field->setAttribute('label', EText::_($guid) . ' ' . $this->ldao->getByIso3166($localeValue)->value);
+            $field->setAttribute('description', EText::_($guid, 2));
+
+            $fields[] = $field;
+        }
+
+        return $fields;
+    }
+
     private function getFormHiddenField(DOMElement $attribute) {
         $attributename = $attribute->nodeName;
         $field = $this->form->createElement('field');
@@ -1099,7 +1150,7 @@ class FormGenerator {
         $field = $this->form->createElement('field');
 
         $validator = $this->getValidatorClass($attribute);
-        
+
         $field->setAttribute('type', 'file');
         $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
         $field->setAttribute('label', EText::_($guid));

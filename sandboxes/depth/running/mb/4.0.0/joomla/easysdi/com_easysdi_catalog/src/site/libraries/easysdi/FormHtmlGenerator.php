@@ -320,11 +320,8 @@ class FormHtmlGenerator {
 
             $divOuter->appendChild($fieldset);
         }
+
         if ($index == $occurance) {
-            if ($stereotypeId == EnumStereotype::$GEOGRAPHICEXTENT) {
-//                $divInner->appendChild($btnEdit);
-//                $divInner->appendChild($divMap);
-            }
             $divOuter->appendChild($divBottom);
         }
 
@@ -352,6 +349,7 @@ class FormHtmlGenerator {
     private function getAttribute(DOMElement $attribute) {
         $lowerbound = $attribute->getAttributeNS($this->catalog_uri, 'lowerbound');
         $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
+        $stereotypeId = $attribute->getAttributeNS($this->catalog_uri, 'stereotypeId');
 
         $languages = $this->ldao->getSupported();
         if ($upperbound > 1) {
@@ -364,8 +362,13 @@ class FormHtmlGenerator {
         $attributeGroup->setAttribute('class', 'attribute-group attribute-group-' . $this->removeIndex($this->serializeXpath($attribute->getNodePath())));
         $attributeGroup->setAttribute('id', 'attribute-group-' . $this->serializeXpath($attribute->getNodePath()));
 
-        switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
+        switch ($stereotypeId) {
+            case EnumStereotype::$GEMET:
             case EnumStereotype::$LOCALE:
+                if ($stereotypeId == EnumStereotype::$GEMET) {
+                    $attributeGroup->appendChild($this->getGemet($attribute));
+                }
+
                 $nodePath = $attribute->firstChild->getNodePath();
                 $jfield = $this->form->getField($this->serializeXpath($nodePath));
                 foreach ($this->buildField($attribute, $jfield, $showButton) as $element) {
@@ -527,13 +530,14 @@ class FormHtmlGenerator {
                                 var lat = 40;
                                 var zoom = 5;
 
-                                map_$parent_path = new OpenLayers.Map(\"map_$parent_path\",{projection: \"" . $map_config->srs . "\" , maxResolution: " . $map_config->maxresolution . " , units: \"" . $map_config->unit_alias . "\", maxExtent: [" . $map_config->maxextent . "], restrictedExtent: [" . $map_config->maxextent . "], center: [" . $map_config->centercoordinates . "]});
+                                map_$parent_path = new OpenLayers.Map(\"map_$parent_path\",{projection: \"" . $map_config->srs . "\" , maxResolution: " . $map_config->maxresolution . " , units: \"" . $map_config->unit_alias . "\", maxExtent: [" . $map_config->maxextent . "], restrictedExtent: [" . $map_config->maxextent . "]});
                                  
                                 " . $layer_definition . "
                                 polygonLayer_$parent_path = new OpenLayers.Layer.Vector('Polygon Layer');
 
                                 map_$parent_path.addLayers([layer_$parent_path, polygonLayer_$parent_path]);
-                                map_$parent_path.setCenter(new OpenLayers.LonLat(lon, lat), zoom);
+                                //map_$parent_path.setCenter(new OpenLayers.LonLat(lon, lat), zoom);
+                                map_$parent_path.zoomToMaxExtent();
 
                                 var polyOptions = {sides: 4, irregular: true};
                                 polygonControl_$parent_path = new OpenLayers.Control.DrawFeature(polygonLayer_$parent_path,
@@ -542,18 +546,27 @@ class FormHtmlGenerator {
 
                                 map_$parent_path.addControl(polygonControl_$parent_path);
                                     
-                               drawBB(polygonLayer_$parent_path, '$parent_path');
+                               drawBB('$parent_path');
                                     
                                polygonLayer_$parent_path.events.register('featureadded', polygonLayer_$parent_path, function(e) {
                                     polygonControl_$parent_path.deactivate();
                                     js('#editBtn_$parent_path').removeClass('active');
 
                                     var bounds = e.feature.geometry.getBounds();
+                                    
+                                    var source = new proj4.Proj(map_" . $parent_path . ".getProjection());
+                                    var dest   = new proj4.Proj(\"EPSG:4326\");
+                                    
+                                    var bottom_left = new proj4.Point(bounds.left, bounds.bottom);
+                                    var top_right = new proj4.Point(bounds.right, bounds.top);
 
-                                    js('#jform_" . $parent_path . "_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', bounds.top);
-                                    js('#jform_" . $parent_path . "_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', bounds.bottom);
-                                    js('#jform_" . $parent_path . "_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', bounds.right);
-                                    js('#jform_" . $parent_path . "_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', bounds.left);
+                                    proj4.transform(source, dest, bottom_left);
+                                    proj4.transform(source, dest, top_right);
+
+                                    js('#jform_" . $parent_path . "_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', top_right.y);
+                                    js('#jform_" . $parent_path . "_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', bottom_left.y);
+                                    js('#jform_" . $parent_path . "_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', top_right.x);
+                                    js('#jform_" . $parent_path . "_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', bottom_left.x);
 
                                     map_$parent_path.zoomToExtent(polygonLayer_$parent_path.getDataExtent());
                                 });
@@ -568,6 +581,104 @@ class FormHtmlGenerator {
         $div->appendChild($btnEdit);
         $div->appendChild($br);
         $div->appendChild($divMap);
+        $div->appendChild($script);
+
+        return $div;
+    }
+
+    private function getGemet(DOMElement $attribute) {
+        $languages = array();
+        foreach ($this->ldao->getAll() as $language) {
+            $languages[] = '\''.$language->gemet.'\'';
+        }
+        
+        $default = $this->ldao->getDefaultLanguage();
+        
+        $parent_path = str_replace('-', '_', $this->serializeXpath($attribute->parentNode->getNodePath()));
+        $div = $this->formHtml->createElement('div');
+
+        $script = $this->formHtml->createElement('script');
+        $script->setAttribute('type', 'text/javascript');
+
+        $script_code = "js = jQuery.noConflict();
+
+                                js('document').ready(function() {
+                                
+                                var languages = new Array(".implode(',', $languages).");
+
+                                // path to Ext images
+                                Ext.BLANK_IMAGE_URL = 'http://gis.bnhelp.cz/wwwlibs/ext/ext3/resources/images/default/s.gif';
+
+                                // sets the user interface language
+                                HS.setLang('".$default->gemet."');
+
+                                Ext.onReady(function() {
+
+                                    var thes = new ThesaurusReader({
+
+                                        //lang: '".$default->gemet."',
+                                        lang:'en',
+                                        outputLangs: [".  implode(',', $languages)."],
+                                        title: 'GEMET Thesaurus',
+                                        separator: ' > ',
+                                        returnPath: true,
+                                        returnInspire: true,
+                                        width: 400, height: 300,
+                                        layout: 'fit',
+                                        proxy: 'http://localhost/joomlaTest/administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/proxy.php?url=',
+                                        handler: writeTerms
+                                    });
+
+                                    thes.render('gemet');
+                                });
+                                
+                                
+                                    
+                                    js('#jform_".$parent_path."_sla_gmd_dp_keyword_sla_gco_dp_CharacterString').on('change',function(evt, params){
+                                                var uri = js('#jform_".$parent_path."_sla_gmd_dp_keyword_sla_gco_dp_CharacterString option[value=\''+params.deselected+'\']').attr('class');
+                                                js('option[class=\''+uri+'\']').remove();
+                                                
+                                                for(var i=1; i < languages.length; i++){
+                                                    js('#jform_".$parent_path."_sla_gmd_dp_keyword_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()).trigger('liszt:updated');
+                                                }
+                                                
+                                    });
+
+                                
+                                
+                                var writeTerms = function(result) {
+                                    
+                                    
+                                    for(var i=0; i < languages.length; i++){
+                                        var paths = result.terms[languages[i]].split('>');
+                                        var keyword = paths[paths.length - 1];
+                                        var option_string = '<option class=\''+result.uri+'\' value=\''+keyword+'\' selected>'+keyword+'</option>';
+                                        
+                                        if(i==0){
+                                            var current_select = js('#jform_".$parent_path."_sla_gmd_dp_keyword_sla_gco_dp_CharacterString');
+                                            var current_div = js('#jform_".$parent_path."_sla_gmd_dp_keyword_sla_gco_dp_CharacterString_chzn ul li[class=\'search-field\']');
+                                        
+                                        }else{
+                                            var current_select = js('#jform_".$parent_path."_sla_gmd_dp_keyword_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase());
+                                            var current_div = js('#jform_".$parent_path."_sla_gmd_dp_keyword_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()+'_chzn ul li[class=\'search-field\']');
+                                        }
+                                        current_select.append(option_string);
+                                        current_div.attr('style','width: 0px');
+                                        current_select.trigger('liszt:updated');
+                                        
+                                        
+                                    }
+                                }
+                                
+                            });";
+
+        $script->nodeValue = $script_code;
+        
+        $divGemet = $this->formHtml->createElement('div');
+        $divGemet->setAttribute('id', 'gemet');
+        $divGemet->setAttribute('class', 'gemet');
+
+        $div->appendChild($divGemet);
         $div->appendChild($script);
 
         return $div;

@@ -51,6 +51,21 @@ class SdiLanguageDao extends SdiDao{
 
         return $languages;
     }
+    
+    public function getDefaultLanguage(){
+        $languageIds = JComponentHelper::getParams('com_easysdi_catalog')->get('defaultlanguage');
+        
+        $query = $this->db->getQuery(true);
+        
+        $query->select('*');
+        $query->from('#__sdi_language');
+        $query->where('id IN (' . $languageIds . ')');
+
+        $this->db->setQuery($query);
+        $language = $this->db->loadObject();
+
+        return $language;
+    }
 
     public function getByCode($code) {
         $query = $this->db->getQuery(true);
