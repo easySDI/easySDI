@@ -1075,12 +1075,6 @@ class FormGenerator {
         }
         $field->setAttribute('description', EText::_($guid, 2));
 
-        for ($index = 0; $index < 100; $index++) {
-            $option = $this->form->createElement('option', 'option-' . $index);
-            $option->setAttribute('value', 'option-' . $index);
-            $field->appendChild($option);
-        }
-
         $fields[] = $field;
 
         foreach ($this->domXpathStr->query('*/*/*', $attribute) as $i18nChild) {
@@ -1089,6 +1083,7 @@ class FormGenerator {
             $field->setAttribute('type', 'list');
             $field->setAttribute('multiple', 'true');
             $field->setAttribute('class', $validator);
+            $field->setAttribute('readonly', 'true');
 
             $field->setAttribute('default', $i18nChild->nodeValue);
             $field->setAttribute('name', $this->serializeXpath($i18nChild->getNodePath()) . $i18nChild->getAttribute('locale'));

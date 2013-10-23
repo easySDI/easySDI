@@ -616,14 +616,13 @@ class FormHtmlGenerator {
 
                                     var thes = new ThesaurusReader({
 
-                                        //lang: '".$default->gemet."',
-                                        lang:'en',
+                                        lang: '".$default->gemet."',
                                         outputLangs: [".  implode(',', $languages)."],
                                         title: 'GEMET Thesaurus',
                                         separator: ' > ',
                                         returnPath: true,
                                         returnInspire: true,
-                                        width: 400, height: 300,
+                                        width: 520, height: 300,
                                         layout: 'fit',
                                         proxy: 'http://localhost/joomlaTest/administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/proxy.php?url=',
                                         handler: writeTerms
@@ -656,16 +655,15 @@ class FormHtmlGenerator {
                                         
                                         if(i==0){
                                             var current_select = js('#jform_".$parent_path."_sla_gmd_dp_keyword_sla_gco_dp_CharacterString');
-                                            var current_div = js('#jform_".$parent_path."_sla_gmd_dp_keyword_sla_gco_dp_CharacterString_chzn ul li[class=\'search-field\']');
+                                            var current_div = js('#jform_".$parent_path."_sla_gmd_dp_keyword_sla_gco_dp_CharacterString_chzn ul li[class=\'search-field\'] input');
                                         
                                         }else{
                                             var current_select = js('#jform_".$parent_path."_sla_gmd_dp_keyword_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase());
-                                            var current_div = js('#jform_".$parent_path."_sla_gmd_dp_keyword_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()+'_chzn ul li[class=\'search-field\']');
+                                            var current_div = js('#jform_".$parent_path."_sla_gmd_dp_keyword_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()+'_chzn ul li[class=\'search-field\'] input');
                                         }
                                         current_select.append(option_string);
-                                        current_div.attr('style','width: 0px');
                                         current_select.trigger('liszt:updated');
-                                        
+                                        current_div.attr('style','width: 0px');
                                         
                                     }
                                 }
@@ -674,11 +672,58 @@ class FormHtmlGenerator {
 
         $script->nodeValue = $script_code;
         
+        $aModal = $this->formHtml->createElement('a','Thesaurus Gemet');
+        $aModal->setAttribute('data-toggle', 'modal');
+        $aModal->setAttribute('href', '#myModal');
+        $aModal->setAttribute('class', 'btn btn-primary btn-lg');
+        
+        $divModal = $this->formHtml->createElement('div');
+        $divModal->setAttribute('class', 'modal fade');
+        $divModal->setAttribute('id', 'myModal');
+        $divModal->setAttribute('tabindex', '-1');
+        $divModal->setAttribute('role', 'dialog');
+        $divModal->setAttribute('aria-labelledby', 'myModalLabel');
+        $divModal->setAttribute('aria-hidden', 'true');
+        
+        $divDialog = $this->formHtml->createElement('div');
+        $divDialog->setAttribute('class', 'modal-dialog');
+        
+        $divContent = $this->formHtml->createElement('div');
+        $divContent->setAttribute('class', 'modal-content');
+        
+        $divHeader = $this->formHtml->createElement('div');
+        $divHeader->setAttribute('class', 'modal-header');
+        
+        $btnClose = $this->formHtml->createElement('button', '&times;');
+        $btnClose->setAttribute('type', 'button');
+        $btnClose->setAttribute('class', 'close');
+        $btnClose->setAttribute('data-dismiss', 'modal');
+        $btnClose->setAttribute('aria-hidden', 'true');
+        
+        $h4 = $this->formHtml->createElement('h4','Thesaurus Gemet');
+        $h4->setAttribute('class', 'modal-title');
+        
+        $divBody = $this->formHtml->createElement('div');
+        $divBody->setAttribute('class', 'modal-body');
+        
         $divGemet = $this->formHtml->createElement('div');
         $divGemet->setAttribute('id', 'gemet');
         $divGemet->setAttribute('class', 'gemet');
-
-        $div->appendChild($divGemet);
+        
+        $divHeader->appendChild($btnClose);
+        $divHeader->appendChild($h4);
+        
+        $divBody->appendChild($divGemet);
+        
+        $divContent->appendChild($divHeader);
+        $divContent->appendChild($divBody);
+        
+        $divDialog->appendChild($divContent);
+        
+        $divModal->appendChild($divDialog);
+        
+        $div->appendChild($aModal);
+        $div->appendChild($divModal);
         $div->appendChild($script);
 
         return $div;
