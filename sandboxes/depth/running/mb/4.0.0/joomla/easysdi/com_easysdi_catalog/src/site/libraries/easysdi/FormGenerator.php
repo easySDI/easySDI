@@ -172,8 +172,7 @@ class FormGenerator {
 
         $this->setDomXpathStr();
 
-        $this->structure->formatOutput = true;
-        $html = $this->structure->saveXML();
+
 
         if (isset($this->csw)) {
             $this->setDomXpathCsw();
@@ -182,6 +181,9 @@ class FormGenerator {
             $this->csw->formatOutput = true;
             $response = $this->csw->saveXML();
         }
+
+        $this->structure->formatOutput = true;
+        $html = $this->structure->saveXML();
 
         $this->session->set('structure', serialize($this->structure->saveXML()));
         $form = $this->buildForm($root);
@@ -382,12 +384,12 @@ class FormGenerator {
             case EnumStereotype::$LOCALE:
             case EnumStereotype::$LOCALECHOICE:
             case EnumStereotype::$GEMET:
-                $characterString = $this->structure->createElement('gco:CharacterString');
+                $characterString = $this->structure->createElementNS('http://www.isotc211.org/2005/gco', 'gco:CharacterString');
                 $elements[] = $characterString;
                 foreach ($languages as $key => $value) {
-                    $pt_freetext = $this->structure->createElement('gmd:PT_FreeText');
-                    $textGroup = $this->structure->createElement('gmd:textGroup');
-                    $localisedcs = $this->structure->createElement('gmd:LocalisedCharacterString');
+                    $pt_freetext = $this->structure->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:PT_FreeText');
+                    $textGroup = $this->structure->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:textGroup');
+                    $localisedcs = $this->structure->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:LocalisedCharacterString');
                     $localisedcs->setAttribute('locale', '#' . $key);
 
                     $textGroup->appendChild($localisedcs);
@@ -548,7 +550,7 @@ class FormGenerator {
 
     private function mergeCsw() {
 
-        foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="0"]|//*[@catalog:childtypeId="3"]') as $relation) {
+        foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="0"]|//*[@catalog:childtypeId="2"]|//*[@catalog:childtypeId="3"]') as $relation) {
             $xpath = $relation->getNodePath();
             $nbr = $this->domXpathCsw->query('/*' . $xpath)->length;
 
@@ -1058,15 +1060,11 @@ class FormGenerator {
         $label = $attribute->getAttributeNS($this->catalog_uri, 'label');
 
         $fields = array();
+
         $field = $this->form->createElement('field');
 
-        $validator = $this->getValidatorClass($attribute);
-
-        $field->setAttribute('type', 'list');
+        $field->setAttribute('type', 'listGemet');
         $field->setAttribute('multiple', 'true');
-        $field->setAttribute('class', $validator);
-
-        $field->setAttribute('default', $attribute->firstChild->nodeValue);
         $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
         if ($guid != '') {
             $field->setAttribute('label', EText::_($guid));
@@ -1075,21 +1073,38 @@ class FormGenerator {
         }
         $field->setAttribute('description', EText::_($guid, 2));
 
+        $defaults = array();
+        foreach ($this->domXpathStr->query('descendant::gco:CharacterString', $attribute->parentNode) as $element) {
+            $defaults[] = $element->nodeValue;
+        }
+
+        foreach ($defaults as $opt) {
+            $option = $this->form->createElement('option', $opt);
+            $option->setAttribute('value', $opt);
+            $field->appendChild($option);
+        }
+
         $fields[] = $field;
 
-        foreach ($this->domXpathStr->query('*/*/*', $attribute) as $i18nChild) {
+        foreach ($this->ldao->getSupported() as $key => $lang) {
             $field = $this->form->createElement('field');
 
-            $field->setAttribute('type', 'list');
+            $field->setAttribute('type', 'listGemet');
             $field->setAttribute('multiple', 'true');
-            $field->setAttribute('class', $validator);
-            $field->setAttribute('readonly', 'true');
-
-            $field->setAttribute('default', $i18nChild->nodeValue);
-            $field->setAttribute('name', $this->serializeXpath($i18nChild->getNodePath()) . $i18nChild->getAttribute('locale'));
-            $localeValue = str_replace('#', '', $i18nChild->getAttribute('locale'));
-            $field->setAttribute('label', EText::_($guid) . ' ' . $this->ldao->getByIso3166($localeValue)->value);
+            $field->setAttribute('name', $this->serializeXpath($attribute->getNodePath() . '/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString#' . $key));
+            $field->setAttribute('label', EText::_($guid) . ' ' . $this->ldao->getByIso3166($key)->value);
             $field->setAttribute('description', EText::_($guid, 2));
+
+            $defaults = array();
+            foreach ($this->domXpathStr->query('*/*/*/*[@locale="#FR"]', $attribute->parentNode) as $element) {
+                $defaults[] = $element->nodeValue;
+            }
+
+            foreach ($defaults as $opt) {
+                $option = $this->form->createElement('option', $opt);
+                $option->setAttribute('value', $opt);
+                $field->appendChild($option);
+            }
 
             $fields[] = $field;
         }
@@ -1264,7 +1279,8 @@ class FormGenerator {
                 $validator .= ' validate-sdi' . $patterns[$guid]->stereotype_name;
             }
 
-            return $validator;
+            return '';
+            //return $validator;
         } else {
             return '';
         }

@@ -142,6 +142,10 @@ foreach ($this->validators as $validator) {
             });
         });
     }
+    
+    function addToStructure(relid, parent_path){
+        js.get('<?php echo $_SERVER['PHP_SELF']; ?>' + '/?view=ajax&parent_path=' + parent_path + '&relid=' + relid);
+    }
 
     function addFieldset(id, idwi, relid, parent_path, lowerbound, upperbound) {
         var uuid = getUuid('add-btn-', id);

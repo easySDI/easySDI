@@ -18,7 +18,8 @@ class SdiLanguageDao extends SdiDao{
     
     /**
      * 
-     * @return array A table containing the list of supported languages
+     * @return array A table containing the list of supported languages. 
+     * The key of array is the language code.
      */
     public function getSupported() {
         
@@ -36,6 +37,10 @@ class SdiLanguageDao extends SdiDao{
         return $languages;
     }
     
+    /**
+     * 
+     * @return stdClass
+     */
     public function getDefault(){
         $languageIds = JComponentHelper::getParams('com_easysdi_catalog')->get('defaultlanguage');
         

@@ -169,8 +169,15 @@ class FormHtmlGenerator {
                 case EnumChildtype::$ATTRIBUT:
                     $parentname = $parent->nodeName;
                     $childName = $child->nodeName;
-                    $field = $this->getAttribute($child);
-                    $parentInner->appendChild($field);
+                    if ($child->getAttributeNS($this->catalog_uri, 'stereotypeId') == EnumStereotype::$GEMET) {
+                        if ($child->getAttributeNS($this->catalog_uri, 'index') == 1) {
+                            $field = $this->getAttribute($child);
+                            $parentInner->appendChild($field);
+                        }
+                    } else {
+                        $field = $this->getAttribute($child);
+                        $parentInner->appendChild($field);
+                    }
 
                     break;
                 case EnumChildtype::$RELATIONTYPE:
@@ -367,6 +374,7 @@ class FormHtmlGenerator {
             case EnumStereotype::$LOCALE:
                 if ($stereotypeId == EnumStereotype::$GEMET) {
                     $attributeGroup->appendChild($this->getGemet($attribute));
+                    $showButton = false;
                 }
 
                 $nodePath = $attribute->firstChild->getNodePath();
@@ -589,11 +597,11 @@ class FormHtmlGenerator {
     private function getGemet(DOMElement $attribute) {
         $languages = array();
         foreach ($this->ldao->getAll() as $language) {
-            $languages[] = '\''.$language->gemet.'\'';
+            $languages[] = '\'' . $language->gemet . '\'';
         }
-        
+
         $default = $this->ldao->getDefaultLanguage();
-        
+
         $parent_path = str_replace('-', '_', $this->serializeXpath($attribute->parentNode->getNodePath()));
         $div = $this->formHtml->createElement('div');
 
@@ -604,20 +612,24 @@ class FormHtmlGenerator {
 
                                 js('document').ready(function() {
                                 
-                                var languages = new Array(".implode(',', $languages).");
+                                var languages = new Array(" . implode(',', $languages) . ");
+                                var index = '';
+                                if(js('#jform_" . $parent_path . "_sla_gmd_dp_keyword_sla_gco_dp_CharacterString').length == 0){
+                                     index = '_la_1_ra_';
+                                }
 
                                 // path to Ext images
                                 Ext.BLANK_IMAGE_URL = 'http://gis.bnhelp.cz/wwwlibs/ext/ext3/resources/images/default/s.gif';
 
                                 // sets the user interface language
-                                HS.setLang('".$default->gemet."');
+                                HS.setLang('" . $default->gemet . "');
 
                                 Ext.onReady(function() {
 
                                     var thes = new ThesaurusReader({
 
-                                        lang: '".$default->gemet."',
-                                        outputLangs: [".  implode(',', $languages)."],
+                                        lang: '" . $default->gemet . "',
+                                        outputLangs: [" . implode(',', $languages) . "],
                                         title: 'GEMET Thesaurus',
                                         separator: ' > ',
                                         returnPath: true,
@@ -630,15 +642,15 @@ class FormHtmlGenerator {
 
                                     thes.render('gemet');
                                 });
-                                
-                                
+                                  
                                     
-                                    js('#jform_".$parent_path."_sla_gmd_dp_keyword_sla_gco_dp_CharacterString').on('change',function(evt, params){
-                                                var uri = js('#jform_".$parent_path."_sla_gmd_dp_keyword_sla_gco_dp_CharacterString option[value=\''+params.deselected+'\']').attr('class');
+                                    js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString').on('change',function(evt, params){
+                                        
+                                                var uri = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString option[value=\''+params.deselected+'\']').attr('class');
                                                 js('option[class=\''+uri+'\']').remove();
                                                 
                                                 for(var i=1; i < languages.length; i++){
-                                                    js('#jform_".$parent_path."_sla_gmd_dp_keyword_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()).trigger('liszt:updated');
+                                                    js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()).trigger('liszt:updated');
                                                 }
                                                 
                                     });
@@ -647,36 +659,36 @@ class FormHtmlGenerator {
                                 
                                 var writeTerms = function(result) {
                                     
-                                    
                                     for(var i=0; i < languages.length; i++){
                                         var paths = result.terms[languages[i]].split('>');
                                         var keyword = paths[paths.length - 1];
                                         var option_string = '<option class=\''+result.uri+'\' value=\''+keyword+'\' selected>'+keyword+'</option>';
                                         
                                         if(i==0){
-                                            var current_select = js('#jform_".$parent_path."_sla_gmd_dp_keyword_sla_gco_dp_CharacterString');
-                                            var current_div = js('#jform_".$parent_path."_sla_gmd_dp_keyword_sla_gco_dp_CharacterString_chzn ul li[class=\'search-field\'] input');
+                                            var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString');
+                                            var current_div = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString_chzn ul li[class=\'search-field\'] input');
                                         
                                         }else{
-                                            var current_select = js('#jform_".$parent_path."_sla_gmd_dp_keyword_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase());
-                                            var current_div = js('#jform_".$parent_path."_sla_gmd_dp_keyword_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()+'_chzn ul li[class=\'search-field\'] input');
+                                            var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase());
+                                            var current_div = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()+'_chzn ul li[class=\'search-field\'] input');
                                         }
                                         current_select.append(option_string);
                                         current_select.trigger('liszt:updated');
                                         current_div.attr('style','width: 0px');
                                         
+                                        addToStructure('" . $attribute->getAttributeNS($this->catalog_uri, 'relid') . "','" . $this->serializeXpath($attribute->parentNode->getNodePath()) . "');
                                     }
                                 }
                                 
                             });";
 
         $script->nodeValue = $script_code;
-        
-        $aModal = $this->formHtml->createElement('a','Thesaurus Gemet');
+
+        $aModal = $this->formHtml->createElement('a', 'Thesaurus Gemet');
         $aModal->setAttribute('data-toggle', 'modal');
         $aModal->setAttribute('href', '#myModal');
         $aModal->setAttribute('class', 'btn btn-primary btn-lg');
-        
+
         $divModal = $this->formHtml->createElement('div');
         $divModal->setAttribute('class', 'modal fade');
         $divModal->setAttribute('id', 'myModal');
@@ -684,44 +696,44 @@ class FormHtmlGenerator {
         $divModal->setAttribute('role', 'dialog');
         $divModal->setAttribute('aria-labelledby', 'myModalLabel');
         $divModal->setAttribute('aria-hidden', 'true');
-        
+
         $divDialog = $this->formHtml->createElement('div');
         $divDialog->setAttribute('class', 'modal-dialog');
-        
+
         $divContent = $this->formHtml->createElement('div');
         $divContent->setAttribute('class', 'modal-content');
-        
+
         $divHeader = $this->formHtml->createElement('div');
         $divHeader->setAttribute('class', 'modal-header');
-        
+
         $btnClose = $this->formHtml->createElement('button', '&times;');
         $btnClose->setAttribute('type', 'button');
         $btnClose->setAttribute('class', 'close');
         $btnClose->setAttribute('data-dismiss', 'modal');
         $btnClose->setAttribute('aria-hidden', 'true');
-        
-        $h4 = $this->formHtml->createElement('h4','Thesaurus Gemet');
+
+        $h4 = $this->formHtml->createElement('h4', 'Thesaurus Gemet');
         $h4->setAttribute('class', 'modal-title');
-        
+
         $divBody = $this->formHtml->createElement('div');
         $divBody->setAttribute('class', 'modal-body');
-        
+
         $divGemet = $this->formHtml->createElement('div');
         $divGemet->setAttribute('id', 'gemet');
         $divGemet->setAttribute('class', 'gemet');
-        
+
         $divHeader->appendChild($btnClose);
         $divHeader->appendChild($h4);
-        
+
         $divBody->appendChild($divGemet);
-        
+
         $divContent->appendChild($divHeader);
         $divContent->appendChild($divBody);
-        
+
         $divDialog->appendChild($divContent);
-        
+
         $divModal->appendChild($divDialog);
-        
+
         $div->appendChild($aModal);
         $div->appendChild($divModal);
         $div->appendChild($script);
