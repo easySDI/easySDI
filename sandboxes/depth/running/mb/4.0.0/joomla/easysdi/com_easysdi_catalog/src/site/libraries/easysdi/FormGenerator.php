@@ -1278,8 +1278,7 @@ class FormGenerator {
                 $validator .= ' validate-sdi' . $patterns[$guid]->stereotype_name;
             }
 
-            return '';
-            //return $validator;
+            return $validator;
         } else {
             return '';
         }

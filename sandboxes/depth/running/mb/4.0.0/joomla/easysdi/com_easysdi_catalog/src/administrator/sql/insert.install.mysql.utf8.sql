@@ -38,10 +38,10 @@ INSERT INTO `#__sdi_sys_stereotype` VALUES ('1', '1', '1', 'guid', '([A-Z0-9]{8}
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('2', '2', '1', 'text', '', 'CharacterString', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('3', '3', '1', 'locale', '', null, null,'1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('4', '4', '1', 'number', '[0-9.-]', 'Decimal', '2','1');
-INSERT INTO `#__sdi_sys_stereotype` VALUES ('5', '5', '1', 'date', 'YYYY-MM-DD ([0-9]{4}-[0-9]{2}-[0-9]{2})', 'Date', '2','1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('5', '5', '1', 'date', '([0-9]{4}-[0-9]{2}-[0-9]{2})', 'Date', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('6', '6', '1', 'list', '', null, null,'1');
-INSERT INTO `#__sdi_sys_stereotype` VALUES ('7', '7', '1', 'link', '#((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|\"|\'|:|\<|$|\.\s)#ie', 'URL', '1','1');
-INSERT INTO `#__sdi_sys_stereotype` VALUES ('8', '8', '1', 'datetime', '(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)[0-9]{2}(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)[0-9]{2}', 'DateTime', '2','1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('7', '7', '1', 'link', '#^http://[w-]+[w.-]+.[a-zA-Z]{2,6}#i', 'URL', '1','1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('8', '8', '1', 'datetime', '([0-9]{4}-[0-9]{2}-[0-9]{2})', 'DateTime', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('9', '9', '1', 'textchoice', '', 'CharacterString', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('10', '10', '1', 'localechoice', '', null, null,'1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('11', '11', '1', 'gemet', null, null, null,'1');
