@@ -196,6 +196,14 @@ foreach ($this->validators as $validator) {
             }
         });
     }
+    
+    function removeFromStructure(id){
+        var uuid = getUuid('remove-btn-', id);
+        js.get('<?php echo $_SERVER['PHP_SELF']; ?>' + '/?task=ajax.removeNode&uuid=' + uuid, function(data) {
+            var response = js.parseJSON(data);
+            return response.success;
+        });
+    }
 
     function removeField(id, idwi, lowerbound, upperbound) {
         var uuid = getUuid('remove-btn-', id);

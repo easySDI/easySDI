@@ -391,6 +391,23 @@ class FormHtmlGenerator {
                         }
                     }
                 }
+
+                if ($stereotypeId == EnumStereotype::$GEMET) {
+                    
+                    foreach ($this->domXpathFormHtml->query('descendant::div[@class="control-group"][position()>1]', $attributeGroup) as $control_group) {
+                        $control_group->setAttribute('style','height:0px; opacity:0;');
+                    }
+                    
+                    foreach ($this->domXpathFormHtml->query('descendant::select', $attributeGroup) as $select) {
+                        $i = 0;
+                        foreach ($this->domXpathFormHtml->query('descendant::option', $select) as $option) {
+                            $option->setAttribute('selected', 'selected');
+                            $option->setAttribute('id', $select->getAttribute('id').'_option_'.$i );
+                            $i++;
+                            $option->setAttribute('index',$i);
+                        }
+                    }
+                }
                 break;
 
             default:
@@ -646,12 +663,16 @@ class FormHtmlGenerator {
                                     
                                     js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString').on('change',function(evt, params){
                                         
-                                                var uri = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString option[value=\''+params.deselected+'\']').attr('class');
-                                                js('option[class=\''+uri+'\']').remove();
-                                                
+                                                var id_default = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString option[value=\''+params.deselected+'\']').attr('id');
+                                                var index_number = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString option[value=\''+params.deselected+'\']').attr('index');
+
                                                 for(var i=1; i < languages.length; i++){
+                                                    var id_i18n = id_default.replace('_sla_gco_dp_CharacterString','_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase());
+                                                    js('option[id=\''+id_i18n+'\']').remove();
                                                     js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()).trigger('liszt:updated');
                                                 }
+                                                
+                                                removeFromStructure('".$this->serializeXpath($attribute->parentNode->getNodePath())."-sla-gmd-dp-keyword-la-'+index_number+'-ra-');
                                                 
                                     });
 

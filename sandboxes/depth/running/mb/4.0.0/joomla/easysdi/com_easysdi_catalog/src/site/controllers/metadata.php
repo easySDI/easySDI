@@ -152,7 +152,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         foreach ($data as $xpath => $values) {
             if(is_array($values)){
                 foreach ($values as $key => $value) {
-                    $index = key+1;
+                    $index = $key+1;
                     $indexedXpath = str_replace('gmd-dp-keyword', 'gmd-dp-keyword-la-'.$index.'-ra-', $xpath);
                     $dataWithoutArray[$indexedXpath] = $value;
                 }
@@ -205,7 +205,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         
         $smda = new sdiMetadata($data['id']);
 
-        //$result = $smda->update($xml);
+        $result = $smda->update($xml);
 //        // Initialise variables.
 //        $app = JFactory::getApplication();
 //        $model = $this->getModel('Metadata', 'Easysdi_catalogModel');
