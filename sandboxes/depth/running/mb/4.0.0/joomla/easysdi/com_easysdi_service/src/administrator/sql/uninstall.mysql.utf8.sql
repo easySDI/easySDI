@@ -26,5 +26,7 @@ DROP TABLE IF EXISTS `#__sdi_featuretype_policy`;
 DROP TABLE IF EXISTS `#__sdi_includedattribute`;
 DROP TABLE IF EXISTS `#__sdi_virtualservice_organism`;
 DROP TABLE IF EXISTS `#__sdi_physicalservice_organism`;
+DROP TABLE IF EXISTS `#__sdi_policy_resourcetype`;
+DROP TABLE IF EXISTS `#__sdi_policy_visibility`;
 
 SET foreign_key_checks = 1;

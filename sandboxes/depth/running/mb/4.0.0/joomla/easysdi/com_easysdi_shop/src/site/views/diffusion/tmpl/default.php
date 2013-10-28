@@ -14,60 +14,11 @@ JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('formbehavior.chosen', 'select');
 
-//Load admin language file
-$lang = JFactory::getLanguage();
-$lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
+
 $document = JFactory::getDocument();
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/view/view.js')
 ?>
 
-<!-- Styling for making front end forms look OK -->
-<!-- This should probably be moved to the template CSS file -->
-<style>
-    .front-end-edit ul {
-        padding: 0 !important;
-    }
-    .front-end-edit li {
-        list-style: none;
-        margin-bottom: 6px !important;
-    }
-    .front-end-edit label {
-        margin-right: 10px;
-        display: block;
-        float: left;
-        width: 200px !important;
-    }
-    .front-end-edit .radio label {
-        float: none;
-    }
-    .front-end-edit .readonly {
-        border: none !important;
-        color: #666;
-    }    
-    .front-end-edit #editor-xtd-buttons {
-        height: 50px;
-        width: 600px;
-        float: left;
-    }
-    .front-end-edit .toggle-editor {
-        height: 50px;
-        width: 120px;
-        float: right;
-    }
-
-    #jform_rules-lbl{
-        display:none;
-    }
-
-    #access-rules a:hover{
-        background:#f5f5f5 url('../images/slider_minus.png') right  top no-repeat;
-        color: #444;
-    }
-
-    fieldset.radio label{
-        width: 50px !important;
-    }
-</style>
 <script type="text/javascript">
     js = jQuery.noConflict();
     js(document).ready(function() {
@@ -76,6 +27,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         onPricingChange();
         enableDownload();
         enableExtraction();
+        enableFreePerimeter();
         js('#adminForm').submit(function(event) {
             if (js('#jform_deposit').val() != '') {
                 js('#jform_deposit_hidden').val(js('#jform_deposit').val());
@@ -84,6 +36,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                 js('#jform_file_hidden').val(js('#jform_file').val());
             }
         });
+        js('#jform_restrictedperimeter').change(enableFreePerimeter);
     });
     Joomla.submitbutton = function(task)
     {
@@ -168,6 +121,16 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         js('#jform_deposit').val('');
         js('#jform_deposit_hidden').val('');
     }
+    
+    function enableFreePerimeter(){
+        if ( js('#jform_restrictedperimeter0').is(':checked') == true ){
+            js('#jform_perimeter1').attr('disabled', 'disabled');
+            js('#jform_perimeter1 option[value=-1]').attr("selected","selected") ;
+        }else{
+            js('#jform_perimeter1').removeAttr('disabled', 'disabled');
+        }
+        js('#jform_perimeter1').trigger("liszt:updated");
+    }
 </script>
 
 <div class="diffusion-edit front-end-edit">
@@ -177,7 +140,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         <h1><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_NEW_DIFFUSION'); ?></h1>
     <?php endif; ?>
 
-    <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+    <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
 
         <div class="row-fluid">
             <div >
@@ -243,10 +206,10 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                                 <label id="jform_perimeter<?php echo $orderperimeter->id; ?>-lbl" for="jform_perimeter<?php echo $orderperimeter->id; ?>" class="hasTip" title=""><?php echo $orderperimeter->name; ?></label>
                                             </div>
                                             <div class="controls">
-                                                <select id="jform_perimeter<?php echo $orderperimeter->id ?>" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" class="inputbox"  >
+                                                <select id="jform_perimeter<?php echo $orderperimeter->id ?>" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" class="inputbox input-xlarge"  >
                                                     <option value="-1" ><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_PERIMETER"); ?></option>
-                                                    <option value="1" <?php if(array_key_exists($orderperimeter->id,$this->item->perimeter ) && $this->item->perimeter[$orderperimeter->id] == 1) echo 'selected';  ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER"); ?></option>
-                                                    <option value="0" <?php if(array_key_exists($orderperimeter->id,$this->item->perimeter ) && $this->item->perimeter[$orderperimeter->id] == 0) echo 'selected';  ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER_WITH_BUFFER"); ?></option>
+                                                    <option value="1" <?php if(array_key_exists($orderperimeter->id,$this->item->perimeter ) && $this->item->perimeter[$orderperimeter->id] == 0) echo 'selected';  ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER"); ?></option>
+                                                    <option value="0" <?php if(array_key_exists($orderperimeter->id,$this->item->perimeter ) && $this->item->perimeter[$orderperimeter->id] == 1) echo 'selected';  ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER_WITH_BUFFER"); ?></option>
                                                 </select>
                                             </div>
                                         </div>
@@ -267,7 +230,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                                     case 2:
                                                     case 3:
                                                         ?>
-                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>][]" class="inputbox <?php if($property->mandatory) echo 'required' ; ?>" multiple="multiple" >
+                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>][]" class="inputbox input-xlarge <?php if($property->mandatory) echo 'required' ; ?>" multiple="multiple" >
                                                             <?php
                                                             foreach ($this->propertyvalues as $propertyvalue):
                                                                 if ($propertyvalue->property_id == $property->id):
@@ -282,7 +245,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                                         break;
                                                     case 4:
                                                         ?>
-                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>]" class="inputbox <?php if($property->mandatory) echo 'required' ; ?>"  >
+                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>]" class="inputbox input-xlarge <?php if($property->mandatory) echo 'required' ; ?>"  >
                                                             <?php if (!$property->mandatory): ?>
                                                                 <option value="-1"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_FIELD"); ?></option>
                                                                 <?php

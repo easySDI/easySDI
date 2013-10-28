@@ -268,6 +268,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_resource` (
 `description` VARCHAR(500)  NOT NULL ,
 `organism_id` INT(11)  UNSIGNED NOT NULL ,
 `resourcetype_id` INT(11) UNSIGNED NOT NULL ,
+`accessscope_id` INT(11) UNSIGNED  NOT NULL ,
 `access` INT(11)  NOT NULL ,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,

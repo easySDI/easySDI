@@ -497,6 +497,7 @@ INSERT INTO `#__sdi_sys_orderstate` VALUES ('7', '7', '1', 'saved');
 
 INSERT INTO `#__sdi_sys_ordertype` VALUES ('1', '1', '1', 'order');
 INSERT INTO `#__sdi_sys_ordertype` VALUES ('2', '2', '1', 'estimate');
+INSERT INTO `#__sdi_sys_ordertype` VALUES ('3', '3', '1', 'draft');
 
 INSERT INTO `#__sdi_sys_productstate` VALUES ('1', '1', '1', 'available');
 INSERT INTO `#__sdi_sys_productstate` VALUES ('2', '2', '1', 'await');

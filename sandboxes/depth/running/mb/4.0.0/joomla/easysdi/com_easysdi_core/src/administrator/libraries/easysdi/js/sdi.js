@@ -694,8 +694,8 @@ sdi.gxp.plugins.LayerManager = Ext.extend(sdi.gxp.plugins.LayerTree, {
 Ext.preg(sdi.gxp.plugins.LayerManager.prototype.ptype, sdi.gxp.plugins.LayerManager);
 
 /**
- * @version     4.0.0
-* * @package     com_easysdi_core
+* @version     4.0.0
+* @package     com_easysdi_core
 * @copyright   Copyright (C) 2012. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
 * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -1029,6 +1029,8 @@ gxp.Viewer.prototype.reactivate = function() {
 
         var panel = this.mapPanel;
         var map = panel.map;
+        extent = record.getLayer().maxExtent.clone();
+        map.zoomToExtent(extent);
 
         var records = baseRecords.concat(overlayRecords);
         if (records.length) {

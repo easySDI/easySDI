@@ -31,8 +31,7 @@ class Easysdi_mapViewPreview extends JViewLegacy {
         $app = JFactory::getApplication();
         
         $sdiuser = sdiFactory::getSdiUser();
-        
-        
+                
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_map');
@@ -43,18 +42,22 @@ class Easysdi_mapViewPreview extends JViewLegacy {
             throw new Exception(implode("\n", $errors));
         }
 
-        if(!$sdiuser->canView($this->item->id)){
-           JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
-           return;
-        }
-        
+        foreach ($this->item as $preview):
+            if(!$sdiuser->canView($preview->id)){
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+                return;
+             }
+        endforeach;
+                
         if (!$this->item) {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_MAP_PREVIEW_NOT_FOUND'), 'error');
             return;
         }
 
-        if($this->item->map_id)
-            $this->mapscript = Easysdi_mapHelper::getMapScript($this->item->map_id);
+        $params_array = $this->params->toArray();
+        if(isset($params_array['previewmap'])){
+            $this->mapscript = Easysdi_mapHelper::getMapScript($params_array['previewmap']);
+        }
         else{
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_MAP_PREVIEW_NOT_FOUND'), 'error');
             return;
@@ -62,31 +65,50 @@ class Easysdi_mapViewPreview extends JViewLegacy {
         
         //Get the default group to use to add the layer
         $model = JModelLegacy::getInstance('map', 'Easysdi_mapModel');
-        $item = $model->getData($this->item->map_id);
+        $item = $model->getData($params_array['previewmap']);
         foreach ($item->groups as $group):
             if($group->isdefault){
                 $defaultgroup = $group->alias;
                 break;
             }
         endforeach;
-            $this->addscript .= ' 
-                Ext.onReady(function(){
-                    sourceConfig = {id :"'.$this->item->service->alias.'",
-                                    ptype: "gxp_wmssource",
-                                    url: "'.$this->item->service->url.'"
-                                    };
-
-                    layerConfig = { group: "'.$defaultgroup.'",
-                                    name: "'.$this->item->layername.'",
-                                    opacity: 1,
-                                    source: "'.$this->item->service->alias.'",
-                                    tiled: true,
-                                    title: "'.$this->item->layername.'",
-                                    visibility: true};
-
-                    app.addExtraLayer(sourceConfig, layerConfig)
-                });';
-            
+        //This piece of code allowed the add of a layer with its source properly configured to be accessible by the layer manager of the gxp viewer.
+        //However, that gives the access to all the layers of the service if the gxp addLayer tool is activated.
+        //Don't think this is what we want, so we replaced that version with a more standard openlayers way to add a layer (see below)
+//            $this->addscript .= ' 
+//                Ext.onReady(function(){
+//                    sourceConfig = {id :"'.$this->item->service->alias.'",
+//                                    ptype: "sdi_gxp_wmssource",
+//                                    url: "'.$this->item->service->resourceurl.'"
+//                                    };
+//
+//                    layerConfig = { group: "'.$defaultgroup.'",
+//                                    name: "'.$this->item->layername.'",
+//                                    attribution: "'.addslashes ($this->item->attribution).'",
+//                                    opacity: 1,
+//                                    source: "'.$this->item->service->alias.'",
+//                                    tiled: true,
+//                                    title: "'.$this->item->layername.'",
+//                                    visibility: true};
+//
+//                    app.addExtraLayer(sourceConfig, layerConfig)
+//                });';
+        $this->addscript .= ' 
+               Ext.onReady(function(){ 
+                app.on("ready", function() {';
+            foreach ($this->item as $preview):
+                $this->addscript .=  'var '.$preview->layername.' = new OpenLayers.Layer.WMS("'.$preview->layername.'",
+                                                        "'.$preview->service->resourceurl.'",
+                                                         {layers: "'.$preview->layername.'",
+                                                             tiled: true,
+                                                             opacity: 1,
+                                                             transparent: true},
+                                                         {"attribution": "'.addslashes ($preview->attribution).'"}
+                                                         );
+                    app.mapPanel.map.addLayer('.$preview->layername.');';
+            endforeach;
+        $this->addscript .=        '  })});
+                ';
         $this->_prepareDocument();
 
         parent::display($tpl);
@@ -112,7 +134,7 @@ class Easysdi_mapViewPreview extends JViewLegacy {
         }
 
 //$title = $this->params->get('page_title', '');
-        $title = $this->item->name;
+//        $title = $this->item->name;
         if (empty($title)) {
             $title = $app->getCfg('sitename');
         } elseif ($app->getCfg('sitename_pagetitles', 0) == 1) {

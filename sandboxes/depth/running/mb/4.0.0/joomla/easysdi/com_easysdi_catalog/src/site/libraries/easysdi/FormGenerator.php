@@ -9,6 +9,8 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enu
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 
 /**
+ * This Class will generate a form in XML format for Joomla.
+ * 
  * @version     4.0.0
  * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2012. All rights reserved.
@@ -18,7 +20,6 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao
 class FormGenerator {
 
     /**
-     * database
      *
      * @var JDatabaseDriver
      */
@@ -91,7 +92,7 @@ class FormGenerator {
      * Returns a form structure to Joomla format.
      * 
      * @return string Form structure in Joomla format
-     * @since 4.0
+     * @version 4.0.0
      */
     public function getForm() {
 
@@ -192,11 +193,9 @@ class FormGenerator {
     }
 
     /**
-     * Recursive method of constructing the tree node
+     * Recursive method of constructing the tree
      * 
-     * @param SdiRelation $rel Current node
-     * @param int $level
-     * @since 4.0
+     * @param DOMElement $parent Current element.
      */
     private function getChildTree(DOMElement $parent) {
 
@@ -224,11 +223,10 @@ class FormGenerator {
     }
 
     /**
-     * Retrieves the child relation of the relation passed as a parameter.
+     * Retrieves the children of the element passed as parameter.
      * 
-     * @param SdiRelation $rel Current node
-     * @return DOMElement[]
-     * @since 4.0
+     * @param DOMElement $parent
+     * @return DOMElement[] Childs of parent relation.
      */
     private function getChildNode(DOMElement $parent) {
         $childs = array();
@@ -329,19 +327,20 @@ class FormGenerator {
     }
 
     /**
+     * This method creates a DOM element.
      * 
-     * @param type $uri
-     * @param type $prefix
-     * @param type $name
-     * @param type $id
-     * @param type $childtypeId
-     * @param type $guid
-     * @param type $lowerbound
-     * @param type $upperbound
-     * @param type $stereotypeId
-     * @param type $rendertypeId
+     * @param string $uri Namespace URI
+     * @param string $prefix Namespace prefix
+     * @param string $name Name of the element.
+     * @param string $id Id for current element
+     * @param int $childtypeId Childtype @see EnumChildtype
+     * @param string $guid Guid for current element
+     * @param int $lowerbound Minimum occurrence for current element.
+     * @param int $upperbound Maximum occurrence for current element.
+     * @param int $stereotypeId Stereotype @see EnumStereotype
+     * @param int $rendertypeId Rendertype @see EnumRendertype
      * 
-     * @return DOMElement Description
+     * @return DOMElement 
      */
     private function getDomElement($uri, $prefix, $name, $id, $childtypeId, $guid, $lowerbound = null, $upperbound = null, $stereotypeId = null, $rendertypeId = null) {
         $element = $this->structure->createElementNS($uri, $prefix . ':' . $name);
@@ -368,8 +367,9 @@ class FormGenerator {
     }
 
     /**
+     * Returns the structure of a stereotype.
      * 
-     * @param type $result
+     * @param stdClass $result
      * @return DOMElement[]
      */
     private function getStereotype($result) {
@@ -427,6 +427,11 @@ class FormGenerator {
         return $elements;
     }
 
+    /**
+     * Returns the structure of the stereotype "Extent".
+     * 
+     * @return DOMElement
+     */
     private function getExtendStereotype() {
         $namspaces = array();
         foreach ($this->nsdao->getAll() as $ns) {
@@ -550,6 +555,9 @@ class FormGenerator {
         return $EX_Extent;
     }
 
+    /**
+     * This method adds the required number of occurrences of a relation.
+     */
     private function mergeCsw() {
 
         foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="0"]|//*[@catalog:childtypeId="2"]|//*[@catalog:childtypeId="3"]') as $relation) {
@@ -574,6 +582,11 @@ class FormGenerator {
         $this->getValue($this->structure->getElementsByTagNameNS('*', '*')->item(0));
     }
 
+    /**
+     * This method retrieves the value of an attribute using XPath.
+     * 
+     * @param DOMNode $child The current attribute.
+     */
     private function getValue(DOMNode $child) {
         foreach ($child->childNodes as $node) {
             if ($node->hasChildNodes()) {
@@ -604,7 +617,6 @@ class FormGenerator {
      * Returns a form structure in Joomla format
      * 
      * @return string Form structure to Joomla format.
-     * @since 4.0
      */
     private function buildForm(DOMElement $root) {
         $form = $this->form->createElement('form');
@@ -641,6 +653,7 @@ class FormGenerator {
     }
 
     /**
+     * Creates hidden fields added to the form.
      * 
      * @return DOMElement
      */
@@ -667,9 +680,8 @@ class FormGenerator {
     /**
      * Returns a field corresponding to RenderType Joomla format.
      * 
-     * @param SdiRelation $rel Current node
-     * @return DOMElement Field corresponding to RenderType Joomla format.
-     * @since 4.0
+     * @param DOMElement $attribute
+     * @return DOMElement
      */
     private function getFormField(DOMElement $attribute) {
         $field = $this->form->createElement('field');
@@ -725,10 +737,8 @@ class FormGenerator {
     /**
      * Create a field of type text.
      * 
-     * @param SdiRelation $rel
-     * @param DOMElement $field
+     * @param DOMElement $attribute
      * @return DOMElement
-     * @since 4.0.0
      */
     private function getFormTextBoxField(DOMElement $attribute) {
         $maxlength = $attribute->getAttributeNS($this->catalog_uri, 'maxlength');
@@ -795,10 +805,9 @@ class FormGenerator {
     /**
      * Create a field of type textarea.
      * 
-     * @param SdiRelation $rel
-     * @param DOMElement $field
+     * @param DOMElement $attribute 
      * @return DOMElement
-     * @since 4.0.0
+     *
      */
     private function getFormTextAreaField(DOMElement $attribute) {
         $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
@@ -851,8 +860,8 @@ class FormGenerator {
     /**
      * Create a field of type checkboxes.
      * 
-     * @param SdiRelation $rel
-     * @return string
+     * @param DOMElement $attribute 
+     * @return DOMElement
      * @since 4.0.0
      */
     private function getFormCheckboxField(DOMElement $attribute) {
@@ -881,8 +890,8 @@ class FormGenerator {
     /**
      * Create a field of type radio.
      * 
-     * @param SdiRelation $rel
-     * @return string
+     * @param DOMElement $attribute
+     * @return DOMElement
      * @since 4.0.0
      */
     private function getFormRadioButtonField(DOMElement $attribute) {
@@ -914,8 +923,8 @@ class FormGenerator {
     /**
      * Create a field of type grouplist or list.
      * 
-     * @param SdiRelation $rel
-     * @return string
+     * @param DOMElement $attribute
+     * @return DOMElement
      * @since 4.0.0
      */
     private function getFormListField(DOMElement $attribute) {
@@ -963,7 +972,7 @@ class FormGenerator {
                     } else {
                         $field->setAttribute('label', JText::_($label));
                     }
-                    
+
                     $field->setAttribute('default', $attribute->firstChild->nodeValue);
 
                     if ($opt->guid != '') {
@@ -984,9 +993,9 @@ class FormGenerator {
                     } else {
                         $field->setAttribute('label', JText::_($label));
                     }
-                    
+
                     $field->setAttribute('default', $attribute->firstChild->nodeValue);
-                    
+
                     if ($opt->guid != '') {
                         $option = $this->form->createElement('option', EText::_($opt->guid));
                     } else {
@@ -1002,7 +1011,7 @@ class FormGenerator {
                     $field->setAttribute('type', 'list');
                     $field->setAttribute('label', EText::_($guid));
                     $field->setAttribute('default', $attribute->firstChild->getAttribute('codeListValue'));
-                    
+
                     if ($opt->guid != '') {
                         $option = $this->form->createElement('option', EText::_($opt->guid));
                     } else {
@@ -1021,8 +1030,8 @@ class FormGenerator {
     /**
      * Create a field of type calendar.
      * 
-     * @param SdiRelation $rel
-     * @return string
+     * @param DOMElement $attribute
+     * @return DOMElement
      * @since 4.0.0
      */
     private function getFormDateField(DOMElement $attribute) {
@@ -1051,9 +1060,15 @@ class FormGenerator {
     }
 
     private function getFormDateTimeField(SdiRelation $rel) {
-        // not yet implemented
+        //TODO: Not Implemented
     }
 
+    /**
+     * Create a field of type list specific for GEMET stereotype.
+     * 
+     * @param DOMElement $attribute
+     * @return DOMElement
+     */
     private function getFormGemetField(DOMElement $attribute) {
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
         $label = $attribute->getAttributeNS($this->catalog_uri, 'label');
@@ -1111,6 +1126,12 @@ class FormGenerator {
         return $fields;
     }
 
+    /**
+     * Create a field of type Hidden
+     * 
+     * @param DOMElement $attribute
+     * @return DOMElement
+     */
     private function getFormHiddenField(DOMElement $attribute) {
         $attributename = $attribute->nodeName;
         $field = $this->form->createElement('field');
@@ -1123,6 +1144,12 @@ class FormGenerator {
         return $field;
     }
 
+    /**
+     * Create a field of type list specific for Relationtype.
+     * 
+     * @param DOMElement $relationtype
+     * @return DOMElement
+     */
     private function getRelationType(DOMElement $relationtype) {
         $field = $this->form->createElement('field');
 
@@ -1149,6 +1176,12 @@ class FormGenerator {
         return $field;
     }
 
+    /**
+     * Create a field of type file.
+     * 
+     * @param DOMElement $attribute
+     * @return DOMElement
+     */
     private function getFormFileField(DOMElement $attribute) {
         $fields = array();
 
@@ -1189,7 +1222,7 @@ class FormGenerator {
     /**
      * Retrieves the list of options for fields such list, checkbox and radio.
      * 
-     * @param SdiRelation $rel Current node
+     * @param DOMElement $attribute
      * @return mixed List of options for list type fields, checkbox and radio.
      * @since 4.0
      */
@@ -1258,7 +1291,7 @@ class FormGenerator {
      * Exemple
      * <code>class = "required validate-sdilocale"</code>
      * 
-     * @param SdiRelation $rel
+     * @param DOMElement $attribute
      * @return string
      * @since 4.0.0
      */
@@ -1285,6 +1318,7 @@ class FormGenerator {
     }
 
     /**
+     * Get the list of the attribute and stereotype patterns.
      * 
      * @return array
      */
@@ -1302,9 +1336,13 @@ class FormGenerator {
     }
 
     /**
+     * Serialze the Xpath
+     * 
+     * @author Depth S.A.
+     * @since 4.0
      * 
      * @param string $xpath
-     * @return string
+     * @return string Serualized XPath
      */
     private function serializeXpath($xpath) {
         $xpath = str_replace('[', '-la-', $xpath);
@@ -1314,6 +1352,15 @@ class FormGenerator {
         return $xpath;
     }
 
+    /**
+     * Unserialze the Xpath
+     * 
+     * @author Depth S.A.
+     * @since 4.0
+     * 
+     * @param string $xpath
+     * @return string Unserialized XPath
+     */
     private function unSerializeXpath($xpath) {
         $xpath = str_replace('-la-', '[', $xpath);
         $xpath = str_replace('-ra-', ']', $xpath);

@@ -59,6 +59,11 @@ class Easysdi_coreViewApplication extends JViewLegacy {
             return;
         }
 
+        $resource = $app->getUserState('com_easysdi_core.edit.applicationresource.id');
+        $pathway = $app->getPathway();
+        $pathway->addItem(JText::_("COM_EASYSDI_CORE_BREADCRUMBS_APPLICATIONS"), JRoute::_('index.php?option=com_easysdi_core&view=applications&resource='.$resource, false));
+        $pathway->addItem(JText::_("COM_EASYSDI_CORE_BREADCRUMBS_APPLICATION"), JRoute::_('index.php?option=com_easysdi_core&task=application.edit&id='.$this->item->id, false));
+        
         $this->_prepareDocument();
 
         parent::display($tpl);

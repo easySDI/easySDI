@@ -287,6 +287,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         $table = $this->getTable();
         if ($table->save($data) === true) {
             $data['guid'] = $table->guid;
+            $id = $table->id;
             if (!sdiModel::saveAccessScope($data))
                 return false;
 
@@ -324,7 +325,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 $array = array();
                 $array['diffusion_id'] = $id;
                 $array['perimeter_id'] = $key;
-                ($perimeter == 1) ? $array['buffer'] = 1 : $array['buffer'] = 0;
+                ($perimeter == 1) ? $array['buffer'] = 0 : $array['buffer'] = 1;
                 if (!$diffusionperimeter->save($array))
                     return false;
 
@@ -396,7 +397,8 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         $query = $db->getQuery(true);
         if (strlen($ids) > 0) {
             $query->delete($table)
-                    ->where('id NOT IN (' . $ids . ')');
+                    ->where('id NOT IN (' . $ids . ')')
+                    ->where('diffusion_id =' . $id);
         } else {
             $query->delete($table)
                     ->where('diffusion_id =' . $id);

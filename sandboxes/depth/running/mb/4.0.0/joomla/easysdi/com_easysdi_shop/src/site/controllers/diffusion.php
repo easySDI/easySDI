@@ -28,7 +28,7 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
         // Get the previous edit id (if any) and the current edit id.
         $previousId = (int) $app->getUserState('com_easysdi_shop.edit.diffusion.id');
 
-        $metadataId = JFactory::getApplication()->input->getInt('id', null, 'array');
+        $metadataId = JFactory::getApplication()->input->getInt('id', null);
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
                 ->select('d.id, v.id as version_id')

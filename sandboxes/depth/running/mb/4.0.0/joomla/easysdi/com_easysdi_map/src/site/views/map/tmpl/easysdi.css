@@ -24,3 +24,7 @@ div.map-overlay {
     left: 10px !important;
     right: auto !important;
 }
+
+svg {
+    max-width :none !important;
+}

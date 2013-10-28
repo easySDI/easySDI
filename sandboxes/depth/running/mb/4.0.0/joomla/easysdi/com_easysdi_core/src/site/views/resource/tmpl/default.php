@@ -17,18 +17,15 @@ JHtml::_('formbehavior.chosen', 'select');
 //Load admin language file
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
+$document = JFactory::getDocument();
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/view/view.js')
+
 ?>
 
 <!-- Styling for making front end forms look OK -->
 <!-- This should probably be moved to the template CSS file -->
 <style>
 
-    .front-end-edit label {
-        margin-right: 10px;
-        display: block;
-        float: left;
-        width: 200px !important;
-    }
 
     #loader{
         -moz-border-radius: 8px;
@@ -70,6 +67,7 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 
     js = jQuery.noConflict();
     js(document).ready(function() {
+        enableAccessScope();
         onChangeOrganism();
         js('#form-resource').submit(function(event) {
 
@@ -120,7 +118,7 @@ $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
     <div id="loader" style="">
         <img id="loader_image"  src="administrator/components/com_easysdi_core/assets/images/loader.gif" alt="">
     </div>
-    <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+    <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
 
         <div class="row-fluid">
             <div >

@@ -58,6 +58,10 @@ class Easysdi_coreViewApplications extends JViewLegacy {
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
+        
+        $resource = $app->getUserState('com_easysdi_core.edit.applicationresource.id');
+        $pathway = $app->getPathway();
+        $pathway->addItem(JText::_("COM_EASYSDI_CORE_BREADCRUMBS_APPLICATIONS"), JRoute::_('index.php?option=com_easysdi_core&view=applications&resource='.$resource, false));
 
         $this->_prepareDocument();
         parent::display($tpl);

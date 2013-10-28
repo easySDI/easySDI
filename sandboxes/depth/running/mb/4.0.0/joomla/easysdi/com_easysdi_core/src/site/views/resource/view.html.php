@@ -53,6 +53,9 @@ class Easysdi_coreViewResource extends JViewLegacy {
             return;
         }
 
+        $pathway = $app->getPathway();
+        $pathway->addItem(JText::_("COM_EASYSDI_CORE_BREADCRUMBS_RESOURCE"), '');
+        
         $this->_prepareDocument();
 
         parent::display($tpl);

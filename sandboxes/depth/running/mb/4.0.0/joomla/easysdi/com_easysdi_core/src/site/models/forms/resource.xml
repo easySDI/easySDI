@@ -23,6 +23,43 @@
               filter="safehtml" />
         
         <field
+            name="accessscope_id" 
+            onchange="enableAccessScope();"
+            type="sql" 
+            class="inputbox input-xlarge"
+            label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_ACCESSSCOPE_ID"
+            description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_ACCESSSCOPE_ID" 
+            query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 ORDER BY ordering" 
+            key_field="id" 
+            value_field="value"
+            translate="true"
+        /> 
+        <field
+            name="organisms" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY ordering" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        /> 
+        <field
+            name="users" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY ordering" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        /> 
+        
+        <field
             name="state"
             type="list"
             label="JSTATUS"

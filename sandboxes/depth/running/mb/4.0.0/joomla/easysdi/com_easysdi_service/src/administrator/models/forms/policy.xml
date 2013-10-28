@@ -86,18 +86,66 @@
 	</fieldset>
 	
 	<fieldset name="csw_policy">
-		<field name="csw_anycontext" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYCONTEXT" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYCONTEXT" >
+                <field name="csw_includeharvested" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_INCLUDE_HARVESTED" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_INCLUDE_HARVESTED">
+		   <option value="1">JYES</option>
+		  <option value="0">JNO</option>
+		</field>
+		
+                <field name="csw_anyresourcetype" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYRESOURCETYPE" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYRESOURCETYPE" >
 			 <option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+                <field
+			name="csw_resourcetype" 
+			type="sql" 
+			class="multiselect input-xxlarge"
+                        multiple="true"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_RESOURCETYPE"
+			description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_RESOURCETYPE" 
+			query="SELECT id, name FROM #__sdi_resourcetype WHERE state=1 ORDER BY ordering" 
+			key_field="id" 
+			value_field="name"
+			translate="true"
+		/> 
 		<field name="csw_anyvisibility" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_ANYVISIBILITY" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_ANYVISIBILITY" >
 			 <option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-		<field name="csw_includeharvested" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CSW_INCLUDE_HARVESTED" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CSW_INCLUDE_HARVESTED">
-		   <option value="1">JYES</option>
-		  <option value="0">JNO</option>
-		</field>
+                <field
+			name="csw_accessscope_id" 
+			onchange="enableVisibility();"
+			type="sql" 
+			class="inputbox"
+			label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_VISIBILITY"
+			description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_VISIBILITY" 
+			query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 ORDER BY ordering" 
+			key_field="id" 
+			value_field="value"
+			translate="true"
+		/> 
+		<field
+			name="csw_organisms" 
+			type="sql" 
+			class="multiselect input-xxlarge"
+			multiple="true"
+			label=""
+			description="" 
+			query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY ordering" 
+			key_field="id" 
+			value_field="name"
+		/> 
+		<field
+			name="csw_users" 
+			type="sql" 
+			class="multiselect input-xxlarge"
+			multiple="true"
+			label=""
+			description="" 
+			query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY ordering" 
+			key_field="id" 
+			value_field="name"
+		/> 
+		
 		<field 	name="csw_anystate" 
 			type="radio" 
 			class="btn-group" 

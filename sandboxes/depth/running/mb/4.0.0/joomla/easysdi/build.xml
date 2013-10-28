@@ -7,7 +7,7 @@
     <property name="parent.component.name" value="easysdi"/>
     <property name="parent.src.out.dir" value="${parent.component.name}/src"/>
     <property name="parent.package.out.dir" value="${parent.component.name}/target"/>
-    <property name="version" value="4.0.0-alpha-7"/>
+    <property name="version" value="4.0.0-alpha-10"/>
     
     <!-- Joomla component path -->
     <property name="joomla.administrator.components.dir" value="administrator/components" />
@@ -18,6 +18,9 @@
     
     <!-- Joomla plugins path -->
     <property name="joomla.plugin.path" value="plugins"/>
+    
+    <!-- Joomla module path -->
+    <property name="joomla.module.path" value="modules"/>
     
     <!-- Java librairies path -->
     <property name="lib.path" value="easysdi/utils/lib"/>
@@ -50,9 +53,10 @@
     <include file="plg_easysdi_contact/build.xml" as="plg-contact"/>
     <include file="plg_easysdi_service/build.xml" as="plg-service"/>
     <include file="tpl_easysdi/build.xml" as="tpl-easysdi"/>
+    <include file="mod_easysdi_basket/build.xml" as="mod-basket"/>
     
     <!-- Packaging targets -->
-    <target name="package-all" depends="package-com-core,package-com-catalog,package-com-map,package-com-monitor,package-com-service,package-com-contact,package-com-shop,package-plg-contact,package-plg-monitor,package-plg-service,package-tpl-easysdi,copy-sub-package,write-xml,package" description="Main target"/>
+    <target name="package-all" depends="package-com-core,package-com-catalog,package-com-map,package-com-monitor,package-com-service,package-com-contact,package-com-shop,package-plg-contact,package-plg-monitor,package-plg-service,package-mod-basket, package-tpl-easysdi,copy-sub-package,write-xml,package" description="Main target"/>
     
     <target name="package-com-core" depends="core.package" description="Main Target"/>
     <target name="package-com-catalog" depends="catalog.package" description="Main Target"/>
@@ -66,10 +70,12 @@
     <target name="package-plg-monitor" depends="plg-monitor.package" description="Main Target"/>
     <target name="package-plg-service" depends="plg-service.package" description="Main Target"/>
     
+    <target name="package-mod-basket" depends="mod-basket.package" description="Main Target"/>
+    
     <target name="package-tpl-easysdi" depends="tpl-easysdi.package" description="Main Target"/>
     
     <!-- Dev Packaging targets -->
-    <target name="dev-package-all" depends="dev-package-com-core,dev-package-com-catalog,dev-package-com-map,dev-package-com-monitor,dev-package-com-service,dev-package-com-contact,dev-package-com-shop,package-plg-contact,package-plg-monitor,package-plg-service,copy-sub-package,write-xml,package" description="Main target"/>
+    <target name="dev-package-all" depends="dev-package-com-core,dev-package-com-catalog,dev-package-com-map,dev-package-com-monitor,dev-package-com-service,dev-package-com-contact,dev-package-com-shop,package-plg-contact,package-plg-monitor,package-plg-service,package-mod-basket,copy-sub-package,write-xml,package" description="Main target"/>
     
     <target name="dev-package-com-core" depends="core.dev-package" description="Main Target"/>
     <target name="dev-package-com-catalog" depends="catalog.dev-package" description="Main Target"/>
@@ -82,7 +88,7 @@
     <target name="dev-package-tpl-easysdi" depends="tpl-easysdi.dev-package" description="Main Target"/>
     
     <!-- Sycronysing targets-->
-    <target name="sync-all" depends="sync-com-core,sync-com-map,sync-com-monitor,sync-com-service,sync-com-contact,sync-com-shop,sync-plg-contact,sync-plg-monitor,sync-plg-service" description="Main target"/>
+    <target name="sync-all" depends="sync-com-core,sync-com-map,sync-com-monitor,sync-com-service,sync-com-contact,sync-com-shop,sync-plg-contact,sync-plg-monitor,sync-plg-service,sync-mod-basket" description="Main target"/>
     
     <target name="sync-com-core" depends="core.sync" description="Main Target"/>
     <target name="sync-com-catalog" depends="catalog.sync" description="Main Target"/>
@@ -96,10 +102,12 @@
     <target name="sync-plg-monitor" depends="plg-monitor.sync" description="Main Target"/>
     <target name="sync-plg-service" depends="plg-service.sync" description="Main Target"/>
     
+    <target name="sync-mod-basket" depends="mod-basket.sync" description="Main Target"/>
+    
     <target name="sync-tpl-easysdi" depends="tpl-easysdi.sync" description="Main Target"/>
     
     <!-- Sycronysing targets-->
-    <target name="sync-package-all" depends="sync-package-com-core,sync-package-com-map,sync-package-com-monitor,sync-package-com-service,sync-package-com-contact,sync-package-com-shop,sync-package-plg-contact,sync-package-plg-monitor,sync-package-plg-service" description="Main target"/>
+    <target name="sync-package-all" depends="sync-package-com-core,sync-package-com-map,sync-package-com-monitor,sync-package-com-service,sync-package-com-contact,sync-package-com-shop,sync-package-plg-contact,sync-package-plg-monitor,sync-package-plg-service, sync-package-mod-basket,write-xml" description="Main target"/>
     
     <target name="sync-package-com-core" depends="core.sync-package" description="Main Target"/>
     <target name="sync-package-com-catalog" depends="catalog.sync-package" description="Main Target"/>
@@ -112,6 +120,8 @@
     <target name="sync-package-plg-contact" depends="plg-contact.sync-package" description="Main Target"/>
     <target name="sync-package-plg-monitor" depends="plg-monitor.sync-package" description="Main Target"/>
     <target name="sync-package-plg-service" depends="plg-service.sync-package" description="Main Target"/>
+	
+    <target name="sync-package-mod-basket" depends="mod-basket.sync-package" description="Main Target"/>
     
     <target name="sync-package-tpl-easysdi" depends="tpl-easysdi.sync-package" description="Main Target"/>
     
@@ -135,6 +145,7 @@
             <fileset dir="${root.out.dir}/plg_easysdi_monitor/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/plg_easysdi_contact/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/plg_easysdi_service/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/mod_easysdi_basket/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/tpl_easysdi/target" includes="*" erroronmissingdir="false"/>
         </copy>
     </target>
@@ -161,6 +172,7 @@
                     <file type="component" id="com_easysdi_catalog">com_easysdi_catalog.zip</file> 
                     <file type="component" id="com_easysdi_map">com_easysdi_map.zip</file>
                     <file type="component" id="com_easysdi_shop">com_easysdi_shop.zip</file>
+                    <file type="module" id="mod_easysdi_basket">mod_easysdi_basket.zip</file>
                     <file type="plugin" id="easysdicontact" group="user">plg_easysdi_contact.zip</file> 
                     <file type="plugin" id="easysdiservice" group="content">plg_easysdi_service.zip</file>
                     <file type="template" id="tpl_easysdi" client="site">tpl_easysdi.zip</file>
@@ -186,6 +198,5 @@
         <jar destfile="${parent.package.out.dir}/easysdi-${version}.zip">
             <fileset dir="${parent.src.out.dir}"/>
         </jar>
-    </target>
-    
+    </target>    
 </project>

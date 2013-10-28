@@ -142,24 +142,34 @@ class Easysdi_mapModelMap extends JModelForm {
                 $this->_item->tools = array();
                 if ($tools = $toolTable->loadByMapId($id)) {
                     $this->_item->tools = $tools;
-//                    foreach ($tools as $tool) {
-//                        $toolTable = JTable::getInstance('tool', 'easysdi_mapTable');
-//                        $toolTable->load($tool, true);
-//                        $this->_item->tools[] = $toolTable;
-//                    }
                 }
                 
                 //Load the scaleline parameters
                 $db->setQuery('SELECT params FROM #__sdi_map_tool WHERE tool_id=14 AND map_id = ' . $id);
                 try {
                     $scalelineparams = $db->loadResult();
-                if(!empty($scalelineparams)){
-                    $params = json_decode($scalelineparams);
-                    $this->_item->topOutUnits = $params->topOutUnits;
-                    $this->_item->topInUnits = $params->topInUnits;
-                    $this->_item->bottomOutUnits = $params->bottomOutUnits;
-                    $this->_item->bottomInUnits = $params->bottomInUnits;
+                    if(!empty($scalelineparams)){
+                        $params = json_decode($scalelineparams);
+                        foreach ($params as $key => $value) {
+                            $this->_item->$key = $value;
+                        }
+                    }
+                } catch (JDatabaseException $e) {
+                    $je = new JException($e->getMessage());
+                    $this->setError($je);
+                    return false;
                 }
+                
+                //Load the wfs locator
+                $db->setQuery('SELECT params FROM #__sdi_map_tool WHERE tool_id=16 AND map_id = ' . $id);
+                try {
+                    $wfslocator = $db->loadResult();
+                    if(!empty($wfslocator)){
+                        $params = json_decode($wfslocator);
+                        foreach ($params as $key => $value) {
+                            $this->_item->$key = $value;
+                        }
+                    }
                 } catch (JDatabaseException $e) {
                     $je = new JException($e->getMessage());
                     $this->setError($je);

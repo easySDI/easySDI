@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 
 require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/metadata.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
 
 /**
  * Version controller class.
@@ -30,6 +31,14 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
         $keys = array("version_id" => $data['id']);
         $metadata->load($keys);
+        //Delete the csw metadata in the remote catalog
+        $csw = new sdiMetadata($metadata->id);
+        if(!$csw->delete()):
+            // Redirect back to the list screen.
+//            $this->setMessage(JText::_('Metadata can not be deleted from the remote catalog.'), 'error');
+//            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+//            return false;
+        endif; 
         if (!$metadata->delete($metadata->id)) {
             // Redirect back to the list screen.
             $this->setMessage(JText::_('Metadata can not be deleted.'), 'error');

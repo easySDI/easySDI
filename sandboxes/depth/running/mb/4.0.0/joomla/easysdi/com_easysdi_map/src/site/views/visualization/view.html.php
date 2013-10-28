@@ -27,13 +27,17 @@ class Easysdi_mapViewVisualization extends JViewLegacy {
      */
     public function display($tpl = null) {
         JForm::addFieldPath(JPATH_ADMINISTRATOR . '/components/com_easysdi_core/models/fields');
-        
-        $app            = JFactory::getApplication();
-        
-        $this->state    = $this->get('State');
-        $this->item     = $this->get('Data');
-        $this->params   = $app->getParams('com_easysdi_map');
-        $this->form     = $this->get('Form');
+
+        //Load admin language file
+        $lang = JFactory::getLanguage();
+        $lang->load('com_easysdi_map', JPATH_ADMINISTRATOR);
+
+        $app = JFactory::getApplication();
+
+        $this->state = $this->get('State');
+        $this->item = $this->get('Data');
+        $this->params = $app->getParams('com_easysdi_map');
+        $this->form = $this->get('Form');
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
@@ -42,12 +46,12 @@ class Easysdi_mapViewVisualization extends JViewLegacy {
 
         //Check the user right
         $this->user = sdiFactory::getSdiUser();
-        if (!$this->user->isEasySDI ) {
+        if (!$this->user->isEasySDI) {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
         }
-       
+
         if (!empty($this->item->id)) {
             if (!$this->user->authorizeOnVersion($this->item->version_id, sdiUser::viewmanager)) {
                 JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
@@ -55,7 +59,11 @@ class Easysdi_mapViewVisualization extends JViewLegacy {
                 return false;
             }
         }
-        
+
+
+        $pathway = $app->getPathway();
+        $pathway->addItem(JText::_("COM_EASYSDI_CORE_BREADCRUMBS_RESOURCES"), JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+        $pathway->addItem(JText::_("COM_EASYSDI_MAP_BREADCRUMBS_VISUALIZATION"), '');
 
         $this->_prepareDocument();
 
@@ -100,7 +108,7 @@ class Easysdi_mapViewVisualization extends JViewLegacy {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
     }
-    
+
     function getToolbar() {
         //load the JToolBar library and create a toolbar
         jimport('joomla.html.toolbar');

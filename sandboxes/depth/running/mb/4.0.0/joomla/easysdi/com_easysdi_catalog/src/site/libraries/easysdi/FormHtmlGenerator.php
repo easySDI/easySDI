@@ -4,15 +4,14 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumLayerName.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumServiceConnector.php';
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- * Description of FormHtmlGenerator
- *
- * @author Administrator
+ * This Class will browse the xml structure in session and create the tree fielset.
+ * 
+ * @version     4.0.0
+ * @package     com_easysdi_catalog
+ * @copyright   Copyright (C) 2012. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 class FormHtmlGenerator {
 
@@ -83,7 +82,10 @@ class FormHtmlGenerator {
     }
 
     /**
+     * This function returns the form in HTML.
      * 
+     * @author Depth S.A.
+     * @since 4.0
      * @return string
      */
     public function buildForm() {
@@ -123,6 +125,15 @@ class FormHtmlGenerator {
         return $html;
     }
 
+    /**
+     * This function recursively browse the XML structure to create the HTML form.
+     * 
+     * @author Depth S.A.
+     * @since 4.0
+     * 
+     * @param DOMElement $parent Parent element in the XML structure.
+     * @param DOMElement $parentHtml Parent element in the HTML structure.
+     */
     private function recBuildForm(DOMElement $parent, DOMElement $parentHtml) {
         switch ($parent->parentNode->nodeType) {
             case XML_DOCUMENT_NODE:
@@ -204,8 +215,11 @@ class FormHtmlGenerator {
     /**
      * Built on the action bar to add new relation instance.
      * 
-     * @param SdiRelation $rel
-     * @return DOMElement
+     * @author Depth S.A.
+     * @since 4.0
+     * 
+     * @param DOMElement $relation Current relation.
+     * @return DOMElement The DIV block that contains the label and the button "add" if necessary.
      */
     private function getAction(DOMElement $relation) {
 
@@ -225,7 +239,8 @@ class FormHtmlGenerator {
 
         $occurance = $this->domXpathStr->query($this->removeIndex($relation->getNodePath()))->length;
 
-        $debug = '[oc:' . $occurance . ' lb:' . $lowerbound . ' ub:' . $upperbound . '][' . $relation->nodeName . ']';
+        //$debug = '[oc:' . $occurance . ' lb:' . $lowerbound . ' ub:' . $upperbound . '][' . $relation->nodeName . ']';
+        $debug = '';
 
         $aAdd = $this->formHtml->createElement('a');
         $aAdd->setAttribute('id', 'add-btn-' . $this->serializeXpath($relation->getNodePath()));
@@ -255,10 +270,14 @@ class FormHtmlGenerator {
     }
 
     /**
-     * Constructs a fieldset corresponding to a Class.
+     * Built fieldset corresponding to a relation instance. 
+     * This method also creates the "Close" button and, if necessary, the "Delete" button.
      * 
-     * @param SdiRelation $rel
-     * @return DOMElement
+     * @author Depth S.A.
+     * @since 4.0
+     * 
+     * @param DOMElement $element
+     * @return DOMElement A fieldset containing the necessary buttons.
      */
     private function getFieldset(DOMElement $element) {
         $lowerbound = $element->getAttributeNS($this->catalog_uri, 'lowerbound');
@@ -269,8 +288,6 @@ class FormHtmlGenerator {
         $guid = $element->getAttributeNS($this->catalog_uri, 'id');
         $legendAttribute = $element->getAttributeNS($this->catalog_uri, 'legend');
         $stereotypeId = $element->firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId');
-
-        $elementname = $element->nodeName;
 
         $aCollapse = $this->formHtml->createElement('a');
         $aCollapse->setAttribute('id', 'collapse-btn-' . $this->serializeXpath($element->getNodePath()));
@@ -338,6 +355,9 @@ class FormHtmlGenerator {
     /**
      * Encode special characters into HTML entities. Unless the <> characters.
      * 
+     * @author Depth S.A.
+     * @since 4.0
+     * 
      * @param string $text
      * @return string
      */
@@ -348,10 +368,14 @@ class FormHtmlGenerator {
     }
 
     /**
-     * Build a string with 
+     * This method constructs a set of attributes. 
+     * It will contain either a single field or a field for each language or a group of fields corresponding to a stereotype.
      * 
-     * @param SdiRelation $rel
-     * @return string
+     * @author Depth S.A.
+     * @since 4.0
+     * 
+     * @param DOMElement $attribute The current attribute.
+     * @return DOMElement DIV containing a group of fields.
      */
     private function getAttribute(DOMElement $attribute) {
         $lowerbound = $attribute->getAttributeNS($this->catalog_uri, 'lowerbound');
@@ -435,6 +459,15 @@ class FormHtmlGenerator {
         return $attributeGroup;
     }
 
+    /**
+     * Returns a DIV containing the fields of the stereotype "geographic extent."
+     * 
+     * @author Depth S.A.
+     * @since 4.0
+     * 
+     * @param DOMElement $attribute The current attribute.
+     * @return DOMElement The DIV.
+     */
     private function getMap(DOMElement $attribute) {
         $parent_path = str_replace('-', '_', $this->serializeXpath($attribute->parentNode->getNodePath()));
 
@@ -460,7 +493,7 @@ class FormHtmlGenerator {
 
         $query = $this->db->getQuery(true);
 
-        $query->select('m.srs, m.unit_id, m.maxresolution, m.maxextent, m.centercoordinates, l.layername, l.service_id, l.servicetype, l.asOLstyle, l.asOLoptions, l.asOLmatrixset, u.`alias` as unit_alias');
+        $query->select('m.srs, m.unit_id, m.maxresolution, m.restrictedextent, m.zoom, m.maxextent, m.centercoordinates, l.layername, l.service_id, l.servicetype, l.asOLstyle, l.asOLoptions, l.asOLmatrixset, u.`alias` as unit_alias');
         $query->from('#__sdi_map as m');
         $query->innerJoin('#__sdi_map_layergroup mlg ON m.id = mlg.map_id');
         $query->innerJoin('#__sdi_layer_layergroup llg ON llg.group_id = mlg.group_id');
@@ -555,7 +588,23 @@ class FormHtmlGenerator {
                                 var lat = 40;
                                 var zoom = 5;
 
-                                map_$parent_path = new OpenLayers.Map(\"map_$parent_path\",{projection: \"" . $map_config->srs . "\" , maxResolution: " . $map_config->maxresolution . " , units: \"" . $map_config->unit_alias . "\", maxExtent: [" . $map_config->maxextent . "], restrictedExtent: [" . $map_config->maxextent . "]});
+                                var map_options = {projection: \"" . $map_config->srs . "\" 
+                                    , maxResolution: " . $map_config->maxresolution . " 
+                                    , units: \"" . $map_config->unit_alias . "\"
+                                    , maxExtent: [" . $map_config->maxextent . "]";
+                                 if(!empty($map_config->restrictedExtent))  {
+                                    $script->nodeValue .= ", restrictedExtent: [" . $map_config->restrictedExtent . "]";
+                                  }
+                                 if(!empty($map_config->centercoordinates)){
+                                     $script->nodeValue .= ", centercoordinates: [" . $map_config->centercoordinates . "]";
+                                 }
+                                 if(!empty($map_config->zoom)){
+                                     $script->nodeValue .= ", zoom: " . $map_config->zoom;
+                                 }
+                           $script->nodeValue .= "};"; 
+                                  
+
+            $script->nodeValue.= " map_$parent_path = new OpenLayers.Map(\"map_$parent_path\", map_options);
                                  
                                 " . $layer_definition . "
                                 polygonLayer_$parent_path = new OpenLayers.Layer.Vector('Polygon Layer');
@@ -611,6 +660,15 @@ class FormHtmlGenerator {
         return $div;
     }
 
+    /**
+     * This method returns a DIV containing the fields of the stereotype "GEMET".
+     * 
+     * @author Depth S.A.
+     * @since 4.0
+     * 
+     * @param DOMElement $attribute
+     * @return DOMElement
+     */
     private function getGemet(DOMElement $attribute) {
         $languages = array();
         foreach ($this->ldao->getAll() as $language) {
@@ -763,10 +821,15 @@ class FormHtmlGenerator {
     }
 
     /**
+     * This method builds up the field retrieve structure Joomla field.
      * 
-     * @param JFile $field
-     * @param string $guid
-     * @return string
+     * @author Depth S.A.
+     * @since 4.0
+     * 
+     * @param DOMElement $attribute The current attribute.
+     * @param JField $field The Joomla JField
+     * @param boolean $addButton Defines whether the "Add" button must be created.
+     * @return DOMElement[] 
      */
     private function buildField(DOMElement $attribute, $field, $addButton = FALSE) {
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
@@ -814,8 +877,12 @@ class FormHtmlGenerator {
     }
 
     /**
+     * Import the HTML structure of the label in a DOMElement.
      * 
-     * @param type $field
+     * @author Depth S.A.
+     * @since 4.0
+     * 
+     * @param JField $field The Joomla JField
      * @return DOMElement
      */
     private function getLabel($field) {
@@ -834,8 +901,9 @@ class FormHtmlGenerator {
     }
 
     /**
+     * Import HTML structure of input field in a DOMElement.
      * 
-     * @param type $field
+     * @param JField $field The Joomla JField.
      * @return DOMElement
      */
     private function getInput($field) {
@@ -853,9 +921,13 @@ class FormHtmlGenerator {
     }
 
     /**
+     * This method creates the tooltip script.
      * 
-     * @param type $field
-     * @param string $guid
+     * @author Depth S.A.
+     * @since 4.0
+     * 
+     * @param JField $field The Joomla JField
+     * @param string $guid Guid find in translations.
      * @return DOMElement
      */
     private function getInputScript($field, $guid) {
@@ -872,9 +944,13 @@ class FormHtmlGenerator {
     }
 
     /**
+     * Create the "ADD" bouton, if necessary.
      * 
-     * @param DOMElement $attribute
-     * @return DOMElement Description
+     * @author Depth S.A.
+     * @since 4.0
+     * 
+     * @param DOMElement $attribute The current attribute.
+     * @return DOMElement
      */
     private function getAttributeAction(DOMElement $attribute) {
         $lowerbound = $attribute->getAttributeNS($this->catalog_uri, 'lowerbound');
@@ -906,6 +982,15 @@ class FormHtmlGenerator {
         return $aAdd;
     }
 
+    /**
+     * Adds the "Preview" button to the File stereotype.
+     * 
+     * @author Depth S.A.
+     * @since 4.0
+     * 
+     * @param DOMElement $attribute
+     * @return DOMElement
+     */
     private function getPreviewAction(DOMElement $attribute) {
         $a = $this->formHtml->createElement('a');
         $i = $this->formHtml->createElement('i');
@@ -923,6 +1008,15 @@ class FormHtmlGenerator {
         return $a;
     }
 
+    /**
+     * Adds the "Clear" button to the File stereotype.
+     * 
+     * @author Depth S.A.
+     * @since 4.0
+     * 
+     * @param DOMElement $attribute The current attribute.
+     * @return DOMElement
+     */
     private function getEmptyFileAction(DOMElement $attribute) {
         $a = $this->formHtml->createElement('a');
         $i = $this->formHtml->createElement('i');
@@ -939,9 +1033,13 @@ class FormHtmlGenerator {
     }
 
     /**
+     * Serialze the Xpath
+     * 
+     * @author Depth S.A.
+     * @since 4.0
      * 
      * @param string $xpath
-     * @return string
+     * @return string Serualized XPath
      */
     private function serializeXpath($xpath) {
         $xpath = str_replace('[', '-la-', $xpath);
@@ -952,6 +1050,7 @@ class FormHtmlGenerator {
     }
 
     /**
+     * Remove index from XPath
      * 
      * @param string $xpath
      * @return string
