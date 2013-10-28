@@ -32,6 +32,23 @@ class Easysdi_catalogModelCatalog extends JModelForm {
     protected function populateState() {
         $app = JFactory::getApplication('com_easysdi_catalog');
 
+        $params = JComponentHelper::getParams('com_easysdi_catalog');
+
+        // List state information
+        $value = $app->getUserStateFromRequest('global.list.limit', 'limit', $params->get('searchresultpaginationnumber'));
+        $limit = $value;
+        $this->setState('list.limit', $limit);
+
+        $value = $app->getUserStateFromRequest('com_easysdi_catalog.limitstart', 'limitstart', 1);
+        $limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 1);
+        $this->setState('list.start', $limitstart);
+
+//        $limit = $app->getUserStateFromRequest('global.list.limit', 'limit', $params->get('searchresultpaginationnumber'));
+//        $this->setState('list.limit', $limit);
+//
+//        $limitstart = JFactory::getApplication()->input->getInt('limitstart', 1);
+//        $this->setState('list.start', $limitstart);
+
         // Load state from the request userState on edit or from the passed variable on default
         if (JFactory::getApplication()->input->get('layout') == 'edit') {
             $id = JFactory::getApplication()->getUserState('com_easysdi_catalog.edit.catalog.id');
@@ -80,11 +97,10 @@ class Easysdi_catalogModelCatalog extends JModelForm {
                 // Convert the JTable to a clean JObject.
                 $properties = $table->getProperties(1);
                 $this->_item = JArrayHelper::toObject($properties, 'JObject');
-                
-                if($this->_item->oninitrunsearch || JFactory::getApplication()->input->get('search', 'false', 'STRING') == 'true'){                    
-                    $this->_item->dom = cswrecords::getRecords($id);   
+               
+                if ($this->_item->oninitrunsearch || JFactory::getApplication()->input->get('search', 'false', 'STRING') == 'true') {
+                    $this->_item->dom = cswrecords::getRecords($id);
                 }
-                
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
@@ -97,8 +113,6 @@ class Easysdi_catalogModelCatalog extends JModelForm {
         $this->addTablePath(JPATH_COMPONENT_ADMINISTRATOR . '/tables');
         return JTable::getInstance($type, $prefix, $config);
     }
-
-    
 
     /**
      * Method to get the profile form.
@@ -132,6 +146,20 @@ class Easysdi_catalogModelCatalog extends JModelForm {
         return $data;
     }
 
-    
+    /**
+     * Method to get a JPagination object for the data set.
+     *
+     * @return  JPagination  A JPagination object for the data set.
+     *
+     * @since   12.2
+     */
+    public function getPagination() {
+
+        // Create the pagination object.
+        $limit = (int) $this->getState('list.limit') - (int) $this->getState('list.links');
+        $page = new JPagination(JFactory::getApplication('com_easysdi_catalog')->getUserState('global.list.total'), $this->getState('list.start'), $limit);
+
+        return $page;
+    }
 
 }

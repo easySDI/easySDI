@@ -16,7 +16,8 @@ abstract class cswrecords {
         $params = JComponentHelper::getParams('com_easysdi_catalog');
         $catalogurl = $params->get('catalogurl');
         $limit = $params->get('searchresultpaginationnumber');
-        $startposition = '1';
+        $startposition = JFactory::getApplication()->input->getInt('start', 1);
+        
         //Or getvar startposition of JPagination
         //Criteria from the catalog : 
         //Resourcetype
@@ -185,6 +186,9 @@ abstract class cswrecords {
                 return false;
             } else {
                 $SearchResults = $doc->getElementsByTagName('SearchResults ');
+                
+               //Put the numberOfRecordsMatched in session variable for pagination
+               JFactory::getApplication('com_easysdi_catalog')->setUserState('global.list.total', '238');
                
 //                foreach ($SearchResults->item(0)->attributes as $a => $b) {
 //                    if ($a == 'numberOfRecordsMatched') {

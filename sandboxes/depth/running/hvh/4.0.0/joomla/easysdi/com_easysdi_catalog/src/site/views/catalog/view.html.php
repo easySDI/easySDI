@@ -35,7 +35,7 @@ class Easysdi_catalogViewCatalog extends JViewLegacy {
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_catalog');
-
+        $this->pagination = $this->get('Pagination');
         $this->form = $this->get('Form');
 
         // Check for errors.

@@ -236,7 +236,7 @@ class cswmetadata {
             $exmetadata->setAttribute('updated', $this->metadata->modified);
 
             $query = $this->db->getQuery(true)
-                    ->select('id,pricing_id, hasdownload, hasextraction, accessscope_id')
+                    ->select('id, guid ,pricing_id, hasdownload, hasextraction, accessscope_id')
                     ->from('#__sdi_diffusion')
                     ->where('version_id = ' . $this->version->id);
             $this->db->setQuery($query);
@@ -275,13 +275,13 @@ class cswmetadata {
                         if ($diffusion->accessscope_id == 2):
                             $organisms = sdiModel::getAccessScopeOrganism($diffusion->guid);
                             $organism = sdiFactory::getSdiUser()->getMemberOrganisms();
-                            if (!in_array($organism[0]->id, $organisms)):
+                            if (empts($organisms) || !in_array($organism[0]->id, $organisms)):
                                 $right = false;
                             endif;
                         endif;
                         if ($diffusion->accessscope_id == 3):
                             $users = sdiModel::getAccessScopeUser($diffusion->guid);
-                            if (!in_array(sdiFactory::getSdiUser()->id, $users)):
+                            if (empty($users) || !in_array(sdiFactory::getSdiUser()->id, $users)):
                                 $right = false;
                             endif;
                         endif;
