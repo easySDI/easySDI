@@ -1,24 +1,20 @@
 <?php
 
-require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/SdiNamespace.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiDao.php';
 
 /**
- * Description of SdiNamespaceDao
- *
- * @author Marc Battaglia <marc.battaglia@depth.ch>
+ * @version     4.0.0
+ * @package     com_easysdi_catalog
+ * @copyright   Copyright (C) 2012. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
-class SdiNamespaceDao {
+class SdiNamespaceDao extends SdiDao{
+    
     /**
-     *
-     * @var JDatabaseDriver 
+     * 
+     * @return array
      */
-    private $db;
-    
-    function __construct() {
-        $this->db = JFactory::getDbo();
-    }
-
-    
     public function getAll(){
         $query = $this->db->getQuery(true);
         

@@ -11,7 +11,6 @@
 defined('_JEXEC') or die;
 
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormGenerator.php';
-require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/SdiRelation.php';
 
 jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
@@ -25,9 +24,9 @@ class Easysdi_catalogModelMetadata extends JModelForm {
 
     /**
      *
-     * @var SdiRelation[] 
+     * @var DOMDocument
      */
-    var $_classTree = array();
+    var $_structure;
 
     /**
      *
@@ -39,7 +38,15 @@ class Easysdi_catalogModelMetadata extends JModelForm {
      *
      * @var stdClass[] 
      */
-    var $_validators = array();
+    public $_validators = array();
+    private $catalog_uri = 'http://www.easysdi.org/2011/sdi/catalog';
+    private $catalog_prefix = 'catalog';
+
+    function __construct() {
+        $this->db = JFactory::getDbo();
+
+        parent::__construct();
+    }
 
     /**
      * Method to auto-populate the model state.
@@ -69,8 +76,12 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         $this->setState('params', $params);
     }
 
-    public function getClassTree() {
-        return $this->_classTree;
+    /**
+     * 
+     * @return DOMDocument
+     */
+    public function getStructure() {
+        return $this->_structure;
     }
 
     public function getValidators() {
@@ -208,16 +219,11 @@ class Easysdi_catalogModelMetadata extends JModelForm {
      * @since	1.6
      */
     public function getForm($data = array(), $loadData = true) {
-        $formGenerator = null;
-        if (isset($this->_item->csw)) {
-            $formGenerator = new FormGenerator($this->_item->csw);
-        } else {
-            $formGenerator = new FormGenerator();
-        }
+        $formGenerator = new FormGenerator($this->_item->csw);
 
         $form = $this->loadForm('com_easysdi_catalog.metadata', $formGenerator->getForm(), array('control' => 'jform', 'load_data' => $loadData, 'file' => FALSE));
 
-        $this->_classTree = $formGenerator->relations;
+        $this->_structure = $formGenerator->structure;
 
         $this->buildValidators();
 
@@ -254,7 +260,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         (empty($data['id']) ) ? $new = true : $new = false;
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('metadata.id');
 
-                
+
         $user = sdiFactory::getSdiUser();
         if (!$user->isEasySDI) {
             //Not an EasySDI user = not allowed
@@ -322,10 +328,10 @@ class Easysdi_catalogModelMetadata extends JModelForm {
      * Built validators depending on pattern of stereotype and attribute.
      * @since  4.0.0
      */
-    private function buildValidators() {
+    private function buildValidators_old() {
         $tmpValidators = array();
 
-        foreach ($this->_classTree as $rel) {
+        foreach ($this->_structure as $rel) {
             if ($rel->childtype_id == SdiRelation::$ATTRIBUT) {
                 $patterns = array();
                 $validator = new stdClass();
@@ -340,7 +346,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                 }
 
                 $validator->patterns = $patterns;
-                if(isset($validator->name)){
+                if (isset($validator->name)) {
                     $tmpValidators[$validator->name] = $validator;
                 }
             }
@@ -367,6 +373,82 @@ class Easysdi_catalogModelMetadata extends JModelForm {
 
             $this->_validators[] = $js;
         }
+    }
+
+    private function buildValidators() {
+        $domXpathStr = new DOMXPath($this->_structure);
+
+        $nsdao = new SdiNamespaceDao();
+        $patterns = $this->getPatterns();
+
+        foreach ($nsdao->getAll() as $ns) {
+            $domXpathStr->registerNamespace($ns->prefix, $ns->uri);
+        }
+
+        $tmpValidator = array();
+        foreach ($domXpathStr->query('//*[@catalog:childtypeId="2"]') as $attribute) {
+
+            $guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
+
+            if (array_key_exists($guid, $patterns)) {
+                $validator = new stdClass();
+                $validator_pattern = array();
+
+                if ($patterns[$guid]->stereotype_pattern != '') {
+                    $validator->name = $patterns[$guid]->stereotype_name;
+                    $validator_pattern[] = $patterns[$guid]->stereotype_pattern;
+                }
+
+                if ($patterns[$guid]->attribute_pattern != '') {
+                    $validator->name = $patterns[$guid]->guid;
+                    $validator_pattern[] = $patterns[$guid]->attribute_pattern;
+                }
+
+                $validator->patterns = $validator_pattern;
+                if(isset($validator->name)){
+                    $tmpValidator[$validator->name] = $validator;
+                }
+            }
+        }
+
+        foreach ($tmpValidator as $v) {
+            $js = 'document.formvalidator.setHandler(\'sdi' . $v->name . '\', function(value) {
+                    ';
+            $condition = '';
+            for ($i = 0; $i < count($v->patterns); $i++) {
+                $js .= 'regex_' . $i . ' = /' . $v->patterns[$i] . '/;
+                        ';
+                $condition .= 'regex_' . $i . '.test(value) && ';
+            }
+
+            $js .= 'if(' . substr($condition, 0, -4) . '){
+                            return true;
+                        }else{
+                            return false;
+                        }';
+
+            $js .= '});
+                    ';
+
+            $this->_validators[] = $js;
+        }
+    }
+
+    /**
+     * 
+     * @return array
+     */
+    private function getPatterns() {
+        $query = $this->db->getQuery(true);
+
+        $query->select('a.id, a.guid, a.pattern as attribute_pattern, s.defaultpattern as stereotype_pattern, s.`value` as stereotype_name');
+        $query->from('#__sdi_relation as r');
+        $query->innerJoin('jos_sdi_attribute as a on r.attributechild_id = a.id');
+        $query->leftJoin('jos_sdi_sys_stereotype as s on a.stereotype_id = s.id');
+        $query->where('r.`state` = 1');
+
+        $this->db->setQuery($query);
+        return $this->db->loadObjectList('guid');
     }
 
 }
