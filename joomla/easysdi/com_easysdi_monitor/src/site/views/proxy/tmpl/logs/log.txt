@@ -1,0 +1,50 @@
+-----------------------------
+REQUEST HEADERS
+-----------------------------
+forward->:Host:localhost
+forward->:Connection:keep-alive
+forward->:User-Agent:Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.43 Safari/537.31
+forward->:X-Requested-With:XMLHttpRequest
+forward->:Accept:*/*
+forward->:Referer:http://localhost/joomla15/administrator/index.php?option=com_easysdi_monitor&view=main
+forward->:Accept-Encoding:gzip,deflate,sdch
+forward->:Accept-Language:fr-FR,fr;q=0.8,en-US;q=0.6,en;q=0.4
+forward->:Accept-Charset:ISO-8859-1,utf-8;q=0.7,*;q=0.3
+forward->:Cookie:6ffe8ff7b5f9f77976632b3eddf11dba=nn6br70k4vr13ergs5nl07kr47; f62e709521569ba23f300581cec9f384=u7g5k7kg4q6gbiqktqfmn1ea60; 10730fd0c3cdd93ad26629c899f61931=n3401impt7dod5qkjcuhhgf794
+-----------------------------
+
+received url:http://localhost:8080/Monitor/jobs/WMS/queries
+-----------------------------
+REQUEST PARAMS
+-----------------------------
+_dc=1365496195123
+Itemid=
+-----------------------------
+resulting url:http://localhost:8080/Monitor/jobs/WMS/queries?_dc=1365496195123&Itemid=&
+
+getfile
+Auth with: admin:adm
+GET:http://localhost:8080/Monitor/jobs/WMS/queries?_dc=1365496195123&Itemid=&
+CURL SUCCEEDED:
+end getfile
+Raw response:-->HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: application/json;charset=UTF-8
+Content-Language: fr-FR
+Transfer-Encoding: chunked
+Date: Tue, 09 Apr 2013 08:29:55 GMT
+
+{"success":true,"message":"Le détail de la collection de queries a bien été récupéré","data":[{"id":94,"name":"GetCap","soapUrl":null,"status":"Non testé","statusCode":"NOT_TESTED","serviceMethod":"GetCapabilities","params":[],"queryValidationResult":{"id":null,"sizeValidationResult":null,"responseSize":null,"timeValidationResult":null,"deliveryTime":null,"xpathValidationResult":null,"xpathValidationOutput":null},"queryValidationSettings":{"id":null,"useSizeValidation":null,"normSize":null,"normSizeTolerance":null,"useTimeValidation":null,"normTime":null,"useXpathValidation":null,"xpathExpression":null,"expectedXpathOutput":null}}]}<--
+-----------------------------
+Response headers
+-----------------------------
+sending->Content-Type: application/json;charset=UTF-8
+-----------------------------
+
+output:
+
+
+
+
+
+{"success":true,"message":"Le détail de la collection de queries a bien été récupéré","data":[{"id":94,"name":"GetCap","soapUrl":null,"status":"Non testé","statusCode":"NOT_TESTED","serviceMethod":"GetCapabilities","params":[],"queryValidationResult":{"id":null,"sizeValidationResult":null,"responseSize":null,"timeValidationResult":null,"deliveryTime":null,"xpathValidationResult":null,"xpathValidationOutput":null},"queryValidationSettings":{"id":null,"useSizeValidation":null,"normSize":null,"normSizeTolerance":null,"useTimeValidation":null,"normTime":null,"useXpathValidation":null,"xpathExpression":null,"expectedXpathOutput":null}}]}
