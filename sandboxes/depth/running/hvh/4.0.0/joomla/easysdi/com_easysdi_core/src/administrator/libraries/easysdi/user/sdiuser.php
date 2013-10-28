@@ -63,6 +63,10 @@ class sdiUser {
      */
     public $lang = null;
 
+    /**
+     * EasySDI user roles
+     * 
+     */
     const member = 1;
     const resourcemanager = 2;
     const metadataresponsible = 3;

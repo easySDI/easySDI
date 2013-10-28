@@ -1,21 +1,30 @@
+var  request;
+
 function addtobasket() {
-    jQuery('#sdi-loader').show();
-    var request = false;
-    if (window.XMLHttpRequest) {
-        request = new XMLHttpRequest();
-    } else if (window.ActiveXObject) {
-        try {
-            request = new ActiveXObject("Msxml2.XMLHTTP");
-        } catch (e) {
+    if (typeof initRequest === 'function') {
+        initRequest();
+    }else{
+        
+        jQuery('#sdi-loader').show();
+        request = false;
+        if (window.XMLHttpRequest) {
+            request = new XMLHttpRequest();
+        } else if (window.ActiveXObject) {
             try {
-                request = new ActiveXObject("Microsoft.XMLHTTP");
+                request = new ActiveXObject("Msxml2.XMLHTTP");
             } catch (e) {
-                request = false;
+                try {
+                    request = new ActiveXObject("Microsoft.XMLHTTP");
+                } catch (e) {
+                    request = false;
+                }
             }
         }
+        if (!request)
+            return;
     }
-    if (!request)
-        return;
+
+    
 
     var diffusion = jQuery('#diffusion_id').val();
     var cmd = {"id": diffusion, "properties": []};
@@ -31,7 +40,7 @@ function addtobasket() {
 
     jQuery(".sdi-shop-property-list").each(function() {
         var count = jQuery(this).find(":selected").length;
-        if (count == 0) {
+        if (count === 0) {
             return;
         }
         var currentId = jQuery(this).attr('id');
@@ -51,7 +60,7 @@ function addtobasket() {
 
     jQuery(".sdi-shop-property-checkbox").each(function() {
         var count = jQuery(this).find(":checked").length;
-        if (count == 0) {
+        if (count === 0) {
             return;
         }
         var currentId = jQuery(this).attr('id');
@@ -65,7 +74,7 @@ function addtobasket() {
     var query = "index.php?option=com_easysdi_shop&task=addToBasket&item=" + JSON.stringify(cmd);
 
     jQuery("#progress").css('visibility', 'visible');
-    if (typeof updateBasketContent == 'function') {
+    if (typeof updateBasketContent === 'function') {
         request.onreadystatechange = updateBasketContent;
     }
 

@@ -30,24 +30,20 @@ class Easysdi_catalogModelSheet extends JModelForm {
      * @since	1.6
      */
     protected function populateState() {
-        $app = JFactory::getApplication('com_easysdi_catalog');
+        $id = JFactory::getApplication()->input->get('guid');
+        if(empty($id)):
+            $item = JFactory::getApplication()->input->get('id');
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true)
+                    ->select('guid')
+                    ->from('#__sdi_metadata')
+                    ->where('id = '.(int) $item ) ;
+            $db->setQuery($query);
+            $id = $db->loadResult();
+        endif;
+        JFactory::getApplication()->setUserState('com_easysdi_catalog.edit.sheet.id', $id);
 
-        // Load state from the request userState on edit or from the passed variable on default
-        if (JFactory::getApplication()->input->get('layout') == 'edit') {
-            $id = JFactory::getApplication()->getUserState('com_easysdi_catalog.edit.sheet.id');
-        } else {
-            $id = JFactory::getApplication()->input->get('id');
-            JFactory::getApplication()->setUserState('com_easysdi_catalog.edit.sheet.id', $id);
-        }
         $this->setState('sheet.id', $id);
-
-        // Load the parameters.
-        $params = $app->getParams();
-        $params_array = $params->toArray();
-        if (isset($params_array['item_id'])) {
-            $this->setState('sheet.id', $params_array['item_id']);
-        }
-        $this->setState('params', $params);
     }
 
     /**
@@ -68,15 +64,15 @@ class Easysdi_catalogModelSheet extends JModelForm {
             //Load CSW metadata
             $metadata = new cswmetadata($id);
             $metadata->load();
-            
-            $jinput = JFactory::getApplication()->input; 
+
+            $jinput = JFactory::getApplication()->input;
             $langtag = $jinput->get('lang', '', 'STRING');
-            if(empty($langtag)):
-                 //Current language
-                $lang = JFactory::getLanguage();  
+            if (empty($langtag)):
+                //Current language
+                $lang = JFactory::getLanguage();
                 $langtag = $lang->getTag();
             endif;
-                       
+
             //Is the call from joomla
             $callfromjoomla = true;
             //Current catalog context
@@ -88,22 +84,29 @@ class Easysdi_catalogModelSheet extends JModelForm {
              * - diffusion
              */
             $type = $jinput->get('type', 'abstract', 'STRING');
-                        
+            /* Current preview. Possible value :
+             * - editor
+             * - public
+             * A preview corresponds to an association of a catalog and a type :
+             * preview = catalog + type
+             * If a preview is provided, its value is used to load the XSL file.
+             * If no preview is provided, catalog and type values are used to load the XSL file
+             */
+            $preview = $jinput->get('preview', '', 'STRING');
+
             //Build extended metadata
-            $metadata->extend($catalog, $type, $callfromjoomla, $langtag);
-            
-            
+            $metadata->extend($catalog, $type, $preview, $callfromjoomla, $langtag);
+
+
             //Apply XSL transformation and complete with shop order fields
-            if($callfromjoomla)
-                $this->_item = $metadata->getShopExtenstion(). $metadata->applyXSL($catalog, $type);
+            if ($callfromjoomla)
+                $this->_item = $metadata->getShopExtension() . $metadata->applyXSL($catalog, $type, $preview);
             else
-                $this->_item = $metadata->applyXSL($catalog, $type);
-            
+                $this->_item = $metadata->applyXSL($catalog, $type, $preview);
         }
 
         return $this->_item;
     }
-   
 
     /**
      * Method to get the profile form.
@@ -116,7 +119,7 @@ class Easysdi_catalogModelSheet extends JModelForm {
      * @since	1.6
      */
     public function getForm($data = array(), $loadData = true) {
-        // Get the form.
+// Get the form.
         $form = $this->loadForm('com_easysdi_catalog.sheet', 'sheet', array('control' => 'jform', 'load_data' => $loadData));
         if (empty($form)) {
             return false;
@@ -135,4 +138,5 @@ class Easysdi_catalogModelSheet extends JModelForm {
         $data = $this->getData();
         return $data;
     }
+
 }

@@ -9,6 +9,12 @@
 // no direct access
 defined('_JEXEC') or die;
 
+JHTML::_('behavior.modal'); 
+JHtml::_('formbehavior.chosen', 'select');
+
+$document = JFactory::getDocument();
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js');
+
 //Load admin language file
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
@@ -36,8 +42,8 @@ if (!empty($this->item->dom)):
         foreach ($nodes as $node) :
             $metadata = new cswmetadata();
             $metadata->init($node);
-            $metadata->extend($this->item->alias, 'result', 'true', $lang->getTag());
-            $result = $metadata->applyXSL($this->item->alias, 'result');
+            $metadata->extend($this->item->alias, 'result','', 'true', $lang->getTag());
+            $result = $metadata->applyXSL($this->item->alias, 'result','');
             ?><div class="catalog-searchresult"> <?php
             echo $result;
             ?><hr></div><?php

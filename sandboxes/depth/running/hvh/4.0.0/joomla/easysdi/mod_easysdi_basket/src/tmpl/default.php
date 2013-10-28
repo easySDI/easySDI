@@ -7,9 +7,13 @@ $document->addStyleSheet(JURI::root().'/administrator/components/com_easysdi_cor
 
 ?>
 <script>
+    var request;
+    
     jQuery(document).ready(function() {
         jQuery('#content').prepend("<div id='sdi-loader' style='display : none'><img id='sdi-loader-image'  src='<?php echo JURI::root(); ?>administrator/components/com_easysdi_core/assets/images/loader.gif' alt=''></div>");
     });
+    
+    
     
     function updateBasketContent() {
         if (request.readyState == 4) {

@@ -63,26 +63,27 @@ abstract class Easysdi_shopHelper {
             //Check if there is at least one common perimeter within all the extractions in the basket
             //Check if buffer is authorized
             $common = array();
-            foreach ($extraction->perimeters as $perimeter):
-                foreach ($basket->perimeters as $bperimeter):
-                    if($bperimeter->id == $perimeter->id):
-                        foreach ($common as $cperimeter):
-                            if($bperimeter->id == $cperimeter->id):
-                                if($bperimeter->allowedbuffer == 0 || $perimeter->allowedbuffer == 0):
-                                    $cperimeter->allowedbuffer = 0;
-                                    continue 2;
+            if ($extraction->perimeters):
+                foreach ($extraction->perimeters as $perimeter):
+                    foreach ($basket->perimeters as $bperimeter):
+                        if ($bperimeter->id == $perimeter->id):
+                            foreach ($common as $cperimeter):
+                                if ($bperimeter->id == $cperimeter->id):
+                                    if ($bperimeter->allowedbuffer == 0 || $perimeter->allowedbuffer == 0):
+                                        $cperimeter->allowedbuffer = 0;
+                                        continue 2;
+                                    endif;
                                 endif;
+                            endforeach;
+                            if ($bperimeter->allowedbuffer == 0):
+                                $common[] = $bperimeter;
+                            else:
+                                $common[] = $perimeter;
                             endif;
-                        endforeach;
-                        if($bperimeter->allowedbuffer == 0):
-                            $common[] = $bperimeter;
-                        else:
-                            $common[] = $perimeter;
                         endif;
-                    endif;
+                    endforeach;
                 endforeach;
-            endforeach;
-
+            endif;
             if (count($common) == 0):
                 //There is no more common perimeter between the extraction in the basket
                 //Extraction can not be added, send a message to the user
@@ -151,15 +152,15 @@ abstract class Easysdi_shopHelper {
             $common = array();
             foreach ($basket->extractions as $extraction):
                 foreach ($extraction->perimeters as $perimeter):
-                    foreach($common as $cperimeter):
-                        if($perimeter->id == $cperimeter->id):
-                            if($perimeter->allowedbuffer == 0 || $cperimeter->allowedbuffer == 0):
+                    foreach ($common as $cperimeter):
+                        if ($perimeter->id == $cperimeter->id):
+                            if ($perimeter->allowedbuffer == 0 || $cperimeter->allowedbuffer == 0):
                                 $cperimeter->allowedbuffer = 0;
                                 continue 2;
                             endif;
                         endif;
                     endforeach;
-                    $common[] = $perimeter;                       
+                    $common[] = $perimeter;
                 endforeach;
             endforeach;
 

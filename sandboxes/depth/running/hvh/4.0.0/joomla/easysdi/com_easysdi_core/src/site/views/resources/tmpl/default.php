@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tooltip');
 JHtml::_('formbehavior.chosen', 'select');
+JHTML::_('behavior.modal'); 
 ?>
 <script type="text/javascript">
     js = jQuery.noConflict();
@@ -201,13 +202,16 @@ endif;
                                                 <li>
                                                     <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_EDIT_METADATA'); ?></a>
                                                 </li>
+                                                <li>
+                                                    <a class="<?php echo $item->id; ?>_linker modal" rel="{handler:'iframe',size:{x:600,y:700}}" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&tmpl=component&view=sheet&preview=editor&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_VIEW_METADATA'); ?></a>
+                                                </li>
                                             <?php endif; ?>
-                                            <?php if ($this->user->authorize($item->id, sdiUser::metadataresponsible)): ?>
+                                            <?php if ($this->user->authorize($item->id, sdiUser::metadataeditor)): ?>
                                                 <li>
                                                     <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.validate&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_VALIDATE_METADATA'); ?></a>
                                                 </li>
                                             <?php endif; ?>
-                                            <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>
+                                            <?php if ($this->user->authorize($item->id, sdiUser::metadataresponsible)): ?>
                                                 <li>
                                                     <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.publish&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_PUBLISH_METADATA'); ?></a>
                                                 </li>
@@ -218,7 +222,7 @@ endif;
                                                     <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.archive&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ARCHIVE_METADATA'); ?></a>
                                                 </li>
                                             <?php endif; ?>
-                                            <?php if ($this->user->authorize($item->id, sdiUser::metadataeditor) || $this->user->authorize($item->id, sdiUser::metadataresponsible)): ?>
+                                            <?php if ($this->user->authorize($item->id, sdiUser::metadataeditor)): ?>
                                                 <li class="divider"></li>
                                                 <li>
                                                     <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.assign&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ASSIGN_METADATA'); ?></a>

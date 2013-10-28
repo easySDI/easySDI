@@ -153,7 +153,7 @@ class cswmetadata {
     /**
      * Buils an extended Metadata containing EasySDI information fields for XSL transformation
      */
-    public function extend($catalog, $type, $callfromJoomla, $lang) {
+    public function extend($catalog, $type, $preview, $callfromJoomla, $lang) {
         //Is it an harvested metadata
         $xpath = new DomXPath($this->dom);
         $xpath->registerNamespace('sdi', 'http://www.easysdi.org/2011/sdi');
@@ -404,13 +404,13 @@ class cswmetadata {
 
         //Sheet view
         $sheet = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:sheetview');
-        $sheetlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&id=' . $this->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&type=' . $type));
+        $sheetlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $this->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&type=' . $type . '&preview=' .$preview));
         $sheet->appendChild($sheetlink);
         $action->appendChild($sheet);
 
         //Make pdf
         $exportpdf = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:exportpdf');
-        $exportpdflink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&task=sheet.exportPDF&id=' . $this->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&type=' . $type));
+        $exportpdflink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&task=sheet.exportPDF&id=' . $this->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&type=' . $type . '&preview=' .$preview));
         $exportpdf->appendChild($exportpdflink);
         $action->appendChild($exportpdf);
 
@@ -432,7 +432,7 @@ class cswmetadata {
         return $this->extendeddom;
     }
 
-    public function applyXSL($catalog, $type, $dom = null) {
+    public function applyXSL($catalog, $type, $preview, $dom = null) {
         if (empty($dom)) {
             $dom = $this->extendeddom;
         }
@@ -445,6 +445,7 @@ class cswmetadata {
         $processor->importStylesheet($style);
         $processor->setParameter("", 'catalog', $catalog);
         $processor->setParameter("", 'type', $type);
+        $processor->setParameter("", 'preview', $preview);
         $html = $processor->transformToDoc($dom);
         $text = $html->saveXML();
         //Workaround to avoid printf problem with text with a "%", must
@@ -454,7 +455,7 @@ class cswmetadata {
         return $text;
     }
 
-    public function getShopExtenstion() {
+    public function getShopExtension() {
         if (empty($this->version)):
             try {
                 $this->metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');

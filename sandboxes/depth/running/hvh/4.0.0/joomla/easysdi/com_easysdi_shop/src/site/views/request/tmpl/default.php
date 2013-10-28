@@ -57,7 +57,7 @@ $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
                                         <?php if (in_array($extraction->id, $this->authorizeddiffusion)) : ?>
                                             <tr id="<?php echo $extraction->id; ?>">
                                                 <td>
-                                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.edit&id=' . (int) $extraction->resource); ?>"><?php echo $extraction->name; ?></a>
+                                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=sheet&preview=editor&guid=' . $extraction->metadataguid); ?>"><?php echo $extraction->name; ?></a>
                                                     <div class="small"><?php echo $extraction->organism; ?></div>
                                                     <div class="accordion" id="accordion_<?php echo $extraction->id; ?>_properties">
                                                         <div class="accordion-group">
