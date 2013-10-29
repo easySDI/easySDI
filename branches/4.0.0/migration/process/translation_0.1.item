@@ -2,7 +2,7 @@
 <talendfile:ProcessType xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.talend.org/mapper" xmlns:talendfile="platform:/resource/org.talend.model/model/TalendFile.xsd" defaultContext="Default">
   <context confirmationNeeded="false" name="Default">
     <contextParameter comment="" name="destination_AdditionalParams" prompt="destination_AdditionalParams?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="noDatetimeStringSync=true"/>
-    <contextParameter comment="" name="destination_Database" prompt="destination_Database?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="joomlatest"/>
+    <contextParameter comment="" name="destination_Database" prompt="destination_Database?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="joomlaAlpha10"/>
     <contextParameter comment="" name="destination_Login" prompt="destination_Login?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="root"/>
     <contextParameter comment="" name="destination_Password" prompt="destination_Password?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_Password" value=""/>
     <contextParameter comment="" name="destination_Port" prompt="destination_Port?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="3306"/>
@@ -235,9 +235,6 @@
     <elementParameter field="MEMO" name="COMMENT" value=""/>
     <elementParameter field="CHECK" name="VALIDATION_RULES" value="false"/>
     <metadata connector="FLOW" label="jos_sdi_translation" name="write">
-      <column comment="" key="true" length="10" name="id" nullable="false" pattern="" precision="0" sourceType="INT UNSIGNED" type="id_Long" usefulColumn="true">
-        <additionalField key="Comment" value=""/>
-      </column>
       <column comment="" key="false" length="36" name="guid" nullable="false" pattern="" precision="0" sourceType="VARCHAR" type="id_String" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
@@ -290,7 +287,6 @@
         <mapperTableEntries name="text2" expression="row1.information!=null?row1.information:row1.content " type="id_String"/>
       </varTables>
       <outputTables sizeState="INTERMEDIATE" name="write">
-        <mapperTableEntries name="id" expression="row1.id" type="id_Long"/>
         <mapperTableEntries name="guid" expression="java.util.UUID.randomUUID().toString() " type="id_String"/>
         <mapperTableEntries name="alias" expression="&quot;default&quot;" type="id_String"/>
         <mapperTableEntries name="created_by" expression="Var.createdby " type="id_Integer" nullable="true"/>
@@ -343,7 +339,7 @@
     <elementParameter field="LABEL" name="NOTE" value="This option only applies when deploying and running in the Talend Runtime"/>
     <elementParameter field="CHECK" name="SPECIFY_DATASOURCE_ALIAS" value="false"/>
     <elementParameter field="TEXT" name="DATASOURCE_ALIAS" value="&quot;&quot;"/>
-    <elementParameter field="CHECK" name="DIE_ON_ERROR" value="false"/>
+    <elementParameter field="CHECK" name="DIE_ON_ERROR" value="true"/>
     <elementParameter field="MAPPING_TYPE" name="MAPPING" value="mysql_id"/>
     <elementParameter field="TEXT" name="PROPERTIES" value="context.destination_AdditionalParams"/>
     <elementParameter field="CHECK" name="EXTENDINSERT" value="true"/>
@@ -357,11 +353,6 @@
     <elementParameter field="TABLE" name="ADD_COLS"/>
     <elementParameter field="CHECK" name="USE_FIELD_OPTIONS" value="false"/>
     <elementParameter field="TABLE" name="FIELD_OPTIONS">
-      <elementValue elementRef="SCHEMA_COLUMN" value="id"/>
-      <elementValue elementRef="UPDATE_KEY" value="false"/>
-      <elementValue elementRef="DELETE_KEY" value="false"/>
-      <elementValue elementRef="UPDATABLE" value="true"/>
-      <elementValue elementRef="INSERTABLE" value="true"/>
       <elementValue elementRef="SCHEMA_COLUMN" value="guid"/>
       <elementValue elementRef="UPDATE_KEY" value="false"/>
       <elementValue elementRef="DELETE_KEY" value="false"/>
@@ -445,9 +436,6 @@
     <elementParameter field="MEMO" name="COMMENT" value=""/>
     <elementParameter field="CHECK" name="VALIDATION_RULES" value="false"/>
     <metadata connector="FLOW" label="jos_sdi_translation" name="tMysqlOutput_1">
-      <column comment="" key="true" length="10" name="id" nullable="false" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">
-        <additionalField key="Comment" value=""/>
-      </column>
       <column comment="" key="false" length="36" name="guid" nullable="false" pattern="" precision="0" sourceType="VARCHAR" type="id_String" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
@@ -492,9 +480,6 @@
       </column>
     </metadata>
     <metadata connector="REJECT" label="jos_sdi_translation" name="REJECT">
-      <column comment="" key="true" length="10" name="id" nullable="false" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">
-        <additionalField key="Comment" value=""/>
-      </column>
       <column comment="" key="false" length="36" name="guid" nullable="false" pattern="" precision="0" sourceType="VARCHAR" type="id_String" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
