@@ -1,0 +1,46 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:expression="http:///expression.ecore">
+  <expression:EMFExpression id="null=>Var=>asset" expression="Utils.sansAccent(row1.name)">
+    <variables name="row1.id" value="0" talendType="id_Long"/>
+    <variables name="row1.guid" value="null" talendType="id_String"/>
+    <variables name="row1.code" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row1.name" value="null" talendType="id_String"/>
+    <variables name="row1.description" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row1.created" value="null" talendType="id_Date"/>
+    <variables name="row1.updated" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="row1.createdby" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="row1.updatedby" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="row1.label" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row1.ordering" value="0" talendType="id_Integer"/>
+    <variables name="row1.objecttype_id" value="0" talendType="id_Long"/>
+    <variables name="row1.published" value="false" talendType="id_Boolean"/>
+    <variables name="row1.account_id" value="0" talendType="id_Long"/>
+    <variables name="row1.checked_out" value="0" talendType="id_Integer"/>
+    <variables name="row1.checked_out_time" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="row1.visibility_id" value="0" talendType="id_Long"/>
+    <variables name="row1.metadata_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables value="null" talendType="id_String"/>
+  </expression:EMFExpression>
+  <expression:EMFExpression id="null=>Var=>description" expression="row1.description!=null?row1.description:&quot;&quot;">
+    <variables name="row1.id" value="0" talendType="id_Long"/>
+    <variables name="row1.guid" value="null" talendType="id_String"/>
+    <variables name="row1.code" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row1.name" value="null" talendType="id_String"/>
+    <variables name="row1.description" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row1.created" value="null" talendType="id_Date"/>
+    <variables name="row1.updated" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="row1.createdby" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="row1.updatedby" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="row1.label" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row1.ordering" value="0" talendType="id_Integer"/>
+    <variables name="row1.objecttype_id" value="0" talendType="id_Long"/>
+    <variables name="row1.published" value="false" talendType="id_Boolean"/>
+    <variables name="row1.account_id" value="0" talendType="id_Long"/>
+    <variables name="row1.checked_out" value="0" talendType="id_Integer"/>
+    <variables name="row1.checked_out_time" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="row1.visibility_id" value="0" talendType="id_Long"/>
+    <variables name="row1.metadata_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="Utils.sansAccent(row1.name) " value="null" talendType="id_String"/>
+    <variables value="null" talendType="id_String"/>
+  </expression:EMFExpression>
+</xmi:XMI>
