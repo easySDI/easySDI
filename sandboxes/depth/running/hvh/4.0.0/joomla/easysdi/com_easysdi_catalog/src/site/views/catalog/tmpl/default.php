@@ -44,9 +44,10 @@ if (!empty($this->item->dom)):
             $metadata->init($node);
             $metadata->extend($this->item->alias, 'result','', 'true', $lang->getTag());
             $result = $metadata->applyXSL($this->item->alias, 'result','');
-            ?><div class="catalog-searchresult"> <?php
+            ?><div class="offset1 catalog-searchresult"> <?php
             echo $result;
-            ?><hr></div><?php
+            ?></div>
+                <hr><?php
         endforeach;
         ?>
             

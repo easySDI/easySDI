@@ -11,60 +11,8 @@ defined('_JEXEC') or die;
 
 JHTML::_('behavior.modal');
 
-        const property_list = 1;
-        const property_multiplelist = 2;
-        const property_checkbox = 3;
-        const property_text = 4;
-        const property_textarea = 5;
-        const property_message = 6;
 
-$db = JFactory::getDbo();
-$db->setQuery('SELECT  d.id as diffusion, pv.id as propertyvalue, p.id as property, p.mandatory as propertymandatory, p.propertytype_id as propertytype FROM #__sdi_diffusion d 
-    INNER JOIN #__sdi_diffusion_propertyvalue dpv ON dpv.diffusion_id = d.id
-    INNER JOIN #__sdi_propertyvalue pv ON pv.id = dpv.propertyvalue_id
-    INNER JOIN #__sdi_property p ON p.id = pv.property_id');
-
-$items = $db->loadObjectList();
 ?>
-<script>
-    var request;
-
-    function addtobasket() {
-
-        initRequest ();
-
-        var properties = {"id": 6, "properties": [{"id": 2, "values": [{"id": 2, "value": "valeur-1"}, {"id": 3, "value": "valeur-2"}]}, {"id": 3, "values": [{"id": 5, "value": "text-simpe"}]}, {"id": 4, "values": [{"id": 8, "value": "check-box-3"}]}]};
-        var query = "index.php?option=com_easysdi_shop&task=addToBasket&item=" + JSON.stringify(properties);
-
-        jQuery("#progress").css('visibility', 'visible');
-        request.onreadystatechange = updateBasketContent;
-        request.open("GET", query, true);
-        request.send(null);
-    }
-
-    function addtobasket2() {
-
-       initRequest ();
-
-        var properties = {"id": 10, "properties": [{"id": 2, "values": [{"id": 2, "value": "valeur-1"}]}, {"id": 3, "values": [{"id": 5, "value": "text-simpe"}]}, {"id": 4, "values": [{"id": 8, "value": "check-box-3"}]}]};
-        var query = "index.php?option=com_easysdi_shop&task=addToBasket&item=" + JSON.stringify(properties);
-
-        jQuery("#progress").css('visibility', 'visible');
-        request.onreadystatechange = updateBasketContent;
-        request.open("GET", query, true);
-        request.send(null);
-    }
-
-</script>
-<div>
-    <button class="btn btn-success btn-large" onclick="addtobasket();">Add to basket</button>
-</div>
-
-<div>
-    <button class="btn btn-success btn-large" onclick="addtobasket2();">Add to basket</button>
-</div>
-
-<a href="<?php echo JRoute::_('index.php?option=com_easysdi_map&view=preview') . '&id=6'; ?>" class="modal btn btn-success btn-mini pull-right"><i class="icon-eye"></i></a>
 
 <?php
 if (empty($this->items)):

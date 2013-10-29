@@ -1,11 +1,20 @@
-var  request;
+var request;
+
+Joomla.submitbutton = function(task)
+{    
+    if (document.formvalidator.isValid(document.id('adminForm'))) {
+        jQuery('#system-message-container').remove();
+        addtobasket();
+    }
+   
+}
 
 function addtobasket() {
     if (typeof initRequest === 'function') {
         initRequest();
-    }else{
-        
-        jQuery('#sdi-loader').show();
+    } else {
+
+        jQuery('#modal-wait').modal('show');
         request = false;
         if (window.XMLHttpRequest) {
             request = new XMLHttpRequest();
@@ -24,7 +33,7 @@ function addtobasket() {
             return;
     }
 
-    
+
 
     var diffusion = jQuery('#diffusion_id').val();
     var cmd = {"id": diffusion, "properties": []};
@@ -38,6 +47,7 @@ function addtobasket() {
     //                                    ]
     //                     };
 
+  
     jQuery(".sdi-shop-property-list").each(function() {
         var count = jQuery(this).find(":selected").length;
         if (count === 0) {
@@ -71,11 +81,13 @@ function addtobasket() {
         cmd.properties.push(value);
     });
 
+    
     var query = "index.php?option=com_easysdi_shop&task=addToBasket&item=" + JSON.stringify(cmd);
-
-    jQuery("#progress").css('visibility', 'visible');
+    
     if (typeof updateBasketContent === 'function') {
         request.onreadystatechange = updateBasketContent;
+    }else{
+        jQuery('#modal-wait').modal('hide');
     }
 
     request.open("GET", query, true);

@@ -149,6 +149,8 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
         $bar = new JToolBar('toolbar');
         //and make whatever calls you require
         $bar->appendButton('Standard', 'save', JText::_('JSave'), 'diffusion.save', false);
+         $bar->appendButton('Separator');
+        $bar->appendButton('Standard', 'remove', JText::_('JDelete'), 'diffusion.remove', false);
         $bar->appendButton('Separator');
         $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'diffusion.cancel', false);
         //generate the html and return

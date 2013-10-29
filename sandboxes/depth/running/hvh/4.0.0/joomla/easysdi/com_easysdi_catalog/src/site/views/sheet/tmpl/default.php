@@ -21,10 +21,11 @@ $lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
 ?>
 <?php if ($this->item) : ?>
 <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
-
+    <div class="metadata-sheet">
 <?php
     printf($this->item);
   ?>
+    </div>
 </form>
 <?php
 else:

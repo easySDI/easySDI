@@ -8,16 +8,10 @@ $document->addStyleSheet(JURI::root().'/administrator/components/com_easysdi_cor
 ?>
 <script>
     var request;
-    
-    jQuery(document).ready(function() {
-        jQuery('#content').prepend("<div id='sdi-loader' style='display : none'><img id='sdi-loader-image'  src='<?php echo JURI::root(); ?>administrator/components/com_easysdi_core/assets/images/loader.gif' alt=''></div>");
-    });
-    
-    
-    
+        
     function updateBasketContent() {
         if (request.readyState == 4) {
-            jQuery('#sdi-loader').hide();
+            jQuery('#modal-wait').modal('hide');
             
             var JSONtext = request.responseText;
 
@@ -49,7 +43,8 @@ $document->addStyleSheet(JURI::root().'/administrator/components/com_easysdi_cor
         }
     }
     function initRequest (){
-        jQuery('#sdi-loader').show();
+       jQuery('#modal-wait').modal('show');
+       
         request = false;
         if (window.XMLHttpRequest) {
             request = new XMLHttpRequest();
@@ -86,7 +81,7 @@ $document->addStyleSheet(JURI::root().'/administrator/components/com_easysdi_cor
     </a>
 </div>
 
-<div id="modal-confirm" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="modal-confirm" class="modal hide fade" style="z-index: 1000000" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h3 id="myModalLabel"><?php echo JText::_("COM_EASYSDI_SHOP_BASKET_ITEM_SUCCESSFULLY_ADDED_HEADER") ?></h3>
@@ -99,7 +94,7 @@ $document->addStyleSheet(JURI::root().'/administrator/components/com_easysdi_cor
   </div>
 </div>
 
-<div id="modal-dialog" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="modal-dialog" class="modal hide fade" style="z-index: 1000000" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h3 id="myModalLabel"><?php echo JText::_("COM_EASYSDI_SHOP_BASKET_DIALOG_HEADER") ?></h3>
@@ -112,3 +107,14 @@ $document->addStyleSheet(JURI::root().'/administrator/components/com_easysdi_cor
       <button onClick="actionAdd('confirmAdd');" class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><?php echo JText::_("COM_EASYSDI_SHOP_BASKET_MODAL_BTN_ADD") ?></button>
   </div>
 </div>
+
+<div class="modal hide" id="modal-wait" data-backdrop="static" data-keyboard="false">
+        <div class="modal-header">
+           
+        </div>
+        <div class="modal-body">
+            <div class="progress progress-striped active">
+                <div class="bar" style="width: 100%;"></div>
+            </div>
+        </div>
+    </div>

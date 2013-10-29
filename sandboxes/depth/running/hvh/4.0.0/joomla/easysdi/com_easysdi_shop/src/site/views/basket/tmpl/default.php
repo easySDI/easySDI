@@ -29,11 +29,14 @@ JHTML::_('behavior.modal');
         }
 
         function actionRemove() {
-            initRequest();
-            var query = "index.php?option=com_easysdi_shop&task=removeFromBasket&id=" + current_id;
-            request.onreadystatechange = reloadBasketContent;
-            request.open("GET", query, true);
-            request.send(null);
+            jQuery('#task').val('removeFromBasket');
+            jQuery('#id').val(current_id);
+            jQuery('#adminForm').submit();
+//            initRequest();
+//            var query = "index.php?option=com_easysdi_shop&task=removeFromBasket&id=" + current_id;
+//            request.onreadystatechange = reloadBasketContent;
+//            request.open("GET", query, true);
+//            request.send(null);
         }
 
         function reloadBasketContent() {
@@ -48,9 +51,13 @@ JHTML::_('behavior.modal');
                 if(jQuery('#features').val() === ''){
                     jQuery('#modal-error').modal('show');
                 }else{
-                    if (jQuery('#allowedbuffer').val() == 0)
+                    if (jQuery('#allowedbuffer').val() == 0){
                         jQuery('#perimeter-buffer').val('');
+                    }
 
+                    var format = new OpenLayers.Format.WMC({'layerOptions': {buffer: 0}});
+                    var text = format.write(minimap);
+                    jQuery('#wmc').val(text);
                     Joomla.submitform(task, document.getElementById('adminForm'));
                 }
 
@@ -72,6 +79,7 @@ JHTML::_('behavior.modal');
                             <?php if(!empty($this->item->visualization)):?>
                             <div class="pull-right">
                                 <a href="<?php echo JRoute::_('index.php?option=com_easysdi_map&view=preview').'&id='.$this->item->visualization; ?>" target="_blank"
+                                   title="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TOOLTIP_PREVIEW'); ?>"
                                     class="btn btn-success btn-mini pull-right" >
                                     <i class="icon-eye"></i>
                                 </a>
@@ -105,10 +113,10 @@ JHTML::_('behavior.modal');
                                                                 <div class="small"><?php echo $property->name; ?> : 
                                                                     <?php
                                                                     foreach ($property->values as $value) :
-                                                                        if (!empty($value->name)) :
-                                                                            echo $value->name;
-                                                                        else :
+                                                                        if (!empty($value->value)) :
                                                                             echo $value->value;
+                                                                        else :
+                                                                            echo $value->name;
                                                                         endif;
                                                                         echo', ';
                                                                     endforeach;
@@ -124,7 +132,7 @@ JHTML::_('behavior.modal');
                                             </div>
                                         </td>
                                         <td>
-                                            <a href="#" class="btn btn-danger btn-mini pull-right" onClick="removeFromBasket(<?php echo $extraction->id; ?>);
+                                            <a href="#" class="btn btn-danger btn-mini pull-right" title="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REMOVE'); ?>" onClick="removeFromBasket(<?php echo $extraction->id; ?>);
                                             return false;"><i class="icon-white icon-remove"></i></a>
                                         </td>
                                     </tr>
@@ -396,10 +404,11 @@ JHTML::_('behavior.modal');
             <input type="hidden" name="t-features" id="t-features" value='<?php if (!empty($this->item->extent)): echo json_encode($this->item->extent->features); endif;?>' />
             <input type="hidden" name="t-surface" id="t-surface" value="<?php if (!empty($this->item->extent)): echo $this->item->extent->surface; endif;?>" />
             <input type="hidden" name="surfacemin" id="surfacemin" value="<?php echo $this->item->surfacemin;?>" />
-            <input type="hidden" name="surfacemax" id="surfacemax" value="<?php echo $this->item->surfacemax;?>" />
-            
-            <input type = "hidden" name = "task" value = "" />
+            <input type="hidden" name="surfacemax" id="surfacemax" value="<?php echo $this->item->surfacemax;?>" />            
+            <input type="hidden" name="wmc" id="wmc" value="" />            
+            <input type = "hidden" name = "task" id = "task" value = "" />
             <input type = "hidden" name = "option" value = "com_easysdi_shop" />
+             <input type = "hidden" name = "id" id = "id" value = "" />
             <?php echo JHtml::_('form.token'); ?>
     </form>
 

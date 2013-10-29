@@ -200,7 +200,7 @@ if (!empty($this->extra_sidebar)) {
                                 <?php echo JText::_($this->escape($item->propertytype)); ?>
                             </td>
                             <td >
-                                <?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>
+                                <?php if (($canEdit || $canEditOwn) && $canCheckin && $item->propertytype_id != 4 && $item->propertytype_id != 5) : ?>
                                     <a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=propertyvalues&filter_property=' . (int) $item->id); ?>">
                                         <div class="icon-edit"></div>
                                     <?php else : ?>

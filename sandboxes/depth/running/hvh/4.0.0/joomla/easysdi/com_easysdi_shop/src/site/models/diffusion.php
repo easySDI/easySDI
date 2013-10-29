@@ -293,16 +293,18 @@ class Easysdi_shopModelDiffusion extends JModelForm {
 
             //User
             $ids = '';
-            foreach ($data['notifieduser_id'] as $user) {
-                $diffusionnotifieduser = JTable::getInstance('diffusionnotifieduser', 'Easysdi_shopTable');
-                $keys = array("diffusion_id" => $id, "user_id" => $user);
-                $diffusionnotifieduser->load($keys);
-                $diffusionnotifieduser->save($keys);
-                if (strlen($ids) > 0 && !empty($diffusionnotifieduser->id))
-                    $ids .= ',';
-                if (!empty($diffusionnotifieduser->id))
-                    $ids .= $diffusionnotifieduser->id;
-            }
+            if(!empty($data['notifieduser_id'])):
+                foreach ($data['notifieduser_id'] as $user) {
+                    $diffusionnotifieduser = JTable::getInstance('diffusionnotifieduser', 'Easysdi_shopTable');
+                    $keys = array("diffusion_id" => $id, "user_id" => $user);
+                    $diffusionnotifieduser->load($keys);
+                    $diffusionnotifieduser->save($keys);
+                    if (strlen($ids) > 0 && !empty($diffusionnotifieduser->id))
+                        $ids .= ',';
+                    if (!empty($diffusionnotifieduser->id))
+                        $ids .= $diffusionnotifieduser->id;
+                }
+            endif;
             //Delete entries no more usefull
             if (!$this->cleanTable($id, '#__sdi_diffusion_notifieduser', $ids))
                 return false;
@@ -374,7 +376,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
             } catch (Exception $e) {
                 //item didn't exist, keep going on
             }
-            continue;
+            return true;
         }
 
         $array = array();
