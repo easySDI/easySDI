@@ -106,9 +106,6 @@ class Easysdi_mapViewMaps extends JViewLegacy
 			JToolBarHelper::preferences('com_easysdi_map');
 		}
 
-		JToolBarHelper::divider();
-		JToolBarHelper::custom('easySDIHome', 'home.png', 'home_f2.png', 'COM_EASYSDI_MAP_TOOLBAR_HOME', false);
-		
 		//Set sidebar action - New in 3.0
 		JHtmlSidebar::setAction('index.php?option=com_easysdi_map&view=maps');
 		$this->extra_sidebar = '';

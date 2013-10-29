@@ -21,6 +21,12 @@ class Easysdi_contactHelper
 	public static function addSubmenu($vName = '')
 	{
 
+            	JHtmlSidebar::addEntry(
+				'<i class="icon-home"></i> '.JText::_('COM_EASYSDI_CONTACT_TITLE_HOME'),
+				'index.php?option=com_easysdi_core&view=easysdi',
+				$vName == 'easysdi'
+		);
+                
 		JHtmlSidebar::addEntry(
 				JText::_('COM_EASYSDI_CONTACT_TITLE_USERS'),
 				'index.php?option=com_easysdi_contact&view=users',
