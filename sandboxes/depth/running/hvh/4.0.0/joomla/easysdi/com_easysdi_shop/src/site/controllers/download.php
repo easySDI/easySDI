@@ -18,13 +18,53 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
  */
 class Easysdi_shopControllerDownload extends Easysdi_shopController {
 
-    
+    public function direct() {
+        $db = JFactory::getDBO();
+        $id = JFactory::getApplication()->input->getInt('id', null);
+        $query = $db->getQuery(true)
+                ->select('*')
+                ->from('#__sdi_diffusion')
+                ->where('id = ' . (int) $id);
+        $db->setQuery($query);
+        $diffusion = $db->loadObject();
+
+        //check if the user has the right to download
+        $sdiUser = sdiFactory::getSdiUser();
+        if ($diffusion->accessscope_id != 1):
+            if (!$sdiUser->isEasySDI)
+                if ($diffusion->accessscope_id == 2):
+                    $organisms = sdiModel::getAccessScopeOrganism($diffusion->guid);
+                    $organism = sdiFactory::getSdiUser()->getMemberOrganisms();
+                    if (!in_array($organism[0]->id, $organisms)):
+                        $this->setMessage(JText::_('Not authorized to access this resource'), 'warning');
+                        $this->setRedirect(JRoute::_('index.php?', false));
+                        return false;
+                    endif;
+            endif;
+            if ($diffusion->accessscope_id == 3):
+                $users = sdiModel::getAccessScopeUser($diffusion->guid);
+                if (!in_array($sdiUser->id, $users)):
+                    $this->setMessage(JText::_('Not authorized to access this resource'), 'warning');
+                    $this->setRedirect(JRoute::_('index.php?', false));
+                    return false;
+                endif;
+            endif;
+        endif;
+
+        if (!empty($diffusion->file) || !empty($diffusion->fileurl)):
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=download&layout=default&id=' . $id, false));
+        elseif (!empty($diffusion->perimeter_id)) :
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=download&layout=grid&id=' . $id, false));
+        endif;
+    }
+
     public function download() {
+        $jinput = JFactory::getApplication()->input;
         $params = JFactory::getApplication()->getParams('com_easysdi_shop');
         $fileFolder = $params->get('fileFolder');
 
         $db = JFactory::getDBO();
-        $id = JFactory::getApplication()->input->getInt('id', null);
+        $id = $jinput->getInt('id', null);
         $query = $db->getQuery(true)
                 ->select('*')
                 ->from('#__sdi_diffusion')
@@ -55,8 +95,12 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
             $file = file_get_contents($fileFolder . '/' . $diffusion->file);
         elseif (!empty($diffusion->fileurl)):
             $file = file_get_contents($diffusion->fileurl);
-        elseif (!empty($diffusion->perimeter_id)) :
-            //TODO : map with grid to download file   
+        elseif (!empty($diffusion->perimeter_id)) :            
+            $url = $jinput->get('url', null);
+            if (empty($url)) {
+                die();
+            }
+            $file = file_get_contents($url);
         endif;
 
         //Record the download for statistic purpose        
@@ -68,7 +112,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         else:
             $id = null;
         endif;
-        $values = array($diffusion->id, $id, '"'.date("Y-m-d H:i:s").'"');
+        $values = array($diffusion->id, $id, '"' . date("Y-m-d H:i:s") . '"');
         $query = $db->getQuery(true)
                 ->insert('#__sdi_diffusion_download')
                 ->columns($columns)

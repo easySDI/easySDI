@@ -32,18 +32,8 @@ JHTML::_('behavior.modal');
             jQuery('#task').val('removeFromBasket');
             jQuery('#id').val(current_id);
             jQuery('#adminForm').submit();
-//            initRequest();
-//            var query = "index.php?option=com_easysdi_shop&task=removeFromBasket&id=" + current_id;
-//            request.onreadystatechange = reloadBasketContent;
-//            request.open("GET", query, true);
-//            request.send(null);
-        }
+      }
 
-        function reloadBasketContent() {
-            if (request.readyState == 4) {
-               location.reload();
-            }
-        }
         
         jQuery(document).ready(function(){
             Joomla.submitbutton = function(task)

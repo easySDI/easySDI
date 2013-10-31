@@ -1,39 +1,15 @@
 var request;
 
 Joomla.submitbutton = function(task)
-{    
+{
     if (document.formvalidator.isValid(document.id('adminForm'))) {
         jQuery('#system-message-container').remove();
         addtobasket();
     }
-   
+
 }
 
 function addtobasket() {
-    if (typeof initRequest === 'function') {
-        initRequest();
-    } else {
-
-        jQuery('#modal-wait').modal('show');
-        request = false;
-        if (window.XMLHttpRequest) {
-            request = new XMLHttpRequest();
-        } else if (window.ActiveXObject) {
-            try {
-                request = new ActiveXObject("Msxml2.XMLHTTP");
-            } catch (e) {
-                try {
-                    request = new ActiveXObject("Microsoft.XMLHTTP");
-                } catch (e) {
-                    request = false;
-                }
-            }
-        }
-        if (!request)
-            return;
-    }
-
-
 
     var diffusion = jQuery('#diffusion_id').val();
     var cmd = {"id": diffusion, "properties": []};
@@ -47,7 +23,7 @@ function addtobasket() {
     //                                    ]
     //                     };
 
-  
+
     jQuery(".sdi-shop-property-list").each(function() {
         var count = jQuery(this).find(":selected").length;
         if (count === 0) {
@@ -81,17 +57,13 @@ function addtobasket() {
         cmd.properties.push(value);
     });
 
-    
-    var query = "index.php?option=com_easysdi_shop&task=addToBasket&item=" + JSON.stringify(cmd);
-    
-    if (typeof updateBasketContent === 'function') {
-        request.onreadystatechange = updateBasketContent;
-    }else{
-        jQuery('#modal-wait').modal('hide');
-    }
+    jQuery.ajax({
+        url: "index.php?option=com_easysdi_shop&task=addToBasket&item=" + JSON.stringify(cmd),
+        success: function(data) {
+            updateBasketContent(data);
+        }
+    });
 
-    request.open("GET", query, true);
-    request.send(null);
 }
 
 
