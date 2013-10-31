@@ -290,7 +290,7 @@ class cswmetadata {
 
                 if ($right):
                     $download = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:download');
-                    $downloadlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=diffusion.download&id=' . $diffusion->id));
+                    $downloadlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&view=download&id=' . $diffusion->id));
                     $download->appendChild($downloadlink);
                     $action->appendChild($download);
                 else:
