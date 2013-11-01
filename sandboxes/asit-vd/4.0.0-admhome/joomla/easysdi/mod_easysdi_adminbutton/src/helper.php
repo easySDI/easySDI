@@ -1,12 +1,17 @@
 <?php
-
+/**
+ * @version     4.0.0
+ * @package     mod_easysdi_adminbutton
+ * @copyright   Copyright (C) 2013. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org§> - http://www.easysdi.org
+ */
 defined('_JEXEC') or die;
 
 abstract class ModEasysdi_adminbuttonHelper {
 
     public static function getList($params) {
         $context = $params->get('context', 'mod_easysdi_adminbutton');
-        // Include buttons defined by published easysdi_admin_button plugins
         JPluginHelper::importPlugin('easysdi_admin_button');
         $app = JFactory::getApplication();
         

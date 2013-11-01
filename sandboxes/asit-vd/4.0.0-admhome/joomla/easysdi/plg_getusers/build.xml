@@ -29,7 +29,7 @@
     <target name="write-xml">
         <echoxml file="${plg.getusers.src.out.dir}/getusers.xml">
             <extension version="3.0" type="plugin" group="easysdi_admin_info" method="upgrade">
-                <name>${getusers.plugin.name}</name>
+                <name>${getusers.plugin.language.file}</name>
                 <author>EasySDI Community</author>
                 <creationDate>15 Septemeber 2013</creationDate>
                 <releaseDate>${xml.releaseDate}</releaseDate>

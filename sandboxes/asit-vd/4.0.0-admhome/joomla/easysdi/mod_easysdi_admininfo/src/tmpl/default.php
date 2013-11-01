@@ -1,11 +1,12 @@
 <?php
 /**
- * @package     Joomla.Administrator
- * @subpackage  mod_logged
- *
- * @copyright   Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
+ * @version     4.0.0
+ * @package     mod_easysdi_adminbutton
+ * @copyright   Copyright (C) 2013. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org§> - http://www.easysdi.org
  */
+
 defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');

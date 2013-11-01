@@ -1,8 +1,15 @@
 <?php
+/**
+ * @version     4.0.0
+ * @package     plg_getordersbutton
+ * @copyright   Copyright (C) 2013. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+ */
 
 defined('_JEXEC') or die;
 
-class PlgEasysdi_admin_buttonGetusersbutton extends JPlugin {
+class PlgEasysdi_admin_buttonGetordersbutton extends JPlugin {
 
     protected $autoloadLanguage = true;
 
@@ -18,8 +25,9 @@ class PlgEasysdi_admin_buttonGetusersbutton extends JPlugin {
 
         // Count unactivated users
         $query->select('COUNT(*)');
-        $query->from('#__sdi_user');
-        $query->where('state != 1');
+        $query->from('#__sdi_order');
+        $query->where('orderstate_id < 7 ');
+        $query->where('orderstate_id > 3 ');
         $db->setQuery($query);
         $rows = $db->loadObjectList();
         //Convert the stdClass object in an array
@@ -29,7 +37,7 @@ class PlgEasysdi_admin_buttonGetusersbutton extends JPlugin {
         $badgetooltip = null;
         
         if($values > 0){
-            $badgetooltip = JText::plural('PLG_EASYSDI_ADMIN_BUTTON_GETUSERSBUTTON_DISABLED_USERS', $values);
+            $badgetooltip = JText::plural('PLG_EASYSDI_ADMIN_BUTTON_GETORDERSBUTTON_ORDERS_INCOMPLETES', $values);
             
         }
 
@@ -37,8 +45,8 @@ class PlgEasysdi_admin_buttonGetusersbutton extends JPlugin {
         return array(
                 'info' => $values,
                 'state' => $state,
-                'link' => 'index.php?option=com_easysdi_contact',
-                'text' => JText::_('PLG_EASYSDI_ADMIN_BUTTON_GETUSERSBUTTON_USERS'),
+                'link' => 'index.php?option=com_easysdi_shop&view=orders',
+                'text' => JText::_('PLG_EASYSDI_ADMIN_BUTTON_GETORDERSBUTTON_ORDERS'),
                 'badgetooltip' => $badgetooltip
         );
     }
