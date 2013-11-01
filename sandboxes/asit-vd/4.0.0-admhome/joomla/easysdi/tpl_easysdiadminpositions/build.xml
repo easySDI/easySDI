@@ -46,7 +46,7 @@
                 </files>
                 <positions>
                         <position>easysdi_adm_home_left</position>
-                        <position>easysdi_adm_home_right_row</position>
+                        <position>easysdi_adm_home_right</position>
                         <position>easysdi_adm_dashboard</position>
                 </positions>
                 <languages folder="language">
