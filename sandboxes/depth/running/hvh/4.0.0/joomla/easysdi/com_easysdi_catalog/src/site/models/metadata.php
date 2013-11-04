@@ -443,8 +443,8 @@ class Easysdi_catalogModelMetadata extends JModelForm {
 
         $query->select('a.id, a.guid, a.pattern as attribute_pattern, s.defaultpattern as stereotype_pattern, s.`value` as stereotype_name');
         $query->from('#__sdi_relation as r');
-        $query->innerJoin('jos_sdi_attribute as a on r.attributechild_id = a.id');
-        $query->leftJoin('jos_sdi_sys_stereotype as s on a.stereotype_id = s.id');
+        $query->innerJoin('#__sdi_attribute as a on r.attributechild_id = a.id');
+        $query->leftJoin('#__sdi_sys_stereotype as s on a.stereotype_id = s.id');
         $query->where('r.`state` = 1');
 
         $this->db->setQuery($query);

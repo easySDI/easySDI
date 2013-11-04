@@ -287,7 +287,7 @@ class FormHtmlGenerator {
         $exist = $element->getAttributeNS($this->catalog_uri, 'exist');
         $guid = $element->getAttributeNS($this->catalog_uri, 'id');
         $legendAttribute = $element->getAttributeNS($this->catalog_uri, 'legend');
-        $stereotypeId = $element->firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId');
+//        $stereotypeId = $element->firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId');
 
         $aCollapse = $this->formHtml->createElement('a');
         $aCollapse->setAttribute('id', 'collapse-btn-' . $this->serializeXpath($element->getNodePath()));
@@ -582,25 +582,19 @@ class FormHtmlGenerator {
                 break;
         }
 
+        $centercoords = explode(',',$map_config->centercoordinates);
         $script->nodeValue = "var map_$parent_path, layer_$parent_path, polygonLayer_$parent_path, polygonControl_$parent_path ;
                             js('document').ready(function() {
-                                var lon = 5;
-                                var lat = 40;
-                                var zoom = 5;
+                                
 
                                 var map_options = {projection: \"" . $map_config->srs . "\" 
                                     , maxResolution: " . $map_config->maxresolution . " 
                                     , units: \"" . $map_config->unit_alias . "\"
                                     , maxExtent: [" . $map_config->maxextent . "]";
-                                 if(!empty($map_config->restrictedExtent))  {
-                                    $script->nodeValue .= ", restrictedExtent: [" . $map_config->restrictedExtent . "]";
+                                 if(!empty($map_config->restrictedextent))  {
+                                    $script->nodeValue .= ", restrictedExtent: [" . $map_config->restrictedextent . "]";
                                   }
-                                 if(!empty($map_config->centercoordinates)){
-                                     $script->nodeValue .= ", centercoordinates: [" . $map_config->centercoordinates . "]";
-                                 }
-                                 if(!empty($map_config->zoom)){
-                                     $script->nodeValue .= ", zoom: " . $map_config->zoom;
-                                 }
+                                 
                            $script->nodeValue .= "};"; 
                                   
 
@@ -610,9 +604,30 @@ class FormHtmlGenerator {
                                 polygonLayer_$parent_path = new OpenLayers.Layer.Vector('Polygon Layer');
 
                                 map_$parent_path.addLayers([layer_$parent_path, polygonLayer_$parent_path]);
-                                //map_$parent_path.setCenter(new OpenLayers.LonLat(lon, lat), zoom);
-                                map_$parent_path.zoomToMaxExtent();
+                      
+                                    var psource = new proj4.Proj(\"". $map_config->srs ."\");
+                                    var pdest   = new proj4.Proj(\"EPSG:4326\");
+                                   
+                    ";
+                            
+            
+                                if(!empty($map_config->centercoordinates) && !empty($map_config->zoom)){
+                                     $script->nodeValue .= "
+                                    var centercoord = new proj4.Point(". $centercoords[0] .", ". $centercoords[1] .");
+                                    proj4.transform(psource, pdest, centercoord);                                         
+                                    map_$parent_path.setCenter(new OpenLayers.LonLat(centercoord.x, centercoord.y), 10);";
+                                 }
+                                 else if(!empty($map_config->centercoordinates)){
+                                     $script->nodeValue .= "
+                                    var centercoord = new proj4.Point(". $centercoords[0] .", ". $centercoords[1] .");
+                                    proj4.transform(psource, pdest, centercoord);                                         
+                                    map_$parent_path.setCenter(new OpenLayers.LonLat(centercoord.x, centercoord.y));";
+                                 }else{
+                                     $script->nodeValue .= "map_$parent_path.zoomToMaxExtent(); ";
+                                 }
+                           
 
+                                $script->nodeValue .= "
                                 var polyOptions = {sides: 4, irregular: true};
                                 polygonControl_$parent_path = new OpenLayers.Control.DrawFeature(polygonLayer_$parent_path,
                                         OpenLayers.Handler.RegularPolygon,
