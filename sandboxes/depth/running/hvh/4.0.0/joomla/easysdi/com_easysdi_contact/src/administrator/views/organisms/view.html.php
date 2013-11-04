@@ -104,9 +104,6 @@ class Easysdi_contactViewOrganisms extends JViewLegacy {
             JToolBarHelper::preferences('com_easysdi_contact');
         }
 
-        JToolBarHelper::divider();
-        JToolBarHelper::custom('easySDIHome', 'home.png', 'home_f2.png', 'COM_EASYSDI_CONTACT_TOOLBAR_HOME', false);
-
 
         //Set sidebar action - New in 3.0
         JHtmlSidebar::setAction('index.php?option=com_easysdi_contact&view=organisms');

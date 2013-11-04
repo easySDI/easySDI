@@ -10,7 +10,7 @@
   <author>EasySDI Community</author>
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>4.0.0-alpha-11</version>
+  <version>4.0.0-alpha-12</version>
   <description>PKG_EASYSDI_XML_DESCRIPTION</description>
   <files folder="easysdi">
     <file id="com_easysdi_core" type="component">com_easysdi_core.zip</file>
@@ -21,10 +21,23 @@
     <file id="com_easysdi_shop" type="component">com_easysdi_shop.zip</file>
     <file id="com_easysdi_monitor" type="component">com_easysdi_monitor.zip</file>
     <file id="mod_easysdi_basket" type="module">mod_easysdi_basket.zip</file>
+    <file id="mod_easysdi_admininfo" type="module">mod_easysdi_admininfo.zip</file>
+    <file id="mod_easysdi_adminbutton" type="module">mod_easysdi_adminbutton.zip</file>
     <file group="user" id="easysdicontact" type="plugin">plg_easysdi_contact.zip</file>
     <file group="content" id="easysdiservice" type="plugin">plg_easysdi_service.zip</file>
     <file group="content" id="easysdimonitor" type="plugin">plg_easysdi_monitor.zip</file>
+    <file group="easysdi_admin_info" id="getusers" type="plugin">plg_getusers.zip</file>
+    <file group="easysdi_admin_info" id="getorganisms" type="plugin">plg_getorganisms.zip</file>
+    <file group="easysdi_admin_info" id="getresources" type="plugin">plg_getresources.zip</file>
+    <file group="easysdi_admin_info" id="getdiffudownloadables" type="plugin">plg_getdiffudownloadables.zip</file>
+    <file group="easysdi_admin_info" id="getdiffudownloads" type="plugin">plg_getdiffudownloads.zip</file>
+    <file group="easysdi_admin_info" id="getdiffuextractables" type="plugin">plg_getdiffuextractables.zip</file>
+    <file group="easysdi_admin_info" id="getdiffuextractions" type="plugin">plg_getdiffuextractions.zip</file>
+    <file group="easysdi_admin_info" id="getordersaresptime" type="plugin">plg_getordersaresptime.zip</file>
+    <file group="easysdi_admin_button" id="getusersbutton" type="plugin">plg_getusersbutton.zip</file>
+    <file group="easysdi_admin_button" id="getordersbutton" type="plugin">plg_getordersbutton.zip</file>
     <file client="site" id="tpl_easysdi" type="template">tpl_easysdi.zip</file>
+    <file client="administrator" id="tpl_easysdiadminpositions" type="template">tpl_easysdiadminpositions.zip</file>
   </files>
   <languages>
     <language tag="en-GB">language/en-GB/en-GB.pkg_easysdi.sys.ini</language>
