@@ -655,7 +655,7 @@ abstract class Easysdi_mapHelper {
            $config .= '  restrictedExtent: [' . $item->restrictedextent . '],';
          endif;
          if (!empty($item->zoom)):
-           $config .= '  zoom : [' . $item->zoom . '],';
+           $config .= '  zoom : ' . $item->zoom . ',';
          endif;
             $config .= ' maxResolution: ' . $item->maxresolution . ',
             units: "' . $item->unit . '",

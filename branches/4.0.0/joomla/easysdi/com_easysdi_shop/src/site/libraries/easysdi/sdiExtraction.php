@@ -10,7 +10,7 @@
 // No direct access.
 defined('_JEXEC') or die;
 
-require_once JPATH_SITE. '/components/com_easysdi_shop/libraries/easysdi/sdiProperty.php';
+require_once JPATH_SITE . '/components/com_easysdi_shop/libraries/easysdi/sdiProperty.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/diffusionperimeter.php';
 
 class sdiExtraction {
@@ -23,7 +23,7 @@ class sdiExtraction {
     public $restrictedperimeter;
     public $perimeters;
     public $visualization;
-    
+
     /**
      * 
      * @param type $session_extraction : json {"id":5,"properties":[{"id": 1, "values" :[{"id" : 4, "value" : "foo"}]},{"id": 1, "values" :[{"id" : 5, "value" : "bar"}]}]}
@@ -35,14 +35,16 @@ class sdiExtraction {
 
         $this->id = $session_extraction->id;
         $this->loadData();
-        
+
         $diffusionperimeter = JTable::getInstance('diffusionperimeter', 'Easysdi_shopTable');
         $perimeters = $diffusionperimeter->loadBydiffusionID($this->id);
-        foreach ($perimeters as $perimeter):
-            $new_perimeter = new sdiPerimeter($perimeter);
-            $this->perimeters[] = $new_perimeter;
-        endforeach;
-        
+        if ($perimeters):
+            foreach ($perimeters as $perimeter):
+                $new_perimeter = new sdiPerimeter($perimeter);
+                $this->perimeters[] = $new_perimeter;
+            endforeach;
+        endif;
+
         if (!isset($this->properties))
             $this->properties = array();
 
@@ -57,6 +59,7 @@ class sdiExtraction {
             $query = $db->getQuery(true)
                     ->select('r.id as resource, 
                         r.name as name, 
+                        m.guid as metadataguid,
                         o.name as organism, 
                         d.restrictedperimeter, 
                         d.surfacemin, 
@@ -65,6 +68,7 @@ class sdiExtraction {
                         z.id as visualization')
                     ->from('#__sdi_resource r')
                     ->innerJoin('#__sdi_version v ON v.resource_id = r.id')
+                    ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
                     ->innerJoin('#__sdi_diffusion d ON d.version_id = v.id')
                     ->innerJoin('#__sdi_organism o ON r.organism_id = o.id')
                     ->leftJoin('#__sdi_visualization z ON z.version_id = v.id')
@@ -72,10 +76,9 @@ class sdiExtraction {
             $db->setQuery($query);
             $item = $db->loadObject();
             $params = get_object_vars($item);
-            foreach ($params as $key => $value){
+            foreach ($params as $key => $value) {
                 $this->$key = $value;
             }
-            
         } catch (JDatabaseException $e) {
             
         }

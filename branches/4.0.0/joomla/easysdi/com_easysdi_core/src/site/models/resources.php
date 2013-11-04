@@ -46,6 +46,16 @@ class Easysdi_coreModelResources extends JModelList {
         $limitstart = JFactory::getApplication()->input->getInt('limitstart', 0);
         $this->setState('list.start', $limitstart);
 
+        // Load the filter state.
+        $search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
+        $this->setState('filter.search', $search);
+        
+        $search = $app->getUserStateFromRequest($this->context . '.filter.status', 'filter_status');
+        $this->setState('filter.status', $search);
+        
+        $search = $app->getUserStateFromRequest($this->context . '.filter.resourcetype', 'filter_resourcetype');
+        $this->setState('filter.resourcetype', $search);
+
 
         if (empty($ordering)) {
             $ordering = 'a.ordering';
@@ -83,15 +93,21 @@ class Easysdi_coreModelResources extends JModelList {
         // Join over the created by field 'created_by'
         $query->select('created_by.name AS created_by');
         $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
-        
+
         // Join over the foreign key 'resourcetype_id'
         $query->select('trans.text1 AS resourcetype_name, rt.versioning as versioning');
         $query->join('LEFT', '#__sdi_resourcetype AS rt ON rt.id = a.resourcetype_id');
         $query->join('LEFT', '#__sdi_translation AS trans ON trans.element_guid = rt.guid');
         $query->join('LEFT', '#__sdi_language AS lang ON lang.id = trans.language_id');
-        $query->where('lang.code = "'.$lang->getTag().'"');
+        $query->where('lang.code = "' . $lang->getTag() . '"');
         $query->where('rt.predefined = 0');
         
+        // Filter by resource type
+        $resourcetype = $this->getState('filter.resourcetype');
+        if (is_numeric($resourcetype)) {
+        	$query->where('a.resourcetype_id = ' . (int) $resourcetype);
+        }
+
         // Filter by search in title
         $search = $this->getState('filter.search');
         if (!empty($search)) {
@@ -99,9 +115,10 @@ class Easysdi_coreModelResources extends JModelList {
                 $query->where('a.id = ' . (int) substr($search, 3));
             } else {
                 $search = $db->Quote('%' . $db->escape($search, true) . '%');
+                 $query->where('( a.name LIKE '.$search.' )');
             }
         }
-        $text = $query->__toString();
+        
         return $query;
     }
 

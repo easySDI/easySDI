@@ -80,6 +80,10 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             $data['name'] = $basket->name;
         endif;
         
+        if(!empty($basket->wmc)):
+            $data['wmc'] = $basket->wmc;
+        endif;
+        
         $data['sent'] = date('Y-m-d H:i:s');
 
         $data['buffer'] = $basket->buffer;

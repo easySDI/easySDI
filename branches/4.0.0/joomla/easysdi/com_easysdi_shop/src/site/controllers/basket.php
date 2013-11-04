@@ -38,18 +38,29 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         $this->saveBasketToSession();
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=basket&layout=confirm&action=draft', false));
     }
-    
-    public function saveBasketToSession(){
+
+    public function load() {
+        $id = JFactory::getApplication()->input->get('id', '', 'int');
+        $basket = new sdiBasket();
+        $basket->loadOrder($id);
+
+        JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=basket&layout=edit', false));
+    }
+
+    public function saveBasketToSession() {
         $jinput = JFactory::getApplication()->input;
         $buffer = $jinput->get('buffer', '', 'float');
         $ordername = $jinput->get('ordername', '', 'string');
         $thirdparty = $jinput->get('thirdparty', '', 'int');
-        
+        $wmc = htmlentities($jinput->get('wmc', '', 'RAW'));
+
         $basket = unserialize(JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content'));
         $basket->name = $ordername;
         $basket->buffer = $buffer;
         $basket->thirdparty = $thirdparty;
-        
+        $basket->wmc = $wmc;
+
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
     }
 
@@ -66,11 +77,11 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         $app = JFactory::getApplication();
 
         $sdiUser = sdiFactory::getSdiUser();
-        if($sdiUser->juser->guest){
+        if ($sdiUser->juser->guest) {
             // Authentication
             // Populate the data array:
             $authentication = array();
-            $authentication['return'] = 'index.php?option=com_easysdi_shop&view=basket&layout=confirm&action='.JFactory::getApplication()->input->get('action', 'save','string' );
+            $authentication['return'] = 'index.php?option=com_easysdi_shop&view=basket&layout=confirm&action=' . JFactory::getApplication()->input->get('action', 'save', 'string');
 
             $jinput = JFactory::getApplication()->input;
             $authentication['username'] = $jinput->get('username', '', 'STRING');
@@ -91,7 +102,6 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
                 // Success
                 $this->setMessage('Authentication done', 'info');
                 $app->setUserState('users.login.form.data', array());
-
             } else {
                 // Login failed !
                 $this->setMessage('Authentication failed', 'error');

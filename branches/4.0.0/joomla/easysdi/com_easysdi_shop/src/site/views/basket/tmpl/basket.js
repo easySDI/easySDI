@@ -1,6 +1,6 @@
 var map, perimeterLayer, selectControl, selectLayer, polygonLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap;
 function initMiniMap() {
-    minimap = new OpenLayers.Map({div: 'minimap', controls:[]});
+    minimap = new OpenLayers.Map({div: 'minimap', controls: []});
     var layer = app.mapPanel.map.layers[1].clone();
     minimap.addLayer(layer);
     minimap.zoomToExtent(app.mapPanel.map.getExtent());
@@ -11,31 +11,31 @@ function initMiniMap() {
 
 var listenerMiniFeaturesAdded = function() {
     minimap.zoomToExtent(miniLayer.getDataExtent());
-    
+
 };
 
-var listenerFeatureAdded = function (e){
+var listenerFeatureAdded = function(e) {
     miniLayer.addFeatures([e.feature.clone()]);
-    
+
     var toobig = false;
     var toosmall = false;
-    if(jQuery('#surfacemax').val() !== ''){
-        if(parseFloat(jQuery('#t-surface').val()) > parseFloat(jQuery('#surfacemax').val()))
-            toobig =true;
+    if (jQuery('#surfacemax').val() !== '') {
+        if (parseFloat(jQuery('#t-surface').val()) > parseFloat(jQuery('#surfacemax').val()))
+            toobig = true;
     }
-    if(jQuery('#surfacemin').val() !== ''){
-        if(parseFloat(jQuery('#t-surface').val()) < parseFloat(jQuery('#surfacemin').val()))
-            toosmall =true;
+    if (jQuery('#surfacemin').val() !== '') {
+        if (parseFloat(jQuery('#t-surface').val()) < parseFloat(jQuery('#surfacemin').val()))
+            toosmall = true;
     }
-    if(toobig || toosmall){
+    if (toobig || toosmall) {
         jQuery("#alert_template").empty();
-        jQuery("#alert_template").append('<span>Your current selection of '+jQuery('#t-surface').val() +' is not in the allowed surface range ['+jQuery('#surfacemin').val()+','+jQuery('#surfacemax').val()+'].</span>');
+        jQuery("#alert_template").append('<span>Your current selection of ' + jQuery('#t-surface').val() + ' is not in the allowed surface range [' + jQuery('#surfacemin').val() + ',' + jQuery('#surfacemax').val() + '].</span>');
         jQuery('#alert_template').fadeIn('slow');
-        jQuery('#btn-saveperimeter').attr("disabled", "disabled");        
-    }else{
+        jQuery('#btn-saveperimeter').attr("disabled", "disabled");
+    } else {
         jQuery('#alert_template').fadeOut('slow');
         jQuery('#btn-saveperimeter').removeAttr("disabled");
-    
+
     }
 };
 
@@ -113,16 +113,16 @@ function resetAll() {
 }
 
 function toggleSelectControl(action) {
-    if(action=='selection'){
+    if (action == 'selection') {
         if (typeof selectControl !== 'undefined') {
             jQuery('#modal-perimeter [id^="btn-selection"]').addClass('active');
             jQuery('#modal-perimeter [id^="btn-pan"]').removeClass('active');
             selectControl.activate();
-        }else{
+        } else {
             jQuery('#modal-perimeter [id^="btn-pan"]').addClass('active');
             jQuery('#modal-perimeter [id^="btn-selection"]').removeClass('active');
         }
-    }else{
+    } else {
         jQuery('#modal-perimeter [id^="btn-pan"]').addClass('active');
         jQuery('#modal-perimeter [id^="btn-selection"]').removeClass('active');
         selectControl.deactivate();
@@ -141,24 +141,24 @@ function cancel() {
 
 function savePerimeter() {
     jQuery("#progress").css('visibility', 'visible');
-    request = false;
-    if (window.XMLHttpRequest) {
-        request = new XMLHttpRequest();
-    } else if (window.ActiveXObject) {
-        try {
-            request = new ActiveXObject("Msxml2.XMLHTTP");
-        } catch (e) {
-            try {
-                request = new ActiveXObject("Microsoft.XMLHTTP");
-            } catch (e) {
-                request = false;
-            }
-        }
-    }
-    if (!request) {
-        alert('Error');
-        return;
-    }
+//    request = false;
+//    if (window.XMLHttpRequest) {
+//        request = new XMLHttpRequest();
+//    } else if (window.ActiveXObject) {
+//        try {
+//            request = new ActiveXObject("Msxml2.XMLHTTP");
+//        } catch (e) {
+//            try {
+//                request = new ActiveXObject("Microsoft.XMLHTTP");
+//            } catch (e) {
+//                request = false;
+//            }
+//        }
+//    }
+//    if (!request) {
+//        alert('Error');
+//        return;
+//    }
 
     var extent = {"id": jQuery('#t-perimeter').val(),
         "name": jQuery('#t-perimetern').val(),
@@ -166,11 +166,18 @@ function savePerimeter() {
         "allowedbuffer": jQuery('#allowedbuffer').val(),
         "buffer": jQuery('#buffer').val(),
         "features": JSON.parse(jQuery('#t-features').val())};
-    var query = "index.php?option=com_easysdi_shop&task=addExtentToBasket&item=" + JSON.stringify(extent);
-    request.onreadystatechange = displayExtentRecap;
-    request.open("GET", query, true);
-    request.send(null);
-    
+//    var query = "index.php?option=com_easysdi_shop&task=addExtentToBasket&item=" + JSON.stringify(extent);
+//    request.onreadystatechange = displayExtentRecap;
+//    request.open("GET", query, true);
+//    request.send(null);
+
+    jQuery.ajax({
+        url: "index.php?option=com_easysdi_shop&task=addExtentToBasket&item=" + JSON.stringify(extent),
+        success: function(data) {
+            displayExtentRecap();
+        }
+    });
+
 //    if (typeof selectLayer !== 'undefined') {
 //        miniLayer.addFeatures(selectLayer.features);
 //    }else if (typeof myLayer !== 'undefined') {
@@ -181,36 +188,36 @@ function savePerimeter() {
 }
 
 function displayExtentRecap() {
-    if (request.readyState === 4) {
-        saveTemporaryFields();
+//    if (request.readyState === 4) {
+    saveTemporaryFields();
 
-        jQuery('#perimeter-recap').empty();
-        jQuery('#perimeter-recap').append("<div><h3>" + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_SURFACE', 'Surface') + "</h3>");
-        jQuery('#perimeter-recap').append("<div>" + jQuery('#surface').val() + "</div></div>");
+    jQuery('#perimeter-recap').empty();
+    jQuery('#perimeter-recap').append("<div><h3>" + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_SURFACE', 'Surface') + "</h3>");
+    jQuery('#perimeter-recap').append("<div>" + jQuery('#surface').val() + "</div></div>");
 
-        jQuery('#perimeter-recap').append("<div><h3>" + jQuery('#perimetern').val() + "</h3></div>");
-        var features_text = jQuery('#features').val();
+    jQuery('#perimeter-recap').append("<div><h3>" + jQuery('#perimetern').val() + "</h3></div>");
+    var features_text = jQuery('#features').val();
 
-        if (features_text === '')
-            return;
+    if (features_text === '')
+        return;
 
-        try {
-            var features = JSON.parse(features_text);
+    try {
+        var features = JSON.parse(features_text);
 
-            jQuery.each(features, function(index, value) {
-                if (typeof value === "undefined")
-                    return true;
+        jQuery.each(features, function(index, value) {
+            if (typeof value === "undefined")
+                return true;
 
-                if (typeof value.name === "undefined") {
-                    jQuery('#perimeter-recap').append("<div>" + features + "</div>");
-                    return false;
-                }
-                jQuery('#perimeter-recap').append("<div>" + value.name + "</div>");
-            });
-        } catch (e) {
-            jQuery('#perimeter-recap').append("<div>" + features_text + "</div>");
-        }
+            if (typeof value.name === "undefined") {
+                jQuery('#perimeter-recap').append("<div>" + features + "</div>");
+                return false;
+            }
+            jQuery('#perimeter-recap').append("<div>" + value.name + "</div>");
+        });
+    } catch (e) {
+        jQuery('#perimeter-recap').append("<div>" + features_text + "</div>");
     }
+//    }
 }
 
 

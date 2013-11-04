@@ -48,6 +48,20 @@
                    description="COM_EASYSDI_CATALOG_CONFIG_DESC_SEARCHRESULTNB">
            </field>
            
+           <field name="rootXSLfile"
+                   type="filelist"
+                   default="20"
+                   class="inputbox input-xlarge"
+                   required ="false"
+                   size="500"
+                   directory="media/easysdi/catalog/xsl" 
+                  filter="" 
+                  exclude="" 
+                  stripext=""
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_ROOTXSLFILE"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_ROOTXSLFILE">
+           </field>
+           
             <field name="metadataencodingcode"
                    type="text"
                    default=""

@@ -46,8 +46,22 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         else {
 
             if (task != 'diffusion.cancel' && document.formvalidator.isValid(document.id('adminForm'))) {
-
-                Joomla.submitform(task, document.getElementById('adminForm'));
+                if (js('#jform_hasextraction').is(':checked')) {
+                    var perimeterselected = false;
+                    js('.perimeterselect').each(function() {
+                        var currentElement = js(this);
+                        if (currentElement.val() != -1) {
+                            perimeterselected = true;
+                        }
+                    })
+                    if (perimeterselected == false) {
+                        alert('<?php echo $this->escape(JText::_('COM_EASYSDI_SHOP_FORM_MSG_DIFFUSION_NO_PERIMETER_SELECTED')); ?>');
+                    } else {
+                        Joomla.submitform(task, document.getElementById('adminForm'));
+                    }
+                } else {
+                    Joomla.submitform(task, document.getElementById('adminForm'));
+                }
             }
             else {
                 alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED')); ?>');
@@ -121,12 +135,12 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         js('#jform_deposit').val('');
         js('#jform_deposit_hidden').val('');
     }
-    
-    function enableFreePerimeter(){
-        if ( js('#jform_restrictedperimeter0').is(':checked') == true ){
+
+    function enableFreePerimeter() {
+        if (js('#jform_restrictedperimeter0').is(':checked') == true) {
             js('#jform_perimeter1').attr('disabled', 'disabled');
-            js('#jform_perimeter1 option[value=-1]').attr("selected","selected") ;
-        }else{
+            js('#jform_perimeter1 option[value=-1]').attr("selected", "selected");
+        } else {
             js('#jform_perimeter1').removeAttr('disabled', 'disabled');
         }
         js('#jform_perimeter1').trigger("liszt:updated");
@@ -206,10 +220,10 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                                 <label id="jform_perimeter<?php echo $orderperimeter->id; ?>-lbl" for="jform_perimeter<?php echo $orderperimeter->id; ?>" class="hasTip" title=""><?php echo $orderperimeter->name; ?></label>
                                             </div>
                                             <div class="controls">
-                                                <select id="jform_perimeter<?php echo $orderperimeter->id ?>" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" class="inputbox input-xlarge"  >
+                                                <select id="jform_perimeter<?php echo $orderperimeter->id ?>" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" class="inputbox input-xlarge perimeterselect"  >
                                                     <option value="-1" ><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_PERIMETER"); ?></option>
-                                                    <option value="1" <?php if(array_key_exists($orderperimeter->id,$this->item->perimeter ) && $this->item->perimeter[$orderperimeter->id] == 0) echo 'selected';  ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER"); ?></option>
-                                                    <option value="0" <?php if(array_key_exists($orderperimeter->id,$this->item->perimeter ) && $this->item->perimeter[$orderperimeter->id] == 1) echo 'selected';  ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER_WITH_BUFFER"); ?></option>
+                                                    <option value="1" <?php if (array_key_exists($orderperimeter->id, $this->item->perimeter) && $this->item->perimeter[$orderperimeter->id] == 0) echo 'selected'; ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER"); ?></option>
+                                                    <option value="0" <?php if (array_key_exists($orderperimeter->id, $this->item->perimeter) && $this->item->perimeter[$orderperimeter->id] == 1) echo 'selected'; ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_PERIMETER_WITH_BUFFER"); ?></option>
                                                 </select>
                                             </div>
                                         </div>
@@ -221,7 +235,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                     <?php foreach ($this->properties as $property): ?>
                                         <div class="control-group" >
                                             <div class="control-label">
-                                                <label id="jform_property<?php echo $property->id ?>-lbl" for="jform_property<?php echo $property->id ?>" class="hasTip <?php if($property->mandatory) echo 'required' ; ?>" title=""><?php echo sdiMultilingual::getTranslation($property->guid); ?><?php if($property->mandatory) echo '<span class="star">&#160;*</span>' ; ?></label>
+                                                <label id="jform_property<?php echo $property->id ?>-lbl" for="jform_property<?php echo $property->id ?>" class="hasTip" title=""><?php echo sdiMultilingual::getTranslation($property->guid); ?></label>
                                             </div>
                                             <div class="controls">
                                                 <?php
@@ -230,12 +244,12 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                                     case 2:
                                                     case 3:
                                                         ?>
-                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>][]" class="inputbox input-xlarge <?php if($property->mandatory) echo 'required' ; ?>" multiple="multiple" >
+                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>][]" class="inputbox input-xlarge" multiple="multiple" >
                                                             <?php
                                                             foreach ($this->propertyvalues as $propertyvalue):
                                                                 if ($propertyvalue->property_id == $property->id):
                                                                     ?>
-                                                                    <option value="<?php echo $propertyvalue->id; ?>" <?php if(array_key_exists($property->id,$this->item->property ) && in_array($propertyvalue->id, $this->item->property[$property->id])) echo 'selected';  ?>><?php echo sdiMultilingual::getTranslation($propertyvalue->guid); ?></option>
+                                                                    <option value="<?php echo $propertyvalue->id; ?>" <?php if (array_key_exists($property->id, $this->item->property) && in_array($propertyvalue->id, $this->item->property[$property->id])) echo 'selected'; ?>><?php echo sdiMultilingual::getTranslation($propertyvalue->guid); ?></option>
                                                                     <?php
                                                                 endif;
                                                             endforeach;
@@ -244,46 +258,16 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                                         <?php
                                                         break;
                                                     case 4:
-                                                        ?>
-                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>]" class="inputbox input-xlarge <?php if($property->mandatory) echo 'required' ; ?>"  >
-                                                            <?php if (!$property->mandatory): ?>
-                                                                <option value="-1"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_FIELD"); ?></option>
-                                                                <?php
-                                                                foreach ($this->propertyvalues as $propertyvalue):
-                                                                    if ($propertyvalue->property_id == $property->id):
-                                                                        ?>
-                                                                        <option value="<?php echo $propertyvalue->id; ?>" <?php if(array_key_exists($property->id,$this->item->property ) && in_array($propertyvalue->id, $this->item->property[$property->id])) echo 'selected';  ?>><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DO_DISPLAY_FIELD"); ?></option>
-                                                                        <?php
-                                                                        break;
-                                                                    endif;
-                                                                endforeach;
-                                                                ?>
-                                                            <?php
-                                                            else:
-                                                                foreach ($this->propertyvalues as $propertyvalue):
-                                                                    if ($propertyvalue->property_id == $property->id):
-                                                                        ?>
-                                                                        <option value="<?php echo $propertyvalue->id; ?>" <?php if(array_key_exists($property->id,$this->item->property ) && in_array($propertyvalue->id, $this->item->property[$property->id])) echo 'selected';  ?>><?php echo sdiMultilingual::getTranslation($propertyvalue->guid); ?></option>
-                                                                        <?php
-                                                                    endif;
-                                                                endforeach;
-                                                            endif;
-                                                            ?>
-                                                        </select>
-                                                        <?php
-                                                        break;
                                                     case 5:
                                                     case 6 :
                                                         ?>
-                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id; ?>]" class="inputbox <?php if($property->mandatory) echo 'required' ; ?>"  >
-                                                            <?php if (!$property->mandatory): ?>
-                                                                <option value="-1"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_FIELD"); ?></option>
-                                                            <?php endif; ?>
+                                                        <select id="jform_property<?php echo $property->id ?>" name="jform[property][<?php echo $property->id ?>]" class="inputbox input-xlarge"  >
+                                                            <option value="-1"><?php echo JText::_("COM_EASYSDI_SHOP_FORM_DONOT_DISPLAY_FIELD"); ?></option>
                                                             <?php
                                                             foreach ($this->propertyvalues as $propertyvalue):
                                                                 if ($propertyvalue->property_id == $property->id):
                                                                     ?>
-                                                                    <option value="<?php echo $propertyvalue->id; ?>"><?php echo sdiMultilingual::getTranslation($propertyvalue->guid); ?></option>
+                                                                    <option value="<?php echo $propertyvalue->id; ?>" <?php if (array_key_exists($property->id, $this->item->property) && in_array($propertyvalue->id, $this->item->property[$property->id])) echo 'selected'; ?>><?php echo JText::_(sdiMultilingual::getTranslation($propertyvalue->guid)); ?></option>
                                                                     <?php
                                                                 endif;
                                                             endforeach;
@@ -291,31 +275,32 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                                         </select>
                                                         <?php
                                                         break;
+
                                                 endswitch;
                                                 ?>
                                             </div>
                                         </div>
-<?php endforeach; ?>
+                                    <?php endforeach; ?>
                                 </fieldset>
                             </div>
                         </fieldset>
                     </div>
 
                     <div class="tab-pane" id="publishing">
-<?php foreach ($this->form->getFieldset('publishing') as $field): ?>
+                        <?php foreach ($this->form->getFieldset('publishing') as $field): ?>
                             <div class="control-group" id="<?php echo $field->fieldname; ?>">
                                 <div class="control-label"><?php echo $field->label; ?></div>
                                 <div class="controls"><?php echo $field->input; ?></div>
                             </div>
                         <?php endforeach; ?>
                         <?php if ($this->item->modified_by) : ?>
-    <?php foreach ($this->form->getFieldset('publishing_update') as $field): ?>
+                            <?php foreach ($this->form->getFieldset('publishing_update') as $field): ?>
                                 <div class="control-group" id="<?php echo $field->fieldname; ?>">
                                     <div class="control-label"><?php echo $field->label; ?></div>
                                     <div class="controls"><?php echo $field->input; ?></div>
                                 </div>
                             <?php endforeach; ?>
-<?php endif; ?>
+                        <?php endif; ?>
                     </div>
 
                 </div>
@@ -329,8 +314,8 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
 
         <input type = "hidden" name = "task" value = "" />
         <input type = "hidden" name = "option" value = "com_easysdi_shop" />
-<?php echo JHtml::_('form.token'); ?>
+        <?php echo JHtml::_('form.token'); ?>
     </form>
-        
-        <?php echo $this->getToolbar(); ?>
+
+    <?php echo $this->getToolbar(); ?>
 </div>

@@ -68,8 +68,6 @@ class Easysdi_shopModelOrder extends JModelForm {
             
             // Attempt to load the row.
             if ($table->load($id)) {
-                
-
                 // Convert the JTable to a clean JObject.
                 $properties = $table->getProperties(1);
                 $this->_item = JArrayHelper::toObject($properties, 'JObject');
