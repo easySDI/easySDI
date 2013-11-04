@@ -20,6 +20,11 @@ class Easysdi_mapHelper {
      */
     public static function addSubmenu($vName = '') {
         JHtmlSidebar::addEntry(
+                '<i class="icon-home"></i> '.JText::_('COM_EASYSDI_MAP_TITLE_HOME'),
+                'index.php?option=com_easysdi_core&view=easysdi',
+                $vName == 'easysdi'
+	);
+        JHtmlSidebar::addEntry(
                 JText::_('COM_EASYSDI_MAP_TITLE_MAPS'), 'index.php?option=com_easysdi_map&view=maps', $vName == 'maps'
         );
         JHtmlSidebar::addEntry(
