@@ -1,16 +1,16 @@
 <?php
 
-require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/SdiRelation.php';
-require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/SdiClass.php';
-require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/SdiAttribute.php';
-require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/SdiNamespace.php';
-require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/SdiStereotype.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/common/EText.php';
-require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/DomCswExtractor.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
-require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/SdiResourcetype.php';
+
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumChildtype.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumRendertype.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumStereotype.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 
 /**
+ * This Class will generate a form in XML format for Joomla.
+ * 
  * @version     4.0.0
  * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2012. All rights reserved.
@@ -20,17 +20,10 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/po/
 class FormGenerator {
 
     /**
-     * database
      *
      * @var JDatabaseDriver
      */
     private $db = null;
-
-    /**
-     *
-     * @var array 
-     */
-    public $relations = array();
 
     /**
      *
@@ -50,22 +43,62 @@ class FormGenerator {
      */
     private $session;
 
+    /**
+     *
+     * @var DOMDocument 
+     */
+    private $form;
+
+    /**
+     *
+     * @var DOMDocument 
+     */
+    public $structure;
+
+    /**
+     *
+     * @var string 
+     */
+    public $ajaxXpath;
+
+    /**
+     *
+     * @var DOMXPath 
+     */
+    private $domXpathStr;
+
+    /**
+     *
+     * @var DOMXPath 
+     */
+    private $domXpathCsw;
+    private $catalog_uri = 'http://www.easysdi.org/2011/sdi/catalog';
+    private $catalog_prefix = 'catalog';
+
     function __construct(DOMDocument $csw = NULL) {
         $this->db = JFactory::getDbo();
         $this->session = JFactory::getSession();
         $this->ldao = new SdiLanguageDao();
+        $this->nsdao = new SdiNamespaceDao();
         $this->csw = $csw;
+        $this->form = new DOMDocument('1.0', 'utf-8');
+        $this->structure = new DOMDocument('1.0', 'utf-8');
+        if (isset($csw)) {
+            $this->setDomXpathCsw();
+        }
     }
 
     /**
      * Returns a form structure to Joomla format.
      * 
      * @return string Form structure in Joomla format
-     * @since 4.0
+     * @version 4.0.0
      */
-    public function getForm(SdiRelation $rel = null) {
+    public function getForm() {
 
-        if ($rel == NULL) {
+
+
+        if (!isset($_GET['relid'])) {
             $query = $this->db->getQuery(true);
             $query->select('r.id, r.name, r.childtype_id');
             $query->select('c.id as class_id, c.name as class_name, c.guid as class_guid, c.isrootclass');
@@ -81,69 +114,1294 @@ class FormGenerator {
             $this->db->setQuery($query);
             $result = $this->db->loadObject();
 
+            $root = $this->getDomElement($result->ns_uri, $result->ns_prefix, $result->class_name, $result->class_id, EnumChildtype::$CLASS, $result->class_guid);
+            foreach ($this->nsdao->getAll() as $ns) {
+                $root->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:' . $ns->prefix, $ns->uri);
+            }
 
-            $rel = new SdiRelation(0, $result->class_name, SdiRelation::$CLASS);
-            $rel->setNamespace(new SdiNamespace($result->ns_id, $result->ns_prefix, $result->ns_uri));
-            $rel->setClass_child(new SdiClass($result->class_id, $result->class_name, $result->class_guid, $result->isrootclass, new SdiNamespace($result->ns_id, $result->ns_prefix, $result->ns_uri)));
+            $this->structure->appendChild($root);
 
-            $rel->setXpath(array($rel));
+            $this->getChildTree($root);
+        } else {
+
+            $this->structure->loadXML(unserialize($this->session->get('structure')));
+            $this->setDomXpathStr();
+
+            $parent = $this->domXpathStr->query($this->unSerializeXpath($_GET['parent_path']))->item(0);
+
+            $query = $this->getRelationQuery();
+            $query->where('r.id = ' . $_GET['relid']);
+
+            $this->db->setQuery($query);
+            $result = $this->db->loadObject();
+
+            switch ($result->childtype_id) {
+                case EnumChildtype::$CLASS:
+                    $relation = $this->getDomElement($result->uri, $result->prefix, $result->name, $result->id, EnumChildtype::$RELATION, $result->guid, 1, $result->upperbound);
+                    $class = $this->getDomElement($result->class_ns_uri, $result->class_ns_prefix, $result->class_name, $result->class_id, EnumChildtype::$CLASS, $result->class_guid);
+                    $relation->appendChild($class);
+
+                    $parent->appendChild($relation);
+                    $root = $class;
+                    $this->ajaxXpath = $relation->getNodePath();
+                    break;
+                case EnumChildtype::$RELATIONTYPE:
+                    $relation = $this->getDomElement($result->classass_ns_uri, $result->classass_ns_prefix, $result->name, $result->classass_id, EnumChildtype::$RELATIONTYPE, $result->guid, 1, $result->upperbound);
+                    $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:show', 'embed');
+                    $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:actuate', 'onLoad');
+                    $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:type', 'simple');
+                    $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '');
+                    $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':resourcetypeId', $result->resourcetype_id);
+                    $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':relationId', $result->id);
+
+                    $parent->appendChild($relation);
+                    $root = $relation;
+                    $this->ajaxXpath = $relation->getNodePath();
+                    break;
+                case EnumChildtype::$ATTRIBUT:
+                    $attribute = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $_GET['relid'] . '"]')->item(0);
+                    $cloned = $attribute->cloneNode(true);
+                    $parent->appendChild($cloned);
+
+                    $root = $cloned;
+                    $this->ajaxXpath = $cloned->getNodePath();
+                    break;
+            }
+
+            $this->getChildTree($root);
         }
 
-        $this->relations[$rel->id . '-0_' . $rel->getClass_child()->id . '-0'] = $rel;
+        $this->setDomXpathStr();
 
-        $this->getChildTree($rel);
 
-        if (!isset($_GET['uuid'])) {
-            $this->session->set('relations', serialize($this->relations));
-            $this->session->set('attribute_index', 1000);
+
+        if (isset($this->csw)) {
+            $this->setDomXpathCsw();
+            $this->mergeCsw();
+
+            $this->csw->formatOutput = true;
+            $response = $this->csw->saveXML();
         }
 
-        $form = $this->buildForm();
+        $this->structure->formatOutput = true;
+        $html = $this->structure->saveXML();
+
+        $this->session->set('structure', serialize($this->structure->saveXML()));
+        $form = $this->buildForm($root);
+
         return $form;
     }
 
     /**
-     * Recursive method of constructing the tree node
+     * Recursive method of constructing the tree
      * 
-     * @param SdiRelation $rel Current node
-     * @param int $level
-     * @since 4.0
+     * @param DOMElement $parent Current element.
      */
-    private function getChildTree(SdiRelation $rel, $level = 0) {
+    private function getChildTree(DOMElement $parent) {
 
-        $rel->level = $level;
+        $childs = $this->getChildNode($parent);
 
-        $childs = $this->getChildNode($rel);
         foreach ($childs as $child) {
-            $this->relations[$child->getSerializedXpath()] = $child;
-            if ($child->childtype_id == SdiRelation::$CLASS || $child->childtype_id == SdiRelation::$RELATIONTYPE) {
-                $this->getChildTree($child, $level + 1);
+            $parent->appendChild($child);
+
+            if ($child->lastChild) {
+                $element = $child->lastChild;
+            } else {
+                $element = $child;
+            }
+
+            switch ($element->getAttributeNS($this->catalog_uri, 'childtypeId')) {
+                case EnumChildtype::$CLASS:
+                    $this->getChildTree($element);
+
+                    break;
+                case EnumChildtype::$RELATIONTYPE:
+                    $this->getChildTree($element);
+                    break;
             }
         }
     }
 
     /**
-     * Retrieves the child relation of the relation passed as a parameter.
+     * Retrieves the children of the element passed as parameter.
      * 
-     * @param SdiRelation $rel Current node
-     * @return SdiRelation[] Array of the child node
+     * @param DOMElement $parent
+     * @return DOMElement[] Childs of parent relation.
+     */
+    private function getChildNode(DOMElement $parent) {
+        $childs = array();
+
+
+        if ($parent->parentNode->nodeType == XML_ELEMENT_NODE) {
+            switch ($parent->getAttributeNS($this->catalog_uri, 'childtypeId')) {
+                case EnumChildtype::$RELATIONTYPE:
+                    $relationExist = $parent;
+                    break;
+                default :
+                    $relationExist = $parent->parentNode;
+                    break;
+            }
+
+            $lowerbound = $relationExist->getAttributeNS($this->catalog_uri, 'lowerbound');
+            $occurance = 0;
+            if (isset($this->csw)) {
+                $occurance = $this->domXpathCsw->query('/*' . $relationExist->getNodePath())->length;
+            }
+
+            $exist = $lowerbound + $occurance;
+
+            if ($exist < 1) {
+                $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
+                return $childs;
+            } else {
+                $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
+            }
+        }
+
+        $query = $this->getRelationQuery();
+        $query->where('r.parent_id = ' . $parent->getAttributeNS($this->catalog_uri, 'dbid'));
+        $query->where('rp.profile_id = 1');
+        $query->where('r.state = 1');
+        $query->order('r.ordering');
+        $query->order('r.name');
+
+        $this->db->setQuery($query);
+
+
+        foreach ($this->db->loadObjectList() as $result) {
+
+            switch ($result->childtype_id) {
+                case EnumChildtype::$CLASS:
+                    $relation = $this->getDomElement($result->uri, $result->prefix, $result->name, $result->id, EnumChildtype::$RELATION, $result->guid, $result->lowerbound, $result->upperbound);
+                    $class = $this->getDomElement($result->class_ns_uri, $result->class_ns_prefix, $result->class_name, $result->class_id, EnumChildtype::$CLASS, $result->class_guid, null, null, $result->class_stereotype_id);
+
+                    switch ($result->class_stereotype_id) {
+                        case EnumStereotype::$GEOGRAPHICEXTENT:
+                            $params = array();
+                            $params['stereotype_id'] = $result->class_stereotype_id;
+
+                            foreach ($this->getStereotype((object) $params) as $st) {
+                                $relation->appendChild($st);
+                            }
+
+                            break;
+                        default :
+                            $relation->appendChild($class);
+                            break;
+                    }
+
+                    $childs[] = $relation;
+
+                    break;
+
+                case EnumChildtype::$ATTRIBUT:
+                    $attribute = $this->getDomElement($result->attribute_ns_uri, $result->attribute_ns_prefix, $result->attribute_isocode, $result->attribute_id, EnumChildtype::$ATTRIBUT, $result->attribute_guid, $result->lowerbound, $result->upperbound, $result->stereotype_id, $result->rendertype_id);
+
+                    foreach ($this->getStereotype($result) as $st) {
+                        $attribute->appendChild($st);
+                    }
+
+                    $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relGuid', $result->guid);
+                    $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relid', $result->id);
+                    $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'maxlength', $result->attribute_length);
+                    $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', $result->attribute_issystem);
+
+                    $childs[] = $attribute;
+
+                    break;
+                case EnumChildtype::$RELATIONTYPE:
+                    $class = $this->getDomElement($result->classass_ns_uri, $result->classass_ns_prefix, $result->name, $result->classass_id, EnumChildtype::$RELATIONTYPE, $result->guid, $result->lowerbound, $result->upperbound);
+                    $class->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:show', 'embed');
+                    $class->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:actuate', 'onLoad');
+                    $class->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:type', 'simple');
+                    $class->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '');
+                    $class->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':resourcetypeId', $result->resourcetype_id);
+                    $class->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':relationId', $result->id);
+
+                    $childs[] = $class;
+                    break;
+            }
+        }
+
+        return $childs;
+    }
+
+    /**
+     * This method creates a DOM element.
+     * 
+     * @param string $uri Namespace URI
+     * @param string $prefix Namespace prefix
+     * @param string $name Name of the element.
+     * @param string $id Id for current element
+     * @param int $childtypeId Childtype @see EnumChildtype
+     * @param string $guid Guid for current element
+     * @param int $lowerbound Minimum occurrence for current element.
+     * @param int $upperbound Maximum occurrence for current element.
+     * @param int $stereotypeId Stereotype @see EnumStereotype
+     * @param int $rendertypeId Rendertype @see EnumRendertype
+     * 
+     * @return DOMElement 
+     */
+    private function getDomElement($uri, $prefix, $name, $id, $childtypeId, $guid, $lowerbound = null, $upperbound = null, $stereotypeId = null, $rendertypeId = null) {
+        $element = $this->structure->createElementNS($uri, $prefix . ':' . $name);
+
+        $element->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':dbid', $id);
+        $element->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':id', $guid);
+        $element->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', $childtypeId);
+        $element->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':index', '1');
+
+        if (isset($lowerbound)) {
+            $element->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':lowerbound', $lowerbound);
+        }
+        if (isset($upperbound)) {
+            $element->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':upperbound', $upperbound);
+        }
+        if (isset($rendertypeId)) {
+            $element->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', $rendertypeId);
+        }
+        if (isset($stereotypeId)) {
+            $element->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', $stereotypeId);
+        }
+
+        return $element;
+    }
+
+    /**
+     * Returns the structure of a stereotype.
+     * 
+     * @param stdClass $result
+     * @return DOMElement[]
+     */
+    private function getStereotype($result) {
+        $elements = array();
+        //$defaultLanguage = 'DE';
+        $sdiLangue = new SdiLanguageDao();
+        $languages = $sdiLangue->getSupported();
+
+
+        switch ($result->stereotype_id) {
+
+            case EnumStereotype::$LOCALE:
+            case EnumStereotype::$LOCALECHOICE:
+            case EnumStereotype::$GEMET:
+                $characterString = $this->structure->createElementNS('http://www.isotc211.org/2005/gco', 'gco:CharacterString');
+                $elements[] = $characterString;
+                foreach ($languages as $key => $value) {
+                    $pt_freetext = $this->structure->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:PT_FreeText');
+                    $textGroup = $this->structure->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:textGroup');
+                    $localisedcs = $this->structure->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:LocalisedCharacterString');
+                    $localisedcs->setAttribute('locale', '#' . $key);
+
+                    $textGroup->appendChild($localisedcs);
+                    $pt_freetext->appendChild($textGroup);
+
+                    $elements[] = $pt_freetext;
+                }
+
+                break;
+
+            case EnumStereotype::$LIST:
+                $element = $this->structure->createElementNS($result->list_ns_uri, $result->list_ns_prefix . ':' . $result->attribute_type_isocode);
+                $element->setAttribute('codeList', $result->attribute_codelist);
+                $element->setAttribute('codeListValue', '');
+
+                $elements[] = $element;
+                break;
+
+            case EnumStereotype::$GEOGRAPHICEXTENT:
+                $element = $this->getExtendStereotype();
+                $elements[] = $element;
+                break;
+            case EnumStereotype::$MAPGEOGRAPHICEXTENT:
+                $elements[] = $this->structure->createElement('stereotype');
+                break;
+            case EnumStereotype::$FREEMAPGEOGRAPHICEXTENT:
+                $elements[] = $this->structure->createElement('stereotype');
+                break;
+
+            default:
+                $elements[] = $this->structure->createElementNS($result->stereotype_ns_uri, $result->stereotype_ns_prefix . ':' . $result->stereotype_isocode);
+                break;
+        }
+
+        return $elements;
+    }
+
+    /**
+     * Returns the structure of the stereotype "Extent".
+     * 
+     * @return DOMElement
+     */
+    private function getExtendStereotype() {
+        $namspaces = array();
+        foreach ($this->nsdao->getAll() as $ns) {
+            $namspaces[$ns->prefix] = $ns->uri;
+        }
+
+        $EX_Extent = $this->structure->createElementNS($namspaces['gmd'], 'gmd:EX_Extent');
+        $EX_Extent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':dbid', '0');
+        $EX_Extent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$CLASS);
+        $EX_Extent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', EnumStereotype::$GEOGRAPHICEXTENT);
+
+        $extentType = $this->structure->createElementNS($namspaces['sdi'], 'sdi:extentType');
+        $extentType->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$ATTRIBUT);
+        $extentType->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', EnumStereotype::$BOUNDARYCATEGORY);
+        $extentType->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$LIST);
+        $extentType->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_TYPE');
+
+        $description = $this->structure->createElementNS($namspaces['gmd'], 'gmd:description');
+        $description->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$ATTRIBUT);
+        $description->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', EnumStereotype::$BOUNDARY);
+        $description->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$LIST);
+        $description->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_DESCRIPTION');
+
+        $geographicElement = $this->structure->createElementNS($namspaces['gmd'], 'gmd:geographicElement');
+        $geographicElement->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$RELATION);
+        $geographicElement->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':lowerbound', '3');
+        $geographicElement->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':upperbound', '3');
+
+        $geographicElement1 = $geographicElement->cloneNode();
+        $geographicElement1->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
+        $geographicElement1->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_GEOGRAPHICELEMENT');
+
+        $EX_GeographicBoundingBox = $this->structure->createElementNS($namspaces['gmd'], 'gmd:EX_GeographicBoundingBox');
+        $EX_GeographicBoundingBox->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$CLASS);
+
+        $extentTypeCode = $this->structure->createElementNS($namspaces['gmd'], 'gmd:extentTypeCode');
+        $extentTypeCode->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$ATTRIBUT);
+        $extentTypeCode->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$HIDDEN);
+
+        $northBoundLatitude = $this->structure->createElementNS($namspaces['gmd'], 'gmd:northBoundLatitude');
+        $northBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$ATTRIBUT);
+        $northBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$TEXTBOX);
+        $northBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', EnumStereotype::$NUMBER);
+        $northBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_NORTHBOUNDLATITUDE');
+        $northBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':boundingbox', 'true');
+
+        $southBoundLatitude = $this->structure->createElementNS($namspaces['gmd'], 'gmd:southBoundLatitude');
+        $southBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$ATTRIBUT);
+        $southBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$TEXTBOX);
+        $southBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', EnumStereotype::$NUMBER);
+        $southBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_SOUTHBOUNDLATITUDE');
+        $southBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':boundingbox', 'true');
+
+        $eastBoundLongitude = $this->structure->createElementNS($namspaces['gmd'], 'gmd:eastBoundLongitude');
+        $eastBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$ATTRIBUT);
+        $eastBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$TEXTBOX);
+        $eastBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', EnumStereotype::$NUMBER);
+        $eastBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_EASTBOUNDLONGITUDE');
+        $eastBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':boundingbox', 'true');
+
+        $westBoundLongitude = $this->structure->createElementNS($namspaces['gmd'], 'gmd:westBoundLongitude');
+        $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$ATTRIBUT);
+        $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$TEXTBOX);
+        $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', EnumStereotype::$NUMBER);
+        $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_WESTBOUNDLONGITUDE');
+        $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':boundingbox', 'true');
+        $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':map', 'true');
+
+        $geographicElement2 = $geographicElement->cloneNode();
+        $geographicElement2->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
+
+        $EX_GeographicDescription = $this->structure->createElementNS($namspaces['gmd'], 'gmd:EX_GeographicDescription');
+        $EX_GeographicDescription->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$CLASS);
+
+        $geographicIdentifier = $this->structure->createElementNS($namspaces['gmd'], 'gmd:geographicIdentifier');
+        $geographicIdentifier->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$RELATION);
+        $geographicIdentifier->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':lowerbound', '1');
+        $geographicIdentifier->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':upperbound', '1');
+        $geographicIdentifier->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
+
+        $MD_Identifier = $this->structure->createElementNS($namspaces['gmd'], 'gmd:MD_Identifier');
+        $MD_Identifier->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$CLASS);
+
+        $code = $this->structure->createElementNS($namspaces['gmd'], 'gmd:code');
+        $code->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$ATTRIBUT);
+        $code->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$HIDDEN);
+
+        $CharacterString = $this->structure->createElementNS($namspaces['gco'], 'gco:CharacterString');
+        $Boolean = $this->structure->createElementNS($namspaces['gco'], 'gco:Boolean', 'true');
+        $Decimal = $this->structure->createElementNS($namspaces['gco'], 'gco:Decimal');
+
+        $extentType->appendChild($CharacterString->cloneNode());
+        $description->appendChild($CharacterString->cloneNode());
+        $extentTypeCode->appendChild($Boolean->cloneNode(true));
+        $northBoundLatitude->appendChild($Decimal->cloneNode());
+        $southBoundLatitude->appendChild($Decimal->cloneNode());
+        $eastBoundLongitude->appendChild($Decimal->cloneNode());
+        $westBoundLongitude->appendChild($Decimal->cloneNode());
+        $code->appendChild($CharacterString->cloneNode());
+
+        $MD_Identifier->appendChild($code);
+        $geographicIdentifier->appendChild($MD_Identifier);
+
+        $EX_GeographicBoundingBox->appendChild($extentTypeCode->cloneNode(true));
+        $EX_GeographicBoundingBox->appendChild($northBoundLatitude);
+        $EX_GeographicBoundingBox->appendChild($southBoundLatitude);
+        $EX_GeographicBoundingBox->appendChild($eastBoundLongitude);
+        $EX_GeographicBoundingBox->appendChild($westBoundLongitude);
+
+        $EX_GeographicDescription->appendChild($extentTypeCode->cloneNode(true));
+        $EX_GeographicDescription->appendChild($geographicIdentifier);
+
+        $geographicElement1->appendChild($EX_GeographicBoundingBox);
+        $geographicElement2->appendChild($EX_GeographicDescription);
+
+        $EX_Extent->appendChild($extentType);
+        $EX_Extent->appendChild($description);
+        $EX_Extent->appendChild($geographicElement1);
+        $EX_Extent->appendChild($geographicElement2);
+
+        return $EX_Extent;
+    }
+
+    /**
+     * This method adds the required number of occurrences of a relation.
+     */
+    private function mergeCsw() {
+
+        foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="0"]|//*[@catalog:childtypeId="2"]|//*[@catalog:childtypeId="3"]') as $relation) {
+            $xpath = $relation->getNodePath();
+            $nbr = $this->domXpathCsw->query('/*' . $xpath)->length;
+
+            $hasSibling = isset($relation->nextSibling);
+            if ($hasSibling) {
+                $nextSibling = $relation->nextSibling;
+            }
+            for ($i = 1; $i < $nbr; $i++) {
+                $clone = $relation->cloneNode(true);
+                $clone->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':index', $i + 1);
+                if ($hasSibling) {
+                    $relation->parentNode->insertBefore($clone, $nextSibling);
+                } else {
+                    $relation->parentNode->appendChild($clone);
+                }
+            }
+        }
+
+        $this->getValue($this->structure->getElementsByTagNameNS('*', '*')->item(0));
+    }
+
+    /**
+     * This method retrieves the value of an attribute using XPath.
+     * 
+     * @param DOMNode $child The current attribute.
+     */
+    private function getValue(DOMNode $child) {
+        foreach ($child->childNodes as $node) {
+            if ($node->hasChildNodes()) {
+                if ($node->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE) {
+                    $nodeCsw = $this->domXpathCsw->query('/*' . $node->getNodePath())->item(0);
+                    if (isset($nodeCsw)) {
+                        $node->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', $nodeCsw->getAttributeNS('http://www.w3.org/1999/xlink', 'href'));
+                    }
+                }
+                $this->getValue($node);
+            } else {
+                $xpath = $node->getNodePath();
+                $nodeCsw = $this->domXpathCsw->query('/*' . $node->getNodePath())->item(0);
+                if (isset($nodeCsw)) {
+                    $node->nodeValue = $nodeCsw->nodeValue;
+
+                    if (isset($nodeCsw->attributes)) {
+                        foreach ($nodeCsw->attributes as $attribute) {
+                            $node->setAttribute($attribute->nodeName, $attribute->nodeValue);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns a form structure in Joomla format
+     * 
+     * @return string Form structure to Joomla format.
+     */
+    private function buildForm(DOMElement $root) {
+        $form = $this->form->createElement('form');
+        $form->appendChild($this->getHiddenFields());
+
+        $fieldset = $this->form->createElement('fieldset');
+
+        switch ($root->getAttributeNS($this->catalog_uri, 'childtypeId')) {
+            case EnumChildtype::$ATTRIBUT:
+            case EnumChildtype::$RELATIONTYPE:
+                $query = 'descendant-or-self::*[@catalog:childtypeId="2"]|descendant-or-self::*[@catalog:childtypeId="3"]';
+                break;
+
+            default:
+                $query = 'descendant::*[@catalog:childtypeId="2"]|descendant::*[@catalog:childtypeId="3"]';
+                break;
+        }
+
+        foreach ($this->domXpathStr->query($query, $root) as $attribute) {
+            $attributes = $this->getFormField($attribute);
+            if (is_array($attributes)) {
+                foreach ($attributes as $attr) {
+                    $fieldset->appendChild($attr);
+                }
+            } else {
+                $fieldset->appendChild($attributes);
+            }
+        }
+
+        $form->appendChild($fieldset);
+        $this->form->appendChild($form);
+        $this->form->formatOutput = true;
+        return $this->form->saveXML();
+    }
+
+    /**
+     * Creates hidden fields added to the form.
+     * 
+     * @return DOMElement
+     */
+    private function getHiddenFields() {
+        $fieldset = $this->form->createElement('fieldset');
+        $fieldset->setAttribute('name', 'hidden');
+
+        $id = $this->form->createElement('field');
+        $id->setAttribute('name', 'id');
+        $id->setAttribute('type', 'hidden');
+        $id->setAttribute('filter', 'safehtml');
+
+        $guid = $this->form->createElement('field');
+        $guid->setAttribute('name', 'guid');
+        $guid->setAttribute('type', 'hidden');
+        $guid->setAttribute('filter', 'safehtml');
+
+        $fieldset->appendChild($id);
+        $fieldset->appendChild($guid);
+
+        return $fieldset;
+    }
+
+    /**
+     * Returns a field corresponding to RenderType Joomla format.
+     * 
+     * @param DOMElement $attribute
+     * @return DOMElement
+     */
+    private function getFormField(DOMElement $attribute) {
+        $field = $this->form->createElement('field');
+        switch ($attribute->getAttributeNS($this->catalog_uri, 'childtypeId')) {
+            case EnumChildtype::$RELATIONTYPE:
+                return $this->getRelationType($attribute);
+                break;
+
+            case EnumChildtype::$ATTRIBUT:
+                switch ($attribute->getAttributeNS($this->catalog_uri, 'rendertypeId')) {
+                    case EnumRendertype::$TEXTBOX:
+                        switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
+                            case EnumStereotype::$FILE:
+                                return $this->getFormFileField($attribute);
+                                break;
+
+                            default:
+                                return $this->getFormTextBoxField($attribute);
+                                break;
+                        }
+                        break;
+                    case EnumRendertype::$TEXTAREA:
+                        return $this->getFormTextAreaField($attribute);
+                        break;
+                    case EnumRendertype::$CHECKBOX:
+                        return $this->getFormCheckboxField($attribute);
+                        break;
+                    case EnumRendertype::$RADIOBUTTON:
+                        return $this->getFormRadioButtonField($attribute);
+                        break;
+                    case EnumRendertype::$LIST:
+                        return $this->getFormListField($attribute);
+                        break;
+                    case EnumRendertype::$DATE:
+                        return $this->getFormDateField($attribute);
+                        break;
+                    case EnumRendertype::$DATETIME:
+                        return $this->getFormDateField($attribute);
+                        break;
+                    case EnumRendertype::$GEMET:
+                        return $this->getFormGemetField($attribute);
+                        break;
+                    case EnumRendertype::$HIDDEN:
+                        return $this->getFormHiddenField($attribute);
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Create a field of type text.
+     * 
+     * @param DOMElement $attribute
+     * @return DOMElement
+     */
+    private function getFormTextBoxField(DOMElement $attribute) {
+        $maxlength = $attribute->getAttributeNS($this->catalog_uri, 'maxlength');
+        $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
+        $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
+        $label = $attribute->getAttributeNS($this->catalog_uri, 'label');
+        $boundingbox = $attribute->getAttributeNS($this->catalog_uri, 'boundingbox');
+
+        $fields = array();
+        $field = $this->form->createElement('field');
+
+        $validator = $this->getValidatorClass($attribute);
+
+        $field->setAttribute('type', 'text');
+        $field->setAttribute('class', $validator);
+
+        if ($maxlength > 0) {
+            $field->setAttribute('maxlength', $maxlength);
+        }
+        if ($readonly) {
+            $field->setAttribute('readonly', 'true');
+        }
+
+        if ($boundingbox) {
+            $field->setAttribute('onchange', 'drawBB();');
+        }
+
+        $field->setAttribute('default', $attribute->firstChild->nodeValue);
+        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
+        if ($guid != '') {
+            $field->setAttribute('label', EText::_($guid));
+        } else {
+            $field->setAttribute('label', JText::_($label));
+        }
+        $field->setAttribute('description', EText::_($guid, 2));
+
+        $fields[] = $field;
+
+        foreach ($this->domXpathStr->query('*/*/*', $attribute) as $i18nChild) {
+            $field = $this->form->createElement('field');
+
+            $field->setAttribute('type', 'text');
+            $field->setAttribute('class', $validator);
+
+            if ($maxlength > 0) {
+                $field->setAttribute('maxlength', $maxlength);
+            }
+            if ($readonly) {
+                $field->setAttribute('readonly', 'true');
+            }
+
+            $field->setAttribute('default', $i18nChild->nodeValue);
+            $field->setAttribute('name', $this->serializeXpath($i18nChild->getNodePath()) . $i18nChild->getAttribute('locale'));
+            $localeValue = str_replace('#', '', $i18nChild->getAttribute('locale'));
+            $field->setAttribute('label', EText::_($guid) . ' ' . $this->ldao->getByIso3166($localeValue)->value);
+            $field->setAttribute('description', EText::_($guid, 2));
+
+            $fields[] = $field;
+        }
+
+        return $fields;
+    }
+
+    /**
+     * Create a field of type textarea.
+     * 
+     * @param DOMElement $attribute 
+     * @return DOMElement
+     *
+     */
+    private function getFormTextAreaField(DOMElement $attribute) {
+        $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
+        $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
+        $validator = $this->getValidatorClass($attribute);
+
+        $fields = array();
+        $field = $this->form->createElement('field');
+
+        $field->setAttribute('type', 'textarea');
+        $field->setAttribute('class', $validator);
+        $field->setAttribute('rows', 5);
+        $field->setAttribute('cols', 5);
+
+        if ($readonly) {
+            $field->setAttribute('readonly', 'true');
+        }
+
+        $field->setAttribute('default', $attribute->firstChild->nodeValue);
+        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
+        $field->setAttribute('label', EText::_($guid));
+        $field->setAttribute('description', EText::_($guid, 2));
+
+        $fields[] = $field;
+
+        foreach ($this->domXpathStr->query('*/*/*', $attribute) as $i18nChild) {
+            $field = $this->form->createElement('field');
+
+            $field->setAttribute('type', 'textarea');
+            $field->setAttribute('class', $validator);
+            $field->setAttribute('rows', 5);
+            $field->setAttribute('cols', 5);
+
+            if ($readonly) {
+                $field->setAttribute('readonly', 'true');
+            }
+
+            $field->setAttribute('default', $i18nChild->nodeValue);
+            $field->setAttribute('name', $this->serializeXpath($i18nChild->getNodePath()) . $i18nChild->getAttribute('locale'));
+            $localeValue = str_replace('#', '', $i18nChild->getAttribute('locale'));
+            $field->setAttribute('label', EText::_($guid) . ' ' . $this->ldao->getByIso3166($localeValue)->value);
+            $field->setAttribute('description', EText::_($guid, 2));
+
+            $fields[] = $field;
+        }
+
+        return $fields;
+    }
+
+    /**
+     * Create a field of type checkboxes.
+     * 
+     * @param DOMElement $attribute 
+     * @return DOMElement
+     * @since 4.0.0
+     */
+    private function getFormCheckboxField(DOMElement $attribute) {
+        $field = $this->form->createElement('field');
+
+        $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
+        $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
+
+        $field->setAttribute('type', 'checkboxes');
+        $field->setAttribute('name', $this->serializeXpath($attribute->getNodePath()));
+
+        if ($readonly) {
+            $field->setAttribute('readonly', 'true');
+        }
+
+        foreach ($this->getAttributValues($attribute) as $value) {
+            $option = $this->form->createElement('option', EText::_($value->guid));
+            $option->setAttribute('value', $value->value);
+
+            $field->appendChild($option);
+        }
+
+        return $field;
+    }
+
+    /**
+     * Create a field of type radio.
+     * 
+     * @param DOMElement $attribute
+     * @return DOMElement
+     * @since 4.0.0
+     */
+    private function getFormRadioButtonField(DOMElement $attribute) {
+        $field = $this->form->createElement('field');
+
+        $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
+        $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
+
+        $field->setAttribute('type', 'radio');
+        $field->setAttribute('name', $this->serializeXpath($attribute->getNodePath()));
+
+        if ($readonly) {
+            $field->setAttribute('readonly', 'true');
+        }
+
+        $field->setAttribute('label', EText::_($guid));
+        $field->setAttribute('description', EText::_($guid, 2));
+
+        foreach ($this->getAttributValues($attribute) as $value) {
+            $option = $this->form->createElement('option', EText::_($value->guid));
+            $option->setAttribute('value', $value->value);
+
+            $field->appendChild($option);
+        }
+
+        return $field;
+    }
+
+    /**
+     * Create a field of type grouplist or list.
+     * 
+     * @param DOMElement $attribute
+     * @return DOMElement
+     * @since 4.0.0
+     */
+    private function getFormListField(DOMElement $attribute) {
+        $field = $this->form->createElement('field');
+
+        $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
+        $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
+        $label = $attribute->getAttributeNS($this->catalog_uri, 'label');
+
+        $validator = $this->getValidatorClass($attribute);
+
+        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
+        $field->setAttribute('class', $validator);
+        if ($readonly) {
+            $field->setAttribute('readonly', 'true');
+        }
+
+        $field->setAttribute('description', EText::_($guid, 2));
+
+        foreach ($this->getAttributOptions($attribute) as $opt) {
+            switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
+                case EnumStereotype::$LOCALECHOICE:
+                    $group = $this->form->createElement('group');
+                    $group->setAttribute('label', EText::_($opt->guid));
+
+                    if ($opt->guid != '') {
+                        $option = $this->form->createElement('option', EText::_($opt->guid, 2));
+                    } else {
+                        $option = $this->form->createElement('option');
+                    }
+
+                    $option->setAttribute('value', $opt->guid);
+
+                    $field->setAttribute('type', 'groupedlist');
+                    $field->setAttribute('label', EText::_($guid));
+                    $field->setAttribute('default', $attribute->firstChild->getAttribute('codeListValue'));
+
+                    $group->appendChild($option);
+                    $field->appendChild($group);
+                    break;
+                case EnumStereotype::$BOUNDARY:
+                    $field->setAttribute('type', 'list');
+                    if ($guid != '') {
+                        $field->setAttribute('label', EText::_($guid));
+                    } else {
+                        $field->setAttribute('label', JText::_($label));
+                    }
+
+                    $field->setAttribute('default', $attribute->firstChild->nodeValue);
+
+                    if ($opt->guid != '') {
+                        $option = $this->form->createElement('option', EText::_($opt->guid));
+                    } else {
+                        $option = $this->form->createElement('option');
+                    }
+
+                    $option->setAttribute('value', $opt->name);
+
+                    $field->appendChild($option);
+                    $field->setAttribute('onchange', 'setBoundary(\'' . $this->serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
+                    break;
+                case EnumStereotype::$BOUNDARYCATEGORY:
+                    $field->setAttribute('type', 'list');
+                    if ($guid != '') {
+                        $field->setAttribute('label', EText::_($guid));
+                    } else {
+                        $field->setAttribute('label', JText::_($label));
+                    }
+
+                    $field->setAttribute('default', $attribute->firstChild->nodeValue);
+
+                    if ($opt->guid != '') {
+                        $option = $this->form->createElement('option', EText::_($opt->guid));
+                    } else {
+                        $option = $this->form->createElement('option');
+                    }
+
+                    $option->setAttribute('value', $opt->name);
+
+                    $field->appendChild($option);
+                    $field->setAttribute('onchange', 'filterBoundary(\'' . $this->serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
+                    break;
+                default:
+                    $field->setAttribute('type', 'list');
+                    $field->setAttribute('label', EText::_($guid));
+                    $field->setAttribute('default', $attribute->firstChild->getAttribute('codeListValue'));
+
+                    if ($opt->guid != '') {
+                        $option = $this->form->createElement('option', EText::_($opt->guid));
+                    } else {
+                        $option = $this->form->createElement('option');
+                    }
+                    $option->setAttribute('value', $opt->value);
+
+                    $field->appendChild($option);
+                    break;
+            }
+        }
+
+        return $field;
+    }
+
+    /**
+     * Create a field of type calendar.
+     * 
+     * @param DOMElement $attribute
+     * @return DOMElement
+     * @since 4.0.0
+     */
+    private function getFormDateField(DOMElement $attribute) {
+        $field = $this->form->createElement('field');
+
+        $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
+        $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
+
+        if ($readonly) {
+            $field->setAttribute('readonly', 'true');
+        }
+
+        $validator = $this->getValidatorClass($attribute);
+
+        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
+        $field->setAttribute('type', 'calendar');
+        $field->setAttribute('class', $validator);
+        $field->setAttribute('format', '%Y-%m-%d');
+        $field->setAttribute('label', EText::_($guid));
+        $field->setAttribute('description', EText::_($guid, 2));
+
+        $field->setAttribute('default', substr($attribute->firstChild->nodeValue, 0, 10));
+
+
+        return $field;
+    }
+
+    private function getFormDateTimeField(SdiRelation $rel) {
+        //TODO: Not Implemented
+    }
+
+    /**
+     * Create a field of type list specific for GEMET stereotype.
+     * 
+     * @param DOMElement $attribute
+     * @return DOMElement
+     */
+    private function getFormGemetField(DOMElement $attribute) {
+        $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
+        $label = $attribute->getAttributeNS($this->catalog_uri, 'label');
+
+        $fields = array();
+
+        $field = $this->form->createElement('field');
+
+        $field->setAttribute('type', 'list');
+        $field->setAttribute('multiple', 'true');
+        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
+        if ($guid != '') {
+            $field->setAttribute('label', EText::_($guid));
+        } else {
+            $field->setAttribute('label', JText::_($label));
+        }
+        $field->setAttribute('description', EText::_($guid, 2));
+
+        $defaults = array();
+        foreach ($this->domXpathStr->query('descendant::gco:CharacterString', $attribute->parentNode) as $element) {
+            $defaults[] = $element->nodeValue;
+        }
+
+        foreach ($defaults as $opt) {
+            $option = $this->form->createElement('option', $opt);
+            $option->setAttribute('value', $opt);
+            $field->appendChild($option);
+        }
+
+        $fields[] = $field;
+
+        foreach ($this->ldao->getSupported() as $key => $lang) {
+            $field = $this->form->createElement('field');
+
+            $field->setAttribute('type', 'list');
+            $field->setAttribute('multiple', 'true');
+            $field->setAttribute('name', $this->serializeXpath($attribute->getNodePath() . '/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString#' . $key));
+            $field->setAttribute('label', EText::_($guid) . ' ' . $this->ldao->getByIso3166($key)->value);
+            $field->setAttribute('description', EText::_($guid, 2));
+
+            $defaults = array();
+            foreach ($this->domXpathStr->query('*/*/*/*[@locale="#FR"]', $attribute->parentNode) as $element) {
+                $defaults[] = $element->nodeValue;
+            }
+
+            foreach ($defaults as $opt) {
+                $option = $this->form->createElement('option', $opt);
+                $option->setAttribute('value', $opt);
+                $field->appendChild($option);
+            }
+
+            $fields[] = $field;
+        }
+
+        return $fields;
+    }
+
+    /**
+     * Create a field of type Hidden
+     * 
+     * @param DOMElement $attribute
+     * @return DOMElement
+     */
+    private function getFormHiddenField(DOMElement $attribute) {
+        $attributename = $attribute->nodeName;
+        $field = $this->form->createElement('field');
+
+        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
+        $field->setAttribute('type', 'hidden');
+        $field->setAttribute('default', $attribute->firstChild->nodeValue);
+        $field->setAttribute('label', 'label');
+
+        return $field;
+    }
+
+    /**
+     * Create a field of type list specific for Relationtype.
+     * 
+     * @param DOMElement $relationtype
+     * @return DOMElement
+     */
+    private function getRelationType(DOMElement $relationtype) {
+        $field = $this->form->createElement('field');
+
+        $guid = $relationtype->getAttributeNS($this->catalog_uri, 'id');
+        if (preg_match('/id=([a-z0-9-]*)/i', $relationtype->getAttributeNS('http://www.w3.org/1999/xlink', 'href'), $default) === 1) {
+            $field->setAttribute('default', $default[1]);
+        } else {
+            $field->setAttribute('default', '');
+        }
+
+        $name = $relationtype->nodeName;
+
+        $field->setAttribute('name', $this->serializeXpath($relationtype->getNodePath()));
+        $field->setAttribute('type', 'list');
+        $field->setAttribute('label', 'Name');
+
+        foreach ($this->getAttributOptions($relationtype) as $opt) {
+            $option = $this->form->createElement('option', $opt->name);
+            $option->setAttribute('value', $opt->guid);
+
+            $field->appendChild($option);
+        }
+
+        return $field;
+    }
+
+    /**
+     * Create a field of type file.
+     * 
+     * @param DOMElement $attribute
+     * @return DOMElement
+     */
+    private function getFormFileField(DOMElement $attribute) {
+        $fields = array();
+
+        $maxlength = $attribute->getAttributeNS($this->catalog_uri, 'maxlength');
+        $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
+        $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
+
+        $field = $this->form->createElement('field');
+
+        $validator = $this->getValidatorClass($attribute);
+
+        $field->setAttribute('type', 'file');
+        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
+        $field->setAttribute('label', EText::_($guid));
+        $field->setAttribute('class', $validator);
+        $field->setAttribute('description', EText::_($guid, 2));
+        $field->setAttribute('default', $attribute->firstChild->nodeValue);
+
+        $fields[] = $field;
+
+        $hiddenField = $this->form->createElement('field');
+        $hiddenField->setAttribute('type', 'hidden');
+        $hiddenField->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()) . '_filehidden');
+        $hiddenField->setAttribute('default', $attribute->firstChild->nodeValue);
+
+        $textField = $this->form->createElement('field');
+        $textField->setAttribute('type', 'text');
+        $textField->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()) . '_filetext');
+        $textField->setAttribute('default', $attribute->firstChild->nodeValue);
+        $textField->setAttribute('readonly', 'true');
+
+        $fields[] = $textField;
+        $fields[] = $hiddenField;
+
+        return $fields;
+    }
+
+    /**
+     * Retrieves the list of options for fields such list, checkbox and radio.
+     * 
+     * @param DOMElement $attribute
+     * @return mixed List of options for list type fields, checkbox and radio.
      * @since 4.0
      */
-    private function getChildNode(SdiRelation $rel) {
-        $dce = new DomCswExtractor($this->csw);
+    private function getAttributOptions(DOMElement $attribute) {
+        $query = $this->db->getQuery(true);
 
+        switch ($attribute->getAttributeNS($this->catalog_uri, 'childtypeId')) {
+            case EnumChildtype::$RELATIONTYPE:
+                $query->select('id, guid, name');
+                $query->from('#__sdi_resource');
+                $query->where('resourcetype_id = ' . $attribute->getAttributeNS($this->catalog_uri, 'resourcetypeId'));
+                $query->order('name ASC');
+
+                $this->db->setQuery($query);
+                $result = $this->db->loadObjectList();
+                break;
+            case EnumChildtype::$ATTRIBUT:
+                switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
+
+                    case EnumStereotype::$BOUNDARY:
+                        $query->select('id, guid, name');
+                        $query->from('#__sdi_boundary');
+                        $query->order('name ASC');
+
+                        $this->db->setQuery($query);
+                        $result = $this->db->loadObjectList();
+
+                        $first = array('id' => '', 'guid' => '', 'name' => '');
+                        array_unshift($result, (object) $first);
+                        break;
+
+                    case EnumStereotype::$BOUNDARYCATEGORY:
+                        $query->select('id, guid, name');
+                        $query->from('#__sdi_boundarycategory');
+                        $query->order('name ASC');
+
+                        $this->db->setQuery($query);
+                        $result = $this->db->loadObjectList();
+
+                        $first = array('id' => '', 'guid' => '', 'name' => '');
+                        array_unshift($result, (object) $first);
+                        break;
+
+                    default:
+                        $query->select('id, guid, `name`, `value`');
+                        $query->from('#__sdi_attributevalue');
+                        $query->where('attribute_id = ' . $attribute->getAttributeNS($this->catalog_uri, 'dbid'));
+                        $query->where('state = 1');
+                        $query->order('ordering ASC');
+
+                        $this->db->setQuery($query);
+                        $result = $this->db->loadObjectList();
+
+                        $first = array('id' => '', 'guid' => '', 'name' => '', 'value' => '');
+                        array_unshift($result, (object) $first);
+                        break;
+                }
+                break;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns the CSS classes used for validation.
+     * Exemple
+     * <code>class = "required validate-sdilocale"</code>
+     * 
+     * @param DOMElement $attribute
+     * @return string
+     * @since 4.0.0
+     */
+    private function getValidatorClass(DOMElement $attribute) {
+        $validator = '';
+        $guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
+        $patterns = $this->getPatterns();
+
+        if ($attribute->getAttributeNS($this->catalog_uri, 'lowerbound') > 0) {
+            $validator .= ' required ';
+        }
+
+        if (array_key_exists($guid, $patterns)) {
+            if ($patterns[$guid]->attribute_pattern != '') {
+                $validator .= ' validate-sdi' . $patterns[$guid]->guid;
+            } elseif ($patterns[$guid]->stereotype_pattern != '') {
+                $validator .= ' validate-sdi' . $patterns[$guid]->stereotype_name;
+            }
+
+            return $validator;
+        } else {
+            return '';
+        }
+    }
+
+    /**
+     * Get the list of the attribute and stereotype patterns.
+     * 
+     * @return array
+     */
+    private function getPatterns() {
+        $query = $this->db->getQuery(true);
+
+        $query->select('a.id, a.guid, a.pattern as attribute_pattern, s.defaultpattern as stereotype_pattern, s.`value` as stereotype_name');
+        $query->from('#__sdi_relation as r');
+        $query->innerJoin('jos_sdi_attribute as a on r.attributechild_id = a.id');
+        $query->leftJoin('jos_sdi_sys_stereotype as s on a.stereotype_id = s.id');
+        $query->where('r.`state` = 1');
+
+        $this->db->setQuery($query);
+        return $this->db->loadObjectList('guid');
+    }
+
+    /**
+     * Serialze the Xpath
+     * 
+     * @author Depth S.A.
+     * @since 4.0
+     * 
+     * @param string $xpath
+     * @return string Serualized XPath
+     */
+    private function serializeXpath($xpath) {
+        $xpath = str_replace('[', '-la-', $xpath);
+        $xpath = str_replace(']', '-ra-', $xpath);
+        $xpath = str_replace('/', '-sla-', $xpath);
+        $xpath = str_replace(':', '-dp-', $xpath);
+        return $xpath;
+    }
+
+    /**
+     * Unserialze the Xpath
+     * 
+     * @author Depth S.A.
+     * @since 4.0
+     * 
+     * @param string $xpath
+     * @return string Unserialized XPath
+     */
+    private function unSerializeXpath($xpath) {
+        $xpath = str_replace('-la-', '[', $xpath);
+        $xpath = str_replace('-ra-', ']', $xpath);
+        $xpath = str_replace('-sla-', '/', $xpath);
+        $xpath = str_replace('-dp-', ':', $xpath);
+        return $xpath;
+    }
+
+    private function setDomXpathStr() {
+        $this->domXpathStr = new DOMXPath($this->structure);
+        foreach ($this->nsdao->getAll() as $ns) {
+            $this->domXpathStr->registerNamespace($ns->prefix, $ns->uri);
+        }
+    }
+
+    private function setDomXpathCsw() {
+        $this->domXpathCsw = new DOMXPath($this->csw);
+        foreach ($this->nsdao->getAll() as $ns) {
+            $this->domXpathCsw->registerNamespace($ns->prefix, $ns->uri);
+        }
+    }
+
+    /**
+     * 
+     * @return JDatabaseQuery
+     */
+    private function getRelationQuery() {
         $query = $this->db->getQuery(true);
         $query->select('r.name, r.id, r.ordering, r.guid, r.childtype_id, r.parent_id, r.lowerbound, r.upperbound, r.rendertype_id');
         $query->select('c.id as class_id, c.`name` AS class_name, c.guid AS class_guid');
         $query->select('ca.id as classass_id, ca.`name` AS classass_name, ca.guid AS classass_guid');
-        $query->select('a.id as attribute_id, a.`name` AS attribute_name, a.guid AS attribute_guid, a.type_isocode as attribute_type_isocode, a.codelist as attribute_codelist, a.pattern as attribute_pattern, a.length as attribute_length, a.issystem as attribute_issystem');
+        $query->select('a.id as attribute_id, a.`name` AS attribute_name, a.guid AS attribute_guid, a.isocode AS attribute_isocode, a.type_isocode as attribute_type_isocode, a.codelist as attribute_codelist, a.pattern as attribute_pattern, a.length as attribute_length, a.issystem as attribute_issystem');
         $query->select('rt.id as resourcetype_id, rt.name as resourcetype_name, rt.fragment as resourcetype_fragment');
         $query->select('st.id as stereotype_id, st.value as stereotype_value, st.isocode as stereotype_isocode, st.defaultpattern as stereotype_defaultpattern');
+        $query->select('stc.id as class_stereotype_id, stc.value as class_stereotype_value, stc.isocode as class_stereotype_isocode, stc.defaultpattern as class_stereotype_defaultpattern');
         $query->select('ns.id as ns_id, ns.prefix, ns.uri');
         $query->select('nsc.id as class_ns_id, nsc.prefix as class_ns_prefix, nsc.uri as class_ns_uri');
         $query->select('nsca.id as classass_ns_id, nsca.prefix as classass_ns_prefix, nsca.uri as classass_ns_uri');
         $query->select('nsa.id as attribute_ns_id, nsa.prefix as attribute_ns_prefix, nsa.uri as attribute_ns_uri');
         $query->select('nsst.id as stereotype_ns_id, nsst.prefix as stereotype_ns_prefix, nsst.uri as stereotype_ns_uri');
+        $query->select('nsstc.id as class_stereotype_ns_id, nsstc.prefix as class_stereotype_ns_prefix, nsstc.uri as class_stereotype_ns_uri');
         $query->select('nsl.id as list_ns_id, nsl.prefix as list_ns_prefix, nsl.uri as list_ns_uri');
         $query->select('nsrt.id as resourcetype_ns_id, nsrt.prefix as resourcetype_ns_prefix, nsrt.uri as resourcetype_ns_uri');
         $query->from('#__sdi_relation AS r');
@@ -153,448 +1411,17 @@ class FormGenerator {
         $query->leftJoin('#__sdi_attribute AS a ON a.id = r.attributechild_id');
         $query->leftJoin('#__sdi_resourcetype AS rt ON rt.id = r.childresourcetype_id');
         $query->leftJoin('#__sdi_sys_stereotype AS st ON st.id = a.stereotype_id');
+        $query->leftJoin('#__sdi_sys_stereotype AS stc ON stc.id = c.stereotype_id');
         $query->leftJoin('#__sdi_namespace AS ns ON ns.id = r.namespace_id');
         $query->leftJoin('#__sdi_namespace AS nsc ON nsc.id = c.namespace_id');
         $query->leftJoin('#__sdi_namespace AS nsca ON nsca.id = ca.namespace_id');
         $query->leftJoin('#__sdi_namespace AS nsa ON nsa.id = a.namespace_id');
         $query->leftJoin('#__sdi_namespace AS nsst ON nsst.id = st.namespace_id');
+        $query->leftJoin('#__sdi_namespace AS nsstc ON nsstc.id = stc.namespace_id');
         $query->leftJoin('#__sdi_namespace AS nsl ON nsl.id = a.listnamespace_id');
         $query->leftJoin('#__sdi_namespace AS nsrt ON nsrt.id = rt.fragmentnamespace_id');
-        $query->where('r.parent_id = ' . $rel->getClass_child()->id);
-        $query->where('rp.profile_id = 1');
-        $query->where('r.state = 1');
-        $query->order('r.ordering');
-        $query->order('r.name');
 
-        $this->db->setQuery($query);
-
-        $relArray = array();
-
-        foreach ($this->db->loadObjectList() as $result) {
-            $newRel = new SdiRelation($result->id, $result->name, $result->childtype_id, $result->guid, $result->rendertype_id);
-            $newRel->ordering = $result->ordering;
-            $newRel->setParent($rel->getClass_child());
-            $newRel->setNamespace(new SdiNamespace($result->ns_id, $result->prefix, $result->uri));
-            $newRel->lowerbound = $result->lowerbound;
-            $newRel->upperbound = $result->upperbound;
-
-            $parentXpath = $rel->getXpath();
-            $parentXpath[] = $newRel;
-            $newRel->setXpath($parentXpath);
-
-            switch ($newRel->childtype_id) {
-                case SdiRelation::$CLASS:
-                    $newRel->setClass_child(new SdiClass($result->class_id, $result->class_name, $result->class_guid, false, new SdiNamespace($result->class_ns_id, $result->class_ns_prefix, $result->class_ns_uri)));
-                    break;
-
-                case SdiRelation::$ATTRIBUT:
-                    $child_attribute = new SdiAttribute($result->attribute_id, $result->attribute_name, $result->attribute_guid, null, new SdiNamespace($result->attribute_ns_id, $result->attribute_ns_prefix, $result->attribute_ns_uri), null, $result->attribute_type_isocode, $result->attribute_codelist);
-                    $child_attribute->setStereotype(new SdiStereotype($result->stereotype_id, $result->stereotype_value, $result->stereotype_isocode, $result->stereotype_defaultpattern, new SdiNamespace($result->stereotype_ns_id, $result->stereotype_ns_prefix, $result->stereotype_ns_uri)));
-                    $child_attribute->setListeNamespace(new SdiNamespace($result->list_ns_id, $result->list_ns_prefix, $result->list_ns_uri));
-                    $child_attribute->pattern = $result->attribute_pattern;
-                    $child_attribute->length = $result->attribute_length;
-                    $child_attribute->issystem = $result->attribute_issystem;
-                    $newRel->setAttribut_child($child_attribute);
-                    $newRel->level = $rel->level + 1;
-                    break;
-
-                case SdiRelation::$RELATIONTYPE:
-                    $resourcetype = new SdiResourcetype($result->resourcetype_id, $result->resourcetype_name, $result->resourcetype_fragment, new SdiNamespace($result->resourcetype_ns_id, $result->resourcetype_ns_prefix, $result->resourcetype_ns_uri));
-                    $newRel->setClass_child(new SdiClass($result->classass_id, $result->classass_name, $result->classass_guid, false, new SdiNamespace($result->classass_ns_id, $result->classass_ns_prefix, $result->classass_ns_uri)));
-                    $newRel->setResoucetype($resourcetype);
-                    $newRel->level = $rel->level + 2;
-                    break;
-                default:
-                    break;
-            }
-
-            if (isset($this->csw)) {
-
-                switch ($newRel->childtype_id) {
-
-                    case SdiRelation::$CLASS:
-                        $occurance = $dce->getCountRelation($newRel);
-                        $newRel->occurance = $occurance;
-                        if ($occurance == 0) {
-                            $newRel->setSerializedXpath($dce->getSerializedXpath($newRel));
-                            $newRel->isEmpty = true;
-                            $relArray[] = $newRel;
-                        }
-
-                        for ($i = 0; $i < $occurance; $i++) {
-                            $indexedRel = clone $newRel;
-                            $indexedRel->setIndex($i);
-                            $indexedRel->replaceLastPath($indexedRel);
-                            $indexedRel->setSerializedXpath($dce->getSerializedXpath($indexedRel));
-                            $relArray[] = $indexedRel;
-                        }
-
-                        break;
-                    case SdiRelation::$ATTRIBUT:
-                        $newRel->setIndex($rel->getIndex());
-                        $newRel->getAttribut_child()->value = $dce->getValue($newRel, $newRel->getIndex());
-                        $newRel->setSerializedXpath($dce->getSerializedXpath($newRel));
-                        $relArray[] = $newRel;
-                        break;
-
-                    case SdiRelation::$RELATIONTYPE:
-                        $occurance = $dce->getCountRelation($newRel);
-                        $newRel->occurance = $occurance;
-                        if ($occurance == 0) {
-                            $newRel->setSerializedXpath($dce->getSerializedXpath($newRel));
-                            $newRel->isEmpty = true;
-                            $relArray[] = $newRel;
-                        }
-
-                        for ($i = 0; $i < $occurance; $i++) {
-                            $indexedRel = clone $newRel;
-                            $indexedRel->setIndex($i);
-                            $indexedRel->replaceLastPath($indexedRel);
-                            $indexedRel->setSerializedXpath($dce->getSerializedXpath($indexedRel));
-
-                            $indexedAttr = clone $indexedRel;
-                            $indexedAttr->childtype_id = SdiRelation::$ATTRIBUT;
-                            $indexedAttr->rendertype = SdiRelation::$LIST;
-                            $indexedAttr->setSerializedXpath($indexedRel->getSerializedXpath() . '_search');
-                            $attribute = new SdiAttribute($indexedRel->id . '_search', $indexedRel->name . '_search');
-                            $indexedAttr->setAttribut_child($attribute);
-                            $indexedAttr->getAttribut_child()->setStereotype(new SdiStereotype(500, 'resource', null, null, null));
-                            $indexedAttr->getAttribut_child()->value = $dce->getValue($indexedAttr, $indexedAttr->getIndex());
-
-                            
-                            $relArray[] = $indexedRel;
-                            $relArray[] = $indexedAttr;
-                            
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            } else {
-                switch ($newRel->childtype_id) {
-
-                    case SdiRelation::$ATTRIBUT:
-                        $newRel->getAttribut_child()->value = '';
-                        $newRel->setIndex($rel->getIndex());
-                        break;
-                    default:
-                        break;
-                }
-
-                $relArray[] = $newRel;
-            }
-        }
-        return $relArray;
-    }
-
-    /**
-     * Returns a form structure in Joomla format
-     * 
-     * @return string Form structure to Joomla format.
-     * @since 4.0
-     */
-    private function buildForm() {
-        $form = '<?xml version="1.0" encoding="utf-8"?>
-                    <form>';
-        $form .= $this->getHiddenFields();
-
-        $form .= '<fieldset>';
-
-        foreach ($this->getAttributes() as $attribute) {
-            $form .= $this->getFormField($attribute);
-        }
-
-        $form .= '</fieldset></form>';
-        return $form;
-    }
-
-    private function getHiddenFields() {
-
-
-        $fields = '<fieldset name="hidden">
-                    <field name="id" type="hidden" filter="safehtml" />
-                    <field name="guid" type="hidden" filter="safehtml" />
-                </fieldset> ';
-
-        return $fields;
-    }
-
-    /**
-     * Filter the array relations by childtype Attribute
-     * 
-     * @return SdiRelation[]
-     */
-    private function getAttributes() {
-        $childs = array();
-
-        foreach ($this->relations as $rel) {
-            if ($rel->childtype_id == SdiRelation::$ATTRIBUT) {
-                $childs[] = $rel;
-            }
-        }
-
-        return $childs;
-    }
-
-    /**
-     * Returns a field corresponding to RenderType Joomla format.
-     * 
-     * @param SdiRelation $rel Current node
-     * @return string Field corresponding to RenderType Joomla format.
-     * @since 4.0
-     */
-    private function getFormField(SdiRelation $rel) {
-        switch ($rel->rendertype) {
-            case SdiRelation::$TEXTBOX:
-                return $this->getFormTextBoxField($rel);
-                break;
-            case SdiRelation::$TEXTAREA:
-                return $this->getFormTextAreaField($rel);
-                break;
-            case SdiRelation::$CHECKBOX:
-                return $this->getFormCheckboxField($rel);
-                break;
-            case SdiRelation::$RADIOBUTTON:
-                return $this->getFormRadioButtonField($rel);
-                break;
-            case SdiRelation::$LIST:
-                return $this->getFormListField($rel);
-                break;
-            case SdiRelation::$DATE:
-                return $this->getFormDateField($rel);
-                break;
-            case SdiRelation::$DATETIME:
-                return $this->getFormDateField($rel);
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    /**
-     * Create a field of type text.
-     * 
-     * @param SdiRelation $rel
-     * @return string
-     * @since 4.0.0
-     */
-    private function getFormTextBoxField(SdiRelation $rel) {
-        $field = '';
-        $validator = $this->getValidatorClass($rel);
-        $maxlength = '';
-        $readonly = '';
-        if ($rel->getAttribut_child()->length > 0) {
-            $maxlength .= 'maxlength = "' . $rel->getAttribut_child()->length . '"';
-        }
-        if ($rel->getAttribut_child()->issystem) {
-            $readonly = 'readonly = "true"';
-        }
-
-        if (is_array($rel->getAttribut_child()->value)) {
-            $languages = $this->ldao->get();
-            $values = $rel->getAttribut_child()->value;
-            foreach ($languages as $key => $langValue) {
-                $value = '';
-                if (array_key_exists($key, $values)) {
-                    $value = $values[$key];
-                }
-                $field .= '<field name="' . $rel->getSerializedXpath() . '#' . $key . '" type="text" class="' . $validator . '" ' . $readonly . ' ' . $maxlength . ' default="' . $value . '" label="' . EText::_($rel->guid) . ' (' . $languages[$key]->value . ')" description="' . EText::_($rel->guid, 2) . '" ></field>';
-            }
-        } else {
-            $field .= '<field name="' . $rel->getSerializedXpath() . '" type="text" class="' . $validator . '" ' . $readonly . ' ' . $maxlength . ' default="' . $rel->getAttribut_child()->value . '" label="' . EText::_($rel->guid) . '" description="' . EText::_($rel->guid, 2) . '" ></field>';
-        }
-
-        return $field;
-    }
-
-    /**
-     * Create a field of type textarea.
-     * 
-     * @param SdiRelation $rel
-     * @return string
-     * @since 4.0.0
-     */
-    private function getFormTextAreaField(SdiRelation $rel) {
-        $field = '';
-        $validator = $this->getValidatorClass($rel);
-        $readonly = '';
-        if ($rel->getAttribut_child()->issystem) {
-            $readonly = 'readonly = "true"';
-        }
-        if (is_array($rel->getAttribut_child()->value)) {
-            $languages = $this->ldao->get();
-            $values = $rel->getAttribut_child()->value;
-            foreach ($languages as $key => $langValue) {
-                $value = '';
-                if (array_key_exists($key, $values)) {
-                    $value = $values[$key];
-                }
-                $field .= '<field name="' . $rel->getSerializedXpath() . '#' . $key . '" type="textarea" class="' . $validator . '" ' . $readonly . ' default="' . $value . '" label="' . EText::_($rel->guid) . ' (' . $languages[$key]->value . ')" description="' . EText::_($rel->guid, 2) . '" rows="10"  cols="5"></field>';
-            }
-        } else {
-            $field .= '<field name="' . $rel->getSerializedXpath() . '" type="textarea" class="' . $validator . '" ' . $readonly . '  default="' . $rel->getAttribut_child()->value . '" label="' . EText::_($rel->guid) . '" description="' . EText::_($rel->guid, 2) . '" rows="10"  cols="5"></field>';
-        }
-
-        return $field;
-    }
-
-    /**
-     * Create a field of type checkboxes.
-     * 
-     * @param SdiRelation $rel
-     * @return string
-     * @since 4.0.0
-     */
-    private function getFormCheckboxField(SdiRelation $rel) {
-        $options = '';
-        foreach ($this->getAttributValues($rel) as $value) {
-            $options .= '<option value="' . $value->value . '">' . EText::_($value->guid) . '</option>';
-        }
-        $field = '<field name="' . $rel->getSerializedXpath() . '" readonly = "' . $rel->getAttribut_child()->issystem . '" type="checkboxes" default="" >';
-        $field .= $options;
-        $field .= '</field>';
-
-        return $field;
-    }
-
-    /**
-     * Create a field of type radio.
-     * 
-     * @param SdiRelation $rel
-     * @return string
-     * @since 4.0.0
-     */
-    private function getFormRadioButtonField(SdiRelation $rel) {
-        $options = '';
-        foreach ($this->getAttributValues($rel) as $value) {
-            $options .= '<option value="' . $value->value . '">' . EText::_($value->guid) . '</option>';
-        }
-        $field = '<field name="' . $rel->getSerializedXpath() . '" type="radio" readonly = "' . $rel->getAttribut_child()->issystem . '" default="" label="' . EText::_($rel->guid) . '" description="' . EText::_($rel->guid, 2) . '">';
-        $field .= $options;
-        $field .= '</field>';
-
-        return $field;
-    }
-
-    /**
-     * Create a field of type grouplist or list.
-     * 
-     * @param SdiRelation $rel
-     * @return string
-     * @since 4.0.0
-     */
-    private function getFormListField(SdiRelation $rel) {
-        $options = '';
-        $field = '';
-        $readonly = '';
-        if ($rel->getAttribut_child()->issystem) {
-            $readonly = 'readonly = "true"';
-        }
-
-        $validator = $this->getValidatorClass($rel);
-
-        foreach ($this->getAttributOptions($rel) as $option) {
-            switch ($rel->getAttribut_child()->getStereotype()->value) {
-                case 'localechoice':
-                    $field = '<field name="' . $rel->getSerializedXpath() . '" type="groupedlist" class="' . $validator . '" ' . $readonly . ' default="' . $rel->getAttribut_child()->value . '" label="' . EText::_($rel->guid) . '" description="' . EText::_($rel->guid, 2) . '">';
-                    $options .= '<group label="' . EText::_($option->guid) . '">';
-                    $options .= '<option value="' . $option->guid . '">' . EText::_($option->guid, 2) . '</option>';
-                    $options .= '</group>';
-                    break;
-                case 'resource':
-                    $field = '<field name="' . $rel->getSerializedXpath() . '" type="list" class="' . $validator . '" ' . $readonly . ' default="' . $rel->getAttribut_child()->value . '" label="Name" description="">';
-                    $options .= '<option value="' . $option->guid . '">' . $option->name . '</option>';
-                    break;
-                default:
-                    $field = '<field name="' . $rel->getSerializedXpath() . '" type="list" class="' . $validator . '" ' . $readonly . ' default="' . $rel->getAttribut_child()->value . '" label="' . EText::_($rel->guid) . '" description="' . EText::_($rel->guid, 2) . '">';
-                    $options .= '<option value="' . $option->value . '">' . EText::_($option->guid) . '</option>';
-                    break;
-            }
-        }
-
-        $field .= $options;
-        $field .= '</field>';
-
-        return $field;
-    }
-
-    /**
-     * Create a field of type calendar.
-     * 
-     * @param SdiRelation $rel
-     * @return string
-     * @since 4.0.0
-     */
-    private function getFormDateField(SdiRelation $rel) {
-        $value = '';
-        $validator = $this->getValidatorClass($rel);
-
-        if ($rel->getAttribut_child()->value != '') {
-            $value = substr($rel->getAttribut_child()->value, 0, 10);
-        }
-        $field = '<field name="' . $rel->getSerializedXpath() . '" type="calendar" class="' . $validator . '" readonly = "' . $rel->getAttribut_child()->issystem . '" default="' . $value . '" format="%Y-%m-%d" label="' . EText::_($rel->guid) . '" description="' . EText::_($rel->guid, 2) . '"  />';
-
-        return $field;
-    }
-
-    private function getFormDateTimeField(SdiRelation $rel) {
-        // not yet implemented
-    }
-
-    /**
-     * Retrieves the list of options for fields such list, checkbox and radio.
-     * 
-     * @param SdiRelation $rel Current node
-     * @return mixed List of options for list type fields, checkbox and radio.
-     * @since 4.0
-     */
-    private function getAttributOptions(SdiRelation $rel) {
-        $query = $this->db->getQuery(true);
-
-        if ($rel->getAttribut_child()->getStereotype()->value == 'resource') {
-            $query->select('id, guid, name');
-            $query->from('#__sdi_resource');
-            $query->where('resourcetype_id = ' . $rel->getResoucetype()->id);
-            $query->order('name ASC');
-        } else {
-
-            $query->select('id, guid, `name`, `value`');
-            $query->from('#__sdi_attributevalue');
-            $query->where('attribute_id = ' . $rel->getAttribut_child()->id);
-            $query->where('state = 1');
-            $query->order('ordering ASC');
-        }
-
-        $this->db->setQuery($query);
-
-        return $this->db->loadObjectList();
-    }
-
-    /**
-     * Returns the CSS classes used for validation.
-     * Exemple
-     * <code>class = "required validate-sdilocale"</code>
-     * 
-     * @param SdiRelation $rel
-     * @return string
-     * @since 4.0.0
-     */
-    private function getValidatorClass(SdiRelation $rel) {
-        $validator = '';
-
-        if ($rel->lowerbound > 0) {
-            $validator .= ' required ';
-        }
-
-        if ($rel->getAttribut_child()->pattern != '') {
-            $validator .= ' validate-sdi' . $rel->getAttribut_child()->guid;
-        } elseif ($rel->getAttribut_child()->getStereotype()->defaultpattern != '') {
-            $validator .= ' validate-sdi' . $rel->getAttribut_child()->getStereotype()->value;
-        }
-
-        //return $validator;
-        return '';
+        return $query;
     }
 
 }

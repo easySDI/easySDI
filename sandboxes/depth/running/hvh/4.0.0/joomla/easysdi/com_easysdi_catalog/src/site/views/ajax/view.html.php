@@ -92,9 +92,10 @@ class Easysdi_catalogViewAjax extends JViewLegacy {
     }
 
     protected function buildForm(){
-        $classTree = $this->classTree = $this->get('ClassTree');
+        $structure = $this->structure = $this->get('Structure');
+        $ajaxXpath = $this->ajaxXpath = $this->get('AjaxXpath');
         
-        $fhg = new FormHtmlGenerator($this->form, $classTree);
+        $fhg = new FormHtmlGenerator($this->form, $structure, $ajaxXpath);
         
         $this->formHtml = $fhg->buildForm();
     }

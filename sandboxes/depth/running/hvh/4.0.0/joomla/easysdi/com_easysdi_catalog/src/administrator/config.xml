@@ -127,7 +127,8 @@
            
            
            <field name="linkedfilerepository"
-                   type="text"
+                   type="folderlist"
+                   directory="media"
                    default=""
                    class="inputbox input-xlarge"
                    required ="false"
@@ -141,19 +142,24 @@
                    default=""
                    class="inputbox input-xlarge"
                    required ="false"
-                   size="500"
                    label="COM_EASYSDI_CATALOG_CONFIG_LBL_LINKEDFILEBASEURL"
                    description="COM_EASYSDI_CATALOG_CONFIG_DESC_LINKEDFILEBASEURL">
            </field>
-           
-          
-	
 
 	</fieldset>
         
         <fieldset name="predefinedboundary">
-             
-           <field name="predefinedboundarytype" 
+           <field name="catalogmap" 
+                   type="sql" 
+                   class="inputbox input-xlarge"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_CATALOGMAP"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_CATALOGMAP" 
+                   query="SELECT null as id, null as name UNION SELECT id, name FROM #__sdi_map WHERE state=1" 
+                   key_field="id" 
+                   value_field="name"
+           />
+            
+<!--           <field name="predefinedboundarytype" 
                type="sql" 
                class="inputbox input-xlarge"
                query=" SELECT NULL AS id, '' AS value, 0 as ordering UNION SELECT id, value, ordering FROM #__sdi_sys_stereotype WHERE state=1 ORDER BY ordering" 
@@ -260,7 +266,7 @@
                    size="500"
                    label="COM_EASYSDI_CATALOG_CONFIG_LBL_MAPBOTTOM"
                    description="COM_EASYSDI_CATALOG_CONFIG_DESC_MAPBOTTOM">
-           </field>
+           </field>-->
            
         </fieldset>
 
