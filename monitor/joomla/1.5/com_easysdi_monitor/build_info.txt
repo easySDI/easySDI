@@ -1,7 +1,0 @@
-EasySDI Monitor uses jsbuild to group and minify the javascript ressources
-
-http://dev.mapfish.org/sandbox/camptocamp/mapfish_workshop/printing/html/building_javascript.html#installation
-
-usage:
-cmd: cd /path/to/com_easysdi_monitor
-jsbuild -o script build.cfg
