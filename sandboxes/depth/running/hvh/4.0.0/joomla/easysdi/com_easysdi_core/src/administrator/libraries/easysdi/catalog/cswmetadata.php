@@ -371,7 +371,7 @@ class cswmetadata {
             $childrenitem = $this->db->loadObjectList();
             $children = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:children');
             foreach ($childrenitem as $item):
-                $child = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:chld');
+                $child = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:child');
                 $child->setAttribute('guid', $item->guid);
                 $child->setAttribute('title', '');
                 $child->setAttribute('resourcename', $item->name);

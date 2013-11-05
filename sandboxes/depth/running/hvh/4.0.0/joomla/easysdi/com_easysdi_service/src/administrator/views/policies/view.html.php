@@ -66,7 +66,7 @@ class Easysdi_serviceViewPolicies extends JViewLegacy
 
             if ($canDo->get('core.create')) {
 		    	//Create custom button with a dropdown list allowing virtual service selection for new policy action
-		    	$dropdown = '<button class="btn dropdown-toggle btn-small btn-success" data-toggle="dropdown"><i class="icon-new icon-white"> '.JText::_('COM_EASYSDI_SERVICE_TOOLBAR_POLICY_NEW').'</i></button>
+		    	$dropdown = '<button class="btn dropdown-toggle btn-small btn-success" data-toggle="dropdown"><span class="icon-new icon-white"> '.JText::_('COM_EASYSDI_SERVICE_TOOLBAR_POLICY_NEW').'</span></button>
 		    	<ul class="dropdown-menu">';
 		    	foreach ($virtualserviceList as $virtualservice){
 		    		$dropdown .= '<li><a href="index.php?option=com_easysdi_service&view=policy&virtualservice_id='.$virtualservice->id.'">'.$virtualservice->name.'</a></li>';
