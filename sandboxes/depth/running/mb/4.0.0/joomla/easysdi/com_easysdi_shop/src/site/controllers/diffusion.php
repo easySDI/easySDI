@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 require_once JPATH_COMPONENT . '/controller.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
 
 /**
  * Diffusion controller class.
@@ -231,4 +232,7 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
         // Flush the data from the session.
         $app->setUserState('com_easysdi_shop.edit.diffusion.data', null);
     }
+
+    
+
 }

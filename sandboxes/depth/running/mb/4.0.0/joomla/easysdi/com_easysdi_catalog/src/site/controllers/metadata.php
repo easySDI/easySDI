@@ -379,12 +379,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query->select('r.id as r_id, r.guid as r_guid, r.`alias` as r_alias, r.`name` as r_name');
         $query->select('rt.`alias` as rt_alias');
         $query->select('o.name as o_name, o.guid as o_guid');
-        $query->from('jos_sdi_metadata as m');
-        $query->innerJoin('jos_sdi_sys_metadatastate as ms ON ms.id = m.metadatastate_id');
-        $query->innerJoin('jos_sdi_version as v ON v.id = m.version_id');
-        $query->innerJoin('jos_sdi_resource as r ON r.id = v.resource_id');
-        $query->innerJoin('jos_sdi_organism as o ON o.id = r.organism_id');
-        $query->innerJoin('jos_sdi_resourcetype as rt ON rt.id = r.resourcetype_id');
+        $query->from('#__sdi_metadata as m');
+        $query->innerJoin('#__sdi_sys_metadatastate as ms ON ms.id = m.metadatastate_id');
+        $query->innerJoin('#__sdi_version as v ON v.id = m.version_id');
+        $query->innerJoin('#__sdi_resource as r ON r.id = v.resource_id');
+        $query->innerJoin('#__sdi_organism as o ON o.id = r.organism_id');
+        $query->innerJoin('#__sdi_resourcetype as rt ON rt.id = r.resourcetype_id');
         $query->where('m.id=' . $id);
 
 
@@ -393,17 +393,17 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $query = $this->db->getQuery(true);
         $query->select('o.guid, o.`name`');
-        $query->from('jos_sdi_accessscope as ac');
-        $query->innerJoin('jos_sdi_organism o ON o.id = ac.organism_id');
+        $query->from('#__sdi_accessscope as ac');
+        $query->innerJoin('#__sdi_organism o ON o.id = ac.organism_id');
         $query->where('ac.entity_guid=\'' . $result->r_guid . '\'');
         $this->db->setQuery($query);
         $resultOrganisms = $this->db->loadObjectList();
 
         $query = $this->db->getQuery(true);
         $query->select('u.guid, ju.`name`');
-        $query->from('jos_sdi_accessscope as ac');
-        $query->innerJoin('jos_sdi_user as u ON u.id = ac.user_id');
-        $query->innerJoin('jos_users as ju ON ju.id = u.user_id');
+        $query->from('#__sdi_accessscope as ac');
+        $query->innerJoin('#__sdi_user as u ON u.id = ac.user_id');
+        $query->innerJoin('#__users as ju ON ju.id = u.user_id');
         $query->where('ac.entity_guid=\'' . $result->r_guid . '\'');
         $this->db->setQuery($query);
         $resultUsers = $this->db->loadObjectList();

@@ -155,7 +155,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                         </div>
 
                         <div class="accordion" id="rights">
-                            <?php for ($index = 2; $index < 9; $index++) {
+                            <?php for ($index = 2; $index < 8; $index++) {
                                 ?>
                                 <div class="accordion-group">
                                     <div class="accordion-heading">

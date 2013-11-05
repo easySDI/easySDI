@@ -25,6 +25,7 @@ class Easysdi_shopController extends JControllerLegacy {
     public function removeFromBasket() {
         $id = JFactory::getApplication()->input->getInt('id', null);
         Easysdi_shopHelper::removeFromBasket($id);
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=basket', false));
     }
 
     public function abortAdd() {

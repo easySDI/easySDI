@@ -13,6 +13,33 @@
              label="COM_EASYSDI_CORE_CONFIG_LBL_INFRASTRUCTURE_ID"
              description="COM_EASYSDI_CORE_CONFIG_DESC_INFRASTRUCTURE_ID">
          </field>
+         
+         <field name="descriptionlength"
+             type="text"
+             default=""
+             class="input"             
+             size="40"
+             label="COM_EASYSDI_CORE_CONFIG_LBL_DESCRIPTION_LENGTH"
+             description="COM_EASYSDI_CORE_CONFIG_DESC_DESCRIPTION_LENGTH">
+         </field>
+         
+         <field name="logowidth"
+             type="text"
+             default=""
+             class="input"             
+             size="40"
+             label="COM_EASYSDI_CORE_CONFIG_LBL_LOGO_WIDTH"
+             description="COM_EASYSDI_CORE_CONFIG_DESC_LOGO_WIDTH">
+         </field>
+         
+         <field name="logoheight"
+             type="text"
+             default=""
+             class="input"             
+             size="40"
+             label="COM_EASYSDI_CORE_CONFIG_LBL_LOGO_HEIGHT"
+             description="COM_EASYSDI_CORE_CONFIG_DESC_LOGO_HEIGHT">
+         </field>
 	</fieldset>
 
 	<fieldset name="permissions"

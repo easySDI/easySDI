@@ -9,89 +9,58 @@
 // no direct access
 defined('_JEXEC') or die;
 
+JHTML::_('behavior.modal'); 
+JHtml::_('formbehavior.chosen', 'select');
+
+$document = JFactory::getDocument();
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js');
+
 //Load admin language file
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
-$canEdit = JFactory::getUser()->authorise('core.edit', 'com_easysdi_catalog.' . $this->item->id);
-if (!$canEdit && JFactory::getUser()->authorise('core.edit.own', 'com_easysdi_catalog' . $this->item->id)) {
-	$canEdit = JFactory::getUser()->id == $this->item->created_by;
-}
 ?>
-<?php if ($this->item) : ?>
-
-    <div class="item_fields">
-
-        <ul class="fields_list">
-
-            			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_CATALOG_ID'); ?>:
-			<?php echo $this->item->id; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_CATALOG_GUID'); ?>:
-			<?php echo $this->item->guid; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_CATALOG_ALIAS'); ?>:
-			<?php echo $this->item->alias; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_CATALOG_CREATED_BY'); ?>:
-			<?php echo $this->item->created_by; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_CATALOG_CREATED'); ?>:
-			<?php echo $this->item->created; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_CATALOG_MODIFIED_BY'); ?>:
-			<?php echo $this->item->modified_by; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_CATALOG_MODIFIED'); ?>:
-			<?php echo $this->item->modified; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_CATALOG_ORDERING'); ?>:
-			<?php echo $this->item->ordering; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_CATALOG_STATE'); ?>:
-			<?php echo $this->item->state; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_CATALOG_CHECKED_OUT'); ?>:
-			<?php echo $this->item->checked_out; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_CATALOG_CHECKED_OUT_TIME'); ?>:
-			<?php echo $this->item->checked_out_time; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_CATALOG_NAME'); ?>:
-			<?php echo $this->item->name; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_CATALOG_DESCRIPTION'); ?>:
-			<?php echo $this->item->description; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_CATALOG_XSLDIRECTORY'); ?>:
-			<?php echo $this->item->xsldirectory; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_CATALOG_ONINITRUNSEARCH'); ?>:
-			<?php echo $this->item->oninitrunsearch; ?></li>
-			<li><?php echo JText::_('COM_EASYSDI_CATALOG_FORM_LBL_CATALOG_CSWFILTER'); ?>:
-			<?php echo $this->item->cswfilter; ?></li>
-
-
-        </ul>
-
+<form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=catalog&search=true&id='.$this->item->id); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+    <div class="catalog front-end-edit">
+        <h1><?php echo JText::_('COM_EASYSDI_CATALOG_TITLE'); ?></h1>
+        <div class="well">
+            <button class="btn btn-primary" type="submit" >Search</button>
+        </div>
     </div>
-    <?php if($canEdit): ?>
-		<a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=catalog.edit&id='.$this->item->id); ?>"><?php echo JText::_("COM_EASYSDI_CATALOG_EDIT_ITEM"); ?></a>
-	<?php endif; ?>
-								<?php if(JFactory::getUser()->authorise('core.delete','com_easysdi_catalog.catalog.'.$this->item->id)):
-								?>
-									<a href="javascript:document.getElementById('form-catalog-delete-<?php echo $this->item->id ?>').submit()"><?php echo JText::_("COM_EASYSDI_CATALOG_DELETE_ITEM"); ?></a>
-									<form id="form-catalog-delete-<?php echo $this->item->id; ?>" style="display:inline" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=catalog.remove'); ?>" method="post" class="form-validate" enctype="multipart/form-data">
-										<input type="hidden" name="jform[id]" value="<?php echo $this->item->id; ?>" />
-										<input type="hidden" name="jform[guid]" value="<?php echo $this->item->guid; ?>" />
-										<input type="hidden" name="jform[alias]" value="<?php echo $this->item->alias; ?>" />
-										<input type="hidden" name="jform[created_by]" value="<?php echo $this->item->created_by; ?>" />
-										<input type="hidden" name="jform[created]" value="<?php echo $this->item->created; ?>" />
-										<input type="hidden" name="jform[modified_by]" value="<?php echo $this->item->modified_by; ?>" />
-										<input type="hidden" name="jform[modified]" value="<?php echo $this->item->modified; ?>" />
-										<input type="hidden" name="jform[ordering]" value="<?php echo $this->item->ordering; ?>" />
-										<input type="hidden" name="jform[state]" value="<?php echo $this->item->state; ?>" />
-										<input type="hidden" name="jform[checked_out]" value="<?php echo $this->item->checked_out; ?>" />
-										<input type="hidden" name="jform[checked_out_time]" value="<?php echo $this->item->checked_out_time; ?>" />
-										<input type="hidden" name="jform[name]" value="<?php echo $this->item->name; ?>" />
-										<input type="hidden" name="jform[description]" value="<?php echo $this->item->description; ?>" />
-										<input type="hidden" name="jform[xsldirectory]" value="<?php echo $this->item->xsldirectory; ?>" />
-										<input type="hidden" name="jform[oninitrunsearch]" value="<?php echo $this->item->oninitrunsearch; ?>" />
-										<input type="hidden" name="jform[cswfilter]" value="<?php echo $this->item->cswfilter; ?>" />
-										<input type="hidden" name="option" value="com_easysdi_catalog" />
-										<input type="hidden" name="task" value="catalog.remove" />
-										<?php echo JHtml::_('form.token'); ?>
-									</form>
-								<?php
-								endif;
-							?>
+</form>
+
 <?php
-else:
-    echo JText::_('COM_EASYSDI_CATALOG_ITEM_NOT_LOADED');
+if (!empty($this->item->dom)):
+    $xpath = new DomXPath($this->item->dom);
+    $xpath->registerNamespace('csw', 'http://www.opengis.net/cat/csw/2.0.2');
+    $xpath->registerNamespace('gmd', 'http://www.isotc211.org/2005/gmd');
+    $nodes = $xpath->query('//csw:SearchResults/gmd:MD_Metadata');
+    ?>
+    <div class="catalog-searchresults">
+        <h3><?php echo JText::_("COM_EASYSDI_CATALOG_RESULTS_TITLE"); ?></h3>        
+        <?php
+        // Build of extendend XML for each result entry
+        foreach ($nodes as $node) :
+            $metadata = new cswmetadata();
+            $metadata->init($node);
+            $metadata->extend($this->item->alias, 'result','', 'true', $lang->getTag());
+            $result = $metadata->applyXSL($this->item->alias, 'result','');
+            ?><div class="offset1 catalog-searchresult"> <?php
+            echo $result;
+            ?></div>
+                <hr><?php
+        endforeach;
+        ?>
+            
+    </div>
+    <div class="pagination">
+        <p class="counter">
+        <?php echo $this->pagination->getPagesCounter(); ?>
+        </p>
+    <?php echo $this->pagination->getPagesLinks(); ?>
+    </div>
+
+    <?php
 endif;
 ?>
+
+

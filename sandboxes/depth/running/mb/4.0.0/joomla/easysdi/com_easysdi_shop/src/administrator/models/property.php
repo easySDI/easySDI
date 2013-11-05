@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.modeladmin');
 
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/models/propertyvalue.php';
 
 /**
  * Easysdi_shop model.
@@ -121,5 +122,52 @@ class Easysdi_shopModelproperty extends sdiModel
 
 		}
 	}
+        
+         /**
+     * Method to save the form data.
+     *
+     * @param   array  $data  The form data.
+     *
+     * @return  boolean  True on success, False on error.
+     *
+     * @since   12.2
+     */
+    public function save($data) {
+
+        $new = false;
+        if(empty($data['id']) || $data['id'] == 0){
+            $new = true;
+        }
+        if (parent::save($data)) {
+            if($new){
+                $item = parent::getItem($data['id']);
+                if($item->propertytype_id == 4 || $item->propertytype_id == 5){
+                    //Create the default and unique property value for property text and text area
+                    $propertyvalue = JModelLegacy::getInstance( 'propertyvalue', 'Easysdi_shopModel' );
+                    $languages = JComponentHelper::getParams('com_easysdi_catalog')->get('languages', array());
+                    array_unshift($languages, JComponentHelper::getParams('com_easysdi_catalog')->get('defaultlanguage'));
+                    $text1 = array();
+                    foreach ($languages as $language) :
+                        $text1[$language] = 'COM_EASYSDI_SHOP_PROPERTYVALUE_LABEL';
+                    endforeach;
+                    $data = array(
+                        'name' => 'default',
+                        'alias' => 'default'.$item->id,
+                        'id' => 0,
+                        'access' => 1,
+                        'state' => 1,
+                        'property_id' => $item->id,
+                        'guid' => '',
+                        'text1' => $text1
+                    );
+                    $propertyvalue->save($data);
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
 
 }
