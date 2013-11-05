@@ -104,5 +104,16 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         $this->formHtml = $fhg->buildForm();
     }
     
+    /**
+     * 
+     * @return string
+     */
+    function getSubmitToolbar() {
+        $bar = JToolbar::getInstance();
+        $bar->appendButton('Standard', 'save', JText::_('JSave'), 'metadata.save', false);
+        $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'metadata.cancel', false);
+        return $bar->render();
+    }
+    
 
 }
