@@ -21,6 +21,8 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/luminous/luminous.php';
+
 /**
  * Metadata controller class.
  */
@@ -109,36 +111,48 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&view=metadata&layout=edit', false));
     }
 
+    public function show() {
+        $response = array();
+        $response['success'] = true;
+        $response['xml'] = htmlspecialchars($this->save($_POST['jform'], false));
+        echo json_encode($response);
+        die();
+    }
+
     /**
-     * Method to save a user's profile data.
+     * Method to save a metadata.
      *
-     * @return	void
+     * @return	void or string if commit is set to false
      * @since	1.6
      */
-    public function save() {
+    public function save($data = null, $commit = true) {
+        if(!isset($data)){
+            $data = JFactory::getApplication()->input->get('jform', array(), 'array');
+        }
+        
         $fileRepository = JPATH_BASE . '/media/' . JComponentHelper::getParams('com_easysdi_catalog')->get('linkedfilerepository');
         $fileBaseUrl = JComponentHelper::getParams('com_easysdi_catalog')->get('linkedfilebaseurl');
 
-        $data = JFactory::getApplication()->input->get('jform', array(), 'array');
-
         //Upload file
-        foreach ($_FILES['jform']['name'] as $key => $value) {
-            if ($_FILES['jform']['name'][$key] != '') {
+        if (isset($_FILES['jform'])) {
+            foreach ($_FILES['jform']['name'] as $key => $value) {
+                if ($_FILES['jform']['name'][$key] != '') {
 
-                $file_guid = $this->getGUID();
-                if (move_uploaded_file($_FILES['jform']['tmp_name'][$key], $fileRepository . '/' . $file_guid . '_' . $_FILES['jform']['name'][$key])) {
+                    $file_guid = $this->getGUID();
+                    if (move_uploaded_file($_FILES['jform']['tmp_name'][$key], $fileRepository . '/' . $file_guid . '_' . $_FILES['jform']['name'][$key])) {
 
-                    if ($data[$key . '_filehidden'] != '') {
-                        unlink($fileRepository . '/' . basename($data[$key . '_filehidden']));
+                        if ($data[$key . '_filehidden'] != '') {
+                            unlink($fileRepository . '/' . basename($data[$key . '_filehidden']));
+                        }
+                        $data[$key] = $fileBaseUrl . '/' . $file_guid . '_' . $_FILES['jform']['name'][$key];
                     }
-                    $data[$key] = $fileBaseUrl . '/' . $file_guid . '_' . $_FILES['jform']['name'][$key];
-                }
-            } else {
-                if ($data[$key . '_filetext'] == '') {
-                    if ($data[$key . '_filehidden'] != '') {
-                        unlink($fileRepository . '/' . basename($data[$key . '_filehidden']));
+                } else {
+                    if ($data[$key . '_filetext'] == '') {
+                        if ($data[$key . '_filehidden'] != '') {
+                            unlink($fileRepository . '/' . basename($data[$key . '_filehidden']));
+                        }
+                        $data[$key] = '';
                     }
-                    $data[$key] = '';
                 }
             }
         }
@@ -150,17 +164,17 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         // Multiple list decomposer
         $dataWithoutArray = array();
         foreach ($data as $xpath => $values) {
-            if(is_array($values)){
+            if (is_array($values)) {
                 foreach ($values as $key => $value) {
-                    $index = $key+1;
-                    $indexedXpath = str_replace('gmd-dp-keyword', 'gmd-dp-keyword-la-'.$index.'-ra-', $xpath);
+                    $index = $key + 1;
+                    $indexedXpath = str_replace('gmd-dp-keyword', 'gmd-dp-keyword-la-' . $index . '-ra-', $xpath);
                     $dataWithoutArray[$indexedXpath] = $value;
                 }
-            }else{
+            } else {
                 $dataWithoutArray[$xpath] = $values;
             }
         }
-        
+
         foreach ($dataWithoutArray as $xpath => $value) {
             $xpatharray = explode('#', $xpath);
             if (count($xpatharray) > 1) {
@@ -202,10 +216,17 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $this->structure->formatOutput = true;
         $xml = $this->structure->saveXML();
-        
-        $smda = new sdiMetadata($data['id']);
 
-        $result = $smda->update($xml);
+        if ($commit) {
+            $smda = new sdiMetadata($data['id']);
+            if ($smda->update($xml)) {
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_SAVE_VALIDE'), 'message');
+            } else {
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_SAVE_ERROR'), 'error');
+            }
+        } else {
+            return $xml;
+        }
 //        // Initialise variables.
 //        $app = JFactory::getApplication();
 //        $model = $this->getModel('Metadata', 'Easysdi_catalogModel');

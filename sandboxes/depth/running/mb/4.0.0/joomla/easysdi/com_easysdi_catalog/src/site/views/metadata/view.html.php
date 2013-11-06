@@ -24,12 +24,22 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
     protected $form;
     protected $params;
     public $formHtml = '';
-    /**
-     *
-     * @var DOMDocument 
-     */
+
+    /** @var sdiUser */
+    public $user;
+
+    /** @var JDatabaseDriver */
+    private $db;
+
+    /** @var DOMDocument */
     public $structure;
     public $validators;
+
+    public function __construct($config = array()) {
+        $this->db = JFactory::getDbo();
+
+        parent::__construct($config);
+    }
 
     /**
      * Display the view
@@ -38,7 +48,13 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
 
 
         $app = JFactory::getApplication();
-        $user = JFactory::getUser();
+        //Check user rights
+        $this->user = sdiFactory::getSdiUser();
+        if (!$this->user->isEasySDI) {
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+            return;
+        }
 
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
@@ -95,25 +111,58 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
     }
-    
-    protected function buildForm(){
+
+    protected function buildForm() {
         $structure = $this->structure = $this->get('Structure');
         $this->validators = $this->get('Validators');
 
         $fhg = new FormHtmlGenerator($this->form, $structure);
         $this->formHtml = $fhg->buildForm();
     }
+
     
     /**
      * 
      * @return string
      */
-    function getSubmitToolbar() {
-        $bar = JToolbar::getInstance();
-        $bar->appendButton('Standard', 'save', JText::_('JSave'), 'metadata.save', false);
-        $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'metadata.cancel', false);
+    public function getActionToolbar() {
+        $query = $this->db->getQuery(true);
+
+        $query->select('m.id, v.name, s.value, s.id AS state, v.id as version');
+        $query->from('#__sdi_version v');
+        $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
+        $query->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id');
+        $query->where('v.id = ' . $this->item->id);
+        $query->order('v.name DESC');
+
+        $this->db->setQuery($query);
+        $metadata = $this->db->loadObject();
+
+        jimport('joomla.html.toolbar');
+        $bar = new JToolBar( 'toolbar' );
+        
+        switch ($metadata->state) {
+            case sdiMetadata::INPROGRESS:
+                if ($this->user->authorize($this->item->id, sdiUser::metadataeditor)) {
+                    
+                    $bar->appendButton('Standard', '', 'Contrôler', 'metadata.control', false);
+                    $bar->appendButton('Standard', '', 'Valider', 'metadata.valid', false);
+                    $bar->appendButton('Standard', '', 'Visualiser', 'metadata.show', false);
+                    $bar->appendButton('Standard', 'save', JText::_('JSave'), 'metadata.save', false);
+                    $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'metadata.cancel', false);
+                }
+                break;
+            case sdiMetadata::VALIDATED:
+                if ($this->user->authorize($this->item->id, sdiUser::metadataresponsible)) {
+                    $bar->appendButton('Standard', '', 'En travail', 'metadata.inprogress', false);
+                    $bar->appendButton('Standard', '', 'Publier', 'metadata.publish', false);
+                    $bar->appendButton('Standard', '', 'Visualiser', 'metadata.show', false);
+                    $bar->appendButton('Standard', 'save', JText::_('JSave'), 'metadata.save', false);
+                    $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'metadata.cancel', false);
+                }
+                break;
+        }
         return $bar->render();
     }
-    
 
 }
