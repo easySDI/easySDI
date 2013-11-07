@@ -114,9 +114,9 @@ if (!empty($this->extra_sidebar)) {
               	<th class='left'>
 				<?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CONTACT_FORM_LBL_USER_NAME', 'a.name', $listDirn, $listOrder); ?>
 				</th>
-				<th class='left'>
+<!--				<th class='left'>
 				<?php echo JHtml::_('grid.sort', 'JCATEGORY', 'category_title', $listDirn, $listOrder); ?>
-				</th>
+				</th>-->
 				<th class='left'>
 				<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
 				</th>
@@ -234,9 +234,9 @@ if (!empty($this->extra_sidebar)) {
 						?>
 					</div>
 				</td>
-				<td align="small hidden-phone">
+<!--				<td align="small hidden-phone">
 					<?php echo $item->category_title; ?>
-				</td>
+				</td>-->
 				<td align="small hidden-phone">
 						<?php echo $item->access_level; ?>
 					</td>

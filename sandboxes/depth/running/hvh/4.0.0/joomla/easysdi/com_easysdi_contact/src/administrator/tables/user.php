@@ -100,6 +100,7 @@ class Easysdi_contactTableuser extends sdiTable
      * Overloaded getNextOrder function
      */
     public function getNextOrder($where = ''){
-        return parent::getNextOrder('catid = '.$this->catid);
+//        return parent::getNextOrder('catid = '.$this->catid);
+        return parent::getNextOrder();
     }
 }
