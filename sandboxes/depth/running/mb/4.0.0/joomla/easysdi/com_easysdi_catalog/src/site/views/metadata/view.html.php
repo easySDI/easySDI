@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.view');
 
 require_once JPATH_COMPONENT . '/libraries/easysdi/FormHtmlGenerator.php';
+require_once JPATH_BASE . '/administrator/components/com_easysdi_core/libraries/easysdi/common/SdiToolbar.php';
 
 /**
  * View to edit
@@ -137,22 +138,20 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
 
         $this->db->setQuery($query);
         $metadata = $this->db->loadObject();
-
-        jimport('joomla.html.toolbar');
-        $bar = new JToolBar( 'toolbar' );
+        
+        $toolbar = new SdiToolbar();
         
         switch ($metadata->state) {
             case sdiMetadata::INPROGRESS:
                 if ($this->user->authorize($this->item->id, sdiUser::metadataeditor)) {
-                    
-                    $bar->appendButton('Standard', '', 'Contrôler', 'metadata.control', false);
-                    $bar->appendButton('Standard', '', 'Valider', 'metadata.valid', false);
-                    $bar->appendButton('Standard', '', 'Visualiser', 'metadata.show', false);
-                    $bar->appendButton('Standard', 'save', JText::_('JSave'), 'metadata.save', false);
-                    $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'metadata.cancel', false);
+                    $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_TITLE_OPEN_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
+                    $toolbar->append('Pévisulisation', 'previsulisation', 'btn-small', array('Pévisulisation XML'=>'metadata.show','Pévisulisation HTML'=>'metadata.preview'), true);
+                    $toolbar->append('Enregistrer', 'Enregistrer', 'btn-small', array('Enregistrer et poursuivre'=>'metadata.saveAndContinue','Enregistrer et fermer'=>'metadata.save'), true);
+                    $toolbar->append('Valider', 'Valider', 'btn-small btn-success', array('Valider'=>'metadata.control','Valider et enregistrer'=>'metadata.valid'), true);
+                    $toolbar->append('Annuler', 'Annuler', 'btn-small btn-danger');
                 }
                 break;
-            case sdiMetadata::VALIDATED:
+            /*case sdiMetadata::VALIDATED:
                 if ($this->user->authorize($this->item->id, sdiUser::metadataresponsible)) {
                     $bar->appendButton('Standard', '', 'En travail', 'metadata.inprogress', false);
                     $bar->appendButton('Standard', '', 'Publier', 'metadata.publish', false);
@@ -160,9 +159,9 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
                     $bar->appendButton('Standard', 'save', JText::_('JSave'), 'metadata.save', false);
                     $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'metadata.cancel', false);
                 }
-                break;
+                break;*/
         }
-        return $bar->render();
+        return $toolbar->renderToolbar();
     }
 
 }

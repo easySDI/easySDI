@@ -1,5 +1,4 @@
 <?php
-require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/luminous/luminous.php';
 /**
  * @version     4.0.0
  * @package     com_easysdi_catalog
@@ -83,6 +82,15 @@ $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/sy
         max-width :none !important;
     }
 
+    .syntaxhighlighter{
+        overflow: visible !important;
+    }
+
+    #previewModal{
+        width: 900px;
+        left: 40%;
+    }
+
 
 </style>
 
@@ -103,61 +111,54 @@ foreach ($this->validators as $validator) {
 
 <div class="metadata-edit front-end-edit">
 
-    <button id="btn_toogle_all" action="open" class="btn btn-small"><?php echo JText::_('COM_EASYSDI_CATALOGE_TITLE_OPEN_ALL'); ?></button>
+
+<?php echo $this->getActionToolbar(); ?>
+
+<div>
+    <h2><?php echo JText::_('COM_EASYSDI_CATALOGE_TITLE_EDIT_METADATA') . ' ' . $this->item->guid; ?></h2>
+</div>
+
+<form id="form-metadata" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal" enctype="multipart/form-data">
+
+
+    <div class ="well">
+        <?php echo $this->formHtml; ?>
+
+        <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
+            <?php echo $field->input; ?>
+        <?php endforeach; ?>
+        <input type="hidden" name="option" value="com_easysdi_catalog" />
+        <input type="hidden" name="task" value="" />
+
+    </div>
 
     <div>
+
         <?php echo $this->getActionToolbar(); ?>
+
+        <button type="submit" class="validate"><span><?php echo JText::_('JSUBMIT'); ?></span></button>
+        <?php echo JText::_('or'); ?>
+        <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.cancel'); ?>" title="<?php echo JText::_('JCANCEL'); ?>"><?php echo JText::_('JCANCEL'); ?></a>
+
+        <?php echo JHtml::_('form.token'); ?>
     </div>
-    <div>
-        <h2><?php echo JText::_('COM_EASYSDI_CATALOGE_TITLE_EDIT_METADATA') . ' ' . $this->item->guid; ?></h2>
+</form>
+
+<!-- Preview XML or XHTML Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Preview</h4>
+            </div>
+            <div id="previewModalBody" class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
-
-    <form id="form-metadata" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal" enctype="multipart/form-data">
-
-
-        <div class ="well">
-            <?php echo $this->formHtml; ?>
-
-            <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
-                <?php echo $field->input; ?>
-            <?php endforeach; ?>
-            <input type="hidden" name="option" value="com_easysdi_catalog" />
-            <input type="hidden" name="task" value="" />
-
-        </div>
-
-        <div>
-            <?php echo $this->getActionToolbar(); ?>
-
-            <button type="submit" class="validate"><span><?php echo JText::_('JSUBMIT'); ?></span></button>
-            <?php echo JText::_('or'); ?>
-            <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.cancel'); ?>" title="<?php echo JText::_('JCANCEL'); ?>"><?php echo JText::_('JCANCEL'); ?></a>
-
-
-
-            <?php echo JHtml::_('form.token'); ?>
-        </div>
-    </form>
-    <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
-        Launch demo modal
-    </button>
-
-    <!-- Modal -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="myModalLabel">Modal title</h4>
-                </div>
-                <div class="modal-body">
-                    Hello
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+</div>
 </div>

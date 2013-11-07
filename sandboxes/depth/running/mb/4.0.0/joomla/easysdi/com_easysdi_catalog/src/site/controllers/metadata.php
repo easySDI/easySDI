@@ -17,11 +17,10 @@ require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormHtmlGenerator.php';
 
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/cswmetadata.php';
 
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
-
-require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/luminous/luminous.php';
 
 /**
  * Metadata controller class.
@@ -65,6 +64,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     private $ldao;
     private $catalog_uri = 'http://www.easysdi.org/2011/sdi/catalog';
     private $catalog_prefix = 'catalog';
+    private $cswUri = 'http://www.opengis.net/cat/csw/2.0.2';
+    private $nsArray = array();
 
     function __construct() {
         $this->db = JFactory::getDbo();
@@ -75,6 +76,10 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->structure->loadXML(unserialize($this->session->get('structure')));
         $this->structure->normalizeDocument();
         $this->domXpathStr = new DOMXPath($this->structure);
+
+        foreach ($this->nsdao->getAll() as $ns) {
+            $this->nsArray[$ns->prefix] = $ns->uri;
+        }
 
         parent::__construct();
     }
@@ -111,25 +116,54 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&view=metadata&layout=edit', false));
     }
 
+    /**
+     * Show xml preview
+     */
     public function show() {
+        $this->save($_POST['jform'], false);
+        /** @var DOMElement */
+        $update = $this->structure->getElementsByTagNameNS($this->cswUri, 'Update')->item(0);
+        $this->structure->formatOutput = true;
+
         $response = array();
         $response['success'] = true;
-        $response['xml'] = htmlspecialchars($this->save($_POST['jform'], false));
+        $response['xml'] = '<pre class="brush: xml">' . htmlspecialchars($this->structure->saveXML($update->firstChild)) . '</pre>';
         echo json_encode($response);
         die();
+    }
+
+    public function preview() {
+        $this->save($_POST['jform'], false);
+        $domExtend = new DOMDocument('1.0','utf-8');
+        
+        $update = $this->structure->getElementsByTagNameNS($this->cswUri, 'Update')->item(0);
+
+        $cswm = new cswmetadata();
+        $cswm->init($update->firstChild);
+        $cswm->extend('', '', 'editor', true, JFactory::getLanguage()->getTag());
+
+        $response = array();
+        $response['success'] = true;
+        $response['xml'] = '<div class="well">'.$cswm->applyXSL('', '', 'editor').'</div>';
+        echo json_encode($response);
+        die();
+    }
+
+    public function saveAndContinue() {
+        $this->save(null, true, true);
     }
 
     /**
      * Method to save a metadata.
      *
-     * @return	void or string if commit is set to false
+     * @return	void
      * @since	1.6
      */
-    public function save($data = null, $commit = true) {
-        if(!isset($data)){
+    public function save($data = null, $commit = true, $continue = false) {
+        if (!isset($data)) {
             $data = JFactory::getApplication()->input->get('jform', array(), 'array');
         }
-        
+
         $fileRepository = JPATH_BASE . '/media/' . JComponentHelper::getParams('com_easysdi_catalog')->get('linkedfilerepository');
         $fileBaseUrl = JComponentHelper::getParams('com_easysdi_catalog')->get('linkedfilebaseurl');
 
@@ -200,13 +234,15 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $root->insertBefore($header, $root->firstChild);
         }
 
-        $root->insertBefore($this->getSdiHeader($data['id']), $root->firstChild);
+        $smda = new sdiMetadata($data['id']);
+        
+        $root->insertBefore($smda->getPlatformNode($this->structure), $root->firstChild);
 
-        $transaction = $this->structure->createElementNS('http://www.opengis.net/cat/csw/2.0.2', 'csw:Transaction');
+        $transaction = $this->structure->createElementNS($this->cswUri, 'Transaction');
         $transaction->setAttribute('service', 'CSW');
         $transaction->setAttribute('version', '2.0.2');
 
-        $update = $this->structure->createElement('csw:Update');
+        $update = $this->structure->createElementNS($this->cswUri, 'Update');
         $update->appendChild($root);
         $update->appendChild($this->getConstraint($data['guid']));
         $transaction->appendChild($update);
@@ -214,18 +250,23 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $this->removeCatalogNS();
 
-        $this->structure->formatOutput = true;
-        $xml = $this->structure->saveXML();
 
         if ($commit) {
-            $smda = new sdiMetadata($data['id']);
+            $this->structure->formatOutput = true;
+            $xml = $this->structure->saveXML();
+
+            
             if ($smda->update($xml)) {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_SAVE_VALIDE'), 'message');
+                if ($continue) {
+                    $this->setRedirect(JRoute::_('index.php?view=metadata&layout=edit', false));
+                } else {
+                    $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+                }
             } else {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_SAVE_ERROR'), 'error');
+                $this->setRedirect(JRoute::_('index.php?view=metadata&layout=edit', false));
             }
-        } else {
-            return $xml;
         }
 //        // Initialise variables.
 //        $app = JFactory::getApplication();
@@ -339,34 +380,35 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * 
      */
     private function getHeader($default = 'deu', $encoding = 'utf8') {
+
         $headers = array();
 
-        $language = $this->structure->createElement('gmd:language');
-        $characterString = $this->structure->createElement('gco:CharacterString', $default);
+        $language = $this->structure->createElementNS($this->nsArray['gmd'], 'language');
+        $characterString = $this->structure->createElementNS($this->nsArray['gco'], 'CharacterString', $default);
         $language->appendChild($characterString);
         $headers[] = $language;
 
-        $characterSet = $this->structure->createElement('gmd:characterSet');
-        $characterSetCode = $this->structure->createElement('gmd:MD_CharacterSetCode');
+        $characterSet = $this->structure->createElementNS($this->nsArray['gmd'], 'characterSet');
+        $characterSetCode = $this->structure->createElementNS($this->nsArray['gmd'], 'MD_CharacterSetCode');
         $characterSetCode->setAttribute('codeListValue', $encoding);
         $characterSetCode->setAttribute('codeList', 'http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode');
         $characterSet->appendChild($characterSetCode);
 
         $headers[] = $characterSet;
 
-        $locale = $this->structure->createElement('gmd:locale');
-        $characterEncoding = $this->structure->createElement('gmd:characterEncoding');
-        $characterEncodingSetCode = $this->structure->createElement('gmd:MD_CharacterSetCode', strtoupper($encoding));
+        $locale = $this->structure->createElementNS($this->nsArray['gmd'], 'locale');
+        $characterEncoding = $this->structure->createElementNS($this->nsArray['gmd'], 'characterEncoding');
+        $characterEncodingSetCode = $this->structure->createElementNS($this->nsArray['gmd'], 'MD_CharacterSetCode', strtoupper($encoding));
         $characterEncodingSetCode->setAttribute('codeListeValue', $encoding);
         $characterEncodingSetCode->setAttribute('codeList', '#MD_CharacterSetCode');
         $characterEncoding->appendChild($characterEncodingSetCode);
         foreach ($this->ldao->getAll() as $key => $value) {
             if ($value->{'iso639-2T'} != $default) {
-                $pt_locale = $this->structure->createElement('gmd:PT_Locale');
+                $pt_locale = $this->structure->createElementNS($this->nsArray['gmd'], 'PT_Locale');
                 $pt_locale->setAttribute('id', $key);
 
-                $languageCode = $this->structure->createElement('gmd:languageCode');
-                $languageCodeChild = $this->structure->createElement('gmd:LanguageCode', $value->value);
+                $languageCode = $this->structure->createElementNS($this->nsArray['gmd'], 'languageCode');
+                $languageCodeChild = $this->structure->createElementNS($this->nsArray['gmd'], 'LanguageCode', $value->value);
                 $languageCodeChild->setAttribute('codeListValue', $value->{'iso639-2T'});
                 $languageCodeChild->setAttribute('codeList', '#LanguageCode');
 
@@ -429,11 +471,11 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->db->setQuery($query);
         $resultUsers = $this->db->loadObjectList();
 
-        $platform = $this->structure->createElement('sdi:platform');
+        $platform = $this->structure->createElementNS($this->nsArray['sdi'], 'platform');
         $platform->setAttribute('guid', $platformGuid);
         $platform->setAttribute('harvested', 'false');
 
-        $resource = $this->structure->createElement('sdi:resource');
+        $resource = $this->structure->createElementNS($this->nsArray['sdi'], 'resource');
         $resource->setAttribute('guid', $result->r_guid);
         $resource->setAttribute('alias', $result->r_alias);
         $resource->setAttribute('name', $result->r_name);
@@ -441,24 +483,24 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $resource->setAttribute('organism', $result->o_guid);
         $resource->setAttribute('scope', '');
 
-        $metadata = $this->structure->createElement('sdi:metadata');
+        $metadata = $this->structure->createElementNS($this->nsArray['sdi'], 'metadata');
         $metadata->setAttribute('lastVersion', $result->md_lastVersion);
         $metadata->setAttribute('guid', $result->md_guid);
         $metadata->setAttribute('created', $result->md_created);
         $metadata->setAttribute('published', $result->md_published);
         $metadata->setAttribute('state', $result->ms_value);
 
-        $organisms = $this->structure->createElement('sdi:organisms');
+        $organisms = $this->structure->createElementNS($this->nsArray['sdi'], 'organisms');
         foreach ($resultOrganisms as $o) {
-            $organism = $this->structure->createElement('sdi:organism');
+            $organism = $this->structure->createElementNS($this->nsArray['sdi'], 'organism');
             $organism->setAttribute('guid', $o->guid);
             $organism->setAttribute('alias', $o->name);
             $organisms->appendChild($organism);
         }
 
-        $users = $this->structure->createElement('sdi:users');
+        $users = $this->structure->createElementNS($this->nsArray['sdi'], 'users');
         foreach ($resultUsers as $u) {
-            $user = $this->structure->createElement('sdi:user');
+            $user = $this->structure->createElementNS($this->nsArray['sdi'], 'user');
             $user->setAttribute('guid', $u->guid);
             $user->setAttribute('alias', $u->name);
             $users->appendChild($user);
@@ -476,7 +518,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * @return DOMElement Description
      */
     private function getConstraint($guid) {
-        $constraint = $this->structure->createElement('csw:Constraint');
+        $constraint = $this->structure->createElementNS($this->cswUri, 'Constraint');
         $constraint->setAttribute('version', '1.0.0');
 
         $filter = $this->structure->createElement('Filter');

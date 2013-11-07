@@ -1,23 +1,128 @@
 js = jQuery.noConflict();
+
 var currentUrl = location.protocol + '//' + location.host + location.pathname;
+
+var tabIsOpen = false;
+
 js('document').ready(function() {
 
+    /**
+     * Control the "Open All" button.
+     */
     js('#btn_toogle_all').click(function() {
         var btn = js(this);
-        if (btn.attr('action') == 'open') {
-            btn.text('Tout fermer');
-            js('.inner-fds').show();
-            js('.collapse-btn').attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/collapse_top.png'});
-            btn.attr({'action': 'close'});
-        } else {
+        if (tabIsOpen) {
             btn.text('Tout ouvrir');
             js('.inner-fds').hide();
             js('.collapse-btn').attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/expand.png'});
-            btn.attr({'action': 'open'});
+            tabIsOpen = true;
+        } else {
+            btn.text('Tout fermer');
+            js('.inner-fds').show();
+            js('.collapse-btn').attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/collapse_top.png'});
+            tabIsOpen = false;
         }
 
     });
+
+    /**
+     * When the modal is visible, we colorize the XML.
+     */
+    js('#previewModal').on('show.bs.modal', function() {
+        SyntaxHighlighter.highlight();
+    });
+
+    /**
+     * We override the "submitbutton" function for Joomla buttonbar .
+     * 
+     * @param {string} task The task to execute.
+     * @returns {Boolean}
+     */
+    Joomla.submitbutton = function(task) {
+
+        if (task == '') {
+            return false;
+        } else {
+            var actions = task.split('.');
+            var form = document.getElementById('form-metadata');
+
+            switch (actions[1]) {
+                case 'save':
+                case 'saveAndContinue':
+                    Joomla.submitform(task, form);
+                    return true;
+                    break;
+                case 'control':
+                    if (document.formvalidator.isValid(form)) {
+                        bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK'));
+                        break;
+                    }
+                    break;
+
+                case 'valid':
+                    if (document.formvalidator.isValid(form)) {
+                        Joomla.submitform(task, form);
+                        break;
+                    }
+                    break;
+
+                case 'show':
+                case 'preview':
+                    js('input[name="task"]').val(task);
+
+                    js.ajax({
+                        url: currentUrl + '?' + task,
+                        type: js('#form-metadata').attr('method'),
+                        data: js('#form-metadata').serialize(),
+                        success: function(data) {
+                            var response = js.parseJSON(data);
+                            if (response.success) {
+                                js('#previewModalBody').html(response.xml);
+                                js('#previewModal').modal('show');
+                            }
+                        }
+                    });
+
+
+                    return true;
+                    break;
+
+                case 'cancel':
+                    return true;
+                    break;
+                case 'inprogress':
+                    return true;
+                    break;
+                case 'publish':
+                    return true;
+                    break;
+                case 'toggle':
+
+                    toggleAll();
+                    break;
+
+            }
+
+        }
+    };
+
 });
+
+function toggleAll() {
+    var btn = js('#btn_toogle_all');
+    if (tabIsOpen) {
+        btn.text('Tout ouvrir');
+        js('.inner-fds').hide();
+        js('.collapse-btn').attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/expand.png'});
+        tabIsOpen = false;
+    } else {
+        btn.text('Tout fermer');
+        js('.inner-fds').show();
+        js('.collapse-btn').attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/collapse_top.png'});
+        tabIsOpen = true;
+    }
+}
+
 function collapse(id) {
 
     var uuid = getUuid('collapse-btn-', id);
