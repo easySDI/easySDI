@@ -821,28 +821,30 @@ public class CSWProxyServlet extends ProxyServlet {
                 if (currentOperation.equalsIgnoreCase("Transaction")
                         && physicalService.getSdiSysAuthenticationconnectorByServiceauthenticationId() != null
                         && physicalService.getSdiSysAuthenticationconnectorByServiceauthenticationId().getValue().equalsIgnoreCase("geonetwork")) {
+                    
+                    sendDataDirectStream(resp,"POST", physicalService.getResourceurl(), param.toString());
                     // Send the xml
-                    StringBuffer response = sendFile(physicalService.getResourceurl(), param, physicalService.getServiceurl());
-
-                    // Get the response
-                    OutputStream os = resp.getOutputStream();
-                    InputStream is = new ByteArrayInputStream(response.toString().getBytes());
-                    int byteRead;
-                    try {
-                        while ((byteRead = is.read()) != -1) {
-                            os.write(byteRead);
-                        }
-                    } finally {
-                        Date d = new Date();
-                        logger.info("ClientResponseDateTime=" + dateFormat.format(d));
-                        if (os != null) {
-                            logger.info("ClientResponseLength=" + os.toString().length());
-                        }
-                        os.flush();
-                        os.close();
-                    }
-                    os = null;
-                    is = null;
+//                    StringBuffer response = sendFile(physicalService.getResourceurl(), param, physicalService.getServiceurl());
+//
+//                    // Get the response
+//                    OutputStream os = resp.getOutputStream();
+//                    InputStream is = new ByteArrayInputStream(response.toString().getBytes());
+//                    int byteRead;
+//                    try {
+//                        while ((byteRead = is.read()) != -1) {
+//                            os.write(byteRead);
+//                        }
+//                    } finally {
+//                        Date d = new Date();
+//                        logger.info("ClientResponseDateTime=" + dateFormat.format(d));
+//                        if (os != null) {
+//                            logger.info("ClientResponseLength=" + os.toString().length());
+//                        }
+//                        os.flush();
+//                        os.close();
+//                    }
+//                    os = null;
+//                    is = null;
                 } //GetRecordById
                 else if (currentOperation.equalsIgnoreCase("GetRecordById")) {
                     if (sdiVirtualService.isHarvester()) {
@@ -1194,7 +1196,7 @@ public class CSWProxyServlet extends ProxyServlet {
      * @param loginServiceUrl
      * @return
      */
-    @SuppressWarnings("deprecation")
+    @Deprecated
     protected StringBuffer sendFile(String urlstr, StringBuffer param, String loginServiceUrl) {
 
         try {
@@ -1205,12 +1207,12 @@ public class CSWProxyServlet extends ProxyServlet {
             logger.info("RemoteRequestDateTime=" + dateFormat.format(d));
 
             HttpClient client = new HttpClient();
-
+           
             PostMethod post = new PostMethod(urlstr);
             post.addRequestHeader("Content-Type", "application/xml");
+  
             post.addRequestHeader("Charset", "UTF-8");
             post.setRequestEntity(new StringRequestEntity(param.toString(),"text/xml", "UTF-8"));
-//            post.setRequestBody(new ByteArrayInputStream(param.toString().getBytes("UTF-8")));
 
             GetMethod loginGet = new GetMethod(loginServiceUrl);
             client.executeMethod(loginGet);

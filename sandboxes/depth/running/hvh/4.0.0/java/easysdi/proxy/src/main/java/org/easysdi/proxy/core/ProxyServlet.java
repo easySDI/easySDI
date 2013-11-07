@@ -642,16 +642,22 @@ public abstract class ProxyServlet extends HttpServlet {
 	
 		    if (method.equalsIgnoreCase("POST")) {
 		    	hpcon.setRequestProperty("Content-Length", "" + Integer.toString(parameters.getBytes().length));
-				String contentType = XML;
-				if(requestCharacterEncoding != null)
-				    contentType += "; " +requestCharacterEncoding;
-				hpcon.setRequestProperty("Content-Type", contentType);
-		
-				hpcon.setDoOutput(true);
-				DataOutputStream printout = new DataOutputStream(hpcon.getOutputStream());
-				printout.writeBytes(parameters);
-				printout.flush();
-				printout.close();
+                        String contentType = APPLICATION_XML;
+                        if(requestCharacterEncoding != null){
+                            contentType += "; charset=" +requestCharacterEncoding;                                    
+                        }
+                        hpcon.setRequestProperty("Content-Type", contentType);
+
+                        hpcon.setDoOutput(true);
+                        DataOutputStream printout = new DataOutputStream(hpcon.getOutputStream());
+                        if(requestCharacterEncoding != null){
+                            byte[] buf = parameters.getBytes("UTF-8");
+                            printout.write(buf, 0, buf.length);
+                        }else{
+                            printout.writeBytes(parameters);
+                        }
+                        printout.flush();
+                        printout.close();
 		    } 
 		    else {
 		    	hpcon.setDoOutput(false);
