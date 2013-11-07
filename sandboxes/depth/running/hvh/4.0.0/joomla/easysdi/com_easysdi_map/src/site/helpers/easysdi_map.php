@@ -35,7 +35,7 @@ abstract class Easysdi_mapHelper {
 
         if (JDEBUG) {
             $output =
-                    '<link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/ext/resources/css/ext-all-'.$theme.'.css" type="text/css" />
+            '<link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/ext/resources/css/ext-all-'.$theme.'.css" type="text/css" />
             <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/ext/resources/css/xtheme-'.$theme.'.css" type="text/css" />
             <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/openlayers/theme/default/style.css" type="text/css" />
             <link rel="stylesheet" href="' . JURI::base() . 'administrator/components/com_easysdi_core/libraries/geoext/resources/css/popup.css" type="text/css" />
@@ -53,7 +53,9 @@ abstract class Easysdi_mapHelper {
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/ux/geoext/PrintPreview.js" type="text/javascript"></script>
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/gxp/script/loader.js" type="text/javascript"></script>
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi.js" type="text/javascript"></script>
-                <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/WMSSource.js" type="text/javascript"></script>';
+                <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/WMSSource.js" type="text/javascript"></script>
+<script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi/plugins/searchCatalog.js" type="text/javascript"></script>                    
+';
 
             $files = glob(JURI::base(true) .'/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.{js}', GLOB_BRACE);
             foreach ($files as $file) {
@@ -102,7 +104,14 @@ abstract class Easysdi_mapHelper {
         }
 
         $output .= '<div id="'.$renderto.'" class="cls-'.$renderto.'"></div>';
-
+      
+//        $output .= '<div id="sbox-overlay" style="z-index: 65555; position: fixed; top: 0px; left: 0px; visibility: hidden; zoom: 1; opacity: 0; width: 1841px; height: 847px; display: none;" class=""></div>';
+//        $output .= '<div id="sbox-window" style="z-index: 65557; position: fixed; top: 50%; left: 50%; width: 500px; height: 500px; margin-left: -480px; margin-top: -350px; display: none;" class="">
+//            <a id="sbox-btn-close" href="#"></a><div id="sbox-content" class="sbox-content-iframe" style="visibility: visible; zoom: 1; opacity: 1;">
+//            <iframe id="sdi-catalog-iframe" src="" frameborder="0" width="960" height="700">
+//            </iframe></div></div>';
+        
+        
         $output .= '<script>
             var '.$appname.';
             var loadingMask;
@@ -452,6 +461,10 @@ abstract class Easysdi_mapHelper {
                         $config .= '
                         {
                         ptype: "gxp_addlayers",
+                        actionTarget: "tree.tbar"
+                        },
+                        {
+                        ptype: "sdi_searchcatalog",
                         actionTarget: "tree.tbar"
                         },
                         ';

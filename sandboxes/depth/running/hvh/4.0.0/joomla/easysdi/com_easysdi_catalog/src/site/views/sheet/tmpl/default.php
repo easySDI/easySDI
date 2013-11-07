@@ -18,6 +18,9 @@ JHtml::_('formbehavior.chosen', 'select');
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
 
+$document = JFactory::getDocument();
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js');
+
 ?>
 <?php if ($this->item) : ?>
 <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
