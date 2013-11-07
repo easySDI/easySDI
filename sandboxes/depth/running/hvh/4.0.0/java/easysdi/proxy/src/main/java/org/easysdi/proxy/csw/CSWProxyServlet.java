@@ -53,6 +53,7 @@ import net.sf.json.JSONSerializer;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.core.ProxyServletRequest;
 import org.easysdi.proxy.domain.Extensions;
@@ -60,6 +61,7 @@ import org.easysdi.proxy.domain.ExtensionsHome;
 import org.easysdi.proxy.domain.SdiExcludedattribute;
 import org.easysdi.proxy.domain.SdiPhysicalservice;
 import org.easysdi.proxy.domain.SdiPolicy;
+import org.easysdi.proxy.domain.SdiSysAuthenticationconnector;
 import org.easysdi.proxy.domain.SdiVirtualmetadata;
 import org.easysdi.proxy.domain.SdiVirtualservice;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
@@ -1207,7 +1209,8 @@ public class CSWProxyServlet extends ProxyServlet {
             PostMethod post = new PostMethod(urlstr);
             post.addRequestHeader("Content-Type", "application/xml");
             post.addRequestHeader("Charset", "UTF-8");
-            post.setRequestBody(new ByteArrayInputStream(param.toString().getBytes("UTF-8")));
+            post.setRequestEntity(new StringRequestEntity(param.toString(),"text/xml", "UTF-8"));
+//            post.setRequestBody(new ByteArrayInputStream(param.toString().getBytes("UTF-8")));
 
             GetMethod loginGet = new GetMethod(loginServiceUrl);
             client.executeMethod(loginGet);
