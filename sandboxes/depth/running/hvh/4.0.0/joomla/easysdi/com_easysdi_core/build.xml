@@ -398,7 +398,8 @@
 		 	geoext/data/PrintProvider.js, 
 		 	geoext/ux/PrintPreview.js, 
 		 	geoext/widgets/PrintMapPanel.js,
-                        sdi/plugins/SearchCatalog.js" />
+                        sdi/plugins/SearchCatalog.js,
+                        sdi/plugins/LayerDetailSheet.js" />
         </concat>
     </target>
 	

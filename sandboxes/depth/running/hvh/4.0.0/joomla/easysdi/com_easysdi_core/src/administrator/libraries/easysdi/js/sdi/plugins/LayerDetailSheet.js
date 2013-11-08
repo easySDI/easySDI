@@ -41,25 +41,26 @@ sdi.plugins.LayerDetailSheet = Ext.extend(gxp.plugins.Tool, {
         var selectedLayer;
         var actions = sdi.plugins.LayerDetailSheet.superclass.addActions.apply(this, [{
             menuText: this.layerDetailMenuText,
-            iconCls: "gxp-icon-removelayers",
+            iconCls: "gxp-icon-getfeatureinfo",
             disabled: true,
             tooltip: this.layerDetailActionTip,
             handler: function() {
+               var record = selectedLayer;
                SqueezeBox.initialize({});
-               SqueezeBox.setContent('iframe', 'http://localhost/sdi4a8/index.php/catalog-main?tmpl=component');
+               SqueezeBox.setContent('iframe', record.json.href);
             },
             scope: this
         }]);
-        var removeLayerAction = actions[0];
+        var layerDetailAction = actions[0];
 
         this.target.on("layerselectionchange", function(record) {
             selectedLayer = record;
-            removeLayerAction.setDisabled(
+            layerDetailAction.setDisabled(
                 this.target.mapPanel.layers.getCount() <= 1 || !record
             );
         }, this);
         var enforceOne = function(store) {
-            removeLayerAction.setDisabled(
+            layerDetailAction.setDisabled(
                 !selectedLayer || store.getCount() <= 1
             );
         };

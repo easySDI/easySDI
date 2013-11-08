@@ -211,6 +211,14 @@
     background-image: url(img/silk/add.png);
 }
 
+/* sdi_searchcatalog */
+.x-btn .gxp-icon-addlayersfromcatalog, .x-menu-item .gxp-icon-addlayersfromcatalog, .x-tree-node .gxp-icon-addlayersfromcatalog {
+    background-image: url(img/silk/find.png);
+}
+.x-btn .gxp-icon-addserver {
+    background-image: url(img/silk/server_add.png);
+}
+
 .x-btn .gxp-icon-addserver {
     background-image: url(img/silk/server_add.png);
 }

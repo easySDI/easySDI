@@ -13,6 +13,8 @@ defined('_JEXEC') or die;
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_map', JPATH_ADMINISTRATOR);
 
+JHTML::_('behavior.modal');
+
 if (!empty($this->mapscript)) :
     ?>
     <?php echo $this->mapscript; ?>

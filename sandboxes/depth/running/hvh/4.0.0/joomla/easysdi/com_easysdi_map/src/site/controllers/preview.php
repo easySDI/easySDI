@@ -27,8 +27,7 @@ class Easysdi_mapControllerPreview extends Easysdi_mapController {
      * @since	1.5
      */
     public function display($cachable = false, $urlparams = false) {
-        $id = JFactory::getApplication()->input->getInt('id', null, 'int');
-
+       
         parent::display();
 
         return $this;

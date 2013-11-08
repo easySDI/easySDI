@@ -112,8 +112,7 @@ class Easysdi_mapViewPreview extends JViewLegacy {
         $this->_prepareDocument();
 
         parent::display($tpl);
-        die();
-        
+//        die();        
     }
 
     /**
