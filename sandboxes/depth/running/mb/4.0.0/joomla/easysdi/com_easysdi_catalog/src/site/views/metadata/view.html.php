@@ -121,7 +121,6 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         $this->formHtml = $fhg->buildForm();
     }
 
-    
     /**
      * 
      * @return string
@@ -138,30 +137,94 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
 
         $this->db->setQuery($query);
         $metadata = $this->db->loadObject();
-        
+
         $toolbar = new SdiToolbar();
-        
+
         switch ($metadata->state) {
             case sdiMetadata::INPROGRESS:
                 if ($this->user->authorize($this->item->id, sdiUser::metadataeditor)) {
-                    $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_TITLE_OPEN_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
-                    $toolbar->append('Pévisulisation', 'previsulisation', 'btn-small', array('Pévisulisation XML'=>'metadata.show','Pévisulisation HTML'=>'metadata.preview'), true);
-                    $toolbar->append('Enregistrer', 'Enregistrer', 'btn-small', array('Enregistrer et poursuivre'=>'metadata.saveAndContinue','Enregistrer et fermer'=>'metadata.save'), true);
-                    $toolbar->append('Valider', 'Valider', 'btn-small btn-success', array('Valider'=>'metadata.control','Valider et enregistrer'=>'metadata.valid'), true);
-                    $toolbar->append('Annuler', 'Annuler', 'btn-small btn-danger');
+                    $toolbar->append('Pévisulisation', 'previsulisation', 'btn-small', array('Pévisulisation XML' => 'metadata.show', 'Pévisulisation HTML' => 'metadata.preview'), true);
+                    $toolbar->append('Enregistrer', 'Enregistrer', 'btn-small', array('Enregistrer et poursuivre' => 'metadata.saveAndContinue', 'Enregistrer et fermer' => 'metadata.save'), true);
+                    $toolbar->append('Valider', 'Valider', 'btn-small btn-success', array('Valider' => 'metadata.control', 'Valider et enregistrer' => 'metadata.valid'), true);
                 }
                 break;
-            /*case sdiMetadata::VALIDATED:
-                if ($this->user->authorize($this->item->id, sdiUser::metadataresponsible)) {
-                    $bar->appendButton('Standard', '', 'En travail', 'metadata.inprogress', false);
-                    $bar->appendButton('Standard', '', 'Publier', 'metadata.publish', false);
-                    $bar->appendButton('Standard', '', 'Visualiser', 'metadata.show', false);
-                    $bar->appendButton('Standard', 'save', JText::_('JSave'), 'metadata.save', false);
-                    $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'metadata.cancel', false);
-                }
-                break;*/
+            /* case sdiMetadata::VALIDATED:
+              if ($this->user->authorize($this->item->id, sdiUser::metadataresponsible)) {
+              $bar->appendButton('Standard', '', 'En travail', 'metadata.inprogress', false);
+              $bar->appendButton('Standard', '', 'Publier', 'metadata.publish', false);
+              $bar->appendButton('Standard', '', 'Visualiser', 'metadata.show', false);
+              $bar->appendButton('Standard', 'save', JText::_('JSave'), 'metadata.save', false);
+              $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'metadata.cancel', false);
+              }
+              break; */
         }
         return $toolbar->renderToolbar();
+    }
+
+    public function getTopActionBar() {
+        $query = $this->db->getQuery(true);
+
+        $query->select('ir.id, ir.name');
+        $query->from('#__sdi_importref ir');
+        $query->where('ir.state = 1');
+        $query->order('ir.name DESC');
+
+        $this->db->setQuery($query);
+        $importref = $this->db->loadObjectList();
+
+        $importrefactions = array();
+        $importrefactions['Réplication de ressource'] = 'metadata.replicate';
+        foreach ($importref as $ir) {
+            $importrefactions[$ir->name] = 'metadata.import.' . $ir->id;
+        }
+
+        $toolbar = new SdiToolbar();
+
+        $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_TITLE_OPEN_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
+        $toolbar->append('Import', 'import', 'btn-small', $importrefactions, true);
+        $toolbar->append('Annuler', 'Annuler', 'btn-small btn-danger','metadata.cancel');
+        
+        return $toolbar->renderToolbar();
+    }
+    
+    /**
+     * Return a list of all resource type
+     * 
+     * @return stdClass[]
+     */
+    public function getResourceType(){
+        $query = $this->db->getQuery(true);
+
+        $query->select('rt.id, rt.name, rt.guid');
+        $query->from('#__sdi_resourcetype rt');
+        $query->order('rt.name DESC');
+
+        $this->db->setQuery($query);
+        $resourcetype = $this->db->loadObjectList();
+        
+        $first = array('id' => '', 'name' => '', 'guid'=>'');
+        array_unshift($resourcetype, (object) $first);
+        
+        return $resourcetype;
+    }
+    
+    /**
+     * @return stdClass[] List of all status
+     */
+    public function getStatusList(){
+        $query = $this->db->getQuery(true);
+
+        $query->select('ms.id, ms.value');
+        $query->from('#__sdi_sys_metadatastate ms');
+        $query->order('ms.id ASC');
+
+        $this->db->setQuery($query);
+        $metadatastate = $this->db->loadObjectList();
+        
+        $first = array('id' => '', 'value' => '');
+        array_unshift($metadatastate, (object) $first);
+        
+        return $metadatastate;
     }
 
 }

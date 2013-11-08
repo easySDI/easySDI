@@ -117,6 +117,35 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     }
 
     /**
+     * 
+     * @return stdClass[] result list of resource
+     */
+    public function searchresource(){
+        $query = $this->db->getQuery(true);
+
+        $query->select('r.`name`, v.created, m.guid');
+        $query->from('#__sdi_resource r');
+        $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
+        $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
+        if($_POST['status_id']!=''){
+            $query->where('r.`state` = '.$_POST['status_id']);
+        }
+        if($_POST['resourcetype_id']!=''){
+            $query->where('r.resourcetype_id = '.$_POST['resourcetype_id']);
+        }
+        $query->where('r.`name` like \'%'.$_POST['resource_name'].'%\'');
+        
+        $this->db->setQuery($query);
+        $resources = $this->db->loadObjectList();
+        
+        $response = array();
+        $response['success'] = true;
+        $response['result'] = $resources;
+        echo json_encode($response);
+        die();
+    }
+    
+    /**
      * Show xml preview
      */
     public function show() {

@@ -14,6 +14,7 @@ JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('formbehavior.chosen', 'select');
 
+
 //Load admin language file
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
@@ -111,54 +112,122 @@ foreach ($this->validators as $validator) {
 
 <div class="metadata-edit front-end-edit">
 
-
-<?php echo $this->getActionToolbar(); ?>
-
-<div>
-    <h2><?php echo JText::_('COM_EASYSDI_CATALOGE_TITLE_EDIT_METADATA') . ' ' . $this->item->guid; ?></h2>
-</div>
-
-<form id="form-metadata" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal" enctype="multipart/form-data">
-
-
-    <div class ="well">
-        <?php echo $this->formHtml; ?>
-
-        <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
-            <?php echo $field->input; ?>
-        <?php endforeach; ?>
-        <input type="hidden" name="option" value="com_easysdi_catalog" />
-        <input type="hidden" name="task" value="" />
-
-    </div>
+    <?php echo $this->getTopActionBar(); ?>
 
     <div>
-
-        <?php echo $this->getActionToolbar(); ?>
-
-        <button type="submit" class="validate"><span><?php echo JText::_('JSUBMIT'); ?></span></button>
-        <?php echo JText::_('or'); ?>
-        <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.cancel'); ?>" title="<?php echo JText::_('JCANCEL'); ?>"><?php echo JText::_('JCANCEL'); ?></a>
-
-        <?php echo JHtml::_('form.token'); ?>
+        <h2><?php echo JText::_('COM_EASYSDI_CATALOGE_TITLE_EDIT_METADATA') . ' ' . $this->item->guid; ?></h2>
     </div>
-</form>
 
-<!-- Preview XML or XHTML Modal -->
-<div class="modal fade" id="previewModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">Preview</h4>
-            </div>
-            <div id="previewModalBody" class="modal-body">
+    <form id="form-metadata" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal" enctype="multipart/form-data">
 
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+
+        <div class ="well">
+            <?php echo $this->formHtml; ?>
+
+            <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
+                <?php echo $field->input; ?>
+            <?php endforeach; ?>
+            <input type="hidden" name="option" value="com_easysdi_catalog" />
+            <input type="hidden" name="task" value="" />
+
+        </div>
+
+        <div>
+
+            <?php echo $this->getActionToolbar(); ?>
+
+            <?php echo JHtml::_('form.token'); ?>
+        </div>
+    </form>
+
+    <!-- Preview XML or XHTML Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Preview</h4>
+                </div>
+                <div id="previewModalBody" class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+    <!-- Replicate modal -->
+
+    <div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="searchModalLabel">Preview</h4>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <form id="form_search_resource" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal">
+                            <input type="hidden" name="task" value="">
+                            <div class="control-group">
+                                <label class="control-label" for="inputEmail">Type d'objet</label>
+                                <div class="controls">
+                                    <select id="resourcetype_id" name="resourcetype_id">
+                                        <?php foreach ($this->getResourceType() as $resource) { ?>
+                                            <option value="<?php echo $resource->id; ?>"><?php echo EText::_($resource->guid); ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label" for="inputEmail">Nom</label>
+                                <div class="controls">
+                                    <input id="resource_name" name="resource_name" type="text" value="">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label" for="inputEmail">Status</label>
+                                <div class="controls">
+                                    <select id="status_id" name="status_id">
+                                        <?php foreach ($this->getStatusList() as $status) { ?>
+                                            <option value="<?php echo $status->id; ?>"><?php echo $status->value; ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <div class="controls">
+                                    <label class="radio">
+                                        <input type="radio" name="version" id="optionsRadios1" value="all" checked>
+                                        Toutes les versions
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" name="version" id="optionsRadios2" value="last">
+                                        Dernière version
+                                    </label>
+                                </div>
+                            </div>
+                            <button onclick="Joomla.submitbutton('metadata.searchresource')" type="button" class="btn btn-success btn-small">Chercher</button>
+                        </form>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr><th></th><th>Nom</th><th>Version</th><th>Guid</th></tr>
+                            </thead>
+                            <tbody id="search_result">
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </div>
