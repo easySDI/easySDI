@@ -210,6 +210,7 @@
 .x-btn .gxp-icon-addlayers, .x-menu-item .gxp-icon-addlayers, .x-tree-node .gxp-icon-addlayers {
     background-image: url(img/silk/add.png);
 }
+
 .x-btn .gxp-icon-addserver {
     background-image: url(img/silk/server_add.png);
 }

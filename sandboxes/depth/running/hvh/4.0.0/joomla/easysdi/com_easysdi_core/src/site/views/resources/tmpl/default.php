@@ -36,7 +36,7 @@ if (isset($this->user)):
         <?php // echo $this->itemmap->_item->text; ?>
         <div class="well">
             <div class="row-fluid">
-                <form class="form-search">
+                <form class="form-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=resources'); ?>" method="post">
                     <div class="btn-toolbar">
                         <div class="btn-group pull-right">
                             <select id="filter_resourcetype" name="filter_resourcetype" onchange="this.form.submit();" class="inputbox">

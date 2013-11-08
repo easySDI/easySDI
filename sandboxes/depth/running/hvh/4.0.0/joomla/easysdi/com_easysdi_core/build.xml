@@ -392,11 +392,13 @@
 		 	gxp/plugins/GoogleSource.js,
 		 	gxp/plugins/OSMSource.js,
 		 	gxp/plugins/LoadingIndicator.js,
+                        gxp/plugins/WMSSource.js,
                         gxp/widgets/ScaleOverlay.js,
                         gxp/widgets/Viewer.js,
 		 	geoext/data/PrintProvider.js, 
 		 	geoext/ux/PrintPreview.js, 
-		 	geoext/widgets/PrintMapPanel.js" />
+		 	geoext/widgets/PrintMapPanel.js,
+                        sdi/plugins/SearchCatalog.js" />
         </concat>
     </target>
 	

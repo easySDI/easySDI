@@ -249,7 +249,6 @@ class Easysdi_coreModelResource extends JModelForm {
 
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('resource.id');
 
-
         $user = sdiFactory::getSdiUser();
         if (!$user->isEasySDI) {
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));

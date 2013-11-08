@@ -57,7 +57,7 @@ class Easysdi_mapModelPreview extends JModelForm {
                     ->from('#__sdi_visualization p')
                     ->innerJoin('#__sdi_version v ON p.version_id = v.id')
                     ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                    ->where('m.id IN ' . (int) $metadataid) .')';
+                    ->where('m.id IN (' . (int) $metadataid) .')';
             $db->setQuery($query);
             $id = implode($db->loadColumn(),',');
         } else {
