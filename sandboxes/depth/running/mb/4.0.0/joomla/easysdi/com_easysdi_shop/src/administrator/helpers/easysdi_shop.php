@@ -20,6 +20,11 @@ class Easysdi_shopHelper
 	 */
 	public static function addSubmenu($vName = '')
 	{
+            JHtmlSidebar::addEntry(
+                '<i class="icon-home"></i> '.JText::_('COM_EASYSDI_SHOP_TITLE_HOME'),
+                'index.php?option=com_easysdi_core&view=easysdi',
+                $vName == 'easysdi'
+            );
             if($vName == 'propertyvalues'){
                 JHtmlSidebar::addEntry(
 			JText::_('COM_EASYSDI_SHOP_TITLE_PROPERTIES'),

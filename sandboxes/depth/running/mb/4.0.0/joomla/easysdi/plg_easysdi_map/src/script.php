@@ -10,7 +10,7 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
 
-class plg_content_easysdimapInstallerScript
+class plgContentEasysdimapInstallerScript
 {
 
 	function preflight( $type, $parent ) {

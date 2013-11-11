@@ -107,9 +107,6 @@ class Easysdi_mapViewLayers extends JViewLegacy
 			JToolBarHelper::preferences('com_easysdi_map');
 		}
 
-		JToolBarHelper::divider();
-		JToolBarHelper::custom('easySDIHome', 'home.png', 'home_f2.png', 'COM_EASYSDI_MAP_TOOLBAR_HOME', false);
-		
 		//Groups list for filtering action
 		$groupModel 	= JModelLegacy::getInstance('groups', 'Easysdi_mapModel', array());
 		$groupList 		= $groupModel->getItemsRestricted();

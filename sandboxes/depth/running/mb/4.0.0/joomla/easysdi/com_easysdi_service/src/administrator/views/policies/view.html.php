@@ -118,9 +118,6 @@ class Easysdi_serviceViewPolicies extends JViewLegacy
 			JToolBarHelper::preferences('com_easysdi_service');
 		}
 		
-		JToolBarHelper::divider();
-		JToolBarHelper::custom('easySDIHome', 'home.png', 'home_f2.png', 'COM_EASYSDI_SERVICE_TOOLBAR_HOME', false);
-		
 		//Set sidebar action - New in 3.0
 		$virtualserviceModel 	= JModelLegacy::getInstance('virtualservices', 'Easysdi_serviceModel', array());
 		$virtualserviceList 	= $virtualserviceModel->getItemsRestricted();
