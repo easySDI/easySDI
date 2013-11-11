@@ -484,7 +484,8 @@ $config .= '
                         },
                         {
                         ptype: "sdi_searchcatalog",
-                        actionTarget: "tree.tbar"
+                        actionTarget: "tree.tbar",
+                        url: "'. JURI::root() .'index.php?option=com_easysdi_catalog&view=catalog&id=2&preview=map&tmpl=component"
                         },
                         ';
                     }

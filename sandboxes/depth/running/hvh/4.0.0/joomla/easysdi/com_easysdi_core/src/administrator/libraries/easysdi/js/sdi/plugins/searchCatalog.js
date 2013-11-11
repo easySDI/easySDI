@@ -76,7 +76,7 @@ sdi.plugins.SearchCatalog = Ext.extend(gxp.plugins.Tool, {
     },
     showCatalogFrame: function() {
         SqueezeBox.initialize({});
-        SqueezeBox.setContent('iframe', 'http://localhost/sdi4a8/index.php?option=com_easysdi_catalog&view=catalog&id=2&tmpl=component');
+        SqueezeBox.setContent('iframe', this.initialConfig.url);
     }
 });
 

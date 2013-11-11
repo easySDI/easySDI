@@ -377,7 +377,7 @@ class cswmetadata {
                         endif;
                     endif;
 
-                    $href = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid='.$this->metadata->guid.'&lang=fr-FR&preview=map&tmpl=component');
+                    $href = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid='.$this->metadata->guid.'&lang=fr-FR&catalog=' . $catalog . '&preview=' . $preview.'&tmpl=component');
                     $sourceconfig = '{id :"'.$service->alias.'",ptype: "sdi_gxp_wmssource",url: "'.$service->resourceurl.'"}';
                     
                     $layerconfig = '{ name: "'.$visualization->layername.'",attribution: "'.addslashes ($visualization->attribution).'",opacity: 1,source: "'.$service->alias.'",tiled: true,title: "'.$visualization->layername.'",visibility: true, href: "'.$href.'"}';
@@ -454,13 +454,13 @@ class cswmetadata {
 
         //Sheet view
         $sheet = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:sheetview');
-        $sheetlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $this->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&type=' . $type . '&preview=' . $preview));
+        $sheetlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $this->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview. '&type='));
         $sheet->appendChild($sheetlink);
         $action->appendChild($sheet);
 
         //Make pdf
         $exportpdf = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:exportpdf');
-        $exportpdflink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&task=sheet.exportPDF&id=' . $this->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&type=' . $type . '&preview=' . $preview));
+        $exportpdflink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&task=sheet.exportPDF&id=' . $this->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview. '&type='));
         $exportpdf->appendChild($exportpdflink);
         $action->appendChild($exportpdf);
 

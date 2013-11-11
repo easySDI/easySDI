@@ -34,7 +34,9 @@ gxp.Viewer.prototype.reactivate = function() {
                             overlayRecords.push(record);
                         }
                     }
+                    break;
                 }
+                
             }
         }
 

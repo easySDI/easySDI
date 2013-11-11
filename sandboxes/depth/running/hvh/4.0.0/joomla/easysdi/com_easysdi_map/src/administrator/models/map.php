@@ -124,6 +124,14 @@ class Easysdi_mapModelmap extends JModelAdmin {
                     $n = 'tool' . $tool->tool_id;
                     (empty($tool->params))?$item->$n = "1" : $item->$n = $tool->params;
                 endforeach;
+                
+                //Search Catalog
+                $db->setQuery('SELECT params FROM #__sdi_map_tool WHERE tool_id=17 AND map_id = ' . $item->id);
+                $catalogsearch = $db->loadResult();
+                if(!empty($catalogsearch)){
+                    $item->tool17 = "1";
+                    $item->catalog_id = $catalogsearch;
+                }
 
                 //Scale line parameters
                 $db->setQuery('SELECT params FROM #__sdi_map_tool WHERE tool_id=14 AND map_id = ' . $item->id);
@@ -205,19 +213,19 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 if (substr($key, 0, 4) == "tool") {
                     if ($value == 1) {
                         $tool = substr($key, 4);
-                        $db->setQuery('INSERT INTO #__sdi_map_tool (map_id, tool_id) VALUES (' . $this->getItem()->get('id') . ', ' . $tool . ')');
+                        ($tool == '17')? $params= $data['catalog_id']: $params = 'NULL';                        
+                        $db->setQuery('INSERT INTO #__sdi_map_tool (map_id, tool_id, params) VALUES (' . $this->getItem()->get('id') . ', ' . $tool . ', '. $params .')');
                         if (!$db->query()) {
                             $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
                             return false;
                         }
-                    }
-                    if ($value == "html" || $value == "grid") {
+                    } else if ($value == "html" || $value == "grid") {
                         $tool = substr($key, 4);
                         $db->setQuery('INSERT INTO #__sdi_map_tool (map_id, tool_id, params) VALUES (' . $this->getItem()->get('id') . ', ' . $tool . ', "'.$value.'")');
                         if (!$db->query()) {
                             $this->setError(JText::_("COM_EASYSDI_MAP_FORM_MAP_SAVE_FAIL_TOOL_ERROR"));
                             return false;
-                        }
+                        }                        
                     }
                 }
             }

@@ -78,15 +78,14 @@ class Easysdi_catalogModelSheet extends JModelForm {
             //Current catalog context
             $catalog = $jinput->get('catalog', '', 'STRING');
             /* Current type view. Possible value :
-             * - result
-             * - complete
-             * - abstract
-             * - diffusion
+             * - result (value used by the code to display the search results in a catalog view)
+             * - any other values wanted by the administrator and used in the XSL files...
              */
-            $type = $jinput->get('type', 'abstract', 'STRING');
+            $type = $jinput->get('type', '', 'STRING');
             /* Current preview. Possible value :
              * - editor
              * - public
+             * - map
              * A preview corresponds to an association of a catalog and a type :
              * preview = catalog + type
              * If a preview is provided, its value is used to load the XSL file.
