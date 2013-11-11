@@ -21,6 +21,7 @@ $lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
 $document = JFactory::getDocument();
 
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/ext/resources/css/ext-all.css');
+$document->addStyleSheet('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/css/jquery.dataTables.css');
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/bootbox.min.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.debug.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/proj4js-1.4.1/dist/proj4.js');
@@ -30,6 +31,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/ext/ex
 $document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/thesaur.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/HS.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/translations.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/js/jquery.dataTables.min.js');
 
 $document->addScript('http://maps.google.com/maps/api/js?v=3&amp;sensor=false');
 
@@ -92,7 +94,9 @@ $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/sy
         left: 40%;
     }
 
-
+    #search_table{
+        display: none;
+    }
 </style>
 
 <script type="text/javascript">
@@ -181,10 +185,11 @@ foreach ($this->validators as $validator) {
                                     </select>
                                 </div>
                             </div>
-                            <div class="control-group">
+                            <div id="resource_name_group" class="control-group">
                                 <label class="control-label" for="inputEmail">Nom</label>
                                 <div class="controls">
                                     <input id="resource_name" name="resource_name" type="text" value="">
+                                    <span class="help-inline">Ce champ doit faire au moins 3 caractères.</span>
                                 </div>
                             </div>
                             <div class="control-group">
@@ -209,21 +214,23 @@ foreach ($this->validators as $validator) {
                                     </label>
                                 </div>
                             </div>
-                            <button onclick="Joomla.submitbutton('metadata.searchresource')" type="button" class="btn btn-success btn-small">Chercher</button>
+                            <button onclick="Joomla.submitbutton('metadata.searchresource')" type="button" class="btn btn-success btn-small pull-right">Chercher</button>
                         </form>
-                        <table class="table table-bordered">
+                        
+
+                        <table id="search_table" class="table table-bordered">
                             <thead>
                                 <tr><th></th><th>Nom</th><th>Version</th><th>Guid</th></tr>
                             </thead>
                             <tbody id="search_result">
-
+                                
                             </tbody>
                         </table>
 
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" data-dismiss="modal">Fermer</button>
                 </div>
             </div>
         </div>

@@ -1,9 +1,6 @@
 js = jQuery.noConflict();
-
 var currentUrl = location.protocol + '//' + location.host + location.pathname;
-
 var tabIsOpen = false;
-
 js('document').ready(function() {
 
     /**
@@ -24,9 +21,8 @@ js('document').ready(function() {
         }
 
     });
-
     /**
-     * When the modal is visible, we colorize the XML.
+     * When the preview modal is visible, we colorize the XML.
      */
     js('#previewModal').on('show.bs.modal', function() {
         SyntaxHighlighter.highlight();
@@ -45,7 +41,8 @@ js('document').ready(function() {
         } else {
             var actions = task.split('.');
             var form = document.getElementById('form-metadata');
-
+            var form_search = document.getElementById('form_search_resource');
+            
             switch (actions[1]) {
                 case 'save':
                 case 'saveAndContinue':
@@ -58,18 +55,15 @@ js('document').ready(function() {
                         break;
                     }
                     break;
-
                 case 'valid':
                     if (document.formvalidator.isValid(form)) {
-                        Joomla.submitform(task, form);
+                        Joomla.submitform('metadata.save', form);
                         break;
                     }
                     break;
-
                 case 'show':
                 case 'preview':
                     js('input[name="task"]').val(task);
-
                     js.ajax({
                         url: currentUrl + '?' + task,
                         type: js('#form-metadata').attr('method'),
@@ -82,11 +76,8 @@ js('document').ready(function() {
                             }
                         }
                     });
-
-
                     return true;
                     break;
-
                 case 'cancel':
                     return true;
                     break;
@@ -100,10 +91,13 @@ js('document').ready(function() {
                     js('#searchModal').modal('show');
                     break;
                 case 'searchresource':
+                    if(js('#resource_name').val().length < 3){
+                       js('#resource_name_group').addCss('error');
+                       break;
+                    }
+                    
                     js('input[name="task"]').val(task);
-
                     var search_form = js('#form_search_resource');
-
                     js.ajax({
                         url: currentUrl + '?' + task,
                         type: search_form.attr('method'),
@@ -113,27 +107,35 @@ js('document').ready(function() {
                             if (response.success) {
                                 var items = '';
                                 js.each(response.result, function() {
-                                    items += '<tr><td><input type="radio" name="resource_id" id="resource_id_' + this.guid + '" value="'+this.guid+'" checked=""</td><td>' + this.name + '</td><td>' + this.created + '</td><td>' + this.guid + '</td></tr>';
+                                    items += '<tr><td><input type="radio" name="resource_id" id="resource_id_' + this.guid + '" value="' + this.guid + '" checked=""</td><td>' + this.name + '</td><td>' + this.created + '</td><td>' + this.guid + '</td></tr>';
                                 });
-
                                 js('#search_result').html(items);
+                                js('#search_table').show();
+                                js('#search_table').dataTable({
+                                    "bFilter": false,
+                                    "oLanguage": {
+                                        "sLengthMenu": "Afficher _MENU_ resultats par page",
+                                        "sZeroRecords": "Aucune réponse",
+                                        "sInfo": "Afficher _START_ à _END_ de _TOTAL_ resultats",
+                                        "sInfoEmpty": "Afficher 0 à 0 de 0 resultats",
+                                        "sInfoFiltered": "(Filtré de _MAX_ total resultats)"
+                                    }
+                                });
                             }
                         }
                     });
+
                     break;
                 case 'import':
                     break;
                 case 'toggle':
                     toggleAll();
                     break;
-
             }
 
         }
     };
-
 });
-
 function toggleAll() {
     var btn = js('#btn_toogle_all');
     if (tabIsOpen) {
@@ -358,26 +360,18 @@ function drawBB(parent_path) {
     var bottom = js('#jform_' + parent_path + '_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value');
     var right = js('#jform_' + parent_path + '_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value');
     var left = js('#jform_' + parent_path + '_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value');
-
     if (top != '' && bottom != '' && left != '' && right != '') {
 
         var map = window['map_' + parent_path];
-
         var dest = new proj4.Proj(map.getProjection());
         var source = new proj4.Proj("EPSG:4326");
-
         var bottom_left = new proj4.Point(left, bottom);
         var top_right = new proj4.Point(right, top);
-
         proj4.transform(source, dest, bottom_left);
         proj4.transform(source, dest, top_right);
-
         var bounds = new OpenLayers.Bounds(bottom_left.x, bottom_left.y, top_right.x, top_right.y);
-
         var box = new OpenLayers.Feature.Vector(bounds.toGeometry());
-
         var layer = window['polygonLayer_' + parent_path];
-
         layer.addFeatures([box]);
     }
 }
