@@ -96,8 +96,34 @@ js('document').ready(function() {
                 case 'publish':
                     return true;
                     break;
-                case 'toggle':
+                case 'replicate':
+                    js('#searchModal').modal('show');
+                    break;
+                case 'searchresource':
+                    js('input[name="task"]').val(task);
 
+                    var search_form = js('#form_search_resource');
+
+                    js.ajax({
+                        url: currentUrl + '?' + task,
+                        type: search_form.attr('method'),
+                        data: search_form.serialize(),
+                        success: function(data) {
+                            var response = js.parseJSON(data);
+                            if (response.success) {
+                                var items = '';
+                                js.each(response.result, function() {
+                                    items += '<tr><td><input type="radio" name="resource_id" id="resource_id_' + this.guid + '" value="'+this.guid+'" checked=""</td><td>' + this.name + '</td><td>' + this.created + '</td><td>' + this.guid + '</td></tr>';
+                                });
+
+                                js('#search_result').html(items);
+                            }
+                        }
+                    });
+                    break;
+                case 'import':
+                    break;
+                case 'toggle':
                     toggleAll();
                     break;
 

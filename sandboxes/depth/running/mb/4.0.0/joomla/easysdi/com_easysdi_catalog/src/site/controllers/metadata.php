@@ -122,7 +122,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      */
     public function searchresource(){
         $query = $this->db->getQuery(true);
-
+        
         $query->select('r.`name`, v.created, m.guid');
         $query->from('#__sdi_resource r');
         $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
