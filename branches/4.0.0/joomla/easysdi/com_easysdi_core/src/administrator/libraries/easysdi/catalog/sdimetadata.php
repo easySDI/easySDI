@@ -33,6 +33,13 @@ class sdiMetadata extends cswmetadata{
      */
     public $catalogurl = null;
 
+    // metadata state list
+    const INPROGRESS = 1;
+    const VALIDATED = 2;
+    const PUBLISHED = 3;
+    const ARCHIVED = 4;
+    const TRASHED = 5;
+
     /**
      * 
      */
@@ -164,6 +171,8 @@ class sdiMetadata extends cswmetadata{
         if (isset($totalUpdated)) {
             if ($totalUpdated->nodeValue == 1) {
                 return true;
+            }else{
+                return false;
             }
         } else {
             return false;
@@ -298,8 +307,12 @@ class sdiMetadata extends cswmetadata{
     }
 
     
-
-    private function getPlatformNode($dom) {
+    /**
+     * 
+     * @param DOMDocument $dom The "DOM" in which to add or update the platform tag.
+     * @return DOMElement the platform tag.
+     */
+    public function getPlatformNode(DOMDocument $dom) {
         //Get the resourcetype alias
         $query = $this->db->getQuery(true);
         $query->select('alias')
