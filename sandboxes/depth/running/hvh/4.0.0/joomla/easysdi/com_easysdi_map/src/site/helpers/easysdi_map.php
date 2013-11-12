@@ -58,6 +58,7 @@ abstract class Easysdi_mapHelper {
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/WMSSource.js" type="text/javascript"></script>
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi/plugins/SearchCatalog.js" type="text/javascript"></script>  
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi/plugins/LayerDetailSheet.js" type="text/javascript"></script> 
+            <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/sdi/plugins/LayerDownload.js" type="text/javascript"></script> 
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/LayerTree.js" type="text/javascript"></script> 
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/Print.js" type="text/javascript"></script>
             <script src="' . JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/LayerManager.js" type="text/javascript"></script>
@@ -358,13 +359,6 @@ abstract class Easysdi_mapHelper {
         $config .= ' outputTarget: "westpanel"
                         },';
 
-        $config .= '
-                    {
-                    ptype: "sdi_layerdetailsheet",
-                   actionTarget: ["tree.contextMenu"]
-                    },';
-
-
         foreach ($item->tools as $tool) :
             switch ($tool->alias) :
                 case 'googleearth':
@@ -453,6 +447,16 @@ abstract class Easysdi_mapHelper {
                         url: "'. JURI::root() .'index.php?option=com_easysdi_catalog&view=catalog&id='. $tool->params .'&preview=map&tmpl=component"
                         },
                         ';
+                        $config .= '
+                        {
+                        ptype: "sdi_layerdetailsheet",
+                        actionTarget: ["tree.contextMenu"]
+                        },';
+                        $config .= '
+                        {
+                        ptype: "sdi_layerdownload",
+                        actionTarget: ["tree.contextMenu"]
+                        },';
                     }
                     break;
                 case 'removelayer':

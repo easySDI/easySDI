@@ -270,18 +270,19 @@ JHTML::_('behavior.modal');
                                         if($this->user->isEasySDI):
                                         ?>
                                         <a href="#" id="btn-perimeter<?php echo $perimeter->id; ?>" class="btn btn-perimeter-selection" 
-                                           onClick="selectMyPerimeter('<?php echo $perimeter->id; ?>','<?php echo $perimeter->name; ?>', '<?php echo $this->user->perimeter ;?>');
+                                           onClick="selectPerimeter<?php echo $perimeter->id; ?>();
                                                jQuery('#allowedbuffer').val(<?php echo $perimeter->allowedbuffer; ?>);
                                                jQuery('#perimeter-buffer').<?php if($perimeter->allowedbuffer == 1): echo 'show'; else: echo 'hide'; endif;?>();
                                                return false;"><i class="icon-user"></i><?php echo $perimeter->name; ?></a>
                                         
                                         <script>
                                             function selectPerimeter<?php echo $perimeter->id; ?>() {
-                                                selectMyPerimeter('<?php echo $perimeter->id; ?>','<?php echo $perimeter->name; ?>', '<?php echo $this->user->perimeter ;?>');
+                                                selectMyPerimeter('<?php echo $perimeter->id; ?>','<?php echo $perimeter->name; ?>', '<?php echo addslashes ($this->user->perimeter) ;?>');                                                
                                             }
                                             
                                             function reloadFeatures<?php echo $perimeter->id; ?>(){
-                                                selectMyPerimeter('<?php echo $perimeter->id; ?>','<?php echo $perimeter->name; ?>', '<?php echo $this->user->perimeter ;?>');
+                                                selectMyPerimeter('<?php echo $perimeter->id; ?>','<?php echo $perimeter->name; ?>', '<?php echo addslashes ($this->user->perimeter) ;?>');
+                                                
                                             }
                                         </script>
                                         <br>
@@ -298,7 +299,7 @@ JHTML::_('behavior.modal');
                                                return false;"><i class="icon-grid-view"></i><?php echo $perimeter->name; ?></a>
                                         <script>
                                             <?php if ($this->item->isrestrictedbyperimeter):
-                                                ?>var userperimeter = "<?php echo $this->user->perimeter ; ?>"; <?php
+                                                ?>var userperimeter = '<?php echo addslashes ($this->user->perimeter) ; ?>'; <?php
                                             endif;?>
                                             function selectPerimeter<?php echo $perimeter->id; ?>() {
                                                 return selectPerimeter(<?php if ($this->item->isrestrictedbyperimeter && $this->user->isEasySDI) : echo 1; else : echo 0; endif; ?>,"<?php echo $perimeter->id; ?>", "<?php echo $perimeter->name; ?>", "<?php echo $perimeter->wmsurl; ?>", "<?php echo $perimeter->layername; ?>", "<?php echo $perimeter->wfsurl; ?>", "<?php echo $perimeter->featuretypename; ?>", "<?php echo $perimeter->namespace; ?>", "<?php echo $perimeter->featuretypefieldgeometry; ?>", "<?php echo $perimeter->featuretypefieldid; ?>", "<?php echo $perimeter->featuretypefieldname; ?>");

@@ -387,9 +387,15 @@ class cswmetadata {
                     endif;
 
                     $href = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid='.$this->metadata->guid.'&lang=fr-FR&catalog=' . $catalog . '&preview=' . $preview.'&tmpl=component');
+                    
                     $sourceconfig = '{id :"'.$service->alias.'",ptype: "sdi_gxp_wmssource",url: "'.$service->resourceurl.'"}';
                     
-                    $layerconfig = '{ name: "'.$visualization->layername.'",attribution: "'.addslashes ($visualization->attribution).'",opacity: 1,source: "'.$service->alias.'",tiled: true,title: "'.$visualization->layername.'",visibility: true, href: "'.$href.'"}';
+                    if (!empty($diffusion) && $diffusion->hasdownload == 1):
+                        $downloadurl = htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&tmpl=component&id=' . $diffusion->id);
+                        $layerconfig = '{ name: "'.$visualization->layername.'",attribution: "'.addslashes ($visualization->attribution).'",opacity: 1,source: "'.$service->alias.'",tiled: true,title: "'.$visualization->layername.'",visibility: true, href: "'.$href.'", download: "'.$downloadurl.'"}';
+                    else:
+                        $layerconfig = '{ name: "'.$visualization->layername.'",attribution: "'.addslashes ($visualization->attribution).'",opacity: 1,source: "'.$service->alias.'",tiled: true,title: "'.$visualization->layername.'",visibility: true, href: "'.$href.'"}';
+                    endif;
                     
                     $addtomap = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:addtomap');
                     $addtomaponclick = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:onclick', ' window.parent.app.addExtraLayer('.$sourceconfig.', '.$layerconfig.')');

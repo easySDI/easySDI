@@ -99,7 +99,11 @@ class Easysdi_catalogModelCatalog extends JModelForm {
                 $this->_item = JArrayHelper::toObject($properties, 'JObject');
                
                 if ($this->_item->oninitrunsearch || JFactory::getApplication()->input->get('search', 'false', 'STRING') == 'true') {
-                    $this->_item->dom = cswrecords::getRecords($id);
+                    $result = cswrecords::getRecords($id);
+                    if(!$result)
+                        JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_CATALOGS_MSG_ERROR_GET_RECORDS'), 'warning');
+                        
+                    $this->_item->dom = $result;
                 }
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
