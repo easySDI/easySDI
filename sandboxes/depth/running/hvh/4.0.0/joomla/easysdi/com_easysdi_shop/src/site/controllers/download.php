@@ -21,6 +21,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
     public function direct() {
         $db = JFactory::getDBO();
         $id = JFactory::getApplication()->input->getInt('id', null);
+        $tmpl = JFactory::getApplication()->input->get('tmpl', null);
         $query = $db->getQuery(true)
                 ->select('*')
                 ->from('#__sdi_diffusion')
@@ -52,9 +53,9 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         endif;
 
         if (!empty($diffusion->file) || !empty($diffusion->fileurl)):
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=download&layout=default&id=' . $id, false));
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=download&layout=default&tmpl='. $tmpl .'&id=' . $id, false));
         elseif (!empty($diffusion->perimeter_id)) :
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=download&layout=grid&id=' . $id, false));
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=download&layout=grid&tmpl='. $tmpl .'&id=' . $id, false));
         endif;
     }
 

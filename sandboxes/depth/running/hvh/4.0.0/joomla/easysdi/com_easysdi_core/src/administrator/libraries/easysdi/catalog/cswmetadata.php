@@ -388,7 +388,7 @@ class cswmetadata {
 
                     $href = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid='.$this->metadata->guid.'&lang=fr-FR&catalog=' . $catalog . '&preview=' . $preview.'&tmpl=component');
                     
-                    $sourceconfig = '{id :"'.$service->alias.'",ptype: "sdi_gxp_wmssource",url: "'.$service->resourceurl.'"}';
+                    $sourceconfig = '{id :"'.$service->alias.'",hidden : "true", ptype: "sdi_gxp_wmssource",url: "'.$service->resourceurl.'"}';
                     
                     if (!empty($diffusion) && $diffusion->hasdownload == 1):
                         $downloadurl = htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&tmpl=component&id=' . $diffusion->id);
