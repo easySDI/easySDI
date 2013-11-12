@@ -8,7 +8,7 @@
   <author>EasySDI Community</author>
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>4.0.0-alpha-15</version>
+  <version>4.0.0-alpha-16</version>
   <description>TPL_EASYSDIADMINPOSITIONS_XML_DESCRIPTION</description>
   <files>
     <filename>templateDetails.xml</filename>
