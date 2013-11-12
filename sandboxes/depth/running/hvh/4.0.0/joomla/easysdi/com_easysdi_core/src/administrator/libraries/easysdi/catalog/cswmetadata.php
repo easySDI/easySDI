@@ -264,6 +264,15 @@ class cswmetadata {
             $exorganism->appendChild($exlogo);
             $exresource->appendChild($exorganism);
             $extendedmetadata->appendChild($exresource);
+            
+            //Shop properties
+            if (!empty($diffusion) && $diffusion->hasextraction == 1):
+                $html = $this->getShopExtension();
+                $extraction = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:extraction');
+                $extractionhtml = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:html', $html);
+                $extraction->appendChild($extractionhtml);
+                $action->appendChild($extraction);
+            endif;
 
             //Download
             if (!empty($diffusion) && $diffusion->hasdownload == 1):

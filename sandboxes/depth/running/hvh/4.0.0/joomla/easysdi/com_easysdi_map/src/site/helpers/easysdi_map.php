@@ -119,14 +119,6 @@ abstract class Easysdi_mapHelper {
         }
 
         $output .= '<div id="'.$renderto.'" class="cls-'.$renderto.'"></div>';
-      
-//        $output .= '<div id="sbox-overlay" style="z-index: 65555; position: fixed; top: 0px; left: 0px; visibility: hidden; zoom: 1; opacity: 0; width: 1841px; height: 847px; display: none;" class=""></div>';
-//        $output .= '<div id="sbox-window" style="z-index: 65557; position: fixed; top: 50%; left: 50%; width: 500px; height: 500px; margin-left: -480px; margin-top: -350px; display: none;" class="">
-//            <a id="sbox-btn-close" href="#"></a><div id="sbox-content" class="sbox-content-iframe" style="visibility: visible; zoom: 1; opacity: 1;">
-//            <iframe id="sdi-catalog-iframe" src="" frameborder="0" width="960" height="700">
-//            </iframe></div></div>';
-        
-        
         $output .= '<script>
             var '.$appname.';
             var loadingMask;
@@ -256,36 +248,6 @@ abstract class Easysdi_mapHelper {
                                     }
                                 ]
                             }';
-//        if(!empty($item->urlwfslocator)):
-//               $config .= ',{
-//                                id: "northpanel",
-//                                xtype: "panel",
-//                                layout: "card",
-//                                region: "north",
-//                                border: false,
-//                                activeItem: 0,
-//                                items: [{
-//                                        xtype: "gxp_autocompletecombo",
-//                                        listeners:{
-//                                                    select: function(list, record) {
-//                                                            var extent = new OpenLayers.Bounds();
-//                                                            extent.extend(record.data.feature.geometry.getBounds());
-//                                                            app.mapPanel.map.zoomToExtent(extent);
-//                                                            }
-//                                                   },
-//                                        url: "'.$item->urlwfslocator.'",
-//                                        fieldName: "'.$item->fieldname.'",
-//                                        featureType: "'.$item->featuretype.'",
-//                                        featurePrefix: "'.$item->featureprefix.'",
-//                                        fieldLabel: "'.$item->fieldname.'",
-//                                        geometryName:"'.$item->geometryname.'",
-//                                        maxFeatures:"10",
-//                                        emptyText: "Search..."
-//                                    }
-//                                   ]
-//                                
-//                            }';
-//           endif;
                $config .= ' ,';
 
         $layertreeactivated = false;
@@ -337,9 +299,6 @@ abstract class Easysdi_mapHelper {
         endforeach;
         
         $config .= '
-              
-
-                        
                             ]
                     },                        
                     tools: [';
@@ -399,7 +358,7 @@ abstract class Easysdi_mapHelper {
         $config .= ' outputTarget: "westpanel"
                         },';
 
-$config .= '
+        $config .= '
                     {
                     ptype: "sdi_layerdetailsheet",
                    actionTarget: ["tree.contextMenu"]
@@ -482,10 +441,16 @@ $config .= '
                         ptype: "gxp_addlayers",
                         actionTarget: "tree.tbar"
                         },
+                        ';
+                    }
+                    break;
+                case 'searchcatalog':
+                    if ($layertreeactivated) {
+                        $config .= '
                         {
                         ptype: "sdi_searchcatalog",
                         actionTarget: "tree.tbar",
-                        url: "'. JURI::root() .'index.php?option=com_easysdi_catalog&view=catalog&id=2&preview=map&tmpl=component"
+                        url: "'. JURI::root() .'index.php?option=com_easysdi_catalog&view=catalog&id='. $tool->params .'&preview=map&tmpl=component"
                         },
                         ';
                     }

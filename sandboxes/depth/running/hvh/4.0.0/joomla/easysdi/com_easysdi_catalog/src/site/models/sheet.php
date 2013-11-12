@@ -74,7 +74,8 @@ class Easysdi_catalogModelSheet extends JModelForm {
             endif;
 
             //Is the call from joomla
-            $callfromjoomla = true;
+            $callfromjoomla = $jinput->get('callfromjoomla', true, 'BOOLEAN');
+            
             //Current catalog context
             $catalog = $jinput->get('catalog', '', 'STRING');
             /* Current type view. Possible value :
@@ -96,12 +97,8 @@ class Easysdi_catalogModelSheet extends JModelForm {
             //Build extended metadata
             $metadata->extend($catalog, $type, $preview, $callfromjoomla, $langtag);
 
-
-            //Apply XSL transformation and complete with shop order fields
-            if ($callfromjoomla)
-                $this->_item = $metadata->getShopExtension() . $metadata->applyXSL($catalog, $type, $preview);
-            else
-                $this->_item = $metadata->applyXSL($catalog, $type, $preview);
+            //Apply XSL transformation 
+            $this->_item = $metadata->applyXSL($catalog, $type, $preview);
         }
 
         return $this->_item;
