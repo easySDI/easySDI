@@ -96,6 +96,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $previousId = (int) $app->getUserState('com_easysdi_catalog.edit.metadata.id');
         $editId = JFactory::getApplication()->input->getInt('id', null, 'array');
 
+
         // Set the user id for the user to edit in the session.
         $app->setUserState('com_easysdi_catalog.edit.metadata.id', $editId);
 
@@ -112,6 +113,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $model->checkin($previousId);
         }
 
+
         // Redirect to the edit screen.
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&view=metadata&layout=edit', false));
     }
@@ -120,31 +122,41 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * 
      * @return stdClass[] result list of resource
      */
-    public function searchresource(){
+    public function searchresource() {
         $query = $this->db->getQuery(true);
-        
+
         $query->select('r.`name`, v.created, m.guid');
         $query->from('#__sdi_resource r');
         $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
         $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
-        if($_POST['status_id']!=''){
-            $query->where('r.`state` = '.$_POST['status_id']);
+        if ($_POST['status_id'] != '') {
+            $query->where('r.`state` = ' . $_POST['status_id']);
         }
-        if($_POST['resourcetype_id']!=''){
-            $query->where('r.resourcetype_id = '.$_POST['resourcetype_id']);
+        if ($_POST['resourcetype_id'] != '') {
+            $query->where('r.resourcetype_id = ' . $_POST['resourcetype_id']);
         }
-        $query->where('r.`name` like \'%'.$_POST['resource_name'].'%\'');
-        
+        $query->where('r.`name` like \'%' . $_POST['resource_name'] . '%\'');
+
         $this->db->setQuery($query);
         $resources = $this->db->loadObjectList();
-        
+
         $response = array();
         $response['success'] = true;
         $response['result'] = $resources;
         echo json_encode($response);
         die();
     }
-    
+
+    /**
+     * Import resource
+     */
+    public function importResource() {
+        $cswmd = new cswmetadata($_POST['resource_guid']);
+        $csw = $cswmd->load();
+        
+        
+    }
+
     /**
      * Show xml preview
      */
@@ -163,8 +175,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
     public function preview() {
         $this->save($_POST['jform'], false);
-        $domExtend = new DOMDocument('1.0','utf-8');
-        
+        $domExtend = new DOMDocument('1.0', 'utf-8');
+
         $update = $this->structure->getElementsByTagNameNS($this->cswUri, 'Update')->item(0);
 
         $cswm = new cswmetadata();
@@ -173,7 +185,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $response = array();
         $response['success'] = true;
-        $response['xml'] = '<div class="well">'.$cswm->applyXSL('', '', 'editor').'</div>';
+        $response['xml'] = '<div class="well">' . $cswm->applyXSL('', '', 'editor') . '</div>';
         echo json_encode($response);
         die();
     }
@@ -264,7 +276,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         }
 
         $smda = new sdiMetadata($data['id']);
-        
+
         $root->insertBefore($smda->getPlatformNode($this->structure), $root->firstChild);
 
         $transaction = $this->structure->createElementNS($this->cswUri, 'Transaction');
@@ -284,7 +296,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $this->structure->formatOutput = true;
             $xml = $this->structure->saveXML();
 
-            
+
             if ($smda->update($xml)) {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_SAVE_VALIDE'), 'message');
                 if ($continue) {

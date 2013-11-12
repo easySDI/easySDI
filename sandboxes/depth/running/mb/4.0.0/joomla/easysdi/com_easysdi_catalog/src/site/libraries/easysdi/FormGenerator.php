@@ -21,6 +21,13 @@ class FormGenerator {
 
     /**
      *
+     * @var JObject 
+     */
+    private $item;
+
+
+    /**
+     *
      * @var JDatabaseDriver
      */
     private $db = null;
@@ -75,17 +82,25 @@ class FormGenerator {
     private $catalog_uri = 'http://www.easysdi.org/2011/sdi/catalog';
     private $catalog_prefix = 'catalog';
 
-    function __construct(DOMDocument $csw = NULL) {
+    function __construct(JObject $item = null) {
         $this->db = JFactory::getDbo();
         $this->session = JFactory::getSession();
         $this->ldao = new SdiLanguageDao();
         $this->nsdao = new SdiNamespaceDao();
-        $this->csw = $csw;
+        
         $this->form = new DOMDocument('1.0', 'utf-8');
         $this->structure = new DOMDocument('1.0', 'utf-8');
-        if (isset($csw)) {
+        
+        if(isset($item)){
+            $this->item = $item;
+            $this->csw = $item->csw;
             $this->setDomXpathCsw();
+            $this->session->set('profile_id',$item->profile_id);
+        }else{
+            $this->item = new JObject();
+            $this->item->profile_id = $this->session->get('profile_id');
         }
+        
     }
 
     /**
@@ -96,8 +111,6 @@ class FormGenerator {
      */
     public function getForm() {
 
-
-
         if (!isset($_GET['relid'])) {
             $query = $this->db->getQuery(true);
             $query->select('r.id, r.name, r.childtype_id');
@@ -107,7 +120,7 @@ class FormGenerator {
             $query->innerJoin('#__sdi_relation AS r ON p.class_id = r.parent_id');
             $query->innerJoin('#__sdi_class AS c ON c.id = r.parent_id');
             $query->innerJoin('#__sdi_namespace AS ns ON ns.id = c.namespace_id');
-            $query->where('p.id = 1');
+            $query->where('p.id = '.$this->item->profile_id);
             $query->where('c.isrootclass = true');
             $query->group('c.id');
 
@@ -172,8 +185,6 @@ class FormGenerator {
         }
 
         $this->setDomXpathStr();
-
-
 
         if (isset($this->csw)) {
             $this->setDomXpathCsw();
@@ -260,7 +271,6 @@ class FormGenerator {
 
         $query = $this->getRelationQuery();
         $query->where('r.parent_id = ' . $parent->getAttributeNS($this->catalog_uri, 'dbid'));
-        $query->where('rp.profile_id = 1');
         $query->where('r.state = 1');
         $query->order('r.ordering');
         $query->order('r.name');
@@ -1420,6 +1430,7 @@ class FormGenerator {
         $query->leftJoin('#__sdi_namespace AS nsstc ON nsstc.id = stc.namespace_id');
         $query->leftJoin('#__sdi_namespace AS nsl ON nsl.id = a.listnamespace_id');
         $query->leftJoin('#__sdi_namespace AS nsrt ON nsrt.id = rt.fragmentnamespace_id');
+        $query->where('rp.profile_id = '.$this->item->profile_id);
 
         return $query;
     }
