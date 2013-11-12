@@ -216,20 +216,22 @@ foreach ($this->validators as $validator) {
                             </div>
                             <button onclick="Joomla.submitbutton('metadata.searchresource')" type="button" class="btn btn-success btn-small pull-right">Chercher</button>
                         </form>
-                        
 
-                        <table id="search_table" class="table table-bordered">
-                            <thead>
-                                <tr><th></th><th>Nom</th><th>Version</th><th>Guid</th></tr>
-                            </thead>
-                            <tbody id="search_result">
-                                
-                            </tbody>
-                        </table>
+                        <form id="form_import_resource" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit'); ?>" method="post" class="form-validate form-horizontal">
+                            <input type="hidden" name="task" value="metadata.importResource"/>
+                            <table id="search_table" class="table table-bordered">
+                                <thead>
+                                    <tr><th></th><th>Nom</th><th>Version</th><th>Guid</th></tr>
+                                </thead>
+                                <tbody id="search_result">
 
+                                </tbody>
+                            </table>
+                        </form>
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.importResource')">Importer</button>
                     <button type="button" class="btn btn-success" data-dismiss="modal">Fermer</button>
                 </div>
             </div>

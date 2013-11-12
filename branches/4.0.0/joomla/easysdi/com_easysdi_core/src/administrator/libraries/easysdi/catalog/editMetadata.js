@@ -41,8 +41,8 @@ js('document').ready(function() {
         } else {
             var actions = task.split('.');
             var form = document.getElementById('form-metadata');
-            var form_search = document.getElementById('form_search_resource');
-            
+            var form_import = document.getElementById('form_import_resource');
+
             switch (actions[1]) {
                 case 'save':
                 case 'saveAndContinue':
@@ -91,42 +91,10 @@ js('document').ready(function() {
                     js('#searchModal').modal('show');
                     break;
                 case 'searchresource':
-                    if(js('#resource_name').val().length < 3){
-                       js('#resource_name_group').addCss('error');
-                       break;
-                    }
-                    
-                    js('input[name="task"]').val(task);
-                    var search_form = js('#form_search_resource');
-                    js.ajax({
-                        url: currentUrl + '?' + task,
-                        type: search_form.attr('method'),
-                        data: search_form.serialize(),
-                        success: function(data) {
-                            var response = js.parseJSON(data);
-                            if (response.success) {
-                                var items = '';
-                                js.each(response.result, function() {
-                                    items += '<tr><td><input type="radio" name="resource_id" id="resource_id_' + this.guid + '" value="' + this.guid + '" checked=""</td><td>' + this.name + '</td><td>' + this.created + '</td><td>' + this.guid + '</td></tr>';
-                                });
-                                js('#search_result').html(items);
-                                js('#search_table').show();
-                                js('#search_table').dataTable({
-                                    "bFilter": false,
-                                    "oLanguage": {
-                                        "sLengthMenu": "Afficher _MENU_ resultats par page",
-                                        "sZeroRecords": "Aucune réponse",
-                                        "sInfo": "Afficher _START_ à _END_ de _TOTAL_ resultats",
-                                        "sInfoEmpty": "Afficher 0 à 0 de 0 resultats",
-                                        "sInfoFiltered": "(Filtré de _MAX_ total resultats)"
-                                    }
-                                });
-                            }
-                        }
-                    });
-
+                    searchResource(task);
                     break;
-                case 'import':
+                case 'importResource':
+                    Joomla.submitform(task, form_import);
                     break;
                 case 'toggle':
                     toggleAll();
@@ -136,6 +104,45 @@ js('document').ready(function() {
         }
     };
 });
+
+function searchResource(task) {
+    if (js('#resource_name').val().length < 3) {
+        js('#resource_name_group').addClass('error');
+        return;
+    }
+
+    js('input[name="task"]').val(task);
+    js('#resource_name_group').addClass('error');
+
+    var search_form = js('#form_search_resource');
+    js.ajax({
+        url: currentUrl + '?' + task,
+        type: search_form.attr('method'),
+        data: search_form.serialize(),
+        success: function(data) {
+            var response = js.parseJSON(data);
+            if (response.success) {
+                var items = '';
+                js.each(response.result, function() {
+                    items += '<tr><td><input type="radio" name="resource_guid" id="resource_guid_' + this.guid + '" value="' + this.guid + '" checked=""</td><td>' + this.name + '</td><td>' + this.created + '</td><td>' + this.guid + '</td></tr>';
+                });
+                js('#search_result').html(items);
+                js('#search_table').show();
+                js('#search_table').dataTable({
+                    "bFilter": false,
+                    "oLanguage": {
+                        "sLengthMenu": "Afficher _MENU_ resultats par page",
+                        "sZeroRecords": "Aucune réponse",
+                        "sInfo": "Afficher _START_ à _END_ de _TOTAL_ resultats",
+                        "sInfoEmpty": "Afficher 0 à 0 de 0 resultats",
+                        "sInfoFiltered": "(Filtré de _MAX_ total resultats)"
+                    }
+                });
+            }
+        }
+    });
+}
+
 function toggleAll() {
     var btn = js('#btn_toogle_all');
     if (tabIsOpen) {
