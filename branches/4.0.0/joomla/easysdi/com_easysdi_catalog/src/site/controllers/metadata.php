@@ -153,8 +153,6 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     public function importResource() {
         $cswmd = new cswmetadata($_POST['resource_guid']);
         $csw = $cswmd->load();
-        
-        
     }
 
     /**
@@ -173,6 +171,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         die();
     }
 
+    /**
+     * Show xhtml preview
+     */
     public function preview() {
         $this->save($_POST['jform'], false);
         $domExtend = new DOMDocument('1.0', 'utf-8');
@@ -240,9 +241,15 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $dataWithoutArray = array();
         foreach ($data as $xpath => $values) {
             if (is_array($values)) {
+                
                 foreach ($values as $key => $value) {
                     $index = $key + 1;
-                    $indexedXpath = str_replace('gmd-dp-keyword', 'gmd-dp-keyword-la-' . $index . '-ra-', $xpath);
+                    $indexedXpath = str_replace('gmd-dp-keyword', 'gmd-dp-keyword-la-' . $index . '-ra-', $xpath, $nbrReplace);
+                    
+                    if($nbrReplace == 0){
+                        $indexedXpath = $this->addIndexToXpath($xpath, 4, $index);
+                    }
+                    
                     $dataWithoutArray[$indexedXpath] = $value;
                 }
             } else {
@@ -257,7 +264,14 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             } else {
                 $query = $this->unSerializeXpath($xpatharray[0]);
             }
-            $element = $this->domXpathStr->query($query)->item(0);
+            $elements = $this->domXpathStr->query($query);
+            if ($elements) {
+                $element = $this->domXpathStr->query($query)->item(0);
+            } else {
+                JFactory::getApplication()->enqueueMessage('Erreur de xpath: '.$query, 'error');
+                $this->setRedirect(JRoute::_('index.php?view=metadata&layout=edit', false));
+            }
+
             if (isset($element)) {
                 if ($element->hasAttribute('codeList')) {
                     $element->setAttribute('codeListValue', $value);
@@ -300,7 +314,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             if ($smda->update($xml)) {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_SAVE_VALIDE'), 'message');
                 if ($continue) {
-                    $this->setRedirect(JRoute::_('index.php?view=metadata&layout=edit', false));
+                    //$this->setRedirect(JRoute::_('index.php?view=metadata&layout=edit', false));
+                    $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $data['id']));
                 } else {
                     $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
                 }
@@ -309,82 +324,28 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                 $this->setRedirect(JRoute::_('index.php?view=metadata&layout=edit', false));
             }
         }
-//        // Initialise variables.
-//        $app = JFactory::getApplication();
-//        $model = $this->getModel('Metadata', 'Easysdi_catalogModel');
-//
-//        // Get the user data.
-//        $data = JFactory::getApplication()->input->get('jform', array(), 'array');
-//
-//        // Validate the posted data.
-//        $form = $model->getForm();
-//        
-//        if (!$form) {
-//            JError::raiseError(500, $model->getError());
-//            return false;
-//        }
-//
-//        // Validate the posted data.
-//        $data = $model->validate($form, $data);
-//
-//        // Check for errors.
-//        if ($data === false) {
-//            // Get the validation messages.
-//            $errors = $model->getErrors();
-//
-//            // Push up to three validation messages out to the user.
-//            for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
-//                if ($errors[$i] instanceof Exception) {
-//                    $app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-//                } else {
-//                    $app->enqueueMessage($errors[$i], 'warning');
-//                }
-//            }
-//
-//            // Save the data in the session.
-//            $app->setUserState('com_easysdi_catalog.edit.metadata.data', JRequest::getVar('jform'), array());
-//
-//            // Redirect back to the edit screen.
-//            $id = (int) $app->getUserState('com_easysdi_catalog.edit.metadata.id');
-//            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&view=metadata&layout=edit&id=' . $id, false));
-//            return false;
-//        }
-//
-//        // Attempt to save the data.
-//        $return = $model->save($data);
-//
-//        // Check for errors.
-//        if ($return === false) {
-//            // Save the data in the session.
-//            $app->setUserState('com_easysdi_catalog.edit.metadata.data', $data);
-//
-//            // Redirect back to the edit screen.
-//            $id = (int) $app->getUserState('com_easysdi_catalog.edit.metadata.id');
-//            $this->setMessage(JText::sprintf('Save failed', $model->getError()), 'warning');
-//            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&view=metadata&layout=edit&id=' . $id, false));
-//            return false;
-//        }
-//
-//
-//        // Check in the profile.
-//        if ($return) {
-//            $model->checkin($return);
-//        }
-//
-//        // Clear the profile id from the session.
-//        $app->setUserState('com_easysdi_catalog.edit.metadata.id', null);
-//
-//        // Redirect to the list screen.
-//        $this->setMessage(JText::_('COM_EASYSDI_CATALOG_ITEM_SAVED_SUCCESSFULLY'));
-//        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-//
-//        // Flush the data from the session.
-//        $app->setUserState('com_easysdi_catalog.edit.metadata.data', null);
     }
 
     function cancel() {
 
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+    }
+
+    /**
+     * Add index to xpath at a specific position
+     * 
+     * @param string $xpath
+     * @param int $position
+     * @return array
+     */
+    private function addIndexToXpath($xpath, $position, $index) {
+        $arrayPath = array_reverse(explode('-', $xpath));
+
+        $arrayIndex = array_slice($arrayPath, 0, $position, true) +
+                array('ra' => 'ra-', 'index' => $index, 'la' => 'la') +
+                array_slice($arrayPath, $position, count($arrayPath), true);
+
+        return implode('-',array_reverse($arrayIndex, true));
     }
 
     private function unSerializeXpath($xpath) {

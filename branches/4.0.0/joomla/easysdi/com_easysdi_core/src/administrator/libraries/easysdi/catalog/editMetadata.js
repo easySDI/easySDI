@@ -194,6 +194,16 @@ function addField(id, idwi, relid, parent_path, lowerbound, upperbound) {
     });
 }
 
+function addOrRemoveCheckbox(id, relid, parent_path, path) {
+    var checked = js('#' + id).is(':checked');
+    if(checked){
+        addToStructure(relid, parent_path);
+    }else{
+        removeFromStructure(path);
+    }
+    
+}
+
 function addToStructure(relid, parent_path) {
     js.get(currentUrl + '?view=ajax&parent_path=' + parent_path + '&relid=' + relid);
 }

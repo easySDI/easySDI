@@ -2,13 +2,13 @@
 <extension client="administrator" method="upgrade" type="module" version="3.0">
   <name>mod_easysdi_adminbutton</name>
   <creationDate>15 September 2013</creationDate>
-  <releaseDate>12 novembre 2013</releaseDate>
+  <releaseDate>13 novembre 2013</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>4.0.0-alpha-15</version>
+  <version>4.0.0-alpha-17</version>
   <description>MOD_EASYSDI_ADMINBUTTON_XML_DESCRIPTION</description>
   <scriptfile>script.php</scriptfile>
   <files>
