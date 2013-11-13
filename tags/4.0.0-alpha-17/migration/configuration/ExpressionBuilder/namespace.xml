@@ -1,0 +1,16 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<expression:EMFExpression xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:expression="http:///expression.ecore" id="null=>Var=>var1" expression="row1.system==0?true:false">
+  <variables name="row1.id" value="0" talendType="id_Long"/>
+  <variables name="row1.guid" value="null" talendType="id_String"/>
+  <variables name="row1.prefix" value="null" talendType="id_String"/>
+  <variables name="row1.uri" value="null" talendType="id_String"/>
+  <variables name="row1.state" value="null" talendType="id_Boolean" nullable="true"/>
+  <variables name="row1.ordering" value="0" talendType="id_Integer"/>
+  <variables name="row1.system" value="null" talendType="id_Boolean" nullable="true"/>
+  <variables name="row1.created" value="null" talendType="id_Date" nullable="true"/>
+  <variables name="row1.created_by" value="null" talendType="id_Integer" nullable="true"/>
+  <variables name="row1.modified" value="null" talendType="id_Date" nullable="true"/>
+  <variables name="row1.modified_by" value="null" talendType="id_Integer" nullable="true"/>
+  <variables name="row1.checked_out" value="0" talendType="id_Long"/>
+  <variables name="row1.checked_out_time" value="null" talendType="id_Date" nullable="true"/>
+</expression:EMFExpression>
