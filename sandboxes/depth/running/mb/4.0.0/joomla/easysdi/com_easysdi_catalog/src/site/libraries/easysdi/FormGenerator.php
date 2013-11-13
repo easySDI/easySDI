@@ -8,6 +8,8 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enu
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumStereotype.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormUtils.php';
+
 /**
  * This Class will generate a form in XML format for Joomla.
  * 
@@ -19,67 +21,40 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao
  */
 class FormGenerator {
 
-    /**
-     *
-     * @var JObject 
-     */
+    /** @var JObject */
     private $item;
 
-
-    /**
-     *
-     * @var JDatabaseDriver
-     */
+    /** @var JDatabaseDriver */
     private $db = null;
 
-    /**
-     *
-     * @var DOMDocument 
-     */
+    /** @var DOMDocument */
     private $csw;
 
-    /**
-     *
-     * @var SdiLanguageDao 
-     */
+    /** @var SdiLanguageDao */
     private $ldao;
 
-    /**
-     *
-     * @var JSession 
-     */
+    /** @var JSession */
     private $session;
 
-    /**
-     *
-     * @var DOMDocument 
-     */
+    /**  @var DOMDocument */
     private $form;
 
-    /**
-     *
-     * @var DOMDocument 
-     */
+    /** @var DOMDocument */
     public $structure;
 
-    /**
-     *
-     * @var string 
-     */
+    /** @var string */
     public $ajaxXpath;
 
-    /**
-     *
-     * @var DOMXPath 
-     */
+    /** @var DOMXPath */
     private $domXpathStr;
 
-    /**
-     *
-     * @var DOMXPath 
-     */
+    /**  @var DOMXPath */
     private $domXpathCsw;
+
+    /** @var string */
     private $catalog_uri = 'http://www.easysdi.org/2011/sdi/catalog';
+
+    /** @var string */
     private $catalog_prefix = 'catalog';
 
     function __construct(JObject $item = null) {
@@ -87,20 +62,19 @@ class FormGenerator {
         $this->session = JFactory::getSession();
         $this->ldao = new SdiLanguageDao();
         $this->nsdao = new SdiNamespaceDao();
-        
+
         $this->form = new DOMDocument('1.0', 'utf-8');
         $this->structure = new DOMDocument('1.0', 'utf-8');
-        
-        if(isset($item)){
+
+        if (isset($item)) {
             $this->item = $item;
             $this->csw = $item->csw;
             $this->setDomXpathCsw();
-            $this->session->set('profile_id',$item->profile_id);
-        }else{
+            $this->session->set('profile_id', $item->profile_id);
+        } else {
             $this->item = new JObject();
             $this->item->profile_id = $this->session->get('profile_id');
         }
-        
     }
 
     /**
@@ -120,7 +94,7 @@ class FormGenerator {
             $query->innerJoin('#__sdi_relation AS r ON p.class_id = r.parent_id');
             $query->innerJoin('#__sdi_class AS c ON c.id = r.parent_id');
             $query->innerJoin('#__sdi_namespace AS ns ON ns.id = c.namespace_id');
-            $query->where('p.id = '.$this->item->profile_id);
+            $query->where('p.id = ' . $this->item->profile_id);
             $query->where('c.isrootclass = true');
             $query->group('c.id');
 
@@ -172,6 +146,7 @@ class FormGenerator {
                     $this->ajaxXpath = $relation->getNodePath();
                     break;
                 case EnumChildtype::$ATTRIBUT:
+                    $parentname = $parent->nodeName;
                     $attribute = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $_GET['relid'] . '"]')->item(0);
                     $cloned = $attribute->cloneNode(true);
                     $parent->appendChild($cloned);
@@ -879,19 +854,35 @@ class FormGenerator {
 
         $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
+        $relid = $attribute->getAttributeNS($this->catalog_uri, 'relid');
 
+        $allValues = $this->domXpathStr->query('child::*[@catalog:relid="'.$relid.'"]', $attribute->parentNode);
+        $default = array();
+        foreach ($allValues as $node) {
+            $default[] = $node->firstChild->getAttribute('codeListValue');
+        }
+        
         $field->setAttribute('type', 'checkboxes');
-        $field->setAttribute('name', $this->serializeXpath($attribute->getNodePath()));
+        $name = FormUtils::removeIndexToXpath($this->serializeXpath($attribute->firstChild->getNodePath()));
+        $field->setAttribute('name', $name);
 
         if ($readonly) {
             $field->setAttribute('readonly', 'true');
         }
 
-        foreach ($this->getAttributValues($attribute) as $value) {
-            $option = $this->form->createElement('option', EText::_($value->guid));
-            $option->setAttribute('value', $value->value);
+        $field->setAttribute('label', EText::_($guid));
+        $field->setAttribute('description', EText::_($guid, 2));
+        $field->setAttribute('multiple', 'true');
+        $field->setAttribute('default', implode(',', $default));
+
+        $i = 1;
+        foreach ($this->getAttributOptions($attribute) as $opt) {
+            $option = $this->form->createElement('option', EText::_($opt->guid));
+            $option->setAttribute('value', $opt->value);
+            $option->setAttribute('onclick', "addOrRemoveCheckbox(this.id," . $relid . ",'" . $this->serializeXpath($attribute->parentNode->getNodePath()) . "','" . $this->serializeXpath($attribute->getNodePath()) . "')");
 
             $field->appendChild($option);
+            $i++;
         }
 
         return $field;
@@ -911,7 +902,7 @@ class FormGenerator {
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
 
         $field->setAttribute('type', 'radio');
-        $field->setAttribute('name', $this->serializeXpath($attribute->getNodePath()));
+        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
 
         if ($readonly) {
             $field->setAttribute('readonly', 'true');
@@ -919,10 +910,11 @@ class FormGenerator {
 
         $field->setAttribute('label', EText::_($guid));
         $field->setAttribute('description', EText::_($guid, 2));
+        $field->setAttribute('default', $attribute->firstChild->getAttribute('codeListValue'));
 
-        foreach ($this->getAttributValues($attribute) as $value) {
-            $option = $this->form->createElement('option', EText::_($value->guid));
-            $option->setAttribute('value', $value->value);
+        foreach ($this->getAttributOptions($attribute) as $opt) {
+            $option = $this->form->createElement('option', EText::_($opt->guid));
+            $option->setAttribute('value', $opt->value);
 
             $field->appendChild($option);
         }
@@ -1285,9 +1277,17 @@ class FormGenerator {
 
                         $this->db->setQuery($query);
                         $result = $this->db->loadObjectList();
+                        switch ($attribute->getAttributeNS($this->catalog_uri, 'rendertypeId')) {
+                            case EnumRendertype::$CHECKBOX:
+                            case EnumRendertype::$RADIOBUTTON:
 
-                        $first = array('id' => '', 'guid' => '', 'name' => '', 'value' => '');
-                        array_unshift($result, (object) $first);
+                                break;
+
+                            default:
+                                $first = array('id' => '', 'guid' => '', 'name' => '', 'value' => '');
+                                array_unshift($result, (object) $first);
+                                break;
+                        }
                         break;
                 }
                 break;
@@ -1362,6 +1362,7 @@ class FormGenerator {
         return $xpath;
     }
 
+    
     /**
      * Unserialze the Xpath
      * 
@@ -1430,7 +1431,7 @@ class FormGenerator {
         $query->leftJoin('#__sdi_namespace AS nsstc ON nsstc.id = stc.namespace_id');
         $query->leftJoin('#__sdi_namespace AS nsl ON nsl.id = a.listnamespace_id');
         $query->leftJoin('#__sdi_namespace AS nsrt ON nsrt.id = rt.fragmentnamespace_id');
-        $query->where('rp.profile_id = '.$this->item->profile_id);
+        $query->where('rp.profile_id = ' . $this->item->profile_id);
 
         return $query;
     }
