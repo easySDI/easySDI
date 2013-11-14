@@ -21,6 +21,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormUtils.php';
 
 /**
  * Metadata controller class.
@@ -112,7 +113,6 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         if ($previousId) {
             $model->checkin($previousId);
         }
-
 
         // Redirect to the edit screen.
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&view=metadata&layout=edit', false));
@@ -260,9 +260,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         foreach ($dataWithoutArray as $xpath => $value) {
             $xpatharray = explode('#', $xpath);
             if (count($xpatharray) > 1) {
-                $query = $this->unSerializeXpath($xpatharray[0]) . '[@locale="#' . $xpatharray[1] . '"]';
+                $query = FormUtils::unSerializeXpath($xpatharray[0]) . '[@locale="#' . $xpatharray[1] . '"]';
             } else {
-                $query = $this->unSerializeXpath($xpatharray[0]);
+                $query = FormUtils::unSerializeXpath($xpatharray[0]);
             }
             $elements = $this->domXpathStr->query($query);
             if ($elements) {

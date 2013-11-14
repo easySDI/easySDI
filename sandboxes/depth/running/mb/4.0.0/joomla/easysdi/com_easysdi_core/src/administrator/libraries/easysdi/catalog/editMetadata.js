@@ -3,6 +3,12 @@ var currentUrl = location.protocol + '//' + location.host + location.pathname;
 var tabIsOpen = false;
 js('document').ready(function() {
 
+    js('.select-multiple').chosen().change(function(e,params) {
+
+        var option = js(this.options[this.selectedIndex]);
+        alert(option);
+    });
+
     /**
      * Control the "Open All" button.
      */
@@ -102,9 +108,10 @@ js('document').ready(function() {
             }
 
         }
-    };
-});
-
+    }
+    ;
+}
+);
 function searchResource(task) {
     if (js('#resource_name').val().length < 3) {
         js('#resource_name_group').addClass('error');
@@ -196,12 +203,12 @@ function addField(id, idwi, relid, parent_path, lowerbound, upperbound) {
 
 function addOrRemoveCheckbox(id, relid, parent_path, path) {
     var checked = js('#' + id).is(':checked');
-    if(checked){
+    if (checked) {
         addToStructure(relid, parent_path);
-    }else{
+    } else {
         removeFromStructure(path);
     }
-    
+
 }
 
 function addToStructure(relid, parent_path) {
