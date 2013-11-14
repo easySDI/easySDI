@@ -390,11 +390,15 @@ class cswmetadata {
                     
                     $sourceconfig = '{id :"'.$service->alias.'",hidden : "true", ptype: "sdi_gxp_wmssource",url: "'.$service->resourceurl.'"}';
                     
+                    $mapparams = JComponentHelper::getParams('com_easysdi_map');
+                    $mwidth = $mapparams->get('iframewidth');
+                    $mheight = $mapparams->get('iframeheight');
+                    
                     if (!empty($diffusion) && $diffusion->hasdownload == 1):
                         $downloadurl = htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&tmpl=component&id=' . $diffusion->id);
-                        $layerconfig = '{ name: "'.$visualization->layername.'",attribution: "'.addslashes ($visualization->attribution).'",opacity: 1,source: "'.$service->alias.'",tiled: true,title: "'.$visualization->layername.'",visibility: true, href: "'.$href.'", download: "'.$downloadurl.'"}';
+                        $layerconfig = '{ name: "'.$visualization->layername.'",attribution: "'.addslashes ($visualization->attribution).'",opacity: 1,source: "'.$service->alias.'",tiled: true,title: "'.$visualization->layername.'",visibility: true, href: "'.$href.'", download: "'.$downloadurl.'", iwidth :"'.$mwidth.'", iheight :"'.$mheight.'"}';
                     else:
-                        $layerconfig = '{ name: "'.$visualization->layername.'",attribution: "'.addslashes ($visualization->attribution).'",opacity: 1,source: "'.$service->alias.'",tiled: true,title: "'.$visualization->layername.'",visibility: true, href: "'.$href.'"}';
+                        $layerconfig = '{ name: "'.$visualization->layername.'",attribution: "'.addslashes ($visualization->attribution).'",opacity: 1,source: "'.$service->alias.'",tiled: true,title: "'.$visualization->layername.'",visibility: true, href: "'.$href.'", iwidth :"'.$mwidth.'", iheight :"'.$mheight.'"}';
                     endif;
                     
                     $addtomap = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:addtomap');

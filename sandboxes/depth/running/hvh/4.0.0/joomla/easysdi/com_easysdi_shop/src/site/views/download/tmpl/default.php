@@ -8,11 +8,6 @@
  */
 // no direct access
 defined('_JEXEC') or die;
-
-//Load admin language file
-$lang = JFactory::getLanguage();
-$lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
-
 ?>
 
 <script>

@@ -76,7 +76,9 @@ sdi.plugins.SearchCatalog = Ext.extend(gxp.plugins.Tool, {
     },
     showCatalogFrame: function() {
         SqueezeBox.initialize({});
+        SqueezeBox.resize({x: this.initialConfig.iwidth, y: this.initialConfig.iheight});
         SqueezeBox.setContent('iframe', this.initialConfig.url);
+        
     }
 });
 

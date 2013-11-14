@@ -28,10 +28,6 @@ class Easysdi_mapViewVisualization extends JViewLegacy {
     public function display($tpl = null) {
         JForm::addFieldPath(JPATH_ADMINISTRATOR . '/components/com_easysdi_core/models/fields');
 
-        //Load admin language file
-        $lang = JFactory::getLanguage();
-        $lang->load('com_easysdi_map', JPATH_ADMINISTRATOR);
-
         $app = JFactory::getApplication();
 
         $this->state = $this->get('State');
@@ -62,7 +58,7 @@ class Easysdi_mapViewVisualization extends JViewLegacy {
 
 
         $pathway = $app->getPathway();
-        $pathway->addItem(JText::_("COM_EASYSDI_CORE_BREADCRUMBS_RESOURCES"), JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+        $pathway->addItem(JText::_("COM_EASYSDI_MAP_BREADCRUMBS_RESOURCES"), JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
         $pathway->addItem(JText::_("COM_EASYSDI_MAP_BREADCRUMBS_VISUALIZATION"), '');
 
         $this->_prepareDocument();

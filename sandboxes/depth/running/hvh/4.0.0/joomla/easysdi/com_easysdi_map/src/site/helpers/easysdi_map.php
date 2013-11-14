@@ -440,11 +440,15 @@ abstract class Easysdi_mapHelper {
                     break;
                 case 'searchcatalog':
                     if ($layertreeactivated) {
+                        $width = $params->get('iframewidth');
+                        $height = $params->get('iframeheight');
                         $config .= '
                         {
                         ptype: "sdi_searchcatalog",
                         actionTarget: "tree.tbar",
-                        url: "'. JURI::root() .'index.php?option=com_easysdi_catalog&view=catalog&id='. $tool->params .'&preview=map&tmpl=component"
+                        url: "'. JURI::root() .'index.php?option=com_easysdi_catalog&view=catalog&id='. $tool->params .'&preview=map&tmpl=component",
+                        iwidth : "'.$width.'",
+                        iheight : "'.$height.'"
                         },
                         ';
                         $config .= '

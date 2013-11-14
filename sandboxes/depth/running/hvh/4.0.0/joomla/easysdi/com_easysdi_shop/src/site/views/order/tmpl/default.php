@@ -9,9 +9,6 @@
 // no direct access
 defined('_JEXEC') or die;
 
-//Load admin language file
-$lang = JFactory::getLanguage();
-$lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
 ?>
 <?php if ($this->item) : ?>    
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=order'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">

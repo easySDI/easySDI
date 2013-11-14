@@ -47,7 +47,9 @@ sdi.plugins.LayerDownload = Ext.extend(gxp.plugins.Tool, {
             handler: function() {
                var record = selectedLayer;
                SqueezeBox.initialize({});
+               SqueezeBox.resize({x: record.json.iwidth, y: record.json.iheight});
                SqueezeBox.setContent('iframe', record.json.download);
+               
             },
             scope: this
         }]);

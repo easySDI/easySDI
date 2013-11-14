@@ -14,9 +14,6 @@ JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('formbehavior.chosen', 'select');
 
-//Load admin language file
-$lang = JFactory::getLanguage();
-$lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 ?>
 
 <script type="text/javascript">

@@ -31,10 +31,6 @@ class Easysdi_shopViewDiffusion extends JViewLegacy {
      */
     public function display($tpl = null) {
 
-        //Load admin language file
-        $lang = JFactory::getLanguage();
-        $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
-
         $app = JFactory::getApplication();
         $user = JFactory::getUser();
 

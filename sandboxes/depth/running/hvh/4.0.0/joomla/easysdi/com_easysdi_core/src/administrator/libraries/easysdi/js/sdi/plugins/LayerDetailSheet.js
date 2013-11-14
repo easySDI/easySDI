@@ -47,7 +47,9 @@ sdi.plugins.LayerDetailSheet = Ext.extend(gxp.plugins.Tool, {
             handler: function() {
                var record = selectedLayer;
                SqueezeBox.initialize({});
+               SqueezeBox.resize({x: record.json.iwidth, y: record.json.iheight});
                SqueezeBox.setContent('iframe', record.json.href);
+               
             },
             scope: this
         }]);
