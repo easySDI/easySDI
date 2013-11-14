@@ -344,7 +344,7 @@ class cswmetadata {
                 endif;
                 if ($right):
                     $view = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:view');
-                    $viewlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_map&view=preview&metadataid=' . $this->metadata->id));
+                    $viewlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_map&view=preview&catalog='. $catalog .'&metadataid=' . $this->metadata->id));
                     $view->appendChild($viewlink);
                     $action->appendChild($view);
 
@@ -386,7 +386,7 @@ class cswmetadata {
                         endif;
                     endif;
 
-                    $href = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid='.$this->metadata->guid.'&lang=fr-FR&catalog=' . $catalog . '&preview=' . $preview.'&tmpl=component');
+                    $href = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid='.$this->metadata->guid.'&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview.'&tmpl=component');
                     
                     $sourceconfig = '{id :"'.$service->alias.'",hidden : "true", ptype: "sdi_gxp_wmssource",url: "'.$service->resourceurl.'"}';
                     

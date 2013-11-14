@@ -129,10 +129,10 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                 // Convert the JTable to a clean JObject.
                 $query = $this->db->getQuery(true);
                 $query->select('m.*, rt.profile_id');
-                $query->from('jos_sdi_metadata m');
-                $query->innerJoin('jos_sdi_version v on v.id = m.version_id');
-                $query->innerJoin('jos_sdi_resource r on v.resource_id = r.id');
-                $query->innerJoin('jos_sdi_resourcetype rt on r.resourcetype_id = rt.id');
+                $query->from('#__sdi_metadata m');
+                $query->innerJoin('#__sdi_version v on v.id = m.version_id');
+                $query->innerJoin('#__sdi_resource r on v.resource_id = r.id');
+                $query->innerJoin('#__sdi_resourcetype rt on r.resourcetype_id = rt.id');
                 $query->where('m.id = '.$id);
                 
                 $this->db->setQuery($query);
