@@ -74,19 +74,19 @@ class Easysdi_catalogModelSheet extends JModelForm {
             endif;
 
             //Is the call from joomla
-            $callfromjoomla = true;
+            $callfromjoomla = $jinput->get('callfromjoomla', true, 'BOOLEAN');
+            
             //Current catalog context
             $catalog = $jinput->get('catalog', '', 'STRING');
             /* Current type view. Possible value :
-             * - result
-             * - complete
-             * - abstract
-             * - diffusion
+             * - result (value used by the code to display the search results in a catalog view)
+             * - any other values wanted by the administrator and used in the XSL files...
              */
-            $type = $jinput->get('type', 'abstract', 'STRING');
+            $type = $jinput->get('type', '', 'STRING');
             /* Current preview. Possible value :
              * - editor
              * - public
+             * - map
              * A preview corresponds to an association of a catalog and a type :
              * preview = catalog + type
              * If a preview is provided, its value is used to load the XSL file.
@@ -97,12 +97,8 @@ class Easysdi_catalogModelSheet extends JModelForm {
             //Build extended metadata
             $metadata->extend($catalog, $type, $preview, $callfromjoomla, $langtag);
 
-
-            //Apply XSL transformation and complete with shop order fields
-            if ($callfromjoomla)
-                $this->_item = $metadata->getShopExtension() . $metadata->applyXSL($catalog, $type, $preview);
-            else
-                $this->_item = $metadata->applyXSL($catalog, $type, $preview);
+            //Apply XSL transformation 
+            $this->_item = $metadata->applyXSL($catalog, $type, $preview);
         }
 
         return $this->_item;

@@ -15,11 +15,8 @@ JHtml::_('formbehavior.chosen', 'select');
 $document = JFactory::getDocument();
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js');
 
-//Load admin language file
-$lang = JFactory::getLanguage();
-$lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
 ?>
-<form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=catalog&search=true&id='.$this->item->id); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+<form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=catalog&search=true&id='.$this->item->id.'&preview='.$this->preview); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
     <div class="catalog front-end-edit">
         <h1><?php echo JText::_('COM_EASYSDI_CATALOG_TITLE'); ?></h1>
         <div class="well">
@@ -42,8 +39,8 @@ if (!empty($this->item->dom)):
         foreach ($nodes as $node) :
             $metadata = new cswmetadata();
             $metadata->init($node);
-            $metadata->extend($this->item->alias, 'result','', 'true', $lang->getTag());
-            $result = $metadata->applyXSL($this->item->alias, 'result','');
+            $metadata->extend($this->item->alias, 'result',$this->preview, 'true', $lang->getTag());
+            $result = $metadata->applyXSL($this->item->alias, 'result',$this->preview);
             ?><div class="offset1 catalog-searchresult"> <?php
             echo $result;
             ?></div>

@@ -60,7 +60,11 @@ function addtobasket() {
     jQuery.ajax({
         url: "index.php?option=com_easysdi_shop&task=addToBasket&item=" + JSON.stringify(cmd),
         success: function(data) {
-            updateBasketContent(data);
+            if(window.updateBasketContent){
+                updateBasketContent(data);
+            }else{
+                window.parent.updateBasketContent(data);
+            }
         }
     });
 

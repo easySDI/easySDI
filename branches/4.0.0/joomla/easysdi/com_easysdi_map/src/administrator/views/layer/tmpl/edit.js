@@ -70,7 +70,7 @@ function getLayers()
 
 function addLayerOption(id, value)
 {
-    jQuery("#jform_layername").append('<option value="' + value + '">' + value + '</option>');
+    jQuery("#jform_layername").append('<option value="' + id + '">' + value + '</option>');
     jQuery("#jform_layername").trigger("liszt:updated");
 }
 

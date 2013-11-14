@@ -63,6 +63,22 @@ class com_easysdi_coreInstallerScript {
             $params['infrastructureID'] = Easysdi_coreHelper::uuid();
             $this->setParams($params);
         }
+
+        if ($type == 'install' || ($type == 'update' && $this->getParam('version') < '4.0.0-alpha-18')) {
+            // import joomla's filesystem classes
+            jimport('joomla.filesystem.folder');
+
+            // Create folders inside media folder
+            if (!JFolder::create(JPATH_ROOT . '/media/easysdi', "0755")) {
+                echo "Unable to create media EasySDI folder";
+            }
+            if (!JFolder::create(JPATH_ROOT . '/media/easysdi/catalog',"0755")) {
+                echo "Unable to create media Catalog folder";
+            }
+            if (!JFolder::create(JPATH_ROOT . '/media/easysdi/catalog/xsl', "0755")) {
+                echo "Unable to create media XSL folder";
+            }
+        }
     }
 
     /*

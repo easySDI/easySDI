@@ -29,91 +29,90 @@ class Easysdi_mapViewPreview extends JViewLegacy {
      */
     public function display($tpl = null) {
         $app = JFactory::getApplication();
-        
+
         $sdiuser = sdiFactory::getSdiUser();
-                
+
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_map');
         $this->form = $this->get('Form');
-        
+
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
 
         foreach ($this->item as $preview):
-            if(!$sdiuser->canView($preview->id)){
+            if (!$sdiuser->canView($preview->id)) {
                 JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
                 return;
-             }
+            }
         endforeach;
-                
+
         if (!$this->item) {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_MAP_PREVIEW_NOT_FOUND'), 'error');
             return;
         }
 
         $params_array = $this->params->toArray();
-        if(isset($params_array['previewmap'])){
+        if (isset($params_array['previewmap'])) {
             $this->mapscript = Easysdi_mapHelper::getMapScript($params_array['previewmap']);
-        }
-        else{
+        } else {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_MAP_PREVIEW_NOT_FOUND'), 'error');
             return;
         }
-        
+
         //Get the default group to use to add the layer
         $model = JModelLegacy::getInstance('map', 'Easysdi_mapModel');
         $item = $model->getData($params_array['previewmap']);
         foreach ($item->groups as $group):
-            if($group->isdefault){
+            if ($group->isdefault) {
                 $defaultgroup = $group->alias;
                 break;
             }
         endforeach;
-        //This piece of code allowed the add of a layer with its source properly configured to be accessible by the layer manager of the gxp viewer.
-        //However, that gives the access to all the layers of the service if the gxp addLayer tool is activated.
-        //Don't think this is what we want, so we replaced that version with a more standard openlayers way to add a layer (see below)
-//            $this->addscript .= ' 
-//                Ext.onReady(function(){
-//                    sourceConfig = {id :"'.$this->item->service->alias.'",
-//                                    ptype: "sdi_gxp_wmssource",
-//                                    url: "'.$this->item->service->resourceurl.'"
-//                                    };
-//
-//                    layerConfig = { group: "'.$defaultgroup.'",
-//                                    name: "'.$this->item->layername.'",
-//                                    attribution: "'.addslashes ($this->item->attribution).'",
-//                                    opacity: 1,
-//                                    source: "'.$this->item->service->alias.'",
-//                                    tiled: true,
-//                                    title: "'.$this->item->layername.'",
-//                                    visibility: true};
-//
-//                    app.addExtraLayer(sourceConfig, layerConfig)
-//                });';
-        $this->addscript .= ' 
-               Ext.onReady(function(){ 
-                app.on("ready", function() {';
-            foreach ($this->item as $preview):
-                $this->addscript .=  'var '.$preview->layername.' = new OpenLayers.Layer.WMS("'.$preview->layername.'",
-                                                        "'.$preview->service->resourceurl.'",
-                                                         {layers: "'.$preview->layername.'",
-                                                             tiled: true,
-                                                             opacity: 1,
-                                                             transparent: true},
-                                                         {"attribution": "'.addslashes ($preview->attribution).'"}
-                                                         );
-                    app.mapPanel.map.addLayer('.$preview->layername.');';
-            endforeach;
-        $this->addscript .=        '  })});
-                ';
+
+        $this->addscript .= 'Ext.onReady(function(){';
+        
+        foreach ($this->item as $preview):
+            //Build the link to the meatadata sheet view
+            $href = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $preview->metadata->guid . '&lang=' . JFactory::getLanguage()->getTag() . '&catalog=' . JFactory::getApplication()->input->get('catalog') . '&preview=map&tmpl=component');
+            //If needed, build the link to the diffusion package ready to download
+            if (!empty($preview->diffusion) && $preview->diffusion->hasdownload == 1) {
+                $download = 'download: "' . htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&tmpl=component&id=' . $preview->diffusion->id) . '",';
+            }
+            //Get the size iframe params
+            $mapparams = JComponentHelper::getParams('com_easysdi_map');
+            $mwidth = $mapparams->get('iframewidth');
+            $mheight = $mapparams->get('iframeheight');
+
+            $this->addscript .= ' 
+                    sourceConfig' . $preview->id . ' = {id :"' . $preview->service->alias . '",
+                                    ptype: "sdi_gxp_wmssource",
+                                    hidden : "true",
+                                    url: "' . $preview->service->resourceurl . '"
+                                    };
+
+                    layerConfig' . $preview->id . ' = { group: "' . $defaultgroup . '",
+                                    name: "' . $preview->layername . '",
+                                    attribution: "' . addslashes($preview->attribution) . '",
+                                    href : "' . $href . '",
+                                    ' . $download . '
+                                    opacity: 1,
+                                    source: "' . $preview->service->alias . '",
+                                    tiled: true,
+                                    title: "' . $preview->layername . '",
+                                    iwidth:"' . $mwidth . '",
+                                    iheight:"' . $mheight . '",
+                                    visibility: true};
+
+                    app.addExtraLayer(sourceConfig' . $preview->id . ', layerConfig' . $preview->id . ');';
+        endforeach;
+        $this->addscript .= '});';
+
         $this->_prepareDocument();
 
         parent::display($tpl);
-        die();
-        
     }
 
     /**

@@ -7,10 +7,9 @@
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
-
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/cswmetadata.php';
 
-class sdiMetadata extends cswmetadata{
+class sdiMetadata extends cswmetadata {
 
     /**
      * Unique metadataid
@@ -18,8 +17,6 @@ class sdiMetadata extends cswmetadata{
      * @var    integer
      */
     public $id = null;
-
-    
 
     /**
      * database
@@ -58,8 +55,6 @@ class sdiMetadata extends cswmetadata{
         $params = JComponentHelper::getParams('com_easysdi_catalog');
         $this->catalogurl = $params->get('catalogurl');
     }
-
-    
 
     /**
      * Insert a newly created metadata into the CSW catalog
@@ -124,7 +119,7 @@ class sdiMetadata extends cswmetadata{
         $root->setAttribute('xmlns:gco', 'http://www.isotc211.org/2005/gco');
         $root->setAttribute('xmlns:gml', 'http://www.opengis.net/gml');
         $root->setAttribute('xmlns:sdi', 'http://www.easysdi.org/2011/sdi');
-       
+
 
         $identifier = $this->dom->createElement($attributeIdentifier->attribute_isocode);
         $identifiertype = $this->dom->createElement($attributeIdentifier->type_isocode, $this->metadata->guid);
@@ -198,7 +193,7 @@ class sdiMetadata extends cswmetadata{
 
         $constraint = $this->dom->createElement('csw:Constraint');
         $constraint->setAttribute('version', '1.0.0');
-        
+
         $filter = $this->dom->createElement('ogc:Filter');
         $propertyEqual = $this->dom->createElement('ogc:PropertyIsLike');
         $propertyEqual->setAttribute('wildCard', '%');
@@ -245,7 +240,7 @@ class sdiMetadata extends cswmetadata{
         $xpathmetadata = new DOMXPath($dom);
         $xpathmetadata->registerNamespace('gmd', 'http://www.isotc211.org/2005/gmd');
         $metadata = $xpathmetadata->query($this->getMetadataRootClass()->isocode)->item(0);
-        
+
         $newdom = new DOMDocument('1.0', 'utf-8');
         $transaction = $newdom->createElement('csw:Transaction');
         $transaction->setAttribute('xmlns:csw', 'http://www.opengis.net/cat/csw/2.0.2');
@@ -254,10 +249,10 @@ class sdiMetadata extends cswmetadata{
         $transaction->setAttribute('version', "2.0.2");
         $update = $newdom->createElement('csw:Update');
         $update->appendChild($newdom->importNode($metadata, true));
-                
+
         $constraint = $newdom->createElement('csw:Constraint');
         $constraint->setAttribute('version', '1.0.0');
-        
+
         $filter = $newdom->createElement('ogc:Filter');
         $propertyEqual = $newdom->createElement('ogc:PropertyIsLike');
         $propertyEqual->setAttribute('wildCard', '%');
@@ -270,11 +265,11 @@ class sdiMetadata extends cswmetadata{
         $propertyEqual->appendChild($literal);
         $filter->appendChild($propertyEqual);
         $constraint->appendChild($filter);
-        
+
         $update->appendChild($constraint);
-        $transaction->appendChild($update);        
+        $transaction->appendChild($update);
         $newdom->appendChild($transaction);
-        
+
         $platform = $this->getPlatformNode($newdom);
         $xpath = new DOMXPath($newdom);
         $xpath->registerNamespace('sdi', 'http://www.easysdi.org/2011/sdi');
@@ -351,10 +346,12 @@ class sdiMetadata extends cswmetadata{
         //Get the infrastructureID
         $infrastructureID = JComponentHelper::getParams('com_easysdi_core')->get('infrastructureID');
 
+        //Platform
         $platform = $dom->createElement('sdi:platform');
         $platform->setAttribute('guid', $infrastructureID);
         $platform->setAttribute('harvested', 'false');
 
+        //Resource
         $resource = $dom->createElement('sdi:resource');
         $resource->setAttribute('guid', $this->resource->guid);
         $resource->setAttribute('alias', $this->resource->alias);
@@ -363,6 +360,7 @@ class sdiMetadata extends cswmetadata{
         $resource->setAttribute('organism', $organism);
         $resource->setAttribute('scope', $accessscope);
 
+        //Metadata
         $metadata = $dom->createElement('sdi:metadata');
         $metadata->setAttribute('lastVersion', 'true');
         $metadata->setAttribute('guid', $this->metadata->guid);
@@ -370,11 +368,45 @@ class sdiMetadata extends cswmetadata{
         $metadata->setAttribute('published', $this->metadata->published);
         $metadata->setAttribute('state', 'inprogress');
 
+        //Diffusion
+        $query = $this->db->getQuery(true)
+                ->select('id, guid ,pricing_id, hasdownload, hasextraction, accessscope_id')
+                ->from('#__sdi_diffusion')
+                ->where('version_id = ' . $this->metadata->version_id)
+                ->where('state = 1');
+        $this->db->setQuery($query);
+        $diffusionobj = $this->db->loadObject();
         $diffusion = $dom->createElement('sdi:diffusion');
-        $diffusion->setAttribute('isFree', 'false');
-        $diffusion->setAttribute('isDownloadable', 'false');
-        $diffusion->setAttribute('isOrderable', 'false');
+        if (!empty($diffusionobj)):
+            $isfree = ($diffusionobj->pricing_id == 1 ) ? 'true' : 'false';
+            $isDownladable = ($diffusionobj->hasdownload == 1 ) ? 'true' : 'false';
+            $isOrderable = ($diffusionobj->hasextraction == 1 ) ? 'true' : 'false';
+            $diffusion->setAttribute('isFree', $isfree);
+            $diffusion->setAttribute('isDownloadable', $isDownladable);
+            $diffusion->setAttribute('isOrderable', $isOrderable);
+        else:
 
+            $diffusion->setAttribute('isFree', 'false');
+            $diffusion->setAttribute('isDownloadable', 'false');
+            $diffusion->setAttribute('isOrderable', 'false');
+        endif;
+        
+        //Visualization
+        $query = $this->db->getQuery(true)
+                ->select('id, wmsservice_id, accessscope_id')
+                ->from('#__sdi_visualization')
+                ->where('version_id = ' . $this->metadata->version_id)
+                ->where('state = 1');
+        $this->db->setQuery($query);
+        $viewobj = $this->db->loadObject();
+        $view = $dom->createElement('sdi:visualization');
+        if (!empty($viewobj) && !empty($viewobj->wmsservice_id)):
+            $view->setAttribute('isViewable', 'true');
+        else:
+            $view->setAttribute('isViewable', 'false');
+        endif;
+
+        //Accessscope
         foreach ($accessscopes as $a) {
             if ($a->organism_id != null):
                 if (!isset($organisms))
@@ -392,6 +424,7 @@ class sdiMetadata extends cswmetadata{
         }
 
         $metadata->appendChild($diffusion);
+        $metadata->appendChild($view);
         if (isset($organisms))
             $resource->appendChild($organisms);
         if (isset($users))
@@ -400,8 +433,8 @@ class sdiMetadata extends cswmetadata{
         $platform->appendChild($resource);
 
         return $platform;
-    }    
-    
+    }
+
     protected function getMetadataRootClass() {
         //Get from the metadata structure the root classe
         $query = $this->db->getQuery(true);

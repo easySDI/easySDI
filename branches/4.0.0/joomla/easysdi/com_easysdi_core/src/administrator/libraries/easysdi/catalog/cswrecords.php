@@ -174,6 +174,9 @@ abstract class cswrecords {
         $body = $dom->saveXML();
 
         $results = cswrecords::CURLRequest('POST', $catalogurl, $body);
+        if(!$results){
+            return false;
+        }
         $doc = new DOMDocument();
         $doc->loadXML($results);
 

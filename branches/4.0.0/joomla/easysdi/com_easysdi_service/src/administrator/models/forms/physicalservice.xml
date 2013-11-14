@@ -168,7 +168,7 @@
                         validate="url" 
                         filter="safehtml" /> 
 
-        <field 	name="serviceusername" 
+<!--        <field 	name="serviceusername" 
                         type="usernamewithplaceholder" 
                         placeholder="COM_EASYSDI_SERVICE_FORM_PLCHLD_PHYSICALSERVICE_RESOURCEUSERNAME"
                         size="150" 
@@ -185,7 +185,7 @@
                         class="inputbox"
                         label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SERVICEPASSWORD"
                         description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SERVICEPASSWORD" 
-                        filter="safehtml" /> 
+                        filter="safehtml" /> -->
     </fieldset>
 
     <fieldset name="publishing">

@@ -238,7 +238,8 @@ class cswmetadata {
             $query = $this->db->getQuery(true)
                     ->select('id, guid ,pricing_id, hasdownload, hasextraction, accessscope_id')
                     ->from('#__sdi_diffusion')
-                    ->where('version_id = ' . $this->version->id);
+                    ->where('version_id = ' . $this->version->id)
+                    ->where('state = 1');
             $this->db->setQuery($query);
             $diffusion = $this->db->loadObject();
             if (!empty($diffusion)):
@@ -263,6 +264,15 @@ class cswmetadata {
             $exorganism->appendChild($exlogo);
             $exresource->appendChild($exorganism);
             $extendedmetadata->appendChild($exresource);
+            
+            //Shop properties
+            if (!empty($diffusion) && $diffusion->hasextraction == 1):
+                $html = $this->getShopExtension();
+                $extraction = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:extraction');
+                $extractionhtml = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:html', $html);
+                $extraction->appendChild($extractionhtml);
+                $action->appendChild($extraction);
+            endif;
 
             //Download
             if (!empty($diffusion) && $diffusion->hasdownload == 1):
@@ -304,13 +314,14 @@ class cswmetadata {
 
             //View
             $query = $this->db->getQuery(true)
-                    ->select('id, guid, accessscope_id')
+                    ->select('id, guid, wmsservice_id, wmsservicetype_id, layername, attribution, accessscope_id')
                     ->from('#__sdi_visualization')
-                    ->where('version_id = ' . $this->version->id);
+                    ->where('version_id = ' . $this->version->id)
+                    ->where('state = 1');
             $this->db->setQuery($query);
             $visualization = $this->db->loadObject();
-            if (!empty($visualization)) :
-                //check if the user has the right to download
+            if (!empty($visualization) && !empty($visualization->wmsservice_id)) :
+                //check if the user has the right to view
                 $right = true;
                 if ($visualization->accessscope_id != 1):
                     if (!sdiFactory::getSdiUser()->isEasySDI):
@@ -333,14 +344,72 @@ class cswmetadata {
                 endif;
                 if ($right):
                     $view = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:view');
-                    $viewlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_map&view=preview&metadataid=' . $this->metadata->id));
+                    $viewlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_map&view=preview&catalog='. $catalog .'&metadataid=' . $this->metadata->id));
                     $view->appendChild($viewlink);
                     $action->appendChild($view);
+
+//                    sourceConfig = {id :"'.$this->item->service->alias.'",
+//                                    ptype: "sdi_gxp_wmssource",
+//                                    url: "'.$this->item->service->resourceurl.'"
+//                                    };
+//
+//                    layerConfig = { group: "'.$defaultgroup.'",
+//                                    name: "'.$this->item->layername.'",
+//                                    attribution: "'.addslashes ($this->item->attribution).'",
+//                                    opacity: 1,
+//                                    source: "'.$this->item->service->alias.'",
+//                                    tiled: true,
+//                                    title: "'.$this->item->layername.'",
+//                                    visibility: true};
+//
+//                    app.addExtraLayer(sourceConfig, layerConfig)
+                    if ($visualization->wmsservicetype_id == 1)://Physical
+                        $query = $this->db->getQuery(true)
+                                ->select('id, alias, resourceurl')
+                                ->from('#__sdi_physicalservice')
+                                ->where('id = ' . $visualization->wmsservice_id)
+                        ;
+                        $this->db->setQuery($query);
+                        $service = $this->db->loadObject();
+                    else://Virtual
+                        $query = $this->db->getQuery(true)
+                                ->select('id, alias, url, reflectedurl')
+                                ->from('#__sdi_virtualservice')
+                                ->where('id = ' . $visualization->wmsservice_id)
+                        ;
+                        $this->db->setQuery($query);
+                        $service = $this->db->loadObject();
+                        if(!empty($service->reflectedurl)):
+                            $service->resourceurl = $service->reflectedurl;
+                        else:    
+                            $service->resourceurl = $service->url;
+                        endif;
+                    endif;
+
+                    $href = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid='.$this->metadata->guid.'&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview.'&tmpl=component');
+                    
+                    $sourceconfig = '{id :"'.$service->alias.'",hidden : "true", ptype: "sdi_gxp_wmssource",url: "'.$service->resourceurl.'"}';
+                    
+                    $mapparams = JComponentHelper::getParams('com_easysdi_map');
+                    $mwidth = $mapparams->get('iframewidth');
+                    $mheight = $mapparams->get('iframeheight');
+                    
+                    if (!empty($diffusion) && $diffusion->hasdownload == 1):
+                        $downloadurl = htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&tmpl=component&id=' . $diffusion->id);
+                        $layerconfig = '{ name: "'.$visualization->layername.'",attribution: "'.addslashes ($visualization->attribution).'",opacity: 1,source: "'.$service->alias.'",tiled: true,title: "'.$visualization->layername.'",visibility: true, href: "'.$href.'", download: "'.$downloadurl.'", iwidth :"'.$mwidth.'", iheight :"'.$mheight.'"}';
+                    else:
+                        $layerconfig = '{ name: "'.$visualization->layername.'",attribution: "'.addslashes ($visualization->attribution).'",opacity: 1,source: "'.$service->alias.'",tiled: true,title: "'.$visualization->layername.'",visibility: true, href: "'.$href.'", iwidth :"'.$mwidth.'", iheight :"'.$mheight.'"}';
+                    endif;
+                    
+                    $addtomap = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:addtomap');
+                    $addtomaponclick = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:onclick', ' window.parent.app.addExtraLayer('.$sourceconfig.', '.$layerconfig.')');
+                    $addtomap->appendChild($addtomaponclick);
+                    $action->appendChild($addtomap);
                 endif;
             endif;
 
             //Links
-            $query = $this->db->getQuery(true)
+             $query = $this->db->getQuery(true)
                     ->select('vl.parent_id, v.guid as guid, r.name as name, rt.alias as type')
                     ->from('#__sdi_versionlink vl')
                     ->innerJoin('#__sdi_version v ON v.id = vl.parent_id')
@@ -371,7 +440,7 @@ class cswmetadata {
             $childrenitem = $this->db->loadObjectList();
             $children = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:children');
             foreach ($childrenitem as $item):
-                $child = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:chld');
+                $child = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:child');
                 $child->setAttribute('guid', $item->guid);
                 $child->setAttribute('title', '');
                 $child->setAttribute('resourcename', $item->name);
@@ -404,13 +473,13 @@ class cswmetadata {
 
         //Sheet view
         $sheet = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:sheetview');
-        $sheetlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $this->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&type=' . $type . '&preview=' .$preview));
+        $sheetlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $this->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview. '&type='));
         $sheet->appendChild($sheetlink);
         $action->appendChild($sheet);
 
         //Make pdf
         $exportpdf = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:exportpdf');
-        $exportpdflink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&task=sheet.exportPDF&id=' . $this->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&type=' . $type . '&preview=' .$preview));
+        $exportpdflink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&task=sheet.exportPDF&id=' . $this->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview. '&type='));
         $exportpdf->appendChild($exportpdflink);
         $action->appendChild($exportpdf);
 
@@ -515,8 +584,8 @@ class cswmetadata {
         $properties = $this->db->loadObjectList();
 
 
-        $html = '<script src="' . JURI::root() . '/administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js" type="text/javascript"></script>';
-        $html .= '<form class="form-horizontal form-inline form-validate" action="" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">';
+//        $html = '<script src="' . JURI::root() . '/administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js" type="text/javascript"></script>';
+        $html = '<form class="form-horizontal form-inline form-validate" action="" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">';
         $html .= '<div class="sdi-shop-order well">';
         $html .= '<div class="sdi-shop-properties" >';
         $html .= '<div class="sdi-shop-properties-title" ></div>';
@@ -549,7 +618,7 @@ class cswmetadata {
 
                 $html .= '
                     <div class="control-group">
-                        <div class="control-label"><label id="' . $property->property_id . '-lbl" for="' . $property->property_id . '" class="hasTip" title="">' . $property->propertyname . $labelrequired .'</label></div>
+                        <div class="control-label"><label id="' . $property->property_id . '-lbl" for="' . $property->property_id . '" class="hasTip" title="">' . $property->propertyname . $labelrequired . '</label></div>
                 ';
 
                 $query = $this->db->getQuery(true)
@@ -562,7 +631,7 @@ class cswmetadata {
                         ->where('dpv.diffusion_id = ' . (int) $this->diffusion->id)
                         ->where('p.id = ' . (int) $property->property_id)
                         ->where('l.code = "' . $language->getTag() . '"')
-                        ;
+                ;
                 $this->db->setQuery($query);
                 $values = $this->db->loadObjectList();
 
@@ -576,7 +645,7 @@ class cswmetadata {
                     case self::LISTE:
                         $html .= '
                             <div class="controls">
-                                <select id="' . $property->property_id . '" name="' . $property->property_id . '"  class="sdi-shop-property-list inputbox '.$classrequired.'" ' . $required . '>';
+                                <select id="' . $property->property_id . '" name="' . $property->property_id . '"  class="sdi-shop-property-list inputbox ' . $classrequired . '" ' . $required . '>';
                         foreach ($values as $value):
                             $html .= '<option value="' . $value->propertyvalue_id . '">' . $value->propertyvaluename . '</option>';
                         endforeach;
@@ -586,7 +655,7 @@ class cswmetadata {
                     case self::MULTIPLELIST:
                         $html .= '
                             <div class="controls">
-                                <select id="' . $property->property_id . '" name="' . $property->property_id . '[]"  class="sdi-shop-property-list inputbox '.$classrequired.'" multiple="multiple" ' . $required . '>';
+                                <select id="' . $property->property_id . '" name="' . $property->property_id . '[]"  class="sdi-shop-property-list inputbox ' . $classrequired . '" multiple="multiple" ' . $required . '>';
                         foreach ($values as $value):
                             $html .= '<option value="' . $value->propertyvalue_id . '">' . $value->propertyvaluename . '</option>';
                         endforeach;
@@ -610,17 +679,17 @@ class cswmetadata {
                         break;
                     case self::TEXT:
                         $html .= '
-                        <div class="controls"><input type="text" name="' . $property->property_id . '" id="' . $property->property_id . '" value=""  propertyvalue_id="' . $values[0]->propertyvalue_id . '" class="sdi-shop-property-text inputbox '.$classrequired.'" size="255" ' . $required . '></div>
+                        <div class="controls"><input type="text" name="' . $property->property_id . '" id="' . $property->property_id . '" value=""  propertyvalue_id="' . $values[0]->propertyvalue_id . '" class="sdi-shop-property-text inputbox ' . $classrequired . '" size="255" ' . $required . '></div>
                         ';
                         break;
                     case self::TEXTAREA:
                         $html .= '
-                        <div class="controls"><textarea cols="100" id="' . $property->property_id . '" name="' . $property->property_id . '" propertyvalue_id="' . $values[0]->propertyvalue_id . '" rows="5" ' . $required . ' class="sdi-shop-property-text '.$classrequired.'" ></textarea></div>
+                        <div class="controls"><textarea cols="100" id="' . $property->property_id . '" name="' . $property->property_id . '" propertyvalue_id="' . $values[0]->propertyvalue_id . '" rows="5" ' . $required . ' class="sdi-shop-property-text ' . $classrequired . '" ></textarea></div>
                         ';
                         break;
                     case self::MESSAGE:
                         $html .= '
-                        <div class="controls"><p class="sdi-shop-property-message">'.$text.'</p></div>
+                        <div class="controls"><p class="sdi-shop-property-message">' . $text . '</p></div>
                         ';
                         break;
                 endswitch;

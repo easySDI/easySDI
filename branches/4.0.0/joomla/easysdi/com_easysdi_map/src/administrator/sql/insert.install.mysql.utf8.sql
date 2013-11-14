@@ -15,7 +15,8 @@ VALUES
 ('layertree',13,1,'Layer tree'),
 ('scaleline',14,1,'Scale line'),
 ('mouseposition',15,1,'Mouse position'),
-('wfslocator',16,1,'Wfs locator')
+('wfslocator',16,1,'Wfs locator'),
+('searchcatalog',17,1,'Catalog search')
 ;
 
 

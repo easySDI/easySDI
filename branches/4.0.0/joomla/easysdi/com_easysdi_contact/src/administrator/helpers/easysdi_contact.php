@@ -33,11 +33,11 @@ class Easysdi_contactHelper
 				$vName == 'users'
 		);
 		
-		JHtmlSidebar::addEntry(
-				JText::_('COM_EASYSDI_CONTACT_TITLE_USERS_CATEGORIES'),
-				"index.php?option=com_categories&extension=com_easysdi_contact",
-				$vName == 'categories'
-		);
+//		JHtmlSidebar::addEntry(
+//				JText::_('COM_EASYSDI_CONTACT_TITLE_USERS_CATEGORIES'),
+//				"index.php?option=com_categories&extension=com_easysdi_contact",
+//				$vName == 'categories'
+//		);
 
 		if ($vName=='categories') {
 			JToolBarHelper::title(JText::sprintf('COM_CATEGORIES_CATEGORIES_TITLE', JText::_('com_easysdi_contact')));
