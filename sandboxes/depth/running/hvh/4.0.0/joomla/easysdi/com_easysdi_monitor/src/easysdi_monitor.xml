@@ -2,13 +2,13 @@
 <extension method="upgrade" type="component" version="3.0.0">
   <name>com_easysdi_monitor</name>
   <creationDate>2013-04-08</creationDate>
-  <releaseDate>05 novembre 2013</releaseDate>
+  <releaseDate>14 novembre 2013</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>4.0.0-alpha-12</version>
+  <version>4.0.0-alpha-18</version>
   <description />
   <install>
     <sql>
