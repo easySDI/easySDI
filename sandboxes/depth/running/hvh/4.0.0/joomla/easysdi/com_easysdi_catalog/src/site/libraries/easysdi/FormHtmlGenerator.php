@@ -4,6 +4,8 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumLayerName.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumServiceConnector.php';
 
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormUtils.php';
+
 /**
  * This Class will browse the xml structure in session and create the tree fielset.
  * 
@@ -417,18 +419,18 @@ class FormHtmlGenerator {
                 }
 
                 if ($stereotypeId == EnumStereotype::$GEMET) {
-                    
+
                     foreach ($this->domXpathFormHtml->query('descendant::div[@class="control-group"][position()>1]', $attributeGroup) as $control_group) {
-                        $control_group->setAttribute('style','height:0px; opacity:0;');
+                        $control_group->setAttribute('style', 'height:0px; opacity:0;');
                     }
-                    
+
                     foreach ($this->domXpathFormHtml->query('descendant::select', $attributeGroup) as $select) {
                         $i = 0;
                         foreach ($this->domXpathFormHtml->query('descendant::option', $select) as $option) {
                             $option->setAttribute('selected', 'selected');
-                            $option->setAttribute('id', $select->getAttribute('id').'_option_'.$i );
+                            $option->setAttribute('id', $select->getAttribute('id') . '_option_' . $i);
                             $i++;
-                            $option->setAttribute('index',$i);
+                            $option->setAttribute('index', $i);
                         }
                     }
                 }
@@ -441,12 +443,26 @@ class FormHtmlGenerator {
                 } else {
                     $nodePath = $attribute->firstChild->getNodePath();
                 }
+                
+                $nbrOccurance = 0;
+                if ($attribute->getAttributeNS($this->catalog_uri, 'rendertypeId') == EnumRendertype::$CHECKBOX) {
+                    /** @var JFormField */
+                    $jfield = $this->form->getField(FormUtils::removeIndexToXpath($this->serializeXpath($nodePath)));
+                    $fieldid = $jfield->__get('id');
+                    $query = 'descendant::*[@id="' . $fieldid . '"]';
+                    $nbrOccurance = $this->domXpathFormHtml->query($query)->length;
+                } else {
+                    $jfield = $this->form->getField($this->serializeXpath($nodePath));
+                }
 
-                $jfield = $this->form->getField($this->serializeXpath($nodePath));
                 if ($jfield) {
-                    foreach ($this->buildField($attribute, $jfield, $showButton) as $element) {
-                        $attributeGroup->appendChild($element);
+                    if ($nbrOccurance < 1) {
+                        foreach ($this->buildField($attribute, $jfield, $showButton) as $element) {
+                            $attributeGroup->appendChild($element);
+                        }
                     }
+                } else {
+                    JFactory::getApplication()->enqueueMessage('Field not found ' . $this->serializeXpath($nodePath), 'warning');
                 }
                 break;
         }
@@ -582,7 +598,7 @@ class FormHtmlGenerator {
                 break;
         }
 
-        $centercoords = explode(',',$map_config->centercoordinates);
+        $centercoords = explode(',', $map_config->centercoordinates);
         $script->nodeValue = "var map_$parent_path, layer_$parent_path, polygonLayer_$parent_path, polygonControl_$parent_path ;
                             js('document').ready(function() {
                                 
@@ -591,43 +607,42 @@ class FormHtmlGenerator {
                                     , maxResolution: " . $map_config->maxresolution . " 
                                     , units: \"" . $map_config->unit_alias . "\"
                                     , maxExtent: [" . $map_config->maxextent . "]";
-                                 if(!empty($map_config->restrictedextent))  {
-                                    $script->nodeValue .= ", restrictedExtent: [" . $map_config->restrictedextent . "]";
-                                  }
-                                 
-                           $script->nodeValue .= "};"; 
-                                  
+        if (!empty($map_config->restrictedextent)) {
+            $script->nodeValue .= ", restrictedExtent: [" . $map_config->restrictedextent . "]";
+        }
 
-            $script->nodeValue.= " map_$parent_path = new OpenLayers.Map(\"map_$parent_path\", map_options);
+        $script->nodeValue .= "};";
+
+
+        $script->nodeValue.= " map_$parent_path = new OpenLayers.Map(\"map_$parent_path\", map_options);
                                  
                                 " . $layer_definition . "
                                 polygonLayer_$parent_path = new OpenLayers.Layer.Vector('Polygon Layer');
 
                                 map_$parent_path.addLayers([layer_$parent_path, polygonLayer_$parent_path]);
                       
-                                    var psource = new proj4.Proj(\"". $map_config->srs ."\");
+                                    var psource = new proj4.Proj(\"" . $map_config->srs . "\");
                                     var pdest   = new proj4.Proj(\"EPSG:4326\");
                                    
                     ";
-                            
-            
-                                if(!empty($map_config->centercoordinates) && !empty($map_config->zoom)){
-                                     $script->nodeValue .= "
-                                    var centercoord = new proj4.Point(". $centercoords[0] .", ". $centercoords[1] .");
+
+
+        if (!empty($map_config->centercoordinates) && !empty($map_config->zoom)) {
+            $script->nodeValue .= "
+                                    var centercoord = new proj4.Point(" . $centercoords[0] . ", " . $centercoords[1] . ");
                                     proj4.transform(psource, pdest, centercoord);                                         
                                     map_$parent_path.setCenter(new OpenLayers.LonLat(centercoord.x, centercoord.y), 10);";
-                                 }
-                                 else if(!empty($map_config->centercoordinates)){
-                                     $script->nodeValue .= "
-                                    var centercoord = new proj4.Point(". $centercoords[0] .", ". $centercoords[1] .");
+        } else if (!empty($map_config->centercoordinates)) {
+            $script->nodeValue .= "
+                                    var centercoord = new proj4.Point(" . $centercoords[0] . ", " . $centercoords[1] . ");
                                     proj4.transform(psource, pdest, centercoord);                                         
                                     map_$parent_path.setCenter(new OpenLayers.LonLat(centercoord.x, centercoord.y));";
-                                 }else{
-                                     $script->nodeValue .= "map_$parent_path.zoomToMaxExtent(); ";
-                                 }
-                           
+        } else {
+            $script->nodeValue .= "map_$parent_path.zoomToMaxExtent(); ";
+        }
 
-                                $script->nodeValue .= "
+
+        $script->nodeValue .= "
                                 var polyOptions = {sides: 4, irregular: true};
                                 polygonControl_$parent_path = new OpenLayers.Control.DrawFeature(polygonLayer_$parent_path,
                                         OpenLayers.Handler.RegularPolygon,
@@ -745,7 +760,7 @@ class FormHtmlGenerator {
                                                     js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()).trigger('liszt:updated');
                                                 }
                                                 
-                                                removeFromStructure('".$this->serializeXpath($attribute->parentNode->getNodePath())."-sla-gmd-dp-keyword-la-'+index_number+'-ra-');
+                                                removeFromStructure('" . $this->serializeXpath($attribute->parentNode->getNodePath()) . "-sla-gmd-dp-keyword-la-'+index_number+'-ra-');
                                                 
                                     });
 

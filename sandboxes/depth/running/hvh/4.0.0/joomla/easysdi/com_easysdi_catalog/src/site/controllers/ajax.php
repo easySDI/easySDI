@@ -15,9 +15,6 @@ JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/ta
 require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 
-/**
- * Metadata controller class.
- */
 class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
 
     /**
@@ -60,7 +57,7 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
 
         parent::__construct();
     }
-
+    
     public function removeNode() {
         $this->domXpathStr = new DOMXPath($this->structure);
 

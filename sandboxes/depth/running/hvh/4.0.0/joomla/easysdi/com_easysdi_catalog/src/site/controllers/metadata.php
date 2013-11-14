@@ -17,6 +17,7 @@ require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormHtmlGenerator.php';
 
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/cswmetadata.php';
 
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
@@ -63,6 +64,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     private $ldao;
     private $catalog_uri = 'http://www.easysdi.org/2011/sdi/catalog';
     private $catalog_prefix = 'catalog';
+    private $cswUri = 'http://www.opengis.net/cat/csw/2.0.2';
+    private $nsArray = array();
 
     function __construct() {
         $this->db = JFactory::getDbo();
@@ -73,6 +76,10 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->structure->loadXML(unserialize($this->session->get('structure')));
         $this->structure->normalizeDocument();
         $this->domXpathStr = new DOMXPath($this->structure);
+
+        foreach ($this->nsdao->getAll() as $ns) {
+            $this->nsArray[$ns->prefix] = $ns->uri;
+        }
 
         parent::__construct();
     }
@@ -88,6 +95,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         // Get the previous edit id (if any) and the current edit id.
         $previousId = (int) $app->getUserState('com_easysdi_catalog.edit.metadata.id');
         $editId = JFactory::getApplication()->input->getInt('id', null, 'array');
+
 
         // Set the user id for the user to edit in the session.
         $app->setUserState('com_easysdi_catalog.edit.metadata.id', $editId);
@@ -105,40 +113,122 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $model->checkin($previousId);
         }
 
+
         // Redirect to the edit screen.
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&view=metadata&layout=edit', false));
     }
 
     /**
-     * Method to save a user's profile data.
+     * 
+     * @return stdClass[] result list of resource
+     */
+    public function searchresource() {
+        $query = $this->db->getQuery(true);
+
+        $query->select('r.`name`, v.created, m.guid');
+        $query->from('#__sdi_resource r');
+        $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
+        $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
+        if ($_POST['status_id'] != '') {
+            $query->where('r.`state` = ' . $_POST['status_id']);
+        }
+        if ($_POST['resourcetype_id'] != '') {
+            $query->where('r.resourcetype_id = ' . $_POST['resourcetype_id']);
+        }
+        $query->where('r.`name` like \'%' . $_POST['resource_name'] . '%\'');
+
+        $this->db->setQuery($query);
+        $resources = $this->db->loadObjectList();
+
+        $response = array();
+        $response['success'] = true;
+        $response['result'] = $resources;
+        echo json_encode($response);
+        die();
+    }
+
+    /**
+     * Import resource
+     */
+    public function importResource() {
+        $cswmd = new cswmetadata($_POST['resource_guid']);
+        $csw = $cswmd->load();
+    }
+
+    /**
+     * Show xml preview
+     */
+    public function show() {
+        $this->save($_POST['jform'], false);
+        /** @var DOMElement */
+        $update = $this->structure->getElementsByTagNameNS($this->cswUri, 'Update')->item(0);
+        $this->structure->formatOutput = true;
+
+        $response = array();
+        $response['success'] = true;
+        $response['xml'] = '<pre class="brush: xml">' . htmlspecialchars($this->structure->saveXML($update->firstChild)) . '</pre>';
+        echo json_encode($response);
+        die();
+    }
+
+    /**
+     * Show xhtml preview
+     */
+    public function preview() {
+        $this->save($_POST['jform'], false);
+        $domExtend = new DOMDocument('1.0', 'utf-8');
+
+        $update = $this->structure->getElementsByTagNameNS($this->cswUri, 'Update')->item(0);
+
+        $cswm = new cswmetadata();
+        $cswm->init($update->firstChild);
+        $cswm->extend('', '', 'editor', true, JFactory::getLanguage()->getTag());
+
+        $response = array();
+        $response['success'] = true;
+        $response['xml'] = '<div class="well">' . $cswm->applyXSL('', '', 'editor') . '</div>';
+        echo json_encode($response);
+        die();
+    }
+
+    public function saveAndContinue() {
+        $this->save(null, true, true);
+    }
+
+    /**
+     * Method to save a metadata.
      *
      * @return	void
      * @since	1.6
      */
-    public function save() {
+    public function save($data = null, $commit = true, $continue = false) {
+        if (!isset($data)) {
+            $data = JFactory::getApplication()->input->get('jform', array(), 'array');
+        }
+
         $fileRepository = JPATH_BASE . '/media/' . JComponentHelper::getParams('com_easysdi_catalog')->get('linkedfilerepository');
         $fileBaseUrl = JComponentHelper::getParams('com_easysdi_catalog')->get('linkedfilebaseurl');
 
-        $data = JFactory::getApplication()->input->get('jform', array(), 'array');
-
         //Upload file
-        foreach ($_FILES['jform']['name'] as $key => $value) {
-            if ($_FILES['jform']['name'][$key] != '') {
+        if (isset($_FILES['jform'])) {
+            foreach ($_FILES['jform']['name'] as $key => $value) {
+                if ($_FILES['jform']['name'][$key] != '') {
 
-                $file_guid = $this->getGUID();
-                if (move_uploaded_file($_FILES['jform']['tmp_name'][$key], $fileRepository . '/' . $file_guid . '_' . $_FILES['jform']['name'][$key])) {
+                    $file_guid = $this->getGUID();
+                    if (move_uploaded_file($_FILES['jform']['tmp_name'][$key], $fileRepository . '/' . $file_guid . '_' . $_FILES['jform']['name'][$key])) {
 
-                    if ($data[$key . '_filehidden'] != '') {
-                        unlink($fileRepository . '/' . basename($data[$key . '_filehidden']));
+                        if ($data[$key . '_filehidden'] != '') {
+                            unlink($fileRepository . '/' . basename($data[$key . '_filehidden']));
+                        }
+                        $data[$key] = $fileBaseUrl . '/' . $file_guid . '_' . $_FILES['jform']['name'][$key];
                     }
-                    $data[$key] = $fileBaseUrl . '/' . $file_guid . '_' . $_FILES['jform']['name'][$key];
-                }
-            } else {
-                if ($data[$key . '_filetext'] == '') {
-                    if ($data[$key . '_filehidden'] != '') {
-                        unlink($fileRepository . '/' . basename($data[$key . '_filehidden']));
+                } else {
+                    if ($data[$key . '_filetext'] == '') {
+                        if ($data[$key . '_filehidden'] != '') {
+                            unlink($fileRepository . '/' . basename($data[$key . '_filehidden']));
+                        }
+                        $data[$key] = '';
                     }
-                    $data[$key] = '';
                 }
             }
         }
@@ -150,17 +240,23 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         // Multiple list decomposer
         $dataWithoutArray = array();
         foreach ($data as $xpath => $values) {
-            if(is_array($values)){
+            if (is_array($values)) {
+                
                 foreach ($values as $key => $value) {
-                    $index = $key+1;
-                    $indexedXpath = str_replace('gmd-dp-keyword', 'gmd-dp-keyword-la-'.$index.'-ra-', $xpath);
+                    $index = $key + 1;
+                    $indexedXpath = str_replace('gmd-dp-keyword', 'gmd-dp-keyword-la-' . $index . '-ra-', $xpath, $nbrReplace);
+                    
+                    if($nbrReplace == 0){
+                        $indexedXpath = $this->addIndexToXpath($xpath, 4, $index);
+                    }
+                    
                     $dataWithoutArray[$indexedXpath] = $value;
                 }
-            }else{
+            } else {
                 $dataWithoutArray[$xpath] = $values;
             }
         }
-        
+
         foreach ($dataWithoutArray as $xpath => $value) {
             $xpatharray = explode('#', $xpath);
             if (count($xpatharray) > 1) {
@@ -168,7 +264,14 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             } else {
                 $query = $this->unSerializeXpath($xpatharray[0]);
             }
-            $element = $this->domXpathStr->query($query)->item(0);
+            $elements = $this->domXpathStr->query($query);
+            if ($elements) {
+                $element = $this->domXpathStr->query($query)->item(0);
+            } else {
+                JFactory::getApplication()->enqueueMessage('Erreur de xpath: '.$query, 'error');
+                $this->setRedirect(JRoute::_('index.php?view=metadata&layout=edit', false));
+            }
+
             if (isset($element)) {
                 if ($element->hasAttribute('codeList')) {
                     $element->setAttribute('codeListValue', $value);
@@ -186,13 +289,15 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $root->insertBefore($header, $root->firstChild);
         }
 
-        $root->insertBefore($this->getSdiHeader($data['id']), $root->firstChild);
+        $smda = new sdiMetadata($data['id']);
 
-        $transaction = $this->structure->createElementNS('http://www.opengis.net/cat/csw/2.0.2', 'csw:Transaction');
+        $root->insertBefore($smda->getPlatformNode($this->structure), $root->firstChild);
+
+        $transaction = $this->structure->createElementNS($this->cswUri, 'Transaction');
         $transaction->setAttribute('service', 'CSW');
         $transaction->setAttribute('version', '2.0.2');
 
-        $update = $this->structure->createElement('csw:Update');
+        $update = $this->structure->createElementNS($this->cswUri, 'Update');
         $update->appendChild($root);
         $update->appendChild($this->getConstraint($data['guid']));
         $transaction->appendChild($update);
@@ -200,88 +305,47 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $this->removeCatalogNS();
 
-        $this->structure->formatOutput = true;
-        $xml = $this->structure->saveXML();
-        
-        $smda = new sdiMetadata($data['id']);
 
-        $result = $smda->update($xml);
-//        // Initialise variables.
-//        $app = JFactory::getApplication();
-//        $model = $this->getModel('Metadata', 'Easysdi_catalogModel');
-//
-//        // Get the user data.
-//        $data = JFactory::getApplication()->input->get('jform', array(), 'array');
-//
-//        // Validate the posted data.
-//        $form = $model->getForm();
-//        
-//        if (!$form) {
-//            JError::raiseError(500, $model->getError());
-//            return false;
-//        }
-//
-//        // Validate the posted data.
-//        $data = $model->validate($form, $data);
-//
-//        // Check for errors.
-//        if ($data === false) {
-//            // Get the validation messages.
-//            $errors = $model->getErrors();
-//
-//            // Push up to three validation messages out to the user.
-//            for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
-//                if ($errors[$i] instanceof Exception) {
-//                    $app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-//                } else {
-//                    $app->enqueueMessage($errors[$i], 'warning');
-//                }
-//            }
-//
-//            // Save the data in the session.
-//            $app->setUserState('com_easysdi_catalog.edit.metadata.data', JRequest::getVar('jform'), array());
-//
-//            // Redirect back to the edit screen.
-//            $id = (int) $app->getUserState('com_easysdi_catalog.edit.metadata.id');
-//            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&view=metadata&layout=edit&id=' . $id, false));
-//            return false;
-//        }
-//
-//        // Attempt to save the data.
-//        $return = $model->save($data);
-//
-//        // Check for errors.
-//        if ($return === false) {
-//            // Save the data in the session.
-//            $app->setUserState('com_easysdi_catalog.edit.metadata.data', $data);
-//
-//            // Redirect back to the edit screen.
-//            $id = (int) $app->getUserState('com_easysdi_catalog.edit.metadata.id');
-//            $this->setMessage(JText::sprintf('Save failed', $model->getError()), 'warning');
-//            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&view=metadata&layout=edit&id=' . $id, false));
-//            return false;
-//        }
-//
-//
-//        // Check in the profile.
-//        if ($return) {
-//            $model->checkin($return);
-//        }
-//
-//        // Clear the profile id from the session.
-//        $app->setUserState('com_easysdi_catalog.edit.metadata.id', null);
-//
-//        // Redirect to the list screen.
-//        $this->setMessage(JText::_('COM_EASYSDI_CATALOG_ITEM_SAVED_SUCCESSFULLY'));
-//        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-//
-//        // Flush the data from the session.
-//        $app->setUserState('com_easysdi_catalog.edit.metadata.data', null);
+        if ($commit) {
+            $this->structure->formatOutput = true;
+            $xml = $this->structure->saveXML();
+
+
+            if ($smda->update($xml)) {
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_SAVE_VALIDE'), 'message');
+                if ($continue) {
+                    //$this->setRedirect(JRoute::_('index.php?view=metadata&layout=edit', false));
+                    $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $data['id']));
+                } else {
+                    $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+                }
+            } else {
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_SAVE_ERROR'), 'error');
+                $this->setRedirect(JRoute::_('index.php?view=metadata&layout=edit', false));
+            }
+        }
     }
 
     function cancel() {
 
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+    }
+
+    /**
+     * Add index to xpath at a specific position
+     * 
+     * @param string $xpath
+     * @param int $position
+     * @return array
+     */
+    private function addIndexToXpath($xpath, $position, $index) {
+        $arrayPath = array_reverse(explode('-', $xpath));
+
+        $arrayIndex = array_slice($arrayPath, 0, $position, true) +
+                array('ra' => 'ra-', 'index' => $index, 'la' => 'la') +
+                array_slice($arrayPath, $position, count($arrayPath), true);
+
+        return implode('-',array_reverse($arrayIndex, true));
     }
 
     private function unSerializeXpath($xpath) {
@@ -318,34 +382,35 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * 
      */
     private function getHeader($default = 'deu', $encoding = 'utf8') {
+
         $headers = array();
 
-        $language = $this->structure->createElement('gmd:language');
-        $characterString = $this->structure->createElement('gco:CharacterString', $default);
+        $language = $this->structure->createElementNS($this->nsArray['gmd'], 'language');
+        $characterString = $this->structure->createElementNS($this->nsArray['gco'], 'CharacterString', $default);
         $language->appendChild($characterString);
         $headers[] = $language;
 
-        $characterSet = $this->structure->createElement('gmd:characterSet');
-        $characterSetCode = $this->structure->createElement('gmd:MD_CharacterSetCode');
+        $characterSet = $this->structure->createElementNS($this->nsArray['gmd'], 'characterSet');
+        $characterSetCode = $this->structure->createElementNS($this->nsArray['gmd'], 'MD_CharacterSetCode');
         $characterSetCode->setAttribute('codeListValue', $encoding);
         $characterSetCode->setAttribute('codeList', 'http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode');
         $characterSet->appendChild($characterSetCode);
 
         $headers[] = $characterSet;
 
-        $locale = $this->structure->createElement('gmd:locale');
-        $characterEncoding = $this->structure->createElement('gmd:characterEncoding');
-        $characterEncodingSetCode = $this->structure->createElement('gmd:MD_CharacterSetCode', strtoupper($encoding));
+        $locale = $this->structure->createElementNS($this->nsArray['gmd'], 'locale');
+        $characterEncoding = $this->structure->createElementNS($this->nsArray['gmd'], 'characterEncoding');
+        $characterEncodingSetCode = $this->structure->createElementNS($this->nsArray['gmd'], 'MD_CharacterSetCode', strtoupper($encoding));
         $characterEncodingSetCode->setAttribute('codeListeValue', $encoding);
         $characterEncodingSetCode->setAttribute('codeList', '#MD_CharacterSetCode');
         $characterEncoding->appendChild($characterEncodingSetCode);
         foreach ($this->ldao->getAll() as $key => $value) {
             if ($value->{'iso639-2T'} != $default) {
-                $pt_locale = $this->structure->createElement('gmd:PT_Locale');
+                $pt_locale = $this->structure->createElementNS($this->nsArray['gmd'], 'PT_Locale');
                 $pt_locale->setAttribute('id', $key);
 
-                $languageCode = $this->structure->createElement('gmd:languageCode');
-                $languageCodeChild = $this->structure->createElement('gmd:LanguageCode', $value->value);
+                $languageCode = $this->structure->createElementNS($this->nsArray['gmd'], 'languageCode');
+                $languageCodeChild = $this->structure->createElementNS($this->nsArray['gmd'], 'LanguageCode', $value->value);
                 $languageCodeChild->setAttribute('codeListValue', $value->{'iso639-2T'});
                 $languageCodeChild->setAttribute('codeList', '#LanguageCode');
 
@@ -408,11 +473,11 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->db->setQuery($query);
         $resultUsers = $this->db->loadObjectList();
 
-        $platform = $this->structure->createElement('sdi:platform');
+        $platform = $this->structure->createElementNS($this->nsArray['sdi'], 'platform');
         $platform->setAttribute('guid', $platformGuid);
         $platform->setAttribute('harvested', 'false');
 
-        $resource = $this->structure->createElement('sdi:resource');
+        $resource = $this->structure->createElementNS($this->nsArray['sdi'], 'resource');
         $resource->setAttribute('guid', $result->r_guid);
         $resource->setAttribute('alias', $result->r_alias);
         $resource->setAttribute('name', $result->r_name);
@@ -420,24 +485,24 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $resource->setAttribute('organism', $result->o_guid);
         $resource->setAttribute('scope', '');
 
-        $metadata = $this->structure->createElement('sdi:metadata');
+        $metadata = $this->structure->createElementNS($this->nsArray['sdi'], 'metadata');
         $metadata->setAttribute('lastVersion', $result->md_lastVersion);
         $metadata->setAttribute('guid', $result->md_guid);
         $metadata->setAttribute('created', $result->md_created);
         $metadata->setAttribute('published', $result->md_published);
         $metadata->setAttribute('state', $result->ms_value);
 
-        $organisms = $this->structure->createElement('sdi:organisms');
+        $organisms = $this->structure->createElementNS($this->nsArray['sdi'], 'organisms');
         foreach ($resultOrganisms as $o) {
-            $organism = $this->structure->createElement('sdi:organism');
+            $organism = $this->structure->createElementNS($this->nsArray['sdi'], 'organism');
             $organism->setAttribute('guid', $o->guid);
             $organism->setAttribute('alias', $o->name);
             $organisms->appendChild($organism);
         }
 
-        $users = $this->structure->createElement('sdi:users');
+        $users = $this->structure->createElementNS($this->nsArray['sdi'], 'users');
         foreach ($resultUsers as $u) {
-            $user = $this->structure->createElement('sdi:user');
+            $user = $this->structure->createElementNS($this->nsArray['sdi'], 'user');
             $user->setAttribute('guid', $u->guid);
             $user->setAttribute('alias', $u->name);
             $users->appendChild($user);
@@ -455,7 +520,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * @return DOMElement Description
      */
     private function getConstraint($guid) {
-        $constraint = $this->structure->createElement('csw:Constraint');
+        $constraint = $this->structure->createElementNS($this->cswUri, 'Constraint');
         $constraint->setAttribute('version', '1.0.0');
 
         $filter = $this->structure->createElement('Filter');

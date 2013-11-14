@@ -127,8 +127,19 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                 }
 
                 // Convert the JTable to a clean JObject.
-                $properties = $table->getProperties(1);
-                $this->_item = JArrayHelper::toObject($properties, 'JObject');
+                $query = $this->db->getQuery(true);
+                $query->select('m.*, rt.profile_id');
+                $query->from('jos_sdi_metadata m');
+                $query->innerJoin('jos_sdi_version v on v.id = m.version_id');
+                $query->innerJoin('jos_sdi_resource r on v.resource_id = r.id');
+                $query->innerJoin('jos_sdi_resourcetype rt on r.resourcetype_id = rt.id');
+                $query->where('m.id = '.$id);
+                
+                $this->db->setQuery($query);
+                $metadata = $this->db->loadObject();
+                $metdataArray = (array)$metadata;
+                
+                $this->_item = JArrayHelper::toObject($metdataArray, 'JObject');
 
                 if ($id) {
                     //Load the CSW metadata
@@ -219,7 +230,8 @@ class Easysdi_catalogModelMetadata extends JModelForm {
      * @since	1.6
      */
     public function getForm($data = array(), $loadData = true) {
-        $formGenerator = new FormGenerator($this->_item->csw);
+
+        $formGenerator = new FormGenerator($this->_item);
 
         $form = $this->loadForm('com_easysdi_catalog.metadata', $formGenerator->getForm(), array('control' => 'jform', 'load_data' => $loadData, 'file' => FALSE));
 
@@ -405,7 +417,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                 }
 
                 $validator->patterns = $validator_pattern;
-                if(isset($validator->name)){
+                if (isset($validator->name)) {
                     $tmpValidator[$validator->name] = $validator;
                 }
             }
