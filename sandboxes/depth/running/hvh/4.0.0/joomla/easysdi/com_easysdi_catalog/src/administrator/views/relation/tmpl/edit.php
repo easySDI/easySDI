@@ -19,13 +19,18 @@ JHtml::_('behavior.keepalive');
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_catalog.css');
 $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.css');
+$document->addScript('components/com_easysdi_catalog/views/relation/tmpl/edit.js');
 ?>
 <script type="text/javascript">
+    var url = '<?php echo JURI::root(); ?>administrator/index.php?option=com_easysdi_catalog&task=relation.getRenderType&attributechild=';
+    var stereotype;
+    var attributevalue = {};
+
     js = jQuery.noConflict();
     js(document).ready(function() {
         onChangeChildType();
         onChangeSearchFilter();
-        onChangeAttributeChild();
+        onChangeAttributeChild();        
     });
 
     Joomla.submitbutton = function(task)
@@ -42,74 +47,6 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
             else {
                 alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED')); ?>');
             }
-        }
-    }
-
-    function onChangeChildType() {
-        var childtype = js("#jform_childtype_id :selected").val();
-        switch (childtype) {
-            case "0":
-                js("#classchilddefinition").hide();
-                js("#commondefinition").hide();
-                js("#attributechilddefinition").hide();
-                js("#resourcetypedefinition").hide();
-                break;
-            case "1":
-                js("#classchilddefinition").show();
-                js("#commondefinition").show();
-                js("#attributechilddefinition").hide();
-                js("#resourcetypedefinition").hide();
-                break;
-            case "2":
-                js("#classchilddefinition").hide();
-                js("#commondefinition").hide();
-                js("#attributechilddefinition").show();
-                js("#resourcetypedefinition").hide();
-                break;
-            case "3":
-                js("#classchilddefinition").hide();
-                js("#commondefinition").show();
-                js("#attributechilddefinition").hide();
-                js("#resourcetypedefinition").show();
-                break;
-        }
-    }
-    
-    function onChangeAttributeChild(){
-        js('#loader').show();
-        var attributechild_id = js("#jform_attributechild_id :selected").val();
-        if (attributechild_id == '') {
-            js('#loader').hide();
-            return;
-        }
-        var uriencoded = '<?php echo JURI::root() ; ?>administrator/index.php?option=com_easysdi_catalog&task=relation.getRenderType&attributechild=' + attributechild_id;
-        js.ajax({
-            type: 'Get',
-            url: uriencoded,
-            success: function(data) {
-                var attributes = js.parseJSON(data);
-                js('#jform_rendertype_id').empty().trigger("liszt:updated");
-
-                js.each(attributes, function(key, value) {
-                    js('#jform_rendertype_id')
-                            .append('<option value="' + value.id + '">' + value.value + '</option>')
-                            .trigger("liszt:updated")
-                            ;
-                });
-                js('#loader').hide();
-            }
-        })
-    }
-    
-    function onChangeSearchFilter() {
-        var isselected = js("#jform_issearchfilter0").prop("checked");
-        switch (isselected) {
-            case true:
-               js("#searchfilterdefinition").show();
-                break;
-            case false:
-                js("#searchfilterdefinition").hide();
-                break;
         }
     }
 </script>
@@ -212,8 +149,47 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
                             <div class="control-label"><?php echo $this->form->getLabel('rendertype_id'); ?></div>
                             <div class="controls"><?php echo $this->form->getInput('rendertype_id'); ?></div>
                         </div>
-
                     </div>
+
+                    <div id="defaultvalue">
+                        <div id="defaultvalue-textbox">
+                            <div class="control-group">
+                                <div class="control-label"><?php echo $this->form->getLabel('defaulttextbox'); ?></div>
+                                <div class="controls"><?php echo $this->form->getInput('defaulttextbox'); ?></div>
+                            </div>
+                        </div>
+                        <div id="defaultvalue-textarea">
+                            <div class="control-group">
+                                <div class="control-label"><?php echo $this->form->getLabel('defaulttextarea'); ?></div>
+                                <div class="controls"><?php echo $this->form->getInput('defaulttextarea'); ?></div>
+                            </div>
+                        </div>
+                        <div id="defaultvalue-list">
+                            <div class="control-group">
+                                <div class="control-label"><?php echo $this->form->getLabel('defaultlist'); ?></div>
+                                <div class="controls"><?php echo $this->form->getInput('defaultlist'); ?></div>
+                            </div>
+                        </div>
+                        <div id="defaultvalue-multiplelist">
+                            <div class="control-group">
+                                <div class="control-label"><?php echo $this->form->getLabel('defaultmultiplelist'); ?></div>
+                                <div class="controls"><?php echo $this->form->getInput('defaultmultiplelist'); ?></div>
+                            </div>
+                        </div>
+                        <div id="defaultvalue-localetextbox">
+                            <div class="control-group">
+                                <div class="control-label"><?php echo $this->form->getLabel('defaultlocaletextbox'); ?></div>
+                                <div class="controls"><?php echo $this->form->getInput('defaultlocaletextbox'); ?></div>
+                            </div>
+                        </div>
+                        <div id="defaultvalue-localetextarea">
+                            <div class="control-group">
+                                <div class="control-label"><?php echo $this->form->getLabel('defaultlocaletextarea'); ?></div>
+                                <div class="controls"><?php echo $this->form->getInput('defaultlocaletextarea'); ?></div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="well">
                         <div class="control-group">
                             <div class="control-label"><?php echo $this->form->getLabel('text1'); ?></div>
@@ -237,14 +213,14 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
                         <div class="controls"><?php echo $this->form->getInput('issearchfilter'); ?></div>
                     </div> 
                     <div id="searchfilterdefinition">
-                    <div class="control-group">
-                        <div class="control-label"><?php echo $this->form->getLabel('catalog_id'); ?></div>
-                        <div class="controls"><?php echo $this->form->getInput('catalog_id'); ?></div>
-                    </div> 
-                    <div class="well">
-                        <?php echo $this->form->getInput('searchfilter'); ?>
-                    </div>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('catalog_id'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('catalog_id'); ?></div>
+                        </div> 
+                        <div class="well">
+                            <?php echo $this->form->getInput('searchfilter'); ?>
                         </div>
+                    </div>
                 </div>
                 <div class="tab-pane" id="publishing">
                     <div class="control-group">

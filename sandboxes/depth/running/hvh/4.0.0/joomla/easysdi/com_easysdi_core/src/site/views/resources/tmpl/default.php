@@ -247,7 +247,7 @@ endif;
                                             <span class="caret"></span>
                                         </a>
                                         <ul class="dropdown-menu">
-                                            <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->versioning): ?>
+                                            <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>
                                                 <li>
                                                     <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.edit'); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
                                                 </li>

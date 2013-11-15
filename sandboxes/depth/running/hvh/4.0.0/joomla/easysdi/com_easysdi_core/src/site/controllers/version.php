@@ -86,5 +86,96 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_DELETED_SUCCESSFULLY'));
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
     }
+    
+    /*
+     * 
+     */
+    public function editrelations(){
+        $app = JFactory::getApplication();
+
+        // Get the previous edit id (if any) and the current edit id.
+        $previousId = (int) $app->getUserState('com_easysdi_core.edit.version.id');
+
+        $metadataId = JFactory::getApplication()->input->getInt('id', null);
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('v.id as id')
+                ->from('#__sdi_version v')
+                ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
+                ->where('m.id = ' . (int) $metadataId);
+        $db->setQuery($query);
+        $item = $db->loadObject();
+
+        $editId = $item->id;
+        
+        // Set the user id for the user to edit in the session.
+        $app->setUserState('com_easysdi_core.edit.version.metadataid', $metadataId);
+        $app->setUserState('com_easysdi_core.edit.version.id', $editId);        
+
+        // Get the model.
+        $model = $this->getModel('Version', 'Easysdi_coreModel');
+
+        // Check out the item
+        if ($editId) {
+            $model->checkout($editId);
+        }
+
+        // Check in the previous user.
+        if ($previousId) {
+            $model->checkin($previousId);
+        }
+
+        // Redirect to the edit screen.
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=version&layout=edit', false));
+    }
+    
+    /**
+     * 
+     */
+    public function search(){
+        $app = JFactory::getApplication();
+        
+        // Get the user data.
+        $jform = JFactory::getApplication()->input->get('jform', array(), 'array');
+        
+        $searchtype = $jform['searchtype'];
+        $searchid = $jform['searchid'];
+        $searchname = $jform['searchname'];
+        $searchstate = $jform['searchstate'];
+        $searchlast = $jform['searchlast'];
+        
+        $app->setUserState('com_easysdi_core.edit.version.runsearch', '1');
+        $app->setUserState('com_easysdi_core.edit.version.searchtype', $searchtype);
+        $app->setUserState('com_easysdi_core.edit.version.searchid', $searchid);
+        $app->setUserState('com_easysdi_core.edit.version.searchname', $searchname);
+        $app->setUserState('com_easysdi_core.edit.version.searchstate', $searchstate);
+        $app->setUserState('com_easysdi_core.edit.version.searchlast', $searchlast);
+        
+        // Redirect to the edit screen.
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=version&layout=edit', false));
+    }
+    
+    /**
+     * 
+     */
+    public function clear(){
+        $app = JFactory::getApplication();
+        $app->setUserState('com_easysdi_core.edit.version.runsearch', null);
+        $app->setUserState('com_easysdi_core.edit.version.searchtype', null);
+        $app->setUserState('com_easysdi_core.edit.version.searchid', null);
+        $app->setUserState('com_easysdi_core.edit.version.searchname', null);
+        $app->setUserState('com_easysdi_core.edit.version.searchstate', null);
+        $app->setUserState('com_easysdi_core.edit.version.searchlast', null);
+        
+        // Redirect to the edit screen.
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=version&layout=edit', false));
+    }
+    
+    /**
+     * 
+     */
+    public function save(){
+        
+    }
 
 }

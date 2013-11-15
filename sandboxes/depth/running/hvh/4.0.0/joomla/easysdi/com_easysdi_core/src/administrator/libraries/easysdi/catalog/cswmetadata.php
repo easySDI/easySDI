@@ -285,7 +285,7 @@ class cswmetadata {
                         if ($diffusion->accessscope_id == 2):
                             $organisms = sdiModel::getAccessScopeOrganism($diffusion->guid);
                             $organism = sdiFactory::getSdiUser()->getMemberOrganisms();
-                            if (empts($organisms) || !in_array($organism[0]->id, $organisms)):
+                            if (empty($organisms) || !in_array($organism[0]->id, $organisms)):
                                 $right = false;
                             endif;
                         endif;
