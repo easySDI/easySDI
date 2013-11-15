@@ -237,7 +237,9 @@ class sdiMetadata extends cswmetadata{
     }
 
     /**
+     * Load a metadata and update the SDI elements.
      * 
+     * @return Boolean 
      */
     public function updateSDIElement() {
         $dom = $this->load();

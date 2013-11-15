@@ -3,11 +3,20 @@ var currentUrl = location.protocol + '//' + location.host + location.pathname;
 var tabIsOpen = false;
 js('document').ready(function() {
 
-    js('.select-multiple').chosen().change(function(e,params) {
-
-        var option = js(this.options[this.selectedIndex]);
-        alert(option);
+    // Change publish date field to Calendar field
+    Calendar.setup({
+        // Id of the input field
+        inputField: "publish_date",
+        // Format of the input field
+        ifFormat: "%Y-%m-%d",
+        // Trigger for the calendar (button ID)
+        button: "publish_date_img",
+        // Alignment (defaults to "Bl")
+        align: "Tl",
+        singleClick: true,
+        firstDay: 1
     });
+
 
     /**
      * Control the "Open All" button.
@@ -57,13 +66,15 @@ js('document').ready(function() {
                     break;
                 case 'control':
                     if (document.formvalidator.isValid(form)) {
-                        bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK'));
+                        js('#system-message-container').remove();
+                        bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK','COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK'));
                         break;
                     }
                     break;
                 case 'valid':
+                case 'validAndClose':
                     if (document.formvalidator.isValid(form)) {
-                        Joomla.submitform('metadata.save', form);
+                        Joomla.submitform(task, form);
                         break;
                     }
                     break;
@@ -82,16 +93,24 @@ js('document').ready(function() {
                             }
                         }
                     });
-                    return true;
-                    break;
-                case 'cancel':
-                    return true;
                     break;
                 case 'inprogress':
-                    return true;
+                    Joomla.submitform(task, form);
                     break;
                 case 'publish':
-                    return true;
+                    if (document.formvalidator.isValid(form)) {
+                        Joomla.submitform(task, form);
+                    }
+                    break;
+                case 'setPublishDate':
+                    if (document.formvalidator.isValid(form)) {
+                        js('#publishModal').modal('show');
+                        break;
+                    }
+                    break;
+                case 'publishWithDate':
+                    js('#jform_published').val(js('#publish_date').val());
+                    Joomla.submitbutton('metadata.publish');
                     break;
                 case 'replicate':
                     js('#searchModal').modal('show');

@@ -655,9 +655,21 @@ class FormGenerator {
         $guid->setAttribute('name', 'guid');
         $guid->setAttribute('type', 'hidden');
         $guid->setAttribute('filter', 'safehtml');
+        
+        $metadatastateId = $this->form->createElement('field');
+        $metadatastateId->setAttribute('name', 'metadatastate_id');
+        $metadatastateId->setAttribute('type', 'hidden');
+        $metadatastateId->setAttribute('filter', 'safehtml');
+        
+        $published = $this->form->createElement('field');
+        $published->setAttribute('name', 'published');
+        $published->setAttribute('type', 'hidden');
+        $published->setAttribute('filter', 'safehtml');
 
         $fieldset->appendChild($id);
         $fieldset->appendChild($guid);
+        $fieldset->appendChild($metadatastateId);
+        $fieldset->appendChild($published);
 
         return $fieldset;
     }
@@ -938,7 +950,6 @@ class FormGenerator {
         $label = $attribute->getAttributeNS($this->catalog_uri, 'label');
         $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
 
-        $validator = $this->getValidatorClass($attribute);
 
         if ($upperbound > 1) {
             $allValues = $this->domXpathStr->query('child::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode);
@@ -953,11 +964,11 @@ class FormGenerator {
             $field->setAttribute('multiple', 'true');
             
         } else {
+            $validator = $this->getValidatorClass($attribute);
+            $field->setAttribute('class', $validator);
             $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
         }
-
-
-        $field->setAttribute('class', $validator);
+        
         if ($readonly) {
             $field->setAttribute('readonly', 'true');
         }

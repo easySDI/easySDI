@@ -143,20 +143,27 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         switch ($metadata->state) {
             case sdiMetadata::INPROGRESS:
                 if ($this->user->authorize($this->item->id, sdiUser::metadataeditor)) {
-                    $toolbar->append('Pévisulisation', 'previsulisation', 'btn-small', array('Pévisulisation XML' => 'metadata.show', 'Pévisulisation HTML' => 'metadata.preview'), true);
-                    $toolbar->append('Enregistrer', 'Enregistrer', 'btn-small', array('Enregistrer et poursuivre' => 'metadata.saveAndContinue', 'Enregistrer et fermer' => 'metadata.save'), true);
-                    $toolbar->append('Valider', 'Valider', 'btn-small btn-success', array('Valider' => 'metadata.control', 'Valider et enregistrer' => 'metadata.valid'), true);
+                    $toolbar->append(JText::_('COM_EASYSDI_CATALOG_PREVIEW_ITEM'), 'previsulisation', 'btn-small', array(JText::_('COM_EASYSDI_CATALOG_PREVIEW_XML_ITEM') => 'metadata.show', JText::_('COM_EASYSDI_CATALOG_PREVIEW_XHTML_ITEM') => 'metadata.preview'), true);
+                    $toolbar->append(JText::_('COM_EASYSDI_CATALOG_SAVE_ITEM'), 'enregistrer', 'btn-small', array(JText::_('COM_EASYSDI_CATALOG_SAVE_AND_CONTINUE_ITEM') => 'metadata.saveAndContinue', JText::_('COM_EASYSDI_CATALOG_SAVE_AND_CLOSE_ITEM') => 'metadata.save'), true);
+                    $toolbar->append(JText::_('COM_EASYSDI_CATALOG_VALIDATE_ITEM'), 'Valider', 'btn-small btn-success', array(JText::_('COM_EASYSDI_CATALOG_VALIDATE_ITEM') => 'metadata.control', JText::_('COM_EASYSDI_CATALOG_VALIDATE_AND_SAVE_ITEM') => 'metadata.valid'), true);
                 }
                 break;
-            /* case sdiMetadata::VALIDATED:
-              if ($this->user->authorize($this->item->id, sdiUser::metadataresponsible)) {
-              $bar->appendButton('Standard', '', 'En travail', 'metadata.inprogress', false);
-              $bar->appendButton('Standard', '', 'Publier', 'metadata.publish', false);
-              $bar->appendButton('Standard', '', 'Visualiser', 'metadata.show', false);
-              $bar->appendButton('Standard', 'save', JText::_('JSave'), 'metadata.save', false);
-              $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'metadata.cancel', false);
-              }
-              break; */
+            case sdiMetadata::VALIDATED:
+                if ($this->user->authorize($this->item->id, sdiUser::metadataresponsible)) {
+                    $toolbar->append(JText::_('COM_EASYSDI_CATALOG_PREVIEW_ITEM'), 'previsulisation', 'btn-small', array(JText::_('COM_EASYSDI_CATALOG_PREVIEW_XML_ITEM') => 'metadata.show', JText::_('COM_EASYSDI_CATALOG_PREVIEW_XHTML_ITEM') => 'metadata.preview'), true);
+                    $toolbar->append(JText::_('COM_EASYSDI_CATALOG_SAVE_ITEM'), 'enregistrer', 'btn-small', array(JText::_('COM_EASYSDI_CATALOG_SAVE_AND_CONTINUE_ITEM') => 'metadata.valid', JText::_('COM_EASYSDI_CATALOG_SAVE_AND_CLOSE_ITEM') => 'metadata.validAndClose'), true);
+                    $toolbar->append(JText::_('COM_EASYSDI_CATALOG_INPROGRESS_ITEM'), 'inprogress', 'btn-small', 'metadata.inprogress');
+                    $toolbar->append(JText::_('COM_EASYSDI_CATALOG_PUBLISH_ITEM'), 'publier', 'btn-small btn-success', array(JText::_('COM_EASYSDI_CATALOG_VALIDATE_ITEM') => 'metadata.control', JText::_('COM_EASYSDI_CATALOG_PUBLISH_AND_SAVE_ITEM') => 'metadata.setPublishDate'), true);
+                }
+                break;
+            case sdiMetadata::PUBLISHED:
+                if ($this->user->authorize($this->item->id, sdiUser::metadataresponsible)) {
+                    $toolbar->append(JText::_('COM_EASYSDI_CATALOG_PREVIEW_ITEM'), 'previsulisation', 'btn-small', array(JText::_('COM_EASYSDI_CATALOG_PREVIEW_XML_ITEM') => 'metadata.show', JText::_('COM_EASYSDI_CATALOG_PREVIEW_XHTML_ITEM') => 'metadata.preview'), true);
+                    $toolbar->append(JText::_('COM_EASYSDI_CATALOG_SAVE_ITEM'), 'enregistrer', 'btn-small', array(JText::_('COM_EASYSDI_CATALOG_SAVE_AND_CONTINUE_ITEM') => 'metadata.publish', JText::_('COM_EASYSDI_CATALOG_SAVE_AND_CLOSE_ITEM') => 'metadata.publishAndClose'), true);
+                    $toolbar->append(JText::_('COM_EASYSDI_CATALOG_INPROGRESS_ITEM'), 'inprogress', 'btn-small', 'metadata.inprogress');
+                    
+                }
+                break;
         }
         return $toolbar->renderToolbar();
     }
@@ -182,17 +189,17 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
 
         $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_TITLE_OPEN_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
         $toolbar->append('Import', 'import', 'btn-small', $importrefactions, true);
-        $toolbar->append('Annuler', 'Annuler', 'btn-small btn-danger','metadata.cancel');
-        
+        $toolbar->append('Annuler', 'Annuler', 'btn-small btn-danger', 'metadata.cancel');
+
         return $toolbar->renderToolbar();
     }
-    
+
     /**
      * Return a list of all resource type
      * 
      * @return stdClass[]
      */
-    public function getResourceType(){
+    public function getResourceType() {
         $query = $this->db->getQuery(true);
 
         $query->select('rt.id, rt.name, rt.guid');
@@ -201,17 +208,17 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
 
         $this->db->setQuery($query);
         $resourcetype = $this->db->loadObjectList();
-        
-        $first = array('id' => '', 'name' => '', 'guid'=>'');
+
+        $first = array('id' => '', 'name' => '', 'guid' => '');
         array_unshift($resourcetype, (object) $first);
-        
+
         return $resourcetype;
     }
-    
+
     /**
      * @return stdClass[] List of all status
      */
-    public function getStatusList(){
+    public function getStatusList() {
         $query = $this->db->getQuery(true);
 
         $query->select('ms.id, ms.value');
@@ -220,10 +227,10 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
 
         $this->db->setQuery($query);
         $metadatastate = $this->db->loadObjectList();
-        
+
         $first = array('id' => '', 'value' => '');
         array_unshift($metadatastate, (object) $first);
-        
+
         return $metadatastate;
     }
 
