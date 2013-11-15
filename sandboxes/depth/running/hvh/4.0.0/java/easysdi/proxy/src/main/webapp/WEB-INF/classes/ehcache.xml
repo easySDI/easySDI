@@ -119,7 +119,7 @@
 		name="operationBasedCache" 
 		maxElementsInMemory="10000" 
 		diskPersistent="true" 
-		timeToLiveSeconds="2592000" 
+		timeToLiveSeconds="1200" 
 		overflowToDisk="true"
 		memoryStoreEvictionPolicy="LFU" 
 		clearOnFlush="true" 
