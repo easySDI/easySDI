@@ -3,6 +3,21 @@ var currentUrl = location.protocol + '//' + location.host + location.pathname;
 var tabIsOpen = false;
 js('document').ready(function() {
 
+    // Change publish date field to Calendar field
+    Calendar.setup({
+        // Id of the input field
+        inputField: "publish_date",
+        // Format of the input field
+        ifFormat: "%Y-%m-%d",
+        // Trigger for the calendar (button ID)
+        button: "publish_date_img",
+        // Alignment (defaults to "Bl")
+        align: "Tl",
+        singleClick: true,
+        firstDay: 1
+    });
+
+
     /**
      * Control the "Open All" button.
      */
@@ -51,13 +66,15 @@ js('document').ready(function() {
                     break;
                 case 'control':
                     if (document.formvalidator.isValid(form)) {
-                        bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK'));
+                        js('#system-message-container').remove();
+                        bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK','COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK'));
                         break;
                     }
                     break;
                 case 'valid':
+                case 'validAndClose':
                     if (document.formvalidator.isValid(form)) {
-                        Joomla.submitform('metadata.save', form);
+                        Joomla.submitform(task, form);
                         break;
                     }
                     break;
@@ -76,16 +93,24 @@ js('document').ready(function() {
                             }
                         }
                     });
-                    return true;
-                    break;
-                case 'cancel':
-                    return true;
                     break;
                 case 'inprogress':
-                    return true;
+                    Joomla.submitform(task, form);
                     break;
                 case 'publish':
-                    return true;
+                    if (document.formvalidator.isValid(form)) {
+                        Joomla.submitform(task, form);
+                    }
+                    break;
+                case 'setPublishDate':
+                    if (document.formvalidator.isValid(form)) {
+                        js('#publishModal').modal('show');
+                        break;
+                    }
+                    break;
+                case 'publishWithDate':
+                    js('#jform_published').val(js('#publish_date').val());
+                    Joomla.submitbutton('metadata.publish');
                     break;
                 case 'replicate':
                     js('#searchModal').modal('show');
@@ -102,9 +127,10 @@ js('document').ready(function() {
             }
 
         }
-    };
-});
-
+    }
+    ;
+}
+);
 function searchResource(task) {
     if (js('#resource_name').val().length < 3) {
         js('#resource_name_group').addClass('error');
@@ -196,12 +222,12 @@ function addField(id, idwi, relid, parent_path, lowerbound, upperbound) {
 
 function addOrRemoveCheckbox(id, relid, parent_path, path) {
     var checked = js('#' + id).is(':checked');
-    if(checked){
+    if (checked) {
         addToStructure(relid, parent_path);
-    }else{
+    } else {
         removeFromStructure(path);
     }
-    
+
 }
 
 function addToStructure(relid, parent_path) {
