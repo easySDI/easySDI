@@ -96,6 +96,7 @@
                 </files>
                 <languages folder="site">
                     <language tag="en-GB">language/en-GB/en-GB.com_easysdi_monitor.ini</language>
+					<language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_monitor.ini</language>
                 </languages>
                 <administration>
                     <menu img="components/com_easysdi_monitor/assets/images/s_com_easysdi_monitor.png" >COM_EASYSDI_MONITOR</menu>
@@ -121,7 +122,7 @@
                     <languages folder="administrator">
                         <language tag="en-GB">language/en-GB/en-GB.com_easysdi_monitor.ini
                         </language>
-                        <language tag="en-GB">language/en-GB/en-GB.com_easysdi_monitor.sys.ini
+                        <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_monitor.ini
                         </language>
                     </languages>
                 </administration>

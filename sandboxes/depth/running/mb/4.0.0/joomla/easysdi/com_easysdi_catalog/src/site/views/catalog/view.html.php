@@ -28,22 +28,19 @@ class Easysdi_catalogViewCatalog extends JViewLegacy {
      * Display the view
      */
     public function display($tpl = null) {
-
         $app = JFactory::getApplication();
-        $user = JFactory::getUser();
-
+       
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_catalog');
         $this->pagination = $this->get('Pagination');
         $this->form = $this->get('Form');
+        $this->preview = $app->input->get('preview', '', 'STRING');
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
-
-
 
         $this->_prepareDocument();
 

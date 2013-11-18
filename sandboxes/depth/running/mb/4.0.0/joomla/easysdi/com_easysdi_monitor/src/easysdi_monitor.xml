@@ -2,13 +2,13 @@
 <extension method="upgrade" type="component" version="3.0.0">
   <name>com_easysdi_monitor</name>
   <creationDate>2013-04-08</creationDate>
-  <releaseDate>12 novembre 2013</releaseDate>
+  <releaseDate>14 novembre 2013</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>4.0.0-alpha-16</version>
+  <version>4.0.0-alpha-18</version>
   <description />
   <install>
     <sql>
@@ -32,6 +32,7 @@
   </files>
   <languages folder="site">
     <language tag="en-GB">language/en-GB/en-GB.com_easysdi_monitor.ini</language>
+    <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_monitor.ini</language>
   </languages>
   <administration>
     <menu img="components/com_easysdi_monitor/assets/images/s_com_easysdi_monitor.png">COM_EASYSDI_MONITOR</menu>
@@ -54,7 +55,7 @@
     </files>
     <languages folder="administrator">
       <language tag="en-GB">language/en-GB/en-GB.com_easysdi_monitor.ini</language>
-      <language tag="en-GB">language/en-GB/en-GB.com_easysdi_monitor.sys.ini</language>
+      <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_monitor.ini</language>
     </languages>
   </administration>
 </extension>

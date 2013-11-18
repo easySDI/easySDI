@@ -36,6 +36,11 @@ if ($saveOrder)
 $sortFields = $this->getSortFields();
 $params = JComponentHelper::getParams('com_easysdi_service');
 ?>
+<style type="text/css">
+  .btn-toolbar {
+font-size: 13px;
+}
+  </style>
 <script type="text/javascript">
 	Joomla.orderTable = function() {
 		table = document.getElementById("sortTable");

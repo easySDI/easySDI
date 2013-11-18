@@ -214,7 +214,7 @@ class Easysdi_mapHelper {
                 $layers_array = $xmlCapa->xpath('//dflt:Layer/ows:Identifier');
                 if(!empty($layers_array)){
                             foreach ($layers_array as $layer):
-                                $r = $xmlCapa->xpath('//ows:Layer[ows:Identifier="'.(string)$layer.'"]/ows:Title[1]'); 
+                                $r = $xmlCapa->xpath('//dflt:Layer[ows:Identifier="'.(string)$layer.'"]/ows:Title[1]'); 
                                 $layers [(string)$layer] = (string) $r[0];
                             endforeach;
                         }

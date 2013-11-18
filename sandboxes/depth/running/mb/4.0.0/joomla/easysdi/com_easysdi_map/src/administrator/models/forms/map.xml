@@ -35,7 +35,7 @@
                 multiple ="false"
                 translate="true" 
                 required="false"
-                query="SELECT null AS id, '- Please select -' AS name UNION SELECT id, name FROM #__sdi_layergroup WHERE state=1" key_field="id" value_field="name"
+                query="SELECT null AS id, 'COM_EASYSDI_MAP_SELECT' AS name UNION SELECT id, name FROM #__sdi_layergroup WHERE state=1" key_field="id" value_field="name"
         />
                  
         <field 	name="groups" 
@@ -59,7 +59,7 @@
                 multiple ="false"
                 translate="true" 
                 required="false"
-                query="SELECT null AS id, '- Please select -' AS name UNION SELECT id, name FROM #__sdi_layergroup WHERE state=1" key_field="id" value_field="name"
+                query="SELECT null AS id, 'COM_EASYSDI_MAP_SELECT' AS name UNION SELECT id, name FROM #__sdi_layergroup WHERE state=1" key_field="id" value_field="name"
         />
                  
         <field 	name="services" 
@@ -103,7 +103,7 @@
                 description="COM_EASYSDI_MAP_FORM_DESC_MAP_UNIT" 
                 translate="true" 
                 required="true"
-                query="SELECT null AS id, '- Please select -' AS name UNION SELECT id, name FROM #__sdi_sys_unit" key_field="id" value_field="name"
+                query="SELECT null AS id, 'COM_EASYSDI_MAP_SELECT' AS name UNION SELECT id, name FROM #__sdi_sys_unit" key_field="id" value_field="name"
         /> 
 
         <field 	name="maxresolution" 
@@ -289,6 +289,15 @@
             <option value="1">JYES</option>
             <option value="0">JNO</option>
         </field>
+        <field name="tool17" type="radio" class="btn-group" default="0"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_SEARCHCATALOG"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_SEARCHCATALOG" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        
+        
         <!--        <field 	name="tools"
         type="sdidatabasecheckboxes"
         class="inputbox"
@@ -311,6 +320,16 @@
                 <option value="1">JYES</option>
         </field> -->
     </fieldset>
+    
+    <field 	name="catalog_id" 
+                type="sql" 
+                class="inputbox"
+                label="COM_EASYSDI_MAP_FORM_LBL_CATALOG_ID"
+                description="COM_EASYSDI_MAP_FORM_DESC_CATALOG_ID" 
+                translate="true" 
+                required="false"
+                query="SELECT null AS id, 'COM_EASYSDI_MAP_SELECT' AS name UNION SELECT id, name FROM #__sdi_catalog WHERE state=1" key_field="id" value_field="name"
+        /> 
     
     <fieldset name="scaleline">
         <field 	name="topOutUnits" 

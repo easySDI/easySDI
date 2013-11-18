@@ -71,10 +71,10 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                         <div class="control-label"><?php echo $this->form->getLabel('resourcetype_id'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('resourcetype_id'); ?></div>
                     </div>
-                    <div class="control-group">
+<!--                    <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('xsldirectory'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('xsldirectory'); ?></div>
-                    </div>
+                    </div>-->
                     <div class="control-group">
                         <div class="control-label"><?php echo $this->form->getLabel('oninitrunsearch'); ?></div>
                         <div class="controls"><?php echo $this->form->getInput('oninitrunsearch'); ?></div>

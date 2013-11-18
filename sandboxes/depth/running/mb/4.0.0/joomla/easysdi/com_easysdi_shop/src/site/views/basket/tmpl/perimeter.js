@@ -39,6 +39,9 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
 //        loadingPerimeter.show();
 //        }
         var featurerestriction = getUserRestrictedExtentFeature(userperimeter);
+        var g = featurerestriction.geometry;
+        var exp = new OpenLayers.Format.WKT().write(featurerestriction);
+        
         //----------------------------------------------------------------------
         // The WFS version of the perimeter layer filtered 
         // by user restricted perimeter

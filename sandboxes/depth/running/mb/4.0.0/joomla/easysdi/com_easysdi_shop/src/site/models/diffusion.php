@@ -16,6 +16,7 @@ jimport('joomla.event.dispatcher');
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/resource.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/version.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
 
 /**
  * Easysdi_shop model.
@@ -293,7 +294,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
 
             //User
             $ids = '';
-            if(!empty($data['notifieduser_id'])):
+            if (!empty($data['notifieduser_id'])):
                 foreach ($data['notifieduser_id'] as $user) {
                     $diffusionnotifieduser = JTable::getInstance('diffusionnotifieduser', 'Easysdi_shopTable');
                     $keys = array("diffusion_id" => $id, "user_id" => $user);
@@ -358,6 +359,19 @@ class Easysdi_shopModelDiffusion extends JModelForm {
             if (!$this->cleanTable($id, '#__sdi_diffusion_propertyvalue', $ids))
                 return false;
 
+            //Update the metadata stored in the remote catalog 
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->select('m.id')
+                    ->from('#__sdi_metadata m ')
+                    ->innerJoin('#__sdi_version v ON v.id = m.version_id')
+                    ->where('v.id = ' . $table->version_id);
+            $db->setQuery($query);
+            $metadata = $db->loadResult();
+            $csw = new sdiMetadata((int) $metadata);
+            if (!$csw->updateSDIElement()):
+                JFactory::getApplication()->enqueueMessage('Update CSW metadata failed.', 'error');
+            endif;
 
             return $id;
         } else {

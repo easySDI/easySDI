@@ -29,10 +29,6 @@ class Easysdi_shopViewBasket extends JViewLegacy {
      * Display the view
      */
     public function display($tpl = null) {
-        //Load admin language file
-        $lang = JFactory::getLanguage();
-        $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
-
         $app = JFactory::getApplication();
 
         $this->state = $this->get('State');

@@ -48,6 +48,31 @@
              required="false"
              label="COM_EASYSDI_MAP_LBL_PRINT_SERVICE_CREATE_URL"
              description="COM_EASYSDI_MAP_DESC_PRINT_SERVICE_CREATE_URL" />
+        
+        <field name="printservicecreateurl"
+             type="text"
+             default=""
+             size="100"
+             required="false"
+             label="COM_EASYSDI_MAP_LBL_PRINT_SERVICE_CREATE_URL"
+             description="COM_EASYSDI_MAP_DESC_PRINT_SERVICE_CREATE_URL" />
+        
+        <field name="iframewidth"
+             type="text"
+             default="600"
+             size="100"
+             required="true"             
+             label="COM_EASYSDI_MAP_LBL_IFRAME_WIDTH"
+             description="COM_EASYSDI_MAP_DESC_IFRAME_WIDTH" />
+        
+        <field name="iframeheight"
+             type="text"
+             default="400"
+             size="100"
+             required="true"             
+             label="COM_EASYSDI_MAP_LBL_IFRAME_HEIGHT"
+             description="COM_EASYSDI_MAP_DESC_IFRAME_HEIGHT" />
+        
 	</fieldset>
 	
 	<fieldset name="tools" 

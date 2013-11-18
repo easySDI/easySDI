@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
     <fieldset name="details" addfieldpath="/administrator/components/com_categories/models/fields">
-        <field 	name="catid"
+<!--        <field 	name="catid"
                         type="categoryedit"
                         extension="com_easysdi_contact"
                         label="JCATEGORY"
                         description="JFIELD_CATEGORY_DESC"
                         class="inputbox"
-                        required="true" />
+                        required="true" />-->
 	
         <field 	name="user_id"
                         type="user"

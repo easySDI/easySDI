@@ -58,103 +58,106 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
                     <?php foreach ($this->form->getFieldset('toolsstate') as $field): ?>
                         <div class="control-group">
                             <div class="control-label"><?php echo $field->label; ?></div>
-                                <div class="controls"><?php echo $field->input; ?></div>
+                            <div class="row controls form-inline"><span><?php echo $field->input; ?></span>
+                            <?php if ($field->fieldname == 'tool17') : ?>
+                                <span><?php echo $this->form->getField('catalog_id')->input; ?></span>
+                            <?php endif; ?>
+                                </div>
                         </div>
-
                     <?php endforeach; ?>
-                    
+
                     <fieldset id ="scaleline">
-                    <legend><?php echo JText::_('COM_EASYSDI_MAP_FORM_FIELDSET_LEGEND_SCALELINE'); ?></legend>
-                    <?php foreach ($this->form->getFieldset('scaleline') as $field): ?>
-                        <div class="control-group">
-                            <div class="control-label"><?php echo $field->label; ?></div>
+                        <legend><?php echo JText::_('COM_EASYSDI_MAP_FORM_FIELDSET_LEGEND_SCALELINE'); ?></legend>
+                        <?php foreach ($this->form->getFieldset('scaleline') as $field): ?>
+                            <div class="control-group">
+                                <div class="control-label"><?php echo $field->label; ?></div>
                                 <div class="controls"><?php echo $field->input; ?></div>
-                        </div>
+                            </div>
 
-                    <?php endforeach; ?>
+                        <?php endforeach; ?>
                     </fieldset>
-                    
+
                     <fieldset id ="wfslocator">
-                    <legend><?php echo JText::_('COM_EASYSDI_MAP_FORM_FIELDSET_LEGEND_WFSLOCATOR'); ?></legend>
-                    <?php foreach ($this->form->getFieldset('wfslocator') as $field): ?>
-                        <div class="control-group">
-                            <div class="control-label"><?php echo $field->label; ?></div>
+                        <legend><?php echo JText::_('COM_EASYSDI_MAP_FORM_FIELDSET_LEGEND_WFSLOCATOR'); ?></legend>
+                        <?php foreach ($this->form->getFieldset('wfslocator') as $field): ?>
+                            <div class="control-group">
+                                <div class="control-label"><?php echo $field->label; ?></div>
                                 <div class="controls"><?php echo $field->input; ?></div>
-                        </div>
+                            </div>
 
-                    <?php endforeach; ?>
+                        <?php endforeach; ?>
                     </fieldset>
                 </div>
-            
-            <div class="tab-pane" id="publishing">
-                <div class="control-group">
-                    <div class="control-label"><?php echo $this->form->getLabel('created_by'); ?></div>
-                    <div class="controls"><?php echo $this->form->getInput('created_by'); ?></div>
-                </div>
-                <div class="control-group">
-                    <div class="control-label"><?php echo $this->form->getLabel('created'); ?></div>
-                    <div class="controls"><?php echo $this->form->getInput('created'); ?></div>
-                </div>
-                <?php if ($this->item->modified_by) : ?>
+
+                <div class="tab-pane" id="publishing">
                     <div class="control-group">
-                        <div class="control-label"><?php echo $this->form->getLabel('modified_by'); ?></div>
-                        <div class="controls"><?php echo $this->form->getInput('modified_by'); ?></div>
+                        <div class="control-label"><?php echo $this->form->getLabel('created_by'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('created_by'); ?></div>
                     </div>
                     <div class="control-group">
-                        <div class="control-label"><?php echo $this->form->getLabel('modified'); ?></div>
-                        <div class="controls"><?php echo $this->form->getInput('modified'); ?></div>
+                        <div class="control-label"><?php echo $this->form->getLabel('created'); ?></div>
+                        <div class="controls"><?php echo $this->form->getInput('created'); ?></div>
+                    </div>
+                    <?php if ($this->item->modified_by) : ?>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('modified_by'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('modified_by'); ?></div>
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label"><?php echo $this->form->getLabel('modified'); ?></div>
+                            <div class="controls"><?php echo $this->form->getInput('modified'); ?></div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                <?php if ($this->canDo->get('core.admin')): ?>
+                    <div class="tab-pane" id="permissions">
+                        <fieldset>
+                            <?php echo $this->form->getInput('rules'); ?>
+                        </fieldset>
                     </div>
                 <?php endif; ?>
             </div>
-            <?php if ($this->canDo->get('core.admin')): ?>
-                <div class="tab-pane" id="permissions">
-                    <fieldset>
-                        <?php echo $this->form->getInput('rules'); ?>
-                    </fieldset>
-                </div>
-            <?php endif; ?>
+            <!-- End Tabs -->
         </div>
-        <!-- End Tabs -->
-    </div>
 
-    <input type="hidden" name="task" value="" />
-    <?php echo JHtml::_('form.token'); ?>
+        <input type="hidden" name="task" value="" />
+        <?php echo JHtml::_('form.token'); ?>
 
-    <!-- Begin Sidebar -->
-    <div class="span2">
-        <h4><?php echo JText::_('JDETAILS'); ?></h4>
-        <hr />
-        <fieldset class="form-vertical">
-            <div class="control-group">
+        <!-- Begin Sidebar -->
+        <div class="span2">
+            <h4><?php echo JText::_('JDETAILS'); ?></h4>
+            <hr />
+            <fieldset class="form-vertical">
                 <div class="control-group">
-                    <div class="controls">
-                        <?php echo $this->form->getValue('name'); ?>
-                    </div>
-                </div>
-                <?php
-                if ($this->canDo->get('core.edit.state')) {
-                    ?>
-                    <div class="control-label">
-                        <?php echo $this->form->getLabel('state'); ?>
-                    </div>
-                    <div class="controls">
-                        <?php echo $this->form->getInput('state'); ?>
+                    <div class="control-group">
+                        <div class="controls">
+                            <?php echo $this->form->getValue('name'); ?>
+                        </div>
                     </div>
                     <?php
-                }
-                ?>
-            </div>
+                    if ($this->canDo->get('core.edit.state')) {
+                        ?>
+                        <div class="control-label">
+                            <?php echo $this->form->getLabel('state'); ?>
+                        </div>
+                        <div class="controls">
+                            <?php echo $this->form->getInput('state'); ?>
+                        </div>
+                        <?php
+                    }
+                    ?>
+                </div>
 
-            <div class="control-group">
-                <div class="control-label">
-                    <?php echo $this->form->getLabel('access'); ?>
+                <div class="control-group">
+                    <div class="control-label">
+                        <?php echo $this->form->getLabel('access'); ?>
+                    </div>
+                    <div class="controls">
+                        <?php echo $this->form->getInput('access'); ?>
+                    </div>
                 </div>
-                <div class="controls">
-                    <?php echo $this->form->getInput('access'); ?>
-                </div>
-            </div>
-        </fieldset>
+            </fieldset>
+        </div>
+        <!-- End Sidebar -->
     </div>
-    <!-- End Sidebar -->
-</div>
 </form>

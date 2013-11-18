@@ -20,6 +20,7 @@
                    class="inputbox input-xlarge"
                    multiple="false"
                    required ="true"
+                   default="9"
                    label="COM_EASYSDI_CATALOG_CONFIG_LBL_LANGUAGE"
                    description="COM_EASYSDI_CATALOG_CONFIG_DESC_LANGUAGE" 
                    query="SELECT id, value FROM #__sdi_language WHERE state=1 ORDER BY ordering" 
@@ -128,7 +129,7 @@
            
            <field name="linkedfilerepository"
                    type="folderlist"
-                   directory="media"
+                   directory="media/easysdi"
                    default=""
                    class="inputbox input-xlarge"
                    required ="false"

@@ -2,12 +2,13 @@ Ext.namespace("gxp");
 
 var sourceConfig;
 
-gxp.Viewer.prototype.addExtraLayer = function(sourceConfig, layerConfig) {
-    this.sources[sourceConfig.id] = sourceConfig;
+gxp.Viewer.prototype.addExtraLayer = function(lsourceConfig, layerConfig) {
+    sourceConfig = lsourceConfig;
+    this.sources[lsourceConfig.id] = lsourceConfig;
     this.initialConfig.map.layers.push(layerConfig);
 
     var queue = [];
-    queue.push(this.createSourceLoader(sourceConfig.id));
+    queue.push(this.createSourceLoader(lsourceConfig.id));
 
     gxp.util.dispatch(queue, this.reactivate, this);
 };
@@ -33,7 +34,9 @@ gxp.Viewer.prototype.reactivate = function() {
                             overlayRecords.push(record);
                         }
                     }
+                    break;
                 }
+                
             }
         }
 

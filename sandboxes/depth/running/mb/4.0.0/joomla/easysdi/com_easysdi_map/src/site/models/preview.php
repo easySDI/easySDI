@@ -13,6 +13,10 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
 
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/version.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/metadata.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/diffusion.php';
+
 /**
  * Easysdi_map model.
  */
@@ -57,7 +61,7 @@ class Easysdi_mapModelPreview extends JModelForm {
                     ->from('#__sdi_visualization p')
                     ->innerJoin('#__sdi_version v ON p.version_id = v.id')
                     ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                    ->where('m.id IN ' . (int) $metadataid) .')';
+                    ->where('m.id IN (' . (int) $metadataid) .')';
             $db->setQuery($query);
             $id = implode($db->loadColumn(),',');
         } else {
@@ -114,11 +118,29 @@ class Easysdi_mapModelPreview extends JModelForm {
                     $service = JTable::getInstance('virtualservice', 'Easysdi_serviceTable');
                 }
                 $service->load($item->wmsservice_id);
-                $serviceproperties = $service->getProperties(1);
-                
-                $service = JArrayHelper::toObject($serviceproperties, 'JObject');
-                
+                $serviceproperties = $service->getProperties(1);                
+                $service = JArrayHelper::toObject($serviceproperties, 'JObject');                
                 $item->service = $service;
+                
+                //Load related version 
+                $version = JTable::getInstance('version', 'Easysdi_coreTable');
+                $version->load($item->version_id);
+                $versionproperties = $version->getProperties(1);     
+                $item->version = JArrayHelper::toObject($versionproperties, 'JObject');
+                
+                //Load related metadata 
+                $metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
+                $keys = array('version_id' => $item->version_id);
+                $metadata->load($keys);
+                $metadataproperties = $metadata->getProperties(1);     
+                $item->metadata = JArrayHelper::toObject($metadataproperties, 'JObject');
+                
+                //Load related diffusion 
+                $diffusion = JTable::getInstance('diffusion', 'Easysdi_shopTable');
+                $keys = array('version_id' => $item->version_id);
+                $diffusion->load($keys);
+                $diffusionproperties = $diffusion->getProperties(1);     
+                $item->diffusion = JArrayHelper::toObject($diffusionproperties, 'JObject');
                 
                 $this->_item[] = $item;
                 
