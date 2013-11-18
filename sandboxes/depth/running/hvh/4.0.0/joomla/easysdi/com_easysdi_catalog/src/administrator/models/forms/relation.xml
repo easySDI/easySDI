@@ -193,6 +193,7 @@
         <field name="guid" type="hidden" filter="SAFEHTML" />
         <field name="checked_out" type="hidden" filter="SAFEHTML" />
         <field name="checked_out_time" type="hidden" filter="SAFEHTML" /> 
+        <field name="hiddendefaultlist" type="hidden" filter="SAFEHTML" />
     </fieldset>
     
     <fieldset name="search">
@@ -219,7 +220,12 @@
     <field name="defaulttextbox" type="text" size="40" class="inputbox"
            label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_DEFAULTVALUE"
            description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_DEFAULTVALUE" 
-           filter="safehtml" />  
+           filter="safehtml" /> 
+    
+    <field name="defaultdate" type="calendar"  
+           label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_DEFAULTVALUE" 
+           description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_DEFAULTVALUE" 
+           format="%d-%m-%Y" /> 
     
     <field name="defaulttextarea" type="textarea" rows="5" cols="10" class="inputbox"
            label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_DEFAULTVALUE"
@@ -245,5 +251,7 @@
            label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_DEFAULTVALUE" description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_DEFAULTVALUE" translate="true">
         <option value=""></option>
     </field>
+    
+    
     
 </form>

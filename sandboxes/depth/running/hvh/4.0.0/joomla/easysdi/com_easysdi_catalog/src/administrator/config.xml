@@ -146,6 +146,18 @@
                    label="COM_EASYSDI_CATALOG_CONFIG_LBL_LINKEDFILEBASEURL"
                    description="COM_EASYSDI_CATALOG_CONFIG_DESC_LINKEDFILEBASEURL">
            </field>
+           
+           <field
+                name="editmetadatafieldsetstate"
+                type="list"
+                label="COM_EASYSDI_CATALOG_CONFIG_LBL_FIELDSET_STATE"
+                description="COM_EASYSDI_CATALOG_CONFIG_DESC_FIELDSET_STATE"
+                class="inputbox"
+                size="1"
+                default="allopen">
+                <option value="allopen">COM_EASYSDI_CATALOG_CONFIG_FIELDSET_STATE_ALLOPEN</option>
+                <option value="allclose">COM_EASYSDI_CATALOG_CONFIG_FIELDSET_STATE_ALLCLOSE</option>
+            </field>
 
 	</fieldset>
         

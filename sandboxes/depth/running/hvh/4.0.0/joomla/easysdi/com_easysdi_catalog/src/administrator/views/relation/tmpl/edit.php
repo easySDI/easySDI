@@ -30,7 +30,8 @@ $document->addScript('components/com_easysdi_catalog/views/relation/tmpl/edit.js
     js(document).ready(function() {
         onChangeChildType();
         onChangeSearchFilter();
-        onChangeAttributeChild();        
+        onChangeAttributeChild();   
+        
     });
 
     Joomla.submitbutton = function(task)
@@ -39,9 +40,7 @@ $document->addScript('components/com_easysdi_catalog/views/relation/tmpl/edit.js
             Joomla.submitform(task, document.getElementById('relation-form'));
         }
         else {
-
             if (task != 'relation.cancel' && document.formvalidator.isValid(document.id('relation-form'))) {
-
                 Joomla.submitform(task, document.getElementById('relation-form'));
             }
             else {
@@ -162,6 +161,12 @@ $document->addScript('components/com_easysdi_catalog/views/relation/tmpl/edit.js
                             <div class="control-group">
                                 <div class="control-label"><?php echo $this->form->getLabel('defaulttextarea'); ?></div>
                                 <div class="controls"><?php echo $this->form->getInput('defaulttextarea'); ?></div>
+                            </div>
+                        </div>
+                        <div id="defaultvalue-date">
+                            <div class="control-group">
+                                <div class="control-label"><?php echo $this->form->getLabel('defaultdate'); ?></div>
+                                <div class="controls"><?php echo $this->form->getInput('defaultdate'); ?></div>
                             </div>
                         </div>
                         <div id="defaultvalue-list">

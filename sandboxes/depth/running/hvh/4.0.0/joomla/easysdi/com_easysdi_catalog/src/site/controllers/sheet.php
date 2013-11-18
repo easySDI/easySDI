@@ -25,7 +25,7 @@ class Easysdi_catalogControllerSheet extends Easysdi_catalogController {
         $type = JFactory::getApplication()->input->get('type', null, 'STRING');
         $lang = JFactory::getApplication()->input->get('lang', null, 'STRING');
         $metadata = new cswmetadata($id);
-        $metadata->load();
+        $metadata->load('complete');
         $metadata->extend($catalog, $type, 'true', $lang);
         $file = $metadata->applyXSL($catalog, $type);
         
@@ -42,16 +42,12 @@ class Easysdi_catalogControllerSheet extends Easysdi_catalogController {
     public function exportXML() {
         $id = JFactory::getApplication()->input->get('id', null, 'STRING');
         $metadata = new cswmetadata($id);
-        $metadata->load();
+        $metadata->load('complete');
         $file = $metadata->dom->saveXML();
         $tmp = uniqid();
         $tmpfile = JPATH_BASE . '/tmp/' . $tmp;
         file_put_contents($tmpfile . '.xml', $file);
         Easysdi_catalogControllerSheet::setResponse($file, $tmpfile . '.xml', 'text/xml', 'report.xml', strlen($file));
-    }
-
-    public function printSheet() {
-        
     }
 
     function setResponse($file, $filename, $contenttype, $downloadname, $size) {

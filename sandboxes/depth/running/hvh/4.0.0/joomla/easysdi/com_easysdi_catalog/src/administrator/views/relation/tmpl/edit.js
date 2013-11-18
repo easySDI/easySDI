@@ -48,38 +48,54 @@ function onChangeChildType() {
 
 function onChangeRenderType() {
     js('[id^="defaultvalue-"]').hide();
-    if ( js.inArray(stereotype, ['1', '2', '4', '5', '7', '8', '12', '13'] ) != -1){
-    //if (stereotype == '1' || stereotype == '2' || stereotype == '4' || stereotype == '5' || stereotype == '7' || stereotype == '8' || stereotype == '12' || stereotype == '13') {
-        if (js("#jform_rendertype_id :selected").val() == '1')
+    if (js.inArray(stereotype, ['1', '2', '4', '5', '7', '8', '12', '13']) !== -1) {
+        if (js("#jform_rendertype_id :selected").val() === '1')
             js('#defaultvalue-textarea').show();
-        else if (js("#jform_rendertype_id :selected").val() == '5')
+        else if (js("#jform_rendertype_id :selected").val() === '5')
             js('#defaultvalue-textbox').show();
-    } else if (stereotype == '3') {
-        if (js("#jform_rendertype_id :selected").val() == '1')
+        else if (js("#jform_rendertype_id :selected").val() === '6')
+            js('#defaultvalue-date').show();
+    } else if (stereotype === '3') {
+        if (js("#jform_rendertype_id :selected").val() === '1')
             js('#defaultvalue-localetextarea').show();
-        else if (js("#jform_rendertype_id :selected").val() == '5')
+        else if (js("#jform_rendertype_id :selected").val() === '5')
             js('#defaultvalue-localetextbox').show();
-    } else if ( js.inArray(stereotype, ['6', '9', '10']) != -1 ){ 
+    } else if (js.inArray(stereotype, ['6', '9', '10']) !== -1) {
         if (js("#jform_upperbound").val() <= 1) {
+            var selected = js('#jform_hiddendefaultlist').val().split(',')[0];
+            js('#jform_defaultlist').empty().trigger("liszt:updated");
+            js('#jform_defaultlist')
+                        .append('<option value=""></option>')
+                        .trigger("liszt:updated")
+                        ;
             js.each(attributevalue, function(key, value) {
                 js('#jform_defaultlist')
                         .append('<option value="' + key + '">' + value + '</option>')
                         .trigger("liszt:updated")
                         ;
             });
+            js('#jform_defaultlist option[value=' + selected + ']').attr('selected', 'selected').trigger("liszt:updated");
             js('#jform_defaultlist').trigger("change");
             js('#defaultvalue-list').show();
         } else {
+            var selected = js('#jform_hiddendefaultlist').val().split(',');
+            js('#jform_defaultmultiplelist').empty().trigger("liszt:updated");
+             js('#jform_defaultmultiplelist')
+                        .append('<option value=""></option>')
+                        .trigger("liszt:updated")
+                        ;
             js.each(attributevalue, function(key, value) {
                 js('#jform_defaultmultiplelist')
                         .append('<option value="' + key + '">' + value + '</option>')
                         .trigger("liszt:updated")
                         ;
             });
+            js.each(selected, function (i, value){
+                js('#jform_defaultmultiplelist option[value=' + value + ']').attr('selected', 'selected').trigger("liszt:updated");
+            })
             js('#jform_defaultmultiplelist').trigger("change");
             js('#defaultvalue-multiplelist').show();
         }
-
     }
 }
 
@@ -90,6 +106,7 @@ function onChangeAttributeChild() {
         js('#loader').hide();
         return;
     }
+    var rendertype_id = js("#jform_rendertype_id :selected").val();
     var uriencoded = url + attributechild_id;
     js.ajax({
         type: 'Get',
@@ -97,28 +114,22 @@ function onChangeAttributeChild() {
         success: function(data) {
             var attributes = js.parseJSON(data);
             js('#jform_rendertype_id').empty().trigger("liszt:updated");
-            js('#jform_defaultlist').empty().trigger("liszt:updated");
-
             var rendertype = {};
             attributevalue = {};
-
             js.each(attributes, function(key, value) {
                 rendertype[value.rendertypeid] = value.rendertypevalue;
                 stereotype = value.stereotypeid;
                 attributevalue [value.attributevalueid] = value.attributevaluevalue;
             });
-
             js.each(rendertype, function(key, value) {
                 js('#jform_rendertype_id')
                         .append('<option value="' + key + '">' + value + '</option>')
                         .trigger("liszt:updated")
                         ;
             });
+            js('#jform_rendertype_id option[value=' + rendertype_id + ']').attr('selected', 'selected').trigger("liszt:updated");
             
-              js('#jform_rendertype_id').trigger("change");
-
             onChangeRenderType();
-
             js('#loader').hide();
         }
     })
