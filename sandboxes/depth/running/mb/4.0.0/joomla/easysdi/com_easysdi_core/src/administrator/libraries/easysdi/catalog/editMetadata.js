@@ -3,6 +3,7 @@ var currentUrl = location.protocol + '//' + location.host + location.pathname;
 var tabIsOpen = false;
 js('document').ready(function() {
 
+
     // Change publish date field to Calendar field
     Calendar.setup({
         // Id of the input field
@@ -368,9 +369,13 @@ function filterBoundary(parentPath, value) {
         var replaceId = parentPath.replace(/-/g, '_');
         var selectList = js('#jform_' + replaceId + '_sla_gmd_dp_description_sla_gco_dp_CharacterString');
         selectList.empty();
-        var items = "";
-        js.each(response, function() {
-            items += "<option value=\"" + this.option_value + "\">" + this.option_value + "</option>";
+        var items = "<option value=\"\"></option>";
+        js.each(response, function(i) {
+            if(i===0){
+                items += "<option selected=\"selected\" value=\"" + this.option_value + "\">" + this.option_value + "</option>";
+            }else{
+                items += "<option value=\"" + this.option_value + "\">" + this.option_value + "</option>";
+            }
         });
         selectList.html(items);
         selectList.trigger("liszt:updated");
@@ -396,6 +401,12 @@ function setBoundary(parentPath, value) {
         var map_parent_path = replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox';
         drawBB(map_parent_path);
     });
+}
+
+function clearbbselect(parent_path){
+    
+    js('#jform_'+parent_path+'_sla_sdi_dp_extentType_sla_gco_dp_CharacterString').val('').trigger('liszt:updated');
+    js('#jform_'+parent_path+'_sla_gmd_dp_description_sla_gco_dp_CharacterString').val('').trigger('liszt:updated');
 }
 
 function drawBB(parent_path) {

@@ -358,10 +358,13 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             }
 
             if (isset($element)) {
+                // List case
                 if ($element->hasAttribute('codeList')) {
                     $element->setAttribute('codeListValue', $value);
+                // Resourcetype case
                 } elseif ($element->hasAttributeNS('http://www.w3.org/1999/xlink', 'href')) {
                     $element->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', $this->getHref($value));
+                // Text case
                 } else {
                     $element->nodeValue = $value;
                 }
@@ -392,9 +395,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         if ($commit) {
             $this->structure->formatOutput = true;
-            $xml = $this->structure->saveXML();
 
             if ($smda->update($xml)) {
+                $this->saveTitle();
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_SAVE_VALIDE'), 'message');
                 if ($continue) {
                     $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $data['id']));
@@ -409,6 +412,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         }
     }
 
+    
     /**
      * Change metadata status
      * 

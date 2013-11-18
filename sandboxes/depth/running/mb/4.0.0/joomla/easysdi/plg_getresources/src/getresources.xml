@@ -3,13 +3,13 @@
   <name>plg_easysdi_admin_info_getresources</name>
   <author>EasySDI Community</author>
   <creationDate>15 Septemeber 2013</creationDate>
-  <releaseDate>14 novembre 2013</releaseDate>
+  <releaseDate>18 novembre 2013</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>4.0.0-alpha-18</version>
+  <version>4.0.0-alpha-19</version>
   <description>PLG_EASYSDI_ADMIN_INFO_GETRESOURCES_XML_DESCRIPTION</description>
   <scriptfile>script.php</scriptfile>
   <files>

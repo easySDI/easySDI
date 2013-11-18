@@ -13,7 +13,13 @@ JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('formbehavior.chosen', 'select');
+JHtml::_('behavior.calendar');
 
+JText::script('COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK');
+
+//Load admin language file
+$lang = JFactory::getLanguage();
+$lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
 $document = JFactory::getDocument();
 
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/ext/resources/css/ext-all.css');
@@ -106,7 +112,7 @@ foreach ($this->validators as $validator) {
     echo $validator;
 }
 ?>
-        });
+    });
 
 </script>
 
@@ -250,7 +256,7 @@ foreach ($this->validators as $validator) {
                                 </tbody>
                             </table>
                         </form>
-        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.importResource')">Importer</button>
