@@ -487,35 +487,6 @@ PRIMARY KEY (`id`) ,
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_relation_attributevalue` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)   ,
-`state` TINYINT(1)  NOT NULL DEFAULT '1',
-`relation_id` INT(11) UNSIGNED NOT NULL ,
-`attribute_id` INT(11) UNSIGNED NOT NULL ,
-`attributevalue_id` INT(11) UNSIGNED  NOT NULL ,
-`value` VARCHAR(255)  NOT NULL ,
-PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_relation_attributevalue_fk1` (`relation_id` ASC) ,
-  INDEX `#__sdi_relation_attributevalue_fk2` (`attribute_id` ASC) ,
-  INDEX `#__sdi_relation_attributevalue_fk3` (`attributevalue_id` ASC) ,
-  CONSTRAINT `#__sdi_relation_attributevalue_fk1`
-    FOREIGN KEY (`relation_id` )
-    REFERENCES `#__sdi_relation` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_relation_attributevalue_fk2`
-    FOREIGN KEY (`attribute_id` )
-    REFERENCES `#__sdi_attribute` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-CONSTRAINT `#__sdi_relation_attributevalue_fk3`
-    FOREIGN KEY (`attributevalue_id` )
-    REFERENCES `#__sdi_attributevalue` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
 CREATE TABLE IF NOT EXISTS `#__sdi_relation_profile` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)   ,
@@ -1005,6 +976,33 @@ CONSTRAINT `#__sdi_user_role_resource_fk1`
 CONSTRAINT `#__sdi_user_role_resource_fk3`
     FOREIGN KEY (`resource_id`)
     REFERENCES `#__sdi_resource` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_relation_defaultvalue` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`relation_id`  INT(11) UNSIGNED NOT NULL  ,
+`attributevalue_id`  INT(11) UNSIGNED ,
+`value` VARCHAR (500),
+`language_id` INT(11) UNSIGNED NOT NULL ,
+PRIMARY KEY (`id`) ,
+  INDEX `#__sdi_relation_defaultvalue_fk1` (`relation_id` ASC) ,
+  INDEX `#__sdi_relation_defaultvalue_fk2` (`attributevalue_id` ASC) ,
+INDEX `#__sdi_relation_defaultvalue_fk3` (`language_id` ASC) ,
+  CONSTRAINT `#__sdi_relation_defaultvalue_fk1`
+    FOREIGN KEY (`relation_id` )
+    REFERENCES `#__sdi_relation` (`id` )
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+  CONSTRAINT `#__sdi_relation_defaultvalue_fk2`
+    FOREIGN KEY (`attributevalue_id` )
+    REFERENCES `#__sdi_attributevalue` (`id` )
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+CONSTRAINT `#__sdi_relation_defaultvalue_fk3`
+    FOREIGN KEY (`language_id` )
+    REFERENCES `#__sdi_language` (`id` )
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;

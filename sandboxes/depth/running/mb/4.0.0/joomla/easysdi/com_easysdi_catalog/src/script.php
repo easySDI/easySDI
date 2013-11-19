@@ -21,7 +21,7 @@ class com_easysdi_catalogInstallerScript {
     function preflight($type, $parent) {
         // Installing component manifest file version
         $this->release = $parent->get("manifest")->version;
-
+	
         // Show the essential information at the install/update back-end
         echo '<p>EasySDI component Catalog [com_easysdi_catalog]';
         echo '<br />' . JText::_('COM_EASYSDI_CATALOG_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
@@ -58,66 +58,41 @@ class com_easysdi_catalogInstallerScript {
      */
 
     function postflight($type, $parent) {
-        if ($type == 'install') {
-            
-//            JTable::addIncludePath(JPATH_ADMINISTRATOR."/components/com_easysdi_catalog/tables");
-//            //Create system namespace
-//            $gmd = JTable::getInstance('namespace', 'easysdi_catalogTable');
-//            $gmd->alias = 'gmd';
-//            $gmd->state = 1;
-//            $gmd->name = 'gmd';
-//            $gmd->prefix = 'gmd';
-//            $gmd->uri = 'http://www.isotc211.org/2005/gmd';
-//            $gmd->system = 1;
-//
-//            if (!$gmd->store(true)) {
-//                JError::raiseWarning(null, JText::_('COM_EASYSDI_CATALOG_POSTFLIGHT_SCRIPT_NAMESPACE_ERROR'));
-//                return false;
-//            }
-//            
-//            $gco = JTable::getInstance('namespace', 'easysdi_catalogTable');
-//            $gco->alias = 'gco';
-//            $gco->state = 1;
-//            $gco->name = 'gco';
-//            $gco->prefix = 'gco';
-//            $gco->uri = 'http://www.isotc211.org/2005/gco';
-//            $gco->system = 1;
-//
-//            if (!$gco->store(true)) {
-//                JError::raiseWarning(null, JText::_('COM_EASYSDI_CATALOG_POSTFLIGHT_SCRIPT_NAMESPACE_ERROR'));
-//                return false;
-//            }
-//            
-//            $gml = JTable::getInstance('namespace', 'easysdi_catalogTable');
-//            $gml->alias = 'gml';
-//            $gml->state = 1;
-//            $gml->name = 'gml';
-//            $gml->prefix = 'gml';
-//            $gml->uri = 'http://www.opengis.net/gml';
-//            $gml->system = 1;
-//
-//            if (!$gml->store(true)) {
-//                JError::raiseWarning(null, JText::_('COM_EASYSDI_CATALOG_POSTFLIGHT_SCRIPT_NAMESPACE_ERROR'));
-//                return false;
-//            }
-//            
-//            $sdi = JTable::getInstance('namespace', 'easysdi_catalogTable');
-//            $sdi->alias = 'sdi';
-//            $sdi->state = 1;
-//            $sdi->name = 'sdi';
-//            $sdi->prefix = 'sdi';
-//            $sdi->uri = 'http://www.easysdi.org/2011/sdi';
-//            $sdi->system = 1;
-//
-//            if (!$sdi->store(true)) {
-//                JError::raiseWarning(null, JText::_('COM_EASYSDI_CATALOG_POSTFLIGHT_SCRIPT_NAMESPACE_ERROR'));
-//                return false;
-//            }
+        if ($type == 'install' || ($type == 'update' && ($this->getParam('version') < '4.0.0-alpha-22') == 1 )) {
+            JTable::addIncludePath(JPATH_ADMINISTRATOR . "/components/com_easysdi_catalog/tables");
+            //Create system search criteria
+            $sc = JTable::getInstance('searchcriteria', 'easysdi_catalogTable');
+            $sc->alias = 'isViewable';
+            $sc->state = 1;
+            $sc->name = 'isViewable';
+            $sc->issystem = 1;
+            $sc->criteriatype_id = 1;
+            $sc->rendertype_id = 1;
+            $sc->access = 1;
+
+            if (!$sc->store(true)) {
+                JError::raiseWarning(null, JText::_('COM_EASYSDI_CATALOG_POSTFLIGHT_SCRIPT_SEARCHCRITERIA_ERROR'));
+                return false;
+            }
+
+            $db = JFactory::getDbo();
+            $db->setQuery('SELECT id FROM #__sdi_catalog');
+            $catalogs = $db->loadColumn();
+            foreach ($catalogs as $catalog):
+                $catalogsearchcriteria = JTable::getInstance('catalogsearchcriteria', 'Easysdi_catalogTable');
+                $array = array();
+                $array['catalog_id'] = $catalog;
+                $array['searchcriteria_id'] = $sc->id;
+                $array['searchtab_id'] = 4;
+                $array['state'] = 1;
+                $array['ordering'] = $sc->id;
+                $catalogsearchcriteria->save($array);
+            endforeach;
         }
-        
+
         $db = JFactory::getDbo();
         $db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_catalog'");
-	$db->query();
+        $db->query();
     }
 
     /*

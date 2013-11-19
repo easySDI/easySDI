@@ -64,7 +64,7 @@ class com_easysdi_coreInstallerScript {
             $this->setParams($params);
         }
 
-        if ($type == 'install' || ($type == 'update' && $this->getParam('version') < '4.0.0-alpha-18')) {
+        if ($type == 'install' || ($type == 'update' && ($this->getParam('version') < '4.0.0-alpha-18') == 1)) {
             // import joomla's filesystem classes
             jimport('joomla.filesystem.folder');
 

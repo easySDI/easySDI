@@ -27,10 +27,11 @@ class Easysdi_catalogControllerRelation extends JControllerForm
         $jinput = JFactory::getApplication()->input;
         $attributechild_id = $jinput->get('attributechild', '0', 'string');
         $db = JFactory::getDbo();
-        $db->setQuery('SELECT rt.id , rt.value
+        $db->setQuery('SELECT rt.id as rendertypeid , rt.value as rendertypevalue, rts.stereotype_id as stereotypeid, av.id as attributevalueid, av.value as attributevaluevalue
                         FROM #__sdi_sys_rendertype rt 
-                        INNER JOIN #__sdi_sys_rendertype_stereotype rts ON rts.rendertype_id = rt.id
+                        INNER JOIN #__sdi_sys_rendertype_stereotype rts ON rts.rendertype_id = rt.id                        
                         INNER JOIN #__sdi_attribute a ON a.stereotype_id = rts.stereotype_id
+                        LEFT OUTER JOIN #__sdi_attributevalue av ON av.attribute_id = a.id
                         WHERE a.id='.$attributechild_id.' 
                         ORDER BY rt.value');
        

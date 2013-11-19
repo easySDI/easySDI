@@ -86,8 +86,8 @@ class cswmetadata {
     /**
      * @return DOMDocument 
      */
-    public function load() {
-        $catalogUrlGetRecordById = $this->catalogurl . "?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=" . $this->guid;
+    public function load($content = 'CORE') {
+        $catalogUrlGetRecordById = $this->catalogurl . "?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=".$content."&id=" . $this->guid;
         $response = $this->CURLRequest("GET", $catalogUrlGetRecordById);
         if (!$response){
             return false;
@@ -286,7 +286,7 @@ class cswmetadata {
                         if ($diffusion->accessscope_id == 2):
                             $organisms = sdiModel::getAccessScopeOrganism($diffusion->guid);
                             $organism = sdiFactory::getSdiUser()->getMemberOrganisms();
-                            if (empts($organisms) || !in_array($organism[0]->id, $organisms)):
+                            if (empty($organisms) || !in_array($organism[0]->id, $organisms)):
                                 $right = false;
                             endif;
                         endif;

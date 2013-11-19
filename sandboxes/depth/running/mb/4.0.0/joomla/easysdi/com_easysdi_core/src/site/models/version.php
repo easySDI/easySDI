@@ -38,14 +38,6 @@ class Easysdi_coreModelVersion extends JModelForm {
             JFactory::getApplication()->setUserState('com_easysdi_core.edit.version.id', $id);
         }
         $this->setState('version.id', $id);
-
-        // Load the parameters.
-        $params = $app->getParams();
-        $params_array = $params->toArray();
-        if (isset($params_array['item_id'])) {
-            $this->setState('version.id', $params_array['item_id']);
-        }
-        $this->setState('params', $params);
     }
 
     /**
@@ -68,16 +60,39 @@ class Easysdi_coreModelVersion extends JModelForm {
 
             // Attempt to load the row.
             if ($table->load($id)) {
-                // Check published state.
-                if ($published = $this->getState('filter.published')) {
-                    if ($table->state != $published) {
-                        return $this->_item;
-                    }
-                }
 
                 // Convert the JTable to a clean JObject.
                 $properties = $table->getProperties(1);
                 $this->_item = JArrayHelper::toObject($properties, 'JObject');
+
+                //Get session
+                $app = JFactory::getApplication();
+                $this->_item->searchtype = $app->getUserState('com_easysdi_core.edit.version.searchtype');
+                $this->_item->searchid = $app->getUserState('com_easysdi_core.edit.version.searchid');
+                $this->_item->searchname = $app->getUserState('com_easysdi_core.edit.version.searchname');
+                $this->_item->searchstate = $app->getUserState('com_easysdi_core.edit.version.searchstate');
+                $this->_item->searchlast = $app->getUserState('com_easysdi_core.edit.version.searchlast');
+
+                //Get search result
+                $run = $app->getUserState('com_easysdi_core.edit.version.runsearch');
+                if (!empty($run)) {
+                    $db = JFactory::getDbo();
+                    $query = $db->getQuery(true)
+                            ->select('*')
+                            ->from('#__sdi_version v')
+                            ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
+                            ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
+                            ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
+                            ;
+                    if(!empty($this->_item->searchtype)){
+                        $query->where('rt.id = '.$this->_item->searchtype);
+                    }
+                    if(!empty($this->_item->searchid)){
+                        $query->where('m.guid = '.$this->_item->searchid);
+                    }
+                    $db->setQuery($query);
+                    $item = $db->loadObject();
+                }
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
