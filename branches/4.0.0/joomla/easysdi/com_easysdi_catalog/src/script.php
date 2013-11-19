@@ -58,7 +58,7 @@ class com_easysdi_catalogInstallerScript {
      */
 
     function postflight($type, $parent) {
-        if ($type == 'install' || ($type == 'update' && ($this->getParam('version') < '4.0.0-alpha-20') == 1 )) {
+        if ($type == 'install' || ($type == 'update' && ($this->getParam('version') < '4.0.0-alpha-22') == 1 )) {
             JTable::addIncludePath(JPATH_ADMINISTRATOR . "/components/com_easysdi_catalog/tables");
             //Create system search criteria
             $sc = JTable::getInstance('searchcriteria', 'easysdi_catalogTable');

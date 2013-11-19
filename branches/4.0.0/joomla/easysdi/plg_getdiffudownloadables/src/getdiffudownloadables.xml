@@ -9,7 +9,7 @@
   <author>EasySDI Community</author>
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>4.0.0-alpha-20</version>
+  <version>4.0.0-alpha-21</version>
   <description>PLG_EASYSDI_ADMIN_INFO_GETDIFFUDOWNLOADABLES_XML_DESCRIPTION</description>
   <scriptfile>script.php</scriptfile>
   <files>
