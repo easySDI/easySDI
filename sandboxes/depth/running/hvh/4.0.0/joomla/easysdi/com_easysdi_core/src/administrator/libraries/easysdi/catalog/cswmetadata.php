@@ -306,10 +306,24 @@ class cswmetadata {
                     $action->appendChild($download);
                 else:
                     //Download right
-                    $downloadright = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:downloadright');
-                    $downloadrighttooltip = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:tooltip');
-                    $downloadright->appendChild($downloadrighttooltip);
-                    $action->appendChild($downloadright);
+                    $query = $this->db->getQuery(true)
+                            ->select('ju.name, ju.email')
+                            ->from('#__sdi_user_role_resource urr')
+                            ->innerJoin('#__sdi_user u ON u.id = urr.user_id')
+                            ->innerJoin('#__users ju ON ju.id = u.user_id')
+                            ->where('urr.resource_id = ' . $this->resource->id)
+                            ->where('urr.role_id = 5')
+                            ;
+                    $this->db->setQuery($query);
+                    $user = $this->db->loadObject();
+                    if(!empty($user)):
+                        $downloadright = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:downloadright');
+                        $downloadrighttooltip = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:tooltip');
+                        $downloadrighttooltip->setAttribute('username', $user->name);
+                        $downloadrighttooltip->setAttribute('email', $user->email);
+                        $downloadright->appendChild($downloadrighttooltip);
+                        $action->appendChild($downloadright);
+                    endif;
                 endif;
             endif;
 
@@ -411,12 +425,17 @@ class cswmetadata {
 
             //Links
              $query = $this->db->getQuery(true)
-                    ->select('vl.parent_id, v.guid as guid, r.name as name, rt.alias as type')
+                    ->select('vl.parent_id, m.guid as guid, r.name as name, rt.alias as type, t.text1 as title')
                     ->from('#__sdi_versionlink vl')
                     ->innerJoin('#__sdi_version v ON v.id = vl.parent_id')
+                    ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
                     ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
                     ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
-                    ->where('vl.child_id = ' . $this->version->id);
+                    ->innerJoin('#__sdi_translation t on t.element_guid = m.guid')
+                    ->innerJoin('#__sdi_language l ON l.id = t.language_id')
+                    ->where('l.code = "' . $lang . '"')
+                    ->where('vl.child_id = ' . $this->version->id)
+                ;
             $this->db->setQuery($query);
             $parentsitem = $this->db->loadObjectList();
             $links = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:links');
@@ -424,7 +443,7 @@ class cswmetadata {
             foreach ($parentsitem as $item):
                 $parent = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:parent');
                 $parent->setAttribute('guid', $item->guid);
-                $parent->setAttribute('title', '');
+                $parent->setAttribute('title', $item->title);
                 $parent->setAttribute('resourcename', $item->name);
                 $parent->setAttribute('resourcetype', $item->type);
                 $parents->appendChild($parent);
@@ -434,8 +453,12 @@ class cswmetadata {
                     ->select('vl.parent_id, v.guid as guid, r.name as name, rt.alias as type')
                     ->from('#__sdi_versionlink vl')
                     ->innerJoin('#__sdi_version v ON v.id = vl.child_id')
+                    ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
                     ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
                     ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
+                    ->innerJoin('#__sdi_translation t on t.element_guid = m.guid')
+                    ->innerJoin('#__sdi_language l ON l.id = t.language_id')
+                    ->where('l.code = "' . $lang . '"')
                     ->where('vl.child_id = ' . $this->version->id);
             $this->db->setQuery($query);
             $childrenitem = $this->db->loadObjectList();
@@ -443,7 +466,7 @@ class cswmetadata {
             foreach ($childrenitem as $item):
                 $child = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:child');
                 $child->setAttribute('guid', $item->guid);
-                $child->setAttribute('title', '');
+                $child->setAttribute('title', $item->title);
                 $child->setAttribute('resourcename', $item->name);
                 $child->setAttribute('resourcetype', $item->type);
                 $children->appendChild($child);
