@@ -10,12 +10,11 @@
 // No direct access
 defined('_JEXEC') or die;
 
-require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/database/sditable.php';
 
 /**
- * importref Table class
+ * attribute Table class
  */
-class Easysdi_catalogTablerelationprofile extends JTable {
+class Easysdi_catalogTablerelationdefaultvalue extends JTable {
 
     /**
      * Constructor
@@ -23,11 +22,9 @@ class Easysdi_catalogTablerelationprofile extends JTable {
      * @param JDatabase A database connector object
      */
     public function __construct(&$db) {
-        parent::__construct('#__sdi_relation_profile', 'id', $db);
+        parent::__construct('#__sdi_relation_defaultvalue', 'id', $db);
     }
-
     
-   
     /**
      * Delete all the entries for the specified relation id
      * 
@@ -75,7 +72,7 @@ class Easysdi_catalogTablerelationprofile extends JTable {
         }
         return true;
     }
-
+    
     public function loadByRelationID($id = null, $reset = true) {
         if ($reset) {
             $this->reset();
@@ -83,13 +80,13 @@ class Easysdi_catalogTablerelationprofile extends JTable {
 
         // Initialise the query.
         $query = $this->_db->getQuery(true);
-        $query->select('profile_id');
+        $query->select('attributevalue_id, value, language_id');
         $query->from($this->_tbl);
         $query->where($this->_db->quoteName('relation_id') . ' = ' . (int) $id);
         $this->_db->setQuery($query);
 
         try {
-            $rows = $this->_db->loadColumn();
+            $rows = $this->_db->loadObjectList();
         } catch (JDatabaseException $e) {
             $je = new JException($e->getMessage());
             $this->setError($je);
@@ -110,9 +107,11 @@ class Easysdi_catalogTablerelationprofile extends JTable {
             $this->setError($e);
             return false;
         }
+        
+        if(count($rows) == 1)
+            return $rows[0];
 
         // Bind the object with the row and return.
         return $rows;
     }
-
 }

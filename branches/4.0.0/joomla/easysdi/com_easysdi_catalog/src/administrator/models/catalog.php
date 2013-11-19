@@ -168,16 +168,29 @@ class Easysdi_catalogModelcatalog extends sdiModel {
 
             //If it is a new catalog, save the default system search criterias
             if ($isNew) {
-                for ($i = 1; $i <= 11; $i++) {
+                $db = JFactory::getDbo();
+                $db->setQuery('SELECT id FROM #__sdi_searchcriteria WHERE issystem = 1');
+                $searchcriterias = $db->loadColumn();
+                foreach ($searchcriterias as $searchcriteria):
                     $catalogsearchcriteria = JTable::getInstance('catalogsearchcriteria', 'Easysdi_catalogTable');
                     $array = array();
                     $array['catalog_id'] = $data['id'];
-                    $array['searchcriteria_id'] = $i;
+                    $array['searchcriteria_id'] = $searchcriteria;
                     $array['searchtab_id'] = 4;
                     $array['state'] = 1;
-                    $array['ordering'] = $i;
+                    $array['ordering'] = $searchcriteria;
                     $catalogsearchcriteria->save($array);
-                }
+                endforeach;
+//                for ($i = 1; $i <= 11; $i++) {
+//                    $catalogsearchcriteria = JTable::getInstance('catalogsearchcriteria', 'Easysdi_catalogTable');
+//                    $array = array();
+//                    $array['catalog_id'] = $data['id'];
+//                    $array['searchcriteria_id'] = $i;
+//                    $array['searchtab_id'] = 4;
+//                    $array['state'] = 1;
+//                    $array['ordering'] = $i;
+//                    $catalogsearchcriteria->save($array);
+//                }
             }
 
             return true;

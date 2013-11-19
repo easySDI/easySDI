@@ -39,7 +39,7 @@ if (!empty($this->item->dom)):
         foreach ($nodes as $node) :
             $metadata = new cswmetadata();
             $metadata->init($node);
-            $metadata->extend($this->item->alias, 'result',$this->preview, 'true', $lang->getTag());
+            $metadata->extend($this->item->alias, 'result',$this->preview, 'true', JFactory::getLanguage()->getTag());
             $result = $metadata->applyXSL($this->item->alias, 'result',$this->preview);
             ?><div class="offset1 catalog-searchresult"> <?php
             echo $result;

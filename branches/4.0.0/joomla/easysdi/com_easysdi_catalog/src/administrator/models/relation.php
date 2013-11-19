@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.modeladmin');
 
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/relationdefaultvalue.php';
 
 /**
  * Easysdi_catalog model.
@@ -89,15 +90,53 @@ class Easysdi_catalogModelrelation extends sdiModel {
             $relationprofile = JTable::getInstance('relationprofile', 'Easysdi_catalogTable');
             $item->profile_id = $relationprofile->loadByRelationID($item->id);
 
+            //Search criteria
             $searchcriteria = JTable::getInstance('searchcriteria', 'Easysdi_catalogTable');
             $searchcriteria_id = $searchcriteria->loadByRelationID($item->id);
 
+            //Default value
+            $relationdefaultvaluet = JTable::getInstance('relationdefaultvalue', 'Easysdi_catalogTable');
+            $relationdefaultvalue = $relationdefaultvaluet->loadByRelationID($item->id);
+            if (!empty($relationdefaultvalue)) {
+                if ($item->rendertype_id == '1') { //Textarea
+                    if (is_array($relationdefaultvalue)) {
+                        foreach ($relationdefaultvalue as $value) {
+                            $item->defaultlocaletextarea[$value->language_id] = $value->value;
+                        }
+                    } else {
+                        $item->defaulttextarea = $relationdefaultvalue->value;
+                    }
+                } else if (in_array($item->rendertype_id, array('2', '3', '4'))) { //Checkbox, radiobutton, list
+                    if (is_array($relationdefaultvalue)) {
+                        foreach ($relationdefaultvalue as $value) {
+                            $item->defaultmultiplelist[] = $value->attributevalue_id;                            
+                        }
+                        $item->hiddendefaultlist = implode(',', $item->defaultmultiplelist);
+                    } else {
+                        $item->defaultlist = $relationdefaultvalue->attributevalue_id;
+                        $item->hiddendefaultlist = $relationdefaultvalue->attributevalue_id;
+                    }
+                } else if ($item->rendertype_id == '5') { //Textbox
+                    if (is_array($relationdefaultvalue)) {
+                        foreach ($relationdefaultvalue as $value) {
+                            $item->defaultlocaletextbox[$value->language_id] = $value->value;
+                        }
+                    } else {
+                        $item->defaulttextbox = $relationdefaultvalue->value;
+                    }
+                } else if ($item->rendertype_id == '6') { //Date
+                    $item->defaultdate = $relationdefaultvalue->value;
+                }
+            }
+
+            //Search filter
             $searchfilter = JTable::getInstance('searchfilter', 'Easysdi_catalogTable');
             $rowsfilter = $searchfilter->loadAll($searchcriteria_id[0]);
             if (is_array($rowsfilter)) {
                 $item->searchfilter = $rowsfilter['searchfilter'];
             }
 
+            //Catalog serach criteria
             $searchcriteriacatalog = JTable::getInstance('catalogsearchcriteria', 'Easysdi_catalogTable');
             $item->catalog_id = $searchcriteriacatalog->loadBySearchCriteriaID($searchcriteria_id[0]);
         }
@@ -124,22 +163,20 @@ class Easysdi_catalogModelrelation extends sdiModel {
             }
         }
 
-        if($table->childtype_id == 1){
-            $table->attributechild_id =null;
+        if ($table->childtype_id == 1) {
+            $table->attributechild_id = null;
             $table->childresourcetype_id = null;
             $table->rendertype_id = null;
-        }
-        elseif($table->childtype_id == 2){
-            $table->classchild_id =null;
+        } elseif ($table->childtype_id == 2) {
+            $table->classchild_id = null;
             $table->childresourcetype_id = null;
             $table->relationtype_id = null;
             $table->classassociation_id = null;
             $table->namespace_id = null;
             $table->isocode = null;
-        }
-        elseif($table->childtype_id == 3){
-            $table->attributechild_id =null;
-            $table->classchild_id =null;
+        } elseif ($table->childtype_id == 3) {
+            $table->attributechild_id = null;
+            $table->classchild_id = null;
             $table->rendertype_id = null;
         }
         if ($table->classchild_id === '')
@@ -188,14 +225,54 @@ class Easysdi_catalogModelrelation extends sdiModel {
                 }
             }
 
+            //Delete default value
+            $relationdefaultvalue = JTable::getInstance('relationdefaultvalue', 'Easysdi_catalogTable');
+            $relationdefaultvalue->deleteByRelationId($item->id);
+            //Save default value
+            if ($data['rendertype_id'] == '1') { //Textarea
+                if (!empty($data['defaulttextarea'])) {
+                    $this->saveDefaultValue($item->id, $data['defaulttextarea']);
+                } else if (!empty($data['defaultlocaletextarea'])) {
+                    foreach ($data['defaultlocaletextarea'] as $key => $value) {
+                        if (!empty($value)) {
+                            $this->saveDefaultLocaleValue($item->id, $value, $key);
+                        }
+                    }
+                }
+            } else if (in_array($data['rendertype_id'], array('2', '3', '4'))) { //Checkbox, radiobutton, list
+                if (!empty($data['defaultlist'])) {
+                    $this->saveDefaultAttributeValue($item->id, $data['defaultlist']);
+                } else if (!empty($data['defaultmultiplelist'])) {
+                    foreach ($data['defaultmultiplelist'] as $key => $value) {
+                        if (!empty($value)) {
+                            $this->saveDefaultAttributeValue($item->id, $value);
+                        }
+                    }
+                }
+            } else if ($data['rendertype_id'] == '5') {//Textbox
+                if (!empty($data['defaulttextbox'])) {
+                    $this->saveDefaultValue($item->id, $data['defaulttextbox']);
+                } else if (!empty($data['defaultlocaletextbox'])) {
+                    foreach ($data['defaultlocaletextbox'] as $key => $value) {
+                        if (!empty($value)) {
+                            $this->saveDefaultLocaleValue($item->id, $value, $key);
+                        }
+                    }
+                }
+            } else if ($data['rendertype_id'] == '6') {//Date
+                if (!empty($data['defaultdate'])) {
+                    $this->saveDefaultValue($item->id, $data['defaultdate']);
+                }
+            }
+
+
             //Delete searchcriteria
-                $searchcriteria = JTable::getInstance('searchcriteria', 'Easysdi_catalogTable');
-                $searchcriteria->deleteByRelationId($item->id);
-                 //Delete existing searcriteriafilter with SQL constraints
-                //Delete existing catalogsearchcriteria with SQL constraints
-                
+            $searchcriteria = JTable::getInstance('searchcriteria', 'Easysdi_catalogTable');
+            $searchcriteria->deleteByRelationId($item->id);
+            //Delete existing searcriteriafilter with SQL constraints
+            //Delete existing catalogsearchcriteria with SQL constraints
+
             if ($data['issearchfilter'] == 1) {
-                
                 //Save search criteria
                 $array = array();
                 $array['relation_id'] = $item->id;
@@ -207,7 +284,7 @@ class Easysdi_catalogModelrelation extends sdiModel {
                 $keys = array();
                 $keys['relation_id'] = $item->id;
                 $searchcriteria->load($keys);
-                if(!$searchcriteria->save($array)){
+                if (!$searchcriteria->save($array)) {
                     $this->setError($searchcriteria->getError());
                     return false;
                 }
@@ -219,7 +296,7 @@ class Easysdi_catalogModelrelation extends sdiModel {
                     $this->setError($searchfilter->getError());
                     return false;
                 }
-               
+
 
                 if (is_array($data['catalog_id'])) {
                     //Insert/update searchcriteria catalog links
@@ -236,13 +313,54 @@ class Easysdi_catalogModelrelation extends sdiModel {
                         $catalogsearchcriteria->save($array);
                     }
                 }
-            }else{
+            } else {
                 //Delete search filter
             }
 
             return true;
         }
         return false;
+    }
+
+    /**
+     * 
+     * @param  $relation_id
+     * @param  $value
+     */
+    private function saveDefaultValue($relation_id, $value) {
+        $relationdefaultvalue = JTable::getInstance('relationdefaultvalue', 'Easysdi_catalogTable');
+        $array = array();
+        $array['relation_id'] = $relation_id;
+        $array['value'] = $value;
+        $relationdefaultvalue->save($array);
+    }
+
+    /**
+     * 
+     * @param  $relation_id
+     * @param  $value
+     * @param  $lang
+     */
+    private function saveDefaultLocaleValue($relation_id, $value, $lang) {
+        $relationdefaultvalue = JTable::getInstance('relationdefaultvalue', 'Easysdi_catalogTable');
+        $array = array();
+        $array['relation_id'] = $relation_id;
+        $array['value'] = $value;
+        $array['language_id'] = $lang;
+        $relationdefaultvalue->save($array);
+    }
+
+    /**
+     * 
+     * @param  $relation_id
+     * @param  $attributevalue
+     */
+    private function saveDefaultAttributeValue($relation_id, $attributevalue) {
+        $relationdefaultvalue = JTable::getInstance('relationdefaultvalue', 'Easysdi_catalogTable');
+        $array = array();
+        $array['relation_id'] = $relation_id;
+        $array['attributevalue_id'] = $attributevalue;
+        $relationdefaultvalue->save($array);
     }
 
 }

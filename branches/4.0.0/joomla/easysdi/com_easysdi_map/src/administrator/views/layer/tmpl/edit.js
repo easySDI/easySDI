@@ -9,6 +9,7 @@ function init()
         jQuery('#asOL :input').removeAttr("disabled");
 
     getLayers();
+	
     setServiceConnector();
 }
 
@@ -25,14 +26,15 @@ function getLayers()
     selectedservice = jQuery('#jform_service_id').find(":selected").val();
     if (!selectedservice)
         return;
-
+	
     var layers = jQuery("#" + selectedservice).val();
+
     if (layers)
     {
         var jsonalllayers = jQuery("#" + selectedservice).val();
         var allayers = JSON.parse(jsonalllayers);
         jQuery.each(allayers, function(key, value) {
-            addLayerOption(key, value);
+            addLayerOption(value, value);
         });
 
         if (jQuery("#jform_onloadlayername").val()) {
@@ -86,17 +88,16 @@ function setLayers()
             return;
         }
 
-
         var ok = true;
-
         var JSONobject = JSON.parse(JSONtext, function(key, value) {
             if (key && typeof key === 'string' && key == 'ERROR') {
                 alert(value);
                 ok = false;
                 return;
             }
+
             if (value && typeof value === 'string') {
-                addLayerOption(value, value);
+                addLayerOption(key,value);
             }
         });
 

@@ -948,6 +948,7 @@ public class CSWProxyServlet extends ProxyServlet {
                 owsExceptionReport.sendExceptionReport(req, resp, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY + "CSWProxyServlet.requestPreTreatmentPOST returns : " + e.toString(), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK);
             }
         } catch (IOException e1) {
+            resp.setHeader("easysdi-proxy-error-occured", "true");
             logger.error(OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
         }
 
@@ -1036,8 +1037,7 @@ public class CSWProxyServlet extends ProxyServlet {
 
         // If something goes wrong, an empty stylesheet is returned.
         StringBuffer sb = new StringBuffer();
-        return sb
-                .append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
+        return sb.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
     }
 
     /**

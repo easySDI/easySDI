@@ -12,7 +12,6 @@ DROP TABLE IF EXISTS `#__sdi_attributevalue`;
 DROP TABLE IF EXISTS `#__sdi_relation`;
 DROP TABLE IF EXISTS `#__sdi_catalog_searchcriteriafilter`;
 DROP TABLE IF EXISTS `#__sdi_catalog_searchsort`;
-DROP TABLE IF EXISTS `#__sdi_relation_attributevalue`;
 DROP TABLE IF EXISTS `#__sdi_relation_profile`;
 DROP TABLE IF EXISTS `#__sdi_relation_catalog`;
 DROP TABLE IF EXISTS `#__sdi_boundary`;
@@ -26,5 +25,6 @@ DROP TABLE IF EXISTS `#__sdi_assignment`;
 DROP TABLE IF EXISTS `#__sdi_searchcriteriafilter`;
 DROP TABLE IF EXISTS `#__sdi_user_role_organism`;
 DROP TABLE IF EXISTS `#__sdi_user_role_resource`;
+DROP TABLE IF EXISTS `#__sdi_relation_defaultvalue`;
 
 SET foreign_key_checks = 1;
