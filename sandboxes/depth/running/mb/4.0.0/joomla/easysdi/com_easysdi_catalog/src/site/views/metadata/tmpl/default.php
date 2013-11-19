@@ -118,10 +118,14 @@ foreach ($this->validators as $validator) {
 
 <div class="metadata-edit front-end-edit">
 
-    <?php echo $this->getTopActionBar(); ?>
+    <?php 
+        echo $this->getTopActionBar(); 
+        $title = $this->getTitle();
+        ?>
 
     <div>
-        <h2><?php echo JText::_('COM_EASYSDI_CATALOGE_TITLE_EDIT_METADATA') . ' ' . $this->item->guid; ?></h2>
+        <h2><?php echo JText::_('COM_EASYSDI_CATALOGE_TITLE_EDIT_METADATA') . ' ' . $title->resource_name  ?></h2>
+        <h5><?php echo $title->name. ': ' . JText::_($title->value) ; ?></h5>
     </div>
 
     <form id="form-metadata" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal" enctype="multipart/form-data">

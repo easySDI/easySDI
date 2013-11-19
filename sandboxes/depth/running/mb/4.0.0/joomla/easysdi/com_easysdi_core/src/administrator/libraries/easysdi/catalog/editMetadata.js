@@ -60,6 +60,9 @@ js('document').ready(function() {
             var form_import = document.getElementById('form_import_resource');
 
             switch (actions[1]) {
+                case 'cancel':
+                    
+                break;
                 case 'save':
                 case 'saveAndContinue':
                     Joomla.submitform(task, form);
