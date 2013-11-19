@@ -48,7 +48,7 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
         // Redirect to the edit screen.
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resource&layout=edit&resourcetype='.$app->input->get('resourcetype', '', 'INT'), false));
     }
-
+    
     /**
      * Method to save a user's profile data.
      *

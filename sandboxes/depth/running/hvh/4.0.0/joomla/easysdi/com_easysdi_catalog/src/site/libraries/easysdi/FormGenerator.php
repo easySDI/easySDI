@@ -114,7 +114,7 @@ class FormGenerator {
             $this->structure->loadXML(unserialize($this->session->get('structure')));
             $this->setDomXpathStr();
 
-            $parent = $this->domXpathStr->query($this->unSerializeXpath($_GET['parent_path']))->item(0);
+            $parent = $this->domXpathStr->query(FormUtils::unSerializeXpath($_GET['parent_path']))->item(0);
 
             $query = $this->getRelationQuery();
             $query->where('r.id = ' . $_GET['relid']);
@@ -655,9 +655,21 @@ class FormGenerator {
         $guid->setAttribute('name', 'guid');
         $guid->setAttribute('type', 'hidden');
         $guid->setAttribute('filter', 'safehtml');
+        
+        $metadatastateId = $this->form->createElement('field');
+        $metadatastateId->setAttribute('name', 'metadatastate_id');
+        $metadatastateId->setAttribute('type', 'hidden');
+        $metadatastateId->setAttribute('filter', 'safehtml');
+        
+        $published = $this->form->createElement('field');
+        $published->setAttribute('name', 'published');
+        $published->setAttribute('type', 'hidden');
+        $published->setAttribute('filter', 'safehtml');
 
         $fieldset->appendChild($id);
         $fieldset->appendChild($guid);
+        $fieldset->appendChild($metadatastateId);
+        $fieldset->appendChild($published);
 
         return $fieldset;
     }
@@ -752,7 +764,7 @@ class FormGenerator {
         }
 
         $field->setAttribute('default', $attribute->firstChild->nodeValue);
-        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
+        $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
         if ($guid != '') {
             $field->setAttribute('label', EText::_($guid));
         } else {
@@ -776,7 +788,7 @@ class FormGenerator {
             }
 
             $field->setAttribute('default', $i18nChild->nodeValue);
-            $field->setAttribute('name', $this->serializeXpath($i18nChild->getNodePath()) . $i18nChild->getAttribute('locale'));
+            $field->setAttribute('name', FormUtils::serializeXpath($i18nChild->getNodePath()) . $i18nChild->getAttribute('locale'));
             $localeValue = str_replace('#', '', $i18nChild->getAttribute('locale'));
             $field->setAttribute('label', EText::_($guid) . ' ' . $this->ldao->getByIso3166($localeValue)->value);
             $field->setAttribute('description', EText::_($guid, 2));
@@ -812,7 +824,7 @@ class FormGenerator {
         }
 
         $field->setAttribute('default', $attribute->firstChild->nodeValue);
-        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
+        $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
         $field->setAttribute('label', EText::_($guid));
         $field->setAttribute('description', EText::_($guid, 2));
 
@@ -831,7 +843,7 @@ class FormGenerator {
             }
 
             $field->setAttribute('default', $i18nChild->nodeValue);
-            $field->setAttribute('name', $this->serializeXpath($i18nChild->getNodePath()) . $i18nChild->getAttribute('locale'));
+            $field->setAttribute('name', FormUtils::serializeXpath($i18nChild->getNodePath()) . $i18nChild->getAttribute('locale'));
             $localeValue = str_replace('#', '', $i18nChild->getAttribute('locale'));
             $field->setAttribute('label', EText::_($guid) . ' ' . $this->ldao->getByIso3166($localeValue)->value);
             $field->setAttribute('description', EText::_($guid, 2));
@@ -856,14 +868,14 @@ class FormGenerator {
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
         $relid = $attribute->getAttributeNS($this->catalog_uri, 'relid');
 
-        $allValues = $this->domXpathStr->query('child::*[@catalog:relid="'.$relid.'"]', $attribute->parentNode);
+        $allValues = $this->domXpathStr->query('child::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode);
         $default = array();
         foreach ($allValues as $node) {
             $default[] = $node->firstChild->getAttribute('codeListValue');
         }
-        
+
         $field->setAttribute('type', 'checkboxes');
-        $name = FormUtils::removeIndexToXpath($this->serializeXpath($attribute->firstChild->getNodePath()));
+        $name = FormUtils::removeIndexToXpath(FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
         $field->setAttribute('name', $name);
 
         if ($readonly) {
@@ -879,7 +891,7 @@ class FormGenerator {
         foreach ($this->getAttributOptions($attribute) as $opt) {
             $option = $this->form->createElement('option', EText::_($opt->guid));
             $option->setAttribute('value', $opt->value);
-            $option->setAttribute('onclick', "addOrRemoveCheckbox(this.id," . $relid . ",'" . $this->serializeXpath($attribute->parentNode->getNodePath()) . "','" . $this->serializeXpath($attribute->getNodePath()) . "')");
+            $option->setAttribute('onclick', "addOrRemoveCheckbox(this.id," . $relid . ",'" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "','" . FormUtils::serializeXpath($attribute->getNodePath()) . "')");
 
             $field->appendChild($option);
             $i++;
@@ -902,7 +914,7 @@ class FormGenerator {
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
 
         $field->setAttribute('type', 'radio');
-        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
+        $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
 
         if ($readonly) {
             $field->setAttribute('readonly', 'true');
@@ -934,12 +946,29 @@ class FormGenerator {
 
         $readonly = $attribute->getAttributeNS($this->catalog_uri, 'readonly');
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
+        $relid = $attribute->getAttributeNS($this->catalog_uri, 'relid');
         $label = $attribute->getAttributeNS($this->catalog_uri, 'label');
+        $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
 
-        $validator = $this->getValidatorClass($attribute);
 
-        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
-        $field->setAttribute('class', $validator);
+        if ($upperbound > 1) {
+            $allValues = $this->domXpathStr->query('child::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode);
+            $default = array();
+            foreach ($allValues as $node) {
+                $default[] = $node->firstChild->getAttribute('codeListValue');
+            }
+
+            $name = FormUtils::removeIndexToXpath(FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
+            $field->setAttribute('name', $name);
+            $field->setAttribute('default', implode(',', $default));
+            $field->setAttribute('multiple', 'true');
+            
+        } else {
+            $validator = $this->getValidatorClass($attribute);
+            $field->setAttribute('class', $validator);
+            $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
+        }
+        
         if ($readonly) {
             $field->setAttribute('readonly', 'true');
         }
@@ -986,7 +1015,7 @@ class FormGenerator {
                     $option->setAttribute('value', $opt->name);
 
                     $field->appendChild($option);
-                    $field->setAttribute('onchange', 'setBoundary(\'' . $this->serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
+                    $field->setAttribute('onchange', 'setBoundary(\'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
                     break;
                 case EnumStereotype::$BOUNDARYCATEGORY:
                     $field->setAttribute('type', 'list');
@@ -1007,7 +1036,7 @@ class FormGenerator {
                     $option->setAttribute('value', $opt->name);
 
                     $field->appendChild($option);
-                    $field->setAttribute('onchange', 'filterBoundary(\'' . $this->serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
+                    $field->setAttribute('onchange', 'filterBoundary(\'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
                     break;
                 default:
                     $field->setAttribute('type', 'list');
@@ -1048,7 +1077,7 @@ class FormGenerator {
 
         $validator = $this->getValidatorClass($attribute);
 
-        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
+        $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
         $field->setAttribute('type', 'calendar');
         $field->setAttribute('class', $validator);
         $field->setAttribute('format', '%Y-%m-%d');
@@ -1081,7 +1110,7 @@ class FormGenerator {
 
         $field->setAttribute('type', 'list');
         $field->setAttribute('multiple', 'true');
-        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
+        $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
         if ($guid != '') {
             $field->setAttribute('label', EText::_($guid));
         } else {
@@ -1107,7 +1136,7 @@ class FormGenerator {
 
             $field->setAttribute('type', 'list');
             $field->setAttribute('multiple', 'true');
-            $field->setAttribute('name', $this->serializeXpath($attribute->getNodePath() . '/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString#' . $key));
+            $field->setAttribute('name', FormUtils::serializeXpath($attribute->getNodePath() . '/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString#' . $key));
             $field->setAttribute('label', EText::_($guid) . ' ' . $this->ldao->getByIso3166($key)->value);
             $field->setAttribute('description', EText::_($guid, 2));
 
@@ -1138,7 +1167,7 @@ class FormGenerator {
         $attributename = $attribute->nodeName;
         $field = $this->form->createElement('field');
 
-        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
+        $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
         $field->setAttribute('type', 'hidden');
         $field->setAttribute('default', $attribute->firstChild->nodeValue);
         $field->setAttribute('label', 'label');
@@ -1164,7 +1193,7 @@ class FormGenerator {
 
         $name = $relationtype->nodeName;
 
-        $field->setAttribute('name', $this->serializeXpath($relationtype->getNodePath()));
+        $field->setAttribute('name', FormUtils::serializeXpath($relationtype->getNodePath()));
         $field->setAttribute('type', 'list');
         $field->setAttribute('label', 'Name');
 
@@ -1196,7 +1225,7 @@ class FormGenerator {
         $validator = $this->getValidatorClass($attribute);
 
         $field->setAttribute('type', 'file');
-        $field->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()));
+        $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
         $field->setAttribute('label', EText::_($guid));
         $field->setAttribute('class', $validator);
         $field->setAttribute('description', EText::_($guid, 2));
@@ -1206,12 +1235,12 @@ class FormGenerator {
 
         $hiddenField = $this->form->createElement('field');
         $hiddenField->setAttribute('type', 'hidden');
-        $hiddenField->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()) . '_filehidden');
+        $hiddenField->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filehidden');
         $hiddenField->setAttribute('default', $attribute->firstChild->nodeValue);
 
         $textField = $this->form->createElement('field');
         $textField->setAttribute('type', 'text');
-        $textField->setAttribute('name', $this->serializeXpath($attribute->firstChild->getNodePath()) . '_filetext');
+        $textField->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()) . '_filetext');
         $textField->setAttribute('default', $attribute->firstChild->nodeValue);
         $textField->setAttribute('readonly', 'true');
 
@@ -1345,24 +1374,6 @@ class FormGenerator {
         return $this->db->loadObjectList('guid');
     }
 
-    /**
-     * Serialze the Xpath
-     * 
-     * @author Depth S.A.
-     * @since 4.0
-     * 
-     * @param string $xpath
-     * @return string Serualized XPath
-     */
-    private function serializeXpath($xpath) {
-        $xpath = str_replace('[', '-la-', $xpath);
-        $xpath = str_replace(']', '-ra-', $xpath);
-        $xpath = str_replace('/', '-sla-', $xpath);
-        $xpath = str_replace(':', '-dp-', $xpath);
-        return $xpath;
-    }
-
-    
     /**
      * Unserialze the Xpath
      * 

@@ -144,8 +144,9 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                 if ($id) {
                     //Load the CSW metadata
                     $CSWmetadata = new sdiMetadata($this->_item->id);
-                    if ($result = $CSWmetadata->load())
+                    if ($result = $CSWmetadata->load()){
                         $this->_item->csw = $result;
+                    }
                 }
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
