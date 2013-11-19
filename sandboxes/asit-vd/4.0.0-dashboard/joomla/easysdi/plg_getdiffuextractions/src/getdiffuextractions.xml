@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension group="easysdi_admin_info" method="upgrade" type="plugin" version="3.0">
+  <name>plg_easysdi_admin_info_getdiffuextractions</name>
+  <author>EasySDI Community</author>
+  <creationDate>15 Septemeber 2013</creationDate>
+  <releaseDate>14 novembre 2013</releaseDate>
+  <copyright>Copyright (C) 2012. All rights reserved.</copyright>
+  <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
+  <author>EasySDI Community</author>
+  <authorEmail>contact@easysdi.org</authorEmail>
+  <authorUrl>http://www.easysdi.org</authorUrl>
+  <version>4.0.0-alpha-18</version>
+  <description>PLG_EASYSDI_ADMIN_INFO_GETDIFFUEXTRACTIONS_XML_DESCRIPTION</description>
+  <scriptfile>script.php</scriptfile>
+  <files>
+    <filename plugin="getdiffuextractions">getdiffuextractions.php</filename>
+    <filename>index.html</filename>
+  </files>
+  <languages>
+    <language tag="en-GB">language/en-GB/en-GB.plg_easysdi_admin_info_getdiffuextractions.sys.ini</language>
+    <language tag="en-GB">language/en-GB/en-GB.plg_easysdi_admin_info_getdiffuextractions.ini</language>
+    <language tag="fr-FR">language/fr-FR/fr-FR.plg_easysdi_admin_info_getdiffuextractions.sys.ini</language>
+    <language tag="fr-FR">language/fr-FR/fr-FR.plg_easysdi_admin_info_getdiffuextractions.ini</language>
+  </languages>
+</extension>
