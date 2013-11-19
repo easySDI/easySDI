@@ -12,7 +12,7 @@
     
     <target name="package" depends="write-xml, mod_zip" description="Main target" />
     <target name="sync-package" depends="mod_copy, write-xml, mod_zip" description="Main target" if="${adminbutton.mod.exist}"/>
-    <target name="sync" depends="mod_copy, write-xml" description="Main target" />
+    <target name="sync" depends="mod_copy" description="Main target" />
     
     <target name="mod_copy">
         <echo>Copy module file for ${adminbutton.module.name}</echo>
