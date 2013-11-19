@@ -24,6 +24,9 @@ class FormGenerator {
     /** @var JObject */
     private $item;
 
+    /** @var sdiUser */
+    private $user;
+
     /** @var JDatabaseDriver */
     private $db = null;
 
@@ -62,6 +65,7 @@ class FormGenerator {
         $this->session = JFactory::getSession();
         $this->ldao = new SdiLanguageDao();
         $this->nsdao = new SdiNamespaceDao();
+        $this->user = sdiFactory::getSdiUser();
 
         $this->form = new DOMDocument('1.0', 'utf-8');
         $this->structure = new DOMDocument('1.0', 'utf-8');
@@ -286,10 +290,37 @@ class FormGenerator {
                         $attribute->appendChild($st);
                     }
 
+                    if ($this->user->authorize($this->item->id, sdiUser::metadataeditor)) {
+                        switch ($result->editorrelationscope_id) {
+
+                            // Visible
+                            case 2:
+                                $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
+                                break;
+                            // Hidden
+                            case 3:
+                                $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
+                                $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$HIDDEN);
+                                break;
+                        }
+                    } else {
+                        switch ($result->relationscope_id) {
+
+                            // Visible
+                            case 2:
+                                $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
+                                break;
+                            // Hidden
+                            case 3:
+                                $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', "true");
+                                $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$HIDDEN);
+                                break;
+                        }
+                    }
+
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relGuid', $result->guid);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'relid', $result->id);
                     $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'maxlength', $result->attribute_length);
-                    $attribute->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':' . 'readonly', $result->attribute_issystem);
 
                     $childs[] = $attribute;
 
@@ -655,12 +686,12 @@ class FormGenerator {
         $guid->setAttribute('name', 'guid');
         $guid->setAttribute('type', 'hidden');
         $guid->setAttribute('filter', 'safehtml');
-        
+
         $metadatastateId = $this->form->createElement('field');
         $metadatastateId->setAttribute('name', 'metadatastate_id');
         $metadatastateId->setAttribute('type', 'hidden');
         $metadatastateId->setAttribute('filter', 'safehtml');
-        
+
         $published = $this->form->createElement('field');
         $published->setAttribute('name', 'published');
         $published->setAttribute('type', 'hidden');
@@ -962,13 +993,12 @@ class FormGenerator {
             $field->setAttribute('name', $name);
             $field->setAttribute('default', implode(',', $default));
             $field->setAttribute('multiple', 'true');
-            
         } else {
             $validator = $this->getValidatorClass($attribute);
             $field->setAttribute('class', $validator);
             $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
         }
-        
+
         if ($readonly) {
             $field->setAttribute('readonly', 'true');
         }
@@ -1037,6 +1067,20 @@ class FormGenerator {
 
                     $field->appendChild($option);
                     $field->setAttribute('onchange', 'filterBoundary(\'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
+                    break;
+                case EnumStereotype::$TEXTCHOICE:
+                    $field->setAttribute('type', 'list');
+                    $field->setAttribute('label', EText::_($guid));
+                    $field->setAttribute('default', $attribute->firstChild->nodeValue);
+
+                    if ($opt->guid != '') {
+                        $option = $this->form->createElement('option', EText::_($opt->guid));
+                    } else {
+                        $option = $this->form->createElement('option');
+                    }
+                    $option->setAttribute('value', $opt->value);
+
+                    $field->appendChild($option);
                     break;
                 default:
                     $field->setAttribute('type', 'list');
@@ -1411,7 +1455,7 @@ class FormGenerator {
      */
     private function getRelationQuery() {
         $query = $this->db->getQuery(true);
-        $query->select('r.name, r.id, r.ordering, r.guid, r.childtype_id, r.parent_id, r.lowerbound, r.upperbound, r.rendertype_id');
+        $query->select('r.name, r.id, r.ordering, r.guid, r.childtype_id, r.parent_id, r.lowerbound, r.upperbound, r.rendertype_id, r.relationscope_id, r.editorrelationscope_id');
         $query->select('c.id as class_id, c.`name` AS class_name, c.guid AS class_guid');
         $query->select('ca.id as classass_id, ca.`name` AS classass_name, ca.guid AS classass_guid');
         $query->select('a.id as attribute_id, a.`name` AS attribute_name, a.guid AS attribute_guid, a.isocode AS attribute_isocode, a.type_isocode as attribute_type_isocode, a.codelist as attribute_codelist, a.pattern as attribute_pattern, a.length as attribute_length, a.issystem as attribute_issystem');

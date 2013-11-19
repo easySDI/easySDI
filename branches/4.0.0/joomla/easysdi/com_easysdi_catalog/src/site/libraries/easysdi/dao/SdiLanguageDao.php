@@ -22,8 +22,13 @@ class SdiLanguageDao extends SdiDao{
      * The key of array is the language code.
      */
     public function getSupported() {
+        $supportedIds = JComponentHelper::getParams('com_easysdi_catalog')->get('languages');
         
-        $languageIds = implode(',', JComponentHelper::getParams('com_easysdi_catalog')->get('languages'));
+        if(!isset($supportedIds)){
+            return array();
+        }
+        
+        $languageIds = implode(',', $supportedIds);
 
         $query = $this->db->getQuery(true);
         

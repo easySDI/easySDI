@@ -486,8 +486,11 @@ class FormHtmlGenerator {
         }
 
         if ($attribute->getAttributeNS($this->catalog_uri, 'map')) {
-
-            $attributeGroup->appendChild($this->getMap($attribute));
+            $map_id = JComponentHelper::getParams('com_easysdi_catalog')->get('catalogmap');
+            
+            if(isset($map_id)){
+                $attributeGroup->appendChild($this->getMap($attribute, $map_id));
+            }
         }
 
         return $attributeGroup;
@@ -502,17 +505,18 @@ class FormHtmlGenerator {
      * @param DOMElement $attribute The current attribute.
      * @return DOMElement The DIV.
      */
-    private function getMap(DOMElement $attribute) {
+    private function getMap(DOMElement $attribute, $map_id) {
         $parent_path = str_replace('-', '_', FormUtils::serializeXpath($attribute->parentNode->getNodePath()));
+        $select_parent_path = str_replace('-', '_', FormUtils::serializeXpath($attribute->parentNode->parentNode->parentNode->getNodePath()));
 
         $div = $this->formHtml->createElement('div');
 
         $btnEdit = $this->formHtml->createElement('button', 'Edition');
         $btnEdit->setAttribute('type', 'button');
-        $btnEdit->setAttribute('class', 'btn btn-primary btn-small');
+        $btnEdit->setAttribute('class', 'btn btn-primary btn-small edit_bb');
         $btnEdit->setAttribute('id', 'editBtn_' . $parent_path);
         $btnEdit->setAttribute('data-toggle', 'button');
-        $btnEdit->setAttribute('onclick', 'polygonControl_' . $parent_path . '.activate();');
+        $btnEdit->setAttribute('onclick', 'polygonControl_' . $parent_path . '.activate(); clearbbselect(\''.$select_parent_path.'\')');
 
         $br = $this->formHtml->createElement('br');
 
@@ -522,8 +526,6 @@ class FormHtmlGenerator {
 
         $script = $this->formHtml->createElement('script');
         $script->setAttribute('type', 'text/javascript');
-
-        $map_id = JComponentHelper::getParams('com_easysdi_catalog')->get('catalogmap');
 
         $query = $this->db->getQuery(true);
 

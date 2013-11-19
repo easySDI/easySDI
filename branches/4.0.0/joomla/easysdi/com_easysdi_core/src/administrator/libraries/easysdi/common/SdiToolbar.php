@@ -5,7 +5,7 @@
  *
  * @author Marc Battaglia <marc.battaglia@depth.ch>
  */
-class SdiToolbar {
+class SdiToolbar{
 
     /** @var DOMDocument */
     private $dom;
@@ -53,6 +53,16 @@ class SdiToolbar {
         }
     }
 
+    public function appendBtnRoute($label, $url, $btnClass = '', $id = ''){
+        
+        $a = $this->dom->createElement('a',$label);
+        $a->setAttribute('class', 'btn ' . $btnClass);
+        $a->setAttribute('id', $id);
+        $a->setAttribute('href', $url);
+        
+        $this->dom->firstChild->appendChild($a);
+    }
+    
     public function renderToolbar() {
         $this->dom->formatOutput = true;
 
