@@ -21,7 +21,7 @@ class com_easysdi_catalogInstallerScript {
     function preflight($type, $parent) {
         // Installing component manifest file version
         $this->release = $parent->get("manifest")->version;
-
+	
         // Show the essential information at the install/update back-end
         echo '<p>EasySDI component Catalog [com_easysdi_catalog]';
         echo '<br />' . JText::_('COM_EASYSDI_CATALOG_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
@@ -58,7 +58,7 @@ class com_easysdi_catalogInstallerScript {
      */
 
     function postflight($type, $parent) {
-        if ($type == 'install' || ($type == 'update' && $this->getParam('version') < '4.0.0-alpha-20')) {
+        if ($type == 'install' || ($type == 'update' && ($this->getParam('version') < '4.0.0-alpha-20') == 1 )) {
             JTable::addIncludePath(JPATH_ADMINISTRATOR . "/components/com_easysdi_catalog/tables");
             //Create system search criteria
             $sc = JTable::getInstance('searchcriteria', 'easysdi_catalogTable');
