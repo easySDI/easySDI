@@ -8,7 +8,7 @@
   <author>EasySDI Community</author>
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>4.0.0-alpha-21</version>
+  <version>4.0.0-alpha-22</version>
   <description>MOD_EASYSDI_QUICKINFO_XML_DESCRIPTION</description>
   <scriptfile>script.php</scriptfile>
   <files>

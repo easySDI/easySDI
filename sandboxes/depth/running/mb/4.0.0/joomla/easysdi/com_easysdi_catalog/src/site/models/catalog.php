@@ -14,6 +14,7 @@ jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
 
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/cswrecords.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/SearchJForm.php';
 
 /**
  * Easysdi_catalog model.
@@ -130,7 +131,9 @@ class Easysdi_catalogModelCatalog extends JModelForm {
      */
     public function getForm($data = array(), $loadData = true) {
         // Get the form.
-        $form = $this->loadForm('com_easysdi_catalog.catalog', 'catalog', array('control' => 'jform', 'load_data' => $loadData));
+        $sf = new SearchJForm();
+        
+        $form = $this->loadForm('com_easysdi_catalog.catalog', $sf->getForm(), array('control' => 'jform', 'load_data' => $loadData, 'file' => FALSE));
         if (empty($form)) {
             return false;
         }
