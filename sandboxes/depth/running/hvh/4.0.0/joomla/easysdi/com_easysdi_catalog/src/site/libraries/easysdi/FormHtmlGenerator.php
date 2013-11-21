@@ -648,12 +648,10 @@ class FormHtmlGenerator {
         if (!empty($map_config->centercoordinates) && !empty($map_config->zoom)) {
             $script->nodeValue .= "
                                     var centercoord = new proj4.Point(" . $centercoords[0] . ", " . $centercoords[1] . ");
-                                    proj4.transform(psource, pdest, centercoord);                                         
-                                    map_$parent_path.setCenter(new OpenLayers.LonLat(centercoord.x, centercoord.y), 10);";
+                                    map_$parent_path.setCenter(new OpenLayers.LonLat(centercoord.x, centercoord.y), $map_config->zoom);";
         } else if (!empty($map_config->centercoordinates)) {
             $script->nodeValue .= "
                                     var centercoord = new proj4.Point(" . $centercoords[0] . ", " . $centercoords[1] . ");
-                                    proj4.transform(psource, pdest, centercoord);                                         
                                     map_$parent_path.setCenter(new OpenLayers.LonLat(centercoord.x, centercoord.y));";
         } else {
             $script->nodeValue .= "map_$parent_path.zoomToMaxExtent(); ";

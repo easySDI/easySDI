@@ -132,7 +132,7 @@ class Easysdi_catalogModelrelation extends sdiModel {
             //Search filter
             $searchfilter = JTable::getInstance('searchfilter', 'Easysdi_catalogTable');
             $rowsfilter = $searchfilter->loadAll($searchcriteria_id[0]);
-            if (is_array($rowsfilter)) {
+            if (is_array($rowsfilter) && !empty($rowsfilter['searchfilter'])) {
                 $item->searchfilter = $rowsfilter['searchfilter'];
             }
 

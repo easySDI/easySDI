@@ -64,7 +64,7 @@
 
         <field name="cswfilter" type="textarea" rows="5" cols="10"
                class="inputbox"
-               filter="safehtml"
+               filter="raw"
                label="COM_EASYSDI_CATALOG_FORM_LBL_CATALOG_CSWFILTER"
                description="COM_EASYSDI_CATALOG_FORM_DESC_CATALOG_CSWFILTER"  /> 
 
