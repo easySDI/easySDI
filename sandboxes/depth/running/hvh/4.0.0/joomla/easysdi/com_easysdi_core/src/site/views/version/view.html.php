@@ -29,19 +29,19 @@ class Easysdi_coreViewVersion extends JViewLegacy {
     public function display($tpl = null) {
 
         $app = JFactory::getApplication();
-        
+
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_core');
         $this->form = $this->get('Form');
-        
-        
+
+
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
-        
+
         //Check user rights
         $this->user = sdiFactory::getSdiUser();
         if (!$this->user->isEasySDI) {
@@ -49,13 +49,13 @@ class Easysdi_coreViewVersion extends JViewLegacy {
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return;
         }
-                
+
         if (!$this->user->authorize($this->item->resource_id, sdiUser::resourcemanager)) {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return;
         }
-   
+
 
         $this->_prepareDocument();
 
@@ -67,18 +67,10 @@ class Easysdi_coreViewVersion extends JViewLegacy {
      */
     protected function _prepareDocument() {
         $app = JFactory::getApplication();
-        $menus = $app->getMenu();
-        $title = null;
 
-        // Because the application sets a default page title,
-        // we need to get it from the menu item itself
-        $menu = $menus->getActive();
-        if ($menu) {
-            $this->params->def('page_heading', $this->params->get('page_title', $menu->title));
-        } else {
-            $this->params->def('page_heading', JText::_('com_easysdi_core_DEFAULT_PAGE_TITLE'));
-        }
+        $this->params->def('page_heading', JText::_('COM_EASYSDI_CORE_VERSION_RELATION_PAGE_TITLE'));
         $title = $this->params->get('page_title', '');
+        
         if (empty($title)) {
             $title = $app->getCfg('sitename');
         } elseif ($app->getCfg('sitename_pagetitles', 0) == 1) {
@@ -100,18 +92,18 @@ class Easysdi_coreViewVersion extends JViewLegacy {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
     }
-    
-    function getToolbar() {        
+
+    function getToolbar() {
         $bar = new JToolBar('toolbar');
         //and make whatever calls you require
-        $bar->appendButton('Standard', 'save', JText::_('JSave'), 'application.save', false);
+        $bar->appendButton('Standard', 'save', JText::_('JSave'), 'version.save', false);
         $bar->appendButton('Separator');
-        $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'application.cancel', false);
+        $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'version.cancel', false);
         //generate the html and return
         return $bar->render();
     }
-    
-    function getSearchToolbar(){
+
+    function getSearchToolbar() {
         $bar = new JToolBar('toolbar');
         //and make whatever calls you require
         $bar->appendButton('Standard', 'search', JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_SEARCH_BTN'), 'version.search', false);

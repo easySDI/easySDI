@@ -65,6 +65,36 @@ class Easysdi_coreModelVersion extends JModelForm {
                 $properties = $table->getProperties(1);
                 $this->_item = JArrayHelper::toObject($properties, 'JObject');
 
+                $db = JFactory::getDbo();
+
+                //Get parents
+                $query = $db->getQuery(true)
+                        ->select('v.id as id, v.name as version, rt.alias as resource, ms.value as state')
+                        ->from('#__sdi_version v')
+                        ->innerJoin('#__sdi_versionlink vl ON vl.child_id = v.id')
+                        ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
+                        ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
+                        ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
+                        ->innerJoin('#__sdi_sys_metadatastate ms ON ms.id = m.metadatastate_id')
+                        ->where('v.id = ' . (int) $table->id)
+                ;
+                $db->setQuery($query);
+                $this->_item->parents = $db->loadObjectList();                
+                
+                //Get children
+                $query = $db->getQuery(true)
+                        ->select('v.id as id, v.name as version, rt.alias as resource, ms.value as state')
+                        ->from('#__sdi_version v')
+                        ->innerJoin('#__sdi_versionlink vl ON vl.parent_id = v.id')
+                        ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
+                        ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
+                        ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
+                        ->innerJoin('#__sdi_sys_metadatastate ms ON ms.id = m.metadatastate_id')
+                        ->where('v.id = ' . (int) $table->id)
+                ;
+                $db->setQuery($query);
+                $this->_item->children = $db->loadObjectList();                
+                                
                 //Get session
                 $app = JFactory::getApplication();
                 $this->_item->searchtype = $app->getUserState('com_easysdi_core.edit.version.searchtype');
@@ -76,22 +106,30 @@ class Easysdi_coreModelVersion extends JModelForm {
                 //Get search result
                 $run = $app->getUserState('com_easysdi_core.edit.version.runsearch');
                 if (!empty($run)) {
-                    $db = JFactory::getDbo();
+
                     $query = $db->getQuery(true)
-                            ->select('*')
+                            ->select('v.id as id, v.name as version, rt.alias as resource, ms.value as state')
                             ->from('#__sdi_version v')
                             ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
                             ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
                             ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
-                            ;
-                    if(!empty($this->_item->searchtype)){
-                        $query->where('rt.id = '.$this->_item->searchtype);
+                            ->innerJoin('#__sdi_sys_metadatastate ms ON ms.id = m.metadatastate_id')
+                    ;
+                    if (!empty($this->_item->searchtype)) {
+                        $query->where('rt.id = ' . $this->_item->searchtype);
                     }
-                    if(!empty($this->_item->searchid)){
-                        $query->where('m.guid = '.$this->_item->searchid);
+                    if (!empty($this->_item->searchid)) {
+                        $query->where('m.guid = ' . $this->_item->searchid);
+                    }
+                    if (!empty($this->_item->searchname)) {
+                        $query->where('r.name = ' . $this->_item->searchname);
+                    }
+                    if (!empty($this->_item->searchstate)) {
+                        $query->where('m.metadatastate_id = ' . $this->_item->searchstate);
                     }
                     $db->setQuery($query);
-                    $item = $db->loadObject();
+                    $result = $db->loadObjectList();
+                    $this->_item->availablechildren = $result;
                 }
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
@@ -208,6 +246,8 @@ class Easysdi_coreModelVersion extends JModelForm {
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('version.id');
         $state = (!empty($data['state'])) ? 1 : 0;
         $user = JFactory::getUser();
+        
+        $children = JFactory::getApplication()->input->get('children', '');
 
         if ($id) {
             //Check the user can edit this item
