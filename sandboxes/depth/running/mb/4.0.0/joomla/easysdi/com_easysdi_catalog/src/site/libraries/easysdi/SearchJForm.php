@@ -12,30 +12,31 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/Sea
  * @author Marc Battaglia <marc.battaglia@depth.ch>
  */
 class SearchJForm extends SearchForm {
-    
-    /** @var DOMElement */
-    private $hidden;
-    
-    function __construct() {
+
+    function __construct($item) {
         parent::__construct();
-        
+
+        $this->item = $item;
+
         $this->dom->appendChild($this->dom->createElement('form'));
-        
-        $this->hidden = $this->dom->createElement('fieldset');
-        $this->hidden->setAttribute('name', 'hidden');
+
+        $this->simple->setAttribute('addfieldpath', JPATH_COMPONENT . '/models/fields');
+        $this->advanced->setAttribute('addfieldpath', JPATH_COMPONENT . '/models/fields');
+        $this->hidden->setAttribute('addfieldpath', JPATH_COMPONENT . '/models/fields');
+
     }
 
     public function getForm() {
 
         $this->buildForm();
-        
-        if($this->simple->hasChildNodes()){
+
+        if ($this->simple->hasChildNodes()) {
             $this->dom->firstChild->appendChild($this->simple);
         }
-        if($this->advanced->hasChildNodes()){
+        if ($this->advanced->hasChildNodes()) {
             $this->dom->firstChild->appendChild($this->advanced);
         }
-        if($this->hidden->hasChildNodes()){
+        if ($this->hidden->hasChildNodes()) {
             $this->dom->firstChild->appendChild($this->hidden);
         }
 
@@ -57,6 +58,9 @@ class SearchJForm extends SearchForm {
                 case EnumRendertype::$TEXTBOX:
                     $field = $this->getFormTextBoxField($searchCriteria);
                     break;
+                case EnumRendertype::$TEXTAREA:
+                    $field = $this->getFormTextAreaField($searchCriteria);
+                    break;
                 case EnumRendertype::$CHECKBOX:
                     switch ($searchCriteria->name) {
                         case 'resourcetype':
@@ -77,15 +81,15 @@ class SearchJForm extends SearchForm {
                     $field = $this->getFormRadioField($searchCriteria);
                     break;
             }
-            
-            if(isset($field)){
+
+            if (isset($field)) {
                 $this->fieldsetDispatch($field, $searchCriteria);
             }
         }
     }
 
     private function fieldsetDispatch($field, $searchCriteria) {
-       
+
         switch ($searchCriteria->searchtab_id) {
             case self::SIMPLE:
                 $this->addFieldToFieldset($field, $this->simple);
@@ -116,6 +120,17 @@ class SearchJForm extends SearchForm {
         $field->setAttribute('name', $searchCriteria->name);
         $field->setAttribute('type', 'text');
         $field->setAttribute('label', EText::_($searchCriteria->guid));
+        $field->setAttribute('default', $searchCriteria->defaultvalue);
+
+        return $field;
+    }
+
+    private function getFormTextAreaField($searchCriteria) {
+        $field = $this->dom->createElement('field');
+        $field->setAttribute('name', $searchCriteria->name);
+        $field->setAttribute('type', 'textarea');
+        $field->setAttribute('label', EText::_($searchCriteria->guid));
+        $field->setAttribute('default', $searchCriteria->defaultvalue);
 
         return $field;
     }
@@ -126,6 +141,7 @@ class SearchJForm extends SearchForm {
         $field->setAttribute('type', 'checkbox');
         $field->setAttribute('label', EText::_($searchCriteria->guid));
         $field->setAttribute('value', 1);
+        $field->setAttribute('default', $searchCriteria->defaultvalue);
 
         return $field;
     }
@@ -133,12 +149,13 @@ class SearchJForm extends SearchForm {
     private function getFormCheckboxesField($searchCriteria) {
         $field = $this->dom->createElement('field');
         $field->setAttribute('name', $searchCriteria->name);
-        $field->setAttribute('type', 'checkboxes');
+        $field->setAttribute('type', 'inlineCheckboxes');
         $field->setAttribute('label', EText::_($searchCriteria->guid));
+        $field->setAttribute('default', $this->getJsonDefaultValue($searchCriteria->defaultvalue));
 
         foreach ($this->getAttributOptions($searchCriteria) as $opt) {
             $option = $this->dom->createElement('option', EText::_($opt->guid));
-            $option->setAttribute('value', $opt->id);
+            $option->setAttribute('value', $opt->value);
 
             $field->appendChild($option);
         }
@@ -151,10 +168,11 @@ class SearchJForm extends SearchForm {
         $field->setAttribute('name', $searchCriteria->name);
         $field->setAttribute('type', 'radio');
         $field->setAttribute('label', EText::_($searchCriteria->guid));
+        $field->setAttribute('default', $searchCriteria->defaultvalue);
 
         foreach ($this->getAttributOptions($searchCriteria) as $opt) {
-            $option = $this->dom->createElement('option', EText::_($opt->guid));
-            $option->setAttribute('value', $opt->id);
+            $option = $this->dom->createElement('option', EText::_($opt->guid, 1, JText::_($opt->name)));
+            $option->setAttribute('value', $opt->value);
 
             $field->appendChild($option);
         }
@@ -167,10 +185,12 @@ class SearchJForm extends SearchForm {
         $field->setAttribute('name', $searchCriteria->name);
         $field->setAttribute('type', 'list');
         $field->setAttribute('label', EText::_($searchCriteria->guid));
+        $field->setAttribute('default', $searchCriteria->defaultvalue);
 
+        $field->appendChild($this->dom->createElement('option'));
         foreach ($this->getAttributOptions($searchCriteria) as $opt) {
-            $option = $this->dom->createElement('option', EText::_($opt->guid));
-            $option->setAttribute('value', $opt->id);
+            $option = $this->dom->createElement('option', EText::_($opt->guid, 1, $opt->name));
+            $option->setAttribute('value', $opt->value);
 
             $field->appendChild($option);
         }
@@ -179,42 +199,42 @@ class SearchJForm extends SearchForm {
     }
 
     private function getFormDateRangeField($searchCriteria) {
-        $fields = array();
 
-        $from = $this->dom->createElement('field');
-        $from->setAttribute('name', 'from' . $searchCriteria->name);
-        $from->setAttribute('type', 'calendar');
-        $from->setAttribute('label', 'from');
+        $field = $this->dom->createElement('field');
+        $field->setAttribute('name', $searchCriteria->name);
+        $field->setAttribute('type', 'fromtocalendar');
+        $field->setAttribute('label', EText::_($searchCriteria->guid));
+        $field->setAttribute('format', 'Y-m-d');
 
-        $to = $this->dom->createElement('field');
-        $to->setAttribute('name', 'to' . $searchCriteria->name);
-        $to->setAttribute('type', 'calendar');
-        $to->setAttribute('label', 'to');
+        $range = array($searchCriteria->defaultvaluefrom, $searchCriteria->defaultvalueto);
+        $field->setAttribute('default', implode(',', $range));
 
-        $fields[] = $from;
-        $fields[] = $to;
-
-        return $fields;
+        return $field;
     }
+    
 
     private function getAttributOptions($searchCriteria) {
         $query = $this->db->getQuery(true);
-        $query->select('id, guid, name');
-
+        
         switch ($searchCriteria->name) {
             case 'organism':
-                $query->from('#__sdi_organism');
+                $query->select('t.id, t.guid, t.guid as value, t.name');
+                $query->from('#__sdi_organism t');
                 break;
             case 'definedBoundary':
-                $query->from('#__sdi_boundary');
+                $query->select('t.id, t.guid, t.guid as value, t.name');
+                $query->from('#__sdi_boundary t');
                 break;
             case 'resourcetype':
-                $query->from('#__sdi_resourcetype');
+                $query->select('t.id, t.alias as value, t.guid, t.name');
+                $query->from('#__sdi_resourcetype t');
+                $query->innerJoin('#__sdi_catalog_resourcetype crt ON crt.resourcetype_id = t.id');
+                $query->where('crt.catalog_id = ' . $this->item->id);
                 break;
             case 'versions':
                 $options = array();
-                $options[] = (object) array('id' => 'last', 'guid' => '', 'name' => 'last');
-                $options[] = (object) array('id' => 'all', 'guid' => '', 'name' => 'all');
+                $options[] = (object) array('value' => '1', 'guid' => '', 'name' => 'LAST');
+                $options[] = (object) array('value' => '0', 'guid' => '', 'name' => 'ALL');
                 return $options;
                 break;
             default :
@@ -226,6 +246,24 @@ class SearchJForm extends SearchForm {
         $options = $this->db->loadObjectList();
 
         return $options;
+    }
+
+    /**
+     * 
+     * @param string $json
+     * @return string
+     */
+    private function getJsonDefaultValue($json) {
+        if (empty($json)) {
+            return '';
+        }
+        $decode = json_decode($json, true);
+
+        if (is_array($decode)) {
+            return implode(',', $decode);
+        } else {
+            return $decode;
+        }
     }
 
 }

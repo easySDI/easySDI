@@ -58,7 +58,6 @@ class Easysdi_catalogModelCatalog extends JModelForm {
             JFactory::getApplication()->setUserState('com_easysdi_catalog.edit.catalog.id', $id);
         }
         $this->setState('catalog.id', $id);
-
         // Load the parameters.
         $params = $app->getParams();
         $params_array = $params->toArray();
@@ -100,7 +99,8 @@ class Easysdi_catalogModelCatalog extends JModelForm {
                 $this->_item = JArrayHelper::toObject($properties, 'JObject');
                
                 if ($this->_item->oninitrunsearch || JFactory::getApplication()->input->get('search', 'false', 'STRING') == 'true') {
-                    $result = cswrecords::getRecords($id);
+                    $cswrecords = new cswrecords();
+                    $result = $cswrecords->getRecords($id);
                     if(!$result)
                         JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_CATALOGS_MSG_ERROR_GET_RECORDS'), 'warning');
                         
@@ -131,7 +131,7 @@ class Easysdi_catalogModelCatalog extends JModelForm {
      */
     public function getForm($data = array(), $loadData = true) {
         // Get the form.
-        $sf = new SearchJForm();
+        $sf = new SearchJForm($this->_item);
         
         $form = $this->loadForm('com_easysdi_catalog.catalog', $sf->getForm(), array('control' => 'jform', 'load_data' => $loadData, 'file' => FALSE));
         if (empty($form)) {

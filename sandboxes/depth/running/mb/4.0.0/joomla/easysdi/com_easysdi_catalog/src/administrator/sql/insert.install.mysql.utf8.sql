@@ -18,12 +18,12 @@ INSERT INTO `#__sdi_sys_rendertype` VALUES ('5', '5', '1', 'textbox');
 INSERT INTO `#__sdi_sys_rendertype` VALUES ('6', '6', '1', 'date');
 
 INSERT INTO `#__sdi_searchcriteria` VALUES ('1', '58dfe161-60c3-4b72-b768-e4a09bae8cdb', 'fulltext', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'fulltext', '1', '1', '1', null, '0', '0');
-INSERT INTO `#__sdi_searchcriteria` VALUES ('2', '05b0fb40-459c-4ed2-a985-ce1611593969', 'resourcetype', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'objecttype', '1', '1', '1', null, '0', '0');
+INSERT INTO `#__sdi_searchcriteria` VALUES ('2', '05b0fb40-459c-4ed2-a985-ce1611593969', 'resourcetype', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'resourcetype', '1', '1', '1', null, '0', '0');
 INSERT INTO `#__sdi_searchcriteria` VALUES ('3', 'f839e3ae-d983-4366-b24f-2678f4cbe188', 'versions', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'versions', '1', '1', '1', null, '0', '0');
-INSERT INTO `#__sdi_searchcriteria` VALUES ('4', '4d402bfd-b50a-42ae-8db4-af8ef940575b', 'resourcename', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'code', '1', '1', '1', null, '0', '0');
+INSERT INTO `#__sdi_searchcriteria` VALUES ('4', '4d402bfd-b50a-42ae-8db4-af8ef940575b', 'resourcename', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'resourcename', '1', '1', '1', null, '0', '0');
 INSERT INTO `#__sdi_searchcriteria` VALUES ('5', '2157fe2c-3705-4db9-a623-462ae38405fa', 'metadata_created', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'metadata_created', '1', '1', '1', null, '0', '0');
 INSERT INTO `#__sdi_searchcriteria` VALUES ('6', '979a4e90-601e-46fe-9239-9080e4238c1e', 'metadata_published', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'metadata_published', '1', '1', '1', null, '0', '0');
-INSERT INTO `#__sdi_searchcriteria` VALUES ('7', 'f761bc2d-57ac-4252-9cd2-17ae5e92793b', 'organism', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'account_id', '1', '1', '1', null, '0', '0');
+INSERT INTO `#__sdi_searchcriteria` VALUES ('7', 'f761bc2d-57ac-4252-9cd2-17ae5e92793b', 'organism', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'organism', '1', '1', '1', null, '0', '0');
 INSERT INTO `#__sdi_searchcriteria` VALUES ('8', 'b2a4c66a-f40c-473d-a03f-5b5e4f93f760', 'definedBoundary', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'definedBoundary', '1', '1', '1', null, '0', '0');
 INSERT INTO `#__sdi_searchcriteria` VALUES ('9', '8a85ed55-6a9c-4af7-aba1-a3c0f8281453', 'isDownloadable', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'isDownloadable', '1', '1', '1', null, '0', '0');
 INSERT INTO `#__sdi_searchcriteria` VALUES ('10', 'f80fcf1c-84df-4202-8838-6bbcb273a68d', 'isFree', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'isFree', '1', '1', '1', null, '0', '0');

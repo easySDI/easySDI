@@ -1,5 +1,7 @@
 <?php
 
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/OgcFilters.php';
+
 /**
  * @version     4.0.0
  * @package     com_easysdi_core
@@ -7,9 +9,25 @@
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
-abstract class cswrecords {
+class cswrecords {
 
-    public static function getRecords($catalog_id) {
+    /** @var DOMDocument */
+    private $dom;
+
+    /** @var OgcFilters */
+    private $ogcFilters;
+    private $ogcUri = 'http://www.opengis.net/ogc';
+    private $ogcPrefix = 'ogc';
+
+    function __construct() {
+        $this->dom = new DOMDocument('1.0', 'UTF-8');
+        $this->dom->formatOutput = true;
+
+        $this->ogcFilters = new OgcFilters($this->dom);
+    }
+
+    public function getRecords($catalog_id) {
+        $data = JFactory::getApplication()->input->get('jform', array(), 'array');
 
         $db = JFactory::getDbo();
         $lang = JFactory::getLanguage()->getTag();
@@ -17,7 +35,7 @@ abstract class cswrecords {
         $catalogurl = $params->get('catalogurl');
         $limit = $params->get('searchresultpaginationnumber');
         $startposition = JFactory::getApplication()->input->getInt('start', 1);
-        
+
         //Or getvar startposition of JPagination
         //Criteria from the catalog : 
         //Resourcetype
@@ -52,9 +70,8 @@ abstract class cswrecords {
         //Build request with posted criterias
         //...
 
-        $dom = new DOMDocument('1.0', 'UTF-8');
-        $dom->formatOutput = true;
-        $getrecords = $dom->createElementNS('http://www.opengis.net/cat/csw/2.0.2', 'csw:GetRecords');
+
+        $getrecords = $this->dom->createElementNS('http://www.opengis.net/cat/csw/2.0.2', 'csw:GetRecords');
         $getrecords->setAttribute('service', 'CSW');
         $getrecords->setAttribute('version', '2.0.2');
         //if resulttype exists
@@ -66,97 +83,80 @@ abstract class cswrecords {
         //if startposition != 0
         $getrecords->setAttribute('startPosition', $startposition);
 
-        $query = $dom->createElementNS('http://www.opengis.net/cat/csw/2.0.2', 'csw:Query');
+        $query = $this->dom->createElementNS('http://www.opengis.net/cat/csw/2.0.2', 'csw:Query');
         $query->setAttribute('typeNames', 'gmd:MD_Metadata');
 
         //if elementsetname exists
-        $elementsetname = $dom->createElementNS('http://www.opengis.net/cat/csw/2.0.2', 'csw:ElementSetName', 'full');
+        $elementsetname = $this->dom->createElementNS('http://www.opengis.net/cat/csw/2.0.2', 'csw:ElementSetName', 'full');
 
-        $constraint = $dom->createElementNS('http://www.opengis.net/cat/csw/2.0.2', 'csw:Constraint');
+        $constraint = $this->dom->createElementNS('http://www.opengis.net/cat/csw/2.0.2', 'csw:Constraint');
         $constraint->setAttribute('version', '1.1.0');
 
-        $filter = $dom->createElementNS('http://www.opengis.net/ogc', 'ogc:Filter');
-        $globalAnd = $dom->createElementNS('http://www.opengis.net/ogc', 'ogc:And');
-        
-        //Add filters here
-        //allowed resource types
-        /**
-          <ogc:Or>
-          <ogc:And>
-          <ogc:Or>
-          <ogc:PropertyIsEqualTo>
-          <ogc:PropertyName>resourcetype</ogc:PropertyName>
-          <ogc:Literal>Layer</ogc:Literal>
-          </ogc:PropertyIsEqualTo>
-          <ogc:PropertyIsEqualTo>
-          <ogc:PropertyName>resourcetype</ogc:PropertyName>
-          <ogc:Literal>Geoproduct</ogc:Literal>
-          </ogc:PropertyIsEqualTo>
-          </ogc:Or>
-          <ogc:Or>
-          <ogc:PropertyIsEqualTo>
-          <ogc:PropertyName>harvested</ogc:PropertyName>
-          <ogc:Literal>false</ogc:Literal>
-          </ogc:PropertyIsEqualTo>
-          <ogc:PropertyIsNull>
-          <ogc:PropertyName>harvested</ogc:PropertyName>
-          </ogc:PropertyIsNull>
-          </ogc:Or>
-          </ogc:And>
-          <ogc:PropertyIsEqualTo>
-          <ogc:PropertyName>harvested</ogc:PropertyName>
-          <ogc:Literal>true</ogc:Literal>
-          </ogc:PropertyIsEqualTo>
-          </ogc:Or>
-         */
-        
-        $or  = $dom->createElementNS('http://www.opengis.net/ogc', 'ogc:Or');
-        $and = $dom->createElementNS('http://www.opengis.net/ogc', 'ogc:And');
-        $orresourcetype = $dom->createElementNS('http://www.opengis.net/ogc', 'ogc:Or');
+        $filter = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:Filter');
 
-        foreach ($resourcetypes as $resourcetype):
-            $proprt = $dom->createElementNS('http://www.opengis.net/ogc', 'ogc:PropertyIsEqualTo');
-            $propnamert = $dom->createElementNS('http://www.opengis.net/ogc', 'ogc:PropertyName', 'resourcetype');
-            $literalrt = $dom->createElementNS('http://www.opengis.net/ogc', 'ogc:Literal', strtolower($resourcetype));
 
-            $proprt->appendChild($propnamert);
-            $proprt->appendChild($literalrt);
-            $orresourcetype->appendChild($proprt);
-        endforeach;
-        
-        $proph = $dom->createElementNS('http://www.opengis.net/ogc', 'ogc:PropertyIsEqualTo');
-        $propnameh = $dom->createElementNS('http://www.opengis.net/ogc', 'ogc:PropertyName', 'harvested');
-        $literalh = $dom->createElementNS('http://www.opengis.net/ogc', 'ogc:Literal', 'false');
-        $proph->appendChild($propnameh);
-        $proph->appendChild($literalh);
-        
+        $or = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:Or');
+        $and = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:And');
+        $orresourcetype = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:Or');
+
+        foreach ($data as $name => $value) {
+            switch ($name) {
+                case 'resourcetype':
+                    foreach ($value as $resourcetype) {
+                        $orresourcetype->appendChild($this->getResouceType(strtolower($resourcetype)));
+                    }
+                    break;
+                case 'versions':
+                    if ($value) {
+                        $and->appendChild($this->getVersions());
+                    }
+                    break;
+                case 'resourcename':
+                    if (!empty($value)) {
+                        $and->appendChild($this->getResouceName($value));
+                    }
+                    break;
+                case 'metadata_created':
+                    if(!empty($value['from'])||!empty($value['to'])){
+                        $and->appendChild($this->getMetadataCreated($value['from'], $value['to']));
+                    }
+                    break;
+                case 'metadata_published':
+                    if(!empty($value['from'])||!empty($value['to'])){
+                        $and->appendChild($this->getMetadataPublished($value['from'], $value['to']));
+                    }
+                    break;
+                case 'organism':
+                    if(!empty($value)){
+                        $and->appendChild($this->getOrganism($value));
+                    }
+                    break;
+                case 'isdownloadable':
+                    $and->appendChild($this->getIsDownloadable());
+                    break;
+               case 'isfree':
+                    $and->appendChild($this->getIsFree());
+                    break;
+                case 'isorderable':
+                    $and->appendChild($this->getIsOrderable());
+                    break;
+                    
+            }
+        }
+
         $and->appendChild($orresourcetype);
-        $and->appendChild($proph);
+        $and->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'false'));
         $or->appendChild($and);
-        
-        $prop = $dom->createElementNS('http://www.opengis.net/ogc', 'ogc:PropertyIsEqualTo');
-        $propname = $dom->createElementNS('http://www.opengis.net/ogc', 'ogc:PropertyName', 'harvested');
-        $literal = $dom->createElementNS('http://www.opengis.net/ogc', 'ogc:Literal', 'true');
-        $prop->appendChild($propname);
-        $prop->appendChild($literal);
-        $or->appendChild($prop);
-        
-        $globalAnd->appendChild($or);
-                
+        $or->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'true'));
 
-        //Csw filter defines on the catalog
-        if (!empty($cswfilter)):
-            $globalAnd->appendChild($cswfilter);
-        endif;
+        $filter->appendChild($or);
 
-        $filter->appendChild($globalAnd);
-        
         //Ogc search sorting
         if (!empty($ogcsearchsorting)):
-            $sortby = $dom->createElementNS('http://www.opengis.net/ogc', 'ogc:SortBy');
-            $sortbyproperty = $dom->createElementNS('http://www.opengis.net/ogc', 'ogc:SortProperty');
-            $propertyname = $dom->createElementNS('http://www.opengis.net/ogc', 'ogc:PropertyName', strtolower($ogcsearchsorting));
-            $sortorder = $dom->createElementNS('http://www.opengis.net/ogc', 'ogc:SortOrder', 'ASC');
+            $sortby = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:SortBy');
+            $sortbyproperty = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:SortProperty');
+            $propertyname = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:PropertyName', strtolower($ogcsearchsorting));
+            $sortorder = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:SortOrder', 'ASC');
             $sortbyproperty->appendChild($propertyname);
             $sortbyproperty->appendChild($sortorder);
             $sortby->appendChild($sortbyproperty);
@@ -169,12 +169,12 @@ abstract class cswrecords {
             $query->appendChild($sortby);
         endif;
         $getrecords->appendChild($query);
-        $dom->appendChild($getrecords);
+        $this->dom->appendChild($getrecords);
 
-        $body = $dom->saveXML();
+        $body = $this->dom->saveXML();
 
         $results = cswrecords::CURLRequest('POST', $catalogurl, $body);
-        if(!$results){
+        if (!$results) {
             return false;
         }
         $doc = new DOMDocument();
@@ -184,21 +184,20 @@ abstract class cswrecords {
         if ($results) {
             // Contrôler si le XML ne contient pas une erreur
             if ($doc->getElementsByTagName('ExceptionReport')->length > 0) {
-                 $msg = $doc->getElementsByTagName("ExceptionReport")->item(0)->nodeValue;
+                $msg = $doc->getElementsByTagName("ExceptionReport")->item(0)->nodeValue;
                 JFactory::getApplication()->enqueueMessage($msg, 'error');
                 return false;
             } else {
                 $SearchResults = $doc->getElementsByTagName('SearchResults ');
-                
-               //Put the numberOfRecordsMatched in session variable for pagination
-               JFactory::getApplication('com_easysdi_catalog')->setUserState('global.list.total', '238');
-               
+
+                //Put the numberOfRecordsMatched in session variable for pagination
+                JFactory::getApplication('com_easysdi_catalog')->setUserState('global.list.total', '238');
+
 //                foreach ($SearchResults->item(0)->attributes as $a => $b) {
 //                    if ($a == 'numberOfRecordsMatched') {
 //                        $total = $b;
 //                    }
 //                }
-
 //                // Si le nombre de résultats retournés a changé, adapter la page affichée
 //                if ($limitstart >= $total) {
 //                    $limitstart = ( $limit != 0 ? ((floor($total / $limit) * $limit) - 1) : 0 );
@@ -260,6 +259,76 @@ abstract class cswrecords {
         return $output;
     }
 
-}
+    private function getFullText($literal) {
+        $operatorNode = $this->ogcFilters->getOperator($operator);
 
-?>
+        $filter1 = $this->ogcFilters->getIsLike('mainsearch', $literal);
+        $filter2 = $this->ogcFilters->getIsLike('keyword', $literal);
+        $filter3 = $this->ogcFilters->getIsLike('abstract', $literal);
+
+        $operatorNode->appendChild($filter1);
+        $operatorNode->appendChild($filter2);
+        $operatorNode->appendChild($filter3);
+
+        return $operatorNode;
+    }
+
+    private function getResouceType($literal) {
+        return $this->ogcFilters->getIsEqualTo('resourcetype', $literal);
+    }
+
+    private function getVersions() {
+        return $this->ogcFilters->getIsEqualTo('lastversion', 'true');
+    }
+
+    private function getResouceName($literal) {
+        return $this->ogcFilters->getIsLike('resourcename', $literal);
+    }
+
+    private function getMetadataCreated($from = '', $to = '') {
+        if (!empty($from) && empty($to)) {
+            return $this->ogcFilters->getIsGreatherOrEqual('created', $from);
+        } elseif (empty($from) && !empty($to)) {
+            return $this->ogcFilters->getIsLessOrEqual('created', $to);
+        } else {
+            return $this->ogcFilters->getIsBetween('created', $from, $to);
+        }
+    }
+
+    private function getMetadataPublished($from = '', $to = '') {
+       if (!empty($from) && empty($to)) {
+            return $this->ogcFilters->getIsGreatherOrEqual('published', $from);
+        } elseif (empty($from) && !empty($to)) {
+            return $this->ogcFilters->getIsLessOrEqual('published', $to);
+        } else {
+            return $this->ogcFilters->getIsBetween('published', $from, $to);
+        }
+    }
+
+    private function getOrganism($literal) {
+        return $this->ogcFilters->getIsEqualTo('organism', $literal);
+    }
+
+    private function getDefinedBoundary($literal) {
+        /**
+         * @todo NOT IMPLEMENTED
+         */
+    }
+
+    private function getIsDownloadable() {
+        return $this->ogcFilters->getIsEqualTo('isdownloadable', 'true');
+    }
+
+    private function getIsFree() {
+        return $this->ogcFilters->getIsEqualTo('isfree', 'true');
+    }
+
+    private function getIsOrderable() {
+        return $this->ogcFilters->getIsEqualTo('isorderable', 'true');
+    }
+
+    private function getIsViewable() {
+        return $this->ogcFilters->getIsEqualTo('isviewable', 'true');
+    }
+
+}

@@ -63,7 +63,6 @@
                value_field="name"
                translate="true"
                class="multiselect"
-               multiple="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_ORGANISM_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_ORGANISM_ID" 
         />
@@ -128,7 +127,7 @@
                description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_DEFAULTVALUE" 
                filter="safehtml" />
         
-        <field name="resourcetype_id" 
+        <!--<field name="resourcetype_id" 
                type="sql" 
                class="multiselect"
                multiple="true" 
@@ -138,14 +137,14 @@
                translate="false"
                label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_RESOURCETYPE_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_RESOURCETYPE_ID" 
-        />
+        />-->
         
         <field name="resourcetype_id" 
                type="sql" 
                class="multiselect"
                multiple="true" 
-               query="SELECT null as id , '' as name UNION SELECT id, name FROM #__sdi_resourcetype WHERE state=1" 
-               key_field="id" 
+               query="SELECT null as id , '' as name, '' as alias UNION SELECT id, name, alias FROM #__sdi_resourcetype WHERE state=1" 
+               key_field="alias" 
                value_field="name"
                translate="false"
                label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_RESOURCETYPE_ID"
@@ -172,11 +171,11 @@
             <option value="1">LAST</option>
         </field>
 
-        <field name="from" type="calendar" default="" 
+        <field name="from" type="calendar" default="null"
                label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_FROM"
                description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_FROM"  />
 
-        <field name="to" type="calendar" default="" 
+        <field name="to" type="calendar" default="null"
                label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_TO"
                description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_TO"  />
         

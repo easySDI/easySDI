@@ -235,7 +235,7 @@ class Easysdi_catalogModelsearchcriteria extends sdiModel {
             else if (isset($data['resourcetype_id']))
                 $catalogsearchcriteria->defaultvalue = json_encode($data['resourcetype_id']);
             else if (isset($data['organism_id']))
-                $catalogsearchcriteria->defaultvalue = json_encode($data['organism_id']);
+                $catalogsearchcriteria->defaultvalue = $data['organism_id'];
             else if (isset($data['boundary_id']))
                 $catalogsearchcriteria->defaultvalue = json_encode($data['boundary_id']);
             else if (isset($data['version']))

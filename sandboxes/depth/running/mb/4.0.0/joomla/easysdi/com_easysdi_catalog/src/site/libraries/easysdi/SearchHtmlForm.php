@@ -11,17 +11,21 @@ class SearchHtmlForm extends SearchForm {
 
     /** @var JForm */
     private $jform;
-
+    
     function __construct(JForm $jform) {
         parent::__construct();
         
         $this->jform = $jform;
         $this->advanced->setAttribute('style', 'display:none');
+        $this->hidden->setAttribute('style', 'display:none');
     }
 
     public function getForm() {
         $this->buildForm();
         
+        if($this->hidden->hasChildNodes()){
+            $this->dom->appendChild($this->hidden);
+        }
         if($this->simple->hasChildNodes()){
             $this->dom->appendChild($this->simple);
         }
@@ -36,6 +40,10 @@ class SearchHtmlForm extends SearchForm {
     }
 
     private function buildForm() {
+        foreach ($this->jform->getFieldset('hidden') as $field) {
+            $this->hidden->appendChild($this->buildAttribute($field));
+        }
+        
         foreach ($this->jform->getFieldset('simple') as $field) {
             $this->simple->appendChild($this->buildAttribute($field));
         }
@@ -43,6 +51,8 @@ class SearchHtmlForm extends SearchForm {
         foreach ($this->jform->getFieldset('advanced') as $field) {
             $this->advanced->appendChild($this->buildAttribute($field));
         }
+        
+        
     }
 
     private function buildAttribute($field) {
