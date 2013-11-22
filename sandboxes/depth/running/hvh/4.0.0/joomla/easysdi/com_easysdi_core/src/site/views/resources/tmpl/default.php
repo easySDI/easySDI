@@ -140,6 +140,8 @@ endif;
                         endif;
                         $db->setQuery($query);
                         $metadata = $db->loadObjectList();
+                        
+                        $s = $query->__toString();
 
                         //If no version are visible according to the filter
                         if (count($metadata) == 0)
@@ -254,7 +256,7 @@ endif;
                                         <ul class="dropdown-menu">
         <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->versioning): ?>
                                                 <li>
-                                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.edit'); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
+                                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.create&resource='. $item->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
                                                 </li>
                                                 <?php endif; ?>
                                                  <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>

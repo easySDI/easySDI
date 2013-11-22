@@ -10,7 +10,7 @@
     <target name="package" depends="write-xml, zip-package" description="Main Target"/>
     <target name="sync-package" depends="copy-tpl, write-xml, zip-package" description="Main Target" if="${tpl.exist}"/>
     <target name="dev-package" depends="copy-tpl, write-xml, zip-dev-package" description="Main Target" if="${tpl.exist}"/>
-    <target name="sync" depends="copy-tpl, write-xml" description="Main Target"/>
+    <target name="sync" depends="copy-tpl" description="Main Target"/>
     
     <target name="copy-tpl">
         <echo>Copy file for ${tpl.name}</echo>

@@ -125,11 +125,11 @@ class Easysdi_coreModelVersion extends JModelForm {
                 //Get session
                 $app = JFactory::getApplication();
                 $data = $app->getUserState('com_easysdi_core.edit.version.data');
-                $this->_item->searchtype = $data['searchtype'];
-                $this->_item->searchid = $data['searchid'];
-                $this->_item->searchname = $data['searchname'];
-                $this->_item->searchstate = $data['searchstate'];
-                $this->_item->searchlast = $data['searchlast'];
+                $this->_item->searchtype = (!empty($data['searchtype']))? $data['searchtype'] : null;
+                $this->_item->searchid = (!empty($data['searchid']))?$data['searchid'] : null;
+                $this->_item->searchname = (!empty($data['searchname']))?$data['searchname'] : null;
+                $this->_item->searchstate = (!empty($data['searchstate']))?$data['searchstate'] : null;
+                $this->_item->searchlast = (!empty($data['searchlast']))?$data['searchlast'] : null;
 
                 //Get search result
                 if (!empty($resourcetypechild)) {//No resourcetype can be child
@@ -339,7 +339,7 @@ class Easysdi_coreModelVersion extends JModelForm {
                 endforeach;
             endif;
 
-            return $id;
+            return $table->id;
         } else {
             return false;
         }

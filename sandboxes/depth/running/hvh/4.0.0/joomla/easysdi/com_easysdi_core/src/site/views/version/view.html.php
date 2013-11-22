@@ -93,7 +93,9 @@ class Easysdi_coreViewVersion extends JViewLegacy {
     function getToolbar() {
         $bar = new JToolBar('toolbar');
         //and make whatever calls you require
-        $bar->appendButton('Standard', 'save', JText::_('JSave'), 'version.save', false);
+        $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_CORE_APPLY'), 'version.apply', false);
+        $bar->appendButton('Separator');
+        $bar->appendButton('Standard', 'save', JText::_('COM_EASYSDI_CORE_SAVE'), 'version.save', false);
         $bar->appendButton('Separator');
         $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'version.cancel', false);
         //generate the html and return
