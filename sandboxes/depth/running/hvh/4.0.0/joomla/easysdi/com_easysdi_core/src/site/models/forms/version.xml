@@ -3,10 +3,9 @@
     <fieldset name="details">
 
         <field  name="searchtype"             
-            type="sql" 
+            type="resourcetypesql" 
             class="inputbox"
             translate="true" 
-            query="SELECT null as id,'' as name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_resourcetype WHERE state=1 ORDER BY ordering" 
             key_field="id" 
             value_field="name"
             label="COM_EASYSDI_CORE_FORM_LBL_VERSION_SEARCH_TYPE"
@@ -49,12 +48,17 @@
     
     <fieldset name="hidden">
         <field name="id" type="hidden" filter="safehtml" />
+        <field name="access" type="hidden" filter="safehtml" />
+        <field name="asset_id" type="hidden" filter="safehtml" />
+        <field name="state" type="hidden" filter="safehtml" />
         <field name="checked_out" type="hidden" filter="safehtml" />
         <field name="checked_out_time" type="hidden" filter="safehtml" /> 
         <field name="guid" type="hidden" filter="safehtml" /> 
-        <field name="resourcetype_id" type="hidden" filter="safehtml" /> 
+        <field name="name" type="hidden" filter="safehtml" /> 
+        <field name="resourcetype_id" type="hidden" filter="safehtml" />
+        <field name="resource_id" type="hidden" filter="safehtml" /> 
         <field name="rights" type="hidden" filter="safehtml" /> 
-        
+        <field name="selectedchildren" id="selectedchildren" type="hidden" filter="safehtml" /> 
     </fieldset>
     
 

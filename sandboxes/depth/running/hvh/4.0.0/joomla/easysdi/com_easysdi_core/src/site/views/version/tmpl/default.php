@@ -17,70 +17,21 @@ JHtml::_('formbehavior.chosen', 'select');
 $document = JFactory::getDocument();
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/css/jquery.dataTables.css');
 $document->addScript('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/js/jquery.dataTables.min.js');
+$document->addScript('components/com_easysdi_core/views/version/tmpl/version.js');
 ?>
-<?php if ($this->item) : ?>
-    <script>
-        js = jQuery.noConflict();
-        var childrenTable, availablechildrenTable, parents;
-        js(document).ready(function() {
-            availablechildrenTable = js('#sdi-availablechildren').dataTable({
-                "bFilter": false,
-                "bLengthChange": false,
-                "aoColumnDefs": [
-                    {"bVisible": false, "aTargets": [0]}
-                ]});
-
-            childrenTable = js('#sdi-children').dataTable({
-                "bLengthChange": false,
-                "aoColumnDefs": [
-                    {"bVisible": false, "aTargets": [0]}
-                ]});
-            parents = js('#sdi-parents').dataTable({
-                "bFilter": true,
-                "bLengthChange": false,
-                "aoColumnDefs": [
-                    {"bVisible": false, "aTargets": [0]}
-                ]});
-
-
-        });
-
-        function addChild(child) {
-            js('#sdi-children').dataTable().fnAddData([
-                child.id,
-                child.resource,
-                child.version,
-                child.state,
-                '<button type="button" id="sdi-childbutton-' + child.id + '" onClick="deleteChild(\'' + child.id + '\');" class="btn btn-info btn-mini"><i class="icon-white icon-minus"></i></button>'
-
-            ]);
-        }
-
-        function deleteChild(child) {
-            childrenTable.fnDeleteRow(js('#sdi-childbutton-' + child).parent().parent()[0]);
-        }
-
-        Joomla.submitbutton = function(task)
-        {
-            if (task === 'version.save') {
-                var results = [];
-                var  children = childrenTable.fnGetData();
-                children.each(function(value) {
-                    results.push(value[0]);
-                });
-                
-                var r = JSON.stringify(results);
-
-                js('#children').val(r);
-            }
-            Joomla.submitform(task, document.getElementById('adminForm'));
-        }
-
-    </script>
+<?php if ($this->item) : 
+    $versioning = ($this->item->versioning == 1)? 'true' :'false';
+    $document->addScriptDeclaration('var versioning='. $versioning .';');    
+    ?>
+    
     <div class="resource-edit front-end-edit">
         <?php if (!empty($this->item->id)): ?>
-            <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_EDIT_VERSION') . ' ' . $this->item->name; ?></h1>
+        <?php if ($this->item->versioning): ?>
+            <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_EDIT_VERSION') . ' ' . $this->item->resourcename . ' - ' . $this->item->name; ?></h1>
+             <?php else: ?>
+            <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_EDIT_VERSION') . ' ' . $this->item->resourcename ; ?></h1>
         <?php endif; ?>
+             <?php endif; ?>
         <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
 
             <div class="row-fluid">
@@ -107,6 +58,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/DataTa
                                     <th>ID</th>
                                     <th>Resource</th>
                                     <th>Version</th>
+                                    <th>Type</th>
                                     <th>Statut</th>
                                     <th>Ajouter</th>
                                 </tr>
@@ -116,11 +68,13 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/DataTa
                                 <?php
                                 if (!empty($this->item->availablechildren)):
                                     foreach ($this->item->availablechildren as $child):
+                                        JText::script($child->state);
                                         ?>
                                         <tr>
                                             <td><?php echo $child->id; ?></td>
                                             <td><?php echo $child->resource; ?></td>
                                             <td><?php echo $child->version; ?></td>
+                                            <td><?php echo $child->resourcetype; ?></td>
                                             <td><?php echo JText::_($child->state); ?></td> 
                                             <td class="center"><button type="button" onClick='addChild(<?php echo json_encode($child); ?>);' class="btn btn-success btn-mini"><i class="icon-white icon-new"></i></button></td> 
                                         </tr>
@@ -142,6 +96,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/DataTa
                                         <th>ID</th>
                                         <th>Resource</th>
                                         <th>Version</th>
+                                        <th>Type</th>
                                         <th>Statut</th>
                                         <th>Ajouter</th>
                                     </tr>
@@ -151,11 +106,13 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/DataTa
                                     <?php
                                     if (!empty($this->item->children)):
                                         foreach ($this->item->children as $child):
+                                            JText::script($child->state);
                                             ?>
                                             <tr class="sdi-child-<?php echo $child->id; ?>">
                                                 <td><?php echo $child->id; ?></td>
                                                 <td><?php echo $child->resource; ?></td>
                                                 <td><?php echo $child->version; ?></td>
+                                                <td><?php echo $child->resourcetype; ?></td>
                                                 <td><?php echo JText::_($child->state); ?></td> 
                                                 <td class="center"><button type="button" id="sdi-childbutton-<?php echo $child->id; ?>" onClick="deleteChild('<?php echo $child->id; ?>');" class="btn btn-danger btn-mini"><i class="icon-white icon-minus"></i></button></td>                                                 
                                             </tr>
@@ -178,6 +135,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/DataTa
                                         <th>ID</th>
                                         <th>Resource</th>
                                         <th>Version</th>
+                                        <th>Type</th>
                                         <th>Statut</th>
                                     </tr>
                                 </thead>
@@ -191,6 +149,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/DataTa
                                                 <td><?php echo $parent->id; ?></td>
                                                 <td><?php echo $parent->resource; ?></td>
                                                 <td><?php echo $parent->version; ?></td>
+                                                <td><?php echo $child->resourcetype; ?></td>
                                                 <td><?php echo JText::_($parent->state); ?></td> 
                                             </tr>
                                             <?php
@@ -213,7 +172,6 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/DataTa
                 <?php echo $field->input; ?>
             <?php endforeach; ?>  
             <input type = "hidden" name = "task" value = "" />
-            <input type = "hidden" name = "children" value = "" />
             <input type = "hidden" name = "option" value = "com_easysdi_core" />
             <?php echo JHtml::_('form.token'); ?>
         </form>

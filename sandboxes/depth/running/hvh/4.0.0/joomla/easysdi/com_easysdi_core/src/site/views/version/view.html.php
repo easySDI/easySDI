@@ -35,8 +35,6 @@ class Easysdi_coreViewVersion extends JViewLegacy {
         $this->params = $app->getParams('com_easysdi_core');
         $this->form = $this->get('Form');
 
-
-
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
@@ -55,7 +53,6 @@ class Easysdi_coreViewVersion extends JViewLegacy {
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return;
         }
-
 
         $this->_prepareDocument();
 
