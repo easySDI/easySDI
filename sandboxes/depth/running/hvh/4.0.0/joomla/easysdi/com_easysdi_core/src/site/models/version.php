@@ -77,13 +77,6 @@ class Easysdi_coreModelVersion extends JModelForm {
                 $this->_item->resourcename = $result->name;
 
                 //Allowed resourcetype as children
-//                $query = $db->getQuery(true)
-//                        ->select('rtchild.id')
-//                        ->from('#__sdi_resourcetype rt')
-//                        ->innerJoin('#__sdi_resource r ON r.resourcetype_id = rt.id')
-//                        ->innerJoin('#__sdi_resourcetypelink rtl ON rtl.parent_id = rt.id')
-//                        ->innerJoin('#__sdi_resourcetype rtchild ON rtchild.id = rtl.child_id')
-//                        ->where('r.id = ' . (int) $table->resource_id);
                 $query = $db->getQuery(true)
                         ->select('rtchild.id')
                         ->from('#__sdi_resourcetype rtchild')
@@ -96,7 +89,7 @@ class Easysdi_coreModelVersion extends JModelForm {
 
                 //Get parents
                 $query = $db->getQuery(true)
-                        ->select('v.id as id, v.name as version, rt.alias as resource, ms.value as state')
+                        ->select('v.id as id, v.name as version, r.name as resource, rt.alias as resourcetype, ms.value as state')
                         ->from('#__sdi_version v')
                         ->innerJoin('#__sdi_versionlink vl ON vl.parent_id = v.id')
                         ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
@@ -110,7 +103,7 @@ class Easysdi_coreModelVersion extends JModelForm {
 
                 //Get children
                 $query = $db->getQuery(true)
-                        ->select('v.id as id, v.name as version, rt.alias as resource, ms.value as state')
+                        ->select('v.id as id, v.name as version,r.name as resource, rt.alias as resourcetype, ms.value as state')
                         ->from('#__sdi_version v')
                         ->innerJoin('#__sdi_versionlink vl ON vl.child_id = v.id')
                         ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')

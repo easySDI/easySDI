@@ -88,7 +88,7 @@ function deleteChild(child) {
 
 Joomla.submitbutton = function(task)
 {
-    if (task === 'version.save') {
+    if (task === 'version.save' || task === 'version.apply') {
         var results = [];
         var children = childrenTable.fnGetData();
         children.each(function(value) {
