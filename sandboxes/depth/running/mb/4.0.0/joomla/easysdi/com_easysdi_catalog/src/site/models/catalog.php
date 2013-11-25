@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
 
-require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/cswrecords.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/Cswrecords.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/SearchJForm.php';
 
 /**

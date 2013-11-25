@@ -11,10 +11,10 @@ class SearchHtmlForm extends SearchForm {
 
     /** @var JForm */
     private $jform;
-    
+
     function __construct(JForm $jform) {
         parent::__construct();
-        
+
         $this->jform = $jform;
         $this->advanced->setAttribute('style', 'display:none');
         $this->hidden->setAttribute('style', 'display:none');
@@ -22,17 +22,16 @@ class SearchHtmlForm extends SearchForm {
 
     public function getForm() {
         $this->buildForm();
-        
-        if($this->hidden->hasChildNodes()){
-            $this->dom->appendChild($this->hidden);
-        }
-        if($this->simple->hasChildNodes()){
+
+        $this->dom->appendChild($this->hidden);
+
+        if ($this->simple->hasChildNodes()) {
             $this->dom->appendChild($this->simple);
         }
-        if($this->advanced->hasChildNodes()){
+        if ($this->advanced->hasChildNodes()) {
             $this->dom->appendChild($this->advanced);
         }
-        
+
         $this->dom->formatOutput = true;
         $form = $this->dom->saveHTML();
 
@@ -43,16 +42,14 @@ class SearchHtmlForm extends SearchForm {
         foreach ($this->jform->getFieldset('hidden') as $field) {
             $this->hidden->appendChild($this->buildAttribute($field));
         }
-        
+
         foreach ($this->jform->getFieldset('simple') as $field) {
             $this->simple->appendChild($this->buildAttribute($field));
         }
-        
+
         foreach ($this->jform->getFieldset('advanced') as $field) {
             $this->advanced->appendChild($this->buildAttribute($field));
         }
-        
-        
     }
 
     private function buildAttribute($field) {
@@ -64,13 +61,13 @@ class SearchHtmlForm extends SearchForm {
 
         $control = $this->dom->createElement('div');
         $control->setAttribute('class', 'controls');
-        
+
         $controlLabel->appendChild($this->getLabel($field));
         $control->appendChild($this->getInput($field));
-        
+
         $controlGroup->appendChild($controlLabel);
         $controlGroup->appendChild($control);
-        
+
         return $controlGroup;
     }
 
@@ -85,7 +82,12 @@ class SearchHtmlForm extends SearchForm {
      */
     private function getLabel($field) {
         $labelString = $field->label;
+        if(empty($labelString)){
+            return $this->dom->createElement('span');
+        }
         $domlocal = new DOMDocument();
+        if (isset($labelString))
+            ;
         $domlocal->loadHTML($this->convert($labelString));
 
         $domXapth = new DOMXPath($domlocal);
@@ -117,7 +119,7 @@ class SearchHtmlForm extends SearchForm {
 
         return $imported;
     }
-    
+
     /**
      * Encode special characters into HTML entities. Unless the <> characters.
      * 

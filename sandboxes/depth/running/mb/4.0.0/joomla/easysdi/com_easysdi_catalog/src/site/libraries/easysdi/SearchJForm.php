@@ -5,6 +5,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumCriteriaType.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumRenderType.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/SearchForm.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
 
 /**
  * 
@@ -13,23 +14,30 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/Sea
  */
 class SearchJForm extends SearchForm {
 
+    /** @var SdiLanguageDao  */
+    private $ldao;
+    
     function __construct($item) {
         parent::__construct();
 
         $this->item = $item;
 
         $this->dom->appendChild($this->dom->createElement('form'));
+        $this->ldao = new SdiLanguageDao();
 
         $this->simple->setAttribute('addfieldpath', JPATH_COMPONENT . '/models/fields');
         $this->advanced->setAttribute('addfieldpath', JPATH_COMPONENT . '/models/fields');
         $this->hidden->setAttribute('addfieldpath', JPATH_COMPONENT . '/models/fields');
-
     }
 
     public function getForm() {
 
         $this->buildForm();
-
+        
+        foreach ($this->buildHiddenField() as $field) {
+            $this->hidden->appendChild($field);
+        }
+        
         if ($this->simple->hasChildNodes()) {
             $this->dom->firstChild->appendChild($this->simple);
         }
@@ -44,6 +52,18 @@ class SearchJForm extends SearchForm {
         $form = $this->dom->saveXML();
 
         return $form;
+    }
+    
+    private function buildHiddenField() {
+        $fields = array();
+        
+        $id = $this->dom->createElement('field');
+        $id->setAttribute('type', 'hidden');
+        $id->setAttribute('name', 'id');
+        
+        $fields[] = $id;
+        
+        return $fields;
     }
 
     /**
@@ -117,9 +137,15 @@ class SearchJForm extends SearchForm {
 
     private function getFormTextBoxField($searchCriteria) {
         $field = $this->dom->createElement('field');
-        $field->setAttribute('name', $searchCriteria->name);
+        
         $field->setAttribute('type', 'text');
-        $field->setAttribute('label', EText::_($searchCriteria->guid));
+        if(isset($searchCriteria->relation_guid)){
+            $field->setAttribute('label', EText::_($searchCriteria->relation_guid));
+            $field->setAttribute('name', $searchCriteria->id.'_'.$this->getOgcSearchFilter($searchCriteria));
+        }  else {
+            $field->setAttribute('label', EText::_($searchCriteria->guid));
+            $field->setAttribute('name', $searchCriteria->id.'_'.$searchCriteria->name);
+        }
         $field->setAttribute('default', $searchCriteria->defaultvalue);
 
         return $field;
@@ -127,9 +153,14 @@ class SearchJForm extends SearchForm {
 
     private function getFormTextAreaField($searchCriteria) {
         $field = $this->dom->createElement('field');
-        $field->setAttribute('name', $searchCriteria->name);
         $field->setAttribute('type', 'textarea');
-        $field->setAttribute('label', EText::_($searchCriteria->guid));
+        if(isset($searchCriteria->relation_guid)){
+            $field->setAttribute('label', EText::_($searchCriteria->relation_guid));
+            $field->setAttribute('name', $searchCriteria->id.'_'.$this->getOgcSearchFilter($searchCriteria));
+        }  else {
+            $field->setAttribute('label', EText::_($searchCriteria->guid));
+            $field->setAttribute('name', $searchCriteria->id.'_'.$searchCriteria->name);
+        }
         $field->setAttribute('default', $searchCriteria->defaultvalue);
 
         return $field;
@@ -137,9 +168,14 @@ class SearchJForm extends SearchForm {
 
     private function getFormCheckboxField($searchCriteria) {
         $field = $this->dom->createElement('field');
-        $field->setAttribute('name', $searchCriteria->name);
         $field->setAttribute('type', 'checkbox');
-        $field->setAttribute('label', EText::_($searchCriteria->guid));
+        if(isset($searchCriteria->relation_guid)){
+            $field->setAttribute('label', EText::_($searchCriteria->relation_guid));
+            $field->setAttribute('name', $searchCriteria->id.'_'.$this->getOgcSearchFilter($searchCriteria));
+        }  else {
+            $field->setAttribute('label', EText::_($searchCriteria->guid));
+            $field->setAttribute('name', $searchCriteria->name);
+        }
         $field->setAttribute('value', 1);
         $field->setAttribute('default', $searchCriteria->defaultvalue);
 
@@ -148,9 +184,15 @@ class SearchJForm extends SearchForm {
 
     private function getFormCheckboxesField($searchCriteria) {
         $field = $this->dom->createElement('field');
-        $field->setAttribute('name', $searchCriteria->name);
         $field->setAttribute('type', 'inlineCheckboxes');
-        $field->setAttribute('label', EText::_($searchCriteria->guid));
+        if(isset($searchCriteria->relation_guid)){
+            $field->setAttribute('label', EText::_($searchCriteria->relation_guid));
+            $field->setAttribute('name', $searchCriteria->id.'_'.$this->getOgcSearchFilter($searchCriteria));
+        }  else {
+            $field->setAttribute('label', EText::_($searchCriteria->guid));
+            $field->setAttribute('name', $searchCriteria->name);
+            
+        }
         $field->setAttribute('default', $this->getJsonDefaultValue($searchCriteria->defaultvalue));
 
         foreach ($this->getAttributOptions($searchCriteria) as $opt) {
@@ -165,9 +207,14 @@ class SearchJForm extends SearchForm {
 
     private function getFormRadioField($searchCriteria) {
         $field = $this->dom->createElement('field');
-        $field->setAttribute('name', $searchCriteria->name);
         $field->setAttribute('type', 'radio');
-        $field->setAttribute('label', EText::_($searchCriteria->guid));
+        if(isset($searchCriteria->relation_guid)){
+            $field->setAttribute('label', EText::_($searchCriteria->relation_guid));
+            $field->setAttribute('name', $searchCriteria->id.'_'.$this->getOgcSearchFilter($searchCriteria));
+        }  else {
+            $field->setAttribute('label', EText::_($searchCriteria->guid));
+            $field->setAttribute('name', $searchCriteria->name);
+        }
         $field->setAttribute('default', $searchCriteria->defaultvalue);
 
         foreach ($this->getAttributOptions($searchCriteria) as $opt) {
@@ -182,9 +229,15 @@ class SearchJForm extends SearchForm {
 
     private function getFormListField($searchCriteria) {
         $field = $this->dom->createElement('field');
-        $field->setAttribute('name', $searchCriteria->name);
         $field->setAttribute('type', 'list');
-        $field->setAttribute('label', EText::_($searchCriteria->guid));
+        if(isset($searchCriteria->relation_guid)){
+            $field->setAttribute('label', EText::_($searchCriteria->relation_guid));
+            $field->setAttribute('name', $searchCriteria->id.'_'.$this->getOgcSearchFilter($searchCriteria));
+            $field->setAttribute('multiple', 'true');
+        }  else {
+            $field->setAttribute('label', EText::_($searchCriteria->guid));
+            $field->setAttribute('name', $searchCriteria->name);
+        }
         $field->setAttribute('default', $searchCriteria->defaultvalue);
 
         $field->appendChild($this->dom->createElement('option'));
@@ -201,9 +254,14 @@ class SearchJForm extends SearchForm {
     private function getFormDateRangeField($searchCriteria) {
 
         $field = $this->dom->createElement('field');
-        $field->setAttribute('name', $searchCriteria->name);
         $field->setAttribute('type', 'fromtocalendar');
-        $field->setAttribute('label', EText::_($searchCriteria->guid));
+        if(isset($searchCriteria->relation_guid)){
+            $field->setAttribute('label', EText::_($searchCriteria->relation_guid));
+            $field->setAttribute('name', $searchCriteria->id.'_'.$this->getOgcSearchFilter($searchCriteria));
+        }  else {
+            $field->setAttribute('label', EText::_($searchCriteria->guid));
+            $field->setAttribute('name', $searchCriteria->name);
+        }
         $field->setAttribute('format', 'Y-m-d');
 
         $range = array($searchCriteria->defaultvaluefrom, $searchCriteria->defaultvalueto);
@@ -211,11 +269,10 @@ class SearchJForm extends SearchForm {
 
         return $field;
     }
-    
 
     private function getAttributOptions($searchCriteria) {
         $query = $this->db->getQuery(true);
-        
+
         switch ($searchCriteria->name) {
             case 'organism':
                 $query->select('t.id, t.guid, t.guid as value, t.name');
@@ -238,7 +295,9 @@ class SearchJForm extends SearchForm {
                 return $options;
                 break;
             default :
-                echo '';
+                $query->select('t.id, t.value, t.guid, t.name');
+                $query->from('#__sdi_attributevalue t');
+                $query->where('t.attribute_id = ' . $searchCriteria->attributechild_id);
                 break;
         }
 
@@ -246,6 +305,26 @@ class SearchJForm extends SearchForm {
         $options = $this->db->loadObjectList();
 
         return $options;
+    }
+    
+    /**
+     * 
+     * @param stdClass $searchCriteria
+     */
+    private function getOgcSearchFilter($searchCriteria) {
+        $language = $this->ldao->getByCode(JFactory::getUser()->getParam('language'));
+        
+        $query = $this->db->getQuery(true);
+        
+        $query->select('scf.ogcsearchfilter');
+        $query->from('#__sdi_searchcriteriafilter scf');
+        $query->where('scf.searchcriteria_id = '.$searchCriteria->id);
+        $query->where('scf.language_id = '.$language->id);
+        
+        $this->db->setQuery($query);
+        $filter = $this->db->loadObject();
+
+        return $filter->ogcsearchfilter;
     }
 
     /**
