@@ -70,7 +70,7 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
      * @return	void
      * @since	1.6
      */
-    public function save() {
+    public function save($andclose = true) {
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
@@ -130,22 +130,35 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
         }
 
 
-        // Check in the profile.
-        if ($return) {
-            $model->checkin($return);
+        if (!$andclose) {
+            $app->setUserState('com_easysdi_shop.edit.diffusion.data', $data);
+
+            // Redirect back to the edit screen.
+            $this->setMessage(JText::_('COM_EASYSDI_SHOP_ITEM_SAVED_SUCCESSFULLY'));
+            $id = (int) $app->getUserState('com_easysdi_shop.edit.diffusionmetadata.id');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.edit&id=' . $id, false));
+        } else {
+            // Check in the profile.
+            if ($return) {
+                $model->checkin($return);
+            }
+
+            // Clear the profile id from the session.
+            $app->setUserState('com_easysdi_shop.edit.diffusionmetadata.id', null);
+            $app->setUserState('com_easysdi_shop.edit.diffusion.id', null);
+            $app->setUserState('com_easysdi_shop.edit.diffusionversion.id', null);
+
+            // Redirect to the list screen.
+            $this->setMessage(JText::_('COM_EASYSDI_SHOP_ITEM_SAVED_SUCCESSFULLY'));
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+
+            // Flush the data from the session.
+            $app->setUserState('com_easysdi_shop.edit.diffusion.data', null);
         }
+    }
 
-        // Clear the profile id from the session.
-        $app->setUserState('com_easysdi_shop.edit.diffusionmetadata.id', null);
-        $app->setUserState('com_easysdi_shop.edit.diffusion.id', null);
-        $app->setUserState('com_easysdi_shop.edit.diffusionversion.id', null);
-
-        // Redirect to the list screen.
-        $this->setMessage(JText::_('COM_EASYSDI_SHOP_ITEM_SAVED_SUCCESSFULLY'));
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-
-        // Flush the data from the session.
-        $app->setUserState('com_easysdi_shop.edit.diffusion.data', null);
+    function apply() {
+        $this->save(false);
     }
 
     function cancel() {
@@ -232,7 +245,5 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
         // Flush the data from the session.
         $app->setUserState('com_easysdi_shop.edit.diffusion.data', null);
     }
-
-    
 
 }

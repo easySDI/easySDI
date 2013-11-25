@@ -16,7 +16,7 @@ require_once JPATH_COMPONENT . '/controller.php';
  * Group controller class.
  */
 class Easysdi_mapControllerVisualization extends Easysdi_mapController {
-    
+
     /**
      * Method to check out an item for editing and redirect to the edit form.
      *
@@ -27,7 +27,7 @@ class Easysdi_mapControllerVisualization extends Easysdi_mapController {
 
         // Get the previous edit id (if any) and the current edit id.
         $previousId = (int) $app->getUserState('com_easysdi_map.edit.visualization.id');
-        
+
         $metadataId = JFactory::getApplication()->input->getInt('id', null, 'array');
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
@@ -69,7 +69,7 @@ class Easysdi_mapControllerVisualization extends Easysdi_mapController {
      * @return	void
      * @since	1.6
      */
-    public function save() {
+    public function save($andclose = true) {
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
@@ -129,22 +129,38 @@ class Easysdi_mapControllerVisualization extends Easysdi_mapController {
         }
 
 
-        // Check in the profile.
-        if ($return) {
-            $model->checkin($return);
+
+
+        if (!$andclose) {
+            // Save the data in the session.
+            $app->setUserState('com_easysdi_map.edit.visualization.data', $data);
+
+            // Redirect back to the edit screen.
+            $id = (int) $app->getUserState('com_easysdi_map.edit.visualizationmetadata.id');
+            $this->setMessage(JText::_('COM_EASYSDI_MAP_ITEM_SAVED_SUCCESSFULLY'));
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_map&view=visualization&layout=edit&id=' . $id, false));
+        } else {
+            // Check in the profile.
+            if ($return) {
+                $model->checkin($return);
+            }
+
+            // Clear the profile id from the session.
+            $app->setUserState('com_easysdi_map.edit.visualizationmetadata.id', null);
+            $app->setUserState('com_easysdi_map.edit.visualization.id', null);
+            $app->setUserState('com_easysdi_map.edit.visualizationversion.id', null);
+
+            // Redirect to the list screen.
+            $this->setMessage(JText::_('COM_EASYSDI_MAP_ITEM_SAVED_SUCCESSFULLY'));
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+
+            // Flush the data from the session.
+            $app->setUserState('com_easysdi_map.edit.visualization.data', null);
         }
+    }
 
-        // Clear the profile id from the session.
-        $app->setUserState('com_easysdi_map.edit.visualizationmetadata.id', null);
-        $app->setUserState('com_easysdi_map.edit.visualization.id', null);
-        $app->setUserState('com_easysdi_map.edit.visualizationversion.id', null);
-
-        // Redirect to the list screen.
-        $this->setMessage(JText::_('COM_EASYSDI_MAP_ITEM_SAVED_SUCCESSFULLY'));
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-
-        // Flush the data from the session.
-        $app->setUserState('com_easysdi_map.edit.visualization.data', null);
+    function apply() {
+        $this->save(false);
     }
 
     function cancel() {

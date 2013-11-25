@@ -179,7 +179,8 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
     }
 
     /**
-     * 
+     * TODO : This piece of code may be moved to an other place ? It can be more clear to have it in a model raither than in a controller.
+     * Move it if needed when implementing version surpport.
      */
     function create() {
         $version = array();
@@ -299,8 +300,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             $app->setUserState('com_easysdi_core.edit.version.data', $data);
             // Redirect back to the edit screen.
             $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_SAVED_SUCCESSFULLY'));
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=version&layout=edit', false));
-            return false;
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=version&layout=edit', false));            
         } else {
             // Redirect to the list screen.
             $this->flushSessionData();

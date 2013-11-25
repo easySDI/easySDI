@@ -293,7 +293,9 @@ class Easysdi_coreModelVersion extends JModelForm {
                 return false;
             }
         } else {
-            if (!$user->authorize($id, sdiUser::resourcemanager)) {
+            $table = $this->getTable();
+            $table->load($id);
+            if (!$user->authorize($table->resource_id, sdiUser::resourcemanager)) {
                 //Try to manage relation but not its resource manager
                 JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
                 JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
