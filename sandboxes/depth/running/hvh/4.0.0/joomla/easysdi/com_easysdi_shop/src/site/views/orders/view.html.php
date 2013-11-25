@@ -33,6 +33,7 @@ class Easysdi_shopViewOrders extends JViewLegacy {
         $app = JFactory::getApplication();
         $this->state = $this->get('State');
         $this->items = $this->get('Items');
+        $this->orderstate = $this->get('orderstate');
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_easysdi_shop');
 

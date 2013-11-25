@@ -93,5 +93,12 @@ class Easysdi_shopViewOrder extends JViewLegacy {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
     }
+    
+    function getToolbar() {
+        $bar = new JToolBar('toolbar');
+        $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'order.cancel', false);
+        //generate the html and return
+        return $bar->render();
+    }
 
 }

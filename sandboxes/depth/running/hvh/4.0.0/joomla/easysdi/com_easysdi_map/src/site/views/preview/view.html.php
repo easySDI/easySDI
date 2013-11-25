@@ -78,6 +78,7 @@ class Easysdi_mapViewPreview extends JViewLegacy {
             //Build the link to the meatadata sheet view
             $href = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $preview->metadata->guid . '&lang=' . JFactory::getLanguage()->getTag() . '&catalog=' . JFactory::getApplication()->input->get('catalog') . '&preview=map&tmpl=component');
             //If needed, build the link to the diffusion package ready to download
+            $download = '';
             if (!empty($preview->diffusion) && $preview->diffusion->hasdownload == 1) {
                 $download = 'download: "' . htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&tmpl=component&id=' . $preview->diffusion->id) . '",';
             }

@@ -10,10 +10,12 @@
 defined('_JEXEC') or die;
 
 ?>
-<?php if ($this->item) : ?>    
+<?php if ($this->item) : ?> 
+<div class="order-edit front-end-edit">
+    <h1><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_TITLE'); ?></h1>
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=order'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
         <div class="order-edit front-end-edit">
-            <h1><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_TITLE'); ?></h1>
+            
             <div >
                 <div class="row-fluid">
                     <div class="span10 offset1 well">
@@ -92,6 +94,7 @@ defined('_JEXEC') or die;
                                                             <a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=<?php echo $extraction->id; ?>&order=<?php echo $this->item->id; ?>" class="btn btn-success btn-mini pull-left" onClick=""><i class="icon-white icon-flag-2"></i></a>
                                                         </div>
                                                         <div class="span8">
+                                                            <div class="container-fluid">
                                                             <div class="row-fluid">
                                                                 <div class="span2 order-edit-label" >
                                                                     <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_FEE'); ?>
@@ -129,6 +132,7 @@ defined('_JEXEC') or die;
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                            </div>
                                                     </div>
                                                 <?php endif; ?>
                                             </td>        
@@ -197,6 +201,11 @@ defined('_JEXEC') or die;
                 </div>
             </div>
         </div>
+        <div>
+                <?php echo $this->getToolbar(); ?>
+            </div>
+
+        
         <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
             <?php echo $field->input; ?>
         <?php endforeach; ?>  
@@ -204,7 +213,7 @@ defined('_JEXEC') or die;
         <input type = "hidden" name = "option" value = "com_easysdi_shop" />
         <?php echo JHtml::_('form.token'); ?>
     </form>
-
+</div>
     <?php
 else:
     echo JText::_('COM_EASYSDI_SHOP_ITEM_NOT_LOADED');

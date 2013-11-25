@@ -87,9 +87,9 @@ class cswmetadata {
      * @return DOMDocument 
      */
     public function load($content = 'CORE') {
-        $catalogUrlGetRecordById = $this->catalogurl . "?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=".$content."&id=" . $this->guid;
+        $catalogUrlGetRecordById = $this->catalogurl . "?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=" . $content . "&id=" . $this->guid;
         $response = $this->CURLRequest("GET", $catalogUrlGetRecordById);
-        if (!$response){
+        if (!$response) {
             return false;
         }
         $doc = new DOMDocument();
@@ -185,183 +185,184 @@ class cswmetadata {
             endif;
             $keys = array("guid" => $this->guid);
             $this->metadata->load($keys);
-            $this->version = JTable::getInstance('version', 'Easysdi_coreTable');
-            $this->version->load($this->metadata->version_id);
-            $this->resource = JTable::getInstance('resource', 'Easysdi_coreTable');
-            $this->resource->load($this->version->resource_id);
+            if (!empty($this->metadata->version_id)):
+                $this->version = JTable::getInstance('version', 'Easysdi_coreTable');
+                $this->version->load($this->metadata->version_id);
+                $this->resource = JTable::getInstance('resource', 'Easysdi_coreTable');
+                $this->resource->load($this->version->resource_id);
 
-            $query = $this->db->getQuery(true)
-                    ->select('name, logo')
-                    ->from('#__sdi_organism')
-                    ->where('id = ' . $this->resource->organism_id);
-            $this->db->setQuery($query);
-            $organism = $this->db->loadObject();
+                $query = $this->db->getQuery(true)
+                        ->select('name, logo')
+                        ->from('#__sdi_organism')
+                        ->where('id = ' . $this->resource->organism_id);
+                $this->db->setQuery($query);
+                $organism = $this->db->loadObject();
 
-            $params = JComponentHelper::getParams('com_easysdi_core');
-            $width = $params->get('logowidth');
-            $height = $params->get('logoheight');
-            $length = $params->get('descriptionlength');
+                $params = JComponentHelper::getParams('com_easysdi_core');
+                $width = $params->get('logowidth');
+                $height = $params->get('logoheight');
+                $length = $params->get('descriptionlength');
 
-            $exresource = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Resource');
-            $exresource->setAttribute('name', $this->resource->name);
-            $exresource->setAttribute('descriptionLength', $length);
+                $exresource = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Resource');
+                $exresource->setAttribute('name', $this->resource->name);
+                $exresource->setAttribute('descriptionLength', $length);
 
-            $exorganism = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Organism');
-            $exorganism->setAttribute('name', $organism->name);
+                $exorganism = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Organism');
+                $exorganism->setAttribute('name', $organism->name);
 
-            $exlogo = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Logo');
-            $exlogo->setAttribute('path', $organism->logo);
-            $exlogo->setAttribute('width', $width);
-            $exlogo->setAttribute('height', $height);
+                $exlogo = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Logo');
+                $exlogo->setAttribute('path', $organism->logo);
+                $exlogo->setAttribute('width', $width);
+                $exlogo->setAttribute('height', $height);
 
-            $query = $this->db->getQuery(true)
-                    ->select('name, alias, logo')
-                    ->from('#__sdi_resourcetype')
-                    ->where('id = ' . $this->resource->resourcetype_id);
-            $this->db->setQuery($query);
-            $resourcetype = $this->db->loadObject();
-            $exresourcetype = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Resourcetype');
-            $exresourcetype->setAttribute('name', $resourcetype->name);
-            $exresourcetype->setAttribute('alias', $resourcetype->alias);
+                $query = $this->db->getQuery(true)
+                        ->select('name, alias, logo')
+                        ->from('#__sdi_resourcetype')
+                        ->where('id = ' . $this->resource->resourcetype_id);
+                $this->db->setQuery($query);
+                $resourcetype = $this->db->loadObject();
+                $exresourcetype = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Resourcetype');
+                $exresourcetype->setAttribute('name', $resourcetype->name);
+                $exresourcetype->setAttribute('alias', $resourcetype->alias);
 
-            $logo = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Logo');
-            $logo->setAttribute('path', $resourcetype->logo);
-            $logo->setAttribute('width', $width);
-            $logo->setAttribute('height', $height);
+                $logo = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Logo');
+                $logo->setAttribute('path', $resourcetype->logo);
+                $logo->setAttribute('width', $width);
+                $logo->setAttribute('height', $height);
 
-            $exversion = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Version');
-            $exversion->setAttribute('name', $this->version->name);
+                $exversion = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Version');
+                $exversion->setAttribute('name', $this->version->name);
 
-            $exmetadata = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Metadata');
-            $exmetadata->setAttribute('created', $this->metadata->created);
-            $exmetadata->setAttribute('updated', $this->metadata->modified);
+                $exmetadata = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Metadata');
+                $exmetadata->setAttribute('created', $this->metadata->created);
+                $exmetadata->setAttribute('updated', $this->metadata->modified);
 
-            $query = $this->db->getQuery(true)
-                    ->select('id, guid ,pricing_id, hasdownload, hasextraction, accessscope_id')
-                    ->from('#__sdi_diffusion')
-                    ->where('version_id = ' . $this->version->id)
-                    ->where('state = 1');
-            $this->db->setQuery($query);
-            $diffusion = $this->db->loadObject();
-            if (!empty($diffusion)):
-                $isfree = ($diffusion->pricing_id == 1 ) ? 'true' : 'false';
-                $isDownladable = ($diffusion->hasdownload == 1 ) ? 'true' : 'false';
-                $isOrderable = ($diffusion->hasextraction == 1 ) ? 'true' : 'false';
-                $exdiffusion = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Diffusion');
-                $exdiffusion->setAttribute('isfree', $isfree);
-                $exdiffusion->setAttribute('isDownladable', $isDownladable);
-                $exdiffusion->setAttribute('isOrderable', $isOrderable);
-                $exdiffusion->setAttribute('file_size', '');
-                $exdiffusion->setAttribute('size_unit', '');
-                $exdiffusion->setAttribute('file_type', '');
+                $query = $this->db->getQuery(true)
+                        ->select('id, guid ,pricing_id, hasdownload, hasextraction, accessscope_id')
+                        ->from('#__sdi_diffusion')
+                        ->where('version_id = ' . $this->version->id)
+                        ->where('state = 1');
+                $this->db->setQuery($query);
+                $diffusion = $this->db->loadObject();
+                if (!empty($diffusion)):
+                    $isfree = ($diffusion->pricing_id == 1 ) ? 'true' : 'false';
+                    $isDownladable = ($diffusion->hasdownload == 1 ) ? 'true' : 'false';
+                    $isOrderable = ($diffusion->hasextraction == 1 ) ? 'true' : 'false';
+                    $exdiffusion = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Diffusion');
+                    $exdiffusion->setAttribute('isfree', $isfree);
+                    $exdiffusion->setAttribute('isDownladable', $isDownladable);
+                    $exdiffusion->setAttribute('isOrderable', $isOrderable);
+                    $exdiffusion->setAttribute('file_size', '');
+                    $exdiffusion->setAttribute('size_unit', '');
+                    $exdiffusion->setAttribute('file_type', '');
 
-                $exmetadata->appendChild($exdiffusion);
-            endif;
+                    $exmetadata->appendChild($exdiffusion);
+                endif;
 
-            $exresource->appendChild($exmetadata);
-            $exresource->appendChild($exversion);
-            $exresourcetype->appendChild($logo);
-            $exresource->appendChild($exresourcetype);
-            $exorganism->appendChild($exlogo);
-            $exresource->appendChild($exorganism);
-            $extendedmetadata->appendChild($exresource);
-            
-            //Shop properties
-            if (!empty($diffusion) && $diffusion->hasextraction == 1):
-                $html = $this->getShopExtension();
-                $extraction = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:extraction');
-                $extractionhtml = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:html', $html);
-                $extraction->appendChild($extractionhtml);
-                $action->appendChild($extraction);
-            endif;
+                $exresource->appendChild($exmetadata);
+                $exresource->appendChild($exversion);
+                $exresourcetype->appendChild($logo);
+                $exresource->appendChild($exresourcetype);
+                $exorganism->appendChild($exlogo);
+                $exresource->appendChild($exorganism);
+                $extendedmetadata->appendChild($exresource);
 
-            //Download
-            if (!empty($diffusion) && $diffusion->hasdownload == 1):
-                //check if the user has the right to download
-                $right = true;
-                if ($diffusion->accessscope_id != 1):
-                    if (!sdiFactory::getSdiUser()->isEasySDI):
-                        $right = false;
+                //Shop properties
+                if (!empty($diffusion) && $diffusion->hasextraction == 1):
+                    $html = $this->getShopExtension();
+                    $extraction = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:extraction');
+                    $extractionhtml = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:html', $html);
+                    $extraction->appendChild($extractionhtml);
+                    $action->appendChild($extraction);
+                endif;
+
+                //Download
+                if (!empty($diffusion) && $diffusion->hasdownload == 1):
+                    //check if the user has the right to download
+                    $right = true;
+                    if ($diffusion->accessscope_id != 1):
+                        if (!sdiFactory::getSdiUser()->isEasySDI):
+                            $right = false;
+                        else:
+                            if ($diffusion->accessscope_id == 2):
+                                $organisms = sdiModel::getAccessScopeOrganism($diffusion->guid);
+                                $organism = sdiFactory::getSdiUser()->getMemberOrganisms();
+                                if (empty($organisms) || !in_array($organism[0]->id, $organisms)):
+                                    $right = false;
+                                endif;
+                            endif;
+                            if ($diffusion->accessscope_id == 3):
+                                $users = sdiModel::getAccessScopeUser($diffusion->guid);
+                                if (empty($users) || !in_array(sdiFactory::getSdiUser()->id, $users)):
+                                    $right = false;
+                                endif;
+                            endif;
+                        endif;
+                    endif;
+
+                    if ($right):
+                        $download = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:download');
+                        $downloadlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&id=' . $diffusion->id));
+                        $download->appendChild($downloadlink);
+                        $action->appendChild($download);
                     else:
-                        if ($diffusion->accessscope_id == 2):
-                            $organisms = sdiModel::getAccessScopeOrganism($diffusion->guid);
-                            $organism = sdiFactory::getSdiUser()->getMemberOrganisms();
-                            if (empty($organisms) || !in_array($organism[0]->id, $organisms)):
-                                $right = false;
-                            endif;
-                        endif;
-                        if ($diffusion->accessscope_id == 3):
-                            $users = sdiModel::getAccessScopeUser($diffusion->guid);
-                            if (empty($users) || !in_array(sdiFactory::getSdiUser()->id, $users)):
-                                $right = false;
-                            endif;
+                        //Download right
+                        $query = $this->db->getQuery(true)
+                                ->select('ju.name, ju.email')
+                                ->from('#__sdi_user_role_resource urr')
+                                ->innerJoin('#__sdi_user u ON u.id = urr.user_id')
+                                ->innerJoin('#__users ju ON ju.id = u.user_id')
+                                ->where('urr.resource_id = ' . $this->resource->id)
+                                ->where('urr.role_id = 5')
+                        ;
+                        $this->db->setQuery($query);
+                        $user = $this->db->loadObject();
+                        if (!empty($user)):
+                            $downloadright = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:downloadright');
+                            $downloadrighttooltip = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:tooltip');
+                            $downloadrighttooltip->setAttribute('username', $user->name);
+                            $downloadrighttooltip->setAttribute('email', $user->email);
+                            $downloadright->appendChild($downloadrighttooltip);
+                            $action->appendChild($downloadright);
                         endif;
                     endif;
                 endif;
 
-                if ($right):
-                    $download = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:download');
-                    $downloadlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&id=' . $diffusion->id));
-                    $download->appendChild($downloadlink);
-                    $action->appendChild($download);
-                else:
-                    //Download right
-                    $query = $this->db->getQuery(true)
-                            ->select('ju.name, ju.email')
-                            ->from('#__sdi_user_role_resource urr')
-                            ->innerJoin('#__sdi_user u ON u.id = urr.user_id')
-                            ->innerJoin('#__users ju ON ju.id = u.user_id')
-                            ->where('urr.resource_id = ' . $this->resource->id)
-                            ->where('urr.role_id = 5')
-                            ;
-                    $this->db->setQuery($query);
-                    $user = $this->db->loadObject();
-                    if(!empty($user)):
-                        $downloadright = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:downloadright');
-                        $downloadrighttooltip = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:tooltip');
-                        $downloadrighttooltip->setAttribute('username', $user->name);
-                        $downloadrighttooltip->setAttribute('email', $user->email);
-                        $downloadright->appendChild($downloadrighttooltip);
-                        $action->appendChild($downloadright);
-                    endif;
-                endif;
-            endif;
-
-            //View
-            $query = $this->db->getQuery(true)
-                    ->select('id, guid, wmsservice_id, wmsservicetype_id, layername, attribution, accessscope_id')
-                    ->from('#__sdi_visualization')
-                    ->where('version_id = ' . $this->version->id)
-                    ->where('state = 1');
-            $this->db->setQuery($query);
-            $visualization = $this->db->loadObject();
-            if (!empty($visualization) && !empty($visualization->wmsservice_id)) :
-                //check if the user has the right to view
-                $right = true;
-                if ($visualization->accessscope_id != 1):
-                    if (!sdiFactory::getSdiUser()->isEasySDI):
-                        $right = false;
-                    else:
-                        if ($visualization->accessscope_id == 2):
-                            $organisms = sdiModel::getAccessScopeOrganism($visualization->guid);
-                            $organism = sdiFactory::getSdiUser()->getMemberOrganisms();
-                            if (!in_array($organism[0]->id, $organisms)):
-                                $right = false;
+                //View
+                $query = $this->db->getQuery(true)
+                        ->select('id, guid, wmsservice_id, wmsservicetype_id, layername, attribution, accessscope_id')
+                        ->from('#__sdi_visualization')
+                        ->where('version_id = ' . $this->version->id)
+                        ->where('state = 1');
+                $this->db->setQuery($query);
+                $visualization = $this->db->loadObject();
+                if (!empty($visualization) && !empty($visualization->wmsservice_id)) :
+                    //check if the user has the right to view
+                    $right = true;
+                    if ($visualization->accessscope_id != 1):
+                        if (!sdiFactory::getSdiUser()->isEasySDI):
+                            $right = false;
+                        else:
+                            if ($visualization->accessscope_id == 2):
+                                $organisms = sdiModel::getAccessScopeOrganism($visualization->guid);
+                                $organism = sdiFactory::getSdiUser()->getMemberOrganisms();
+                                if (!in_array($organism[0]->id, $organisms)):
+                                    $right = false;
+                                endif;
                             endif;
-                        endif;
-                        if ($visualization->accessscope_id == 3):
-                            $users = sdiModel::getAccessScopeUser($visualization->guid);
-                            if (!in_array(sdiFactory::getSdiUser()->id, $users)):
-                                $right = false;
+                            if ($visualization->accessscope_id == 3):
+                                $users = sdiModel::getAccessScopeUser($visualization->guid);
+                                if (!in_array(sdiFactory::getSdiUser()->id, $users)):
+                                    $right = false;
+                                endif;
                             endif;
                         endif;
                     endif;
-                endif;
-                if ($right):
-                    $view = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:view');
-                    $viewlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_map&view=preview&catalog='. $catalog .'&metadataid=' . $this->metadata->id));
-                    $view->appendChild($viewlink);
-                    $action->appendChild($view);
+                    if ($right):
+                        $view = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:view');
+                        $viewlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_map&view=preview&catalog=' . $catalog . '&metadataid=' . $this->metadata->id));
+                        $view->appendChild($viewlink);
+                        $action->appendChild($view);
 
 //                    sourceConfig = {id :"'.$this->item->service->alias.'",
 //                                    ptype: "sdi_gxp_wmssource",
@@ -378,132 +379,133 @@ class cswmetadata {
 //                                    visibility: true};
 //
 //                    app.addExtraLayer(sourceConfig, layerConfig)
-                    if ($visualization->wmsservicetype_id == 1)://Physical
-                        $query = $this->db->getQuery(true)
-                                ->select('id, alias, resourceurl')
-                                ->from('#__sdi_physicalservice')
-                                ->where('id = ' . $visualization->wmsservice_id)
-                        ;
-                        $this->db->setQuery($query);
-                        $service = $this->db->loadObject();
-                    else://Virtual
-                        $query = $this->db->getQuery(true)
-                                ->select('id, alias, url, reflectedurl')
-                                ->from('#__sdi_virtualservice')
-                                ->where('id = ' . $visualization->wmsservice_id)
-                        ;
-                        $this->db->setQuery($query);
-                        $service = $this->db->loadObject();
-                        if(!empty($service->reflectedurl)):
-                            $service->resourceurl = $service->reflectedurl;
-                        else:    
-                            $service->resourceurl = $service->url;
+                        if ($visualization->wmsservicetype_id == 1)://Physical
+                            $query = $this->db->getQuery(true)
+                                    ->select('id, alias, resourceurl')
+                                    ->from('#__sdi_physicalservice')
+                                    ->where('id = ' . $visualization->wmsservice_id)
+                            ;
+                            $this->db->setQuery($query);
+                            $service = $this->db->loadObject();
+                        else://Virtual
+                            $query = $this->db->getQuery(true)
+                                    ->select('id, alias, url, reflectedurl')
+                                    ->from('#__sdi_virtualservice')
+                                    ->where('id = ' . $visualization->wmsservice_id)
+                            ;
+                            $this->db->setQuery($query);
+                            $service = $this->db->loadObject();
+                            if (!empty($service->reflectedurl)):
+                                $service->resourceurl = $service->reflectedurl;
+                            else:
+                                $service->resourceurl = $service->url;
+                            endif;
                         endif;
-                    endif;
 
-                    $href = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid='.$this->metadata->guid.'&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview.'&tmpl=component');
-                    
-                    $sourceconfig = '{id :"'.$service->alias.'",hidden : "true", ptype: "sdi_gxp_wmssource",url: "'.$service->resourceurl.'"}';
-                    
-                    $mapparams = JComponentHelper::getParams('com_easysdi_map');
-                    $mwidth = $mapparams->get('iframewidth');
-                    $mheight = $mapparams->get('iframeheight');
-                    
-                    if (!empty($diffusion) && $diffusion->hasdownload == 1):
-                        $downloadurl = htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&tmpl=component&id=' . $diffusion->id);
-                        $layerconfig = '{ name: "'.$visualization->layername.'",attribution: "'.addslashes ($visualization->attribution).'",opacity: 1,source: "'.$service->alias.'",tiled: true,title: "'.$visualization->layername.'",visibility: true, href: "'.$href.'", download: "'.$downloadurl.'", iwidth :"'.$mwidth.'", iheight :"'.$mheight.'"}';
-                    else:
-                        $layerconfig = '{ name: "'.$visualization->layername.'",attribution: "'.addslashes ($visualization->attribution).'",opacity: 1,source: "'.$service->alias.'",tiled: true,title: "'.$visualization->layername.'",visibility: true, href: "'.$href.'", iwidth :"'.$mwidth.'", iheight :"'.$mheight.'"}';
+                        $href = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $this->metadata->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview . '&tmpl=component');
+
+                        $sourceconfig = '{id :"' . $service->alias . '",hidden : "true", ptype: "sdi_gxp_wmssource",url: "' . $service->resourceurl . '"}';
+
+                        $mapparams = JComponentHelper::getParams('com_easysdi_map');
+                        $mwidth = $mapparams->get('iframewidth');
+                        $mheight = $mapparams->get('iframeheight');
+
+                        if (!empty($diffusion) && $diffusion->hasdownload == 1):
+                            $downloadurl = htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&tmpl=component&id=' . $diffusion->id);
+                            $layerconfig = '{ name: "' . $visualization->layername . '",attribution: "' . addslashes($visualization->attribution) . '",opacity: 1,source: "' . $service->alias . '",tiled: true,title: "' . $visualization->layername . '",visibility: true, href: "' . $href . '", download: "' . $downloadurl . '", iwidth :"' . $mwidth . '", iheight :"' . $mheight . '"}';
+                        else:
+                            $layerconfig = '{ name: "' . $visualization->layername . '",attribution: "' . addslashes($visualization->attribution) . '",opacity: 1,source: "' . $service->alias . '",tiled: true,title: "' . $visualization->layername . '",visibility: true, href: "' . $href . '", iwidth :"' . $mwidth . '", iheight :"' . $mheight . '"}';
+                        endif;
+
+                        $addtomap = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:addtomap');
+                        $addtomaponclick = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:onclick', ' window.parent.app.addExtraLayer(' . $sourceconfig . ', ' . $layerconfig . ')');
+                        $addtomap->appendChild($addtomaponclick);
+                        $action->appendChild($addtomap);
                     endif;
-                    
-                    $addtomap = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:addtomap');
-                    $addtomaponclick = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:onclick', ' window.parent.app.addExtraLayer('.$sourceconfig.', '.$layerconfig.')');
-                    $addtomap->appendChild($addtomaponclick);
-                    $action->appendChild($addtomap);
                 endif;
-            endif;
 
-            //Links
-             $query = $this->db->getQuery(true)
-                    ->select('vl.parent_id, m.guid as guid, r.name as name, rt.alias as type, t.text1 as title')
-                    ->from('#__sdi_versionlink vl')
-                    ->innerJoin('#__sdi_version v ON v.id = vl.parent_id')
-                    ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                    ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
-                    ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
-                    ->innerJoin('#__sdi_translation t on t.element_guid = m.guid')
-                    ->innerJoin('#__sdi_language l ON l.id = t.language_id')
-                    ->where('l.code = "' . $lang . '"')
-                    ->where('vl.child_id = ' . $this->version->id)
+                //Links
+                $query = $this->db->getQuery(true)
+                        ->select('vl.parent_id, m.guid as guid, r.name as name, rt.alias as type, t.text1 as title')
+                        ->from('#__sdi_versionlink vl')
+                        ->innerJoin('#__sdi_version v ON v.id = vl.parent_id')
+                        ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
+                        ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
+                        ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
+                        ->innerJoin('#__sdi_translation t on t.element_guid = m.guid')
+                        ->innerJoin('#__sdi_language l ON l.id = t.language_id')
+                        ->where('l.code = "' . $lang . '"')
+                        ->where('vl.child_id = ' . $this->version->id)
                 ;
-            $this->db->setQuery($query);
-            $parentsitem = $this->db->loadObjectList();
-            $links = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:links');
-            $parents = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:parents');
-            foreach ($parentsitem as $item):
-                $parent = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:parent');
-                $parent->setAttribute('guid', $item->guid);
-                $parent->setAttribute('title', $item->title);
-                $parent->setAttribute('resourcename', $item->name);
-                $parent->setAttribute('resourcetype', $item->type);
-                $parents->appendChild($parent);
-            endforeach;
+                $this->db->setQuery($query);
+                $parentsitem = $this->db->loadObjectList();
+                $links = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:links');
+                $parents = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:parents');
+                foreach ($parentsitem as $item):
+                    $parent = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:parent');
+                    $parent->setAttribute('guid', $item->guid);
+                    $parent->setAttribute('title', $item->title);
+                    $parent->setAttribute('resourcename', $item->name);
+                    $parent->setAttribute('resourcetype', $item->type);
+                    $parents->appendChild($parent);
+                endforeach;
 
-            $query = $this->db->getQuery(true)
-                    ->select('vl.parent_id, v.guid as guid, r.name as name, rt.alias as type')
-                    ->from('#__sdi_versionlink vl')
-                    ->innerJoin('#__sdi_version v ON v.id = vl.child_id')
-                    ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                    ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
-                    ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
-                    ->innerJoin('#__sdi_translation t on t.element_guid = m.guid')
-                    ->innerJoin('#__sdi_language l ON l.id = t.language_id')
-                    ->where('l.code = "' . $lang . '"')
-                    ->where('vl.child_id = ' . $this->version->id);
-            $this->db->setQuery($query);
-            $childrenitem = $this->db->loadObjectList();
-            $children = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:children');
-            foreach ($childrenitem as $item):
-                $child = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:child');
-                $child->setAttribute('guid', $item->guid);
-                $child->setAttribute('title', $item->title);
-                $child->setAttribute('resourcename', $item->name);
-                $child->setAttribute('resourcetype', $item->type);
-                $children->appendChild($child);
-            endforeach;
+                $query = $this->db->getQuery(true)
+                        ->select('vl.parent_id, v.guid as guid, r.name as name, rt.alias as type')
+                        ->from('#__sdi_versionlink vl')
+                        ->innerJoin('#__sdi_version v ON v.id = vl.child_id')
+                        ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
+                        ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
+                        ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
+                        ->innerJoin('#__sdi_translation t on t.element_guid = m.guid')
+                        ->innerJoin('#__sdi_language l ON l.id = t.language_id')
+                        ->where('l.code = "' . $lang . '"')
+                        ->where('vl.child_id = ' . $this->version->id);
+                $this->db->setQuery($query);
+                $childrenitem = $this->db->loadObjectList();
+                $children = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:children');
+                foreach ($childrenitem as $item):
+                    $child = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:child');
+                    $child->setAttribute('guid', $item->guid);
+                    $child->setAttribute('title', $item->title);
+                    $child->setAttribute('resourcename', $item->name);
+                    $child->setAttribute('resourcetype', $item->type);
+                    $children->appendChild($child);
+                endforeach;
 
-            $links->appendChild($parents);
-            $links->appendChild($children);
-            $extendedmetadata->appendChild($links);
+                $links->appendChild($parents);
+                $links->appendChild($children);
+                $extendedmetadata->appendChild($links);
 
-            //Applications
-            $query = $this->db->getQuery(true)
-                    ->select('*')
-                    ->from('#__sdi_application')
-                    ->where('resource_id = ' . $this->resource->id);
-            $this->db->setQuery($query);
-            $applicationsitem = $this->db->loadObjectList();
-            $applications = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:applications');
-            foreach ($applicationsitem as $item):
-                $application = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:application', $item->url);
-                $application->setAttribute('name', $item->name);
-                $application->setAttribute('windowname', $item->windowname);
-                $application->setAttribute('options', $item->options);
-                $applications->appendChild($application);
-            endforeach;
+                //Applications
+                $query = $this->db->getQuery(true)
+                        ->select('*')
+                        ->from('#__sdi_application')
+                        ->where('resource_id = ' . $this->resource->id);
+                $this->db->setQuery($query);
+                $applicationsitem = $this->db->loadObjectList();
+                $applications = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:applications');
+                foreach ($applicationsitem as $item):
+                    $application = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:application', $item->url);
+                    $application->setAttribute('name', $item->name);
+                    $application->setAttribute('windowname', $item->windowname);
+                    $application->setAttribute('options', $item->options);
+                    $applications->appendChild($application);
+                endforeach;
 
-            $extendedmetadata->appendChild($applications);
+                $extendedmetadata->appendChild($applications);
+            endif;
         }
 
         //Sheet view
         $sheet = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:sheetview');
-        $sheetlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $this->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview. '&type='));
+        $sheetlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $this->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview . '&type='));
         $sheet->appendChild($sheetlink);
         $action->appendChild($sheet);
 
         //Make pdf
         $exportpdf = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:exportpdf');
-        $exportpdflink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&task=sheet.exportPDF&id=' . $this->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview. '&type='));
+        $exportpdflink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&task=sheet.exportPDF&id=' . $this->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview . '&type='));
         $exportpdf->appendChild($exportpdflink);
         $action->appendChild($exportpdf);
 

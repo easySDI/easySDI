@@ -11,10 +11,10 @@ defined('_JEXEC') or die;
 
 JHTML::_('behavior.modal');
 
-if (empty($this->items)):
-    echo JText::_('COM_EASYSDI_SHOP_NO_ITEMS');
-else:
+
 ?>
+<div class="shop front-end-edit">
+        <h1><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_REQUESTS'); ?></h1>
     <div class="well">
         <div class="items">                      
             <table class="table table-striped">
@@ -62,4 +62,4 @@ else:
         </p>
         <?php echo $this->pagination->getPagesLinks(); ?>
     </div>
-<?php endif; ?>
+</div>

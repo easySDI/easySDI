@@ -21,7 +21,10 @@ $document = JFactory::getDocument();
 
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/resources.js');
 ?>
+<div class="core front-end-edit">
+        <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_RESOURCES'); ?></h1>
 <?php
+
 if (isset($this->user)):
     if ($this->user->isResourceManager()):
         $resourcetypes = $this->user->getResourceType();
@@ -321,6 +324,7 @@ endif;
     <?php echo $this->pagination->getPagesLinks(); ?>
     </div>
 <?php endif; ?>
+</div>
 
 <!-- Publish Modal -->
 <div class="modal fade" id="publishModal" tabindex="-1" role="dialog" aria-labelledby="publishModalLabel" aria-hidden="true">

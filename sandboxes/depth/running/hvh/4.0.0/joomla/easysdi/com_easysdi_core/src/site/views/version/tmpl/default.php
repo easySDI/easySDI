@@ -35,7 +35,7 @@ if ($this->item) :
     JText::script('COM_EASYSDI_CORE_DATATABLES_SEARCH');
     ?>
 
-    <div class="resource-edit front-end-edit">
+    <div class="version-edit front-end-edit">
         <?php if (!empty($this->item->id)): ?>
             <?php if ($this->item->versioning): ?>
                 <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_EDIT_VERSION') . ' ' . $this->item->resourcename . ' - ' . $this->item->name; ?></h1>
@@ -167,7 +167,7 @@ if ($this->item) :
                                                 <td><?php echo $parent->id; ?></td>
                                                 <td><?php echo $parent->resource; ?></td>
                                                 <td><?php echo $parent->version; ?></td>
-                                                <td><?php echo $child->resourcetype; ?></td>
+                                                <td><?php echo $parent->resourcetype; ?></td>
                                                 <td><?php echo JText::_($parent->state); ?></td> 
                                             </tr>
                                             <?php

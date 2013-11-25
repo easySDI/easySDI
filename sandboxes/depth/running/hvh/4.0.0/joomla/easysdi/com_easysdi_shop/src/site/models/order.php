@@ -19,6 +19,14 @@ jimport('joomla.event.dispatcher');
 class Easysdi_shopModelOrder extends JModelForm {
 
     var $_item = null;
+    
+    const ARCHIVED = 1;
+    const HISTORIZED = 2;
+    const FINISHED = 3;
+    const AWAIT = 4;
+    const PROGRESS = 5;
+    const SENT = 6;
+    const SAVED = 7;
 
     /**
      * Method to auto-populate the model state.
@@ -62,28 +70,27 @@ class Easysdi_shopModelOrder extends JModelForm {
             if (empty($id)) {
                 $id = $this->getState('order.id');
             }
-            
+
             // Get a level row instance.
             $table = $this->getTable();
-            
+
             // Attempt to load the row.
             if ($table->load($id)) {
                 // Convert the JTable to a clean JObject.
                 $properties = $table->getProperties(1);
                 $this->_item = JArrayHelper::toObject($properties, 'JObject');
-                
+
                 //Get constante value (to display)
-                $this->_item->orderstate = constant('Easysdi_shopTableorder::orderstate_'.$this->_item->orderstate_id);
-                $this->_item->ordertype = constant('Easysdi_shopTableorder::ordertype_'.$this->_item->ordertype_id);
-                                
+                $this->_item->orderstate = constant('Easysdi_shopTableorder::orderstate_' . $this->_item->orderstate_id);
+                $this->_item->ordertype = constant('Easysdi_shopTableorder::ordertype_' . $this->_item->ordertype_id);
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
-            
+
             $basket = new sdiBasket();
             $basket->loadOrder($id);
-            
-            $this->_item->basket = $basket;            
+
+            $this->_item->basket = $basket;
         }
 
         return $this->_item;
@@ -185,14 +192,23 @@ class Easysdi_shopModelOrder extends JModelForm {
         return $data;
     }
 
-    
+    function setOrderState($id, $state) {
+        $id = (!empty($id)) ? $id : (int) $this->getState('order.id');
+        $table = $this->getTable();
+        if(!$table->load($id)){
+            return false;
+        }
+        
+        $table->orderstate_id = $state;
+        return $table->store();
+        
+    }
 
     function delete($data) {
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('order.id');
-        if (JFactory::getUser()->authorise('core.delete', 'com_easysdi_shop.order.' . $id) !== true) {
-            JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
-            return false;
-        }
+
+        //check user rights 
+
         $table = $this->getTable();
         if ($table->delete($data['id']) === true) {
             return $id;
