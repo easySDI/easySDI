@@ -32,13 +32,13 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
         <?php
         foreach ($this->item->attributevalues as $attributevalue) :
 
-            if (isset($this->item->defaultvalues) && in_array($attributevalue->id, $this->item->defaultvalues))
+            if (isset($this->item->defaultvalues) && in_array($attributevalue->value, $this->item->defaultvalues))
                 $selected = 'selected="selected"';
             else
                 $selected = '';
             ?>
                     js('#jform_defaultvalues')
-                            .append('<option value="<?php echo $attributevalue->id; ?>" <?php echo $selected; ?> ><?php echo $attributevalue->value; ?></option>')
+                            .append('<option value="<?php echo $attributevalue->value; ?>" <?php echo $selected; ?> ><?php echo $attributevalue->value; ?></option>')
                             .trigger("liszt:updated")
                             ;
 

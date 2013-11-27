@@ -35,6 +35,9 @@ class SearchForm {
 
     /** @var stdClass */
     protected $item;
+    
+    /** @var string[] */
+    protected $data;
 
     function __construct() {
         $this->db = JFactory::getDbo();
@@ -47,6 +50,8 @@ class SearchForm {
         $this->advanced->setAttribute('name', 'advanced');
         $this->hidden = $this->dom->createElement('fieldset');
         $this->hidden->setAttribute('name', 'hidden');
+        
+        $this->data = JFactory::getApplication()->input->get('jform', array(), 'array');
     }
 
     /**
@@ -67,7 +72,6 @@ class SearchForm {
         $query->innerJoin('#__sdi_sys_searchtab st ON st.id = csc.searchtab_id');
         $query->leftJoin('#__sdi_relation r on r.id = sc.relation_id');
         $query->leftJoin('#__sdi_attribute a on a.id = r.attributechild_id');
-        //$query->where('sc.criteriatype_id = ' . EnumCriteriaType::SYSTEM);
         if(isset($catalog_id)){
             $query->where('csc.catalog_id = ' . $catalog_id);
         }else{

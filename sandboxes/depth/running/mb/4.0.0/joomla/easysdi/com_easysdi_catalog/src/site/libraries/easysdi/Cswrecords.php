@@ -27,8 +27,6 @@ class Cswrecords extends SearchForm {
     }
 
     public function getRecords($catalog_id) {
-        $data = JFactory::getApplication()->input->get('jform', array(), 'array');
-
         $lang = JFactory::getLanguage()->getTag();
         $params = JComponentHelper::getParams('com_easysdi_catalog');
         $catalogurl = $params->get('catalogurl');
@@ -71,71 +69,18 @@ class Cswrecords extends SearchForm {
 
         $or = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:Or');
         $and = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:And');
-        $orresourcetype = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:Or');
 
-        foreach ($data as $name => $value) {
-            switch ($name) {
-                case 'resourcetype':
-                    foreach ($value as $resourcetype) {
-                        $orresourcetype->appendChild($this->getResouceType(strtolower($resourcetype)));
-                    }
-                    break;
-                case 'versions':
-                    if ($value) {
-                        $and->appendChild($this->getVersions());
-                    }
-                    break;
-                case 'resourcename':
-                    if (!empty($value)) {
-                        $and->appendChild($this->getResouceName($value));
-                    }
-                    break;
-                case 'metadata_created':
-                    if (!empty($value['from']) || !empty($value['to'])) {
-                        $and->appendChild($this->getMetadataCreated($value['from'], $value['to']));
-                    }
-                    break;
-                case 'metadata_published':
-                    if (!empty($value['from']) || !empty($value['to'])) {
-                        $and->appendChild($this->getMetadataPublished($value['from'], $value['to']));
-                    }
-                    break;
-                case 'organism':
-                    if (!empty($value)) {
-                        $and->appendChild($this->getOrganism($value));
-                    }
-                    break;
-                case 'isdownloadable':
-                    $and->appendChild($this->getIsDownloadable());
-                    break;
-                case 'isfree':
-                    $and->appendChild($this->getIsFree());
-                    break;
-                case 'isorderable':
-                    $and->appendChild($this->getIsOrderable());
-                    break;
-                default :
-                    if (is_array($value)) {
-                        if (count($value)>1) {
-                            $element = $this->switchOnRenderType($name, $value);
-                            if ($element != FALSE) {
-                                $and->appendChild($element);
-                            }
-                        }
-                    } else {
-                        if (!empty($value)) {
+        foreach ($this->data as $key => $value) {
+            $name = explode('_', $key);
 
-                            $element = $this->switchOnRenderType($name, $value);
-                            if ($element != FALSE) {
-                                $and->appendChild($element);
-                            }
-                        }
-                    }
-                    break;
+            if (count($name) > 1) {
+                $element = $this->switchOnFieldName($name, $value);
+                if (isset($element)) {
+                    $and->appendChild($element);
+                }
             }
         }
 
-        $and->appendChild($orresourcetype);
         $and->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'false'));
         $or->appendChild($and);
         $or->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'true'));
@@ -164,51 +109,41 @@ class Cswrecords extends SearchForm {
 
         $body = $this->dom->saveXML();
 
-        $results = cswrecords::CURLRequest('POST', $catalogurl, $body);
+        $results = $this->CURLRequest('POST', $catalogurl, $body);
         if (!$results) {
             return false;
         }
         $doc = new DOMDocument();
-        $doc->loadXML($results);
+        $loadTest = $doc->loadXML($results);
 
         $total = 0;
-        if ($results) {
+        if ($loadTest) {
             // Contrôler si le XML ne contient pas une erreur
             if ($doc->getElementsByTagName('ExceptionReport')->length > 0) {
                 $msg = $doc->getElementsByTagName("ExceptionReport")->item(0)->nodeValue;
                 JFactory::getApplication()->enqueueMessage($msg, 'error');
                 return false;
             } else {
-                $SearchResults = $doc->getElementsByTagName('SearchResults ');
-
+                $searchResults = $doc->getElementsByTagName('SearchResults')->item(0);
+                $matched = $searchResults->getAttribute('numberOfRecordsMatched');
+                $nextRecord = $searchResults->getAttribute('nextRecord');
+                
                 //Put the numberOfRecordsMatched in session variable for pagination
-                JFactory::getApplication('com_easysdi_catalog')->setUserState('global.list.total', '238');
-
-//                foreach ($SearchResults->item(0)->attributes as $a => $b) {
-//                    if ($a == 'numberOfRecordsMatched') {
-//                        $total = $b;
-//                    }
-//                }
-//                // Si le nombre de résultats retournés a changé, adapter la page affichée
-//                if ($limitstart >= $total) {
-//                    $limitstart = ( $limit != 0 ? ((floor($total / $limit) * $limit) - 1) : 0 );
-//                    $mainframe->setUserState('limitstart', $limitstart);
-//                }
-//
-//                if ($limitstart < 0) {
-//                    $limitstart = 0;
-//                    $mainframe->setUserState('limitstart', $limitstart);
-//                }
-//
-//                $pageNav = new JPagination($total, $limitstart, $limit);
-//                $cswResults = DOMDocument::loadXML($xmlResponse);
+                JFactory::getApplication('com_easysdi_catalog')->setUserState('global.list.total', $matched);
             }
         }
 
         return $doc;
     }
 
-    protected static function CURLRequest($type, $url, $xmlBody = "") {
+    /**
+     * 
+     * @param string $type Method of the request POST, GET
+     * @param string $url 
+     * @param string $xmlBody Rquest body
+     * @return string response
+     */
+    protected function CURLRequest($type, $url, $xmlBody = "") {
         // Get COOKIE as key=value
         $cookiesList = array();
         foreach ($_COOKIE as $key => $val) {
@@ -250,13 +185,80 @@ class Cswrecords extends SearchForm {
         return $output;
     }
 
-    private function switchOnRenderType($propertyNameWithId, $value) {
-        $propertyName = explode('_', $propertyNameWithId);
+    private function switchOnFieldName($name, $value) {
+        switch ($name[1]) {
+            case 'resourcetype':
+                foreach ($value as $resourcetype) {
+                    $or = $this->ogcFilters->getOperator(OgcFilters::OPERATOR_OR);
+                    $or->appendChild($this->getResouceType(strtolower($resourcetype)));
+                    return $or;
+                }
+                break;
+            case 'versions':
+                if ($value) {
+                    return $this->getVersions();
+                }
+                break;
+            case 'resourcename':
+                if (!empty($value)) {
+                    return $this->getResouceName($value);
+                }
+                break;
+            case 'metadata_created':
+                if (!empty($value['from']) || !empty($value['to'])) {
+                    return $this->getMetadataCreated($value['from'], $value['to']);
+                }
+                break;
+            case 'metadata_published':
+                if (!empty($value['from']) || !empty($value['to'])) {
+                    return $this->getMetadataPublished($value['from'], $value['to']);
+                }
+                break;
+            case 'organism':
+                if (!empty($value)) {
+                    return $this->getOrganism($value);
+                }
+                break;
+            case 'isdownloadable':
+                return $this->getIsDownloadable();
+            case 'isfree':
+                return $this->getIsFree();
+            case 'isorderable':
+                return $this->getIsOrderable();
+            default :
+                if (is_array($value)) {
+                    $value_filter = array_filter($value);
+                    if (count($value_filter) > 0) {
+                        $element = $this->switchOnRenderType($name, $value_filter);
+                        if ($element != FALSE) {
+                            return $element;
+                        }
+                    }
+                } else {
+                    if (!empty($value)) {
+
+                        $element = $this->switchOnRenderType($name, $value);
+                        if ($element != FALSE) {
+                            return $element;
+                        }
+                    }
+                }
+                break;
+        }
+    }
+
+    private function switchOnRenderType($propertyName, $value) {
 
         if (array_key_exists($propertyName[0], $this->searchcriteria)) {
             $searchcriteria = $this->searchcriteria[$propertyName[0]];
 
-            switch ($searchcriteria->rel_rendertype_id) {
+            if(isset($searchcriteria->rel_rendertype_id)){
+                $rendertype_id = $searchcriteria->rel_rendertype_id;
+            }  else {
+                $rendertype_id = $searchcriteria->rendertype_id;
+            }
+            
+            switch ($rendertype_id) {
                 case EnumRendertype::$LIST:
                     return $this->getList($propertyName[1], $value);
                 case EnumRendertype::$RADIOBUTTON:
@@ -276,7 +278,7 @@ class Cswrecords extends SearchForm {
     }
 
     private function getList($propertyName, $value) {
-        $or = $this->dom->createElementNS($this->ogcUri, $this->ogcPrefix . ':or');
+        $or = $this->dom->createElementNS($this->ogcUri, $this->ogcPrefix . ':Or');
 
         foreach ($value as $literal) {
             $or->appendChild($this->ogcFilters->getIsEqualTo($propertyName, $literal));
@@ -342,7 +344,7 @@ class Cswrecords extends SearchForm {
     }
 
     private function getOrganism($literal) {
-        return $this->ogcFilters->getIsEqualTo('organism', $literal);
+        return $this->ogcFilters->getIsEqualTo('resourceorganism', $literal);
     }
 
     private function getDefinedBoundary($literal) {

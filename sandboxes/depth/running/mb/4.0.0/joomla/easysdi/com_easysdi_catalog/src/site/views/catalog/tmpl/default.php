@@ -20,10 +20,13 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
     ul {
         list-style: none;
     }
-
+    
+    .pagination{
+        text-align: center;
+    }
 </style>
 
-<form class="form-horizontal form-validate " action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=catalog&search=true&id=' . $this->item->id . '&preview=' . $this->preview); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+<form class="form-horizontal form-validate " action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=catalog&search=true&id=' . $this->item->id . '&preview=' . $this->preview); ?>#results" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
     <div class="catalog front-end-edit">
         <fieldset id="jform_offline" class="radio btn-group pull-right">
             <input type="radio" id="jform_searchtype_simple" name="jform[searchtype]" value="simple" checked="checked">
@@ -44,8 +47,9 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
 $results = $this->getResults();
 if ($results):
     ?>
+<a name="results"></a>
     <div class="catalog-searchresults">
-        <h3><?php echo JText::_("COM_EASYSDI_CATALOG_RESULTS_TITLE"); ?></h3>        
+        <h3><?php echo JFactory::getApplication('com_easysdi_catalog')->getUserState('global.list.total') .' '. JText::_("COM_EASYSDI_CATALOG_RESULTS_TITLE"); ?></h3>        
         <?php
         // Build of extendend XML for each result entry
         foreach ($results as $result) :
