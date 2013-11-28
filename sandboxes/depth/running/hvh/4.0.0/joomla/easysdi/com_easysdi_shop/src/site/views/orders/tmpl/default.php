@@ -15,12 +15,22 @@ JHtml::_('behavior.tooltip');
 JHtml::_('formbehavior.chosen', 'select');
 ?>
 <div class="shop front-end-edit">
-        <h1><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_ORDERS'); ?></h1>
+    <h1><?php echo JText::_('COM_EASYSDI_SHOP_TITLE_ORDERS'); ?></h1>
     <div class="well">
         <div class="row-fluid">
             <form class="form-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=orders'); ?>" method="post">
                 <div class="btn-toolbar">
-                    <div class="btn-group pull-right">                        
+                    <div class="btn-group pull-right">
+                        <select id="filter_type" name="filter_type" onchange="this.form.submit();" class="inputbox">
+                            <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_ORDERS_TYPE_FILTER'); ?></option>
+                            <?php foreach ($this->ordertype as $type): ?>
+                                <option value="<?php echo $type->id; ?>" <?php
+                                if ($this->state->get('filter.type') == $type->id) : echo 'selected="selected"';
+                                endif;
+                                ?> >
+                                <?php echo JText::_($type->value); ?></option>
+                            <?php endforeach; ?>
+                        </select>
                         <select id="filter_status" name="filter_status" onchange="this.form.submit();" class="inputbox">
                             <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_ORDERS_STATE_FILTER'); ?></option>
                             <?php foreach ($this->orderstate as $status): ?>

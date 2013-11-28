@@ -31,6 +31,7 @@ class Easysdi_shopViewOrder extends JViewLegacy {
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_shop');
+        $this->paramsarray = $this->params->toArray();
         $this->form = $this->get('Form');
 
         // Check for errors.

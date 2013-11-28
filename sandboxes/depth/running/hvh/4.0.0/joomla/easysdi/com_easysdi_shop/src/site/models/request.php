@@ -236,7 +236,9 @@ class Easysdi_shopModelRequest extends JModelForm {
                     JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_REQUEST_COPY_FILE_ERROR_MESSAGE'), 'error');
                     JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=request&id=' . $id, false));
                     return false;
-                endif;
+                endif;                
+            endif;
+            if(!empty($orderdiffusion->fee) || !empty($orderdiffusion->remark) || !empty($files['file'][$diffusion_id][0]['name'])):
                 $orderdiffusion->completed = date('Y-m-d H:i:s');
                 $orderdiffusion->productstate_id = 1;
             endif;
@@ -244,6 +246,7 @@ class Easysdi_shopModelRequest extends JModelForm {
             $orderdiffusion->store();
         endforeach;
 
+        //Update order state if needed
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('COUNT(*)')
@@ -270,7 +273,6 @@ class Easysdi_shopModelRequest extends JModelForm {
             if (!$sdiUser->sendMail(JText::_('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_PROGRESS_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_REQUEST_SEND_MAIL_ORDER_PROGRESS_BODY', $data['name']))):
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
             endif;
-
         endif;
 
         if ($data['thirdparty_id'] == '')

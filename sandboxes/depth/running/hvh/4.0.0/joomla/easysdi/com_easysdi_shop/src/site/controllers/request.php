@@ -64,8 +64,7 @@ class Easysdi_shopControllerRequest extends Easysdi_shopController {
         $model = $this->getModel('Request', 'Easysdi_shopModel');
 
         // Get the user data.
-        $data = $app->input->get('jform', array(), 'array');
-       
+        $data = $app->input->get('jform', array(), 'array');       
         
 
         // Attempt to save the data.
@@ -99,7 +98,7 @@ class Easysdi_shopControllerRequest extends Easysdi_shopController {
 
     function cancel() {
         $model = $this->getModel('Request', 'Easysdi_shopModel');
-        $id = $app->getUserState('com_easysdi_shop.edit.request.id');
+        $id = JFactory::getApplication()->getUserState('com_easysdi_shop.edit.request.id');
         $model->checkin($id);
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=requests', false));
     }

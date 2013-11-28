@@ -152,7 +152,8 @@ defined('_JEXEC') or die;
                             </table>
                         </div>
 
-                        <div class="row-fluid" >
+                       <?php Easysdi_shopHelper::getHTMLOrderPerimeter($this->item); ?>
+<!--                        <div class="row-fluid" >
                             <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h3>
                             <hr>
                             <div class="row-fluid" >
@@ -193,7 +194,7 @@ defined('_JEXEC') or die;
                                 </div>
                             </div>
 
-                        </div>
+                        </div>-->
 
                         <?php if (!empty($this->item->basket->thirdparty)): ?>
                             <div class="row-fluid" >

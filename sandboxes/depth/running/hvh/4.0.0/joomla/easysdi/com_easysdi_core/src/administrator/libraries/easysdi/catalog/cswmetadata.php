@@ -582,6 +582,9 @@ class cswmetadata {
             if ($this->diffusion->accessscope_id == 2):
                 $organisms = sdiModel::getAccessScopeOrganism($this->diffusion->guid);
                 $organism = sdiFactory::getSdiUser()->getMemberOrganisms();
+                if(empty($organism)):
+                    return null;
+                endif;
                 if (!in_array($organism[0]->id, $organisms)):
                     return null;
                 endif;
@@ -725,14 +728,18 @@ class cswmetadata {
                 //User is not an EasySDI user
             }
         endforeach;
-
+        
         $html .="</div>";
         $html .="</div>";
         $html .="</form>";
+        
         //Submit to shop button
+        //Load lang to translate button label
+        $lang = JFactory::getLanguage();
+        $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
         $html .= '
             <div class="sdi-shop-toolbar-add-basket pull-right">
-                <button id="sdi-shop-btn-add-basket" class="btn btn-success btn-small" onclick="Joomla.submitbutton(); return false;">Add to basket</button>
+                <button id="sdi-shop-btn-add-basket" class="btn btn-success btn-small" onclick="Joomla.submitbutton(); return false;">'.JText::_('COM_EASYSDI_SHOP_BASKET_ADD_TO_BASKET').'</button>
                 <input type="hidden" name="diffusion_id" id="diffusion_id" value="' . $this->diffusion->id . '" />
             </div>
             ';

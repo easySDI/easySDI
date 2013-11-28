@@ -46,6 +46,9 @@ class Easysdi_shopModelOrders extends JModelList {
         $search = $app->getUserStateFromRequest($this->context . '.filter.status', 'filter_status');
         $this->setState('filter.status', $search);
         
+        $search = $app->getUserStateFromRequest($this->context . '.filter.type', 'filter_type');
+        $this->setState('filter.type', $search);
+                
         // List state information
         $limit = $app->getUserStateFromRequest('global.list.limit', 'limit', $app->getCfg('list_limit'));
         $this->setState('list.limit', $limit);
@@ -103,6 +106,12 @@ class Easysdi_shopModelOrders extends JModelList {
         if (is_numeric($status)) {
         	$query->where('a.orderstate_id = ' . (int) $status);
         }
+        
+        // Filter by type
+        $type = $this->getState('filter.type');
+        if (is_numeric($type)) {
+        	$query->where('a.ordertype_id = ' . (int) $type);
+        }
 
         // Filter by search in title
         $search = $this->getState('filter.search');
@@ -117,16 +126,34 @@ class Easysdi_shopModelOrders extends JModelList {
         
         //Only order which belong to the current user
         $query->where('a.user_id = ' . (int) sdiFactory::getSdiUser()->id);
+        
+        //Don't include historized item
+        $query->where('a.orderstate_id <> 2');
+        
+        $query->order('a.created DESC');
 
         return $query;
     }
 
     function getOrderState() {
-        //Load all status value
+        //Load all status value except historized (only used by EasySDI administrator in back-end)
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
                 ->select('s.value, s.id ')
-                ->from('#__sdi_sys_orderstate s');
+                ->from('#__sdi_sys_orderstate s')
+                ->where('s.id <> 2')
+                ->order('id desc');
+        $db->setQuery($query);
+        return $db->loadObjectList();
+    }
+    
+    function getOrderType() {
+        //Load all status value
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('t.value, t.id ')
+                ->from('#__sdi_sys_ordertype t')
+                ->where('t.value <> "draft"');
         $db->setQuery($query);
         return $db->loadObjectList();
     }
