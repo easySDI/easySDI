@@ -304,11 +304,11 @@ JHTML::_('behavior.modal');
 
                                                     <script>
                     function selectPerimeter<?php echo $perimeter->id; ?>() {
-                        selectMyPerimeter('<?php echo $perimeter->id; ?>', '<?php echo $perimeter->name; ?>', '<?php echo addslashes($this->user->perimeter); ?>');
+                        selectMyPerimeter('<?php echo $perimeter->id; ?>', '<?php echo $perimeter->name; ?>', '<?php echo addslashes(preg_replace('/\s+/', '', $this->user->perimeter)); ?>');
                     }
 
                     function reloadFeatures<?php echo $perimeter->id; ?>() {
-                        selectMyPerimeter('<?php echo $perimeter->id; ?>', '<?php echo $perimeter->name; ?>', '<?php echo addslashes($this->user->perimeter); ?>');
+                        selectMyPerimeter('<?php echo $perimeter->id; ?>', '<?php echo $perimeter->name; ?>', '<?php echo addslashes(preg_replace('/\s+/', '', $this->user->perimeter)); ?>');
 
                     }
                                                     </script>

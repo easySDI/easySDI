@@ -3,6 +3,7 @@ function initMiniMap() {
     minimap = new OpenLayers.Map({div: 'minimap', controls: []});
     var layer = app.mapPanel.map.layers[1].clone();
     minimap.addLayer(layer);
+    minimap.setBaseLayer(layer);
     minimap.zoomToExtent(app.mapPanel.map.getExtent());
     miniLayer = new OpenLayers.Layer.Vector("miniLayer");
     minimap.addLayer(miniLayer);

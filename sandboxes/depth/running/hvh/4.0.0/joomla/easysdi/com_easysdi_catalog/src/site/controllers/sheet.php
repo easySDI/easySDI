@@ -23,11 +23,12 @@ class Easysdi_catalogControllerSheet extends Easysdi_catalogController {
         $id = JFactory::getApplication()->input->get('id', null, 'STRING');
         $catalog = JFactory::getApplication()->input->get('catalog', null, 'STRING');
         $type = JFactory::getApplication()->input->get('type', null, 'STRING');
+        $preview = JFactory::getApplication()->input->get('preview', null, 'STRING');
         $lang = JFactory::getApplication()->input->get('lang', null, 'STRING');
         $metadata = new cswmetadata($id);
         $metadata->load('complete');
-        $metadata->extend($catalog, $type, 'true', $lang);
-        $file = $metadata->applyXSL($catalog, $type);
+        $metadata->extend($catalog, $type,$preview, 'true', $lang);
+        $file = $metadata->applyXSL($catalog,$preview, $type);
         
         $tmp = uniqid();
         $tmpfile = JPATH_BASE . '/tmp/' . $tmp;
