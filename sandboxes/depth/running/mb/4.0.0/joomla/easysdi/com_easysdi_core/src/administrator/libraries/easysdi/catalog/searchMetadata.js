@@ -7,15 +7,8 @@ js('document').ready(function() {
         if (btn.hasClass('active')) {
             return;
         }
-        js('fieldset[name="advanced"]').toggle('fast', function() {
-            js('.searchtype').each(function() {
-                if (js(this).hasClass('active')) {
-                    js(this).removeClass('active');
-                } else {
-                    js(this).addClass('active');
-                }
-            });
-        });
+        
+        showAdvanced();
 
     });
 
@@ -27,7 +20,7 @@ js('document').ready(function() {
             // Format of the input field
             ifFormat: "%Y-%m-%d",
             // Trigger for the calendar (button ID)
-            button: js(this).attr('id')+"_img",
+            button: js(this).attr('id') + "_img",
             // Alignment (defaults to "Bl")
             align: "Tl",
             singleClick: true,
@@ -36,4 +29,17 @@ js('document').ready(function() {
 
     });
 });
+
+
+function showAdvanced() {
+    js('fieldset[name="advanced"]').toggle('fast', function() {
+        js('.searchtype').each(function() {
+            if (js(this).hasClass('active')) {
+                js(this).removeClass('active');
+            } else {
+                js(this).addClass('active');
+            }
+        });
+    });
+}
 

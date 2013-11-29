@@ -123,5 +123,19 @@ class Easysdi_catalogViewCatalog extends JViewLegacy {
         
         return $htmlForm;
     }
+    
+    public function isAdvanced() {
+        $data = JFactory::getApplication()->input->get('jform', array(), 'array');
+        
+        if(empty($data)){
+            return false;
+        }
+        
+        if($data['searchtype'] == 'advanced'){
+            return true;
+        }  else {
+            return false;
+        }
+    }
 
 }

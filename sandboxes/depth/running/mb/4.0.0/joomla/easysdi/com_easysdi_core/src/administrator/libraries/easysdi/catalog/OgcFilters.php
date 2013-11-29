@@ -16,14 +16,22 @@ class OgcFilters {
     const OPERATOR_OR = 'Or';
     const OPERATOR_AND = 'And';
     const OPERATOR_NOT = 'Not';
-    
+
     /** @var DOMDocument */
     private $dom;
+
     /** @var string */
     private $ogcUri = 'http://www.opengis.net/ogc';
+
     /** @var string */
     private $ogcPrefix = 'ogc';
-
+    
+    /** @var string */
+    private $gmlUri = 'http://www.opengis.net/gml';
+    
+    /** @var string */
+    private $gmlPrefix = 'gml';
+            
     function __construct(DOMDocument $dom) {
         $this->dom = $dom;
     }
@@ -41,7 +49,7 @@ class OgcFilters {
         $propertyIsLike->setAttribute('escapeChar', '\\');
 
         $propertyIsLike->appendChild($this->getProtertyName($propertyName));
-        $propertyIsLike->appendChild($this->getLiteral('%'.$literal.'%'));
+        $propertyIsLike->appendChild($this->getLiteral('%' . $literal . '%'));
 
         return $propertyIsLike;
     }
@@ -100,18 +108,34 @@ class OgcFilters {
      */
     public function getIsBetween($propertyName, $lowerBoundary, $upperBoundary) {
         $propertyIsBetween = $this->dom->createElementNS($this->ogcUri, $this->ogcPrefix . ':PropertyIsBetween');
-        
+
         $lowerBoundaryNode = $this->dom->createElementNS($this->ogcUri, $this->ogcPrefix . ':LowerBoundary');
         $upperBoundaryNode = $this->dom->createElementNS($this->ogcUri, $this->ogcPrefix . ':UpperBoundary');
-        
+
         $lowerBoundaryNode->appendChild($this->getLiteral($lowerBoundary));
         $upperBoundaryNode->appendChild($this->getLiteral($upperBoundary));
-        
+
         $propertyIsBetween->appendChild($this->getProtertyName($propertyName));
         $propertyIsBetween->appendChild($lowerBoundaryNode);
         $propertyIsBetween->appendChild($upperBoundaryNode);
-        
+
         return $propertyIsBetween;
+    }
+
+    public function getBBox($minX, $minY, $maxX, $maxY) {
+        $bbox = $this->dom->createElementNS($this->ogcUri, $this->ogcPrefix . ':BBOX');
+        $propertyName = $this->dom->createElementNS($this->ogcUri, $this->ogcPrefix . ':PropertyName', 'iso:BoundingBox');
+        $envelope = $this->dom->createElementNS($this->gmlUri,  $this->gmlPrefix.':Envelope');
+        $lowerCorner = $this->dom->createElementNS($this->gmlUri, $this->gmlPrefix.':lowerCorner',$minX.' '.$minY);
+        $upperCorner = $this->dom->createElementNS($this->gmlUri, $this->gmlPrefix.':upperCorner',$maxX.' '.$maxY);
+        
+        $envelope->appendChild($lowerCorner);
+        $envelope->appendChild($upperCorner);
+        
+        $bbox->appendChild($propertyName);
+        $bbox->appendChild($envelope);
+        
+        return $bbox;
     }
 
     /**
@@ -119,9 +143,9 @@ class OgcFilters {
      * @return DOMElement
      */
     public function getOperator($type) {
-        return $this->dom->createElementNS($this->ogcUri, $this->ogcPrefix.':'.$type);
+        return $this->dom->createElementNS($this->ogcUri, $this->ogcPrefix . ':' . $type);
     }
-    
+
     /**
      * 
      * @param string $propertyName

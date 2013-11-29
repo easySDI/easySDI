@@ -18,6 +18,10 @@ class SearchForm {
     const ADVANCED = 2;
     const HIDDEN = 3;
 
+    /** BBOX search type */
+    const SEARCHTYPEBBOX = 0;
+    const SEARCHTYPEID = 1;
+    
     /** @var JDatabaseDriver */
     protected $db;
 
@@ -51,7 +55,19 @@ class SearchForm {
         $this->hidden = $this->dom->createElement('fieldset');
         $this->hidden->setAttribute('name', 'hidden');
         
-        $this->data = JFactory::getApplication()->input->get('jform', array(), 'array');
+        $session = JFactory::getSession();
+        
+        $start = JFactory::getApplication()->input->get('start', NULL, 'int');
+        $limitstart = JFactory::getApplication()->input->get('limitstart', NULL, 'int');
+        
+        if(isset($start)||isset($limitstart)){
+            $this->data = $session->get('data');
+        }else{
+            $this->data = JFactory::getApplication()->input->get('jform', array(), 'array');
+            $session->set('data', $this->data);
+            
+        }
+        
     }
 
     /**
@@ -63,8 +79,8 @@ class SearchForm {
         $query = $this->db->getQuery(true);
 
         $query->select('sc.id, sc.guid, sc.name, sc.alias, sc.rendertype_id');
-        $query->select('csc.searchtab_id, csc.defaultvalue, csc.defaultvaluefrom, csc.defaultvalueto');
-        $query->select('st.value');
+        $query->select('csc.searchtab_id, csc.defaultvalue, csc.defaultvaluefrom, csc.defaultvalueto, csc.params');
+        $query->select('st.value as tab_value');
         $query->select('r.rendertype_id as rel_rendertype_id, r.attributechild_id, r.guid as relation_guid');
         $query->select('a.guid as attribute_guid');
         $query->from('#__sdi_searchcriteria AS sc');

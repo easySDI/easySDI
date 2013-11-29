@@ -28,6 +28,7 @@ INSERT INTO `#__sdi_searchcriteria` VALUES ('8', 'b2a4c66a-f40c-473d-a03f-5b5e4f
 INSERT INTO `#__sdi_searchcriteria` VALUES ('9', '8a85ed55-6a9c-4af7-aba1-a3c0f8281453', 'isDownloadable', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'isDownloadable', '1', '1', '1', null, '0', '0');
 INSERT INTO `#__sdi_searchcriteria` VALUES ('10', 'f80fcf1c-84df-4202-8838-6bbcb273a68d', 'isFree', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'isFree', '1', '1', '1', null, '0', '0');
 INSERT INTO `#__sdi_searchcriteria` VALUES ('11', 'a9a44261-05da-4ee8-a3f2-4ec1c53bcb00', 'isOrderable', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'isOrderable', '1', '1', '1', null, '0', '0');
+INSERT INTO `#__sdi_searchcriteria` VALUES ('12', 'a9a44261-05da-4ee8-a3f2-4ec1c53bcb00', 'isViewable', '356', '2013-06-17 11:22:36', null, null, '0', '1', '0', '0000-00-00 00:00:00', 'isViewable', '1', '1', '1', null, '0', '0');
 
 INSERT INTO `#__sdi_namespace` VALUES ('1', '6df1fcd1-0a57-8b74-cd21-354dc5ef0b3d', 'gmd', '356', '2013-06-21 12:12:47', null, null, '1', '1', '0', '0000-00-00 00:00:00', 'gmd', 'gmd', 'http://www.isotc211.org/2005/gmd', '1', '1', '0');
 INSERT INTO `#__sdi_namespace` VALUES ('2', '016318b2-29ec-3a74-c161-14aa1b1d3b97', 'gco', '356', '2013-06-21 12:12:47', null, null, '2', '1', '0', '0000-00-00 00:00:00', 'gco', 'gco', 'http://www.isotc211.org/2005/gco', '1', '1', '0');

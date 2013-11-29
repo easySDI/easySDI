@@ -20,11 +20,25 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
     ul {
         list-style: none;
     }
-    
+
     .pagination{
         text-align: center;
     }
 </style>
+
+<script type="text/javascript">
+<?php if ($this->isAdvanced()): ?>
+
+        js = jQuery.noConflict();
+
+        js('document').ready(function() {
+            showAdvanced();
+        });
+
+<?php endif; ?>
+</script>
+
+
 
 <form class="form-horizontal form-validate " action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=catalog&search=true&id=' . $this->item->id . '&preview=' . $this->preview); ?>#results" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
     <div class="catalog front-end-edit">
@@ -35,7 +49,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
             <label for="jform_searchtype_advanced" class="btn btn-danger searchtype ">Avancée</label>
         </fieldset>
         <h1><?php echo JText::_('COM_EASYSDI_CATALOG_TITLE'); ?></h1>
-        
+
         <div class="well">
             <?php echo $this->getSearchForm(); ?>
             <button class="btn btn-primary" type="submit" >Search</button>
@@ -47,9 +61,9 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
 $results = $this->getResults();
 if ($results):
     ?>
-<a name="results"></a>
+    <a name="results"></a>
     <div class="catalog-searchresults">
-        <h3><?php echo JFactory::getApplication('com_easysdi_catalog')->getUserState('global.list.total') .' '. JText::_("COM_EASYSDI_CATALOG_RESULTS_TITLE"); ?></h3>        
+        <h3><?php echo JFactory::getApplication('com_easysdi_catalog')->getUserState('global.list.total') . ' ' . JText::_("COM_EASYSDI_CATALOG_RESULTS_TITLE"); ?></h3>        
         <?php
         // Build of extendend XML for each result entry
         foreach ($results as $result) :

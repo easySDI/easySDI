@@ -213,9 +213,14 @@ class SearchJForm extends SearchForm {
 
     private function getFormListField($searchCriteria) {
         $field = $this->dom->createElement('field');
-        $field->setAttribute('type', 'list');
-        if (isset($searchCriteria->relation_guid)) {
-            $field->setAttribute('multiple', 'true');
+        $field->setAttribute('type', 'multipleDefaultList');
+        switch ($searchCriteria->name) {
+            case 'organism':
+                $field->setAttribute('multiple', 'false');
+                break;
+            default:
+                $field->setAttribute('multiple', 'true');
+                break;
         }
 
         $name = $this->getName($searchCriteria);
@@ -272,6 +277,15 @@ class SearchJForm extends SearchForm {
     }
 
     private function getDefault($searchCriteria, $name) {
+        $isSearch = JFactory::getApplication()->input->get('search', false, 'boolean');
+        if ($isSearch) {
+            return $this->getDefaultFromSession($name);
+        } else {
+            return $this->getJsonDefaultValue($searchCriteria, $searchCriteria->defaultvalue);
+        }
+    }
+
+    private function getDefaultFromSession($name) {
         if (key_exists($name, $this->data)) {
             if (is_array($this->data[$name])) {
                 return implode(',', array_filter($this->data[$name]));
@@ -279,7 +293,7 @@ class SearchJForm extends SearchForm {
                 return $this->data[$name];
             }
         } else {
-            return $this->getJsonDefaultValue($searchCriteria->defaultvalue);
+            return '';
         }
     }
 
@@ -292,8 +306,24 @@ class SearchJForm extends SearchForm {
                 $query->from('#__sdi_organism t');
                 break;
             case 'definedBoundary':
-                $query->select('t.id, t.guid, t.guid as value, t.name');
-                $query->from('#__sdi_boundary t');
+                $language = $this->ldao->getByCode(JFactory::getUser()->getParam('language'));
+
+                $params = json_decode($searchCriteria->params);
+                if ($params->searchboundarytype == parent::SEARCHTYPEID) {
+                    $query->select('b.alias as value, t.text1 as name, b.guid');
+                } else {
+                    $query->select('CONCAT_WS("-",b.northbound, b.southbound, b.eastbound, b.westbound) as value, t.text1 as name, b.guid');
+                }
+
+                $query->from('#__sdi_boundary b');
+                $query->innerJoin('#__sdi_translation t on b.guid = t.element_guid');
+                $query->where('t.language_id = ' . $language->id);
+                if (!empty($params->boundarycategory_id)) {
+                    $query->where('b.category_id IN (' . implode(',', $params->boundarycategory_id) . ')');
+                }
+
+                //$query->select('t.id, t.guid, t.guid as value, t.name');
+                //$query->from('#__sdi_boundary t');
                 break;
             case 'resourcetype':
                 $query->select('t.id, t.alias as value, t.guid, t.name');
@@ -345,16 +375,71 @@ class SearchJForm extends SearchForm {
      * @param string $json
      * @return string
      */
-    private function getJsonDefaultValue($json) {
-        if (empty($json)) {
+    private function getJsonDefaultValue($searchCriteria, $json) {
+        if (empty($json) && $json != '0') {
             return '';
         }
         $decode = json_decode($json, true);
 
         if (is_array($decode)) {
-            return implode(',', $decode);
+            $ids = implode(',', array_filter($decode));
         } else {
-            return $json;
+            $ids = $json;
+        }
+
+        switch ($searchCriteria->name) {
+            case 'organism':
+                $query = $this->db->getQuery(true);
+                $query->select('guid as value');
+                $query->from('#__sdi_organism');
+                $query->where('id IN (' . $ids . ')');
+                break;
+            case 'resourcetype':
+                $query = $this->db->getQuery(true);
+                $query->select('alias as value');
+                $query->from('#__sdi_resourcetype');
+                $query->where('id IN (' . $ids . ')');
+                break;
+            case 'definedBoundary':
+
+                $query = $this->db->getQuery(true);
+                $params = json_decode($searchCriteria->params);
+                if ($params->searchboundarytype == parent::SEARCHTYPEID) {
+                    $query->select('b.alias as value');
+                } else {
+                    $query->select('CONCAT_WS("-",b.northbound, b.southbound, b.eastbound, b.westbound) as value');
+                }
+
+                $query->from('#__sdi_boundary as b');
+                $query->where('id IN (' . $ids . ')');
+                break;
+            case 'versions':
+                $query = $this->db->getQuery(true);
+                $query->select('csc.defaultvalue as value');
+                $query->from('#__sdi_searchcriteria sc');
+                $query->innerJoin('#__sdi_catalog_searchcriteria csc on csc.searchcriteria_id = sc.id');
+                $query->where('sc.alias = "versions"');
+                $query->where('csc.catalog_id = 10');
+                break;
+            default :
+                $query = $this->db->getQuery(true);
+                $query->select('name as value');
+                $query->from('#__sdi_attributevalue');
+                $query->where('id IN (' . $ids . ')');
+                break;
+        }
+
+        if (isset($query)) {
+            $this->db->setQuery($query);
+            $results = $this->db->loadObjectList();
+            $defaults = array();
+            foreach ($results as $result) {
+                $defaults[] = $result->value;
+            }
+
+            return implode(',', $defaults);
+        } else {
+            return '';
         }
     }
 

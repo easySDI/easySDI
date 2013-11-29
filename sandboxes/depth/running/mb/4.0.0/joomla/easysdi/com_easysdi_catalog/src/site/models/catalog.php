@@ -165,7 +165,7 @@ class Easysdi_catalogModelCatalog extends JModelForm {
         $limit = (int) $this->getState('list.limit') - (int) $this->getState('list.links');
         $page = new JPagination(JFactory::getApplication('com_easysdi_catalog')->getUserState('global.list.total'), $this->getState('list.start'), $limit);
 
-        $data = JFactory::getApplication()->input->get('jform', array(), 'array');
+        /*$data = JFactory::getApplication()->input->get('jform', array(), 'array');
 
         foreach ($data as $key => $value) {
             if (is_array($value)) {
@@ -177,7 +177,7 @@ class Easysdi_catalogModelCatalog extends JModelForm {
             } else {
                 $page->setAdditionalUrlParam('jform[' . $key . ']', $value);
             }
-        }
+        }*/
 
         return $page;
     }

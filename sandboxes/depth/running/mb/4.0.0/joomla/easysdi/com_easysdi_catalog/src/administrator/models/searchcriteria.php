@@ -135,7 +135,6 @@ class Easysdi_catalogModelsearchcriteria extends sdiModel {
                         $params = json_decode($catalogsearchcriteria->params, false);
                         $item->boundarycategory_id = $params->boundarycategory_id;
                         $item->searchboundarytype = $params->searchboundarytype;
-                        $item->categorysearchfield = $params->categorysearchfield;
                         $item->boundarysearchfield = $params->boundarysearchfield;
                     }
                 }
