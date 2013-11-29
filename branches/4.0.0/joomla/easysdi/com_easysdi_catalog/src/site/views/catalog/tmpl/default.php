@@ -9,51 +9,75 @@
 // no direct access
 defined('_JEXEC') or die;
 
-JHTML::_('behavior.modal'); 
+JHTML::_('behavior.modal');
 JHtml::_('formbehavior.chosen', 'select');
 
 $document = JFactory::getDocument();
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js');
-
+$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/searchMetadata.js');
 ?>
-<form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=catalog&search=true&id='.$this->item->id.'&preview='.$this->preview); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+<style>
+    ul {
+        list-style: none;
+    }
+
+    .pagination{
+        text-align: center;
+    }
+</style>
+
+<script type="text/javascript">
+<?php if ($this->isAdvanced()): ?>
+
+        js = jQuery.noConflict();
+
+        js('document').ready(function() {
+            showAdvanced();
+        });
+
+<?php endif; ?>
+</script>
+
+
+
+<form class="form-horizontal form-validate " action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=catalog&search=true&id=' . $this->item->id . '&preview=' . $this->preview); ?>#results" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
     <div class="catalog front-end-edit">
+        <fieldset id="jform_offline" class="radio btn-group pull-right">
+            <input type="radio" id="jform_searchtype_simple" name="jform[searchtype]" value="simple" checked="checked">
+            <label for="jform_searchtype_simple" class="btn searchtype active">Simple</label>
+            <input type="radio" id="jform_searchtype_advanced" name="jform[searchtype]" value="advanced" >
+            <label for="jform_searchtype_advanced" class="btn btn-danger searchtype ">Avancée</label>
+        </fieldset>
         <h1><?php echo JText::_('COM_EASYSDI_CATALOG_TITLE'); ?></h1>
+
         <div class="well">
+            <?php echo $this->getSearchForm(); ?>
             <button class="btn btn-primary" type="submit" >Search</button>
         </div>
     </div>
 </form>
 
 <?php
-if (!empty($this->item->dom)):
-    $xpath = new DomXPath($this->item->dom);
-    $xpath->registerNamespace('csw', 'http://www.opengis.net/cat/csw/2.0.2');
-    $xpath->registerNamespace('gmd', 'http://www.isotc211.org/2005/gmd');
-    $nodes = $xpath->query('//csw:SearchResults/gmd:MD_Metadata');
+$results = $this->getResults();
+if ($results):
     ?>
+    <a name="results"></a>
     <div class="catalog-searchresults">
-        <h3><?php echo JText::_("COM_EASYSDI_CATALOG_RESULTS_TITLE"); ?></h3>        
+        <h3><?php echo JFactory::getApplication('com_easysdi_catalog')->getUserState('global.list.total') . ' ' . JText::_("COM_EASYSDI_CATALOG_RESULTS_TITLE"); ?></h3>        
         <?php
         // Build of extendend XML for each result entry
-        foreach ($nodes as $node) :
-            $metadata = new cswmetadata();
-            $metadata->init($node);
-            $metadata->extend($this->item->alias, 'result',$this->preview, 'true', JFactory::getLanguage()->getTag());
-            $result = $metadata->applyXSL($this->item->alias, 'result',$this->preview);
+        foreach ($results as $result) :
             ?><div class="offset1 catalog-searchresult"> <?php
             echo $result;
             ?></div>
-                <hr><?php
-        endforeach;
-        ?>
-            
+            <hr><?php endforeach; ?>
+
     </div>
     <div class="pagination">
         <p class="counter">
-        <?php echo $this->pagination->getPagesCounter(); ?>
+            <?php echo $this->pagination->getPagesCounter(); ?>
         </p>
-    <?php echo $this->pagination->getPagesLinks(); ?>
+        <?php echo $this->pagination->getPagesLinks(); ?>
     </div>
 
     <?php

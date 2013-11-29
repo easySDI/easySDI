@@ -12,7 +12,7 @@
  */
 class EText {
 
-    public static function _($guid, $text = 1) {
+    public static function _($guid, $text = 1, $default = 'Translation not found') {
         $user = JFactory::getUser();
         $db = JFactory::getDbo();
 
@@ -40,7 +40,7 @@ class EText {
         if ($textI18n) {
             return $textI18n->text;
         } else {
-            return 'Translation not found';
+            return $default;
         }
     }
 

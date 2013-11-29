@@ -1,5 +1,7 @@
 <?php
 
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/SearchHtmlForm.php';
+
 /**
  * @version     4.0.0
  * @package     com_easysdi_catalog
@@ -29,7 +31,7 @@ class Easysdi_catalogViewCatalog extends JViewLegacy {
      */
     public function display($tpl = null) {
         $app = JFactory::getApplication();
-       
+
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_catalog');
@@ -83,6 +85,56 @@ class Easysdi_catalogViewCatalog extends JViewLegacy {
 
         if ($this->params->get('robots')) {
             $this->document->setMetadata('robots', $this->params->get('robots'));
+        }
+    }
+
+    /**
+     * Return a list of result node
+     * 
+     * @return array
+     */
+    public function getResults() {
+        if (empty($this->item->dom)) {
+            return false;
+        } else {
+            $xpath = new DomXPath($this->item->dom);
+            $xpath->registerNamespace('csw', 'http://www.opengis.net/cat/csw/2.0.2');
+            $xpath->registerNamespace('gmd', 'http://www.isotc211.org/2005/gmd');
+            $nodes = $xpath->query('//csw:SearchResults/gmd:MD_Metadata');
+            
+            $results = array();
+            foreach ($nodes as $node) {
+                $metadata = new cswmetadata();
+                $metadata->init($node);
+                $metadata->extend($this->item->alias, 'result', $this->preview, 'true', JFactory::getLanguage()->getTag());
+                $result = $metadata->applyXSL($this->item->alias, 'result', $this->preview);
+                
+                $results[] = $result;
+            }
+
+            return $results;
+        }
+    }
+    
+    public function getSearchForm(){
+        $shf = new SearchHtmlForm($this->form);
+        
+        $htmlForm = $shf->getForm();
+        
+        return $htmlForm;
+    }
+    
+    public function isAdvanced() {
+        $data = JFactory::getApplication()->input->get('jform', array(), 'array');
+        
+        if(empty($data)){
+            return false;
+        }
+        
+        if($data['searchtype'] == 'advanced'){
+            return true;
+        }  else {
+            return false;
         }
     }
 
