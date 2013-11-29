@@ -141,6 +141,8 @@ abstract class Easysdi_mapHelper {
                 '.$appname.' = new gxp.Viewer(' . $config . ');
                    ';
 
+        
+        
         //Add the mouseposition control if activated in the map configuration
         //Can not be done in the gxp.Viewer instanciation because it has to be done on the openlayers map object
         foreach ($item->tools as $tool) {
@@ -149,6 +151,8 @@ abstract class Easysdi_mapHelper {
                 break;
             }
         }
+        
+        
 
         $output .= '
             '.$appname.'.on("ready", function (){ ';
@@ -648,8 +652,11 @@ abstract class Easysdi_mapHelper {
 
             // map and layers
             map: 
-            {
-            id: "sdimap",
+            {';
+         if($cleared):
+            $config .= 'controls : [],';
+        endif;
+            $config .= 'id: "sdimap",
             title: "Map",
             header:false,
             projection: "' . $item->srs . '",        
@@ -870,6 +877,11 @@ abstract class Easysdi_mapHelper {
         ]
         }
         ,';
+        
+        
+        
+        
+        
         if(!$cleared){
             $config .= ' 
         mapItems: 

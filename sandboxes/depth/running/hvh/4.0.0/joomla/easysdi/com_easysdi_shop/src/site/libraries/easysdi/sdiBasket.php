@@ -101,7 +101,7 @@ class sdiBasket {
                 $this->setPerimeters($ex->perimeters);
             endforeach;
 
-            //Load Extent od the order
+            //Load Extent of the order
             //     extent = {"id": perimeter_id ,"name": perimeter_name, "surface": surface_order,"allowedbuffer": boolean,"buffer": int_value,"features": string_coordinates or id_array)};
             $query = $db->getQuery(true)
                     ->select('op.*, p.name as perimeter_name')
@@ -117,7 +117,6 @@ class sdiBasket {
             $extent->buffer = $order->buffer;
             $extent->features = array();
             foreach ($perimeters as $perimeter):
-
                 if (!strpos($perimeter->value, ',')):
                     //Feature id
                     $feature = new stdClass();

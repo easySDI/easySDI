@@ -9,6 +9,9 @@
 // no direct access
 defined('_JEXEC') or die;
 
+$document = JFactory::getDocument();
+$document->addScript('components/com_easysdi_shop/helpers/helper.js');
+
 ?>
 <?php if ($this->item) : ?>
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=request'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
@@ -153,48 +156,6 @@ defined('_JEXEC') or die;
                         </div>
 
                        <?php Easysdi_shopHelper::getHTMLOrderPerimeter($this->item); ?>
-<!--                        <div class="row-fluid" >
-                            <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h3>
-                            <hr>
-                            <div class="row-fluid" >
-                                <div class="map-recap span6" >
-                                    <div id="minimap" class="minimap" style="height:250px"></div>                   
-                                </div>
-                                <div  class="value-recap span6" >
-                                    <div id="perimeter-buffer" class="row-fluid hide" >
-                                        <div><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BUFFER'); ?></h3>
-                                            <input id="buffer" name="buffer" type="text" placeholder="" class="input-xlarge" value="<?php if (!empty($this->item->basket->buffer)) echo $this->item->basket->buffer; ?>">
-                                        </div>                                
-                                    </div>
-                                    <div id="perimeter-recap" class="row-fluid" >
-                                        <?php if (!empty($this->item->basket->extent)): ?>
-                                            <div><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SURFACE'); ?></h3>
-                                                <div><?php if (!empty($this->item->basket->extent->surface)) echo $this->item->basket->extent->surface; ?></div>
-                                            </div>                                
-                                            <div><h3><?php echo $this->item->basket->extent->name; ?></h3></div>
-                                            <?php
-                                            if (!is_array($this->item->basket->extent->features)):
-                                                $features = explode(',', $this->item->basket->extent->features);
-                                                foreach ($features as $feature):
-                                                    ?>
-                                                    <div><?php echo $feature; ?></div>
-                                                    <?php
-                                                endforeach;
-                                            else :
-                                                foreach ($this->item->basket->extent->features as $feature):
-                                                    ?>
-                                                    <div><?php echo $feature->name; ?></div>
-                                                    <?php
-                                                endforeach;
-                                            endif;
-                                            ?>
-
-                                        <?php endif; ?>
-                                    </div>                           
-                                </div>
-                            </div>
-
-                        </div>-->
 
                         <?php if (!empty($this->item->basket->thirdparty)): ?>
                             <div class="row-fluid" >

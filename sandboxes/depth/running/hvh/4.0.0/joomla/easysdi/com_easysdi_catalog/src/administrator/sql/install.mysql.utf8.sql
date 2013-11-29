@@ -772,12 +772,12 @@ INDEX `#__sdi_versionlink_fk2` (`child_id` ASC) ,
   CONSTRAINT `#__sdi_versionlink_fk1`
     FOREIGN KEY (`parent_id` )
     REFERENCES `#__sdi_version` (`id` )
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
 CONSTRAINT `#__sdi_versionlink_fk2`
     FOREIGN KEY (`child_id` )
     REFERENCES `#__sdi_version` (`id` )
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 

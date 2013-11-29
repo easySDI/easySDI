@@ -1,4 +1,5 @@
 var map, perimeterLayer, selectControl, selectLayer, polygonLayer, selectControl, request, myLayer, fieldid, fieldname, loadingPerimeter, miniLayer, minimap;
+
 function initMiniMap() {
     minimap = new OpenLayers.Map({div: 'minimap', controls: []});
     var layer = app.mapPanel.map.layers[1].clone();
@@ -12,12 +13,11 @@ function initMiniMap() {
 
 var listenerMiniFeaturesAdded = function() {
     minimap.zoomToExtent(miniLayer.getDataExtent());
-
 };
 
 var listenerFeatureAdded = function(e) {
     miniLayer.addFeatures([e.feature.clone()]);
-
+    
     var toobig = false;
     var toosmall = false;
     if (jQuery('#surfacemax').val() !== '') {
@@ -39,8 +39,6 @@ var listenerFeatureAdded = function(e) {
 
     }
 };
-
-
 
 function clearLayersVector() {
     for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
@@ -142,24 +140,6 @@ function cancel() {
 
 function savePerimeter() {
     jQuery("#progress").css('visibility', 'visible');
-//    request = false;
-//    if (window.XMLHttpRequest) {
-//        request = new XMLHttpRequest();
-//    } else if (window.ActiveXObject) {
-//        try {
-//            request = new ActiveXObject("Msxml2.XMLHTTP");
-//        } catch (e) {
-//            try {
-//                request = new ActiveXObject("Microsoft.XMLHTTP");
-//            } catch (e) {
-//                request = false;
-//            }
-//        }
-//    }
-//    if (!request) {
-//        alert('Error');
-//        return;
-//    }
 
     var extent = {"id": jQuery('#t-perimeter').val(),
         "name": jQuery('#t-perimetern').val(),
@@ -167,11 +147,7 @@ function savePerimeter() {
         "allowedbuffer": jQuery('#allowedbuffer').val(),
         "buffer": jQuery('#buffer').val(),
         "features": JSON.parse(jQuery('#t-features').val())};
-//    var query = "index.php?option=com_easysdi_shop&task=addExtentToBasket&item=" + JSON.stringify(extent);
-//    request.onreadystatechange = displayExtentRecap;
-//    request.open("GET", query, true);
-//    request.send(null);
-
+        
     jQuery.ajax({
         url: "index.php?option=com_easysdi_shop&task=addExtentToBasket&item=" + JSON.stringify(extent),
         success: function(data) {
@@ -179,17 +155,9 @@ function savePerimeter() {
         }
     });
 
-//    if (typeof selectLayer !== 'undefined') {
-//        miniLayer.addFeatures(selectLayer.features);
-//    }else if (typeof myLayer !== 'undefined') {
-//        miniLayer.addFeatures(myLayer.features);
-//    } else {
-//        miniLayer.addFeatures(polygonLayer.features);
-//    }
 }
 
 function displayExtentRecap() {
-//    if (request.readyState === 4) {
     saveTemporaryFields();
 
     jQuery('#perimeter-recap').empty();
@@ -204,7 +172,7 @@ function displayExtentRecap() {
 
     try {
         var features = JSON.parse(features_text);
-
+      
         jQuery.each(features, function(index, value) {
             if (typeof value === "undefined")
                 return true;
@@ -218,7 +186,6 @@ function displayExtentRecap() {
     } catch (e) {
         jQuery('#perimeter-recap').append("<div>" + features_text + "</div>");
     }
-//    }
 }
 
 

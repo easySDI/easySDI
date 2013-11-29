@@ -4,9 +4,10 @@ function initDraw() {
         featuresadded: onFeaturesAdded,
         beforefeatureadded: beforeFeatureAdded
     });
+    polygonLayer.events.register("loadend", polygonLayer, listenerFeatureDrawToZoom);
     polygonLayer.events.register("featureadded", polygonLayer, listenerFeatureAdded);
     app.mapPanel.map.addLayers([polygonLayer]);
-    
+
     drawControls = {
         polygon: new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.Polygon, {handlerOptions: {stopDown: 0, stopUp: 0}}),
         box: new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.RegularPolygon, {handlerOptions: {stopDown: 1, stopUp: 1, irregular: 1}})
@@ -21,50 +22,85 @@ function onFeaturesAdded(event) {
 }
 
 function putFeaturesVerticesInHiddenField(feature) {
-    var vertices = feature.geometry.getVertices();
+
+    var geometry = feature.geometry.transform(
+            new OpenLayers.Projection(app.mapPanel.map.projection),
+            new OpenLayers.Projection("EPSG:4326")
+            );
+
     var pointsAsString = '';
-    for (var i = 0; i < vertices.length; i++) {
-        pointsAsString += vertices[i].x;
-        pointsAsString += ' ';
-        pointsAsString += vertices[i].y;
-        if(i < vertices.length-1) pointsAsString += ', ';
+    var components = new Array();
+    if (geometry instanceof OpenLayers.Geometry.MultiPolygon) {
+        components = geometry.components;
+        for (var j = 0; j < components.length; j++) {
+            pointsAsString += '[';
+            var vertices = components[j].getVertices();
+            for (var i = 0; i < vertices.length; i++) {
+                pointsAsString += vertices[i].x;
+                pointsAsString += ' ';
+                pointsAsString += vertices[i].y;
+                if (i < vertices.length - 1)
+                    pointsAsString += ', ';
+            }
+            pointsAsString += ']';
+        }
+    } else {
+        var vertices = geometry.getVertices();
+        for (var i = 0; i < vertices.length; i++) {
+            pointsAsString += vertices[i].x;
+            pointsAsString += ' ';
+            pointsAsString += vertices[i].y;
+            if (i < vertices.length - 1)
+                pointsAsString += ', ';
+        }
     }
+
+
+
     jQuery('#t-features').val(JSON.stringify(pointsAsString));
     jQuery('#t-surface').val(JSON.stringify(feature.geometry.getGeodesicArea(app.mapPanel.map.projection)));
 }
 
 function selectPerimeter1() {
-    drawControls['polygon'].activate();
+    selectPolygon();
+//    drawControls['polygon'].activate();
 }
 
 function reloadFeatures1() {
     var wkt = 'POLYGON((' + JSON.parse(jQuery('#features').val()) + '))';
     var feature = new OpenLayers.Format.WKT().read(wkt);
-    polygonLayer.addFeatures([feature]);
-    app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
-            
- 
-//        miniLayer.addFeatures(polygonLayer.features);
-    putFeaturesVerticesInHiddenField(feature);
+    var geometry = feature.geometry.transform(
+            new OpenLayers.Projection("EPSG:4326"),
+            new OpenLayers.Projection(app.mapPanel.map.projection)
+            );
+    var reprojfeature = new OpenLayers.Feature.Vector(geometry);
+    polygonLayer.addFeatures([reprojfeature]);
+//    app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
+    putFeaturesVerticesInHiddenField(reprojfeature);
 }
 
-function selectPolygon(){
+var listenerFeatureDrawToZoom = function(e) {
+    app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
+//    miniLayer.addFeatures(selectLayer.features);
+};
+
+function selectPolygon() {
     resetAll();
-    
+
     selectControl = new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.Polygon, {handlerOptions: {stopDown: 0, stopUp: 0}});
     app.mapPanel.map.addControl(selectControl);
     jQuery('#t-perimeter').val('1');
-    jQuery('#t-perimetern').val('freeperimeter');
+    jQuery('#t-perimetern').val('FREE PERIMETER');
     jQuery('#t-features').val('');
 }
 
-function selectRectangle(){
+function selectRectangle() {
     resetAll();
-    
+
     selectControl = new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.RegularPolygon, {handlerOptions: {stopDown: 1, stopUp: 1, irregular: 1}});
     app.mapPanel.map.addControl(selectControl);
     jQuery('#t-perimeter').val('1');
-    jQuery('#t-perimetern').val('freeperimeter');
+    jQuery('#t-perimetern').val('FREE PERIMETER');
     jQuery('#t-features').val('');
 }
 

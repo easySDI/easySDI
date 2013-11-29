@@ -143,10 +143,7 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
                 $model->checkin($return);
             }
 
-            // Clear the profile id from the session.
-            $app->setUserState('com_easysdi_shop.edit.diffusionmetadata.id', null);
-            $app->setUserState('com_easysdi_shop.edit.diffusion.id', null);
-            $app->setUserState('com_easysdi_shop.edit.diffusionversion.id', null);
+            $this->clearSession();
 
             // Redirect to the list screen.
             $this->setMessage(JText::_('COM_EASYSDI_SHOP_ITEM_SAVED_SUCCESSFULLY'));
@@ -165,6 +162,7 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
         $model = $this->getModel('Diffusion', 'Easysdi_shopModel');
         $data = JFactory::getApplication()->input->get('jform', array(), 'array');
         $model->checkin($data['id']);
+        $this->clearSession();
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
     }
 
@@ -233,10 +231,7 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
             $model->checkin($return);
         }
 
-        // Clear the profile id from the session.
-        $app->setUserState('com_easysdi_shop.edit.diffusionmetadata.id', null);
-        $app->setUserState('com_easysdi_shop.edit.diffusion.id', null);
-        $app->setUserState('com_easysdi_shop.edit.diffusionversion.id', null);
+        $this->clearSession();
 
         // Redirect to the list screen.
         $this->setMessage(JText::_('COM_EASYSDI_SHOP_ITEM_DELETED_SUCCESSFULLY'));
@@ -246,4 +241,11 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
         $app->setUserState('com_easysdi_shop.edit.diffusion.data', null);
     }
 
+    public function clearSession(){
+        $app = JFactory::getApplication();
+        // Clear the id from the session.
+        $app->setUserState('com_easysdi_shop.edit.diffusionmetadata.id', null);
+        $app->setUserState('com_easysdi_shop.edit.diffusion.id', null);
+        $app->setUserState('com_easysdi_shop.edit.diffusionversion.id', null);
+    }
 }
