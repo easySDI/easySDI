@@ -291,7 +291,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $data = $this->data;
         }
 
-        $fileRepository = JPATH_BASE . '/media/' . JComponentHelper::getParams('com_easysdi_catalog')->get('linkedfilerepository');
+        $fileRepository = JPATH_BASE . '/media/easysdi/' . JComponentHelper::getParams('com_easysdi_catalog')->get('linkedfilerepository');
         $fileBaseUrl = JComponentHelper::getParams('com_easysdi_catalog')->get('linkedfilebaseurl');
 
         //Upload file
@@ -329,7 +329,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
                 foreach ($values as $key => $value) {
                     $index = $key + 1;
-                    $indexedXpath = str_replace('gmd-dp-keyword', 'gmd-dp-keyword-la-' . $index . '-ra-', $xpath, $nbrReplace);
+                    $indexedXpath = str_replace('MD_Keywords-sla-gmd-dp-keyword', 'MD_Keywords-sla-gmd-dp-keyword-la-' . $index . '-ra-', $xpath, $nbrReplace);
 
                     if ($nbrReplace == 0) {
                         $indexedXpath = $this->addIndexToXpath($xpath, 4, $index);
@@ -353,6 +353,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             if ($elements) {
                 $element = $this->domXpathStr->query($query)->item(0);
             } else {
+                
                 JFactory::getApplication()->enqueueMessage('Erreur de xpath: ' . $query, 'error');
                 $this->setRedirect(JRoute::_('index.php?view=metadata&layout=edit', false));
             }
@@ -379,7 +380,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $smda = new sdiMetadata($data['id']);
 
-        $root->insertBefore($smda->getPlatformNode($this->structure), $root->firstChild);
+        //$root->insertBefore($smda->getPlatformNode($this->structure), $root->firstChild);
+        $root->appendChild($smda->getPlatformNode($this->structure));
 
         $transaction = $this->structure->createElementNS($this->cswUri, 'Transaction');
         $transaction->setAttribute('service', 'CSW');
@@ -555,12 +557,13 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * @return DOMElement[] 
      * 
      */
-    private function getHeader($default = 'deu', $encoding = 'utf8') {
-
+    private function getHeader($encoding = 'utf8') {
+        $languageid = $this->ldao->getByCode(JFactory::getUser()->getParam('language'));
+        
         $headers = array();
 
         $language = $this->structure->createElementNS($this->nsArray['gmd'], 'language');
-        $characterString = $this->structure->createElementNS($this->nsArray['gco'], 'CharacterString', $default);
+        $characterString = $this->structure->createElementNS($this->nsArray['gco'], 'CharacterString', $languageid->iso639);
         $language->appendChild($characterString);
         $headers[] = $language;
 
@@ -578,8 +581,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $characterEncodingSetCode->setAttribute('codeListeValue', $encoding);
         $characterEncodingSetCode->setAttribute('codeList', '#MD_CharacterSetCode');
         $characterEncoding->appendChild($characterEncodingSetCode);
-        foreach ($this->ldao->getAll() as $key => $value) {
-            if ($value->{'iso639-2T'} != $default) {
+        foreach ($this->ldao->getSupported() as $key => $value) {
+            if ($value->{'iso639-2T'} != $languageid->iso639) {
                 $pt_locale = $this->structure->createElementNS($this->nsArray['gmd'], 'PT_Locale');
                 $pt_locale->setAttribute('id', $key);
 

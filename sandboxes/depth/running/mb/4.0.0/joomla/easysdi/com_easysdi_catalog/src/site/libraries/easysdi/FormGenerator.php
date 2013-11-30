@@ -4,7 +4,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
 
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumChildtype.php';
-require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumRendertype.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumRenderType.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enum/EnumStereotype.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 

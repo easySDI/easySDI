@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension client="site" method="upgrade" type="template" version="3.0">
   <name>tpl_easysdi</name>
-  <version>4.0.0-alpha-22</version>
+  <version>4.0.0-alpha-23</version>
   <creationDate>26 march 2013</creationDate>
   <releaseDate>29 novembre 2013</releaseDate>
   <author>GavickPro</author>
