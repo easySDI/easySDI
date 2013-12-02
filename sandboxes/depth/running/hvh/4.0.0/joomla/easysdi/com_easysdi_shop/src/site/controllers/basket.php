@@ -40,7 +40,8 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
     }
 
     public function load() {
-        $id = JFactory::getApplication()->input->get('id', '', 'int');
+        $jinput = JFactory::getApplication()->input;
+        $id = $jinput->get('id', '', 'int');
         $basket = new sdiBasket();
         $basket->loadOrder($id);
 
@@ -52,14 +53,14 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
         $jinput = JFactory::getApplication()->input;
         $buffer = $jinput->get('buffer', '', 'float');
         $ordername = $jinput->get('ordername', '', 'string');
-        $thirdparty = $jinput->get('thirdparty', '', 'int');
-        $wmc = htmlentities($jinput->get('wmc', '', 'RAW'));
+        $thirdparty = $jinput->get('thirdparty', '', 'int');        
+//        $wmc = htmlentities($jinput->get('wmc', '', 'RAW'));
 
         $basket = unserialize(JFactory::getApplication()->getUserState('com_easysdi_shop.basket.content'));
         $basket->name = $ordername;
         $basket->buffer = $buffer;
         $basket->thirdparty = $thirdparty;
-        $basket->wmc = $wmc;
+//        $basket->wmc = $wmc;
 
         JFactory::getApplication()->setUserState('com_easysdi_shop.basket.content', serialize($basket));
     }

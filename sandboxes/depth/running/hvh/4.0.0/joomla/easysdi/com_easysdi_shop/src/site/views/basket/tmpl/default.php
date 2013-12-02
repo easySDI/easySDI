@@ -8,6 +8,15 @@
  */
 // no direct access
 defined('_JEXEC') or die;
+JHtml::_('behavior.keepalive');
+JHtml::_('behavior.tooltip');
+JHtml::_('behavior.formvalidation');
+
+
+JText::script('FREEPERIMETER');
+JText::script('MYPERIMETER');
+JText::script('COM_EASYSDI_SHOP_BASKET_KILOMETER');
+JText::script('COM_EASYSDI_SHOP_BASKET_METER');
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
@@ -15,10 +24,6 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/freeperimete
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/perimeter.js');
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.js');
 
-JHTML::_('behavior.modal');
-
-JText::script('FREE PERIMETER');
-JText::script('MY PERIMETER');
 ?>
 <?php if ($this->item && $this->item->extractions) : ?>
     <script>
@@ -144,41 +149,37 @@ JText::script('MY PERIMETER');
                         <div  class="value-recap span6" >
                             <div id="perimeter-buffer" class="row-fluid hide" >
                                 <div><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BUFFER'); ?></h3>
-                                    <input id="buffer" name="buffer" type="text" placeholder="" class="input-xlarge" value="<?php if (!empty($this->item->buffer)) echo $this->item->buffer; ?>">
+                                    <input id="buffer" name="buffer" type="text" placeholder="" class="input-xlarge" value="<?php if (!empty($this->item->buffer)) echo (float)$this->item->buffer; ?>">
                                 </div>                                
                             </div>
                             <div id="perimeter-recap" class="row-fluid" >
                                 <?php if (!empty($this->item->extent)): ?>
                                     <div><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SURFACE'); ?></h3>
                                         <div><?php
-                                            if (!empty($this->item->extent->surface)) :
-                                                if ($this->item->extent->surface > $this->paramsarray['maxmetervalue']):
-                                                    echo $this->item->extent->surface / 10 ^ 6;
-                                                else:
-                                                    echo $this->item->extent->surface;
-                                                endif;
+                                        if (!empty($this->item->extent->surface)) :
+                                            if (floatval($this->item->extent->surface) > intval($this->paramsarray['maxmetervalue'])):
+                                                echo round(floatval($this->item->extent->surface) / 1000000, intval($this->paramsarray['surfacedigit']));
+                                                echo JText::_('COM_EASYSDI_SHOP_BASKET_KILOMETER');
+                                            else:
+                                                echo round(floatval($this->item->extent->surface), intval($this->paramsarray['surfacedigit']));
+                                                echo JText::_('COM_EASYSDI_SHOP_BASKET_METER');
                                             endif;
+                                        endif;
                                             ?></div>
                                     </div>                                
                                     <div><h3><?php echo JText::_($this->item->extent->name); ?></h3></div>
                                     <?php
-                                    if (is_string($this->item->extent->features)):
-                                        $features = explode(',', $this->item->extent->features);
-                                        foreach ($features as $feature):
+                                    if (is_string($this->item->extent->features)):                                        
                                             ?>
-                                            <div><?php echo $feature; ?></div>
+<!--                                            <div><?php echo $this->item->extent->features; ?></div>-->
                                             <?php
-                                        endforeach;
+                                        
                                     elseif (is_array($this->item->extent->features)):
                                         foreach ($this->item->extent->features as $feature):
                                             ?>
                                             <div><?php echo $feature->name; ?></div>
                                             <?php
-                                        endforeach;
-                                    else :
-                                        ?>
-                            <!--<div><?php echo json_encode($this->item->extent->features); ?></div>-->
-                                    <?php
+                                        endforeach;                                    
                                     endif;
                                     ?>
 
@@ -291,14 +292,14 @@ JText::script('MY PERIMETER');
                                                        onClick="selectPerimeter<?php echo $perimeter->id; ?>(); 
                                                                 jQuery('#allowedbuffer').val(<?php echo $perimeter->allowedbuffer; ?>);
                                                                 jQuery('#perimeter-buffer').<?php if ($perimeter->allowedbuffer == 1): echo 'show';else: echo 'hide';endif;?>();return false;">
-                                                      <i class="icon-user"></i><?php echo $perimeter->name; ?></a>
+                                                        <i class="icon-user"></i><?php echo JText::_($perimeter->name); ?></a>
 
                                                     <script>
                                                         function selectPerimeter<?php echo $perimeter->id; ?>() {
-                                                            selectMyPerimeter('<?php echo $perimeter->id; ?>', '<?php echo $perimeter->name; ?>', '<?php echo addslashes(preg_replace('/\s+/', '', $this->user->perimeter)); ?>');
+                                                            selectMyPerimeter('<?php echo $perimeter->id; ?>', '<?php echo JText::_('MYPERIMETER'); ?>', '<?php echo addslashes(preg_replace('/\s+/', '', $this->user->perimeter)); ?>');
                                                         }
                                                         function reloadFeatures<?php echo $perimeter->id; ?>() {
-                                                            selectMyPerimeter('<?php echo $perimeter->id; ?>', '<?php echo $perimeter->name; ?>', '<?php echo addslashes(preg_replace('/\s+/', '', $this->user->perimeter)); ?>');
+                                                            selectMyPerimeter('<?php echo $perimeter->id; ?>', '<?php echo JText::_('MYPERIMETER'); ?>', '<?php echo addslashes(preg_replace('/\s+/', '', $this->user->perimeter)); ?>');
                                                         }
                                                     </script>
                                                     <br>
@@ -310,7 +311,7 @@ JText::script('MY PERIMETER');
                                                    onClick="selectPerimeter<?php echo $perimeter->id; ?>();
                                                             jQuery('#allowedbuffer').val(<?php echo $perimeter->allowedbuffer; ?>);
                                                             jQuery('#perimeter-buffer').<?php if ($perimeter->allowedbuffer == 1): echo 'show';else: echo 'hide';endif;?>();return false;">
-                                                   <i class="icon-grid-view"></i><?php echo $perimeter->name; ?></a>
+                                                   <i class="icon-grid-view"></i><?php echo JText::_($perimeter->name); ?></a>
                                                 <script>
                                                     <?php if ($this->item->isrestrictedbyperimeter):?>
                                                         var userperimeter = '<?php echo addslashes(preg_replace('/\s+/', '', $this->user->perimeter)); ?>';
@@ -376,7 +377,7 @@ JText::script('MY PERIMETER');
                 app.on("ready", function() {
                     initMiniMap();
                     initDraw();
-                    jQuery('#perimeter-buffer').hide();
+//                    jQuery('#perimeter-buffer').hide();
                     <?php if (!empty($this->item->extent)): ?>
                         <?php if (!empty($this->item->extent->allowedbuffer) && $this->item->extent->allowedbuffer == 1): ?>
                                         jQuery('#perimeter-buffer').show();
@@ -390,6 +391,10 @@ JText::script('MY PERIMETER');
                                         jQuery('#btn-perimeter<?php echo $this->item->extent->id; ?>').addClass('active');
                         <?php endif; ?>
                     <?php endif; ?>
+                    <?php if (!empty ($this->item->extent) && is_string($this->item->extent->features)):        ?>
+                        var feature = reprojectWKT("<?php echo $this->item->extent->features; ?>");
+                        jQuery('#perimeter-recap').append("<div>" + feature.geometry.toString() + "</div>");
+                    <?php endif;?>
                     <?php if (!empty($this->item->extent)) : ?>
                         selectPerimeter<?php echo $this->item->extent->id; ?>();
                         reloadFeatures<?php echo $this->item->extent->id; ?>();
@@ -411,7 +416,10 @@ JText::script('MY PERIMETER');
         ?>" />
         <input type="hidden" name="allowedbuffer" id="allowedbuffer" value="" />
         <input type="hidden" name="features" id="features" value='<?php
-        if (!empty($this->item->extent)): echo json_encode($this->item->extent->features);
+        if (!empty($this->item->extent) && !is_array($this->item->extent)): 
+            echo $this->item->extent->features; 
+        elseif (!empty($this->item->extent)): 
+            echo json_encode($this->item->extent->features) ;
         endif;
         ?>' />
         <input type="hidden" name="t-perimeter" id="t-perimeter" value="<?php
@@ -423,19 +431,25 @@ JText::script('MY PERIMETER');
         endif;
         ?>" />
         <input type="hidden" name="t-features" id="t-features" value='<?php
-        if (!empty($this->item->extent)): echo json_encode($this->item->extent->features);
+         if (!empty($this->item->extent) && !is_array($this->item->extent)): 
+            echo $this->item->extent->features; 
+        elseif (!empty($this->item->extent)): 
+            echo json_encode($this->item->extent->features) ;
         endif;
         ?>' />
         <input type="hidden" name="t-surface" id="t-surface" value="<?php
         if (!empty($this->item->extent)): echo $this->item->extent->surface;
         endif;
         ?>" />
-        <input type="hidden" name="surfacemin" id="surfacemin" value="<?php echo $this->item->surfacemin; ?>" />
-        <input type="hidden" name="surfacemax" id="surfacemax" value="<?php echo $this->item->surfacemax; ?>" />            
-        <input type="hidden" name="wmc" id="wmc" value="" />            
+        <input type = "hidden" name= "surfacemin" id="surfacemin" value="<?php echo $this->item->surfacemin; ?>" />
+        <input type = "hidden" name = "surfacemax" id="surfacemax" value="<?php echo $this->item->surfacemax; ?>" />            
+        <input type = "hidden" name = "v-features" id="v-features" value="" />            
         <input type = "hidden" name = "task" id = "task" value = "" />
         <input type = "hidden" name = "option" value = "com_easysdi_shop" />
         <input type = "hidden" name = "id" id = "id" value = "" />
+        <input type = "hidden" name = "surfacedigit" id = "surfacedigit" value = "<?php echo $this->paramsarray['surfacedigit']; ?>" />
+        <input type = "hidden" name = "maxmetervalue" id = "maxmetervalue" value = "<?php echo $this->paramsarray['maxmetervalue']; ?>" />
+        
         <?php echo JHtml::_('form.token'); ?>
     </form>
 

@@ -140,7 +140,7 @@ var listenerFeatureSelected = function(e) {
         var surface = parseInt(jQuery('#t-surface').val());
     else
         var surface = 0;
-    
+        
     jQuery('#t-surface').val(JSON.stringify(surface + e.feature.geometry.getGeodesicArea(app.mapPanel.map.projection)));
     
     selectLayer.addFeatures([e.feature]);

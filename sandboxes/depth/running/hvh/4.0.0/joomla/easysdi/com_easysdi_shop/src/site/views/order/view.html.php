@@ -97,6 +97,8 @@ class Easysdi_shopViewOrder extends JViewLegacy {
     
     function getToolbar() {
         $bar = new JToolBar('toolbar');
+        $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_SHOP_ORDERS_LOAD_DRAFT_INTO_BASKET'), 'basket.load', false);
+        $bar->appendButton('Separator');
         $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'order.cancel', false);
         //generate the html and return
         return $bar->render();

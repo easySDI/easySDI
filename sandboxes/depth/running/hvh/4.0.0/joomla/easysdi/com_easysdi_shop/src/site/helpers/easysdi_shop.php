@@ -219,7 +219,6 @@ abstract class Easysdi_shopHelper {
         $paramsarray = $params->toArray();
 
         $mapscript = Easysdi_mapHelper::getMapScript($paramsarray['ordermap'], true);
-
         
         ?> <div class="row-fluid" >
             <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h3>
@@ -233,9 +232,9 @@ abstract class Easysdi_shopHelper {
                     </div>                
                 </div>
                 <div  class="value-recap span4" >
-                    <div id="perimeter-buffer" class="row-fluid hide" >
+                    <div id="perimeter-buffer" class="row-fluid" >
                         <div><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BUFFER'); ?></h3>
-                            <input id="buffer" name="buffer" type="text" placeholder="" class="input-xlarge" value="<?php if (!empty($item->basket->buffer)) echo $item->basket->buffer; ?>">
+                            <span><?php if (!empty($item->basket->buffer)) echo (float)$item->basket->buffer; ?></span>                            
                         </div>                                
                     </div>
                     <div id="perimeter-recap" class="row-fluid" >
@@ -243,11 +242,11 @@ abstract class Easysdi_shopHelper {
                             <div><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SURFACE'); ?></h3>
                                 <div><?php
                                     if (!empty($item->basket->extent->surface)) :
-                                        if (intval($item->basket->extent->surface) > intval($paramsarray['maxmetervalue'])):
-                                            echo round(intval($item->basket->extent->surface) / 1000000, intval($paramsarray['surfacedigit']));
+                                        if (floatval($item->basket->extent->surface) > intval($paramsarray['maxmetervalue'])):
+                                            echo round(floatval($item->basket->extent->surface) / 1000000, intval($paramsarray['surfacedigit']));
                                             echo JText::_('COM_EASYSDI_SHOP_BASKET_KILOMETER');
                                         else:
-                                            echo $item->basket->extent->surface;
+                                            echo round(floatval($item->basket->extent->surface), intval($paramsarray['surfacedigit']));
                                             echo JText::_('COM_EASYSDI_SHOP_BASKET_METER');
                                         endif;
                                     endif;
@@ -255,14 +254,7 @@ abstract class Easysdi_shopHelper {
                             </div>                                
                             <div><h3><?php echo JText::_($item->basket->extent->name); ?></h3></div>
                             <?php
-                            if (!is_array($item->basket->extent->features)):
-                                $features = explode(',', $item->basket->extent->features);
-                                foreach ($features as $feature):
-                                    ?>
-                                    <div><?php echo $feature; ?></div>
-                                    <?php
-                                endforeach;
-                            else :
+                            if (is_array($item->basket->extent->features)):                                    
                                 foreach ($item->basket->extent->features as $feature):
                                     ?>
                                     <div><?php echo $feature->name; ?></div>
@@ -275,7 +267,6 @@ abstract class Easysdi_shopHelper {
                     </div>                           
                 </div>
             </div>
-
         </div>
         <?php
     }

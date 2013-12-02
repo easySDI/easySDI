@@ -22,7 +22,8 @@ function onFeaturesAdded(event) {
 }
 
 function putFeaturesVerticesInHiddenField(feature) {
-
+    jQuery('#t-surface').val(JSON.stringify(feature.geometry.getGeodesicArea(app.mapPanel.map.projection)));
+    
     var geometry = feature.geometry.transform(
             new OpenLayers.Projection(app.mapPanel.map.projection),
             new OpenLayers.Projection("EPSG:4326")
@@ -32,8 +33,13 @@ function putFeaturesVerticesInHiddenField(feature) {
     var components = new Array();
     if (geometry instanceof OpenLayers.Geometry.MultiPolygon) {
         components = geometry.components;
+        if(components.length > 1){
+            pointsAsString += 'MULTIPOLYGON ';
+        }else{
+            pointsAsString += 'POLYGON ';
+        }
         for (var j = 0; j < components.length; j++) {
-            pointsAsString += '[';
+            pointsAsString += '((';
             var vertices = components[j].getVertices();
             for (var i = 0; i < vertices.length; i++) {
                 pointsAsString += vertices[i].x;
@@ -42,10 +48,15 @@ function putFeaturesVerticesInHiddenField(feature) {
                 if (i < vertices.length - 1)
                     pointsAsString += ', ';
             }
-            pointsAsString += ']';
+            pointsAsString += '))';
+            if(j < components.length -1){
+                pointsAsString += ',';
+            }
         }
     } else {
         var vertices = geometry.getVertices();
+        pointsAsString += 'POLYGON ';
+        pointsAsString += '((';
         for (var i = 0; i < vertices.length; i++) {
             pointsAsString += vertices[i].x;
             pointsAsString += ' ';
@@ -53,54 +64,47 @@ function putFeaturesVerticesInHiddenField(feature) {
             if (i < vertices.length - 1)
                 pointsAsString += ', ';
         }
+        pointsAsString += '))';
     }
 
-
-
     jQuery('#t-features').val(JSON.stringify(pointsAsString));
-    jQuery('#t-surface').val(JSON.stringify(feature.geometry.getGeodesicArea(app.mapPanel.map.projection)));
 }
 
 function selectPerimeter1() {
     selectPolygon();
-//    drawControls['polygon'].activate();
 }
 
 function reloadFeatures1() {
-    var wkt = 'POLYGON((' + JSON.parse(jQuery('#features').val()) + '))';
+    var wkt = jQuery('#features').val();
     var feature = new OpenLayers.Format.WKT().read(wkt);
     var geometry = feature.geometry.transform(
             new OpenLayers.Projection("EPSG:4326"),
             new OpenLayers.Projection(app.mapPanel.map.projection)
             );
-    var reprojfeature = new OpenLayers.Feature.Vector(geometry);
-    polygonLayer.addFeatures([reprojfeature]);
+    polygonLayer.addFeatures([feature]);
 //    app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
-    putFeaturesVerticesInHiddenField(reprojfeature);
+    putFeaturesVerticesInHiddenField(feature);
 }
 
 var listenerFeatureDrawToZoom = function(e) {
     app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
-//    miniLayer.addFeatures(selectLayer.features);
 };
 
 function selectPolygon() {
     resetAll();
-
     selectControl = new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.Polygon, {handlerOptions: {stopDown: 0, stopUp: 0}});
     app.mapPanel.map.addControl(selectControl);
     jQuery('#t-perimeter').val('1');
-    jQuery('#t-perimetern').val('FREE PERIMETER');
+    jQuery('#t-perimetern').val(Joomla.JText._('FREEPERIMETER', 'Périmètre libre'));
     jQuery('#t-features').val('');
 }
 
 function selectRectangle() {
     resetAll();
-
     selectControl = new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.RegularPolygon, {handlerOptions: {stopDown: 1, stopUp: 1, irregular: 1}});
     app.mapPanel.map.addControl(selectControl);
     jQuery('#t-perimeter').val('1');
-    jQuery('#t-perimetern').val('FREE PERIMETER');
+    jQuery('#t-perimetern').val(Joomla.JText._('FREEPERIMETER', 'Périmètre libre'));
     jQuery('#t-features').val('');
 }
 

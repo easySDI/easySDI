@@ -9,16 +9,19 @@
 // no direct access
 defined('_JEXEC') or die;
 
+JHtml::_('behavior.keepalive');
+JHtml::_('behavior.tooltip');
+JHtml::_('behavior.formvalidation');
+
+
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/helpers/helper.js');
-
 ?>
 <?php if ($this->item) : ?> 
     <div class="order-edit front-end-edit">
         <h1><?php echo JText::_('COM_EASYSDI_SHOP_ORDER_TITLE'); ?></h1>
         <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=order'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
             <div class="order-edit front-end-edit">
-
                 <div >
                     <div class="row-fluid">
                         <div class="span10 offset1 well">
@@ -156,7 +159,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                 <div class="row-fluid" >
                                     <h3><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_THIRDPARTY_ID'); ?></h3>
                                     <hr>
-                                    <input id="thirdparty" name="thirdparty" type="text" placeholder="" class="input-xlarge" value="<?php $this->item->basket->thirdparty; ?>">                               
+                                    <span ><?php echo $this->item->basket->thirdorganism; ?></span>                                    
                                 </div>
                             <?php endif; ?>
 
@@ -168,16 +171,40 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
             <div>
                 <?php echo $this->getToolbar(); ?>
             </div>
-
-
+            <?php if($this->item->basket->extent->id == 1 || $this->item->basket->extent->id == 2  ):?>
+                <?php echo $this->form->getInput('perimeter', null, $this->item->basket->extent->features); ?>
+            <?php else : 
+                foreach($this->item->basket->perimeters as $perimeter):
+                     if($perimeter->id == $this->item->basket->extent->id):
+                         echo $this->form->getInput('wfsfeaturetypefieldid', null, $perimeter->featuretypefieldid);
+                        echo $this->form->getInput('wfsfeaturetypename', null, $perimeter->featuretypename);
+                        echo $this->form->getInput('wfsurl', null, $perimeter->wfsurl);
+                        break;
+                     endif;
+                endforeach;
+                ?>
+                <?php echo $this->form->getInput('wfsperimeter', null, json_encode($this->item->basket->extent->features)); ?>
+            <?php endif; ?>
             <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
                 <?php echo $field->input; ?>
             <?php endforeach; ?>  
             <input type = "hidden" name = "task" value = "" />
+            <input type = "hidden" name = "id" value = "<?php echo $this->item->id; ?>" />
             <input type = "hidden" name = "option" value = "com_easysdi_shop" />
             <?php echo JHtml::_('form.token'); ?>
         </form>
     </div>
+    <script>
+            Ext.onReady(function() {
+                app.on("ready", function() {
+                    loadPerimeter();
+                    <?php if (is_string($this->item->basket->extent->features)):        ?>
+                        var feature = reprojectWKT("<?php echo $this->item->basket->extent->features; ?>");
+                        jQuery('#perimeter-recap').append("<div>" + feature.geometry.toString() + "</div>");
+                    <?php endif;?>
+                })
+            })
+    </script>
     <?php
 else:
     echo JText::_('COM_EASYSDI_SHOP_ITEM_NOT_LOADED');

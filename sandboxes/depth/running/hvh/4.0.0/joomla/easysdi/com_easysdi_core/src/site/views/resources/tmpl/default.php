@@ -18,7 +18,6 @@ JHtml::_('behavior.modal');
 JHtml::_('behavior.calendar');
 
 $document = JFactory::getDocument();
-
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/resources.js');
 ?>
 <div class="core front-end-edit">

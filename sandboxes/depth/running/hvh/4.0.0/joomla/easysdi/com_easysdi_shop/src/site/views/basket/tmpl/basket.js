@@ -17,7 +17,7 @@ var listenerMiniFeaturesAdded = function() {
 
 var listenerFeatureAdded = function(e) {
     miniLayer.addFeatures([e.feature.clone()]);
-    
+
     var toobig = false;
     var toosmall = false;
     if (jQuery('#surfacemax').val() !== '') {
@@ -147,7 +147,7 @@ function savePerimeter() {
         "allowedbuffer": jQuery('#allowedbuffer').val(),
         "buffer": jQuery('#buffer').val(),
         "features": JSON.parse(jQuery('#t-features').val())};
-        
+
     jQuery.ajax({
         url: "index.php?option=com_easysdi_shop&task=addExtentToBasket&item=" + JSON.stringify(extent),
         success: function(data) {
@@ -162,9 +162,21 @@ function displayExtentRecap() {
 
     jQuery('#perimeter-recap').empty();
     jQuery('#perimeter-recap').append("<div><h3>" + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_SURFACE', 'Surface') + "</h3>");
-    jQuery('#perimeter-recap').append("<div>" + jQuery('#surface').val() + "</div></div>");
+    var surface = parseFloat(jQuery('#surface').val());
+    var surfacedigit = parseInt(jQuery('#surfacedigit').val());
+    var maxmetervalue = parseFloat(jQuery('#maxmetervalue').val());
+    if (surface > maxmetervalue) {
+        surface = surface / 1000000;
+        surface = surface.toFixed(surfacedigit);
+        surface += Joomla.JText._('COM_EASYSDI_SHOP_BASKET_KILOMETER', ' km2');
+    } else {
+        surface = surface.toFixed(surfacedigit);
+        surface += Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m2');
+    }
 
+    jQuery('#perimeter-recap').append("<div>" + surface + "</div></div>");
     jQuery('#perimeter-recap').append("<div><h3>" + jQuery('#perimetern').val() + "</h3></div>");
+
     var features_text = jQuery('#features').val();
 
     if (features_text === '')
@@ -172,20 +184,33 @@ function displayExtentRecap() {
 
     try {
         var features = JSON.parse(features_text);
-      
-        jQuery.each(features, function(index, value) {
-            if (typeof value === "undefined")
-                return true;
+        if (jQuery.isArray(features)) {
+            jQuery.each(features, function(index, value) {
+                if (typeof value === "undefined")
+                    return true;
 
-            if (typeof value.name === "undefined") {
-                jQuery('#perimeter-recap').append("<div>" + features + "</div>");
-                return false;
-            }
-            jQuery('#perimeter-recap').append("<div>" + value.name + "</div>");
-        });
+                if (typeof value.name === "undefined") {
+                    jQuery('#perimeter-recap').append("<div>" + features + "</div>");
+                    return false;
+                }
+                jQuery('#perimeter-recap').append("<div>" + value.name + "</div>");
+            });
+        } else {
+            var feature = reprojectWKT(JSON.parse(features_text));
+            jQuery('#perimeter-recap').append("<div>" + feature.geometry.toString() + "</div>");
+        }
     } catch (e) {
         jQuery('#perimeter-recap').append("<div>" + features_text + "</div>");
     }
+}
+
+function reprojectWKT(wkt) {
+    var feature = new OpenLayers.Format.WKT().read(wkt);
+    var geometry = feature.geometry.transform(
+            new OpenLayers.Projection("EPSG:4326"),
+            new OpenLayers.Projection(app.mapPanel.map.projection)
+            );
+    return feature;
 }
 
 
