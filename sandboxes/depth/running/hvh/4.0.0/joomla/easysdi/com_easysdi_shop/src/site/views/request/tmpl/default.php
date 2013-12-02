@@ -11,7 +11,6 @@ defined('_JEXEC') or die;
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/helpers/helper.js');
-
 ?>
 <?php if ($this->item) : ?>
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=request'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
@@ -107,7 +106,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                                                     </div>
 
                                                                     <div class="span6 order-edit-value" >
-                                                                        <?php echo $extraction->file .' ('. $extraction->size . ' B)'; ?>
+                                                                        <?php echo $extraction->file . ' (' . $extraction->size . ' B)'; ?>
                                                                     </div>
                                                                 <?php endif; ?>
 
@@ -155,7 +154,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                             </table>
                         </div>
 
-                       <?php Easysdi_shopHelper::getHTMLOrderPerimeter($this->item); ?>
+                        <?php Easysdi_shopHelper::getHTMLOrderPerimeter($this->item); ?>
 
                         <?php if (!empty($this->item->basket->thirdparty)): ?>
                             <div class="row-fluid" >
@@ -170,9 +169,24 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                 </div>
             </div>
         </div>
-        <script>
-
-        </script>
+        <div>
+            <?php echo $this->getToolbar(); ?>
+        </div>
+        <?php if ($this->item->basket->extent->id == 1 || $this->item->basket->extent->id == 2): ?>
+            <?php echo $this->form->getInput('perimeter', null, $this->item->basket->extent->features); ?>
+        <?php
+        else :
+            foreach ($this->item->basket->perimeters as $perimeter):
+                if ($perimeter->id == $this->item->basket->extent->id):
+                    echo $this->form->getInput('wfsfeaturetypefieldid', null, $perimeter->featuretypefieldid);
+                    echo $this->form->getInput('wfsfeaturetypename', null, $perimeter->featuretypename);
+                    echo $this->form->getInput('wfsurl', null, $perimeter->wfsurl);
+                    break;
+                endif;
+            endforeach;
+            ?>
+            <?php echo $this->form->getInput('wfsperimeter', null, json_encode($this->item->basket->extent->features)); ?>
+        <?php endif; ?>
         <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
             <?php echo $field->input; ?>
         <?php endforeach; ?>  
@@ -180,8 +194,19 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
         <input type = "hidden" name = "option" value = "com_easysdi_shop" />
         <?php echo JHtml::_('form.token'); ?>
     </form>
-    <?php echo $this->getToolbar(); ?>
 
+
+    <script>
+        Ext.onReady(function() {
+            app.on("ready", function() {
+                loadPerimeter();
+    <?php if (is_string($this->item->basket->extent->features)): ?>
+                    var feature = reprojectWKT("<?php echo $this->item->basket->extent->features; ?>");
+                    jQuery('#perimeter-recap').append("<div>" + feature.geometry.toString() + "</div>");
+    <?php endif; ?>
+            })
+        })
+    </script>
     <?php
 else:
     echo JText::_('COM_EASYSDI_SHOP_ITEM_NOT_LOADED');
