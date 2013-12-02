@@ -353,7 +353,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             if ($elements) {
                 $element = $this->domXpathStr->query($query)->item(0);
             } else {
-                
+
                 JFactory::getApplication()->enqueueMessage('Erreur de xpath: ' . $query, 'error');
                 $this->setRedirect(JRoute::_('index.php?view=metadata&layout=edit', false));
             }
@@ -393,6 +393,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $transaction->appendChild($update);
         $this->structure->appendChild($transaction);
 
+        $this->removeNoneExist();
         $this->removeCatalogNS();
 
         if ($commit) {
@@ -443,15 +444,15 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         // Delete old version
         $query = $this->db->getQuery(true);
-        $query = 'DELETE FROM #__sdi_translation WHERE element_guid = \''.$guid.'\'';
-        
+        $query = 'DELETE FROM #__sdi_translation WHERE element_guid = \'' . $guid . '\'';
+
         $this->db->setQuery($query);
         $this->db->execute();
-        
+
         foreach ($titles as $language_id => $text1) {
-            
-            $data =new stdClass();
-            
+
+            $data = new stdClass();
+
             $data->id = null;
             $data->guid = $this->getGUID();
             $data->created_by = $user->id;
@@ -459,8 +460,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $data->element_guid = $guid;
             $data->language_id = $language_id;
             $data->text1 = $text1;
-            
-            
+
+
             $this->db->insertObject('#__sdi_translation', $data, 'id');
         }
     }
@@ -559,7 +560,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      */
     private function getHeader($encoding = 'utf8') {
         $languageid = $this->ldao->getByCode(JFactory::getUser()->getParam('language'));
-        
+
         $headers = array();
 
         $language = $this->structure->createElementNS($this->nsArray['gmd'], 'language');
@@ -720,6 +721,18 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         return $constraint;
     }
 
+    private function removeNoneExist(){
+        $relations = $this->domXpathStr->query('descendant::*[@catalog:exist="0"]');
+        $toRemove = array();
+        foreach ($relations as $relation) {
+            $toRemove[] = $relation;
+        }
+        
+        foreach ($toRemove as $remove) {
+            $remove->parentNode->removeChild($remove);
+        }
+    }
+    
     private function removeCatalogNS() {
         $attributeNames = array('id', 'dbid', 'childtypeId', 'index', 'lowerbound', 'upperbound', 'rendertypeId', 'stereotypeId', 'relGuid', 'relid', 'maxlength', 'readonly', 'exist', 'resourcetypeId', 'relationId', 'label', 'boundingbox', 'map');
         foreach ($this->domXpathStr->query('//*') as $element) {

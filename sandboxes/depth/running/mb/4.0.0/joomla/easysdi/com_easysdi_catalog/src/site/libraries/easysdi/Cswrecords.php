@@ -19,6 +19,10 @@ class Cswrecords extends SearchForm {
 
     /** @var OgcFilters */
     private $ogcFilters;
+    
+    /** @var boolean if is true, set harvested at true */
+    private $addHarvested = true;
+    
     private $ogcUri = 'http://www.opengis.net/ogc';
     private $ogcPrefix = 'ogc';
 
@@ -99,7 +103,11 @@ class Cswrecords extends SearchForm {
 
         $and->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'false'));
         $or->appendChild($and);
-        $or->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'true'));
+        if($this->addHarvested){
+            $or->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'true'));
+        }else{
+            $or->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'false'));
+        }
         $parentAnd->appendChild($or);
 
         $cswfilter = $this->getCswFilter($catalog_id);
@@ -216,6 +224,7 @@ class Cswrecords extends SearchForm {
                 break;
             case 'resourcetype':
                 foreach ($value as $resourcetype) {
+                    $this->addHarvested = false;
                     $or = $this->ogcFilters->getOperator(OgcFilters::OPERATOR_OR);
                     $or->appendChild($this->getResouceType(strtolower($resourcetype)));
                     return $or;
@@ -223,26 +232,31 @@ class Cswrecords extends SearchForm {
                 break;
             case 'versions':
                 if ($value) {
+                    $this->addHarvested = false;
                     return $this->getVersions($value);
                 }
                 break;
             case 'resourcename':
                 if (!empty($value)) {
+                    $this->addHarvested = false;
                     return $this->getResouceName($value);
                 }
                 break;
             case 'metadata_created':
+                $this->addHarvested = false;
                 if (!empty($value['from']) || !empty($value['to'])) {
                     return $this->getMetadataCreated($value['from'], $value['to']);
                 }
                 break;
             case 'metadata_published':
+                $this->addHarvested = false;
                 if (!empty($value['from']) || !empty($value['to'])) {
                     return $this->getMetadataPublished($value['from'], $value['to']);
                 }
                 break;
             case 'organism':
                 if (!empty($value)) {
+                    $this->addHarvested = false;
                     return $this->getOrganism($value);
                 }
                 break;
@@ -252,9 +266,15 @@ class Cswrecords extends SearchForm {
             case 'isdownloadable':
                 return $this->getIsDownloadable();
             case 'isfree':
+                $this->addHarvested = false;
                 return $this->getIsFree();
             case 'isorderable':
+                $this->addHarvested = false;
                 return $this->getIsOrderable();
+            case 'isviewable':
+                $this->addHarvested = false;
+                return $this->getIsViewable();
+                break;
             default :
                 if (is_array($value)) {
                     $value_filter = array_filter($value);
@@ -445,5 +465,6 @@ class Cswrecords extends SearchForm {
     private function getIsViewable() {
         return $this->ogcFilters->getIsEqualTo('isviewable', 'true');
     }
+   
 
 }
