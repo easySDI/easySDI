@@ -152,14 +152,15 @@ abstract class Easysdi_mapHelper {
             }
         }
         
-        
+        $output .= 'var locator = null';
 
         $output .= '
             '.$appname.'.on("ready", function (){ ';
         
         if(!empty($item->urlwfslocator)):
             $output .= '
-            var locator = { xtype: "gxp_autocompletecombo",
+            if(locator == null){
+                locator = { xtype: "gxp_autocompletecombo",
                                         listeners:{
                                                     select: function(list, record) {
                                                             var extent = new OpenLayers.Bounds();
@@ -175,8 +176,9 @@ abstract class Easysdi_mapHelper {
                                         geometryName:"'.$item->geometryname.'",
                                         maxFeatures:"10",
                                         emptyText: "Search..."};
-                                        app.portal.items.items[0].items.items[0].toolbars[0].add(locator);
-                                        app.portal.items.items[0].items.items[0].toolbars[0].doLayout();';
+                app.portal.items.items[0].items.items[0].toolbars[0].add(locator);
+                app.portal.items.items[0].items.items[0].toolbars[0].doLayout();
+            }';
         endif;
                 
           $output .= '      loadingMask.hide(); 

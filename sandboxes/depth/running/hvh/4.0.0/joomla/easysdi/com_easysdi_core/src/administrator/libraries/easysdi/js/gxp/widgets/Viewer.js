@@ -49,7 +49,6 @@ gxp.Viewer.prototype.reactivate = function() {
         if (records.length) {
             panel.layers.add(records);
         }
-
     }
 
     // respond to any queued requests for layer records

@@ -432,9 +432,8 @@ class cswmetadata {
                         ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
                         ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
                         ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
-                        ->innerJoin('#__sdi_translation t on t.element_guid = m.guid')
-                        ->innerJoin('#__sdi_language l ON l.id = t.language_id')
-                        ->where('l.code = "' . $lang . '"')
+                        ->leftJoin('#__sdi_translation t on t.element_guid = m.guid')
+                        ->leftJoin('#__sdi_language l ON l.id = t.language_id AND l.code = "' . $lang . '"')
                         ->where('vl.child_id = ' . $this->version->id)
                 ;
                 $this->db->setQuery($query);
@@ -451,16 +450,15 @@ class cswmetadata {
                 endforeach;
 
                 $query = $this->db->getQuery(true)
-                        ->select('vl.parent_id, v.guid as guid, r.name as name, rt.alias as type')
+                        ->select('vl.parent_id, v.guid as guid, r.name as name, rt.alias as type,  t.text1 as title')
                         ->from('#__sdi_versionlink vl')
                         ->innerJoin('#__sdi_version v ON v.id = vl.child_id')
                         ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
                         ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
                         ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
-                        ->innerJoin('#__sdi_translation t on t.element_guid = m.guid')
-                        ->innerJoin('#__sdi_language l ON l.id = t.language_id')
-                        ->where('l.code = "' . $lang . '"')
-                        ->where('vl.child_id = ' . $this->version->id);
+                        ->leftJoin('#__sdi_translation t on t.element_guid = m.guid')
+                        ->leftJoin('#__sdi_language l ON l.id = t.language_id AND l.code = "' . $lang . '"')
+                        ->where('vl.parent_id = ' . $this->version->id);
                 $this->db->setQuery($query);
                 $childrenitem = $this->db->loadObjectList();
                 $children = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:children');
