@@ -11,11 +11,11 @@
             label="COM_EASYSDI_CATALOG_FIELDSET_ITEM_ID_SELECT_LABEL">
             <field
                 name="item_id"
-                query="SELECT `id` FROM #__sdi_catalog ORDER BY `id`"
+                query="SELECT `id`, `name`  FROM #__sdi_catalog ORDER BY `id`"
                 type="sql"
                 key_field="id" 
-                value_field="id"
-                label="COM_EASYSDI_CATALOG_ITEM_ID_SELECT_LABEL"
+                value_field="name"
+                label="COM_EASYSDI_CATALOG_CATALOG_SELECT_LABEL"
                 require="true"
                 description="JGLOBAL_SHOW_TITLE_DESC">
             </field>
