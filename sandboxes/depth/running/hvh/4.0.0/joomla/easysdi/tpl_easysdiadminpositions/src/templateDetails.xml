@@ -2,13 +2,13 @@
 <extension client="administrator" method="upgrade" type="template" version="3.0">
   <name>EasySdi Admin Positions</name>
   <creationDate>15 spetember 2013</creationDate>
-  <releaseDate>29 novembre 2013</releaseDate>
+  <releaseDate>03 décembre 2013</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>4.0.0-alpha-22</version>
+  <version>4.0.0-alpha-23</version>
   <description>TPL_EASYSDIADMINPOSITIONS_XML_DESCRIPTION</description>
   <files>
     <filename>templateDetails.xml</filename>
