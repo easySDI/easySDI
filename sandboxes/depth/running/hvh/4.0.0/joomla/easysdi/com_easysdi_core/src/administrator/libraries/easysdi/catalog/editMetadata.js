@@ -3,6 +3,7 @@ var currentUrl = location.protocol + '//' + location.host + location.pathname;
 var tabIsOpen = false;
 js('document').ready(function() {
 
+
     // Change publish date field to Calendar field
     Calendar.setup({
         // Id of the input field
@@ -59,6 +60,9 @@ js('document').ready(function() {
             var form_import = document.getElementById('form_import_resource');
 
             switch (actions[1]) {
+                case 'cancel':
+
+                    break;
                 case 'save':
                 case 'saveAndContinue':
                     Joomla.submitform(task, form);
@@ -67,7 +71,7 @@ js('document').ready(function() {
                 case 'control':
                     if (document.formvalidator.isValid(form)) {
                         js('#system-message-container').remove();
-                        bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK','COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK'));
+                        bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK', 'COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK'));
                         break;
                     }
                     break;
@@ -368,9 +372,13 @@ function filterBoundary(parentPath, value) {
         var replaceId = parentPath.replace(/-/g, '_');
         var selectList = js('#jform_' + replaceId + '_sla_gmd_dp_description_sla_gco_dp_CharacterString');
         selectList.empty();
-        var items = "";
-        js.each(response, function() {
-            items += "<option value=\"" + this.option_value + "\">" + this.option_value + "</option>";
+        var items = "<option value=\"\"></option>";
+        js.each(response, function(i) {
+            if (i === 0) {
+                items += "<option selected=\"selected\" value=\"" + this.option_value + "\">" + this.option_value + "</option>";
+            } else {
+                items += "<option value=\"" + this.option_value + "\">" + this.option_value + "</option>";
+            }
         });
         selectList.html(items);
         selectList.trigger("liszt:updated");
@@ -380,6 +388,8 @@ function filterBoundary(parentPath, value) {
         js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', response['0'].southbound);
         js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', response['0'].eastbound);
         js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', response['0'].westbound);
+        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_2_ra__sla_gmd_dp_EX_GeographicDescription_sla_gmd_dp_geographicIdentifier_sla_gmd_dp_MD_Identifier_sla_gmd_dp_code_sla_gco_dp_CharacterString').attr('value', response['0'].alias);
+
         var map_parent_path = replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox';
         drawBB(map_parent_path);
     });
@@ -393,9 +403,17 @@ function setBoundary(parentPath, value) {
         js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', response.southbound);
         js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', response.eastbound);
         js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', response.westbound);
+        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_2_ra__sla_gmd_dp_EX_GeographicDescription_sla_gmd_dp_geographicIdentifier_sla_gmd_dp_MD_Identifier_sla_gmd_dp_code_sla_gco_dp_CharacterString').attr('value', response.alias);
+
         var map_parent_path = replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox';
         drawBB(map_parent_path);
     });
+}
+
+function clearbbselect(parent_path) {
+
+    js('#jform_' + parent_path + '_sla_sdi_dp_extentType_sla_gco_dp_CharacterString').val('').trigger('liszt:updated');
+    js('#jform_' + parent_path + '_sla_gmd_dp_description_sla_gco_dp_CharacterString').val('').trigger('liszt:updated');
 }
 
 function drawBB(parent_path) {

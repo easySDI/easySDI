@@ -155,10 +155,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
                             <div class="control-label"><?php echo $this->form->getLabel('searchboundarytype'); ?></div>
                             <div class="controls"><?php echo $this->form->getInput('searchboundarytype'); ?></div>
                         </div>
-                        <div class="control-group">
-                            <div class="control-label"><?php echo $this->form->getLabel('categorysearchfield'); ?></div>
-                            <div class="controls"><?php echo $this->form->getInput('categorysearchfield'); ?></div>
-                        </div>
+                        
                         <div class="control-group">
                             <div class="control-label"><?php echo $this->form->getLabel('boundarysearchfield'); ?></div>
                             <div class="controls"><?php echo $this->form->getInput('boundarysearchfield'); ?></div>

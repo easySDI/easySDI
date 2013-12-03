@@ -88,7 +88,7 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         $default_lang = $user->getParam('language');
 
         $query = $this->db->getQuery(true);
-        $query->select('t.text1 as option_value, b.`name`, b.northbound, b.southbound, b.westbound, b.eastbound ');
+        $query->select('t.text1 as option_value, b.alias, b.`name`, b.northbound, b.southbound, b.westbound, b.eastbound ');
         $query->from('#__sdi_boundary AS b');
         $query->innerJoin('#__sdi_boundarycategory as bc ON b.category_id = bc.id');
         $query->innerJoin('#__sdi_translation t ON b.guid = t.element_guid');
@@ -106,7 +106,7 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
     
     public function getBoundaryByName(){
         $query = $this->db->getQuery(true);
-        $query->select('t.text1, b.northbound, b.southbound, b.westbound, b.eastbound');
+        $query->select('t.text1, b.alias, b.northbound, b.southbound, b.westbound, b.eastbound');
         $query->from('#__sdi_boundary AS b');
         $query->innerJoin('#__sdi_translation t ON b.guid = t.element_guid ');
         $query->where('t.text1 = \'' . $_GET['value'] . '\'');

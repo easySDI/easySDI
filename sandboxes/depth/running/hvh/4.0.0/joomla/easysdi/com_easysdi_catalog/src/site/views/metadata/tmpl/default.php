@@ -13,7 +13,13 @@ JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('formbehavior.chosen', 'select');
+JHtml::_('behavior.calendar');
 
+JText::script('COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK');
+
+//Load admin language file
+$lang = JFactory::getLanguage();
+$lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
 $document = JFactory::getDocument();
 
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/ext/resources/css/ext-all.css');
@@ -106,16 +112,20 @@ foreach ($this->validators as $validator) {
     echo $validator;
 }
 ?>
-        });
+    });
 
 </script>
 
 <div class="metadata-edit front-end-edit">
 
-    <?php echo $this->getTopActionBar(); ?>
+    <?php 
+        echo $this->getTopActionBar(); 
+        $title = $this->getTitle();
+        ?>
 
     <div>
-        <h2><?php echo JText::_('COM_EASYSDI_CATALOGE_TITLE_EDIT_METADATA') . ' ' . $this->item->guid; ?></h2>
+        <h2><?php echo JText::_('COM_EASYSDI_CATALOGE_TITLE_EDIT_METADATA') . ' ' . $title->resource_name  ?></h2>
+        <h5><?php echo $title->name. ': ' . JText::_($title->value) ; ?></h5>
     </div>
 
     <form id="form-metadata" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal" enctype="multipart/form-data">
@@ -250,7 +260,7 @@ foreach ($this->validators as $validator) {
                                 </tbody>
                             </table>
                         </form>
-        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.importResource')">Importer</button>

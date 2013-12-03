@@ -358,10 +358,13 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             }
 
             if (isset($element)) {
+                // List case
                 if ($element->hasAttribute('codeList')) {
                     $element->setAttribute('codeListValue', $value);
+                    // Resourcetype case
                 } elseif ($element->hasAttributeNS('http://www.w3.org/1999/xlink', 'href')) {
                     $element->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', $this->getHref($value));
+                    // Text case
                 } else {
                     $element->nodeValue = $value;
                 }
@@ -393,8 +396,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         if ($commit) {
             $this->structure->formatOutput = true;
             $xml = $this->structure->saveXML();
-
             if ($smda->update($xml)) {
+                $this->saveTitle($data['guid']);
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_SAVE_VALIDE'), 'message');
                 if ($continue) {
                     $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $data['id']));
@@ -406,6 +409,57 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_SAVE_ERROR'), 'error');
                 $this->setRedirect(JRoute::_('index.php?view=metadata&layout=edit', false));
             }
+        }
+    }
+
+    /**
+     * Get and save the value of title in sdi_translation
+     * 
+     * @param string $guid Guid for the metadata
+     */
+    public function saveTitle($guid) {
+        $user = JFactory::getUser();
+        $metadatatitlexpath = JComponentHelper::getParams('com_easysdi_catalog')->get('metadatatitlexpath');
+        $defaultLang = $this->ldao->getDefaultLanguage();
+        $supportedLangs = $this->ldao->getSupported();
+
+        $titles = array();
+
+        $default = $this->domXpathStr->query($metadatatitlexpath . '/gco:CharacterString')->item(0);
+
+        $titles[$defaultLang->id] = $default->nodeValue;
+
+        foreach ($supportedLangs as $supportedLang) {
+            $i18nlang = $this->domXpathStr->query($metadatatitlexpath . '/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale="#' . $supportedLang->iso3166 . '"]')->item(0);
+
+            if (isset($i18nlang)) {
+                $titles[$supportedLang->id] = $i18nlang->nodeValue;
+            } else {
+                $titles[$supportedLang->id] = $default->nodeValue;
+            }
+        }
+
+        // Delete old version
+        $query = $this->db->getQuery(true);
+        $query = 'DELETE FROM #__sdi_translation WHERE element_guid = \''.$guid.'\'';
+        
+        $this->db->setQuery($query);
+        $this->db->execute();
+        
+        foreach ($titles as $language_id => $text1) {
+            
+            $data =new stdClass();
+            
+            $data->id = null;
+            $data->guid = $this->getGUID();
+            $data->created_by = $user->id;
+            $data->created = date('Y-m-d H:i:s');
+            $data->element_guid = $guid;
+            $data->language_id = $language_id;
+            $data->text1 = $text1;
+            
+            
+            $this->db->insertObject('#__sdi_translation', $data, 'id');
         }
     }
 
@@ -664,7 +718,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     }
 
     private function removeCatalogNS() {
-        $attributeNames = array('id', 'dbid', 'childtypeId', 'index', 'lowerbound', 'upperbound', 'rendertypeId', 'stereotypeId', 'relGuid', 'relid', 'maxlength', 'readonly', 'exist');
+        $attributeNames = array('id', 'dbid', 'childtypeId', 'index', 'lowerbound', 'upperbound', 'rendertypeId', 'stereotypeId', 'relGuid', 'relid', 'maxlength', 'readonly', 'exist', 'resourcetypeId', 'relationId', 'label', 'boundingbox', 'map');
         foreach ($this->domXpathStr->query('//*') as $element) {
             foreach ($attributeNames as $attributeName) {
                 $element->removeAttributeNS($this->catalog_uri, $attributeName);
