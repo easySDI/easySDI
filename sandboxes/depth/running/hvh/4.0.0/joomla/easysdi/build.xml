@@ -63,7 +63,6 @@
     <include file="plg_getordersaresptime/build.xml" as="plg-getordersaresptime"/>
     <include file="plg_getusersbutton/build.xml" as="plg-getusersbutton"/>
     <include file="plg_getordersbutton/build.xml" as="plg-getordersbutton"/>
-    <include file="tpl_easysdi/build.xml" as="tpl-easysdi"/>
     <include file="tpl_easysdiadminpositions/build.xml" as="tpl-easysdiadminpositions"/>
     <include file="mod_easysdi_basket/build.xml" as="mod-basket"/>
     <include file="mod_easysdi_admininfo/build.xml" as="mod-admininfo"/>
