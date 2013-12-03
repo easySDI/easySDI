@@ -93,7 +93,6 @@
                     package-mod-basket,
                     package-mod-admininfo,
                     package-mod-adminbutton,
-                    package-tpl-easysdi,
                     package-tpl-easysdiadminpositions,
                     copy-sub-package,
                     write-xml,
@@ -126,7 +125,6 @@
     <target name="package-mod-admininfo" depends="mod-admininfo.package" description="Main Target"/>
     <target name="package-mod-adminbutton" depends="mod-adminbutton.package" description="Main Target"/>    
     
-    <target name="package-tpl-easysdi" depends="tpl-easysdi.package" description="Main Target"/>
     <target name="package-tpl-easysdiadminpositions" depends="tpl-easysdiadminpositions.package" description="Main Target"/>
     
     
@@ -155,7 +153,6 @@
                     package-mod-basket,
                     package-mod-admininfo,
                     package-mod-adminbutton,
-                    package-tpl-easysdi,
                     package-tpl-easysdiadminpositions,
                     copy-sub-package,
                     write-xml,
@@ -170,7 +167,6 @@
     <target name="dev-package-com-shop" depends="shop.dev-package" description="Main Target"/>
     <target name="dev-package-com-contact" depends="contact.dev-package" description="Main Target"/>
     
-    <target name="dev-package-tpl-easysdi" depends="tpl-easysdi.dev-package" description="Main Target"/>
     <target name="dev-package-tpl-easysdiadminpositions" depends="tpl-easysdiadminpositions.dev-package" description="Main Target"/>
     
     <!-- Sycronysing targets-->
@@ -198,7 +194,6 @@
                     sync-mod-basket,
                     sync-mod-admininfo,
                     sync-mod-adminbutton,
-                    sync-tpl-easysdi,
                     sync-tpl-easysdiadminpositions" 
             description="Main target"/>
     
@@ -228,7 +223,6 @@
     <target name="sync-mod-admininfo" depends="mod-admininfo.sync" description="Main Target"/>
     <target name="sync-mod-adminbutton" depends="mod-adminbutton.sync" description="Main Target"/>    
     
-    <target name="sync-tpl-easysdi" depends="tpl-easysdi.sync" description="Main Target"/>
     <target name="sync-tpl-easysdiadminpositions" depends="tpl-easysdiadminpositions.sync" description="Main Target"/>
     
     
@@ -256,7 +250,6 @@
                     sync-package-mod-basket,
                     sync-package-mod-admininfo,
                     sync-package-mod-adminbutton,
-                    sync-package-tpl-easysdi,
                     sync-package-tpl-easysdiadminpositions,
                     write-xml" 
             description="Main target"/>
@@ -287,7 +280,6 @@
     <target name="sync-package-mod-admininfo" depends="mod-admininfo.sync-package" description="Main Target"/>
     <target name="sync-package-mod-adminbutton" depends="mod-adminbutton.sync-package" description="Main Target"/>
     
-    <target name="sync-package-tpl-easysdi" depends="tpl-easysdi.sync-package" description="Main Target"/>
     <target name="sync-package-tpl-easysdiadminpositions" depends="tpl-easysdiadminpositions.sync-package" description="Main Target"/>
     
 
