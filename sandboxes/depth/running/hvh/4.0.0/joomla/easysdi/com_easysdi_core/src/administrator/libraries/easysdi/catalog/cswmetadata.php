@@ -374,6 +374,7 @@ class cswmetadata {
 //                                    attribution: "'.addslashes ($this->item->attribution).'",
 //                                    opacity: 1,
 //                                    source: "'.$this->item->service->alias.'",
+//                                    group:"",
 //                                    tiled: true,
 //                                    title: "'.$this->item->layername.'",
 //                                    visibility: true};
@@ -401,21 +402,36 @@ class cswmetadata {
                                 $service->resourceurl = $service->url;
                             endif;
                         endif;
+                        
+                        //Get the current displayed map, from which the call is made
+                        $mapid = JFactory::getApplication()->getUserState('com_easysdi_map.edit.map.id');
+                        if(!empty($mapid)){
+                            $query = $this->db->getQuery(true)
+                                    ->select('g.alias')
+                                    ->from('#__sdi_map m')
+                                    ->innerJoin('#__sdi_map_layergroup mg ON mg.map_id = m.id AND mg.isdefault = 1')
+                                    ->innerJoin('#__sdi_layergroup g ON mg.group_id = g.id')
+                                    ->where('m.id = ' . $mapid);
+                            $this->db->setQuery($query);
+                            $group = $this->db->loadResult();
+                        }
 
                         $href = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $this->metadata->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview . '&tmpl=component');
-
                         $sourceconfig = '{id :"' . $service->alias . '",hidden : "true", ptype: "sdi_gxp_wmssource",url: "' . $service->resourceurl . '"}';
 
                         $mapparams = JComponentHelper::getParams('com_easysdi_map');
                         $mwidth = $mapparams->get('iframewidth');
                         $mheight = $mapparams->get('iframeheight');
 
+                        $layerconfig = '{ name: "' . $visualization->layername . '",attribution: "' . addslashes($visualization->attribution) . '",opacity: 1,source: "' . $service->alias . '",tiled: true,title: "' . $visualization->layername . '", visibility: true, href: "' . $href . '", iwidth :"' . $mwidth . '", iheight :"' . $mheight . '"';
                         if (!empty($diffusion) && $diffusion->hasdownload == 1):
                             $downloadurl = htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&tmpl=component&id=' . $diffusion->id);
-                            $layerconfig = '{ name: "' . $visualization->layername . '",attribution: "' . addslashes($visualization->attribution) . '",opacity: 1,source: "' . $service->alias . '",tiled: true,title: "' . $visualization->layername . '",visibility: true, href: "' . $href . '", download: "' . $downloadurl . '", iwidth :"' . $mwidth . '", iheight :"' . $mheight . '"}';
-                        else:
-                            $layerconfig = '{ name: "' . $visualization->layername . '",attribution: "' . addslashes($visualization->attribution) . '",opacity: 1,source: "' . $service->alias . '",tiled: true,title: "' . $visualization->layername . '",visibility: true, href: "' . $href . '", iwidth :"' . $mwidth . '", iheight :"' . $mheight . '"}';
+                            $layerconfig .= ', download: "' . $downloadurl . '"';                        
                         endif;
+                        if(!empty($group)):
+                            $layerconfig .= ', group: "' . $group . '"';  
+                        endif;
+                        $layerconfig .='}';
 
                         $addtomap = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:addtomap');
                         $addtomaponclick = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:onclick', ' window.parent.app.addExtraLayer(' . $sourceconfig . ', ' . $layerconfig . ')');
@@ -426,7 +442,7 @@ class cswmetadata {
 
                 //Links
                 $query = $this->db->getQuery(true)
-                        ->select('vl.parent_id, m.guid as guid, r.name as name, rt.alias as type, t.text1 as title')
+                        ->select('vl.parent_id, m.guid as guid, r.name as name, v.name as version, rt.alias as type, t.text1 as title')
                         ->from('#__sdi_versionlink vl')
                         ->innerJoin('#__sdi_version v ON v.id = vl.parent_id')
                         ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
@@ -446,11 +462,14 @@ class cswmetadata {
                     $parent->setAttribute('title', $item->title);
                     $parent->setAttribute('resourcename', $item->name);
                     $parent->setAttribute('resourcetype', $item->type);
+                    $parent->setAttribute('version', $item->version);
+                    $sheetlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $item->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview . '&type='));
+                    $parent->appendChild($sheetlink);
                     $parents->appendChild($parent);
                 endforeach;
 
                 $query = $this->db->getQuery(true)
-                        ->select('vl.parent_id, v.guid as guid, r.name as name, rt.alias as type,  t.text1 as title')
+                        ->select('vl.parent_id, m.guid as guid, r.name as name, v.name as version, rt.alias as type,  t.text1 as title')
                         ->from('#__sdi_versionlink vl')
                         ->innerJoin('#__sdi_version v ON v.id = vl.child_id')
                         ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
@@ -468,6 +487,9 @@ class cswmetadata {
                     $child->setAttribute('title', $item->title);
                     $child->setAttribute('resourcename', $item->name);
                     $child->setAttribute('resourcetype', $item->type);
+                    $child->setAttribute('version', $item->version);
+                    $sheetlink = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:link', htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $item->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview . '&type='));
+                    $child->appendChild($sheetlink);
                     $children->appendChild($child);
                 endforeach;
 
