@@ -357,7 +357,7 @@
                     <file type="plugin" id="easysdicontact" group="user">plg_easysdi_contact.zip</file> 
                     <file type="plugin" id="easysdiservice" group="content">plg_easysdi_service.zip</file>
                     <file type="plugin" id="easysdimonitor" group="content">plg_easysdi_monitor.zip</file>
-					<file type="plugin" id="getusers" group="easysdi_admin_info">plg_getusers.zip</file>
+		    <file type="plugin" id="getusers" group="easysdi_admin_info">plg_getusers.zip</file>
                     <file type="plugin" id="getorganisms" group="easysdi_admin_info">plg_getorganisms.zip</file>
                     <file type="plugin" id="getresources" group="easysdi_admin_info">plg_getresources.zip</file>
                     <file type="plugin" id="getdiffudownloadables" group="easysdi_admin_info">plg_getdiffudownloadables.zip</file>
@@ -367,7 +367,6 @@
                     <file type="plugin" id="getordersaresptime" group="easysdi_admin_info">plg_getordersaresptime.zip</file>
                     <file type="plugin" id="getusersbutton" group="easysdi_admin_button">plg_getusersbutton.zip</file>
                     <file type="plugin" id="getordersbutton" group="easysdi_admin_button">plg_getordersbutton.zip</file>
-                    <file type="template" id="tpl_easysdi" client="site">tpl_easysdi.zip</file>
                     <file type="template" id="tpl_easysdiadminpositions" client="administrator">tpl_easysdiadminpositions.zip</file>
                 </files> 
                 <languages>
