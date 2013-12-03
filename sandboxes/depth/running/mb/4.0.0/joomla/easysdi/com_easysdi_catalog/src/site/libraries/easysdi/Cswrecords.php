@@ -19,10 +19,9 @@ class Cswrecords extends SearchForm {
 
     /** @var OgcFilters */
     private $ogcFilters;
-    
+
     /** @var boolean if is true, set harvested at true */
     private $addHarvested = true;
-    
     private $ogcUri = 'http://www.opengis.net/ogc';
     private $ogcPrefix = 'ogc';
 
@@ -103,16 +102,16 @@ class Cswrecords extends SearchForm {
 
         $and->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'false'));
         $or->appendChild($and);
-        if($this->addHarvested){
+        if ($this->addHarvested) {
             $or->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'true'));
-        }else{
+        } else {
             $or->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'false'));
         }
         $parentAnd->appendChild($or);
 
         $cswfilter = $this->getCswFilter($catalog_id);
-        
-        if(!empty($cswfilter)){
+
+        if (!empty($cswfilter)) {
             $parentAnd->appendChild($cswfilter);
         }
 
@@ -261,7 +260,9 @@ class Cswrecords extends SearchForm {
                 }
                 break;
             case 'definedBoundary':
-                return $this->getDefinedBoundary($name, $value);
+                if (count(array_filter($value)) > 0) {
+                    return $this->getDefinedBoundary($name, $value);
+                }
                 break;
             case 'isdownloadable':
                 return $this->getIsDownloadable();
@@ -465,6 +466,5 @@ class Cswrecords extends SearchForm {
     private function getIsViewable() {
         return $this->ogcFilters->getIsEqualTo('isviewable', 'true');
     }
-   
 
 }

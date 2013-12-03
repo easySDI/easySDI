@@ -1,7 +1,17 @@
 js = jQuery.noConflict();
 
 js('document').ready(function() {
+    
+    /**
+     * Show searchtype button group, when advenced fieldset exist
+     */
+    if(js('fieldset[name="advanced"]').length > 0){
+        js('#searchtype').show();
+    }
 
+    /**
+     * Catch click event on searchtype button group
+     */
     js('.searchtype').click(function() {
         var btn = js(this);
         if (btn.hasClass('active')) {
@@ -12,7 +22,9 @@ js('document').ready(function() {
 
     });
 
-
+    /**
+     * Set Calendar Type for "from" and "to" date field
+     */
     js('.fromtodatefield').each(function() {
         Calendar.setup({
             // Id of the input field
@@ -30,7 +42,9 @@ js('document').ready(function() {
     });
 });
 
-
+/**
+ * Show or hide advanced fieldset
+ */
 function showAdvanced() {
     js('fieldset[name="advanced"]').toggle('fast', function() {
         js('.searchtype').each(function() {
@@ -41,5 +55,12 @@ function showAdvanced() {
             }
         });
     });
+}
+
+/**
+ * Submit form
+ */
+function submitForm(){
+    js('#searchform').submit();
 }
 

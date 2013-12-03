@@ -28,6 +28,7 @@ class SearchJForm extends SearchForm {
         $this->simple->setAttribute('addfieldpath', JPATH_COMPONENT . '/models/fields');
         $this->advanced->setAttribute('addfieldpath', JPATH_COMPONENT . '/models/fields');
         $this->hidden->setAttribute('addfieldpath', JPATH_COMPONENT . '/models/fields');
+        
     }
 
     public function getForm() {
@@ -243,19 +244,21 @@ class SearchJForm extends SearchForm {
 
     private function getFormDateRangeField($searchCriteria) {
 
+        $name = $this->getName($searchCriteria);
+        
         $field = $this->dom->createElement('field');
         $field->setAttribute('type', 'fromtocalendar');
         if (isset($searchCriteria->relation_guid)) {
             $field->setAttribute('label', EText::_($searchCriteria->relation_guid));
-            $field->setAttribute('name', $searchCriteria->id . '_' . $this->getOgcSearchFilter($searchCriteria));
+            
         } else {
             $field->setAttribute('label', EText::_($searchCriteria->guid));
-            $field->setAttribute('name', $searchCriteria->name);
+            
         }
+        $field->setAttribute('name', $name);
         $field->setAttribute('format', 'Y-m-d');
-
-        $range = array($searchCriteria->defaultvaluefrom, $searchCriteria->defaultvalueto);
-        $field->setAttribute('default', implode(',', $range));
+       
+        $field->setAttribute('default', $this->getDefault($searchCriteria, $name));
 
         return $field;
     }
@@ -281,7 +284,11 @@ class SearchJForm extends SearchForm {
         if ($isSearch) {
             return $this->getDefaultFromSession($name);
         } else {
-            return $this->getJsonDefaultValue($searchCriteria, $searchCriteria->defaultvalue);
+            if(isset($searchCriteria->defaultvalue)){
+                return $this->getJsonDefaultValue($searchCriteria, $searchCriteria->defaultvalue);
+            }elseif (isset ($searchCriteria->defaultvaluefrom)) {
+                return $searchCriteria->defaultvaluefrom.','.$searchCriteria->defaultvalueto;
+            }
         }
     }
 
@@ -306,7 +313,8 @@ class SearchJForm extends SearchForm {
                 $query->from('#__sdi_organism t');
                 break;
             case 'definedBoundary':
-                $language = $this->ldao->getByCode(JFactory::getUser()->getParam('language'));
+               
+                $language = $this->ldao->getByCode(JFactory::getLanguage()->getTag());
 
                 $params = json_decode($searchCriteria->params);
                 if ($params->searchboundarytype == parent::SEARCHTYPEID) {
@@ -355,7 +363,7 @@ class SearchJForm extends SearchForm {
      * @param stdClass $searchCriteria
      */
     private function getOgcSearchFilter($searchCriteria) {
-        $language = $this->ldao->getByCode(JFactory::getUser()->getParam('language'));
+        $language = $this->ldao->getByCode(JFactory::getLanguage()->getTag());
 
         $query = $this->db->getQuery(true);
 

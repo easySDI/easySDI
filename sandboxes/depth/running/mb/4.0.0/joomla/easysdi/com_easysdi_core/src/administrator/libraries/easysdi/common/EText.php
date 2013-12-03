@@ -13,7 +13,7 @@
 class EText {
 
     public static function _($guid, $text = 1, $default = 'Translation not found') {
-        $user = JFactory::getUser();
+        $lang = JFactory::getLanguage();
         $db = JFactory::getDbo();
 
         $query = $db->getQuery(true);
@@ -32,7 +32,7 @@ class EText {
         $query->from('#__sdi_translation AS t');
         $query->innerJoin('#__sdi_language AS l ON t.language_id = l.id');
         $query->where('t.element_guid = "' . $guid . '"');
-        $query->where('l.code = "' . $user->getParam('language') . '"');
+        $query->where('l.code = "' . $lang->getTag() . '"');
 
         $db->setQuery($query);
         $textI18n = $db->loadObject();

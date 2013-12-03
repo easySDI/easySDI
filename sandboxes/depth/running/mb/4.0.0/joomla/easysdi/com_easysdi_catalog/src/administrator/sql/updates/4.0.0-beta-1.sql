@@ -1,0 +1,2 @@
+UPDATE jos_sdi_searchcriteria SET `name` = 'created', `alias` = 'created' WHERE `name` = 'metadata_created';
+UPDATE jos_sdi_searchcriteria SET `name` = 'published', `alias` = 'published' WHERE `name` = 'metadata_published';

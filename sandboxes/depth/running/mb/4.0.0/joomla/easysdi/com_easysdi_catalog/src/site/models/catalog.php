@@ -97,7 +97,7 @@ class Easysdi_catalogModelCatalog extends JModelForm {
                 $properties = $table->getProperties(1);
                 $this->_item = JArrayHelper::toObject($properties, 'JObject');
 
-                if ($this->_item->oninitrunsearch || JFactory::getApplication()->input->get('search', 'false', 'STRING') == 'true') {
+                if (JFactory::getApplication()->input->get('search', 'false', 'STRING') == 'true') {
                     $cswrecords = new cswrecords();
                     $result = $cswrecords->getRecords($id);
                     if (!$result)
@@ -165,19 +165,20 @@ class Easysdi_catalogModelCatalog extends JModelForm {
         $limit = (int) $this->getState('list.limit') - (int) $this->getState('list.links');
         $page = new JPagination(JFactory::getApplication('com_easysdi_catalog')->getUserState('global.list.total'), $this->getState('list.start'), $limit);
 
-        /*$data = JFactory::getApplication()->input->get('jform', array(), 'array');
+        $data = JFactory::getApplication()->input->get('jform', array(), 'array');
 
         foreach ($data as $key => $value) {
             if (is_array($value)) {
                 $i = 0;
-                foreach ($value as $val) {
-                    $page->setAdditionalUrlParam('jform[' . $key . '][' . $i . ']', $val);
+                foreach ($value as $k => $v) {
+
+                    $page->setAdditionalUrlParam('jform[' . $key . '][' . $k . ']', $v);
                     $i++;
                 }
             } else {
                 $page->setAdditionalUrlParam('jform[' . $key . ']', $value);
             }
-        }*/
+        }
 
         return $page;
     }

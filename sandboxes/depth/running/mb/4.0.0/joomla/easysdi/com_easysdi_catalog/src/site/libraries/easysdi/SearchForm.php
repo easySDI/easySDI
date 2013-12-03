@@ -21,7 +21,7 @@ class SearchForm {
     /** BBOX search type */
     const SEARCHTYPEBBOX = 0;
     const SEARCHTYPEID = 1;
-    
+
     /** @var JDatabaseDriver */
     protected $db;
 
@@ -39,7 +39,7 @@ class SearchForm {
 
     /** @var stdClass */
     protected $item;
-    
+
     /** @var string[] */
     protected $data;
 
@@ -54,20 +54,8 @@ class SearchForm {
         $this->advanced->setAttribute('name', 'advanced');
         $this->hidden = $this->dom->createElement('fieldset');
         $this->hidden->setAttribute('name', 'hidden');
-        
-        $session = JFactory::getSession();
-        
-        $start = JFactory::getApplication()->input->get('start', NULL, 'int');
-        $limitstart = JFactory::getApplication()->input->get('limitstart', NULL, 'int');
-        
-        if(isset($start)||isset($limitstart)){
-            $this->data = $session->get('data');
-        }else{
-            $this->data = JFactory::getApplication()->input->get('jform', array(), 'array');
-            $session->set('data', $this->data);
-            
-        }
-        
+
+        $this->data = JFactory::getApplication()->input->get('jform', array(), 'array');
     }
 
     /**
@@ -88,9 +76,9 @@ class SearchForm {
         $query->innerJoin('#__sdi_sys_searchtab st ON st.id = csc.searchtab_id');
         $query->leftJoin('#__sdi_relation r on r.id = sc.relation_id');
         $query->leftJoin('#__sdi_attribute a on a.id = r.attributechild_id');
-        if(isset($catalog_id)){
+        if (isset($catalog_id)) {
             $query->where('csc.catalog_id = ' . $catalog_id);
-        }else{
+        } else {
             $query->where('csc.catalog_id = ' . $this->item->id);
         }
         $query->order('csc.ordering ASC');
