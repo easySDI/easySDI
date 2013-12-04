@@ -535,17 +535,19 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
     private function getHref($guid) {
         $query = $this->db->getQuery(true);
-        $query->select('ns.`prefix`, rt.fragment');
+        $query->select('m.guid ,ns.`prefix`, rt.fragment');
         $query->from('#__sdi_resource as r');
         $query->innerJoin('#__sdi_resourcetype as rt ON r.resourcetype_id = rt.id');
         $query->innerJoin('#__sdi_namespace as ns ON rt.fragmentnamespace_id = ns.id');
-        $query->where('r.guid = \'' . $guid . '\'');
+        $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
+        $query->innerJoin('#__sdi_metadata m on v.id = m.version_id');
+        $query->where('m.guid = \'' . $guid . '\'');
 
         $this->db->setQuery($query);
         $result = $this->db->loadObject();
-
+        
         $href = JComponentHelper::getParams('com_easysdi_catalog')->get('catalogurl');
-        $href.= '?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=' . $guid;
+        $href.= '?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=' . $result->guid;
         $href .= '&fragment=' . $result->prefix . '%3A' . $result->fragment;
 
         return $href;

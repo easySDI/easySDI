@@ -1041,8 +1041,6 @@ class FormGenerator {
                         $field->setAttribute('label', JText::_($label));
                     }
 
-                    $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue), true);
-
                     if ($opt->guid != '') {
                         $option = $this->form->createElement('option', EText::_($opt->guid));
                     } else {
@@ -1062,8 +1060,6 @@ class FormGenerator {
                         $field->setAttribute('label', JText::_($label));
                     }
 
-                    $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue), true);
-
                     if ($opt->guid != '') {
                         $option = $this->form->createElement('option', EText::_($opt->guid));
                     } else {
@@ -1078,7 +1074,7 @@ class FormGenerator {
                 case EnumStereotype::$TEXTCHOICE:
                     $field->setAttribute('type', 'list');
                     $field->setAttribute('label', EText::_($guid));
-                    $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue), true);
+                    $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue, true));
 
                     if ($opt->guid != '') {
                         $option = $this->form->createElement('option', EText::_($opt->guid));
@@ -1320,8 +1316,10 @@ class FormGenerator {
 
         switch ($attribute->getAttributeNS($this->catalog_uri, 'childtypeId')) {
             case EnumChildtype::$RELATIONTYPE:
-                $query->select('id, guid, name');
-                $query->from('#__sdi_resource');
+                $query->select('r.id, r.`name`,m.guid');
+                $query->from('#__sdi_resource r');
+                $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
+                $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
                 $query->where('resourcetype_id = ' . $attribute->getAttributeNS($this->catalog_uri, 'resourcetypeId'));
                 $query->order('name ASC');
 
@@ -1508,6 +1506,10 @@ class FormGenerator {
     private function getDefaultValue($relation_id, $value, $isList = false) {
         if (!empty($value)) {
             return $value;
+        }
+        
+        if(empty($relation_id)){
+            return '';
         }
 
         $language = $this->ldao->getDefaultLanguage();
