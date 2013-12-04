@@ -83,6 +83,9 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         die();
     }
 
+    /**
+     * get defined boundary, filter by category
+     */
     public function getBoundaryByCategory() {
         $user = JFactory::getUser();
         $default_lang = $user->getParam('language');
@@ -104,6 +107,9 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         die();
     }
     
+    /**
+     * Get defined boundary, boundary name
+     */
     public function getBoundaryByName(){
         $query = $this->db->getQuery(true);
         $query->select('t.text1, b.alias, b.northbound, b.southbound, b.westbound, b.eastbound');
