@@ -44,11 +44,6 @@ class Easysdi_catalogModelCatalog extends JModelForm {
         $limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 1);
         $this->setState('list.start', $limitstart);
 
-//        $limit = $app->getUserStateFromRequest('global.list.limit', 'limit', $params->get('searchresultpaginationnumber'));
-//        $this->setState('list.limit', $limit);
-//
-//        $limitstart = JFactory::getApplication()->input->getInt('limitstart', 1);
-//        $this->setState('list.start', $limitstart);
         // Load state from the request userState on edit or from the passed variable on default
         if (JFactory::getApplication()->input->get('layout') == 'edit') {
             $id = JFactory::getApplication()->getUserState('com_easysdi_catalog.edit.catalog.id');
@@ -57,11 +52,13 @@ class Easysdi_catalogModelCatalog extends JModelForm {
             JFactory::getApplication()->setUserState('com_easysdi_catalog.edit.catalog.id', $id);
         }
         $this->setState('catalog.id', $id);
+        
         // Load the parameters.
         $params = $app->getParams();
         $params_array = $params->toArray();
         if (isset($params_array['item_id'])) {
             $this->setState('catalog.id', $params_array['item_id']);
+            JFactory::getApplication()->setUserState('com_easysdi_catalog.edit.catalog.id', $params_array['item_id']);
         }
         $this->setState('params', $params);
     }

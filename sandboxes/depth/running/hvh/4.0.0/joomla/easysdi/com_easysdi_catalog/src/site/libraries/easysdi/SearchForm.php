@@ -75,6 +75,8 @@ class SearchForm {
      */
     protected function loadSystemFields() {
         $catalog_id = JFactory::getApplication()->input->getInt('id');
+        if(empty($catalog_id))
+            $catalog_id = JFactory::getApplication()->getUserState('com_easysdi_catalog.edit.catalog.id');
 
         $query = $this->db->getQuery(true);
 
