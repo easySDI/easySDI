@@ -106,6 +106,12 @@ $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/sy
     js = jQuery.noConflict();
     js('document').ready(function() {
 
+<?php 
+
+if ($this->item->editmetadatafieldsetstate == 'allopen'): ?>
+        allopen();
+<?php endif; ?>
+
 <?php
 foreach ($this->validators as $validator) {
 
@@ -118,14 +124,14 @@ foreach ($this->validators as $validator) {
 
 <div class="metadata-edit front-end-edit">
 
-    <?php 
-        echo $this->getTopActionBar(); 
-        $title = $this->getTitle();
-        ?>
+    <?php
+    echo $this->getTopActionBar();
+    $title = $this->getTitle();
+    ?>
 
     <div>
-        <h2><?php echo JText::_('COM_EASYSDI_CATALOGE_TITLE_EDIT_METADATA') . ' ' . $title->resource_name  ?></h2>
-        <h5><?php echo $title->name. ': ' . JText::_($title->value) ; ?></h5>
+        <h2><?php echo JText::_('COM_EASYSDI_CATALOGE_TITLE_EDIT_METADATA') . ' ' . $title->resource_name ?></h2>
+        <h5><?php echo $title->name . ': ' . JText::_($title->value); ?></h5>
     </div>
 
     <form id="form-metadata" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal" enctype="multipart/form-data">

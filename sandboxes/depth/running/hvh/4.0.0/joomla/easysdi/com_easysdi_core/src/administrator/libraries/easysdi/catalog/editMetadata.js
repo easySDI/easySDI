@@ -272,6 +272,10 @@ function addFieldset(id, idwi, relid, parent_path, lowerbound, upperbound) {
     });
 }
 
+function allopen(){
+    js('.inner-fds').show();
+}
+
 function confirmFieldset(id, idwi, lowerbound, upperbound) {
     bootbox.confirm("Are you sure?", function(result) {
         if (result) {
@@ -367,6 +371,10 @@ function chosenRefresh() {
 }
 
 function filterBoundary(parentPath, value) {
+    if(value == ''){
+        
+    }
+    
     js.get(currentUrl + '?task=ajax.getBoundaryByCategory&value=' + value, function(data) {
         var response = js.parseJSON(data);
         var replaceId = parentPath.replace(/-/g, '_');

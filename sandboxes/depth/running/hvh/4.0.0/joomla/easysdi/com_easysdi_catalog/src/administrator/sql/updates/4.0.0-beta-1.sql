@@ -19,3 +19,6 @@ ALTER TABLE `#__sdi_versionlink`
    REFERENCES `#__sdi_version` (`id` )
    ON DELETE CASCADE
    ON UPDATE NO ACTION;
+   
+UPDATE #__sdi_searchcriteria SET `name` = 'created', `alias` = 'created' WHERE `name` = 'metadata_created';
+UPDATE #__sdi_searchcriteria SET `name` = 'published', `alias` = 'published' WHERE `name` = 'metadata_published';

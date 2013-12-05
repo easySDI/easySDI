@@ -1,6 +1,6 @@
 <?php
 
-JFormHelper::loadFieldClass('list');
+
 
 /**
  * @package     Joomla.Platform
@@ -11,11 +11,17 @@ JFormHelper::loadFieldClass('list');
  */
 defined('JPATH_PLATFORM') or die;
 
+JFormHelper::loadFieldClass('list');
+
 class JFormFieldMultipleDefaultList extends JFormFieldList {
 
+    public $type = 'MultipleDefaultList';
+    
     protected function getInput() {
         if ($this->multiple) {
-            $this->value = explode(',', $this->value);
+            if(strpos($this->value, ',')!==false){
+                $this->value = explode(',', $this->value);
+            }
         }
 
         return parent::getInput();

@@ -19,18 +19,22 @@ class Cswrecords extends SearchForm {
 
     /** @var OgcFilters */
     private $ogcFilters;
+
+    /** @var boolean if is true, set harvested at true */
+    private $addHarvested = true;
     private $ogcUri = 'http://www.opengis.net/ogc';
     private $ogcPrefix = 'ogc';
 
-    function __construct() {
+    function __construct($item) {
         parent::__construct();
 
+        $this->item = $item;
         $this->searchcriteria = parent::loadSystemFields();
         $this->ldao = new SdiLanguageDao();
         $this->ogcFilters = new OgcFilters($this->dom);
     }
 
-    public function getRecords($catalog_id) {
+    public function getRecords() {
         $lang = JFactory::getLanguage()->getTag();
         $params = JComponentHelper::getParams('com_easysdi_catalog');
         $catalogurl = $params->get('catalogurl');
@@ -42,7 +46,7 @@ class Cswrecords extends SearchForm {
                 ->select('css.ogcsearchsorting')
                 ->from('#__sdi_catalog_searchsort css')
                 ->innerJoin('#__sdi_language l ON l.id = css.language_id ')
-                ->where('css.catalog_id = ' . (int) $catalog_id)
+                ->where('css.catalog_id = ' . (int) $this->item->id)
                 ->where('l.code = "' . $lang . '"');
         $this->db->setQuery($q);
         $ogcsearchsorting = $this->db->loadResult();
@@ -96,15 +100,24 @@ class Cswrecords extends SearchForm {
                 }
             }
         }
+        
+        // if resourcetype field is set to none, add all resourcetype to filter
+        if(!key_exists('2_resourcetype', $this->data)){
+            $and->appendChild($this->getResouceType($this->getAllResourcetype()));
+        }
 
         $and->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'false'));
         $or->appendChild($and);
-        $or->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'true'));
+        if ($this->addHarvested) {
+            $or->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'true'));
+        } else {
+            $or->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'false'));
+        }
         $parentAnd->appendChild($or);
 
-        $cswfilter = $this->getCswFilter($catalog_id);
-        
-        if(!empty($cswfilter)){
+        $cswfilter = $this->getCswFilter($this->item->id);
+
+        if (!empty($cswfilter)) {
             $parentAnd->appendChild($cswfilter);
         }
 
@@ -215,46 +228,58 @@ class Cswrecords extends SearchForm {
                 }
                 break;
             case 'resourcetype':
-                foreach ($value as $resourcetype) {
-                    $or = $this->ogcFilters->getOperator(OgcFilters::OPERATOR_OR);
-                    $or->appendChild($this->getResouceType(strtolower($resourcetype)));
-                    return $or;
+                $this->addHarvested = false;
+                if(count(array_filter($value))>0){
+                    return $this->getResouceType($value);
                 }
                 break;
             case 'versions':
                 if ($value) {
+                    $this->addHarvested = false;
                     return $this->getVersions($value);
                 }
                 break;
             case 'resourcename':
                 if (!empty($value)) {
+                    $this->addHarvested = false;
                     return $this->getResouceName($value);
                 }
                 break;
             case 'metadata_created':
+                $this->addHarvested = false;
                 if (!empty($value['from']) || !empty($value['to'])) {
                     return $this->getMetadataCreated($value['from'], $value['to']);
                 }
                 break;
             case 'metadata_published':
+                $this->addHarvested = false;
                 if (!empty($value['from']) || !empty($value['to'])) {
                     return $this->getMetadataPublished($value['from'], $value['to']);
                 }
                 break;
             case 'organism':
                 if (!empty($value)) {
+                    $this->addHarvested = false;
                     return $this->getOrganism($value);
                 }
                 break;
             case 'definedBoundary':
-                return $this->getDefinedBoundary($name, $value);
+                if (count(array_filter($value)) > 0) {
+                    return $this->getDefinedBoundary($name, $value);
+                }
                 break;
             case 'isdownloadable':
                 return $this->getIsDownloadable();
             case 'isfree':
+                $this->addHarvested = false;
                 return $this->getIsFree();
             case 'isorderable':
+                $this->addHarvested = false;
                 return $this->getIsOrderable();
+            case 'isviewable':
+                $this->addHarvested = false;
+                return $this->getIsViewable();
+                break;
             default :
                 if (is_array($value)) {
                     $value_filter = array_filter($value);
@@ -374,8 +399,14 @@ class Cswrecords extends SearchForm {
         return $or;
     }
 
-    private function getResouceType($literal) {
-        return $this->ogcFilters->getIsEqualTo('resourcetype', $literal);
+    private function getResouceType($value) {
+        $or = $this->ogcFilters->getOperator(OgcFilters::OPERATOR_OR);
+        
+        foreach ($value as $literal) {
+            $or->appendChild($this->ogcFilters->getIsEqualTo('resourcetype', strtolower($literal)));
+        }
+
+        return $or;
     }
 
     private function getVersions($literal) {
@@ -444,6 +475,26 @@ class Cswrecords extends SearchForm {
 
     private function getIsViewable() {
         return $this->ogcFilters->getIsEqualTo('isviewable', 'true');
+    }
+
+    private function getAllResourcetype() {
+        $query = $this->db->getQuery(true);
+
+        $query->select('t.alias');
+        $query->from('#__sdi_resourcetype t');
+        $query->innerJoin('#__sdi_catalog_resourcetype crt ON crt.resourcetype_id = t.id');
+        $query->where('crt.catalog_id = ' . $this->item->id);
+        
+        $this->db->setQuery($query);
+        $results = $this->db->loadObjectList();
+        
+        $resourcetype = array();
+        
+        foreach ($results as $result) {
+            $resourcetype[] = $result->alias;
+        }
+        
+        return $resourcetype;
     }
 
 }

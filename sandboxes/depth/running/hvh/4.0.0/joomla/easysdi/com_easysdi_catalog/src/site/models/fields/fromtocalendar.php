@@ -109,14 +109,23 @@ class JFormFieldFromToCalendar extends JFormField {
         $from_id = $this->id . '_from';
         $to_id = $this->id . '_to';
 
-        $values = explode(',', str_replace('0000-00-00 00:00:00', '', $this->value));
+        $this->value = str_replace('0000-00-00 00:00:00', '', $this->value);
+        $values = explode(',', str_replace('00:00:00', '', $this->value));
 
         $html = array();
         $html[] = '<div>';
         $html[] = '<div>' . JText::_('COM_EASYSDI_CATALOGE_FROM') . '</div>';
-        $html[] = JHtml::_('calendar', $values[0], $from_name, $from_id, $format, $attributes);
+        if(key_exists('0', $values)){
+            $html[] = JHtml::_('calendar', $values[0], $from_name, $from_id, $format, $attributes);
+        }  else {
+            $html[] = JHtml::_('calendar', '', $from_name, $from_id, $format, $attributes);
+        }
         $html[] = '<div>' . JText::_('COM_EASYSDI_CATALOGE_TO') . '</div>';
-        $html[] = JHtml::_('calendar', $values[1], $to_name, $to_id, $format, $attributes);
+        if(key_exists('1', $values)){
+            $html[] = JHtml::_('calendar', $values[1], $to_name, $to_id, $format, $attributes);
+        }  else {
+            $html[] = JHtml::_('calendar', '', $to_name, $to_id, $format, $attributes);
+        }
         $html[] = '</div>';
 
         return implode($html);

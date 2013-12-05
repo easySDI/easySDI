@@ -176,6 +176,8 @@ class SearchJForm extends SearchForm {
     private function getFormCheckboxesField($searchCriteria) {
         $field = $this->dom->createElement('field');
         $field->setAttribute('type', 'inlineCheckboxes');
+
+
         $name = $this->getName($searchCriteria);
 
         $field->setAttribute('label', $this->getLabel($searchCriteria));
@@ -185,6 +187,9 @@ class SearchJForm extends SearchForm {
         foreach ($this->getAttributOptions($searchCriteria) as $opt) {
             $option = $this->dom->createElement('option', EText::_($opt->guid));
             $option->setAttribute('value', $opt->value);
+            if ($searchCriteria->name == 'resourcetype') {
+                $option->setAttribute('class', 'cbx-resourcetype');
+            }
 
             $field->appendChild($option);
         }
@@ -243,19 +248,19 @@ class SearchJForm extends SearchForm {
 
     private function getFormDateRangeField($searchCriteria) {
 
+        $name = $this->getName($searchCriteria);
+
         $field = $this->dom->createElement('field');
         $field->setAttribute('type', 'fromtocalendar');
         if (isset($searchCriteria->relation_guid)) {
             $field->setAttribute('label', EText::_($searchCriteria->relation_guid));
-            $field->setAttribute('name', $searchCriteria->id . '_' . $this->getOgcSearchFilter($searchCriteria));
         } else {
             $field->setAttribute('label', EText::_($searchCriteria->guid));
-            $field->setAttribute('name', $searchCriteria->name);
         }
+        $field->setAttribute('name', $name);
         $field->setAttribute('format', 'Y-m-d');
 
-        $range = array($searchCriteria->defaultvaluefrom, $searchCriteria->defaultvalueto);
-        $field->setAttribute('default', implode(',', $range));
+        $field->setAttribute('default', $this->getDefault($searchCriteria, $name));
 
         return $field;
     }
@@ -281,7 +286,11 @@ class SearchJForm extends SearchForm {
         if ($isSearch) {
             return $this->getDefaultFromSession($name);
         } else {
-            return $this->getJsonDefaultValue($searchCriteria, $searchCriteria->defaultvalue);
+            if (isset($searchCriteria->defaultvalue)) {
+                return $this->getJsonDefaultValue($searchCriteria, $searchCriteria->defaultvalue);
+            } elseif (isset($searchCriteria->defaultvaluefrom)) {
+                return $searchCriteria->defaultvaluefrom . ',' . $searchCriteria->defaultvalueto;
+            }
         }
     }
 
@@ -306,7 +315,8 @@ class SearchJForm extends SearchForm {
                 $query->from('#__sdi_organism t');
                 break;
             case 'definedBoundary':
-                $language = $this->ldao->getByCode(JFactory::getUser()->getParam('language'));
+
+                $language = $this->ldao->getByCode(JFactory::getLanguage()->getTag());
 
                 $params = json_decode($searchCriteria->params);
                 if ($params->searchboundarytype == parent::SEARCHTYPEID) {
@@ -355,7 +365,7 @@ class SearchJForm extends SearchForm {
      * @param stdClass $searchCriteria
      */
     private function getOgcSearchFilter($searchCriteria) {
-        $language = $this->ldao->getByCode(JFactory::getUser()->getParam('language'));
+        $language = $this->ldao->getByCode(JFactory::getLanguage()->getTag());
 
         $query = $this->db->getQuery(true);
 
@@ -389,19 +399,27 @@ class SearchJForm extends SearchForm {
 
         switch ($searchCriteria->name) {
             case 'organism':
+                if (empty($ids)) {
+                    break;
+                }
                 $query = $this->db->getQuery(true);
                 $query->select('guid as value');
                 $query->from('#__sdi_organism');
                 $query->where('id IN (' . $ids . ')');
                 break;
             case 'resourcetype':
+                if (empty($ids)) {
+                    break;
+                }
                 $query = $this->db->getQuery(true);
                 $query->select('alias as value');
                 $query->from('#__sdi_resourcetype');
                 $query->where('id IN (' . $ids . ')');
                 break;
             case 'definedBoundary':
-
+                if (empty($ids)) {
+                    break;
+                }
                 $query = $this->db->getQuery(true);
                 $params = json_decode($searchCriteria->params);
                 if ($params->searchboundarytype == parent::SEARCHTYPEID) {
@@ -419,9 +437,12 @@ class SearchJForm extends SearchForm {
                 $query->from('#__sdi_searchcriteria sc');
                 $query->innerJoin('#__sdi_catalog_searchcriteria csc on csc.searchcriteria_id = sc.id');
                 $query->where('sc.alias = "versions"');
-                $query->where('csc.catalog_id = 10');
+                $query->where('csc.catalog_id = ' . $this->item->id);
                 break;
             default :
+                if (empty($ids)) {
+                    break;
+                }
                 $query = $this->db->getQuery(true);
                 $query->select('name as value');
                 $query->from('#__sdi_attributevalue');
