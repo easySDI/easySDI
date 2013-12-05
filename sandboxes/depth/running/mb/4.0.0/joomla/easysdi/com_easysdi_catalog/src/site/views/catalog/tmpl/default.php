@@ -55,7 +55,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
 
         <div class="well">
             <?php echo $this->getSearchForm(); ?>
-            <button class="btn btn-primary" type="submit" ><?php echo JText::_('COM_EASYSDI_CATALOGE_SEARCH') ; ?></button>
+            <button id="btn-submit" class="btn btn-primary" type="submit" ><?php echo JText::_('COM_EASYSDI_CATALOGE_SEARCH') ; ?></button>
         </div>
     </div>
 </form>

@@ -3,11 +3,23 @@ js = jQuery.noConflict();
 js('document').ready(function() {
     
     /**
+     * Set submit button state at document ready
+     */
+    if(js('.cbx-resourcetype').length > 0){
+        setSubmitBtnState();
+    }
+    
+    /**
      * Show searchtype button group, when advenced fieldset exist
      */
     if(js('fieldset[name="advanced"]').length > 0){
         js('#searchtype').show();
     }
+
+    /**
+     * Set submit button state on click on resource type checkboxes
+     */
+    js('.cbx-resourcetype').on('click', setSubmitBtnState);
 
     /**
      * Catch click event on searchtype button group
@@ -55,6 +67,18 @@ function showAdvanced() {
             }
         });
     });
+}
+
+/**
+ * Set submit button state
+ */
+function setSubmitBtnState(){
+   if(js('.cbx-resourcetype:checked').length > 0){
+       js('#btn-submit').removeAttr('disabled');
+   }else{
+       js('#btn-submit').attr('disabled','disabled');
+   }
+    
 }
 
 /**
