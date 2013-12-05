@@ -18,10 +18,12 @@ JHtml::_('behavior.modal');
 JHtml::_('behavior.calendar');
 
 $document = JFactory::getDocument();
-
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/resources.js');
 ?>
+<div class="core front-end-edit">
+        <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_RESOURCES'); ?></h1>
 <?php
+
 if (isset($this->user)):
     if ($this->user->isResourceManager()):
         $resourcetypes = $this->user->getResourceType();
@@ -140,6 +142,8 @@ endif;
                         endif;
                         $db->setQuery($query);
                         $metadata = $db->loadObjectList();
+                        
+                        $s = $query->__toString();
 
                         //If no version are visible according to the filter
                         if (count($metadata) == 0)
@@ -254,10 +258,12 @@ endif;
                                         <ul class="dropdown-menu">
         <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->versioning): ?>
                                                 <li>
-                                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.edit'); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
+                                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.create&resource='. $item->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
                                                 </li>
+                                                <?php endif; ?>
+                                                 <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>
                                                 <li>
-                                                    <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.editrelations&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RELATIONS'); ?></a>
+                                                    <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.edit&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RELATIONS'); ?></a>
                                                 </li>               
                                             <?php endif; ?>
         <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>
@@ -317,6 +323,7 @@ endif;
     <?php echo $this->pagination->getPagesLinks(); ?>
     </div>
 <?php endif; ?>
+</div>
 
 <!-- Publish Modal -->
 <div class="modal fade" id="publishModal" tabindex="-1" role="dialog" aria-labelledby="publishModalLabel" aria-hidden="true">

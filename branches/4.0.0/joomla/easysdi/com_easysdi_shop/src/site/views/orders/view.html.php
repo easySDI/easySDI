@@ -30,9 +30,18 @@ class Easysdi_shopViewOrders extends JViewLegacy {
         $lang = JFactory::getLanguage();
         $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
         
+        $this->user = sdiFactory::getSdiUser();
+        if (!$this->user->isEasySDI) {
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            JFactory::getApplication()->redirect(JRoute::_('index.php?', false));
+            return false;
+        }
+        
         $app = JFactory::getApplication();
         $this->state = $this->get('State');
         $this->items = $this->get('Items');
+        $this->orderstate = $this->get('orderstate');
+        $this->ordertype = $this->get('ordertype');
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_easysdi_shop');
 

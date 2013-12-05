@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @version     4.0.0
  * @package     com_easysdi_shop
@@ -14,6 +13,7 @@ require_once JPATH_COMPONENT_ADMINISTRATOR . '/tables/diffusion.php';
 require_once JPATH_COMPONENT_SITE . '/libraries/easysdi/sdiBasket.php';
 require_once JPATH_COMPONENT_SITE . '/libraries/easysdi/sdiExtraction.php';
 require_once JPATH_COMPONENT_SITE . '/libraries/easysdi/sdiPerimeter.php';
+require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
 
 abstract class Easysdi_shopHelper {
 
@@ -60,6 +60,14 @@ abstract class Easysdi_shopHelper {
             $basket->setPerimeters($extraction->perimeters);
         else:
             //There is already extractions in the basket
+            //Check if the diffusion is not already in the basket
+            foreach ($basket->extractions as $inextraction):
+                if ($inextraction->id == $extraction->id):
+                    $return['ERROR'] = JText::_('COM_EASYSDI_SHOP_BASKET_ERROR_DIFFUSION_ALREADY_IN_BASKET');
+                    echo json_encode($return);
+                    die();
+                endif;
+            endforeach;
             //Check if there is at least one common perimeter within all the extractions in the basket
             //Check if buffer is authorized
             $common = array();
@@ -204,6 +212,63 @@ abstract class Easysdi_shopHelper {
         $return['MESSAGE'] = 'OK';
         echo json_encode($return);
         die();
+    }
+
+    public static function getHTMLOrderPerimeter($item) {
+        $params = JFactory::getApplication()->getParams('com_easysdi_shop');
+        $paramsarray = $params->toArray();
+
+        $mapscript = Easysdi_mapHelper::getMapScript($paramsarray['ordermap'], true);
+        
+        ?> <div class="row-fluid" >
+            <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h3>
+            <hr>
+            <div class="row-fluid" >
+                <div class="map-recap span8" >
+                   <div >
+                        <?php
+                        echo $mapscript;
+                        ?>
+                    </div>                
+                </div>
+                <div  class="value-recap span4" >
+                    <div id="perimeter-buffer" class="row-fluid" >
+                        <div><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BUFFER'); ?></h3>
+                            <span><?php if (!empty($item->basket->buffer)) echo (float)$item->basket->buffer; ?></span>                            
+                        </div>                                
+                    </div>
+                    <div id="perimeter-recap" class="row-fluid" >
+                        <?php if (!empty($item->basket->extent)): ?>
+                            <div><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SURFACE'); ?></h3>
+                                <div><?php
+                                    if (!empty($item->basket->extent->surface)) :
+                                        if (floatval($item->basket->extent->surface) > intval($paramsarray['maxmetervalue'])):
+                                            echo round(floatval($item->basket->extent->surface) / 1000000, intval($paramsarray['surfacedigit']));
+                                            echo JText::_('COM_EASYSDI_SHOP_BASKET_KILOMETER');
+                                        else:
+                                            echo round(floatval($item->basket->extent->surface), intval($paramsarray['surfacedigit']));
+                                            echo JText::_('COM_EASYSDI_SHOP_BASKET_METER');
+                                        endif;
+                                    endif;
+                                    ?></div>
+                            </div>                                
+                            <div><h3><?php echo JText::_($item->basket->extent->name); ?></h3></div>
+                            <?php
+                            if (is_array($item->basket->extent->features)):                                    
+                                foreach ($item->basket->extent->features as $feature):
+                                    ?>
+                                    <div><?php echo $feature->name; ?></div>
+                                    <?php
+                                endforeach;
+                            endif;
+                            ?>
+
+                        <?php endif; ?>
+                    </div>                           
+                </div>
+            </div>
+        </div>
+        <?php
     }
 
 }

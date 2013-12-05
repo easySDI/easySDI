@@ -192,7 +192,10 @@ class Easysdi_mapModelVisualization extends JModelForm {
      * @since	1.6
      */
     protected function loadFormData() {
-        $data = $this->getData();
+       $data = JFactory::getApplication()->getUserState('com_easysdi_map.edit.visualization.data', array());
+        if (empty($data)) {
+            $data = $this->getData();
+        } 
 
         return $data;
     }

@@ -17,6 +17,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 //Load admin language file
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_map', JPATH_ADMINISTRATOR);
+$lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 
 // Execute the task.
 $controller = JControllerLegacy::getInstance('Easysdi_map');

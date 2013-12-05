@@ -27,6 +27,9 @@ class sdiBasket {
     public $surfacemax;
     public $free = true;
     public $visualization = '';
+    public $created;
+    public $created_by;
+    public $thirdorganism;
 
     function __construct() {
         $this->sdiUser = sdiFactory::getSdiUser();
@@ -38,8 +41,9 @@ class sdiBasket {
 
             //Load order object
             $query = $db->getQuery(true)
-                    ->select('o.id as id, o.name as name, o.thirdparty_id as thirparty, o.buffer as buffer , o.surface')
+                    ->select('o.id as id, o.name as name, o.thirdparty_id as thirdparty, org.name as thirdorganism, o.buffer as buffer , o.surface, o.created, o.created_by')
                     ->from('#__sdi_order o')
+                    ->leftJoin('#__sdi_organism org ON org.id = o.thirdparty_id')
                     ->where('o.id = ' . $orderId);
             $db->setQuery($query);
             $order = $db->loadObject();
@@ -101,7 +105,7 @@ class sdiBasket {
                 $this->setPerimeters($ex->perimeters);
             endforeach;
 
-            //Load Extent od the order
+            //Load Extent of the order
             //     extent = {"id": perimeter_id ,"name": perimeter_name, "surface": surface_order,"allowedbuffer": boolean,"buffer": int_value,"features": string_coordinates or id_array)};
             $query = $db->getQuery(true)
                     ->select('op.*, p.name as perimeter_name')
@@ -117,7 +121,6 @@ class sdiBasket {
             $extent->buffer = $order->buffer;
             $extent->features = array();
             foreach ($perimeters as $perimeter):
-
                 if (!strpos($perimeter->value, ',')):
                     //Feature id
                     $feature = new stdClass();

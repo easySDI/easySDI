@@ -9,6 +9,8 @@
 // no direct access
 defined('_JEXEC') or die;
 
+$document = JFactory::getDocument();
+$document->addScript('components/com_easysdi_shop/helpers/helper.js');
 ?>
 <?php if ($this->item) : ?>
     <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=request'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
@@ -104,7 +106,7 @@ defined('_JEXEC') or die;
                                                                     </div>
 
                                                                     <div class="span6 order-edit-value" >
-                                                                        <?php echo $extraction->file .' ('. $extraction->size . ' B)'; ?>
+                                                                        <?php echo $extraction->file . ' (' . $extraction->size . ' B)'; ?>
                                                                     </div>
                                                                 <?php endif; ?>
 
@@ -152,48 +154,7 @@ defined('_JEXEC') or die;
                             </table>
                         </div>
 
-                        <div class="row-fluid" >
-                            <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h3>
-                            <hr>
-                            <div class="row-fluid" >
-                                <div class="map-recap span6" >
-                                    <div id="minimap" class="minimap" style="height:250px"></div>                   
-                                </div>
-                                <div  class="value-recap span6" >
-                                    <div id="perimeter-buffer" class="row-fluid hide" >
-                                        <div><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BUFFER'); ?></h3>
-                                            <input id="buffer" name="buffer" type="text" placeholder="" class="input-xlarge" value="<?php if (!empty($this->item->basket->buffer)) echo $this->item->basket->buffer; ?>">
-                                        </div>                                
-                                    </div>
-                                    <div id="perimeter-recap" class="row-fluid" >
-                                        <?php if (!empty($this->item->basket->extent)): ?>
-                                            <div><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SURFACE'); ?></h3>
-                                                <div><?php if (!empty($this->item->basket->extent->surface)) echo $this->item->basket->extent->surface; ?></div>
-                                            </div>                                
-                                            <div><h3><?php echo $this->item->basket->extent->name; ?></h3></div>
-                                            <?php
-                                            if (!is_array($this->item->basket->extent->features)):
-                                                $features = explode(',', $this->item->basket->extent->features);
-                                                foreach ($features as $feature):
-                                                    ?>
-                                                    <div><?php echo $feature; ?></div>
-                                                    <?php
-                                                endforeach;
-                                            else :
-                                                foreach ($this->item->basket->extent->features as $feature):
-                                                    ?>
-                                                    <div><?php echo $feature->name; ?></div>
-                                                    <?php
-                                                endforeach;
-                                            endif;
-                                            ?>
-
-                                        <?php endif; ?>
-                                    </div>                           
-                                </div>
-                            </div>
-
-                        </div>
+                        <?php Easysdi_shopHelper::getHTMLOrderPerimeter($this->item); ?>
 
                         <?php if (!empty($this->item->basket->thirdparty)): ?>
                             <div class="row-fluid" >
@@ -208,9 +169,24 @@ defined('_JEXEC') or die;
                 </div>
             </div>
         </div>
-        <script>
-
-        </script>
+        <div>
+            <?php echo $this->getToolbar(); ?>
+        </div>
+        <?php if ($this->item->basket->extent->id == 1 || $this->item->basket->extent->id == 2): ?>
+            <?php echo $this->form->getInput('perimeter', null, $this->item->basket->extent->features); ?>
+        <?php
+        else :
+            foreach ($this->item->basket->perimeters as $perimeter):
+                if ($perimeter->id == $this->item->basket->extent->id):
+                    echo $this->form->getInput('wfsfeaturetypefieldid', null, $perimeter->featuretypefieldid);
+                    echo $this->form->getInput('wfsfeaturetypename', null, $perimeter->featuretypename);
+                    echo $this->form->getInput('wfsurl', null, $perimeter->wfsurl);
+                    break;
+                endif;
+            endforeach;
+            ?>
+            <?php echo $this->form->getInput('wfsperimeter', null, json_encode($this->item->basket->extent->features)); ?>
+        <?php endif; ?>
         <?php foreach ($this->form->getFieldset('hidden') as $field): ?>
             <?php echo $field->input; ?>
         <?php endforeach; ?>  
@@ -218,8 +194,19 @@ defined('_JEXEC') or die;
         <input type = "hidden" name = "option" value = "com_easysdi_shop" />
         <?php echo JHtml::_('form.token'); ?>
     </form>
-    <?php echo $this->getToolbar(); ?>
 
+
+    <script>
+        Ext.onReady(function() {
+            app.on("ready", function() {
+                loadPerimeter();
+    <?php if (is_string($this->item->basket->extent->features)): ?>
+                    var feature = reprojectWKT("<?php echo $this->item->basket->extent->features; ?>");
+                    jQuery('#perimeter-recap').append("<div>" + feature.geometry.toString() + "</div>");
+    <?php endif; ?>
+            })
+        })
+    </script>
     <?php
 else:
     echo JText::_('COM_EASYSDI_SHOP_ITEM_NOT_LOADED');

@@ -31,6 +31,7 @@ class Easysdi_shopViewOrder extends JViewLegacy {
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
         $this->params = $app->getParams('com_easysdi_shop');
+        $this->paramsarray = $this->params->toArray();
         $this->form = $this->get('Form');
 
         // Check for errors.
@@ -92,6 +93,15 @@ class Easysdi_shopViewOrder extends JViewLegacy {
         if ($this->params->get('robots')) {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
+    }
+    
+    function getToolbar() {
+        $bar = new JToolBar('toolbar');
+        $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_SHOP_ORDERS_LOAD_DRAFT_INTO_BASKET'), 'basket.load', false);
+        $bar->appendButton('Separator');
+        $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'order.cancel', false);
+        //generate the html and return
+        return $bar->render();
     }
 
 }

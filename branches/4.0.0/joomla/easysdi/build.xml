@@ -6,7 +6,7 @@
     <property name="parent.component.name" value="easysdi"/>
     <property name="parent.src.out.dir" value="${parent.component.name}/src"/>
     <property name="parent.package.out.dir" value="${parent.component.name}/target"/>
-    <property name="version" value="4.0.0-alpha-23"/>
+    <property name="version" value="4.0.0-beta-1"/>
     
     <!-- Joomla component path -->
     <property name="joomla.administrator.components.dir" value="administrator/components" />
@@ -63,7 +63,6 @@
     <include file="plg_getordersaresptime/build.xml" as="plg-getordersaresptime"/>
     <include file="plg_getusersbutton/build.xml" as="plg-getusersbutton"/>
     <include file="plg_getordersbutton/build.xml" as="plg-getordersbutton"/>
-    <include file="tpl_easysdi/build.xml" as="tpl-easysdi"/>
     <include file="tpl_easysdiadminpositions/build.xml" as="tpl-easysdiadminpositions"/>
     <include file="mod_easysdi_basket/build.xml" as="mod-basket"/>
     <include file="mod_easysdi_admininfo/build.xml" as="mod-admininfo"/>
@@ -94,7 +93,6 @@
                     package-mod-basket,
                     package-mod-admininfo,
                     package-mod-adminbutton,
-                    package-tpl-easysdi,
                     package-tpl-easysdiadminpositions,
                     copy-sub-package,
                     write-xml,
@@ -127,7 +125,6 @@
     <target name="package-mod-admininfo" depends="mod-admininfo.package" description="Main Target"/>
     <target name="package-mod-adminbutton" depends="mod-adminbutton.package" description="Main Target"/>    
     
-    <target name="package-tpl-easysdi" depends="tpl-easysdi.package" description="Main Target"/>
     <target name="package-tpl-easysdiadminpositions" depends="tpl-easysdiadminpositions.package" description="Main Target"/>
     
     
@@ -156,7 +153,6 @@
                     package-mod-basket,
                     package-mod-admininfo,
                     package-mod-adminbutton,
-                    package-tpl-easysdi,
                     package-tpl-easysdiadminpositions,
                     copy-sub-package,
                     write-xml,
@@ -171,7 +167,6 @@
     <target name="dev-package-com-shop" depends="shop.dev-package" description="Main Target"/>
     <target name="dev-package-com-contact" depends="contact.dev-package" description="Main Target"/>
     
-    <target name="dev-package-tpl-easysdi" depends="tpl-easysdi.dev-package" description="Main Target"/>
     <target name="dev-package-tpl-easysdiadminpositions" depends="tpl-easysdiadminpositions.dev-package" description="Main Target"/>
     
     <!-- Sycronysing targets-->
@@ -199,7 +194,6 @@
                     sync-mod-basket,
                     sync-mod-admininfo,
                     sync-mod-adminbutton,
-                    sync-tpl-easysdi,
                     sync-tpl-easysdiadminpositions" 
             description="Main target"/>
     
@@ -229,7 +223,6 @@
     <target name="sync-mod-admininfo" depends="mod-admininfo.sync" description="Main Target"/>
     <target name="sync-mod-adminbutton" depends="mod-adminbutton.sync" description="Main Target"/>    
     
-    <target name="sync-tpl-easysdi" depends="tpl-easysdi.sync" description="Main Target"/>
     <target name="sync-tpl-easysdiadminpositions" depends="tpl-easysdiadminpositions.sync" description="Main Target"/>
     
     
@@ -257,7 +250,6 @@
                     sync-package-mod-basket,
                     sync-package-mod-admininfo,
                     sync-package-mod-adminbutton,
-                    sync-package-tpl-easysdi,
                     sync-package-tpl-easysdiadminpositions,
                     write-xml" 
             description="Main target"/>
@@ -288,7 +280,6 @@
     <target name="sync-package-mod-admininfo" depends="mod-admininfo.sync-package" description="Main Target"/>
     <target name="sync-package-mod-adminbutton" depends="mod-adminbutton.sync-package" description="Main Target"/>
     
-    <target name="sync-package-tpl-easysdi" depends="tpl-easysdi.sync-package" description="Main Target"/>
     <target name="sync-package-tpl-easysdiadminpositions" depends="tpl-easysdiadminpositions.sync-package" description="Main Target"/>
     
 
@@ -357,7 +348,7 @@
                     <file type="plugin" id="easysdicontact" group="user">plg_easysdi_contact.zip</file> 
                     <file type="plugin" id="easysdiservice" group="content">plg_easysdi_service.zip</file>
                     <file type="plugin" id="easysdimonitor" group="content">plg_easysdi_monitor.zip</file>
-					<file type="plugin" id="getusers" group="easysdi_admin_info">plg_getusers.zip</file>
+		    <file type="plugin" id="getusers" group="easysdi_admin_info">plg_getusers.zip</file>
                     <file type="plugin" id="getorganisms" group="easysdi_admin_info">plg_getorganisms.zip</file>
                     <file type="plugin" id="getresources" group="easysdi_admin_info">plg_getresources.zip</file>
                     <file type="plugin" id="getdiffudownloadables" group="easysdi_admin_info">plg_getdiffudownloadables.zip</file>
@@ -367,7 +358,6 @@
                     <file type="plugin" id="getordersaresptime" group="easysdi_admin_info">plg_getordersaresptime.zip</file>
                     <file type="plugin" id="getusersbutton" group="easysdi_admin_button">plg_getusersbutton.zip</file>
                     <file type="plugin" id="getordersbutton" group="easysdi_admin_button">plg_getordersbutton.zip</file>
-                    <file type="template" id="tpl_easysdi" client="site">tpl_easysdi.zip</file>
                     <file type="template" id="tpl_easysdiadminpositions" client="administrator">tpl_easysdiadminpositions.zip</file>
                 </files> 
                 <languages>

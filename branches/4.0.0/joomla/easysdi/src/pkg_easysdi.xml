@@ -4,13 +4,13 @@
   <packager>EasySDI Community</packager>
   <packagename>easysdi</packagename>
   <creationDate>15 August 2012</creationDate>
-  <releaseDate>19 novembre 2013</releaseDate>
+  <releaseDate>05 décembre 2013</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>4.0.0-alpha-22</version>
+  <version>4.0.0-beta-1</version>
   <description>PKG_EASYSDI_XML_DESCRIPTION</description>
   <files folder="easysdi">
     <file id="com_easysdi_core" type="component">com_easysdi_core.zip</file>
@@ -36,7 +36,6 @@
     <file group="easysdi_admin_info" id="getordersaresptime" type="plugin">plg_getordersaresptime.zip</file>
     <file group="easysdi_admin_button" id="getusersbutton" type="plugin">plg_getusersbutton.zip</file>
     <file group="easysdi_admin_button" id="getordersbutton" type="plugin">plg_getordersbutton.zip</file>
-    <file client="site" id="tpl_easysdi" type="template">tpl_easysdi.zip</file>
     <file client="administrator" id="tpl_easysdiadminpositions" type="template">tpl_easysdiadminpositions.zip</file>
   </files>
   <languages>

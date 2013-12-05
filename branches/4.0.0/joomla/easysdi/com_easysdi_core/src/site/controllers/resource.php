@@ -29,8 +29,9 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
         $previousId = (int) $app->getUserState('com_easysdi_core.edit.resource.id');
         $editId = JFactory::getApplication()->input->getInt('id', null, 'array');
 
-        // Set the user id for the user to edit in the session.
-        $app->setUserState('com_easysdi_core.edit.resource.id', $editId);
+        // Set the id to edit in the session.
+        $app->setUserState('com_easysdi_core.edit.resource.id', $editId);        
+        $app->setUserState('com_easysdi_core.edit.resource.resourcetype.id', $app->input->get('resourcetype', '', 'INT'));
 
         // Get the model.
         $model = $this->getModel('Resource', 'Easysdi_coreModel');
@@ -44,18 +45,18 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
         if ($previousId) {
             $model->checkin($previousId);
         }
-        
+
         // Redirect to the edit screen.
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resource&layout=edit&resourcetype='.$app->input->get('resourcetype', '', 'INT'), false));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resource&layout=edit' , false));
     }
-    
+
     /**
      * Method to save a user's profile data.
      *
      * @return	void
      * @since	1.6
      */
-    public function save() {
+    public function save($andclose = true) {
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
@@ -68,7 +69,7 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
 
         // Validate the posted data.
         $form = $model->getForm();
-         
+
         if (!$form) {
             JError::raiseError(500, $model->getError());
             return false;
@@ -116,21 +117,32 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
         }
 
 
-        // Check in the profile.
-        if ($return) {
-            $model->checkin($return);
+        if (!$andclose) {
+            // Save the data in the session.
+            $app->setUserState('com_easysdi_core.edit.resource.data', $data);
+
+            // Redirect back to the edit screen.
+            $id = (int) $app->getUserState('com_easysdi_core.edit.resource.id');
+            $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_SAVED_SUCCESSFULLY'));
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resource&layout=edit&id=' . $id, false));
+        } else {
+            // Check in the profile.
+            if ($return) {
+                $model->checkin($return);
+            }
+
+            // Clear the profile id from the session.
+            $app->setUserState('com_easysdi_core.edit.resource.id', null);
+            $app->setUserState('com_easysdi_core.edit.resource.resourcetype.id', null);
+
+            // Redirect to the list screen.
+            $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_SAVED_SUCCESSFULLY'));
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+
+
+            // Flush the data from the session.
+            $app->setUserState('com_easysdi_core.edit.resource.data', null);
         }
-
-        // Clear the profile id from the session.
-        $app->setUserState('com_easysdi_core.edit.resource.id', null);
-
-        // Redirect to the list screen.
-        $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_SAVED_SUCCESSFULLY'));
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-        
-
-        // Flush the data from the session.
-        $app->setUserState('com_easysdi_core.edit.resource.data', null);
     }
 
     function cancel() {
@@ -204,6 +216,7 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
 
         // Clear the profile id from the session.
         $app->setUserState('com_easysdi_core.edit.resource.id', null);
+        $app->setUserState('com_easysdi_core.edit.resource.resourcetype.id', null);
 
         // Redirect to the list screen.
         $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_DELETED_SUCCESSFULLY'));
@@ -212,21 +225,21 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
         // Flush the data from the session.
         $app->setUserState('com_easysdi_core.edit.resource.data', null);
     }
-    
-    public function  getUsers(){
+
+    public function getUsers() {
         $jinput = JFactory::getApplication()->input;
         $organism_id = $jinput->get('organism', '0', 'string');
 
         $all = array();
-        
+
         $db = JFactory::getDbo();
         $db->setQuery('SELECT uro.role_id, u.id, user.name
                         FROM #__sdi_user_role_organism uro
                         INNER JOIN #__sdi_user u ON u.id = uro.user_id
                         INNER JOIN #__users user ON u.user_id = user.id
-                        WHERE organism_id=' . $organism_id );
+                        WHERE organism_id=' . $organism_id);
         $users = $db->loadObjectList();
-        
+
         foreach ($users as $user) :
             if (!isset($all[$user->role_id]))
                 $all[$user->role_id] = array();
@@ -235,10 +248,14 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
             $u->name = $user->name;
             array_push($all[$user->role_id], $u);
         endforeach;
-        
-        
+
+
         echo json_encode($all);
         die();
+    }
+
+    function apply() {
+        $this->save(false);
     }
 
 }

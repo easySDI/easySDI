@@ -38,6 +38,13 @@ class Easysdi_shopModelRequests extends JModelList {
 
         // Initialise variables.
         $app = JFactory::getApplication();
+        
+        // Load the filter state.
+        $search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
+        $this->setState('filter.search', $search);
+        
+        $search = $app->getUserStateFromRequest($this->context . '.filter.type', 'filter_type');
+        $this->setState('filter.type', $search);
 
         // List state information
         $limit = $app->getUserStateFromRequest('global.list.limit', 'limit', $app->getCfg('list_limit'));
@@ -90,6 +97,12 @@ class Easysdi_shopModelRequests extends JModelList {
         //Join over the order type value
         $query->select('type.value AS ordertype');
         $query->innerjoin('#__sdi_sys_ordertype AS type ON type.id = a.ordertype_id');
+        
+        // Filter by type
+        $type = $this->getState('filter.type');
+        if (is_numeric($type)) {
+        	$query->where('a.ordertype_id = ' . (int) $type);
+        }
 
         // Filter by search in title
         $search = $this->getState('filter.search');
@@ -98,18 +111,32 @@ class Easysdi_shopModelRequests extends JModelList {
                 $query->where('a.id = ' . (int) substr($search, 3));
             } else {
                 $search = $db->Quote('%' . $db->escape($search, true) . '%');
+                $query->where('( a.name LIKE '.$search.' )');
             }
         }
         
-        //Only order that the current has something ti do with
+        //Only order that the current user has something to do with
         $diffusions = sdiFactory::getSdiUser()->getResponsibleExtraction();
         $query->innerjoin('#__sdi_order_diffusion od ON od.order_id = a.id');
         $query->innerjoin('#__sdi_diffusion d ON d.id = od.diffusion_id');
         $query->where('d.id IN ( ' . implode(',', $diffusions) .')');
+        $query->where('od.productstate_id = 2');
         
         $query->group('a.id');
+        $query->order('a.created DESC');        
 
         return $query;
+    }
+    
+    function getOrderType() {
+        //Load all status value
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('t.value, t.id ')
+                ->from('#__sdi_sys_ordertype t')
+                ->where('t.value <> "draft"');
+        $db->setQuery($query);
+        return $db->loadObjectList();
     }
 
 }

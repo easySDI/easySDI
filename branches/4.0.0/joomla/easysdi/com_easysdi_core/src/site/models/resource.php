@@ -36,11 +36,13 @@ class Easysdi_coreModelResource extends JModelForm {
         // Load state from the request userState on edit or from the passed variable on default
         if (JFactory::getApplication()->input->get('layout') == 'edit') {
             $id = JFactory::getApplication()->getUserState('com_easysdi_core.edit.resource.id');
+            $resourcetype_id = JFactory::getApplication()->getUserState('com_easysdi_core.edit.resource.resourcetype.id');
         } else {
             $id = JFactory::getApplication()->input->get('id');
             JFactory::getApplication()->setUserState('com_easysdi_core.edit.resource.id', $id);
         }
         $this->setState('resource.id', $id);
+        $this->setState('resourcetype.id', $resourcetype_id);
 
         // Load the parameters.
         $params = $app->getParams();
@@ -88,7 +90,7 @@ class Easysdi_coreModelResource extends JModelForm {
             //Get resourcetype from GET
             $jinput = JFactory::getApplication()->input;
             if (!isset($this->_item->resourcetype_id)) {
-                $this->_item->resourcetype_id = $jinput->get('resourcetype', '', 'INT');
+                $this->_item->resourcetype_id = $this->getState('resourcetype.id');
             }
 
             if (!empty($this->_item->resourcetype_id)) {

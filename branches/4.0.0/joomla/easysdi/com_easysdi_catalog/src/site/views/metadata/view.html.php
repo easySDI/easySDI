@@ -204,7 +204,7 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         $toolbar = new SdiToolbar();
 
         $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_TITLE_OPEN_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
-        $toolbar->append('Import', 'import', 'btn-small', $importrefactions, true);
+        //$toolbar->append('Import', 'import', 'btn-small', $importrefactions, true);
         $toolbar->appendBtnRoute('Annuler', JRoute::_('index.php?option=com_easysdi_core&view=resources'), 'btn-small btn-danger');
 
         return $toolbar->renderToolbar();

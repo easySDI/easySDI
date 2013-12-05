@@ -40,6 +40,7 @@ class Easysdi_shopViewRequests extends JViewLegacy {
 
         $app = JFactory::getApplication();
         $this->state = $this->get('State');
+        $this->ordertype = $this->get('ordertype');
         $this->items = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_easysdi_shop');

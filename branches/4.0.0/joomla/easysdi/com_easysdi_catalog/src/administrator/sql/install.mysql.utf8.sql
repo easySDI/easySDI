@@ -656,7 +656,7 @@ PRIMARY KEY (`id`) ,
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
-
+ALTER TABLE `#__sdi_translation` ADD INDEX `element_guid` (`element_guid`);
 
 CREATE TABLE IF NOT EXISTS `#__sdi_searchcriteriafilter` (
 `id`  int(11) UNSIGNED NOT NULL AUTO_INCREMENT ,
@@ -772,12 +772,12 @@ INDEX `#__sdi_versionlink_fk2` (`child_id` ASC) ,
   CONSTRAINT `#__sdi_versionlink_fk1`
     FOREIGN KEY (`parent_id` )
     REFERENCES `#__sdi_version` (`id` )
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
 CONSTRAINT `#__sdi_versionlink_fk2`
     FOREIGN KEY (`child_id` )
     REFERENCES `#__sdi_version` (`id` )
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -985,7 +985,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_relation_defaultvalue` (
 `relation_id`  INT(11) UNSIGNED NOT NULL  ,
 `attributevalue_id`  INT(11) UNSIGNED ,
 `value` VARCHAR (500),
-`language_id` INT(11) UNSIGNED NOT NULL ,
+`language_id` INT(11) UNSIGNED ,
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_relation_defaultvalue_fk1` (`relation_id` ASC) ,
   INDEX `#__sdi_relation_defaultvalue_fk2` (`attributevalue_id` ASC) ,

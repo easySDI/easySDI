@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/order.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/orderdiffusion.php';
+require_once JPATH_COMPONENT . '/models/order.php';
 
 /**
  * Order controller class.
@@ -86,87 +87,80 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
     }
 
     function cancel() {
-        $menu = & JSite::getMenu();
-        $item = $menu->getActive();
-        $this->setRedirect(JRoute::_($item->link, false));
+        JFactory::getApplication()->setUserState('com_easysdi_shop.edit.order.id', null);
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
     }
 
     public function remove() {
-        // Check for request forgeries.
-        JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
-        // Initialise variables.
-        $app = JFactory::getApplication();
         $model = $this->getModel('Order', 'Easysdi_shopModel');
 
-        // Get the user data.
-        $data = JFactory::getApplication()->input->get('jform', array(), 'array');
+        $id = JFactory::getApplication()->input->getInt('id', null, 'array');
 
-        // Validate the posted data.
-        $form = $model->getForm();
-        if (!$form) {
-            JError::raiseError(500, $model->getError());
-            return false;
-        }
-
-        // Validate the posted data.
-        $data = $model->validate($form, $data);
-
-        // Check for errors.
-        if ($data === false) {
-            // Get the validation messages.
-            $errors = $model->getErrors();
-
-            // Push up to three validation messages out to the user.
-            for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++) {
-                if ($errors[$i] instanceof Exception) {
-                    $app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-                } else {
-                    $app->enqueueMessage($errors[$i], 'warning');
-                }
-            }
-
-            // Save the data in the session.
-            $app->setUserState('com_easysdi_shop.edit.order.data', $data);
-
-            // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_easysdi_shop.edit.order.id');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=edit&id=' . $id, false));
-            return false;
-        }
+       if(empty($id)):
+           // Redirect back to the list screen.
+           $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDERS_ERROR_MSG_CANT_REMOVE'), 'error');
+           $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
+           return false;
+       endif;
 
         // Attempt to save the data.
-        $return = $model->delete($data);
+        $return = $model->delete(array('id'=> $id));
 
         // Check for errors.
         if ($return === false) {
-            // Save the data in the session.
-            $app->setUserState('com_easysdi_shop.edit.order.data', $data);
-
-            // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_easysdi_shop.edit.order.id');
+            // Redirect back to the list screen.
             $this->setMessage(JText::sprintf('Delete failed', $model->getError()), 'warning');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=edit&id=' . $id, false));
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
             return false;
         }
 
-
-        // Check in the profile.
+        // Check in.
         if ($return) {
             $model->checkin($return);
         }
 
         // Clear the profile id from the session.
-        $app->setUserState('com_easysdi_shop.edit.order.id', null);
+        JFactory::getApplication()->setUserState('com_easysdi_shop.edit.order.id', null);
 
         // Redirect to the list screen.
         $this->setMessage(JText::_('COM_EASYSDI_SHOP_ITEM_DELETED_SUCCESSFULLY'));
-        $menu = & JSite::getMenu();
-        $item = $menu->getActive();
-        $this->setRedirect(JRoute::_($item->link, false));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
 
-        // Flush the data from the session.
-        $app->setUserState('com_easysdi_shop.edit.order.data', null);
+    }
+    
+    function archive(){
+        $this->saveState(Easysdi_shopModelOrder::ARCHIVED);        
+    }
+    
+    function saveState($state){
+        $model = $this->getModel('Order', 'Easysdi_shopModel');
+
+        $id = JFactory::getApplication()->input->getInt('id', null, 'array');
+
+       if(empty($id)):
+           // Redirect back to the list screen.
+           $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDERS_ERROR_MSG_CANT_ARCHIVE'), 'error');
+           $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
+           return false;
+       endif;
+
+        // Attempt to save order state.
+        $return = $model->setOrderState($id, $state );
+
+        // Check for errors.
+        if ($return === false) {
+            // Redirect back to the list screen.
+            $this->setMessage(JText::sprintf('Delete failed', $model->getError()), 'warning');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
+            return false;
+        }
+
+        // Clear the profile id from the session.
+        JFactory::getApplication()->setUserState('com_easysdi_shop.edit.order.id', null);
+
+        // Redirect to the list screen.
+        $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_ARCHIVED_SUCCESSFULLY'));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders', false));
     }
 
 }

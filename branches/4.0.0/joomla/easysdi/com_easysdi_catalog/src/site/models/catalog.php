@@ -44,11 +44,6 @@ class Easysdi_catalogModelCatalog extends JModelForm {
         $limitstart = ($limit != 0 ? (floor($value / $limit) * $limit) : 1);
         $this->setState('list.start', $limitstart);
 
-//        $limit = $app->getUserStateFromRequest('global.list.limit', 'limit', $params->get('searchresultpaginationnumber'));
-//        $this->setState('list.limit', $limit);
-//
-//        $limitstart = JFactory::getApplication()->input->getInt('limitstart', 1);
-//        $this->setState('list.start', $limitstart);
         // Load state from the request userState on edit or from the passed variable on default
         if (JFactory::getApplication()->input->get('layout') == 'edit') {
             $id = JFactory::getApplication()->getUserState('com_easysdi_catalog.edit.catalog.id');
@@ -57,11 +52,13 @@ class Easysdi_catalogModelCatalog extends JModelForm {
             JFactory::getApplication()->setUserState('com_easysdi_catalog.edit.catalog.id', $id);
         }
         $this->setState('catalog.id', $id);
+        
         // Load the parameters.
         $params = $app->getParams();
         $params_array = $params->toArray();
         if (isset($params_array['item_id'])) {
             $this->setState('catalog.id', $params_array['item_id']);
+            JFactory::getApplication()->setUserState('com_easysdi_catalog.edit.catalog.id', $params_array['item_id']);
         }
         $this->setState('params', $params);
     }
@@ -97,9 +94,9 @@ class Easysdi_catalogModelCatalog extends JModelForm {
                 $properties = $table->getProperties(1);
                 $this->_item = JArrayHelper::toObject($properties, 'JObject');
 
-                if ($this->_item->oninitrunsearch || JFactory::getApplication()->input->get('search', 'false', 'STRING') == 'true') {
-                    $cswrecords = new cswrecords();
-                    $result = $cswrecords->getRecords($id);
+                if (JFactory::getApplication()->input->get('search', 'false', 'STRING') == 'true') {
+                    $cswrecords = new cswrecords($this->_item);
+                    $result = $cswrecords->getRecords();
                     if (!$result)
                         JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_CATALOGS_MSG_ERROR_GET_RECORDS'), 'warning');
 
@@ -165,19 +162,20 @@ class Easysdi_catalogModelCatalog extends JModelForm {
         $limit = (int) $this->getState('list.limit') - (int) $this->getState('list.links');
         $page = new JPagination(JFactory::getApplication('com_easysdi_catalog')->getUserState('global.list.total'), $this->getState('list.start'), $limit);
 
-        /*$data = JFactory::getApplication()->input->get('jform', array(), 'array');
+        $data = JFactory::getApplication()->input->get('jform', array(), 'array');
 
         foreach ($data as $key => $value) {
             if (is_array($value)) {
                 $i = 0;
-                foreach ($value as $val) {
-                    $page->setAdditionalUrlParam('jform[' . $key . '][' . $i . ']', $val);
+                foreach ($value as $k => $v) {
+
+                    $page->setAdditionalUrlParam('jform[' . $key . '][' . $k . ']', $v);
                     $i++;
                 }
             } else {
                 $page->setAdditionalUrlParam('jform[' . $key . ']', $value);
             }
-        }*/
+        }
 
         return $page;
     }
