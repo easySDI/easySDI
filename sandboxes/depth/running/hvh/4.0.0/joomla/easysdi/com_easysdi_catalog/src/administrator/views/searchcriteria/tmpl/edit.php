@@ -205,7 +205,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
                                 <div class="controls"><?php echo $this->form->getInput('boundary_id'); ?></div>
                             </div>
                         <?php endif ?>
-                        <?php if ($this->item->id == 9 || $this->item->id == 10 || $this->item->id == 11) : ?>
+                        <?php if ($this->item->id == 9 || $this->item->id == 10 || $this->item->id == 11 || strcasecmp('isviewable',$this->item->alias) == 0) : ?>
                             <div class="control-group">
                                 <div class="control-label"><?php echo $this->form->getLabel('defaultvalue'); ?></div>
                                 <div class="controls"><?php echo $this->form->getInput('is'); ?></div>

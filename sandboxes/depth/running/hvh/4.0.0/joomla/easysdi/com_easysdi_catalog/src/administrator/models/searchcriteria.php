@@ -141,7 +141,7 @@ class Easysdi_catalogModelsearchcriteria extends sdiModel {
                     }
                 }
 
-                if ($item->id == 9 || $item->id == 10 || $item->id == 11) {
+                if ($item->id == 9 || $item->id == 10 || $item->id == 11 || strcasecmp('isViewable',$item->alias) == 0) {
                     $item->is = $catalogsearchcriteria->defaultvalue;
                 }
 
