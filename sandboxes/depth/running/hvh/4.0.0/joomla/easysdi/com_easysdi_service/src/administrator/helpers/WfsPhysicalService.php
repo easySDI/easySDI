@@ -5,8 +5,8 @@ require_once('WfsFeatureType.php');
 class WfsPhysicalService extends PhysicalService{
 	private $featureTypeList = Array();
 	
-	public function __construct ($id, $url) {
-		parent::__construct($id, $url, 'WFS');
+	public function __construct ($id, $url, $user=null, $password=null) {
+		parent::__construct($id, $url, $user, $password, 'WFS');
 	}
 	
 	public function getLayerList () {

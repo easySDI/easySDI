@@ -1519,7 +1519,7 @@ class FormGenerator {
         if ($isList) {
             $query->select('av.`value`');
             $query->from('#__sdi_relation_defaultvalue rdv');
-            $query->innerJoin('jos_sdi_attributevalue av on av.id = rdv.attributevalue_id');
+            $query->innerJoin('#__sdi_attributevalue av on av.id = rdv.attributevalue_id');
             $query->where('rdv.relation_id = ' . $relation_id);
         } else {
             $query->select('attributevalue_id, `value`');

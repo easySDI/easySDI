@@ -8,6 +8,7 @@ GeoExt.Lang.add("fr", {
         addActionMenuText: "Ajouter des calques",
         addActionTip: "Ajouter des calques",
         addServerText: "Ajouter un nouveau serveur",
+        addButtonText: "Ajouter les couches",
         untitledText: "Sans titre",
         addLayerSourceErrorText: "Impossible d'obtenir les capacités WMS ({msg}).\nVeuillez vérifier l'URL et essayez à nouveau.",
         availableLayersText: "Couches disponibles",

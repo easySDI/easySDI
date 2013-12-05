@@ -376,7 +376,7 @@ class Cswrecords extends SearchForm {
     }
 
     private function getFullText($literal) {
-        $language_code = JFactory::getUser()->getParam('language');
+        $language_code = JFactory::getLanguage()->getTag();
         $language = $this->ldao->getByCode($language_code);
         $catalog_language_id = JComponentHelper::getParams('com_easysdi_catalog')->get('defaultlanguage');
 

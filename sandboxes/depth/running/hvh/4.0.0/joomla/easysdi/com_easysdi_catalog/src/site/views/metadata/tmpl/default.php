@@ -106,9 +106,7 @@ $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/sy
     js = jQuery.noConflict();
     js('document').ready(function() {
 
-<?php 
-
-if ($this->item->editmetadatafieldsetstate == 'allopen'): ?>
+<?php if ($this->params->get('editmetadatafieldsetstate') == "allopen"): ?>
         allopen();
 <?php endif; ?>
 
