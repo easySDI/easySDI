@@ -53,9 +53,9 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         endif;
 
         if (!empty($diffusion->file) || !empty($diffusion->fileurl)):
-            $url = 'index.php?option=com_easysdi_shop&view=download&layout=default&id' . $id;
+            $url = 'index.php?option=com_easysdi_shop&view=download&layout=default&id=' . $id;
         elseif (!empty($diffusion->perimeter_id)) :
-            $url = 'index.php?option=com_easysdi_shop&view=download&layout=grid&id' . $id;
+            $url = 'index.php?option=com_easysdi_shop&view=download&layout=grid&id=' . $id;
         endif;
         if (!empty($tmpl)) {
             $url .= '&tmpl=' . $tmpl;
@@ -131,14 +131,17 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         }
 
         error_reporting(0);
+        
+        $pos = strrpos($diffusion->file, '.');
+        $extension = substr($diffusion->file, $pos+1);
 
         ini_set('zlib.output_compression', 0);
         header('Pragma: public');
         header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
         header('Content-Transfer-Encoding: none');
         header("Content-Length: " . strlen($file));
-        header('Content-Type: application/octetstream; name="zip"');
-        header('Content-Disposition: attachement; filename="' . $diffusion->name . '.zip"');
+        header('Content-Type: application/octetstream; name="' . $extension . '"');
+        header('Content-Disposition: attachement; filename="' . $diffusion->name . '.' . $extension . '"');
 
         echo $file;
         die();
