@@ -585,7 +585,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * 
      */
     private function getHeader($encoding = 'utf8') {
-        $languageid = $this->ldao->getByCode(JFactory::getUser()->getParam('language'));
+        $languageid = $this->ldao->getByCode(JFactory::getLanguage()->getTag());
 
         $headers = array();
 
