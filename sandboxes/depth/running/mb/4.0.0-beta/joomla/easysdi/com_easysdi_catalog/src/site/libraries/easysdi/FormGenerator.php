@@ -109,6 +109,8 @@ class FormGenerator {
                 $root->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:' . $ns->prefix, $ns->uri);
             }
 
+            $root->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
+
             $this->structure->appendChild($root);
 
             $this->getChildTree($root);
@@ -151,6 +153,7 @@ class FormGenerator {
                 case EnumChildtype::$ATTRIBUT:
                     $parentname = $parent->nodeName;
                     $attribute = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $_GET['relid'] . '"]')->item(0);
+                    $attributename = $attribute->nodeName;
                     $cloned = $attribute->cloneNode(true);
                     $parent->appendChild($cloned);
 
@@ -237,13 +240,16 @@ class FormGenerator {
                 $occurance = $this->domXpathCsw->query('/*' . $relationExist->getNodePath())->length;
             }
 
-            $exist = $lowerbound + $occurance;
+            if (!$relationExist->hasAttributeNS($this->catalog_uri, 'exist')) {
 
-            if ($exist < 1) {
-                $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
-                return $childs;
-            } else {
-                $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
+                $exist = $lowerbound + $occurance;
+
+                if ($exist < 1) {
+                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
+                    return $childs;
+                } else {
+                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
+                }
             }
         }
 
@@ -1088,9 +1094,9 @@ class FormGenerator {
                 default:
                     $field->setAttribute('type', 'list');
                     $field->setAttribute('label', EText::_($guid));
-                    if($attribute->firstChild->hasAttribute('codeListValue')){
+                    if ($attribute->firstChild->hasAttribute('codeListValue')) {
                         $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->getAttribute('codeListValue'), true));
-                    }  else {
+                    } else {
                         $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue, true));
                     }
                     if ($opt->guid != '') {
@@ -1507,8 +1513,8 @@ class FormGenerator {
         if (!empty($value)) {
             return $value;
         }
-        
-        if(empty($relation_id)){
+
+        if (empty($relation_id)) {
             return '';
         }
 
