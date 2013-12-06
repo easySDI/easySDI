@@ -53,10 +53,14 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         endif;
 
         if (!empty($diffusion->file) || !empty($diffusion->fileurl)):
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=download&layout=default&tmpl='. $tmpl .'&id=' . $id, false));
+            $url = 'index.php?option=com_easysdi_shop&view=download&layout=default&id' . $id;
         elseif (!empty($diffusion->perimeter_id)) :
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=download&layout=grid&tmpl='. $tmpl .'&id=' . $id, false));
+            $url = 'index.php?option=com_easysdi_shop&view=download&layout=grid&id' . $id;
         endif;
+        if (!empty($tmpl)) {
+            $url .= '&tmpl=' . $tmpl;
+        }
+        $this->setRedirect(JRoute::_($url, false));
     }
 
     public function download() {
@@ -96,7 +100,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
             $file = file_get_contents($fileFolder . '/' . $diffusion->file);
         elseif (!empty($diffusion->fileurl)):
             $file = file_get_contents($diffusion->fileurl);
-        elseif (!empty($diffusion->perimeter_id)) :            
+        elseif (!empty($diffusion->perimeter_id)) :
             $url = $jinput->get('url', null);
             if (empty($url)) {
                 die();

@@ -245,13 +245,13 @@ class Cswrecords extends SearchForm {
                     return $this->getResouceName($value);
                 }
                 break;
-            case 'metadata_created':
+            case 'created':
                 $this->addHarvested = false;
                 if (!empty($value['from']) || !empty($value['to'])) {
                     return $this->getMetadataCreated($value['from'], $value['to']);
                 }
                 break;
-            case 'metadata_published':
+            case 'published':
                 $this->addHarvested = false;
                 if (!empty($value['from']) || !empty($value['to'])) {
                     return $this->getMetadataPublished($value['from'], $value['to']);
@@ -268,15 +268,15 @@ class Cswrecords extends SearchForm {
                     return $this->getDefinedBoundary($name, $value);
                 }
                 break;
-            case 'isdownloadable':
+            case 'isDownloadable':
                 return $this->getIsDownloadable();
-            case 'isfree':
+            case 'isFree':
                 $this->addHarvested = false;
                 return $this->getIsFree();
-            case 'isorderable':
+            case 'isOrderable':
                 $this->addHarvested = false;
                 return $this->getIsOrderable();
-            case 'isviewable':
+            case 'isViewable':
                 $this->addHarvested = false;
                 return $this->getIsViewable();
                 break;

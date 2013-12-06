@@ -160,7 +160,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                             <div class="row-fluid" >
                                 <h3><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_THIRDPARTY_ID'); ?></h3>
                                 <hr>
-                                <input id="thirdparty" name="thirdparty" type="text" placeholder="" class="input-xlarge" value="<?php echo $this->item->basket->thirdparty; ?>">                               
+                                <span ><?php echo $this->item->basket->thirdorganism; ?></span>
                             </div>
                         <?php endif; ?>
 
