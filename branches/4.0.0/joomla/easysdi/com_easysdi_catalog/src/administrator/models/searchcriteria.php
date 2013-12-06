@@ -133,13 +133,15 @@ class Easysdi_catalogModelsearchcriteria extends sdiModel {
                     //Saved params
                     if (isset($catalogsearchcriteria->params)) {
                         $params = json_decode($catalogsearchcriteria->params, false);
-                        $item->boundarycategory_id = $params->boundarycategory_id;
+                        if(!empty($params->boundarycategory_id)){
+                            $item->boundarycategory_id = $params->boundarycategory_id;
+                        }
                         $item->searchboundarytype = $params->searchboundarytype;
                         $item->boundarysearchfield = $params->boundarysearchfield;
                     }
                 }
 
-                if ($item->id == 9 || $item->id == 10 || $item->id == 11) {
+                if ($item->id == 9 || $item->id == 10 || $item->id == 11 || strcasecmp('isViewable',$item->alias) == 0) {
                     $item->is = $catalogsearchcriteria->defaultvalue;
                 }
 

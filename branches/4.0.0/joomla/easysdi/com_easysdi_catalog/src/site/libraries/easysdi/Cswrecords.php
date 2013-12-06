@@ -82,37 +82,45 @@ class Cswrecords extends SearchForm {
             $name = explode('_', $key);
 
             if (key_exists($name[0], $this->searchcriteria)) {
+                switch ($this->searchcriteria[$name[0]]->name) {
+                    case 'resourcetype':
+                        $parent = $parentAnd;
+                        break;
+                    default:
+                        $parent = $and;
+                        break;
+                }
+
                 switch ($this->data['searchtype']) {
                     case 'simple':
                         if ($this->searchcriteria[$name[0]]->tab_value != 'advanced') {
                             $element = $this->switchOnFieldName($name, $value);
                             if (isset($element)) {
-                                $and->appendChild($element);
+                                $parent->appendChild($element);
                             }
                         }
                         break;
                     case 'advanced':
                         $element = $this->switchOnFieldName($name, $value);
                         if (isset($element)) {
-                            $and->appendChild($element);
+                            $parent->appendChild($element);
                         }
                         break;
                 }
             }
         }
-        
+
         // if resourcetype field is set to none, add all resourcetype to filter
-        if(!key_exists('2_resourcetype', $this->data)){
-            $and->appendChild($this->getResouceType($this->getAllResourcetype()));
+        if (!key_exists('2_resourcetype', $this->data)) {
+            $parentAnd->appendChild($this->getResouceType($this->getAllResourcetype()));
         }
 
         $and->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'false'));
         $or->appendChild($and);
         if ($this->addHarvested) {
             $or->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'true'));
-        } else {
-            $or->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'false'));
         }
+
         $parentAnd->appendChild($or);
 
         $cswfilter = $this->getCswFilter($this->item->id);
@@ -229,7 +237,7 @@ class Cswrecords extends SearchForm {
                 break;
             case 'resourcetype':
                 $this->addHarvested = false;
-                if(count(array_filter($value))>0){
+                if (count(array_filter($value)) > 0) {
                     return $this->getResouceType($value);
                 }
                 break;
@@ -245,13 +253,13 @@ class Cswrecords extends SearchForm {
                     return $this->getResouceName($value);
                 }
                 break;
-            case 'metadata_created':
+            case 'created':
                 $this->addHarvested = false;
                 if (!empty($value['from']) || !empty($value['to'])) {
                     return $this->getMetadataCreated($value['from'], $value['to']);
                 }
                 break;
-            case 'metadata_published':
+            case 'published':
                 $this->addHarvested = false;
                 if (!empty($value['from']) || !empty($value['to'])) {
                     return $this->getMetadataPublished($value['from'], $value['to']);
@@ -268,15 +276,15 @@ class Cswrecords extends SearchForm {
                     return $this->getDefinedBoundary($name, $value);
                 }
                 break;
-            case 'isdownloadable':
+            case 'isDownloadable':
                 return $this->getIsDownloadable();
-            case 'isfree':
+            case 'isFree':
                 $this->addHarvested = false;
                 return $this->getIsFree();
-            case 'isorderable':
+            case 'isOrderable':
                 $this->addHarvested = false;
                 return $this->getIsOrderable();
-            case 'isviewable':
+            case 'isViewable':
                 $this->addHarvested = false;
                 return $this->getIsViewable();
                 break;
@@ -376,7 +384,7 @@ class Cswrecords extends SearchForm {
     }
 
     private function getFullText($literal) {
-        $language_code = JFactory::getUser()->getParam('language');
+        $language_code = JFactory::getLanguage()->getTag();
         $language = $this->ldao->getByCode($language_code);
         $catalog_language_id = JComponentHelper::getParams('com_easysdi_catalog')->get('defaultlanguage');
 
@@ -401,7 +409,7 @@ class Cswrecords extends SearchForm {
 
     private function getResouceType($value) {
         $or = $this->ogcFilters->getOperator(OgcFilters::OPERATOR_OR);
-        
+
         foreach ($value as $literal) {
             $or->appendChild($this->ogcFilters->getIsEqualTo('resourcetype', strtolower($literal)));
         }
@@ -484,16 +492,16 @@ class Cswrecords extends SearchForm {
         $query->from('#__sdi_resourcetype t');
         $query->innerJoin('#__sdi_catalog_resourcetype crt ON crt.resourcetype_id = t.id');
         $query->where('crt.catalog_id = ' . $this->item->id);
-        
+
         $this->db->setQuery($query);
         $results = $this->db->loadObjectList();
-        
+
         $resourcetype = array();
-        
+
         foreach ($results as $result) {
             $resourcetype[] = $result->alias;
         }
-        
+
         return $resourcetype;
     }
 

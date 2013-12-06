@@ -319,7 +319,7 @@ class SearchJForm extends SearchForm {
                 $language = $this->ldao->getByCode(JFactory::getLanguage()->getTag());
 
                 $params = json_decode($searchCriteria->params);
-                if ($params->searchboundarytype == parent::SEARCHTYPEID) {
+                if (!empty($params->searchboundarytype) && ($params->searchboundarytype == parent::SEARCHTYPEID)) {
                     $query->select('b.alias as value, t.text1 as name, b.guid');
                 } else {
                     $query->select('CONCAT_WS("-",b.northbound, b.southbound, b.eastbound, b.westbound) as value, t.text1 as name, b.guid');

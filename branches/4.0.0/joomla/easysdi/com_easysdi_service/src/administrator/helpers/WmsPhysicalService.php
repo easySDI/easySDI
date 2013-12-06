@@ -5,8 +5,8 @@ require_once('WmsLayer.php');
 class WmsPhysicalService extends PhysicalService{
 	private $layerList = Array();
 	
-	public function __construct ($id, $url) {
-		parent::__construct($id, $url, 'WMS');
+	public function __construct ($id, $url, $user=null, $password=null) {
+		parent::__construct($id, $url, $user, $password, 'WMS');
 	}
 	
 	public function getLayerList () {

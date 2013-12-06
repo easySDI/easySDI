@@ -248,6 +248,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         /** @var DOMElement */
         $update = $this->structure->getElementsByTagNameNS($this->cswUri, 'Update')->item(0);
         $this->structure->formatOutput = true;
+        $xml = $this->structure->saveXML();
 
         $response = array();
         $response['success'] = true;
@@ -287,6 +288,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * @since	1.6
      */
     public function save($data = null, $commit = true, $continue = false) {
+        $this->structure->formatOutput = true;
+        $xml = $this->structure->saveXML();
+        
         if (!isset($data)) {
             $data = $this->data;
         }
@@ -372,8 +376,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             }
         }
 
+        $this->structure->formatOutput = true;
+        $xml = $this->structure->saveXML();
+        
         $root = $this->domXpathStr->query('/*')->item(0);
 
+        
         foreach ($this->getHeader() as $header) {
             $root->insertBefore($header, $root->firstChild);
         }
@@ -383,16 +391,32 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         //$root->insertBefore($smda->getPlatformNode($this->structure), $root->firstChild);
         $root->appendChild($smda->getPlatformNode($this->structure));
 
+        $rootname = $root->nodeName;
+        
+        $this->structure->formatOutput = true;
+        $xml = $this->structure->saveXML();
+        
         $transaction = $this->structure->createElementNS($this->cswUri, 'Transaction');
         $transaction->setAttribute('service', 'CSW');
         $transaction->setAttribute('version', '2.0.2');
 
         $update = $this->structure->createElementNS($this->cswUri, 'Update');
         $update->appendChild($root);
+        
+        $this->structure->formatOutput = true;
+        $xml = $this->structure->saveXML();
+        
         $update->appendChild($this->getConstraint($data['guid']));
+        
+        $this->structure->formatOutput = true;
+        $xml = $this->structure->saveXML();
+        
         $transaction->appendChild($update);
         $this->structure->appendChild($transaction);
 
+        $this->structure->formatOutput = true;
+        $xml = $this->structure->saveXML();
+        
         $this->removeNoneExist();
         $this->removeCatalogNS();
 
@@ -606,94 +630,6 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $headers[] = $locale;
 
         return $headers;
-    }
-
-    /**
-     * 
-     * @return DOMDocument
-     */
-    private function getSdiHeader($id) {
-
-        /**
-         * @todo Vérifier le nom du paramètre à remonter du core
-         */
-        $platformGuid = JComponentHelper::getParams('com_easysdi_core')->get('guid');
-
-        $query = $this->db->getQuery(true);
-        $query->select('v.`name` as md_lastVersion, m.guid as md_guid, m.created as md_created, m.published as md_published, ms.`value` as ms_value');
-        $query->select('r.id as r_id, r.guid as r_guid, r.`alias` as r_alias, r.`name` as r_name');
-        $query->select('rt.`alias` as rt_alias');
-        $query->select('o.name as o_name, o.guid as o_guid');
-        $query->from('#__sdi_metadata as m');
-        $query->innerJoin('#__sdi_sys_metadatastate as ms ON ms.id = m.metadatastate_id');
-        $query->innerJoin('#__sdi_version as v ON v.id = m.version_id');
-        $query->innerJoin('#__sdi_resource as r ON r.id = v.resource_id');
-        $query->innerJoin('#__sdi_organism as o ON o.id = r.organism_id');
-        $query->innerJoin('#__sdi_resourcetype as rt ON rt.id = r.resourcetype_id');
-        $query->where('m.id=' . $id);
-
-
-        $this->db->setQuery($query);
-        $result = $this->db->loadObject();
-
-        $query = $this->db->getQuery(true);
-        $query->select('o.guid, o.`name`');
-        $query->from('#__sdi_accessscope as ac');
-        $query->innerJoin('#__sdi_organism o ON o.id = ac.organism_id');
-        $query->where('ac.entity_guid=\'' . $result->r_guid . '\'');
-        $this->db->setQuery($query);
-        $resultOrganisms = $this->db->loadObjectList();
-
-        $query = $this->db->getQuery(true);
-        $query->select('u.guid, ju.`name`');
-        $query->from('#__sdi_accessscope as ac');
-        $query->innerJoin('#__sdi_user as u ON u.id = ac.user_id');
-        $query->innerJoin('#__users as ju ON ju.id = u.user_id');
-        $query->where('ac.entity_guid=\'' . $result->r_guid . '\'');
-        $this->db->setQuery($query);
-        $resultUsers = $this->db->loadObjectList();
-
-        $platform = $this->structure->createElementNS($this->nsArray['sdi'], 'platform');
-        $platform->setAttribute('guid', $platformGuid);
-        $platform->setAttribute('harvested', 'false');
-
-        $resource = $this->structure->createElementNS($this->nsArray['sdi'], 'resource');
-        $resource->setAttribute('guid', $result->r_guid);
-        $resource->setAttribute('alias', $result->r_alias);
-        $resource->setAttribute('name', $result->r_name);
-        $resource->setAttribute('type', $result->rt_alias);
-        $resource->setAttribute('organism', $result->o_guid);
-        $resource->setAttribute('scope', '');
-
-        $metadata = $this->structure->createElementNS($this->nsArray['sdi'], 'metadata');
-        $metadata->setAttribute('lastVersion', $result->md_lastVersion);
-        $metadata->setAttribute('guid', $result->md_guid);
-        $metadata->setAttribute('created', $result->md_created);
-        $metadata->setAttribute('published', $result->md_published);
-        $metadata->setAttribute('state', $result->ms_value);
-
-        $organisms = $this->structure->createElementNS($this->nsArray['sdi'], 'organisms');
-        foreach ($resultOrganisms as $o) {
-            $organism = $this->structure->createElementNS($this->nsArray['sdi'], 'organism');
-            $organism->setAttribute('guid', $o->guid);
-            $organism->setAttribute('alias', $o->name);
-            $organisms->appendChild($organism);
-        }
-
-        $users = $this->structure->createElementNS($this->nsArray['sdi'], 'users');
-        foreach ($resultUsers as $u) {
-            $user = $this->structure->createElementNS($this->nsArray['sdi'], 'user');
-            $user->setAttribute('guid', $u->guid);
-            $user->setAttribute('alias', $u->name);
-            $users->appendChild($user);
-        }
-
-        $resource->appendChild($organisms);
-        $resource->appendChild($users);
-        $resource->appendChild($metadata);
-        $platform->appendChild($resource);
-
-        return $platform;
     }
 
     /**

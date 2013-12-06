@@ -38,11 +38,11 @@ class Easysdi_shopModelRequests extends JModelList {
 
         // Initialise variables.
         $app = JFactory::getApplication();
-        
+
         // Load the filter state.
         $search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
-        
+
         $search = $app->getUserStateFromRequest($this->context . '.filter.type', 'filter_type');
         $this->setState('filter.type', $search);
 
@@ -89,19 +89,21 @@ class Easysdi_shopModelRequests extends JModelList {
         // Join over the created by field 'created_by'
         $query->select('created_by.name AS created_by');
         $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
-        
+
         //Join over the order state value
         $query->select('state.value AS orderstate');
         $query->innerjoin('#__sdi_sys_orderstate AS state ON state.id = a.orderstate_id');
-        
+
         //Join over the order type value
         $query->select('type.value AS ordertype');
         $query->innerjoin('#__sdi_sys_ordertype AS type ON type.id = a.ordertype_id');
-        
+
         // Filter by type
         $type = $this->getState('filter.type');
         if (is_numeric($type)) {
-        	$query->where('a.ordertype_id = ' . (int) $type);
+            $query->where('a.ordertype_id = ' . (int) $type);
+        } else {
+            $query->where('a.ordertype_id <> 3 ');
         }
 
         // Filter by search in title
@@ -111,23 +113,23 @@ class Easysdi_shopModelRequests extends JModelList {
                 $query->where('a.id = ' . (int) substr($search, 3));
             } else {
                 $search = $db->Quote('%' . $db->escape($search, true) . '%');
-                $query->where('( a.name LIKE '.$search.' )');
+                $query->where('( a.name LIKE ' . $search . ' )');
             }
         }
-        
+
         //Only order that the current user has something to do with
         $diffusions = sdiFactory::getSdiUser()->getResponsibleExtraction();
         $query->innerjoin('#__sdi_order_diffusion od ON od.order_id = a.id');
         $query->innerjoin('#__sdi_diffusion d ON d.id = od.diffusion_id');
-        $query->where('d.id IN ( ' . implode(',', $diffusions) .')');
+        $query->where('d.id IN ( ' . implode(',', $diffusions) . ')');
         $query->where('od.productstate_id = 2');
-        
+
         $query->group('a.id');
-        $query->order('a.created DESC');        
+        $query->order('a.created DESC');
 
         return $query;
     }
-    
+
     function getOrderType() {
         //Load all status value
         $db = JFactory::getDbo();

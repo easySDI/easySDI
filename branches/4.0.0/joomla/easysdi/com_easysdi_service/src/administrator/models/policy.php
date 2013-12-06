@@ -195,7 +195,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                 }
             }
 
-            $wmsObj = new WmsPhysicalService($ps->id, $ps->resourceurl);
+            $wmsObj = new WmsPhysicalService($ps->id, $ps->resourceurl, $ps->resourceusername, $ps->resourcepassword);
             $wmsObj->getCapabilities();
             $wmsObj->populate();
             $wmsObj->loadData($data);
@@ -256,7 +256,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                 }
             }
 
-            $wfsObj = new WfsPhysicalService($ps->id, $ps->resourceurl);
+            $wfsObj = new WfsPhysicalService($ps->id, $ps->resourceurl, $ps->resourceusername, $ps->resourcepassword);
             $wfsObj->getCapabilities();
             $wfsObj->populate();
             $wfsObj->loadData($data);
@@ -324,7 +324,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                 }
             }
 
-            $wmtsObj = new WmtsPhysicalService($ps->id, $ps->resourceurl);
+            $wmtsObj = new WmtsPhysicalService($ps->id, $ps->resourceurl, $ps->resourceusername, $ps->resourcepassword);
             $wmtsObj->getCapabilities();
             $wmtsObj->populate();
             $wmtsObj->loadData($data);

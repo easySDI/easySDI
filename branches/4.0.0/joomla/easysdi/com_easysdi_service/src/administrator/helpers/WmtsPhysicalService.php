@@ -6,8 +6,8 @@ class WmtsPhysicalService extends PhysicalService{
 	private $layerList = Array();
 	private $SRSList = Array();
 	
-	public function __construct ($id, $url) {
-		parent::__construct($id, $url, 'WMTS');
+	public function __construct ($id, $url, $user=null, $password=null) {
+		parent::__construct($id, $url, $user, $password, 'WMTS');
 	}
 	
 	public function getLayerList () {
