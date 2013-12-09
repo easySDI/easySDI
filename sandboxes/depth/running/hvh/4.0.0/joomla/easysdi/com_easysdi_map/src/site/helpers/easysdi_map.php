@@ -675,7 +675,7 @@ abstract class Easysdi_mapHelper {
                         switch ($layer->serviceconnector) {
                             case 'WMTS' :
                                 $config .= ' 
-                                {
+                                {                                
                                 source: "ol",
                                 type: "OpenLayers.Layer.WMTS",
                                 args: [
@@ -709,6 +709,14 @@ abstract class Easysdi_mapHelper {
                                     $config .= 'group: "background"';
                                 else
                                     $config .= 'group: "' . $group->alias . '"';
+                                
+                                if(!empty($layer->metadata_guid)):
+                                    $config .= 'href: "'. $layer->metadata_guid .'",';
+                                endif;
+                                if(!empty($layer->diffusion_id)):
+                                    $config .= 'download: "'. $layer->diffusion_id .'",';
+                                endif;
+                                
                                 $config .='
                                 },
                                 ';
@@ -756,6 +764,15 @@ abstract class Easysdi_mapHelper {
                                     $config .= ' group : "background"';
                                 else
                                     $config .= ' group : "' . $group->alias . '"';
+                                
+                                if(!empty($layer->metadata_guid)):
+                                    $config .= 'href: "'. $layer->metadata_guid .'",';
+                                endif;
+                                if(!empty($layer->diffusion_id)):
+                                    $config .= 'download: "'. $layer->diffusion_id .'",';
+                                endif;
+                                
+                               
                                 $config .= '
                                 },
                                 ';
@@ -801,6 +818,14 @@ abstract class Easysdi_mapHelper {
                                     $config .= ' group : "background"';
                                 else
                                     $config .= ' group : "' . $group->alias . '"';
+                                
+                                if(!empty($layer->metadata_guid)):
+                                    $config .= 'href: "'. $layer->metadata_guid .'",';
+                                endif;
+                                if(!empty($layer->diffusion_id)):
+                                    $config .= 'download: "'. $layer->diffusion_id .'",';
+                                endif;
+                                
                                 $config .= '
                                 },
                                 ';
@@ -843,6 +868,14 @@ abstract class Easysdi_mapHelper {
                                     $config .= 'visibility :  true,';
                                 else
                                     $config .= 'visibility :  false,';
+                                
+                                if(!empty($layer->metadata_guid)):
+                                    $config .= 'href: "'. $layer->metadata_guid .'",';
+                                endif;
+                                if(!empty($layer->diffusion_id)):
+                                    $config .= 'download: "'. $layer->diffusion_id .'",';
+                                endif;
+                                
 
                                 $config .= 'opacity: ' . $layer->opacity . '
                                 },
