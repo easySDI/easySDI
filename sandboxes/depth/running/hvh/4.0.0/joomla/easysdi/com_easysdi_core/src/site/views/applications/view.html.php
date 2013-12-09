@@ -42,8 +42,8 @@ class Easysdi_coreViewApplications extends JViewLegacy {
             return;
         }
         
-        $resource = $app->input->get('resource', '', 'int');
-        if (!$this->user->authorize($resource, sdiUser::metadataresponsible)) {
+       $resource = $app->getUserState('com_easysdi_core.edit.applicationresource.id');
+        if (!$this->user->authorize($resource, sdiUser::resourcemanager)) {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return;
@@ -59,7 +59,7 @@ class Easysdi_coreViewApplications extends JViewLegacy {
             throw new Exception(implode("\n", $errors));
         }
         
-        $resource = $app->getUserState('com_easysdi_core.edit.applicationresource.id');
+        
         $pathway = $app->getPathway();
         $pathway->addItem(JText::_("COM_EASYSDI_CORE_BREADCRUMBS_APPLICATIONS"), JRoute::_('index.php?option=com_easysdi_core&view=applications&resource='.$resource, false));
 

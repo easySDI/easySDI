@@ -102,6 +102,11 @@ class Easysdi_coreModelResources extends JModelList {
         $query->where('lang.code = "' . $lang->getTag() . '"');
         $query->where('rt.predefined = 0');
         
+        //Join over the organism to return only the resource belonging to the current user's organism
+//        $sdiUser = sdiFactory::getSdiUser();
+//        $organisms = $sdiUser->getMemberOrganisms();        
+//        $query->where('a.organism_id = ' . (int) $organisms[0]->id);
+        
         // Filter by resource type
         $resourcetype = $this->getState('filter.resourcetype');
         if (is_numeric($resourcetype)) {

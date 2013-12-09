@@ -300,7 +300,7 @@ class sdiUser {
      * Get if a user has the specific right on the specific item, or all the right on an item
      * @param int $item
      * @param int $right
-     * @return boolean
+     * @return mixed
      */
     public function authorize($item, $right = null) {
         if(!$this->isEasySDI){

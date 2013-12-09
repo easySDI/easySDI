@@ -30,7 +30,7 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
         $editId = JFactory::getApplication()->input->getInt('id', null, 'array');
 
         // Set the id to edit in the session.
-        $app->setUserState('com_easysdi_core.edit.resource.id', $editId);        
+        $app->setUserState('com_easysdi_core.edit.resource.id', $editId);
         $app->setUserState('com_easysdi_core.edit.resource.resourcetype.id', $app->input->get('resourcetype', '', 'INT'));
 
         // Get the model.
@@ -47,7 +47,7 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
         }
 
         // Redirect to the edit screen.
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resource&layout=edit' , false));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resource&layout=edit', false));
     }
 
     /**
@@ -131,21 +131,18 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
                 $model->checkin($return);
             }
 
-            // Clear the profile id from the session.
-            $app->setUserState('com_easysdi_core.edit.resource.id', null);
-            $app->setUserState('com_easysdi_core.edit.resource.resourcetype.id', null);
+            // Flush the data from the session.
+            $this->clearSession();
 
             // Redirect to the list screen.
             $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_SAVED_SUCCESSFULLY'));
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-
-
-            // Flush the data from the session.
-            $app->setUserState('com_easysdi_core.edit.resource.data', null);
         }
     }
 
     function cancel() {
+        // Flush the data from the session.
+        $this->clearSession();
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
     }
 
@@ -214,16 +211,12 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
             $model->checkin($return);
         }
 
-        // Clear the profile id from the session.
-        $app->setUserState('com_easysdi_core.edit.resource.id', null);
-        $app->setUserState('com_easysdi_core.edit.resource.resourcetype.id', null);
-
+        // Flush the data from the session.
+        $this->clearSession();
+        
         // Redirect to the list screen.
         $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_DELETED_SUCCESSFULLY'));
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-
-        // Flush the data from the session.
-        $app->setUserState('com_easysdi_core.edit.resource.data', null);
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));        
     }
 
     public function getUsers() {
@@ -256,6 +249,15 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
 
     function apply() {
         $this->save(false);
+    }
+
+    function clearSession() {
+        $app = JFactory::getApplication();
+        // Clear the id from the session.
+        $app->setUserState('com_easysdi_core.edit.resource.id', null);
+        $app->setUserState('com_easysdi_core.edit.resource.resourcetype.id', null);
+        // Flush the data from the session.
+        $app->setUserState('com_easysdi_core.edit.resource.data', null);
     }
 
 }

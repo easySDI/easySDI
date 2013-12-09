@@ -45,9 +45,16 @@ CREATE TABLE IF NOT EXISTS `#__sdi_maplayer` (
 `asOLoptions` TEXT,
 `metadatalink` TEXT  ,
 `attribution` VARCHAR(255)   ,
+`accessscope_id` INT(11) UNSIGNED NOT NULL ,
 `access` INT(11)  NOT NULL DEFAULT '1',
 `asset_id` INT(10),
 PRIMARY KEY (`id`), 
+INDEX `#__sdi_maplayer_fk1` (`accessscope_id` ASC) ,
+CONSTRAINT `#__sdi_maplayer_fk1`
+    FOREIGN KEY (`accessscope_id`)
+    REFERENCES `#__sdi_sys_accessscope` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
 UNIQUE (`alias`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 

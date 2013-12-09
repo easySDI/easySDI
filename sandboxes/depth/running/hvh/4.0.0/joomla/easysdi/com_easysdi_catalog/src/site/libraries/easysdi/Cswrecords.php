@@ -83,7 +83,7 @@ class Cswrecords extends SearchForm {
 
             if (key_exists($name[0], $this->searchcriteria)) {
                 switch ($this->searchcriteria[$name[0]]->name) {
-                    case 'fulltext':
+                    case 'resourcetype':
                         $parent = $parentAnd;
                         break;
                     default:
@@ -112,7 +112,7 @@ class Cswrecords extends SearchForm {
 
         // if resourcetype field is set to none, add all resourcetype to filter
         if (!key_exists('2_resourcetype', $this->data)) {
-            $and->appendChild($this->getResouceType($this->getAllResourcetype()));
+            $parentAnd->appendChild($this->getResouceType($this->getAllResourcetype()));
         }
 
         $and->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'false'));
@@ -236,8 +236,8 @@ class Cswrecords extends SearchForm {
                 }
                 break;
             case 'resourcetype':
+                $this->addHarvested = false;
                 if (count(array_filter($value)) > 0) {
-                    $this->addHarvested = false;
                     return $this->getResouceType($value);
                 }
                 break;
@@ -277,7 +277,6 @@ class Cswrecords extends SearchForm {
                 }
                 break;
             case 'isDownloadable':
-                $this->addHarvested = false;
                 return $this->getIsDownloadable();
             case 'isFree':
                 $this->addHarvested = false;

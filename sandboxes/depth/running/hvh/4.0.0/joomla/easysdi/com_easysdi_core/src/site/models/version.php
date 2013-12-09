@@ -33,7 +33,7 @@ class Easysdi_coreModelVersion extends JModelForm {
             $id = JFactory::getApplication()->getUserState('com_easysdi_core.edit.version.id');
         } else {
             $id = JFactory::getApplication()->input->get('id');
-            JFactory::getApplication()->setUserState('com_easysdi_core.edit.version.id', $id);
+//            JFactory::getApplication()->setUserState('com_easysdi_core.edit.version.id', $id);
         }
         $this->setState('version.id', $id);
     }
