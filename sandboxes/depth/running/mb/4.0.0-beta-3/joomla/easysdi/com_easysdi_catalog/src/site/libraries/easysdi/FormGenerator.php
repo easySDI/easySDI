@@ -156,6 +156,8 @@ class FormGenerator {
                     $attributename = $attribute->nodeName;
                     $cloned = $attribute->cloneNode(true);
                     $parent->appendChild($cloned);
+                    $parent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
+                    
 
                     $root = $cloned;
                     $this->ajaxXpath = $cloned->getNodePath();
@@ -167,6 +169,9 @@ class FormGenerator {
 
         $this->setDomXpathStr();
 
+        $this->structure->formatOutput = true;
+        $html = $this->structure->saveXML();
+        
         if (isset($this->csw)) {
             $this->setDomXpathCsw();
             $this->mergeCsw();
@@ -240,7 +245,7 @@ class FormGenerator {
                 $occurance = $this->domXpathCsw->query('/*' . $relationExist->getNodePath())->length;
             }
 
-            if (!$relationExist->hasAttributeNS($this->catalog_uri, 'exist')) {
+            if (!$relationExist->hasAttributeNS($this->catalog_uri, 'exist'))  {
 
                 $exist = $lowerbound + $occurance;
 
@@ -928,7 +933,8 @@ class FormGenerator {
         $field->setAttribute('label', EText::_($guid));
         $field->setAttribute('description', EText::_($guid, 2));
         $field->setAttribute('multiple', 'true');
-        $field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $default)));
+
+        $field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $default), true));
 
         $i = 1;
         foreach ($this->getAttributOptions($attribute) as $opt) {
