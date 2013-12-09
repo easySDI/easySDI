@@ -131,7 +131,7 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
 
 
         if (!$andclose) {
-            $app->setUserState('com_easysdi_shop.edit.diffusion.data', $data);
+            $app->setUserState('com_easysdi_shop.edit.diffusion.data', null);
 
             // Redirect back to the edit screen.
             $this->setMessage(JText::_('COM_EASYSDI_SHOP_ITEM_SAVED_SUCCESSFULLY'));

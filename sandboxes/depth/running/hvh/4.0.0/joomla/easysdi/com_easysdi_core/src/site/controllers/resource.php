@@ -118,11 +118,9 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
 
 
         if (!$andclose) {
-            // Save the data in the session.
-            $app->setUserState('com_easysdi_core.edit.resource.data', $data);
-
             // Redirect back to the edit screen.
             $id = (int) $app->getUserState('com_easysdi_core.edit.resource.id');
+            $app->setUserState('com_easysdi_core.edit.resource.data', null);
             $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_SAVED_SUCCESSFULLY'));
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resource&layout=edit&id=' . $id, false));
         } else {

@@ -22,6 +22,16 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 class Easysdi_coreModelResource extends JModelForm {
 
     var $_item = null;
+    
+    const MEMBER = 1;
+    const RESOURCEMANAGER = 2;
+    const METADATARESPONSIBLE = 3;
+    const METADATAEDITOR = 4;
+    const DIFFUSIONMANAGER = 5;
+    const PREVIEWMANAGER = 6;
+    const EXTRACTIONRESPONSIBLE = 7;
+    const ORDERELIGIBLE = 8;
+    
 
     /**
      * Method to auto-populate the model state.

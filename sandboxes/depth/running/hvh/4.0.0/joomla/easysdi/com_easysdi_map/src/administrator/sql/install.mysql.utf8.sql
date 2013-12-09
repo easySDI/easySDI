@@ -153,6 +153,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_visualization` (
 `name` VARCHAR(255)  NOT NULL ,
 `version_id` INT(11) UNSIGNED NOT NULL ,
 `accessscope_id` INT(11) UNSIGNED NOT NULL ,
+`maplayer_id` INT(11) UNSIGNED  NOT NULL ,
 `wmsservice_id` INT(11) UNSIGNED  NOT NULL ,
 `wmsservicetype_id` INT(11) UNSIGNED  ,
 `layername` VARCHAR(255)  NOT NULL ,

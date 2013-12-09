@@ -270,6 +270,9 @@ endif;
                                                 </li>
                                             <?php endif; ?>
 
+                                            <?php if (($this->user->authorize($item->id, sdiUser::diffusionmanager) && $item->supportdiffusion) || ($this->user->authorize($item->id, sdiUser::viewmanager) && $item->supportview)): ?>
+                                                <li class="divider"></li>
+                                            <?php endif; ?>
                                             <?php if ($this->user->authorize($item->id, sdiUser::diffusionmanager) && $item->supportdiffusion): ?>
                                                 <li class="divider"></li>
                                                 <li>

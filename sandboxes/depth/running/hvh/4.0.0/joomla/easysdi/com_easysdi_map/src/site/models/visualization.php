@@ -40,7 +40,7 @@ class Easysdi_mapModelVisualization extends JModelForm {
             $id = JFactory::getApplication()->getUserState('com_easysdi_map.edit.visualization.id');
         } else {
             $id = JFactory::getApplication()->input->get('id');
-            JFactory::getApplication()->setUserState('com_easysdi_map.edit.visualization.id', $id);
+//            JFactory::getApplication()->setUserState('com_easysdi_map.edit.visualization.id', $id);
         }
         $this->setState('visualization.id', $id);
 
@@ -99,6 +99,31 @@ class Easysdi_mapModelVisualization extends JModelForm {
         }
 
         return $this->_item;
+    }
+
+    public function getAuthorizedLayers() {
+        $sdiUser = sdiFactory::getSdiUser();
+
+        $cls = '(ml.accessscope_id = 1 
+                            OR ((ml.accessscope_id = 3) AND (' . $sdiUser->id . ' IN (select a.user_id from #__sdi_accessscope a where a.entity_guid = ml.guid)))';
+
+        $organisms = $sdiUser->getMemberOrganisms();
+        $cls .= 'OR ((ml.accessscope_id = 2) AND (';
+        $cls .= $organisms[0]->id . ' in (select a.organism_id from #__sdi_accessscope a where a.entity_guid = ml.guid)';
+        $cls .= '))';
+        $cls .= '
+                 )';
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('*')
+                ->from('#__sdi_maplayer ml')
+                ->where($cls);
+
+        $db->setQuery($query);
+        $layers = $db->loadObjectList();
+        
+        return $layers;
     }
 
     public function getTable($type = 'Visualization', $prefix = 'Easysdi_mapTable', $config = array()) {
@@ -192,10 +217,10 @@ class Easysdi_mapModelVisualization extends JModelForm {
      * @since	1.6
      */
     protected function loadFormData() {
-       $data = JFactory::getApplication()->getUserState('com_easysdi_map.edit.visualization.data', array());
+        $data = JFactory::getApplication()->getUserState('com_easysdi_map.edit.visualization.data', array());
         if (empty($data)) {
             $data = $this->getData();
-        } 
+        }
 
         return $data;
     }
@@ -234,7 +259,7 @@ class Easysdi_mapModelVisualization extends JModelForm {
             $data['guid'] = $table->guid;
             if (!sdiModel::saveAccessScope($data))
                 return false;
-            
+
             //Update the metadata stored in the remote catalog 
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
@@ -248,7 +273,7 @@ class Easysdi_mapModelVisualization extends JModelForm {
             if (!$csw->updateSDIElement()):
                 JFactory::getApplication()->enqueueMessage('Update CSW metadata failed.', 'error');
             endif;
-            
+
             return $id;
         } else {
             return false;
@@ -257,7 +282,7 @@ class Easysdi_mapModelVisualization extends JModelForm {
 
     function delete($data) {
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('visualization.id');
-        
+
         //Check the user right
         $user = sdiFactory::getSdiUser();
         if (!$user->isEasySDI || !$user->authorizeOnVersion($data['version_id'], sdiUser::viewmanager)) {
@@ -266,7 +291,7 @@ class Easysdi_mapModelVisualization extends JModelForm {
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
         }
-       
+
         $table = $this->getTable();
         if ($table->delete($data['id']) === true) {
             return $id;

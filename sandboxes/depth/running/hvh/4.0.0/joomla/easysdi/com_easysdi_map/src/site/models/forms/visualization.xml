@@ -43,9 +43,6 @@
             translate="true"
         /> 
   
-        
-       
-        
 
         <field
             name="state"
@@ -61,30 +58,7 @@
     </fieldset> 
 
     <fieldset name="view">
-        <field 	name="wmsservice_id" 
-                type="ServicegroupedList" 
-                class="required validate-select"
-                size="10"
-                servicetype="wms"
-                label="COM_EASYSDI_MAP_FORM_LBL_VISUALIZATION_WMSSERVICE_ID"
-                description="COM_EASYSDI_MAP_FORM_DESC_VISUALIZATION_WMSSERVICE_ID" 
-                required="true"
-        />
-       
-        <field name="layername" type="text" size="40" class="inputbox"
-                required="true"
-              label="COM_EASYSDI_MAP_FORM_LBL_VISUALIZATION_LAYERNAME"
-              description="COM_EASYSDI_MAP_FORM_DESC_VISUALIZATION_LAYERNAME" 
-              filter="safehtml" /> 
-        
-        <field 	name="attribution" 
-                type="textarea" 
-                class="input-xlarge"
-                rows="3"
-                cols="30"
-                filter="safehtml"
-                label="COM_EASYSDI_MAP_FORM_LBL_VISUALIZATION_ATTRIBUTION"
-                description="COM_EASYSDI_MAP_FORM_DESC_VISUALIZATION_ATTRIBUTION"  />
+        <field name="maplayer_id" type="text" size="40" class="inputbox" required="true" filter="safehtml" /> 
     </fieldset>
     
     

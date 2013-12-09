@@ -6,3 +6,5 @@ ALTER TABLE `#__sdi_maplayer`
    REFERENCES `#__sdi_sys_accessscope` (`id` )
    ON DELETE CASCADE
    ON UPDATE NO ACTION;
+
+ALTER TABLE `#__sdi_visualization` ADD `maplayer_id` INT(11) UNSIGNED  NOT NULL ;
