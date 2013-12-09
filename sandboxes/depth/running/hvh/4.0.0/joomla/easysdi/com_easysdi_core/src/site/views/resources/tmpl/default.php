@@ -259,7 +259,7 @@ endif;
                                                     <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.create&resource=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
                                                 </li>
                                             <?php endif; ?>
-                                            <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>
+                                            <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->supportrelation): ?>
                                                 <li>
                                                     <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.edit&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RELATIONS'); ?></a>
                                                 </li>               
@@ -270,13 +270,13 @@ endif;
                                                 </li>
                                             <?php endif; ?>
 
-                                            <?php if ($this->user->authorize($item->id, sdiUser::diffusionmanager)): ?>
+                                            <?php if ($this->user->authorize($item->id, sdiUser::diffusionmanager) && $item->supportdiffusion): ?>
                                                 <li class="divider"></li>
                                                 <li>
                                                     <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.edit&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_DIFFUSION'); ?></a>
                                                 </li>
                                             <?php endif; ?>
-                                            <?php if ($this->user->authorize($item->id, sdiUser::viewmanager)): ?>
+                                            <?php if ($this->user->authorize($item->id, sdiUser::viewmanager) && $item->supportview): ?>
                                                 <li>
                                                     <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_map&task=visualization.edit&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_VIEW'); ?></a>
                                                 </li>
