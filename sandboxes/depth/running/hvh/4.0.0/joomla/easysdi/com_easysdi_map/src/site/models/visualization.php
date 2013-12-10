@@ -101,24 +101,30 @@ class Easysdi_mapModelVisualization extends JModelForm {
         return $this->_item;
     }
 
-    public function getAuthorizedLayers() {
+    public function getAuthorizedLayers($visualization_id) {
         $sdiUser = sdiFactory::getSdiUser();
 
-        $cls = '(ml.accessscope_id = 1 
-                            OR ((ml.accessscope_id = 3) AND (' . $sdiUser->id . ' IN (select a.user_id from #__sdi_accessscope a where a.entity_guid = ml.guid)))';
-
+        $cls = '(ml.accessscope_id = 1 OR ((ml.accessscope_id = 3) AND (' . $sdiUser->id . ' IN (select a.user_id from #__sdi_accessscope a where a.entity_guid = ml.guid)))';
         $organisms = $sdiUser->getMemberOrganisms();
         $cls .= 'OR ((ml.accessscope_id = 2) AND (';
         $cls .= $organisms[0]->id . ' in (select a.organism_id from #__sdi_accessscope a where a.entity_guid = ml.guid)';
         $cls .= '))';
-        $cls .= '
-                 )';
+        $cls .= ')';
+        
+        if(!empty($visualization_id)):
+            $exclusioncls = 'ml.id NOT IN (SELECT v.maplayer_id FROM #__sdi_visualization v WHERE v.id <> ' . $visualization_id . ')';
+        else:
+            $exclusioncls = 'ml.id NOT IN (SELECT v.maplayer_id FROM #__sdi_visualization v)';
+        endif;
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
                 ->select('*')
                 ->from('#__sdi_maplayer ml')
-                ->where($cls);
+                ->where($cls)
+                ->where('ml.state = 1')
+                ->where($exclusioncls);
+        
 
         $db->setQuery($query);
         $layers = $db->loadObjectList();

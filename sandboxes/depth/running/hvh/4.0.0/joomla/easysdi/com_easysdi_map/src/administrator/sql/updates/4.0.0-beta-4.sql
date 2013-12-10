@@ -8,3 +8,10 @@ ALTER TABLE `#__sdi_maplayer`
    ON UPDATE NO ACTION;
 
 ALTER TABLE `#__sdi_visualization` ADD `maplayer_id` INT(11) UNSIGNED  NOT NULL ;
+
+INSERT INTO `#__sdi_sys_maptool` (alias,ordering,state,name) 
+VALUES 
+('layerdetailsheet',18,1,'Layer detail sheet'),
+('layerdownload',19,1,'Layer download'),
+('layerorder',20,1,'Layer order')
+;

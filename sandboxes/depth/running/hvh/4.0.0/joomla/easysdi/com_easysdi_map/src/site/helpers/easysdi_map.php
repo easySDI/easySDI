@@ -13,26 +13,26 @@ require_once JPATH_SITE . '/components/com_easysdi_map/models/map.php';
 
 abstract class Easysdi_mapHelper {
 
-    public static function getMapScript($mapid, $cleared=false, $appname = "app", $renderto = "sdimapcontainer") {
+    public static function getMapScript($mapid, $cleared = false, $appname = "app", $renderto = "sdimapcontainer") {
         $model = JModelLegacy::getInstance('map', 'Easysdi_mapModel');
         $item = $model->getData($mapid);
 
         //Clear the map from all the tools
         //The goal is to have a clean map to use as a simple and quick data preview
-        if($cleared){
+        if ($cleared) {
             $item->tools = array();
             $item->urlwfslocator = null;
         }
-        
+
         $config = Easysdi_mapHelper::getMapConfig($item, $cleared, $renderto);
 
         //Load admin language file
         $lang = JFactory::getLanguage();
         $lang->load('com_easysdi_map', JPATH_ADMINISTRATOR);
-        
+
         //Loading css files
-        $doc = JFactory::getDocument();   
-        $base_url = Juri::base(true) . '/administrator/components/com_easysdi_core/libraries';        
+        $doc = JFactory::getDocument();
+        $base_url = Juri::base(true) . '/administrator/components/com_easysdi_core/libraries';
         $doc->addStyleSheet($base_url . '/ext/resources/css/ext-all.css');
         $doc->addStyleSheet($base_url . '/ext/resources/css/xtheme-gray.css');
         $doc->addStyleSheet($base_url . '/openlayers/theme/default/style.css');
@@ -43,13 +43,13 @@ abstract class Easysdi_mapHelper {
         $doc->addStyleSheet($base_url . '/gxp/theme/all.css');
         $doc->addStyleSheet(Juri::base(true) . '/components/com_easysdi_map/views/map/tmpl/easysdi.css');
 
-        $output ='';
+        $output = '';
 
-         $doc->addScript(JURI::base(true) . '/media/jui/js/jquery.js');
-            $doc->addScript(JURI::base(true) . '/media/jui/js/jquery-noconflict.js');
-            $doc->addScript(JURI::base(true) . '/media/jui/js/bootstrap.js');
-            
-        if (JDEBUG) { 
+        $doc->addScript(JURI::base(true) . '/media/jui/js/jquery.js');
+        $doc->addScript(JURI::base(true) . '/media/jui/js/jquery-noconflict.js');
+        $doc->addScript(JURI::base(true) . '/media/jui/js/bootstrap.js');
+
+        if (JDEBUG) {
             $doc->addScript($base_url . '/ext/adapter/ext/ext-base-debug.js');
             $doc->addScript($base_url . '/ext/ext-all-debug.js');
             $doc->addScript($base_url . '/ux/ext/RowExpander.js');
@@ -57,11 +57,11 @@ abstract class Easysdi_mapHelper {
             $doc->addScript($base_url . '/geoext/lib/GeoExt.js');
             $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
             $doc->addScript($base_url . '/gxp/script/loader.js');
-            
             $doc->addScript($base_url . '/easysdi/js/gxp/plugins/WMSSource.js');
             $doc->addScript($base_url . '/easysdi/js/sdi/plugins/SearchCatalog.js');
             $doc->addScript($base_url . '/easysdi/js/sdi/plugins/LayerDetailSheet.js');
             $doc->addScript($base_url . '/easysdi/js/sdi/plugins/LayerDownload.js');
+            $doc->addScript($base_url . '/easysdi/js/sdi/plugins/LayerOrder.js');
             $doc->addScript($base_url . '/easysdi/js/gxp/plugins/LayerTree.js');
             $doc->addScript($base_url . '/easysdi/js/gxp/plugins/Print.js');
             $doc->addScript($base_url . '/easysdi/js/gxp/plugins/LayerManager.js');
@@ -74,10 +74,9 @@ abstract class Easysdi_mapHelper {
             $doc->addScript($base_url . '/easysdi/js/geoext/data/PrintProvider.js');
             $doc->addScript($base_url . '/easysdi/js/geoext/ux/PrintPreview.js');
             $doc->addScript($base_url . '/easysdi/js/geoext/widgets/PrintMapPanel.js');
-        
+
             $doc->addScript(JURI::base(true) . '/media/system/js/mootools-core-uncompressed.js');
             $doc->addScript(JURI::base(true) . '/media/system/js/core-uncompressed.js');
-         
         } else {
             $doc->addScript($base_url . '/ext/adapter/ext/ext-base.js');
             $doc->addScript($base_url . '/ext/ext-all.js');
@@ -87,20 +86,19 @@ abstract class Easysdi_mapHelper {
             $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
             $doc->addScript($base_url . '/gxp/script/gxp.min.js');
             $doc->addScript($base_url . '/easysdi/js/sdi.min.js');
-                       
+
             $doc->addScript(JURI::base(true) . '/media/system/js/mootools-core.js');
             $doc->addScript(JURI::base(true) . '/media/system/js/core.js');
-
         }
-        
-        $files = glob(JURI::base(true) .'/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.{js}', GLOB_BRACE);
+
+        $files = glob(JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.{js}', GLOB_BRACE);
         foreach ($files as $file) {
-            $doc->addScript($file);                
+            $doc->addScript($file);
         }
 
-        $output .= '<div id="'.$renderto.'" class="cls-'.$renderto.'"></div>';
+        $output .= '<div id="' . $renderto . '" class="cls-' . $renderto . '"></div>';
         $output .= '<script>
-            var '.$appname.';
+            var ' . $appname . ';
             var loadingMask;
             Ext.Container.prototype.bufferResize = false;
             Ext.onReady(function(){
@@ -110,31 +108,31 @@ abstract class Easysdi_mapHelper {
         $output .= '"
                 });
                 loadingMask.show();
-                var height = Ext.get("'.$renderto.'").getHeight();
-                if(!height)  height = Ext.get("'.$renderto.'").getWidth() * 1/2;
-                var width = Ext.get("'.$renderto.'").getWidth();
+                var height = Ext.get("' . $renderto . '").getHeight();
+                if(!height)  height = Ext.get("' . $renderto . '").getWidth() * 1/2;
+                var width = Ext.get("' . $renderto . '").getWidth();
                 OpenLayers.ImgPath = "administrator/components/com_easysdi_core/libraries/openlayers/img/";
                 GeoExt.Lang.set("';
         $output .= $lang->getTag();
         $output .= '");
-                '.$appname.' = new gxp.Viewer(' . $config . ');
+                ' . $appname . ' = new gxp.Viewer(' . $config . ');
                    ';
-        
+
         //Add the mouseposition control if activated in the map configuration
         //Can not be done in the gxp.Viewer instanciation because it has to be done on the openlayers map object
         foreach ($item->tools as $tool) {
             if ($tool->alias == 'mouseposition') {
-                $output .= $appname.'.mapPanel.map.addControl(new OpenLayers.Control.MousePosition());';
+                $output .= $appname . '.mapPanel.map.addControl(new OpenLayers.Control.MousePosition());';
                 break;
             }
         }
-        
+
         $output .= 'var locator = null';
 
         $output .= '
-            '.$appname.'.on("ready", function (){ ';
-        
-        if(!empty($item->urlwfslocator)):
+            ' . $appname . '.on("ready", function (){ ';
+
+        if (!empty($item->urlwfslocator)):
             //Only add a wfslocator if it doesn't exist already
             $output .= '
             if(locator == null){
@@ -146,23 +144,23 @@ abstract class Easysdi_mapHelper {
                                                             app.mapPanel.map.zoomToExtent(extent);
                                                             }
                                                    },
-                                        url: "'.$item->urlwfslocator.'",
-                                        fieldName: "'.$item->fieldname.'",
-                                        featureType: "'.$item->featuretype.'",
-                                        featurePrefix: "'.$item->featureprefix.'",
-                                        fieldLabel: "'.$item->fieldname.'",
-                                        geometryName:"'.$item->geometryname.'",
+                                        url: "' . $item->urlwfslocator . '",
+                                        fieldName: "' . $item->fieldname . '",
+                                        featureType: "' . $item->featuretype . '",
+                                        featurePrefix: "' . $item->featureprefix . '",
+                                        fieldLabel: "' . $item->fieldname . '",
+                                        geometryName:"' . $item->geometryname . '",
                                         maxFeatures:"10",
                                         emptyText: "Search..."};
                 app.portal.items.items[0].items.items[0].toolbars[0].add(locator);
                 app.portal.items.items[0].items.items[0].toolbars[0].doLayout();
             }';
         endif;
-                
-          $output .= '      loadingMask.hide(); 
+
+        $output .= '      loadingMask.hide(); 
                 });';
-        if(!$cleared){
-        $output .= '        SdiScaleLineParams= { 
+        if (!$cleared) {
+            $output .= '        SdiScaleLineParams= { 
                             bottomInUnits :"' . $item->bottomInUnits . '",
                             bottomOutUnits :"' . $item->bottomOutUnits . '",
                             topInUnits :"' . $item->topInUnits . '",
@@ -173,8 +171,8 @@ abstract class Easysdi_mapHelper {
                     Ext.QuickTips.init();
                     Ext.apply(Ext.QuickTips.getQuickTip(), {maxWidth: 1000 });
                     Ext.EventManager.onWindowResize(function() {
-                        '.$appname.'.portal.setWidth(Ext.get("'.$renderto.'").getWidth());
-                        '.$appname.'.portal.setHeight(Ext.get("'.$renderto.'").getWidth() * 1/2);
+                        ' . $appname . '.portal.setWidth(Ext.get("' . $renderto . '").getWidth());
+                        ' . $appname . '.portal.setHeight(Ext.get("' . $renderto . '").getWidth() * 1/2);
                     });
             });';
         $output .= '</script>';
@@ -201,7 +199,7 @@ abstract class Easysdi_mapHelper {
         if (!empty($proxyhost)) :
             $config .= 'proxy :"' . $proxyhost . '",';
         else:
-            $config .= 'proxy :"' . JURI::base()."administrator/components/com_easysdi_core/libraries/proxy/proxy.php?=&=" . '",';
+            $config .= 'proxy :"' . JURI::base() . "administrator/components/com_easysdi_core/libraries/proxy/proxy.php?=&=" . '",';
         endif;
         $config .= 'about: 
                         { 
@@ -210,7 +208,7 @@ abstract class Easysdi_mapHelper {
                          },
                     portalConfig: 
                         {
-                        renderTo:"'.$renderto.'",
+                        renderTo:"' . $renderto . '",
                         width: width, 
                         height: height,
                         layout: "border",
@@ -233,7 +231,7 @@ abstract class Easysdi_mapHelper {
                                     }
                                 ]
                             }';
-               $config .= ' ,';
+        $config .= ' ,';
 
         $layertreeactivated = false;
         foreach ($item->tools as $tool) :
@@ -282,7 +280,7 @@ abstract class Easysdi_mapHelper {
                 break;
             }
         endforeach;
-        
+
         $config .= '
                             ]
                     },                        
@@ -343,6 +341,9 @@ abstract class Easysdi_mapHelper {
         $config .= ' outputTarget: "westpanel"
                         },';
 
+        $width = $params->get('iframewidth');
+        $height = $params->get('iframeheight');
+                        
         foreach ($item->tools as $tool) :
             switch ($tool->alias) :
                 case 'googleearth':
@@ -423,29 +424,50 @@ abstract class Easysdi_mapHelper {
                     }
                     break;
                 case 'searchcatalog':
-                    if ($layertreeactivated) {
-                        $width = $params->get('iframewidth');
-                        $height = $params->get('iframeheight');
+                    if ($layertreeactivated) {                        
                         $config .= '
                         {
                         ptype: "sdi_searchcatalog",
                         actionTarget: "tree.tbar",
-                        url: "'. JURI::root() .'index.php?option=com_easysdi_catalog&view=catalog&id='. $tool->params .'&preview=map&tmpl=component",
-                        iwidth : "'.$width.'",
-                        iheight : "'.$height.'"
+                        url: "' . JURI::root() . 'index.php?option=com_easysdi_catalog&view=catalog&id=' . $tool->params . '&preview=map&tmpl=component",
+                        iwidth : "' . $width . '",
+                        iheight : "' . $height . '"
                         },
                         ';
+                        }
+                        break;
+               case 'layerdetailsheet':
+                   if ($layertreeactivated) {
                         $config .= '
                         {
                         ptype: "sdi_layerdetailsheet",
-                        actionTarget: ["tree.contextMenu"]
+                        actionTarget: ["tree.contextMenu"],
+                        iwidth : "' . $width . '",
+                        iheight : "' . $height . '"
                         },';
+                   }
+                    break;
+                case 'layerdownload':
+                   if ($layertreeactivated) {
                         $config .= '
                         {
                         ptype: "sdi_layerdownload",
-                        actionTarget: ["tree.contextMenu"]
+                        actionTarget: ["tree.contextMenu"],
+                        iwidth : "' . $width . '",
+                        iheight : "' . $height . '"
                         },';
-                    }
+                   }
+                    break;
+                case 'layerorder':
+                   if ($layertreeactivated) {
+                        $config .= '
+                        {
+                        ptype: "sdi_layerorder",
+                        actionTarget: ["tree.contextMenu"],
+                        iwidth : "' . $width . '",
+                        iheight : "' . $height . '"
+                        },';
+                   }
                     break;
                 case 'removelayer':
                     if ($layertreeactivated) {
@@ -530,23 +552,11 @@ abstract class Easysdi_mapHelper {
         ],';
 
         // layer sources
-        
         //Default service is always wms
         $config .= '
                 defaultSourceType: "sdi_gxp_wmssource",
                 ';
-//        switch ($item->defaultserviceconnector_id) :
-//            case 2 :
-//                $config .= '
-//                defaultSourceType: "sdi_gxp_wmssource",
-//                ';
-//                break;
-//            case 11 :
-//                $config .= '
-//                defaultSourceType: "gxp_wmscsource",
-//                ';
-//                break;
-//        endswitch;
+
 
         $config .= '
         sources: 
@@ -602,7 +612,7 @@ abstract class Easysdi_mapHelper {
                     break;
             endswitch;
         endforeach;
-        
+
         if (isset($item->virtualservices)) :
             foreach ($item->virtualservices as $service) {
                 switch ($service->serviceconnector_id) {
@@ -627,35 +637,34 @@ abstract class Easysdi_mapHelper {
             }
         endif;
 
-         $config .= ' 
+        $config .= ' 
             },
 
             // map and layers
             map: 
             {';
-         if($cleared):
+        if ($cleared):
             $config .= 'controls : [],';
         endif;
-            $config .= 'id: "sdimap",
+        $config .= 'id: "sdimap",
             title: "Map",
             header:false,
             projection: "' . $item->srs . '",        
             maxExtent : [' . $item->maxextent . '],';
-         if (!empty($item->centercoordinates)):
-           $config .= '  center: [' . $item->centercoordinates . '],';
-         endif;
-         if (!empty($item->restrictedextent)):
-           $config .= '  restrictedExtent: [' . $item->restrictedextent . '],';
-         endif;
-         if (!empty($item->zoom)):
-           $config .= '  zoom : ' . $item->zoom . ',';
-         endif;
-            $config .= ' maxResolution: ' . $item->maxresolution . ',
+        if (!empty($item->centercoordinates)):
+            $config .= '  center: [' . $item->centercoordinates . '],';
+        endif;
+        if (!empty($item->restrictedextent)):
+            $config .= '  restrictedExtent: [' . $item->restrictedextent . '],';
+        endif;
+        if (!empty($item->zoom)):
+            $config .= '  zoom : ' . $item->zoom . ',';
+        endif;
+        $config .= ' maxResolution: ' . $item->maxresolution . ',
             units: "' . $item->unit . '",
             layers: 
             [
             ';
-
 
         //Layers have to be added the lowest before the highest
         //To do that, the groups have to be looped in reverse order
@@ -671,12 +680,14 @@ abstract class Easysdi_mapHelper {
                     if (!in_array($layer->access, $user->getAuthorisedViewLevels()))
                         continue;
 
+                    $config .= ' { ';
+
                     if ($layer->asOL || $layer->serviceconnector == 'WMTS') {
+                        $config .= 'source : "ol", ';
+                        
                         switch ($layer->serviceconnector) {
                             case 'WMTS' :
                                 $config .= ' 
-                                {                                
-                                source: "ol",
                                 type: "OpenLayers.Layer.WMTS",
                                 args: [
                                 {
@@ -688,6 +699,7 @@ abstract class Easysdi_mapHelper {
                                     $config .= 'visibility: true,';
                                 else
                                     $config .= 'visibility: false,';
+
                                 if ($layer->istiled == 1)
                                     $config .= 'singleTile: true,';
                                 else
@@ -705,26 +717,12 @@ abstract class Easysdi_mapHelper {
 
                                 $config .=' }
                                 ],';
-                                if ($group->isbackground)
-                                    $config .= 'group: "background"';
-                                else
-                                    $config .= 'group: "' . $group->alias . '"';
-                                
-                                if(!empty($layer->metadata_guid)):
-                                    $config .= 'href: "'. $layer->metadata_guid .'",';
-                                endif;
-                                if(!empty($layer->diffusion_id)):
-                                    $config .= 'download: "'. $layer->diffusion_id .'",';
-                                endif;
-                                
-                                $config .='
-                                },
-                                ';
+
                                 break;
                             case 'WMS' :
+                            case 'WMSC' :
                                 $config .= ' 
-                                {
-                                source : "ol",
+                                
                                 type : "OpenLayers.Layer.WMS",
                                 args: 
                                 [
@@ -732,10 +730,14 @@ abstract class Easysdi_mapHelper {
                                 "' . $layer->serviceurl . '",
                                 {
                                 layers: "' . $layer->layername . '", 
-                                version: "' . $layer->version . '"
+                                version: "' . $layer->version . '"';
+                                if($layer->serviceconnector == 'WMSC'):
+                                    $config .= ', tiled: true';
+                                endif;
+                                
+                                $config .= '
                                 },
                                 {';
-
 
                                 if ($layer->isdefaultvisible == 1)
                                     $config .= 'visibility :  true';
@@ -755,82 +757,16 @@ abstract class Easysdi_mapHelper {
                                 if (!empty($layer->metadatalink)) {
                                     $config .='metadataURL: "' . $layer->metadatalink . '",';
                                 }
-                                $config .= '}';
+                                
                                 $config .= $layer->asOLoptions;
                                 $config .= '}
                                 ],';
-
-                                if ($group->isbackground)
-                                    $config .= ' group : "background"';
-                                else
-                                    $config .= ' group : "' . $group->alias . '"';
-                                
-                                if(!empty($layer->metadata_guid)):
-                                    $config .= 'href: "'. $layer->metadata_guid .'",';
-                                endif;
-                                if(!empty($layer->diffusion_id)):
-                                    $config .= 'download: "'. $layer->diffusion_id .'",';
-                                endif;
-                                
-                               
-                                $config .= '
-                                },
-                                ';
-                                break;
-                            case 'WMSC' :
-                                $config .= ' 
-                                {
-                                source : "ol",
-                                type : "OpenLayers.Layer.WMS",
-                                args: 
-                                [
-                                "' . $layer->name . '",
-                                "' . $layer->serviceurl . '",
-                                {
-                                layers: "' . $layer->layername . '", 
-                                version: "' . $layer->version . '",
-                                tiled: true
-                                },
-                                {';
-
-                                if ($layer->isdefaultvisible == 1)
-                                    $config .= 'visibility :  true,';
-                                else
-                                    $config .= 'visibility :  false,';
-
-
-                                if ($layer->istiled == 1)
-                                    $config .= 'singleTile :  true,';
-                                else
-                                    $config .= 'singleTile :  false,';
-
-                                $config .= 'opacity: ' . $layer->opacity . ',
-                                transitionEffect: "resize",
-                                style: "' . $layer->asOLstyle . '",';
-
-                                if (!empty($layer->metadatalink)) {
-                                    $config .= 'metadataURL: "' . $layer->metadatalink . '",';
-                                }
-                                $config .=$layer->asOLoptions;
-
-                                $config .= '}],';
-                                if ($group->isbackground)
-                                    $config .= ' group : "background"';
-                                else
-                                    $config .= ' group : "' . $group->alias . '"';
-                                
-                                if(!empty($layer->metadata_guid)):
-                                    $config .= 'href: "'. $layer->metadata_guid .'",';
-                                endif;
-                                if(!empty($layer->diffusion_id)):
-                                    $config .= 'download: "'. $layer->diffusion_id .'",';
-                                endif;
-                                
-                                $config .= '
-                                },
-                                ';
                                 break;
                         }
+                        if ($group->isbackground)
+                            $config .= 'group: "background"';
+                        else
+                            $config .= 'group: "' . $group->alias . '"';
                     }
                     else {
                         switch ($layer->serviceconnector) {
@@ -838,7 +774,6 @@ abstract class Easysdi_mapHelper {
                                 break;
                             default :
                                 $config .= '
-                                {
                                 source: "' . $layer->servicealias . '",';
 
                                 if ($layer->istiled == 1)
@@ -868,21 +803,28 @@ abstract class Easysdi_mapHelper {
                                     $config .= 'visibility :  true,';
                                 else
                                     $config .= 'visibility :  false,';
-                                
-                                if(!empty($layer->metadata_guid)):
-                                    $config .= 'href: "'. $layer->metadata_guid .'",';
-                                endif;
-                                if(!empty($layer->diffusion_id)):
-                                    $config .= 'download: "'. $layer->diffusion_id .'",';
-                                endif;
-                                
 
-                                $config .= 'opacity: ' . $layer->opacity . '
-                                },
+                                $config .= 'opacity: ' . $layer->opacity . ',
+                                
                                 ';
                                 break;
                         }
                     }
+
+                    if (!empty($layer->metadata_guid)):
+//                        $href = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $layer->metadata_guid . '&lang=' . JFactory::getLanguage()->getTag() . '&catalog=&preview=map&tmpl=component');
+                        $config .= 'href: "' . Easysdi_mapHelper::getLayerDetailSheetToolUrl($layer->metadata_guid, JFactory::getLanguage()->getTag(), '', 'map') . '",';
+                    endif;
+                    if (!empty($layer->hasdownload)):
+//                        $downloadurl = htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&tmpl=component&id=' . $layer->diffusion_id);
+                        $config .= 'download: "' . Easysdi_mapHelper::getLayerDownloadToolUrl($layer->diffusion_id) . '",';
+                    endif;
+                    if (!empty($layer->hasextraction)):
+//                        $orderurl = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $layer->metadata_guid . '&lang=' . JFactory::getLanguage()->getTag() . '&catalog=&type=shop&preview=map&tmpl=component');
+                        $config .= 'order: "' . Easysdi_mapHelper::getLayerOrderToolUrl($layer->metadata_guid, JFactory::getLanguage()->getTag(), '') . '",';
+                    endif;
+
+                    $config .= ' }, ';
                 }
             }
         }
@@ -890,12 +832,9 @@ abstract class Easysdi_mapHelper {
         ]
         }
         ,';
-        
-        
-        
-        
-        
-        if(!$cleared){
+
+
+        if (!$cleared) {
             $config .= ' 
         mapItems: 
         [            
@@ -923,6 +862,18 @@ abstract class Easysdi_mapHelper {
         $config .='}';
 
         return $config;
+    }
+    
+    public static function getLayerDownloadToolUrl ($diffusion_id){
+        return htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&tmpl=component&id=' . $diffusion_id);
+    }
+    
+    public static function getLayerOrderToolUrl ($metadata_guid, $lang, $catalog){
+        return htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $metadata_guid . '&lang=' . $lang . '&catalog=' . $catalog . '&type=shop&preview=map&tmpl=component');
+    }
+    
+    public static function getLayerDetailSheetToolUrl ($metadata_guid, $lang, $catalog, $preview){
+        return htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $metadata_guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview . '&tmpl=component');
     }
 
 }

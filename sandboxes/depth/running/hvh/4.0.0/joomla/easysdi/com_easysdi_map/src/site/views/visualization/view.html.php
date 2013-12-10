@@ -32,7 +32,8 @@ class Easysdi_mapViewVisualization extends JViewLegacy {
 
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
-        $this->authorizedLayers = $this->get('AuthorizedLayers');
+        $model = $this->getModel();
+        $this->authorizedLayers = $model->getAuthorizedLayers($this->item->id);
         $this->params = $app->getParams('com_easysdi_map');
         $this->form = $this->get('Form');
 

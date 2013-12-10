@@ -13,25 +13,25 @@
 Ext.namespace("sdi.plugins");
 
 /** api: constructor
- *  .. class:: RemoveLayer(config)
+ *  
  *
- *    Plugin for removing a selected layer from the map.
- *    TODO Make this plural - selected layers
+ *    Plugin for opening the layer's detail sheet.
+ 
  */
 sdi.plugins.LayerDetailSheet = Ext.extend(gxp.plugins.Tool, {
     
-    /** api: ptype = gxp_removelayer */
+    /** api: ptype = sdi_layerdetailsheet */
     ptype: "sdi_layerdetailsheet",
     
-    /** api: config[removeMenuText]
+    /** api: config[layerDetailMenuText]
      *  ``String``
-     *  Text for remove menu item (i18n).
+     *  Text for detail sheet menu item (i18n).
      */
     layerDetailMenuText: "Layer details sheet",
 
-    /** api: config[removeActionTip]
+    /** api: config[layerDetailActionTip]
      *  ``String``
-     *  Text for remove action tooltip (i18n).
+     *  Text for detail sheet action tooltip (i18n).
      */
     layerDetailActionTip: "Layer details sheet",
     
@@ -47,7 +47,7 @@ sdi.plugins.LayerDetailSheet = Ext.extend(gxp.plugins.Tool, {
             handler: function() {
                var record = selectedLayer;
                SqueezeBox.initialize({});
-               SqueezeBox.resize({x: record.json.iwidth, y: record.json.iheight});
+               SqueezeBox.resize({x: this.initialConfig.iwidth, y: this.initialConfig.iheight});
                SqueezeBox.setContent('iframe', record.json.href);
                
             },
