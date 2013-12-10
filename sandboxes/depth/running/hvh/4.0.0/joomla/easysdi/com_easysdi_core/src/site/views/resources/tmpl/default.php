@@ -274,7 +274,6 @@ endif;
                                                 <li class="divider"></li>
                                             <?php endif; ?>
                                             <?php if ($this->user->authorize($item->id, sdiUser::diffusionmanager) && $item->supportdiffusion): ?>
-                                                <li class="divider"></li>
                                                 <li>
                                                     <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.edit&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_DIFFUSION'); ?></a>
                                                 </li>

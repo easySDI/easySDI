@@ -395,14 +395,14 @@ class sdiMetadata extends cswmetadata {
         
         //Visualization
         $query = $this->db->getQuery(true)
-                ->select('id, wmsservice_id, accessscope_id')
+                ->select('id, maplayer_id, accessscope_id')
                 ->from('#__sdi_visualization')
                 ->where('version_id = ' . $this->metadata->version_id)
                 ->where('state = 1');
         $this->db->setQuery($query);
         $viewobj = $this->db->loadObject();
         $view = $dom->createElement('sdi:visualization');
-        if (!empty($viewobj) && !empty($viewobj->wmsservice_id)):
+        if (!empty($viewobj) && !empty($viewobj->maplayer_id)):
             $view->setAttribute('isViewable', 'true');
         else:
             $view->setAttribute('isViewable', 'false');

@@ -110,8 +110,8 @@ class Easysdi_mapModelVisualization extends JModelForm {
         $cls .= $organisms[0]->id . ' in (select a.organism_id from #__sdi_accessscope a where a.entity_guid = ml.guid)';
         $cls .= '))';
         $cls .= ')';
-        
-        if(!empty($visualization_id)):
+
+        if (!empty($visualization_id)):
             $exclusioncls = 'ml.id NOT IN (SELECT v.maplayer_id FROM #__sdi_visualization v WHERE v.id <> ' . $visualization_id . ')';
         else:
             $exclusioncls = 'ml.id NOT IN (SELECT v.maplayer_id FROM #__sdi_visualization v)';
@@ -124,11 +124,11 @@ class Easysdi_mapModelVisualization extends JModelForm {
                 ->where($cls)
                 ->where('ml.state = 1')
                 ->where($exclusioncls);
-        
+
 
         $db->setQuery($query);
         $layers = $db->loadObjectList();
-        
+
         return $layers;
     }
 
@@ -267,16 +267,7 @@ class Easysdi_mapModelVisualization extends JModelForm {
                 return false;
 
             //Update the metadata stored in the remote catalog 
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
-            $query->select('m.id')
-                    ->from('#__sdi_metadata m ')
-                    ->innerJoin('#__sdi_version v ON v.id = m.version_id')
-                    ->where('v.id = ' . $table->version_id);
-            $db->setQuery($query);
-            $metadata = $db->loadResult();
-            $csw = new sdiMetadata((int) $metadata);
-            if (!$csw->updateSDIElement()):
+            if (!$this->updateCSWMetadata($table->version_id)):
                 JFactory::getApplication()->enqueueMessage('Update CSW metadata failed.', 'error');
             endif;
 
@@ -299,13 +290,34 @@ class Easysdi_mapModelVisualization extends JModelForm {
         }
 
         $table = $this->getTable();
+        $table->load($id);
+        $version_id = $table->version_id;
         if ($table->delete($data['id']) === true) {
+            //Update the metadata stored in the remote catalog 
+            if (!$this->updateCSWMetadata($version_id)):
+                JFactory::getApplication()->enqueueMessage('Update CSW metadata failed.', 'error');
+            endif;
+            
             return $id;
         } else {
             return false;
         }
 
         return true;
+    }
+
+    private function updateCSWMetadata($version_id) {
+        //Update the metadata stored in the remote catalog 
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('m.id')
+                ->from('#__sdi_metadata m ')
+                ->innerJoin('#__sdi_version v ON v.id = m.version_id')
+                ->where('v.id = ' . $version_id);
+        $db->setQuery($query);
+        $metadata = $db->loadResult();
+        $csw = new sdiMetadata((int) $metadata);
+        return $csw->updateSDIElement();
     }
 
 }

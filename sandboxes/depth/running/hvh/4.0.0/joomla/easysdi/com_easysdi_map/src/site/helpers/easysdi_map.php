@@ -709,10 +709,7 @@ abstract class Easysdi_mapHelper {
                                 opacity: ' . $layer->opacity . ',
                                 style: "' . $layer->asOLstyle . '",
                                 matrixSet: "' . $layer->asOLmatrixset . '",';
-                                if (!empty($layer->metadatalink)) {
-                                    $config .= 'metadataURL: "' . $layer->metadatalink . '",';
-                                }
-
+                                
                                 $config .= $layer->asOLoptions;
 
                                 $config .=' }
@@ -754,10 +751,7 @@ abstract class Easysdi_mapHelper {
                                 transitionEffect: "resize",
                                 style: "' . $layer->asOLstyle . '",';
 
-                                if (!empty($layer->metadatalink)) {
-                                    $config .='metadataURL: "' . $layer->metadatalink . '",';
-                                }
-                                
+                                                                
                                 $config .= $layer->asOLoptions;
                                 $config .= '}
                                 ],';
@@ -784,9 +778,7 @@ abstract class Easysdi_mapHelper {
                                 if (!empty($layer->version)) {
                                     $config .= 'version: "' . $layer->version . '",';
                                 }
-                                if (!empty($layer->metadatalink)) {
-                                    $config .= 'metadataURL: "' . $layer->metadatalink . '",';
-                                }
+                                
                                 if (!empty($layer->attribution)) {
                                     $config .= 'attribution: "' . $layer->attribution . '",';
                                 }
@@ -812,15 +804,14 @@ abstract class Easysdi_mapHelper {
                     }
 
                     if (!empty($layer->metadata_guid)):
-//                        $href = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $layer->metadata_guid . '&lang=' . JFactory::getLanguage()->getTag() . '&catalog=&preview=map&tmpl=component');
                         $config .= 'href: "' . Easysdi_mapHelper::getLayerDetailSheetToolUrl($layer->metadata_guid, JFactory::getLanguage()->getTag(), '', 'map') . '",';
+                    elseif(!empty($layer->metadatalink)):
+                        $config .= 'href: "' . $layer->metadatalink . '",';
                     endif;
                     if (!empty($layer->hasdownload)):
-//                        $downloadurl = htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&tmpl=component&id=' . $layer->diffusion_id);
                         $config .= 'download: "' . Easysdi_mapHelper::getLayerDownloadToolUrl($layer->diffusion_id) . '",';
                     endif;
                     if (!empty($layer->hasextraction)):
-//                        $orderurl = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $layer->metadata_guid . '&lang=' . JFactory::getLanguage()->getTag() . '&catalog=&type=shop&preview=map&tmpl=component');
                         $config .= 'order: "' . Easysdi_mapHelper::getLayerOrderToolUrl($layer->metadata_guid, JFactory::getLanguage()->getTag(), '') . '",';
                     endif;
 

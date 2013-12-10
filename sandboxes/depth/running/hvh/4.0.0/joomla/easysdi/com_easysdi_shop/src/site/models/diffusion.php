@@ -363,16 +363,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                 return false;
 
             //Update the metadata stored in the remote catalog 
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
-            $query->select('m.id')
-                    ->from('#__sdi_metadata m ')
-                    ->innerJoin('#__sdi_version v ON v.id = m.version_id')
-                    ->where('v.id = ' . $table->version_id);
-            $db->setQuery($query);
-            $metadata = $db->loadResult();
-            $csw = new sdiMetadata((int) $metadata);
-            if (!$csw->updateSDIElement()):
+            if (!$this->updateCSWMetadata($table->version_id)):
                 JFactory::getApplication()->enqueueMessage('Update CSW metadata failed.', 'error');
             endif;
 
@@ -380,6 +371,20 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         } else {
             return false;
         }
+    }
+    
+    private function updateCSWMetadata($version_id) {
+        //Update the metadata stored in the remote catalog 
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('m.id')
+                ->from('#__sdi_metadata m ')
+                ->innerJoin('#__sdi_version v ON v.id = m.version_id')
+                ->where('v.id = ' . $version_id);
+        $db->setQuery($query);
+        $metadata = $db->loadResult();
+        $csw = new sdiMetadata((int) $metadata);
+        return $csw->updateSDIElement();
     }
 
     private function saveDiffusionPropertyValue($id, $property, &$ids) {
@@ -440,7 +445,14 @@ class Easysdi_shopModelDiffusion extends JModelForm {
             return false;
         }
         $table = $this->getTable();
+        $table->load($id);
+        $version_id = $table->version_id;
         if ($table->delete($data['id']) === true) {
+            //Update the metadata stored in the remote catalog 
+            if (!$this->updateCSWMetadata($version_id)):
+                JFactory::getApplication()->enqueueMessage('Update CSW metadata failed.', 'error');
+            endif;
+            
             return $id;
         } else {
             return false;
