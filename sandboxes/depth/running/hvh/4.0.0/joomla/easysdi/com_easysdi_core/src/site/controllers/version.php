@@ -35,7 +35,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $csw = new sdiMetadata($metadata->id);
         if (!$csw->delete()):
         // Redirect back to the list screen.
-//            $this->setMessage(JText::_('Metadata can not be deleted from the remote catalog.'), 'error');
+            $this->setMessage(JText::_('Metadata can not be deleted from the remote catalog.'), 'error');
 //            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
 //            return false;
         endif;
