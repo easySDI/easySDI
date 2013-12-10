@@ -290,7 +290,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     public function save($data = null, $commit = true, $continue = false) {
         $this->structure->formatOutput = true;
         $xml = $this->structure->saveXML();
-        
+
         if (!isset($data)) {
             $data = $this->data;
         }
@@ -376,12 +376,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             }
         }
 
-        $this->structure->formatOutput = true;
-        $xml = $this->structure->saveXML();
-        
         $root = $this->domXpathStr->query('/*')->item(0);
 
-        
+
         foreach ($this->getHeader() as $header) {
             $root->insertBefore($header, $root->firstChild);
         }
@@ -391,41 +388,33 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         //$root->insertBefore($smda->getPlatformNode($this->structure), $root->firstChild);
         $root->appendChild($smda->getPlatformNode($this->structure));
 
-        $rootname = $root->nodeName;
-        
-        $this->structure->formatOutput = true;
-        $xml = $this->structure->saveXML();
-        
         $transaction = $this->structure->createElementNS($this->cswUri, 'Transaction');
         $transaction->setAttribute('service', 'CSW');
         $transaction->setAttribute('version', '2.0.2');
 
         $update = $this->structure->createElementNS($this->cswUri, 'Update');
         $update->appendChild($root);
-        
-        $this->structure->formatOutput = true;
-        $xml = $this->structure->saveXML();
-        
+
         $update->appendChild($this->getConstraint($data['guid']));
-        
-        $this->structure->formatOutput = true;
-        $xml = $this->structure->saveXML();
-        
+
         $transaction->appendChild($update);
         $this->structure->appendChild($transaction);
 
-        $this->structure->formatOutput = true;
-        $xml = $this->structure->saveXML();
-        
         $this->removeNoneExist();
         $this->removeCatalogNS();
 
         if ($commit) {
+
             $this->structure->formatOutput = true;
             $xml = $this->structure->saveXML();
             if ($smda->update($xml)) {
                 $this->saveTitle($data['guid']);
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_SAVE_VALIDE'), 'message');
+
+                if (!$smda->updateSDIElement()) {
+                    JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_CHANGE_STATUS_ERROR'), 'error');
+                }
+
                 if ($continue) {
                     $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $data['id']));
                 } else {
@@ -454,39 +443,42 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $default = $this->domXpathStr->query($metadatatitlexpath . '/gco:CharacterString')->item(0);
 
-        $titles[$defaultLang->id] = $default->nodeValue;
+        if (isset($default)) {
 
-        foreach ($supportedLangs as $supportedLang) {
-            $i18nlang = $this->domXpathStr->query($metadatatitlexpath . '/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale="#' . $supportedLang->iso3166 . '"]')->item(0);
+            $titles[$defaultLang->id] = $default->nodeValue;
 
-            if (isset($i18nlang)) {
-                $titles[$supportedLang->id] = $i18nlang->nodeValue;
-            } else {
-                $titles[$supportedLang->id] = $default->nodeValue;
+            foreach ($supportedLangs as $supportedLang) {
+                $i18nlang = $this->domXpathStr->query($metadatatitlexpath . '/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale="#' . $supportedLang->iso3166 . '"]')->item(0);
+
+                if (isset($i18nlang)) {
+                    $titles[$supportedLang->id] = $i18nlang->nodeValue;
+                } else {
+                    $titles[$supportedLang->id] = $default->nodeValue;
+                }
             }
-        }
 
-        // Delete old version
-        $query = $this->db->getQuery(true);
-        $query = 'DELETE FROM #__sdi_translation WHERE element_guid = \'' . $guid . '\'';
+            // Delete old version
+            $query = $this->db->getQuery(true);
+            $query = 'DELETE FROM #__sdi_translation WHERE element_guid = \'' . $guid . '\'';
 
-        $this->db->setQuery($query);
-        $this->db->execute();
+            $this->db->setQuery($query);
+            $this->db->execute();
 
-        foreach ($titles as $language_id => $text1) {
+            foreach ($titles as $language_id => $text1) {
 
-            $data = new stdClass();
+                $data = new stdClass();
 
-            $data->id = null;
-            $data->guid = $this->getGUID();
-            $data->created_by = $user->id;
-            $data->created = date('Y-m-d H:i:s');
-            $data->element_guid = $guid;
-            $data->language_id = $language_id;
-            $data->text1 = $text1;
+                $data->id = null;
+                $data->guid = $this->getGUID();
+                $data->created_by = $user->id;
+                $data->created = date('Y-m-d H:i:s');
+                $data->element_guid = $guid;
+                $data->language_id = $language_id;
+                $data->text1 = $text1;
 
 
-            $this->db->insertObject('#__sdi_translation', $data, 'id');
+                $this->db->insertObject('#__sdi_translation', $data, 'id');
+            }
         }
     }
 
@@ -569,7 +561,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $this->db->setQuery($query);
         $result = $this->db->loadObject();
-        
+
         $href = JComponentHelper::getParams('com_easysdi_catalog')->get('catalogurl');
         $href.= '?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=' . $result->guid;
         $href .= '&fragment=' . $result->prefix . '%3A' . $result->fragment;
@@ -659,18 +651,18 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         return $constraint;
     }
 
-    private function removeNoneExist(){
+    private function removeNoneExist() {
         $relations = $this->domXpathStr->query('descendant::*[@catalog:exist="0"]');
         $toRemove = array();
         foreach ($relations as $relation) {
             $toRemove[] = $relation;
         }
-        
+
         foreach ($toRemove as $remove) {
             $remove->parentNode->removeChild($remove);
         }
     }
-    
+
     private function removeCatalogNS() {
         $attributeNames = array('id', 'dbid', 'childtypeId', 'index', 'lowerbound', 'upperbound', 'rendertypeId', 'stereotypeId', 'relGuid', 'relid', 'maxlength', 'readonly', 'exist', 'resourcetypeId', 'relationId', 'label', 'boundingbox', 'map');
         foreach ($this->domXpathStr->query('//*') as $element) {

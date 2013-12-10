@@ -168,9 +168,6 @@ class FormGenerator {
         }
 
         $this->setDomXpathStr();
-
-        $this->structure->formatOutput = true;
-        $html = $this->structure->saveXML();
         
         if (isset($this->csw)) {
             $this->setDomXpathCsw();

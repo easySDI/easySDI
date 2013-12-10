@@ -129,6 +129,11 @@ class Cswrecords extends SearchForm {
             $parentAnd->appendChild($cswfilter);
         }
 
+        // Add permanent filter
+        $and->appendChild($this->getState());
+        $and->appendChild($this->getPublished());
+        $and->appendChild($this->getScope());
+
         $filter->appendChild($parentAnd);
 
         //Ogc search sorting
@@ -504,6 +509,52 @@ class Cswrecords extends SearchForm {
         }
 
         return $resourcetype;
+    }
+
+    private function getState() {
+        return $this->ogcFilters->getIsEqualTo('metadatastate', 'published');
+    }
+
+    private function getPublished() {
+        $literal = date('Y-m-d H:i:s');
+        return $this->ogcFilters->getIsLessOrEqual('published', $literal);
+    }
+
+    private function getScope() {
+        $juser = JFactory::getUser();
+
+        $or = $this->dom->createElementNS($this->ogcUri, $this->ogcPrefix . ':Or');
+        $or->appendChild($this->ogcFilters->getIsEqualTo('scope', 'public'));
+
+        if (!$juser->guest) {
+            $query = $this->db->getQuery(true);
+            $query->select('u.guid as user_guid, o.guid as organism_guid');
+            $query->from('jos_sdi_user_role_organism uro');
+            $query->innerJoin('jos_sdi_organism o on uro.organism_id = o.id');
+            $query->innerJoin('jos_sdi_user u on uro.user_id = u.id');
+            $query->where('uro.role_id = 1');
+            $query->where('u.user_id = ' . $juser->id);
+
+            $this->db->setQuery($query);
+            $organisms = $this->db->loadObjectList();
+
+
+            $andOrganism = $this->dom->createElementNS($this->ogcUri, $this->ogcPrefix . ':And');
+            $andUser = $this->dom->createElementNS($this->ogcUri, $this->ogcPrefix . ':And');
+
+            $andOrganism->appendChild($this->ogcFilters->getIsEqualTo('scope', 'organism'));
+            $andUser->appendChild($this->ogcFilters->getIsEqualTo('scope', 'user'));
+            $andUser->appendChild($this->ogcFilters->getIsEqualTo('sdiuser', $organisms[0]->user_guid));
+
+            foreach ($organisms as $organism) {
+                $andOrganism->appendChild($this->ogcFilters->getIsEqualTo('sdiorganism', $organism->organism_guid));
+            }
+
+            $or->appendChild($andOrganism);
+            $or->appendChild($andUser);
+        }
+
+        return $or;
     }
 
 }
