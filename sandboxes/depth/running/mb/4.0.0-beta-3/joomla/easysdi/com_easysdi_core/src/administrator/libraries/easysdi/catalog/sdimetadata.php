@@ -158,7 +158,7 @@ class sdiMetadata extends cswmetadata {
      * 
      */
     public function update($xml) {
-        
+
         $reponse = $this->CURLRequest('POST', $this->catalogurl, $xml);
         $dom = new DOMDocument();
         $dom->loadXML($reponse);
@@ -167,7 +167,7 @@ class sdiMetadata extends cswmetadata {
         if (isset($totalUpdated)) {
             if ($totalUpdated->nodeValue == 1) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         } else {
@@ -304,7 +304,6 @@ class sdiMetadata extends cswmetadata {
         endif;
     }
 
-    
     /**
      * 
      * @param DOMDocument $dom The "DOM" in which to add or update the platform tag.
@@ -368,7 +367,24 @@ class sdiMetadata extends cswmetadata {
         $metadata->setAttribute('guid', $this->metadata->guid);
         $metadata->setAttribute('created', $this->metadata->created);
         $metadata->setAttribute('published', $this->metadata->published);
-        $metadata->setAttribute('state', 'inprogress');
+        switch ($this->metadata->metadatastate_id) {
+            case self::INPROGRESS:
+                $metadata->setAttribute('state', 'inprogress');
+                break;
+            case self::VALIDATED:
+                $metadata->setAttribute('state', 'validated');
+                break;
+            case self::PUBLISHED:
+                $metadata->setAttribute('state', 'published');
+                break;
+            case self::ARCHIVED:
+                $metadata->setAttribute('state', 'archived');
+                break;
+            case self::TRASHED:
+                $metadata->setAttribute('state', 'trashed');
+                break;
+        }
+
 
         //Diffusion
         $query = $this->db->getQuery(true)
@@ -392,7 +408,7 @@ class sdiMetadata extends cswmetadata {
             $diffusion->setAttribute('isDownloadable', 'false');
             $diffusion->setAttribute('isOrderable', 'false');
         endif;
-        
+
         //Visualization
         $query = $this->db->getQuery(true)
                 ->select('id, wmsservice_id, accessscope_id')

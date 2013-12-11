@@ -371,11 +371,9 @@ function chosenRefresh() {
 }
 
 function filterBoundary(parentPath, value) {
-    if(value == ''){
-        
-    }
     
     js.get(currentUrl + '?task=ajax.getBoundaryByCategory&value=' + value, function(data) {
+       
         var response = js.parseJSON(data);
         var replaceId = parentPath.replace(/-/g, '_');
         var selectList = js('#jform_' + replaceId + '_sla_gmd_dp_description_sla_gco_dp_CharacterString');
@@ -390,7 +388,6 @@ function filterBoundary(parentPath, value) {
         });
         selectList.html(items);
         selectList.trigger("liszt:updated");
-        //selectList.change();
 
         js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', response['0'].northbound);
         js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', response['0'].southbound);
