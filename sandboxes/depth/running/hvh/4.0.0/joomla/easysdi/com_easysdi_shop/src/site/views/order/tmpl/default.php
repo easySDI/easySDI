@@ -198,10 +198,6 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
             Ext.onReady(function() {
                 app.on("ready", function() {
                     loadPerimeter();
-                    <?php if (is_string($this->item->basket->extent->features)):        ?>
-                        var feature = reprojectWKT("<?php echo $this->item->basket->extent->features; ?>");
-                        jQuery('#perimeter-recap').append("<div>" + feature.geometry.toString() + "</div>");
-                    <?php endif;?>
                 })
             })
     </script>

@@ -243,6 +243,8 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         $form = $jinput->get('jform', 'null', 'ARRAY');
         (empty($data['hasdownload'])) ? $data['hasdownload'] = "0" : $data['hasdownload'] = "1";
         (empty($data['hasextraction'])) ? $data['hasextraction'] = "0" : $data['hasextraction'] = "1";
+        if(empty($data['surfacemin']))  $data['surfacemin'] = null;
+        if(empty($data['surfacemax']))  $data['surfacemax'] = null;
         if ($data['hasdownload'] == 0) {
             $data['productstorage_id'] = null;
             $data['file'] = null;

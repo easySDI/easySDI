@@ -20,14 +20,14 @@ function loadPolygonPerimeter() {
     app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
 }
 
-function reprojectWKT(wkt) {
-    var feature = new OpenLayers.Format.WKT().read(wkt);
-    var geometry = feature.geometry.transform(
-            new OpenLayers.Projection("EPSG:4326"),
-            new OpenLayers.Projection(app.mapPanel.map.projection)
-            );
-    return feature;
-}
+//function reprojectWKT(wkt) {
+//    var feature = new OpenLayers.Format.WKT().read(wkt);
+//    var geometry = feature.geometry.transform(
+//            new OpenLayers.Projection("EPSG:4326"),
+//            new OpenLayers.Projection(app.mapPanel.map.projection)
+//            );
+//    return feature;
+//}
 
  var selectLayer;
  

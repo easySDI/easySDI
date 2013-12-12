@@ -167,22 +167,6 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.
                                         endif;
                                             ?></div>
                                     </div>                                
-                                    <div><h3><?php echo JText::_($this->item->extent->name); ?></h3></div>
-                                    <?php
-                                    if (is_string($this->item->extent->features)):                                        
-                                            ?>
-<!--                                            <div><?php echo $this->item->extent->features; ?></div>-->
-                                            <?php
-                                        
-                                    elseif (is_array($this->item->extent->features)):
-                                        foreach ($this->item->extent->features as $feature):
-                                            ?>
-                                            <div><?php echo $feature->name; ?></div>
-                                            <?php
-                                        endforeach;                                    
-                                    endif;
-                                    ?>
-
                                 <?php endif; ?>
                             </div>                           
                         </div>
@@ -391,10 +375,7 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.
                                         jQuery('#btn-perimeter<?php echo $this->item->extent->id; ?>').addClass('active');
                         <?php endif; ?>
                     <?php endif; ?>
-                    <?php if (!empty ($this->item->extent) && is_string($this->item->extent->features)):        ?>
-                        var feature = reprojectWKT("<?php echo $this->item->extent->features; ?>");
-                        jQuery('#perimeter-recap').append("<div>" + feature.geometry.toString() + "</div>");
-                    <?php endif;?>
+                   
                     <?php if (!empty($this->item->extent)) : ?>
                         selectPerimeter<?php echo $this->item->extent->id; ?>();
                         reloadFeatures<?php echo $this->item->extent->id; ?>();

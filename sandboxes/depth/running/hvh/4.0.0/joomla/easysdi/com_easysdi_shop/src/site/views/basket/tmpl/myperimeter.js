@@ -29,7 +29,6 @@ function getUserRestrictedExtentFeature(text) {
             var feature = features[i];
             var geometry = tranformGeometry(feature);
             polygonList.push(geometry);
-
         }
 
     } else if (features instanceof OpenLayers.Feature.Vector) {
@@ -37,8 +36,8 @@ function getUserRestrictedExtentFeature(text) {
         polygonList.push(geometry);
     }
 
-    var multuPolygonGeometry = new OpenLayers.Geometry.MultiPolygon(polygonList);
-    var multigeomFeature = new OpenLayers.Feature.Vector(multuPolygonGeometry);
+    var collectionGeometry = new OpenLayers.Geometry.Collection(polygonList);
+    var multigeomFeature = new OpenLayers.Feature.Vector(collectionGeometry);
     return  multigeomFeature;
 }
 

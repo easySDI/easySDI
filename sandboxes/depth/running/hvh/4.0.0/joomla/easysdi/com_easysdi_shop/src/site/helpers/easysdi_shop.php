@@ -252,17 +252,6 @@ abstract class Easysdi_shopHelper {
                                     endif;
                                     ?></div>
                             </div>                                
-                            <div><h3><?php echo JText::_($item->basket->extent->name); ?></h3></div>
-                            <?php
-                            if (is_array($item->basket->extent->features)):                                    
-                                foreach ($item->basket->extent->features as $feature):
-                                    ?>
-                                    <div><?php echo $feature->name; ?></div>
-                                    <?php
-                                endforeach;
-                            endif;
-                            ?>
-
                         <?php endif; ?>
                     </div>                           
                 </div>

@@ -31,13 +31,24 @@ function putFeaturesVerticesInHiddenField(feature) {
 
     var pointsAsString = '';
     var components = new Array();
-    if (geometry instanceof OpenLayers.Geometry.MultiPolygon) {
-        components = geometry.components;
-        if(components.length > 1){
-            pointsAsString += 'MULTIPOLYGON ';
-        }else{
-            pointsAsString += 'POLYGON ';
+    if (geometry instanceof OpenLayers.Geometry.Polygon) {
+        var vertices = geometry.getVertices();
+        pointsAsString += 'POLYGON ';
+        pointsAsString += '((';
+        for (var i = 0; i < vertices.length; i++) {
+            pointsAsString += vertices[i].x;
+            pointsAsString += ' ';
+            pointsAsString += vertices[i].y;
+            if (i < vertices.length - 1)
+                pointsAsString += ', ';
         }
+        pointsAsString += '))';
+    }
+    else {
+        components = geometry.components;
+        
+            pointsAsString += 'MULTIPOLYGON ';
+        
         for (var j = 0; j < components.length; j++) {
             pointsAsString += '((';
             var vertices = components[j].getVertices();
@@ -53,19 +64,7 @@ function putFeaturesVerticesInHiddenField(feature) {
                 pointsAsString += ',';
             }
         }
-    } else {
-        var vertices = geometry.getVertices();
-        pointsAsString += 'POLYGON ';
-        pointsAsString += '((';
-        for (var i = 0; i < vertices.length; i++) {
-            pointsAsString += vertices[i].x;
-            pointsAsString += ' ';
-            pointsAsString += vertices[i].y;
-            if (i < vertices.length - 1)
-                pointsAsString += ', ';
-        }
-        pointsAsString += '))';
-    }
+    } 
 
     jQuery('#t-features').val(JSON.stringify(pointsAsString));
 }
