@@ -243,12 +243,12 @@ public class OgcProxyServlet extends HttpServlet {
                 request = (ProxyServletRequest) requestConstructeur.newInstance(req);
                 if (request.getService() == null & request.getService().equals("")) {
                     resp.setHeader("easysdi-proxy-error-occured", "true");
-                    sendException("Service value is not given in the request.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "SERVICE", HttpServletResponse.SC_BAD_REQUEST, connector, highestversion);
+                    sendException(OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE, OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "SERVICE", HttpServletResponse.SC_BAD_REQUEST, connector, request.getVersion());
                     return null;
                 }
                 if (!connector.equals(request.getService())) {
                     resp.setHeader("easysdi-proxy-error-occured", "true");
-                    sendException("Wrong service value given in the request.", OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "SERVICE", HttpServletResponse.SC_BAD_REQUEST, connector, highestversion);
+                    sendException(OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE, OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE, "SERVICE", HttpServletResponse.SC_BAD_REQUEST, connector, request.getVersion());
                     return null;
                 }
             } catch (VersionNotSupportedException e) {
