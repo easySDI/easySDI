@@ -30,43 +30,46 @@ function putFeaturesVerticesInHiddenField(feature) {
             );
 
     var pointsAsString = '';
-    var components = new Array();
-    if (geometry instanceof OpenLayers.Geometry.Polygon) {
-        var vertices = geometry.getVertices();
-        pointsAsString += 'POLYGON ';
-        pointsAsString += '((';
-        for (var i = 0; i < vertices.length; i++) {
-            pointsAsString += vertices[i].x;
-            pointsAsString += ' ';
-            pointsAsString += vertices[i].y;
-            if (i < vertices.length - 1)
-                pointsAsString += ', ';
-        }
-        pointsAsString += '))';
-    }
-    else {
-        components = geometry.components;
-        
-            pointsAsString += 'MULTIPOLYGON ';
-        
-        for (var j = 0; j < components.length; j++) {
-            pointsAsString += '((';
-            var vertices = components[j].getVertices();
-            for (var i = 0; i < vertices.length; i++) {
-                pointsAsString += vertices[i].x;
-                pointsAsString += ' ';
-                pointsAsString += vertices[i].y;
-                if (i < vertices.length - 1)
-                    pointsAsString += ', ';
-            }
-            pointsAsString += '))';
-            if(j < components.length -1){
-                pointsAsString += ',';
-            }
-        }
-    } 
+    var wkt = new OpenLayers.Format.WKT();
+    pointAsString = wkt.write(feature);
+//    var components = new Array();
+//    if (geometry instanceof OpenLayers.Geometry.Polygon) {
+//        var vertices = geometry.getVertices();
+//        pointsAsString += 'POLYGON ';
+//        pointsAsString += '((';
+//        for (var i = 0; i < vertices.length; i++) {
+//            pointsAsString += vertices[i].x;
+//            pointsAsString += ' ';
+//            pointsAsString += vertices[i].y;
+//            if (i < vertices.length - 1)
+//                pointsAsString += ', ';
+//        }
+//        pointsAsString += '))';
+//    }
+//    else {
+//        components = geometry.components;
+//        
+//            pointsAsString += 'MULTIPOLYGON ';
+//        pointsAsString += '(';
+//        for (var j = 0; j < components.length; j++) {
+//            pointsAsString += '((';
+//            var vertices = components[j].getVertices();
+//            for (var i = 0; i < vertices.length; i++) {
+//                pointsAsString += vertices[i].x;
+//                pointsAsString += ' ';
+//                pointsAsString += vertices[i].y;
+//                if (i < vertices.length - 1)
+//                    pointsAsString += ', ';
+//            }
+//            pointsAsString += '))';
+//            if(j < components.length -1){
+//                pointsAsString += ',';
+//            }
+//        }
+//        pointsAsString += ')';
+//    } 
 
-    jQuery('#t-features').val(JSON.stringify(pointsAsString));
+    jQuery('#t-features').val(JSON.stringify(pointAsString));
 }
 
 function selectPerimeter1() {

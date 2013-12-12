@@ -30,7 +30,6 @@ function getUserRestrictedExtentFeature(text) {
             var geometry = tranformGeometry(feature);
             polygonList.push(geometry);
         }
-
     } else if (features instanceof OpenLayers.Feature.Vector) {
         var geometry = tranformGeometry(features);
         polygonList.push(geometry);
