@@ -176,43 +176,60 @@ function displayExtentRecap() {
         surface += Joomla.JText._('COM_EASYSDI_SHOP_BASKET_METER', ' m2');
     }
 
-//    jQuery('#perimeter-recap').append("<div>" + surface + "</div></div>");
-//    jQuery('#perimeter-recap').append("<div><h3>" + jQuery('#perimetern').val() + "</h3></div>");
-//
-//    var features_text = jQuery('#features').val();
-//
-//    if (features_text === '')
-//        return;
-//
-//    try {
-//        var features = JSON.parse(features_text);
-//        if (jQuery.isArray(features)) {
-//            jQuery.each(features, function(index, value) {
-//                if (typeof value === "undefined")
-//                    return true;
-//
-//                if (typeof value.name === "undefined") {
-//                    jQuery('#perimeter-recap').append("<div>" + features + "</div>");
-//                    return false;
-//                }
-//                jQuery('#perimeter-recap').append("<div>" + value.name + "</div>");
-//            });
-//        } else {
-//            var feature = reprojectWKT(JSON.parse(features_text));
-//            jQuery('#perimeter-recap').append("<div>" + feature.geometry.toString() + "</div>");
-//        }
-//    } catch (e) {
-//        jQuery('#perimeter-recap').append("<div>" + features_text + "</div>");
-//    }
+    jQuery('#perimeter-recap').append("<div>" + surface + "</div></div>");
+    jQuery('#perimeter-recap').append("<div><h3>" + jQuery('#perimetern').val() + "</h3></div>");
+
+    var features_text = jQuery('#features').val();
+
+    if (features_text === '')
+        return;
+
+    try {
+        var features = JSON.parse(features_text);
+        if (jQuery.isArray(features)) {
+            jQuery.each(features, function(index, value) {
+                if (typeof value === "undefined")
+                    return true;
+
+                if (typeof value.name === "undefined") {
+                    jQuery('#perimeter-recap').append("<div>" + features + "</div>");
+                    return false;
+                }
+                jQuery('#perimeter-recap').append("<div>" + value.name + "</div>");
+            });
+        } else {
+            reprojectWKT(JSON.parse(features_text));            
+        }
+    } catch (e) {
+        jQuery('#perimeter-recap').append("<div>" + JSON.parse(features_text) + "</div>");
+    }
 }
+               
 
 //function reprojectWKT(wkt) {
-//    var feature = new OpenLayers.Format.WKT().read(wkt);
-//    var geometry = feature.geometry.transform(
-//            new OpenLayers.Projection("EPSG:4326"),
-//            new OpenLayers.Projection(app.mapPanel.map.projection)
-//            );
-//    return feature;
+//    var features = new OpenLayers.Format.WKT().read(wkt);
+//    var reprojfeatures = new Array();
+//    if (features instanceof Array) {
+//        for (var i = 0; i < features.length; i++) {
+//            var geometry = features[i].geometry.transform(
+//                    new OpenLayers.Projection("EPSG:4326"),
+//                    new OpenLayers.Projection(app.mapPanel.map.projection)
+//                    );
+//            var reprojfeature = new OpenLayers.Feature.Vector(geometry);
+//            reprojfeatures.push(reprojfeature);
+//        }
+//    }
+//    else {
+//        var geometry = features.geometry.transform(
+//                new OpenLayers.Projection("EPSG:4326"),
+//                new OpenLayers.Projection(app.mapPanel.map.projection)
+//                );
+//        var reprojfeature = new OpenLayers.Feature.Vector(geometry);
+//        reprojfeatures.push(reprojfeature);
+//        
+//    }
+//    var reprojwkt = new OpenLayers.Format.WKT().write(reprojfeatures);
+//    jQuery('#perimeter-recap').append("<div>" + reprojwkt + "</div>");
 //}
 
 

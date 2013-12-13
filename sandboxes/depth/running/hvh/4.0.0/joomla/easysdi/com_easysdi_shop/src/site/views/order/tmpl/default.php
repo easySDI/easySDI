@@ -16,6 +16,7 @@ JHtml::_('behavior.formvalidation');
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/helpers/helper.js');
+
 ?>
 <?php if ($this->item) : ?> 
     <div class="order-edit front-end-edit">
@@ -198,6 +199,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
             Ext.onReady(function() {
                 app.on("ready", function() {
                     loadPerimeter();
+                    
                 })
             })
     </script>

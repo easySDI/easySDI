@@ -23,6 +23,7 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/basket.js');
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/freeperimeter.js');
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/perimeter.js');
 $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.js');
+$document->addScript('components/com_easysdi_shop/helpers/helper.js');
 
 ?>
 <?php if ($this->item && $this->item->extractions) : ?>
@@ -167,6 +168,22 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.
                                         endif;
                                             ?></div>
                                     </div>                                
+                                    <div><h3><?php echo JText::_($this->item->extent->name); ?></h3></div>
+                                    <?php
+                                    if (is_string($this->item->extent->features)):                                        
+                                            ?>
+<!--                                            <div><?php echo $this->item->extent->features; ?></div>-->
+                                            <?php
+                                        
+                                    elseif (is_array($this->item->extent->features)):
+                                        foreach ($this->item->extent->features as $feature):
+                                            ?>
+                                            <div><?php echo $feature->name; ?></div>
+                                            <?php
+                                        endforeach;                                    
+                                    endif;
+                                    ?>
+
                                 <?php endif; ?>
                             </div>                           
                         </div>
@@ -280,10 +297,10 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.
 
                                                     <script>
                                                         function selectPerimeter<?php echo $perimeter->id; ?>() {
-                                                            selectMyPerimeter('<?php echo $perimeter->id; ?>', '<?php echo JText::_('MYPERIMETER'); ?>', '<?php echo addslashes(preg_replace('/\s+/', '', $this->user->perimeter)); ?>');
+                                                            selectMyPerimeter('<?php echo $perimeter->id; ?>', '<?php echo JText::_('MYPERIMETER'); ?>', '<?php echo addslashes(preg_replace('/\r\n/', '', $this->user->perimeter)); ?>');
                                                         }
                                                         function reloadFeatures<?php echo $perimeter->id; ?>() {
-                                                            selectMyPerimeter('<?php echo $perimeter->id; ?>', '<?php echo JText::_('MYPERIMETER'); ?>', '<?php echo addslashes(preg_replace('/\s+/', '', $this->user->perimeter)); ?>');
+                                                            selectMyPerimeter('<?php echo $perimeter->id; ?>', '<?php echo JText::_('MYPERIMETER'); ?>', '<?php echo addslashes(preg_replace('/\r\n/', '', $this->user->perimeter)); ?>');
                                                         }
                                                     </script>
                                                     <br>
@@ -375,7 +392,9 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.
                                         jQuery('#btn-perimeter<?php echo $this->item->extent->id; ?>').addClass('active');
                         <?php endif; ?>
                     <?php endif; ?>
-                   
+                    <?php if (!empty ($this->item->extent) && is_string($this->item->extent->features)):        ?>
+                        reprojectWKT("<?php echo $this->item->extent->features; ?>");
+                    <?php endif;?>
                     <?php if (!empty($this->item->extent)) : ?>
                         selectPerimeter<?php echo $this->item->extent->id; ?>();
                         reloadFeatures<?php echo $this->item->extent->id; ?>();
@@ -397,10 +416,10 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.
         ?>" />
         <input type="hidden" name="allowedbuffer" id="allowedbuffer" value="" />
         <input type="hidden" name="features" id="features" value='<?php
-        if (!empty($this->item->extent) && !is_array($this->item->extent)): 
+        if (!empty($this->item->extent) && !is_array($this->item->extent->features)): 
             echo $this->item->extent->features; 
         elseif (!empty($this->item->extent)): 
-            echo json_encode($this->item->extent->features) ;
+            echo htmlspecialchars(json_encode($this->item->extent->features), ENT_QUOTES, 'UTF-8') ;
         endif;
         ?>' />
         <input type="hidden" name="t-perimeter" id="t-perimeter" value="<?php
@@ -412,10 +431,10 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.
         endif;
         ?>" />
         <input type="hidden" name="t-features" id="t-features" value='<?php
-         if (!empty($this->item->extent) && !is_array($this->item->extent)): 
+         if (!empty($this->item->extent) && !is_array($this->item->extent->features)): 
             echo $this->item->extent->features; 
         elseif (!empty($this->item->extent)): 
-            echo json_encode($this->item->extent->features) ;
+            echo htmlspecialchars(json_encode($this->item->extent->features), ENT_QUOTES, 'UTF-8') ;
         endif;
         ?>' />
         <input type="hidden" name="t-surface" id="t-surface" value="<?php

@@ -200,6 +200,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
         Ext.onReady(function() {
             app.on("ready", function() {
                 loadPerimeter();
+                
             })
         })
     </script>
