@@ -91,10 +91,13 @@ abstract class Easysdi_mapHelper {
             $doc->addScript(JURI::base(true) . '/media/system/js/core.js');
         }
 
-        $files = glob(JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.{js}', GLOB_BRACE);
-        foreach ($files as $file) {
-            $doc->addScript($file);
-        }
+//        $files = glob(JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/*.{js}', GLOB_BRACE);
+//        foreach ($files as $file) {
+//            $doc->addScript($file);
+//        }
+        
+        $doc->addScript(JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/fr.js');
+        $doc->addScript(JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/en.js');
 
         $output .= '<div id="' . $renderto . '" class="cls-' . $renderto . '"></div>';
         $output .= '<script>

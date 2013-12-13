@@ -327,6 +327,21 @@ GeoExt.Lang.add("fr", {
 
     "gxp.ScaleOverlay.prototype": { 
         zoomLevelText: "Niveau de zoom"
+    },
+    
+    "sdi.plugins.LayerDetailSheet.prototype": {
+        layerDetailMenuText: "Fiche de la métadonnée",
+        layerDetailActionTip: "Afficher la fiche de la métadonnée"
+    },
+    
+    "sdi.plugins.LayerDownload.prototype": {
+        layerDownloadMenuText: "Télécharger le produit",
+        layerDownloadActionTip: "Télécharger le produit"
+    },
+    
+     "sdi.plugins.LayerOrder.prototype": {
+        layerOrderMenuText: "Commander la donnée",
+        layerOrderActionTip: "Vers la commande de la donnée"
     }
 
 });

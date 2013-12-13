@@ -11,7 +11,6 @@ function loadPolygonPerimeter(withdisplay) {
     app.mapPanel.map.addLayers([polygonLayer]);
     var wkt = jQuery('#jform_perimeter').val();
     var features = new OpenLayers.Format.WKT().read(wkt);
-    var reprojfeatures = new Array();
     if (features instanceof Array) {
         for (var i = 0; i < features.length; i++) {
             var geometry = features[i].geometry.transform(
@@ -20,7 +19,6 @@ function loadPolygonPerimeter(withdisplay) {
                     );
             var reprojfeature = new OpenLayers.Feature.Vector(geometry);
             polygonLayer.addFeatures([reprojfeature]);  
-            reprojfeatures.push(reprojfeature);
         }
     }
     else {
@@ -30,42 +28,16 @@ function loadPolygonPerimeter(withdisplay) {
                 );
         var reprojfeature = new OpenLayers.Feature.Vector(geometry);
         polygonLayer.addFeatures([reprojfeature]);   
-        reprojfeatures.push(reprojfeature);
     }
     app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
     if(withdisplay === true){
-        var reprojwkt = new OpenLayers.Format.WKT().write(reprojfeatures);
         jQuery('#perimeter-recap').append('<div id="perimeter-recap-details" style="overflow-y:scroll; height:100px;">');
-        jQuery('#perimeter-recap-details').append("<div>" + reprojwkt + "</div>");
+        jQuery('#perimeter-recap-details').append("<div>" + wkt + "</div>");
         jQuery('#perimeter-recap').append('</div>');
     }
 }
 
-function reprojectWKT(wkt) {
-    var features = new OpenLayers.Format.WKT().read(wkt);
-    var reprojfeatures = new Array();
-    if (features instanceof Array) {
-        for (var i = 0; i < features.length; i++) {
-            var geometry = features[i].geometry.transform(
-                    new OpenLayers.Projection("EPSG:4326"),
-                    new OpenLayers.Projection(app.mapPanel.map.projection)
-                    );
-            var reprojfeature = new OpenLayers.Feature.Vector(geometry);
-            reprojfeatures.push(reprojfeature);
-        }
-    }
-    else {
-        var geometry = features.geometry.transform(
-                new OpenLayers.Projection("EPSG:4326"),
-                new OpenLayers.Projection(app.mapPanel.map.projection)
-                );
-        var reprojfeature = new OpenLayers.Feature.Vector(geometry);
-        reprojfeatures.push(reprojfeature);
-        
-    }
-    var reprojwkt = new OpenLayers.Format.WKT().write(reprojfeatures);
-    jQuery('#perimeter-recap-details').append("<div>" + reprojwkt + "</div>");
-}
+
 
 var selectLayer;
 

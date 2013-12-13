@@ -23,6 +23,24 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                             <h3><?php echo $this->item->basket->name; ?></h3>
                             <div class="row-fluid" >
                                 <div class="span4 order-edit-label" >
+                                    <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_USER'); ?>
+                                </div>
+                                <div class="span6 order-edit-value" >
+                                    <?php echo $this->item->client->name; ?>
+                                </div>
+                            </div>
+                            <div class="row-fluid" >
+                                <div class="span4 order-edit-label" >
+                                    <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_USER_ORGANISM'); ?>
+                                </div>
+                                <div class="span6 order-edit-value" >
+                                    <?php 
+                                    $organisms = $this->item->client->getMemberOrganisms();
+                                    echo $organisms[0]->name; ?>
+                                </div>
+                            </div>
+                            <div class="row-fluid" >
+                                <div class="span4 order-edit-label" >
                                     <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_CREATED'); ?>
                                 </div>
                                 <div class="span6 order-edit-value" >
