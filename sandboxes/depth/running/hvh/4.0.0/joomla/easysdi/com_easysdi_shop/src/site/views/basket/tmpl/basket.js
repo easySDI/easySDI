@@ -163,7 +163,7 @@ function displayExtentRecap() {
     saveTemporaryFields();
 
     jQuery('#perimeter-recap').empty();
-    jQuery('#perimeter-recap').append("<div><h3>" + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_SURFACE', 'Surface') + "</h3>");
+    jQuery('#perimeter-recap').append("<div><h4>" + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_SURFACE', 'Surface') + "</h4>");
     var surface = parseFloat(jQuery('#surface').val());
     var surfacedigit = parseInt(jQuery('#surfacedigit').val());
     var maxmetervalue = parseFloat(jQuery('#maxmetervalue').val());
@@ -177,8 +177,8 @@ function displayExtentRecap() {
     }
 
     jQuery('#perimeter-recap').append("<div>" + surface + "</div></div>");
-    jQuery('#perimeter-recap').append("<div><h3>" + jQuery('#perimetern').val() + "</h3></div>");
-
+    jQuery('#perimeter-recap').append("<div><h4>" + jQuery('#perimetern').val() + "</h4></div>");
+    
     var features_text = jQuery('#features').val();
 
     if (features_text === '')
@@ -186,22 +186,30 @@ function displayExtentRecap() {
 
     try {
         var features = JSON.parse(features_text);
+        var createdivdetails = false;
         if (jQuery.isArray(features)) {
             jQuery.each(features, function(index, value) {
                 if (typeof value === "undefined")
                     return true;
 
                 if (typeof value.name === "undefined") {
-                    jQuery('#perimeter-recap').append("<div>" + features + "</div>");
+//                    jQuery('#perimeter-recap-details').append("<div>" + features + "</div>");
                     return false;
                 }
-                jQuery('#perimeter-recap').append("<div>" + value.name + "</div>");
+                if(createdivdetails === false){
+                    jQuery('#perimeter-recap').append("<div id='perimeter-recap-details' style='overflow-y:scroll; height:100px;'>");
+                    createdivdetails = true;
+                }
+                jQuery('#perimeter-recap-details').append("<div>" + value.name + "</div>");
             });
         } else {
-            reprojectWKT(JSON.parse(features_text));            
+//            reprojectWKT(JSON.parse(features_text));            
         }
     } catch (e) {
-        jQuery('#perimeter-recap').append("<div>" + JSON.parse(features_text) + "</div>");
+//        jQuery('#perimeter-recap-details').append("<div>" + JSON.parse(features_text) + "</div>");
+    }
+    if(createdivdetails === true){
+        jQuery('#perimeter-recap').append("<div");
     }
 }
                

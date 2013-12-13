@@ -1,12 +1,12 @@
-function loadPerimeter() {
+function loadPerimeter(withdisplay) {
     if (jQuery('#jform_perimeter').length > 0) {
-        loadPolygonPerimeter();
+        loadPolygonPerimeter(withdisplay);
     } else {
         loadWfsPerimeter();
     }
 }
 
-function loadPolygonPerimeter() {
+function loadPolygonPerimeter(withdisplay) {
     var polygonLayer = new OpenLayers.Layer.Vector("Polygon Layer", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
     app.mapPanel.map.addLayers([polygonLayer]);
     var wkt = jQuery('#jform_perimeter').val();
@@ -33,8 +33,12 @@ function loadPolygonPerimeter() {
         reprojfeatures.push(reprojfeature);
     }
     app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
-    var reprojwkt = new OpenLayers.Format.WKT().write(reprojfeatures);
-    jQuery('#perimeter-recap').append("<div>" + reprojwkt + "</div>");
+    if(withdisplay === true){
+        var reprojwkt = new OpenLayers.Format.WKT().write(reprojfeatures);
+        jQuery('#perimeter-recap').append('<div id="perimeter-recap-details" style="overflow-y:scroll; height:100px;">');
+        jQuery('#perimeter-recap-details').append("<div>" + reprojwkt + "</div>");
+        jQuery('#perimeter-recap').append('</div>');
+    }
 }
 
 function reprojectWKT(wkt) {
@@ -60,7 +64,7 @@ function reprojectWKT(wkt) {
         
     }
     var reprojwkt = new OpenLayers.Format.WKT().write(reprojfeatures);
-    jQuery('#perimeter-recap').append("<div>" + reprojwkt + "</div>");
+    jQuery('#perimeter-recap-details').append("<div>" + reprojwkt + "</div>");
 }
 
 var selectLayer;

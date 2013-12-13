@@ -149,13 +149,13 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                         </div>
                         <div  class="value-recap span6" >
                             <div id="perimeter-buffer" class="row-fluid hide" >
-                                <div><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BUFFER'); ?></h3>
+                                <div><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BUFFER'); ?></h4>
                                     <input id="buffer" name="buffer" type="text" placeholder="" class="input-xlarge" value="<?php if (!empty($this->item->buffer)) echo (float)$this->item->buffer; ?>">
                                 </div>                                
                             </div>
                             <div id="perimeter-recap" class="row-fluid" >
                                 <?php if (!empty($this->item->extent)): ?>
-                                    <div><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SURFACE'); ?></h3>
+                                    <div><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SURFACE'); ?></h4>
                                         <div><?php
                                         if (!empty($this->item->extent->surface)) :
                                             if (floatval($this->item->extent->surface) > intval($this->paramsarray['maxmetervalue'])):
@@ -168,14 +168,10 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                         endif;
                                             ?></div>
                                     </div>                                
-                                    <div><h3><?php echo JText::_($this->item->extent->name); ?></h3></div>
+                                    <div><h4><?php echo JText::_($this->item->extent->name); ?></h4></div>
                                     <?php
-                                    if (is_string($this->item->extent->features)):                                        
-                                            ?>
-<!--                                            <div><?php echo $this->item->extent->features; ?></div>-->
-                                            <?php
-                                        
-                                    elseif (is_array($this->item->extent->features)):
+                                    if (is_array($this->item->extent->features)):
+                                        ?> <div id="perimeter-recap-details" style="overflow-y:scroll; height:100px;"> <?php                                    
                                         foreach ($this->item->extent->features as $feature):
                                             ?>
                                             <div><?php echo $feature->name; ?></div>
@@ -183,8 +179,9 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                         endforeach;                                    
                                     endif;
                                     ?>
-
-                                <?php endif; ?>
+                                    </div>
+                              <?php endif; ?>
+                                              
                             </div>                           
                         </div>
                     </div>
