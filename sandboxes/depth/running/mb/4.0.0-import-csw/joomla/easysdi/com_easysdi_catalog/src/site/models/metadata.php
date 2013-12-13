@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormGenerator.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/CswMerge.php';
 
 jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
@@ -61,11 +62,13 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         // Load state from the request userState on edit or from the passed variable on default
         if (JFactory::getApplication()->input->get('layout') == 'edit') {
             $id = JFactory::getApplication()->getUserState('com_easysdi_catalog.edit.metadata.id');
+            $import = JFactory::getApplication()->getUserState('com_easysdi_catalog.edit.metadata.import');
         } else {
             $id = JFactory::getApplication()->input->get('id');
             JFactory::getApplication()->setUserState('com_easysdi_catalog.edit.metadata.id', $id);
         }
         $this->setState('metadata.id', $id);
+        $this->setState('metadata.import', $import);
 
         // Load the parameters.
         $params = $app->getParams();
@@ -103,6 +106,8 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                 $id = $this->getState('metadata.id');
             }
 
+            $import = $this->getState('metadata.import');
+
             // Get a level row instance.
             $table = $this->getTable();
 
@@ -133,19 +138,35 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                 $query->innerJoin('#__sdi_version v on v.id = m.version_id');
                 $query->innerJoin('#__sdi_resource r on v.resource_id = r.id');
                 $query->innerJoin('#__sdi_resourcetype rt on r.resourcetype_id = rt.id');
-                $query->where('m.id = '.$id);
-                
+                $query->where('m.id = ' . $id);
+
                 $this->db->setQuery($query);
                 $metadata = $this->db->loadObject();
-                $metdataArray = (array)$metadata;
-                
+                $metdataArray = (array) $metadata;
+
                 $this->_item = JArrayHelper::toObject($metdataArray, 'JObject');
 
                 if ($id) {
-                    //Load the CSW metadata
-                    $CSWmetadata = new sdiMetadata($this->_item->id);
-                    if ($result = $CSWmetadata->load()){
+                    //Load the CSW metadata from local catalog
+                    if (key_exists('id', $import)) {
+                        $CSWmetadata = new sdiMetadata($import['id']);
+                    } else {
+                        $CSWmetadata = new sdiMetadata($this->_item->id);
+                    }
+
+                    if ($result = $CSWmetadata->load()) {
                         $this->_item->csw = $result;
+                    }
+
+                    // create csw attribute to item
+                    if (key_exists('xml', $import)) {
+                        $xml = new DOMDocument('1.0','utf-8');
+                        $xml->loadXML($import['xml']);
+                        $cswm = new CswMerge($this->_item->csw, $xml);
+
+                        if($merged = $cswm->mergeImport($import['importref_id'])){
+                            $this->_item->csw = $merged;
+                        }
                     }
                 }
             } elseif ($error = $table->getError()) {
@@ -462,6 +483,19 @@ class Easysdi_catalogModelMetadata extends JModelForm {
 
         $this->db->setQuery($query);
         return $this->db->loadObjectList('guid');
+    }
+
+    private function getGUID() {
+        mt_srand((double) microtime() * 10000); //optional for php 4.2.0 and up.
+        $charid = strtoupper(md5(uniqid(rand(), true)));
+        $hyphen = chr(45); // "-"
+        $uuid = substr($charid, 0, 8) . $hyphen
+                . substr($charid, 8, 4) . $hyphen
+                . substr($charid, 12, 4) . $hyphen
+                . substr($charid, 16, 4) . $hyphen
+                . substr($charid, 20, 12);
+
+        return $uuid;
     }
 
 }

@@ -107,7 +107,7 @@ $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/sy
     js('document').ready(function() {
 
 <?php if ($this->params->get('editmetadatafieldsetstate') == "allopen"): ?>
-        allopen();
+            allopen();
 <?php endif; ?>
 
 <?php
@@ -181,7 +181,7 @@ foreach ($this->validators as $validator) {
                     <h4 class="modal-title" id="publishModalLabel"><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_DATE'); ?></h4>
                 </div>
                 <div class="modal-body">
-                    <form id="form_search_resource" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal">
+                    <form id="form_publish" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal">
                         <div class="control-group">
                             <div class="control-label"><label id="publish_date-lbl" for="publish_date" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_DATE'); ?></label></div>
                             <div class="controls"><div class="input-append">
@@ -225,7 +225,6 @@ foreach ($this->validators as $validator) {
                                 <label class="control-label" for="inputEmail">Nom</label>
                                 <div class="controls">
                                     <input id="resource_name" name="resource_name" type="text" value="">
-                                    <span class="help-inline">Ce champ doit faire au moins 3 caractères.</span>
                                 </div>
                             </div>
                             <div class="control-group">
@@ -253,8 +252,11 @@ foreach ($this->validators as $validator) {
                             <button onclick="Joomla.submitbutton('metadata.searchresource')" type="button" class="btn btn-success btn-small pull-right">Chercher</button>
                         </form>
 
-                        <form id="form_import_resource" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit'); ?>" method="post" class="form-validate form-horizontal">
-                            <input type="hidden" name="task" value="metadata.importResource"/>
+                        <!-- Select replicate form -->
+                        <form id="form_replicate_resource" method="post" class="form-validate form-horizontal">
+                            <input type="hidden" name="task" value="metadata.edit"/>
+                            <input type="hidden" name="id" value="<?php echo $this->item->id; ?>"/>
+
                             <table id="search_table" class="table table-bordered">
                                 <thead>
                                     <tr><th></th><th>Nom</th><th>Version</th><th>Guid</th></tr>
@@ -267,12 +269,75 @@ foreach ($this->validators as $validator) {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.importResource')">Importer</button>
-                    <button type="button" class="btn btn-success" data-dismiss="modal">Fermer</button>
+                    <button id="import-btn" style="display: none" type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.edit')">Importer</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Fermer</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Import XML modal -->
+    <div class="modal fade" id="importXmlModal" tabindex="-1" role="dialog" aria-labelledby="importXmlModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="importXmlModalLabel">Import</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="form_xml_import" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit'); ?>" method="post" class="form-validate form-horizontal" accept-charset="utf-8" enctype="multipart/form-data">
+                        <input type="hidden" name="task" value="metadata.edit"/>
+                        <input type="hidden" name="id" value="<?php echo $this->item->id; ?>"/>
+                        <input type="hidden" name="import[importref_id]" class="import_importref_id" value=""/>
+                        
+                        <div class="control-group">
+                            <div class="control-label"><label id="xml_file-lbl" for="publish_date" class="" aria-invalid="false">Fichier XML</label></div>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input type="file" name="xml_file" id="xml_file"/>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.importxml')" >Importer</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import CSW modal -->
+    <div class="modal fade" id="importCswModal" tabindex="-1" role="dialog" aria-labelledby="importCswModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="importCswModalLabel">Import</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="form_csw_import" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit'); ?>" method="post" class="form-validate form-horizontal">
+                        <input type="hidden" name="task" value="metadata.edit"/>
+                        <input type="hidden" name="id" value="<?php echo $this->item->id; ?>"/>
+                        <input type="hidden" name="import[importref_id]" class="import_importref_id" value=""/>
+                        
+                        <div class="control-group">
+                            <div class="control-label"><label id="import_fileidentifier-lbl" for="publish_date" class="" aria-invalid="false">Fileidentifier</label></div>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input type="text" name="import[fileidentifier]" id="import_fileidentifier"/>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.importcsw')" >Importer</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>

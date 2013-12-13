@@ -57,7 +57,7 @@ js('document').ready(function() {
         } else {
             var actions = task.split('.');
             var form = document.getElementById('form-metadata');
-            var form_import = document.getElementById('form_import_resource');
+            var form_import = document.getElementById('form_replicate_resource');
 
             switch (actions[1]) {
                 case 'cancel':
@@ -117,13 +117,22 @@ js('document').ready(function() {
                     Joomla.submitbutton('metadata.publish');
                     break;
                 case 'replicate':
-                    js('#searchModal').modal('show');
+                    confirmReplicate(task);
                     break;
                 case 'searchresource':
                     searchResource(task);
                     break;
-                case 'importResource':
+                case 'edit':
                     Joomla.submitform(task, form_import);
+                    break;
+                case 'import':
+                    confirmImport(task);
+                    break;
+                case 'importxml':
+                    Joomla.submitform('metadata.edit', form_xml_import);
+                    break;
+                case 'importcsw':
+                    Joomla.submitform('metadata.edit', form_csw_import);
                     break;
                 case 'toggle':
                     toggleAll();
@@ -135,28 +144,33 @@ js('document').ready(function() {
     ;
 }
 );
+
+/**
+ * 
+ * @param {type} task
+ * @returns {undefined}
+ */
 function searchResource(task) {
-    if (js('#resource_name').val().length < 3) {
-        js('#resource_name_group').addClass('error');
-        return;
-    }
 
     js('input[name="task"]').val(task);
-    js('#resource_name_group').addClass('error');
 
-    var search_form = js('#form_search_resource');
     js.ajax({
         url: currentUrl + '?' + task,
-        type: search_form.attr('method'),
-        data: search_form.serialize(),
+        type: js('#form_search_resource').attr('method'),
+        data: js('#form_search_resource').serialize(),
         success: function(data) {
             var response = js.parseJSON(data);
             if (response.success) {
                 var items = '';
                 js.each(response.result, function() {
-                    items += '<tr><td><input type="radio" name="resource_guid" id="resource_guid_' + this.guid + '" value="' + this.guid + '" checked=""</td><td>' + this.name + '</td><td>' + this.created + '</td><td>' + this.guid + '</td></tr>';
+                    items += '<tr><td><input type="radio" name="import[id]" id="import_id_' + this.id + '" value="' + this.id + '" checked=""</td><td>' + this.name + '</td><td>' + this.created + '</td><td>' + this.guid + '</td></tr>';
                 });
                 js('#search_result').html(items);
+                if (response.total > 0) {
+                    js('#import-btn').show();
+                } else {
+                    js('#import-btn').hide();
+                }
                 js('#search_table').show();
                 js('#search_table').dataTable({
                     "bFilter": false,
@@ -168,6 +182,23 @@ function searchResource(task) {
                         "sInfoFiltered": "(Filtré de _MAX_ total resultats)"
                     }
                 });
+            }
+        }
+    });
+}
+
+function importSwitch(task) {
+    var actions = task.split('.');
+
+    js.get(currentUrl + '?task=' + actions[0] + '.' + actions[1] + '&id=' + actions[2], function(data) {
+        var response = js.parseJSON(data);
+
+        if (response.success) {
+            js('.import_importref_id').val(response.result.id);
+            if (response.result.cswservice_id !== null) {
+                js('#importCswModal').modal('show');
+            } else {
+                js('#importXmlModal').modal('show');
             }
         }
     });
@@ -272,8 +303,25 @@ function addFieldset(id, idwi, relid, parent_path, lowerbound, upperbound) {
     });
 }
 
-function allopen(){
+function allopen() {
     js('.inner-fds').show();
+}
+
+function confirmImport(task) {
+    bootbox.confirm("Attention a bien sauvegarder votre metadonnée avant l'import!", function(result) {
+        if (result) {
+            importSwitch(task);
+        }
+    });
+}
+
+function confirmReplicate() {
+     bootbox.confirm("Attention a bien sauvegarder votre metadonnée avant l'import!", function(result) {
+        if (result) {
+           js('#searchModal').modal('show');
+        }
+    });
+
 }
 
 function confirmFieldset(id, idwi, lowerbound, upperbound) {
@@ -371,9 +419,9 @@ function chosenRefresh() {
 }
 
 function filterBoundary(parentPath, value) {
-    
+
     js.get(currentUrl + '?task=ajax.getBoundaryByCategory&value=' + value, function(data) {
-       
+
         var response = js.parseJSON(data);
         var replaceId = parentPath.replace(/-/g, '_');
         var selectList = js('#jform_' + replaceId + '_sla_gmd_dp_description_sla_gco_dp_CharacterString');
