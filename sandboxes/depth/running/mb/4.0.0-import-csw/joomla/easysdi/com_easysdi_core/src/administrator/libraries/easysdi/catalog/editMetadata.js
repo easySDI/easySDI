@@ -58,6 +58,8 @@ js('document').ready(function() {
             var actions = task.split('.');
             var form = document.getElementById('form-metadata');
             var form_import = document.getElementById('form_replicate_resource');
+            var form_xml_import = document.getElementById('form_xml_import');
+            var form_csw_import = document.getElementById('form_csw_import');
 
             switch (actions[1]) {
                 case 'cancel':
@@ -129,10 +131,14 @@ js('document').ready(function() {
                     confirmImport(task);
                     break;
                 case 'importxml':
-                    Joomla.submitform('metadata.edit', form_xml_import);
+                    if (document.formvalidator.isValid(form_xml_import)) {
+                        Joomla.submitform('metadata.edit', form_xml_import);
+                    }
                     break;
                 case 'importcsw':
-                    Joomla.submitform('metadata.edit', form_csw_import);
+                    if (document.formvalidator.isValid(form_csw_import)) {
+                        Joomla.submitform('metadata.edit', form_csw_import);
+                    }
                     break;
                 case 'toggle':
                     toggleAll();
@@ -140,8 +146,7 @@ js('document').ready(function() {
             }
 
         }
-    }
-    ;
+    };
 }
 );
 
@@ -308,7 +313,7 @@ function allopen() {
 }
 
 function confirmImport(task) {
-    bootbox.confirm("Attention a bien sauvegarder votre metadonnée avant l'import!", function(result) {
+    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_SAVE_WARNING', 'COM_EASYSDI_CATALOGE_METADATA_SAVE_WARNING'), function(result) {
         if (result) {
             importSwitch(task);
         }
@@ -316,16 +321,16 @@ function confirmImport(task) {
 }
 
 function confirmReplicate() {
-     bootbox.confirm("Attention a bien sauvegarder votre metadonnée avant l'import!", function(result) {
+    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_SAVE_WARNING', 'COM_EASYSDI_CATALOGE_METADATA_SAVE_WARNING'), function(result) {
         if (result) {
-           js('#searchModal').modal('show');
+            js('#searchModal').modal('show');
         }
     });
 
 }
 
 function confirmFieldset(id, idwi, lowerbound, upperbound) {
-    bootbox.confirm("Are you sure?", function(result) {
+    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_EMPTY_WARNING', 'COM_EASYSDI_CATALOGE_METADATA_EMPTY_WARNING'), function(result) {
         if (result) {
             removeFieldset(id, idwi, lowerbound, upperbound);
         }
@@ -333,7 +338,7 @@ function confirmFieldset(id, idwi, lowerbound, upperbound) {
 }
 
 function confirmField(id, idwi, lowerbound, upperbound) {
-    bootbox.confirm("Are you sure?", function(result) {
+    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_EMPTY_WARNING', 'COM_EASYSDI_CATALOGE_METADATA_EMPTY_WARNING'), function(result) {
         if (result) {
             removeField(id, idwi, lowerbound, upperbound);
         }

@@ -1,6 +1,7 @@
 <?php
 
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
+require_once JPATH_BASE . '/administrator/components/com_easysdi_core/libraries/easysdi/catalog/CurlUtils.php';
 
 /**
  * Description of CswMerge
@@ -25,20 +26,36 @@ class CswMerge {
     /** @var SdiNamespaceDao */
     private $nsdao;
 
-    function __construct($original, $import) {
+    function __construct($original, $import = '') {
         $this->db = JFactory::getDbo();
-        $this->import = $import;
+        if (!empty($import)) {
+            $this->import = $import;
+        }
         $this->original = $original;
         $this->nsdao = new SdiNamespaceDao();
     }
 
     /**
-     * @return DOMDocument Description
+     * 
+     * @param int $importref_id
+     * @param string $fileidentifier
+     * @return DOMDocument or false if fail
      */
-    public function mergeImport($importref_id) {
+    public function mergeImport($importref_id, $fileidentifier = '') {
         $importref = $this->getImportRef($importref_id);
+
+        /* Retrieves metadata from the CSW server. */
+        if (!empty($fileidentifier)) {
+            if ($response = $this->getImportCsw($importref->resourceurl, $importref->resourceusername, $importref->resourcepassword, $fileidentifier)) {
+                $this->import = $response;
+            }  else {
+                return FALSE;
+            }
+        }
+
         $firstChildName = $this->import->firstChild->nodeName;
 
+        /* Add tag GetRecordById Response if necessary. */
         if ($firstChildName != 'csw:GetRecordByIdResponse') {
             $dom = new DOMDocument('1.0', 'utf-8');
             $dom->appendChild($dom->createElementNS('http://www.opengis.net/cat/csw/2.0.2', 'csw:GetRecordByIdResponse'));
@@ -50,18 +67,21 @@ class CswMerge {
             }
         }
 
+        /* Transform the external xml if necessary. */
         if (!empty($importref->xsl4ext)) {
             if ($xmltranform = $this->xslProceed($this->import, $importref->xsl4ext)) {
                 $this->import = $xmltranform;
             }
         }
 
+        /* Transform the sdi xml if necessary. */
         if (!empty($importref->xsl4sdi)) {
             if ($xmltrasform = $this->xslProceed($this->original, $importref->xsl4sdi)) {
                 $this->original = $xmltranform;
             }
         }
 
+        /* Switch on import type */
         switch ($importref->importtype_id) {
             case self::REPLACE:
                 return $this->replace();
@@ -71,10 +91,17 @@ class CswMerge {
         }
     }
 
+    /**
+     * 
+     * @return DOMElement
+     */
     private function replace() {
         return $this->import;
     }
 
+    /**
+     * Merge import to original
+     */
     private function merge() {
 
         $domXpathImport = new DOMXPath($this->import);
@@ -97,11 +124,13 @@ class CswMerge {
                 }
             }
         }
-
-        $this->original->formatOutput = true;
-        $xml = $this->original->saveXML();
     }
 
+    /**
+     * Import node at the fist share ancestor
+     * 
+     * @param DOMElement $node
+     */
     private function getFirstShareAncestor(DOMElement $node) {
         $domXpathImport = new DOMXPath($this->import);
         $domXpathOriginal = new DOMXPath($this->original);
@@ -128,6 +157,12 @@ class CswMerge {
         }
     }
 
+    /**
+     * Check if element has child
+     * 
+     * @param DOMElement $node
+     * @return boolean
+     */
     private function hasChild(DOMElement $node) {
         if (!$node->hasChildNodes()) {
             return FALSE;
@@ -143,6 +178,13 @@ class CswMerge {
         return FALSE;
     }
 
+    /**
+     * Tranform xml DOMDocument with xsl
+     * 
+     * @param DOMDocument $xml
+     * @param string $xsl
+     * @return DOMDocument of false if fail
+     */
     private function xslProceed(DOMDocument $xml, $xsl) {
         $xsldoc = new DOMDocument('1.0', 'utf-8');
         if (!$xsldoc->load($xsl)) {
@@ -159,11 +201,45 @@ class CswMerge {
         }
     }
 
+    /**
+     * Retrives metadadata from service
+     * 
+     * @param string $resourceUrl
+     * @param string $username
+     * @param string $password
+     * @param string $fileidentifier
+     * @return DOMDocument or false if not found
+     */
+    private function getImportCsw($resourceUrl, $username, $password, $fileidentifier) {
+        $url = array();
+        $url[] = $resourceUrl;
+        $url[] = '?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&';
+        $url[] = 'id=' . $fileidentifier;
+
+        $response = CurlUtils::CURLRequest(CurlUtils::GET, implode($url), $username, $password);
+
+        $dom = new DOMDocument('1.0', 'utf-8');
+        $dom->loadXML($response);
+
+        if ($dom->firstChild->hasChildNodes()) {
+            return $dom;
+        } else {
+            return FALSE;
+        }
+    }
+
+    /**
+     * Retrieves import configuration via the id.
+     * 
+     * @param int $importref_id
+     * @return stdClass importref
+     */
     private function getImportRef($importref_id) {
         $query = $this->db->getQuery(true);
         $query->select('*');
-        $query->from('#__sdi_importref AS i');
-        $query->where('i.id = ' . $importref_id);
+        $query->from('#__sdi_importref AS ir');
+        $query->leftJoin('#__sdi_physicalservice ps on ps.id = ir.cswservice_id');
+        $query->where('ir.id = ' . $importref_id);
 
         $this->db->setQuery($query);
         $importref = $this->db->loadObject();

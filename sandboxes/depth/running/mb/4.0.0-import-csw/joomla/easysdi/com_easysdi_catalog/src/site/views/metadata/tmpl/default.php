@@ -16,6 +16,8 @@ JHtml::_('formbehavior.chosen', 'select');
 JHtml::_('behavior.calendar');
 
 JText::script('COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK');
+JText::script('COM_EASYSDI_CATALOGE_METADATA_SAVE_WARNING');
+JText::script('COM_EASYSDI_CATALOGE_METADATA_EMPTY_WARNING');
 
 //Load admin language file
 $lang = JFactory::getLanguage();
@@ -326,7 +328,7 @@ foreach ($this->validators as $validator) {
                             <div class="control-label"><label id="import_fileidentifier-lbl" for="publish_date" class="" aria-invalid="false">Fileidentifier</label></div>
                             <div class="controls">
                                 <div class="input-append">
-                                    <input type="text" name="import[fileidentifier]" id="import_fileidentifier"/>
+                                    <input class="required" type="text" name="import[fileidentifier]" id="import_fileidentifier"/>
                                 </div>
                             </div>
                         </div>

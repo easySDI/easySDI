@@ -196,16 +196,16 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         $importref = $this->db->loadObjectList();
 
         $importrefactions = array();
-        $importrefactions['Réplication de ressource'] = 'metadata.replicate';
+        $importrefactions[JText::_('COM_EASYSDI_CATALOGE_REPLICATE')] = 'metadata.replicate';
         foreach ($importref as $ir) {
             $importrefactions[$ir->name] = 'metadata.import.' . $ir->id;
         }
 
         $toolbar = new SdiToolbar();
 
-        $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_TITLE_OPEN_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
-        $toolbar->append('Import', 'import', 'btn-small', $importrefactions, true);
-        $toolbar->appendBtnRoute('Annuler', JRoute::_('index.php?option=com_easysdi_core&view=resources'), 'btn-small btn-danger');
+        $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_OPEN_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
+        $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_IMPORT'), 'import', 'btn-small', $importrefactions, true);
+        $toolbar->appendBtnRoute(JText::_('JCANCEL'), JRoute::_('index.php?option=com_easysdi_core&view=resources'), 'btn-small btn-danger');
 
         return $toolbar->renderToolbar();
     }

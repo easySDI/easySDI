@@ -158,7 +158,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                         $this->_item->csw = $result;
                     }
 
-                    // create csw attribute to item
+                    // If xml is upload
                     if (key_exists('xml', $import)) {
                         $xml = new DOMDocument('1.0','utf-8');
                         $xml->loadXML($import['xml']);
@@ -166,6 +166,17 @@ class Easysdi_catalogModelMetadata extends JModelForm {
 
                         if($merged = $cswm->mergeImport($import['importref_id'])){
                             $this->_item->csw = $merged;
+                        }
+                    }
+                    
+                    // If fileidentifier is not null
+                    if(key_exists('fileidentifier', $import)){
+                       $cswm = new CswMerge($this->_item->csw);
+                      
+                       if($merged = $cswm->mergeImport($import['importref_id'], $import['fileidentifier'])){
+                            $this->_item->csw = $merged;
+                        }  else {
+                            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_NOT_FOUND_ERROR'), 'error');
                         }
                     }
                 }
