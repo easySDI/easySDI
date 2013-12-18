@@ -568,6 +568,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         return $xpath;
     }
 
+    /**
+     * Return href for sub resource
+     * 
+     * @param string $guid
+     * @return string 
+     */
     private function getHref($guid) {
         $query = $this->db->getQuery(true);
         $query->select('m.guid ,ns.`prefix`, rt.fragment');
@@ -581,11 +587,16 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->db->setQuery($query);
         $result = $this->db->loadObject();
 
-        $href = JComponentHelper::getParams('com_easysdi_catalog')->get('catalogurl');
-        $href.= '?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=' . $result->guid;
-        $href .= '&fragment=' . $result->prefix . '%3A' . $result->fragment;
+        if (isset($result)) {
 
-        return $href;
+            $href = JComponentHelper::getParams('com_easysdi_catalog')->get('catalogurl');
+            $href.= '?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=' . $result->guid;
+            $href .= '&fragment=' . $result->prefix . '%3A' . $result->fragment;
+
+            return $href;
+        } else {
+            return '';
+        }
     }
 
     /**
@@ -705,3 +716,5 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     }
 
 }
+
+?>
