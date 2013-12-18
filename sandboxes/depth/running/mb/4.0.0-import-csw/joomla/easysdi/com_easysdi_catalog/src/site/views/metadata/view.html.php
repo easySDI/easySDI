@@ -195,6 +195,18 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         $this->db->setQuery($query);
         $importref = $this->db->loadObjectList();
 
+        $query = $this->db->getQuery(true);
+
+        $query->select('m.id, v.name, s.value, s.id AS state, v.id as version');
+        $query->from('#__sdi_version v');
+        $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
+        $query->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id');
+        $query->where('v.id = ' . $this->item->id);
+        $query->order('v.name DESC');
+
+        $this->db->setQuery($query);
+        $metadata = $this->db->loadObject();
+        
         $importrefactions = array();
         $importrefactions[JText::_('COM_EASYSDI_CATALOGE_REPLICATE')] = 'metadata.replicate';
         foreach ($importref as $ir) {
@@ -204,7 +216,9 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         $toolbar = new SdiToolbar();
 
         $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_OPEN_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
-        $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_IMPORT'), 'import', 'btn-small', $importrefactions, true);
+        if($metadata->state == sdiMetadata::INPROGRESS){
+            $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_IMPORT'), 'import', 'btn-small', $importrefactions, true);
+        }
         $toolbar->appendBtnRoute(JText::_('JCANCEL'), JRoute::_('index.php?option=com_easysdi_core&view=resources'), 'btn-small btn-danger');
 
         return $toolbar->renderToolbar();
