@@ -43,6 +43,11 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
 
 
 <form class="form-horizontal form-validate " action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=catalog&search=true&id=' . $this->item->id . '&preview=' . $this->preview); ?>#results" method="post" id="searchform" name="searchform" enctype="multipart/form-data">
+    <?php 
+    $tmpl = JFactory::getApplication()->input->get('tmpl', null, 'string');
+    if(isset($tmpl)):?>
+    <input type="hidden" name="tmpl" id="tmpl" value="<?php echo $tmpl ; ?>"/>
+    <?php endif; ?>
     <div class="catalog front-end-edit">
         <fieldset id="searchtype" class="radio btn-group pull-right" style="display: none">
             <input type="radio" id="jform_searchtype_simple" class="input-searchtype"  name="jform[searchtype]" value="simple" <?php if(!$this->isAdvanced()){ echo 'checked="checked"'; }?>>
