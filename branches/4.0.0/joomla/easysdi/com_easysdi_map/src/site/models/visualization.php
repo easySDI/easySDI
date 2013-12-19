@@ -82,7 +82,7 @@ class Easysdi_mapModelVisualization extends JModelForm {
                 $this->_item->users = sdiModel::getAccessScopeUser($this->_item->guid);
 
                 //Adapt service reference
-                ($this->_item->wmsservicetype_id == 1) ? $this->_item->wmsservice_id = 'physical_' . $this->_item->wmsservice_id : $this->_item->wmsservice_id = 'virtual_' . $this->_item->wmsservice_id;
+              //  ($this->_item->wmsservicetype_id == 1) ? $this->_item->wmsservice_id = 'physical_' . $this->_item->wmsservice_id : $this->_item->wmsservice_id = 'virtual_' . $this->_item->wmsservice_id;
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
