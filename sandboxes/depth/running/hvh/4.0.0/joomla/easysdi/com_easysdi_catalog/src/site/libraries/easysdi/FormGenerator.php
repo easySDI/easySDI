@@ -156,6 +156,8 @@ class FormGenerator {
                     $attributename = $attribute->nodeName;
                     $cloned = $attribute->cloneNode(true);
                     $parent->appendChild($cloned);
+                    $parent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
+
 
                     $root = $cloned;
                     $this->ajaxXpath = $cloned->getNodePath();
@@ -189,9 +191,9 @@ class FormGenerator {
      * 
      * @param DOMElement $parent Current element.
      */
-    private function getChildTree(DOMElement $parent) {
+    private function getChildTree(DOMElement $parent, $level = 1) {
 
-        $childs = $this->getChildNode($parent);
+        $childs = $this->getChildNode($parent, $level);
 
         foreach ($childs as $child) {
             $parent->appendChild($child);
@@ -204,11 +206,11 @@ class FormGenerator {
 
             switch ($element->getAttributeNS($this->catalog_uri, 'childtypeId')) {
                 case EnumChildtype::$CLASS:
-                    $this->getChildTree($element);
+                    $this->getChildTree($element, $level + 1);
 
                     break;
                 case EnumChildtype::$RELATIONTYPE:
-                    $this->getChildTree($element);
+                    $this->getChildTree($element, $level + 1);
                     break;
             }
         }
@@ -220,7 +222,7 @@ class FormGenerator {
      * @param DOMElement $parent
      * @return DOMElement[] Childs of parent relation.
      */
-    private function getChildNode(DOMElement $parent) {
+    private function getChildNode(DOMElement $parent, $level) {
         $childs = array();
 
 
@@ -269,6 +271,8 @@ class FormGenerator {
                     $relation = $this->getDomElement($result->uri, $result->prefix, $result->name, $result->id, EnumChildtype::$RELATION, $result->guid, $result->lowerbound, $result->upperbound);
                     $class = $this->getDomElement($result->class_ns_uri, $result->class_ns_prefix, $result->class_name, $result->class_id, EnumChildtype::$CLASS, $result->class_guid, null, null, $result->class_stereotype_id);
 
+                    $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix.':level', $level);
+                    
                     switch ($result->class_stereotype_id) {
                         case EnumStereotype::$GEOGRAPHICEXTENT:
                             $params = array();
@@ -928,7 +932,8 @@ class FormGenerator {
         $field->setAttribute('label', EText::_($guid));
         $field->setAttribute('description', EText::_($guid, 2));
         $field->setAttribute('multiple', 'true');
-        $field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $default)));
+
+        $field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $default), true));
 
         $i = 1;
         foreach ($this->getAttributOptions($attribute) as $opt) {
