@@ -38,7 +38,6 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         <?php endif; ?>
     });
 
-
 </script>
 
 
