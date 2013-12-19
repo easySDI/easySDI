@@ -13,6 +13,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/resource
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/diffusion.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/metadata.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
+require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
 
 class cswmetadata {
 
@@ -330,13 +331,14 @@ class cswmetadata {
 
                 //View
                 $query = $this->db->getQuery(true)
-                        ->select('id, guid, wmsservice_id, wmsservicetype_id, layername, attribution, accessscope_id')
-                        ->from('#__sdi_visualization')
-                        ->where('version_id = ' . $this->version->id)
-                        ->where('state = 1');
+                        ->select('v.id, v.guid, v.maplayer_id, v.accessscope_id, ml.layername, ml.service_id, ml.servicetype, ml.attribution')
+                        ->from('#__sdi_visualization v')
+                        ->join('LEFT', '#__sdi_maplayer ml ON ml.id = v.maplayer_id')
+                        ->where('v.version_id = ' . $this->version->id)
+                        ->where('v.state = 1');
                 $this->db->setQuery($query);
                 $visualization = $this->db->loadObject();
-                if (!empty($visualization) && !empty($visualization->wmsservice_id)) :
+                if (!empty($visualization) && !empty($visualization->maplayer_id)) :
                     //check if the user has the right to view
                     $right = true;
                     if ($visualization->accessscope_id != 1):
@@ -380,11 +382,11 @@ class cswmetadata {
 //                                    visibility: true};
 //
 //                    app.addExtraLayer(sourceConfig, layerConfig)
-                        if ($visualization->wmsservicetype_id == 1)://Physical
+                        if ($visualization->servicetype == 'physical')://Physical
                             $query = $this->db->getQuery(true)
                                     ->select('id, alias, resourceurl')
                                     ->from('#__sdi_physicalservice')
-                                    ->where('id = ' . $visualization->wmsservice_id)
+                                    ->where('id = ' . $visualization->service_id)
                             ;
                             $this->db->setQuery($query);
                             $service = $this->db->loadObject();
@@ -392,7 +394,7 @@ class cswmetadata {
                             $query = $this->db->getQuery(true)
                                     ->select('id, alias, url, reflectedurl')
                                     ->from('#__sdi_virtualservice')
-                                    ->where('id = ' . $visualization->wmsservice_id)
+                                    ->where('id = ' . $visualization->service_id)
                             ;
                             $this->db->setQuery($query);
                             $service = $this->db->loadObject();
@@ -416,17 +418,24 @@ class cswmetadata {
                             $group = $this->db->loadResult();
                         }
 
-                        $href = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $this->metadata->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview . '&tmpl=component');
+//                        $href = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $this->metadata->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview . '&tmpl=component');
+                        $href = Easysdi_mapHelper::getLayerDetailSheetToolUrl($this->metadata->guid, $lang, $catalog, $preview) ;
                         $sourceconfig = '{id :"' . $service->alias . '",hidden : "true", ptype: "sdi_gxp_wmssource",url: "' . $service->resourceurl . '"}';
 
                         $mapparams = JComponentHelper::getParams('com_easysdi_map');
                         $mwidth = $mapparams->get('iframewidth');
                         $mheight = $mapparams->get('iframeheight');
 
-                        $layerconfig = '{ name: "' . $visualization->layername . '",attribution: "' . addslashes($visualization->attribution) . '",opacity: 1,source: "' . $service->alias . '",tiled: true,title: "' . $visualization->layername . '", visibility: true, href: "' . $href . '", iwidth :"' . $mwidth . '", iheight :"' . $mheight . '"';
+                        $layerconfig = '{ name: "' . $visualization->layername . '",attribution: "' . addslashes($visualization->attribution) . '",opacity: 1,source: "' . $service->alias . '",tiled: true,title: "' . $visualization->layername . '", visibility: true, href: "' . $href . '"';
                         if (!empty($diffusion) && $diffusion->hasdownload == 1):
-                            $downloadurl = htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&tmpl=component&id=' . $diffusion->id);
-                            $layerconfig .= ', download: "' . $downloadurl . '"';                        
+//                            $downloadurl = htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&tmpl=component&id=' . $diffusion->id);
+                            $downloadurl = Easysdi_mapHelper::getLayerDownloadToolUrl($diffusion->id) ;    
+                        $layerconfig .= ', download: "' . $downloadurl . '"';                        
+                        endif;
+                        if (!empty($diffusion) && $diffusion->hasextraction == 1):
+//                            $orderurl = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $this->metadata->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&type=shop&preview=map&tmpl=component');
+                            $orderurl = Easysdi_mapHelper::getLayerOrderToolUrl($this->metadata->guid, $lang, $catalog);
+                            $layerconfig .= ', order: "' . $orderurl . '"';                        
                         endif;
                         if(!empty($group)):
                             $layerconfig .= ', group: "' . $group . '"';  

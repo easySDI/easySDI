@@ -34,8 +34,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_maplayer` (
 `service_id` INT(11) UNSIGNED   ,
 `servicetype` VARCHAR(10)    ,
 `layername` VARCHAR(255)  NOT NULL ,
-`user` VARCHAR(255)   ,
-`password` VARCHAR(255)  ,
 `istiled` BOOLEAN NOT NULL DEFAULT '0',
 `isdefaultvisible` BOOLEAN NOT NULL DEFAULT '0' ,
 `opacity` DECIMAL (3,2) NOT NULL DEFAULT '1',
@@ -45,9 +43,16 @@ CREATE TABLE IF NOT EXISTS `#__sdi_maplayer` (
 `asOLoptions` TEXT,
 `metadatalink` TEXT  ,
 `attribution` VARCHAR(255)   ,
+`accessscope_id` INT(11) UNSIGNED NOT NULL ,
 `access` INT(11)  NOT NULL DEFAULT '1',
 `asset_id` INT(10),
 PRIMARY KEY (`id`), 
+INDEX `#__sdi_maplayer_fk1` (`accessscope_id` ASC) ,
+CONSTRAINT `#__sdi_maplayer_fk1`
+    FOREIGN KEY (`accessscope_id`)
+    REFERENCES `#__sdi_sys_accessscope` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
 UNIQUE (`alias`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -146,10 +151,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_visualization` (
 `name` VARCHAR(255)  NOT NULL ,
 `version_id` INT(11) UNSIGNED NOT NULL ,
 `accessscope_id` INT(11) UNSIGNED NOT NULL ,
-`wmsservice_id` INT(11) UNSIGNED  NOT NULL ,
-`wmsservicetype_id` INT(11) UNSIGNED  ,
-`layername` VARCHAR(255)  NOT NULL ,
-`attribution` VARCHAR(255)   ,
+`maplayer_id` INT(11) UNSIGNED  NOT NULL ,
 `access` INT(11)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) ,
 PRIMARY KEY (`id`), 

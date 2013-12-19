@@ -83,10 +83,17 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         // Get the previous edit id (if any) and the current edit id.
         $previousId = (int) $app->getUserState('com_easysdi_catalog.edit.metadata.id');
         $editId = JFactory::getApplication()->input->getInt('id', null, 'array');
-
+        $import = JFactory::getApplication()->input->get('import', array(), 'array');
+        if (key_exists('xml_file', $_FILES)) {
+            if ($xml = file_get_contents($_FILES['xml_file']['tmp_name'])) {
+                $import['xml'] = $xml;
+            }
+        }
 
         // Set the user id for the user to edit in the session.
         $app->setUserState('com_easysdi_catalog.edit.metadata.id', $editId);
+
+        $app->setUserState('com_easysdi_catalog.edit.metadata.import', $import);
 
         // Get the model.
         $model = $this->getModel('Metadata', 'Easysdi_catalogModel');
@@ -103,6 +110,23 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         // Redirect to the edit screen.
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&view=metadata&layout=edit', false));
+    }
+
+    public function import() {
+        $query = $this->db->getQuery(true);
+
+        $query->select('*');
+        $query->from('#__sdi_importref');
+        $query->where('id = ' . $_GET['id']);
+
+        $this->db->setQuery($query);
+        $importRef = $this->db->loadObject();
+
+        $response = array();
+        $response['success'] = true;
+        $response['result'] = $importRef;
+        echo json_encode($response);
+        die();
     }
 
     /**
@@ -210,7 +234,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     public function searchresource() {
         $query = $this->db->getQuery(true);
 
-        $query->select('r.`name`, v.created, m.guid');
+        $query->select('r.`name`, v.created, m.guid, m.id');
         $query->from('#__sdi_resource r');
         $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
         $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
@@ -220,24 +244,19 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         if ($_POST['resourcetype_id'] != '') {
             $query->where('r.resourcetype_id = ' . $_POST['resourcetype_id']);
         }
-        $query->where('r.`name` like \'%' . $_POST['resource_name'] . '%\'');
+        if ($_POST['resource_name'] != '') {
+            $query->where('r.`name` like \'%' . $_POST['resource_name'] . '%\'');
+        }
 
         $this->db->setQuery($query);
         $resources = $this->db->loadObjectList();
 
         $response = array();
         $response['success'] = true;
+        $response['total'] = count($resources);
         $response['result'] = $resources;
         echo json_encode($response);
         die();
-    }
-
-    /**
-     * Import resource
-     */
-    public function importResource() {
-        $cswmd = new cswmetadata($_POST['resource_guid']);
-        $csw = $cswmd->load();
     }
 
     /**
@@ -557,6 +576,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         return $xpath;
     }
 
+    /**
+     * Return href for sub resource
+     * 
+     * @param string $guid
+     * @return string 
+     */
     private function getHref($guid) {
         $query = $this->db->getQuery(true);
         $query->select('m.guid ,ns.`prefix`, rt.fragment');
@@ -570,11 +595,16 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->db->setQuery($query);
         $result = $this->db->loadObject();
         
-        $href = JComponentHelper::getParams('com_easysdi_catalog')->get('catalogurl');
-        $href.= '?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=' . $result->guid;
-        $href .= '&fragment=' . $result->prefix . '%3A' . $result->fragment;
+        if (isset($result)) {
 
-        return $href;
+            $href = JComponentHelper::getParams('com_easysdi_catalog')->get('catalogurl');
+            $href.= '?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=' . $result->guid;
+            $href .= '&fragment=' . $result->prefix . '%3A' . $result->fragment;
+
+            return $href;
+        } else {
+            return '';
+        }
     }
 
     /**
@@ -694,3 +724,5 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     }
 
 }
+
+?>

@@ -25,10 +25,10 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         enableAccessScope();
 
     });
-    
-    
-    
-    
+
+
+
+
     Joomla.submitbutton = function(task)
     {
         if (task == 'visualization.cancel') {
@@ -75,14 +75,25 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
 
                         <fieldset id ="fieldset_view">
                             <legend><?php echo JText::_('COM_EASYSDI_MAP_FORM_FIELDSET_LEGEND_VIEW'); ?></legend>
-                            <?php foreach ($this->form->getFieldset('view') as $field): ?>
-                                <div class="control-group" id="<?php echo $field->fieldname; ?>">
-                                    <div class="control-label"><?php echo $field->label; ?></div>
-                                    <div class="controls"><?php echo $field->input; ?></div>
+                            <div class="control-group" id="maplayer_id">
+                                <div class="control-label">
+                                    <label id="jform_maplayer_id-lbl" for="jform_maplayer_id" class="hasTip required" title="<?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_VISUALIZATION_MAPLAYER_ID'); ?>::<?php echo JText::_('COM_EASYSDI_MAP_FORM_DESC_VISUALIZATION_MAPLAYER_ID'); ?>"><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_VISUALIZATION_MAPLAYER_ID'); ?><span class="star">&#160;*</span></label>
                                 </div>
-                            <?php endforeach; ?>
+                                <div class="controls">
+                                    <select id="jform_maplayer_id" name="jform[maplayer_id]" class="inputbox required" size="1" >
+                                        <option value="" ></option>
+                                        <?php foreach ($this->authorizedLayers as $maplayer) : ?>
+                                            <option value="<?php echo $maplayer->id; ?>" <?php
+                                            if (isset($this->item->maplayer_id) && $this->item->maplayer_id == $maplayer->id) : echo 'selected="selected"';
+                                            endif;
+                                            ?>>
+                                            <?php echo $maplayer->name; ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
                         </fieldset>
-
                     </div>
 
                     <div class="tab-pane" id="publishing">
@@ -101,7 +112,6 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -114,6 +124,6 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         <input type = "hidden" name = "option" value = "com_easysdi_map" />
         <?php echo JHtml::_('form.token'); ?>
     </form>
-        
-        <?php echo $this->getToolbar(); ?>
+
+    <?php echo $this->getToolbar(); ?>
 </div>

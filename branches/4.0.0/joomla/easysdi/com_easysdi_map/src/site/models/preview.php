@@ -16,6 +16,7 @@ jimport('joomla.event.dispatcher');
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/version.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/metadata.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/diffusion.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_map/tables/layer.php';
 
 /**
  * Easysdi_map model.
@@ -38,36 +39,36 @@ class Easysdi_mapModelPreview extends JModelForm {
         if (JFactory::getApplication()->input->get('versionid')) {
             $versionid = JFactory::getApplication()->input->get('versionid');
             $query = $db->getQuery(true)
-                    ->select('p.id')
-                    ->from('#__sdi_visualization p')
-                    ->innerJoin('#__sdi_version v ON p.version_id = v.id')
-                    ->where('v.id IN ( ' . (int) $versionid) .')';
+                            ->select('p.id')
+                            ->from('#__sdi_visualization p')
+                            ->innerJoin('#__sdi_version v ON p.version_id = v.id')
+                            ->where('v.id IN ( ' . (int) $versionid) . ')';
             $db->setQuery($query);
-            $id = implode($db->loadColumn(),',');
+            $id = implode($db->loadColumn(), ',');
         } else if (JFactory::getApplication()->input->get('diffusionid')) {
             $diffusionid = JFactory::getApplication()->input->get('diffusionid');
             $query = $db->getQuery(true)
-                    ->select('p.id')
-                    ->from('#__sdi_visualization p')
-                    ->innerJoin('#__sdi_version v ON p.version_id = v.id')
-                    ->innerJoin('#__sdi_diffusion d ON d.version_id = v.id')
-                    ->where('d.id IN ( ' . (int) $diffusionid) .')';
+                            ->select('p.id')
+                            ->from('#__sdi_visualization p')
+                            ->innerJoin('#__sdi_version v ON p.version_id = v.id')
+                            ->innerJoin('#__sdi_diffusion d ON d.version_id = v.id')
+                            ->where('d.id IN ( ' . (int) $diffusionid) . ')';
             $db->setQuery($query);
-            $id = implode($db->loadColumn(),',');
+            $id = implode($db->loadColumn(), ',');
         } else if (JFactory::getApplication()->input->get('metadataid')) {
             $metadataid = JFactory::getApplication()->input->get('metadataid');
             $query = $db->getQuery(true)
-                    ->select('p.id')
-                    ->from('#__sdi_visualization p')
-                    ->innerJoin('#__sdi_version v ON p.version_id = v.id')
-                    ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                    ->where('m.id IN (' . (int) $metadataid) .')';
+                            ->select('p.id')
+                            ->from('#__sdi_visualization p')
+                            ->innerJoin('#__sdi_version v ON p.version_id = v.id')
+                            ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
+                            ->where('m.id IN (' . (int) $metadataid) . ')';
             $db->setQuery($query);
-            $id = implode($db->loadColumn(),',');
+            $id = implode($db->loadColumn(), ',');
         } else {
             $id = JFactory::getApplication()->input->get('id', null, 'safehtml');
         }
-        $this->setState('preview.id', $id,',');
+        $this->setState('preview.id', $id, ',');
 
         // Load the parameters.
         $app = JFactory::getApplication('com_easysdi_map');
@@ -91,64 +92,71 @@ class Easysdi_mapModelPreview extends JModelForm {
             }
 
             // Attempt to load the row.
-            $ids =array();
-            if(strpos($id, ',') !== false){
+            $ids = array();
+            if (strpos($id, ',') !== false) {
                 $ids = explode(',', $id);
-            }else{
+            } else {
                 $ids[] = $id;
             }
-            $this->_item = array ();
-            foreach ($ids as $id ):                
+            $this->_item = array();
+            foreach ($ids as $id):
                 // Get a level row instance.
                 $table = $this->getTable();
                 if ($table->load($id)) {
 
-                if ($table->state != 1)
-                    continue;
+                    if ($table->state != 1)
+                        continue;
 
-                // Convert the JTable to a clean JObject.
-                $properties = $table->getProperties(1);
-                $item = JArrayHelper::toObject($properties, 'JObject');
-                
-                //Load Layer source
-                //TODO : Do we have to check the service access scope?
-                if($item->wmsservicetype_id == 1){
-                    $service = JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
-                }else{
-                    $service = JTable::getInstance('virtualservice', 'Easysdi_serviceTable');
+                    // Convert the JTable to a clean JObject.
+                    $properties = $table->getProperties(1);
+                    $item = JArrayHelper::toObject($properties, 'JObject');
+
+                    if (!empty($item->maplayer_id)):
+                        //Load layer object
+                        $maplayer = JTable::getInstance('layer', 'Easysdi_mapTable');
+                        $maplayer->load($item->maplayer_id);
+                        $maplayerproperties = $maplayer->getProperties(1);
+                        $maplayer = JArrayHelper::toObject($maplayerproperties, 'JObject');                        
+                        $item->maplayer = $maplayer;
+                        
+                        //Load Layer source
+                        //TODO : Do we have to check the service access scope?
+                        if ($maplayer->servicetype == 'physical') {
+                            $service = JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
+                        } else {
+                            $service = JTable::getInstance('virtualservice', 'Easysdi_serviceTable');
+                        }
+                        $service->load($maplayer->service_id);
+                        $serviceproperties = $service->getProperties(1);
+                        $service = JArrayHelper::toObject($serviceproperties, 'JObject');
+                        $item->service = $service;
+                    endif;
+
+                    //Load related version 
+                    $version = JTable::getInstance('version', 'Easysdi_coreTable');
+                    $version->load($item->version_id);
+                    $versionproperties = $version->getProperties(1);
+                    $item->version = JArrayHelper::toObject($versionproperties, 'JObject');
+
+                    //Load related metadata 
+                    $metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
+                    $keys = array('version_id' => $item->version_id);
+                    $metadata->load($keys);
+                    $metadataproperties = $metadata->getProperties(1);
+                    $item->metadata = JArrayHelper::toObject($metadataproperties, 'JObject');
+
+                    //Load related diffusion 
+                    $diffusion = JTable::getInstance('diffusion', 'Easysdi_shopTable');
+                    $keys = array('version_id' => $item->version_id);
+                    $diffusion->load($keys);
+                    $diffusionproperties = $diffusion->getProperties(1);
+                    $item->diffusion = JArrayHelper::toObject($diffusionproperties, 'JObject');
+
+                    $this->_item[] = $item;
+                } elseif ($error = $table->getError()) {
+                    $this->setError($error);
                 }
-                $service->load($item->wmsservice_id);
-                $serviceproperties = $service->getProperties(1);                
-                $service = JArrayHelper::toObject($serviceproperties, 'JObject');                
-                $item->service = $service;
-                
-                //Load related version 
-                $version = JTable::getInstance('version', 'Easysdi_coreTable');
-                $version->load($item->version_id);
-                $versionproperties = $version->getProperties(1);     
-                $item->version = JArrayHelper::toObject($versionproperties, 'JObject');
-                
-                //Load related metadata 
-                $metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
-                $keys = array('version_id' => $item->version_id);
-                $metadata->load($keys);
-                $metadataproperties = $metadata->getProperties(1);     
-                $item->metadata = JArrayHelper::toObject($metadataproperties, 'JObject');
-                
-                //Load related diffusion 
-                $diffusion = JTable::getInstance('diffusion', 'Easysdi_shopTable');
-                $keys = array('version_id' => $item->version_id);
-                $diffusion->load($keys);
-                $diffusionproperties = $diffusion->getProperties(1);     
-                $item->diffusion = JArrayHelper::toObject($diffusionproperties, 'JObject');
-                
-                $this->_item[] = $item;
-                
-            } elseif ($error = $table->getError()) {
-                $this->setError($error);
-            }
             endforeach;
-            
         }
 
         return $this->_item;
@@ -184,7 +192,5 @@ class Easysdi_mapModelPreview extends JModelForm {
         }
         return $form;
     }
-
-   
 
 }

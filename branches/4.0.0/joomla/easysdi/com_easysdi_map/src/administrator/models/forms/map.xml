@@ -297,28 +297,31 @@
             <option value="0">JNO</option>
         </field>
         
+        <field name="tool18" type="radio" class="btn-group" default="0"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_LAYERDETAILSHEET"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_LAYERDETAILSHEET" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
         
-        <!--        <field 	name="tools"
-        type="sdidatabasecheckboxes"
-        class="inputbox"
-        valuefield="id"
-        textfield="name"
-        disable = "false"
-        sourcetable="#__sdi_sys_maptool"
-        label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS"
-        description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS" />-->
-        <!-- 		<field 	name="tools"
-                        type="sdidatabaseradio"
-                        class="btn-group"
-                        valuefield="id"
-                        textfield="name"
-                        disable = "false"
-                        sourcetable="#__sdi_sys_maptool"
-                        label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS"
-                        description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS" >
-                <option value="0">JNO</option>
-                <option value="1">JYES</option>
-        </field> -->
+        <field name="tool19" type="radio" class="btn-group" default="0"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_LAYERDOWNLOAD"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_LAYERDOWNLOAD" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+        
+        <field name="tool20" type="radio" class="btn-group" default="0"
+                label="COM_EASYSDI_MAP_FORM_LBL_MAP_TOOLS_LAYERORDER"
+                description="COM_EASYSDI_MAP_FORM_DESC_MAP_TOOLS_LAYERORDER" 
+        > 
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+
+        
     </fieldset>
     
     <field 	name="catalog_id" 

@@ -149,7 +149,9 @@ function savePerimeter() {
         "features": JSON.parse(jQuery('#t-features').val())};
 
     jQuery.ajax({
-        url: "index.php?option=com_easysdi_shop&task=addExtentToBasket&item=" + JSON.stringify(extent),
+        type: "POST",
+        url: "index.php?option=com_easysdi_shop&task=addExtentToBasket" ,
+        data :"item="+ JSON.stringify(extent),
         success: function(data) {
             displayExtentRecap();
         }
@@ -161,7 +163,7 @@ function displayExtentRecap() {
     saveTemporaryFields();
 
     jQuery('#perimeter-recap').empty();
-    jQuery('#perimeter-recap').append("<div><h3>" + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_SURFACE', 'Surface') + "</h3>");
+    jQuery('#perimeter-recap').append("<div><h4>" + Joomla.JText._('COM_EASYSDI_SHOP_BASKET_SURFACE', 'Surface') + "</h4>");
     var surface = parseFloat(jQuery('#surface').val());
     var surfacedigit = parseInt(jQuery('#surfacedigit').val());
     var maxmetervalue = parseFloat(jQuery('#maxmetervalue').val());
@@ -175,8 +177,8 @@ function displayExtentRecap() {
     }
 
     jQuery('#perimeter-recap').append("<div>" + surface + "</div></div>");
-    jQuery('#perimeter-recap').append("<div><h3>" + jQuery('#perimetern').val() + "</h3></div>");
-
+    jQuery('#perimeter-recap').append("<div><h4>" + jQuery('#perimetern').val() + "</h4></div>");
+    
     var features_text = jQuery('#features').val();
 
     if (features_text === '')
@@ -184,33 +186,84 @@ function displayExtentRecap() {
 
     try {
         var features = JSON.parse(features_text);
+        var createdivdetails = false;
         if (jQuery.isArray(features)) {
             jQuery.each(features, function(index, value) {
                 if (typeof value === "undefined")
                     return true;
 
                 if (typeof value.name === "undefined") {
-                    jQuery('#perimeter-recap').append("<div>" + features + "</div>");
+//                    jQuery('#perimeter-recap-details').append("<div>" + features + "</div>");
                     return false;
                 }
-                jQuery('#perimeter-recap').append("<div>" + value.name + "</div>");
+                if(createdivdetails === false){
+                    jQuery('#perimeter-recap').append("<div id='perimeter-recap-details' style='overflow-y:scroll; height:100px;'>");
+                    createdivdetails = true;
+                }
+                jQuery('#perimeter-recap-details').append("<div>" + value.name + "</div>");
             });
         } else {
-            var feature = reprojectWKT(JSON.parse(features_text));
-            jQuery('#perimeter-recap').append("<div>" + feature.geometry.toString() + "</div>");
+//            reprojectWKT(JSON.parse(features_text));            
         }
     } catch (e) {
-        jQuery('#perimeter-recap').append("<div>" + features_text + "</div>");
+//        jQuery('#perimeter-recap-details').append("<div>" + JSON.parse(features_text) + "</div>");
+    }
+    if(createdivdetails === true){
+        jQuery('#perimeter-recap').append("<div");
     }
 }
+               
+
+//function reprojectWKT(wkt) {
+//    var features = new OpenLayers.Format.WKT().read(wkt);
+//    var reprojfeatures = new Array();
+//    if (features instanceof Array) {
+//        for (var i = 0; i < features.length; i++) {
+//            var geometry = features[i].geometry.transform(
+//                    new OpenLayers.Projection("EPSG:4326"),
+//                    new OpenLayers.Projection(app.mapPanel.map.projection)
+//                    );
+//            var reprojfeature = new OpenLayers.Feature.Vector(geometry);
+//            reprojfeatures.push(reprojfeature);
+//        }
+//    }
+//    else {
+//        var geometry = features.geometry.transform(
+//                new OpenLayers.Projection("EPSG:4326"),
+//                new OpenLayers.Projection(app.mapPanel.map.projection)
+//                );
+//        var reprojfeature = new OpenLayers.Feature.Vector(geometry);
+//        reprojfeatures.push(reprojfeature);
+//        
+//    }
+//    var reprojwkt = new OpenLayers.Format.WKT().write(reprojfeatures);
+//    jQuery('#perimeter-recap').append("<div>" + reprojwkt + "</div>");
+//}
 
 function reprojectWKT(wkt) {
-    var feature = new OpenLayers.Format.WKT().read(wkt);
-    var geometry = feature.geometry.transform(
-            new OpenLayers.Projection("EPSG:4326"),
-            new OpenLayers.Projection(app.mapPanel.map.projection)
-            );
-    return feature;
+    var features = new OpenLayers.Format.WKT().read(wkt);
+    var reprojfeatures = new Array();
+    if (features instanceof Array) {
+        for (var i = 0; i < features.length; i++) {
+            var geometry = features[i].geometry.transform(
+                    new OpenLayers.Projection("EPSG:4326"),
+                    new OpenLayers.Projection(app.mapPanel.map.projection)
+                    );
+            var reprojfeature = new OpenLayers.Feature.Vector(geometry);
+            reprojfeatures.push(reprojfeature);
+        }
+    }
+    else {
+        var geometry = features.geometry.transform(
+                new OpenLayers.Projection("EPSG:4326"),
+                new OpenLayers.Projection(app.mapPanel.map.projection)
+                );
+        var reprojfeature = new OpenLayers.Feature.Vector(geometry);
+        reprojfeatures.push(reprojfeature);
+        
+    }
+    var reprojwkt = new OpenLayers.Format.WKT().write(reprojfeatures);
+    jQuery('#perimeter-recap-details').append("<div>" + reprojwkt + "</div>");
 }
 
 

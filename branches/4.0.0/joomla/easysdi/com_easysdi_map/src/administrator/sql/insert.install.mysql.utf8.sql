@@ -16,7 +16,10 @@ VALUES
 ('scaleline',14,1,'Scale line'),
 ('mouseposition',15,1,'Mouse position'),
 ('wfslocator',16,1,'Wfs locator'),
-('searchcatalog',17,1,'Catalog search')
+('searchcatalog',17,1,'Catalog search'),
+('layerdetailsheet',18,1,'Layer detail sheet'),
+('layerdownload',19,1,'Layer download'),
+('layerorder',20,1,'Layer order')
 ;
 
 

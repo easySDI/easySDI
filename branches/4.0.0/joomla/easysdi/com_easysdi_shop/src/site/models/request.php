@@ -68,11 +68,12 @@ class Easysdi_shopModelRequest extends JModelForm {
 
             // Attempt to load the row.
             if ($table->load($id)) {
-
-
                 // Convert the JTable to a clean JObject.
                 $properties = $table->getProperties(1);
                 $this->_item = JArrayHelper::toObject($properties, 'JObject');
+                
+                //Get user informations
+                $this->_item->client = sdiFactory::getSdiUser($this->_item->user_id);
 
                 //Get constante value (to display)
                 $this->_item->orderstate = constant('Easysdi_shopTableorder::orderstate_' . $this->_item->orderstate_id);

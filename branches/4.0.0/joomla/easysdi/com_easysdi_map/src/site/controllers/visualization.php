@@ -128,15 +128,10 @@ class Easysdi_mapControllerVisualization extends Easysdi_mapController {
             return false;
         }
 
-
-
-
         if (!$andclose) {
-            // Save the data in the session.
-            $app->setUserState('com_easysdi_map.edit.visualization.data', $data);
-
             // Redirect back to the edit screen.
             $id = (int) $app->getUserState('com_easysdi_map.edit.visualizationmetadata.id');
+            $app->setUserState('com_easysdi_map.edit.visualization.data', null);
             $this->setMessage(JText::_('COM_EASYSDI_MAP_ITEM_SAVED_SUCCESSFULLY'));
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_map&view=visualization&layout=edit&id=' . $id, false));
         } else {
@@ -145,17 +140,11 @@ class Easysdi_mapControllerVisualization extends Easysdi_mapController {
                 $model->checkin($return);
             }
 
-            // Clear the profile id from the session.
-            $app->setUserState('com_easysdi_map.edit.visualizationmetadata.id', null);
-            $app->setUserState('com_easysdi_map.edit.visualization.id', null);
-            $app->setUserState('com_easysdi_map.edit.visualizationversion.id', null);
+            $this->clearSession();
 
             // Redirect to the list screen.
             $this->setMessage(JText::_('COM_EASYSDI_MAP_ITEM_SAVED_SUCCESSFULLY'));
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-
-            // Flush the data from the session.
-            $app->setUserState('com_easysdi_map.edit.visualization.data', null);
         }
     }
 
@@ -167,6 +156,7 @@ class Easysdi_mapControllerVisualization extends Easysdi_mapController {
         $model = $this->getModel('Visualization', 'Easysdi_mapModel');
         $data = JFactory::getApplication()->input->get('jform', array(), 'array');
         $model->checkin($data['id']);
+        $this->clearSession();
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
     }
 
@@ -235,15 +225,19 @@ class Easysdi_mapControllerVisualization extends Easysdi_mapController {
             $model->checkin($return);
         }
 
-        // Clear the profile id from the session.
-        $app->setUserState('com_easysdi_map.edit.visualizationmetadata.id', null);
-        $app->setUserState('com_easysdi_map.edit.visualization.id', null);
-        $app->setUserState('com_easysdi_map.edit.visualizationversion.id', null);
+        $this->clearSession();
 
         // Redirect to the list screen.
         $this->setMessage(JText::_('COM_EASYSDI_MAP_ITEM_DELETED_SUCCESSFULLY'));
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-
+    }
+    
+    function clearSession() {
+        $app = JFactory::getApplication();
+        // Clear the id from the session.
+        $app->setUserState('com_easysdi_map.edit.visualizationmetadata.id', null);
+        $app->setUserState('com_easysdi_map.edit.visualization.id', null);
+        $app->setUserState('com_easysdi_map.edit.visualizationversion.id', null);
         // Flush the data from the session.
         $app->setUserState('com_easysdi_map.edit.visualization.data', null);
     }

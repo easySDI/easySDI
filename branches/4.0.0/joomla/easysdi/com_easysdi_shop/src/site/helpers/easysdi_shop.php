@@ -222,7 +222,7 @@ abstract class Easysdi_shopHelper {
         
         ?> <div class="row-fluid" >
             <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h3>
-            <hr>
+            
             <div class="row-fluid" >
                 <div class="map-recap span8" >
                    <div >
@@ -233,13 +233,13 @@ abstract class Easysdi_shopHelper {
                 </div>
                 <div  class="value-recap span4" >
                     <div id="perimeter-buffer" class="row-fluid" >
-                        <div><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BUFFER'); ?></h3>
+                        <div><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_BUFFER'); ?></h4>
                             <span><?php if (!empty($item->basket->buffer)) echo (float)$item->basket->buffer; ?></span>                            
                         </div>                                
                     </div>
-                    <div id="perimeter-recap" class="row-fluid" >
+                    <div  class="row-fluid" >
                         <?php if (!empty($item->basket->extent)): ?>
-                            <div><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SURFACE'); ?></h3>
+                            <div><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SURFACE'); ?></h4>
                                 <div><?php
                                     if (!empty($item->basket->extent->surface)) :
                                         if (floatval($item->basket->extent->surface) > intval($paramsarray['maxmetervalue'])):
@@ -252,19 +252,27 @@ abstract class Easysdi_shopHelper {
                                     endif;
                                     ?></div>
                             </div>                                
-                            <div><h3><?php echo JText::_($item->basket->extent->name); ?></h3></div>
-                            <?php
-                            if (is_array($item->basket->extent->features)):                                    
-                                foreach ($item->basket->extent->features as $feature):
-                                    ?>
-                                    <div><?php echo $feature->name; ?></div>
-                                    <?php
-                                endforeach;
-                            endif;
-                            ?>
-
+                            
                         <?php endif; ?>
                     </div>                           
+                </div>
+                
+            </div>
+            <div class="row-fluid" >
+                <div id="perimeter-recap" class="span12" >
+                   <div><h4><?php echo JText::_($item->basket->extent->name); ?></h4></div>                        
+                        <?php
+                        if (is_array($item->basket->extent->features)):  
+                            ?> <div id="perimeter-recap-details" style="overflow-y:scroll; height:100px;"> <?php
+                            foreach ($item->basket->extent->features as $feature):
+                                ?>
+                                <div><?php echo $feature->name; ?></div>
+                                <?php
+                            endforeach; 
+                            ?> </div>   <?php
+                        endif;
+                        ?>
+                                      
                 </div>
             </div>
         </div>

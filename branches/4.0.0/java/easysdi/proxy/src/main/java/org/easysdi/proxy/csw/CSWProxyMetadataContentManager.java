@@ -82,7 +82,6 @@ public class CSWProxyMetadataContentManager {
             Document docParent = sxb.build(new File(filePath));
             Element racine = docParent.getRootElement();
 
-
             //Get all the attributes 'xlink:href'
             Filter filtre = new AttributeXlinkFilter();
 

@@ -95,12 +95,17 @@ class Easysdi_coreModelResources extends JModelList {
         $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
 
         // Join over the foreign key 'resourcetype_id'
-        $query->select('trans.text1 AS resourcetype_name, rt.versioning as versioning');
+        $query->select('trans.text1 AS resourcetype_name, rt.versioning as versioning, rt.view as supportview, rt.diffusion as supportdiffusion, rt.meta as supportmetadata');
         $query->join('LEFT', '#__sdi_resourcetype AS rt ON rt.id = a.resourcetype_id');
         $query->join('LEFT', '#__sdi_translation AS trans ON trans.element_guid = rt.guid');
         $query->join('LEFT', '#__sdi_language AS lang ON lang.id = trans.language_id');
         $query->where('lang.code = "' . $lang->getTag() . '"');
         $query->where('rt.predefined = 0');
+        
+        //join over resourcetypelink to know if some relations are possible
+        $query->select('rtl.state as supportrelation');
+        $query->join('LEFT', '(SELECT n.parent_id, state FROM #__sdi_resourcetypelink n GROUP BY n.parent_id) rtl ON rtl.parent_id = rt.id');
+        
         
         // Filter by resource type
         $resourcetype = $this->getState('filter.resourcetype');
@@ -118,6 +123,8 @@ class Easysdi_coreModelResources extends JModelList {
                  $query->where('( a.name LIKE '.$search.' )');
             }
         }
+        
+        $query->order('a.name');
         
         return $query;
     }

@@ -228,6 +228,7 @@ class FormHtmlGenerator {
         $lowerbound = $relation->getAttributeNS($this->catalog_uri, 'lowerbound');
         $upperbound = $relation->getAttributeNS($this->catalog_uri, 'upperbound');
         $exist = $relation->getAttributeNS($this->catalog_uri, 'exist');
+        $level = $relation->getAttributeNS($this->catalog_uri, 'level');
 
         switch ($relation->getAttributeNS($this->catalog_uri, 'childtypeId')) {
             case EnumChildtype::$RELATIONTYPE:
@@ -260,10 +261,10 @@ class FormHtmlGenerator {
 
         $divOuter = $this->formHtml->createElement('div');
         $divOuter->setAttribute('id', 'outer-fds-' . FormUtils::serializeXpath($relation->getNodePath()));
-        $divOuter->setAttribute('class', 'outer-level outer-fds-' . FormUtils::serializeXpath($relation->getNodePath()));
+        $divOuter->setAttribute('class', 'outer-' . $level . ' outer-fds-' . FormUtils::serializeXpath($relation->getNodePath()));
 
         $divAction = $this->formHtml->createElement('div', EText::_($relation->getAttributeNS($this->catalog_uri, 'id')) . ' ' . $debug);
-        $divAction->setAttribute('class', 'action-level');
+        $divAction->setAttribute('class', 'action-' . $level);
 
         $aAdd->appendChild($iAdd);
         $divAction->appendChild($aAdd);
@@ -289,6 +290,7 @@ class FormHtmlGenerator {
         $exist = $element->getAttributeNS($this->catalog_uri, 'exist');
         $guid = $element->getAttributeNS($this->catalog_uri, 'id');
         $legendAttribute = $element->getAttributeNS($this->catalog_uri, 'legend');
+        $level = $element->getAttributeNS($this->catalog_uri, 'level');
 //        $stereotypeId = $element->firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId');
 
         $aCollapse = $this->formHtml->createElement('a');
@@ -309,7 +311,7 @@ class FormHtmlGenerator {
 
         $divOuter = $this->formHtml->createElement('div');
         $divOuter->setAttribute('id', 'outer-fds-' . FormUtils::serializeXpath($element->getNodePath()));
-        $divOuter->setAttribute('class', 'outer-' . 0 . ' outer-fds-' . FormUtils::serializeXpath($this->removeIndex($element->getNodePath())));
+        $divOuter->setAttribute('class', ' outer-' . $level . ' outer-fds-' . FormUtils::serializeXpath($this->removeIndex($element->getNodePath())));
 
         $fieldset = $this->formHtml->createElement('fieldset');
         $fieldset->setAttribute('id', 'fds-' . FormUtils::serializeXpath($element->getNodePath()));
@@ -320,7 +322,7 @@ class FormHtmlGenerator {
             $spanLegend = $this->formHtml->createElement('span', JText::_($legendAttribute));
         }
 
-        $spanLegend->setAttribute('class', 'legend-' . 0);
+        $spanLegend->setAttribute('class', 'legend-' . $level);
         $legend = $this->formHtml->createElement('legend');
 
         $divInner = $this->formHtml->createElement('div');
@@ -463,7 +465,7 @@ class FormHtmlGenerator {
                             $query = 'descendant::*[@id="' . $fieldid . '"]';
                             $nbrOccurance = $this->domXpathFormHtml->query($query)->length;
                             $showButton = false;
-                        // Single list
+                            // Single list
                         } else {
                             $jfield = $this->form->getField(FormUtils::serializeXpath($nodePath));
                         }
@@ -487,8 +489,8 @@ class FormHtmlGenerator {
 
         if ($attribute->getAttributeNS($this->catalog_uri, 'map')) {
             $map_id = JComponentHelper::getParams('com_easysdi_catalog')->get('catalogmap');
-            
-            if(isset($map_id)){
+
+            if (isset($map_id)) {
                 $attributeGroup->appendChild($this->getMap($attribute, $map_id));
             }
         }
@@ -516,7 +518,7 @@ class FormHtmlGenerator {
         $btnEdit->setAttribute('class', 'btn btn-primary btn-small edit_bb');
         $btnEdit->setAttribute('id', 'editBtn_' . $parent_path);
         $btnEdit->setAttribute('data-toggle', 'button');
-        $btnEdit->setAttribute('onclick', 'polygonControl_' . $parent_path . '.activate(); clearbbselect(\''.$select_parent_path.'\')');
+        $btnEdit->setAttribute('onclick', 'polygonControl_' . $parent_path . '.activate(); clearbbselect(\'' . $select_parent_path . '\')');
 
         $br = $this->formHtml->createElement('br');
 
@@ -759,7 +761,7 @@ class FormHtmlGenerator {
                                         returnInspire: true,
                                         width: 520, height: 300,
                                         layout: 'fit',
-                                        proxy: '".JUri::base()."administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/proxy.php?url=',
+                                        proxy: '" . JUri::base() . "administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/proxy.php?url=',
                                         handler: writeTerms
                                     });
 
@@ -921,10 +923,10 @@ class FormHtmlGenerator {
         }
 
         $elements[] = $controlGroup;
-        
+
         $elements[] = $this->getInputScript($field, $guid);
-        
-        if($rendertypeId == EnumRendertype::$LIST && $upperbound > 1){
+
+        if ($rendertypeId == EnumRendertype::$LIST && $upperbound > 1) {
             $elements[] = $this->getMultiSelectScript($field, $attribute);
         }
 
@@ -1007,26 +1009,26 @@ class FormHtmlGenerator {
      * @param JFormField $field The Joomla JField
      * @return DOMElement
      */
-    private function getMultiSelectScript($field, DOMElement $attribute){
-        
+    private function getMultiSelectScript($field, DOMElement $attribute) {
+
         $script_content = "js = jQuery.noConflict();
             
-                            js('#".$field->__get('id')."').chosen().change(function(e, params) {
+                            js('#" . $field->__get('id') . "').chosen().change(function(e, params) {
                                 
                                 if(params.selected != null){
-                                    addToStructure(".$attribute->getAttributeNS($this->catalog_uri, 'relid').", '". FormUtils::serializeXpath($attribute->parentNode->getNodePath()) ."');
+                                    addToStructure(" . $attribute->getAttributeNS($this->catalog_uri, 'relid') . ", '" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "');
                                 }else{
-                                    removeFromStructure('".FormUtils::serializeXpath($attribute->getNodePath())."');
+                                    removeFromStructure('" . FormUtils::serializeXpath($attribute->getNodePath()) . "');
                                 }
                               
                             });";
-        
+
         $script = $this->formHtml->createElement('script', $script_content);
         $script->setAttribute('type', 'text/javascript');
-        
+
         return $script;
     }
-    
+
     /**
      * Create the "ADD" bouton, if necessary.
      * 

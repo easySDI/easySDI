@@ -32,6 +32,8 @@ class Easysdi_mapViewVisualization extends JViewLegacy {
 
         $this->state = $this->get('State');
         $this->item = $this->get('Data');
+        $model = $this->getModel();
+        $this->authorizedLayers = $model->getAuthorizedLayers($this->item->id);
         $this->params = $app->getParams('com_easysdi_map');
         $this->form = $this->get('Form');
 
@@ -113,6 +115,8 @@ class Easysdi_mapViewVisualization extends JViewLegacy {
         $bar->appendButton('Standard', 'apply', JText::_('COM_EASYSDI_CORE_APPLY'), 'visualization.apply', false);
         $bar->appendButton('Separator');
         $bar->appendButton('Standard', 'save', JText::_('COM_EASYSDI_CORE_SAVE'), 'visualization.save', false);
+        $bar->appendButton('Separator');
+        $bar->appendButton('Standard', 'remove', JText::_('COM_EASYSDI_CORE_DELETE'), 'visualization.remove', false);
         $bar->appendButton('Separator');
         $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'visualization.cancel', false);
         //generate the html and return

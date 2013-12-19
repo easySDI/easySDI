@@ -124,14 +124,18 @@ class Easysdi_mapTablelayer extends sdiTable {
 		try
 		{
 			$query = $this->_db->getQuery(true);
-			$query->select('l.*');
+			$query->select('l.*,  m.guid as metadata_guid, d.id as diffusion_id, d.hasdownload as hasdownload, d.hasextraction as hasextraction');
 			$query->from($this->_tbl.' AS l');
 			$query->join('INNER', '#__sdi_layer_layergroup AS lg ON lg.layer_id=l.id');
+                        $query->join('LEFT', '#__sdi_visualization v ON v.maplayer_id = l.id');
+                        $query->join('LEFT', '#__sdi_version version ON version.id = v.version_id');
+                        $query->join('LEFT', '#__sdi_metadata m ON m.version_id = version.id');
+                        $query->join('LEFT', '#__sdi_diffusion d ON d.version_id = version.id ');                        
 			$query->where('lg.group_id = '. (int) $key );
 			$query->where('l.state = 1' );
 			$query->order('lg.ordering DESC' );
 			$this->_db->setQuery($query);
-			$rows = $this->_db->loadObjectList();
+                        $rows = $this->_db->loadObjectList();
 			foreach ($rows as $row)
 			{
 				if($row->servicetype == 'virtual')

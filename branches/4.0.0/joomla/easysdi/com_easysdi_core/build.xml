@@ -400,7 +400,8 @@
 		 	geoext/widgets/PrintMapPanel.js,
                         sdi/plugins/SearchCatalog.js,
                         sdi/plugins/LayerDetailSheet.js,
-                        sdi/plugins/LayerDownload.js" />
+                        sdi/plugins/LayerDownload.js,
+                        sdi/plugins/LayerOrder.js" />
         </concat>
     </target>
 	

@@ -95,14 +95,14 @@ class Easysdi_mapViewPreview extends JViewLegacy {
                                     };
 
                     layerConfig' . $preview->id . ' = { group: "' . $defaultgroup . '",
-                                    name: "' . $preview->layername . '",
-                                    attribution: "' . addslashes($preview->attribution) . '",
+                                    name: "' . $preview->maplayer->layername . '",
+                                    attribution: "' . addslashes($preview->maplayer->attribution) . '",
                                     href : "' . $href . '",
                                     ' . $download . '
                                     opacity: 1,
                                     source: "' . $preview->service->alias . '",
                                     tiled: true,
-                                    title: "' . $preview->layername . '",
+                                    title: "' . $preview->maplayer->layername . '",
                                     iwidth:"' . $mwidth . '",
                                     iheight:"' . $mheight . '",
                                     visibility: true};

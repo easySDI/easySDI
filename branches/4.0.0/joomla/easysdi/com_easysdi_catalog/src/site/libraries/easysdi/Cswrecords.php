@@ -161,7 +161,7 @@ class Cswrecords extends SearchForm {
         $loadTest = $doc->loadXML($results);
 
         if ($loadTest) {
-            // Contrôler si le XML ne contient pas une erreur
+            // ContrÃ´ler si le XML ne contient pas une erreur
             if ($doc->getElementsByTagName('ExceptionReport')->length > 0) {
                 $msg = $doc->getElementsByTagName("ExceptionReport")->item(0)->nodeValue;
                 JFactory::getApplication()->enqueueMessage($msg, 'error');

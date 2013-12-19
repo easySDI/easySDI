@@ -29,45 +29,10 @@ function putFeaturesVerticesInHiddenField(feature) {
             new OpenLayers.Projection("EPSG:4326")
             );
 
-    var pointsAsString = '';
-    var components = new Array();
-    if (geometry instanceof OpenLayers.Geometry.MultiPolygon) {
-        components = geometry.components;
-        if(components.length > 1){
-            pointsAsString += 'MULTIPOLYGON ';
-        }else{
-            pointsAsString += 'POLYGON ';
-        }
-        for (var j = 0; j < components.length; j++) {
-            pointsAsString += '((';
-            var vertices = components[j].getVertices();
-            for (var i = 0; i < vertices.length; i++) {
-                pointsAsString += vertices[i].x;
-                pointsAsString += ' ';
-                pointsAsString += vertices[i].y;
-                if (i < vertices.length - 1)
-                    pointsAsString += ', ';
-            }
-            pointsAsString += '))';
-            if(j < components.length -1){
-                pointsAsString += ',';
-            }
-        }
-    } else {
-        var vertices = geometry.getVertices();
-        pointsAsString += 'POLYGON ';
-        pointsAsString += '((';
-        for (var i = 0; i < vertices.length; i++) {
-            pointsAsString += vertices[i].x;
-            pointsAsString += ' ';
-            pointsAsString += vertices[i].y;
-            if (i < vertices.length - 1)
-                pointsAsString += ', ';
-        }
-        pointsAsString += '))';
-    }
+    var wkt = new OpenLayers.Format.WKT();
+    var featureAsString = wkt.write(feature);
 
-    jQuery('#t-features').val(JSON.stringify(pointsAsString));
+    jQuery('#t-features').val(JSON.stringify(featureAsString));
 }
 
 function selectPerimeter1() {

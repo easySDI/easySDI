@@ -19,8 +19,14 @@ JHtml::_('behavior.keepalive');
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css');
 $document->addScript('components/com_easysdi_map/views/layer/tmpl/edit.js');
+$document->addScript('components/com_easysdi_core/libraries/easysdi/view/view.js');
 ?>
 <script type="text/javascript">
+    js = jQuery.noConflict();
+    js(document).ready(function() {
+        enableAccessScope();        
+    });
+    
     Joomla.submitbutton = function(task)
     {
         if (task == 'layer.cancel' || document.formvalidator.isValid(document.id('layer-form'))) {
@@ -51,7 +57,7 @@ $document->addScript('components/com_easysdi_map/views/layer/tmpl/edit.js');
                 <!-- Begin Tabs -->
                 <div class="tab-pane active" id="details">
                     <?php foreach ($this->form->getFieldset('details') as $field): ?>
-                        <div class="control-group">
+                         <div class="control-group" id="<?php echo $field->fieldname; ?>">
                             <div class="control-label"><?php echo $field->label; ?></div>
                             <div class="controls"><?php echo $field->input; ?></div>
                         </div>

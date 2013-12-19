@@ -14,49 +14,49 @@ Ext.namespace("sdi.plugins");
 
 /** api: constructor
  *
- *    Plugin for downloading the linked product.
+ *    Plugin for opening shop order form
  */
-sdi.plugins.LayerDownload = Ext.extend(gxp.plugins.Tool, {
+sdi.plugins.LayerOrder = Ext.extend(gxp.plugins.Tool, {
     
-    /** api: ptype = sdi_layerdownload */
-    ptype: "sdi_layerdownload",
+    /** api: ptype = sdi_layerorder */
+    ptype: "sdi_layerorder",
     
-    /** api: config[layerDownloadMenuText]
+    /** api: config[layerOrderMenuText]
      *  ``String``
-     *  Text for download action menu item (i18n).
+     *  Text for shop menu item (i18n).
      */
-    layerDownloadMenuText: "Download",
+    layerOrderMenuText: "Order",
 
-    /** api: config[layerDownloadActionTip]
+    /** api: config[layerOrderActionTip]
      *  ``String``
-     *  Text for download action tooltip (i18n).
+     *  Text for shop action tooltip (i18n).
      */
-    layerDownloadActionTip: "Download",
+    layerOrderActionTip: "Order",
     
     /** api: method[addActions]
      */
     addActions: function() {
         var selectedLayer;
         var actions = sdi.plugins.LayerDownload.superclass.addActions.apply(this, [{
-            menuText: this.layerDownloadMenuText,
-            iconCls: "gxp-icon-filebrowse",
+            menuText: this.layerOrderMenuText,
+            iconCls: "gxp-icon-addnote",
             disabled: true,
-            tooltip: this.layerDownloadActionTip,
+            tooltip: this.layerOrderActionTip,
             handler: function() {
                var record = selectedLayer;
                SqueezeBox.initialize({});
                SqueezeBox.resize({x: this.initialConfig.iwidth, y: this.initialConfig.iheight});
-               SqueezeBox.setContent('iframe', record.json.download);
+               SqueezeBox.setContent('iframe', record.json.order);
                
             },
             scope: this
         }]);
-        var layerDownloadAction = actions[0];
+        var layerOrderAction = actions[0];
 
         this.target.on("layerselectionchange", function(record) {
             selectedLayer = record;
-            layerDownloadAction.setDisabled(
-                !record || !record.json || !record.json.download
+            layerOrderAction.setDisabled(
+                !record || !record.json || !record.json.order
             );
         }, this);
                
@@ -65,4 +65,4 @@ sdi.plugins.LayerDownload = Ext.extend(gxp.plugins.Tool, {
         
 });
 
-Ext.preg(sdi.plugins.LayerDownload.prototype.ptype, sdi.plugins.LayerDownload);
+Ext.preg(sdi.plugins.LayerOrder.prototype.ptype, sdi.plugins.LayerOrder);

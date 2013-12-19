@@ -16,6 +16,7 @@ JHtml::_('behavior.formvalidation');
 
 $document = JFactory::getDocument();
 $document->addScript('components/com_easysdi_shop/helpers/helper.js');
+
 ?>
 <?php if ($this->item) : ?> 
     <div class="order-edit front-end-edit">
@@ -52,6 +53,14 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                     </div>
                                 </div>
                             </div>
+                            
+                            <?php if (!empty($this->item->basket->thirdparty)): ?>
+                                <div class="row-fluid" >
+                                    <h3><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_THIRDPARTY_ID'); ?></h3>                                   
+                                    <span ><?php echo $this->item->basket->thirdorganism; ?></span>                                    
+                                </div>
+                            <?php endif; ?>
+                            
                             <div class="row-fluid ">
                                 <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_EXTRACTION_NAME'); ?></h3>
                                 <table class="table table-striped">
@@ -155,13 +164,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 
                             <?php Easysdi_shopHelper::getHTMLOrderPerimeter($this->item); ?>
 
-                            <?php if (!empty($this->item->basket->thirdparty)): ?>
-                                <div class="row-fluid" >
-                                    <h3><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_THIRDPARTY_ID'); ?></h3>
-                                    <hr>
-                                    <span ><?php echo $this->item->basket->thirdorganism; ?></span>                                    
-                                </div>
-                            <?php endif; ?>
+                            
 
 
                         </div>
@@ -197,11 +200,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
     <script>
             Ext.onReady(function() {
                 app.on("ready", function() {
-                    loadPerimeter();
-                    <?php if (is_string($this->item->basket->extent->features)):        ?>
-                        var feature = reprojectWKT("<?php echo $this->item->basket->extent->features; ?>");
-                        jQuery('#perimeter-recap').append("<div>" + feature.geometry.toString() + "</div>");
-                    <?php endif;?>
+                    loadPerimeter(false);                    
                 })
             })
     </script>

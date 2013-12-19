@@ -38,18 +38,22 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         <?php endif; ?>
     });
 
-
 </script>
 
 
 
 <form class="form-horizontal form-validate " action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=catalog&search=true&id=' . $this->item->id . '&preview=' . $this->preview); ?>#results" method="post" id="searchform" name="searchform" enctype="multipart/form-data">
+    <?php 
+    $tmpl = JFactory::getApplication()->input->get('tmpl', null, 'string');
+    if(isset($tmpl)):?>
+    <input type="hidden" name="tmpl" id="tmpl" value="<?php echo $tmpl ; ?>"/>
+    <?php endif; ?>
     <div class="catalog front-end-edit">
         <fieldset id="searchtype" class="radio btn-group pull-right" style="display: none">
-            <input type="radio" id="jform_searchtype_simple" name="jform[searchtype]" value="simple" checked="checked">
-            <label for="jform_searchtype_simple" class="btn searchtype active">Simple</label>
-            <input type="radio" id="jform_searchtype_advanced" name="jform[searchtype]" value="advanced" >
-            <label for="jform_searchtype_advanced" class="btn btn-danger searchtype ">Avancée</label>
+            <input type="radio" id="jform_searchtype_simple" class="input-searchtype"  name="jform[searchtype]" value="simple" <?php if(!$this->isAdvanced()){ echo 'checked="checked"'; }?>>
+            <label for="jform_searchtype_simple" class="btn searchtype active"><?php echo JText::_('COM_EASYSDI_CATALOGE_SIMPLE') ; ?></label>
+            <input type="radio" id="jform_searchtype_advanced" class="input-searchtype" name="jform[searchtype]" value="advanced" <?php if($this->isAdvanced()){ echo 'checked="checked"'; }?>>
+            <label for="jform_searchtype_advanced" class="btn btn-danger searchtype "><?php echo JText::_('COM_EASYSDI_CATALOGE_ADVANCED'); ?></label>
         </fieldset>
         <h1><?php echo JText::_('COM_EASYSDI_CATALOG_TITLE'); ?></h1>
 

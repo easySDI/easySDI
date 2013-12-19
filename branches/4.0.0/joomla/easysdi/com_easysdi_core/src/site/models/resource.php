@@ -22,6 +22,16 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 class Easysdi_coreModelResource extends JModelForm {
 
     var $_item = null;
+    
+    const MEMBER = 1;
+    const RESOURCEMANAGER = 2;
+    const METADATARESPONSIBLE = 3;
+    const METADATAEDITOR = 4;
+    const DIFFUSIONMANAGER = 5;
+    const PREVIEWMANAGER = 6;
+    const EXTRACTIONRESPONSIBLE = 7;
+    const ORDERELIGIBLE = 8;
+    
 
     /**
      * Method to auto-populate the model state.
@@ -32,15 +42,10 @@ class Easysdi_coreModelResource extends JModelForm {
      */
     protected function populateState() {
         $app = JFactory::getApplication('com_easysdi_core');
-
-        // Load state from the request userState on edit or from the passed variable on default
-        if (JFactory::getApplication()->input->get('layout') == 'edit') {
-            $id = JFactory::getApplication()->getUserState('com_easysdi_core.edit.resource.id');
-            $resourcetype_id = JFactory::getApplication()->getUserState('com_easysdi_core.edit.resource.resourcetype.id');
-        } else {
-            $id = JFactory::getApplication()->input->get('id');
-            JFactory::getApplication()->setUserState('com_easysdi_core.edit.resource.id', $id);
-        }
+        
+        $id = JFactory::getApplication()->getUserState('com_easysdi_core.edit.resource.id');
+        $resourcetype_id = JFactory::getApplication()->getUserState('com_easysdi_core.edit.resource.resourcetype.id');
+        
         $this->setState('resource.id', $id);
         $this->setState('resourcetype.id', $resourcetype_id);
 
@@ -62,7 +67,6 @@ class Easysdi_coreModelResource extends JModelForm {
      */
     public function &getData($id = null) {
         $db = JFactory::getDbo();
-
 
         if ($this->_item === null) {
             $this->_item = false;
@@ -91,6 +95,8 @@ class Easysdi_coreModelResource extends JModelForm {
             $jinput = JFactory::getApplication()->input;
             if (!isset($this->_item->resourcetype_id)) {
                 $this->_item->resourcetype_id = $this->getState('resourcetype.id');
+            }else{
+                JFactory::getApplication()->setUserState('com_easysdi_core.edit.resource.resourcetype.id', $this->_item->resourcetype_id);
             }
 
             if (!empty($this->_item->resourcetype_id)) {

@@ -23,6 +23,24 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                             <h3><?php echo $this->item->basket->name; ?></h3>
                             <div class="row-fluid" >
                                 <div class="span4 order-edit-label" >
+                                    <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_USER'); ?>
+                                </div>
+                                <div class="span6 order-edit-value" >
+                                    <?php echo $this->item->client->name; ?>
+                                </div>
+                            </div>
+                            <div class="row-fluid" >
+                                <div class="span4 order-edit-label" >
+                                    <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_USER_ORGANISM'); ?>
+                                </div>
+                                <div class="span6 order-edit-value" >
+                                    <?php 
+                                    $organisms = $this->item->client->getMemberOrganisms();
+                                    echo $organisms[0]->name; ?>
+                                </div>
+                            </div>
+                            <div class="row-fluid" >
+                                <div class="span4 order-edit-label" >
                                     <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_CREATED'); ?>
                                 </div>
                                 <div class="span6 order-edit-value" >
@@ -46,6 +64,14 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                 </div>
                             </div>
                         </div>
+                        
+                        <?php if (!empty($this->item->basket->thirdparty)): ?>
+                            <div class="row-fluid" >
+                                <h3><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_THIRDPARTY_ID'); ?></h3>                                
+                                <span ><?php echo $this->item->basket->thirdorganism; ?></span>
+                            </div>
+                        <?php endif; ?>
+                        
                         <div class="row-fluid ">
                             <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_EXTRACTION_NAME'); ?></h3>
                             <table class="table table-striped">
@@ -156,13 +182,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 
                         <?php Easysdi_shopHelper::getHTMLOrderPerimeter($this->item); ?>
 
-                        <?php if (!empty($this->item->basket->thirdparty)): ?>
-                            <div class="row-fluid" >
-                                <h3><?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDER_THIRDPARTY_ID'); ?></h3>
-                                <hr>
-                                <span ><?php echo $this->item->basket->thirdorganism; ?></span>
-                            </div>
-                        <?php endif; ?>
+                        
 
 
                     </div>
@@ -199,11 +219,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
     <script>
         Ext.onReady(function() {
             app.on("ready", function() {
-                loadPerimeter();
-    <?php if (is_string($this->item->basket->extent->features)): ?>
-                    var feature = reprojectWKT("<?php echo $this->item->basket->extent->features; ?>");
-                    jQuery('#perimeter-recap').append("<div>" + feature.geometry.toString() + "</div>");
-    <?php endif; ?>
+                loadPerimeter(true);                
             })
         })
     </script>

@@ -1592,25 +1592,25 @@ Ext.preg(sdi.plugins.SearchCatalog.prototype.ptype, sdi.plugins.SearchCatalog);
 Ext.namespace("sdi.plugins");
 
 /** api: constructor
- *  .. class:: RemoveLayer(config)
+ *  
  *
- *    Plugin for removing a selected layer from the map.
- *    TODO Make this plural - selected layers
+ *    Plugin for opening the layer's detail sheet.
+ 
  */
 sdi.plugins.LayerDetailSheet = Ext.extend(gxp.plugins.Tool, {
     
-    /** api: ptype = gxp_removelayer */
+    /** api: ptype = sdi_layerdetailsheet */
     ptype: "sdi_layerdetailsheet",
     
-    /** api: config[removeMenuText]
+    /** api: config[layerDetailMenuText]
      *  ``String``
-     *  Text for remove menu item (i18n).
+     *  Text for detail sheet menu item (i18n).
      */
     layerDetailMenuText: "Layer details sheet",
 
-    /** api: config[removeActionTip]
+    /** api: config[layerDetailActionTip]
      *  ``String``
-     *  Text for remove action tooltip (i18n).
+     *  Text for detail sheet action tooltip (i18n).
      */
     layerDetailActionTip: "Layer details sheet",
     
@@ -1626,7 +1626,7 @@ sdi.plugins.LayerDetailSheet = Ext.extend(gxp.plugins.Tool, {
             handler: function() {
                var record = selectedLayer;
                SqueezeBox.initialize({});
-               SqueezeBox.resize({x: record.json.iwidth, y: record.json.iheight});
+               SqueezeBox.resize({x: this.initialConfig.iwidth, y: this.initialConfig.iheight});
                SqueezeBox.setContent('iframe', record.json.href);
                
             },
@@ -1663,25 +1663,23 @@ Ext.preg(sdi.plugins.LayerDetailSheet.prototype.ptype, sdi.plugins.LayerDetailSh
 Ext.namespace("sdi.plugins");
 
 /** api: constructor
- *  .. class:: RemoveLayer(config)
  *
- *    Plugin for removing a selected layer from the map.
- *    TODO Make this plural - selected layers
+ *    Plugin for downloading the linked product.
  */
 sdi.plugins.LayerDownload = Ext.extend(gxp.plugins.Tool, {
     
-    /** api: ptype = gxp_removelayer */
+    /** api: ptype = sdi_layerdownload */
     ptype: "sdi_layerdownload",
     
-    /** api: config[removeMenuText]
+    /** api: config[layerDownloadMenuText]
      *  ``String``
-     *  Text for remove menu item (i18n).
+     *  Text for download action menu item (i18n).
      */
     layerDownloadMenuText: "Download",
 
-    /** api: config[removeActionTip]
+    /** api: config[layerDownloadActionTip]
      *  ``String``
-     *  Text for remove action tooltip (i18n).
+     *  Text for download action tooltip (i18n).
      */
     layerDownloadActionTip: "Download",
     
@@ -1693,11 +1691,11 @@ sdi.plugins.LayerDownload = Ext.extend(gxp.plugins.Tool, {
             menuText: this.layerDownloadMenuText,
             iconCls: "gxp-icon-filebrowse",
             disabled: true,
-            tooltip: this.layerDetailActionTip,
+            tooltip: this.layerDownloadActionTip,
             handler: function() {
                var record = selectedLayer;
                SqueezeBox.initialize({});
-               SqueezeBox.resize({x: record.json.iwidth, y: record.json.iheight});
+               SqueezeBox.resize({x: this.initialConfig.iwidth, y: this.initialConfig.iheight});
                SqueezeBox.setContent('iframe', record.json.download);
                
             },
@@ -1718,4 +1716,73 @@ sdi.plugins.LayerDownload = Ext.extend(gxp.plugins.Tool, {
 });
 
 Ext.preg(sdi.plugins.LayerDownload.prototype.ptype, sdi.plugins.LayerDownload);
+
+/**
+ * @requires plugins/Tool.js
+ */
+
+/** api: (define)
+ *  module = sdi.plugins
+ *  class = LayerDownload
+ */
+
+/** api: (extends)
+ *  plugins/Tool.js
+ */
+Ext.namespace("sdi.plugins");
+
+/** api: constructor
+ *
+ *    Plugin for opening shop order form
+ */
+sdi.plugins.LayerOrder = Ext.extend(gxp.plugins.Tool, {
+    
+    /** api: ptype = sdi_layerorder */
+    ptype: "sdi_layerorder",
+    
+    /** api: config[layerOrderMenuText]
+     *  ``String``
+     *  Text for shop menu item (i18n).
+     */
+    layerOrderMenuText: "Order",
+
+    /** api: config[layerOrderActionTip]
+     *  ``String``
+     *  Text for shop action tooltip (i18n).
+     */
+    layerOrderActionTip: "Order",
+    
+    /** api: method[addActions]
+     */
+    addActions: function() {
+        var selectedLayer;
+        var actions = sdi.plugins.LayerDownload.superclass.addActions.apply(this, [{
+            menuText: this.layerOrderMenuText,
+            iconCls: "gxp-icon-addnote",
+            disabled: true,
+            tooltip: this.layerOrderActionTip,
+            handler: function() {
+               var record = selectedLayer;
+               SqueezeBox.initialize({});
+               SqueezeBox.resize({x: this.initialConfig.iwidth, y: this.initialConfig.iheight});
+               SqueezeBox.setContent('iframe', record.json.order);
+               
+            },
+            scope: this
+        }]);
+        var layerOrderAction = actions[0];
+
+        this.target.on("layerselectionchange", function(record) {
+            selectedLayer = record;
+            layerOrderAction.setDisabled(
+                !record || !record.json || !record.json.order
+            );
+        }, this);
+               
+        return actions;
+    }
+        
+});
+
+Ext.preg(sdi.plugins.LayerOrder.prototype.ptype, sdi.plugins.LayerOrder);
 
