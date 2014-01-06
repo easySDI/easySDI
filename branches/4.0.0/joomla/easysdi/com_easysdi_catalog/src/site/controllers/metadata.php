@@ -702,7 +702,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     }
     
     private function removeCatalogNS() {
-        $attributeNames = array('id', 'dbid', 'childtypeId', 'index', 'lowerbound', 'upperbound', 'rendertypeId', 'stereotypeId', 'relGuid', 'relid', 'maxlength', 'readonly', 'exist', 'resourcetypeId', 'relationId', 'label', 'boundingbox', 'map');
+        $attributeNames = array('id', 'dbid', 'childtypeId', 'index', 'lowerbound', 'upperbound', 'rendertypeId', 'stereotypeId', 'relGuid', 'relid', 'maxlength', 'readonly', 'exist', 'resourcetypeId', 'relationId', 'label', 'boundingbox', 'map', 'level');
         foreach ($this->domXpathStr->query('//*') as $element) {
             foreach ($attributeNames as $attributeName) {
                 $element->removeAttributeNS($this->catalog_uri, $attributeName);
