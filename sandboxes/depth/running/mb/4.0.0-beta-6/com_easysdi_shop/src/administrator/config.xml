@@ -36,7 +36,15 @@
                    query="SELECT id, name FROM #__sdi_map WHERE state=1 ORDER BY ordering" 
                    key_field="id" 
                    value_field="name"
-           />           
+           />
+           
+           <field name="orderGlobalUser" 
+		 		type="user" 
+		 		default="" 
+		 		size="40"
+		 		required="true"
+		 		label="COM_EASYSDI_SHOP_CONFIG_LBL_ORDERGLOBALUSERNAME" 
+         		description="COM_EASYSDI_SHOP_CONFIG_DESC_ORDERGLOBALUSERNAME" />
            
             <field name="orderresponseFolder"
                    type="text"
