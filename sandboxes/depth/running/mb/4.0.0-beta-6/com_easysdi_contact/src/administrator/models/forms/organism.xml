@@ -25,22 +25,6 @@
                filter="safehtml"
                label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_DESCRIPTION"
                description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_DESCRIPTION"  /> 
-
-        <field name="username"
-               type="text"
-               size="40" 
-               class="inputbox"
-               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_USERNAME"
-               description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_USERNAME" 
-               filter="safehtml"/>
-        
-        <field name="password"
-               type="password"
-               size="40" 
-               class="inputbox"
-               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_PASSWORD"
-               description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_PASSWORD" 
-               filter="safehtml"/>
         
         <field name="logo" 
                type="media" 
@@ -81,6 +65,37 @@
         <field  name="checked_out" type="hidden" filter="SAFEHTML" />
         <field  name="checked_out_time" type="hidden" filter="SAFEHTML" />
     </fieldset>
+
+    <fieldset name="orderuser">
+        <field name="username"
+               type="text"
+               size="40" 
+               class="inputbox"
+               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_USERNAME"
+               description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_USERNAME" 
+               filter="safehtml"/>
+        
+        <field name="clearpassword"
+               type="password"
+               size="40" 
+               class="inputbox"
+               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_PASSWORD"
+               description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_PASSWORD" 
+               filter="safehtml"/>
+        
+        <field name="confirmpassword"
+               type="password"
+               size="40" 
+               class="inputbox"
+               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_PASSWORDCONFIRM"
+               description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_PASSWORD" 
+               filter="safehtml"/>
+        
+        <field name="password"
+               type="hidden"/>
+    </fieldset>
+    
+    
 
     <field
         name="state"

@@ -79,6 +79,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_organism` (
 `perimeter` TEXT  ,
 `access` INT(11)  NOT NULL ,
 `asset_id` INT(10)  NOT NULL ,
+`username` VARCHAR(150) ,
+`password` VARCHAR(65) ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 

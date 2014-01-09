@@ -38,7 +38,7 @@
                    value_field="name"
            />
            
-           <field name="orderGlobalUser" 
+           <field name="orderaccount" 
 		 		type="user" 
 		 		default="" 
 		 		size="40"
