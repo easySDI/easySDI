@@ -339,6 +339,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    if((remoteServerExceptionFiles.size() > 0 && sdiVirtualService.getSdiSysExceptionlevel().getValue().equals("restrictive")) ||  
 		    (wmtsGetCapabilitiesResponseFilePathMap.size() == 0)){
 		logger.info("Exception(s) returned by remote server(s) are sent to client.");
+                resp.setHeader("easysdi-proxy-error-occured", "true");
 		ByteArrayOutputStream exceptionOutputStream = docBuilder.ExceptionAggregation(remoteServerExceptionFiles);
 		sendHttpServletResponse(req,resp,exceptionOutputStream, "text/xml; charset=utf-8", responseStatusCode);
 		return;

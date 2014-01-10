@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -69,6 +68,8 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
         super(proxyServlet);
         nsOWS = Namespace.getNamespace("http://www.opengis.net/ows");
         nsXLINK = Namespace.getNamespace("xlink", "http://www.w3.org/1999/xlink");
+        nsWMS = Namespace.getNamespace("xlink", "http://www.opengis.net/wms");
+        
     }
 
     /* (non-Javadoc)
@@ -99,7 +100,6 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
 
             //We can not modify Elements while we loop over them with an iterator.
             //We have to use a separate List storing the Elements we want to modify.
-
             //Operation filtering
             Filter xlinkFilter = new AttributeXlinkFilter();
             Element elementCapability = getChildElementCapability(racine);
@@ -149,32 +149,104 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
                 }
             }
 
-            //Overwrite xlink attribute in Layer element , eg :
+            // Overwrite xlink attribute in Layer element , eg :
             // <LegendURL width="20" height="20">
             // <Format>image/png</Format>
             // <OnlineResource xlink:type="simple" xlink:href="http://46.105.164.226:8080/geoserver/si17-secure/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=CLC06_RGF"/>
             // </LegendURL>
-            Iterator<Element> ichild = getChildrenElementsLayer(elementCapability).iterator();
-            while (ichild.hasNext()) {
-                Element layer = (Element) ichild.next();
+            Iterator<Element> iLayer = getChildrenElementsLayer(elementCapability).iterator();
+            while (iLayer.hasNext()) {
+                Element layer = (Element) iLayer.next();
 
-                Iterator iXlink = layer.getDescendants(xlinkFilter);
-                List<Element> xlinkList = new ArrayList<Element>();
-                while (iXlink.hasNext()) {
-                    Element courant = (Element) iXlink.next();
-                    xlinkList.add(courant);
-                }
-                Iterator ilXlink = xlinkList.iterator();
-                while (ilXlink.hasNext()) {
-                    Element toUpdate = (Element) ilXlink.next();
-                    String att = toUpdate.getAttribute("href", nsXLINK).getValue();
-                    if (att.contains("?")) {
-                        att = att.replace(att.substring(0, att.indexOf("?")), href);
-                    } else {
-                        att = href;
+                List<Element> layerChildren = getChildrenElementsLayer(layer);
+                if (!layerChildren.isEmpty()) {
+                    //Layer is a parent layer : loop over children layers
+                    Iterator<Element> iChildLayer = layerChildren.iterator();
+                    while (iChildLayer.hasNext()) {
+                        Element childLayer = (Element) iChildLayer.next();
+                        Element nameElement = childLayer.getChild("Name", childLayer.getNamespace());
+
+                        Iterator iXlink = childLayer.getDescendants(xlinkFilter);
+                        List<Element> xlinkList = new ArrayList<Element>();
+                        while (iXlink.hasNext()) {
+                            Element courant = (Element) iXlink.next();
+                            xlinkList.add(courant);
+                        }
+                        for (Element toUpdate : xlinkList) {
+                            String att = toUpdate.getAttribute("href", nsXLINK).getValue();
+                            //Replace layer name with the prefixed layer name found in the parent Element <Name>
+                            if (att.contains("layer=") && nameElement != null) {
+
+                                String prefixedName = nameElement.getText();
+
+                                String endatt = att.substring(att.indexOf("layer=") + 6);
+                                int startlayername = att.indexOf("layer=") + 6;
+
+                                if (endatt.contains("&")) {
+                                    int endlayername = att.indexOf("&", startlayername);
+                                    String oldlayername = att.substring(startlayername, endlayername);
+                                    att = att.replace(oldlayername, prefixedName);
+                                } else {
+                                    String oldlayername = att.substring(startlayername);
+                                    att = att.replace(oldlayername, prefixedName);
+                                }
+
+                            }
+
+                            if (!att.contains("version=")) {
+
+                            }
+                            if (att.contains("?")) {
+                                att = att.replace(att.substring(0, att.indexOf("?")), href);
+                            } else {
+                                att = href;
+                            }
+                            toUpdate.setAttribute("href", att, nsXLINK);
+                        }
                     }
-                    toUpdate.setAttribute("href", att, nsXLINK);
                 }
+                
+//                //Rewrite Layer
+//                Element nameElement = layer.getChild("Name");
+//
+//                Iterator iXlink = layer.getDescendants(xlinkFilter);
+//                List<Element> xlinkList = new ArrayList<Element>();
+//                while (iXlink.hasNext()) {
+//                    Element courant = (Element) iXlink.next();
+//                    xlinkList.add(courant);
+//                }
+//                for (Element toUpdate : xlinkList) {
+//                    String att = toUpdate.getAttribute("href", nsXLINK).getValue();
+//                    //Replace layer name with the prefixed layer name found in the parent Element <Name>
+//                    if (att.contains("layer=") && nameElement != null) {
+//
+//                        String prefixedName = nameElement.getText();
+//
+//                        String endatt = att.substring(att.indexOf("layer=") + 6);
+//                        int startlayername = att.indexOf("layer=") + 6;
+//
+//                        if (endatt.contains("&")) {
+//                            int endlayername = att.indexOf("&", startlayername);
+//                            String oldlayername = att.substring(startlayername, endlayername);
+//                            String a = att.replace(oldlayername, prefixedName);
+//                        } else {
+//                            String oldlayername = att.substring(startlayername);
+//                            String a = att.replace(oldlayername, prefixedName);
+//                        }
+//
+//                    }
+//
+//                    if (!att.contains("version=")) {
+//
+//                    }
+//                    if (att.contains("?")) {
+//                        att = att.replace(att.substring(0, att.indexOf("?")), href);
+//                    } else {
+//                        att = href;
+//                    }
+//                    toUpdate.setAttribute("href", att, nsXLINK);
+//                }
+
             }
 
             Iterator<Element> iToRemove = toRemove.iterator();
@@ -221,7 +293,6 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
     public Boolean CapabilitiesContentsFiltering(HashMap<String, String> wmsGetCapabilitiesResponseFilePath, String href) throws NoSuchAuthorityCodeException {
         servlet.logger.trace("transform - Start - Capabilities contents filtering");
         try {
-
 
             SAXBuilder sxb = new SAXBuilder();
             Iterator<Entry<String, String>> iFile = wmsGetCapabilitiesResponseFilePath.entrySet().iterator();
@@ -635,7 +706,6 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
                         }
                     }
                 }
-
 
             } catch (JDOMException e) {
                 servlet.logger.error("WMSProxyResponseBuilder.ExceptionAggregation - ", e);

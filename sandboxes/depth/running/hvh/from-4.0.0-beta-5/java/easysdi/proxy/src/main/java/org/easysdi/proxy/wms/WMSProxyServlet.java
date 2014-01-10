@@ -741,6 +741,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			if((remoteServerExceptionFiles.size() > 0 && sdiVirtualService.getSdiSysExceptionlevel().getValue().equals("restrictive")) ||  
 					(sdiVirtualService.getSdiSysExceptionlevel().getValue().equals("permissive") && wmsGetCapabilitiesResponseFilePathMap.size() == 0)){
 				logger.info("Exception(s) returned by remote server(s) are sent to client.");
+                                resp.setHeader("easysdi-proxy-error-occured", "true");
 				ByteArrayOutputStream exceptionOutputStream = docBuilder.ExceptionAggregation(remoteServerExceptionFiles);
 				sendHttpServletResponse(req,resp,exceptionOutputStream, "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 				return;
@@ -772,6 +773,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					return;
 				}
 			}catch (NoSuchAuthorityCodeException e){
+                            resp.setHeader("easysdi-proxy-error-occured", "true");
 				logger.error(e.getMessage());
 				owsExceptionReport.sendExceptionReport(request, response, e.getMessage(),OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_OK);
 				return;
@@ -779,6 +781,7 @@ public class WMSProxyServlet extends ProxyServlet {
 
 			if(!docBuilder.CapabilitiesOperationsFiltering(wmsGetCapabilitiesResponseFilePathMap.get(physicalServiceMaster.getAlias()), getServletUrl(req)))
 			{
+                            resp.setHeader("easysdi-proxy-error-occured", "true");
 				logger.error(docBuilder.getLastException().getMessage());
 				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_OK);
 				return;
@@ -786,6 +789,7 @@ public class WMSProxyServlet extends ProxyServlet {
 
 			if(!docBuilder.CapabilitiesMerging(wmsGetCapabilitiesResponseFilePathMap))
 			{
+                            resp.setHeader("easysdi-proxy-error-occured", "true");
 				logger.error(docBuilder.getLastException().getMessage());
 				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_OK);
 				return;
@@ -793,6 +797,7 @@ public class WMSProxyServlet extends ProxyServlet {
 
 			if(!docBuilder.CapabilitiesServiceMetadataWriting(wmsGetCapabilitiesResponseFilePathMap.get(physicalServiceMaster.getAlias()),getServletUrl(req)))
 			{
+                            resp.setHeader("easysdi-proxy-error-occured", "true");
 				logger.error(docBuilder.getLastException().getMessage());
 				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_OK);
 				return;
@@ -839,6 +844,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			if((remoteServerExceptionFiles.size() > 0 && sdiVirtualService.getSdiSysExceptionlevel().getValue().equals("restrictive")) ||  
 					(wmsGetMapResponseFilePathMap.size() == 0)){
 				logger.info("Exception(s) returned by remote server(s) are sent to client.");
+                                resp.setHeader("easysdi-proxy-error-occured", "true");
 				ByteArrayOutputStream exceptionOutputStream = docBuilder.ExceptionAggregation(remoteServerExceptionFiles);
 				sendHttpServletResponse(req,resp,exceptionOutputStream, "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 				return;
@@ -914,6 +920,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			if((remoteServerExceptionFiles.size() > 0 && sdiVirtualService.getSdiSysExceptionlevel().getValue().equals("restrictive")) ||  
 					(wmsGetFeatureInfoResponseFilePathMap.size() == 0)){
 				logger.info("Exception(s) returned by remote server(s) are sent to client.");
+                                resp.setHeader("easysdi-proxy-error-occured", "true");
 				ByteArrayOutputStream exceptionOutputStream = docBuilder.ExceptionAggregation(remoteServerExceptionFiles);
 				sendHttpServletResponse(req,resp,exceptionOutputStream, "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 				return;
@@ -922,6 +929,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			ByteArrayOutputStream outResult = docBuilder.GetFeatureInfoAggregation(wmsGetFeatureInfoResponseFilePathMap);
 			if(outResult == null){
 				logger.error(docBuilder.getLastException().getMessage());
+                                resp.setHeader("easysdi-proxy-error-occured", "true");
 				owsExceptionReport.sendExceptionReport(request, response, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"", HttpServletResponse.SC_OK);
 				return;
 			}

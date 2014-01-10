@@ -321,8 +321,9 @@ public class OgcProxyServlet extends HttpServlet {
                     }
                 }
 
-                if (request.getOperation().equalsIgnoreCase("GetCapabilities")) {
-                    //GetCapabilities can be perform without version parameter. the highest version supported by the service is used, as recommanded in the OGC standard
+                if (request.getOperation().equalsIgnoreCase("GetCapabilities") || request.getOperation().equalsIgnoreCase("GetLegendGraphic")) {
+                    //GetCapabilities can be perform without version parameter. The highest version supported by the service is used, as recommanded in the OGC standard
+                    //GetLegendGraphic url given in the getCapabilities document sometimes missing the version parameter. The highest version supported by the service is used to avoid map display problem.
                     if (request.getVersion() == null || !found) {
                         reqVersion = highestversion;
                         //ProxyRequest checks if the current requested operation is supported by the virtualservice loaded and defined by its compliances.
