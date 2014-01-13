@@ -12,6 +12,8 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
     const CONTACT = '1';
     const BILLING = '2';
     const DELIVERY = '3';
+    const PRODUCTSTATESENT = 2;
+    const PRODUCTSTATEDONE = 1;
 
     /** @var string Possible values global or organism */
     private $userType = 'global';
@@ -42,6 +44,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
      * Main wps method
      */
     public function wps() {
+
         if ($this->authentification()) {
             if (isset($GLOBALS['HTTP_RAW_POST_DATA'])) {
                 if ($this->request->loadXML($GLOBALS['HTTP_RAW_POST_DATA'])) {
@@ -78,13 +81,14 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
     }
 
     /**
+     * Execute de Identifier getOrders
      * 
      * @return DOMElement
      */
     private function getOrders() {
         $query = $this->db->getQuery(true);
 
-        $query->select('o.id, o.`name`, o.user_id, ot.`value` ordertype');
+        $query->select('o.id, o.`name`, o.user_id, o.thirdparty_id, ot.`value` ordertype');
         $query->from('#__sdi_order o');
         $query->innerJoin('#__sdi_sys_ordertype ot on ot.id = o.ordertype_id');
 
@@ -203,6 +207,12 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         }
     }
 
+    /**
+     * Get one ORDER node
+     * 
+     * @param stdClass $order
+     * @return DOMElement ORDER node
+     */
     private function getOrder($order) {
 
         $root = $this->response->createElementNS($this->nsEasysdi, 'easysdi:ORDER');
@@ -217,42 +227,218 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $request->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:TYPE', $order->ordertype));
         $request->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:NAME', $order->name));
 
-        $client = $request->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:CLIENT'));
-        $client->appendChild($request->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:ID', $order->user_id)));
-
         $root->appendChild($header);
         $root->appendChild($request);
-        $root->appendChild($client);
+        $root->appendChild($this->getClient($order));
+        $root->appendChild($this->getTierce($order));
+        $root->appendChild($this->getPerimeter($order));
+        $root->appendChild($this->getProducts($order));
 
-        return $order;
+        return $root;
     }
 
-    private function getAdresse($addressType, $order) {
+    /**
+     * Get an address node from the specific type
+     * 
+     * @param int $addressType type of address 
+     * @param stdClass $order
+     * @return DOMElement address node
+     */
+    private function getAdresse($addressType, $order, $for = 'client') {
         switch ($addressType) {
             case self::CONTACT:
-                $adresse = $this->response->createElementNS($this->nsEasysdi, 'easysdi:CONTACTADDRESS');
+                $address = $this->response->createElementNS($this->nsEasysdi, 'easysdi:CONTACTADDRESS');
                 break;
             case self::BILLING:
-                $adresse = $this->response->createElementNS($this->nsEasysdi, 'easysdi:CONTACTADDRESS');
+                $address = $this->response->createElementNS($this->nsEasysdi, 'easysdi:INVOICEADDRESS');
                 break;
             case self::DELIVERY:
-                $adresse = $this->response->createElementNS($this->nsEasysdi, 'easysdi:CONTACTADDRESS');
+                $address = $this->response->createElementNS($this->nsEasysdi, 'easysdi:DELIVERYADDRESS');
                 break;
         }
 
 
         $query = $this->db->getQuery(true);
 
-        $query->select('*');
+        $query->select('a.firstname, a.lastname, a.address, a.addresscomplement, a.postalcode, a.postalbox, a.locality, a.email, a.phone, a.mobile, a.fax');
+        $query->select('o.acronym name1, o.`name` name2');
+        $query->select('c.iso2 country_iso');
+        $query->leftJoin('#__sdi_organism o on a.organism_id = o.id');
+        $query->leftJoin('#__sdi_sys_country c on c.id = a.country_id');
         $query->from('#__sdi_address a ');
-        $query->where('a.user_id = ' . $order->user_id);
+        switch ($for) {
+            case 'client':
+                $query->where('a.user_id = ' . $order->user_id);
+                break;
+            case 'tierce':
+                $query->where('a.user_id = ' . $order->thirdparty_id);
+                break;
+        }
         $query->where('a.addresstype_id = ' . $addressType);
 
         $this->db->setQuery($query);
-        $addressedata = $this->db->loadObject();
-        
-        
-        
+        $addressdata = $this->db->loadObject();
+
+        if (!empty($addressdata)) {
+            $address->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:NAME1', $addressdata->name1));
+            $address->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:NAME2', $addressdata->name2));
+            $address->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:AGENTFIRSTNAME', $addressdata->firstname));
+            $address->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:AGENTLASTNAME', $addressdata->lastname));
+            $address->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:ADDRESSSTREET1', $addressdata->address));
+            $address->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:ADDRESSSTREET2', $addressdata->addresscomplement));
+            $address->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:ZIP', $addressdata->postalcode));
+            $address->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:POBOX', $addressdata->postalbox));
+            $address->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:LOCALITY', $addressdata->locality));
+            $address->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:COUNTRY', $addressdata->country_iso));
+            $address->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:EMAIL', $addressdata->email));
+            $address->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:MOBILE', $addressdata->mobile));
+            $address->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:PHONE', $addressdata->phone));
+            $address->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:FAX', $addressdata->fax));
+        }
+
+        return $address;
+    }
+
+    private function getClient($order) {
+        $client = $this->response->createElementNS($this->nsEasysdi, 'easysdi:CLIENT');
+        $client->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:ID', $order->user_id));
+        $client->appendChild($this->getAdresse(self::CONTACT, $order));
+        $client->appendChild($this->getAdresse(self::BILLING, $order));
+        $client->appendChild($this->getAdresse(self::DELIVERY, $order));
+
+        return $client;
+    }
+
+    private function getTierce($order) {
+        $tierce = $this->response->createElementNS($this->nsEasysdi, 'easysdi:TIERCE');
+        if (!empty($order->thirdparty_id)) {
+            $tierce->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:ID', $order->thirdparty_id));
+            $tierce->appendChild($this->getAdresse(self::CONTACT, $order, 'tierce'));
+            $tierce->appendChild($this->getAdresse(self::BILLING, $order, 'tierce'));
+            $tierce->appendChild($this->getAdresse(self::DELIVERY, $order, 'tierce'));
+        }
+        return $tierce;
+    }
+
+    private function getBuffer() {
+        $buffer = $this->response->createElementNS($this->nsEasysdi, 'easysdi:BUFFER');
+
+        return $buffer;
+    }
+
+    /**
+     * get a PRODUCTS node with many PRODUCT child
+     * 
+     * @param stdClass $order
+     * @return DOMElement a PRODUCTS node
+     */
+    private function getProducts($order) {
+        $products = $this->response->createElementNS($this->nsEasysdi, 'easysdi:PRODUCTS');
+
+        $query = $this->db->getQuery(true);
+
+        $query->select('d.id, d.guid, d.`name`, od.id orderdiffusion_id');
+        $query->from('jos_sdi_order_diffusion od');
+        $query->innerJoin('jos_sdi_diffusion d on d.id = od.diffusion_id');
+        $query->where('od.productstate_id = ' . self::PRODUCTSTATESENT);
+        $query->where('od.order_id = ' . $order->id);
+
+        $this->db->setQuery($query);
+        $productsdata = $this->db->loadObjectList();
+
+        foreach ($productsdata as $product) {
+            $products->appendChild($this->getProduct($product));
+        }
+
+        return $products;
+    }
+
+    /**
+     * get a PRODUCT node
+     * 
+     * @param stdClass $product
+     * @return DOMElement PRODUCT node
+     */
+    private function getProduct($product) {
+        $root = $this->response->createElementNS($this->nsEasysdi, 'easysdi:PRODUCT');
+        $root->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:METADATA_ID', $product->guid));
+        $root->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:ID', $product->id));
+        $root->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:NAME', $product->name));
+
+        $root->appendChild($this->getProductProperties($product));
+
+        return $root;
+    }
+
+    /**
+     * get a PROPERTIES node with many PROPERTY node
+     * 
+     * @param stdClass $product
+     * @return DOMElement PROPERTIES node
+     */
+    private function getProductProperties($product) {
+        $properties = $this->response->createElementNS($this->nsEasysdi, 'easysdi:PROPERTIES');
+
+        $query = $this->db->getQuery(true);
+
+        $query->select('p.`name`, pv.propertyvalue');
+        $query->from('#__sdi_order_diffusion od');
+        $query->innerJoin('jos_sdi_order_propertyvalue pv on pv.orderdiffusion_id = od.id');
+        $query->innerJoin('jos_sdi_property p on p.id = pv.property_id');
+        $query->where('od.id = ' . $product->orderdiffusion_id);
+
+        $this->db->setQuery($query);
+        $propertiesdata = $this->db->loadObjectList();
+
+        foreach ($propertiesdata as $propertydata) {
+            $property = $this->response->createElementNS($this->nsEasysdi, 'easysdi:PROPERTY');
+            $property->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:CODE', $propertydata->name));
+            $property->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:VALUE', $propertydata->propertyvalue));
+
+            $properties->appendChild($property);
+        }
+
+        return $properties;
+    }
+
+    /**
+     * Get a PERIMETER node with many CONTENT node
+     * 
+     * @param type $order
+     * @return DOMElement
+     */
+    private function getPerimeter($order) {
+        $perimeter = $this->response->createElementNS($this->nsEasysdi, 'easysdi:PERIMETER');
+
+        $query = $this->db->getQuery(true);
+
+        $query->select('p.`name` perimeter_name, p.alias, op.`value` perimeter_value');
+        $query->from('jos_sdi_order_perimeter op');
+        $query->innerJoin('jos_sdi_perimeter p on p.id = op.perimeter_id');
+        $query->where('op.order_id = ' . $order->id);
+
+        $this->db->setQuery($query);
+        $contents = $this->db->loadObjectList();
+
+        $first = $contents[0];
+
+        switch ($first->alias) {
+            case 'freeperimeter':
+            case 'myperimeter':
+                $perimeter->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:TYPE', 'COORDINATES'));
+                break;
+            default :
+                $perimeter->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:TYPE', 'VALUES'));
+                break;
+        }
+
+        $perimeter->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:CODE', $first->alias));
+
+        foreach ($contents as $content) {
+            $perimeter->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:CONTENT', $content->perimeter_value));
+        }
+
+        return $perimeter;
     }
 
 }
