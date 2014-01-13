@@ -513,6 +513,7 @@ public abstract class ProxyServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
+            logger.error(e.toString());
             return null;
         }
     }

@@ -779,7 +779,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				return;
 			}
 
-			if(!docBuilder.CapabilitiesOperationsFiltering(wmsGetCapabilitiesResponseFilePathMap.get(physicalServiceMaster.getAlias()), getServletUrl(req)))
+			if(!docBuilder.CapabilitiesOperationsFiltering(wmsGetCapabilitiesResponseFilePathMap.get(physicalServiceMaster.getAlias()), getServletUrl(req), getProxyRequest().getVersion()))
 			{
                             resp.setHeader("easysdi-proxy-error-occured", "true");
 				logger.error(docBuilder.getLastException().getMessage());

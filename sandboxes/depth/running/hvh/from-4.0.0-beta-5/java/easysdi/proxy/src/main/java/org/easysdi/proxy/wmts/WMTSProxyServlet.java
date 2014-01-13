@@ -354,13 +354,15 @@ public class WMTSProxyServlet extends ProxyServlet{
 		if(!docBuilder.CapabilitiesContentsFiltering(wmtsGetCapabilitiesResponseFilePathMap))
 		{
 		    logger.error(docBuilder.getLastException().toString());
+                    resp.setHeader("easysdi-proxy-error-occured", "true");
 		    owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		    return;
 		}
 
-		if(!docBuilder.CapabilitiesOperationsFiltering(wmtsGetCapabilitiesResponseFilePathMap.get(physicalServiceMaster.getAlias()), getServletUrl(req)))
+		if(!docBuilder.CapabilitiesOperationsFiltering(wmtsGetCapabilitiesResponseFilePathMap.get(physicalServiceMaster.getAlias()), getServletUrl(req), getProxyRequest().getVersion()))
 		{
 		    logger.error(docBuilder.getLastException().toString());
+                    resp.setHeader("easysdi-proxy-error-occured", "true");
 		    owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		    return;
 		}
@@ -368,6 +370,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 		if(!docBuilder.CapabilitiesMerging(wmtsGetCapabilitiesResponseFilePathMap))
 		{
 		    logger.error(docBuilder.getLastException().toString());
+                    resp.setHeader("easysdi-proxy-error-occured", "true");
 		    owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		    return;
 		}
@@ -375,6 +378,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 		if(!docBuilder.CapabilitiesServiceMetadataWriting(wmtsGetCapabilitiesResponseFilePathMap.get(physicalServiceMaster.getAlias()),getServletUrl(req)))
 		{
 		    logger.error(docBuilder.getLastException().toString());
+                    resp.setHeader("easysdi-proxy-error-occured", "true");
 		    owsExceptionReport.sendExceptionReport(request, response,OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		    return;
 		}

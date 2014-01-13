@@ -77,7 +77,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public Boolean CapabilitiesOperationsFiltering(String filePath, String href) {
+    public Boolean CapabilitiesOperationsFiltering(String filePath, String href, String version) {
         servlet.logger.trace("transform - Start - Capabilities operations filtering");
         try {
             SAXBuilder sxb = new SAXBuilder();
@@ -102,7 +102,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
             List<Element> requestList = elementRequest.getChildren();
             List<Element> toRemove = new ArrayList<Element>();
             Element getFeatureInfoElement = null;
-            
+
             for (Element request : requestList) {
                 //If Request is not allowed by policy or not supported by the current Easysdy proxy : the element is remove from the capabilities document	    		 
                 if (deniedOperations.contains(request.getName())) {
@@ -115,7 +115,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
                         getFeatureInfoElement = request;
                     }
                     //Overwrite xlink attribute
-                    Iterator iXlink = request.getDescendants(xlinkFilter);                    
+                    Iterator iXlink = request.getDescendants(xlinkFilter);
                     while (iXlink.hasNext()) {
                         Element toUpdate = (Element) iXlink.next();
                         String att = toUpdate.getAttribute("href", nsXLINK).getValue();
@@ -125,10 +125,10 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
                             att = href;
                         }
                         toUpdate.setAttribute("href", att, nsXLINK);
-                    }                  
+                    }
                 }
             }
-            
+
             //Remove denied operations
             Iterator<Element> iToRemove = toRemove.iterator();
             while (iToRemove.hasNext()) {
@@ -147,11 +147,10 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
 
                 //Replace all the service urls in the xlink attributes under the main Layer
                 Iterator iXlink = layer.getDescendants(xlinkFilter);
-                List<Element> xlinkList = new ArrayList<Element>();
                 while (iXlink.hasNext()) {
                     Element toUpdate = (Element) iXlink.next();
                     String att = toUpdate.getAttribute("href", nsXLINK).getValue();
-                    
+
                     if (att.contains("?")) {
                         att = att.replace(att.substring(0, att.indexOf("?")), href);
                     } else {
@@ -159,6 +158,9 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
                     }
                     toUpdate.setAttribute("href", att, nsXLINK);
                 }
+
+                //Overwrite Layer name and set version if missing in the GetLegendGraphic link of the layer
+                this.OverWriteGetLegendGraphicParameters(layer, version);
                 
                 List<Element> layerChildren = getChildrenElementsLayer(layer);
                 if (!layerChildren.isEmpty()) {
@@ -166,39 +168,11 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
                     Iterator<Element> iChildLayer = layerChildren.iterator();
                     while (iChildLayer.hasNext()) {
                         Element childLayer = (Element) iChildLayer.next();
-                        Element nameElement = childLayer.getChild("Name", childLayer.getNamespace());
-
-                        Iterator icXlink = childLayer.getDescendants(xlinkFilter);                       
-                        while (icXlink.hasNext()) {
-                            Element toUpdate = (Element) icXlink.next();
-                            String att = toUpdate.getAttribute("href", nsXLINK).getValue();
-                            //Replace layer name with the prefixed layer name found in the parent Element <Name>
-                            if (att.contains("layer=") && nameElement != null) {
-                                String prefixedName = nameElement.getText();
-                                String endatt = att.substring(att.indexOf("layer=") + 6);
-                                int startlayername = att.indexOf("layer=") + 6;
-
-                                if (endatt.contains("&")) {
-                                    int endlayername = att.indexOf("&", startlayername);
-                                    String oldlayername = att.substring(startlayername, endlayername);
-                                    att = att.replace(oldlayername, prefixedName);
-                                } else {
-                                    String oldlayername = att.substring(startlayername);
-                                    att = att.replace(oldlayername, prefixedName);
-                                }
-                            }
-
-                            if (!att.contains("version=")) {
-
-                            }
-
-                            toUpdate.setAttribute("href", att, nsXLINK);
-                        }                       
+                        //Overwrite Layer name and set version if missing in the GetLegendGraphic link of each child layer
+                       this.OverWriteGetLegendGraphicParameters(childLayer, version);
                     }
                 }
             }
-
-            
 
             if (getFeatureInfoElement != null) {
                 ElementFilter formatFilter = new ElementFilter("Format");
@@ -227,6 +201,41 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
         } catch (Exception ex) {
             setLastException(ex);
             return false;
+        }
+    }
+
+    private void OverWriteGetLegendGraphicParameters(Element layerElement, String version) {
+        Element nameElement = layerElement.getChild("Name", layerElement.getNamespace());
+
+        Filter xlinkFilter = new AttributeXlinkFilter();
+        Iterator icXlink = layerElement.getDescendants(xlinkFilter);
+        while (icXlink.hasNext()) {
+            Element toUpdate = (Element) icXlink.next();
+            String att = toUpdate.getAttribute("href", nsXLINK).getValue();
+            if(!att.contains("GetLegendGraphic")){
+                continue;
+            }
+            //Replace layer name with the prefixed layer name found in the parent Element <Name>
+            if (att.contains("layer=") && nameElement != null) {
+                String prefixedName = nameElement.getText();
+                String endatt = att.substring(att.indexOf("layer=") + 6);
+                int startlayername = att.indexOf("layer=") + 6;
+
+                if (endatt.contains("&")) {
+                    int endlayername = att.indexOf("&", startlayername);
+                    String oldlayername = att.substring(startlayername, endlayername);
+                    att = att.replace(oldlayername, prefixedName);
+                } else {
+                    String oldlayername = att.substring(startlayername);
+                    att = att.replace(oldlayername, prefixedName);
+                }
+            }
+
+            if (!att.contains("version=")) {
+                att += "&version=" + version;
+            }
+
+            toUpdate.setAttribute("href", att, nsXLINK);
         }
     }
 

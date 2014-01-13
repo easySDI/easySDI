@@ -81,10 +81,11 @@ public abstract class ProxyResponseBuilder {
 	 * Overwrite the OnlineResource link for all the authorized operations with the URL of he current servlet. 
 	 * @param filePath : file path of the GetCapabilities response file of the master remote server
 	 * @param href : Url of the current servlet (can be overwrite with the param 'HostTranslator' of the config.xml) @see ProxyServlet.getServletUrl()
+         * @param version : version of the current request
 	 * @return true if the GetCapabilities was succesfully updated, false otherwise
 	 * If returns false, the caller should call getLastException() to get the catched exception.
 	 */
-	public abstract Boolean CapabilitiesOperationsFiltering (String filePath, String href );
+	public abstract Boolean CapabilitiesOperationsFiltering (String filePath, String href, String version );
 	
 	/**
 	 * Remove the unauthorized Layers (defined in the policy) from the GetCapabilities responses.
