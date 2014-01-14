@@ -44,9 +44,11 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
      * Main wps method
      */
     public function wps() {
+        /* @var $response DOMElement */
+        $response = NULL;
 
         if ($this->authentification()) {
-            if (isset($GLOBALS['HTTP_RAW_POST_DATA'])) {
+            if (!empty($GLOBALS['HTTP_RAW_POST_DATA'])) {
                 if ($this->request->loadXML($GLOBALS['HTTP_RAW_POST_DATA'])) {
                     //if($this->request->schemaValidate(JPATH_COMPONENT.'/controllers/xsd/wpsAll.xsd')){
                     if (true) {
@@ -54,30 +56,31 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
                         $identifier = $this->request->getElementsByTagNameNS('http://www.opengis.net/ows/1.1', 'Identifier')->item(0);
                         switch ($identifier->nodeValue) {
                             case 'getOrders':
-                                $this->response->appendChild($this->getOrders());
-                                echo $this->response->saveXML();
+                                $response = $this->getOrders();
                                 break;
                             case 'setOrder':
-                                $this->setOrder();
+                                $response = $this->setOrder();
                                 break;
-
                             default:
+                                $response = $this->getException('NotSupportedOperation', 'This operation identifier is not supported.');
                                 break;
                         }
-                        die();
                     } else {
-                        echo 'Requeste non valide';
-                        die();
+                        $response = $this->getException('InvalideRequest', 'This request is not schema compliant.');
                     }
                 } else {
-                    echo 'xml non valide';
-                    die();
+                    $response = $this->getException('InvalideXml', 'This XML is not well formed.');
                 }
+            } else {
+                $response = $this->getException('EmptyRequest', 'This request is empty.');
             }
         } else {
-            echo 'Authentification OK :' . $this->userType;
-            die();
+            $response = $this->getException('BadUserOrPassword', 'Bad username or password.');
         }
+
+        $this->response->appendChild($response);
+        echo $this->response->saveXML();
+        JFactory::getApplication()->close();
     }
 
     /**
@@ -91,6 +94,15 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $query->select('o.id, o.`name`, o.user_id, o.thirdparty_id, ot.`value` ordertype');
         $query->from('#__sdi_order o');
         $query->innerJoin('#__sdi_sys_ordertype ot on ot.id = o.ordertype_id');
+        $query->innerJoin('jos_sdi_order_diffusion od on o.id = od.order_id');
+        $query->innerJoin('jos_sdi_diffusion d on d.id = od.diffusion_id');
+        $query->innerJoin('jos_sdi_version v on d.version_id = v.id');
+        $query->innerJoin('jos_sdi_resource r on r.id = v.resource_id');
+        if (!empty($this->organism)) {
+            $query->where('r.organism_id = ' . $this->organism->id);
+        }
+        $query->where('od.productstate_id = ' . self::PRODUCTSTATESENT);
+        $query->group('o.id');
 
         $this->db->setQuery($query);
 
@@ -123,7 +135,71 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
     }
 
     private function setOrder() {
-        
+        $orderId = '';
+        $diffusionId = '';
+        $remark = '';
+        $filename = '';
+        $data = '';
+
+        $inputs = $this->request->getElementsByTagNameNS($this->nsWps, 'Input');
+
+        /* @var $input DOMElement */
+        foreach ($inputs as $input) {
+            switch ($input->getElementsByTagNameNS($this->nsOws, 'Identifier')->item(0)->nodeValue) {
+                case 'orderID':
+                    $orderId = $input->getElementsByTagNameNS($this->nsWps, 'LiteralData')->item(0)->nodeValue;
+                    break;
+                case 'productID':
+                    $diffusionId = $input->getElementsByTagNameNS($this->nsWps, 'LiteralData')->item(0)->nodeValue;
+                    break;
+                case 'notice':
+                    $remark = $input->getElementsByTagNameNS($this->nsWps, 'LiteralData')->item(0)->nodeValue;
+                    break;
+                case 'filename':
+                    $filename = $input->getElementsByTagNameNS($this->nsWps, 'LiteralData')->item(0)->nodeValue;
+                    break;
+                case 'data':
+                    $data = $input->getElementsByTagNameNS($this->nsWps, 'ComplexData')->item(0)->nodeValue;
+                    break;
+            }
+        }
+
+        $query = $this->db->getQuery(true);
+
+        $query->select('od.id');
+        $query->from('jos_sdi_order_diffusion od');
+        $query->innerJoin('jos_sdi_diffusion d on d.id = od.diffusion_id');
+        $query->innerJoin('jos_sdi_version v on d.version_id = v.id');
+        $query->innerJoin('jos_sdi_resource r on r.id = v.resource_id');
+        $query->where('r.organism_id = 1');
+        $query->where('od.order_id = ' . $orderId);
+        $query->where('od.diffusion_id = ' . $diffusionId);
+
+        $this->db->setQuery($query);
+
+        if ($product = $this->db->loadObject()) {
+            return $this->sendProduct($orderId, $diffusionId, $remark, $filename, $data);
+        } else {
+            return $this->getException('ProductNotFound', 'Couple userid and productid not found for this user.');
+        }
+    }
+
+    private function sendProduct($orderId, $diffusionId, $remark, $filename, $data) {
+        $folder = JComponentHelper::getParams('com_easysdi_shop')->get('orderresponseFolder');
+
+        if ($content = base64_decode($data)) {
+            if (mkdir(JPATH_BASE . $folder . '/' . $orderId . '/' . $diffusionId, null, true)) {
+                if ($size = file_put_contents(JPATH_BASE . $folder . '/' . $orderId . '/' . $diffusionId . '/' . $filename, $content)) {
+                    return $this->response->createElementNS($this->nsWps, 'wps:ExecuteResponse');
+                } else {
+                    return $this->getException('UnableToWriteFile', 'Unable to write file.');
+                }
+            } else {
+                return $this->getException('UnableToWriteFolder', 'Unable to write folder tree.');
+            }
+        } else {
+            return $this->getException('UnableToDecode', 'Unable to decode data.');
+        }
     }
 
     /**
@@ -186,7 +262,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
     private function isOrganismAccount($username, $password) {
         $query = $this->db->getQuery(true);
 
-        $query->select('o.username, o.password');
+        $query->select('o.id, o.username, o.password');
         $query->from('#__sdi_organism o');
         $query->where('o.username = \'' . $username . '\'');
 
@@ -338,10 +414,18 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $query = $this->db->getQuery(true);
 
         $query->select('d.id, d.guid, d.`name`, od.id orderdiffusion_id');
-        $query->from('jos_sdi_order_diffusion od');
+        $query->from('#__sdi_order o');
+        $query->innerJoin('#__sdi_sys_ordertype ot on ot.id = o.ordertype_id');
+        $query->innerJoin('jos_sdi_order_diffusion od on o.id = od.order_id');
         $query->innerJoin('jos_sdi_diffusion d on d.id = od.diffusion_id');
+        $query->innerJoin('jos_sdi_version v on d.version_id = v.id');
+        $query->innerJoin('jos_sdi_resource r on r.id = v.resource_id');
+        if (!empty($this->organism)) {
+            $query->where('r.organism_id = ' . $this->organism->id);
+        }
         $query->where('od.productstate_id = ' . self::PRODUCTSTATESENT);
         $query->where('od.order_id = ' . $order->id);
+
 
         $this->db->setQuery($query);
         $productsdata = $this->db->loadObjectList();
@@ -366,6 +450,8 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $root->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:NAME', $product->name));
 
         $root->appendChild($this->getProductProperties($product));
+
+        $this->changeState($product, self::PRODUCTSTATEDONE);
 
         return $root;
     }
@@ -439,6 +525,33 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         }
 
         return $perimeter;
+    }
+
+    private function getException($exceptionCode, $message) {
+        $exceptionReport = $this->response->createElementNS($this->nsOws, 'ows:ExceptionReport');
+        $exception = $this->response->createElementNS($this->nsOws, 'ows:Exception');
+        $exception->setAttribute('exceptionCode', $exceptionCode);
+
+        $exceptionText = $this->response->createElementNS($this->nsOws, 'ows:ExceptionText', $message);
+
+        $exception->appendChild($exceptionText);
+        $exceptionReport->appendChild($exception);
+
+        $this->response->appendChild($exceptionReport);
+
+        echo $this->response->saveXML();
+        JFactory::getApplication()->close();
+    }
+
+    private function changeState($product, $to) {
+        $query = $this->db->getQuery(true);
+
+        $query->update('jos_sdi_order_diffusion od');
+        $query->set('od.productstate_id = ' . $to);
+        $query->where('od.id = ' . $product->orderdiffusion_id);
+
+        $this->db->setQuery($query);
+        $this->db->execute();
     }
 
 }
