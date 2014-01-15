@@ -9,9 +9,9 @@
 	
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://localhost:3306/sdi4a8?zeroDateTimeBehavior=convertToNull" />
+		<property name="url" value="jdbc:mysql://localhost:3306/easysdi?zeroDateTimeBehavior=convertToNull" />
 		<property name="username" value="root" />
-		<property name="password" value="invulsion" />
+		<property name="password" value="" />
 	</bean>
 
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
@@ -40,7 +40,7 @@
 	
 	<bean id="namingStrategy" class="org.easysdi.proxy.namingStrategy.CustomNamingStrategy">
 		<property name="prefix">
-			<value>gh0jl_</value>
+			<value>jos_</value>
 		</property>
 	</bean>
 

@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -69,6 +68,8 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
         super(proxyServlet);
         nsOWS = Namespace.getNamespace("http://www.opengis.net/ows");
         nsXLINK = Namespace.getNamespace("xlink", "http://www.w3.org/1999/xlink");
+        nsWMS = Namespace.getNamespace("xlink", "http://www.opengis.net/wms");
+
     }
 
     /* (non-Javadoc)
@@ -76,48 +77,33 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public Boolean CapabilitiesOperationsFiltering(String filePath, String href) {
+    public Boolean CapabilitiesOperationsFiltering(String filePath, String href, String version) {
         servlet.logger.trace("transform - Start - Capabilities operations filtering");
         try {
             SAXBuilder sxb = new SAXBuilder();
             //Retrieve allowed and denied operations from the policy
-            List<String> permitedOperations = new Vector<String>();
             List<String> deniedOperations = new Vector<String>();
             for (SdiSysOperationcompliance compliance : servlet.getProxyRequest().getServiceCompliance().getSdiSysOperationcompliances()) {
                 if (compliance.getSdiSysServiceoperation().getState() == 1 && compliance.getState() == 1 && compliance.isImplemented() && servlet.isOperationAllowed(compliance.getSdiSysServiceoperation().getValue())) {
-                    permitedOperations.add(compliance.getSdiSysServiceoperation().getValue());
                     servlet.logger.trace(compliance.getSdiSysServiceoperation().getValue() + " is permitted");
                 } else {
                     deniedOperations.add(compliance.getSdiSysServiceoperation().getValue());
                     servlet.logger.trace(compliance.getSdiSysServiceoperation().getValue() + " is denied");
-
                 }
             }
 
             Document docParent = sxb.build(new File(filePath));
             Element racine = docParent.getRootElement();
 
-            //We can not modify Elements while we loop over them with an iterator.
-            //We have to use a separate List storing the Elements we want to modify.
-
-            //Operation filtering
+            //Operations filtering
             Filter xlinkFilter = new AttributeXlinkFilter();
             Element elementCapability = getChildElementCapability(racine);
             Element elementRequest = getChildElementRequest(elementCapability);
             List<Element> requestList = elementRequest.getChildren();
-//            List<Element> requestListToUpdate = new ArrayList<Element>();
-//            Iterator iRequest = requestList.iterator();
-//            while (iRequest.hasNext()) {
-//                Element courant = (Element) iRequest.next();
-//                requestListToUpdate.add(courant);
-//            }
-
             List<Element> toRemove = new ArrayList<Element>();
             Element getFeatureInfoElement = null;
 
-            Iterator iRequestToUpdate = requestList.iterator();
-            while (iRequestToUpdate.hasNext()) {
-                Element request = (Element) iRequestToUpdate.next();
+            for (Element request : requestList) {
                 //If Request is not allowed by policy or not supported by the current Easysdy proxy : the element is remove from the capabilities document	    		 
                 if (deniedOperations.contains(request.getName())) {
                     toRemove.add(request);
@@ -130,14 +116,8 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
                     }
                     //Overwrite xlink attribute
                     Iterator iXlink = request.getDescendants(xlinkFilter);
-                    List<Element> xlinkList = new ArrayList<Element>();
                     while (iXlink.hasNext()) {
-                        Element courant = (Element) iXlink.next();
-                        xlinkList.add(courant);
-                    }
-                    Iterator ilXlink = xlinkList.iterator();
-                    while (ilXlink.hasNext()) {
-                        Element toUpdate = (Element) ilXlink.next();
+                        Element toUpdate = (Element) iXlink.next();
                         String att = toUpdate.getAttribute("href", nsXLINK).getValue();
                         if (att.contains("?")) {
                             att = att.replace(att.substring(0, att.indexOf("?")), href);
@@ -149,25 +129,28 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
                 }
             }
 
-            //Overwrite xlink attribute in Layer element , eg :
+            //Remove denied operations
+            Iterator<Element> iToRemove = toRemove.iterator();
+            while (iToRemove.hasNext()) {
+                Element request = iToRemove.next();
+                request.getParent().removeContent(request);
+            }
+
+            // Overwrite xlink attribute in Layer element , eg :
             // <LegendURL width="20" height="20">
             // <Format>image/png</Format>
             // <OnlineResource xlink:type="simple" xlink:href="http://46.105.164.226:8080/geoserver/si17-secure/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=CLC06_RGF"/>
             // </LegendURL>
-            Iterator<Element> ichild = getChildrenElementsLayer(elementCapability).iterator();
-            while (ichild.hasNext()) {
-                Element layer = (Element) ichild.next();
+            Iterator<Element> iLayer = getChildrenElementsLayer(elementCapability).iterator();
+            while (iLayer.hasNext()) {
+                Element layer = (Element) iLayer.next();
 
+                //Replace all the service urls in the xlink attributes under the main Layer
                 Iterator iXlink = layer.getDescendants(xlinkFilter);
-                List<Element> xlinkList = new ArrayList<Element>();
                 while (iXlink.hasNext()) {
-                    Element courant = (Element) iXlink.next();
-                    xlinkList.add(courant);
-                }
-                Iterator ilXlink = xlinkList.iterator();
-                while (ilXlink.hasNext()) {
-                    Element toUpdate = (Element) ilXlink.next();
+                    Element toUpdate = (Element) iXlink.next();
                     String att = toUpdate.getAttribute("href", nsXLINK).getValue();
+
                     if (att.contains("?")) {
                         att = att.replace(att.substring(0, att.indexOf("?")), href);
                     } else {
@@ -175,12 +158,20 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
                     }
                     toUpdate.setAttribute("href", att, nsXLINK);
                 }
-            }
 
-            Iterator<Element> iToRemove = toRemove.iterator();
-            while (iToRemove.hasNext()) {
-                Element request = iToRemove.next();
-                request.getParent().removeContent(request);
+                //Overwrite Layer name and set version if missing in the GetLegendGraphic link of the layer
+                this.OverWriteGetLegendGraphicParameters(layer, version);
+                
+                List<Element> layerChildren = getChildrenElementsLayer(layer);
+                if (!layerChildren.isEmpty()) {
+                    //Layer is a parent layer : loop over children layers
+                    Iterator<Element> iChildLayer = layerChildren.iterator();
+                    while (iChildLayer.hasNext()) {
+                        Element childLayer = (Element) iChildLayer.next();
+                        //Overwrite Layer name and set version if missing in the GetLegendGraphic link of each child layer
+                       this.OverWriteGetLegendGraphicParameters(childLayer, version);
+                    }
+                }
             }
 
             if (getFeatureInfoElement != null) {
@@ -213,6 +204,41 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
         }
     }
 
+    private void OverWriteGetLegendGraphicParameters(Element layerElement, String version) {
+        Element nameElement = layerElement.getChild("Name", layerElement.getNamespace());
+
+        Filter xlinkFilter = new AttributeXlinkFilter();
+        Iterator icXlink = layerElement.getDescendants(xlinkFilter);
+        while (icXlink.hasNext()) {
+            Element toUpdate = (Element) icXlink.next();
+            String att = toUpdate.getAttribute("href", nsXLINK).getValue();
+            if(!att.contains("GetLegendGraphic")){
+                continue;
+            }
+            //Replace layer name with the prefixed layer name found in the parent Element <Name>
+            if (att.contains("layer=") && nameElement != null) {
+                String prefixedName = nameElement.getText();
+                String endatt = att.substring(att.indexOf("layer=") + 6);
+                int startlayername = att.indexOf("layer=") + 6;
+
+                if (endatt.contains("&")) {
+                    int endlayername = att.indexOf("&", startlayername);
+                    String oldlayername = att.substring(startlayername, endlayername);
+                    att = att.replace(oldlayername, prefixedName);
+                } else {
+                    String oldlayername = att.substring(startlayername);
+                    att = att.replace(oldlayername, prefixedName);
+                }
+            }
+
+            if (!att.contains("version=")) {
+                att += "&version=" + version;
+            }
+
+            toUpdate.setAttribute("href", att, nsXLINK);
+        }
+    }
+
     /* (non-Javadoc)
      * @see org.easysdi.proxy.core.ProxyResponseBuilder#CapabilitiesContentsFiltering(java.util.HashMap)
      */
@@ -221,7 +247,6 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
     public Boolean CapabilitiesContentsFiltering(HashMap<String, String> wmsGetCapabilitiesResponseFilePath, String href) throws NoSuchAuthorityCodeException {
         servlet.logger.trace("transform - Start - Capabilities contents filtering");
         try {
-
 
             SAXBuilder sxb = new SAXBuilder();
             Iterator<Entry<String, String>> iFile = wmsGetCapabilitiesResponseFilePath.entrySet().iterator();
@@ -635,7 +660,6 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder {
                         }
                     }
                 }
-
 
             } catch (JDOMException e) {
                 servlet.logger.error("WMSProxyResponseBuilder.ExceptionAggregation - ", e);

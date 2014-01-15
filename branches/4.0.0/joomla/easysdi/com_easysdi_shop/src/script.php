@@ -19,6 +19,7 @@ class com_easysdi_shopInstallerScript {
      */
 
     function preflight($type, $parent) {
+
         // Installing component manifest file version
         $this->release = $parent->get("manifest")->version;
 
@@ -97,7 +98,13 @@ class com_easysdi_shopInstallerScript {
                 JError::raiseError(42, JText::_('COM_EASYSDI_SHOP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR') . $row->getError());
                 return false;
             }
+
+            //add default order account
+            $user = JFactory::getUser();
+            $params['orderaccount'] = $user->id;
+            $this->setParams($params);
         }
+
         $db = JFactory::getDbo();
         $db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_shop'");
         $db->query();

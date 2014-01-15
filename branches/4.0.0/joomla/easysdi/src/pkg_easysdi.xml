@@ -4,13 +4,13 @@
   <packager>EasySDI Community</packager>
   <packagename>easysdi</packagename>
   <creationDate>15 August 2012</creationDate>
-  <releaseDate>19 décembre 2013</releaseDate>
+  <releaseDate>15 January 2014</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>4.0.0-beta-5</version>
+  <version>4.0.0-beta-6</version>
   <description>PKG_EASYSDI_XML_DESCRIPTION</description>
   <files folder="easysdi">
     <file id="com_easysdi_core" type="component">com_easysdi_core.zip</file>
