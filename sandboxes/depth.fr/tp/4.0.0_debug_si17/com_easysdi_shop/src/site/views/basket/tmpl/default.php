@@ -68,7 +68,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
         <div class="basket-edit front-end-edit">
             <h1><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TITLE'); ?></h1>
             <div class="well">
-                <div class="row-fluid">
+                <div class="row-fluid shop-product">
                     <div class="row-fluid" >
                         <div class="span6" >
                             <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_EXTRACTION_NAME'); ?></h3>
@@ -140,8 +140,8 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                         </table>
                     </div>
                 </div>
-                <div class="row-fluid" >
-                    <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h3>
+                <div class="row-fluid shop-perimeter" >
+                    <div class="row-fluid" ><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h3></div>
                     <hr>
                     <div class="row-fluid" >
                         <div class="map-recap span6" >
@@ -189,27 +189,27 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                         <div class="span6" >
                             <a href="#modal-perimeter" class="btn btn-success" style="margin-bottom: 10px;" data-toggle="modal" >
                                 <i class="icon-white icon-location"></i>
-                                <span id="defineOrderBtn"> Define order perimeter</span></a>
+                                <span id="defineOrderBtn"> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER'); ?></span></a>
                         </div>
                     </div>
                 </div>
                 <?php if (!empty($this->thirdParties)): ?>
-                    <div class="row-fluid" >
-                        <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY'); ?></h3>
+                    <div class="row-fluid shop-third-party" >
+                        <div class="row-fluid" ><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY'); ?></h3></div>
                         <hr>
-                        <select id="thirdparty" name="thirdparty" class="inputbox input-xlarge">
+                       <div class="row-fluid" > <select id="thirdparty" name="thirdparty" class="inputbox input-xlarge">
                             <option value="-1"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_NO_THIRD_PARTY'); ?></option>
                             <?php foreach ($this->thirdParties as $thirdparty) : ?>
                                 <option value="<?php echo $thirdparty->id; ?>" <?php if ($this->item->thirdparty == $thirdparty->id) echo 'selected' ?>><?php echo $thirdparty->name; ?></option>
                             <?php endforeach; ?>
-                        </select>
+                           </select></div>
                     </div>
                 <?php endif; ?>
                 <?php if (!empty($this->paramsarray['shopinfomessage'])): ?>
-                    <div class="row-fluid" >
-                        <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_MESSAGE'); ?></h3>
+                    <div class="row-fluid shop-info" >
+                        <div class="row-fluid" ><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_MESSAGE'); ?></h3></div>
                         <hr>
-                        <div class="shop-information"><?php echo $this->paramsarray['shopinfomessage']; ?></div>
+                        <div class="row-fluid" ><div class="shop-information"><?php echo $this->paramsarray['shopinfomessage']; ?></div></div>
                     </div>
                 <?php endif; ?>
                 <div class="row-fluid " >

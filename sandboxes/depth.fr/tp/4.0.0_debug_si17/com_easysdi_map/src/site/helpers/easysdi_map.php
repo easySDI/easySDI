@@ -664,6 +664,7 @@ abstract class Easysdi_mapHelper {
             $config .= '  zoom : ' . $item->zoom . ',';
         endif;
         $config .= ' maxResolution: ' . $item->maxresolution . ',
+            numZoomLevels:18,
             units: "' . $item->unit . '",
             layers: 
             [
@@ -761,9 +762,9 @@ abstract class Easysdi_mapHelper {
                                 break;
                         }
                         if ($group->isbackground)
-                            $config .= 'group: "background"';
+                            $config .= 'group: "background",';
                         else
-                            $config .= 'group: "' . $group->alias . '"';
+                            $config .= 'group: "' . $group->alias . '",';
                     }
                     else {
                         switch ($layer->serviceconnector) {

@@ -583,6 +583,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * @return string 
      */
     private function getHref($guid) {
+
         $query = $this->db->getQuery(true);
         $query->select('m.guid ,ns.`prefix`, rt.fragment');
         $query->from('#__sdi_resource as r');
@@ -702,7 +703,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     }
     
     private function removeCatalogNS() {
-        $attributeNames = array('id', 'dbid', 'childtypeId', 'index', 'lowerbound', 'upperbound', 'rendertypeId', 'stereotypeId', 'relGuid', 'relid', 'maxlength', 'readonly', 'exist', 'resourcetypeId', 'relationId', 'label', 'boundingbox', 'map', 'level');
+        $attributeNames = array('id', 'dbid', 'childtypeId', 'index', 'lowerbound', 'upperbound', 'rendertypeId', 'stereotypeId', 'relGuid', 'relid', 'maxlength', 'readonly', 'exist', 'resourcetypeId', 'relationId', 'label', 'boundingbox', 'map');
         foreach ($this->domXpathStr->query('//*') as $element) {
             foreach ($attributeNames as $attributeName) {
                 $element->removeAttributeNS($this->catalog_uri, $attributeName);

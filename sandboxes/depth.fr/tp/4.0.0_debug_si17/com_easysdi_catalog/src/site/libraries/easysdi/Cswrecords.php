@@ -153,6 +153,9 @@ class Cswrecords extends SearchForm {
 
         $body = $this->dom->saveXML();
 
+		/*echo $body;
+		die();*/
+
         $results = $this->CURLRequest('POST', $catalogurl, $body);
         if (!$results) {
             return false;
@@ -188,7 +191,9 @@ class Cswrecords extends SearchForm {
      */
     protected function CURLRequest($type, $url, $xmlBody = "") {
         // Get COOKIE as key=value
-        $cookiesList = array();
+
+
+	$cookiesList = array();
         foreach ($_COOKIE as $key => $val) {
             $cookiesList[] = $key . "=" . $val;
         }
