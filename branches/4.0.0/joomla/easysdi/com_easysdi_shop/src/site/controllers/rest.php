@@ -15,7 +15,10 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
     // Product state
     const PRODUCTSTATEAWAIT = 2;
     const PRODUCTSTATEAVAILABLE = 1;
+    const PRODUCTSTATESENT = 3;
     // Order state
+    const ORDERSTATESENT = 6;
+    const ORDERSTATEAWAIT = 4;
     const ORDERSTATEPROGRESS = 5;
     const ORDERSTATEFINISH = 3;
 
@@ -105,7 +108,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         if (!empty($this->organism)) {
             $query->where('r.organism_id = ' . $this->organism->id);
         }
-        $query->where('od.productstate_id = ' . self::PRODUCTSTATEAWAIT);
+        $query->where('od.productstate_id = ' . self::PRODUCTSTATESENT);
         $query->group('o.id');
 
         $this->db->setQuery($query);
@@ -180,7 +183,9 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $query->innerJoin('#__sdi_diffusion d on d.id = od.diffusion_id');
         $query->innerJoin('#__sdi_version v on d.version_id = v.id');
         $query->innerJoin('#__sdi_resource r on r.id = v.resource_id');
-        $query->where('r.organism_id = 1');
+        if (!empty($this->organism)) {
+            $query->where('r.organism_id = ' . $this->organism->id);
+        }
         $query->where('od.order_id = ' . $orderId);
         $query->where('od.diffusion_id = ' . $diffusionId);
 
@@ -209,7 +214,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
 
         if ($content = base64_decode($data)) {
             if (!file_exists(JPATH_BASE . $folder . '/' . $orderId . '/' . $diffusionId)) {
-                $mkdirOk = mkdir(JPATH_BASE . $folder . '/' . $orderId . '/' . $diffusionId, null, true);
+                $mkdirOk = mkdir(JPATH_BASE . $folder . '/' . $orderId . '/' . $diffusionId, 0755, true);
             } else {
                 $mkdirOk = true;
             }
@@ -493,7 +498,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         if (!empty($this->organism)) {
             $query->where('r.organism_id = ' . $this->organism->id);
         }
-        $query->where('od.productstate_id = ' . self::PRODUCTSTATEAWAIT);
+        $query->where('od.productstate_id = ' . self::PRODUCTSTATESENT);
         $query->where('od.order_id = ' . $order->id);
 
 
@@ -521,6 +526,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
 
         $root->appendChild($this->getProductProperties($product));
 
+        $this->changeState($product->orderdiffusion_id, self::PRODUCTSTATEAWAIT);
         $this->changeOrderState($order->id);
 
         return $root;
@@ -699,12 +705,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $this->db->setQuery($query);
         $available = $this->db->getNumRows($this->db->execute());
 
-        $orderstate = 0;
-        if ($available == $total) {
-            $orderstate = self::ORDERSTATEFINISH;
-        } elseif ($await > 0) {
-            $orderstate = self::ORDERSTATEPROGRESS;
-        }
+        $orderstate = $this->chooseOrderState($total, $await, $available);
 
         if ($orderstate > 0) {
             $query = $this->db->getQuery(true);
@@ -716,6 +717,22 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
             $this->db->setQuery($query);
             $this->db->execute();
         }
+    }
+    
+    private function chooseOrderState($total, $await, $available){
+        if($available == $total){
+            return self::ORDERSTATEFINISH;
+        }
+        
+        if($available>0){
+            return self::ORDERSTATEPROGRESS;
+        }
+        
+        if($await>0){
+            return self::ORDERSTATEAWAIT;
+        }
+        
+        return 0;
     }
 
 }
