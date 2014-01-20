@@ -120,7 +120,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                 $od = array();
                 $od['order_id'] = $table->id;
                 $od['diffusion_id'] = $diffusion->id;
-                $od['productstate_id'] = 2;
+                $od['productstate_id'] = 3;
                 $orderdiffusion->save($od);
 
                 //Save properties
