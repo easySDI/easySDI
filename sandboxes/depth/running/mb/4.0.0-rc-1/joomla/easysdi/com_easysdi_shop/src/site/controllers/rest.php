@@ -150,6 +150,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $orderId = '';
         $diffusionId = '';
         $remark = '';
+        $amount = '';
         $filename = '';
         $data = '';
 
@@ -166,6 +167,9 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
                     break;
                 case 'notice':
                     $remark = $input->getElementsByTagNameNS($this->nsWps, 'LiteralData')->item(0)->nodeValue;
+                    break;
+                case 'amount':
+                    $amount = $input->getElementsByTagNameNS($this->nsWps, 'LiteralData')->item(0)->nodeValue;
                     break;
                 case 'filename':
                     $filename = $input->getElementsByTagNameNS($this->nsWps, 'LiteralData')->item(0)->nodeValue;
@@ -192,7 +196,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $this->db->setQuery($query);
 
         if ($product = $this->db->loadObject()) {
-            return $this->sendProduct($product->id, $orderId, $diffusionId, $remark, $filename, $data);
+            return $this->sendProduct($product->id, $orderId, $diffusionId, $remark, $amount, $filename, $data);
         } else {
             return $this->getException('ProductNotFound', 'Couple userid and productid not found for this user.');
         }
@@ -209,7 +213,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
      * @param string $data Base64 value of file
      * @return DOMElement
      */
-    private function sendProduct($orderdiffusionId, $orderId, $diffusionId, $remark, $filename, $data) {
+    private function sendProduct($orderdiffusionId, $orderId, $diffusionId, $remark, $amount, $filename, $data) {
         $folder = JComponentHelper::getParams('com_easysdi_shop')->get('orderresponseFolder');
 
         if ($content = base64_decode($data)) {
@@ -221,7 +225,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
 
             if ($mkdirOk) {
                 if ($size = file_put_contents(JPATH_BASE . $folder . '/' . $orderId . '/' . $diffusionId . '/' . $filename, $content)) {
-                    if ($this->updateOrderDiffusion($orderdiffusionId, $remark, $filename, $size)) {
+                    if ($this->updateOrderDiffusion($orderdiffusionId, $remark, $amount, $filename, $size)) {
                         $this->changeState($orderdiffusionId, self::PRODUCTSTATEAVAILABLE);
                         return $this->getSuccess('File sended');
                     } else {
@@ -248,13 +252,14 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
      * @param int $size
      * @return mixed A database cursor resource on success, boolean false on failure.
      */
-    private function updateOrderDiffusion($orderdiffusionId, $remark, $filename, $size) {
+    private function updateOrderDiffusion($orderdiffusionId, $remark, $amount, $filename, $size) {
         $now = date("Y-m-d H:i:s");
 
         $query = $this->db->getQuery(true);
 
         $query->update('#__sdi_order_diffusion');
         $query->set('remark = \'' . $remark . '\'');
+        $query->set('fee = \''.$amount.'\'');
         $query->set('completed = \'' . $now . '\'');
         $query->set('file = \'' . $filename . '\'');
         $query->set('size = ' . $size);
