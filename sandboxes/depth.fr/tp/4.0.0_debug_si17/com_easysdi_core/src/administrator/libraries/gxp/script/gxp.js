@@ -25739,9 +25739,10 @@ gxp.plugins.AddLayers = Ext.extend(gxp.plugins.Tool, {
                             newSourceDialog.hide();
                         },
                         fallback: function(source, msg) {
-                            this.setError(
-                                new Ext.Template(this.addLayerSourceErrorText).apply({msg: msg})
-                            );
+                            alert('Erreur lors de l\'interrogation du serveur distant');
+                            /*Modif Thomas 24/01/13 
+                             * this.setError(new Ext.Template(this.addLayerSourceErrorText).apply({msg: msg})
+                             */
                         },
                         scope: this
                     });
