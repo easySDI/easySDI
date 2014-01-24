@@ -63,7 +63,7 @@ class Easysdi_catalogModelSheet extends JModelForm {
 
             //Load CSW metadata
             $metadata = new cswmetadata($id);
-            $metadata->load();
+            $metadata->load('complete');
 
             $jinput = JFactory::getApplication()->input;
             $langtag = $jinput->get('lang', '', 'STRING');
