@@ -1004,7 +1004,7 @@ class FormGenerator {
             $allValues = $this->domXpathStr->query('child::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode);
             $default = array();
             foreach ($allValues as $node) {
-                $default[] = $node->firstChild->getAttribute('codeListValue');
+                $default[] = $node->firstChild->nodeValue;
             }
 
             $name = FormUtils::removeIndexToXpath(FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
