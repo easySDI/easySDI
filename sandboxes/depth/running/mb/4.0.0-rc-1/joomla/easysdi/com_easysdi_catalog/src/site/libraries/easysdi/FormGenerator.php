@@ -271,8 +271,8 @@ class FormGenerator {
                     $relation = $this->getDomElement($result->uri, $result->prefix, $result->name, $result->id, EnumChildtype::$RELATION, $result->guid, $result->lowerbound, $result->upperbound);
                     $class = $this->getDomElement($result->class_ns_uri, $result->class_ns_prefix, $result->class_name, $result->class_id, EnumChildtype::$CLASS, $result->class_guid, null, null, $result->class_stereotype_id);
 
-                    $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix.':level', $level);
-                    
+                    $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':level', $level);
+
                     switch ($result->class_stereotype_id) {
                         case EnumStereotype::$GEOGRAPHICEXTENT:
                             $params = array();
@@ -1227,6 +1227,7 @@ class FormGenerator {
      */
     private function getFormHiddenField(DOMElement $attribute) {
         $relid = $attribute->getAttributeNS($this->catalog_uri, 'relid');
+        $stereotypeid = $attribute->getAttributeNS($this->catalog_uri, 'stereotypeId');
 
         $attributename = $attribute->nodeName;
         $field = $this->form->createElement('field');
@@ -1234,7 +1235,18 @@ class FormGenerator {
 
         $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
         $field->setAttribute('type', 'hidden');
-        $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue));
+
+        switch ($stereotypeid) {
+            case 6:
+            case 9:
+                $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue, true));
+                break;
+
+            default:
+                $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue));
+                break;
+        }
+
         $field->setAttribute('label', 'label');
 
         return $field;
