@@ -239,7 +239,7 @@ function collapse(id) {
 }
 
 function addField(id, idwi, relid, parent_path, lowerbound, upperbound) {
-    js.get(currentUrl + '?view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
+    js.get(currentUrl + '?option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
 
         js('#attribute-group-' + idwi + ':last').after(data);
         if (js(data).find('select') !== null) {
@@ -271,12 +271,12 @@ function addOrRemoveCheckbox(id, relid, parent_path, path) {
 }
 
 function addToStructure(relid, parent_path) {
-    js.get(currentUrl + '?view=ajax&parent_path=' + parent_path + '&relid=' + relid);
+    js.get(currentUrl + '?option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid);
 }
 
 function addFieldset(id, idwi, relid, parent_path, lowerbound, upperbound) {
     var uuid = getUuid('add-btn-', id);
-    js.get(currentUrl + '?view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
+    js.get(currentUrl + '?option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
         js('#bottom-' + idwi).before(data);
         if (js(data).find('select') !== null) {
             chosenRefresh();
@@ -347,7 +347,7 @@ function confirmField(id, idwi, lowerbound, upperbound) {
 
 function removeFromStructure(id) {
     var uuid = getUuid('remove-btn-', id);
-    js.get(currentUrl + '/?task=ajax.removeNode&uuid=' + uuid, function(data) {
+    js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
         var response = js.parseJSON(data);
         return response.success;
     });
@@ -355,7 +355,7 @@ function removeFromStructure(id) {
 
 function removeField(id, idwi, lowerbound, upperbound) {
     var uuid = getUuid('remove-btn-', id);
-    js.get(currentUrl + '/?task=ajax.removeNode&uuid=' + uuid, function(data) {
+    js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
         var response = js.parseJSON(data);
         if (response.success) {
             var toRemove = js('#attribute-group-' + uuid);
@@ -366,7 +366,7 @@ function removeField(id, idwi, lowerbound, upperbound) {
 
 function removeFieldset(id, idwi, lowerbound, upperbound) {
     var uuid = getUuid('remove-btn-', id);
-    js.get(currentUrl + '/?task=ajax.removeNode&uuid=' + uuid, function(data) {
+    js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
         var response = js.parseJSON(data);
         if (response.success) {
 
@@ -425,7 +425,7 @@ function chosenRefresh() {
 
 function filterBoundary(parentPath, value) {
 
-    js.get(currentUrl + '?task=ajax.getBoundaryByCategory&value=' + value, function(data) {
+    js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.getBoundaryByCategory&value=' + value, function(data) {
 
         var response = js.parseJSON(data);
         var replaceId = parentPath.replace(/-/g, '_');
@@ -454,7 +454,7 @@ function filterBoundary(parentPath, value) {
 }
 
 function setBoundary(parentPath, value) {
-    js.get(currentUrl + '/?task=ajax.getBoundaryByName&value=' + value, function(data) {
+    js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.getBoundaryByName&value=' + value, function(data) {
         var response = js.parseJSON(data);
         var replaceId = parentPath.replace(/-/g, '_');
         js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', response.northbound);

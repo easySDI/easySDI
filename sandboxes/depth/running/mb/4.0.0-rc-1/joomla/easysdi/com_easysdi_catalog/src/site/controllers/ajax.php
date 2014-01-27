@@ -88,7 +88,7 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
      */
     public function getBoundaryByCategory() {
         $user = JFactory::getUser();
-        $default_lang = $user->getParam('language');
+        $default_lang = $user->getParam('language', JFactory::getLanguage());
 
         $query = $this->db->getQuery(true);
         $query->select('t.text1 as option_value, b.alias, b.`name`, b.northbound, b.southbound, b.westbound, b.eastbound ');
