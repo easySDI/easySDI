@@ -92,11 +92,10 @@ js('document').ready(function() {
                         type: js('#form-metadata').attr('method'),
                         data: js('#form-metadata').serialize(),
                         success: function(data) {
-                            var response = js.parseJSON(data);
-                            if (response.success) {
-                                js('#previewModalBody').html(response.xml);
-                                js('#previewModal').modal('show');
-                            }
+                            
+                            js('#previewModalBody').html(data);
+                            js('#previewModal').modal('show');
+                            
                         }
                     });
                     break;

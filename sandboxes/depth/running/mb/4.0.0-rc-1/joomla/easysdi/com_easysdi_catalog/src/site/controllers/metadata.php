@@ -284,12 +284,17 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $update = $this->structure->getElementsByTagNameNS($this->cswUri, 'Update')->item(0);
 
+        $lang = JFactory::getLanguage();
+        
         $cswm = new cswmetadata();
-
+        $cswm->init($update->firstChild);
+        $extend = $cswm->extend('', '', 'editor', 1, 'fr-FR');
+        
         $response = array();
         $response['success'] = true;
-        $response['xml'] = '<div class="well">' . $cswm->applyXSL('', '', 'editor',$update->firstChild) . '</div>';
-        echo json_encode($response);
+        $response['xml'] = '<div class="well">' . $cswm->applyXSL('', '', 'editor',null) . '</div>';
+        echo $response['xml'];
+        //echo json_encode($response);
         die();
     }
 

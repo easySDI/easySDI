@@ -37,6 +37,8 @@ class sdiMetadata extends cswmetadata {
     const ARCHIVED = 4;
     const TRASHED = 5;
 
+    const sdi_uri = 'http://www.easysdi.org/2011/sdi';
+    
     /**
      * 
      */
@@ -349,12 +351,12 @@ class sdiMetadata extends cswmetadata {
         $infrastructureID = JComponentHelper::getParams('com_easysdi_core')->get('infrastructureID');
 
         //Platform
-        $platform = $dom->createElement('sdi:platform');
+        $platform = $dom->createElementNS(self::sdi_uri, 'sdi:platform');
         $platform->setAttribute('guid', $infrastructureID);
         $platform->setAttribute('harvested', 'false');
 
         //Resource
-        $resource = $dom->createElement('sdi:resource');
+        $resource = $dom->createElementNS(self::sdi_uri,'sdi:resource');
         $resource->setAttribute('guid', $this->resource->guid);
         $resource->setAttribute('alias', $this->resource->alias);
         $resource->setAttribute('name', $this->resource->name);
@@ -363,7 +365,7 @@ class sdiMetadata extends cswmetadata {
         $resource->setAttribute('scope', $accessscope);
 
         //Metadata
-        $metadata = $dom->createElement('sdi:metadata');
+        $metadata = $dom->createElementNS(self::sdi_uri,'sdi:metadata');
         $metadata->setAttribute('lastVersion', 'true');
         $metadata->setAttribute('guid', $this->metadata->guid);
         $metadata->setAttribute('created', $this->metadata->created);
@@ -378,7 +380,7 @@ class sdiMetadata extends cswmetadata {
                 ->where('state = 1');
         $this->db->setQuery($query);
         $diffusionobj = $this->db->loadObject();
-        $diffusion = $dom->createElement('sdi:diffusion');
+        $diffusion = $dom->createElementNS(self::sdi_uri,'sdi:diffusion');
         if (!empty($diffusionobj)):
             $isfree = ($diffusionobj->pricing_id == 1 ) ? 'true' : 'false';
             $isDownladable = ($diffusionobj->hasdownload == 1 ) ? 'true' : 'false';
@@ -401,7 +403,7 @@ class sdiMetadata extends cswmetadata {
                 ->where('state = 1');
         $this->db->setQuery($query);
         $viewobj = $this->db->loadObject();
-        $view = $dom->createElement('sdi:visualization');
+        $view = $dom->createElementNS(self::sdi_uri,'sdi:visualization');
         if (!empty($viewobj) && !empty($viewobj->maplayer_id)):
             $view->setAttribute('isViewable', 'true');
         else:
@@ -412,14 +414,14 @@ class sdiMetadata extends cswmetadata {
         foreach ($accessscopes as $a) {
             if ($a->organism_id != null):
                 if (!isset($organisms))
-                    $organisms = $dom->createElement('sdi:organisms');
-                $organism = $dom->createElement('sdi:organism');
+                    $organisms = $dom->createElementNS(self::sdi_uri,'sdi:organisms');
+                $organism = $dom->createElementNS(self::sdi_uri,'sdi:organism');
                 $organism->setAttribute('guid', $a->o_guid);
                 $organisms->appendChild($organism);
             elseif ($a->user_id != null):
                 if (!isset($users))
-                    $users = $dom->createElement('sdi:users');
-                $user = $dom->createElement('sdi:user');
+                    $users = $dom->createElementNS(self::sdi_uri,'sdi:users');
+                $user = $dom->createElementNS(self::sdi_uri,'sdi:user');
                 $user->setAttribute('guid', $a->u_guid);
                 $users->appendChild($user);
             endif;

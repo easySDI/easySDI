@@ -131,7 +131,7 @@ class cswmetadata {
                 $this->dom = $metadata;
             } else
             if ($metadata instanceof DOMElement) {
-
+                
                 $this->dom = new DOMDocument('1.0', 'UTF-8');
                 $xmlContent = $this->dom->importNode($metadata, true);
                 $this->dom->appendChild($xmlContent);
@@ -161,7 +161,8 @@ class cswmetadata {
         //Is it an harvested metadata
         $xpath = new DomXPath($this->dom);
         $xpath->registerNamespace('sdi', 'http://www.easysdi.org/2011/sdi');
-        $sdiplatform = $xpath->query('//sdi:platform');
+        $sdiplatform = $xpath->query('descendant::sdi:platform');
+        $nombre = $sdiplatform->length;
         $isharvested = $sdiplatform->item(0)->getAttribute('harvested');
         
         $root = $this->dom->documentElement;
@@ -558,11 +559,21 @@ class cswmetadata {
         return $this->extendeddom;
     }
 
+    /**
+     * 
+     * @param type $catalog
+     * @param type $type
+     * @param type $preview
+     * @param DOMDocument $dom
+     * @return boolean
+     */
     public function applyXSL($catalog, $type, $preview, $dom = null) {
         if (empty($dom)) {
             $dom = $this->extendeddom;
         }
 
+        $xml = $dom->saveXML();
+        
         $style = new DomDocument();
         if (!$style->load(JPATH_BASE . '/media/easysdi/catalog/xsl/' . $this->rootxslfile)):
             return false;
