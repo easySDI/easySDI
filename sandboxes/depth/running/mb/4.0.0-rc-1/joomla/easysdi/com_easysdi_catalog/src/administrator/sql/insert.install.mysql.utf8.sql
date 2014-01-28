@@ -34,6 +34,7 @@ INSERT INTO `#__sdi_namespace` VALUES ('1', '6df1fcd1-0a57-8b74-cd21-354dc5ef0b3
 INSERT INTO `#__sdi_namespace` VALUES ('2', '016318b2-29ec-3a74-c161-14aa1b1d3b97', 'gco', '356', '2013-06-21 12:12:47', null, null, '2', '1', '0', '0000-00-00 00:00:00', 'gco', 'gco', 'http://www.isotc211.org/2005/gco', '1', '1', '0');
 INSERT INTO `#__sdi_namespace` VALUES ('3', '3e31cc00-8fa3-97a4-8510-dac7e4bac992', 'gml', '356', '2013-06-21 12:12:47', null, null, '3', '1', '0', '0000-00-00 00:00:00', 'gml', 'gml', 'http://www.opengis.net/gml', '1', '1', '0');
 INSERT INTO `#__sdi_namespace` VALUES ('4', 'd4b19594-af15-0b44-516b-22284be8dc66', 'sdi', '356', '2013-06-21 12:12:47', null, null, '4', '1', '0', '0000-00-00 00:00:00', 'sdi', 'sdi', 'http://www.easysdi.org/2011/sdi', '1', '1', '0');
+INSERT INTO `#__sdi_namespace` VALUES ('5', 'd84c3757-6471-49ed-a109-c8cef52840a8', 'catalog', '356', '2013-06-21 12:12:47', null, null, '5', '1', '0', '0000-00-00 00:00:00', 'catalog', 'catalog', 'http://www.easysdi.org/2011/sdi/catalog', '1', '1', '0');
 
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('1', '1', '1', 'guid', '([A-Z0-9]{8}|-|[A-Z0-9]{4}|-|[A-Z0-9]{4}|-|[A-Z0-9]{4}|-|[A-Z0-9]{12})', 'CharacterString', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('2', '2', '1', 'text', '', 'CharacterString', '2','1');
