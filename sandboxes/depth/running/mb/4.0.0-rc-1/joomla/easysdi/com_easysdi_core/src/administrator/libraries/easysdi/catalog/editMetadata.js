@@ -114,6 +114,11 @@ js('document').ready(function() {
                         break;
                     }
                     break;
+                case 'publishAndClose':
+                    if (document.formvalidator.isValid(form)) {
+                        Joomla.submitform(task, form);
+                    }
+                    break;
                 case 'publishWithDate':
                     js('#jform_published').val(js('#publish_date').val());
                     Joomla.submitbutton('metadata.publish');

@@ -109,7 +109,7 @@ $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/sy
     js('document').ready(function() {
 
 <?php if ($this->params->get('editmetadatafieldsetstate') == "allopen"): ?>
-            allopen();
+            Joomla.submitbutton('metadata.toggle');
 <?php endif; ?>
 
 <?php
