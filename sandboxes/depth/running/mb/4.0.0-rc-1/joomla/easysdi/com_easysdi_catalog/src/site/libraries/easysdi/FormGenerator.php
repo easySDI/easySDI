@@ -1001,15 +1001,9 @@ class FormGenerator {
 
 
         if ($upperbound > 1) {
-            $allValues = $this->domXpathStr->query('child::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode);
-            $default = array();
-            foreach ($allValues as $node) {
-                $default[] = $node->firstChild->nodeValue;
-            }
 
             $name = FormUtils::removeIndexToXpath(FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
             $field->setAttribute('name', $name);
-            $field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $default), true));
             $field->setAttribute('multiple', 'true');
         } else {
             $validator = $this->getValidatorClass($attribute);
@@ -1104,6 +1098,17 @@ class FormGenerator {
                     } else {
                         $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue, true));
                     }
+
+                    if($upperbound > 1) {
+                        $allValues = $this->domXpathStr->query('child::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode);
+                        $default = array();
+                        foreach ($allValues as $node) {
+                            $default[] = $node->firstChild->nodeValue;
+                        }
+                        $field->setAttribute('type', 'MultipleDefaultList');
+                        $field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $default), true));
+                    }
+
                     if ($opt->guid != '') {
                         $option = $this->form->createElement('option', EText::_($opt->guid));
                     } else {
