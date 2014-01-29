@@ -75,6 +75,8 @@ js('document').ready(function() {
                         js('#system-message-container').remove();
                         bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK', 'COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK'));
                         break;
+                    }else{
+                        js('html, body').animate({ scrollTop: 0 }, 'slow');
                     }
                     break;
                 case 'valid':
@@ -82,6 +84,8 @@ js('document').ready(function() {
                     if (document.formvalidator.isValid(form)) {
                         Joomla.submitform(task, form);
                         break;
+                    }else{
+                        js('html, body').animate({ scrollTop: 0 }, 'slow');
                     }
                     break;
                 case 'show':
