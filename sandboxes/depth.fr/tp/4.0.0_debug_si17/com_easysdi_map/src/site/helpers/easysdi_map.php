@@ -58,6 +58,7 @@ abstract class Easysdi_mapHelper {
             $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
             $doc->addScript($base_url . '/gxp/script/loader.js');
             $doc->addScript($base_url . '/easysdi/js/gxp/plugins/WMSSource.js');
+            $doc->addScript($base_url . '/easysdi/js/gxp/plugins/OLSource.js');
             $doc->addScript($base_url . '/easysdi/js/sdi/plugins/SearchCatalog.js');
             $doc->addScript($base_url . '/easysdi/js/sdi/plugins/LayerDetailSheet.js');
             $doc->addScript($base_url . '/easysdi/js/sdi/plugins/LayerDownload.js');
@@ -564,7 +565,7 @@ abstract class Easysdi_mapHelper {
         $config .= '
         sources: 
         {
-        "ol": { ptype: "gxp_olsource" }, ';
+        "ol": { ptype: "sdi_gxp_olsource" }, ';
 
         foreach ($item->physicalservices as $service) :
             //Acces not allowed
