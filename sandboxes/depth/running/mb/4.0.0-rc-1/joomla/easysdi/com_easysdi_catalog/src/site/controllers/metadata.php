@@ -292,12 +292,14 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         
         $response = array();
         $response['success'] = true;
-        $response['xml'] = '<div class="well">' . $cswm->applyXSL('', '', 'editor',null) . '</div>';
-        echo $response['xml'];
-        //echo json_encode($response);
+        $response['guid'] = $_POST['jform']['guid'];
+        
+        $this->session->set($_POST['jform']['guid'], '<div class="well">' . $cswm->applyXSL('', '', 'editor',null) . '</div>');
+        
+        echo json_encode($response);
         die();
     }
-
+    
     public function saveAndContinue() {
         $this->save(null, true, true);
     }

@@ -54,6 +54,11 @@ class Easysdi_catalogModelSheet extends JModelForm {
      * @return	mixed	Object on success, false on failure.
      */
     public function &getData($id = null) {
+        if(!empty($_GET['guid'])){
+            $session = JFactory::getSession();
+            $this->_item = $session->get($_GET['guid']);
+        }
+        
         if ($this->_item === null) {
             $this->_item = false;
 

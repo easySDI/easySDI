@@ -156,13 +156,12 @@ class cswmetadata {
      * Buils an extended Metadata containing EasySDI information fields for XSL transformation
      */
     public function extend($catalog, $type, $preview, $callfromJoomla, $lang) {
-        $xml = $this->dom->saveXML();
+        
         
         //Is it an harvested metadata
         $xpath = new DomXPath($this->dom);
         $xpath->registerNamespace('sdi', 'http://www.easysdi.org/2011/sdi');
         $sdiplatform = $xpath->query('descendant::sdi:platform');
-        $nombre = $sdiplatform->length;
         $isharvested = $sdiplatform->item(0)->getAttribute('harvested');
         
         $root = $this->dom->documentElement;

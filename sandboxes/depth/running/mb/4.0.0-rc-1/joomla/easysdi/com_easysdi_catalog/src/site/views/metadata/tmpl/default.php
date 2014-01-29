@@ -14,6 +14,7 @@ JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('formbehavior.chosen', 'select');
 JHtml::_('behavior.calendar');
+JHtml::_('behavior.modal');
 
 JText::script('COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK');
 JText::script('COM_EASYSDI_CATALOGE_METADATA_SAVE_WARNING');

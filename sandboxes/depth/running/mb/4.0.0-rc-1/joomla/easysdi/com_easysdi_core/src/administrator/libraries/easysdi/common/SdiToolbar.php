@@ -53,12 +53,13 @@ class SdiToolbar{
         }
     }
 
-    public function appendBtnRoute($label, $url, $btnClass = '', $id = ''){
+    public function appendBtnRoute($label, $url, $btnClass = '', $id = '', $rel = ''){
         
         $a = $this->dom->createElement('a',$label);
         $a->setAttribute('class', 'btn ' . $btnClass);
         $a->setAttribute('id', $id);
         $a->setAttribute('href', $url);
+        $a->setAttribute('rel', $rel);
         
         $this->dom->firstChild->appendChild($a);
     }
