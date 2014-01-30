@@ -289,7 +289,16 @@ CREATE TABLE `#__sdi_language` (
   `iso639-2T` varchar(10) DEFAULT NULL,
   `iso639-1` varchar(10) DEFAULT NULL,
   `iso3166-1-alpha2` varchar(10) DEFAULT NULL,
+  `iso639-2B` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_sys_isolanguage` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` int(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_pricing` (

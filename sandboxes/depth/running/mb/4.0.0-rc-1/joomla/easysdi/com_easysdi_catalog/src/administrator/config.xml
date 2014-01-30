@@ -38,6 +38,21 @@
                    key_field="id" 
                    value_field="value"
            /> 
+            
+            <field name="isolanguage" 
+                   type="sql" 
+                   translate="true" 
+                   class="inputbox input-xlarge"
+                   multiple="false"
+                   required ="true"
+                   default="2"
+                   label="COM_EASYSDI_CATALOG_CONFIG_LBL_ISOLANGUAGE"
+                   description="COM_EASYSDI_CATALOG_CONFIG_DESC_ISOLANGUAGE" 
+                   query="SELECT id, value FROM #__sdi_sys_isolanguage WHERE state=1 ORDER BY ordering" 
+                   key_field="id" 
+                   value_field="value" 
+                   
+           />
            
            <field name="searchresultpaginationnumber"
                    type="text"
