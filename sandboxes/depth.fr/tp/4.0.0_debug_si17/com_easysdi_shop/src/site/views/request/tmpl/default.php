@@ -122,7 +122,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                                         </div>
                                                         <div class="span10">
                                                             <div class="row-fluid">
-                                                                <?php if ($extraction->productstate_id == 2) : ?>
+                                                                <?php if ($extraction->productstate_id == 3) : ?>
                                                                     <div class="span8">
                                                                         <input type="file" name="jform[file][<?php echo $extraction->id; ?>][]" id="file_<?php echo $extraction->id; ?>" >                                                                             
                                                                     </div>
@@ -143,7 +143,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                                                     <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_FEE'); ?>
                                                                 </div>
                                                                 <div class="span6 order-edit-value" >
-                                                                    <?php if ($extraction->productstate_id == 2) : ?>
+                                                                    <?php if ($extraction->productstate_id == 3) : ?>
                                                                         <input type="text" id="fee_<?php echo $extraction->id; ?>" name="jform[fee][<?php echo $extraction->id; ?>]" placeholder="">
                                                                     <?php else : ?>
                                                                         <?php echo $extraction->fee; ?>
@@ -157,7 +157,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                                                 </div>
 
                                                                 <div class="span6 order-edit-value" >
-                                                                    <?php if ($extraction->productstate_id == 2) : ?>
+                                                                    <?php if ($extraction->productstate_id == 3) : ?>
                                                                         <textarea id="remark_<?php echo $extraction->id; ?>" name="jform[remark][<?php echo $extraction->id; ?>]" rows="6" placeholder=""></textarea>
                                                                     <?php else : ?>
                                                                         <?php echo $extraction->remark; ?>
