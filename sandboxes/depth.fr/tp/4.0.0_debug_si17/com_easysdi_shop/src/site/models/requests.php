@@ -122,7 +122,7 @@ class Easysdi_shopModelRequests extends JModelList {
         $query->innerjoin('#__sdi_order_diffusion od ON od.order_id = a.id');
         $query->innerjoin('#__sdi_diffusion d ON d.id = od.diffusion_id');
         $query->where('d.id IN ( ' . implode(',', $diffusions) . ')');
-        $query->where('od.productstate_id = 2');
+        $query->where('od.productstate_id = 3');
         
         //And the product minig is manual
         $query->innerjoin('#__sdi_sys_productmining pm ON pm.id = d.productmining_id');
