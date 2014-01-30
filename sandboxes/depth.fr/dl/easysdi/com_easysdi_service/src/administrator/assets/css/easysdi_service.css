@@ -1,0 +1,103 @@
+.icon-48-services {
+      background-image: url(../images/l_services.png);
+      padding-left:60px!important;
+}
+
+.icon-48-service {
+      background-image: url(../images/l_services.png);
+      padding-left:60px!important;
+}
+
+.icon-48-virtualservices {
+      background-image: url(../images/l_virtualservices.png);
+      padding-left:60px!important;
+}
+
+.icon-48-virtualservice {
+      background-image: url(../images/l_virtualservices.png);
+      padding-left:60px!important;
+}
+
+.icon-48-physicalservices {
+      background-image: url(../images/l_physicalservices.png);
+      padding-left:60px!important;
+}
+
+.icon-48-physicalservice {
+      background-image: url(../images/l_physicalservices.png);
+      padding-left:60px!important;
+}
+
+.icon-48-policies {
+      background-image: url(../images/l_policies.png);
+      padding-left:60px!important;
+}
+
+.icon-48-policy {
+      background-image: url(../images/l_policies.png);
+      padding-left:60px!important;
+}
+
+.icon-48-links-cat {
+      background-image: url(../images/icon-48-links-cat.png);
+      padding-left:60px!important;
+}
+
+.icon-48-links {
+      background-image: url(../images/icon-48-links.png);
+      padding-left:60px!important;
+}
+
+.supportedversion{
+	
+	width: 30px;
+	height:15px;
+	float:left;
+	background-color: #F6F6F6;
+    border-bottom: 1px solid #E9E9E9;
+    border-right: 1px solid #E9E9E9;
+    color: #666666;
+    font-weight: bold;
+    text-align: center;
+    -moz-border-radius: 8px;
+	border-radius: 8px;
+	margin-top:5px;
+	
+}
+
+.errornegotiation{
+	
+	width: 200px;
+	height:15px;
+	float:left;
+	color: #FF0000;
+    font-weight: bold;
+    text-align: center;
+    -moz-border-radius: 8px;
+	border-radius: 8px;
+	margin-top:5px;
+	
+}
+
+.div-supportedversions{
+	position:relative
+}
+
+#progress{
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	visibility:hidden; 
+	position:absolute; 
+	background-color: #B8B9BB;
+	opacity:0.3;
+	filter:alpha(opacity=30);
+	text-align : center; 
+	vertical-align:middle;
+	height:80%;
+	width:80%;
+	z-index:99;
+}
+#progress_image{
+	padding-left:60px;
+	padding-top:70px;
+}
