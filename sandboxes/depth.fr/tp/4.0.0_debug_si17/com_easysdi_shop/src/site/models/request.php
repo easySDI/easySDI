@@ -253,7 +253,7 @@ class Easysdi_shopModelRequest extends JModelForm {
         $query->select('COUNT(*)')
                 ->from('#__sdi_order_diffusion')
                 ->where('order_id = ' . (int) $id)
-                ->where('productstate_id = 2');
+                ->where('productstate_id = 3');
         $db->setQuery($query);
         $orderdone = $db->loadResult();
 
