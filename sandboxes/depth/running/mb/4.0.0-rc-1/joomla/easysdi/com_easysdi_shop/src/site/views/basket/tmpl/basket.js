@@ -92,7 +92,7 @@ function resetAll() {
 
     if (typeof selectControl !== 'undefined') {
         selectControl.deactivate();
-        toggleSelectControl('pan');
+        //toggleSelectControl('pan');
         selectControl.events.unregister("featureselected", this, listenerFeatureSelected);
         selectControl.events.unregister("featureunselected", this, listenerFeatureUnselected);
         app.mapPanel.map.removeControl(selectControl);
@@ -114,16 +114,10 @@ function resetAll() {
 function toggleSelectControl(action) {
     if (action == 'selection') {
         if (typeof selectControl !== 'undefined') {
-            jQuery('#modal-perimeter [id^="btn-selection"]').addClass('active');
-            jQuery('#modal-perimeter [id^="btn-pan"]').removeClass('active');
             selectControl.activate();
-        } else {
-            jQuery('#modal-perimeter [id^="btn-pan"]').addClass('active');
-            jQuery('#modal-perimeter [id^="btn-selection"]').removeClass('active');
         }
     } else {
-        jQuery('#modal-perimeter [id^="btn-pan"]').addClass('active');
-        jQuery('#modal-perimeter [id^="btn-selection"]').removeClass('active');
+        resetAll();
         selectControl.deactivate();
     }
 }

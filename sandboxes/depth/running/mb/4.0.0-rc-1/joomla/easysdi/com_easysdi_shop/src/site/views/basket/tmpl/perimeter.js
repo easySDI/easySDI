@@ -24,9 +24,10 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
                 featureNS: namespace,
                 geometryName: featuretypefieldgeometry
             }),
-            box: true,
-            multipleKey: "shiftKey",
-            toggleKey: "ctrlKey"
+            box: false,
+            click: true,
+            multipleKey: "ctrlKey",
+            clickout: true
         });
 
     } else {
@@ -38,6 +39,7 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
 //        });
 //        loadingPerimeter.show();
 //        }
+        
         var featurerestriction = getUserRestrictedExtentFeature(userperimeter);
         var g = featurerestriction.geometry;
         var exp = new OpenLayers.Format.WKT().write(featurerestriction);
@@ -73,8 +75,10 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
          perimeterLayer = new OpenLayers.Layer.WMS("perimeterLayer",
                 wmsurl,     
                 {layers: wmslayername,
-                    transparent: true,
-                CQL_FILTER: 'INTERSECTS(the_geom,' + new OpenLayers.Format.WKT().write(featurerestriction) + ')'}           
+                 transparent: true,
+                 //CQL_FILTER: 'INTERSECTS(the_geom,' + new OpenLayers.Format.WKT().write(featurerestriction) + ')'},
+                 CQL_FILTER: 'INTERSECTS(the_geom,' + exp + ')'},
+                 {tileOptions: {maxGetUrlLength: 2048}, transitionEffect: 'resize'}
             );
 
         //----------------------------------------------------------------------
@@ -92,9 +96,10 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
                     value: featurerestriction.geometry
                 })
             }),
-            box: true,
-            multipleKey: "shiftKey",
-            toggleKey: "ctrlKey"
+            box: false,
+            click: true,
+            multipleKey: "ctrlKey",
+            clickout: true
         });
     }
 
@@ -108,6 +113,8 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
     selectControl.events.register("featureunselected", this, listenerFeatureUnselected);
     
     app.mapPanel.map.addControl(selectControl);
+
+    toggleSelectControl('selection');
 
     return false;
 };

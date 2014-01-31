@@ -68,9 +68,12 @@ function getUserRestrictedExtentFeature(text) {
 
     }
 
-    var collectionGeometry = new OpenLayers.Geometry.Collection(polygonList);
+   // var collectionGeometry = new OpenLayers.Geometry.Collection(polygonList);
+    var collectionGeometry = new OpenLayers.Geometry.MultiPolygon(polygonList);
     var multigeomFeature = new OpenLayers.Feature.Vector(collectionGeometry);
     return  multigeomFeature;
+    
+    
 
 //    var features = new OpenLayers.Format.WKT().read(text);
 //    var reprojfeatures = new Array();
