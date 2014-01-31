@@ -69,7 +69,7 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         $orderdiffusion->load($keys);
 
         $folder = JFactory::getApplication()->getParams('com_easysdi_shop')->get('orderresponseFolder');
-        $file = $folder.'\\'.$order_id.'\\'.$diffusion_id.'\\'.$orderdiffusion->file;
+        $file = JPATH_BASE. '/' .$folder.'/'.$order_id.'/'.$diffusion_id.'/'.$orderdiffusion->file;
 
 
         error_reporting(0);

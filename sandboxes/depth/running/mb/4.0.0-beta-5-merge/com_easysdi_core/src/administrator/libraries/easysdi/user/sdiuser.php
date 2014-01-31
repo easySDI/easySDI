@@ -461,6 +461,7 @@ class sdiUser {
         $body   = $body;
         $mailer->setSubject($subject);
         $mailer->setBody($body);
+        $mailer->isHTML(TRUE);
         
         //Send the mail
         $send = $mailer->Send();

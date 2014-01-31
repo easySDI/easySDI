@@ -583,6 +583,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * @return string 
      */
     private function getHref($guid) {
+
         $query = $this->db->getQuery(true);
         $query->select('m.guid ,ns.`prefix`, rt.fragment');
         $query->from('#__sdi_resource as r');

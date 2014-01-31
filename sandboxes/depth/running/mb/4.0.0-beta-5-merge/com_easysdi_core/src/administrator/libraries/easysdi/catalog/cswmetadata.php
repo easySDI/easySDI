@@ -88,7 +88,9 @@ class cswmetadata {
      * @return DOMDocument 
      */
     public function load($content = 'CORE') {
+        
         $catalogUrlGetRecordById = $this->catalogurl . "?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=" . $content . "&id=" . $this->guid;
+
         $response = $this->CURLRequest("GET", $catalogUrlGetRecordById);
         if (!$response) {
             return false;
