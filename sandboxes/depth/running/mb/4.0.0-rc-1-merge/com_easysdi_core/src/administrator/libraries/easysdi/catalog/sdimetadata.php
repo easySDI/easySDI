@@ -188,8 +188,8 @@ class sdiMetadata extends cswmetadata {
         $this->dom = new DOMDocument('1.0', 'utf-8');
 
         $transaction = $this->dom->createElementNS(self::csw_uri,'csw:Transaction');
-        $transaction->setAttributeNS(self::xmlns_uri,'xmlns:csw', 'http://www.opengis.net/cat/csw/2.0.2');
-        $transaction->setAttributeNS(self::xmlns_uri,'xmlns:ogc', 'http://www.opengis.net/ogc');
+        //$transaction->setAttributeNS(self::xmlns_uri,'xmlns:csw', 'http://www.opengis.net/cat/csw/2.0.2');
+        //$transaction->setAttributeNS(self::xmlns_uri,'xmlns:ogc', 'http://www.opengis.net/ogc');
         $transaction->setAttribute('service', "CSW");
         $transaction->setAttribute('version', "2.0.2");
 
