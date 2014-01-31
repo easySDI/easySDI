@@ -13,12 +13,14 @@ $desc=array (
 );
 $up=-63;
 $ut=44;
-$ttffile='C:/www/sdi4a8/administrator/components/com_easysdi_core/libraries/mpdf/ttfonts/DejaVuSerifCondensed.ttf';
+$ttffile='/var/www/html/administrator/components/com_easysdi_core/libraries/mpdf/ttfonts/DejaVuSerifCondensed.ttf';
 $TTCfontID='0';
 $originalsize=296976;
 $sip=false;
 $smp=false;
 $BMPselected=true;
 $fontkey='dejavuserifcondensed';
-$panose='0 0 2 6 6 6 5 6 5 2 2 4';
+$panose=' 0 0 2 6 6 6 5 6 5 2 2 4';
+$haskerninfo=false;
+$unAGlyphs=false;
 ?>

@@ -491,9 +491,9 @@ gxp.plugins.AddLayers = Ext.extend(gxp.plugins.Tool, {
                             newSourceDialog.hide();
                         },
                         fallback: function(source, msg) {
-                            this.setError(
-                                new Ext.Template(this.addLayerSourceErrorText).apply({msg: msg})
-                            );
+                            /* newSourceDialog.setError(
+                                new Ext.Template(this.addLayerSourceErrorText).apply({type: "Erreur", msg: msg})
+                            );*/
                         },
                         scope: this
                     });

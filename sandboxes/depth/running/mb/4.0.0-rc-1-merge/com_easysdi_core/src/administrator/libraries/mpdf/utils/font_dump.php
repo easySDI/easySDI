@@ -46,13 +46,16 @@ $mpdf->percentSubset = 0;
 //==============================================================
 
 // This generates a .mtx.php file if not already generated
+$mpdf->WriteHTML('<style>td { border: 0.1mm solid #555555; } body { font-weight: normal; }</style>');
 $mpdf->WriteHTML('<h3 style="font-family:'.$font.'">'.strtoupper($font).'</h3>');	// Separate Paragraphs  defined by font
+$html = '';
 //==============================================================
 //==============================================================
 //==============================================================
 //==============================================================
 $unifile = file('UnicodeData.txt');
 $unichars = array();
+
 foreach($unifile AS $line) {
 	if ($smp && preg_match('/^(1[0-9A-Za-z]{4});/',$line,$m)) { 
 	  $unichars[hexdec($m[1])] = hexdec($m[1]);
@@ -69,7 +72,6 @@ include('UnicodeRanges.php');
 
 
 
-$html = '<style>td { border: 0.1mm solid #555555; } body { font-weight: normal; }</style>';
 $cw = file_get_contents(_MPDF_TTFONTDATAPATH.$font.'.cw.dat');
 if (!$cw) { die("Error - Must be able to read font metrics file: "._MPDF_TTFONTDATAPATH.$font.'.cw.dat'); }
 $counter=0;

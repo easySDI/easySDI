@@ -270,15 +270,17 @@ class Easysdi_contactModeluser extends JModelAdmin {
                     ->where('r.organism_id IN (' . implode(",", $organisms) . ')');
             $db->setQuery($query);
             $resources = $db->loadColumn();
-
-            $query = $db->getQuery(true)
-                    ->delete('#__sdi_user_role_resource ')
-                    ->where('user_id = ' . $this->getItem()->get('id'))
-                    ->where('resource_id NOT IN ( ' . implode(',', $resources) . ')')
-                    ->where('role_id =  ' . (int) $role_id);
-            $db->setQuery($query);
             
-            $result = $db->query();
+            if (sizeof($resources)>0):
+                $query = $db->getQuery(true)
+                        ->delete('#__sdi_user_role_resource ')
+                        ->where('user_id = ' . $this->getItem()->get('id'))
+                        ->where('resource_id NOT IN ( ' . implode(',', $resources) . ')')
+                        ->where('role_id =  ' . (int) $role_id);
+                $db->setQuery($query);
+
+                $result = $db->query();
+            endif;
         else:
             $this->deleteRoleAttribution($role_id);
         endif;

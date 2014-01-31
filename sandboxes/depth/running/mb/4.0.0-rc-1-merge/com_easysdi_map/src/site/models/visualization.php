@@ -112,8 +112,10 @@ class Easysdi_mapModelVisualization extends JModelForm {
         $cls .= ')';
 
         if (!empty($visualization_id)):
+            
             $exclusioncls = 'ml.id NOT IN (SELECT v.maplayer_id FROM #__sdi_visualization v WHERE v.id <> ' . $visualization_id . ' AND v.maplayer_id IS NOT NULL)';
         else:
+            
             $exclusioncls = 'ml.id NOT IN (SELECT v.maplayer_id FROM #__sdi_visualization v WHERE v.maplayer_id IS NOT NULL)';
         endif;
 
@@ -124,6 +126,7 @@ class Easysdi_mapModelVisualization extends JModelForm {
                 ->where($cls)
                 ->where('ml.state = 1')
                 ->where($exclusioncls);
+
 
 
         $db->setQuery($query);
