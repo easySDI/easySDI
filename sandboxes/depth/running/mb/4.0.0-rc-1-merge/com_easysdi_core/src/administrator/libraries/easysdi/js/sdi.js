@@ -1787,6 +1787,14 @@ sdi.plugins.LayerOrder = Ext.extend(gxp.plugins.Tool, {
 Ext.preg(sdi.plugins.LayerOrder.prototype.ptype, sdi.plugins.LayerOrder);
 
 /**
+ * Copyright (c) 2008-2011 The Open Planning Project
+ * 
+ * Published under the GPL license.
+ * See https://github.com/opengeo/gxp/raw/master/license.txt for the full text
+ * of the license.
+ */
+
+/**
  * @requires plugins/LayerSource.js
  */
 
@@ -1926,3 +1934,4 @@ sdi.gxp.plugins.OLSource = Ext.extend(gxp.plugins.LayerSource, {
 });
 
 Ext.preg(sdi.gxp.plugins.OLSource.prototype.ptype, sdi.gxp.plugins.OLSource);
+
