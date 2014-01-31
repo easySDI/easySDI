@@ -73,7 +73,7 @@ class Easysdi_shopModelorder extends JModelAdmin
 
 		if (empty($data)) {
 			$data = $this->getItem();
-            
+
 		}
 
 		return $data;
@@ -89,11 +89,67 @@ class Easysdi_shopModelorder extends JModelAdmin
 	 */
 	public function getItem($pk = null)
 	{
-		if ($item = parent::getItem($pk)) {
+
+		/*if ($item = parent::getItem($pk)) {
 
 			//Do any procesing on fields here if needed
 
-		}
+		}*/
+
+        $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+        $db = $this->getDbo();
+
+        $query = $db->getQuery(true);
+
+        // Select the required fields from the table.
+        $query->select(
+                $this->getState(
+                        'list.select', 'a.*'
+                )
+        );
+        $query->from('`#__sdi_order` AS a');
+
+
+        // Join over the users for the checked out user.
+        $query->select('uc.name AS editor');
+        $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
+
+
+
+        // Join over the user field 'user'
+        $query->select('users2.name AS user')
+        ->join('LEFT', '#__sdi_user AS sdi_user ON sdi_user.id=a.user_id')
+        ->join('LEFT', '#__users AS users2 ON users2.id=sdi_user.user_id');
+
+        // Join over the orderstate field 'orderstate'
+        $query->select('orderstate.value AS orderstate')
+        ->join('LEFT', '#__sdi_sys_orderstate AS orderstate ON orderstate.id = a.orderstate_id');
+
+        // Join over the ordertype field 'ordertype'
+        $query->select('ordertype.value AS ordertype')
+        ->join('LEFT', '#__sdi_sys_ordertype AS ordertype ON ordertype.id = a.ordertype_id');
+
+        // Join over the thirdparty field 'thirdparty'
+        $query->select('users3.name AS thirdparty')
+        ->join('LEFT', '#__sdi_user AS sdi_user2 ON sdi_user2.id=a.thirdparty_id')
+        ->join('LEFT', '#__users AS users3 ON users3.id=sdi_user2.user_id');
+
+        // Join over the diffusion field 'products'
+        /*$query->select("GROUP_CONCAT(diffusion.name SEPARATOR '".PHP_EOL."') AS products")
+        ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion ON order_diffusion.order_id =a.id')
+        ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id');*/
+
+        $query->select("GROUP_CONCAT(CONCAT(diffusion.name , ' (',organism.name,')') SEPARATOR '<br/>".PHP_EOL."') AS products")
+                ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion ON order_diffusion.order_id =a.id')
+                ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id')
+                ->join('LEFT', '#__sdi_resource AS resource ON resource.id=diffusion.version_id')
+                ->join('LEFT', '#__sdi_organism AS organism ON organism.id=resource.organism_id')
+                ->group('a.id');
+
+        $query->where('a.id = '.$pk);
+
+        $db->setQuery($query);
+        $item= $db->loadObject();
 
 		return $item;
 	}

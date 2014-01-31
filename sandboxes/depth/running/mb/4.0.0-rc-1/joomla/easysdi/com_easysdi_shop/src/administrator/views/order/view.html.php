@@ -57,6 +57,7 @@ class Easysdi_shopViewOrder extends JViewLegacy
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SHOP_TITLE_ORDER'), 'order.png');
 
+        /*
 		// If not checked out, can save the item.
 		if (!$checkedOut && ($canDo->get('core.edit')||($canDo->get('core.create'))))
 		{
@@ -77,6 +78,8 @@ class Easysdi_shopViewOrder extends JViewLegacy
 		else {
 			JToolBarHelper::cancel('order.cancel', 'JTOOLBAR_CLOSE');
 		}
+        */
+        JToolBarHelper::cancel('order.cancel', 'JTOOLBAR_CLOSE');
 
 	}
 }

@@ -31,7 +31,7 @@ class Easysdi_shopHelper
 			'index.php?option=com_easysdi_shop&view=properties',
 			$vName == 'properties'
 		);
-                
+
                 return;
             };
             JHtmlSidebar::addEntry(
@@ -39,19 +39,19 @@ class Easysdi_shopHelper
                     'index.php?option=com_easysdi_shop&view=perimeters',
                     $vName == 'perimeters'
             );
-            
+
             JHtmlSidebar::addEntry(
                     JText::_('COM_EASYSDI_SHOP_TITLE_PROPERTIES'),
                     'index.php?option=com_easysdi_shop&view=properties',
                     $vName == 'properties'
             );
-            
+
             JHtmlSidebar::addEntry(
                     JText::_('COM_EASYSDI_SHOP_TITLE_ORDERS'),
                     'index.php?option=com_easysdi_shop&view=orders',
                     $vName == 'orders'
             );
-		
+
 	}
 
 	/**
@@ -77,4 +77,27 @@ class Easysdi_shopHelper
 
 		return $result;
 	}
+
+
+    /**
+     * Creates a list of range options used in filter select list
+     * used in com_users on users view
+     *
+     * @return  array
+     *
+     * @since   2.5
+     */
+    public static function getRangeOptions()
+    {
+        $options = array(
+            JHtml::_('select.option', 'today', JText::_('COM_EASYSDI_SHOP_OPTION_RANGE_TODAY')),
+            JHtml::_('select.option', 'past_week', JText::_('COM_EASYSDI_SHOP_OPTION_RANGE_PAST_WEEK')),
+            JHtml::_('select.option', 'past_1month', JText::_('COM_EASYSDI_SHOP_OPTION_RANGE_PAST_1MONTH')),
+            JHtml::_('select.option', 'past_3month', JText::_('COM_EASYSDI_SHOP_OPTION_RANGE_PAST_3MONTH')),
+            JHtml::_('select.option', 'past_6month', JText::_('COM_EASYSDI_SHOP_OPTION_RANGE_PAST_6MONTH')),
+            JHtml::_('select.option', 'past_year', JText::_('COM_EASYSDI_SHOP_OPTION_RANGE_PAST_YEAR')),
+            JHtml::_('select.option', 'post_year', JText::_('COM_EASYSDI_SHOP_OPTION_RANGE_POST_YEAR')),
+        );
+        return $options;
+    }
 }
