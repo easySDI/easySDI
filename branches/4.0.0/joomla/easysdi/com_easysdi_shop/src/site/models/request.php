@@ -230,11 +230,14 @@ class Easysdi_shopModelRequest extends JModelForm {
                 $folder = $app->getParams('com_easysdi_shop')->get('orderresponseFolder');
                 $orderdiffusion->size = $files['file'][$diffusion_id][0]['size'];
                 $orderdiffusion->file = $files['file'][$diffusion_id][0]['name'];
-                mkdir($folder . '/' . $id . '/' . $diffusion_id, 0777, true);
+                
+				mkdir(JPATH_BASE. '/' .$folder . '/' . $id . '/' . $diffusion_id, 0777, true);
                 $file = $files['file'][$diffusion_id][0]['tmp_name'];
-                $newfile = $folder . '/' . $id . '/' . $diffusion_id . '/' . $files['file'][$diffusion_id][0]['name'];
+                
+                $newfile = JPATH_BASE. '/' .$folder . '/' . $id . '/' . $diffusion_id . '/' . $files['file'][$diffusion_id][0]['name'];
                 if (!move_uploaded_file($file, $newfile)):
-                    JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_REQUEST_COPY_FILE_ERROR_MESSAGE'), 'error');
+                    
+                    JFactory::getApplication()->enqueueMessage(JText::_(JPATH_BASE. '/' .'COM_EASYSDI_SHOP_REQUEST_COPY_FILE_ERROR_MESSAGE'), 'error');
                     JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_shop&view=request&id=' . $id, false));
                     return false;
                 endif;                
@@ -253,7 +256,7 @@ class Easysdi_shopModelRequest extends JModelForm {
         $query->select('COUNT(*)')
                 ->from('#__sdi_order_diffusion')
                 ->where('order_id = ' . (int) $id)
-                ->where('productstate_id = 2');
+                ->where('productstate_id = 3');
         $db->setQuery($query);
         $orderdone = $db->loadResult();
 

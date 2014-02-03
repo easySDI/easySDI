@@ -14,6 +14,7 @@ JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('formbehavior.chosen', 'select');
 JHtml::_('behavior.calendar');
+JHtml::_('behavior.modal');
 
 JText::script('COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK');
 JText::script('COM_EASYSDI_CATALOGE_METADATA_SAVE_WARNING');
@@ -109,7 +110,7 @@ $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/sy
     js('document').ready(function() {
 
 <?php if ($this->params->get('editmetadatafieldsetstate') == "allopen"): ?>
-            allopen();
+            Joomla.submitbutton('metadata.toggle');
 <?php endif; ?>
 
 <?php

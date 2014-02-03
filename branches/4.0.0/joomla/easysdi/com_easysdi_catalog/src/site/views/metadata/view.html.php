@@ -143,6 +143,7 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         switch ($metadata->state) {
             case sdiMetadata::INPROGRESS:
                 if ($this->user->authorize($this->item->id, sdiUser::metadataeditor)) {
+                    
                     $toolbar->append(JText::_('COM_EASYSDI_CATALOG_PREVIEW_ITEM'), 'previsulisation', 'btn-small', array(JText::_('COM_EASYSDI_CATALOG_PREVIEW_XML_ITEM') => 'metadata.show', JText::_('COM_EASYSDI_CATALOG_PREVIEW_XHTML_ITEM') => 'metadata.preview'), true);
                     $toolbar->append(JText::_('COM_EASYSDI_CATALOG_SAVE_ITEM'), 'enregistrer', 'btn-small', array(JText::_('COM_EASYSDI_CATALOG_SAVE_AND_CONTINUE_ITEM') => 'metadata.saveAndContinue', JText::_('COM_EASYSDI_CATALOG_SAVE_AND_CLOSE_ITEM') => 'metadata.save'), true);
                     $toolbar->append(JText::_('COM_EASYSDI_CATALOG_VALIDATE_ITEM'), 'Valider', 'btn-small btn-success', array(JText::_('COM_EASYSDI_CATALOG_VALIDATE_ITEM') => 'metadata.control', JText::_('COM_EASYSDI_CATALOG_VALIDATE_AND_SAVE_ITEM') => 'metadata.valid'), true);
@@ -150,10 +151,12 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
                 break;
             case sdiMetadata::VALIDATED:
                 if ($this->user->authorize($this->item->id, sdiUser::metadataresponsible)) {
+                    
                     $toolbar->append(JText::_('COM_EASYSDI_CATALOG_PREVIEW_ITEM'), 'previsulisation', 'btn-small', array(JText::_('COM_EASYSDI_CATALOG_PREVIEW_XML_ITEM') => 'metadata.show', JText::_('COM_EASYSDI_CATALOG_PREVIEW_XHTML_ITEM') => 'metadata.preview'), true);
                     $toolbar->append(JText::_('COM_EASYSDI_CATALOG_SAVE_ITEM'), 'enregistrer', 'btn-small', array(JText::_('COM_EASYSDI_CATALOG_SAVE_AND_CONTINUE_ITEM') => 'metadata.valid', JText::_('COM_EASYSDI_CATALOG_SAVE_AND_CLOSE_ITEM') => 'metadata.validAndClose'), true);
                     $toolbar->append(JText::_('COM_EASYSDI_CATALOG_INPROGRESS_ITEM'), 'inprogress', 'btn-small', 'metadata.inprogress');
                     $toolbar->append(JText::_('COM_EASYSDI_CATALOG_PUBLISH_ITEM'), 'publier', 'btn-small btn-success', array(JText::_('COM_EASYSDI_CATALOG_VALIDATE_ITEM') => 'metadata.control', JText::_('COM_EASYSDI_CATALOG_PUBLISH_AND_SAVE_ITEM') => 'metadata.setPublishDate'), true);
+                    
                 }
                 break;
             case sdiMetadata::PUBLISHED:

@@ -401,7 +401,8 @@
                         sdi/plugins/SearchCatalog.js,
                         sdi/plugins/LayerDetailSheet.js,
                         sdi/plugins/LayerDownload.js,
-                        sdi/plugins/LayerOrder.js" />
+                        sdi/plugins/LayerOrder.js,
+                        gxp/plugins/OLSource.js" />
         </concat>
     </target>
 	

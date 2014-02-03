@@ -34,6 +34,7 @@ INSERT INTO `#__sdi_namespace` VALUES ('1', '6df1fcd1-0a57-8b74-cd21-354dc5ef0b3
 INSERT INTO `#__sdi_namespace` VALUES ('2', '016318b2-29ec-3a74-c161-14aa1b1d3b97', 'gco', '356', '2013-06-21 12:12:47', null, null, '2', '1', '0', '0000-00-00 00:00:00', 'gco', 'gco', 'http://www.isotc211.org/2005/gco', '1', '1', '0');
 INSERT INTO `#__sdi_namespace` VALUES ('3', '3e31cc00-8fa3-97a4-8510-dac7e4bac992', 'gml', '356', '2013-06-21 12:12:47', null, null, '3', '1', '0', '0000-00-00 00:00:00', 'gml', 'gml', 'http://www.opengis.net/gml', '1', '1', '0');
 INSERT INTO `#__sdi_namespace` VALUES ('4', 'd4b19594-af15-0b44-516b-22284be8dc66', 'sdi', '356', '2013-06-21 12:12:47', null, null, '4', '1', '0', '0000-00-00 00:00:00', 'sdi', 'sdi', 'http://www.easysdi.org/2011/sdi', '1', '1', '0');
+INSERT INTO `#__sdi_namespace` VALUES ('5', 'd84c3757-6471-49ed-a109-c8cef52840a8', 'catalog', '356', '2013-06-21 12:12:47', null, null, '5', '1', '0', '0000-00-00 00:00:00', 'catalog', 'catalog', 'http://www.easysdi.org/2011/sdi/catalog', '1', '1', '0');
 
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('1', '1', '1', 'guid', '([A-Z0-9]{8}|-|[A-Z0-9]{4}|-|[A-Z0-9]{4}|-|[A-Z0-9]{4}|-|[A-Z0-9]{12})', 'CharacterString', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('2', '2', '1', 'text', '', 'CharacterString', '2','1');
@@ -41,7 +42,7 @@ INSERT INTO `#__sdi_sys_stereotype` VALUES ('3', '3', '1', 'locale', '', null, n
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('4', '4', '1', 'number', '[0-9.-]', 'Decimal', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('5', '5', '1', 'date', '([0-9]{4}-[0-9]{2}-[0-9]{2})', 'Date', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('6', '6', '1', 'list', '', null, null,'1');
-INSERT INTO `#__sdi_sys_stereotype` VALUES ('7', '7', '1', 'link', '#^http://[w-]+[w.-]+.[a-zA-Z]{2,6}#i', 'URL', '1','1');
+INSERT INTO `#__sdi_sys_stereotype` VALUES ('7', '7', '1', 'link', '#^http:////[w-]+[w.-]+.[a-zA-Z]{2,6}#i', 'URL', '1','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('8', '8', '1', 'datetime', '([0-9]{4}-[0-9]{2}-[0-9]{2})', 'DateTime', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('9', '9', '1', 'textchoice', '', 'CharacterString', '2','1');
 INSERT INTO `#__sdi_sys_stereotype` VALUES ('10', '10', '1', 'localechoice', '', null, null,'1');
@@ -104,36 +105,3 @@ INSERT INTO `#__sdi_sys_topiccategory` VALUES ('19', '19', '1', 'utilitiesCommun
 INSERT INTO `#__sdi_sys_relationscope` VALUES ('1', '1', '1', 'editable');
 INSERT INTO `#__sdi_sys_relationscope` VALUES ('2', '2', '1', 'visible');
 INSERT INTO `#__sdi_sys_relationscope` VALUES ('3', '3', '1', 'hidden');
-
-INSERT INTO `#__sdi_language` VALUES ('1', '0', '1', 'العربية', 'ar-DZ', 'ar', 'ara', 'ar', 'DZ');
-INSERT INTO `#__sdi_language` VALUES ('3', '0', '1', 'български език', 'bg-BG', 'bg', 'bul', 'bg', 'BG');
-INSERT INTO `#__sdi_language` VALUES ('4', '0', '1', 'català', 'ca-ES', 'ca', 'cat', 'ca', 'ES');
-INSERT INTO `#__sdi_language` VALUES ('5', '0', '1', 'čeština', 'cs-CZ', 'cs', 'ces', 'cs', 'CZ');
-INSERT INTO `#__sdi_language` VALUES ('6', '0', '1', 'dansk', 'da-DK', 'da', 'dan', 'da', 'DK');
-INSERT INTO `#__sdi_language` VALUES ('7', '0', '1', 'Deutsch', 'de-DE', 'de', 'deu', 'de', 'DE');
-INSERT INTO `#__sdi_language` VALUES ('8', '0', '1', 'ελληνικά', 'el-GR', 'el', 'ell', 'el', 'GR');
-INSERT INTO `#__sdi_language` VALUES ('9', '0', '1', 'English (UK)', 'en-GB', 'en', 'eng', 'en', 'GB');
-INSERT INTO `#__sdi_language` VALUES ('10', '0', '1', 'English (US)', 'en-US', 'en-US', 'eng', 'en', 'US');
-INSERT INTO `#__sdi_language` VALUES ('11', '0', '1', 'español', 'es-ES', 'es', 'spa', 'es', 'ES');
-INSERT INTO `#__sdi_language` VALUES ('12', '0', '1', 'eesti', 'et-EE', 'et', 'est', 'et', 'EE');
-INSERT INTO `#__sdi_language` VALUES ('13', '0', '1', 'euskara', 'eu-ES', 'eu', 'eus', 'eu', 'ES');
-INSERT INTO `#__sdi_language` VALUES ('14', '0', '1', 'suomi', 'fi-FI', 'fi', 'fin', 'fi', 'FI');
-INSERT INTO `#__sdi_language` VALUES ('15', '0', '1', 'Français', 'fr-FR', 'fr', 'fra', 'fr', 'FR');
-INSERT INTO `#__sdi_language` VALUES ('16', '0', '1', 'Gaeilge', 'ga-IE', 'ga', 'gle', 'ga', 'IE');
-INSERT INTO `#__sdi_language` VALUES ('17', '0', '1', 'hrvatski jezik', 'hr-HR', 'hr', 'hrv', 'hr', 'HR');
-INSERT INTO `#__sdi_language` VALUES ('18', '0', '1', 'magyar', 'hu-HU', 'hu', 'hun', 'hu', 'HU');
-INSERT INTO `#__sdi_language` VALUES ('19', '0', '1', 'italiano', 'it-IT', 'it', 'ita', 'it', 'IT');
-INSERT INTO `#__sdi_language` VALUES ('20', '0', '1', 'lietuvių kalba', 'lt-LT', 'lt', 'lit', 'lt', 'LT');
-INSERT INTO `#__sdi_language` VALUES ('21', '0', '1', 'latviešu valoda', 'lv-LV', 'lv', 'lav', 'lv', 'LV');
-INSERT INTO `#__sdi_language` VALUES ('22', '0', '1', 'Malti', 'mt-MT', 'mt', 'mlt', 'mt', 'MT');
-INSERT INTO `#__sdi_language` VALUES ('23', '0', '1', 'Nederlands', 'nl-NL', 'nl', 'nld', 'nl', 'NL');
-INSERT INTO `#__sdi_language` VALUES ('24', '0', '1', 'Norsk', 'no-NO', 'no', 'nor', 'no', 'NO');
-INSERT INTO `#__sdi_language` VALUES ('25', '0', '1', 'język polski', 'pl-PL', 'pl', 'pol', 'pl', 'PL');
-INSERT INTO `#__sdi_language` VALUES ('26', '0', '1', 'português', 'pt-PT', 'pt', 'por', 'pt', 'PT');
-INSERT INTO `#__sdi_language` VALUES ('27', '0', '1', 'română', 'ro-RO', 'ro', 'ron', 'ro', 'RO');
-INSERT INTO `#__sdi_language` VALUES ('28', '0', '1', 'русский язык', 'ru-RU', 'ru', 'rus', 'ru', 'RU');
-INSERT INTO `#__sdi_language` VALUES ('29', '0', '1', 'slovenčina', 'sk-SK', 'sk', 'slk', 'sk', 'SK');
-INSERT INTO `#__sdi_language` VALUES ('30', '0', '1', 'Svenska', 'sv-SE', 'sv', 'swe', 'sv', 'SE');
-INSERT INTO `#__sdi_language` VALUES ('31', '0', '1', 'Türkçe', 'tr-TR', 'tr', 'tur', 'tr', 'TR');
-INSERT INTO `#__sdi_language` VALUES ('32', '0', '1', 'українська мова', 'uk-UA', 'uk', 'ukr', 'uk', 'UA');
-INSERT INTO `#__sdi_language` VALUES ('33', '0', '1', 'Chinese', 'zh-CN', 'zh-CN', 'zho', 'zh', 'CN');

@@ -284,15 +284,22 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $update = $this->structure->getElementsByTagNameNS($this->cswUri, 'Update')->item(0);
 
+        $lang = JFactory::getLanguage();
+        
         $cswm = new cswmetadata();
-
+        $cswm->init($update->firstChild);
+        $extend = $cswm->extend('', '', 'editor', 1, 'fr-FR');
+        
         $response = array();
         $response['success'] = true;
-        $response['xml'] = '<div class="well">' . $cswm->applyXSL('', '', 'editor',$update->firstChild) . '</div>';
+        $response['guid'] = $_POST['jform']['guid'];
+        
+        $this->session->set($_POST['jform']['guid'], '<div class="well">' . $cswm->applyXSL('', '', 'editor',null) . '</div>');
+        
         echo json_encode($response);
         die();
     }
-
+    
     public function saveAndContinue() {
         $this->save(null, true, true);
     }
@@ -580,6 +587,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * @return string 
      */
     private function getHref($guid) {
+
         $query = $this->db->getQuery(true);
         $query->select('m.guid ,ns.`prefix`, rt.fragment');
         $query->from('#__sdi_resource as r');
@@ -698,8 +706,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         }
     }
     
-    private function removeCatalogNS() {
+    private function removeCatalogNS() {;
         $attributeNames = array('id', 'dbid', 'childtypeId', 'index', 'lowerbound', 'upperbound', 'rendertypeId', 'stereotypeId', 'relGuid', 'relid', 'maxlength', 'readonly', 'exist', 'resourcetypeId', 'relationId', 'label', 'boundingbox', 'map', 'level');
+
         foreach ($this->domXpathStr->query('//*') as $element) {
             foreach ($attributeNames as $attributeName) {
                 $element->removeAttributeNS($this->catalog_uri, $attributeName);

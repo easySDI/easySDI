@@ -37,8 +37,6 @@ function loadPolygonPerimeter(withdisplay) {
     }
 }
 
-
-
 var selectLayer;
 
 function loadWfsPerimeter() {

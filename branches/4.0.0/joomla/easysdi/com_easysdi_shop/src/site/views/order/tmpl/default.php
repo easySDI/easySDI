@@ -104,13 +104,16 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                                         </div>
                                                     </div>
                                                     <?php if ($extraction->productstate_id == 1) : ?>
-                                                        <div class="row-fluid diffusion-order-result">
-                                                            <div class="span2">
+                                                        <div class="diffusion-order-result">
+                                                            <div class="span5">
                                                                 <?php if (!empty($extraction->file)) : ?>
-                                                                    <a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=<?php echo $extraction->id; ?>&order=<?php echo $this->item->id; ?>" class="btn btn-success btn-mini pull-left" onClick=""><i class="icon-white icon-flag-2"></i></a>
+                                                                    <a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id=<?php echo $extraction->id; ?>&order=<?php echo $this->item->id; ?>" class="btn btn-success" onClick="">
+                                                                        <i class="icon-white icon-flag-2"></i> 
+                                                                        <?php echo $extraction->name; ?>
+                                                                    </a>
                                                                 <?php endif; ?>
                                                             </div>
-                                                            <div class="span8">
+                                                            <div class="span5">
                                                                 <div class="container-fluid">
                                                                     <div class="row-fluid">
                                                                         <div class="span2 order-edit-label" >

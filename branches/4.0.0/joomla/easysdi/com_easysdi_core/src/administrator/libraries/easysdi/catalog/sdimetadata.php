@@ -36,6 +36,10 @@ class sdiMetadata extends cswmetadata {
     const PUBLISHED = 3;
     const ARCHIVED = 4;
     const TRASHED = 5;
+    const sdi_uri = 'http://www.easysdi.org/2011/sdi';
+    const xmlns_uri = 'http://www.w3.org/2000/xmlns/';
+    const csw_uri = 'http://www.opengis.net/cat/csw/2.0.2/';
+    const ogc_uri = 'http://www.opengis.net/ogc';
 
     /**
      * 
@@ -106,19 +110,19 @@ class sdiMetadata extends cswmetadata {
         //Create metadata XML
         $this->dom = new DOMDocument('1.0', 'utf-8');
 
-        $transaction = $this->dom->createElement('csw:Transaction');
-        $transaction->setAttribute('xmlns:csw', 'http://www.opengis.net/cat/csw/2.0.2/');
-        $transaction->setAttribute('xmlns:ogc', 'http://www.opengis.net/ogc');
+        $transaction = $this->dom->createElementNS(self::csw_uri, 'csw:Transaction');
+        $transaction->setAttributeNS(self::xmlns_uri, 'xmlns:csw', 'http://www.opengis.net/cat/csw/2.0.2/');
+        $transaction->setAttributeNS(self::xmlns_uri, 'xmlns:ogc', 'http://www.opengis.net/ogc');
         $transaction->setAttribute('service', "CSW");
         $transaction->setAttribute('version', "2.0.2");
 
-        $insert = $this->dom->createElement('csw:Insert');
+        $insert = $this->dom->createElementNS(self::csw_uri, 'csw:Insert');
 
         $root = $this->dom->createElement($rootclass->isocode);
-        $root->setAttribute('xmlns:gmd', 'http://www.isotc211.org/2005/gmd');
-        $root->setAttribute('xmlns:gco', 'http://www.isotc211.org/2005/gco');
-        $root->setAttribute('xmlns:gml', 'http://www.opengis.net/gml');
-        $root->setAttribute('xmlns:sdi', 'http://www.easysdi.org/2011/sdi');
+        $root->setAttributeNS(self::xmlns_uri, 'xmlns:gmd', 'http://www.isotc211.org/2005/gmd');
+        $root->setAttributeNS(self::xmlns_uri, 'xmlns:gco', 'http://www.isotc211.org/2005/gco');
+        $root->setAttributeNS(self::xmlns_uri, 'xmlns:gml', 'http://www.opengis.net/gml');
+        $root->setAttributeNS(self::xmlns_uri, 'xmlns:sdi', 'http://www.easysdi.org/2011/sdi');
 
 
         $identifier = $this->dom->createElement($attributeIdentifier->attribute_isocode);
@@ -158,7 +162,7 @@ class sdiMetadata extends cswmetadata {
      * 
      */
     public function update($xml) {
-        
+
         $reponse = $this->CURLRequest('POST', $this->catalogurl, $xml);
         $dom = new DOMDocument();
         $dom->loadXML($reponse);
@@ -167,7 +171,7 @@ class sdiMetadata extends cswmetadata {
         if (isset($totalUpdated)) {
             if ($totalUpdated->nodeValue == 1) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         } else {
@@ -183,24 +187,24 @@ class sdiMetadata extends cswmetadata {
         //Create metadata XML
         $this->dom = new DOMDocument('1.0', 'utf-8');
 
-        $transaction = $this->dom->createElement('csw:Transaction');
-        $transaction->setAttribute('xmlns:csw', 'http://www.opengis.net/cat/csw/2.0.2');
-        $transaction->setAttribute('xmlns:ogc', 'http://www.opengis.net/ogc');
+        $transaction = $this->dom->createElementNS(self::csw_uri,'csw:Transaction');
+        //$transaction->setAttributeNS(self::xmlns_uri,'xmlns:csw', 'http://www.opengis.net/cat/csw/2.0.2');
+        //$transaction->setAttributeNS(self::xmlns_uri,'xmlns:ogc', 'http://www.opengis.net/ogc');
         $transaction->setAttribute('service', "CSW");
         $transaction->setAttribute('version', "2.0.2");
 
-        $delete = $this->dom->createElement('csw:Delete');
+        $delete = $this->dom->createElementNS(self::csw_uri,'csw:Delete');
 
-        $constraint = $this->dom->createElement('csw:Constraint');
+        $constraint = $this->dom->createElementNS(self::csw_uri,'csw:Constraint');
         $constraint->setAttribute('version', '1.0.0');
 
-        $filter = $this->dom->createElement('ogc:Filter');
-        $propertyEqual = $this->dom->createElement('ogc:PropertyIsLike');
+        $filter = $this->dom->createElementNS(self::ogc_uri,'ogc:Filter');
+        $propertyEqual = $this->dom->createElementNS(self::ogc_uri,'ogc:PropertyIsLike');
         $propertyEqual->setAttribute('wildCard', '%');
         $propertyEqual->setAttribute('singleChar', '_');
         $propertyEqual->setAttribute('escape', '/');
-        $propertyName = $this->dom->createElement('ogc:PropertyName', JComponentHelper::getParams('com_easysdi_catalog')->get('idogcsearchfield'));
-        $literal = $this->dom->createElement('ogc:Literal', $this->metadata->guid);
+        $propertyName = $this->dom->createElementNS(self::ogc_uri,'ogc:PropertyName', JComponentHelper::getParams('com_easysdi_catalog')->get('idogcsearchfield'));
+        $literal = $this->dom->createElementNS(self::ogc_uri,'ogc:Literal', $this->metadata->guid);
 
         $propertyEqual->appendChild($propertyName);
         $propertyEqual->appendChild($literal);
@@ -244,24 +248,24 @@ class sdiMetadata extends cswmetadata {
         $metadata = $xpathmetadata->query($this->getMetadataRootClass()->isocode)->item(0);
 
         $newdom = new DOMDocument('1.0', 'utf-8');
-        $transaction = $newdom->createElement('csw:Transaction');
-        $transaction->setAttribute('xmlns:csw', 'http://www.opengis.net/cat/csw/2.0.2');
-        $transaction->setAttribute('xmlns:ogc', 'http://www.opengis.net/ogc');
+        $transaction = $newdom->createElementNS(self::csw_uri,'csw:Transaction');
+        $transaction->setAttributeNS(self::xmlns_uri,'xmlns:csw', 'http://www.opengis.net/cat/csw/2.0.2');
+        $transaction->setAttributeNS(self::xmlns_uri,'xmlns:ogc', 'http://www.opengis.net/ogc');
         $transaction->setAttribute('service', "CSW");
         $transaction->setAttribute('version', "2.0.2");
-        $update = $newdom->createElement('csw:Update');
+        $update = $newdom->createElementNS(self::csw_uri,'csw:Update');
         $update->appendChild($newdom->importNode($metadata, true));
 
-        $constraint = $newdom->createElement('csw:Constraint');
+        $constraint = $newdom->createElementNS(self::csw_uri,'csw:Constraint');
         $constraint->setAttribute('version', '1.0.0');
 
-        $filter = $newdom->createElement('ogc:Filter');
-        $propertyEqual = $newdom->createElement('ogc:PropertyIsLike');
+        $filter = $newdom->createElementNS(self::ogc_uri,'ogc:Filter');
+        $propertyEqual = $newdom->createElementNS(self::ogc_uri,'ogc:PropertyIsLike');
         $propertyEqual->setAttribute('wildCard', '%');
         $propertyEqual->setAttribute('singleChar', '_');
         $propertyEqual->setAttribute('escape', '/');
-        $propertyName = $newdom->createElement('ogc:PropertyName', JComponentHelper::getParams('com_easysdi_catalog')->get('idogcsearchfield'));
-        $literal = $newdom->createElement('ogc:Literal', $this->metadata->guid);
+        $propertyName = $newdom->createElementNS(self::ogc_uri,'ogc:PropertyName', JComponentHelper::getParams('com_easysdi_catalog')->get('idogcsearchfield'));
+        $literal = $newdom->createElementNS(self::ogc_uri,'ogc:Literal', $this->metadata->guid);
 
         $propertyEqual->appendChild($propertyName);
         $propertyEqual->appendChild($literal);
@@ -304,7 +308,6 @@ class sdiMetadata extends cswmetadata {
         endif;
     }
 
-    
     /**
      * 
      * @param DOMDocument $dom The "DOM" in which to add or update the platform tag.
@@ -349,12 +352,12 @@ class sdiMetadata extends cswmetadata {
         $infrastructureID = JComponentHelper::getParams('com_easysdi_core')->get('infrastructureID');
 
         //Platform
-        $platform = $dom->createElement('sdi:platform');
+        $platform = $dom->createElementNS(self::sdi_uri, 'sdi:platform');
         $platform->setAttribute('guid', $infrastructureID);
         $platform->setAttribute('harvested', 'false');
 
         //Resource
-        $resource = $dom->createElement('sdi:resource');
+        $resource = $dom->createElementNS(self::sdi_uri, 'sdi:resource');
         $resource->setAttribute('guid', $this->resource->guid);
         $resource->setAttribute('alias', $this->resource->alias);
         $resource->setAttribute('name', $this->resource->name);
@@ -363,7 +366,7 @@ class sdiMetadata extends cswmetadata {
         $resource->setAttribute('scope', $accessscope);
 
         //Metadata
-        $metadata = $dom->createElement('sdi:metadata');
+        $metadata = $dom->createElementNS(self::sdi_uri, 'sdi:metadata');
         $metadata->setAttribute('lastVersion', 'true');
         $metadata->setAttribute('guid', $this->metadata->guid);
         $metadata->setAttribute('created', $this->metadata->created);
@@ -378,7 +381,7 @@ class sdiMetadata extends cswmetadata {
                 ->where('state = 1');
         $this->db->setQuery($query);
         $diffusionobj = $this->db->loadObject();
-        $diffusion = $dom->createElement('sdi:diffusion');
+        $diffusion = $dom->createElementNS(self::sdi_uri, 'sdi:diffusion');
         if (!empty($diffusionobj)):
             $isfree = ($diffusionobj->pricing_id == 1 ) ? 'true' : 'false';
             $isDownladable = ($diffusionobj->hasdownload == 1 ) ? 'true' : 'false';
@@ -392,7 +395,7 @@ class sdiMetadata extends cswmetadata {
             $diffusion->setAttribute('isDownloadable', 'false');
             $diffusion->setAttribute('isOrderable', 'false');
         endif;
-        
+
         //Visualization
         $query = $this->db->getQuery(true)
                 ->select('id, maplayer_id, accessscope_id')
@@ -401,7 +404,7 @@ class sdiMetadata extends cswmetadata {
                 ->where('state = 1');
         $this->db->setQuery($query);
         $viewobj = $this->db->loadObject();
-        $view = $dom->createElement('sdi:visualization');
+        $view = $dom->createElementNS(self::sdi_uri, 'sdi:visualization');
         if (!empty($viewobj) && !empty($viewobj->maplayer_id)):
             $view->setAttribute('isViewable', 'true');
         else:
@@ -412,14 +415,14 @@ class sdiMetadata extends cswmetadata {
         foreach ($accessscopes as $a) {
             if ($a->organism_id != null):
                 if (!isset($organisms))
-                    $organisms = $dom->createElement('sdi:organisms');
-                $organism = $dom->createElement('sdi:organism');
+                    $organisms = $dom->createElementNS(self::sdi_uri, 'sdi:organisms');
+                $organism = $dom->createElementNS(self::sdi_uri, 'sdi:organism');
                 $organism->setAttribute('guid', $a->o_guid);
                 $organisms->appendChild($organism);
             elseif ($a->user_id != null):
                 if (!isset($users))
-                    $users = $dom->createElement('sdi:users');
-                $user = $dom->createElement('sdi:user');
+                    $users = $dom->createElementNS(self::sdi_uri, 'sdi:users');
+                $user = $dom->createElementNS(self::sdi_uri, 'sdi:user');
                 $user->setAttribute('guid', $a->u_guid);
                 $users->appendChild($user);
             endif;

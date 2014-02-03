@@ -62,7 +62,7 @@ if (!empty($this->extra_sidebar)) {
 <?php else : ?>
 	<div id="j-main-container">
 <?php endif;?>
-    
+
 		<div id="filter-bar" class="btn-toolbar">
 			<div class="filter-search btn-group pull-left">
 				<label for="filter_search" class="element-invisible"><?php echo JText::_('JSEARCH_FILTER');?></label>
@@ -91,7 +91,7 @@ if (!empty($this->extra_sidebar)) {
 					<?php echo JHtml::_('select.options', $sortFields, 'value', 'text', $listOrder);?>
 				</select>
 			</div>
-		</div>        
+		</div>
 		<div class="clearfix"> </div>
 		<table class="table table-striped" id="orderList">
 			<thead>
@@ -104,50 +104,34 @@ if (!empty($this->extra_sidebar)) {
 					<th width="1%" class="hidden-phone">
 						<input type="checkbox" name="checkall-toggle" value="" title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
 					</th>
-                <?php if (isset($this->items[0]->state)): ?>
+                <?php /*if (isset($this->items[0]->state)): ?>
 					<th width="1%" class="nowrap center">
 						<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
 					</th>
-                <?php endif; ?>
-                    
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SHOP_ORDERS_GUID', 'a.guid', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SHOP_ORDERS_ALIAS', 'a.alias', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SHOP_ORDERS_CREATED_BY', 'a.created_by', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SHOP_ORDERS_CREATED', 'a.created', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SHOP_ORDERS_MODIFIED_BY', 'a.modified_by', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SHOP_ORDERS_MODIFIED', 'a.modified', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SHOP_ORDERS_NAME', 'a.name', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SHOP_ORDERS_ACCESS', 'a.access', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SHOP_ORDERS_ASSET_ID', 'a.asset_id', $listDirn, $listOrder); ?>
-				</th>
-                    
-                    
+                <?php endif;*/?>
+
+                <th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SHOP_ORDERS_NAME', 'a.name', $listDirn, $listOrder); ?></th>
+                <th class='left'><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_ORDERTYPE'); ?></th>
+                <th class='left'><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_STATE'); ?></th>
+                <th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SHOP_ORDERS_USER', 'user', $listDirn, $listOrder); ?></th>
+                <th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SHOP_ORDERS_CREATED', 'a.created', $listDirn, $listOrder); ?></th>
+                <th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SHOP_ORDERS_COMPLETED', 'a.completed', $listDirn, $listOrder); ?></th>
+                <th class='left'><?php echo JText::_('COM_EASYSDI_SHOP_ORDERS_PRODUCTS'); ?></th>
+
+
+                <?php
+                /*?>
+
                 <?php if (isset($this->items[0]->id)): ?>
 					<th width="1%" class="nowrap center hidden-phone">
 						<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
 					</th>
                 <?php endif; ?>
+				*/ ?>
 				</tr>
 			</thead>
 			<tfoot>
-                <?php 
+                <?php
                 if(isset($this->items[0])){
                     $colspan = count(get_object_vars($this->items[0]));
                 }
@@ -170,7 +154,7 @@ if (!empty($this->extra_sidebar)) {
                 $canChange	= $user->authorise('core.edit.state',	'com_easysdi_shop');
 				?>
 				<tr class="row<?php echo $i % 2; ?>">
-                    
+
                 <?php if (isset($this->items[0]->ordering)): ?>
 					<td class="order nowrap center hidden-phone">
 					<?php if ($canChange) :
@@ -194,63 +178,61 @@ if (!empty($this->extra_sidebar)) {
 					<td class="center hidden-phone">
 						<?php echo JHtml::_('grid.id', $i, $item->id); ?>
 					</td>
-                <?php if (isset($this->items[0]->state)): ?>
+                <?php /* if (isset($this->items[0]->state)): ?>
 					<td class="center">
 						<?php echo JHtml::_('jgrid.published', $item->state, $i, 'orders.', $canChange, 'cb'); ?>
 					</td>
-                <?php endif; ?>
-                    
-				<td>
-				<?php if (isset($item->checked_out) && $item->checked_out) : ?>
-					<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'orders.', $canCheckin); ?>
-				<?php endif; ?>
-				<?php if ($canEdit) : ?>
-					<a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.edit&id='.(int) $item->id); ?>">
-					<?php echo $this->escape($item->guid); ?></a>
-				<?php else : ?>
-					<?php echo $this->escape($item->guid); ?>
-				<?php endif; ?>
-				</td>
-				<td>
-
-					<?php echo $item->alias; ?>
-				</td>
-				<td>
-
-					<?php echo $item->created_by; ?>
-				</td>
-				<td>
-
-					<?php echo $item->created; ?>
-				</td>
-				<td>
-
-					<?php echo $item->modified_by; ?>
-				</td>
-				<td>
-
-					<?php echo $item->modified; ?>
-				</td>
-				<td>
-
-					<?php echo $item->name; ?>
-				</td>
-				<td>
-
-					<?php echo $item->access; ?>
-				</td>
-				<td>
-
-					<?php echo $item->asset_id; ?>
-				</td>
+                <?php endif; */ ?>
 
 
-                <?php if (isset($this->items[0]->id)): ?>
-					<td class="center hidden-phone">
-						<?php echo (int) $item->id; ?>
-					</td>
-                <?php endif; ?>
-				</tr>
+                    <td>
+                    <?php if (isset($item->checked_out) && $item->checked_out) : ?>
+                    	<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'orders.', $canCheckin); ?>
+                    <?php endif; ?>
+
+                    <?php if ($canEdit) : ?>
+                    	<a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=order.edit&id='.(int) $item->id); ?>">
+                    	<?php echo $this->escape($item->name); ?></a>
+                    <?php else : ?>
+                    	<?php echo $this->escape($item->name); ?>
+                    <?php endif; ?>
+                    </td>
+                    <td><?php
+    	                if ('order'===$item->ordertype) {
+    	                	echo '<i class="icon-cart"></i>&nbsp;';
+    	                }
+                   	 	echo JText::_($item->ordertype);
+                    ?></td>
+                    <td><?php
+                    	if ($item->ordertype_id != 3):
+                    		if ($item->orderstate_id == 1):
+                    			$classlabel = '';
+                    		elseif ($item->orderstate_id == 2):
+                    			$classlabel = '';
+                    		elseif ($item->orderstate_id == 3):
+                    			$classlabel = 'label-success';
+                    		elseif ($item->orderstate_id == 4):
+                    			$classlabel = 'label-warning';
+                    		elseif ($item->orderstate_id == 5):
+                    			$classlabel = 'label-info';
+                    		elseif ($item->orderstate_id == 6):
+                    			$classlabel = 'label-inverse';
+                    		endif;
+                    		?>
+                    		<span class="label <?php echo $classlabel; ?> "><?php
+                    			echo JText::_($item->orderstate);
+                    			?></span><?php
+                    	endif;
+                    ?></td>
+                    <td><?php echo $item->user; ?></td>
+                    <td><?php echo $item->created; ?></td>
+                    <td><?php
+                    	if ('0000-00-00 00:00:00'!=$item->completed)
+                    		echo $item->completed;
+                    	?></td>
+                    <td><?php echo $item->products; ?></td>
+
+               	</tr>
 				<?php endforeach; ?>
 			</tbody>
 		</table>
@@ -261,6 +243,16 @@ if (!empty($this->extra_sidebar)) {
 		<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 	</div>
-</form>        
+</form>
 
-		
+<?php
+ /*
+    // DEBUG
+    echo "<div style='position:absolute; left:5px; top:1500px'>";
+    var_dump($this->items);
+    echo "</div>";
+*/
+?>
+
+</div>
+

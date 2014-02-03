@@ -48,6 +48,10 @@ function reloadFeatures1() {
             );
     polygonLayer.addFeatures([feature]);
 //    app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
+    app.mapPanel.map.zoomToExtent(geometry.getBounds().transform(
+            new OpenLayers.Projection("EPSG:4326"),
+            new OpenLayers.Projection(app.mapPanel.map.projection)
+            ));
     putFeaturesVerticesInHiddenField(feature);
 }
 
@@ -58,18 +62,22 @@ var listenerFeatureDrawToZoom = function(e) {
 function selectPolygon() {
     resetAll();
     selectControl = new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.Polygon, {handlerOptions: {stopDown: 0, stopUp: 0}});
+    
     app.mapPanel.map.addControl(selectControl);
     jQuery('#t-perimeter').val('1');
     jQuery('#t-perimetern').val(Joomla.JText._('FREEPERIMETER', 'Périmètre libre'));
     jQuery('#t-features').val('');
+    toggleSelectControl('selection');
 }
 
 function selectRectangle() {
     resetAll();
     selectControl = new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.RegularPolygon, {handlerOptions: {stopDown: 1, stopUp: 1, irregular: 1}});
+    
     app.mapPanel.map.addControl(selectControl);
     jQuery('#t-perimeter').val('1');
     jQuery('#t-perimetern').val(Joomla.JText._('FREEPERIMETER', 'Périmètre libre'));
     jQuery('#t-features').val('');
+    toggleSelectControl('selection');
 }
 

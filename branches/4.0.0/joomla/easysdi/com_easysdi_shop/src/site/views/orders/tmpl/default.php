@@ -111,7 +111,20 @@ JHtml::_('formbehavior.chosen', 'select');
                             </td>
                             <td >
                                 <?php if ($item->orderstate_id == 5 || $item->orderstate_id == 3): ?>
-                                    <i class="icon-flag-2"></i>
+                                    <div class="btn-group">
+                                    <a class="btn btn-info btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+                                        <i class="icon-flag-2"></i>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                    <?php
+                                        $basket = new sdiBasket();
+                                        $basket->loadOrder($item->id);
+                                        foreach ($basket->extractions as $extraction) {
+                                           echo '<li><a target="RAW" href="index.php?option=com_easysdi_shop&task=order.download&id='.$extraction->id.'&order='.$item->id.'">'.$extraction->name.'</a></li>';
+                                        }
+                                    ?>                                        
+                                    </ul>
+                                    </div>                                   
         <?php endif; ?>
                             </td>
                             <td>

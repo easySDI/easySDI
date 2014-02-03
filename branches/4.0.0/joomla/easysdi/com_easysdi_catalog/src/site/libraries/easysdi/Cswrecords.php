@@ -74,62 +74,63 @@ class Cswrecords extends SearchForm {
 
         $filter = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:Filter');
 
-        $parentAnd = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:And');
-        $or = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:Or');
-        $and = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:And');
+        $and1 = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:And');
+        $and2 = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:And');
+        $and3 = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:And');
+        $and4 = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:And');
+
+        $or1 = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:Or');
 
         foreach ($this->data as $key => $value) {
             $name = explode('_', $key);
 
             if (key_exists($name[0], $this->searchcriteria)) {
-                switch ($this->searchcriteria[$name[0]]->name) {
-                    case 'fulltext':
-                        $parent = $parentAnd;
-                        break;
-                    default:
-                        $parent = $and;
-                        break;
-                }
 
                 switch ($this->data['searchtype']) {
                     case 'simple':
                         if ($this->searchcriteria[$name[0]]->tab_value != 'advanced') {
                             $element = $this->switchOnFieldName($name, $value);
                             if (isset($element)) {
-                                $parent->appendChild($element);
+                                $and3->appendChild($element);
                             }
                         }
                         break;
                     case 'advanced':
                         $element = $this->switchOnFieldName($name, $value);
                         if (isset($element)) {
-                            $parent->appendChild($element);
+                            $and3->appendChild($element);
                         }
                         break;
                 }
             }
         }
 
-        // if resourcetype field is set to none, add all resourcetype to filter
-        if (!key_exists('2_resourcetype', $this->data)) {
-            $and->appendChild($this->getResouceType($this->getAllResourcetype()));
+        $and1->appendChild($and2);
+        if ($and3->hasChildNodes()) {
+            $and2->appendChild($and3);
         }
+        $and2->appendChild($or1);
 
-        $and->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'false'));
-        $or->appendChild($and);
-        if ($this->addHarvested) {
-            $or->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'true'));
-        }
+        $filter->appendChild($and1);
 
-        $parentAnd->appendChild($or);
+        $or1->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'true'));
+        $or1->appendChild($and4);
+
+        $and4->appendChild($this->ogcFilters->getIsEqualTo('harvested', 'false'));
+        $and4->appendChild($this->getResouceType($this->getAllResourcetype()));
 
         $cswfilter = $this->getCswFilter($this->item->id);
 
         if (!empty($cswfilter)) {
-            $parentAnd->appendChild($cswfilter);
+            $and1->appendChild($cswfilter);
         }
 
-        $filter->appendChild($parentAnd);
+        // Permanent criteria
+        $and4->appendChild($this->ogcFilters->getIsEqualTo('metadatastate', 'publish'));
+        $and4->appendChild($this->ogcFilters->getIsLessOrEqual('published', date('Y-m-d')));
+
+        // User and organism filter
+        $and4->appendChild($this->getOrganismBlock());
 
         //Ogc search sorting
         if (!empty($ogcsearchsorting)):
@@ -152,6 +153,9 @@ class Cswrecords extends SearchForm {
         $this->dom->appendChild($getrecords);
 
         $body = $this->dom->saveXML();
+
+		/*echo $body;
+		die();*/
 
         $results = $this->CURLRequest('POST', $catalogurl, $body);
         if (!$results) {
@@ -188,7 +192,9 @@ class Cswrecords extends SearchForm {
      */
     protected function CURLRequest($type, $url, $xmlBody = "") {
         // Get COOKIE as key=value
-        $cookiesList = array();
+
+
+	$cookiesList = array();
         foreach ($_COOKIE as $key => $val) {
             $cookiesList[] = $key . "=" . $val;
         }
@@ -504,6 +510,53 @@ class Cswrecords extends SearchForm {
         }
 
         return $resourcetype;
+    }
+
+    /**
+     * 
+     * @param int $id
+     * @return array
+     */
+    private function getOrganismForUser($id) {
+
+        $query = $this->db->getQuery(true);
+
+        $query->select('u.guid as user_guid, o.guid as organism_guid');
+        $query->from('#__sdi_user u');
+        $query->innerJoin('#__sdi_user_role_organism uro on uro.user_id = u.id');
+        $query->innerJoin('#__sdi_organism o on uro.organism_id = o.id');
+        $query->where('u.user_id = ' . $id);
+
+        $this->db->setQuery($query);
+        $results = $this->db->loadObjectList();
+
+        return $results;
+    }
+
+    private function getOrganismBlock() {
+        $user = JFactory::getUser();
+
+        $or = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:Or');
+        $or->appendChild($this->ogcFilters->getIsEqualTo('scope', 'public'));
+
+        if ($user->id > 0) {
+            $organisms = $this->getOrganismForUser($user->id);
+
+            $and = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:And');
+            $and->appendChild($this->ogcFilters->getIsEqualTo('scope', 'user'));
+            $and->appendChild($this->ogcFilters->getIsEqualTo('sdiuser', $organisms[0]->user_guid));
+            $or->appendChild($and);
+
+            foreach ($organisms as $organism) {
+                $and = $this->dom->createElementNS('http://www.opengis.net/ogc', 'ogc:And');
+                $and->appendChild($this->ogcFilters->getIsEqualTo('scope', 'organism'));
+                $and->appendChild($this->ogcFilters->getIsEqualTo('sdiorganism', $organism->organism_guid));
+
+                $or->appendChild($and);
+            }
+        }
+
+        return $or;
     }
 
 }
