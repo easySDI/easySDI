@@ -65,8 +65,17 @@ class CswMerge {
 
                 $this->import = $dom;
             }
+        
         }
+        
+        // Preserve original fileidentifier
+        $fileidentifierOriginalNode = $this->original->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'fileIdentifier')->item(0);
+        $fileidentifierImportNode = $this->import->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'fileIdentifier')->item(0);
 
+        $fileidentifierImportedNode = $this->import->importNode($fileidentifierOriginalNode, true);
+        
+        $fileidentifierImportNode->parentNode->replaceChild($fileidentifierImportedNode, $fileidentifierImportNode);
+        
         /* Transform the external xml if necessary. */
         if (!empty($importref->xsl4ext)) {
             if ($xmltranform = $this->xslProceed($this->import, $importref->xsl4ext)) {
