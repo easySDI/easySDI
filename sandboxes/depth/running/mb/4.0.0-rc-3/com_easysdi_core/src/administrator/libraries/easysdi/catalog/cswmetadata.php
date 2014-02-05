@@ -585,7 +585,7 @@ class cswmetadata {
         $processor->setParameter("", 'type', $type);
         $processor->setParameter("", 'preview', $preview);
         $html = $processor->transformToDoc($dom);
-        $text = $html->saveXML();
+        $text = $html->saveHTML();
         //Workaround to avoid printf problem with text with a "%", must
         //be changed to "%%".
         $text = str_replace("%", "%%", $text);

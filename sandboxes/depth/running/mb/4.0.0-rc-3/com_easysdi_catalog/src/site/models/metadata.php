@@ -461,7 +461,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                     ';
             $condition = '';
             for ($i = 0; $i < count($v->patterns); $i++) {
-                $js .= 'regex_' . $i . ' = /' . $v->patterns[$i] . '/;
+                $js .= 'regex_' . $i . ' = new RegExp(/' . $v->patterns[$i] . '/);
                         ';
                 $condition .= 'regex_' . $i . '.test(value) && ';
             }
