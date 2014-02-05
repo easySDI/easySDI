@@ -111,6 +111,8 @@ class FormGenerator {
 
             $root->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
 
+            
+            
             $this->structure->appendChild($root);
 
             $this->getChildTree($root);
@@ -588,7 +590,7 @@ class FormGenerator {
      * This method adds the required number of occurrences of a relation.
      */
     private function mergeCsw() {
-
+        
         foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="0"]|//*[@catalog:childtypeId="2"]|//*[@catalog:childtypeId="3"]') as $relation) {
             $xpath = $relation->getNodePath();
             $nbr = $this->domXpathCsw->query('/*' . $xpath)->length;

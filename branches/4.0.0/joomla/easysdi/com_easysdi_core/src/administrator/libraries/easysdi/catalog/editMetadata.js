@@ -67,7 +67,13 @@ js('document').ready(function() {
                     break;
                 case 'save':
                 case 'saveAndContinue':
-                    Joomla.submitform(task, form);
+                    js('.required').removeClass('required').addClass('remove-required');
+                    if (document.formvalidator.isValid(form)) {
+                        Joomla.submitform(task, form);
+                    }else{
+                        js('.remove-required').removeClass('remove-required').addClass('required');
+                        js('html, body').animate({ scrollTop: 0 }, 'slow');
+                    }
                     return true;
                     break;
                 case 'control':

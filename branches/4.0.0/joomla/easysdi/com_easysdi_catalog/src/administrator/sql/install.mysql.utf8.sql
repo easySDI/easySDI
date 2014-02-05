@@ -756,7 +756,7 @@ PRIMARY KEY (`id`) ,
   CONSTRAINT `#__sdi_application_fk1`
     FOREIGN KEY (`resource_id` )
     REFERENCES `#__sdi_resource` (`id` )
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 

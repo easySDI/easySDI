@@ -38,7 +38,7 @@ class sdiMetadata extends cswmetadata {
     const TRASHED = 5;
     const sdi_uri = 'http://www.easysdi.org/2011/sdi';
     const xmlns_uri = 'http://www.w3.org/2000/xmlns/';
-    const csw_uri = 'http://www.opengis.net/cat/csw/2.0.2/';
+    const csw_uri = 'http://www.opengis.net/cat/csw/2.0.2';
     const ogc_uri = 'http://www.opengis.net/ogc';
 
     /**
@@ -111,8 +111,8 @@ class sdiMetadata extends cswmetadata {
         $this->dom = new DOMDocument('1.0', 'utf-8');
 
         $transaction = $this->dom->createElementNS(self::csw_uri, 'csw:Transaction');
-        $transaction->setAttributeNS(self::xmlns_uri, 'xmlns:csw', 'http://www.opengis.net/cat/csw/2.0.2/');
-        $transaction->setAttributeNS(self::xmlns_uri, 'xmlns:ogc', 'http://www.opengis.net/ogc');
+        $transaction->setAttributeNS(self::xmlns_uri, 'xmlns:csw', self::csw_uri);
+        $transaction->setAttributeNS(self::xmlns_uri, 'xmlns:ogc', self::ogc_uri);
         $transaction->setAttribute('service', "CSW");
         $transaction->setAttribute('version', "2.0.2");
 
@@ -188,8 +188,8 @@ class sdiMetadata extends cswmetadata {
         $this->dom = new DOMDocument('1.0', 'utf-8');
 
         $transaction = $this->dom->createElementNS(self::csw_uri,'csw:Transaction');
-        //$transaction->setAttributeNS(self::xmlns_uri,'xmlns:csw', 'http://www.opengis.net/cat/csw/2.0.2');
-        //$transaction->setAttributeNS(self::xmlns_uri,'xmlns:ogc', 'http://www.opengis.net/ogc');
+        $transaction->setAttributeNS(self::xmlns_uri,'xmlns:csw', self::csw_uri);
+        $transaction->setAttributeNS(self::xmlns_uri,'xmlns:ogc', self::ogc_uri);
         $transaction->setAttribute('service', "CSW");
         $transaction->setAttribute('version', "2.0.2");
 
@@ -249,8 +249,8 @@ class sdiMetadata extends cswmetadata {
 
         $newdom = new DOMDocument('1.0', 'utf-8');
         $transaction = $newdom->createElementNS(self::csw_uri,'csw:Transaction');
-        $transaction->setAttributeNS(self::xmlns_uri,'xmlns:csw', 'http://www.opengis.net/cat/csw/2.0.2');
-        $transaction->setAttributeNS(self::xmlns_uri,'xmlns:ogc', 'http://www.opengis.net/ogc');
+        $transaction->setAttributeNS(self::xmlns_uri,'xmlns:csw', self::csw_uri);
+        $transaction->setAttributeNS(self::xmlns_uri,'xmlns:ogc', self::ogc_uri);
         $transaction->setAttribute('service', "CSW");
         $transaction->setAttribute('version', "2.0.2");
         $update = $newdom->createElementNS(self::csw_uri,'csw:Update');
@@ -347,7 +347,16 @@ class sdiMetadata extends cswmetadata {
                 ->where('entity_guid = "' . $this->resource->guid . '"');
         $this->db->setQuery($query);
         $accessscopes = $this->db->loadObjectList();
-
+        
+        // Get the metadatastate
+        $query = $this->db->getQuery(true);
+        $query->select('ms.`value`')
+                ->from('jos_sdi_metadata m')
+                ->innerJoin('jos_sdi_sys_metadatastate ms on ms.id = m.metadatastate_id')
+                ->where('m.id  = '.$this->metadata->id);
+        $this->db->setQuery($query);
+        $metadatastate = $this->db->loadResult();
+        
         //Get the infrastructureID
         $infrastructureID = JComponentHelper::getParams('com_easysdi_core')->get('infrastructureID');
 
@@ -371,7 +380,7 @@ class sdiMetadata extends cswmetadata {
         $metadata->setAttribute('guid', $this->metadata->guid);
         $metadata->setAttribute('created', $this->metadata->created);
         $metadata->setAttribute('published', $this->metadata->published);
-        $metadata->setAttribute('state', 'inprogress');
+        $metadata->setAttribute('state', $metadatastate);
 
         //Diffusion
         $query = $this->db->getQuery(true)
