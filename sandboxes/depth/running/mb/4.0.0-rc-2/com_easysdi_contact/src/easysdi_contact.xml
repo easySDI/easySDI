@@ -2,13 +2,13 @@
 <extension method="upgrade" type="component" version="3.0.0">
   <name>com_easysdi_contact</name>
   <creationDate>14 february 2013</creationDate>
-  <releaseDate>03 février 2014</releaseDate>
+  <releaseDate>05 février 2014</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>4.0.0-rc-1</version>
+  <version>4.0.0-rc-2</version>
   <description />
   <scriptfile>script.php</scriptfile>
   <install>
