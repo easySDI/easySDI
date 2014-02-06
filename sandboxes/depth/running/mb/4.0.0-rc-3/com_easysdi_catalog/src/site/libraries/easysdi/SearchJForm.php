@@ -28,6 +28,7 @@ class SearchJForm extends SearchForm {
         $this->simple->setAttribute('addfieldpath', JPATH_COMPONENT . '/models/fields');
         $this->advanced->setAttribute('addfieldpath', JPATH_COMPONENT . '/models/fields');
         $this->hidden->setAttribute('addfieldpath', JPATH_COMPONENT . '/models/fields');
+        
     }
 
     public function getForm() {
@@ -463,5 +464,7 @@ class SearchJForm extends SearchForm {
             return '';
         }
     }
+
+    
 
 }
