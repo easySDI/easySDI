@@ -480,7 +480,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $titles[$defaultLang->id] = $default->nodeValue;
 
         foreach ($supportedLangs as $supportedLang) {
-            $i18nlang = $this->domXpathStr->query($metadatatitlexpath . '/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale="#' . $supportedLang->iso3166 . '"]')->item(0);
+            $i18nlang = $this->domXpathStr->query($metadatatitlexpath . '/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale="#' . $supportedLang->{'iso3166-1-alpha2'} . '"]')->item(0);
 
             if (isset($i18nlang)) {
                 $titles[$supportedLang->id] = $i18nlang->nodeValue;
@@ -625,7 +625,23 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $headers = array();
 
         $language = $this->structure->createElementNS($this->nsArray['gmd'], 'language');
-        $characterString = $this->structure->createElementNS($this->nsArray['gco'], 'CharacterString', $languageid->iso639);
+        
+        $isolanguageid = JComponentHelper::getParams('com_easysdi_catalog')->get('isolanguage', 2);
+        switch ($isolanguageid) {
+            case 1:
+                $isolanguage = $languageid->{'iso639-1'};
+                break;
+            case 2:
+                $isolanguage = $languageid->{'iso639-2B'};
+                break;
+            case 3:
+                $isolanguage = $languageid->{'iso639-2T'};
+                break;
+            default:
+                $isolanguage = $languageid->{'iso639-2B'};
+                break;
+        }
+        $characterString = $this->structure->createElementNS($this->nsArray['gco'], 'CharacterString', $isolanguage);
         $language->appendChild($characterString);
         $headers[] = $language;
 
@@ -643,8 +659,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $characterEncodingSetCode->setAttribute('codeListeValue', $encoding);
         $characterEncodingSetCode->setAttribute('codeList', '#MD_CharacterSetCode');
         $characterEncoding->appendChild($characterEncodingSetCode);
+        $addLocale = false;
         foreach ($this->ldao->getSupported() as $key => $value) {
-            if ($value->{'iso639-2T'} != $languageid->iso639) {
+            if ($value->{'iso639-2T'} != $languageid->{'iso639-2T'}) {
                 $pt_locale = $this->structure->createElementNS($this->nsArray['gmd'], 'PT_Locale');
                 $pt_locale->setAttribute('id', $key);
 
@@ -659,10 +676,13 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                 $pt_locale->appendChild($characterEncoding);
 
                 $locale->appendChild($pt_locale);
+                $addLocale = true;
             }
         }
 
-        $headers[] = $locale;
+        if($addLocale){
+            $headers[] = $locale;
+        }
 
         return $headers;
     }
