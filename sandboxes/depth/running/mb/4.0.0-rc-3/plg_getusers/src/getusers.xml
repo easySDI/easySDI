@@ -3,13 +3,13 @@
   <name>plg_easysdi_admin_info_getusers</name>
   <author>EasySDI Community</author>
   <creationDate>15 Septemeber 2013</creationDate>
-  <releaseDate>31 janvier 2014</releaseDate>
+  <releaseDate>07 February 2014</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>4.0.0-rc-1</version>
+  <version>4.0.0-rc-3</version>
   <description>PLG_EASYSDI_ADMIN_INFO_GETUSERS_XML_DESCRIPTION</description>
   <scriptfile>script.php</scriptfile>
   <files>
