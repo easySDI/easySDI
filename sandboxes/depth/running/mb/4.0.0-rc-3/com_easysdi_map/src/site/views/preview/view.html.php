@@ -91,7 +91,7 @@ class Easysdi_mapViewPreview extends JViewLegacy {
                     sourceConfig' . $preview->id . ' = {id :"' . $preview->service->alias . '",
                                     ptype: "sdi_gxp_wmssource",
                                     hidden : "true",
-                                    url: "' . $preview->service->resourceurl . '"
+                                    url: "' . $preview->service->reflectedurl . '"
                                     };
 
                     layerConfig' . $preview->id . ' = { group: "' . $defaultgroup . '",

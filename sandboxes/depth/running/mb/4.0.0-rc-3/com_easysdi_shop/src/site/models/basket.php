@@ -90,7 +90,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         $data['created_by'] = $basket->created_by;
         $data['buffer'] = $basket->buffer;
         $data['surface'] = $basket->extent->surface;
-        $data['thirdparty_id'] = ($basket->thirdparty != -1)? $basket->thirdparty : null;
+        $data['thirdparty_id'] = (($basket->thirdparty != -1)&&($basket->thirdparty != ""))? $basket->thirdparty : NULL;
         switch (JFactory::getApplication()->input->get('action', 'save', 'string')) {
             case 'order':
                 $data['ordertype_id'] = 1;
