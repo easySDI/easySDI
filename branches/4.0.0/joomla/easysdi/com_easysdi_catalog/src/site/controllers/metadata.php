@@ -285,21 +285,21 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $update = $this->structure->getElementsByTagNameNS($this->cswUri, 'Update')->item(0);
 
         $lang = JFactory::getLanguage();
-        
+
         $cswm = new cswmetadata();
         $cswm->init($update->firstChild);
         $extend = $cswm->extend('', '', 'editor', 1, 'fr-FR');
-        
+
         $response = array();
         $response['success'] = true;
         $response['guid'] = $_POST['jform']['guid'];
-        
-        $this->session->set($_POST['jform']['guid'], '<div class="well">' . $cswm->applyXSL('', '', 'editor',null) . '</div>');
-        
+
+        $this->session->set($_POST['jform']['guid'], '<div class="well">' . $cswm->applyXSL('', '', 'editor', null) . '</div>');
+
         echo json_encode($response);
         die();
     }
-    
+
     public function saveAndContinue() {
         $this->save(null, true, true);
     }
@@ -313,7 +313,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     public function save($data = null, $commit = true, $continue = false) {
         $this->structure->formatOutput = true;
         $xml = $this->structure->saveXML();
-        
+
         if (!isset($data)) {
             $data = $this->data;
         }
@@ -401,10 +401,10 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $this->structure->formatOutput = true;
         $xml = $this->structure->saveXML();
-        
+
         $root = $this->domXpathStr->query('/*')->item(0);
 
-        
+
         foreach ($this->getHeader() as $header) {
             $root->insertBefore($header, $root->firstChild);
         }
@@ -415,31 +415,31 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $root->appendChild($smda->getPlatformNode($this->structure));
 
         $rootname = $root->nodeName;
-        
+
         $this->structure->formatOutput = true;
         $xml = $this->structure->saveXML();
-        
+
         $transaction = $this->structure->createElementNS($this->cswUri, 'Transaction');
         $transaction->setAttribute('service', 'CSW');
         $transaction->setAttribute('version', '2.0.2');
 
         $update = $this->structure->createElementNS($this->cswUri, 'Update');
         $update->appendChild($root);
-        
+
         $this->structure->formatOutput = true;
         $xml = $this->structure->saveXML();
-        
+
         $update->appendChild($this->getConstraint($data['guid']));
-        
+
         $this->structure->formatOutput = true;
         $xml = $this->structure->saveXML();
-        
+
         $transaction->appendChild($update);
         $this->structure->appendChild($transaction);
 
         $this->structure->formatOutput = true;
         $xml = $this->structure->saveXML();
-        
+
         $this->removeNoneExist();
         $this->removeCatalogNS();
 
@@ -480,7 +480,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $titles[$defaultLang->id] = $default->nodeValue;
 
         foreach ($supportedLangs as $supportedLang) {
-            $i18nlang = $this->domXpathStr->query($metadatatitlexpath . '/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale="#' . $supportedLang->iso3166 . '"]')->item(0);
+            $i18nlang = $this->domXpathStr->query($metadatatitlexpath . '/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale="#' . $supportedLang->{'iso3166-1-alpha2'} . '"]')->item(0);
 
             if (isset($i18nlang)) {
                 $titles[$supportedLang->id] = $i18nlang->nodeValue;
@@ -599,7 +599,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $this->db->setQuery($query);
         $result = $this->db->loadObject();
-        
+
         if (isset($result)) {
 
             $href = JComponentHelper::getParams('com_easysdi_catalog')->get('catalogurl');
@@ -625,7 +625,23 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $headers = array();
 
         $language = $this->structure->createElementNS($this->nsArray['gmd'], 'language');
-        $characterString = $this->structure->createElementNS($this->nsArray['gco'], 'CharacterString', $languageid->iso639);
+
+        $isolanguageid = JComponentHelper::getParams('com_easysdi_catalog')->get('isolanguage', 2);
+        switch ($isolanguageid) {
+            case 1:
+                $isolanguage = $languageid->{'iso639-1'};
+                break;
+            case 2:
+                $isolanguage = $languageid->{'iso639-2B'};
+                break;
+            case 3:
+                $isolanguage = $languageid->{'iso639-2T'};
+                break;
+            default:
+                $isolanguage = $languageid->{'iso639-2B'};
+                break;
+        }
+        $characterString = $this->structure->createElementNS($this->nsArray['gco'], 'CharacterString', $isolanguage);
         $language->appendChild($characterString);
         $headers[] = $language;
 
@@ -643,14 +659,29 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $characterEncodingSetCode->setAttribute('codeListeValue', $encoding);
         $characterEncodingSetCode->setAttribute('codeList', '#MD_CharacterSetCode');
         $characterEncoding->appendChild($characterEncodingSetCode);
+        $addLocale = false;
         foreach ($this->ldao->getSupported() as $key => $value) {
-            if ($value->{'iso639-2T'} != $languageid->iso639) {
+            switch ($isolanguageid) {
+                case 1:
+                    $isolanguagesupported = $value->{'iso639-1'};
+                    break;
+                case 2:
+                    $isolanguagesupported = $value->{'iso639-2B'};
+                    break;
+                case 3:
+                    $isolanguagesupported = $value->{'iso639-2T'};
+                    break;
+                default:
+                    $isolanguagesupported = $value->{'iso639-2B'};
+                    break;
+            }
+            if ($isolanguagesupported != $isolanguage) {
                 $pt_locale = $this->structure->createElementNS($this->nsArray['gmd'], 'PT_Locale');
                 $pt_locale->setAttribute('id', $key);
 
                 $languageCode = $this->structure->createElementNS($this->nsArray['gmd'], 'languageCode');
                 $languageCodeChild = $this->structure->createElementNS($this->nsArray['gmd'], 'LanguageCode', $value->value);
-                $languageCodeChild->setAttribute('codeListValue', $value->{'iso639-2T'});
+                $languageCodeChild->setAttribute('codeListValue', $isolanguagesupported);
                 $languageCodeChild->setAttribute('codeList', '#LanguageCode');
 
                 $languageCode->appendChild($languageCodeChild);
@@ -659,10 +690,13 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                 $pt_locale->appendChild($characterEncoding);
 
                 $locale->appendChild($pt_locale);
+                $addLocale = true;
             }
         }
 
-        $headers[] = $locale;
+        if ($addLocale) {
+            $headers[] = $locale;
+        }
 
         return $headers;
     }
@@ -694,19 +728,20 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         return $constraint;
     }
 
-    private function removeNoneExist(){
+    private function removeNoneExist() {
         $relations = $this->domXpathStr->query('descendant::*[@catalog:exist="0"]');
         $toRemove = array();
         foreach ($relations as $relation) {
             $toRemove[] = $relation;
         }
-        
+
         foreach ($toRemove as $remove) {
             $remove->parentNode->removeChild($remove);
         }
     }
-    
-    private function removeCatalogNS() {;
+
+    private function removeCatalogNS() {
+;
         $attributeNames = array('id', 'dbid', 'childtypeId', 'index', 'lowerbound', 'upperbound', 'rendertypeId', 'stereotypeId', 'relGuid', 'relid', 'maxlength', 'readonly', 'exist', 'resourcetypeId', 'relationId', 'label', 'boundingbox', 'map', 'level');
 
         foreach ($this->domXpathStr->query('//*') as $element) {

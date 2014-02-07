@@ -32,9 +32,13 @@ class Cswrecords extends SearchForm {
         $this->searchcriteria = parent::loadSystemFields();
         $this->ldao = new SdiLanguageDao();
         $this->ogcFilters = new OgcFilters($this->dom);
+        
     }
 
     public function getRecords() {
+        // Workaround to replace accented characters in the search fields.
+        array_walk($this->data, array($this,'replaceAccent'));
+        
         $lang = JFactory::getLanguage()->getTag();
         $params = JComponentHelper::getParams('com_easysdi_catalog');
         $catalogurl = $params->get('catalogurl');
@@ -192,7 +196,6 @@ class Cswrecords extends SearchForm {
      */
     protected function CURLRequest($type, $url, $xmlBody = "") {
         // Get COOKIE as key=value
-
 
 	$cookiesList = array();
         foreach ($_COOKIE as $key => $val) {
@@ -402,9 +405,9 @@ class Cswrecords extends SearchForm {
             $keyword = $this->ogcFilters->getIsLike('keyword', $literal);
             $abstract = $this->ogcFilters->getIsLike('abstract', $literal);
         } else {
-            $title = $this->ogcFilters->getIsLike('title_' . $language->iso3166, $literal);
-            $keyword = $this->ogcFilters->getIsLike('keyword_' . $language->iso3166, $literal);
-            $abstract = $this->ogcFilters->getIsLike('abstract_' . $language->iso3166, $literal);
+            $title = $this->ogcFilters->getIsLike('title_' . $language->{'iso3166-1-alpha2'}, $literal);
+            $keyword = $this->ogcFilters->getIsLike('keyword_' . $language->{'iso3166-1-alpha2'}, $literal);
+            $abstract = $this->ogcFilters->getIsLike('abstract_' . $language->{'iso3166-1-alpha2'}, $literal);
         }
 
         $or->appendChild($title);
@@ -557,6 +560,28 @@ class Cswrecords extends SearchForm {
         }
 
         return $or;
+    }
+    
+    /**
+     * 
+     * @param string $string
+     * @return string A string without accent
+     */
+    function replaceAccent($item, $itemkey) {
+        $unwanted_array = array('Š' => 'S', 'š' => 's', 'Ž' => 'Z', 'ž' => 'z', 'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E',
+            'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U',
+            'Ú' => 'U', 'Û' => 'U', 'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'B', 'ß' => 'Ss', 'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'å' => 'a', 'æ' => 'a', 'ç' => 'c',
+            'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o',
+            'ö' => 'o', 'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y');
+        
+        if(is_array($item)){
+            foreach ($item as $key => $value) {
+                $item[$key] = strtr($value, $unwanted_array);
+            }
+            $this->data[$itemkey] = $item;
+        }  else {
+            $this->data[$itemkey] = strtr($item, $unwanted_array);
+        }
     }
 
 }

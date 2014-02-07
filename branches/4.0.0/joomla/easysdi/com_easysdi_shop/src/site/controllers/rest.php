@@ -56,7 +56,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
 
         if ($this->authentification()) {
             if (!empty($GLOBALS['HTTP_RAW_POST_DATA'])) {
-                if ($this->request->loadXML($GLOBALS['HTTP_RAW_POST_DATA'])) {
+                if ($this->request->loadXML($GLOBALS['HTTP_RAW_POST_DATA'], LIBXML_PARSEHUGE)) {
                     //if($this->request->schemaValidate(JPATH_COMPONENT.'/controllers/xsd/wpsAll.xsd')){
                     if (true) {
                         /* @var $identifier DOMElement */
