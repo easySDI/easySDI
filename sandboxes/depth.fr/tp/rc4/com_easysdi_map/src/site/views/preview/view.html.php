@@ -86,12 +86,18 @@ class Easysdi_mapViewPreview extends JViewLegacy {
             $mapparams = JComponentHelper::getParams('com_easysdi_map');
             $mwidth = $mapparams->get('iframewidth');
             $mheight = $mapparams->get('iframeheight');
-
+            if ($preview->service->reflectedurl)
+            {
+                $url = $preview->service->reflectedurl;
+            }else{
+                $url = $preview->service->serviceurl;
+            }
+            
             $this->addscript .= ' 
                     sourceConfig' . $preview->id . ' = {id :"' . $preview->service->alias . '",
                                     ptype: "sdi_gxp_wmssource",
                                     hidden : "true",
-                                    url: "' . $preview->service->reflectedurl . '"
+                                    url: "' . $url . '"
                                     };
 
                     layerConfig' . $preview->id . ' = { group: "' . $defaultgroup . '",
