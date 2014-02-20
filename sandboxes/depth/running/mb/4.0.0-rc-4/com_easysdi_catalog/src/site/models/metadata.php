@@ -155,7 +155,13 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                     }
 
                     if ($result = $CSWmetadata->load()) {
+                        $cswm = new CswMerge();
+                        if (key_exists('id', $import)) {
+                            $cswm->preserveFileidentifier($result, $this->_item->guid);
+                        }
+                        
                         $this->_item->csw = $result;
+                        
                     }
 
                     // If xml is upload
@@ -179,6 +185,8 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_NOT_FOUND_ERROR'), 'error');
                         }
                     }
+                    
+                    
                 }
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
@@ -461,7 +469,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                     ';
             $condition = '';
             for ($i = 0; $i < count($v->patterns); $i++) {
-                $js .= 'regex_' . $i . ' = new RegExp(/' . $v->patterns[$i] . '/);
+                $js .= 'regex_' . $i . ' = new RegExp("' . $v->patterns[$i] . '");
                         ';
                 $condition .= 'regex_' . $i . '.test(value) && ';
             }

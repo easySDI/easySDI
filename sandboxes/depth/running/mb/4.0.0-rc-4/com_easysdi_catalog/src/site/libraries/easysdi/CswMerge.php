@@ -26,10 +26,13 @@ class CswMerge {
     /** @var SdiNamespaceDao */
     private $nsdao;
 
-    function __construct($original, $import = '') {
+    function __construct($original = '', $import = '') {
         $this->db = JFactory::getDbo();
         if (!empty($import)) {
             $this->import = $import;
+        }
+        if(!empty($original)){
+            $this->original = $original;
         }
         $this->original = $original;
         $this->nsdao = new SdiNamespaceDao();
@@ -68,13 +71,8 @@ class CswMerge {
         
         }
         
-        // Preserve original fileidentifier
-        $fileidentifierOriginalNode = $this->original->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'fileIdentifier')->item(0);
-        $fileidentifierImportNode = $this->import->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'fileIdentifier')->item(0);
-
-        $fileidentifierImportedNode = $this->import->importNode($fileidentifierOriginalNode, true);
-        
-        $fileidentifierImportNode->parentNode->replaceChild($fileidentifierImportedNode, $fileidentifierImportNode);
+        // preserve original fileidentifier
+        $this->preserveFileidentifier($this->import, '', $this->original);
         
         /* Transform the external xml if necessary. */
         if (!empty($importref->xsl4ext)) {
@@ -100,6 +98,29 @@ class CswMerge {
         }
     }
 
+    /**
+     * Preserve fileidentifier during import process
+     * 
+     * @param string $fileIdentifier Original fileidentifier
+     * @param DOMDocument $original
+     * @param DOMDocument $import
+     */
+    public function preserveFileidentifier(DOMDocument $import, $fileIdentifier = '', DOMDocument $original = null) {
+        $fileidentifierImportNode = $import->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'fileIdentifier')->item(0);
+        
+        if(!empty($original)){
+            $fileidentifierOriginalNode = $original->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'fileIdentifier')->item(0);
+            $fileidentifierImportedNode = $import->importNode($fileidentifierOriginalNode, true);
+        }  else {
+            $fileidentifierImportedNode = $import->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:fileIdentifier');
+            $gco_character = $import->createElementNS('http://www.isotc211.org/2005/gco', 'gco:CharacterString',$fileIdentifier);
+            $fileidentifierImportedNode->appendChild($gco_character);
+        }
+        
+        $fileidentifierImportNode->parentNode->replaceChild($fileidentifierImportedNode, $fileidentifierImportNode);
+ 
+    }
+    
     /**
      * 
      * @return DOMElement
