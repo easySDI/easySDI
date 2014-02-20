@@ -1,5 +1,7 @@
 <?php
 
+require_once JPATH_BASE . '/administrator/components/com_easysdi_core/libraries/easysdi/user/sdiuser.php';
+
 /**
  * @version     4.0.0
  * @package     com_easysdi_core

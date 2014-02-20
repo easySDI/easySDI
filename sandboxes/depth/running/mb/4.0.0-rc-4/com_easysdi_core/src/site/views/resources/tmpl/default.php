@@ -117,7 +117,9 @@ endif;
                 <tfoot>
                 </tfoot>
                 <tbody>
-                    <?php foreach ($this->items as $item) : ?>
+                    
+                    <?php 
+                    foreach ($this->items as $item) : ?>
                         <?php
                         //Load versions
                         $db = JFactory::getDbo();
@@ -150,7 +152,7 @@ endif;
                             continue;
 
                         $rights = $this->user->authorize($item->id);
-                        if (is_array($rights) && !empty($rights)): //User has some rights on this item 
+                        
                             $show = true;
                             ?>
                             <tr>
@@ -303,7 +305,7 @@ endif;
                                 </td>
 
                             </tr>
-                        <?php endif; ?>
+                        
                     <?php endforeach; ?>
                 </tbody>
             </table>
