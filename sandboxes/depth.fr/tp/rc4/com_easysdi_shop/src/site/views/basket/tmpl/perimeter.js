@@ -31,43 +31,13 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
         });
 
     } else {
-//        if(jQuery('#modal-perimeter').is(':visible')){
-//            
-//        }else{
-//        loadingPerimeter = new Ext.LoadMask(Ext.getBody(), {
-//            msg: "Chargement de la couche de périmètre..."
-//        });
-//        loadingPerimeter.show();
-//        }
+
         
         var featurerestriction = getUserRestrictedExtentFeature(userperimeter);
         var g = featurerestriction.geometry;
         var exp = new OpenLayers.Format.WKT().write(featurerestriction);
         
-        //----------------------------------------------------------------------
-        // The WFS version of the perimeter layer filtered 
-        // by user restricted perimeter
-        //----------------------------------------------------------------------
-//        perimeterLayer = new OpenLayers.Layer.Vector("perimeterLayer", {
-//            strategies: [new OpenLayers.Strategy.Fixed()],
-//            protocol: new OpenLayers.Protocol.WFS({
-//                url: wfsurl,
-//                featureType: featuretypename,
-//                featureNS: namespace,
-//                srsName: app.mapPanel.map.projection
-//            }),
-//            styleMap: new OpenLayers.StyleMap({
-//                fillColor: "#ffcc66",
-//                fillOpacity: 0,
-//                strokeColor: "black",
-//                strokeWidth: 2,
-//            }),
-//            filter: new OpenLayers.Filter.Spatial({
-//                type: OpenLayers.Filter.Spatial.INTERSECTS,
-//                value: featurerestriction.geometry
-//            })
-//        });
-        
+         
         //----------------------------------------------------------------------
         // The WMS version of the perimeter layer filtered 
         // by user restricted perimeter
@@ -76,7 +46,6 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
                 wmsurl,     
                 {layers: wmslayername,
                  transparent: true,
-                 //CQL_FILTER: 'INTERSECTS(the_geom,' + new OpenLayers.Format.WKT().write(featurerestriction) + ')'},
                  CQL_FILTER: 'INTERSECTS(the_geom,' + exp + ')'},
                  {tileOptions: {maxGetUrlLength: 2048}, transitionEffect: 'resize'}
             );
@@ -104,7 +73,7 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
     }
 
     app.mapPanel.map.addLayer(perimeterLayer);
-    perimeterLayer.events.register("loadend", perimeterLayer, listenerLoadEnd);
+    //perimeterLayer.events.register("loadend", perimeterLayer, listenerLoadEnd);
 
     selectLayer = new OpenLayers.Layer.Vector("Selection", {srsName: app.mapPanel.map.projection, projection: app.mapPanel.map.projection});
     selectLayer.events.register("featureadded", selectLayer, listenerFeatureAdded);
@@ -119,11 +88,6 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
     return false;
 };
 
-
-
-var listenerLoadEnd = function() {
-//    loadingPerimeter.hide();
-};
 var listenerFeatureSelected = function(e) {
     if(fromreload === true){
         selectLayer.removeAllFeatures();
@@ -227,6 +191,5 @@ function reloadFeatures(wfsurl, featuretypename, featuretypefieldid) {
 
 var listenerFeatureAddedToZoom = function (e){
     app.mapPanel.map.zoomToExtent(selectLayer.getDataExtent());
-//    miniLayer.addFeatures(selectLayer.features);
 };
 

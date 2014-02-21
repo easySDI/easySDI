@@ -365,16 +365,16 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
         <div id="modal-error" class="modal fade">
             <div class="modal-dialog">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>-->
                     <h3 id="myModalLabel"><?php echo JText::_("COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_TITLE") ?></h3>
                 </div>               
                 <div class="modal-body">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
                     <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ERROR_PERIMETER_SELECTION_MISSING'); ?>
                 </div>                
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary"><?php echo JText::_('JOK'); ?></button>
-                </div>              
+                <!--<div class="modal-footer">
+                    <button type="button" class="btn btn-primary"><?php echo JText::_('OK'); ?></button>
+                </div>              -->
             </div>
         </div>
 
@@ -390,7 +390,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                         <?php endif; ?>
                         <?php if ($this->item->extent->id == 1):
                             ?>
-                                        jQuery('#btn-perimeter1b').addClass('active');
+                                        jQuery('#btn-perimeter1a').addClass('active');
                             <?php
                         else :
                             ?>
