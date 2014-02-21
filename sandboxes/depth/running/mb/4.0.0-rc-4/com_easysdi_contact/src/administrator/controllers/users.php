@@ -37,6 +37,7 @@ class Easysdi_contactControllerUsers extends JControllerAdmin
 	 */
 	public function saveOrderAjax()
 	{
+            
 		// Get the input
 		$input = JFactory::getApplication()->input;
 		$pks = $input->post->get('cid', array(), 'array');

@@ -130,7 +130,7 @@ class Cswrecords extends SearchForm {
         }
 
         // Permanent criteria
-        //$and4->appendChild($this->ogcFilters->getIsEqualTo('metadatastate', 'publish'));
+        $and4->appendChild($this->ogcFilters->getIsEqualTo('metadatastate', 'published'));
         $and4->appendChild($this->ogcFilters->getIsLessOrEqual('published', date('Y-m-d')));
 
         // User and organism filter
