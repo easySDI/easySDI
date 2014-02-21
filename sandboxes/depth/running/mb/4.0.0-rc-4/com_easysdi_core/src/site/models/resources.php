@@ -139,9 +139,9 @@ class Easysdi_coreModelResources extends JModelList {
         
          //Controls whether a version of the metadata has a status matching the filter.
         $status = $this->getState('filter.status');
+        $query->innerJoin('#__sdi_version v ON v.resource_id = a.id');
+        $query->innerJoin('#__sdi_metadata md ON md.version_id = v.id');
         if(!empty($status)){
-            $query->innerJoin('#__sdi_version v ON v.resource_id = a.id');
-            $query->innerJoin('#__sdi_metadata md ON md.version_id = v.id');
             $query->where('md.metadatastate_id = '.$status);
         }
         

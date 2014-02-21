@@ -146,12 +146,6 @@ endif;
                         $metadata = $db->loadObjectList();
 
                         $s = $query->__toString();
-
-                        //If no version are visible according to the filter
-                        if (count($metadata) == 0)
-                            continue;
-
-                        $rights = $this->user->authorize($item->id);
                         
                             $show = true;
                             ?>
