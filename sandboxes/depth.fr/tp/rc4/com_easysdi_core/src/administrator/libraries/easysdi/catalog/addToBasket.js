@@ -58,7 +58,9 @@ function addtobasket() {
     });
 
     jQuery.ajax({
-        url: "index.php?option=com_easysdi_shop&task=addToBasket&item=" + JSON.stringify(cmd),
+        url: "index.php?option=com_easysdi_shop&task=addToBasket",//&item=" + JSON.stringify(cmd),
+        type: "POST",
+        data : {'item' : JSON.stringify(cmd)},
         success: function(data) {
             if(window.updateBasketContent){
                 updateBasketContent(data);
