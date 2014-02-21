@@ -43,15 +43,25 @@ var listenerFeatureAdded = function(e) {
 
 function clearLayersVector() {
     for (var j = 0; j < app.mapPanel.map.layers.length; j++) {
-        if (app.mapPanel.map.layers[j].__proto__.CLASS_NAME === "OpenLayers.Layer.Vector") {
+        //if (app.mapPanel.map.layers[j].__proto__.CLASS_NAME === "OpenLayers.Layer.Vector") {
+        if (app.mapPanel.map.layers[j].id.indexOf("Vector") != -1){
             app.mapPanel.map.layers[j].removeAllFeatures();
         }
     }
     for (var j = 0; j < minimap.layers.length; j++) {
-        if (minimap.layers[j].__proto__.CLASS_NAME === "OpenLayers.Layer.Vector") {
+        //if (minimap.layers[j].__proto__.CLASS_NAME === "OpenLayers.Layer.Vector") {
+        if (minimap.layers[j].id.indexOf("Vector") != -1){
             minimap.layers[j].removeAllFeatures();
         }
     }
+    
+   /* if (app.mapPanel.map.getLayersByName("perimeterLayer").length > 0) {
+        perimeterLayer.removeAllFeatures();
+        selectLayer.removeAllFeatures();
+    }
+    if (app.mapPanel.map.getLayersByName("myLayer").length > 0) {
+        myLayer.removeAllFeatures();
+    }*/
 }
 
 function clearTemporaryFields() {
