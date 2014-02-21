@@ -275,7 +275,7 @@ class Cswrecords extends SearchForm {
                 }
                 break;
             case 'organism':
-                if (!empty($value)) {
+                if (count(array_filter($value)) > 0) {
                     $this->addHarvested = false;
                     return $this->getOrganism($value);
                 }
@@ -457,8 +457,14 @@ class Cswrecords extends SearchForm {
         }
     }
 
-    private function getOrganism($literal) {
-        return $this->ogcFilters->getIsEqualTo('resourceorganism', $literal);
+    private function getOrganism($value) {
+        $or = $this->ogcFilters->getOperator(OgcFilters::OPERATOR_OR);
+
+        foreach ($value as $literal) {
+            $or->appendChild($this->ogcFilters->getIsEqualTo('resourceorganism', strtolower($literal)));
+        }
+
+        return $or;
     }
 
     private function getDefinedBoundary($propertyName, $value) {

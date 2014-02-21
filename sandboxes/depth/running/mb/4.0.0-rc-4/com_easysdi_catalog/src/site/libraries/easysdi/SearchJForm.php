@@ -222,7 +222,7 @@ class SearchJForm extends SearchForm {
         $field->setAttribute('type', 'multipleDefaultList');
         switch ($searchCriteria->name) {
             case 'organism':
-                $field->setAttribute('multiple', 'false');
+                $field->setAttribute('multiple', 'true');
                 break;
             default:
                 $field->setAttribute('multiple', 'true');
