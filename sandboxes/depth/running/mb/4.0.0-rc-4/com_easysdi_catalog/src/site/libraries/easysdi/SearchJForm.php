@@ -323,7 +323,7 @@ class SearchJForm extends SearchForm {
                 if (!empty($params->searchboundarytype) && ($params->searchboundarytype == parent::SEARCHTYPEID)) {
                     $query->select('b.alias as value, t.text1 as name, b.guid');
                 } else {
-                    $query->select('CONCAT_WS("-",b.northbound, b.southbound, b.eastbound, b.westbound) as value, t.text1 as name, b.guid');
+                    $query->select('CONCAT_WS("#",b.northbound, b.southbound, b.eastbound, b.westbound) as value, t.text1 as name, b.guid');
                 }
 
                 $query->from('#__sdi_boundary b');
@@ -426,7 +426,7 @@ class SearchJForm extends SearchForm {
                 if ($params->searchboundarytype == parent::SEARCHTYPEID) {
                     $query->select('b.alias as value');
                 } else {
-                    $query->select('CONCAT_WS("-",b.northbound, b.southbound, b.eastbound, b.westbound) as value');
+                    $query->select('CONCAT_WS("#",b.northbound, b.southbound, b.eastbound, b.westbound) as value');
                 }
 
                 $query->from('#__sdi_boundary as b');

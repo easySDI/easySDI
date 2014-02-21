@@ -175,33 +175,6 @@ foreach ($this->validators as $validator) {
         </div>
     </div>
 
-    <!-- Publish Modal -->
-    <div class="modal fade" id="publishModal" tabindex="-1" role="dialog" aria-labelledby="publishModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="publishModalLabel"><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_DATE'); ?></h4>
-                </div>
-                <div class="modal-body">
-                    <form id="form_publish" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal">
-                        <div class="control-group">
-                            <div class="control-label"><label id="publish_date-lbl" for="publish_date" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_DATE'); ?></label></div>
-                            <div class="controls"><div class="input-append">
-                                    <input type="text" name="publish_date" id="publish_date" value="" class=" required  validate-sdidatetime" aria-required="true" required="required" data-original-title="mercredi 13 novembre 2013" aria-invalid="false"><button class="btn" id="publish_date_img"><i class="icon-calendar"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.publishWithDate')" ><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_ITEM'); ?></button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Replicate modal -->
     <div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -294,7 +267,7 @@ foreach ($this->validators as $validator) {
                         <input type="hidden" name="import[importref_id]" class="import_importref_id" value=""/>
                         
                         <div class="control-group">
-                            <div class="control-label"><label id="xml_file-lbl" for="publish_date" class="" aria-invalid="false">Fichier XML</label></div>
+                            <div class="control-label"><label id="xml_file-lbl" for="xml_file" class="" aria-invalid="false">Fichier XML</label></div>
                             <div class="controls">
                                 <div class="input-append">
                                     <input type="file" name="xml_file" id="xml_file"/>
@@ -326,7 +299,7 @@ foreach ($this->validators as $validator) {
                         <input type="hidden" name="import[importref_id]" class="import_importref_id" value=""/>
                         
                         <div class="control-group">
-                            <div class="control-label"><label id="import_fileidentifier-lbl" for="publish_date" class="" aria-invalid="false">Fileidentifier</label></div>
+                            <div class="control-label"><label id="import_fileidentifier-lbl" for="import_fileidentifier" class="" aria-invalid="false">Fileidentifier</label></div>
                             <div class="controls">
                                 <div class="input-append">
                                     <input class="required" type="text" name="import[fileidentifier]" id="import_fileidentifier"/>
@@ -341,6 +314,35 @@ foreach ($this->validators as $validator) {
                 </div>
             </div>
         </div>
+    </div>
+    
+    <!-- Publish Modal -->
+    <div class="modal fade" id="publishModal" tabindex="-1" role="dialog" aria-labelledby="publishModalLabel" aria-hidden="true">
+        <form id="form_publish" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="publishModalLabel"><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_DATE'); ?></h4>
+                </div>
+                <div class="modal-body">
+                    
+                        <div class="control-group">
+                            <div class="control-label"><label id="publish_date-lbl" for="publish_date" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_DATE'); ?></label></div>
+                            <div class="controls"><div class="input-append">
+                                    <input type="text" name="publish_date" id="publish_date" value="" class=" required  validate-sdidatetime" aria-required="true" required="required" aria-invalid="false"><button class="btn" id="publish_date_img"><i class="icon-calendar"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.publishWithDate')" ><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_ITEM'); ?></button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+                </div>
+            </div>
+        </div>
+            </form>
     </div>
 
 </div>

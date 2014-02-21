@@ -112,7 +112,7 @@ js('document').ready(function() {
                     });
                     break;
                 case 'preview':
-                    js('input[name="task"]').val(task);
+                   js('input[name="task"]').val(task);
                    js.ajax({
                         url: currentUrl + '?' + task,
                         type: js('#form-metadata').attr('method'),
