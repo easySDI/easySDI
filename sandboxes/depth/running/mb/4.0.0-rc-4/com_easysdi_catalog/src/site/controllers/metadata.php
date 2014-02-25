@@ -90,7 +90,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                     $import['xml'] = $xml;
                 }
             } else {
-                JFactory::getApplication()->enqueueMessage(JText::_('Le fichier n\'est pas un fichier XML'), 'error');
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_XML_IMPORT_ERROR'), 'error');
             }
         }
 
