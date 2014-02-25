@@ -19,12 +19,16 @@ JHtml::_('behavior.keepalive');
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_catalog.css');
 $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.css');
+
+$document->addScript('components/com_easysdi_catalog/assets/js/searchcriteria.js');
 ?>
 <script type="text/javascript">
     js = jQuery.noConflict();
     js(document).ready(function() {
         onRenderTypeChange();
         onBoundaryCategoryChange();
+        filterResourceType(<?php echo $this->item->catalog_id ; ?>);
+        
         js('#loader').hide();
 
     <?php if (isset($this->item->attributevalues)): ?>
@@ -111,6 +115,8 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
         })
 
     }
+    
+   
 </script>
 
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&layout=edit&id=' . (int) $this->item->id); ?>" method="post" enctype="multipart/form-data" name="adminForm" id="searchcriteria-form" class="form-validate">
