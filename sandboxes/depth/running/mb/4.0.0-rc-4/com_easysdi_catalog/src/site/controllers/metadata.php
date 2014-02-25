@@ -85,8 +85,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $editId = JFactory::getApplication()->input->getInt('id', null, 'array');
         $import = JFactory::getApplication()->input->get('import', array(), 'array');
         if (key_exists('xml_file', $_FILES)) {
-            if ($xml = file_get_contents($_FILES['xml_file']['tmp_name'])) {
-                $import['xml'] = $xml;
+            if ($_FILES['xml_file']['type'] == 'text/xml') {
+                if ($xml = file_get_contents($_FILES['xml_file']['tmp_name'])) {
+                    $import['xml'] = $xml;
+                }
+            } else {
+                JFactory::getApplication()->enqueueMessage(JText::_('Le fichier n\'est pas un fichier XML'), 'error');
             }
         }
 
@@ -741,7 +745,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     }
 
     private function removeCatalogNS() {
-;
+        ;
         $attributeNames = array('id', 'dbid', 'childtypeId', 'index', 'lowerbound', 'upperbound', 'rendertypeId', 'stereotypeId', 'relGuid', 'relid', 'maxlength', 'readonly', 'exist', 'resourcetypeId', 'relationId', 'label', 'boundingbox', 'map', 'level');
 
         foreach ($this->domXpathStr->query('//*') as $element) {
