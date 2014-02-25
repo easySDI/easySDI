@@ -63,6 +63,7 @@
                value_field="name"
                translate="true"
                class="multiselect"
+               multiple="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_ORGANISM_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_ORGANISM_ID" 
         />

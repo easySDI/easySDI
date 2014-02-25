@@ -41,4 +41,6 @@ class Easysdi_catalogControllerSearchcriteria extends JControllerForm
         echo json_encode($boundaries);
         die();
     }
+    
+ 
 }
