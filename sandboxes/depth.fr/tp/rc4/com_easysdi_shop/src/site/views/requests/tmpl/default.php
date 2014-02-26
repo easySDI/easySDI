@@ -20,7 +20,7 @@ JHtml::_('formbehavior.chosen', 'select');
         <div class="row-fluid">
             <form class="form-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=requests'); ?>" method="post">
                 <div class="btn-toolbar">
-                    <div class="btn-group pull-right">                        
+                    <div class="btn-group pull-left">                        
                         <select id="filter_status" name="filter_type" onchange="this.form.submit();" class="inputbox">
                             <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_REQUESTS_TYPE_FILTER'); ?></option>
                             <?php foreach ($this->ordertype as $ordertype): ?>
@@ -31,22 +31,24 @@ JHtml::_('formbehavior.chosen', 'select');
                                     <?php echo JText::_($ordertype->value); ?></option>
                             <?php endforeach; ?>
                         </select>
-                        <div class=" pull-right">
+                        </div>
+                    <div id="filtersearch" class="btn-group pull-left">
+                            <label for="filter_search" class="element-invisible">Rechercher</label>
+                            <input type="text" name="filter_search" id="filter_search" placeholder="<?php echo JText::_('COM_EASYSDI_CORE_REQUESTS_SEARCH_FILTER'); ?>" value="<?php echo $this->state->get('filter.search'); ?>" title="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" />
                             <button class="btn hasTooltip" type="submit" title="Rechercher"><i class="icon-search"></i></button>
                             <button class="btn hasTooltip" type="button" title="Effacer" onclick="document.id('filter_search').value = '';
                                 this.form.submit();"><i class="icon-remove"></i></button>
                         </div>
-                        <div class="filter-search  pull-right">
-                            <label for="filter_search" class="element-invisible">Rechercher</label>
-                            <input type="text" name="filter_search" id="filter_search" placeholder="<?php echo JText::_('COM_EASYSDI_CORE_REQUESTS_SEARCH_FILTER'); ?>" value="<?php echo $this->state->get('filter.search'); ?>" title="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" />
-                        </div>
+                        
+                            
+                        
 
                     </div>
 
             </form>
         </div>
     </div>
-</div>
+
 <div class="items">
     <div class="well">                      
         <table class="table table-striped">
