@@ -350,5 +350,4 @@ GeoExt.Lang.add("fr", {
         addButtonText: "Rechercher dans le catalogue",
         doneText: "Ok"
     }
-
 });

@@ -109,11 +109,14 @@ $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/sy
     js = jQuery.noConflict();
     js('document').ready(function() {
 
-<?php if ($this->params->get('editmetadatafieldsetstate') == "allopen"): ?>
+<?php 
+if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
             Joomla.submitbutton('metadata.toggle');
-<?php endif; ?>
-
+            tabIsOpen = false;
+<?php }else{ ?>
+            tabIsOpen = true;
 <?php
+}
 foreach ($this->validators as $validator) {
 
     echo $validator;
