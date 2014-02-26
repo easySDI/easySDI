@@ -342,6 +342,13 @@ GeoExt.Lang.add("fr", {
      "sdi.plugins.LayerOrder.prototype": {
         layerOrderMenuText: "Commander la donnée",
         layerOrderActionTip: "Vers la commande de la donnée"
+    },
+    
+    "sdi.plugins.SearchCatalog.prototype": {
+        addActionMenuText: "Rechercher dans le catalogue",
+        addActionTip: "Rechercher dans le catalogue",
+        addButtonText: "Rechercher dans le catalogue",
+        doneText: "Ok"
     }
 
 });
