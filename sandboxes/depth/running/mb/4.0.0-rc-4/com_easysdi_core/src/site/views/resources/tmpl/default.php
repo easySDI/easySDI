@@ -31,52 +31,8 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
             <div class="well">
                 <div class="row-fluid">
                     <form class="form-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=resources'); ?>" method="post">
-                        <div class="btn-toolbar">
-                            <div class="btn-group pull-right">
-                                <select id="filter_resourcetype" name="filter_resourcetype" onchange="this.form.submit();" class="inputbox">
-                                    <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESOURCE_TYPE_FILTER'); ?></option>
-                                    <?php foreach ($resourcetypes as $resourcetype): ?>
-                                        <option value="<?php echo $resourcetype->id; ?>" <?php
-                            if ($this->state->get('filter.resourcetype') == $resourcetype->id) : echo 'selected="selected"';
-                            endif;
-                                        ?> ><?php echo $resourcetype->label; ?></option>
-                                            <?php endforeach; ?>
-                                </select>
-
-                                <?php
-                                //Load all status value
-                                $db = JFactory::getDbo();
-                                $query = $db->getQuery(true)
-                                        ->select('s.value, s.id ')
-                                        ->from('#__sdi_sys_metadatastate s');
-                                $db->setQuery($query);
-                                $metadatastate = $db->loadObjectList();
-                                ?>
-
-
-                                <select id="filter_status" name="filter_status" onchange="this.form.submit();" class="inputbox">
-                                    <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_METADATA_STATE_FILTER'); ?></option>
-                                    <?php foreach ($metadatastate as $status): ?>
-                                        <option value="<?php echo $status->id; ?>" <?php if ($this->state->get('filter.status') == $status->id) : echo 'selected="selected"';
-                            endif;
-                            ?> >
-                                            <?php echo JText::_($status->value); ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-
-                                <div class=" pull-right">
-                                    <button class="btn hasTooltip" type="submit" title="Rechercher"><i class="icon-search"></i></button>
-                                    <button class="btn hasTooltip" type="button" title="Effacer" onclick="document.id('filter_search').value = '';
-                                            this.form.submit();"><i class="icon-remove"></i></button>
-                                </div>
-                                <div class="filter-search  pull-right">
-                                    <label for="filter_search" class="element-invisible">Rechercher</label>
-                                    <input type="text" name="filter_search" id="filter_search" placeholder="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" value="<?php echo $this->state->get('filter.search'); ?>" title="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" />
-                                </div>
-
-                            </div>
-                            <div class="btn-toolbar">
-                                <div class="btn-group ">
+                        
+                            <div class="btn-group pull-left">
                                     <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
                                         <i class="icon-white icon-plus-sign"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW'); ?>
                                         <span class="caret"></span>
@@ -89,10 +45,56 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                             </li>
                                         <?php endforeach; ?>
                                     </ul>
-                                </div>
+                            </div>
+                            <div class="btn-group pull-right">
+                                
+                                    <div id="filtertype" >
+                                        <select id="filter_resourcetype" name="filter_resourcetype" onchange="this.form.submit();" class="inputbox">
+                                            <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESOURCE_TYPE_FILTER'); ?></option>
+                                            <?php foreach ($resourcetypes as $resourcetype): ?>
+                                                <option value="<?php echo $resourcetype->id; ?>" <?php
+                                    if ($this->state->get('filter.resourcetype') == $resourcetype->id) : echo 'selected="selected"';
+                                    endif;
+                                                ?> ><?php echo $resourcetype->label; ?></option>
+                                                    <?php endforeach; ?>
+                                        </select>
+
+                                        <?php
+                                        //Load all status value
+                                        $db = JFactory::getDbo();
+                                        $query = $db->getQuery(true)
+                                                ->select('s.value, s.id ')
+                                                ->from('#__sdi_sys_metadatastate s');
+                                        $db->setQuery($query);
+                                        $metadatastate = $db->loadObjectList();
+                                        ?>
+                                      </div>
+                                      <div id="filterstatus">
+
+                                        <select id="filter_status" name="filter_status" onchange="this.form.submit();" class="inputbox">
+                                            <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_METADATA_STATE_FILTER'); ?></option>
+                                            <?php foreach ($metadatastate as $status): ?>
+                                                <option value="<?php echo $status->id; ?>" <?php if ($this->state->get('filter.status') == $status->id) : echo 'selected="selected"';
+                                    endif;
+                                    ?> >
+                                                    <?php echo JText::_($status->value); ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                      </div>
+                                        <div id="filtersearch" >
+                                            <div class="filter-search>
+                                                <label for="filter_search" class="element-invisible">Rechercher</label>
+                                                <input type="text" name="filter_search" id="filter_search" placeholder="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" value="<?php echo $this->state->get('filter.search'); ?>" title="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" />
+                                                
+                                                <button class="btn hasTooltip" type="submit" title="Rechercher"><i class="icon-search"></i></button>
+                                                <button class="btn hasTooltip" type="button" title="Effacer" onclick="document.id('filter_search').value = '';
+                                                        this.form.submit();"><i class="icon-remove"></i></button>
+                                                </div>
+                                        </div>
+                                
                             </div>
                     </form>
-                </div>
+                
             </div>
         </div>
         <?php
@@ -147,7 +149,7 @@ endif;
 
                         $s = $query->__toString();
                         
-                            $show = true;
+                           $show = true;
                             ?>
                             <tr>
                                 <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>

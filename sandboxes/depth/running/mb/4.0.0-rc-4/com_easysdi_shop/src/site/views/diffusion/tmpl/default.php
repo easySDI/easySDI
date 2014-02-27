@@ -212,12 +212,20 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                         <div class="controls"><?php echo $field->input; ?></div>
                                     </div>
                                 <?php endforeach; ?>
-                                <fieldset id ="fieldset_perimeters" class="span0 offset1">
+                                <fieldset id ="fieldset_perimeters" >
                                     <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_PERIMETERS'); ?></legend>
-                                    <?php foreach ($this->orderperimeters as $orderperimeter): ?>
+                                    <?php foreach ($this->orderperimeters as $orderperimeter): 
+                                            if ($orderperimeter->id == 1){
+                                                $orderperimeterlabel = JText::_('FREEPERIMETER');
+                                            }elseif ($orderperimeter->id == 2){
+                                                $orderperimeterlabel = JText::_('MYPERIMETER');
+                                            }else {
+                                                $orderperimeterlabel = $orderperimeter->name;
+                                            }
+?>
                                         <div class="control-group" >
                                             <div class="control-label">
-                                                <label id="jform_perimeter<?php echo $orderperimeter->id; ?>-lbl" for="jform_perimeter<?php echo $orderperimeter->id; ?>" class="hasTip" title=""><?php echo $orderperimeter->name; ?></label>
+                                                <label id="jform_perimeter<?php echo $orderperimeter->id; ?>-lbl" for="jform_perimeter<?php echo $orderperimeter->id; ?>" class="hasTip" title=""><?php echo $orderperimeterlabel; ?></label>
                                             </div>
                                             <div class="controls">
                                                 <select id="jform_perimeter<?php echo $orderperimeter->id ?>" name="jform[perimeter][<?php echo $orderperimeter->id ?>]" class="inputbox input-xlarge perimeterselect"  >
@@ -230,7 +238,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                     <?php endforeach; ?>
 
                                 </fieldset>
-                                <fieldset id ="fieldset_properties" class="span0 offset1">
+                                <fieldset id ="fieldset_properties" >
                                     <legend><?php echo JText::_('COM_EASYSDI_SHOP_FORM_FIELDSET_LEGEND_PROPERTIES'); ?></legend>
                                     <?php foreach ($this->properties as $property): ?>
                                         <div class="control-group" >

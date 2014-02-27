@@ -4,7 +4,7 @@ function initDraw() {
         featuresadded: onFeaturesAdded,
         beforefeatureadded: beforeFeatureAdded
     });
-    polygonLayer.events.register("loadend", polygonLayer, listenerFeatureDrawToZoom);
+    
     polygonLayer.events.register("featureadded", polygonLayer, listenerFeatureAdded);
     app.mapPanel.map.addLayers([polygonLayer]);
 
@@ -18,7 +18,7 @@ function initDraw() {
 }
 
 function onFeaturesAdded(event) {
-    putFeaturesVerticesInHiddenField(event.features[0]);
+    putFeaturesVerticesInHiddenField(event.features[0].clone());
 }
 
 function putFeaturesVerticesInHiddenField(feature) {
@@ -36,7 +36,7 @@ function putFeaturesVerticesInHiddenField(feature) {
 }
 
 function selectPerimeter1() {
-    selectPolygon();
+    selectRectangle();
 }
 
 function reloadFeatures1() {
@@ -47,12 +47,12 @@ function reloadFeatures1() {
             new OpenLayers.Projection(app.mapPanel.map.projection)
             );
     polygonLayer.addFeatures([feature]);
-//    app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
-    app.mapPanel.map.zoomToExtent(geometry.getBounds().transform(
+    app.mapPanel.map.zoomToExtent(polygonLayer.getDataExtent());
+ /*   app.mapPanel.map.zoomToExtent(geometry.getBounds().transform(
             new OpenLayers.Projection("EPSG:4326"),
             new OpenLayers.Projection(app.mapPanel.map.projection)
-            ));
-    putFeaturesVerticesInHiddenField(feature);
+            ));*/
+    putFeaturesVerticesInHiddenField(feature.clone());
 }
 
 var listenerFeatureDrawToZoom = function(e) {
@@ -73,6 +73,16 @@ function selectPolygon() {
 function selectRectangle() {
     resetAll();
     selectControl = new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.RegularPolygon, {handlerOptions: {stopDown: 1, stopUp: 1, irregular: 1}});
+    
+    app.mapPanel.map.addControl(selectControl);
+    jQuery('#t-perimeter').val('1');
+    jQuery('#t-perimetern').val(Joomla.JText._('FREEPERIMETER', 'Périmètre libre'));
+    jQuery('#t-features').val('');
+    toggleSelectControl('selection');
+}
+
+function toggleRectangle() {
+   selectControl = new OpenLayers.Control.DrawFeature(polygonLayer, OpenLayers.Handler.RegularPolygon, {handlerOptions: {stopDown: 1, stopUp: 1, irregular: 1}});
     
     app.mapPanel.map.addControl(selectControl);
     jQuery('#t-perimeter').val('1');

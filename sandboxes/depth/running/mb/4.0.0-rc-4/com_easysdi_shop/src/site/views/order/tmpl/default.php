@@ -79,7 +79,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                                                     <?php echo JText::_("COM_EASYSDI_SHOP_BASKET_EXTRACTION_PROPERTIES"); ?>
                                                                 </a>
                                                             </div>
-                                                            <div id="<?php echo $extraction->id; ?>_collapse" class="accordion-body collapse">
+                                                            <div id="<?php echo $extraction->id; ?>_collapse" class="accordion-body in">
                                                                 <div class="accordion-inner">
                                                                     <?php
                                                                     foreach ($extraction->properties as $property):

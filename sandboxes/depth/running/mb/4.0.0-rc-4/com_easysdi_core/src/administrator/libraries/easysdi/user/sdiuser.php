@@ -292,7 +292,7 @@ class sdiUser {
      * @return type
      */
     public function getOrderEligibleOrganisms() {
-        if(!$this->isEasySDI){
+        if(!$this->isEasySDI || !isset($this->role[8])){
             return null;
         }
         return $this->role[8];
