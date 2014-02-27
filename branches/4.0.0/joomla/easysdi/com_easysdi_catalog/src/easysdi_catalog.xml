@@ -2,13 +2,13 @@
 <extension method="upgrade" type="component" version="3.0.0">
   <name>com_easysdi_catalog</name>
   <creationDate>15 August 2012</creationDate>
-  <releaseDate>07 February 2014</releaseDate>
+  <releaseDate>27 février 2014</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>4.0.0-rc-3</version>
+  <version>4.0.0-rc-4</version>
   <description />
   <scriptfile>script.php</scriptfile>
   <install>

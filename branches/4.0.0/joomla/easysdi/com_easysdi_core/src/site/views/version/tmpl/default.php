@@ -90,8 +90,8 @@ if ($this->item) :
                                                 <td><?php echo $child->resource; ?></td>
                                                 <td><?php echo $child->version; ?></td>
                                                 <td><?php echo $child->resourcetype; ?></td>
-                                                <td><?php echo JText::_($child->state); ?></td> 
-                                                <td class="center"><button type="button" onClick='addChild(<?php echo json_encode($child); ?>);' class="btn btn-success btn-mini"><i class="icon-white icon-new"></i></button></td> 
+                                                <td><?php echo JText::_($child->state); ?></td>
+                                                <td class="center"><button type="button" onClick='addChild(<?php echo htmlspecialchars(json_encode($child),ENT_QUOTES); ?>);' class="btn btn-success btn-mini"><i class="icon-white icon-new"></i></button></td> 
                                             </tr>
                                             <?php
                                         endforeach;

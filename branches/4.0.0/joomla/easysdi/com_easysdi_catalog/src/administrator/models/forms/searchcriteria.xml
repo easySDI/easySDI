@@ -63,6 +63,7 @@
                value_field="name"
                translate="true"
                class="multiselect"
+               multiple="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_ORGANISM_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_ORGANISM_ID" 
         />
@@ -143,7 +144,7 @@
                type="sql" 
                class="multiselect"
                multiple="true" 
-               query="SELECT null as id , '' as name, '' as alias UNION SELECT id, name, alias FROM #__sdi_resourcetype WHERE state=1" 
+               query="SELECT id, name, alias FROM #__sdi_resourcetype WHERE state=1" 
                key_field="id" 
                value_field="name"
                translate="false"

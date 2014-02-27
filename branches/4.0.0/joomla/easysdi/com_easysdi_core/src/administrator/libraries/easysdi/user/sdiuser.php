@@ -1,5 +1,7 @@
 <?php
 
+require_once JPATH_BASE . '/administrator/components/com_easysdi_core/libraries/easysdi/user/sdiuser.php';
+
 /**
  * @version     4.0.0
  * @package     com_easysdi_core
@@ -290,7 +292,7 @@ class sdiUser {
      * @return type
      */
     public function getOrderEligibleOrganisms() {
-        if(!$this->isEasySDI){
+        if(!$this->isEasySDI || !isset($this->role[8])){
             return null;
         }
         return $this->role[8];

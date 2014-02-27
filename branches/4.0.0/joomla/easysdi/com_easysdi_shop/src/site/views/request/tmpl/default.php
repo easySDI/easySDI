@@ -91,7 +91,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                                                     <?php echo JText::_("COM_EASYSDI_SHOP_BASKET_EXTRACTION_PROPERTIES"); ?>
                                                                 </a>
                                                             </div>
-                                                            <div id="<?php echo $extraction->id; ?>_collapse" class="accordion-body collapse">
+                                                            <div id="<?php echo $extraction->id; ?>_collapse" class="accordion-body in">
                                                                 <div class="accordion-inner">
                                                                     <?php
                                                                     foreach ($extraction->properties as $property):
@@ -138,7 +138,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 
 
                                                             </div>
-                                                            <div class="row-fluid">
+                                                            <div class="row-fluid order-fee">
                                                                 <div class="span2 order-edit-label" >
                                                                     <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_FEE'); ?>
                                                                 </div>
@@ -151,7 +151,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                                                 </div>
                                                             </div>
 
-                                                            <div class="row-fluid">
+                                                            <div class="row-fluid order-remark">
                                                                 <div class="span2 order-edit-label" >
                                                                     <?php echo JText::_('COM_EASYSDI_SHOP_FORM_LBL_ORDERDIFFUSION_REMARK'); ?>
                                                                 </div>

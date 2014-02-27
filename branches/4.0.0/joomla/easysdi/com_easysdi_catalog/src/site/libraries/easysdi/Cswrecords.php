@@ -130,7 +130,7 @@ class Cswrecords extends SearchForm {
         }
 
         // Permanent criteria
-        //$and4->appendChild($this->ogcFilters->getIsEqualTo('metadatastate', 'publish'));
+        $and4->appendChild($this->ogcFilters->getIsEqualTo('metadatastate', 'published'));
         $and4->appendChild($this->ogcFilters->getIsLessOrEqual('published', date('Y-m-d')));
 
         // User and organism filter
@@ -275,7 +275,7 @@ class Cswrecords extends SearchForm {
                 }
                 break;
             case 'organism':
-                if (!empty($value)) {
+                if (count(array_filter($value)) > 0) {
                     $this->addHarvested = false;
                     return $this->getOrganism($value);
                 }
@@ -457,21 +457,35 @@ class Cswrecords extends SearchForm {
         }
     }
 
-    private function getOrganism($literal) {
-        return $this->ogcFilters->getIsEqualTo('resourceorganism', $literal);
+    private function getOrganism($value) {
+        $or = $this->ogcFilters->getOperator(OgcFilters::OPERATOR_OR);
+
+        foreach ($value as $literal) {
+            $or->appendChild($this->ogcFilters->getIsEqualTo('resourceorganism', strtolower($literal)));
+        }
+
+        return $or;
     }
 
     private function getDefinedBoundary($propertyName, $value) {
         $searchCriteria = $this->searchcriteria[$propertyName[0]];
+        
         $params = json_decode($searchCriteria->params);
+        if(empty($params)){
+            $params = new stdClass();
+            $params->searchboundarytype = parent::SEARCHTYPEBBOX;
+        }
 
         $or = $this->dom->createElementNS($this->ogcUri, $this->ogcPrefix . ':Or');
 
         foreach ($value as $literal) {
+            if(empty($literal)){
+                continue;
+            }
             if ($params->searchboundarytype == parent::SEARCHTYPEID) {
                 $or->appendChild($this->ogcFilters->getIsEqualTo($params->boundarysearchfield, $literal));
             } else {
-                $coordinate = explode('-', $literal);
+                $coordinate = explode('#', $literal);
                 $or->appendChild($this->ogcFilters->getBBox($coordinate[3], $coordinate[1], $coordinate[2], $coordinate[0]));
             }
         }

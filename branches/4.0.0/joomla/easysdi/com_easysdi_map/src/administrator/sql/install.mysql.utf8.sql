@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_map` (
 `rootnodetext` VARCHAR(255)  ,
 `srs` VARCHAR(255)  NOT NULL ,
 `unit_id` INT(11) UNSIGNED NOT NULL ,
-`maxresolution` DECIMAL  ,
+`maxresolution` DOUBLE  ,
 `numzoomlevel` INT(10)  ,
 `maxextent` VARCHAR(255)  NOT NULL ,
 `restrictedextent` VARCHAR(255) ,

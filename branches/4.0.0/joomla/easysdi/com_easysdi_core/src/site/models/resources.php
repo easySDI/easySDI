@@ -17,6 +17,11 @@ jimport('joomla.application.component.modellist');
 class Easysdi_coreModelResources extends JModelList {
 
     /**
+     * @var sdiUser 
+     */
+    private $user;
+    
+    /**
      * Constructor.
      *
      * @param    array    An optional associative array of configuration settings.
@@ -25,6 +30,8 @@ class Easysdi_coreModelResources extends JModelList {
      */
     public function __construct($config = array()) {
         parent::__construct($config);
+        
+        $this->user = new sdiUser();
     }
 
     /**
@@ -106,6 +113,12 @@ class Easysdi_coreModelResources extends JModelList {
         $query->select('rtl.state as supportrelation');
         $query->join('LEFT', '(SELECT n.parent_id, state FROM #__sdi_resourcetypelink n GROUP BY n.parent_id) rtl ON rtl.parent_id = rt.id');
         
+        //join over rights table, check if user have any right on resource
+        $query->innerJoin('#__sdi_user_role_resource AS urr ON urr.resource_id = a.id');
+        $query->where('urr.user_id = ' .$this->user->id);
+       
+        
+        $query->group('a.id');
         
         // Filter by resource type
         $resourcetype = $this->getState('filter.resourcetype');
@@ -122,6 +135,14 @@ class Easysdi_coreModelResources extends JModelList {
                 $search = $db->Quote('%' . $db->escape($search, true) . '%');
                  $query->where('( a.name LIKE '.$search.' )');
             }
+        }
+        
+         //Controls whether a version of the metadata has a status matching the filter.
+        $status = $this->getState('filter.status');
+        $query->innerJoin('#__sdi_version v ON v.resource_id = a.id');
+        $query->innerJoin('#__sdi_metadata md ON md.version_id = v.id');
+        if(!empty($status)){
+            $query->where('md.metadatastate_id = '.$status);
         }
         
         $query->order('a.name');

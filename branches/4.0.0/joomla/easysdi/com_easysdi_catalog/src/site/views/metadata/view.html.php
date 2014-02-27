@@ -218,11 +218,15 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
 
         $toolbar = new SdiToolbar();
 
-        $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_OPEN_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
+        if ($this->params->get('editmetadatafieldsetstate') == "allopen"){
+            $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_CLOSE_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
+        }else{
+            $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_OPEN_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
+        }
         if($metadata->state == sdiMetadata::INPROGRESS){
             $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_IMPORT'), 'import', 'btn-small', $importrefactions, true);
         }
-        $toolbar->appendBtnRoute(JText::_('JCANCEL'), JRoute::_('index.php?option=com_easysdi_core&view=resources'), 'btn-small btn-danger');
+        $toolbar->appendBtnRoute(JText::_('COM_EASYSDI_CATALOG_BACK'), JRoute::_('index.php?option=com_easysdi_core&view=resources'), 'btn-small btn-danger btn-back-ressources');
 
         return $toolbar->renderToolbar();
     }

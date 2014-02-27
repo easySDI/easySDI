@@ -1,6 +1,6 @@
 js = jQuery.noConflict();
 var currentUrl = location.protocol + '//' + location.host + location.pathname;
-var tabIsOpen = false;
+var tabIsOpen;
 js('document').ready(function() {
 
 
@@ -22,7 +22,7 @@ js('document').ready(function() {
     /**
      * Control the "Open All" button.
      */
-    js('#btn_toogle_all').click(function() {
+    js('#btn_toggle_all').click(function() {
         var btn = js(this);
         if (tabIsOpen) {
             btn.text('Tout ouvrir');
@@ -112,7 +112,7 @@ js('document').ready(function() {
                     });
                     break;
                 case 'preview':
-                    js('input[name="task"]').val(task);
+                   js('input[name="task"]').val(task);
                    js.ajax({
                         url: currentUrl + '?' + task,
                         type: js('#form-metadata').attr('method'),
