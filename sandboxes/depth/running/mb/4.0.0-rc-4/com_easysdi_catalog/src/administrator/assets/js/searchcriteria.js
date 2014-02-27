@@ -2,7 +2,9 @@ js = jQuery.noConflict();
 var currentUrl = location.protocol + '//' + location.host + location.pathname;
 
 /**
- * filter resource type for a specific catalog
+ * 
+ * @param {type} catalog_id
+ * @returns {undefined}filter resource type for a specific catalog
  */
 function filterResourceType(catalog_id) {
     var selectedValues = js('#jform_resourcetype_id').val();
