@@ -11,6 +11,8 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.modellist');
 
+require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
+
 /**
  * Methods supporting a list of Easysdi_shop records.
  */
@@ -25,8 +27,12 @@ class Easysdi_shopModelOrders extends JModelList {
      */
     public function __construct($config = array()) {
         parent::__construct($config);
+        
+        //Before displaying list, Archive and Historize old orders
+        $this->archiveOrders();
+        $this->historizeOrders();
     }
-
+    
     /**
      * Method to auto-populate the model state.
      *
@@ -72,6 +78,7 @@ class Easysdi_shopModelOrders extends JModelList {
      * @since	1.6
      */
     protected function getListQuery() {
+        
         // Create a new query object.
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -157,5 +164,86 @@ class Easysdi_shopModelOrders extends JModelList {
         $db->setQuery($query);
         return $db->loadObjectList();
     }
+    
+    /**
+     * Archive orders if they are older than defined in admin
+     */
+    function archiveOrders() {
+        $app = JFactory::getApplication();
+        $archiveorderdelay = $app->getParams('com_easysdi_shop')->get('archiveorderdelay');
+        
+        if (is_numeric($archiveorderdelay))
+        {
+            // Get UTC for now.
+            $dNow = new JDate;
+            $dStart = clone $dNow;
+            $dStart->modify('-'.$archiveorderdelay.' day');
 
+            $db = $this->getDbo();
+            
+            $query = $db->getQuery(true);
+
+            $query->update('#__sdi_order');
+            $query->set('orderstate_id = 1');
+            $query->where('completed < ' . $db->quote($dStart->format('Y-m-d H:i:s')));
+            $query->where('orderstate_id = 3');
+
+            $db->setQuery($query);
+
+            return $db->execute();
+        }
+    }
+    
+    /**
+     * Historize orders if they are older than defined in admin
+     * This will also delete files associated to the order
+     */
+    function historizeOrders() {
+        $app = JFactory::getApplication();
+        $historyorderdelay = $app->getParams('com_easysdi_shop')->get('historyorderdelay');
+        
+         if (is_numeric($historyorderdelay))
+         {
+            // Get UTC for now.
+            $dNow = new JDate;
+            $dStart = clone $dNow;
+            $dStart->modify('-'.$historyorderdelay.' day');
+
+
+            //Get All the orders to historize and delete associated files
+            //Load all status value
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->select('d.id, d.order_id, o.alias ');
+            $query->from($db->quoteName('#__sdi_order','o'));
+            $query->join('INNER',$db->quoteName('#__sdi_order_diffusion','d'). ' ON (' . $db->quoteName('d.order_id') . ' = ' . $db->quoteName('o.id') . ')');
+            $query->where('o.completed < ' . $db->quote($dStart->format('Y-m-d H:i:s')));
+            $query->where('o.orderstate_id = 1');
+            $query->where('d.productstate_id = 1');
+            $db->setQuery($query);
+            $orderstohistorize = $db->loadObjectList();
+            
+            $orderdirectory = $app->getParams('com_easysdi_shop')->get('orderresponseFolder');
+            
+            foreach ($orderstohistorize as $ordertohistorize) {
+               //Suppression du répertoire de stockage de la commande
+               $folder = $app->getParams('com_easysdi_shop')->get('orderresponseFolder');
+               $requestDir = JPATH_BASE. '/' .$folder . '/' . $ordertohistorize->order_id; 
+               //recursieve delete
+               Easysdi_shopHelper::rrmdir($requestDir);
+            }
+                        
+            //Change status of the orders to historised
+            $query = $db->getQuery(true);
+
+            $query->update('#__sdi_order');
+            $query->set('orderstate_id = 2');
+            $query->where('completed < ' . $db->quote($dStart->format('Y-m-d H:i:s')));
+            $query->where('orderstate_id = 1');
+
+            $db->setQuery($query);
+
+            return $db->execute();
+         }
+    }
 }
