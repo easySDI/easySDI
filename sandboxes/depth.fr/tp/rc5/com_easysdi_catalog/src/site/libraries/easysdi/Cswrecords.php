@@ -160,8 +160,9 @@ class Cswrecords extends SearchForm {
 
 		/*echo $body;
 		die();*/
-
+        
         $results = $this->CURLRequest('POST', $catalogurl, $body);
+        
         if (!$results) {
             return false;
         }

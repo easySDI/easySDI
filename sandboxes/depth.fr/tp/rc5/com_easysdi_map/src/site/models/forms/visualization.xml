@@ -58,7 +58,7 @@
     </fieldset> 
 
     <fieldset name="view">
-        <field name="maplayer_id" type="text" size="40" class="inputbox" required="true" filter="safehtml" /> 
+        <field name="maplayer_id" type="text" size="40" class="inputbox"  filter="safehtml" /> 
     </fieldset>
     
     

@@ -77,10 +77,10 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                             <legend><?php echo JText::_('COM_EASYSDI_MAP_FORM_FIELDSET_LEGEND_VIEW'); ?></legend>
                             <div class="control-group" id="maplayer_id">
                                 <div class="control-label">
-                                    <label id="jform_maplayer_id-lbl" for="jform_maplayer_id" class="hasTip required" title="<?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_VISUALIZATION_MAPLAYER_ID'); ?>::<?php echo JText::_('COM_EASYSDI_MAP_FORM_DESC_VISUALIZATION_MAPLAYER_ID'); ?>"><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_VISUALIZATION_MAPLAYER_ID'); ?><span class="star">&#160;*</span></label>
+                                    <label id="jform_maplayer_id-lbl" for="jform_maplayer_id" class="hasTip" title="<?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_VISUALIZATION_MAPLAYER_ID'); ?>::<?php echo JText::_('COM_EASYSDI_MAP_FORM_DESC_VISUALIZATION_MAPLAYER_ID'); ?>"><?php echo JText::_('COM_EASYSDI_MAP_FORM_LBL_VISUALIZATION_MAPLAYER_ID'); ?></label>
                                 </div>
                                 <div class="controls">
-                                    <select id="jform_maplayer_id" name="jform[maplayer_id]" class="inputbox required" size="1" >
+                                    <select id="jform_maplayer_id" name="jform[maplayer_id]" class="inputbox" size="1" >
                                         <option value="" ></option>
                                         <?php foreach ($this->authorizedLayers as $maplayer) : ?>
                                             <option value="<?php echo $maplayer->id; ?>" <?php

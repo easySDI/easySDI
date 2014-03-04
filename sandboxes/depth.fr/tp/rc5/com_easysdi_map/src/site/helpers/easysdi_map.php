@@ -571,73 +571,12 @@ abstract class Easysdi_mapHelper {
             //Acces not allowed
             if (!in_array($service->access, $user->getAuthorisedViewLevels()))
                 continue;
-            switch ($service->serviceconnector_id) :
-                case 2 :
-                    $config .= ' 
-                    "' . $service->alias . '":
-                    {
-                    ptype: "sdi_gxp_wmssource",
-                    url: "' . $service->resourceurl . '"
-                    },
-                    ';
-                    break;
-                case 11 :
-                    $config .= ' 
-                    "' . $service->alias . '":
-                    {
-                    ptype: "gxp_wmscsource",
-                     url: "' . $service->resourceurl . '"
-                    },
-                    ';
-                    break;
-                case 12 :
-                    $config .= ' 
-                    "' . $service->alias . '":
-                    {
-                    ptype: "sdi_gxp_bingsource"
-                    },
-                    ';
-                    break;
-                case 13 :
-                    $config .= ' 
-                    "' . $service->alias . '":
-                    {
-                    ptype: "sdi_gxp_googlesource"
-                    },
-                    ';
-                    break;
-                case 14 :
-                    $config .= ' 
-                    "' . $service->alias . '":
-                    {
-                    ptype: "sdi_gxp_osmsource"
-                    },
-                    ';
-                    break;
-            endswitch;
+            $config .= Easysdi_mapHelper::getServiceDescription($service);
         endforeach;
 
         if (isset($item->virtualservices)) :
             foreach ($item->virtualservices as $service) {
-                switch ($service->serviceconnector_id) {
-                    case 2 :
-                        $config .= ' 
-                    "' . $service->alias . '":
-                        {
-                        ptype: "sdi_gxp_wmssource",
-                        url: "' . $service->url . '"
-                        },
-                        ';
-                        break;
-                    case 11 :
-                        $config .= ' 
-                    "' . $service->alias . '":
-                        {
-                        ptype: "gxp_wmscsource",
-                        url: "' . $service->url . '"
-                        },
-                    ';
-                }
+                $config .= Easysdi_mapHelper::getServiceDescription($service);
             }
         endif;
 
@@ -685,142 +624,9 @@ abstract class Easysdi_mapHelper {
                     if (!in_array($layer->access, $user->getAuthorisedViewLevels()))
                         continue;
 
-                    $config .= ' { ';
-
-                    if ($layer->asOL || $layer->serviceconnector == 'WMTS') {
-                        $config .= 'source : "ol", ';
-                        
-                        switch ($layer->serviceconnector) {
-                            case 'WMTS' :
-                                $config .= ' 
-                                type: "OpenLayers.Layer.WMTS",
-                                args: [
-                                {
-                                name:"' . $layer->name . '", 
-                                url : "' . $layer->serviceurl . '", 
-                                layer: "' . $layer->layername . '", ';
-
-                                if ($layer->isdefaultvisible == 1)
-                                    $config .= 'visibility: true,';
-                                else
-                                    $config .= 'visibility: false,';
-
-                                if ($layer->istiled == 1)
-                                    $config .= 'singleTile: true,';
-                                else
-                                    $config .= 'singleTile: false,';
-
-                                $config .= 'transitionEffect: "resize",
-                                opacity: ' . $layer->opacity . ',
-                                style: "' . $layer->asOLstyle . '",
-                                matrixSet: "' . $layer->asOLmatrixset . '",';
-                                
-                                $config .= $layer->asOLoptions;
-
-                                $config .=' }
-                                ],';
-
-                                break;
-                            case 'WMS' :
-                            case 'WMSC' :
-                                $config .= ' 
-                                
-                                type : "OpenLayers.Layer.WMS",
-                                args: 
-                                [
-                                "' . $layer->name . '",
-                                "' . $layer->serviceurl . '",
-                                {
-                                layers: "' . $layer->layername . '", 
-                                version: "' . $layer->version . '"';
-                                if($layer->serviceconnector == 'WMSC'):
-                                    $config .= ', tiled: true';
-                                endif;
-                                
-                                $config .= '
-                                },
-                                {';
-
-                                if ($layer->isdefaultvisible == 1)
-                                    $config .= 'visibility :  true';
-                                else
-                                    $config .= 'visibility :  false';
-                                $config .= ',';
-
-                                if ($layer->istiled == 1)
-                                    $config .= 'singleTile :  true';
-                                else
-                                    $config .= 'singleTile :  false';
-                                $config .=',
-                                opacity: ' . $layer->opacity . ',
-                                transitionEffect: "resize",
-                                style: "' . $layer->asOLstyle . '",';
-
-                                                                
-                                $config .= $layer->asOLoptions;
-                                $config .= '}
-                                ],';
-                                break;
-                        }
-                        if ($group->isbackground)
-                            $config .= 'group: "background",';
-                        else
-                            $config .= 'group: "' . $group->alias . '",';
-                    }
-                    else {
-                        switch ($layer->serviceconnector) {
-                            case 'WMTS':
-                                break;
-                            default :
-                                $config .= '
-                                source: "' . $layer->servicealias . '",';
-
-                                if ($layer->istiled == 1)
-                                    $config .= 'tiled :  true,';
-                                else
-                                    $config .= 'tiled :  false,';
-
-                                if (!empty($layer->version)) {
-                                    $config .= 'version: "' . $layer->version . '",';
-                                }
-                                
-                                if (!empty($layer->attribution)) {
-                                    $config .= 'attribution: "' . $layer->attribution . '",';
-                                }
-                                $config .= 'name: "' . $layer->layername . '",
-                                title: "' . $layer->name . '",';
-                                if ($group->isbackground)
-                                    $config .= ' group : "background",';
-                                else
-                                    $config .= ' group : "' . $group->alias . '",';
-                                if ($group->alias == "background")
-                                    $config .= 'fixed: true,';
-
-                                if ($layer->isdefaultvisible == 1)
-                                    $config .= 'visibility :  true,';
-                                else
-                                    $config .= 'visibility :  false,';
-
-                                $config .= 'opacity: ' . $layer->opacity . ',
-                                
-                                ';
-                                break;
-                        }
-                    }
-
-                    if (!empty($layer->metadata_guid)):
-                        $config .= 'href: "' . Easysdi_mapHelper::getLayerDetailSheetToolUrl($layer->metadata_guid, JFactory::getLanguage()->getTag(), '', 'map') . '",';
-                    elseif(!empty($layer->metadatalink)):
-                        $config .= 'href: "' . $layer->metadatalink . '",';
-                    endif;
-                    if (!empty($layer->hasdownload)):
-                        $config .= 'download: "' . Easysdi_mapHelper::getLayerDownloadToolUrl($layer->diffusion_id) . '",';
-                    endif;
-                    if (!empty($layer->hasextraction)):
-                        $config .= 'order: "' . Easysdi_mapHelper::getLayerOrderToolUrl($layer->metadata_guid, JFactory::getLanguage()->getTag(), '') . '",';
-                    endif;
-
-                    $config .= ' }, ';
+                    $config .= Easysdi_mapHelper::getLayerDescription($layer,$group);
+                    
+                    
                 }
             }
         }
@@ -857,6 +663,268 @@ abstract class Easysdi_mapHelper {
 ';
         $config .='}';
 
+        return $config;
+    }
+    
+    
+    public static function getServiceDescription($service){
+        $url='';
+        //Initilization of the service url if the service is physic or virtual
+        if (isset($service->resourceurl)){
+            $url = $service->resourceurl;
+        }elseif (isset($service->url)){
+            $url = $service->url;
+        }
+            $config='';
+            switch ($service->serviceconnector_id) :
+                case 2 :
+                    $config = ' 
+                    "' . $service->alias . '":
+                    {
+                    ptype: "sdi_gxp_wmssource",
+                    url: "' . $url . '"
+                    },
+                    ';
+                    break;
+                case 11 :
+                    $config = ' 
+                    "' . $service->alias . '":
+                    {
+                    ptype: "gxp_wmscsource",
+                     url: "' . $url . '"
+                    },
+                    ';
+                    break;
+                case 12 :
+                    $config = ' 
+                    "' . $service->alias . '":
+                    {
+                    ptype: "sdi_gxp_bingsource"
+                    },
+                    ';
+                    break;
+                case 13 :
+                    $config = ' 
+                    "' . $service->alias . '":
+                    {
+                    ptype: "sdi_gxp_googlesource"
+                    },
+                    ';
+                    break;
+                case 14 :
+                    $config = ' 
+                    "' . $service->alias . '":
+                    {
+                    ptype: "sdi_gxp_osmsource"
+                    },
+                    ';
+                    break;
+            endswitch;
+            return $config;
+    }
+    
+    
+    public static function getExtraServiceDescription($service){
+        $url='';
+        $config='';
+        //Initilization of the service url if the service is physic or virtual
+        if (isset($service->resourceurl)){
+            $url = $service->resourceurl;
+        }elseif (isset($service->url)){
+            $url = $service->url;
+        }
+            switch ($service->serviceconnector_id) :
+                case 2 :
+                    $config ='{id:"' . $service->alias . '",';
+                    $config .= '
+                    ptype: "sdi_gxp_wmssource",
+                    hidden : "true",
+                    url: "' . $url . '"
+                    }
+                    ';
+                    break;
+                case 11 :
+                    $config ='{id:"' . $service->alias . '",';
+                    $config .= ' 
+                    ptype: "gxp_wmscsource",
+                    hidden : "true",
+                    url: "' . $url . '"
+                    }
+                    ';
+                    break;
+                case 12 :
+                    $config ='{id:"' . $service->alias . '",';
+                    $config .= '
+                    ptype: "sdi_gxp_bingsource",
+                    hidden : "true",
+                    }
+                    ';
+                    break;
+                case 13 :
+                    $config ='{id:"' . $service->alias . '",';
+                    $config .= '
+                    ptype: "sdi_gxp_googlesource",
+                    hidden : "true",
+                    }
+                    ';
+                    break;
+                case 14 :
+                    $config ='{id:"' . $service->alias . '",';
+                    $config .= '
+                    ptype: "sdi_gxp_osmsource",
+                    hidden : "true",
+                    }
+                    ';
+                    break;
+                default :
+                    $config ='{id:"' . $service->alias . '",';
+                    $config .= '
+                    ptype: "sdi_gxp_olsource",
+                    hidden : "true",
+                    }
+                    ';
+            endswitch;
+            return $config;
+    }
+        
+    public static function getLayerDescription($layer, $group){
+        $config = ' { ';
+
+        if ($layer->asOL) {
+            $config .= 'source : "ol", ';
+
+            switch ($layer->serviceconnector) {
+                case 'WMTS' :
+                    $config .= ' 
+                    type: "OpenLayers.Layer.WMTS",
+                    args: [
+                    {
+                    name:"' . $layer->name . '", 
+                    url : "' . $layer->serviceurl . '", 
+                    layer: "' . $layer->layername . '", ';
+
+                    if ($layer->isdefaultvisible == 1)
+                        $config .= 'visibility: true,';
+                    else
+                        $config .= 'visibility: false,';
+
+                    if ($layer->istiled == 1)
+                        $config .= 'singleTile: true,';
+                    else
+                        $config .= 'singleTile: false,';
+
+                    $config .= 'transitionEffect: "resize",
+                    opacity: ' . $layer->opacity . ',
+                    style: "' . $layer->asOLstyle . '",
+                    matrixSet: "' . $layer->asOLmatrixset . '",';
+
+                    $config .= $layer->asOLoptions;
+
+                    $config .=' }
+                    ],';
+
+                    break;
+                case 'WMS' :
+                case 'WMSC' :
+                    $config .= ' 
+
+                    type : "OpenLayers.Layer.WMS",
+                    args: 
+                    [
+                    "' . $layer->name . '",
+                    "' . $layer->serviceurl . '",
+                    {
+                    layers: "' . $layer->layername . '", 
+                    version: "' . $layer->version . '"';
+                    if($layer->serviceconnector == 'WMSC'):
+                        $config .= ', tiled: true';
+                    endif;
+
+                    $config .= '
+                    },
+                    {';
+
+                    if ($layer->isdefaultvisible == 1)
+                        $config .= 'visibility :  true';
+                    else
+                        $config .= 'visibility :  false';
+                    $config .= ',';
+
+                    if ($layer->istiled == 1)
+                        $config .= 'singleTile :  true';
+                    else
+                        $config .= 'singleTile :  false';
+                    $config .=',
+                    opacity: ' . $layer->opacity . ',
+                    transitionEffect: "resize",
+                    style: "' . $layer->asOLstyle . '",';
+
+
+                    $config .= $layer->asOLoptions;
+                    $config .= '}
+                    ],';
+                    break;
+            }
+            if ($group->isbackground)
+                $config .= 'group: "background",';
+            else
+                $config .= 'group: "' . $group->alias . '",';
+        }
+        else {
+            switch ($layer->serviceconnector) {
+                case 'WMTS':
+                    break;
+                default :
+                    $config .= '
+                    source: "' . $layer->servicealias . '",';
+
+                    if ($layer->istiled == 1)
+                        $config .= 'tiled :  true,';
+                    else
+                        $config .= 'tiled :  false,';
+
+                    if (!empty($layer->version)) {
+                        $config .= 'version: "' . $layer->version . '",';
+                    }
+
+                    if (!empty($layer->attribution)) {
+                        $config .= 'attribution: "' . $layer->attribution . '",';
+                    }
+                    $config .= 'name: "' . $layer->layername . '",
+                    title: "' . $layer->name . '",';
+                    if ($group->isbackground)
+                        $config .= ' group : "background",';
+                    else
+                        $config .= ' group : "' . $group->alias . '",';
+                    if ($group->alias == "background")
+                        $config .= 'fixed: true,';
+
+                    if ($layer->isdefaultvisible == 1)
+                        $config .= 'visibility :  true,';
+                    else
+                        $config .= 'visibility :  false,';
+
+                    $config .= 'opacity: ' . $layer->opacity . ',
+
+                    ';
+                    break;
+            }
+        }
+
+        if (!empty($layer->metadata_guid)):
+            $config .= 'href: "' . Easysdi_mapHelper::getLayerDetailSheetToolUrl($layer->metadata_guid, JFactory::getLanguage()->getTag(), '', 'map') . '",';
+        elseif(!empty($layer->metadatalink)):
+            $config .= 'href: "' . $layer->metadatalink . '",';
+        endif;
+        if (!empty($layer->hasdownload)):
+            $config .= 'download: "' . Easysdi_mapHelper::getLayerDownloadToolUrl($layer->diffusion_id) . '",';
+        endif;
+        if (!empty($layer->hasextraction)):
+            $config .= 'order: "' . Easysdi_mapHelper::getLayerOrderToolUrl($layer->metadata_guid, JFactory::getLanguage()->getTag(), '') . '",';
+        endif;
+
+        $config .= ' }, ';
+        
         return $config;
     }
     
