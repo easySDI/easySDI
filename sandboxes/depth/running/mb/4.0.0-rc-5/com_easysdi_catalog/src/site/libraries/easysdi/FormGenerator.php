@@ -632,7 +632,7 @@ class FormGenerator {
                 $xpath = $node->getNodePath();
                 $nodeCsw = $this->domXpathCsw->query('/*' . $node->getNodePath())->item(0);
                 if (isset($nodeCsw)) {
-                    $node->nodeValue = htmlentities($nodeCsw->nodeValue);
+                    $node->nodeValue = htmlspecialchars($nodeCsw->nodeValue);
 
                     if (isset($nodeCsw->attributes)) {
                         foreach ($nodeCsw->attributes as $attribute) {

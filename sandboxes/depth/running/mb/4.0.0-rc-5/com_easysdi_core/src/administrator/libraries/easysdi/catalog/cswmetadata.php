@@ -42,7 +42,7 @@ class cswmetadata {
     public $catalogurl = null;
 
     /**
-     * 
+     * @var DOMDocument
      */
     public $dom = null;
 

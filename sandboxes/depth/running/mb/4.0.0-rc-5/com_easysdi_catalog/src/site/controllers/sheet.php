@@ -10,7 +10,7 @@
 // No direct access
 defined('_JEXEC') or die;
 
-require_once JPATH_COMPONENT . '/controller.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/controller.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/cswmetadata.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/mpdf/mpdf.php';
 
@@ -19,17 +19,24 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/mpdf/
  */
 class Easysdi_catalogControllerSheet extends Easysdi_catalogController {
 
-    public function exportPDF() {
-        $id = JFactory::getApplication()->input->get('id', null, 'STRING');
-        $catalog = JFactory::getApplication()->input->get('catalog', null, 'STRING');
-        $type = JFactory::getApplication()->input->get('type', null, 'STRING');
-        $preview = JFactory::getApplication()->input->get('preview', null, 'STRING');
-        $lang = JFactory::getApplication()->input->get('lang', null, 'STRING');
+    public function exportPDF($id = null, $download = true) {
+        if (empty($id)) {
+            $id = JFactory::getApplication()->input->get('id', null, 'STRING');
+            $catalog = JFactory::getApplication()->input->get('catalog', null, 'STRING');
+            $type = JFactory::getApplication()->input->get('type', null, 'STRING');
+            $preview = JFactory::getApplication()->input->get('preview', null, 'STRING');
+            $lang = JFactory::getApplication()->input->get('lang', null, 'STRING');
+        } else {
+            $lang = JFactory::getLanguage()->getTag();
+            $catalog = "";
+            $type = "";
+            $preview = "search_list";
+        }
         $metadata = new cswmetadata($id);
         $metadata->load('complete');
-        $metadata->extend($catalog, $type,$preview, 'true', $lang);
-        $file = $metadata->applyXSL($catalog,$preview, $type);
-        
+        $metadata->extend($catalog, $type, $preview, 'true', $lang);
+        $file = $metadata->applyXSL($catalog, $preview, $type);
+
         $tmp = uniqid();
         $tmpfile = JPATH_BASE . '/tmp/' . $tmp;
         file_put_contents($tmpfile . '.xml', $file);
@@ -37,18 +44,29 @@ class Easysdi_catalogControllerSheet extends Easysdi_catalogController {
         $mpdf->WriteHTML($file);
         $mpdf->Output($tmpfile . '.pdf', 'F');
         $file = $mpdf->Output('', 'S');
-        Easysdi_catalogControllerSheet::setResponse($file, $tmpfile . '.pdf', 'application/pdf', 'report.pdf', strlen($file));
+        if ($download) {
+            Easysdi_catalogControllerSheet::setResponse($file, $tmpfile . '.pdf', 'application/pdf', 'report.pdf', strlen($file));
+        } else {
+            return $file;
+        }
     }
 
-    public function exportXML() {
-        $id = JFactory::getApplication()->input->get('id', null, 'STRING');
+    public function exportXML($id = null, $download = true) {
+        if (empty($id)) {
+            $id = JFactory::getApplication()->input->get('id', null, 'STRING');
+        }
         $metadata = new cswmetadata($id);
         $metadata->load('complete');
+        $metadata->dom->formatOutput = FALSE;
         $file = $metadata->dom->saveXML();
         $tmp = uniqid();
         $tmpfile = JPATH_BASE . '/tmp/' . $tmp;
         file_put_contents($tmpfile . '.xml', $file);
-        Easysdi_catalogControllerSheet::setResponse($file, $tmpfile . '.xml', 'text/xml', 'report.xml', strlen($file));
+        if ($download) {
+            Easysdi_catalogControllerSheet::setResponse($file, $tmpfile . '.xml', 'text/xml', 'report.xml', strlen($file));
+        } else {
+            return $file;
+        }
     }
 
     function setResponse($file, $filename, $contenttype, $downloadname, $size) {
