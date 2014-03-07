@@ -10,7 +10,7 @@ js(document).ready(function() {
         // Trigger for the calendar (button ID)
         button: "published_img",
         // Alignment (defaults to "Bl")
-        align: "Tl",
+        align: "Bl",
         singleClick: true,
         firstDay: 1
     });
@@ -18,6 +18,7 @@ js(document).ready(function() {
 });
 
 function showModal(id) {
+    js('html, body').animate({ scrollTop: 0 }, 'slow');
     js('input[name^="id"]').val(id);
     js('#publishModal').modal('show');
 }

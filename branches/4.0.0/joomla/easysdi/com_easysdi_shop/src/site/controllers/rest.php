@@ -1,6 +1,8 @@
 <?php
 
 require_once JPATH_COMPONENT . '/controller.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/controllers/sheet.php';
+
 
 /**
  * Description of rest
@@ -33,11 +35,14 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
     /** @var JDatabaseDriver Description */
     private $db;
 
-    /** @var DOMDocument Description */
+    /** @var DOMDocument */
     private $request;
 
-    /** @var DOMDocument Description */
+    /** @var DOMDocument  */
     private $response;
+    
+    /** @var Easysdi_catalogControllerSheet */
+    private $sheet;
 
     function __construct() {
         parent::__construct();
@@ -45,6 +50,8 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $this->db = JFactory::getDbo();
         $this->request = new DOMDocument('1.0', 'utf-8');
         $this->response = new DOMDocument('1.0', 'utf-8');
+        
+        $this->sheet = new Easysdi_catalogControllerSheet();
     }
 
     /**
@@ -493,13 +500,14 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
 
         $query = $this->db->getQuery(true);
 
-        $query->select('d.id, d.guid, d.`name`, od.id orderdiffusion_id');
+        $query->select('d.id, m.guid, d.`name`, od.id orderdiffusion_id');
         $query->from('#__sdi_order o');
         $query->innerJoin('#__sdi_sys_ordertype ot on ot.id = o.ordertype_id');
         $query->innerJoin('#__sdi_order_diffusion od on o.id = od.order_id');
         $query->innerJoin('#__sdi_diffusion d on d.id = od.diffusion_id');
         $query->innerJoin('#__sdi_version v on d.version_id = v.id');
         $query->innerJoin('#__sdi_resource r on r.id = v.resource_id');
+        $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
         if (!empty($this->organism)) {
             $query->where('r.organism_id = ' . $this->organism->id);
         }
@@ -524,15 +532,20 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
      * @return DOMElement PRODUCT node
      */
     private function getProduct($order, $product) {
+        $xml = $this->sheet->exportXML($product->guid, FALSE);
+        $pdf = $this->sheet->exportPDF($product->guid, FALSE);
+        
         $root = $this->response->createElementNS($this->nsEasysdi, 'easysdi:PRODUCT');
         $root->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:METADATA_ID', $product->guid));
         $root->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:ID', $product->id));
         $root->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:NAME', $product->name));
-
+        $root->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:XML', base64_encode($xml)));
+        $root->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:PDF', base64_encode($pdf)));
+        
         $root->appendChild($this->getProductProperties($product));
 
-        $this->changeState($product->orderdiffusion_id, self::PRODUCTSTATEAWAIT);
-        $this->changeOrderState($order->id);
+        //$this->changeState($product->orderdiffusion_id, self::PRODUCTSTATEAWAIT);
+        //$this->changeOrderState($order->id);
 
         return $root;
     }
@@ -548,9 +561,10 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
 
         $query = $this->db->getQuery(true);
 
-        $query->select('p.`name`, pv.propertyvalue');
+        $query->select('p.`alias` as palias, pv.`alias` as pvalias');
         $query->from('#__sdi_order_diffusion od');
-        $query->innerJoin('#__sdi_order_propertyvalue pv on pv.orderdiffusion_id = od.id');
+        $query->innerJoin('#__sdi_order_propertyvalue opv on opv.orderdiffusion_id = od.id');
+        $query->innerJoin('#__sdi_propertyvalue pv on pv.id = opv.propertyvalue_id');
         $query->innerJoin('#__sdi_property p on p.id = pv.property_id');
         $query->where('od.id = ' . $product->orderdiffusion_id);
 
@@ -559,8 +573,8 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
 
         foreach ($propertiesdata as $propertydata) {
             $property = $this->response->createElementNS($this->nsEasysdi, 'easysdi:PROPERTY');
-            $property->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:CODE', $propertydata->name));
-            $property->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:VALUE', $propertydata->propertyvalue));
+            $property->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:CODE', $propertydata->palias));
+            $property->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:VALUE', $propertydata->pvalias));
 
             $properties->appendChild($property);
         }

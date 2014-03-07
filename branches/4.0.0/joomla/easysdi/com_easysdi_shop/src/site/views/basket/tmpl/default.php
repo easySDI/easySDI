@@ -190,9 +190,15 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                     
                     <div class="row-fluid" >                        
                             <div class="span6" >
-                                <a href="#modal-perimeter" class="btn btn-success" style="margin-bottom: 10px;" data-toggle="modal" >
-                                    <i class="icon-white icon-location"></i>
-                                    <span id="defineOrderBtn"> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER'); ?></span></a>
+                                <?php
+                                //If one of the products is restricted and the organism of the user doesn't have a perimeter, the selection can't be done
+                                if ($this->item->isrestrictedbyperimeter && ($this->user->perimeter=='')){?>
+                                    <div id="help-perimeter" class="help-block"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER_ERROR'); ?></div>
+                                 <?php }else{ ?>
+                                    <a href="#modal-perimeter" class="btn btn-success" style="margin-bottom: 10px;" data-toggle="modal" >
+                                       <i class="icon-white icon-location"></i>
+                                       <span id="defineOrderBtn"> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_DEFINE_PERIMETER'); ?></span></a>
+                                 <?php } ?>
                             </div>
                          
                         </div>
@@ -250,14 +256,6 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                             </div>
                         </div>
                         <div class="span4">
-                            <!--<div class="row-fluid">
-                                <div class="span4">
-                                    <div class="btn-group" id="btns-selection" data-toggle="buttons-radio">
-                                        <a href="#" id="btn-selection" class="btn"  data-toggle="button" onClick="toggleSelectControl('selection');return false;"><i class="icon-pencil-2"></i></a>
-                                        <a href="#" id="btn-pan" class="btn active"  data-toggle="button" onClick="toggleSelectControl('pan'); return false;"><i class="icon-move"></i></a>
-                                    </div>                            
-                                </div>
-                            </div>-->
                             <br>
                             <br>
                             <div class="row-fluid">

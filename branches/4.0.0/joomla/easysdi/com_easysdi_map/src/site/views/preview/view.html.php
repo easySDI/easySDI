@@ -67,7 +67,7 @@ class Easysdi_mapViewPreview extends JViewLegacy {
         $item = $model->getData($params_array['previewmap']);
         foreach ($item->groups as $group):
             if ($group->isdefault) {
-                $defaultgroup = $group->alias;
+                $defaultgroup = $group;
                 break;
             }
         endforeach;
@@ -80,40 +80,62 @@ class Easysdi_mapViewPreview extends JViewLegacy {
             //If needed, build the link to the diffusion package ready to download
             $download = '';
             if (!empty($preview->diffusion) && $preview->diffusion->hasdownload == 1) {
-                $download = 'download: "' . htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&tmpl=component&id=' . $preview->diffusion->id) . '",';
+                $download = htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&tmpl=component&id=' . $preview->diffusion->id);
             }
             //Get the size iframe params
             $mapparams = JComponentHelper::getParams('com_easysdi_map');
             $mwidth = $mapparams->get('iframewidth');
             $mheight = $mapparams->get('iframeheight');
-            if ($preview->service->reflectedurl)
+            if (isset($preview->service->resourceurl))
             {
-                $url = $preview->service->reflectedurl;
+                $url = $preview->service->resourceurl;
             }else{
                 $url = $preview->service->serviceurl;
             }
             
-            $this->addscript .= ' 
-                    sourceConfig' . $preview->id . ' = {id :"' . $preview->service->alias . '",
-                                    ptype: "sdi_gxp_wmssource",
-                                    hidden : "true",
-                                    url: "' . $url . '"
-                                    };
-
-                    layerConfig' . $preview->id . ' = { group: "' . $defaultgroup . '",
-                                    name: "' . $preview->maplayer->layername . '",
+            
+            
+            $this->addscript .= 'sourceConfig' . $preview->id . ' = ' . Easysdi_mapHelper::getExtraServiceDescription($preview->service);
+            
+           
+            
+            $layerConfig = 'layerConfig' . $preview->id . ' = { group: "' . $defaultgroup->alias . '",';
+            switch ($preview->service->serviceconnector_id) :
+                case 2 :
+                case 11 :
+                    $layerConfig .=  'type: "OpenLayers.Layer.WMS",';
+                    $layerConfig .= ' name: "' . $preview->maplayer->layername . '",
                                     attribution: "' . addslashes($preview->maplayer->attribution) . '",
                                     href : "' . $href . '",
-                                    ' . $download . '
+                                    download: "' . $download . '",
                                     opacity: 1,
                                     source: "' . $preview->service->alias . '",
                                     tiled: true,
-                                    title: "' . $preview->maplayer->layername . '",
+                                    title: "' . $preview->maplayer->name . '",
                                     iwidth:"' . $mwidth . '",
                                     iheight:"' . $mheight . '",
-                                    visibility: true};
-
-                    app.addExtraLayer(sourceConfig' . $preview->id . ', layerConfig' . $preview->id . ');';
+                                    visibility: true};';
+                    break;
+                case 3 :
+                    $layerConfig .=  'type: "OpenLayers.Layer.WMTS",';
+                    $layerConfig .= ' name: "' . $preview->maplayer->layername . '",';
+                    $layerConfig .=  'source : "'.$preview->service->alias.'",';
+                    $layerConfig .=  'title : "'.$preview->maplayer->name.'",';
+                    $layerConfig .=  'args: [{';
+                    $layerConfig .=  'name : "'.$preview->maplayer->name.'",';
+                    $layerConfig .=  'layer : "'.$preview->maplayer->layername.'",';
+                    $layerConfig .=  'matrixSet: "'.$preview->maplayer->asOLmatrixset.'",';
+                    $layerConfig .=  'url: "'.$preview->service->resourceurl.'",';
+                    $layerConfig .=  'style : "'.$preview->maplayer->asOLstyle.'",';
+                    $layerConfig .=  $preview->maplayer->asOLoptions;    
+                    $layerConfig .=  '}]};';
+                    break;
+            endswitch;
+            
+            
+            $this->addscript .= $layerConfig;
+            $this->addscript .= 'app.addExtraLayer(sourceConfig' . $preview->id . ', layerConfig' . $preview->id . ');';        
+                    
         endforeach;
         $this->addscript .= '});';
 

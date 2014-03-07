@@ -42,7 +42,7 @@ class cswmetadata {
     public $catalogurl = null;
 
     /**
-     * 
+     * @var DOMDocument
      */
     public $dom = null;
 
@@ -370,25 +370,9 @@ class cswmetadata {
                         $view->appendChild($viewlink);
                         $action->appendChild($view);
 
-//                    sourceConfig = {id :"'.$this->item->service->alias.'",
-//                                    ptype: "sdi_gxp_wmssource",
-//                                    url: "'.$this->item->service->resourceurl.'"
-//                                    };
-//
-//                    layerConfig = { group: "'.$defaultgroup.'",
-//                                    name: "'.$this->item->layername.'",
-//                                    attribution: "'.addslashes ($this->item->attribution).'",
-//                                    opacity: 1,
-//                                    source: "'.$this->item->service->alias.'",
-//                                    group:"",
-//                                    tiled: true,
-//                                    title: "'.$this->item->layername.'",
-//                                    visibility: true};
-//
-//                    app.addExtraLayer(sourceConfig, layerConfig)
                         if ($visualization->servicetype == 'physical')://Physical
                             $query = $this->db->getQuery(true)
-                                    ->select('id, alias, resourceurl')
+                                    ->select('id, alias, resourceurl, serviceconnector_id')
                                     ->from('#__sdi_physicalservice')
                                     ->where('id = ' . $visualization->service_id)
                             ;
@@ -396,7 +380,7 @@ class cswmetadata {
                             $service = $this->db->loadObject();
                         else://Virtual
                             $query = $this->db->getQuery(true)
-                                    ->select('id, alias, url, reflectedurl')
+                                    ->select('id, alias, url, reflectedurl, serviceconnector_id')
                                     ->from('#__sdi_virtualservice')
                                     ->where('id = ' . $visualization->service_id)
                             ;
@@ -421,16 +405,77 @@ class cswmetadata {
                             $this->db->setQuery($query);
                             $group = $this->db->loadResult();
                         }
-
+                        
+                        $maplayer = JTable::getInstance('layer', 'Easysdi_mapTable');
+                        $maplayer->load($visualization->maplayer_id);
+                       
 //                        $href = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $this->metadata->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview . '&tmpl=component');
                         $href = Easysdi_mapHelper::getLayerDetailSheetToolUrl($this->metadata->guid, $lang, $catalog, $preview) ;
-                        $sourceconfig = '{id :"' . $service->alias . '",hidden : "true", ptype: "sdi_gxp_wmssource",url: "' . $service->resourceurl . '"}';
+                        //$sourceconfig = '{id :"' . $service->alias . '",hidden : "true", ptype: "sdi_gxp_wmssource",url: "' . $service->resourceurl . '"}';
+                        $sourceconfig = Easysdi_mapHelper::getExtraServiceDescription($service);
 
                         $mapparams = JComponentHelper::getParams('com_easysdi_map');
                         $mwidth = $mapparams->get('iframewidth');
                         $mheight = $mapparams->get('iframeheight');
+                        
+                        
+                        //Get the default group to use to add the layer
+                        /*$model = JModelLegacy::getInstance('map', 'Easysdi_mapModel');
+                        $item = $model->getData($mapparams->data->previewmap);
+                        foreach ($item->groups as $group):
+                            if ($group->isdefault) {
+                                $defaultgroup = $group;
+                                break;
+                            }
+                        endforeach;*/
+                         $downloadurl='';
+                         $orderurl='';
+                        if (!empty($diffusion) && $diffusion->hasdownload == 1):
+                            $downloadurl = Easysdi_mapHelper::getLayerDownloadToolUrl($diffusion->id) ;                         
+                        endif;
+                        if (!empty($diffusion) && $diffusion->hasextraction == 1):
+                            $orderurl = Easysdi_mapHelper::getLayerOrderToolUrl($this->metadata->guid, $lang, $catalog);                 
+                        endif;
+                        
+                        $layerConfig = '{ ';//group: "' . $defaultgroup->alias . '",';
+                        switch ($service->serviceconnector_id) :
+                            case 2 :
+                            case 11 :
+                                $layerConfig .=  'type: "OpenLayers.Layer.WMS",';
+                                $layerConfig .= ' name: "' . $maplayer->layername . '",
+                                                attribution: "' . addslashes($maplayer->attribution) . '",
+                                                href : "' . $href . '",
+                                                download: "' . $downloadurl . '",
+                                                order: "' . $orderurl . '",
+                                                opacity: 1,
+                                                source: "' . $service->alias . '",
+                                                tiled: true,
+                                                title: "' . $maplayer->name . '",
+                                                iwidth:"' . $mwidth . '",
+                                                iheight:"' . $mheight . '",
+                                                visibility: true}';
+                                break;
+                            case 3 :
+                                $layerConfig .=  'type: "OpenLayers.Layer.WMTS",';
+                                $layerConfig .= ' name: "' . $maplayer->layername . '",';
+                                $layerConfig .= ' href: "' . $href . '",';
+                                $layerConfig .= ' download: "' . $downloadurl . '",';
+                                $layerConfig .= ' order: "' . $orderurl . '",';
+                                $layerConfig .=  'source : "'.$service->alias.'",';
+                                $layerConfig .=  'title : "'.$maplayer->name.'",';
+                                $layerConfig .=  'args: [{';
+                                $layerConfig .=  'name : "'.$maplayer->name.'",';
+                                $layerConfig .=  'layer : "'.$maplayer->layername.'",';
+                                $layerConfig .=  'matrixSet: "'.$maplayer->asOLmatrixset.'",';
+                                $layerConfig .=  'url: "'.$service->resourceurl.'",';
+                                $layerConfig .=  'style : "'.$maplayer->asOLstyle.'",';
+                                $layerConfig .=  $maplayer->asOLoptions;    
+                                $layerConfig .=  '}]}';
+                                break;
+                        endswitch;
+                        
 
-                        $layerconfig = '{ name: "' . $visualization->layername . '",attribution: "' . addslashes($visualization->attribution) . '",opacity: 1,source: "' . $service->alias . '",tiled: true,title: "' . $visualization->layername . '", visibility: true, href: "' . $href . '"';
+                       /*$layerconfig = '{ name: "' . $visualization->layername . '",attribution: "' . addslashes($visualization->attribution) . '",opacity: 1,source: "' . $service->alias . '",tiled: true,title: "' . $visualization->layername . '", visibility: true, href: "' . $href . '"';
                         if (!empty($diffusion) && $diffusion->hasdownload == 1):
 //                            $downloadurl = htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&tmpl=component&id=' . $diffusion->id);
                             $downloadurl = Easysdi_mapHelper::getLayerDownloadToolUrl($diffusion->id) ;    
@@ -444,10 +489,10 @@ class cswmetadata {
                         if(!empty($group)):
                             $layerconfig .= ', group: "' . $group . '"';  
                         endif;
-                        $layerconfig .='}';
+                        $layerconfig .='}';*/
 
                         $addtomap = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:addtomap');
-                        $addtomaponclick = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:onclick', ' window.parent.app.addExtraLayer(' . $sourceconfig . ', ' . $layerconfig . ')');
+                        $addtomaponclick = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:onclick', ' window.parent.app.addExtraLayer(' . $sourceconfig . ', ' . $layerConfig . ')');
                         $addtomap->appendChild($addtomaponclick);
                         $action->appendChild($addtomap);
                     endif;
@@ -826,7 +871,7 @@ class cswmetadata {
 
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($ch, CURLOPT_USERPWD, $juser->username . ":" . $juser->password);
-
+        
         $output = curl_exec($ch);
         curl_close($ch);
 
