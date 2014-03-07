@@ -112,12 +112,13 @@ class Easysdi_mapModelVisualization extends JModelForm {
         $cls .= ')';
 
         if (!empty($visualization_id)):
-            
             $exclusioncls = 'ml.id NOT IN (SELECT v.maplayer_id FROM #__sdi_visualization v WHERE v.id <> ' . $visualization_id . ' AND v.maplayer_id IS NOT NULL)';
         else:
-            
             $exclusioncls = 'ml.id NOT IN (SELECT v.maplayer_id FROM #__sdi_visualization v WHERE v.maplayer_id IS NOT NULL)';
         endif;
+        
+        //Exclude layers from de Bing, Google et OSM
+        $exclusionbgo = 'ml.id NOT IN (select ml.id from #__sdi_maplayer ml, #__sdi_physicalservice as ps WHERE ml.service_id = ps.id AND ml.service_id = ps.id and ml.servicetype = "physical" and serviceconnector_id IN (12,13,14))';
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
@@ -125,7 +126,8 @@ class Easysdi_mapModelVisualization extends JModelForm {
                 ->from('#__sdi_maplayer ml')
                 ->where($cls)
                 ->where('ml.state = 1')
-                ->where($exclusioncls);
+                ->where($exclusioncls)
+                ->where($exclusionbgo);
 
 
 
@@ -242,6 +244,10 @@ class Easysdi_mapModelVisualization extends JModelForm {
      * @since	1.6
      */
     public function save($data) {
+        $table = $this->getTable();
+
+        
+        
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('visualization.id');
         $state = (!empty($data['state'])) ? 1 : 0;
         $user = JFactory::getUser();
@@ -263,7 +269,7 @@ class Easysdi_mapModelVisualization extends JModelForm {
         endif;
 
 
-        $table = $this->getTable();
+        
         if ($table->save($data) === true) {
             $data['guid'] = $table->guid;
             if (!sdiModel::saveAccessScope($data))

@@ -15,6 +15,7 @@ JHtml::_('formbehavior.chosen', 'select');
 $document = JFactory::getDocument();
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/addToBasket.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/searchMetadata.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.debug.js');
 ?>
 <style>
     ul {

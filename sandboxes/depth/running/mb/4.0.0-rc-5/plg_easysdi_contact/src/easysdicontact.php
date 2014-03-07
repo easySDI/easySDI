@@ -98,11 +98,17 @@ class plgUserEasysdicontact extends JPlugin {
 			$rawresponse = curl_exec($session);
 			curl_close($session);
 			$response = json_decode($rawresponse);
-			if($response->{"status"} == "OK"){
-				JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDIUSER_OK_INVALIDATION'), 'notice');
-			}else{
-				JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDIUSER_ERR_INVALIDATION')." ".$response->{"message"}, 'error');
-			}
+                        
+                        $app =& JFactory::getApplication();
+                        
+                        //Display invalidation proxy message only on backend
+                        if ($app->isAdmin()) {
+                            if($response->{"status"} == "OK"){
+                                    JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDIUSER_OK_INVALIDATION'), 'notice');
+                            }else{
+                                    JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDIUSER_ERR_INVALIDATION')." ".$response->{"message"}, 'error');
+                            }
+                        }
 			return false; // if the user isn't new we don't create an easysdi user
 		}
 	

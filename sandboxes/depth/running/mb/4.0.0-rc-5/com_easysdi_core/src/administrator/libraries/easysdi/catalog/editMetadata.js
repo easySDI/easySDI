@@ -141,6 +141,7 @@ js('document').ready(function() {
                     break;
                 case 'setPublishDate':
                     if (document.formvalidator.isValid(form)) {
+                        js('html, body').animate({ scrollTop: 0 }, 'slow');
                         js('#publishModal').modal('show');
                         break;
                     }
