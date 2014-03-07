@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset>
+
+              <field name="id" type="text" default="0" label="COM_EASYSDI_CORE_FORM_LBL_VERSIONRELATION_ID"
+            readonly="true" class="readonly"
+            description="JGLOBAL_FIELD_ID_DESC" /> 
+
+       <field name="parent_id" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_VERSIONRELATION_PARENT_ID"
+            description="COM_EASYSDI_CORE_FORM_DESC_VERSIONRELATION_PARENT_ID" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="child_id" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_CORE_FORM_LBL_VERSIONRELATION_CHILD_ID"
+            description="COM_EASYSDI_CORE_FORM_DESC_VERSIONRELATION_CHILD_ID" 
+        
+        
+        
+        filter="safehtml" /> 
+
+ </fieldset> 
+
+ <fieldset 
+                        name="accesscontrol">
+                       <field name="asset_id" type="hidden" filter="unset" />
+                       <field name="rules"
+                            type="rules"
+                            label="JFIELD_RULES_LABEL"
+                            translate_label="false"
+                            filter="rules"
+                            validate="rules"
+                            class="inputbox"
+                            component="com_easysdi_core"
+                            section="versionrelation"
+                        />
+
+	</fieldset>
+
+</form>
