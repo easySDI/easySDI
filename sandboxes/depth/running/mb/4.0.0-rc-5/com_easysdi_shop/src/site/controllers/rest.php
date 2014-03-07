@@ -561,9 +561,10 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
 
         $query = $this->db->getQuery(true);
 
-        $query->select('p.`name`, pv.propertyvalue');
+        $query->select('p.`alias` as palias, pv.`alias` as pvalias');
         $query->from('#__sdi_order_diffusion od');
-        $query->innerJoin('#__sdi_order_propertyvalue pv on pv.orderdiffusion_id = od.id');
+        $query->innerJoin('#__sdi_order_propertyvalue opv on opv.orderdiffusion_id = od.id');
+        $query->innerJoin('#__sdi_propertyvalue pv on pv.id = opv.propertyvalue_id');
         $query->innerJoin('#__sdi_property p on p.id = pv.property_id');
         $query->where('od.id = ' . $product->orderdiffusion_id);
 
@@ -572,8 +573,8 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
 
         foreach ($propertiesdata as $propertydata) {
             $property = $this->response->createElementNS($this->nsEasysdi, 'easysdi:PROPERTY');
-            $property->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:CODE', $propertydata->name));
-            $property->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:VALUE', $propertydata->propertyvalue));
+            $property->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:CODE', $propertydata->palias));
+            $property->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:VALUE', $propertydata->pvalias));
 
             $properties->appendChild($property);
         }
