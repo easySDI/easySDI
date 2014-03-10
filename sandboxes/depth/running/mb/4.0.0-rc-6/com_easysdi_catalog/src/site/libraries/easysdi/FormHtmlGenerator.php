@@ -752,7 +752,7 @@ class FormHtmlGenerator {
                                 Ext.onReady(function() {
 
                                     var thes = new ThesaurusReader({
-
+                                        appPath: '". JUri::base() ."administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/',
                                         lang: '" . $default->gemet . "',
                                         outputLangs: [" . implode(',', $languages) . "],
                                         title: 'GEMET Thesaurus',

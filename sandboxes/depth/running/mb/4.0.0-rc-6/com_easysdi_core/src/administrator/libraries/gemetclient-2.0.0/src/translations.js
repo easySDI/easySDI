@@ -42,4 +42,10 @@ HS.Lang["eng"]["BT"] = "Broader terms";
 HS.Lang["eng"]["NT"] = "Narrower terms";
 HS.Lang["eng"]["RT"] = "Related terms";
 
+HS.Lang["fre"]["Search"] = "Recherche";
+HS.Lang["fre"]["Use"] = "Utiliser";
+HS.Lang["fre"]["BT"] = "Termes plus généraux";
+HS.Lang["fre"]["NT"] = "Termes plus spécifiques";
+HS.Lang["fre"]["RT"] = "Termes connexes";
+
 /* add more languages here */
