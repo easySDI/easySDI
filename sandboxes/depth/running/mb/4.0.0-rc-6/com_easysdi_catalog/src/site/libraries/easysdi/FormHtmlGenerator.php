@@ -791,7 +791,7 @@ class FormHtmlGenerator {
                                     for(var i=0; i < languages.length; i++){
                                         var paths = result.terms[languages[i]].split('>');
                                         var keyword = paths[paths.length - 1];
-                                        var option_string = '<option class=\''+result.uri+'\' value=\''+keyword+'\' selected>'+keyword+'</option>';
+                                        var option_string = '<option class=\''+result.uri+'\' value=\"'+keyword+'\" selected>'+keyword+'</option>';
                                         
                                         if(i==0){
                                             var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString');
