@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension client="site" method="upgrade" type="module" version="3.1.0">
+  <name>mod_easysdi_basket</name>
+  <author>EasySDI Community</author>
+  <creationDate>15 August 2012</creationDate>
+  <releaseDate>07 mars 2014</releaseDate>
+  <copyright>Copyright (C) 2012. All rights reserved.</copyright>
+  <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
+  <author>EasySDI Community</author>
+  <authorEmail>contact@easysdi.org</authorEmail>
+  <authorUrl>http://www.easysdi.org</authorUrl>
+  <version>4.0.0-rc-5</version>
+  <description>MOD_EASYSDI_BASKET</description>
+  <files>
+    <filename>mod_easysdi_basket.xml</filename>
+    <filename module="mod_easysdi_basket">mod_easysdi_basket.php</filename>
+    <filename>index.html</filename>
+    <filename>helper.php</filename>
+    <filename>tmpl/default.php</filename>
+    <filename>tmpl/index.html</filename>
+  </files>
+  <config />
+</extension>
