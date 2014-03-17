@@ -682,7 +682,8 @@ abstract class Easysdi_mapHelper {
                     "' . $service->alias . '":
                     {
                     ptype: "sdi_gxp_wmssource",
-                    url: "' . $url . '"
+                    url: "' . $url . '",
+                    title: "' . $service->name .'"
                     },
                     ';
                     break;
