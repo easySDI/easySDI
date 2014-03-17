@@ -130,6 +130,25 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         die();
     }
 
+    /**
+     * Return a list of all resource type
+     * 
+     * @return stdClass[]
+     */
+    public function getResourceType() {
+        $query = $this->db->getQuery(true);
+
+        $query->select('rt.id, rt.name, rt.guid, rt.versioning');
+        $query->from('#__sdi_resourcetype rt');
+        $query->order('rt.name DESC');
+
+        $this->db->setQuery($query);
+        $resourcetype = $this->db->loadObjectList('id');
+
+        echo json_encode($resourcetype);
+        die();
+    }
+    
     private function unSerializeXpath($xpath) {
         $xpath = str_replace('-la-', '[', $xpath);
         $xpath = str_replace('-ra-', ']', $xpath);

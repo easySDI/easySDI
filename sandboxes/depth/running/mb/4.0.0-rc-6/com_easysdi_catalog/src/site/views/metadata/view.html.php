@@ -239,14 +239,14 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
     public function getResourceType() {
         $query = $this->db->getQuery(true);
 
-        $query->select('rt.id, rt.name, rt.guid');
+        $query->select('rt.id, rt.name, rt.guid, rt.versioning');
         $query->from('#__sdi_resourcetype rt');
         $query->order('rt.name DESC');
 
         $this->db->setQuery($query);
         $resourcetype = $this->db->loadObjectList();
 
-        $first = array('id' => '', 'name' => '', 'guid' => '');
+        $first = array('id' => '0', 'name' => '', 'guid' => '', 'versioning' => '');
         array_unshift($resourcetype, (object) $first);
 
         return $resourcetype;

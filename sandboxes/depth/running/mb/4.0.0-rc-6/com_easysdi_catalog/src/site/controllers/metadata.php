@@ -238,14 +238,16 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     public function searchresource() {
         $query = $this->db->getQuery(true);
 
-        $query->select('r.`name`, v.created, m.guid, m.id');
+        $query->select('m.id, r.`name`, v.created, m.guid, rt.`name` as rt_name, ms.`value` as status');
         $query->from('#__sdi_resource r');
+        $query->innerJoin('#__sdi_resourcetype rt on r.resourcetype_id = rt.id');
         $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
         $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
+        $query->innerJoin('#__sdi_sys_metadatastate ms on ms.id = m.metadatastate_id');
         if ($_POST['status_id'] != '') {
-            $query->where('r.`state` = ' . $_POST['status_id']);
+            $query->where('m.metadatastate_id = ' . $_POST['status_id']);
         }
-        if ($_POST['resourcetype_id'] != '') {
+        if (!empty($_POST['resourcetype_id'])) {
             $query->where('r.resourcetype_id = ' . $_POST['resourcetype_id']);
         }
         if ($_POST['resource_name'] != '') {
@@ -275,7 +277,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $response = array();
         $response['success'] = true;
-        $response['xml'] = '<pre class="brush: xml">' . htmlspecialchars($this->structure->saveXML($update->firstChild)) . '</pre>';
+        $response['xml'] = '<pre class="brush: xml">' . addslashes(htmlspecialchars($this->structure->saveXML($update->firstChild))) . '</pre>';
         echo json_encode($response);
         die();
     }
