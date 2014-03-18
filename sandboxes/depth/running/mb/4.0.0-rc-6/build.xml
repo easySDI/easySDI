@@ -48,6 +48,7 @@
     <include file="com_easysdi_map/build.xml" as="map"/>
     <include file="com_easysdi_monitor/build.xml" as="monitor"/>
     <include file="com_easysdi_service/build.xml" as="service"/>
+    <include file="com_easysdi_dashboard/build.xml" as="dashboard"/>
     <include file="com_easysdi_contact/build.xml" as="contact"/>
     <include file="com_easysdi_shop/build.xml" as="shop"/>
     <include file="plg_easysdi_monitor/build.xml" as="plg-monitor"/>
@@ -75,6 +76,7 @@
                     package-com-map,
                     package-com-monitor,
                     package-com-service,
+                    package-com-dashboard,
                     package-com-contact,
                     package-com-shop,
                     package-plg-contact,
@@ -104,6 +106,7 @@
     <target name="package-com-map" depends="map.package" description="Main Target"/>
     <target name="package-com-monitor" depends="monitor.package" description="Main Target"/>
     <target name="package-com-service" depends="service.package" description="Main Target"/>
+    <target name="package-com-dashboard" depends="dashboard.package" description="Main Target"/>
     <target name="package-com-shop" depends="shop.package" description="Main Target"/>
     <target name="package-com-contact" depends="contact.package" description="Main Target"/>
     
@@ -135,6 +138,7 @@
                     dev-package-com-map,
                     dev-package-com-monitor,
                     dev-package-com-service,
+                    dev-package-com-dashboard,
                     dev-package-com-contact,
                     dev-package-com-shop,
                     package-plg-contact,
@@ -164,6 +168,7 @@
     <target name="dev-package-com-map" depends="map.dev-package" description="Main Target"/>
     <target name="dev-package-com-monitor" depends="monitor.dev-package" description="Main Target"/>
     <target name="dev-package-com-service" depends="service.dev-package" description="Main Target"/>
+    <target name="dev-package-com-dashboard" depends="dashboard.dev-package" description="Main Target"/>
     <target name="dev-package-com-shop" depends="shop.dev-package" description="Main Target"/>
     <target name="dev-package-com-contact" depends="contact.dev-package" description="Main Target"/>
     
@@ -176,6 +181,7 @@
                     sync-com-map,
                     sync-com-monitor,
                     sync-com-service,
+                    sync-com-dashboard,
                     sync-com-contact,
                     sync-com-shop,
                     sync-plg-contact,
@@ -202,6 +208,7 @@
     <target name="sync-com-map" depends="map.sync" description="Main Target"/>
     <target name="sync-com-monitor" depends="monitor.sync" description="Main Target"/>
     <target name="sync-com-service" depends="service.sync" description="Main Target"/>
+    <target name="sync-com-dashboard" depends="dashboard.sync" description="Main Target"/>
     <target name="sync-com-contact" depends="contact.sync" description="Main Target"/>
     <target name="sync-com-shop" depends="shop.sync" description="Main Target"/>
     
@@ -232,6 +239,7 @@
                     sync-package-com-map,
                     sync-package-com-monitor,
                     sync-package-com-service,
+                    sync-package-com-dashboard,
                     sync-package-com-contact,
                     sync-package-com-shop,
                     sync-package-plg-contact,
@@ -259,6 +267,7 @@
     <target name="sync-package-com-map" depends="map.sync-package" description="Main Target"/>
     <target name="sync-package-com-monitor" depends="monitor.sync-package" description="Main Target"/>
     <target name="sync-package-com-service" depends="service.sync-package" description="Main Target"/>
+    <target name="sync-package-com-dashboard" depends="dashboard.sync-package" description="Main Target"/>
     <target name="sync-package-com-contact" depends="contact.sync-package" description="Main Target"/>
     <target name="sync-package-com-shop" depends="shop.sync-package" description="Main Target"/>
     
@@ -296,6 +305,7 @@
             <fileset dir="${root.out.dir}/com_easysdi_map/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/com_easysdi_monitor/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/com_easysdi_service/target" includes="*" erroronmissingdir="false"/>
+            <fileset dir="${root.out.dir}/com_easysdi_dashboard/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/com_easysdi_contact/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/com_easysdi_shop/target" includes="*" erroronmissingdir="false"/>
             <fileset dir="${root.out.dir}/plg_easysdi_monitor/target" includes="*" erroronmissingdir="false"/>
@@ -338,6 +348,7 @@
                     <file type="component" id="com_easysdi_core">com_easysdi_core.zip</file> 
                     <file type="component" id="com_easysdi_contact">com_easysdi_contact.zip</file>
                     <file type="component" id="com_easysdi_service">com_easysdi_service.zip</file>
+                    <file type="component" id="com_easysdi_dashboard">com_easysdi_dashboard.zip</file>
                     <file type="component" id="com_easysdi_catalog">com_easysdi_catalog.zip</file> 
                     <file type="component" id="com_easysdi_map">com_easysdi_map.zip</file>
                     <file type="component" id="com_easysdi_shop">com_easysdi_shop.zip</file>

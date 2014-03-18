@@ -65,7 +65,7 @@ class Easysdi_serviceViewVirtualservices extends JViewLegacy
 			    //JToolBarHelper::addNew('virtualservice.add','JTOOLBAR_NEW');
             	
 			    //Create custom button with a dropdown list allowing connector type selection for new virtualservice action
-            	$dropdown = '<button class="btn dropdown-toggle btn-small btn-success" data-toggle="dropdown"><span class="icon-new icon-white"> '.JText::_('JTOOLBAR_NEW').'</span></button>
+            	$dropdown = '<button class="btn dropdown-toggle btn-small btn-success" data-toggle="dropdown"><span class="icon-new icon-white"></span> '.JText::_('JTOOLBAR_NEW').'</button>
             	<ul class="dropdown-menu">';
             	foreach ($this->connector as $connector){
             		$dropdown .= '<li><a href="index.php?option=com_easysdi_service&view=virtualservice&connector='.$connector->id.'">'.$connector->value.'</a></li>';
