@@ -1,6 +1,6 @@
 <?php
 
-require_once JPATH_COMPONENT.'\\'.'helpers'.'\\'.'easysdi_JLanguage.php';
+require_once JPATH_COMPONENT.'/'.'helpers'.'/'.'easysdi_JLanguage.php';
 
 class easysdiComponentHelper
 {   
