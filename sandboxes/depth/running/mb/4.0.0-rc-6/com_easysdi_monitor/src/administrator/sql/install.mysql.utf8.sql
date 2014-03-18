@@ -1,4 +1,4 @@
-
+SET FOREIGN_KEY_CHECKS = 0;
 
 			DROP TABLE IF EXISTS `actions`;
 			CREATE TABLE `actions` (
@@ -551,7 +551,7 @@
   			ALTER TABLE `users`
   			ADD CONSTRAINT `FK_USERS_ROLE` FOREIGN KEY (`ID_ROLE`) REFERENCES `roles` (`ID_ROLE`) ON DELETE SET NULL;
 
-
+                        DROP TABLE IF EXISTS `#__sdi_monitor_exports`;
                         CREATE TABLE `#__sdi_monitor_exports` (
 					  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 					  `exportDesc` varchar(500) ,
@@ -561,4 +561,4 @@
 					  PRIMARY KEY (`id`)
 					) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
   			
-  
+  SET FOREIGN_KEY_CHECKS = 0;
