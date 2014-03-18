@@ -99,6 +99,7 @@ class plgContentSdiMonitor extends JPlugin
 				//}
 				
 				//Link librairie and css on the first match
+                                $output = '';
 				if($i != 0){
 					$output = '';
 				}else{

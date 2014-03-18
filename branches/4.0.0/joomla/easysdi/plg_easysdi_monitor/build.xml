@@ -40,8 +40,8 @@
                 <description><![CDATA[OGC EasySDI Monitor Plugin, display service's status in an article<br />]]></description>
                 <!-- Main File Copy Section -->
                 <files>
-                    <filename plugin="easysdimonitor">sdimonitor.php</filename>
-                    <filename plugin="easysdimonitor">sdimonitor.xml</filename>
+                    <filename plugin="sdimonitor">sdimonitor.php</filename>
+                    <filename plugin="sdimonitor">sdimonitor.xml</filename>
                 </files>
                 <params>
                     <!--

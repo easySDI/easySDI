@@ -5,6 +5,16 @@
 		description="COM_EASYSDI_MONITOR_COMPONENT_DESC"
 	>
 
+        <field name="servletUrl"
+                    type="text"
+                    default=""
+                    class="input"             
+                    size="100"
+                    label="COM_EASYSDI_MONITOR_URL_LABEL"
+                    description="COM_EASYSDI_MONITOR_URL_DESC"
+                    required="true"/>
+            
+            
         <field name="test"
              type="radio"
              default="1"
@@ -16,16 +26,16 @@
 
 	</fieldset>
 
+        
+
 	<fieldset name="permissions"
 		description="JCONFIG_PERMISSIONS_DESC"
-		label="JCONFIG_PERMISSIONS_LABEL"
-	>
+		label="JCONFIG_PERMISSIONS_LABEL">
 
-		<field 
-            name="rules" 
-            type="rules"
+                
+		<field name="rules" type="rules"
 			component="com_easysdi_monitor"
-            class="inputbox"
+                        class="inputbox"
 			filter="rules"
 			validate="rules"
 			label="JCONFIG_PERMISSIONS_LABEL"
@@ -106,4 +116,4 @@ http://docs.joomla.org/Usergroup_parameter_type
 <field name="myusergroups" type="usergroup" default="" label="Select a user group" description="" />
 
 
- -->
+-->

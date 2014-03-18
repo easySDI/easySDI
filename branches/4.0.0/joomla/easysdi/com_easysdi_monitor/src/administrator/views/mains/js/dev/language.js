@@ -19,7 +19,7 @@ Ext.namespace("EasySDI_Mon");
 Ext.onReady(function(){
 	Ext.QuickTips.init();
 
-	var url = String.format("./components/com_easysdi_monitor/lib/ext/src/locale/ext-lang-{0}.js", EasySDI_Mon.locale);
+	var url = String.format("./components/com_easysdi_monitor/libraries/ext/src/locale/ext-lang-{0}.js", EasySDI_Mon.locale);
 	Ext.Ajax.request({
 		url: url,
 		success: function(response, opts){

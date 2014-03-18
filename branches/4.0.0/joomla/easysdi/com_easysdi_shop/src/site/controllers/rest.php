@@ -544,8 +544,8 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         
         $root->appendChild($this->getProductProperties($product));
 
-        //$this->changeState($product->orderdiffusion_id, self::PRODUCTSTATEAWAIT);
-        //$this->changeOrderState($order->id);
+        $this->changeState($product->orderdiffusion_id, self::PRODUCTSTATEAWAIT);
+        $this->changeOrderState($order->id);
 
         return $root;
     }

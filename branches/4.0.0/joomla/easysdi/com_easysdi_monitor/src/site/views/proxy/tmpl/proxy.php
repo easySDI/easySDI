@@ -26,11 +26,13 @@ error_reporting(0);
 global $requ_headers;
 global $resp_header;
 
+$params  = JComponentHelper::getParams('com_easysdi_monitor');
+
 // Used for image/data handler
 $req_Content = "";
 
 // TODO Config changes needed
-$monitorUrl = "http:/"."/localhost:8080/Monitor";
+$monitorUrl = $params->get('servletUrl');
  
 //request headers
 $requ_headers = Array();

@@ -2,17 +2,17 @@
 <extension group="content" method="upgrade" type="plugin" version="3.0">
   <name>EasySDI Monitor Plugin</name>
   <creationDate>10 January 2011</creationDate>
-  <releaseDate>07 mars 2014</releaseDate>
+  <releaseDate>18 March 2014</releaseDate>
   <author>asitvd.ch</author>
   <authorEmail />
   <authorUrl>http://www.asitvd.ch</authorUrl>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
-  <version>4.0.0-rc-5</version>
+  <version>4.0.0-rc-6</version>
   <description>OGC EasySDI Monitor Plugin, display service&apos;s status in an article&lt;br /&gt;</description>
   <files>
-    <filename plugin="easysdimonitor">sdimonitor.php</filename>
-    <filename plugin="easysdimonitor">sdimonitor.xml</filename>
+    <filename plugin="sdimonitor">sdimonitor.php</filename>
+    <filename plugin="sdimonitor">sdimonitor.xml</filename>
   </files>
   <params />
 </extension>

@@ -90,13 +90,14 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         $user = JFactory::getUser();
         $default_lang = $user->getParam('language', JFactory::getLanguage());
 
+        $name = addslashes($_GET['value']);
         $query = $this->db->getQuery(true);
         $query->select('t.text1 as option_value, b.alias, b.`name`, b.northbound, b.southbound, b.westbound, b.eastbound ');
         $query->from('#__sdi_boundary AS b');
         $query->innerJoin('#__sdi_boundarycategory as bc ON b.category_id = bc.id');
         $query->innerJoin('#__sdi_translation t ON b.guid = t.element_guid');
         $query->innerJoin('#__sdi_language as l ON l.id = t.language_id');
-        $query->where('bc.`name` = \'' . $_GET['value'] . '\'');
+        $query->where('bc.`name` = \'' . $name . '\'');
         $query->where('l.code = \'' . $default_lang . '\'');
         
 
@@ -111,11 +112,16 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
      * Get defined boundary, boundary name
      */
     public function getBoundaryByName(){
+        if(empty($_GET['value'])){
+            return null;
+            die();
+        }
+        $name = addslashes($_GET['value']);
         $query = $this->db->getQuery(true);
         $query->select('t.text1, b.alias, b.northbound, b.southbound, b.westbound, b.eastbound');
         $query->from('#__sdi_boundary AS b');
         $query->innerJoin('#__sdi_translation t ON b.guid = t.element_guid ');
-        $query->where('t.text1 = \'' . $_GET['value'] . '\'');
+        $query->where('t.text1 = \'' . $name . '\'');
         
         $this->db->setQuery($query);
         $result = $this->db->loadObject();
@@ -124,6 +130,25 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         die();
     }
 
+    /**
+     * Return a list of all resource type
+     * 
+     * @return stdClass[]
+     */
+    public function getResourceType() {
+        $query = $this->db->getQuery(true);
+
+        $query->select('rt.id, rt.name, rt.guid, rt.versioning');
+        $query->from('#__sdi_resourcetype rt');
+        $query->order('rt.name DESC');
+
+        $this->db->setQuery($query);
+        $resourcetype = $this->db->loadObjectList('id');
+
+        echo json_encode($resourcetype);
+        die();
+    }
+    
     private function unSerializeXpath($xpath) {
         $xpath = str_replace('-la-', '[', $xpath);
         $xpath = str_replace('-ra-', ']', $xpath);
