@@ -130,7 +130,7 @@ class Indicator {
         $return->data = array_merge($resNbDif,$resNbDifExt,$resNbDifDown,$resNbDifDownExt,$resNbDifFree,$resNbDifFee,$resNbDifManu,$resNbDifAuto);
 
         $json = '';
-        $json = json_encode($return, JSON_PRETTY_PRINT | JSON_NUMERIC_CHECK );
+        $json = json_encode($return);
 
         return ($json);
     }
