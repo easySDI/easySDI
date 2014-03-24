@@ -727,10 +727,15 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $orderstate = $this->chooseOrderState($total, $await, $available);
 
         if ($orderstate > 0) {
+            $now = date("Y-m-d H:i:s");
+            
             $query = $this->db->getQuery(true);
 
             $query->update('#__sdi_order');
             $query->set('orderstate_id = ' . $orderstate);
+            if($orderstate == self::ORDERSTATEFINISH){
+                $query->set('completed = \'' . $now . '\'');
+            }
             $query->where('id = ' . $orderId);
 
             $this->db->setQuery($query);
