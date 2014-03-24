@@ -99,12 +99,6 @@
 					<language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_monitor.ini</language>
                 </languages>
                 <administration>
-                    <menu img="components/com_easysdi_monitor/assets/images/s_com_easysdi_monitor.png" >COM_EASYSDI_MONITOR</menu>
-                    <submenu>
-            
-                        <menu link="option=com_easysdi_monitor&amp;view=mains" view="mains" img="components/com_easysdi_monitor/assets/images/s_mains.png" alt="Easysdi_monitor/Mains">COM_EASYSDI_MONITOR_TITLE_MAINS</menu>
-
-                    </submenu>
                     <files folder="administrator">
                         <filename>access.xml</filename>
                         <filename>config.xml</filename>
