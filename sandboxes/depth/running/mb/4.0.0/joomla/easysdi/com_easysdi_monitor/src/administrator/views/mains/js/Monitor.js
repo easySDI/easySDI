@@ -6583,7 +6583,6 @@ Ext.onReady(function() {
 		       reportPanel,
 		       alertPanel,
 		       maintenancePanel,
-		       responseoverviewPanel,
 		       slaPanel
 		       ]
 	});
