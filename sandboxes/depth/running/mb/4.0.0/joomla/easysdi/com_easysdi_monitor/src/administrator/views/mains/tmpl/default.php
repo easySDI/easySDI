@@ -56,6 +56,7 @@ if ($saveOrder)
 require_once( JPATH_COMPONENT_ADMINISTRATOR.'/'.'i18n'.'/'.'lang.php' );
 
 ?>
+
 <script type="text/javascript">
 	Joomla.orderTable = function() {
 		table = document.getElementById("sortTable");
