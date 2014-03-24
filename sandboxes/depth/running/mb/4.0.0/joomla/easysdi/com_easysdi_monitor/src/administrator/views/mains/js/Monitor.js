@@ -6584,8 +6584,7 @@ Ext.onReady(function() {
 		       alertPanel,
 		       maintenancePanel,
 		       responseoverviewPanel,
-		       slaPanel,
-		       exportPanel
+		       slaPanel
 		       ]
 	});
 

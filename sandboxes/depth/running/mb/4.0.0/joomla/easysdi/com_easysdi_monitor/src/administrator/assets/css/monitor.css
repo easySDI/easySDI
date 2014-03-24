@@ -257,3 +257,7 @@ background-repeat:no-repeat;
 #toolbar{
     display: none;
 }
+
+#exportBtn{
+    display:none;
+}
