@@ -69,6 +69,25 @@ require_once( JPATH_COMPONENT_ADMINISTRATOR.'/'.'i18n'.'/'.'lang.php' );
 		}
 		Joomla.tableOrdering(order, dirn, '');
 	}
+        
+        var $ = document; // shortcut
+       
+            var head  = $.getElementsByTagName('head')[0];
+            var link  = $.createElement('link');
+            link.rel  = 'stylesheet';
+            link.type = 'text/css';
+            link.href = 'components/com_easysdi_monitor/libraries/ext/resources/css/ext-all.css';
+            link.media = 'all';
+           // head.appendChild(link);
+            
+          var link  = $.createElement('link');
+            link.rel  = 'stylesheet';
+            link.type = 'text/css';
+            link.href = 'components/com_easysdi_monitor/libraries/ext/resources/css/xtheme-gray.css';
+            link.media = 'all';
+            //head.appendChild(link);
+            
+           //
 </script>
 
 <div id="tabsContainer"></div>

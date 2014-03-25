@@ -1315,7 +1315,7 @@ a.x-menu-item {
 .x-combo-list-small {
     font:normal 11px tahoma, arial, helvetica, sans-serif;
 }.x-panel {
-    border-color: #d0d0d0;
+    /* border-color: #d0d0d0; */
 }
 
 .x-panel-header {
@@ -1328,8 +1328,8 @@ a.x-menu-item {
 }
 
 .x-panel-body {
-    border-color:#d0d0d0;
-    background-color:#fff;
+    /* border-color:#d0d0d0; */
+    /* background-color:#fff; */
 }
 
 .x-panel-bbar .x-toolbar, .x-panel-tbar .x-toolbar {
@@ -1341,7 +1341,7 @@ a.x-menu-item {
 }
 
 .x-panel-body-noheader, .x-panel-mc .x-panel-body {
-    border-top-color:#d0d0d0;
+    /* border-top-color:#d0d0d0; */
 }
 
 .x-panel-tl .x-panel-header {
