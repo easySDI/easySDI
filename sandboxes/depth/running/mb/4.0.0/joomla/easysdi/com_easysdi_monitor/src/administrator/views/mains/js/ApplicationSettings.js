@@ -24,7 +24,7 @@ Ext.namespace("EasySDI_Mon");
    //EasySDI_Mon.proxy = '/web2/administrator/components/com_easysdi_monitor/views/proxy/tmpl/default.php?proxy_url=';
    
    //Default application height
-   EasySDI_Mon.appHeight = 450;
+   EasySDI_Mon.appHeight = 500;
    
    //Default tab the application should display after loading
    //0=Jobs, 1=Reports, 2=Alerts, 3=State, 4=Maintenance
