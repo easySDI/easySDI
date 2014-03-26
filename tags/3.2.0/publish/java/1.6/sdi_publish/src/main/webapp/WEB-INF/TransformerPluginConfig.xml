@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+		<!-- Handled File Group Types -->
+		<SupportedTransformedFileTypes>OGR</SupportedTransformedFileTypes>
+		<!-- Associate File Group Types With A Concrete Transformer-->
+		<!-- Concrete Transformer -->
+		<OGR>org.easysdi.publish.dat.transformation.plugin.OGRTransformer</OGR>
+</CONFIG>

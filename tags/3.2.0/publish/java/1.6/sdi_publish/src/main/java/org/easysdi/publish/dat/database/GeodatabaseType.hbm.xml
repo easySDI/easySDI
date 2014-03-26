@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.easysdi.publish.biz.database">
+	<class name="GeodatabaseType" table="geodatabase_types">
+		<id name="typeId" type="long" column="ID_GEODATABASE_TYPES">
+			<generator class="assigned"></generator>
+		</id>
+		<property name="name" type="string" length="45" column="NAME"></property>
+	</class>
+</hibernate-mapping>

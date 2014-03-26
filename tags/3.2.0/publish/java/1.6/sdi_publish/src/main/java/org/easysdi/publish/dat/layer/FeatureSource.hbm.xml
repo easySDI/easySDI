@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.easysdi.publish.biz.layer">
+	<class name="FeatureSource" table="featuresource" lazy="false">
+		<id name="featureSourceId" type="long" column="ID_FEATURESOURCE">
+			<generator class="org.hibernate.id.enhanced.TableGenerator">
+				<param name="table_name">last_ids</param>
+				<param name="value_column_name">LAST_ID</param>
+				<param name="segment_column_name">TABLE_NAME</param>
+				<param name="segment_value">FEATURESOURCE</param>
+				<param name="initial_value">1</param>
+				<param name="increment_size">1</param>
+			</generator>
+		</id>
+		<many-to-one name="diffuser" class="org.easysdi.publish.biz.diffuser.Diffuser" column="ID_DIFFUSER"
+				lazy="false"></many-to-one>
+		<property name="guid" type="string" length="100" column="FEATUREGUID"></property>
+		<property name="tableName" type="string" length="200" column="TABLENAME"></property>
+		<property name="scriptName" type="string" length="100" column="SCRIPTNAME"></property>
+		<property name="sourceDataType" type="string" length="100" column="SOURCEDATATYPE"></property>
+		<property name="crsCode" type="string" length="50" column="CRSCODE"></property>
+		<property name="fieldsName" type="string" length="2000" column="FIELDSNAME"></property>
+		<property name="creationDate" type="calendar_date" column="CREATION_DATE"></property>
+		<property name="updateDate" type="calendar_date" column="UPDATE_DATE"></property>
+		<property name="status" type="string" length="20" column="STATUS"></property>
+		<property name="excMessage" type="string" length="2000" column="EXCMESSAGE"></property>		
+	    <property name="excCode" type="string" length="500" column="EXCCODE"></property>
+	    <property name="excStackTrace" type="string" length="3000" column="EXCSTACKTRACE"></property> 
+	</class>
+</hibernate-mapping>

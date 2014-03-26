@@ -1,0 +1,99 @@
+Array
+(
+    [time] => Tue, 23 Jun 2009 14:56:36 +0200
+    [addr] => ******ost
+    [agent] => Mozilla/5.0 (Windows; U; Windows NT 5.1; fr; rv:1.9.0.11) Gecko/2009060215 Firefox/3.0.11 (.NET CLR 3.5.30729)
+    [post] => Array
+        (
+            [MAX_FILE_SIZE] => 100000
+        )
+
+    [files] => Array
+        (
+            [publish_script_file] => Array
+                (
+                    [name] => Nénuphars.jpg
+                    [type] => image/jpeg
+                    [tmp_name] => C:\wamp\tmp\php43.tmp
+                    [error] => 0
+                    [size] => 83794
+                )
+
+        )
+
+)
+
+---
+Array
+(
+    [time] => Tue, 23 Jun 2009 14:59:34 +0200
+    [addr] => ******ost
+    [agent] => Mozilla/5.0 (Windows; U; Windows NT 5.1; fr; rv:1.9.0.11) Gecko/2009060215 Firefox/3.0.11 (.NET CLR 3.5.30729)
+    [post] => Array
+        (
+            [MAX_FILE_SIZE] => 100000
+        )
+
+    [files] => Array
+        (
+            [publish_script_file] => Array
+                (
+                    [name] => Nénuphars.jpg
+                    [type] => image/jpeg
+                    [tmp_name] => C:\wamp\tmp\php44.tmp
+                    [error] => 0
+                    [size] => 83794
+                )
+
+        )
+
+)
+
+---
+Array
+(
+    [time] => Tue, 23 Jun 2009 15:00:44 +0200
+    [addr] => ******ost
+    [agent] => Mozilla/5.0 (Windows; U; Windows NT 5.1; fr; rv:1.9.0.11) Gecko/2009060215 Firefox/3.0.11 (.NET CLR 3.5.30729)
+    [post] => Array
+        (
+            [MAX_FILE_SIZE] => 100000
+        )
+
+    [files] => Array
+        (
+            [publish_script_file] => Array
+                (
+                    [name] => Nénuphars.jpg
+                    [type] => image/jpeg
+                    [tmp_name] => C:\wamp\tmp\php45.tmp
+                    [error] => 0
+                    [size] => 83794
+                )
+
+        )
+
+)
+
+---
+Array
+(
+    [time] => Tue, 23 Jun 2009 15:01:11 +0200
+    [addr] => ******ost
+    [agent] => Mozilla/5.0 (Windows; U; Windows NT 5.1; fr; rv:1.9.0.11) Gecko/2009060215 Firefox/3.0.11 (.NET CLR 3.5.30729)
+    [files] => Array
+        (
+            [Filedata] => Array
+                (
+                    [name] => Hiver.jpg
+                    [type] => image/jpeg
+                    [tmp_name] => C:\wamp\tmp\php46.tmp
+                    [error] => 0
+                    [size] => 105542
+                )
+
+        )
+
+)
+
+---

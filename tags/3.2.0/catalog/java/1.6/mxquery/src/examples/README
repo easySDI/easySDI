@@ -1,0 +1,57 @@
+Overview on the examples:
+
+Query/Language Feature Examples:
+
+- XQuery 1.0
+  * helloWorld.xq: Very simple Hello World example
+  * flowr.xq: FLWOR expression
+    Run as: java -jar ../dist/mxquery.jar -f <query.xq>
+  * schema.xq: XML Schema import & Module Import
+    Run as: java -jar ../dist/mxquery.jar -sa -f schema.xq
+  * external.xq: using command line settings for serializer, external variable and static context
+    Run as java -jar ../dist/mxquery.jar -e ext=books.xml -e.:="<context123/>" -s omit-xml-declaration=true -c boundary-space=preserve -f external.xq
+
+- XQuery 1.1:
+  * window.xq: Simple Window query
+  * try_catch.xq: Error recovery
+  Run as: java -jar ../dist/mxquery.jar -11m -f <query.xq>  
+  
+- XQuery Update Facility 1.0
+  * update.xq: transform/copy statement with update+output
+  * inserttest.xq Insert element into document, update file (no output, just modified file)
+  Run as: java -jar ../dist/mxquery.jar -um -x -f <query.xq>  
+  
+- XPath/XQuery Fulltext 1.0
+  * fulltext.xq: Simple full text example 
+    Run as java -jar ../dist/mxquery.jar -fm -f fulltext.xq
+     
+- XQuery Scripting 1.0 (December 2008)
+  * mixed_sequence.xq: Mixing updating and regular/simple expressions
+  * bubblesort.xq: "Imperative XQuery": while, blocks and assignment
+  Run as java -jar ../dist/mxquery.jar -sm -x -f <query.xq>
+    
+- Web Service Support: (Check the provided tutorial for detailed information)
+  * GoogleSearch.xq: High-Level SOAP call to Google Search API
+  * Low_Level_SOAP_Call_Google_Spelling.xq: Low-Level SOAP call to Google corrections API
+  * A_Web Service_Mashup.xq: Composition of two SOAP based web services, a spell checker service and a dictionary service
+  
+  * REST_GET.xq: RESTful web service, example for the 'GET' verb in HTTP
+  * REST_POST.xq: RESTful web service, example for the 'POST' verb HTTP
+  Run as: java -jar ../dist/mxquery.jar -f <query.xq>
+  * MashupExpose.xq: exposes a web service mashup (from the example in A_Web Service_Mashup.xq) as a web service on its own (bundled in MXQuery.war)
+  * mod.xq: Module to export as SOAP (bundled in MXQuery.war)
+  (NOTE: extension proposals have been included in the 'example' directory)
+  
+Source Code Examples:
+
+To compile them, please add mxquery.jar to the classpath
+
+* SimpleExample.java: MXQuery Java API - getting started, describes compiling a query, setting values and getting output
+* XQJExample:  XQJ API (JSR 225) - getting started, describes compiling a query, setting values and getting output
+* ContextExample: More details on working with Static and Dynamic Context in MXQuery API
+* InputOutputExample: More details on providing input different inputs for queries: atomic values, xml from string/files, StAX, DOM, SAX, serialization
+* StoreExample: Details on the store API, different types + access
+* StreamExample: Creating Stream stores with different modes, running continuous queries on stream stores   
+* ExternalFunctionExample: How to create and add external functions to the context
+
+

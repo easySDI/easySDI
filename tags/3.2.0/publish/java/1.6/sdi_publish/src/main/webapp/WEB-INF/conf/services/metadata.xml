@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreeServicesMetadata configVersion="0.6.0" xmlns="http://www.deegree.org/webservices"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/webservices http://schemas.deegree.org/webservices/0.6.0/services.xsd">
+  <ServiceIdentification>
+    <Title>EasySDI Publish</Title>
+    <Abstract>Service for publishing member's dataset to a diffusion server</Abstract>
+  </ServiceIdentification>
+  <ServiceProvider>
+    <ProviderName>MyCompany</ProviderName>
+    <ProviderSite>http://www.mycompany.com</ProviderSite>
+    <ServiceContact>
+      <IndividualName>Foo Bar</IndividualName>
+      <PositionName>Technical responsible</PositionName>
+      <Phone>012/1234567</Phone>
+      <Facsimile>012/1234567</Facsimile>
+      <ElectronicMailAddress>info@mycompany.com
+      </ElectronicMailAddress>
+      <Address>
+        <DeliveryPoint>21 Gladstone av</DeliveryPoint>
+        <City>City</City>
+        <AdministrativeArea></AdministrativeArea>
+        <PostalCode>1234</PostalCode>
+        <Country>Switzerland</Country>
+      </Address>
+      <OnlineResource>http://www.mycompany.com</OnlineResource>
+      <HoursOfService>24x7</HoursOfService>
+      <ContactInstructions>Don't hesitate to call</ContactInstructions>
+      <Role>PointOfContact</Role>
+    </ServiceContact>
+  </ServiceProvider>
+</deegreeServicesMetadata>

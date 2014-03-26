@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProcessDefinition configVersion="0.5.0"
+	processVersion="1.0.0" storeSupported="false" statusSupported="false"
+	xmlns="http://www.deegree.org/services/wps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.deegree.org/services/wps http://schemas.deegree.org/wps/0.5.0/process_definition.xsd">
+	<Identifier>PublishLayer</Identifier>
+	<JavaClass>org.easysdi.publish.gui.wps.provider.PublishLayerProcesslet</JavaClass>
+	<Title>Publishes a layer based on a previously created dataset on the target diffusion server.</Title>
+	<Abstract></Abstract>
+	<InputParameters>
+		<LiteralInput>
+			<Identifier>FeatureSourceId</Identifier>
+			<Title>Universal id of the feature Type</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<!--  <DefaultUOM>unity</DefaultUOM> -->
+		</LiteralInput>
+		<LiteralInput>
+			<Identifier>LayerId</Identifier>
+			<Title>id of an existing layer, none creates a new one</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<!--  <DefaultUOM>unity</DefaultUOM> -->
+		</LiteralInput>
+		<LiteralInput minOccurs="1" maxOccurs="100">
+			<Identifier>AttributeAlias</Identifier>
+			<Title>Alias for an attribute</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<!--  <DefaultUOM>unity</DefaultUOM> -->
+		</LiteralInput>
+		<LiteralInput>
+			<Identifier>Title</Identifier>
+			<Title>Alias for layer name</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<!--  <DefaultUOM>unity</DefaultUOM> -->
+		</LiteralInput>
+		<LiteralInput>
+			<Identifier>Name</Identifier>
+			<Title>Alias for layer name</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<!--  <DefaultUOM>unity</DefaultUOM> -->
+		</LiteralInput>
+		<LiteralInput>
+			<Identifier>Quality_Area</Identifier>
+			<Title>Quality/Area metadata</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<!--  <DefaultUOM>unity</DefaultUOM> -->
+		</LiteralInput>
+		<LiteralInput>
+			<Identifier>KeywordList</Identifier>
+			<Title>Layer's keyword list for service discovery</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<!--  <DefaultUOM>unity</DefaultUOM> -->
+		</LiteralInput>
+		<LiteralInput>
+			<Identifier>Abstract</Identifier>
+			<Title>Layer description and abstract</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<!--  <DefaultUOM>unity</DefaultUOM> -->
+		</LiteralInput>
+		<LiteralInput>
+			<Identifier>Geometry</Identifier>
+			<Title>The geometry type</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<!--  <DefaultUOM>unity</DefaultUOM> -->
+		</LiteralInput>
+	</InputParameters>
+	<OutputParameters>
+		<LiteralOutput>
+			<Identifier>LayerGuid</Identifier>
+			<Title>The universal identifier of the created layer</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<!--  <DefaultUOM>unity</DefaultUOM> -->
+		</LiteralOutput>
+		<LiteralOutput>
+			<Identifier>WMS_URL</Identifier>
+			<Title>Url to the wms service for this layer</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<!--  <DefaultUOM>unity</DefaultUOM> -->
+		</LiteralOutput>
+		<LiteralOutput>
+			<Identifier>WFS_URL</Identifier>
+			<Title>Url to the wfs service for this layer</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<!--  <DefaultUOM>unity</DefaultUOM> -->
+		</LiteralOutput>
+		<LiteralOutput>
+			<Identifier>KML_URL</Identifier>
+			<Title>Url to the kml service for this layer</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<!--  <DefaultUOM>unity</DefaultUOM> -->
+		</LiteralOutput>
+		<LiteralOutput>
+			<Identifier>MinX</Identifier>
+			<Title>Boundary of the feature set</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<!--  <DefaultUOM>unity</DefaultUOM> -->
+		</LiteralOutput>
+		<LiteralOutput>
+			<Identifier>MinY</Identifier>
+			<Title>Boundary of the feature set</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<!--  <DefaultUOM>unity</DefaultUOM> -->
+		</LiteralOutput>
+		<LiteralOutput>
+			<Identifier>MaxX</Identifier>
+			<Title>Boundary of the feature set</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<!--  <DefaultUOM>unity</DefaultUOM> -->
+		</LiteralOutput>
+		<LiteralOutput>
+			<Identifier>MaxY</Identifier>
+			<Title>Boundary of the feature set</Title>
+			<DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
+			<!--  <DefaultUOM>unity</DefaultUOM> -->
+		</LiteralOutput>
+	</OutputParameters>
+</ProcessDefinition>

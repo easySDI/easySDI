@@ -1,0 +1,105 @@
+<?xml version="1.0" ?>
+<project default="com_easysdi_publish" basedir=".">
+
+	<property name="projet.out.dir" value="out" />
+  <taskdef name="jscomp" classname="com.google.javascript.jscomp.ant.CompileTask"
+           classpath="js_minifier/compiler.jar"/>
+
+	<target name="com_easysdi_publish" depends="create-structure,minify,compression"
+		description="Main target">
+
+	</target>
+	
+  <target name="minify" description="Compression">
+		<echo>Checking code syntax and minifying.</echo>
+		<jscomp compilationLevel="whitespace" warning="verbose" 
+            debug="false" output="com_easysdi_publish/js/styler/script/Styler.js">
+      <sources dir="com_easysdi_publish/js/styler/lib">
+        <file name="Styler.js"/>
+        <file name="olx.js"/>
+      </sources>
+      <sources dir="com_easysdi_publish/js/styler/lib/Styler">
+        <file name="ColorManager.js"/>
+        <file name="dispatch.js"/>
+        <file name="SchemaManager.js"/>
+        <file name="SLDManager.js"/>
+      </sources>
+    </jscomp>
+	</target>
+	
+	<!--
+  <target name="minify" description="Minifying js files">
+		<exec executable="cmd" os="Windows XP" dir=".\com_easysdi_publish\js\styler\">
+      		<arg line="/c C:\tools\env\Scripts\jsbuild.exe -o script build_s.cfg"/>
+   		</exec>
+	</target>
+	-->
+	
+	<target name="create-structure">
+		<echo>Creating the working directory structure</echo>
+		<delete>
+			<fileset dir="${projet.out.dir}" includes="*" />
+		</delete>
+		<mkdir dir="${projet.out.dir}" />
+	</target>
+
+	<target name="compression" description="Compression">
+
+		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi_publish.zip"
+			basedir="." excludes="out/** ; .cache/** ; .svn/** ; .settings/** ; *.project; .prefs" />
+	</target>
+
+	<target name="sync" description="Copy from here to apache">
+		<copy
+			todir="C:\wamp\www\Joomla\administrator\components\com_easysdi_publish">
+			<fileset dir=".">
+				<include name="**/*.php" />
+				<include name="**/*.xsl" />
+				<include name="**/*.inc" />
+				<include name="**/*.jar" />
+				<include name="**/*.xml" />
+				<include name="**/*.png" />
+				<include name="**/*.ttf" />
+				<include name="**/*.txt" />
+				<include name="**/*.css" />
+			</fileset>
+		</copy>
+		<copy
+			todir="C:\wamp\www\Joomla\components\com_easysdi_publish">
+			<fileset dir="./com_easysdi_publish">
+				<include name="**/*.php" />
+				<include name="**/*.xsl" />
+				<include name="**/*.inc" />
+				<include name="**/*.jar" />
+				<include name="**/*.xml" />
+				<include name="**/*.png" />
+				<include name="**/*.ttf" />
+				<include name="**/*.txt" />
+			</fileset>
+		</copy>
+		<copy		   
+		   todir="C:\wamp\www\Joomla\language\fr-FR">
+		     <fileset dir="./language/site">
+		      <include name="**/fr-FR.com_easysdi_publish.ini" />
+		     </fileset>
+		    </copy>
+		<copy		   
+		   todir="C:\wamp\www\Joomla\language\en-GB">
+		     <fileset dir="./language/site">
+		      <include name="**/en-GB.com_easysdi_publish.ini" />
+		     </fileset>
+		    </copy>
+		<copy		   
+		   todir="C:\wamp\www\Joomla\administrator\language\fr-FR">
+		     <fileset dir="./language/admin">
+		      <include name="**/fr-FR.com_easysdi_publish.ini" />
+		     </fileset>
+		    </copy>
+		<copy		   
+		   todir="C:\wamp\www\Joomla\administrator\language\en-GB">
+		     <fileset dir="./language/admin">
+		      <include name="**/en-GB.com_easysdi_publish.ini" />
+		     </fileset>
+		    </copy>
+	</target>
+</project>

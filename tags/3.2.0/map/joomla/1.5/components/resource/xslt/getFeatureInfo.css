@@ -1,0 +1,19 @@
+.tabs {
+	max-width: 350px;
+	min-width: 330px;
+	min-height: 300px;
+	margin: 5px;
+	overflow: hidden;
+}
+
+.tabContent {
+	max-width: 305px;
+	max-height: 220px;
+	overflow: auto;
+}
+
+.tabContent ul li
+{
+	max-width:300px;
+	overflow: hidden;
+}

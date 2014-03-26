@@ -1,0 +1,84 @@
+<project name="MXQuery_Import">
+  <target name="compile_functions">
+    <echo message="Copying Source Files...">
+    </echo>
+    <copy todir="${customtmp.dir}">
+      <fileset dir="${src.dir}">
+      </fileset>
+    </copy>
+<!--    <delete dir="${tmpfunc.dir}/fn">-->
+<!--    </delete>-->
+<!--    <delete dir="${tmpfunc.dir}/mxq">-->
+<!--    </delete>-->
+<!--    <delete dir="${tmpfunc.dir}/xs">-->
+<!--    </delete>-->
+    <echo message="Copying Function Gallery...">
+    </echo>
+    <copy todir="${tmpfunc.dir}/xs">
+        <fileset file="${srcfunc.dir}/xs/*.java">
+        </fileset>
+      </copy>  	
+    <copy todir="${tmpfunc.dir}/fn">
+      <fileset file="${srcfunc.dir}/fn/DataValuesIterator.java">
+      </fileset>
+    </copy>  	
+    <copy todir="${tmpfunc.dir}/fn">
+      <fileset file="${srcfunc.dir}/fn/BooleanIterator.java">
+      </fileset>
+    </copy>
+    <copy todir="${tmpfunc.dir}/fn">
+      <fileset file="${srcfunc.dir}/fn/CurrentDateTime.java">
+      </fileset>
+    </copy>
+    <copy todir="${tmpfunc.dir}/fn">
+      <fileset file="${srcfunc.dir}/fn/Error.java">
+      </fileset>
+    </copy>  	
+    <copy todir="${tmpfunc.dir}/fn">
+      <fileset file="${srcfunc.dir}/fn/Min.java">
+      </fileset>
+    </copy>
+    <copy todir="${tmpfunc.dir}/fn">
+      <fileset file="${srcfunc.dir}/fn/Max.java">
+      </fileset>
+    </copy>
+    <copy todir="${tmpfunc.dir}/fn">
+      <fileset file="${srcfunc.dir}/fn/Avg.java">
+      </fileset>
+    </copy>
+    <copy file="${srcfunc.dir}/FG_custom.xml" tofile="${tmpfunc.dir}/FG_complete.xml" overwrite="yes">
+    </copy>
+    <copy todir="${tmpfunc.dir}/fn/">
+      <fileset file="${srcfunc.dir}/fn/DateTimeValues.java">
+      </fileset>
+    </copy>
+    <copy todir="${tmpfunc.dir}/fn/">
+      <fileset file="${srcfunc.dir}/fn/DayTimeDurationValues.java">
+      </fileset>
+    </copy>
+    <copy todir="${tmpfunc.dir}/fn/">
+      <fileset file="${srcfunc.dir}/fn/DistinctValuesIterator.java">
+      </fileset>
+    </copy>
+    <copy todir="${tmpfunc.dir}/fn/">
+      <fileset file="${srcfunc.dir}/fn/SubSequenceIterator.java">
+      </fileset>
+    </copy>
+    <copy todir="${tmpfunc.dir}/fn/">
+      <fileset file="${srcfunc.dir}/fn/CountIterator.java">
+      </fileset>
+    </copy>
+    <copy todir="${tmpfunc.dir}/fn/">
+      <fileset file="${srcfunc.dir}/fn/True.java">
+      </fileset>
+    </copy>
+    <copy todir="${tmpfunc.dir}/fn/">
+      <fileset file="${srcfunc.dir}/fn/False.java">
+      </fileset>
+    </copy>
+       <copy todir="${tmpfunc.dir}/fn/">
+      <fileset file="${srcfunc.dir}/fn/Soap_call.java">
+      </fileset>
+    </copy>
+  </target>
+</project>

@@ -1,0 +1,91 @@
+<?xml version="1.0" ?>
+<project default="createwar" basedir=".">
+	
+	
+  <property name="projet.src.dir" value="src"/>
+  <property name="projet.work.dir" value="work"/>
+  <property name="projet.out.dir" value="out"/>
+  <property name="projet.lib.dir" value="sdi_publish/src/main/webapp/WEB-INF/lib"/>
+  <property name="projet.web.dir" value="sdi_publish\\src\\main\\webapp\\WEB-INF\\"/>
+  
+   <path id="project.work.classpath">
+	    <fileset dir="${projet.work.dir}/WEB-INF/lib">
+	      <include name="*.jar"/>
+	    </fileset>
+   </path>
+
+	 <path id="projet.work.and.publish.classpath">
+	    <fileset dir="${projet.work.dir}/WEB-INF/lib">
+	      <include name="*.jar"/>
+	    </fileset>
+	    <pathelement path="${projet.work.dir}/WEB-INF/classes"/>
+   </path>
+
+  <!--<target name="createwar" depends="create-structure,copy-resources,compilation,compression,deleteResources,war" description="Main target">-->
+  <target name="createwar" depends="create-structure,copy-resources,compilation,ogr-trans-plugin-comp,war,deleteResources" description="Main target">
+    <echo message="Building EasySDI Publish and its OGR transformer plugin ---> done" level="info" />
+  </target>
+
+  <target name="create-structure">    
+  	<echo>Creating the working directory structure</echo>
+  	<mkdir dir="${projet.out.dir}" />
+  	<mkdir dir="${projet.work.dir}" />
+  </target>  
+	
+  <target name="copy-resources">    
+		  <echo>Copy the resources into the working directory</echo>
+  		<copy todir="${projet.work.dir}" >
+  	      <fileset dir="sdi_publish/src/main/webapp" >
+  	        <include name="**"/>
+  	      </fileset>
+  	  </copy>
+  	  
+  	  <echo message="Create classes placeholders." level="info" />
+  		<mkdir dir="${projet.work.dir}/WEB-INF/classes" />
+  		<mkdir dir="${projet.work.dir}/WEB-INF/transformerPlugIns/classes" />
+  	  	
+  </target>
+ 
+  <target name="compilation" description="Compilation" >
+  	<echo message="Compile EasySDI Publish." level="info" />	
+    <javac debug="on" srcdir="sdi_publish/src/main/java" destdir="${projet.work.dir}/WEB-INF/classes">
+    	<classpath refid="project.work.classpath"/>
+    </javac>
+    
+    <echo message="Copy additionnal XML ressources located in classes." level="info" />
+    <copy todir="${projet.work.dir}/WEB-INF/classes" >
+  	  	  <fileset dir="sdi_publish/src/main/java" >
+  	  	  	  <include name="**/*.xml"/>  	  	        
+  	  	  </fileset>
+  	</copy>
+  	
+  </target>
+  
+  <target name="ogr-trans-plugin-comp" description="publish ogr plugin compilation and jar packaging" >
+  	<echo message="Compile the OGRTransformer plugin." level="info" />	
+    <javac debug="on" srcdir="OGRTransformerPlugin/src" destdir="${projet.work.dir}/WEB-INF/transformerPlugIns/classes">
+    	<classpath refid="projet.work.and.publish.classpath"/>
+    </javac>
+    
+    <echo message="Packaging the plugin into EasySDI Publish." level="info" />
+  	<jar destfile="${projet.work.dir}/WEB-INF/transformerPlugIns/OGRTransformer.jar" basedir="${projet.work.dir}/WEB-INF/transformerPlugIns/classes"/>
+  	
+  	<echo message="Clean plugin working directory." level="info" />
+  	<delete dir="${projet.work.dir}/WEB-INF/transformerPlugIns/classes"/>
+  </target>
+  
+  <target name="war" description="generate the war" >
+		<tstamp/>
+		<echo>Building the war file</echo>
+	    <war warfile="${projet.out.dir}/sdi_publish.${DSTAMP}.${TSTAMP}.war" basedir="${projet.work.dir}" />
+	</target>
+  
+	<target name="deleteResources" description="delete ressources" >
+	<echo message="Cleaning the working directory." level="info" />
+	<delete includeEmptyDirs="true">			
+					      <fileset dir="${projet.work.dir}" />
+					</delete>
+	</target>
+	
+	
+</project>

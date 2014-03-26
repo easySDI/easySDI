@@ -1,0 +1,11 @@
+<xsd:schema xmlns:tns="urn:myNamespace" targetNamespace="urn:myNamespace" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:element name="testElement" type="tns:testSimpleList"/>
+    <xsd:simpleType name="testSimpleList">
+            <xsd:annotation>
+                <xsd:documentation>
+                    SimpleType Test
+                    </xsd:documentation>
+            </xsd:annotation>
+            <xsd:list itemType="xsd:int"/>            
+        </xsd:simpleType>
+    </xsd:schema>

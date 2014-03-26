@@ -1,0 +1,21 @@
+Planned features, fixes and enhancements:
+
+- More complete XQuery 1.1 support
+ + General FLWOR (unrestricted order of expressions, outer for, count)
+ + Group By (also continuous Group By)
+ + external variable/context item extensions
+ 
+- More complete Fulltext Support
+ + For scoring
+ + Weights
+ 
+- Fine-grained, automatic store selection, 
+- mixing updatable, fulltext and streaming stores within the same query/module
+- Performance improvements (CPU/memory)
+
+Platforms:
+- Android
+
+Packaging:
+ - Streaming Server inside an application server,
+ - Streaming Server inside an JBI-compatible ESB
