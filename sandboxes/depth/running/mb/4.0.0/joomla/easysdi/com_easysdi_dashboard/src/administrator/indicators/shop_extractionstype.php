@@ -110,7 +110,7 @@ class Indicator{
         $return->data = array_merge($resNbExt,$resNbExtManu,$resNbExtAuto,$resNbExtFee,$resNbExtFree);
 
         $json = '';
-        $json = json_encode($return, JSON_PRETTY_PRINT | JSON_NUMERIC_CHECK );
+        $json = json_encode($return);
 
         return ($json);
 

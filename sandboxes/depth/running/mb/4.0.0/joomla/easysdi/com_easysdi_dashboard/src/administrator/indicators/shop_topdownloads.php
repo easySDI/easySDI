@@ -39,10 +39,10 @@ class Indicator{
                                 .' '.date("Y-m-d",$timestart).' '
                                 .JText::_('COM_EASYSDI_DASHBOARD_PERIOD_TITLE_TO')
                                 .' '.date("Y-m-d",$timeend);
-        $return->columns_title = [JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPDOWNLOADS_COL1'),JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPDOWNLOADS_COL2')];
+        $return->columns_title = array(JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPDOWNLOADS_COL1'),JText::_('COM_EASYSDI_DASHBOARD_SHOP_IND_TOPDOWNLOADS_COL2'));
         
         $json='';
-        $json = json_encode($return, JSON_PRETTY_PRINT);
+        $json = json_encode($return);
 
         return ($json);
 

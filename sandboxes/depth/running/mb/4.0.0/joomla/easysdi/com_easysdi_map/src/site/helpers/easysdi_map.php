@@ -604,7 +604,6 @@ abstract class Easysdi_mapHelper {
             $config .= '  zoom : ' . $item->zoom . ',';
         endif;
         $config .= ' maxResolution: ' . $item->maxresolution . ',
-            numZoomLevels:18,
             units: "' . $item->unit . '",
             layers: 
             [
