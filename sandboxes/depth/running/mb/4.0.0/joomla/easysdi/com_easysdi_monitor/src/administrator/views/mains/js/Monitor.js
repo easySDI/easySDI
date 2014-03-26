@@ -1347,6 +1347,7 @@ Ext.onReady(function() {
 	//Advanced edition form
 	var _advForm = new Ext.FormPanel({
 		id: 'jobAdvForm',
+		title: EasySDI_Mon.lang.getLocal('advanced'),
 		// labelAlign: 'top',
 		frame:true,
 		//bodyStyle:'padding:5px 5px 0',
@@ -2492,6 +2493,7 @@ Ext.onReady(function(){
 
 	var _alertForm = new Ext.FormPanel({
 		id:'AlertForm',
+		title: EasySDI_Mon.lang.getLocal('alerts'),
 		labelWidth: 90,
 		region:'center',
 		bodyStyle:'padding:5px 5px 0',
@@ -6614,7 +6616,8 @@ Ext.onReady(function() {
 
 	var appPanel = new Ext.Panel({
 		id: 'appPanel',
-		frame:false,
+		frame:true,
+		anchor: '50%',
 		region: 'center', // this is what makes this panel into a region within the containing layout
 		layout: 'card',
 		margins: '2 5 5 0',
@@ -6624,7 +6627,7 @@ Ext.onReady(function() {
 	});
 
 	EasySDI_Mon.mainPanel = new Ext.Panel({
-		height: EasySDI_Mon.appHeight,
+		height:EasySDI_Mon.appHeight,
 		id: 'mainPanel',
 		xtype: 'panel',
 		renderTo: "tabsContainer",
