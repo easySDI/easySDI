@@ -844,7 +844,7 @@ public class CSWProxyDataAccessibilityManager {
                     filter += "(";
                     filter += " metadatastate = '" + policyMetadataState.getSdiSysMetadatastate().getValue() + "'";
                     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    filter += " AND published >= '" + dateFormat.format(new Date()) + "'";
+                    filter += " AND published <= '" + dateFormat.format(new Date()) + "'";
                     if (policyMetadataState.getSdiSysMetadataversion().getValue().equals("last")) {
                         filter += " AND lastversion = TRUE";
                     }

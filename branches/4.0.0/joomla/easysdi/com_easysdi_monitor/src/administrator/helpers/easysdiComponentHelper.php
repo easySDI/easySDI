@@ -18,7 +18,7 @@ class easysdiComponentHelper
         $easysdi_Language = new easysdi_JLanguage(JFactory::getConfig()->get('language'), true);
  
         //-- Load the javascript language ini file - only to get the keys
-        $easysdi_Language->load($option, JPATH_ADMINISTRATOR, $easysdi_Language->getDefault(), false, false);
+        $easysdi_Language->load($option, JPATH_ADMINISTRATOR, JFactory::getConfig()->get('language'), false, false);
         
         $strings = $easysdi_Language->getStrings();
         

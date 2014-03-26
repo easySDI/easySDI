@@ -2925,77 +2925,84 @@ Ext.onReady(function() {
 		var u = new _slaGrid.store.recordType(EasySDI_Mon.DefaultSla);
 
 		var win = new  Ext.Window({
-			width:380,
+			width:450,
+                        height: 300,
 			autoScroll:true,
 			modal:true,
+                        layout: 'fit',
 			title:EasySDI_Mon.lang.getLocal('title new sla'),
 			items: [
 			        new Ext.FormPanel({
-			        	labelWidth: 1,
 			        	monitorValid:true,
 			        	ref: 'slaPanel',
 			        	region:'center',
-			        	bodyStyle:'padding:5px 5px 0',
-			        	autoHeight:true,
-			        	frame:true,
-			        	autoHeight:true,
-			        	items: [{
-			        			xtype: 'fieldset',
-			        			title: EasySDI_Mon.lang.getLocal('field slaname title'),
-			        			autoHeight: true,
-			        			anchor: '95%',
-			        			items:[{
-			        				xtype: 'textfield',
-					        		value: u.data['name'],
-					        		name: 'name',
-					        		width: 280,
-					        		allowBlank:false,
-					        		vtype: 'slaname' // validate name
-			        			}]
+			        	bodyStyle:'padding:5px 5px 0;',
+                                        layout: 'fit',
+                                        padding: 5,
+			        	frame:false,
+                                        border: false,
+                                        layout: 'fit',
+                                        labelWidth:1,
+			        	items: 
+                                        [{
+                                            xtype: 'fieldset',
+                                            title: EasySDI_Mon.lang.getLocal('field slaname title'),
+                                            autoHeight: true,
+                                            items:[{
+                                                    xtype: 'textfield',
+                                                    value: u.data['name'],
+                                                    name: 'name',
+                                                    width: 280,
+                                                    allowBlank:false,
+                                                    vtype: 'slaname' // validate name
+                                            }]
 			        	},
 			        	{
-							layout:'column',
-							items:[
-							{
-								xtype: 'fieldset',
-								title: EasySDI_Mon.lang.getLocal('field worstexclude title'),
-								columnWidth:.5,
-								layout: 'form',
-								height: 100,
-								items: [{
-									boxLabel: EasySDI_Mon.lang.getLocal('grid header excludeWorst'),
-			        				xtype: 'checkbox',
-					        		name: 'isExcludeWorst',
-					        		checked: u.data['isExcludeWorst']
-								}]
-							},
-							{
-								columnWidth:.5,
-								layout: 'form',
-								items: [{
-								xtype: 'fieldset',
-			        			title: EasySDI_Mon.lang.getLocal('field slameasure title'),
-			        			height: 80,
-			        			defaultType: 'radio',
-			        			items:[{
-			        				 name: 'isMeasureTimeToFirst',
-			        				 boxLabel: EasySDI_Mon.lang.getLocal('sla firstbyte boxlabel'),
-			        				 checked: u.data['isMeasureTimeToFirst'],
-			        				 fieldLabel: '',
-		        	                 labelSeparator: '',
-									 xtype: 'radio'
-			        			},
-			        			{
-			        				name: 'isMeasureTimeToFirst',
-			        				boxLabel: EasySDI_Mon.lang.getLocal('sla lastbyte boxlabel'),
-			        				checked: true,
-			        				fieldLabel: '',
-									xtype: 'radio',
-		        	                labelSeparator: ''
-			        			}]
-								}]
-									
-							}]
+                                            layout:'column',
+                                            
+                                            border: false,
+                                            frame: false,      
+                                            items:
+                                            [
+                                                {
+                                                    xtype: 'fieldset',
+                                                    columnWidth: .5,
+                                                    title: EasySDI_Mon.lang.getLocal('field worstexclude title'),
+                                                    items: 
+                                                    [{
+                                                        boxLabel: EasySDI_Mon.lang.getLocal('grid header excludeWorst'),
+                                                                            fieldLabel: '',
+                                                                            labelSeparator: '',
+                                                        xtype: 'checkbox',
+                                                        name: 'isExcludeWorst',
+                                                        checked: u.data['isExcludeWorst']
+                                                     }]
+                                                },
+                                                {   
+                                                    xtype: 'fieldset',
+                                                    columnWidth: .5,
+                                                    title: EasySDI_Mon.lang.getLocal('field slameasure title'),
+                                                    defaultType: 'radio',
+                                                    border: 0,
+                                                    items: 
+                                                    [{
+                                                        name: 'isMeasureTimeToFirst',
+                                                        boxLabel: EasySDI_Mon.lang.getLocal('sla firstbyte boxlabel'),
+                                                        checked: u.data['isMeasureTimeToFirst'],
+                                                        fieldLabel: '',
+                                                        labelSeparator: '',
+                                                        xtype: 'radio'
+                                                    },
+                                                    {
+                                                        name: 'isMeasureTimeToFirst',
+                                                        boxLabel: EasySDI_Mon.lang.getLocal('sla lastbyte boxlabel'),
+                                                        checked: true,
+                                                        fieldLabel: '',
+                                                        xtype: 'radio',
+                                                        labelSeparator: ''
+                                                    }]
+
+                                                }]
 			        	}
 			        	],
 			        	buttons: [{
@@ -6476,12 +6483,31 @@ Ext.onReady(function() {
 
 	var appPanel
 
+	var item1 = new Ext.Panel({
+		title: EasySDI_Mon.lang.getLocal('advanced'),
+		layout: 'fit',
+		border:false,
+		frame:true,
+                autoScroll: true,
+		items: [Ext.getCmp('jobAdvForm')]
+	});
+
 	var item2 = new Ext.Panel({
 		title: EasySDI_Mon.lang.getLocal('requests'),
 		layout: 'fit',
 		border:false,
 		frame:true,
+                autoScroll: true,
 		items: [Ext.getCmp('ReqGrid')]
+	});
+
+	var item3 = new Ext.Panel({
+		title: EasySDI_Mon.lang.getLocal('alerts'),
+		layout: 'fit',
+		border:false,
+		frame:true,
+                autoScroll: true,
+		items: [Ext.getCmp('AlertForm')]
 	});
 
 	var accordion = new Ext.Panel({
@@ -6490,8 +6516,8 @@ Ext.onReady(function() {
 		split:true,
 		width: '40%',
 		layout:'accordion',
-		frame:"true",
-		items: [Ext.getCmp('jobAdvForm'), item2, Ext.getCmp('AlertForm')]
+		items:
+                        [item1, item2, item3]
 	});
 
 	//Job panel
@@ -6583,9 +6609,7 @@ Ext.onReady(function() {
 		       reportPanel,
 		       alertPanel,
 		       maintenancePanel,
-		       responseoverviewPanel,
-		       slaPanel,
-		       exportPanel
+		       slaPanel
 		       ]
 	});
 

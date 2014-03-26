@@ -25,12 +25,31 @@ Ext.onReady(function() {
 
 	var appPanel
 
+	var item1 = new Ext.Panel({
+		title: EasySDI_Mon.lang.getLocal('advanced'),
+		layout: 'fit',
+		border:false,
+		frame:true,
+                autoScroll: true,
+		items: [Ext.getCmp('jobAdvForm')]
+	});
+
 	var item2 = new Ext.Panel({
 		title: EasySDI_Mon.lang.getLocal('requests'),
 		layout: 'fit',
 		border:false,
 		frame:true,
+                autoScroll: true,
 		items: [Ext.getCmp('ReqGrid')]
+	});
+
+	var item3 = new Ext.Panel({
+		title: EasySDI_Mon.lang.getLocal('alerts'),
+		layout: 'fit',
+		border:false,
+		frame:true,
+                autoScroll: true,
+		items: [Ext.getCmp('AlertForm')]
 	});
 
 	var accordion = new Ext.Panel({
@@ -39,8 +58,8 @@ Ext.onReady(function() {
 		split:true,
 		width: '40%',
 		layout:'accordion',
-		frame:"true",
-		items: [Ext.getCmp('jobAdvForm'), item2, Ext.getCmp('AlertForm')]
+		items:
+                        [item1, item2, item3]
 	});
 
 	//Job panel
@@ -132,9 +151,7 @@ Ext.onReady(function() {
 		       reportPanel,
 		       alertPanel,
 		       maintenancePanel,
-		       responseoverviewPanel,
-		       slaPanel,
-		       exportPanel
+		       slaPanel
 		       ]
 	});
 

@@ -1089,8 +1089,8 @@ textarea {
 }
 
 .x-form-element {
-    padding-left:105px;
-    position:relative;
+    /* padding-left:105px; */
+    /* position:relative; */
 }
 
 .x-form-invalid-msg {
@@ -6461,7 +6461,7 @@ a.x-menu-item {
 .x-combo-list-small {
     font:normal 11px tahoma, arial, helvetica, sans-serif;
 }.x-panel {
-    border-color: #99bbe8;
+    /* border-color: #99bbe8; */
 }
 
 .x-panel-header {
