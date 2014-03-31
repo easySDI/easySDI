@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_unit` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_unit` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL ,
 `state` int(11)  NOT NULL DEFAULT '1',
@@ -8,7 +8,7 @@ PRIMARY KEY (`id`),
 INDEX `alias` USING BTREE (`alias`) 
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_role` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_role` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` int(11)  NOT NULL DEFAULT '1',
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_role` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE `#__sdi_sys_country` (
+CREATE TABLE `jos_sdi_sys_country` (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `ordering` bigint(20) NOT NULL DEFAULT '1',
   `state` int(11) NOT NULL DEFAULT '1',
@@ -26,7 +26,7 @@ CREATE TABLE `#__sdi_sys_country` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_versiontype` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_versiontype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` int(11)  NOT NULL DEFAULT '1',
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_versiontype` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_accessscope` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_accessscope` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` int(11)  NOT NULL DEFAULT '1',
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_accessscope` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_metadatastate` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_metadatastate` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` int(11)  NOT NULL DEFAULT '1',
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_metadatastate` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_metadataversion` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_metadataversion` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` int(11)  NOT NULL DEFAULT '1',
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_metadataversion` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_spatialoperator` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_spatialoperator` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` int(11)  NOT NULL DEFAULT '1',
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_spatialoperator` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_serviceconnector` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_serviceconnector` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11) ,
 `state` int(11) NOT NULL DEFAULT '1',
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_serviceconnector` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_serviceversion` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_serviceversion` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  ,
 `state` int(11)  NOT NULL DEFAULT '1',
@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_serviceversion` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_servicecompliance` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_servicecompliance` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  ,
 `state` int(11)  NOT NULL DEFAULT '1',
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_servicecompliance` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_serviceoperation` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_serviceoperation` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  ,
 `state` int(11)  NOT NULL DEFAULT '1',
@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_serviceoperation` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_operationcompliance` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_operationcompliance` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  ,
 `state` int(11)  NOT NULL DEFAULT '1',
@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_operationcompliance` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_authenticationlevel` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_authenticationlevel` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  ,
 `state` int(11)  NOT NULL DEFAULT '1',
@@ -121,7 +121,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_authenticationlevel` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_authenticationconnector` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_authenticationconnector` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  ,
 `state` int(11)  NOT NULL DEFAULT '1',
@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_authenticationconnector` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_logroll` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_logroll` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL ,
 `state` INT(11)  NOT NULL DEFAULT '1',
@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_logroll` (
 PRIMARY KEY (`id`)
 ) DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_loglevel` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_loglevel` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL ,
 `state` INT(11)  NOT NULL DEFAULT '1',
@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_loglevel` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_exceptionlevel` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_exceptionlevel` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL ,
 `state` INT(11)  NOT NULL DEFAULT '1',
@@ -154,7 +154,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_exceptionlevel` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_proxytype` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_proxytype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL ,
 `state` INT(11)  NOT NULL DEFAULT '1',
@@ -162,14 +162,14 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_proxytype` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_servicecon_authenticationcon` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_servicecon_authenticationcon` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `serviceconnector_id` INT(11) UNSIGNED NOT NULL ,
 `authenticationconnector_id` INT(11) UNSIGNED NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_servicescope` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_servicescope` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` INT(11)  NOT NULL DEFAULT '1',
@@ -177,65 +177,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_servicescope` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_entity` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)  NOT NULL DEFAULT '1' ,
-`state` INT(11)  NOT NULL DEFAULT '1',
-`value` VARCHAR(150)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_criteriatype` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)  NOT NULL DEFAULT '1' ,
-`state` INT(11)  NOT NULL DEFAULT '1',
-`value` VARCHAR(150)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_importtype` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)  NOT NULL DEFAULT '1' ,
-`state` INT(11)  NOT NULL DEFAULT '1',
-`value` VARCHAR(150)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_orderstate` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)  NOT NULL DEFAULT '1' ,
-`state` INT(11)  NOT NULL DEFAULT '1',
-`value` VARCHAR(150)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_ordertype` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)  NOT NULL DEFAULT '1' ,
-`state` INT(11)  NOT NULL DEFAULT '1',
-`value` VARCHAR(150)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_productstate` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)  NOT NULL DEFAULT '1' ,
-`state` INT(11)  NOT NULL DEFAULT '1',
-`value` VARCHAR(150)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_relationtype` (
-`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ordering` INT(11)  NOT NULL DEFAULT '1' ,
-`state` INT(11)  NOT NULL DEFAULT '1',
-`value` VARCHAR(150)  NOT NULL ,
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_rendertype` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_entity` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` INT(11)  NOT NULL DEFAULT '1',
@@ -245,9 +187,7 @@ PRIMARY KEY (`id`)
 
 
 
-
-
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_searchtab` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_criteriatype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` INT(11)  NOT NULL DEFAULT '1',
@@ -255,7 +195,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_searchtab` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_topiccategory` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_importtype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` INT(11)  NOT NULL DEFAULT '1',
@@ -263,7 +203,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_topiccategory` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_productmining` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_orderstate` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` INT(11)  NOT NULL DEFAULT '1',
@@ -271,7 +211,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_productmining` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_relationscope` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_ordertype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` INT(11)  NOT NULL DEFAULT '1',
@@ -279,7 +219,67 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_relationscope` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE `#__sdi_language` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_productstate` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` INT(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_relationtype` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` INT(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_rendertype` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` INT(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+
+
+
+
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_searchtab` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` INT(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_topiccategory` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` INT(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_productmining` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` INT(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_relationscope` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`ordering` INT(11)  NOT NULL DEFAULT '1' ,
+`state` INT(11)  NOT NULL DEFAULT '1',
+`value` VARCHAR(150)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE `jos_sdi_language` (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `ordering` bigint(20) NOT NULL DEFAULT '0',
   `state` int(11) DEFAULT '1',
@@ -293,7 +293,7 @@ CREATE TABLE `#__sdi_language` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_isolanguage` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_isolanguage` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` int(11)  NOT NULL DEFAULT '1',
@@ -301,7 +301,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_isolanguage` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_pricing` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_pricing` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` int(11)  NOT NULL DEFAULT '1',
@@ -309,7 +309,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_pricing` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_productstorage` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_productstorage` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` int(11)  NOT NULL DEFAULT '1',
@@ -317,7 +317,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_productstorage` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_productmining` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_productmining` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` int(11)  NOT NULL DEFAULT '1',
@@ -326,7 +326,7 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_perimetertype` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_perimetertype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` int(11)  NOT NULL DEFAULT '1',
@@ -336,7 +336,7 @@ PRIMARY KEY (`id`)
 
 -- com_easysdi_contact
 
-CREATE TABLE IF NOT EXISTS `#__sdi_user` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_user` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `created_by` INT(11)  NOT NULL ,
@@ -357,7 +357,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_user` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_address` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_address` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(50)   ,
@@ -390,7 +390,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_address` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_addresstype` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_addresstype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11),
 `state` int(11)  NOT NULL DEFAULT '1',
@@ -398,7 +398,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_addresstype` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_organism` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_organism` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `created_by` INT(11)  NOT NULL ,
@@ -422,7 +422,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_organism` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_user_role_organism` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_user_role_organism` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `user_id` int(11) UNSIGNED ,
 `role_id` int(11) UNSIGNED ,
@@ -431,22 +431,22 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
-CREATE TABLE IF NOT EXISTS `#__sdi_accessscope` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_accessscope` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `entity_guid` VARCHAR(36)  NOT NULL ,
 `organism_id` INT(11) UNSIGNED   ,
 `user_id` INT(11) UNSIGNED   ,
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_accessscope_fk1` (`organism_id` ASC) ,
-  INDEX `#__sdi_accessscope_fk2` (`user_id` ASC) ,
-  CONSTRAINT `#__sdi_accessscope_fk1`
+  INDEX `jos_sdi_accessscope_fk1` (`organism_id` ASC) ,
+  INDEX `jos_sdi_accessscope_fk2` (`user_id` ASC) ,
+  CONSTRAINT `jos_sdi_accessscope_fk1`
     FOREIGN KEY (`organism_id`)
-    REFERENCES `#__sdi_organism` (`id`)
+    REFERENCES `jos_sdi_organism` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_accessscope_fk2`
+  CONSTRAINT `jos_sdi_accessscope_fk2`
     FOREIGN KEY (`user_id`)
-    REFERENCES `#__sdi_user` (`id`)
+    REFERENCES `jos_sdi_user` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -454,7 +454,7 @@ PRIMARY KEY (`id`) ,
 -- com_easysdi_service
 
 -- System tables
-CREATE TABLE IF NOT EXISTS `#__sdi_physicalservice_servicecompliance` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_physicalservice_servicecompliance` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `service_id` INT(11) UNSIGNED  NOT NULL ,
 `servicecompliance_id` INT(11) UNSIGNED  NOT NULL ,
@@ -462,7 +462,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_physicalservice_servicecompliance` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_virtualservice_servicecompliance` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_virtualservice_servicecompliance` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `service_id` INT(11) UNSIGNED  NOT NULL ,
 `servicecompliance_id` INT(11) UNSIGNED  NOT NULL ,
@@ -470,7 +470,7 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 -- Layer of Google, Bing and OSM services
-CREATE TABLE IF NOT EXISTS `#__sdi_layer` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_layer` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `created_by` INT(11)  NOT NULL ,
@@ -488,7 +488,7 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 -- Physical Service
-CREATE TABLE IF NOT EXISTS `#__sdi_physicalservice` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_physicalservice` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(20)  NOT NULL ,
@@ -520,7 +520,7 @@ UNIQUE (`name`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 -- virtual Service
-CREATE TABLE IF NOT EXISTS `#__sdi_virtualservice` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_virtualservice` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR (36)  NOT NULL ,
 `ordering` INT(11)   ,
@@ -553,7 +553,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualservice` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_virtualmetadata` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_virtualmetadata` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
@@ -595,7 +595,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualmetadata` (
 PRIMARY KEY (`id`)
 ) DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_virtual_physical` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_virtual_physical` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `virtualservice_id` INT(11) UNSIGNED  NOT NULL ,
 `physicalservice_id` INT(11) UNSIGNED NOT NULL ,
@@ -603,7 +603,7 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 -- Policy
-CREATE TABLE IF NOT EXISTS `#__sdi_policy` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_policy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR (36)  NOT NULL ,
 `ordering` INT(11)  NOT NULL ,
@@ -644,28 +644,28 @@ CREATE TABLE IF NOT EXISTS `#__sdi_policy` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_policy_organism` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_policy_organism` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `policy_id` INT(11) UNSIGNED  NOT NULL ,
 `organism_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_policy_user` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_policy_user` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `policy_id` INT(11) UNSIGNED  NOT NULL ,
 `user_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_allowedoperation` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_allowedoperation` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `policy_id` INT(11) UNSIGNED  NOT NULL ,
 `serviceoperation_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_policy_metadatastate` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_policy_metadatastate` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `metadatastate_id` INT(11) UNSIGNED  NOT NULL ,
 `policy_id` INT(11) UNSIGNED  NOT NULL ,
@@ -674,7 +674,7 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 -- ServicePolicy
-CREATE TABLE IF NOT EXISTS `#__sdi_physicalservice_policy` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_physicalservice_policy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `prefix` VARCHAR(255),
 `namespace` VARCHAR(255) ,
@@ -690,7 +690,7 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 -- SpatialPolicy
-CREATE TABLE IF NOT EXISTS `#__sdi_csw_spatialpolicy` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_csw_spatialpolicy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `eastboundlongitude` DECIMAL(10,6) ,
 `westboundlongitude` DECIMAL(10,6) ,
@@ -704,7 +704,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_csw_spatialpolicy` (
 PRIMARY KEY (`id`)
 ) DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_wmts_spatialpolicy` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_wmts_spatialpolicy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `spatialoperator_id` int(11) UNSIGNED NOT NULL DEFAULT '1',
 `eastboundlongitude` DECIMAL(10,6) ,
@@ -714,7 +714,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_wmts_spatialpolicy` (
 PRIMARY KEY (`id`)
 ) DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_wms_spatialpolicy` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_wms_spatialpolicy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `maxx` DECIMAL(18,6) ,
 `maxy` DECIMAL(18,6) ,
@@ -727,7 +727,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_wms_spatialpolicy` (
 PRIMARY KEY (`id`)
 ) DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_wfs_spatialpolicy` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_wfs_spatialpolicy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `localgeographicfilter` TEXT,
 `remotegeographicfilter` TEXT,
@@ -735,7 +735,7 @@ PRIMARY KEY (`id`)
 ) DEFAULT COLLATE=utf8_general_ci;
 
 -- CSW
-CREATE TABLE IF NOT EXISTS `#__sdi_excludedattribute` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_excludedattribute` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `path` VARCHAR(500)  NOT NULL ,
 `policy_id` INT(11) UNSIGNED  NOT NULL ,
@@ -743,7 +743,7 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 -- WMTS
-CREATE TABLE IF NOT EXISTS `#__sdi_wmtslayer_policy` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_wmtslayer_policy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `identifier` varchar(255)  NOT NULL ,
 `enabled` TINYINT(1)  NOT NULL DEFAULT '1',
@@ -754,7 +754,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_wmtslayer_policy` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_tilematrixset_policy` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_tilematrixset_policy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `wmtslayerpolicy_id` INT(11) UNSIGNED  NOT NULL ,
 `identifier` varchar(255)  NOT NULL ,
@@ -763,7 +763,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_tilematrixset_policy` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_tilematrix_policy` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_tilematrix_policy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `tilematrixsetpolicy_id` INT(11) UNSIGNED  NOT NULL ,
 `identifier` varchar(255)  NOT NULL ,
@@ -776,7 +776,7 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 -- WMS
-CREATE TABLE IF NOT EXISTS `#__sdi_wmslayer_policy` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_wmslayer_policy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `name` VARCHAR(255)  NOT NULL ,
 `description` VARCHAR(255)  NOT NULL ,
@@ -788,7 +788,7 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 -- WFS
-CREATE TABLE IF NOT EXISTS `#__sdi_featuretype_policy` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_featuretype_policy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `name` VARCHAR(255)  NOT NULL ,
 `description` VARCHAR(255)  ,
@@ -799,35 +799,35 @@ CREATE TABLE IF NOT EXISTS `#__sdi_featuretype_policy` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_includedattribute` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_includedattribute` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `name` VARCHAR(500)  NOT NULL ,
 `featuretypepolicy_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_physicalservice_organism` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_physicalservice_organism` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `physicalservice_id` INT(11) UNSIGNED  NOT NULL ,
 `organism_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_virtualservice_organism` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_virtualservice_organism` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `virtualservice_id` INT(11) UNSIGNED  NOT NULL ,
 `organism_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_policy_resourcetype` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_policy_resourcetype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `resourcetype_id` INT(11) UNSIGNED  NOT NULL ,
 `policy_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_policy_visibility` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_policy_visibility` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `policy_id` INT(11) UNSIGNED  NOT NULL ,
 `user_id` INT(11) UNSIGNED   NULL ,
@@ -837,7 +837,7 @@ PRIMARY KEY (`id`)
 
 -- com_easysd_catalog
 
-CREATE TABLE IF NOT EXISTS `#__sdi_namespace` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_namespace` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -858,7 +858,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_namespace` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_stereotype` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_stereotype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` INT(11)  NOT NULL DEFAULT '1',
@@ -868,22 +868,22 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_stereotype` (
 `namespace_id` INT(11) UNSIGNED ,
 `entity_id` INT(11) UNSIGNED ,
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_sys_stereotype_fk1` (`entity_id` ASC) ,
-  INDEX `#__sdi_sys_stereotype_fk2` (`namespace_id` ASC) ,
-  CONSTRAINT `#__sdi_sys_stereotype_fk1`
+  INDEX `jos_sdi_sys_stereotype_fk1` (`entity_id` ASC) ,
+  INDEX `jos_sdi_sys_stereotype_fk2` (`namespace_id` ASC) ,
+  CONSTRAINT `jos_sdi_sys_stereotype_fk1`
     FOREIGN KEY (`entity_id` )
-    REFERENCES `#__sdi_sys_entity` (`id` )
+    REFERENCES `jos_sdi_sys_entity` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_sys_stereotype_fk2`
+  CONSTRAINT `jos_sdi_sys_stereotype_fk2`
     FOREIGN KEY (`namespace_id` )
-    REFERENCES `#__sdi_namespace` (`id` )
+    REFERENCES `jos_sdi_namespace` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_catalog` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_catalog` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -906,7 +906,7 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
-CREATE TABLE IF NOT EXISTS `#__sdi_class` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_class` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -928,21 +928,21 @@ CREATE TABLE IF NOT EXISTS `#__sdi_class` (
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_class_fk1` (`namespace_id` ASC) ,
-  INDEX `#__sdi_class_fk2` (`stereotype_id` ASC) ,
-  CONSTRAINT `#__sdi_class_fk1`
+  INDEX `jos_sdi_class_fk1` (`namespace_id` ASC) ,
+  INDEX `jos_sdi_class_fk2` (`stereotype_id` ASC) ,
+  CONSTRAINT `jos_sdi_class_fk1`
     FOREIGN KEY (`namespace_id` )
-    REFERENCES `#__sdi_namespace` (`id` )
+    REFERENCES `jos_sdi_namespace` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_class_fk2`
+  CONSTRAINT `jos_sdi_class_fk2`
     FOREIGN KEY (`stereotype_id` )
-    REFERENCES `#__sdi_sys_stereotype` (`id` )
+    REFERENCES `jos_sdi_sys_stereotype` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_profile` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_profile` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -961,15 +961,15 @@ CREATE TABLE IF NOT EXISTS `#__sdi_profile` (
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_profile_fk1` (`class_id` ASC) ,
-  CONSTRAINT `#__sdi_profile_fk1`
+  INDEX `jos_sdi_profile_fk1` (`class_id` ASC) ,
+  CONSTRAINT `jos_sdi_profile_fk1`
     FOREIGN KEY (`class_id` )
-    REFERENCES `#__sdi_class` (`id` )
+    REFERENCES `jos_sdi_class` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_attribute` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_attribute` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -999,22 +999,22 @@ PRIMARY KEY (`id`) ,
   INDEX `sdi_attribute_fk3` (`stereotype_id` ASC) ,
   CONSTRAINT `sdi_attribute_fk1`
     FOREIGN KEY (`namespace_id` )
-    REFERENCES `#__sdi_namespace` (`id`  )
+    REFERENCES `jos_sdi_namespace` (`id`  )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `sdi_attribute_fk2`
     FOREIGN KEY (`listnamespace_id` )
-    REFERENCES `#__sdi_namespace` (`id` )
+    REFERENCES `jos_sdi_namespace` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `sdi_attribute_fk3`
     FOREIGN KEY (`stereotype_id` )
-    REFERENCES `#__sdi_sys_stereotype` (`id` )
+    REFERENCES `jos_sdi_sys_stereotype` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_attributevalue` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_attributevalue` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -1032,15 +1032,15 @@ CREATE TABLE IF NOT EXISTS `#__sdi_attributevalue` (
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_attributevalue` (`attribute_id` ASC) ,
-  CONSTRAINT `#__sdi_attributevalue`
+  INDEX `jos_sdi_attributevalue` (`attribute_id` ASC) ,
+  CONSTRAINT `jos_sdi_attributevalue`
     FOREIGN KEY (`attribute_id` )
-    REFERENCES `#__sdi_attribute` (`id` )
+    REFERENCES `jos_sdi_attribute` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_resourcetype` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_resourcetype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -1069,27 +1069,27 @@ CREATE TABLE IF NOT EXISTS `#__sdi_resourcetype` (
 `access` INT(11)  NOT NULL ,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_resourcetype_fk1` (`profile_id` ASC) ,
-  INDEX `#__sdi_resourcetype_fk2` (`fragmentnamespace_id` ASC) ,
-INDEX `#__sdi_resourcetype_fk3` (`accessscope_id` ASC) ,
-  CONSTRAINT `#__sdi_resourcetype_fk1`
+  INDEX `jos_sdi_resourcetype_fk1` (`profile_id` ASC) ,
+  INDEX `jos_sdi_resourcetype_fk2` (`fragmentnamespace_id` ASC) ,
+INDEX `jos_sdi_resourcetype_fk3` (`accessscope_id` ASC) ,
+  CONSTRAINT `jos_sdi_resourcetype_fk1`
     FOREIGN KEY (`profile_id` )
-    REFERENCES `#__sdi_profile` (`id` )
+    REFERENCES `jos_sdi_profile` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_resourcetype_fk2`
+  CONSTRAINT `jos_sdi_resourcetype_fk2`
     FOREIGN KEY (`fragmentnamespace_id` )
-    REFERENCES `#__sdi_namespace` (`id` )
+    REFERENCES `jos_sdi_namespace` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-CONSTRAINT `#__sdi_resourcetype_fk3`
+CONSTRAINT `jos_sdi_resourcetype_fk3`
     FOREIGN KEY (`accessscope_id` )
-    REFERENCES `#__sdi_sys_accessscope` (`id` )
+    REFERENCES `jos_sdi_sys_accessscope` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_resource` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_resource` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -1109,28 +1109,28 @@ CREATE TABLE IF NOT EXISTS `#__sdi_resource` (
 `access` INT(11)  NOT NULL ,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_resource_fk1` (`organism_id` ASC) ,
-  INDEX `#__sdi_resource_fk2` (`resourcetype_id` ASC) ,
-  INDEX `#__sdi_resource_fk3` (`accessscope_id` ASC) ,
-  CONSTRAINT `#__sdi_resource_fk1`
+  INDEX `jos_sdi_resource_fk1` (`organism_id` ASC) ,
+  INDEX `jos_sdi_resource_fk2` (`resourcetype_id` ASC) ,
+  INDEX `jos_sdi_resource_fk3` (`accessscope_id` ASC) ,
+  CONSTRAINT `jos_sdi_resource_fk1`
     FOREIGN KEY (`organism_id` )
-    REFERENCES `#__sdi_organism` (`id` )
+    REFERENCES `jos_sdi_organism` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_resource_fk2`
+  CONSTRAINT `jos_sdi_resource_fk2`
     FOREIGN KEY (`resourcetype_id` )
-    REFERENCES `#__sdi_resourcetype` (`id` )
+    REFERENCES `jos_sdi_resourcetype` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-CONSTRAINT `#__sdi_resource_fk3`
+CONSTRAINT `jos_sdi_resource_fk3`
     FOREIGN KEY (`accessscope_id` )
-    REFERENCES `#__sdi_sys_accessscope` (`id` )
+    REFERENCES `jos_sdi_sys_accessscope` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
-CREATE TABLE IF NOT EXISTS `#__sdi_relation` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_relation` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -1163,69 +1163,69 @@ CREATE TABLE IF NOT EXISTS `#__sdi_relation` (
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_relation_fk1` (`parent_id` ASC) ,
-  INDEX `#__sdi_relation_fk2` (`classchild_id` ASC) ,
-  INDEX `#__sdi_relation_fk3` (`attributechild_id` ASC) ,
-  INDEX `#__sdi_relation_fk4` (`relationtype_id` ASC) ,
-  INDEX `#__sdi_relation_fk5` (`rendertype_id` ASC) ,
-  INDEX `#__sdi_relation_fk6` (`namespace_id` ASC) ,
-  INDEX `#__sdi_relation_fk7` (`classassociation_id` ASC) ,
-  INDEX `#__sdi_relation_fk8` (`relationscope_id` ASC) ,
-  INDEX `#__sdi_relation_fk9` (`editorrelationscope_id` ASC) ,
-  INDEX `#__sdi_relation_fk10` (`childresourcetype_id` ASC) ,
-  CONSTRAINT `#__sdi_relation_fk1`
+  INDEX `jos_sdi_relation_fk1` (`parent_id` ASC) ,
+  INDEX `jos_sdi_relation_fk2` (`classchild_id` ASC) ,
+  INDEX `jos_sdi_relation_fk3` (`attributechild_id` ASC) ,
+  INDEX `jos_sdi_relation_fk4` (`relationtype_id` ASC) ,
+  INDEX `jos_sdi_relation_fk5` (`rendertype_id` ASC) ,
+  INDEX `jos_sdi_relation_fk6` (`namespace_id` ASC) ,
+  INDEX `jos_sdi_relation_fk7` (`classassociation_id` ASC) ,
+  INDEX `jos_sdi_relation_fk8` (`relationscope_id` ASC) ,
+  INDEX `jos_sdi_relation_fk9` (`editorrelationscope_id` ASC) ,
+  INDEX `jos_sdi_relation_fk10` (`childresourcetype_id` ASC) ,
+  CONSTRAINT `jos_sdi_relation_fk1`
     FOREIGN KEY (`parent_id` )
-    REFERENCES `#__sdi_class` (`id` )
+    REFERENCES `jos_sdi_class` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_relation_fk2`
+  CONSTRAINT `jos_sdi_relation_fk2`
     FOREIGN KEY (`classchild_id` )
-    REFERENCES `#__sdi_class` (`id` )
+    REFERENCES `jos_sdi_class` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_relation_fk3`
+  CONSTRAINT `jos_sdi_relation_fk3`
     FOREIGN KEY (`attributechild_id` )
-    REFERENCES `#__sdi_attribute` (`id` )
+    REFERENCES `jos_sdi_attribute` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_relation_fk4`
+  CONSTRAINT `jos_sdi_relation_fk4`
     FOREIGN KEY (`relationtype_id` )
-    REFERENCES `#__sdi_sys_relationtype` (`id` )
+    REFERENCES `jos_sdi_sys_relationtype` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_relation_fk5`
+  CONSTRAINT `jos_sdi_relation_fk5`
     FOREIGN KEY (`rendertype_id` )
-    REFERENCES `#__sdi_sys_rendertype` (`id` )
+    REFERENCES `jos_sdi_sys_rendertype` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_relation_fk6`
+  CONSTRAINT `jos_sdi_relation_fk6`
     FOREIGN KEY (`namespace_id` )
-    REFERENCES `#__sdi_namespace` (`id` )
+    REFERENCES `jos_sdi_namespace` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_relation_fk7`
+  CONSTRAINT `jos_sdi_relation_fk7`
     FOREIGN KEY (`classassociation_id` )
-    REFERENCES `#__sdi_class` (`id` )
+    REFERENCES `jos_sdi_class` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_relation_fk8`
+  CONSTRAINT `jos_sdi_relation_fk8`
     FOREIGN KEY (`relationscope_id` )
-    REFERENCES `#__sdi_sys_relationscope` (`id` )
+    REFERENCES `jos_sdi_sys_relationscope` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_relation_fk9`
+  CONSTRAINT `jos_sdi_relation_fk9`
     FOREIGN KEY (`editorrelationscope_id` )
-    REFERENCES `#__sdi_sys_relationscope` (`id` )
+    REFERENCES `jos_sdi_sys_relationscope` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_relation_fk10`
+  CONSTRAINT `jos_sdi_relation_fk10`
     FOREIGN KEY (`childresourcetype_id` )
-    REFERENCES `#__sdi_resourcetype` (`id` )
+    REFERENCES `jos_sdi_resourcetype` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_searchcriteria` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_searchcriteria` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -1245,27 +1245,27 @@ CREATE TABLE IF NOT EXISTS `#__sdi_searchcriteria` (
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_searchcriteria_fk1` (`criteriatype_id` ASC) ,
-  INDEX `#__sdi_searchcriteria_fk2` (`rendertype_id` ASC) ,
-  INDEX `#__sdi_searchcriteria_fk3` (`relation_id` ASC) ,
-  CONSTRAINT `#__sdi_searchcriteria_fk1`
+  INDEX `jos_sdi_searchcriteria_fk1` (`criteriatype_id` ASC) ,
+  INDEX `jos_sdi_searchcriteria_fk2` (`rendertype_id` ASC) ,
+  INDEX `jos_sdi_searchcriteria_fk3` (`relation_id` ASC) ,
+  CONSTRAINT `jos_sdi_searchcriteria_fk1`
     FOREIGN KEY (`criteriatype_id` )
-    REFERENCES `#__sdi_sys_criteriatype` (`id` )
+    REFERENCES `jos_sdi_sys_criteriatype` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_searchcriteria_fk2`
+  CONSTRAINT `jos_sdi_searchcriteria_fk2`
     FOREIGN KEY (`rendertype_id` )
-    REFERENCES `#__sdi_sys_rendertype` (`id` )
+    REFERENCES `jos_sdi_sys_rendertype` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_searchcriteria_fk3`
+  CONSTRAINT `jos_sdi_searchcriteria_fk3`
     FOREIGN KEY (`relation_id` )
-    REFERENCES `#__sdi_relation` (`id` )
+    REFERENCES `jos_sdi_relation` (`id` )
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_catalog_searchcriteria` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_catalog_searchcriteria` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `created_by` INT(11)  NOT NULL ,
@@ -1282,27 +1282,27 @@ CREATE TABLE IF NOT EXISTS `#__sdi_catalog_searchcriteria` (
 `defaultvalueto` DATETIME ,
 `params` VARCHAR(500)  ,
 PRIMARY KEY (`id`),
-INDEX `#__sdi_catalog_searchcriteria_fk1` (`catalog_id` ASC) ,
-  INDEX `#__sdi_catalog_searchcriteria_fk2` (`searchcriteria_id` ASC) ,
-  INDEX `#__sdi_catalog_searchcriteria_fk3` (`searchtab_id` ASC) ,
- CONSTRAINT `#__sdi_catalog_searchcriteria_fk1`
+INDEX `jos_sdi_catalog_searchcriteria_fk1` (`catalog_id` ASC) ,
+  INDEX `jos_sdi_catalog_searchcriteria_fk2` (`searchcriteria_id` ASC) ,
+  INDEX `jos_sdi_catalog_searchcriteria_fk3` (`searchtab_id` ASC) ,
+ CONSTRAINT `jos_sdi_catalog_searchcriteria_fk1`
     FOREIGN KEY (`catalog_id` )
-    REFERENCES `#__sdi_catalog` (`id` )
+    REFERENCES `jos_sdi_catalog` (`id` )
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `#__sdi_catalog_searchcriteria_fk2`
+  CONSTRAINT `jos_sdi_catalog_searchcriteria_fk2`
     FOREIGN KEY (`searchcriteria_id` )
-    REFERENCES `#__sdi_searchcriteria` (`id` )
+    REFERENCES `jos_sdi_searchcriteria` (`id` )
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `#__sdi_catalog_searchcriteria_fk3`
+  CONSTRAINT `jos_sdi_catalog_searchcriteria_fk3`
     FOREIGN KEY (`searchtab_id` )
-    REFERENCES `#__sdi_sys_searchtab` (`id` )
+    REFERENCES `jos_sdi_sys_searchtab` (`id` )
     ON DELETE CASCADE
     ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_catalog_searchsort` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_catalog_searchsort` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)   ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
@@ -1310,65 +1310,65 @@ CREATE TABLE IF NOT EXISTS `#__sdi_catalog_searchsort` (
 `language_id` INT(11) UNSIGNED NOT NULL ,
 `ogcsearchsorting` VARCHAR(255) ,
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_catalog_searchsort_fk1` (`catalog_id` ASC) ,
-  INDEX `#__sdi_catalog_searchsort_fk2` (`language_id` ASC) ,
-  CONSTRAINT `#__sdi_catalog_searchsort_fk1`
+  INDEX `jos_sdi_catalog_searchsort_fk1` (`catalog_id` ASC) ,
+  INDEX `jos_sdi_catalog_searchsort_fk2` (`language_id` ASC) ,
+  CONSTRAINT `jos_sdi_catalog_searchsort_fk1`
     FOREIGN KEY (`catalog_id` )
-    REFERENCES `#__sdi_catalog` (`id` )
+    REFERENCES `jos_sdi_catalog` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_catalog_searchsort_fk2`
+  CONSTRAINT `jos_sdi_catalog_searchsort_fk2`
     FOREIGN KEY (`language_id` )
-    REFERENCES `#__sdi_language` (`id` )
+    REFERENCES `jos_sdi_language` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_relation_profile` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_relation_profile` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)   ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `relation_id` INT(11) UNSIGNED NOT NULL ,
 `profile_id` INT(11) UNSIGNED NOT NULL ,
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_relation_profile_fk1` (`relation_id` ASC) ,
-  INDEX `#__sdi_relation_profile_fk2` (`profile_id` ASC) ,
-  CONSTRAINT `#__sdi_relation_profile_fk1`
+  INDEX `jos_sdi_relation_profile_fk1` (`relation_id` ASC) ,
+  INDEX `jos_sdi_relation_profile_fk2` (`profile_id` ASC) ,
+  CONSTRAINT `jos_sdi_relation_profile_fk1`
     FOREIGN KEY (`relation_id` )
-    REFERENCES `#__sdi_relation` (`id` )
+    REFERENCES `jos_sdi_relation` (`id` )
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_relation_profile_fk2`
+  CONSTRAINT `jos_sdi_relation_profile_fk2`
     FOREIGN KEY (`profile_id` )
-    REFERENCES `#__sdi_profile` (`id` )
+    REFERENCES `jos_sdi_profile` (`id` )
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_relation_catalog` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_relation_catalog` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)   ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `relation_id` INT(11) UNSIGNED NOT NULL ,
 `catalog_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_relation_catalog_fk1` (`relation_id` ASC) ,
-  INDEX `#__sdi_relation_catalog_fk2` (`catalog_id` ASC) ,
-  CONSTRAINT `#__sdi_relation_catalog_fk1`
+  INDEX `jos_sdi_relation_catalog_fk1` (`relation_id` ASC) ,
+  INDEX `jos_sdi_relation_catalog_fk2` (`catalog_id` ASC) ,
+  CONSTRAINT `jos_sdi_relation_catalog_fk1`
     FOREIGN KEY (`relation_id` )
-    REFERENCES `#__sdi_relation` (`id` )
+    REFERENCES `jos_sdi_relation` (`id` )
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_relation_catalog_fk2`
+  CONSTRAINT `jos_sdi_relation_catalog_fk2`
     FOREIGN KEY (`catalog_id` )
-    REFERENCES `#__sdi_catalog` (`id` )
+    REFERENCES `jos_sdi_catalog` (`id` )
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
 
-CREATE TABLE IF NOT EXISTS `#__sdi_boundarycategory` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_boundarycategory` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -1385,15 +1385,15 @@ CREATE TABLE IF NOT EXISTS `#__sdi_boundarycategory` (
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_boundarycategory_fk1` (`parent_id` ASC) ,
-  CONSTRAINT `#__sdi_boundarycategory_fk1`
+  INDEX `jos_sdi_boundarycategory_fk1` (`parent_id` ASC) ,
+  CONSTRAINT `jos_sdi_boundarycategory_fk1`
     FOREIGN KEY (`parent_id` )
-    REFERENCES `#__sdi_boundarycategory` (`id` )
+    REFERENCES `jos_sdi_boundarycategory` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_boundary` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_boundary` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -1415,21 +1415,21 @@ CREATE TABLE IF NOT EXISTS `#__sdi_boundary` (
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_boundary_fk1` (`parent_id` ASC) ,
-INDEX `#__sdi_boundary_fk2` (`category_id` ASC) ,
-  CONSTRAINT `#__sdi_boundary_fk1`
+  INDEX `jos_sdi_boundary_fk1` (`parent_id` ASC) ,
+INDEX `jos_sdi_boundary_fk2` (`category_id` ASC) ,
+  CONSTRAINT `jos_sdi_boundary_fk1`
     FOREIGN KEY (`parent_id` )
-    REFERENCES `#__sdi_boundary` (`id` )
+    REFERENCES `jos_sdi_boundary` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-CONSTRAINT `#__sdi_boundary_fk2`
+CONSTRAINT `jos_sdi_boundary_fk2`
     FOREIGN KEY (`category_id` )
-    REFERENCES `#__sdi_boundarycategory` (`id` )
+    REFERENCES `jos_sdi_boundarycategory` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_importref` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_importref` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -1452,22 +1452,22 @@ CREATE TABLE IF NOT EXISTS `#__sdi_importref` (
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_importref_fk1` (`importtype_id` ASC) ,
-  CONSTRAINT `#__sdi_importref_fk1`
+  INDEX `jos_sdi_importref_fk1` (`importtype_id` ASC) ,
+  CONSTRAINT `jos_sdi_importref_fk1`
     FOREIGN KEY (`importtype_id` )
-    REFERENCES `#__sdi_sys_importtype` (`id` )
+    REFERENCES `jos_sdi_sys_importtype` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-ALTER TABLE `#__sdi_importref`
-ADD CONSTRAINT `#__sdi_importref_fk2` FOREIGN KEY (`cswservice_id`) REFERENCES `#__sdi_physicalservice` (`id`) ON DELETE CASCADE ;
+ALTER TABLE `jos_sdi_importref`
+ADD CONSTRAINT `jos_sdi_importref_fk2` FOREIGN KEY (`cswservice_id`) REFERENCES `jos_sdi_physicalservice` (`id`) ON DELETE CASCADE ;
 
-ALTER TABLE `#__sdi_importref`
-ADD CONSTRAINT `#__sdi_importref_fk3` FOREIGN KEY (`cswversion_id`) REFERENCES `#__sdi_sys_serviceversion` (`id`) ON DELETE CASCADE ;
+ALTER TABLE `jos_sdi_importref`
+ADD CONSTRAINT `jos_sdi_importref_fk3` FOREIGN KEY (`cswversion_id`) REFERENCES `jos_sdi_sys_serviceversion` (`id`) ON DELETE CASCADE ;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_translation` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_translation` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -1484,18 +1484,18 @@ CREATE TABLE IF NOT EXISTS `#__sdi_translation` (
 `text1` VARCHAR(255)   ,
 `text2` VARCHAR(500) ,
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_translation_fk1` (`language_id` ASC) ,
-  CONSTRAINT `#__sdi_translation_fk1`
+  INDEX `jos_sdi_translation_fk1` (`language_id` ASC) ,
+  CONSTRAINT `jos_sdi_translation_fk1`
     FOREIGN KEY (`language_id` )
-    REFERENCES `#__sdi_language` (`id` )
+    REFERENCES `jos_sdi_language` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
-ALTER TABLE `#__sdi_translation` ADD INDEX `element_guid` (`element_guid`);
+ALTER TABLE `jos_sdi_translation` ADD INDEX `element_guid` (`element_guid`);
 
-CREATE TABLE IF NOT EXISTS `#__sdi_searchcriteriafilter` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_searchcriteriafilter` (
 `id`  int(11) UNSIGNED NOT NULL AUTO_INCREMENT ,
 `ordering`  int(11) NULL DEFAULT NULL ,
 `state`  tinyint(1) NOT NULL DEFAULT 1 ,
@@ -1503,16 +1503,16 @@ CREATE TABLE IF NOT EXISTS `#__sdi_searchcriteriafilter` (
 `language_id`  int(11) UNSIGNED NOT NULL ,
 `ogcsearchfilter`  varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_searchcriteriafilter_fk1` (`searchcriteria_id` ASC) ,
-  INDEX `#__sdi_searchcriteriafilter_fk2` (`language_id` ASC) ,
-  CONSTRAINT `#__sdi_searchcriteriafilter_fk1`
+  INDEX `jos_sdi_searchcriteriafilter_fk1` (`searchcriteria_id` ASC) ,
+  INDEX `jos_sdi_searchcriteriafilter_fk2` (`language_id` ASC) ,
+  CONSTRAINT `jos_sdi_searchcriteriafilter_fk1`
     FOREIGN KEY (`searchcriteria_id`)
-    REFERENCES `#__sdi_searchcriteria` (`id` )
+    REFERENCES `jos_sdi_searchcriteria` (`id` )
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `#__sdi_searchcriteriafilter_fk2`
+  CONSTRAINT `jos_sdi_searchcriteriafilter_fk2`
     FOREIGN KEY (`language_id`)
-    REFERENCES `#__sdi_language` (`id` )
+    REFERENCES `jos_sdi_language` (`id` )
     ON DELETE CASCADE
     ON UPDATE CASCADE
 )
@@ -1522,27 +1522,27 @@ DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci;
 
 
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_rendertype_stereotype` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_rendertype_stereotype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `stereotype_id` INT(11) UNSIGNED  NOT NULL ,
 `rendertype_id` INT(11) UNSIGNED NOT NULL ,
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_sys_rendertype_stereotype_fk1` (`stereotype_id` ASC) ,
-  INDEX `#__sdi_sys_rendertype_stereotype_fk1_fk2` (`rendertype_id` ASC) ,
-  CONSTRAINT `#__sdi_sys_rendertype_stereotype_fk1`
+  INDEX `jos_sdi_sys_rendertype_stereotype_fk1` (`stereotype_id` ASC) ,
+  INDEX `jos_sdi_sys_rendertype_stereotype_fk1_fk2` (`rendertype_id` ASC) ,
+  CONSTRAINT `jos_sdi_sys_rendertype_stereotype_fk1`
     FOREIGN KEY (`stereotype_id` )
-    REFERENCES `#__sdi_sys_stereotype` (`id` )
+    REFERENCES `jos_sdi_sys_stereotype` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_sys_rendertype_stereotype_fk2`
+  CONSTRAINT `jos_sdi_sys_rendertype_stereotype_fk2`
     FOREIGN KEY (`rendertype_id` )
-    REFERENCES `#__sdi_sys_rendertype` (`id` )
+    REFERENCES `jos_sdi_sys_rendertype` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
-CREATE TABLE IF NOT EXISTS `#__sdi_version` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_version` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -1559,17 +1559,17 @@ CREATE TABLE IF NOT EXISTS `#__sdi_version` (
 `access` INT(11)  NOT NULL DEFAULT '1' ,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_version_fk1` (`resource_id` ASC) ,
-  CONSTRAINT `#__sdi_version_fk1`
+  INDEX `jos_sdi_version_fk1` (`resource_id` ASC) ,
+  CONSTRAINT `jos_sdi_version_fk1`
     FOREIGN KEY (`resource_id` )
-    REFERENCES `#__sdi_resource` (`id` )
+    REFERENCES `jos_sdi_resource` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
 
-CREATE TABLE IF NOT EXISTS `#__sdi_application` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_application` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -1590,37 +1590,37 @@ CREATE TABLE IF NOT EXISTS `#__sdi_application` (
 `access` INT(11)  NOT NULL ,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_application_fk1` (`resource_id` ASC) ,
-  CONSTRAINT `#__sdi_application_fk1`
+  INDEX `jos_sdi_application_fk1` (`resource_id` ASC) ,
+  CONSTRAINT `jos_sdi_application_fk1`
     FOREIGN KEY (`resource_id` )
-    REFERENCES `#__sdi_resource` (`id` )
+    REFERENCES `jos_sdi_resource` (`id` )
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
-CREATE TABLE IF NOT EXISTS `#__sdi_versionlink` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_versionlink` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `parent_id` INT(11) UNSIGNED  NOT NULL ,
 `child_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_versionlink_fk1` (`parent_id` ASC) ,
-INDEX `#__sdi_versionlink_fk2` (`child_id` ASC) ,
-  CONSTRAINT `#__sdi_versionlink_fk1`
+  INDEX `jos_sdi_versionlink_fk1` (`parent_id` ASC) ,
+INDEX `jos_sdi_versionlink_fk2` (`child_id` ASC) ,
+  CONSTRAINT `jos_sdi_versionlink_fk1`
     FOREIGN KEY (`parent_id` )
-    REFERENCES `#__sdi_version` (`id` )
+    REFERENCES `jos_sdi_version` (`id` )
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-CONSTRAINT `#__sdi_versionlink_fk2`
+CONSTRAINT `jos_sdi_versionlink_fk2`
     FOREIGN KEY (`child_id` )
-    REFERENCES `#__sdi_version` (`id` )
+    REFERENCES `jos_sdi_version` (`id` )
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
 
-CREATE TABLE IF NOT EXISTS `#__sdi_resourcetypelink` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_resourcetypelink` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -1645,47 +1645,47 @@ CREATE TABLE IF NOT EXISTS `#__sdi_resourcetypelink` (
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_resourcetypelink_fk1` (`parent_id` ASC) ,
-INDEX `#__sdi_resourcetypelink_fk2` (`child_id` ASC) ,
-INDEX `#__sdi_resourcetypelink_fk3` (`class_id` ASC) ,
-INDEX `#__sdi_resourcetypelink_fk4` (`attribute_id` ASC) ,
-  CONSTRAINT `#__sdi_resourcetypelink_fk1`
+  INDEX `jos_sdi_resourcetypelink_fk1` (`parent_id` ASC) ,
+INDEX `jos_sdi_resourcetypelink_fk2` (`child_id` ASC) ,
+INDEX `jos_sdi_resourcetypelink_fk3` (`class_id` ASC) ,
+INDEX `jos_sdi_resourcetypelink_fk4` (`attribute_id` ASC) ,
+  CONSTRAINT `jos_sdi_resourcetypelink_fk1`
     FOREIGN KEY (`parent_id` )
-    REFERENCES `#__sdi_resourcetype` (`id` )
+    REFERENCES `jos_sdi_resourcetype` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-CONSTRAINT `#__sdi_resourcetypelink_fk2`
+CONSTRAINT `jos_sdi_resourcetypelink_fk2`
     FOREIGN KEY (`child_id` )
-    REFERENCES `#__sdi_resourcetype` (`id` )
+    REFERENCES `jos_sdi_resourcetype` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-CONSTRAINT `#__sdi_resourcetypelink_fk3`
+CONSTRAINT `jos_sdi_resourcetypelink_fk3`
     FOREIGN KEY (`class_id` )
-    REFERENCES `#__sdi_class` (`id` )
+    REFERENCES `jos_sdi_class` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-CONSTRAINT `#__sdi_resourcetypelink_fk4`
+CONSTRAINT `jos_sdi_resourcetypelink_fk4`
     FOREIGN KEY (`attribute_id` )
-    REFERENCES `#__sdi_attribute` (`id` )
+    REFERENCES `jos_sdi_attribute` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
-CREATE TABLE IF NOT EXISTS `#__sdi_resourcetypelinkinheritance` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_resourcetypelinkinheritance` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `resourcetypelink_id` INT(11) UNSIGNED NOT NULL ,
 `xpath` VARCHAR(500)  NOT NULL ,
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_resourcetypelinkinheritance_fk1` (`resourcetypelink_id` ASC) ,
-  CONSTRAINT `#__sdi_resourcetypelinkinheritance_fk1`
+  INDEX `jos_sdi_resourcetypelinkinheritance_fk1` (`resourcetypelink_id` ASC) ,
+  CONSTRAINT `jos_sdi_resourcetypelinkinheritance_fk1`
     FOREIGN KEY (`resourcetypelink_id` )
-    REFERENCES `#__sdi_resourcetypelink` (`id` )
+    REFERENCES `jos_sdi_resourcetypelink` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_metadata` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_metadata` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `created_by` INT(11)  NOT NULL ,
@@ -1706,63 +1706,63 @@ CREATE TABLE IF NOT EXISTS `#__sdi_metadata` (
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_metadata_fk1` (`metadatastate_id` ASC) ,
-INDEX `#__sdi_metadata_fk2` (`accessscope_id` ASC) ,
-INDEX `#__sdi_metadata_fk3` (`version_id` ASC) ,
-  CONSTRAINT `#__sdi_metadata_fk1`
+  INDEX `jos_sdi_metadata_fk1` (`metadatastate_id` ASC) ,
+INDEX `jos_sdi_metadata_fk2` (`accessscope_id` ASC) ,
+INDEX `jos_sdi_metadata_fk3` (`version_id` ASC) ,
+  CONSTRAINT `jos_sdi_metadata_fk1`
     FOREIGN KEY (`metadatastate_id` )
-    REFERENCES `#__sdi_sys_metadatastate` (`id` )
+    REFERENCES `jos_sdi_sys_metadatastate` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
- CONSTRAINT `#__sdi_metadata_fk2`
+ CONSTRAINT `jos_sdi_metadata_fk2`
     FOREIGN KEY (`accessscope_id` )
-    REFERENCES `#__sdi_sys_accessscope` (`id` )
+    REFERENCES `jos_sdi_sys_accessscope` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
- CONSTRAINT `#__sdi_metadata_fk3`
+ CONSTRAINT `jos_sdi_metadata_fk3`
     FOREIGN KEY (`version_id` )
-    REFERENCES `#__sdi_version` (`id` )
+    REFERENCES `jos_sdi_version` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_catalog_resourcetype` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_catalog_resourcetype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)   ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `catalog_id` INT(11) UNSIGNED  NOT NULL ,
 `resourcetype_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_catalog_resourcetype_fk1` (`catalog_id` ASC) ,
-  INDEX `#__sdi_catalog_resourcetype_fk2` (`resourcetype_id` ASC) ,
-  CONSTRAINT `#__sdi_catalog_resourcetype_fk1`
+  INDEX `jos_sdi_catalog_resourcetype_fk1` (`catalog_id` ASC) ,
+  INDEX `jos_sdi_catalog_resourcetype_fk2` (`resourcetype_id` ASC) ,
+  CONSTRAINT `jos_sdi_catalog_resourcetype_fk1`
     FOREIGN KEY (`catalog_id` )
-    REFERENCES `#__sdi_catalog` (`id` )
+    REFERENCES `jos_sdi_catalog` (`id` )
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_catalog_resourcetype_fk2`
+  CONSTRAINT `jos_sdi_catalog_resourcetype_fk2`
     FOREIGN KEY (`resourcetype_id` )
-    REFERENCES `#__sdi_resourcetype` (`id` )
+    REFERENCES `jos_sdi_resourcetype` (`id` )
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_rendertype_criteriatype` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_rendertype_criteriatype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `criteriatype_id` INT(11) UNSIGNED  NOT NULL ,
 `rendertype_id` INT(11) UNSIGNED NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-ALTER TABLE `#__sdi_sys_rendertype_criteriatype`
-ADD CONSTRAINT `#__sdi_sys_rendertype_criteriatype_fk1` FOREIGN KEY (`criteriatype_id`) REFERENCES `#__sdi_sys_criteriatype` (`id`) ON DELETE CASCADE;
+ALTER TABLE `jos_sdi_sys_rendertype_criteriatype`
+ADD CONSTRAINT `jos_sdi_sys_rendertype_criteriatype_fk1` FOREIGN KEY (`criteriatype_id`) REFERENCES `jos_sdi_sys_criteriatype` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `#__sdi_sys_rendertype_criteriatype`
-ADD CONSTRAINT `#__sdi_sys_rendertype_criteriatype_fk2` FOREIGN KEY (`rendertype_id`) REFERENCES `#__sdi_sys_rendertype` (`id`) ON DELETE CASCADE;
+ALTER TABLE `jos_sdi_sys_rendertype_criteriatype`
+ADD CONSTRAINT `jos_sdi_sys_rendertype_criteriatype_fk2` FOREIGN KEY (`rendertype_id`) REFERENCES `jos_sdi_sys_rendertype` (`id`) ON DELETE CASCADE;
 
 
-CREATE TABLE IF NOT EXISTS `#__sdi_assignment` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_assignment` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `assigned` DATETIME ,
@@ -1771,82 +1771,82 @@ CREATE TABLE IF NOT EXISTS `#__sdi_assignment` (
 `version_id` INT(11) UNSIGNED NOT NULL ,
 `text` VARCHAR (500),
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_assignment_fk1` (`assigned_by`) ,
-INDEX `#__sdi_assignment_fk2` (`assigned_to`) ,
-INDEX `#__sdi_assignment_fk3` (`version_id`) ,
-  CONSTRAINT `#__sdi_assignment_fk1`
+  INDEX `jos_sdi_assignment_fk1` (`assigned_by`) ,
+INDEX `jos_sdi_assignment_fk2` (`assigned_to`) ,
+INDEX `jos_sdi_assignment_fk3` (`version_id`) ,
+  CONSTRAINT `jos_sdi_assignment_fk1`
     FOREIGN KEY (`assigned_by` )
-    REFERENCES `#__sdi_user` (`id` )
+    REFERENCES `jos_sdi_user` (`id` )
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
- CONSTRAINT `#__sdi_assignment_fk2`
+ CONSTRAINT `jos_sdi_assignment_fk2`
     FOREIGN KEY (`assigned_to` )
-    REFERENCES `#__sdi_user` (`id` )
+    REFERENCES `jos_sdi_user` (`id` )
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
- CONSTRAINT `#__sdi_assignment_fk3`
+ CONSTRAINT `jos_sdi_assignment_fk3`
     FOREIGN KEY (`version_id` )
-    REFERENCES `#__sdi_version` (`id` )
+    REFERENCES `jos_sdi_version` (`id` )
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_user_role_resource` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_user_role_resource` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `user_id` int(11) UNSIGNED ,
 `role_id` int(11) UNSIGNED ,
 `resource_id` int(11) UNSIGNED ,
 PRIMARY KEY (`id`),
-    INDEX `#__sdi_user_role_resource_fk1` (`user_id` ASC) ,
-    INDEX `#__sdi_user_role_resource_fk2` (`role_id` ASC) ,
-    INDEX `#__sdi_user_role_resource_fk3` (`resource_id` ASC) ,
-CONSTRAINT `#__sdi_user_role_resource_fk1`
+    INDEX `jos_sdi_user_role_resource_fk1` (`user_id` ASC) ,
+    INDEX `jos_sdi_user_role_resource_fk2` (`role_id` ASC) ,
+    INDEX `jos_sdi_user_role_resource_fk3` (`resource_id` ASC) ,
+CONSTRAINT `jos_sdi_user_role_resource_fk1`
     FOREIGN KEY (`user_id`)
-    REFERENCES `#__sdi_user` (`id`)
+    REFERENCES `jos_sdi_user` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_user_role_resource_fk2`
+  CONSTRAINT `jos_sdi_user_role_resource_fk2`
     FOREIGN KEY (`role_id`)
-    REFERENCES `#__sdi_sys_role` (`id`)
+    REFERENCES `jos_sdi_sys_role` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-CONSTRAINT `#__sdi_user_role_resource_fk3`
+CONSTRAINT `jos_sdi_user_role_resource_fk3`
     FOREIGN KEY (`resource_id`)
-    REFERENCES `#__sdi_resource` (`id`)
+    REFERENCES `jos_sdi_resource` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_relation_defaultvalue` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_relation_defaultvalue` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `relation_id`  INT(11) UNSIGNED NOT NULL  ,
 `attributevalue_id`  INT(11) UNSIGNED ,
 `value` VARCHAR (500),
 `language_id` INT(11) UNSIGNED ,
 PRIMARY KEY (`id`) ,
-  INDEX `#__sdi_relation_defaultvalue_fk1` (`relation_id` ASC) ,
-  INDEX `#__sdi_relation_defaultvalue_fk2` (`attributevalue_id` ASC) ,
-INDEX `#__sdi_relation_defaultvalue_fk3` (`language_id` ASC) ,
-  CONSTRAINT `#__sdi_relation_defaultvalue_fk1`
+  INDEX `jos_sdi_relation_defaultvalue_fk1` (`relation_id` ASC) ,
+  INDEX `jos_sdi_relation_defaultvalue_fk2` (`attributevalue_id` ASC) ,
+INDEX `jos_sdi_relation_defaultvalue_fk3` (`language_id` ASC) ,
+  CONSTRAINT `jos_sdi_relation_defaultvalue_fk1`
     FOREIGN KEY (`relation_id` )
-    REFERENCES `#__sdi_relation` (`id` )
+    REFERENCES `jos_sdi_relation` (`id` )
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_relation_defaultvalue_fk2`
+  CONSTRAINT `jos_sdi_relation_defaultvalue_fk2`
     FOREIGN KEY (`attributevalue_id` )
-    REFERENCES `#__sdi_attributevalue` (`id` )
+    REFERENCES `jos_sdi_attributevalue` (`id` )
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-CONSTRAINT `#__sdi_relation_defaultvalue_fk3`
+CONSTRAINT `jos_sdi_relation_defaultvalue_fk3`
     FOREIGN KEY (`language_id` )
-    REFERENCES `#__sdi_language` (`id` )
+    REFERENCES `jos_sdi_language` (`id` )
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 -- com_easysdi_map
 
-CREATE TABLE IF NOT EXISTS `#__sdi_layergroup` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_layergroup` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(20)  NOT NULL ,
@@ -1866,7 +1866,7 @@ PRIMARY KEY (`id`),
 UNIQUE (`alias`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_maplayer` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_maplayer` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(20)  NOT NULL ,
@@ -1895,16 +1895,16 @@ CREATE TABLE IF NOT EXISTS `#__sdi_maplayer` (
 `access` INT(11)  NOT NULL DEFAULT '1',
 `asset_id` INT(10),
 PRIMARY KEY (`id`), 
-INDEX `#__sdi_maplayer_fk1` (`accessscope_id` ASC) ,
-CONSTRAINT `#__sdi_maplayer_fk1`
+INDEX `jos_sdi_maplayer_fk1` (`accessscope_id` ASC) ,
+CONSTRAINT `jos_sdi_maplayer_fk1`
     FOREIGN KEY (`accessscope_id`)
-    REFERENCES `#__sdi_sys_accessscope` (`id`)
+    REFERENCES `jos_sdi_sys_accessscope` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
 UNIQUE (`alias`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_map` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_map` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(20)  NOT NULL ,
@@ -1934,7 +1934,7 @@ PRIMARY KEY (`id`),
 UNIQUE (`alias`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_maptool` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_maptool` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `alias` VARCHAR(20)  NOT NULL ,
 `ordering` INT(11)  ,
@@ -1943,7 +1943,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_maptool` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_map_tool` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_map_tool` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `map_id` INT(11) UNSIGNED  NOT NULL ,
 `tool_id` INT(11) UNSIGNED NOT NULL ,
@@ -1951,7 +1951,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_map_tool` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_map_layergroup` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_map_layergroup` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `map_id` INT(11) UNSIGNED NOT NULL ,
 `group_id` INT(11) UNSIGNED  NOT NULL ,
@@ -1961,21 +1961,21 @@ CREATE TABLE IF NOT EXISTS `#__sdi_map_layergroup` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_map_physicalservice` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_map_physicalservice` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `map_id` INT(11) UNSIGNED  NOT NULL ,
 `physicalservice_id` INT(11) UNSIGNED NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_map_virtualservice` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_map_virtualservice` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `map_id` INT(11) UNSIGNED NOT NULL ,
 `virtualservice_id` INT(11) UNSIGNED NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_layer_layergroup` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_layer_layergroup` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `layer_id` INT(11) UNSIGNED NOT NULL ,
 `group_id` INT(11) UNSIGNED NOT NULL ,
@@ -1984,7 +1984,7 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
-CREATE TABLE IF NOT EXISTS `#__sdi_visualization` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_visualization` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(20)  NOT NULL ,
@@ -2003,10 +2003,10 @@ CREATE TABLE IF NOT EXISTS `#__sdi_visualization` (
 `access` INT(11)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) ,
 PRIMARY KEY (`id`), 
-INDEX `#__sdi_visualization_fk1` (`accessscope_id` ASC) ,
-CONSTRAINT `#__sdi_visualization_fk1`
+INDEX `jos_sdi_visualization_fk1` (`accessscope_id` ASC) ,
+CONSTRAINT `jos_sdi_visualization_fk1`
     FOREIGN KEY (`accessscope_id`)
-    REFERENCES `#__sdi_sys_accessscope` (`id`)
+    REFERENCES `jos_sdi_sys_accessscope` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
 UNIQUE (`alias`)
@@ -2015,7 +2015,7 @@ UNIQUE (`alias`)
 
 -- com_easysdi_shop
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_propertytype` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_propertytype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL ,
 `state` INT(11)  NOT NULL DEFAULT '1',
@@ -2023,7 +2023,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_propertytype` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_property` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_property` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(255)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -2043,21 +2043,21 @@ CREATE TABLE IF NOT EXISTS `#__sdi_property` (
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`),
-    INDEX `#__sdi_property_fk1` (`accessscope_id` ASC) ,
-    INDEX `#__sdi_property_fk2` (`propertytype_id` ASC) ,
-  CONSTRAINT `#__sdi_property_fk1`
+    INDEX `jos_sdi_property_fk1` (`accessscope_id` ASC) ,
+    INDEX `jos_sdi_property_fk2` (`propertytype_id` ASC) ,
+  CONSTRAINT `jos_sdi_property_fk1`
     FOREIGN KEY (`accessscope_id`)
-    REFERENCES `#__sdi_sys_accessscope` (`id`)
+    REFERENCES `jos_sdi_sys_accessscope` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_property_fk2`
+  CONSTRAINT `jos_sdi_property_fk2`
     FOREIGN KEY (`propertytype_id`)
-    REFERENCES `#__sdi_sys_propertytype` (`id`)
+    REFERENCES `jos_sdi_sys_propertytype` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_propertyvalue` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_propertyvalue` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(255)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -2075,16 +2075,16 @@ CREATE TABLE IF NOT EXISTS `#__sdi_propertyvalue` (
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`),
-    INDEX `#__sdi_propertyvalue_fk1` (`property_id` ASC) ,
-  CONSTRAINT `#__sdi_propertyvalue_fk1`
+    INDEX `jos_sdi_propertyvalue_fk1` (`property_id` ASC) ,
+  CONSTRAINT `jos_sdi_propertyvalue_fk1`
     FOREIGN KEY (`property_id`)
-    REFERENCES `#__sdi_property` (`id`)
+    REFERENCES `jos_sdi_property` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
-CREATE TABLE IF NOT EXISTS `#__sdi_sys_servicetype` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_sys_servicetype` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL DEFAULT '1' ,
 `state` int(11)  NOT NULL DEFAULT '1',
@@ -2092,7 +2092,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_servicetype` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_perimeter` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_perimeter` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(255)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -2125,21 +2125,21 @@ CREATE TABLE IF NOT EXISTS `#__sdi_perimeter` (
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`),
-  INDEX `#__sdi_perimeter_fk1` (`accessscope_id` ASC) ,
-  INDEX `#__sdi_perimeter_fk2` (`perimetertype_id` ASC) ,
-  CONSTRAINT `#__sdi_perimeter_fk1`
+  INDEX `jos_sdi_perimeter_fk1` (`accessscope_id` ASC) ,
+  INDEX `jos_sdi_perimeter_fk2` (`perimetertype_id` ASC) ,
+  CONSTRAINT `jos_sdi_perimeter_fk1`
     FOREIGN KEY (`accessscope_id`)
-    REFERENCES `#__sdi_sys_accessscope` (`id`)
+    REFERENCES `jos_sdi_sys_accessscope` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
- CONSTRAINT `#__sdi_perimeter_fk2`
+ CONSTRAINT `jos_sdi_perimeter_fk2`
     FOREIGN KEY (`perimetertype_id`)
-    REFERENCES `#__sdi_sys_perimetertype` (`id`)
+    REFERENCES `jos_sdi_sys_perimetertype` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_diffusion` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_diffusion` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(255)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -2170,39 +2170,39 @@ CREATE TABLE IF NOT EXISTS `#__sdi_diffusion` (
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`),
-    INDEX `#__sdi_diffusion_fk1` (`accessscope_id` ASC) ,
-    INDEX `#__sdi_diffusion_fk2` (`productmining_id` ASC) ,
-    INDEX `#__sdi_diffusion_fk3` (`productstorage_id` ASC) ,
-    INDEX `#__sdi_diffusion_fk4` (`perimeter_id` ASC) ,
-    INDEX `#__sdi_diffusion_fk5` (`version_id` ASC) ,
-  CONSTRAINT `#__sdi_diffusion_fk1`
+    INDEX `jos_sdi_diffusion_fk1` (`accessscope_id` ASC) ,
+    INDEX `jos_sdi_diffusion_fk2` (`productmining_id` ASC) ,
+    INDEX `jos_sdi_diffusion_fk3` (`productstorage_id` ASC) ,
+    INDEX `jos_sdi_diffusion_fk4` (`perimeter_id` ASC) ,
+    INDEX `jos_sdi_diffusion_fk5` (`version_id` ASC) ,
+  CONSTRAINT `jos_sdi_diffusion_fk1`
     FOREIGN KEY (`accessscope_id`)
-    REFERENCES `#__sdi_sys_accessscope` (`id`)
+    REFERENCES `jos_sdi_sys_accessscope` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_diffusion_fk2`
+  CONSTRAINT `jos_sdi_diffusion_fk2`
     FOREIGN KEY (`productmining_id`)
-    REFERENCES `#__sdi_sys_productmining` (`id`)
+    REFERENCES `jos_sdi_sys_productmining` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_diffusion_fk3`
+  CONSTRAINT `jos_sdi_diffusion_fk3`
     FOREIGN KEY (`productstorage_id`)
-    REFERENCES `#__sdi_sys_productstorage` (`id`)
+    REFERENCES `jos_sdi_sys_productstorage` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_diffusion_fk4`
+  CONSTRAINT `jos_sdi_diffusion_fk4`
     FOREIGN KEY (`perimeter_id`)
-    REFERENCES `#__sdi_perimeter` (`id`)
+    REFERENCES `jos_sdi_perimeter` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_diffusion_fk5`
+  CONSTRAINT `jos_sdi_diffusion_fk5`
     FOREIGN KEY (`version_id`)
-    REFERENCES `#__sdi_version` (`id`)
+    REFERENCES `jos_sdi_version` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_order` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_order` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(255)  NOT NULL ,
 `alias` VARCHAR(50)  NOT NULL ,
@@ -2227,33 +2227,33 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order` (
 `access` INT(10)  NOT NULL DEFAULT '1',
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`),
-  INDEX `#__sdi_order_fk1` (`ordertype_id` ASC) ,
-  INDEX `#__sdi_order_fk2` (`orderstate_id` ASC) ,
-  INDEX `#__sdi_order_fk3` (`user_id` ASC) ,
-  INDEX `#__sdi_order_fk4` (`thirdparty_id` ASC) ,
-  CONSTRAINT `#__sdi_order_fk1`
+  INDEX `jos_sdi_order_fk1` (`ordertype_id` ASC) ,
+  INDEX `jos_sdi_order_fk2` (`orderstate_id` ASC) ,
+  INDEX `jos_sdi_order_fk3` (`user_id` ASC) ,
+  INDEX `jos_sdi_order_fk4` (`thirdparty_id` ASC) ,
+  CONSTRAINT `jos_sdi_order_fk1`
     FOREIGN KEY (`ordertype_id`)
-    REFERENCES `#__sdi_sys_ordertype` (`id`)
+    REFERENCES `jos_sdi_sys_ordertype` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_order_fk2`
+  CONSTRAINT `jos_sdi_order_fk2`
     FOREIGN KEY (`orderstate_id`)
-    REFERENCES `#__sdi_sys_orderstate` (`id`)
+    REFERENCES `jos_sdi_sys_orderstate` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_order_fk3`
+  CONSTRAINT `jos_sdi_order_fk3`
     FOREIGN KEY (`user_id`)
-    REFERENCES `#__sdi_user` (`id`)
+    REFERENCES `jos_sdi_user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_order_fk4`
+  CONSTRAINT `jos_sdi_order_fk4`
     FOREIGN KEY (`thirdparty_id`)
-    REFERENCES `#__sdi_user` (`id`)
+    REFERENCES `jos_sdi_user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_order_diffusion` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_order_diffusion` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `order_id` INT(11) UNSIGNED NOT NULL ,
 `diffusion_id` INT(11) UNSIGNED NOT NULL ,
@@ -2265,27 +2265,27 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order_diffusion` (
 `size` DECIMAL(10)  NOT NULL ,
 `created_by` INT(11)  NOT NULL ,
 PRIMARY KEY (`id`),
-  INDEX `#__sdi_order_diffusion_fk1` (`order_id` ASC) ,
-  INDEX `#__sdi_order_diffusion_fk2` (`diffusion_id` ASC) ,
-  INDEX `#__sdi_order_diffusion_fk3` (`productstate_id` ASC) ,
-  CONSTRAINT `#__sdi_order_diffusion_fk1`
+  INDEX `jos_sdi_order_diffusion_fk1` (`order_id` ASC) ,
+  INDEX `jos_sdi_order_diffusion_fk2` (`diffusion_id` ASC) ,
+  INDEX `jos_sdi_order_diffusion_fk3` (`productstate_id` ASC) ,
+  CONSTRAINT `jos_sdi_order_diffusion_fk1`
     FOREIGN KEY (`order_id`)
-    REFERENCES `#__sdi_order` (`id`)
+    REFERENCES `jos_sdi_order` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_order_diffusion_fk2`
+  CONSTRAINT `jos_sdi_order_diffusion_fk2`
     FOREIGN KEY (`diffusion_id`)
-    REFERENCES `#__sdi_diffusion` (`id`)
+    REFERENCES `jos_sdi_diffusion` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_order_diffusion_fk3`
+  CONSTRAINT `jos_sdi_order_diffusion_fk3`
     FOREIGN KEY (`productstate_id`)
-    REFERENCES `#__sdi_sys_productstate` (`id`)
+    REFERENCES `jos_sdi_sys_productstate` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_order_propertyvalue` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_order_propertyvalue` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `orderdiffusion_id` int(11) UNSIGNED NOT NULL ,
 `property_id` int(11) UNSIGNED NOT NULL ,
@@ -2293,27 +2293,27 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order_propertyvalue` (
 `propertyvalue` VARCHAR(4000)  NOT NULL ,
 `created_by` INT(11)  NOT NULL ,
 PRIMARY KEY (`id`),
-  INDEX `#__sdi_order_propertyvalue_fk1` (`orderdiffusion_id` ASC) ,
-  INDEX `#__sdi_order_propertyvalue_fk2` (`property_id` ASC) ,
-  INDEX `#__sdi_order_propertyvalue_fk3` (`propertyvalue_id` ASC) ,
-  CONSTRAINT `#__sdi_order_propertyvalue_fk1`
+  INDEX `jos_sdi_order_propertyvalue_fk1` (`orderdiffusion_id` ASC) ,
+  INDEX `jos_sdi_order_propertyvalue_fk2` (`property_id` ASC) ,
+  INDEX `jos_sdi_order_propertyvalue_fk3` (`propertyvalue_id` ASC) ,
+  CONSTRAINT `jos_sdi_order_propertyvalue_fk1`
     FOREIGN KEY (`orderdiffusion_id`)
-    REFERENCES `#__sdi_order_diffusion` (`id`)
+    REFERENCES `jos_sdi_order_diffusion` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_order_propertyvalue_fk2`
+  CONSTRAINT `jos_sdi_order_propertyvalue_fk2`
     FOREIGN KEY (`property_id`)
-    REFERENCES `#__sdi_property` (`id`)
+    REFERENCES `jos_sdi_property` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_order_propertyvalue_fk3`
+  CONSTRAINT `jos_sdi_order_propertyvalue_fk3`
     FOREIGN KEY (`propertyvalue_id`)
-    REFERENCES `#__sdi_propertyvalue` (`id`)
+    REFERENCES `jos_sdi_propertyvalue` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_order_perimeter` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_order_perimeter` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `order_id` int(11) UNSIGNED NOT NULL ,
 `perimeter_id` int(11) UNSIGNED NOT NULL ,
@@ -2321,43 +2321,43 @@ CREATE TABLE IF NOT EXISTS `#__sdi_order_perimeter` (
 `text` TEXT  NULL ,
 `created_by` INT(11)  NOT NULL ,
 PRIMARY KEY (`id`),
-  INDEX `#__sdi_order_perimeter_fk1` (`order_id` ASC) ,
-  INDEX `#__sdi_order_perimeter_fk2` (`perimeter_id` ASC) ,
-  CONSTRAINT `#__sdi_order_perimeter_fk1`
+  INDEX `jos_sdi_order_perimeter_fk1` (`order_id` ASC) ,
+  INDEX `jos_sdi_order_perimeter_fk2` (`perimeter_id` ASC) ,
+  CONSTRAINT `jos_sdi_order_perimeter_fk1`
     FOREIGN KEY (`order_id`)
-    REFERENCES `#__sdi_order` (`id`)
+    REFERENCES `jos_sdi_order` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_order_perimeter_fk2`
+  CONSTRAINT `jos_sdi_order_perimeter_fk2`
     FOREIGN KEY (`perimeter_id`)
-    REFERENCES `#__sdi_perimeter` (`id`)
+    REFERENCES `jos_sdi_perimeter` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_diffusion_notifieduser` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_diffusion_notifieduser` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `diffusion_id` int(11) UNSIGNED NOT NULL ,
 `user_id` INT(11) UNSIGNED NOT NULL ,
 PRIMARY KEY (`id`),
-    INDEX `#__sdi_diffusion_notifieduser_fk1` (`diffusion_id` ASC) ,
-    INDEX `#__sdi_diffusion_notifieduser_fk2` (`user_id` ASC) ,
-  CONSTRAINT `#__sdi_diffusion_notifieduser_fk1`
+    INDEX `jos_sdi_diffusion_notifieduser_fk1` (`diffusion_id` ASC) ,
+    INDEX `jos_sdi_diffusion_notifieduser_fk2` (`user_id` ASC) ,
+  CONSTRAINT `jos_sdi_diffusion_notifieduser_fk1`
     FOREIGN KEY (`diffusion_id`)
-    REFERENCES `#__sdi_diffusion` (`id`)
+    REFERENCES `jos_sdi_diffusion` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-CONSTRAINT `#__sdi_diffusion_notifieduser_fk2`
+CONSTRAINT `jos_sdi_diffusion_notifieduser_fk2`
     FOREIGN KEY (`user_id`)
-    REFERENCES `#__sdi_user` (`id`)
+    REFERENCES `jos_sdi_user` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 
-CREATE TABLE IF NOT EXISTS `#__sdi_diffusion_perimeter` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_diffusion_perimeter` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
@@ -2365,57 +2365,57 @@ CREATE TABLE IF NOT EXISTS `#__sdi_diffusion_perimeter` (
 `perimeter_id` int(11) UNSIGNED NOT NULL ,
 `buffer` TINYINT(1)  NOT NULL ,
 PRIMARY KEY (`id`),
-    INDEX `#__sdi_diffusion_perimeter_fk1` (`diffusion_id` ASC) ,
-    INDEX `#__sdi_diffusion_perimeter_fk2` (`perimeter_id` ASC) ,
-  CONSTRAINT `#__sdi_diffusion_perimeter_fk1`
+    INDEX `jos_sdi_diffusion_perimeter_fk1` (`diffusion_id` ASC) ,
+    INDEX `jos_sdi_diffusion_perimeter_fk2` (`perimeter_id` ASC) ,
+  CONSTRAINT `jos_sdi_diffusion_perimeter_fk1`
     FOREIGN KEY (`diffusion_id`)
-    REFERENCES `#__sdi_diffusion` (`id`)
+    REFERENCES `jos_sdi_diffusion` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_diffusion_perimeter_fk2`
+  CONSTRAINT `jos_sdi_diffusion_perimeter_fk2`
     FOREIGN KEY (`perimeter_id`)
-    REFERENCES `#__sdi_perimeter` (`id`)
+    REFERENCES `jos_sdi_perimeter` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_diffusion_propertyvalue` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_diffusion_propertyvalue` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL ,
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `diffusion_id` int(11) UNSIGNED NOT NULL ,
 `propertyvalue_id` INT(11) UNSIGNED NOT NULL ,
 PRIMARY KEY (`id`),
-    INDEX `#__sdi_diffusion_propertyvalue_fk1` (`diffusion_id` ASC) ,
-    INDEX `#__sdi_diffusion_propertyvalue_fk2` (`propertyvalue_id` ASC) ,
-  CONSTRAINT `#__sdi_diffusion_propertyvalue_fk1`
+    INDEX `jos_sdi_diffusion_propertyvalue_fk1` (`diffusion_id` ASC) ,
+    INDEX `jos_sdi_diffusion_propertyvalue_fk2` (`propertyvalue_id` ASC) ,
+  CONSTRAINT `jos_sdi_diffusion_propertyvalue_fk1`
     FOREIGN KEY (`diffusion_id`)
-    REFERENCES `#__sdi_diffusion` (`id`)
+    REFERENCES `jos_sdi_diffusion` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_diffusion_propertyvalue_fk2`
+  CONSTRAINT `jos_sdi_diffusion_propertyvalue_fk2`
     FOREIGN KEY (`propertyvalue_id`)
-    REFERENCES `#__sdi_propertyvalue` (`id`)
+    REFERENCES `jos_sdi_propertyvalue` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_diffusion_download` (
+CREATE TABLE IF NOT EXISTS `jos_sdi_diffusion_download` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `diffusion_id` int(11) UNSIGNED NOT NULL ,
 `user_id` INT(11) UNSIGNED NULL ,
 `executed` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 PRIMARY KEY (`id`),
-    INDEX `#__sdi_diffusion_download_fk1` (`diffusion_id` ASC) ,
-    INDEX `#__sdi_diffusion_download_fk2` (`user_id` ASC) ,
-  CONSTRAINT `#__sdi_diffusion_download_fk1`
+    INDEX `jos_sdi_diffusion_download_fk1` (`diffusion_id` ASC) ,
+    INDEX `jos_sdi_diffusion_download_fk2` (`user_id` ASC) ,
+  CONSTRAINT `jos_sdi_diffusion_download_fk1`
     FOREIGN KEY (`diffusion_id`)
-    REFERENCES `#__sdi_diffusion` (`id`)
+    REFERENCES `jos_sdi_diffusion` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-  CONSTRAINT `#__sdi_diffusion_download_fk2`
+  CONSTRAINT `jos_sdi_diffusion_download_fk2`
     FOREIGN KEY (`user_id`)
-    REFERENCES `#__sdi_user` (`id`)
+    REFERENCES `jos_sdi_user` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -2975,8 +2975,8 @@ ADD CONSTRAINT `FK_SERVICE_TYPES_METHODS_TYPE` FOREIGN KEY (`ID_SERVICE_TYPE`) R
 ALTER TABLE `users`
 ADD CONSTRAINT `FK_USERS_ROLE` FOREIGN KEY (`ID_ROLE`) REFERENCES `roles` (`ID_ROLE`) ON DELETE SET NULL;
 
-DROP TABLE IF EXISTS `#__sdi_monitor_exports`;
-CREATE TABLE `#__sdi_monitor_exports` (
+DROP TABLE IF EXISTS `jos_sdi_monitor_exports`;
+CREATE TABLE `jos_sdi_monitor_exports` (
                   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
                   `exportDesc` varchar(500) ,
                   `exportName` varchar(500),
