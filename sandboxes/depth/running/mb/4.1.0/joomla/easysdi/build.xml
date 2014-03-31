@@ -352,7 +352,7 @@
                     <file type="component" id="com_easysdi_catalog">com_easysdi_catalog.zip</file> 
                     <file type="component" id="com_easysdi_map">com_easysdi_map.zip</file>
                     <file type="component" id="com_easysdi_shop">com_easysdi_shop.zip</file>
-                    <file type="component" id="com_easysdi_monitor">com_easysdi_monitor.zip</file>
+                    <!--<file type="component" id="com_easysdi_monitor">com_easysdi_monitor.zip</file> --> 
                     <file type="module" id="mod_easysdi_basket">mod_easysdi_basket.zip</file>
                     <file type="module" id="mod_easysdi_admininfo">mod_easysdi_admininfo.zip</file>
                     <file type="module" id="mod_easysdi_adminbutton">mod_easysdi_adminbutton.zip</file>

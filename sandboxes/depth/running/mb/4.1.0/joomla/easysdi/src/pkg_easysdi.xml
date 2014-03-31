@@ -4,7 +4,7 @@
   <packager>EasySDI Community</packager>
   <packagename>easysdi</packagename>
   <creationDate>15 August 2012</creationDate>
-  <releaseDate>31 mars 2014</releaseDate>
+  <releaseDate>31 March 2014</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
@@ -20,7 +20,6 @@
     <file id="com_easysdi_catalog" type="component">com_easysdi_catalog.zip</file>
     <file id="com_easysdi_map" type="component">com_easysdi_map.zip</file>
     <file id="com_easysdi_shop" type="component">com_easysdi_shop.zip</file>
-    <file id="com_easysdi_monitor" type="component">com_easysdi_monitor.zip</file>
     <file id="mod_easysdi_basket" type="module">mod_easysdi_basket.zip</file>
     <file id="mod_easysdi_admininfo" type="module">mod_easysdi_admininfo.zip</file>
     <file id="mod_easysdi_adminbutton" type="module">mod_easysdi_adminbutton.zip</file>

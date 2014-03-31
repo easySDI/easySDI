@@ -72,7 +72,7 @@
                 <authorUrl>${xml.authorUrl}</authorUrl>
                 <version>${version}</version>
                 <description></description>
-    
+                <scriptfile>script.php</scriptfile>
                 <install> <!-- Runs on install -->
                     <sql>
                         <file driver="mysql" charset="utf8">sql/install/mysql/install.sql</file>

@@ -118,7 +118,6 @@ class com_easysdi_coreInstallerScript {
             // store the combined new and existing values back as a JSON string
             $paramsString = json_encode($params);
             $db->setQuery('SELECT params FROM #__extensions WHERE name = "com_easysdi_core"');
-            $db->setQuery($query);
             $db->query();
         }
     }
