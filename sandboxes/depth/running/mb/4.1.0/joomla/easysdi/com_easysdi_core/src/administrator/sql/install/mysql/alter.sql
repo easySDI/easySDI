@@ -247,9 +247,6 @@ ADD CONSTRAINT `#__sdi_physicalservice_policy_fk5` FOREIGN KEY (`wfs_spatialpoli
 ALTER TABLE `#__sdi_physicalservice_policy`
 ADD CONSTRAINT `#__sdi_physicalservice_policy_fk6` FOREIGN KEY (`wmts_spatialpolicy_id`) REFERENCES `#__sdi_wmts_spatialpolicy` (`id`) ;
 
-ALTER TABLE `#__sdi_policy`
-ADD CONSTRAINT `#__sdi_policy_fk7` FOREIGN KEY (`csw_version_id`) REFERENCES `#__sdi_sys_metadataversion` (`id`) ;
-
 
 ALTER TABLE `#__sdi_policy_resourcetype`
 ADD CONSTRAINT `#__sdi_policy_resourcetype_fk1` FOREIGN KEY (`policy_id`) REFERENCES `#__sdi_policy` (`id`) ON DELETE CASCADE;
