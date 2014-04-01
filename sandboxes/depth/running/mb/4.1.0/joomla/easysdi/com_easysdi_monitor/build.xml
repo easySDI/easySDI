@@ -142,6 +142,8 @@
                         </language>
                         <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_monitor.ini
                         </language>
+                        <language tag="en-GB">language/en-GB/en-GB.com_easysdi_monitor.sys.ini</language>
+                        <language tag="fr-FR">language/fr-FR/fr-FR.com_easysdi_monitor.sys.ini</language>
                     </languages>
                 </administration>
             </extension>

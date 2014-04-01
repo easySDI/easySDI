@@ -33,8 +33,8 @@ class com_easysdi_dashboardInstallerScript
 		$this->release = $parent->get( "manifest" )->version;
 		
 		// Show the essential information at the install/update back-end
-		echo '<p>EasySDI component Contact [com_easysdi_contact]';
-		echo '<br />'.JText::_('COM_EASYSDI_CONTACT_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
+		echo '<p>EasySDI component Dashboard [com_easysdi_dashboard]';
+		echo '<br />'.JText::_('COM_EASYSDI_DASHBOARD_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
 	}
  
 	/*

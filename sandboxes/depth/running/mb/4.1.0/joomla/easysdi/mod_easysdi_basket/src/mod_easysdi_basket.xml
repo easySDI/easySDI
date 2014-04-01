@@ -3,7 +3,7 @@
   <name>mod_easysdi_basket</name>
   <author>EasySDI Community</author>
   <creationDate>15 August 2012</creationDate>
-  <releaseDate>31 March 2014</releaseDate>
+  <releaseDate>01 April 2014</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
@@ -19,5 +19,11 @@
     <filename>tmpl/default.php</filename>
     <filename>tmpl/index.html</filename>
   </files>
+  <languages>
+    <language tag="en-GB">language/en-GB/en-GB.mod_easysdi_basket.sys.ini</language>
+    <language tag="en-GB">language/en-GB/en-GB.mod_easysdi_basket.ini</language>
+    <language tag="fr-FR">language/fr-FR/fr-FR.mod_easysdi_basket.sys.ini</language>
+    <language tag="fr-FR">language/fr-FR/fr-FR.mod_easysdi_basket.ini</language>
+  </languages>
   <config />
 </extension>

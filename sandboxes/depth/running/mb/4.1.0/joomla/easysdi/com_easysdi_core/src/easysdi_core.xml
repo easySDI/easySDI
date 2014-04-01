@@ -2,7 +2,7 @@
 <extension method="upgrade" type="component" version="3.0.0">
   <name>com_easysdi_core</name>
   <creationDate>15 August 2012</creationDate>
-  <releaseDate>31 March 2014</releaseDate>
+  <releaseDate>01 April 2014</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
@@ -16,11 +16,9 @@
       <file charset="utf8" driver="mysql">sql/install/mysql/install.sql</file>
       <file charset="utf8" driver="mysql">sql/install/mysql/insert.sql</file>
       <file charset="utf8" driver="mysql">sql/install/mysql/alter.sql</file>
-      
       <file charset="utf8" driver="sqlsrv">sql/install/sqlazure/install.sql</file>
       <file charset="utf8" driver="sqlsrv">sql/install/sqlazure/insert.sql</file>
       <file charset="utf8" driver="sqlsrv">sql/install/sqlazure/alter.sql</file>
-      
       <file charset="utf8" driver="postgresql">sql/install/postgresql/install.sql</file>
       <file charset="utf8" driver="postgresql">sql/install/postgresql/insert.sql</file>
       <file charset="utf8" driver="postgresql">sql/install/postgresql/alter.sql</file>
@@ -29,11 +27,18 @@
   <uninstall>
     <sql>
       <file charset="utf8" driver="mysql">sql/install/mysql/uninstall.sql</file>
+      <file charset="utf8" driver="mysqli">sql/install/mysql/uninstall.sql</file>
+      <file charset="utf8" driver="sqlsrv">sql/install/sqlazure/uninstall.sql</file>
+      <file charset="utf8" driver="sqlazure">sql/install/sqlazure/uninstall.sql</file>
+      <file charset="utf8" driver="postgresql">sql/install/postgresql/uninstall.sql</file>
     </sql>
   </uninstall>
   <update>
     <schemas>
-      <schemapath charset="utf8" type="mysql">sql/updates/mysql</schemapath>
+      <schemapath type="mysql">sql/updates/mysql</schemapath>
+      <schemapath type="sqlsrv">sql/updates/sqlazure</schemapath>
+      <schemapath type="sqlazure">sql/updates/sqlazure</schemapath>
+      <schemapath type="postgresql">sql/updates/postgresql</schemapath>
     </schemas>
   </update>
   <files folder="site">
