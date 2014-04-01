@@ -112,9 +112,8 @@ $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/sy
     #searchModal{
         width: 900px;
         left: 40%;
-    }
-    
-    div.modal {
+    } 
+   div.modal {
 	position: fixed;
 	top: 50%;
 	left: 50%;
@@ -146,6 +145,7 @@ div.modal.fade {
 div.modal.fade.in {
 	top: 50%;
 }
+    
 </style>
 
 <script type="text/javascript">
