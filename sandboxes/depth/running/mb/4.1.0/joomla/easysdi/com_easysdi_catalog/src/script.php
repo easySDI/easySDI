@@ -58,7 +58,7 @@ class com_easysdi_catalogInstallerScript {
      */
 
     function postflight($type, $parent) {
-        /*if ($type == 'install' || ($type == 'update' && ($this->getParam('version') < '4.0.0-alpha-22') == 1 )) {
+        if ($type == 'install') {
             JTable::addIncludePath(JPATH_ADMINISTRATOR . "/components/com_easysdi_catalog/tables");
             //Create system search criteria
             $sc = JTable::getInstance('searchcriteria', 'easysdi_catalogTable');
@@ -76,7 +76,10 @@ class com_easysdi_catalogInstallerScript {
             }
 
             $db = JFactory::getDbo();
-            $db->setQuery('SELECT id FROM #__sdi_catalog');
+            $query = $db->getQuery(true);
+            $query->select('id');
+            $query->from('#__sdi_catalog');
+            $db->setQuery($query);
             $catalogs = $db->loadColumn();
             foreach ($catalogs as $catalog):
                 $catalogsearchcriteria = JTable::getInstance('catalogsearchcriteria', 'Easysdi_catalogTable');
@@ -88,10 +91,14 @@ class com_easysdi_catalogInstallerScript {
                 $array['ordering'] = $sc->id;
                 $catalogsearchcriteria->save($array);
             endforeach;
-        }*/
+        }
 
         $db = JFactory::getDbo();
-        $db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_catalog'");
+        $query = $db->getQuery(true);
+        $query->delete('#__menu');
+        $query->where('title = \'com_easysdi_catalog\'');
+        
+        $db->setQuery($query);
         $db->query();
     }
 
@@ -110,7 +117,11 @@ class com_easysdi_catalogInstallerScript {
 
     function getParam($name) {
         $db = JFactory::getDbo();
-        $db->setQuery('SELECT manifest_cache FROM #__extensions WHERE name = "com_easysdi_catalog"');
+        $query = $db->getQuery(true);
+        $query->select('manifest_cache');
+        $query->from('#__extensions');
+        $query->where('name = "com_easysdi_catalog"');
+        $db->setQuery($query);
         $manifest = json_decode($db->loadResult(), true);
         return $manifest[$name];
     }
@@ -123,7 +134,11 @@ class com_easysdi_catalogInstallerScript {
         if (count($param_array) > 0) {
             // read the existing component value(s)
             $db = JFactory::getDbo();
-            $db->setQuery('SELECT params FROM #__extensions WHERE name = "com_easysdi_catalog"');
+            $query = $db->getQuery(true);
+            $query->select('params');
+            $query->from('#__extensions');
+            $query->where('name = "com_easysdi_catalog"');
+            $db->setQuery($query);
             $params = json_decode($db->loadResult(), true);
             // add the new variable(s) to the existing one(s)
             foreach ($param_array as $name => $value) {
@@ -131,9 +146,12 @@ class com_easysdi_catalogInstallerScript {
             }
             // store the combined new and existing values back as a JSON string
             $paramsString = json_encode($params);
-            $db->setQuery('UPDATE #__extensions SET params = ' .
-                    $db->quote($paramsString) .
-                    ' WHERE name = "com_easysdi_catalog"');
+            $query = $db->getQuery(true);
+            $query->update('#__extensions');
+            $query->set('params = ' .$db->quote($paramsString));
+            $query->where('name = "com_easysdi_catalog"');
+            
+            $db->setQuery($query);
             $db->query();
         }
     }

@@ -64,7 +64,7 @@ class com_easysdi_coreInstallerScript {
             $this->setParams($params);
         }
 
-        /*if ($type == 'install') {
+        if ($type == 'install') {
             // import joomla's filesystem classes
             jimport('joomla.filesystem.folder');
 
@@ -78,7 +78,7 @@ class com_easysdi_coreInstallerScript {
             if (!JFolder::create(JPATH_ROOT . '/media/easysdi/catalog/xsl', "0755")) {
                 echo "Unable to create media XSL folder";
             }
-        }*/
+        }
     }
 
     /*
@@ -96,7 +96,11 @@ class com_easysdi_coreInstallerScript {
 
     function getParam($name) {
         $db = JFactory::getDbo();
-        $db->setQuery('SELECT manifest_cache FROM #__extensions WHERE name = "com_easysdi_core"');
+        $query = $db->getQuery(true);
+        $query->select('manifest_cache');
+        $query->from('#__extensions');
+        $query->where('name = "com_easysdi_core"');
+        $db->setQuery($query);
         $manifest = json_decode($db->loadResult(), true);
         return $manifest[$name];
     }
@@ -109,7 +113,11 @@ class com_easysdi_coreInstallerScript {
         if (count($param_array) > 0) {
             // read the existing component value(s)
             $db = JFactory::getDbo();
-            $db->setQuery('SELECT manifest_cache FROM #__extensions WHERE name = "com_easysdi_core"');
+            $query = $db->getQuery(true);
+            $query->select('manifest_cache');
+            $query->from('#__extensions');
+            $query->where('name = "com_easysdi_core"');
+            $db->setQuery($query);
             $params = json_decode($db->loadResult(), true);
             // add the new variable(s) to the existing one(s)
             foreach ($param_array as $name => $value) {
@@ -117,7 +125,11 @@ class com_easysdi_coreInstallerScript {
             }
             // store the combined new and existing values back as a JSON string
             $paramsString = json_encode($params);
-            $db->setQuery('SELECT params FROM #__extensions WHERE name = "com_easysdi_core"');
+            $query = $db->getQuery(true);
+            $query->select('params');
+            $query->from('#__extensions');
+            $query->where('name = "com_easysdi_core"');
+            $db->setQuery($query);
             $db->query();
         }
     }

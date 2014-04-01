@@ -58,7 +58,10 @@ class com_easysdi_monitorInstallerScript
 	 */
 	function postflight( $type, $parent ) {
 		$db = JFactory::getDbo();
-		$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_monitor'");
+                $query = $db->getQuery(true);
+                $query->delete('#__menu');
+                $query->where('title = "com_easysdi_monitor"');
+		$db->setQuery($query);
 		$db->query();
 	}
 
@@ -75,7 +78,11 @@ class com_easysdi_monitorInstallerScript
 	 */
 	function getParam( $name ) {
 		$db = JFactory::getDbo();
-		$db->setQuery('SELECT manifest_cache FROM #__extensions WHERE name = "com_easysdi_monitor"');
+                $query = $db->getQuery(true);
+                $query->select('manifest_cache');
+                $query->from('#__extensions');
+                $query->where('name = "com_easysdi_monitor"');
+		$db->setQuery($query);
 		$manifest = json_decode( $db->loadResult(), true );
 		return $manifest[ $name ];
 	}
@@ -87,7 +94,11 @@ class com_easysdi_monitorInstallerScript
 		if ( count($param_array) > 0 ) {
 			// read the existing component value(s)
 			$db = JFactory::getDbo();
-			$db->setQuery('SELECT params FROM #__extensions WHERE name = "com_easysdi_monitor"');
+                        $query = $db->getQuery(true);
+                        $query->select('params');
+                        $query->from('#__extensions');
+                        $query->where('name = "com_easysdi_monitor"');
+			$db->setQuery($query);
 			$params = json_decode( $db->loadResult(), true );
 			// add the new variable(s) to the existing one(s)
 			foreach ( $param_array as $name => $value ) {
@@ -95,10 +106,12 @@ class com_easysdi_monitorInstallerScript
 			}
 			// store the combined new and existing values back as a JSON string
 			$paramsString = json_encode( $params );
-			$db->setQuery('UPDATE #__extensions SET params = ' .
-				$db->quote( $paramsString ) .
-				' WHERE name = "com_easysdi_monitor"' );
-				$db->query();
+                        $query = $db->getQuery(true);
+                        $query->update('#__extensions');
+                        $query->set('params = ' .$db->quote( $paramsString ));
+                        $query->where('name = "com_easysdi_monitor"');
+			$db->setQuery($query);
+                        $db->query();
 		}
 	}
 }

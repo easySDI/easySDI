@@ -23,10 +23,6 @@ class com_easysdi_shopInstallerScript {
         // Installing component manifest file version
         $this->release = $parent->get("manifest")->version;
 
-        $db = JFactory::getDbo();
-        $db->setQuery('SELECT s.version_id FROM #__extensions e INNER JOIN #__schemas s ON e.extension_id = s.extension_id  WHERE e.name = "com_easysdi_shop"');
-        $this->previousrelease = $db->loadResult();
-
         // Show the essential information at the install/update back-end
         echo '<p>EasySDI component Shop [com_easysdi_shop]';
         echo '<br />' . JText::_('COM_EASYSDI_SHOP_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
@@ -63,7 +59,7 @@ class com_easysdi_shopInstallerScript {
      */
 
     function postflight($type, $parent) {
-        if (($type == 'update' && strcmp($this->previousrelease, '4.0.0-alpha-6') < 0) || $type == 'install') {
+        if ($type == 'install') {
             JTable::addIncludePath(JPATH_ADMINISTRATOR . "/../libraries/joomla/database/table");
             JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables');
 
@@ -106,7 +102,10 @@ class com_easysdi_shopInstallerScript {
         }
 
         $db = JFactory::getDbo();
-        $db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_shop'");
+        $query = $db->getQuery(true);
+        $query->delete('#__menu');
+        $query->where('title = "com_easysdi_shop"');
+        $db->setQuery($query);
         $db->query();
     }
 
@@ -125,7 +124,11 @@ class com_easysdi_shopInstallerScript {
 
     function getParam($name) {
         $db = JFactory::getDbo();
-        $db->setQuery('SELECT manifest_cache FROM #__extensions WHERE name = "com_easysdi_shop"');
+        $query = $db->getQuery(true);
+        $query->select('manifest_cache');
+        $query->from('#__extensions');
+        $query->where('name = "com_easysdi_shop"');
+        $db->setQuery($query);
         $manifest = json_decode($db->loadResult(), true);
         return $manifest[$name];
     }
@@ -138,7 +141,12 @@ class com_easysdi_shopInstallerScript {
         if (count($param_array) > 0) {
             // read the existing component value(s)
             $db = JFactory::getDbo();
-            $db->setQuery('SELECT params FROM #__extensions WHERE name = "com_easysdi_shop"');
+            $query = $db->getQuery(true);
+            $query->select('params');
+            $query->from('#__extensions');
+            $query->where('name = "com_easysdi_shop"');
+            
+            $db->setQuery($query);
             $params = json_decode($db->loadResult(), true);
             // add the new variable(s) to the existing one(s)
             foreach ($param_array as $name => $value) {
@@ -146,9 +154,11 @@ class com_easysdi_shopInstallerScript {
             }
             // store the combined new and existing values back as a JSON string
             $paramsString = json_encode($params);
-            $db->setQuery('UPDATE #__extensions SET params = ' .
-                    $db->quote($paramsString) .
-                    ' WHERE name = "com_easysdi_shop"');
+            $query = $db->getQuery(true);
+            $query->update('#__extensions');
+            $query->set('params = ' .$db->quote($paramsString));
+            $query->where('name = "com_easysdi_shop"');
+            $db->setQuery($query);
             $db->query();
         }
     }

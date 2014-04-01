@@ -21,16 +21,17 @@ class com_easysdi_serviceInstallerScript
 	function preflight( $type, $parent ) {
 		//Check if com_easysdi_core is installed
 		$db = JFactory::getDbo();
-		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = "com_easysdi_core"');
+                $query = $db->getQuery(true);
+                $query->select('COUNT(*)');
+                $query->from('#__extensions');
+                $query->where('name = "com_easysdi_core"');
+		$db->setQuery($query);
 		$install = $db->loadResult();
 		
 		if($install == 0){
 			JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_INSTALL_SCRIPT_CORE_ERROR'));
 			return false;
-		}
-		
-		$db->setQuery('SELECT s.version_id FROM #__extensions e INNER JOIN #__schemas s ON e.extension_id = s.extension_id  WHERE e.name = "com_easysdi_service"');
-		$this->previousrelease = $db->loadResult();
+                }
 		
 		// Installing component manifest file version
 		$this->release = $parent->get( "manifest" )->version;
@@ -95,7 +96,7 @@ class com_easysdi_serviceInstallerScript
 			
 			
 		}
-		if(($type == 'update' && strcmp ($this->previousrelease,'3.1.0') < 0) || $type == 'install')
+		if($type == 'install')
 		{
 			//Create a Bing service
 			$row 						= JTable::getInstance('physicalservice','easysdi_serviceTable');
@@ -232,7 +233,10 @@ class com_easysdi_serviceInstallerScript
 		}
 		
 		$db = JFactory::getDbo();
-		$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_service'");
+                $query = $db->getQuery(true);
+                $query->delete('#__menu');
+                $query->where('title = "com_easysdi_service"');
+		$db->setQuery($query);
 		$db->query();
 	}
 
@@ -249,7 +253,11 @@ class com_easysdi_serviceInstallerScript
 	 */
 	function getParam( $name ) {
 		$db = JFactory::getDbo();
-		$db->setQuery('SELECT manifest_cache FROM #__extensions WHERE name = "com_easysdi_service"');
+                $query = $db->getQuery(true);
+                $query->select('manifest_cache');
+                $query->from('#__extensions');
+                $query->where('name = "com_easysdi_service"');
+		$db->setQuery($query);
 		$manifest = json_decode( $db->loadResult(), true );
 		return $manifest[ $name ];
 	}
@@ -261,7 +269,11 @@ class com_easysdi_serviceInstallerScript
 		if ( count($param_array) > 0 ) {
 			// read the existing component value(s)
 			$db = JFactory::getDbo();
-			$db->setQuery('SELECT params FROM #__extensions WHERE name = "com_easysdi_service"');
+                        $query = $db->getQuery(true);
+                        $query->select('params');
+                        $query->from('#__extensions');
+                        $query->where('name = "com_easysdi_service"');
+			$db->setQuery($query);
 			$params = json_decode( $db->loadResult(), true );
 			// add the new variable(s) to the existing one(s)
 			foreach ( $param_array as $name => $value ) {
@@ -269,10 +281,12 @@ class com_easysdi_serviceInstallerScript
 			}
 			// store the combined new and existing values back as a JSON string
 			$paramsString = json_encode( $params );
-			$db->setQuery('UPDATE #__extensions SET params = ' .
-				$db->quote( $paramsString ) .
-				' WHERE name = "com_easysdi_service"' );
-				$db->query();
+                        $query = $db->getQuery(true);
+                        $query->update('#__extensions');
+                        $query->set('params = ' .$db->quote( $paramsString ));
+                        $query->where('name = "com_easysdi_service"');
+			$db->setQuery($query);
+			$db->query();
 		}
 	}
 }
