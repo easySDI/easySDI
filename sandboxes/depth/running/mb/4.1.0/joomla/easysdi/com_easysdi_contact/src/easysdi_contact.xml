@@ -2,7 +2,7 @@
 <extension method="upgrade" type="component" version="3.0.0">
   <name>com_easysdi_contact</name>
   <creationDate>14 february 2013</creationDate>
-  <releaseDate>01 April 2014</releaseDate>
+  <releaseDate>03 avril 2014</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>

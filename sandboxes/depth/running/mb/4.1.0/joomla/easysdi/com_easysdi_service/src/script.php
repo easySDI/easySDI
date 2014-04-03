@@ -24,7 +24,7 @@ class com_easysdi_serviceInstallerScript
                 $query = $db->getQuery(true);
                 $query->select('COUNT(*)');
                 $query->from('#__extensions');
-                $query->where('name = "com_easysdi_core"');
+                $query->where('name = '.$db->quote('com_easysdi_core'));
 		$db->setQuery($query);
 		$install = $db->loadResult();
 		
@@ -235,7 +235,7 @@ class com_easysdi_serviceInstallerScript
 		$db = JFactory::getDbo();
                 $query = $db->getQuery(true);
                 $query->delete('#__menu');
-                $query->where('title = "com_easysdi_service"');
+                $query->where('title = '.$db->quote('com_easysdi_service'));
 		$db->setQuery($query);
 		$db->query();
 	}
@@ -256,7 +256,7 @@ class com_easysdi_serviceInstallerScript
                 $query = $db->getQuery(true);
                 $query->select('manifest_cache');
                 $query->from('#__extensions');
-                $query->where('name = "com_easysdi_service"');
+                $query->where('name = '.$db->quote('com_easysdi_service'));
 		$db->setQuery($query);
 		$manifest = json_decode( $db->loadResult(), true );
 		return $manifest[ $name ];
@@ -272,7 +272,7 @@ class com_easysdi_serviceInstallerScript
                         $query = $db->getQuery(true);
                         $query->select('params');
                         $query->from('#__extensions');
-                        $query->where('name = "com_easysdi_service"');
+                        $query->where('name = '.$db->quote('com_easysdi_service'));
 			$db->setQuery($query);
 			$params = json_decode( $db->loadResult(), true );
 			// add the new variable(s) to the existing one(s)
@@ -284,7 +284,7 @@ class com_easysdi_serviceInstallerScript
                         $query = $db->getQuery(true);
                         $query->update('#__extensions');
                         $query->set('params = ' .$db->quote( $paramsString ));
-                        $query->where('name = "com_easysdi_service"');
+                        $query->where('name = '.$db->quote('com_easysdi_service'));
 			$db->setQuery($query);
 			$db->query();
 		}

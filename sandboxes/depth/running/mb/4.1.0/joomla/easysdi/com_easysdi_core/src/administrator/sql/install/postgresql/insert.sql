@@ -3,61 +3,61 @@ INSERT INTO action_types ("ID_ACTION_TYPE", "NAME") VALUES (1, 'E-MAIL');
 INSERT INTO action_types ("ID_ACTION_TYPE", "NAME") VALUES (2, 'RSS');
 
 
---
--- TOC entry 2987 (class 0 OID 32742)
--- Dependencies: 172
--- Data for Name: actions; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
 
 
 
---
--- TOC entry 2988 (class 0 OID 32745)
--- Dependencies: 173
--- Data for Name: alerts; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
 
 
 
---
--- TOC entry 2989 (class 0 OID 32751)
--- Dependencies: 174
--- Data for Name: holidays; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
 
 
 
---
--- TOC entry 2990 (class 0 OID 32754)
--- Dependencies: 175
--- Data for Name: http_methods; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 INSERT INTO http_methods ("ID_HTTP_METHOD", "NAME") VALUES (1, 'GET');
 INSERT INTO http_methods ("ID_HTTP_METHOD", "NAME") VALUES (2, 'POST');
 
 
---
--- TOC entry 2991 (class 0 OID 32757)
--- Dependencies: 176
--- Data for Name: job_agg_hour_log_entries; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
 
 
 
---
--- TOC entry 2992 (class 0 OID 32770)
--- Dependencies: 177
--- Data for Name: job_agg_log_entries; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
 
 
 
---
--- TOC entry 2993 (class 0 OID 32783)
--- Dependencies: 178
--- Data for Name: job_defaults; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 INSERT INTO job_defaults ("ID_PARAM", "COLUMN_NAME", "STRING_VALUE", "VALUE_TYPE") VALUES (1, 'IS_PUBLIC', 'false', 'bool');
 INSERT INTO job_defaults ("ID_PARAM", "COLUMN_NAME", "STRING_VALUE", "VALUE_TYPE") VALUES (2, 'IS_AUTOMATIC', 'false', 'bool');
@@ -73,19 +73,19 @@ INSERT INTO job_defaults ("ID_PARAM", "COLUMN_NAME", "STRING_VALUE", "VALUE_TYPE
 INSERT INTO job_defaults ("ID_PARAM", "COLUMN_NAME", "STRING_VALUE", "VALUE_TYPE") VALUES (12, 'SAVE_RESPONSE', 'false', 'bool');
 
 
---
--- TOC entry 2994 (class 0 OID 32786)
--- Dependencies: 179
--- Data for Name: jobs; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
 
 
 
---
--- TOC entry 2995 (class 0 OID 33367)
--- Dependencies: 252
--- Data for Name: jos_sdi_language; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
+
+
+
+
+
 
 INSERT INTO jos_sdi_language (id, ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (1, 0, 1, 'العربية', 'ar-DZ', 'ar', 'ara', 'ar', 'DZ', 'ara');
 INSERT INTO jos_sdi_language (id, ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (3, 0, 1, 'български език', 'bg-BG', 'bg', 'bul', 'bg', 'BG', 'bul');
@@ -121,11 +121,11 @@ INSERT INTO jos_sdi_language (id, ordering, state, value, code, gemet, "iso639-2
 INSERT INTO jos_sdi_language (id, ordering, state, value, code, gemet, "iso639-2T", "iso639-1", "iso3166-1-alpha2", "iso639-2B") VALUES (33, 0, 1, 'Chinese', 'zh-CN', 'zh-CN', 'zho', 'zh', 'CN', 'chi');
 
 
---
--- TOC entry 2996 (class 0 OID 33451)
--- Dependencies: 264
--- Data for Name: jos_sdi_namespace; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_namespace (id, guid, alias, created_by, created, modified_by, modified, ordering, state, checked_out, checked_out_time, name, prefix, uri, system, access, asset_id) VALUES (1, '6df1fcd1-0a57-8b74-cd21-354dc5ef0b3d', 'gmd', 356, '2013-06-21 12:12:47', NULL, NULL, 1, B'1', 0, '2013-06-21 12:12:47', 'gmd', 'gmd', 'http://www.isotc211.org/2005/gmd', B'1', 1, 0);
 INSERT INTO jos_sdi_namespace (id, guid, alias, created_by, created, modified_by, modified, ordering, state, checked_out, checked_out_time, name, prefix, uri, system, access, asset_id) VALUES (2, '016318b2-29ec-3a74-c161-14aa1b1d3b97', 'gco', 356, '2013-06-21 12:12:47', NULL, NULL, 2, B'1', 0, '2013-06-21 12:12:47', 'gco', 'gco', 'http://www.isotc211.org/2005/gco', B'1', 1, 0);
@@ -134,21 +134,21 @@ INSERT INTO jos_sdi_namespace (id, guid, alias, created_by, created, modified_by
 INSERT INTO jos_sdi_namespace (id, guid, alias, created_by, created, modified_by, modified, ordering, state, checked_out, checked_out_time, name, prefix, uri, system, access, asset_id) VALUES (5, 'd84c3757-6471-49ed-a109-c8cef52840a8', 'catalog', 356, '2013-06-21 12:12:47', NULL, NULL, 5, B'1', 0, '2013-06-21 12:12:47', 'catalog', 'catalog', 'http://www.easysdi.org/2011/sdi/catalog', B'1', 1, 0);
 
 
---
--- TOC entry 2997 (class 0 OID 33509)
--- Dependencies: 270
--- Data for Name: jos_sdi_perimeter; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_perimeter (id, guid, alias, created_by, created, modified_by, modified, ordering, state, checked_out, checked_out_time, name, description, accessscope_id, perimetertype_id, wfsservice_id, wfsservicetype_id, featuretypename, prefix, namespace, featuretypefieldid, featuretypefieldname, featuretypefieldsurface, featuretypefielddescription, featuretypefieldgeometry, featuretypefieldresource, wmsservice_id, wmsservicetype_id, layername, access, asset_id) VALUES (1, '1a9f342c-bb1e-9bc4-dd19-38910dff0f59', 'freeperimeter', 356, '2013-07-23 09:16:11', NULL, NULL, 1, B'1', 0, '0002-11-30 00:00:00', 'Free perimeter', '', 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0);
 INSERT INTO jos_sdi_perimeter (id, guid, alias, created_by, created, modified_by, modified, ordering, state, checked_out, checked_out_time, name, description, accessscope_id, perimetertype_id, wfsservice_id, wfsservicetype_id, featuretypename, prefix, namespace, featuretypefieldid, featuretypefieldname, featuretypefieldsurface, featuretypefielddescription, featuretypefieldgeometry, featuretypefieldresource, wmsservice_id, wmsservicetype_id, layername, access, asset_id) VALUES (2, '9adc6d4e-262a-d6e4-e152-6de437ba80ed', 'myperimeter', 356, '2013-07-23 09:16:11', NULL, NULL, 2, B'1', 0, '0002-11-30 00:00:00', 'My perimeter', '', 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0);
 
 
---
--- TOC entry 2998 (class 0 OID 33685)
--- Dependencies: 292
--- Data for Name: jos_sdi_searchcriteria; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_searchcriteria (id, guid, alias, created_by, created, modified_by, modified, ordering, state, checked_out, checked_out_time, name, issystem, criteriatype_id, rendertype_id, relation_id, access, asset_id) VALUES (1, '58dfe161-60c3-4b72-b768-e4a09bae8cdb', 'fulltext', 356, '2013-06-17 11:22:36', NULL, NULL, 0, 1, 0, '2013-06-21 12:12:47', 'fulltext', B'1', 1, 1, NULL, 0, 0);
 INSERT INTO jos_sdi_searchcriteria (id, guid, alias, created_by, created, modified_by, modified, ordering, state, checked_out, checked_out_time, name, issystem, criteriatype_id, rendertype_id, relation_id, access, asset_id) VALUES (2, '05b0fb40-459c-4ed2-a985-ce1611593969', 'resourcetype', 356, '2013-06-17 11:22:36', NULL, NULL, 0, 1, 0, '2013-06-21 12:12:47', 'resourcetype', B'1', 1, 1, NULL, 0, 0);
@@ -164,53 +164,53 @@ INSERT INTO jos_sdi_searchcriteria (id, guid, alias, created_by, created, modifi
 INSERT INTO jos_sdi_searchcriteria (id, guid, alias, created_by, created, modified_by, modified, ordering, state, checked_out, checked_out_time, name, issystem, criteriatype_id, rendertype_id, relation_id, access, asset_id) VALUES (12, 'a9a44261-05da-4ee8-a3f2-4ec1c53bcb00', 'isViewable', 356, '2013-06-17 11:22:36', NULL, NULL, 0, 1, 0, '2013-06-21 12:12:47', 'isViewable', B'1', 1, 1, NULL, 0, 0);
 
 
---
--- TOC entry 2999 (class 0 OID 33699)
--- Dependencies: 294
--- Data for Name: jos_sdi_sys_accessscope; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_accessscope (id, ordering, state, value) VALUES (1, 1, 1, 'public');
 INSERT INTO jos_sdi_sys_accessscope (id, ordering, state, value) VALUES (2, 2, 1, 'organism');
 INSERT INTO jos_sdi_sys_accessscope (id, ordering, state, value) VALUES (3, 3, 1, 'user');
 
 
---
--- TOC entry 3000 (class 0 OID 33704)
--- Dependencies: 295
--- Data for Name: jos_sdi_sys_addresstype; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_addresstype (id, ordering, state, value) VALUES (1, 1, 1, 'contact');
 INSERT INTO jos_sdi_sys_addresstype (id, ordering, state, value) VALUES (2, 2, 1, 'billing');
 INSERT INTO jos_sdi_sys_addresstype (id, ordering, state, value) VALUES (3, 3, 1, 'delivry');
 
 
---
--- TOC entry 3001 (class 0 OID 33708)
--- Dependencies: 296
--- Data for Name: jos_sdi_sys_authenticationconnector; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_authenticationconnector (id, ordering, state, authenticationlevel_id, value) VALUES (1, 1, 1, 1, 'HTTPBasic');
 INSERT INTO jos_sdi_sys_authenticationconnector (id, ordering, state, authenticationlevel_id, value) VALUES (2, 2, 1, 2, 'Geonetwork');
 
 
---
--- TOC entry 3002 (class 0 OID 33712)
--- Dependencies: 297
--- Data for Name: jos_sdi_sys_authenticationlevel; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_authenticationlevel (id, ordering, state, value) VALUES (1, 1, 1, 'resource');
 INSERT INTO jos_sdi_sys_authenticationlevel (id, ordering, state, value) VALUES (2, 2, 1, 'service');
 
 
---
--- TOC entry 3003 (class 0 OID 33716)
--- Dependencies: 298
--- Data for Name: jos_sdi_sys_country; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_country (id, ordering, state, name, iso2, iso3) VALUES (1, 1, 1, 'Afghanistan', 'AF', 'AFG');
 INSERT INTO jos_sdi_sys_country (id, ordering, state, name, iso2, iso3) VALUES (2, 2, 1, 'Åland Islands', 'AX', 'ALA');
@@ -455,63 +455,63 @@ INSERT INTO jos_sdi_sys_country (id, ordering, state, name, iso2, iso3) VALUES (
 INSERT INTO jos_sdi_sys_country (id, ordering, state, name, iso2, iso3) VALUES (241, 241, 1, 'Zimbabwe', 'ZW', 'ZWE');
 
 
---
--- TOC entry 3004 (class 0 OID 33721)
--- Dependencies: 299
--- Data for Name: jos_sdi_sys_criteriatype; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_criteriatype (id, ordering, state, value) VALUES (1, 1, 1, 'system');
 INSERT INTO jos_sdi_sys_criteriatype (id, ordering, state, value) VALUES (2, 2, 1, 'relation');
 INSERT INTO jos_sdi_sys_criteriatype (id, ordering, state, value) VALUES (3, 3, 1, 'csw');
 
 
---
--- TOC entry 3005 (class 0 OID 33726)
--- Dependencies: 300
--- Data for Name: jos_sdi_sys_entity; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_entity (id, ordering, state, value) VALUES (1, 1, 1, 'attribute');
 INSERT INTO jos_sdi_sys_entity (id, ordering, state, value) VALUES (2, 2, 1, 'class');
 
 
---
--- TOC entry 3006 (class 0 OID 33731)
--- Dependencies: 301
--- Data for Name: jos_sdi_sys_exceptionlevel; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_exceptionlevel (id, ordering, state, value) VALUES (1, 1, 1, 'permissive');
 INSERT INTO jos_sdi_sys_exceptionlevel (id, ordering, state, value) VALUES (2, 2, 1, 'restrictive');
 
 
---
--- TOC entry 3007 (class 0 OID 33735)
--- Dependencies: 302
--- Data for Name: jos_sdi_sys_importtype; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_importtype (id, ordering, state, value) VALUES (1, 1, 1, 'replace');
 INSERT INTO jos_sdi_sys_importtype (id, ordering, state, value) VALUES (2, 2, 1, 'merge');
 
 
---
--- TOC entry 3008 (class 0 OID 33740)
--- Dependencies: 303
--- Data for Name: jos_sdi_sys_isolanguage; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_isolanguage (id, ordering, state, value) VALUES (1, 1, 1, 'iso639-2T');
 INSERT INTO jos_sdi_sys_isolanguage (id, ordering, state, value) VALUES (2, 2, 1, 'iso639-2B');
 INSERT INTO jos_sdi_sys_isolanguage (id, ordering, state, value) VALUES (3, 3, 1, 'iso639-1');
 
 
---
--- TOC entry 3009 (class 0 OID 33745)
--- Dependencies: 304
--- Data for Name: jos_sdi_sys_loglevel; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_loglevel (id, ordering, state, value) VALUES (1, 1, 1, 'off');
 INSERT INTO jos_sdi_sys_loglevel (id, ordering, state, value) VALUES (2, 2, 1, 'fatal');
@@ -523,11 +523,11 @@ INSERT INTO jos_sdi_sys_loglevel (id, ordering, state, value) VALUES (7, 7, 1, '
 INSERT INTO jos_sdi_sys_loglevel (id, ordering, state, value) VALUES (8, 8, 1, 'All');
 
 
---
--- TOC entry 3010 (class 0 OID 33749)
--- Dependencies: 305
--- Data for Name: jos_sdi_sys_logroll; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_logroll (id, ordering, state, value) VALUES (1, 1, 1, 'daily');
 INSERT INTO jos_sdi_sys_logroll (id, ordering, state, value) VALUES (2, 2, 1, 'weekly');
@@ -535,11 +535,11 @@ INSERT INTO jos_sdi_sys_logroll (id, ordering, state, value) VALUES (3, 3, 1, 'm
 INSERT INTO jos_sdi_sys_logroll (id, ordering, state, value) VALUES (4, 4, 1, 'annually');
 
 
---
--- TOC entry 3011 (class 0 OID 33753)
--- Dependencies: 306
--- Data for Name: jos_sdi_sys_maptool; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_maptool (id, alias, ordering, state, name) VALUES (1, 'googleearth', 1, 1, 'Google Earth');
 INSERT INTO jos_sdi_sys_maptool (id, alias, ordering, state, name) VALUES (2, 'navigation', 2, 1, 'Navigation');
@@ -563,11 +563,11 @@ INSERT INTO jos_sdi_sys_maptool (id, alias, ordering, state, name) VALUES (19, '
 INSERT INTO jos_sdi_sys_maptool (id, alias, ordering, state, name) VALUES (20, 'layerorder', 20, 1, 'Layer order');
 
 
---
--- TOC entry 3012 (class 0 OID 33757)
--- Dependencies: 307
--- Data for Name: jos_sdi_sys_metadatastate; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_metadatastate (id, ordering, state, value) VALUES (1, 1, 1, 'inprogress');
 INSERT INTO jos_sdi_sys_metadatastate (id, ordering, state, value) VALUES (2, 2, 1, 'validated');
@@ -576,21 +576,21 @@ INSERT INTO jos_sdi_sys_metadatastate (id, ordering, state, value) VALUES (4, 4,
 INSERT INTO jos_sdi_sys_metadatastate (id, ordering, state, value) VALUES (5, 5, 1, 'trashed');
 
 
---
--- TOC entry 3013 (class 0 OID 33762)
--- Dependencies: 308
--- Data for Name: jos_sdi_sys_metadataversion; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_metadataversion (id, ordering, state, value) VALUES (1, 1, 1, 'all');
 INSERT INTO jos_sdi_sys_metadataversion (id, ordering, state, value) VALUES (2, 2, 1, 'last');
 
 
---
--- TOC entry 3014 (class 0 OID 33767)
--- Dependencies: 309
--- Data for Name: jos_sdi_sys_operationcompliance; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_operationcompliance (id, ordering, state, servicecompliance_id, serviceoperation_id, implemented) VALUES (1, 1, 1, 1, 1, B'1');
 INSERT INTO jos_sdi_sys_operationcompliance (id, ordering, state, servicecompliance_id, serviceoperation_id, implemented) VALUES (2, 2, 1, 1, 2, B'1');
@@ -643,11 +643,11 @@ INSERT INTO jos_sdi_sys_operationcompliance (id, ordering, state, servicecomplia
 INSERT INTO jos_sdi_sys_operationcompliance (id, ordering, state, servicecompliance_id, serviceoperation_id, implemented) VALUES (49, 49, 1, 5, 12, B'1');
 
 
---
--- TOC entry 3015 (class 0 OID 33772)
--- Dependencies: 310
--- Data for Name: jos_sdi_sys_orderstate; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_orderstate (id, ordering, state, value) VALUES (1, 1, 1, 'archived');
 INSERT INTO jos_sdi_sys_orderstate (id, ordering, state, value) VALUES (2, 2, 1, 'historized');
@@ -658,75 +658,75 @@ INSERT INTO jos_sdi_sys_orderstate (id, ordering, state, value) VALUES (6, 6, 1,
 INSERT INTO jos_sdi_sys_orderstate (id, ordering, state, value) VALUES (7, 7, 1, 'saved');
 
 
---
--- TOC entry 3016 (class 0 OID 33777)
--- Dependencies: 311
--- Data for Name: jos_sdi_sys_ordertype; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_ordertype (id, ordering, state, value) VALUES (1, 1, 1, 'order');
 INSERT INTO jos_sdi_sys_ordertype (id, ordering, state, value) VALUES (2, 2, 1, 'estimate');
 INSERT INTO jos_sdi_sys_ordertype (id, ordering, state, value) VALUES (3, 3, 1, 'draft');
 
 
---
--- TOC entry 3017 (class 0 OID 33782)
--- Dependencies: 312
--- Data for Name: jos_sdi_sys_perimetertype; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_perimetertype (id, ordering, state, value) VALUES (1, 1, 1, 'extraction');
 INSERT INTO jos_sdi_sys_perimetertype (id, ordering, state, value) VALUES (2, 2, 1, 'download');
 INSERT INTO jos_sdi_sys_perimetertype (id, ordering, state, value) VALUES (3, 3, 1, 'both');
 
 
---
--- TOC entry 3018 (class 0 OID 33787)
--- Dependencies: 313
--- Data for Name: jos_sdi_sys_pricing; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_pricing (id, ordering, state, value) VALUES (1, 1, 1, 'free');
 INSERT INTO jos_sdi_sys_pricing (id, ordering, state, value) VALUES (2, 2, 1, 'fee');
 
 
---
--- TOC entry 3019 (class 0 OID 33792)
--- Dependencies: 314
--- Data for Name: jos_sdi_sys_productmining; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_productmining (id, ordering, state, value) VALUES (1, 1, 1, 'automatic');
 INSERT INTO jos_sdi_sys_productmining (id, ordering, state, value) VALUES (2, 2, 1, 'manual');
 
 
---
--- TOC entry 3020 (class 0 OID 33797)
--- Dependencies: 315
--- Data for Name: jos_sdi_sys_productstate; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_productstate (id, ordering, state, value) VALUES (1, 1, 1, 'available');
 INSERT INTO jos_sdi_sys_productstate (id, ordering, state, value) VALUES (2, 2, 1, 'await');
 INSERT INTO jos_sdi_sys_productstate (id, ordering, state, value) VALUES (3, 3, 1, 'sent');
 
 
---
--- TOC entry 3021 (class 0 OID 33802)
--- Dependencies: 316
--- Data for Name: jos_sdi_sys_productstorage; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_productstorage (id, ordering, state, value) VALUES (1, 1, 1, 'upload');
 INSERT INTO jos_sdi_sys_productstorage (id, ordering, state, value) VALUES (2, 2, 1, 'url');
 INSERT INTO jos_sdi_sys_productstorage (id, ordering, state, value) VALUES (3, 3, 1, 'zoning');
 
 
---
--- TOC entry 3022 (class 0 OID 33807)
--- Dependencies: 317
--- Data for Name: jos_sdi_sys_propertytype; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_propertytype (id, ordering, state, value) VALUES (1, 1, 1, 'list');
 INSERT INTO jos_sdi_sys_propertytype (id, ordering, state, value) VALUES (2, 2, 1, 'multiplelist');
@@ -736,33 +736,33 @@ INSERT INTO jos_sdi_sys_propertytype (id, ordering, state, value) VALUES (5, 5, 
 INSERT INTO jos_sdi_sys_propertytype (id, ordering, state, value) VALUES (6, 6, 1, 'message');
 
 
---
--- TOC entry 3023 (class 0 OID 33811)
--- Dependencies: 318
--- Data for Name: jos_sdi_sys_proxytype; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_proxytype (id, ordering, state, value) VALUES (1, 1, 1, 'harvest');
 INSERT INTO jos_sdi_sys_proxytype (id, ordering, state, value) VALUES (2, 2, 1, 'relay');
 INSERT INTO jos_sdi_sys_proxytype (id, ordering, state, value) VALUES (3, 3, 1, 'aggregate');
 
 
---
--- TOC entry 3024 (class 0 OID 33815)
--- Dependencies: 319
--- Data for Name: jos_sdi_sys_relationscope; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_relationscope (id, ordering, state, value) VALUES (1, 1, 1, 'editable');
 INSERT INTO jos_sdi_sys_relationscope (id, ordering, state, value) VALUES (2, 2, 1, 'visible');
 INSERT INTO jos_sdi_sys_relationscope (id, ordering, state, value) VALUES (3, 3, 1, 'hidden');
 
 
---
--- TOC entry 3025 (class 0 OID 33820)
--- Dependencies: 320
--- Data for Name: jos_sdi_sys_relationtype; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_relationtype (id, ordering, state, value) VALUES (1, 1, 1, 'association');
 INSERT INTO jos_sdi_sys_relationtype (id, ordering, state, value) VALUES (2, 2, 1, 'aggregation');
@@ -770,11 +770,11 @@ INSERT INTO jos_sdi_sys_relationtype (id, ordering, state, value) VALUES (3, 3, 
 INSERT INTO jos_sdi_sys_relationtype (id, ordering, state, value) VALUES (4, 4, 1, 'generalization');
 
 
---
--- TOC entry 3026 (class 0 OID 33825)
--- Dependencies: 321
--- Data for Name: jos_sdi_sys_rendertype; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_rendertype (id, ordering, state, value) VALUES (1, 1, 1, 'textarea');
 INSERT INTO jos_sdi_sys_rendertype (id, ordering, state, value) VALUES (2, 2, 1, 'checkbox');
@@ -784,21 +784,21 @@ INSERT INTO jos_sdi_sys_rendertype (id, ordering, state, value) VALUES (5, 5, 1,
 INSERT INTO jos_sdi_sys_rendertype (id, ordering, state, value) VALUES (6, 6, 1, 'date');
 
 
---
--- TOC entry 3027 (class 0 OID 33830)
--- Dependencies: 322
--- Data for Name: jos_sdi_sys_rendertype_criteriatype; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_rendertype_criteriatype (id, criteriatype_id, rendertype_id) VALUES (1, 3, 5);
 INSERT INTO jos_sdi_sys_rendertype_criteriatype (id, criteriatype_id, rendertype_id) VALUES (2, 3, 6);
 
 
---
--- TOC entry 3028 (class 0 OID 33833)
--- Dependencies: 323
--- Data for Name: jos_sdi_sys_rendertype_stereotype; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_rendertype_stereotype (id, stereotype_id, rendertype_id) VALUES (1, 1, 5);
 INSERT INTO jos_sdi_sys_rendertype_stereotype (id, stereotype_id, rendertype_id) VALUES (2, 2, 1);
@@ -821,11 +821,11 @@ INSERT INTO jos_sdi_sys_rendertype_stereotype (id, stereotype_id, rendertype_id)
 INSERT INTO jos_sdi_sys_rendertype_stereotype (id, stereotype_id, rendertype_id) VALUES (20, 14, 5);
 
 
---
--- TOC entry 3029 (class 0 OID 33836)
--- Dependencies: 324
--- Data for Name: jos_sdi_sys_role; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_role (id, ordering, state, value) VALUES (1, 1, 1, 'member');
 INSERT INTO jos_sdi_sys_role (id, ordering, state, value) VALUES (2, 2, 1, 'resourcemanager');
@@ -837,11 +837,11 @@ INSERT INTO jos_sdi_sys_role (id, ordering, state, value) VALUES (7, 7, 1, 'extr
 INSERT INTO jos_sdi_sys_role (id, ordering, state, value) VALUES (8, 8, 1, 'ordereligible');
 
 
---
--- TOC entry 3030 (class 0 OID 33841)
--- Dependencies: 325
--- Data for Name: jos_sdi_sys_searchtab; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_searchtab (id, ordering, state, value) VALUES (1, 1, 1, 'simple');
 INSERT INTO jos_sdi_sys_searchtab (id, ordering, state, value) VALUES (2, 2, 1, 'advanced');
@@ -849,11 +849,11 @@ INSERT INTO jos_sdi_sys_searchtab (id, ordering, state, value) VALUES (3, 3, 1, 
 INSERT INTO jos_sdi_sys_searchtab (id, ordering, state, value) VALUES (4, 4, 1, 'none');
 
 
---
--- TOC entry 3031 (class 0 OID 33846)
--- Dependencies: 326
--- Data for Name: jos_sdi_sys_servicecompliance; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_servicecompliance (id, ordering, state, serviceconnector_id, serviceversion_id, implemented, relayable, aggregatable, harvestable) VALUES (1, 1, 1, 1, 7, B'1', B'1', B'0', B'1');
 INSERT INTO jos_sdi_sys_servicecompliance (id, ordering, state, serviceconnector_id, serviceversion_id, implemented, relayable, aggregatable, harvestable) VALUES (2, 2, 1, 1, 8, B'1', B'1', B'0', B'1');
@@ -867,11 +867,11 @@ INSERT INTO jos_sdi_sys_servicecompliance (id, ordering, state, serviceconnector
 INSERT INTO jos_sdi_sys_servicecompliance (id, ordering, state, serviceconnector_id, serviceversion_id, implemented, relayable, aggregatable, harvestable) VALUES (10, 10, 1, 11, 4, B'1', B'1', B'1', B'0');
 
 
---
--- TOC entry 3032 (class 0 OID 33854)
--- Dependencies: 327
--- Data for Name: jos_sdi_sys_servicecon_authenticationcon; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_servicecon_authenticationcon (id, serviceconnector_id, authenticationconnector_id) VALUES (1, 1, 1);
 INSERT INTO jos_sdi_sys_servicecon_authenticationcon (id, serviceconnector_id, authenticationconnector_id) VALUES (2, 1, 2);
@@ -886,11 +886,11 @@ INSERT INTO jos_sdi_sys_servicecon_authenticationcon (id, serviceconnector_id, a
 INSERT INTO jos_sdi_sys_servicecon_authenticationcon (id, serviceconnector_id, authenticationconnector_id) VALUES (11, 10, 1);
 
 
---
--- TOC entry 3033 (class 0 OID 33857)
--- Dependencies: 328
--- Data for Name: jos_sdi_sys_serviceconnector; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_serviceconnector (id, ordering, state, value) VALUES (1, 1, 1, 'CSW');
 INSERT INTO jos_sdi_sys_serviceconnector (id, ordering, state, value) VALUES (2, 2, 1, 'WMS');
@@ -908,11 +908,11 @@ INSERT INTO jos_sdi_sys_serviceconnector (id, ordering, state, value) VALUES (13
 INSERT INTO jos_sdi_sys_serviceconnector (id, ordering, state, value) VALUES (14, 14, 0, 'OSM');
 
 
---
--- TOC entry 3034 (class 0 OID 33861)
--- Dependencies: 329
--- Data for Name: jos_sdi_sys_serviceoperation; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_serviceoperation (id, ordering, state, value) VALUES (1, 1, 1, 'GetCapabilities');
 INSERT INTO jos_sdi_sys_serviceoperation (id, ordering, state, value) VALUES (2, 2, 1, 'GetRecords');
@@ -937,32 +937,32 @@ INSERT INTO jos_sdi_sys_serviceoperation (id, ordering, state, value) VALUES (20
 INSERT INTO jos_sdi_sys_serviceoperation (id, ordering, state, value) VALUES (21, 21, 1, 'PutStyles');
 
 
---
--- TOC entry 3035 (class 0 OID 33865)
--- Dependencies: 330
--- Data for Name: jos_sdi_sys_servicescope; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_servicescope (id, ordering, state, value) VALUES (1, 1, 1, 'all');
 INSERT INTO jos_sdi_sys_servicescope (id, ordering, state, value) VALUES (2, 2, 1, 'organism');
 INSERT INTO jos_sdi_sys_servicescope (id, ordering, state, value) VALUES (3, 3, 1, 'none');
 
 
---
--- TOC entry 3036 (class 0 OID 33870)
--- Dependencies: 331
--- Data for Name: jos_sdi_sys_servicetype; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_servicetype (id, ordering, state, value) VALUES (1, 1, 1, 'physical');
 INSERT INTO jos_sdi_sys_servicetype (id, ordering, state, value) VALUES (2, 2, 1, 'virtual');
 
 
---
--- TOC entry 3037 (class 0 OID 33875)
--- Dependencies: 332
--- Data for Name: jos_sdi_sys_serviceversion; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_serviceversion (id, ordering, state, value) VALUES (1, 1, 1, '1.0.0');
 INSERT INTO jos_sdi_sys_serviceversion (id, ordering, state, value) VALUES (2, 2, 1, '1.1.0');
@@ -974,21 +974,21 @@ INSERT INTO jos_sdi_sys_serviceversion (id, ordering, state, value) VALUES (7, 7
 INSERT INTO jos_sdi_sys_serviceversion (id, ordering, state, value) VALUES (8, 8, 1, '2.0.2');
 
 
---
--- TOC entry 3038 (class 0 OID 33879)
--- Dependencies: 333
--- Data for Name: jos_sdi_sys_spatialoperator; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_spatialoperator (id, ordering, state, value) VALUES (1, 1, 1, 'within');
 INSERT INTO jos_sdi_sys_spatialoperator (id, ordering, state, value) VALUES (2, 3, 1, 'touch');
 
 
---
--- TOC entry 3039 (class 0 OID 33884)
--- Dependencies: 334
--- Data for Name: jos_sdi_sys_stereotype; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_stereotype (id, ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (1, 1, 1, 'guid', '([A-Z0-9]{8}|-|[A-Z0-9]{4}|-|[A-Z0-9]{4}|-|[A-Z0-9]{4}|-|[A-Z0-9]{12})', 'CharacterString', 2, 1);
 INSERT INTO jos_sdi_sys_stereotype (id, ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (2, 2, 1, 'text', '', 'CharacterString', 2, 1);
@@ -1007,11 +1007,11 @@ INSERT INTO jos_sdi_sys_stereotype (id, ordering, state, value, defaultpattern, 
 INSERT INTO jos_sdi_sys_stereotype (id, ordering, state, value, defaultpattern, isocode, namespace_id, entity_id) VALUES (15, 15, 1, 'geographicextent', NULL, NULL, NULL, 2);
 
 
---
--- TOC entry 3040 (class 0 OID 33892)
--- Dependencies: 335
--- Data for Name: jos_sdi_sys_topiccategory; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_topiccategory (id, ordering, state, value) VALUES (1, 1, 1, 'farming');
 INSERT INTO jos_sdi_sys_topiccategory (id, ordering, state, value) VALUES (2, 2, 1, 'biota');
@@ -1034,31 +1034,31 @@ INSERT INTO jos_sdi_sys_topiccategory (id, ordering, state, value) VALUES (18, 1
 INSERT INTO jos_sdi_sys_topiccategory (id, ordering, state, value) VALUES (19, 19, 1, 'utilitiesCommunication');
 
 
---
--- TOC entry 3041 (class 0 OID 33897)
--- Dependencies: 336
--- Data for Name: jos_sdi_sys_unit; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_unit (id, ordering, state, alias, name) VALUES (1, 1, 1, 'm', 'meter');
 INSERT INTO jos_sdi_sys_unit (id, ordering, state, alias, name) VALUES (2, 2, 1, 'dd', 'degree');
 
 
---
--- TOC entry 3042 (class 0 OID 33901)
--- Dependencies: 337
--- Data for Name: jos_sdi_sys_versiontype; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO jos_sdi_sys_versiontype (id, ordering, state, value) VALUES (1, 1, 1, 'all');
 INSERT INTO jos_sdi_sys_versiontype (id, ordering, state, value) VALUES (2, 2, 1, 'lastPublishedVersion');
 
 
---
--- TOC entry 3043 (class 0 OID 34188)
--- Dependencies: 372
--- Data for Name: last_ids; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO last_ids ("TABLE_NAME", "LAST_ID") VALUES ('ACTIONS', 2);
 INSERT INTO last_ids ("TABLE_NAME", "LAST_ID") VALUES ('ALERTS', 161);
@@ -1077,109 +1077,109 @@ INSERT INTO last_ids ("TABLE_NAME", "LAST_ID") VALUES ('SERVICE_TYPES', 8);
 INSERT INTO last_ids ("TABLE_NAME", "LAST_ID") VALUES ('STATUSES', 5);
 
 
---
--- TOC entry 3044 (class 0 OID 34192)
--- Dependencies: 373
--- Data for Name: last_query_results; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
 
 
 
---
--- TOC entry 3045 (class 0 OID 34198)
--- Dependencies: 374
--- Data for Name: log_entries; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
 
 
 
---
--- TOC entry 3046 (class 0 OID 34204)
--- Dependencies: 375
--- Data for Name: overview_page; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
 
 
 
---
--- TOC entry 3047 (class 0 OID 34208)
--- Dependencies: 376
--- Data for Name: overview_queries; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
 
 
 
---
--- TOC entry 3048 (class 0 OID 34211)
--- Dependencies: 377
--- Data for Name: periods; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
 
 
 
---
--- TOC entry 3049 (class 0 OID 34223)
--- Dependencies: 378
--- Data for Name: queries; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
 
 
 
---
--- TOC entry 3050 (class 0 OID 34227)
--- Dependencies: 379
--- Data for Name: query_agg_hour_log_entries; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
 
 
 
---
--- TOC entry 3051 (class 0 OID 34240)
--- Dependencies: 380
--- Data for Name: query_agg_log_entries; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
 
 
 
---
--- TOC entry 3052 (class 0 OID 34253)
--- Dependencies: 381
--- Data for Name: query_params; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
 
 
 
---
--- TOC entry 3053 (class 0 OID 34259)
--- Dependencies: 382
--- Data for Name: query_validation_results; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
 
 
 
---
--- TOC entry 3054 (class 0 OID 34265)
--- Dependencies: 383
--- Data for Name: query_validation_settings; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
 
 
 
---
--- TOC entry 3055 (class 0 OID 34274)
--- Dependencies: 384
--- Data for Name: roles; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 INSERT INTO roles ("ID_ROLE", "NAME", "RANK") VALUES (1, 'ROLE_ADMIN', 1);
 INSERT INTO roles ("ID_ROLE", "NAME", "RANK") VALUES (2, 'ROLE_USER', 3);
 
 
---
--- TOC entry 3056 (class 0 OID 34277)
--- Dependencies: 385
--- Data for Name: service_methods; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO service_methods ("ID_SERVICE_METHOD", "NAME") VALUES (1, 'GetCapabilities');
 INSERT INTO service_methods ("ID_SERVICE_METHOD", "NAME") VALUES (2, 'GetMap');
@@ -1195,11 +1195,11 @@ INSERT INTO service_methods ("ID_SERVICE_METHOD", "NAME") VALUES (11, 'HTTP POST
 INSERT INTO service_methods ("ID_SERVICE_METHOD", "NAME") VALUES (12, 'HTTP GET');
 
 
---
--- TOC entry 3057 (class 0 OID 34280)
--- Dependencies: 386
--- Data for Name: service_types; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO service_types ("ID_SERVICE_TYPE", "NAME", "VERSION") VALUES (1, 'WMS', '1.1.1');
 INSERT INTO service_types ("ID_SERVICE_TYPE", "NAME", "VERSION") VALUES (2, 'WFS', '1.1.0');
@@ -1210,11 +1210,11 @@ INSERT INTO service_types ("ID_SERVICE_TYPE", "NAME", "VERSION") VALUES (7, 'WCS
 INSERT INTO service_types ("ID_SERVICE_TYPE", "NAME", "VERSION") VALUES (8, 'ALL', '0');
 
 
---
--- TOC entry 3058 (class 0 OID 34283)
--- Dependencies: 387
--- Data for Name: service_types_methods; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO service_types_methods ("ID_SERVICE_TYPE", "ID_SERVICE_METHOD") VALUES (1, 1);
 INSERT INTO service_types_methods ("ID_SERVICE_TYPE", "ID_SERVICE_METHOD") VALUES (2, 1);
@@ -1243,19 +1243,19 @@ INSERT INTO service_types_methods ("ID_SERVICE_TYPE", "ID_SERVICE_METHOD") VALUE
 INSERT INTO service_types_methods ("ID_SERVICE_TYPE", "ID_SERVICE_METHOD") VALUES (8, 12);
 
 
---
--- TOC entry 3059 (class 0 OID 34286)
--- Dependencies: 388
--- Data for Name: sla; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
 
 
 
---
--- TOC entry 3060 (class 0 OID 34291)
--- Dependencies: 389
--- Data for Name: statuses; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
+
+
+
+
+
 
 INSERT INTO statuses ("ID_STATUS", "NAME") VALUES (1, 'AVAILABLE');
 INSERT INTO statuses ("ID_STATUS", "NAME") VALUES (2, 'OUT_OF_ORDER');
@@ -1263,19 +1263,11 @@ INSERT INTO statuses ("ID_STATUS", "NAME") VALUES (3, 'UNAVAILABLE');
 INSERT INTO statuses ("ID_STATUS", "NAME") VALUES (4, 'NOT_TESTED');
 
 
---
--- TOC entry 3061 (class 0 OID 34294)
--- Dependencies: 390
--- Data for Name: users; Type: TABLE DATA; Schema: joomla; Owner: postgres
---
+
+
+
+
+
 
 INSERT INTO users ("LOGIN", "PASSWORD", "ID_ROLE", "EXPIRATION", "ENABLED", "LOCKED") VALUES ('Admin', 'adm', 1, NULL, B'1', B'0');
 INSERT INTO users ("LOGIN", "PASSWORD", "ID_ROLE", "EXPIRATION", "ENABLED", "LOCKED") VALUES ('user', 'usr', 2, NULL, B'1', B'0');
-
-
--- Completed on 2014-04-03 09:04:05
-
---
--- PostgreSQL database dump complete
---
-

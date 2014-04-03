@@ -104,7 +104,7 @@ class com_easysdi_shopInstallerScript {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->delete('#__menu');
-        $query->where('title = "com_easysdi_shop"');
+        $query->where('title = '.$db->quote('com_easysdi_shop'));
         $db->setQuery($query);
         $db->query();
     }
@@ -127,7 +127,7 @@ class com_easysdi_shopInstallerScript {
         $query = $db->getQuery(true);
         $query->select('manifest_cache');
         $query->from('#__extensions');
-        $query->where('name = "com_easysdi_shop"');
+        $query->where('name = '.$db->quote('com_easysdi_shop'));
         $db->setQuery($query);
         $manifest = json_decode($db->loadResult(), true);
         return $manifest[$name];
@@ -144,7 +144,7 @@ class com_easysdi_shopInstallerScript {
             $query = $db->getQuery(true);
             $query->select('params');
             $query->from('#__extensions');
-            $query->where('name = "com_easysdi_shop"');
+            $query->where('name = '.$db->quote('com_easysdi_shop'));
             
             $db->setQuery($query);
             $params = json_decode($db->loadResult(), true);
@@ -157,7 +157,7 @@ class com_easysdi_shopInstallerScript {
             $query = $db->getQuery(true);
             $query->update('#__extensions');
             $query->set('params = ' .$db->quote($paramsString));
-            $query->where('name = "com_easysdi_shop"');
+            $query->where('name = '.$db->quote('com_easysdi_shop'));
             $db->setQuery($query);
             $db->query();
         }
