@@ -14,9 +14,9 @@
   <install>
     <sql>
       <file charset="utf8" driver="mysql">sql/install/mysql/install.sql</file>
-
+      <file charset="utf8" driver="mysqli">sql/install/mysql/install.sql</file>
       <file charset="utf8" driver="sqlsrv">sql/install/sqlazure/install.sql</file>
-
+      <file charset="utf8" driver="sqlazure">sql/install/sqlazure/install.sql</file>
       <file charset="utf8" driver="postgresql">sql/install/postgresql/install.sql</file>
     </sql>
   </install>

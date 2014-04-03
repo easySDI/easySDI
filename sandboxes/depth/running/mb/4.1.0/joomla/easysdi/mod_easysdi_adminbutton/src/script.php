@@ -46,7 +46,7 @@ class mod_easysdi_adminbuttonInstallerScript
 
      // Add module to menu 0 (all)
      $db->setQuery("INSERT INTO 
-                        `#__modules_menu` 
+                        #__modules_menu
                         (`moduleid`, `menuid`)
                     VALUES 
                         ($moduleId, 0)");

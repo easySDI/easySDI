@@ -125,7 +125,7 @@ class Easysdi_contactModelusers extends JModelList
 				'a.*'
 			)
 		);
-		$query->from('`#__sdi_user` AS a');
+		$query->from('#__sdi_user AS a');
 
 
 		// Join over the users .

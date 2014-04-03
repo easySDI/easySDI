@@ -73,6 +73,10 @@ class com_easysdi_shopInstallerScript {
             $row->accessscope_id = 1;
             $row->perimetertype_id = 1;
             $row->access = 1;
+            $row->created_by = 356;
+            $row->created = '0002-11-30 00:00:00';
+            $row->checked_out = 0;
+            $row->checked_out_time = '0002-11-30 00:00:00';
             $result1 = $row->store();
             if (!(isset($result1)) || !$result1) {
                 JError::raiseError(42, JText::_('COM_EASYSDI_SHOP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR') . $row->getError());
@@ -89,6 +93,10 @@ class com_easysdi_shopInstallerScript {
             $row->accessscope_id = 1;
             $row->perimetertype_id = 1;
             $row->access = 1;
+            $row->created_by = 356;
+            $row->created = '0002-11-30 00:00:00';
+            $row->checked_out = 0;
+            $row->checked_out_time = '0002-11-30 00:00:00';
             $result2 = $row->store();
             if (!(isset($result2)) || !$result2) {
                 JError::raiseError(42, JText::_('COM_EASYSDI_SHOP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR') . $row->getError());

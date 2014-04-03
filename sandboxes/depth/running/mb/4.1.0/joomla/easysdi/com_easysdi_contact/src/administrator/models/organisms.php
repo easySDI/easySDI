@@ -111,7 +111,7 @@ class Easysdi_contactModelorganisms extends JModelList {
                         'list.select', 'a.*'
                 )
         );
-        $query->from('`#__sdi_organism` AS a');
+        $query->from('#__sdi_organism AS a');
 
 
         // Join over the users for the checked out user.

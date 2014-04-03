@@ -87,6 +87,8 @@ class com_easysdi_serviceInstallerScript
 			$row->access 			= 1;
 			$row->params  			= '{"category_layout":"","image":""}';
 			$row->metadata 			= '{"author":"","robots":""}';
+                        $row->metadesc                   = 'uncategorised';
+                        $row->metakey                   = '';
 			if(!$row->store(true))
 			{
 				JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_POSTFLIGHT_SCRIPT_CATEGORY_ERROR'));
