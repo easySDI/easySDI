@@ -75,8 +75,8 @@ class com_easysdi_contactInstallerScript
 			//Create a default EasySDI User Category
 			$row 					= JTable::getInstance('category');
 			$row->parent_id 		= 1;
-			$row->level				= 1;
-			$row->path 				= 'uncategorised';
+			$row->level			= 1;
+			$row->path 			= 'uncategorised';
 			$row->extension 		= 'com_easysdi_contact';
 			$row->title 			= 'Uncategorised';
 			$row->alias 			= 'uncategorised';
@@ -84,6 +84,8 @@ class com_easysdi_contactInstallerScript
 			$row->access 			= 1;
 			$row->params  			= '{"category_layout":"","image":""}';
 			$row->metadata 			= '{"author":"","robots":""}';
+                        $row->metadesc                  = 'uncategorised';
+                        $row->metakey                   = '';
 			if(!$row->store(true))
 			{
 				JError::raiseWarning(null, JText::_('COM_EASYSDI_CONTACT_POSTFLIGHT_SCRIPT_CATEGORY_ERROR'));
@@ -100,9 +102,9 @@ class com_easysdi_contactInstallerScript
 				return false;
 			}
 			$newaccount->user_id 	= $user->id;
-			$newaccount->catid 		= $row->id;
+			$newaccount->catid 	= $row->id;
 			$newaccount->ordering	= 1;
-			$result 				= $newaccount->store();
+			$result 		= $newaccount->store();
 			if (!(isset($result)) || !$result) {
 				JError::raiseError(42, JText::_('COM_EASYSDI_CONTACT_POSTFLIGHT_SCRIPT_USER_ERROR_STORE'). $newaccount->getError());
 				return false;
