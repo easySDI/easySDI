@@ -26,7 +26,13 @@ class plgEasysdi_admin_buttonGetusersbuttonInstallerScript
 		if($type == 'install'){
 			//Activate the plugin
 			$db = JFactory::getDbo();
-			$db->setQuery("UPDATE #__extensions SET enabled=1 WHERE type='plugin' AND element='getusersbutton' AND folder='easysdi_admin_button'");
+                        $query = $db->getQuery(true);
+                        $query->update('#__extensions');
+                        $query->set('enabled=1');
+                        $query->where('type='.$db->quote('plugin'));
+                        $query->where('element='.$db->quote('getusersbutton'));
+                        $query->where('folder='.$db->quote('easysdi_admin_button'));
+			$db->setQuery($query);
 			$db->execute();
 		}
 	}

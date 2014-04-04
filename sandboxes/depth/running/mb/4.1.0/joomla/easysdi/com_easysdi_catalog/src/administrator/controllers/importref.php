@@ -28,6 +28,7 @@ class Easysdi_catalogControllerImportref extends JControllerForm
         $service_id = $jinput->get('service_id', '0', 'string');
 
         $db = JFactory::getDbo();
+        $query->select('v.id , v.value');
         $db->setQuery('SELECT v.id , v.value 
                         FROM #__sdi_sys_serviceversion v 
                         INNER JOIN #__sdi_sys_servicecompliance compliance ON v.id=compliance.serviceversion_id  

@@ -78,11 +78,9 @@
                         <file driver="mysql" charset="utf8">sql/install/mysql/install.sql</file>
                         <file driver="mysql" charset="utf8">sql/install/mysql/insert.sql</file>
                         <file driver="mysql" charset="utf8">sql/install/mysql/alter.sql</file>
-
 			<file driver="sqlsrv" charset="utf8">sql/install/sqlazure/install.sql</file>
                         <file driver="sqlsrv" charset="utf8">sql/install/sqlazure/insert.sql</file>
                         <file driver="sqlsrv" charset="utf8">sql/install/sqlazure/alter.sql</file>
-			
 			<file driver="postgresql" charset="utf8">sql/install/postgresql/install.sql</file>
                         <file driver="postgresql" charset="utf8">sql/install/postgresql/insert.sql</file>
                         <file driver="postgresql" charset="utf8">sql/install/postgresql/alter.sql</file>
@@ -92,11 +90,7 @@
                 <uninstall> <!-- Runs on uninstall -->
                     <sql>
                         <file driver="mysql" charset="utf8">sql/install/mysql/uninstall.sql</file>
-			<file driver="mysqli" charset="utf8">sql/install/mysql/uninstall.sql</file>
-			
 			<file driver="sqlsrv" charset="utf8">sql/install/sqlazure/uninstall.sql</file>
-			<file driver="sqlazure" charset="utf8">sql/install/sqlazure/uninstall.sql</file>
-			
 			<file driver="postgresql" charset="utf8">sql/install/postgresql/uninstall.sql</file>
                     </sql>
                 </uninstall>
@@ -104,7 +98,6 @@
                         <schemas>
                                 <schemapath type="mysql">sql/updates/mysql</schemapath>
                                 <schemapath type="sqlsrv">sql/updates/sqlazure</schemapath>
-                                <schemapath type="sqlazure">sql/updates/sqlazure</schemapath>
                                 <schemapath type="postgresql">sql/updates/postgresql</schemapath>
                         </schemas>
                 </update>

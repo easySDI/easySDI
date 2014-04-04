@@ -26,7 +26,13 @@ class plgEasysdi_admin_infoGetdiffuextractablesInstallerScript
 		if($type == 'install'){
 			//Activate the plugin
 			$db = JFactory::getDbo();
-			$db->setQuery("UPDATE #__extensions SET enabled=1 WHERE type='plugin' AND element='getdiffuextractables' AND folder='easysdi_admin_info'");
+                        $query = $db->getQuery(true);
+                        $query->update('#__extensions');
+                        $query->set('enabled=1');
+                        $query->where('type='.$db->quote('plugin'));
+                        $query->where('element='.$db->quote('getdiffuextractables'));
+                        $query->where('folder='.$db->quote('easysdi_admin_info'));
+			$db->setQuery($query);
 			$db->execute();
 		}
 	}
