@@ -8,7 +8,7 @@
   <author>EasySDI Community</author>
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>4.0.0</version>
+  <version>4.0.1</version>
   <description />
   <scriptfile>script.php</scriptfile>
   <install>
@@ -29,7 +29,6 @@
     </schemas>
   </update>
   <administration>
-    <menu img="components/com_easysdi_dashboard/assets/images/s_com_easysdi_core.ico">COM_EASYSDI_SOLUTION</menu>
     <files folder="administrator">
       <filename>access.xml</filename>
       <filename>config.xml</filename>
