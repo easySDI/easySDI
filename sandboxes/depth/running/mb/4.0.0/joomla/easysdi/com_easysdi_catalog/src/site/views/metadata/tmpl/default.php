@@ -112,7 +112,7 @@ $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/sy
     #searchModal{
         width: 900px;
         left: 40%;
-    }
+    } 
 </style>
 
 <script type="text/javascript">
