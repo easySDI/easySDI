@@ -1,20 +1,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.easysdi</groupId>
     <artifactId>easysdi</artifactId>
     <version>4.0.1</version>
     <packaging>pom</packaging>
     <name>easysdi</name>
- 
+    
     <properties>
         <spring.version>3.0.2.RELEASE</spring.version>
         <hibernate.version>3.6.10.Final</hibernate.version>
         <mysql.connector.version>5.1.8</mysql.connector.version>
     </properties>
-    
+ 
     <scm>
-        <connection>scm:svn:http://www.easysdi.org/easysdi/branches/depth/running/v330/sandbox/mb/easysdi330</connection>
+        <connection>scm:svn:http://www.easysdi.org/easysdi/trunk/java/easysdi</connection>
     </scm>
     
     <distributionManagement>

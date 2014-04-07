@@ -11,7 +11,7 @@
     </parent>
 	
     <scm>
-        <connection>scm:svn:http://www.easysdi.org/easysdi/branches/4.0.0/java/easysdi/proxy</connection>
+        <connection>scm:svn:http://www.easysdi.org/easysdi/trunk/java/easysdi/proxy</connection>
     </scm>
         
     <properties>
@@ -235,6 +235,10 @@
             <version>6.1.20</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <finalName>Proxy</finalName>
+    </build>
 
     <!--<build>
         <plugins>
