@@ -503,7 +503,7 @@ INSERT INTO `#__sdi_sys_ordertype` VALUES ('3', '3', '1', 'draft');
 
 INSERT INTO `#__sdi_sys_productstate` VALUES ('1', '1', '1', 'available');
 INSERT INTO `#__sdi_sys_productstate` VALUES ('2', '2', '1', 'await');
-INSERT INTO `#__sdi_sys_productstate` VALUES ('3', '1', 'sent');
+INSERT INTO `#__sdi_sys_productstate` VALUES ('3', '3','1', 'sent');
 
 
 INSERT INTO `#__sdi_sys_pricing` VALUES ('1', '1', '1', 'free');

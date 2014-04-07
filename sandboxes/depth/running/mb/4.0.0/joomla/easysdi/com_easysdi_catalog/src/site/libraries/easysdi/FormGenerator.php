@@ -1355,6 +1355,9 @@ class FormGenerator {
 
                 $this->db->setQuery($query);
                 $result = $this->db->loadObjectList();
+                
+                $first = array('id' => '', 'guid' => '', 'name' => '');
+                array_unshift($result, (object) $first);
                 break;
             case EnumChildtype::$ATTRIBUT:
                 switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
