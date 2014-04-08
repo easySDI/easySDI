@@ -54,7 +54,7 @@ class Easysdi_serviceTablephysicalservice_policy extends sdiTable {
                                 $values = array($result->physicalservice_id, $result->policy_id);
 				$query->insert('#__sdi_physicalservice_policy')
                                         ->columns($query->quoteName($columns))
-                                        ->values($query->quote($values));
+                                        ->values(implode(',', $values));
 				$db->setQuery($query);
 					
 				try {

@@ -186,10 +186,10 @@ class WmsWebservice {
 			$query = $db->getQuery(true);
 			if (0 == $num_result) {
                                 $columns = array('geographicfilter','maxx','minx','miny','minimumscale','maximumscale','srssource');
-                                $values = array($raw_GET['geographicfilter'],$raw_GET['maxX'],$raw_GET['maxY'],$raw_GET['minX'],$raw_GET['minY'],$raw_GET['minimumscale'],$raw_GET['maximumscale'],$raw_GET['srs']);
+                                $values = array($db->quote($raw_GET['geographicfilter']),$raw_GET['maxX'],$raw_GET['maxY'],$raw_GET['minX'],$raw_GET['minY'],$raw_GET['minimumscale'],$raw_GET['maximumscale'],$db->quote($raw_GET['srs']));
 				$query->insert('#__sdi_wms_spatialpolicy')
                                         ->columns($db->quoteName($columns))
-                                        ->values($db->quote($values));
+                                        ->values(implode(',',$values));
 			}
 			else {
 				$query->update('#__sdi_wms_spatialpolicy')->set(Array(
@@ -343,10 +343,10 @@ class WmsWebservice {
 					//we save the layer policy
 					$query = $db->getQuery(true);
                                         $columns = array('name','description','physicalservicepolicy_id');
-                                        $values = array($layer->name, $db->escape($layer->description), $physicalservice_policy_id);
+                                        $values = array($query->quote($layer->name), $query->quote($db->escape($layer->description)), $physicalservice_policy_id);
 					$query->insert('#__sdi_wmslayer_policy')
-                                                ->columns($columns)
-                                                ->values($values);
+                                                ->columns($query->quoteName($columns))
+                                                ->values(implode(',',$values));
 					
 					$db->setQuery($query);
 					

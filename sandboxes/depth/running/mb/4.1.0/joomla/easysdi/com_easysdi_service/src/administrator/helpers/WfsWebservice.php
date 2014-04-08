@@ -209,11 +209,11 @@ class WfsWebservice {
 		if (0 == $num_result) {
 			$query = $db->getQuery(true);
                         $columns = array('localgeographicfilter','remotegeographicfilter');
-                        $values = array($raw_GET['localgeographicfilter'], $raw_GET['remotegeographicfilter']);
+                        $values = array($db->quote($raw_GET['localgeographicfilter']), $db->quote($raw_GET['remotegeographicfilter']));
                         
 			$query->insert('#__sdi_wfs_spatialpolicy')
                                 ->columns($db->quoteName($columns))
-                                ->values($db->quote($values));
+                                ->values(implode(',',$values));
 		}
 		else {
 			$query = $db->getQuery(true);
@@ -403,10 +403,10 @@ class WfsWebservice {
 					//we save the layer policy
 					$query = $db->getQuery(true);
                                         $columns = array('name','description','physicalservicepolicy_id'); 
-                                        $values = array($layer->name, $db->escape($layer->description), $physicalservice_policy_id);
+                                        $values = array($db->quote($layer->name), $db->quote($db->escape($layer->description)), $db->quote($physicalservice_policy_id));
 					$query->insert('#__sdi_featuretype_policy')
                                                 ->columns($db->quoteName($columns))
-                                                ->values($db->quote($values));
+                                                ->values(implode(',',$values));
 					
 					$db->setQuery($query);
 					

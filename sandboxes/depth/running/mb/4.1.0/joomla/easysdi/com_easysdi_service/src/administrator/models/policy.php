@@ -552,7 +552,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                 $values = array($spatialPolicy['northBoundLatitude'],$spatialPolicy['westBoundLongitude'],$spatialPolicy['eastBoundLongitude'],$spatialPolicy['southBoundLatitude'],$spatialPolicy['spatialoperatorid']);
                 $query->insert('#__sdi_wmts_spatialpolicy')
                         ->columns($query->quoteName($columns))
-                        ->values($query->quote($values));
+                        ->values(implode(',', $values));
 
                 try {
                     $db->setQuery($query);
@@ -666,7 +666,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                     $values = array($spatialPolicy['northBoundLatitude'], $spatialPolicy['westBoundLongitude'], $spatialPolicy['eastBoundLongitude'], $spatialPolicy['southBoundLatitude'], $spatialPolicy['spatialoperatorid']);
                     $query->insert('#__sdi_wmts_spatialpolicy')
                             ->columns($query->quoteName($columns))
-                            ->values($query->quote($values));
+                            ->values(implode(',', $values));
 
                     try {
                         $db->setQuery($query);
@@ -789,10 +789,10 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                 //we create the spatial policy
                 $query = $db->getQuery(true);
                 $columns = array('maxx', 'maxy', 'minx', 'miny', 'geographicfilter', 'maximumscale', 'minimumscale', 'srssource');
-                $values = array($spatialPolicy['maxx'], $spatialPolicy['maxy'], $spatialPolicy['minx'], $spatialPolicy['miny'], ((!empty($spatialPolicy['geographicfilter']))?$spatialPolicy['geographicfilter']:NULL), $spatialPolicy['maximumscale'], $spatialPolicy['minimumscale'], $spatialPolicy['srssource']);
+                $values = array($spatialPolicy['maxx'], $spatialPolicy['maxy'], $spatialPolicy['minx'], $spatialPolicy['miny'], ((!empty($spatialPolicy['geographicfilter']))?$query->quote($spatialPolicy['geographicfilter']):NULL), $spatialPolicy['maximumscale'], $spatialPolicy['minimumscale'], $query->quote($spatialPolicy['srssource']));
                 $query->insert('#__sdi_wms_spatialpolicy')
                         ->columns($columns)
-                        ->values($values);
+                        ->values(implode(',', $values));
 
                 try {
                     $db->setQuery($query);
@@ -908,10 +908,10 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                     //create a spatial policy
                     $query = $db->getQuery(true);
                     $columns = array('maxx', 'maxy', 'minx', 'miny', 'geographicfilter', 'maximumscale', 'minimumscale', 'srssource');
-                    $values = array($spatialPolicy['maxx'], $spatialPolicy['maxy'], $spatialPolicy['minx'], $spatialPolicy['miny'], ((!empty($spatialPolicy['geographicfilter'])) ? $spatialPolicy['geographicfilter'] : NULL), $spatialPolicy['maximumscale'], $spatialPolicy['minimumscale'], $spatialPolicy['srssource']);
+                    $values = array($spatialPolicy['maxx'], $spatialPolicy['maxy'], $spatialPolicy['minx'], $spatialPolicy['miny'], ((!empty($spatialPolicy['geographicfilter'])) ? $query->quote($spatialPolicy['geographicfilter']) : NULL), $spatialPolicy['maximumscale'], $spatialPolicy['minimumscale'], $query->quote($spatialPolicy['srssource']));
                     $query->insert('#__sdi_wms_spatialpolicy')
                             ->columns($query->quoteName($columns))
-                            ->values($query->quote($values));
+                            ->values(implode(',', $values));
 
                     try {
                         $db->setQuery($query);
@@ -1030,10 +1030,10 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                 //we create the spatial policy
                 $query = $db->getQuery(true);
                 $columns = array('localgeographicfilter', 'remotegeographicfilter');
-                $values = array(((!empty($spatialPolicy['localgeographicfilter'])) ? $spatialPolicy['localgeographicfilter'] : 'null'), ((!empty($spatialPolicy['remotegeographicfilter'])) ?  $spatialPolicy['remotegeographicfilter'] : 'null'));
+                $values = array(((!empty($spatialPolicy['localgeographicfilter'])) ? $query->quote($spatialPolicy['localgeographicfilter']) : null), ((!empty($spatialPolicy['remotegeographicfilter'])) ?  $query->quote($spatialPolicy['remotegeographicfilter']) : null));
                 $query->insert('#__sdi_wfs_spatialpolicy')
                         ->columns($query->quoteName($columns))
-                        ->values($query->quote($values));
+                        ->values(implode(',', $values));
 
                 try {
                     $db->setQuery($query);
@@ -1138,10 +1138,10 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                     //create a spatial policy
                     $query = $db->getQuery(true);
                     $columns = array('localgeographicfilter', 'remotegeographicfilter');
-                    $values = array(((!empty($spatialPolicy['localgeographicfilter'])) ?  $spatialPolicy['localgeographicfilter'] : 'null'), ((!empty($spatialPolicy['remotegeographicfilter'])) ?  $spatialPolicy['remotegeographicfilter'] : 'null'));
+                    $values = array(((!empty($spatialPolicy['localgeographicfilter'])) ?  $query->quote($spatialPolicy['localgeographicfilter']) : null), ((!empty($spatialPolicy['remotegeographicfilter'])) ?  $query->quote($spatialPolicy['remotegeographicfilter']) : null));
                     $query->insert('#__sdi_wfs_spatialpolicy')
                             ->columns($query->quoteName($columns))
-                            ->values($query->quote($values));
+                            ->values(implode(',', $values));
 
                     try {
                         $db->setQuery($query);
@@ -1788,7 +1788,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                     $values = array($layerID, 1, $physicalservice_policy_id);
                     $query->insert('#__sdi_wmtslayer_policy')
                             ->columns($query->quoteName($columns))
-                            ->values($query->quote($values));
+                            ->values(implode(',', $values));
                 } else {
                     $query = $db->getQuery(true);
                     $query->update('#__sdi_wmtslayer_policy')
@@ -1882,7 +1882,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                     $values = array($layerID, 1, $physicalservice_policy_id);
                     $query->insert('#__sdi_wmslayer_policy')
                             ->columns($query->quoteName($columns))
-                            ->values($query->quote($values));
+                            ->values(implode(',', $values));
                 } else {
                     $query = $db->getQuery(true);
                     $query->update('#__sdi_wmslayer_policy')->set(
@@ -1977,7 +1977,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                     $values = array($layerID, 1, $physicalservice_policy_id);
                     $query->insert('#__sdi_featuretype_policy')
                             ->columns($query->quoteName($columns))
-                            ->values($query->quote($values));
+                            ->values(implode(',', $values));
                 } else {
                     $query = $db->getQuery(true);
                     $query->update('#__sdi_featuretype_policy')
@@ -2228,10 +2228,10 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                         if (is_null($wpID)) {
                             $query = $db->getQuery(true);
                             $columns = Array('identifier','physicalservicepolicy_id');
-                            $values = array($layerObj->name, $pspID);
+                            $values = array($query->quote($layerObj->name), $pspID);
                             $query->insert('#__sdi_wmtslayer_policy')
                                     ->columns($query->quoteName($columns))
-                                    ->values($query->quote($values));
+                                    ->values(implode(',', $values));
                             $db->setQuery($query);
                             try {
                                 $db->execute();
@@ -2247,10 +2247,10 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                         if (is_null($tmsID)) {
                             $query = $db->getQuery(true);
                             $columns = array('identifier','wmtslayerpolicy_id','srssource');
-                            $values = array($tmsObj->identifier, $wpID, $tmsObj->srs);
+                            $values = array($query->quote($tmsObj->identifier), $wpID, $query->quote($tmsObj->srs));
                             $query->insert('#__sdi_tilematrixset_policy')
                                     ->columns($query->quoteName($columns))
-                                    ->values($query->quote($values));
+                                    ->values(implode(',', $wmtsObj));
                             $db->setQuery($query);
                             try {
                                 $db->execute();
@@ -2272,10 +2272,10 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                             ))->where('id = ' . (int)$tmID);
                         } else {
                             $columns = Array('tilematrixsetpolicy_id','identifier','tileminrow','tilemaxrow','tilemincol','tilemaxcol');
-                            $values = array($tmsID, $tmObj->identifier, ((isset($tmObj->minTileRow)) ? $tmObj->minTileRow : null), ((isset($tmObj->maxTileRow)) ? $tmObj->maxTileRow : null), ((isset($tmObj->minTileCol)) ? $tmObj->minTileCol : null), ((isset($tmObj->maxTileCol)) ? $tmObj->maxTileCol : null));
+                            $values = array($tmsID, $query->quote($tmObj->identifier), ((isset($tmObj->minTileRow)) ? $tmObj->minTileRow : null), ((isset($tmObj->maxTileRow)) ? $tmObj->maxTileRow : null), ((isset($tmObj->minTileCol)) ? $tmObj->minTileCol : null), ((isset($tmObj->maxTileCol)) ? $tmObj->maxTileCol : null));
                             $query->insert('#__sdi_tilematrix_policy')
                                     ->columns($query->quoteName($columns))
-                                    ->values($query->quote($values));
+                                    ->values(implode(',', $values));
                         }
                         $db->setQuery($query);
                         try {

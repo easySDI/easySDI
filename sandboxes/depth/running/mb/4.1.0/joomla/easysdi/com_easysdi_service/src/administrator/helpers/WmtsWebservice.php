@@ -303,8 +303,8 @@ class WmtsWebservice {
                 $columns = array('identifier', 'spatialpolicy_id', 'physicalservicepolicy_id', 'inheritedspatialpolicy');
                 $values = array($layerID,$spatial_policy_id,$physicalservice_policy_id,0);
                 $query->insert('#__sdi_wmtslayer_policy')
-                        ->columns($columns)
-                        ->values($values);
+                        ->columns($query->quoteName($columns))
+                        ->values(implode(',', $values));
             } else {
                 $query = $db->getQuery(true);
                 if($spatial_policy_id == 'null')
@@ -459,7 +459,7 @@ class WmtsWebservice {
             $values = array($wmtslayerpolicy_id, $tmsObj->identifier, ((empty($maxTmsIdentifier)) ? 1 : 0));
             $query->insert('#__sdi_tilematrixset_policy')
                     ->columns($query->quoteName($columns))
-                    ->values($query->quote($values));
+                    ->values(implode(',', $values));
             $db->setQuery($query);
 
             try {
@@ -478,7 +478,7 @@ class WmtsWebservice {
                 $values = array($tilematrixsetpolicy_id, $tmObj->identifier, $tmObj->anyTile, $tmObj->minTileRow, $tmObj->maxTileRow, $tmObj->minTileCol, $tmObj->maxTileCol);
                 $query->insert('#__sdi_tilematrix_policy')
                       ->columns($query->quoteName($columns))
-                      ->values($query->quote($values));
+                      ->values(implode(',', $values));
                 $db->setQuery($query);
 
                 try {
