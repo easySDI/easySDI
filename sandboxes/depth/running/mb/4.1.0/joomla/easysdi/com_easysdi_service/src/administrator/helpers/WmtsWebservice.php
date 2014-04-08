@@ -257,24 +257,19 @@ class WmtsWebservice {
                 $num_result = $db->getNumRows();
                 $spatial_policy_id = $db->loadResult();
 
+                $wmts_spatialpolicy = new stdClass();
+                $wmts_spatialpolicy->spatialoperator_id = $raw_GET['spatialoperatorid'];
+                $wmts_spatialpolicy->eastboundlongitude = $raw_GET['eastBoundLongitude'];
+                $wmts_spatialpolicy->westboundlongitude = $raw_GET['westBoundLongitude'];
+                $wmts_spatialpolicy->northboundlatitude = $raw_GET['northBoundLatitude'];
+                $wmts_spatialpolicy->southboundlatitude = $raw_GET['southBoundLatitude'];
+                
                 if (0 == $num_result) {
-                    $query = $db->getQuery(true);
-                    $query->insert('#__sdi_wmts_spatialpolicy')
-                          ->columns('spatialoperator_id, eastboundlongitude, westboundlongitude, northboundlatitude, southboundlatitude')
-                          ->values('' . $raw_GET['spatialoperatorid'] . ', ' . $raw_GET['eastBoundLongitude'] . ', ' . $raw_GET['westBoundLongitude'] . ', ' . $raw_GET['northBoundLatitude'] . ', ' . $raw_GET['southBoundLatitude'] . '');
+                    $db->insertObject('#__sdi_wmts_spatialpolicy', $wmts_spatialpolicy);
                 } else {
-                    $query = $db->getQuery(true);
-                    $query->update('#__sdi_wmts_spatialpolicy')
-                          ->set(Array(
-                        'spatialoperator_id = ' . $raw_GET['spatialoperatorid'],
-                        'eastboundlongitude = ' . $raw_GET['eastBoundLongitude'],
-                        'westboundlongitude = ' . $raw_GET['westBoundLongitude'],
-                        'northboundlatitude = ' . $raw_GET['northBoundLatitude'],
-                        'southboundlatitude = ' . $raw_GET['southBoundLatitude'],))
-                          ->where(Array('id = \'' . $spatial_policy_id . '\'',));
+                    $db->updateObject('#__sdi_wmts_spatialpolicy', $wmts_spatialpolicy, $spatial_policy_id);
                 }
-                $db->setQuery($query);
-                $db->execute();
+                
                 if (0 == $num_result) {
                     $spatial_policy_id = $db->insertid();
                 }
@@ -305,11 +300,11 @@ class WmtsWebservice {
                 $physicalservice_policy_id = $db->loadResult();
 
                 $query = $db->getQuery(true);
-                $query->insert('#__sdi_wmtslayer_policy')->columns('
-					identifier, spatialpolicy_id, physicalservicepolicy_id, inheritedspatialpolicy 
-				')->values('
-					\'' . $layerID . '\', \'' . $spatial_policy_id . '\', \'' . $physicalservice_policy_id . '\' , 0
-				');
+                $columns = array('identifier', 'spatialpolicy_id', 'physicalservicepolicy_id', 'inheritedspatialpolicy');
+                $values = array($layerID,$spatial_policy_id,$physicalservice_policy_id,0);
+                $query->insert('#__sdi_wmtslayer_policy')
+                        ->columns($columns)
+                        ->values($values);
             } else {
                 $query = $db->getQuery(true);
                 if($spatial_policy_id == 'null')
@@ -319,14 +314,15 @@ class WmtsWebservice {
                                         'spatialpolicy_id = NULL',
                                         'inheritedspatialpolicy = 1',))
                            ->where(Array(
-                                            'id = \'' . $wmtslayerpolicy_id . '\'',));
+                                            'id = ' . (int)$wmtslayerpolicy_id ,));
                 }
                 else{
-                     $query->update('#__sdi_wmtslayer_policy')->set(Array(
-                    'spatialpolicy_id = \'' . $spatial_policy_id . '\'',
+                     $query->update('#__sdi_wmtslayer_policy')
+                             ->set(Array(
+                    'spatialpolicy_id = ' . (int)$spatial_policy_id,
                     'inheritedspatialpolicy = 0',
                     ))->where(Array(
-                        'id = \'' . $wmtslayerpolicy_id . '\'',
+                        'id = ' . (int)$wmtslayerpolicy_id ,
                     ));
                 }
             }
@@ -443,7 +439,7 @@ class WmtsWebservice {
 
         //flushing the previous Tile Matrix and Tile Matrix Set
         $query = $db->getQuery(true);
-        $query->delete('#__sdi_tilematrixset_policy')->where('wmtslayerpolicy_id = ' . $wmtslayerpolicy_id);
+        $query->delete('#__sdi_tilematrixset_policy')->where('wmtslayerpolicy_id = ' . (int)$wmtslayerpolicy_id);
         $db->setQuery($query);
 
         try {
@@ -459,11 +455,11 @@ class WmtsWebservice {
 
             //save Tile Matrix Set
             $query = $db->getQuery(true);
-            $query->insert('#__sdi_tilematrixset_policy')->columns('
-				wmtslayerpolicy_id, identifier, anytilematrix
-			')->values('
-				\'' . $wmtslayerpolicy_id . '\', \'' . $tmsObj->identifier . '\', ' . ((empty($maxTmsIdentifier)) ? 1 : 0) . '
-			');
+            $columns = array('wmtslayerpolicy_id', 'identifier', 'anytilematrix');
+            $values = array($wmtslayerpolicy_id, $tmsObj->identifier, ((empty($maxTmsIdentifier)) ? 1 : 0));
+            $query->insert('#__sdi_tilematrixset_policy')
+                    ->columns($query->quoteName($columns))
+                    ->values($query->quote($values));
             $db->setQuery($query);
 
             try {
@@ -478,9 +474,11 @@ class WmtsWebservice {
             foreach ($tmsObj->getUpperTileMatrix($maxTmsIdentifier) as $tmObj) {
                 //save Tile Matrix
                 $query = $db->getQuery(true);
+                $columns = array('tilematrixsetpolicy_id', 'identifier', 'anytile', 'tileminrow', 'tilemaxrow', 'tilemincol', 'tilemaxcol');
+                $values = array($tilematrixsetpolicy_id, $tmObj->identifier, $tmObj->anyTile, $tmObj->minTileRow, $tmObj->maxTileRow, $tmObj->minTileCol, $tmObj->maxTileCol);
                 $query->insert('#__sdi_tilematrix_policy')
-                      ->columns('tilematrixsetpolicy_id, identifier, anytile, tileminrow, tilemaxrow, tilemincol, tilemaxcol')
-                      ->values('\'' . $tilematrixsetpolicy_id . '\', \'' . $tmObj->identifier . '\', \'' . $tmObj->anyTile . '\', \'' . $tmObj->minTileRow . '\', \'' . $tmObj->maxTileRow . '\', \'' . $tmObj->minTileCol . '\', \'' . $tmObj->maxTileCol . '\'');
+                      ->columns($query->quoteName($columns))
+                      ->values($query->quote($values));
                 $db->setQuery($query);
 
                 try {
@@ -525,11 +523,12 @@ class WmtsWebservice {
 
         if (is_numeric($result->sp_id) && 0 < $result->sp_id) {
             $query = $db->getQuery(true);
-            $query->update('#__sdi_wmtslayer_policy')->set(Array(
+            $query->update('#__sdi_wmtslayer_policy')
+                    ->set(Array(
                             'spatialpolicy_id = NULL',
                             'inheritedspatialpolicy = 1',
             ))->where(Array(
-                            'spatialpolicy_id = \'' . $result->sp_id . '\'',
+                            'spatialpolicy_id = ' . (int)$result->sp_id ,
             ));
             $db->setQuery($query);
             $db->execute();
@@ -537,7 +536,7 @@ class WmtsWebservice {
            // $db->execute();
 
             $query = $db->getQuery(true);
-            $query->delete('#__sdi_wmts_spatialpolicy')->where('id = ' . $result->sp_id);
+            $query->delete('#__sdi_wmts_spatialpolicy')->where('id = ' . (int)$result->sp_id);
 
             $db->setQuery($query);
 
@@ -552,7 +551,7 @@ class WmtsWebservice {
 
         if (is_numeric($result->wp_id) && 0 < $result->wp_id) {
             $query = $db->getQuery(true);
-            $query->delete('#__sdi_tilematrixset_policy')->where('wmtslayerpolicy_id = ' . $result->wp_id);
+            $query->delete('#__sdi_tilematrixset_policy')->where('wmtslayerpolicy_id = ' . (int)$result->wp_id);
 
             $db->setQuery($query);
 

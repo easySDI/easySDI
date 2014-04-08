@@ -285,10 +285,10 @@ abstract class sdiTable extends JTable {
     private function getUniqueAlias($alias) {
         $query = $this->_db->getQuery(true);
         $query->select('count(*)');
-        $query->from('`' . $this->_tbl . '`');
-        $query->where('alias = "' . $alias . '"');
+        $query->from( $query->quoteName($this->_tbl));
+        $query->where('alias = ' . $query->quote($alias) );
         if ($this->id)
-            $query->where('id <> ' . $this->id);
+            $query->where('id <> ' . (int)$this->id);
         $this->_db->setQuery($query);
 
         // Check for a database error.

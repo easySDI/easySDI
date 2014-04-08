@@ -179,7 +179,7 @@ abstract class sdiModel extends JModelAdmin {
             $query = $db->getQuery(true);
             $query->select('p.organism_id as id');
             $query->from('#__sdi_accessscope p');
-            $query->where('p.entity_guid = "' . $guid . '"');
+            $query->where('p.entity_guid = ' . $query->quote($guid) );
             $db->setQuery($query);
 
             $scope = $db->loadColumn();
@@ -208,7 +208,7 @@ abstract class sdiModel extends JModelAdmin {
             $query = $db->getQuery(true);
             $query->select('p.user_id as id');
             $query->from('#__sdi_accessscope p');
-            $query->where('p.entity_guid = "' . $guid . '"');
+            $query->where('p.entity_guid = ' . $query->quote($guid) );
             $db->setQuery($query);
 
             $scope = $db->loadColumn();
@@ -224,7 +224,7 @@ abstract class sdiModel extends JModelAdmin {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->delete($db->quoteName('#__sdi_accessscope'));
-        $query->where('entity_guid = "' . $guid . '"');
+        $query->where('entity_guid = ' . $query->quote($guid) );
         $db->setQuery($query);
         try {
             $db->execute();

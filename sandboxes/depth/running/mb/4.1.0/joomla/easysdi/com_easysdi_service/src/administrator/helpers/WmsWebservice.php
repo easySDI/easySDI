@@ -185,24 +185,24 @@ class WmsWebservice {
 		
 			$query = $db->getQuery(true);
 			if (0 == $num_result) {
-				$query->insert('#__sdi_wms_spatialpolicy')->columns('
-					geographicfilter, maxx, maxy, minx, miny, minimumscale, maximumscale, srssource
-				')->values('
-					\'' . $raw_GET['geographicfilter'] . '\', ' . $raw_GET['maxX'] . ', ' . $raw_GET['maxY'] . ', ' . $raw_GET['minX'] . ', ' . $raw_GET['minY'] . ', ' . $raw_GET['minimumscale'] . ', ' . $raw_GET['maximumscale'] . ', \'' . $raw_GET['srs'] . '\'
-				');
+                                $columns = array('geographicfilter','maxx','minx','miny','minimumscale','maximumscale','srssource');
+                                $values = array($raw_GET['geographicfilter'],$raw_GET['maxX'],$raw_GET['maxY'],$raw_GET['minX'],$raw_GET['minY'],$raw_GET['minimumscale'],$raw_GET['maximumscale'],$raw_GET['srs']);
+				$query->insert('#__sdi_wms_spatialpolicy')
+                                        ->columns($db->quoteName($columns))
+                                        ->values($db->quote($values));
 			}
 			else {
 				$query->update('#__sdi_wms_spatialpolicy')->set(Array(
-					'geographicfilter = \'' . $raw_GET['geographicfilter'] . '\'',
+					'geographicfilter = ' . $query->quote($raw_GET['geographicfilter']) ,
 					'maxx = ' . $raw_GET['maxX'],
 					'maxy = ' . $raw_GET['maxY'],
 					'minx = ' . $raw_GET['minX'],
 					'miny = ' . $raw_GET['minY'],
 					'minimumscale = ' . $raw_GET['minimumscale'],
 					'maximumscale = ' . $raw_GET['maximumscale'],
-					'srssource = \'' . $raw_GET['srs'] . '\'',
+					'srssource = ' . $query->quote($raw_GET['srs']) ,
 				))->where(Array(
-					'id = \'' . $spatial_policy_id . '\'',
+					'id = ' . (int)$spatial_policy_id ,
 				));
 			}
 			$db->setQuery($query);
@@ -229,10 +229,10 @@ class WmsWebservice {
 			if (0 != $num_result) {//Update the spatialpolicy_id in the wmslayer object
 				$query = $db->getQuery(true);
 				$query->update('#__sdi_wmslayer_policy')->set(Array(
-					'spatialpolicy_id = \'' . $spatial_policy_id . '\'',
+					'spatialpolicy_id = ' . (int)$spatial_policy_id ,
 					'inheritedspatialpolicy = 0',
 				))->where(Array(
-					'id = \'' . $wmslayerpolicy_id . '\'',
+					'id = ' . (int)$wmslayerpolicy_id ,
 				));
 				$db->setQuery($query);
 				$db->execute();
@@ -342,11 +342,11 @@ class WmsWebservice {
 					
 					//we save the layer policy
 					$query = $db->getQuery(true);
-					$query->insert('#__sdi_wmslayer_policy')->columns('
-						name, description, physicalservicepolicy_id
-					')->values('
-						\'' . $layer->name . '\', \'' . $db->escape($layer->description) . '\', \'' . $physicalservice_policy_id . '\'
-					');
+                                        $columns = array('name','description','physicalservicepolicy_id');
+                                        $values = array($layer->name, $db->escape($layer->description), $physicalservice_policy_id);
+					$query->insert('#__sdi_wmslayer_policy')
+                                                ->columns($columns)
+                                                ->values($values);
 					
 					$db->setQuery($query);
 					
@@ -399,7 +399,7 @@ class WmsWebservice {
 						'spatialpolicy_id = NULL',
 						'inheritedspatialpolicy = 1',
 				))->where(Array(
-						'spatialpolicy_id = \'' . $pk . '\'',
+						'spatialpolicy_id = ' . (int)$pk ,
 				));
 				$db->setQuery($query);
 				$db->execute();
@@ -407,7 +407,8 @@ class WmsWebservice {
 // 				$db->execute();
 				
 				$query = $db->getQuery(true);
-				$query->delete('#__sdi_wms_spatialpolicy')->where('id = ' . $pk);
+				$query->delete('#__sdi_wms_spatialpolicy')
+                                        ->where('id = ' . (int)$pk);
 				
 				$db->setQuery($query);
 				$db->execute();

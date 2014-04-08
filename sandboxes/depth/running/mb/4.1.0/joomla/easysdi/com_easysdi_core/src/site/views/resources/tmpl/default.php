@@ -133,8 +133,8 @@ endif;
                                     ->from('#__sdi_version v')
                                     ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
                                     ->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id')
-                                    ->where('v.resource_id = ' . $item->id)
-                                    ->where('m.metadatastate_id = ' . $filter_status)
+                                    ->where('v.resource_id = ' . (int)$item->id)
+                                    ->where('m.metadatastate_id = ' . (int)$filter_status)
                                     ->order('v.name DESC');
                         else :
                             $query = $db->getQuery(true)
@@ -142,7 +142,7 @@ endif;
                                     ->from('#__sdi_version v')
                                     ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
                                     ->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id')
-                                    ->where('v.resource_id = ' . $item->id)
+                                    ->where('v.resource_id = ' . (int)$item->id)
                                     ->order('v.name DESC');
                         endif;
                         $db->setQuery($query);

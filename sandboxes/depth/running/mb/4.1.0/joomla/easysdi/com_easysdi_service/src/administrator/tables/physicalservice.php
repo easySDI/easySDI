@@ -98,7 +98,7 @@ class Easysdi_serviceTablephysicalservice extends sdiTable
 			// Initialise the query.
 			$query = $this->_db->getQuery(true);
 			$query->select('ps.id');
-			$query->from($this->_tbl.'  AS ps ');
+			$query->from($query->quoteName($this->_tbl).'  AS ps ');
 			$query->join('LEFT', '#__sdi_map_physicalservice AS cps ON cps.physicalservice_id=ps.id');
 			$query->where('cps.map_id = ' . (int) $map_id);
 			$query->where('ps.state = 1' );

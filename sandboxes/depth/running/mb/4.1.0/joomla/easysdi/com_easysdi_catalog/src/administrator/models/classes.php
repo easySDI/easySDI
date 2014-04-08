@@ -122,7 +122,7 @@ class Easysdi_catalogModelclasses extends JModelList {
         $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
         
         // Join over the namespace to build the complete iso reference name
-        $query->select('CONCAT(ns.prefix, ":", a.isocode) AS namespace');
+        $query->select($query->concatenate(array('ns.prefix','a.isocode'), ':').' AS namespace');
         $query->join('LEFT', '#__sdi_namespace AS ns ON ns.id=a.namespace_id');
 
         // Filter by published state
@@ -140,7 +140,7 @@ class Easysdi_catalogModelclasses extends JModelList {
                 $query->where('a.id = ' . (int) substr($search, 3));
             } else {
                 $search = $db->Quote('%' . $db->escape($search, true) . '%');
-                $query->where('( a.name LIKE '.$search.' ) OR (CONCAT(ns.prefix, ":", a.isocode) LIKE '.$search.' ) ');
+                $query->where('( a.name LIKE '.$search.' ) OR ('.$query->concatenate(array('ns.prefix','a.isocode'), ':').' LIKE '.$search.' ) ');
             }
         }
 

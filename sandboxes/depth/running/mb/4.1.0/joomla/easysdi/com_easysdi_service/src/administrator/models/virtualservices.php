@@ -117,9 +117,9 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 		$query->from('`#__sdi_virtualservice` AS a');
 		$query->join('LEFT', '#__sdi_sys_serviceconnector AS c ON a.serviceconnector_id = c.id' );
 		if(!empty ($connector))
-			$query->where('c.id = '.$connector);
+			$query->where('c.id = '. $connector);
 		if(!empty ($pk))
-			$query->where('a.id = '.$pk);
+			$query->where('a.id = '. (int)$pk);
  		$query->where('a.state IN (1, 0)');
 		$query->order('a.ordering');
 		try

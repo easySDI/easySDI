@@ -284,7 +284,7 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 $query
                         ->select('group_id')
                         ->from('#__sdi_map_layergroup ')
-                        ->where('map_id= ' . $this->getItem()->get('id'));
+                        ->where('map_id= ' . (int)$this->getItem()->get('id'));
                 $db->setQuery($query);
                 $pks = $db->loadColumn();
             } catch (Exception $e) {
@@ -303,8 +303,8 @@ class Easysdi_mapModelmap extends JModelAdmin {
                     $query = $db->getQuery(true);
                     $query
                             ->delete('#__sdi_map_layergroup')
-                            ->where('map_id= ' . $this->getItem()->get('id'))
-                            ->where('group_id =' . $pk);
+                            ->where('map_id= ' . (int)$this->getItem()->get('id'))
+                            ->where('group_id =' . (int)$pk);
                     $db->setQuery($query);
                     try {
                         // Execute the query in Joomla 3.0.
@@ -322,7 +322,7 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 $query
                         ->select('MAX(ordering)')
                         ->from('#__sdi_map_layergroup ')
-                        ->where('map_id= ' . $this->getItem()->get('id'));
+                        ->where('map_id= ' . (int)$this->getItem()->get('id'));
                 $db->setQuery($query);
                 $ordering = $db->loadResult();
             } catch (Exception $e) {
@@ -360,7 +360,7 @@ class Easysdi_mapModelmap extends JModelAdmin {
             $query
                     ->update($db->quoteName('#__sdi_map_layergroup'))
                     ->set('isbackground=0')
-                    ->where('map_id= ' . $this->getItem()->get('id'));
+                    ->where('map_id= ' . (int)$this->getItem()->get('id'));
             $db->setQuery($query);
             try {
                 $result = $db->execute();
@@ -374,7 +374,7 @@ class Easysdi_mapModelmap extends JModelAdmin {
             $query
                     ->update($db->quoteName('#__sdi_map_layergroup'))
                     ->set('isdefault=0')
-                    ->where('map_id= ' . $this->getItem()->get('id'));
+                    ->where('map_id= ' . (int)$this->getItem()->get('id'));
             $db->setQuery($query);
             try {
                 $result = $db->execute();
@@ -390,8 +390,8 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 $query
                         ->update($db->quoteName('#__sdi_map_layergroup'))
                         ->set('isbackground=1')
-                        ->where('map_id= ' . $this->getItem()->get('id'))
-                        ->where('group_id= ' . $background);
+                        ->where('map_id= ' . (int)$this->getItem()->get('id'))
+                        ->where('group_id= ' . (int)$background);
                 $db->setQuery($query);
                 try {
                     $result = $db->execute();
@@ -407,8 +407,8 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 $query
                         ->update($db->quoteName('#__sdi_map_layergroup'))
                         ->set('isdefault=1')
-                        ->where('map_id= ' . $this->getItem()->get('id'))
-                        ->where('group_id= ' . $default);
+                        ->where('map_id= ' . (int)$this->getItem()->get('id'))
+                        ->where('group_id= ' . (int)$default);
                 $db->setQuery($query);
                 try {
                     $result = $db->execute();

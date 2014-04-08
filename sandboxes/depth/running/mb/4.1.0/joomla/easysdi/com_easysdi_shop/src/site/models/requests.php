@@ -126,7 +126,7 @@ class Easysdi_shopModelRequests extends JModelList {
         
         //And the product minig is manual
         $query->innerjoin('#__sdi_sys_productmining pm ON pm.id = d.productmining_id');
-        $query->where('pm.value = "manual"' );
+        $query->where('pm.value = '. $query->quote('manual') );
 
         $query->group('a.id');
         $query->order('a.created DESC');
@@ -140,7 +140,7 @@ class Easysdi_shopModelRequests extends JModelList {
         $query = $db->getQuery(true)
                 ->select('t.value, t.id ')
                 ->from('#__sdi_sys_ordertype t')
-                ->where('t.value <> "draft"');
+                ->where('t.value <> '.$query->quote('draft'));
         $db->setQuery($query);
         return $db->loadObjectList();
     }

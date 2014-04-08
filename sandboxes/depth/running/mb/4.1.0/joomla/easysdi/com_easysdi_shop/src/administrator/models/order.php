@@ -146,7 +146,7 @@ class Easysdi_shopModelorder extends JModelAdmin
                 ->join('LEFT', '#__sdi_organism AS organism ON organism.id=resource.organism_id')
                 ->group('a.id');
 
-        $query->where('a.id = '.$pk);
+        $query->where('a.id = '. (int)$pk);
 
         $db->setQuery($query);
         $item= $db->loadObject();

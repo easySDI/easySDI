@@ -208,19 +208,21 @@ class WfsWebservice {
 		
 		if (0 == $num_result) {
 			$query = $db->getQuery(true);
-			$query->insert('#__sdi_wfs_spatialpolicy')->columns('
-				localgeographicfilter, remotegeographicfilter
-			')->values('
-				\'' . $raw_GET['localgeographicfilter'] . '\', \'' . $raw_GET['remotegeographicfilter'] . '\'
-			');
+                        $columns = array('localgeographicfilter','remotegeographicfilter');
+                        $values = array($raw_GET['localgeographicfilter'], $raw_GET['remotegeographicfilter']);
+                        
+			$query->insert('#__sdi_wfs_spatialpolicy')
+                                ->columns($db->quoteName($columns))
+                                ->values($db->quote($values));
 		}
 		else {
 			$query = $db->getQuery(true);
+                        
 			$query->update('#__sdi_wfs_spatialpolicy')->set(Array(
-				'localgeographicfilter = \'' . $raw_GET['localgeographicfilter'] . '\'',
-				'remotegeographicfilter = \'' . $raw_GET['remotegeographicfilter'] . '\'',
+				'localgeographicfilter = ' . $db->quote($raw_GET['localgeographicfilter']) ,
+				'remotegeographicfilter = ' . $db->quote($raw_GET['remotegeographicfilter']) ,
 			))->where(Array(
-				'id = \'' . $spatial_policy_id . '\'',
+				'id = ' . $db->quote($spatial_policy_id),
 			));
 		}
 		
@@ -264,10 +266,10 @@ class WfsWebservice {
 		if (0 != $num_result) {
 			$query = $db->getQuery(true);
 			$query->update('#__sdi_featuretype_policy')->set(Array(
-				'spatialpolicy_id = \'' . $spatial_policy_id . '\'',
+				'spatialpolicy_id = ' . (int)$spatial_policy_id ,
 				'inheritedspatialpolicy = 0',
 			))->where(Array(
-				'id = \'' . $featuretypepolicy_id . '\'',
+				'id = ' . (int)$featuretypepolicy_id ,
 			));
 			$db->setQuery($query);
 			
@@ -400,11 +402,11 @@ class WfsWebservice {
 					
 					//we save the layer policy
 					$query = $db->getQuery(true);
-					$query->insert('#__sdi_featuretype_policy')->columns('
-						name, description, physicalservicepolicy_id
-					')->values('
-						\'' . $layer->name . '\', \'' . $db->escape($layer->description) . '\', \'' . $physicalservice_policy_id . '\'
-					');
+                                        $columns = array('name','description','physicalservicepolicy_id'); 
+                                        $values = array($layer->name, $db->escape($layer->description), $physicalservice_policy_id);
+					$query->insert('#__sdi_featuretype_policy')
+                                                ->columns($db->quoteName($columns))
+                                                ->values($db->quote($values));
 					
 					$db->setQuery($query);
 					
@@ -454,16 +456,17 @@ class WfsWebservice {
 			try {
 				//Update spatialspolicy_id on __sdi_featuretype_policy
 				$query = $db->getQuery(true);
-				$query->update('#__sdi_featuretype_policy')->set(Array(
+				$query->update('#__sdi_featuretype_policy')
+                                        ->set(Array(
 					'spatialpolicy_id = NULL',
-					'inheritedspatialpolicy = 1',
-				))->where('spatialpolicy_id = ' . $pk);
+					'inheritedspatialpolicy = 1'))
+                                        ->where('spatialpolicy_id = ' . (int)$pk);
 				$db->setQuery($query);
 				$db->execute();
 				
 				//Delete spatialspolicy_id
 				$query = $db->getQuery(true);
-				$query->delete('#__sdi_wfs_spatialpolicy')->where('id = ' . $pk);
+				$query->delete('#__sdi_wfs_spatialpolicy')->where('id = ' . (int)$pk);
 				$db->setQuery($query);
 				$db->execute();
 			}
@@ -474,7 +477,7 @@ class WfsWebservice {
 			}
 			
 			$query = $db->getQuery(true);
-			$query->delete('#__sdi_includedattribute')->where('featuretypepolicy_id = ' . $pk);
+			$query->delete('#__sdi_includedattribute')->where('featuretypepolicy_id = ' . (int)$pk);
 			
 			$db->setQuery($query);
 			

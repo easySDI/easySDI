@@ -31,8 +31,8 @@ class EText {
 
         $query->from('#__sdi_translation AS t');
         $query->innerJoin('#__sdi_language AS l ON t.language_id = l.id');
-        $query->where('t.element_guid = "' . $guid . '"');
-        $query->where('l.code = "' . $lang->getTag() . '"');
+        $query->where('t.element_guid = ' . $query->quote($guid) );
+        $query->where('l.code = ' . $query->quote($lang->getTag()));
 
         $db->setQuery($query);
         $textI18n = $db->loadObject();

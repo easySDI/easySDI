@@ -217,8 +217,8 @@ class Easysdi_mapModellayer extends sdiModel
 				$query
 				->update($db->quoteName('#__sdi_layer_layergroup'))
 				->set('ordering='.$order)
-				->where('layer_id= '.$pks[$i])
-				->where('group_id= '.$group);
+				->where('layer_id= '. (int)$pks[$i])
+				->where('group_id= '. (int)$group);
 				$db->setQuery($query);
 				try {
 					$result = $db->execute();

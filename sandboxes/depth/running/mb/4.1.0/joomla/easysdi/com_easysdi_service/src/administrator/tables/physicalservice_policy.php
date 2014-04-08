@@ -50,11 +50,11 @@ class Easysdi_serviceTablephysicalservice_policy extends sdiTable {
 		foreach ($resultset as $result) {
 			$query = $db->getQuery(true);
 			if (empty($result->physicalservicepolicy_id)) {
-				$query->insert('#__sdi_physicalservice_policy')->columns('
-					physicalservice_id, policy_id
-				')->values('
-					\'' . $result->physicalservice_id . '\', \'' . $result->policy_id . '\'
-				');
+                                $columns = array('physicalservice_id', 'policy_id');
+                                $values = array($result->physicalservice_id, $result->policy_id);
+				$query->insert('#__sdi_physicalservice_policy')
+                                        ->columns($query->quoteName($columns))
+                                        ->values($query->quote($values));
 				$db->setQuery($query);
 					
 				try {

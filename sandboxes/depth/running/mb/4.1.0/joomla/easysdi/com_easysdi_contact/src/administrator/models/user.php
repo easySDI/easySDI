@@ -291,7 +291,7 @@ class Easysdi_contactModeluser extends JModelAdmin {
         //Delete all rights on resources
         $query = $db->getQuery(true)
                 ->delete('#__sdi_user_role_resource ')
-                ->where('user_id = ' . $this->getItem()->get('id'))
+                ->where('user_id = ' . (int)$this->getItem()->get('id'))
                 ->where('role_id =  ' . (int) $role_id);
          $db->setQuery($query);
          

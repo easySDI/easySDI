@@ -70,10 +70,10 @@ class Easysdi_serviceTablewmtslayerpolicy extends sdiTable {
 						'bbox_maximumx = ' . $layer_data['bboxmaximumx'],
 						'bbox_maximumy = ' . $layer_data['bboxmaximumy'],
 						'geographicfilter = ' . $layer_data['geographicfilter'],
-						'spatialoperator = ' . ((isset($layer_data['spatialoperator']))?$layer_data['spatialoperator']:''),
+						'spatialoperator = ' . $query->quote(((isset($layer_data['spatialoperator']))?$layer_data['spatialoperator']:'')),
 					))->where(Array(
-						'policy_id = ' . $policy_id,
-						'wmtslayer_id = ' . $layer_id
+						'policy_id = ' . (int)$policy_id,
+						'wmtslayer_id = ' . (int)$layer_id
 					));
 					$db->setQuery($query);
 					$db->execute();
@@ -121,7 +121,7 @@ class Easysdi_serviceTablewmtslayerpolicy extends sdiTable {
 					$query = $db->getQuery(true);
 					$query->delete('#__sdi_wmtslayerpolicy')->where(Array(
 						'wmtslayerpolicy_id = ' . $wmtslayerpolicy_id,
-						'tilematrixset_id = ' . $tms_id,
+						'tilematrixset_id = ' . $tms_id
 					));
 					$db->setQuery($query);
 					$db->execute();
