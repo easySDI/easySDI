@@ -54,23 +54,23 @@ abstract class sdiTable extends JTable {
             }
         }
 
+        $query = $this->_db->getQuery(true);
+        $query->update($query->quote($this->_tbl));
+        $query->set('state = '. (int)$state);
+        
+        
         // Build the WHERE clause for the primary keys.
         $where = $k . '=' . implode(' OR ' . $k . '=', $pks);
 
+        $query->where($where);
+        
         // Determine if there is checkin support for the table.
-        if (!property_exists($this, 'checked_out') || !property_exists($this, 'checked_out_time')) {
-            $checkin = '';
-        } else {
-            $checkin = ' AND (checked_out = 0 OR checked_out = ' . (int) $userId . ')';
+        if (property_exists($this, 'checked_out') || property_exists($this, 'checked_out_time')) {
+            $query->where('(checked_out = 0 OR checked_out = ' . (int) $userId . ')');
         }
 
         // Update the publishing state for rows with the given primary keys.
-        $this->_db->setQuery(
-                'UPDATE `' . $this->_tbl . '`' .
-                ' SET `state` = ' . (int) $state .
-                ' WHERE (' . $where . ')' .
-                $checkin
-        );
+        $this->_db->setQuery($query);
         $this->_db->query();
 
         // Check for a database error.

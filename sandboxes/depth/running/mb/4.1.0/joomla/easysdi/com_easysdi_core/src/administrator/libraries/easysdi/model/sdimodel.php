@@ -125,17 +125,25 @@ abstract class sdiModel extends JModelAdmin {
     public static function saveAccessScope($data) {
         //Delete previously saved access
         $db = JFactory::getDbo();
-        $db->setQuery('DELETE FROM #__sdi_accessscope WHERE entity_guid = "' . $data['guid'] . '"');
+        $query = $db->getQuery(true);
+        $query->delete('#__sdi_accessscope');
+        $query->where('entity_guid = '. $query->quote($data['guid']));
+        
+        $db->setQuery($query);
         $db->query();
 
         if (isset($data['organisms'])) {
             $pks = $data['organisms'];
             foreach ($pks as $pk) {
                 try {
-                    $db->setQuery(
-                            'INSERT INTO #__sdi_accessscope (entity_guid, organism_id) ' .
-                            ' VALUES ("' . $data['guid'] . '",' . $pk . ')'
-                    );
+                    $columns = array('entity_guid', 'organism_id');
+                    $values = array($query->quote($data['guid']), $query->quote($pk));
+                    $query = $db->getQuery(true);
+                    $query->insert('#__sdi_accessscope');
+                    $query->columns($query->quoteName($columns));
+                    $query->values(implode(',', $values));
+                    
+                    $db->setQuery($query);
                     $db->execute();
                 } catch (Exception $e) {
                     $this->setError($e->getMessage());
@@ -147,10 +155,14 @@ abstract class sdiModel extends JModelAdmin {
             $pks = $data['users'];
             foreach ($pks as $pk) {
                 try {
-                    $db->setQuery(
-                            'INSERT INTO #__sdi_accessscope (entity_guid, user_id) ' .
-                            ' VALUES ("' . $data['guid'] . '",' . $pk . ')'
-                    );
+                    $columns = array('entity_guid', 'user_id');
+                    $values = array($query->quote($data['guid']), $query->quote($pk));
+                    
+                    $query = $db->getQuery(true);
+                    $query->insert('#__sdi_accessscope');
+                    $query->columns($query->quoteName($columns));
+                    $query->values(implode(',', $values));
+                    $db->setQuery($query);
                     $db->execute();
                 } catch (Exception $e) {
                     $this->setError($e->getMessage());

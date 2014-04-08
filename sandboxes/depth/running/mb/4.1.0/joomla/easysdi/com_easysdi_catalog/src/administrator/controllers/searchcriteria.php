@@ -30,10 +30,13 @@ class Easysdi_catalogControllerSearchcriteria extends JControllerForm {
         $categories = implode(',', $categories);
 
         $db = JFactory::getDbo();
-        $db->setQuery('SELECT id, name
-                        FROM #__sdi_boundary  
-                        WHERE category_id IN (' . $categories . ' )
-                        ORDER BY ordering');
+        $query = $db->getQuery(true);
+        $query->select('id, name');
+        $query->from('#__sdi_boundary');
+        $query->where('category_id IN (' . $categories . ' )');
+        $query->order('ordering');
+        
+        $db->setQuery($query);
 
         $boundaries = $db->loadObjectList();
         echo json_encode($boundaries);

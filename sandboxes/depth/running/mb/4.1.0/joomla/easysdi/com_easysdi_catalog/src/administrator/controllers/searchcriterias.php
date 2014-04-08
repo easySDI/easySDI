@@ -64,7 +64,12 @@ class Easysdi_catalogControllerSearchcriterias extends JControllerAdmin {
         $tab = $input->get('tab', null, 'int');
 
         $db = JFactory::getDbo();
-        $db->setQuery('UPDATE  #__sdi_catalog_searchcriteria SET searchtab_id = ' .$tab . ' WHERE id=' . $id);
+        $query = $db->getQuery(true);
+        $query->update('#__sdi_catalog_searchcriteria');
+        $query->set('searchtab_id = ' . (int)$tab);
+        $query->where('id=' . (int)$id);
+        
+        $db->setQuery($query);
         $db->execute();
         die();
     }

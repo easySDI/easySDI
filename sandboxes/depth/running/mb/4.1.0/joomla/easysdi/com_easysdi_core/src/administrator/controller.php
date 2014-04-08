@@ -28,20 +28,68 @@ class Easysdi_coreController extends JControllerLegacy
 		//Check if others EasySDI components are installed and saved results in UserState
 		$app = JFactory::getApplication();
 		$db = JFactory::getDbo();
-		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = '.$db->quote('com_easysdi_contact'));
+                
+                $query = $db->getQuery(true);
+                $query->select('COUNT(*)');
+                $query->from('#__extensions');
+                $query->where('name = '.$db->quote('com_easysdi_contact'));
+                
+		$db->setQuery($query);
 		$app->setUserState( 'com_easysdi_contact-installed' ,$db->loadResult() == 0 ? false : true);
-                $db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = '.$db->quote('com_easysdi_catalog'));
+                
+                $query = $db->getQuery(true);
+                $query->select('COUNT(*)');
+                $query->from('#__extensions');
+                $query->where('name = '.$db->quote('com_easysdi_catalog'));
+                
+                $db->setQuery($query);
 		$app->setUserState( 'com_easysdi_catalog-installed' ,$db->loadResult() == 0 ? false : true);
-		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = '.$db->quote('com_easysdi_shop'));
+                
+                $query = $db->getQuery(true);
+                $query->select('COUNT(*)');
+                $query->from('#__extensions');
+                $query->where('name = '.$db->quote('com_easysdi_shop'));
+                
+		$db->setQuery($query);
 		$app->setUserState( 'com_easysdi_shop-installed' ,$db->loadResult() == 0 ? false : true);
-		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = '.$db->quote('com_easysdi_service'));
+                
+                $query = $db->getQuery(true);
+                $query->select('COUNT(*)');
+                $query->from('#__extensions');
+                $query->where('name = '.$db->quote('com_easysdi_service'));
+                
+		$db->setQuery($query);
 		$app->setUserState( 'com_easysdi_service-installed' ,$db->loadResult() == 0 ? false : true);
-		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = '.$db->quote('com_easysdi_map'));
+                
+                $query = $db->getQuery(true);
+                $query->select('COUNT(*)');
+                $query->from('#__extensions');
+                $query->where('name = '.$db->quote('com_easysdi_map'));
+                
+		$db->setQuery($query);
 		$app->setUserState( 'com_easysdi_map-installed' ,$db->loadResult() == 0 ? false : true);
-		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = '.$db->quote('com_easysdi_monitor'));
+                
+                $query = $db->getQuery(true);
+                $query->select('COUNT(*)');
+                $query->from('#__extensions');
+                $query->where('name = '.$db->quote('com_easysdi_monitor'));
+                
+		$db->setQuery($query);
 		$app->setUserState( 'com_easysdi_monitor-installed' ,$db->loadResult() == 0 ? false : true);
-                $db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = '.$db->quote('com_easysdi_shop'));
+                
+                $query = $db->getQuery(true);
+                $query->select('COUNT(*)');
+                $query->from('#__extensions');
+                $query->where('name = '.$db->quote('com_easysdi_shop'));
+                
+                $db->setQuery($query);
 		$app->setUserState( 'com_easysdi_shop-installed' ,$db->loadResult() == 0 ? false : true);
+                
+                $query = $db->getQuery(true);
+                $query->select('COUNT(*)');
+                $query->from('#__extensions');
+                $query->where('name = '.$db->quote('com_easysdi_dashboard'));
+                
                 $db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = '.$db->quote('com_easysdi_dashboard'));
 		$app->setUserState( 'com_easysdi_dashboard-installed' ,$db->loadResult() == 0 ? false : true);
 		

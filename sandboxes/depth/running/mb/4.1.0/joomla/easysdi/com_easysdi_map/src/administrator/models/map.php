@@ -108,17 +108,39 @@ class Easysdi_mapModelmap extends JModelAdmin {
 
             if ($item->id) {
                 $db = JFactory::getDbo();
-                $db->setQuery('SELECT group_id FROM #__sdi_map_layergroup WHERE isbackground = 0  AND map_id = ' . $item->id);
+                $query = $db->getQuery(true);
+                $query->select('group_id');
+                $query->from('#__sdi_map_layergroup');
+                $query->where('isbackground = 0');
+                $query->where('map_id = ' . (int)$item->id);
+                
+                $db->setQuery($query);
                 $item->groups = $db->loadColumn();
 
-                $db->setQuery('SELECT group_id FROM #__sdi_map_layergroup WHERE isbackground = 1 AND map_id = ' . $item->id);
+                $query = $db->getQuery(true);
+                $query->select('group_id');
+                $query->from('#__sdi_map_layergroup');
+                $query->where('isbackground = 1');
+                $query->where('map_id = ' . (int)$item->id);
+                $db->setQuery($query);
                 $item->background = $db->loadResult();
 
-                $db->setQuery('SELECT group_id FROM #__sdi_map_layergroup WHERE isdefault = 1 AND map_id = ' . $item->id);
+                $query = $db->getQuery(true);
+                $query->select('group_id');
+                $query->from('#__sdi_map_layergroup');
+                $query->where('isdefault = 1');
+                $query->where('map_id = ' . (int)$item->id);
+                
+                $db->setQuery($query);
                 $item->default = $db->loadResult();
 
                 //Tools activation
-                $db->setQuery('SELECT tool_id, params FROM #__sdi_map_tool WHERE map_id = ' . $item->id);
+                $query = $db->getQuery(true);
+                $query->select('tool_id, params');
+                $query->from('#__sdi_map_tool');
+                $query->where('map_id = ' . $item->id);
+                
+                $db->setQuery($query);
                 $tools = $db->loadObjectList();
                 foreach ($tools as $tool):
                     $n = 'tool' . $tool->tool_id;
@@ -126,7 +148,13 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 endforeach;
                 
                 //Search Catalog
-                $db->setQuery('SELECT params FROM #__sdi_map_tool WHERE tool_id=17 AND map_id = ' . $item->id);
+                $query = $db->getQuery(true);
+                $query->select('params');
+                $query->from('#__sdi_map_tool');
+                $query->where('tool_id=17');
+                $query->where('map_id = ' . (int)$item->id);
+                
+                $db->setQuery($query);
                 $catalogsearch = $db->loadResult();
                 if(!empty($catalogsearch)){
                     $item->tool17 = "1";
@@ -134,7 +162,13 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 }
 
                 //Scale line parameters
-                $db->setQuery('SELECT params FROM #__sdi_map_tool WHERE tool_id=14 AND map_id = ' . $item->id);
+                $query = $db->getQuery(true);
+                $query->select('params');
+                $query->from('#__sdi_map_tool');
+                $query->where('tool_id=14');
+                $query->where('map_id = ' . (int)$item->id);
+                
+                $db->setQuery($query);
                 $scalelineparams = $db->loadResult();
                 if(!empty($scalelineparams)){
                     $params = json_decode($scalelineparams);
@@ -144,7 +178,13 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 }
                 
                 //Wfs locator
-                $db->setQuery('SELECT params FROM #__sdi_map_tool WHERE tool_id=16 AND map_id = ' . $item->id);
+                $query = $db->getQuery(true);
+                $query->select('params');
+                $query->from('#__sdi_map_tool');
+                $query->where('tool_id=16');
+                $query->where('map_id = ' . $item->id);
+                
+                $db->setQuery($query);
                 $wfslocator = $db->loadResult();
                 if(!empty($wfslocator)){
                     $params = json_decode($wfslocator);
@@ -153,8 +193,19 @@ class Easysdi_mapModelmap extends JModelAdmin {
                     }                    
                 }
                 
-                $db->setQuery('SELECT CONCAT ("physical_",physicalservice_id) FROM #__sdi_map_physicalservice WHERE map_id = ' . $item->id . ' 
-								UNION SELECT CONCAT ("virtual_",virtualservice_id) FROM #__sdi_map_virtualservice WHERE map_id = ' . $item->id);
+                $query = $db->getQuery(true);
+                $query->select($query->concatenate(array('"physical_"','physicalservice_id')));
+                $query->from('#__sdi_map_physicalservice');
+                $query->where('map_id = ' . $item->id);
+                
+                $query2 = $db->getQuery(true);
+                $query2->select($query->concatenate(array('"physical_"','physicalservice_id')));
+                $query2->from('#__sdi_map_virtualservice');
+                $query2->where('map_id = ' . $item->id);
+                $query->union($query2);
+                
+                
+                $db->setQuery($query);
                 $item->services = $db->loadColumn();
             }
         }
