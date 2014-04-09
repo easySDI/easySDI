@@ -48,12 +48,14 @@ class WfsWebservice {
 		);
 		
 		$db = JFactory::getDbo();
-		$db->setQuery('
-			SELECT *
-			FROM #__sdi_sys_spatialoperator
-			WHERE state = 1
-			ORDER BY ordering;
-		');
+                
+                $query = $db->getQuery(true);
+                $query->select('*');
+                $query->from('#__sdi_sys_spatialoperator');
+                $query->where('state = 1');
+                $query->order('ordering');
+                
+		$db->setQuery($query);
 		
 		try {
 			$db->execute();
@@ -84,13 +86,13 @@ class WfsWebservice {
 			<div id="div_included_attributes">
 		';
 		
-		$db->setQuery('
-			SELECT ia.name
-			FROM #__sdi_includedattribute ia
-			JOIN #__sdi_featuretype_policy ftp
-			ON ftp.id = ia.featuretypepolicy_id
-			WHERE ftp.name = \'' . $layerID . '\';
-		');
+                $query = $db->getQuery(true);
+                $query->select('ia.name');
+                $query->from('#__sdi_includedattribute ia');
+                $query->innerJoin('#__sdi_featuretype_policy ftp ON ftp.id = ia.featuretypepolicy_id');
+                $query->where('ftp.name = ' . $query->quote($layerID));
+                
+		$db->setQuery($query);
 		$db->execute();
 		$items = $db->loadColumn();
 		$item_count = 0;
@@ -119,11 +121,12 @@ class WfsWebservice {
 	private static function getFeatureTypeSettings ($virtualServiceID, $physicalServiceID, $policyID, $layerID) {
 		$db = JFactory::getDbo();
 		
-		$db->setQuery('
-			SELECT resourceurl
-			FROM #__sdi_physicalservice 
-			WHERE id = ' . $physicalServiceID . ';
-		');
+                $query = $db->getQuery(true);
+                $query->select('resourceurl');
+                $query->from('#__sdi_physicalservice');
+                $query->where('id = ' . (int)$physicalServiceID);
+                
+		$db->setQuery($query);
 		
 		try {
 			$url = $db->loadResult();
@@ -134,17 +137,16 @@ class WfsWebservice {
 			return false;
 		}
 		
-		$db->setQuery('
-			SELECT ftp.*, wsp.*, ftp.id AS featuretypepolicy_id
-			FROM #__sdi_featuretype_policy ftp
-			JOIN #__sdi_physicalservice_policy pp
-			ON ftp.physicalservicepolicy_id = pp.id
-			JOIN #__sdi_wfs_spatialpolicy wsp
-			ON ftp.spatialpolicy_id = wsp.id
-			WHERE pp.physicalservice_id = ' . $physicalServiceID . '
-			AND pp.policy_id = ' . $policyID . '
-			AND ftp.name = \'' . $layerID . '\';
-		');
+                $query = $db->getQuery(true);
+                $query->select('ftp.*, wsp.*, ftp.id AS featuretypepolicy_id');
+                $query->from('#__sdi_featuretype_policy ftp');
+                $query->innerJoin('#__sdi_physicalservice_policy pp ON ftp.physicalservicepolicy_id = pp.id');
+                $query->innerJoin('#__sdi_wfs_spatialpolicy wsp ON ftp.spatialpolicy_id = wsp.id');
+                $query->where('pp.physicalservice_id = ' . (int)$physicalServiceID);
+                $query->where('pp.policy_id = ' . (int)$policyID);
+                $query->where('ftp.name = ' . $query->quote($layerID));
+                
+		$db->setQuery($query);
 		
 		try {
 			$db->execute();
@@ -182,18 +184,17 @@ class WfsWebservice {
 		
 		$db = JFactory::getDbo();
 		
+                $query = $db->getQuery(true);
+                $query->select('sp.id');
+                $query->from('#__sdi_wfs_spatialpolicy sp');
+                $query->innerJoin('#__sdi_featuretype_policy ftp ON sp.id = ftp.spatialpolicy_id');
+                $query->innerJoin('#__sdi_physicalservice_policy psp ON psp.id = ftp.physicalservicepolicy_id');
+                $query->where('psp.physicalservice_id = ' . (int)$physicalServiceID);
+                $query->where('psp.policy_id = ' . (int)$policyID);
+                $query->where('ftp.name = ' . $query->quote($layerID));
+                
 		//save Spatial Policy
-		$db->setQuery('
-			SELECT sp.id
-			FROM #__sdi_wfs_spatialpolicy sp
-			JOIN #__sdi_featuretype_policy ftp
-			ON sp.id = ftp.spatialpolicy_id
-			JOIN #__sdi_physicalservice_policy psp
-			ON psp.id = ftp.physicalservicepolicy_id
-			WHERE psp.physicalservice_id = ' . $physicalServiceID . '
-			AND psp.policy_id = ' . $policyID . '
-			AND ftp.name = \'' . $layerID . '\';
-		');
+		$db->setQuery($query);
 		
 		try {
 			$db->execute();
@@ -241,15 +242,15 @@ class WfsWebservice {
 		}
 		
 		//save Feature Type Policy
-		$db->setQuery('
-			SELECT ftp.id
-			FROM #__sdi_featuretype_policy ftp
-			JOIN #__sdi_physicalservice_policy psp
-			ON psp.id = ftp.physicalservicepolicy_id
-			WHERE psp.physicalservice_id = ' . $physicalServiceID . '
-			AND psp.policy_id = ' . $policyID . '
-			AND ftp.name = \'' . $layerID . '\';
-		');
+                $query = $db->getQuery(true);
+                $query->select('ftp.id');
+                $query->from('#__sdi_featuretype_policy ftp');
+                $query->innerJoin('#__sdi_physicalservice_policy psp ON psp.id = ftp.physicalservicepolicy_id');
+                $query->where('psp.physicalservice_id = ' . (int)$physicalServiceID);
+                $query->where('psp.policy_id = ' . (int)$policyID );
+                $query->where('ftp.name = ' . $query->quote($layerID));
+                
+		$db->setQuery($query);
 		
 		try {
 			$db->execute();
@@ -284,16 +285,23 @@ class WfsWebservice {
 		}
 		
 		//save included attributes
-		$db->setQuery('DELETE FROM #__sdi_includedattribute WHERE featuretypepolicy_id = ' . $featuretypepolicy_id);
+                $query = $db->getQuery(true);
+                $query->delete('#__sdi_includedattribute');
+                $query->where('featuretypepolicy_id = ' . (int)$featuretypepolicy_id);
+                
+		$db->setQuery($query);
 		$db->query();
 		
 		$arr_ex = $raw_GET['included_attribute'];
 		foreach ($arr_ex as $value) {
 			if (!empty($value)) {
-				$db->setQuery('
-					INSERT INTO #__sdi_includedattribute (featuretypepolicy_id, name)
-					VALUES (' . $featuretypepolicy_id . ',\'' . $value . '\');
-				');
+                                $query = $db->getQuery(true);
+                                $columns = array('featuretypepolicy_id', 'name');
+                                $values = array($featuretypepolicy_id, $query->quote($value));
+                                $query->insert('#__sdi_includedattribute');
+                                $query->columns($query->quoteName($columns));
+                                $query->values(implode(',', $values));
+				$db->setQuery($query);
 				try {
 					$db->execute();
 				}
@@ -325,18 +333,16 @@ class WfsWebservice {
 	*/
 	public static function saveAllFeatureTypes($virtualServiceID, $policyID) {
 		$db = JFactory::getDbo();
-		$db->setQuery('
-			SELECT ps.id, ps.resourceurl AS url, psp.id AS psp_id
-			FROM #__sdi_virtualservice vs
-			JOIN #__sdi_virtual_physical vp
-			ON vs.id = vp.virtualservice_id
-			JOIN #__sdi_physicalservice ps
-			ON ps.id = vp.physicalservice_id
-			JOIN #__sdi_physicalservice_policy psp
-			ON ps.id = psp.physicalservice_id
-			WHERE vs.id = ' . $virtualServiceID . '
-			AND psp.policy_id = ' . $policyID . ';
-		');
+                $query = $db->getQuery(true);
+                $query->select('ps.id, ps.resourceurl AS url, psp.id AS psp_id');
+                $query->from('#__sdi_virtualservice vs');
+                $query->innerJoin('#__sdi_virtual_physical vp ON vs.id = vp.virtualservice_id');
+                $query->innerJoin('#__sdi_physicalservice ps ON ps.id = vp.physicalservice_id');
+                $query->innerJoin('#__sdi_physicalservice_policy psp ON ps.id = psp.physicalservice_id');
+                $query->where('vs.id = ' . (int)$virtualServiceID);
+                $query->where('psp.policy_id = ' . (int)$policyID);
+                
+		$db->setQuery($query);
 		
 		try {
 			$db->execute();
@@ -357,15 +363,15 @@ class WfsWebservice {
 			
 			foreach ($layerList as $layer) {
 				//we check if the layer already exists
-				$db->setQuery('
-					SELECT ftp.id
-					FROM #__sdi_featuretype_policy ftp
-					JOIN #__sdi_physicalservice_policy psp
-					ON psp.id = ftp.physicalservicepolicy_id
-					WHERE psp.physicalservice_id = ' . $physicalServiceID . '
-					AND psp.policy_id = ' . $policyID . '
-					AND ftp.name = \'' . $layer->name . '\';
-				');
+                                $query = $db->getQuery(true);
+                                $query->select('ftp.id');
+                                $query->from('#__sdi_featuretype_policy ftp');
+                                $query->innerJoin('#__sdi_physicalservice_policy psp ON psp.id = ftp.physicalservicepolicy_id');
+                                $query->where('psp.physicalservice_id = ' . $physicalServiceID);
+                                $query->where('psp.policy_id = ' . $policyID);
+                                $query->where('ftp.name = ' . $query->quote($layer->name));
+                                
+				$db->setQuery($query);
 				
 				try {
 					$db->execute();
@@ -383,12 +389,13 @@ class WfsWebservice {
 				}
 				else {
 					//we retrieve the physicalservice_policy id to link the layer policy with
-					$db->setQuery('
-						SELECT id
-						FROM #__sdi_physicalservice_policy
-						WHERE physicalservice_id = ' . $physicalServiceID . '
-						AND policy_id = ' . $policyID . ';
-					');
+                                        $query = $db->getQuery('true');
+                                        $query->select('id');
+                                        $query->from('#__sdi_physicalservice_policy');
+                                        $query->where('physicalservice_id = ' . $physicalServiceID);
+                                        $query->where('policy_id = ' . $policyID);
+                                        
+					$db->setQuery($query);
 					
 					try {
 						$db->execute();
@@ -432,15 +439,15 @@ class WfsWebservice {
 		
 		$db = JFactory::getDbo();
 		
-		$db->setQuery('
-			SELECT ftp.spatialpolicy_id AS id
-			FROM #__sdi_featuretype_policy ftp
-			JOIN #__sdi_physicalservice_policy pp
-			ON ftp.physicalservicepolicy_id = pp.id
-			WHERE pp.physicalservice_id = ' . $physicalServiceID . '
-			AND pp.policy_id = ' . $policyID . '
-			AND ftp.name = \'' . $layerID . '\';
-		');
+                $query = $db->getQuery(true);
+                $query->select('ftp.spatialpolicy_id AS id');
+                $query->from('#__sdi_featuretype_policy ftp');
+                $query->innerJoin('#__sdi_physicalservice_policy pp ON ftp.physicalservicepolicy_id = pp.id');
+                $query->where('pp.physicalservice_id = ' . (int)$physicalServiceID);
+                $query->where('pp.policy_id = ' . (int)$policyID);
+                $query->where('ftp.name = ' . $query->quote($layerID));
+                
+		$db->setQuery($query);
 		
 		try {
 			$db->execute();
@@ -502,26 +509,20 @@ class WfsWebservice {
 	private static function getXmlFromCache ($physicalServiceID, $virtualServiceID) {
 		$db = JFactory::getDbo();
 		
-		$db->setQuery('
-			SELECT pssc.capabilities
-			FROM #__sdi_virtualservice vs
-			JOIN #__sdi_virtual_physical vp
-			ON vs.id = vp.virtualservice_id
-			JOIN #__sdi_physicalservice ps
-			ON ps.id = vp.physicalservice_id
-			JOIN #__sdi_physicalservice_servicecompliance pssc
-			ON ps.id = pssc.service_id
-			JOIN #__sdi_virtualservice_servicecompliance vssc
-			ON vs.id = vssc.service_id
-			JOIN #__sdi_sys_servicecompliance sc
-			ON sc.id = vssc.servicecompliance_id
-			JOIN #__sdi_sys_serviceversion sv
-			ON sv.id = sc.serviceversion_id
-			WHERE ps.id = ' . $physicalServiceID . '
-			AND vs.id = ' . $virtualServiceID . '
-			ORDER BY sv.ordering DESC
-			LIMIT 0,1;
-		');
+                $query = $db->getQuery(true);
+                $query->select('pssc.capabilities');
+                $query->from('#__sdi_virtualservice vs');
+                $query->innerJoin('#__sdi_virtual_physical vp ON vs.id = vp.virtualservice_id');
+                $query->innerJoin('#__sdi_physicalservice ps ON ps.id = vp.physicalservice_id');
+                $query->innerJoin('#__sdi_physicalservice_servicecompliance pssc ON ps.id = pssc.service_id');
+                $query->innerJoin('#__sdi_virtualservice_servicecompliance vssc ON vs.id = vssc.service_id');
+                $query->innerJoin('#__sdi_sys_servicecompliance sc ON sc.id = vssc.servicecompliance_id');
+                $query->innerJoin('#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id');
+                $query->where('ps.id = ' . $physicalServiceID);
+                $query->where('vs.id = ' . $virtualServiceID);
+                $query->order('sv.ordering DESC');
+                
+		$db->setQuery($query,0,1);
 		try {
 			$db->execute();
 			return $db->loadResult();

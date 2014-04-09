@@ -87,7 +87,13 @@ class Easysdi_mapModelMap extends JModelForm {
 
                 //Get the unit value
                 $db = JFactory::getDbo();
-                $db->setQuery('SELECT alias FROM #__sdi_sys_unit WHERE id=' . $this->_item->unit_id);
+                
+                $query = $db->getQuery(true);
+                $query->select('alias');
+                $query->from('#__sdi_sys_unit');
+                $query->where('id=' . (int)$this->_item->unit_id);
+                
+                $db->setQuery($query);
                 try {
                     $unit = $db->loadResult();
                     $this->_item->unit = $unit;
@@ -149,7 +155,13 @@ class Easysdi_mapModelMap extends JModelForm {
                 }
                 
                 //Load the scaleline parameters
-                $db->setQuery('SELECT params FROM #__sdi_map_tool WHERE tool_id=14 AND map_id = ' . $id);
+                $query = $db->getQuery(true);
+                $query->select('params');
+                $query->from('#__sdi_map_tool');
+                $query->where('tool_id=14');
+                $query->where('map_id = ' . (int)$id);
+                
+                $db->setQuery($query);
                 try {
                     $scalelineparams = $db->loadResult();
                     if(!empty($scalelineparams)){
@@ -165,7 +177,13 @@ class Easysdi_mapModelMap extends JModelForm {
                 }
                 
                 //Load the wfs locator
-                $db->setQuery('SELECT params FROM #__sdi_map_tool WHERE tool_id=16 AND map_id = ' . $id);
+                $query = $db->getQuery(true);
+                $query->select('params');
+                $query->from('#__sdi_map_tool');
+                $query->where('tool_id=16');
+                $query->where('map_id = ' . (int)$id);
+                
+                $db->setQuery($query);
                 try {
                     $wfslocator = $db->loadResult();
                     if(!empty($wfslocator)){

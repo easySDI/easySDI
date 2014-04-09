@@ -48,12 +48,13 @@ class WmsWebservice {
 		);
 		
 		$db = JFactory::getDbo();
-		$db->setQuery('
-			SELECT *
-			FROM #__sdi_sys_spatialoperator
-			WHERE state = 1
-			ORDER BY ordering;
-		');
+                $query = $db->getQuery(true);
+                $query->select('*');
+                $query->from('#__sdi_sys_spatialoperator');
+                $query->where('state=1');
+                $query->order('ordering');
+                
+		$db->setQuery($query);
 		
 		try {
 			$db->execute();
@@ -98,11 +99,12 @@ class WmsWebservice {
 	private static function getWmsLayerSettings ($virtualServiceID, $physicalServiceID, $policyID, $layerID) {
 		$db = JFactory::getDbo();
 		
-		$db->setQuery('
-			SELECT resourceurl
-			FROM #__sdi_physicalservice 
-			WHERE id = ' . $physicalServiceID . ';
-		');
+                $query = $db->getQuery(true);
+                $query->select('resourceurl');
+                $query->from('#__sdi_physicalservice');
+                $query->where('id = ' . $physicalServiceID);
+                
+		$db->setQuery($query);
 		
 		try {
 			$url = $db->loadResult();
@@ -113,17 +115,16 @@ class WmsWebservice {
 			return false;
 		}
 		
-		$db->setQuery('
-			SELECT wlp.*, wsp.*, wlp.id AS wmslayerpolicy_id
-			FROM #__sdi_wmslayer_policy wlp
-			JOIN #__sdi_physicalservice_policy pp
-			ON wlp.physicalservicepolicy_id = pp.id
-			JOIN #__sdi_wms_spatialpolicy wsp
-			ON wlp.spatialpolicy_id = wsp.id
-			WHERE pp.physicalservice_id = ' . $physicalServiceID . '
-			AND pp.policy_id = ' . $policyID . '
-			AND wlp.name = \'' . $layerID . '\';
-		');
+                $query =$db->getQuery(true);
+                $query->select('wlp.*, wsp.*, wlp.id AS wmslayerpolicy_id');
+                $query->from('#__sdi_wmslayer_policy wlp');
+                $query->innerJoin('#__sdi_physicalservice_policy pp ON wlp.physicalservicepolicy_id = pp.id');
+                $query->innerJoin('#__sdi_wms_spatialpolicy wsp ON wlp.spatialpolicy_id = wsp.id');
+                $query->where('pp.physicalservice_id = ' . (int)$physicalServiceID);
+                $query->where('pp.policy_id = ' . (int)$policyID);
+                $query->where('wlp.name = ' . $query->quote($layerID));
+                
+		$db->setQuery($query);
 		
 		try {
 			$db->execute();
@@ -168,17 +169,16 @@ class WmsWebservice {
 		
 		try{
 			//save Spatial Policy
-			$db->setQuery('
-				SELECT sp.id
-				FROM #__sdi_wms_spatialpolicy sp
-				JOIN #__sdi_wmslayer_policy wlp
-				ON sp.id = wlp.spatialpolicy_id
-				JOIN #__sdi_physicalservice_policy psp
-				ON psp.id = wlp.physicalservicepolicy_id
-				WHERE psp.physicalservice_id = ' . $physicalServiceID . '
-				AND psp.policy_id = ' . $policyID . '
-				AND wlp.name = \'' . $layerID . '\';
-			');
+                        $query = $db->getQuery(true);
+                        $query->select('sp.id');
+                        $query->from('#__sdi_wms_spatialpolicy sp');
+                        $query->innerJoin('#__sdi_wmslayer_policy wlp ON sp.id = wlp.spatialpolicy_id');
+                        $query->innerJoin('#__sdi_physicalservice_policy psp ON psp.id = wlp.physicalservicepolicy_id');
+                        $query->where('psp.physicalservice_id = ' . (int)$physicalServiceID);
+                        $query->where('psp.policy_id = ' . (int)$policyID);
+                        $query->where('wlp.name = ' . $query->quote($layerID));
+                        
+			$db->setQuery($query);
 			$db->execute();
 			$num_result = $db->getNumRows();
 			$spatial_policy_id = $db->loadResult();
@@ -212,15 +212,15 @@ class WmsWebservice {
 			}
 		
 			//save Wms Layer Policy
-			$db->setQuery('
-				SELECT wlp.id
-				FROM #__sdi_wmslayer_policy wlp
-				JOIN #__sdi_physicalservice_policy psp
-				ON psp.id = wlp.physicalservicepolicy_id
-				WHERE psp.physicalservice_id = ' . $physicalServiceID . '
-				AND psp.policy_id = ' . $policyID . '
-				AND wlp.name = \'' . $layerID . '\';
-			');
+                        $query = $db->getQuery(true);
+                        $query->select('wlp.id');
+                        $query->from('#__sdi_wmslayer_policy wlp');
+                        $query->innerJoin('#__sdi_physicalservice_policy psp ON psp.id = wlp.physicalservicepolicy_id');
+                        $query->where('psp.physicalservice_id = ' . $physicalServiceID);
+                        $query->where('psp.policy_id = ' . $policyID);
+                        $query->where('wlp.name = ' . $query->quote($layerID));
+                        
+			$db->setQuery($query);
 			$db->execute();
 			$num_result = $db->getNumRows();
 			$wmslayerpolicy_id = $db->loadResult();
@@ -265,18 +265,16 @@ class WmsWebservice {
 	*/
 	public static function saveAllLayers($virtualServiceID, $policyID) {
 		$db = JFactory::getDbo();
-		$db->setQuery('
-			SELECT ps.id, ps.resourceurl AS url, psp.id AS psp_id
-			FROM #__sdi_virtualservice vs
-			JOIN #__sdi_virtual_physical vp
-			ON vs.id = vp.virtualservice_id
-			JOIN #__sdi_physicalservice ps
-			ON ps.id = vp.physicalservice_id
-			JOIN #__sdi_physicalservice_policy psp
-			ON ps.id = psp.physicalservice_id
-			WHERE vs.id = ' . $virtualServiceID . '
-			AND psp.policy_id = ' . $policyID . ';
-		');
+                $query = $db->getQuery(true);
+                $query->select('ps.id, ps.resourceurl AS url, psp.id AS psp_id');
+                $query->from('#__sdi_virtualservice vs');
+                $query->innerJoin('#__sdi_virtual_physical vp ON vs.id = vp.virtualservice_id');
+                $query->innerJoin('#__sdi_physicalservice ps ON ps.id = vp.physicalservice_id');
+                $query->innerJoin('#__sdi_physicalservice_policy psp ON ps.id = psp.physicalservice_id');
+                $query->where('vs.id = ' . (int)$virtualServiceID);
+                $query->where('psp.policy_id = ' . (int)$policyID);
+                
+		$db->setQuery($query);
 		
 		try {
 			$db->execute();
@@ -297,15 +295,15 @@ class WmsWebservice {
 			
 			foreach ($layerList as $layer) {
 				//we check if the layer already exists
-				$db->setQuery('
-					SELECT wlp.id
-					FROM #__sdi_wmslayer_policy wlp
-					JOIN #__sdi_physicalservice_policy psp
-					ON psp.id = wlp.physicalservicepolicy_id
-					WHERE psp.physicalservice_id = ' . $physicalServiceID . '
-					AND psp.policy_id = ' . $policyID . '
-					AND wlp.name = \'' . $layer->name . '\';
-				');
+                                $query = $db->getQuery(true);
+                                $query->select('wlp.id');
+                                $query->from('#__sdi_wmslayer_policy wlp');
+                                $query->innerJoin('#__sdi_physicalservice_policy psp ON psp.id = wlp.physicalservicepolicy_id');
+                                $query->where('psp.physicalservice_id = ' . (int)$physicalServiceID);
+                                $query->where('psp.policy_id = ' . (int)$policyID);
+                                $query->where('wlp.name = \'' . $query->quote($layer->name));
+                            
+				$db->setQuery($query);
 				
 				try {
 					$db->execute();
@@ -323,12 +321,13 @@ class WmsWebservice {
 				}
 				else {
 					//we retrieve the physicalservice_policy id to link the layer policy with
-					$db->setQuery('
-						SELECT id
-						FROM #__sdi_physicalservice_policy
-						WHERE physicalservice_id = ' . $physicalServiceID . '
-						AND policy_id = ' . $policyID . ';
-					');
+                                        $query = $db->getQuery(true);
+                                        $query->select('id');
+                                        $query->from('#__sdi_physicalservice_policy');
+                                        $query->where('physicalservice_id = ' . $physicalServiceID);
+                                        $query->where('policy_id = ' . $policyID);
+                                        
+					$db->setQuery($query);
 					
 					try {
 						$db->execute();
@@ -372,15 +371,15 @@ class WmsWebservice {
 		
 		$db = JFactory::getDbo();
 		
-		$db->setQuery('
-			SELECT wp.spatialpolicy_id
-			FROM #__sdi_wmslayer_policy wp
-			JOIN #__sdi_physicalservice_policy pp
-			ON wp.physicalservicepolicy_id = pp.id
-			WHERE pp.physicalservice_id = ' . $physicalServiceID . '
-			AND pp.policy_id = ' . $policyID . '
-			AND wp.name = \'' . $layerID . '\';
-		');
+                $query = $db->getQuery(true);
+                $query->select('wp.spatialpolicy_id');
+                $query->from('#__sdi_wmslayer_policy wp');
+                $query->innerJoin('#__sdi_physicalservice_policy pp ON wp.physicalservicepolicy_id = pp.id');
+                $query->where('pp.physicalservice_id = ' . (int)$physicalServiceID);
+                $query->where('pp.policy_id = ' . (int)$policyID);
+                $query->where('wp.name = ' . $query->quote($layerID));
+                
+		$db->setQuery($query);
 
 		try {
 			$db->execute();
@@ -426,26 +425,20 @@ class WmsWebservice {
 	private static function getXmlFromCache ($physicalServiceID, $virtualServiceID) {
 		$db = JFactory::getDbo();
 		
-		$db->setQuery('
-			SELECT pssc.capabilities
-			FROM #__sdi_virtualservice vs
-			JOIN #__sdi_virtual_physical vp
-			ON vs.id = vp.virtualservice_id
-			JOIN #__sdi_physicalservice ps
-			ON ps.id = vp.physicalservice_id
-			JOIN #__sdi_physicalservice_servicecompliance pssc
-			ON ps.id = pssc.service_id
-			JOIN #__sdi_virtualservice_servicecompliance vssc
-			ON vs.id = vssc.service_id
-			JOIN #__sdi_sys_servicecompliance sc
-			ON sc.id = vssc.servicecompliance_id
-			JOIN #__sdi_sys_serviceversion sv
-			ON sv.id = sc.serviceversion_id
-			WHERE ps.id = ' . $physicalServiceID . '
-			AND vs.id = ' . $virtualServiceID . '
-			ORDER BY sv.ordering DESC
-			LIMIT 0,1;
-		');
+                $query = $db->getQuery(true);
+                $query->select('pssc.capabilities');
+                $query->from('#__sdi_virtualservice vs');
+                $query->innerJoin('#__sdi_virtual_physical vp ON vs.id = vp.virtualservice_id');
+                $query->innerJoin('#__sdi_physicalservice ps ON ps.id = vp.physicalservice_id');
+                $query->innerJoin('#__sdi_physicalservice_servicecompliance pssc ON ps.id = pssc.service_id');
+                $query->innerJoin('#__sdi_virtualservice_servicecompliance vssc ON vs.id = vssc.service_id');
+                $query->innerJoin('#__sdi_sys_servicecompliance sc ON sc.id = vssc.servicecompliance_id');
+                $query->innerJoin('#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id');
+                $query->where('ps.id = ' . $physicalServiceID);
+                $query->where('vs.id = ' . $virtualServiceID);
+                $query->order('sv.ordering DESC');
+                
+		$db->setQuery($query,0,1);
 		try {
 			$db->execute();
 			return $db->loadResult();
