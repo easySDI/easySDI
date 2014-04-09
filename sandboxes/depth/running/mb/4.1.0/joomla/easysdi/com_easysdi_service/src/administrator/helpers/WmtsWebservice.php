@@ -381,11 +381,12 @@ class WmtsWebservice {
             $spatialOperators[$result->id] = $result->value;
         }
 
-        $db->setQuery('
-			SELECT resourceurl
-			FROM #__sdi_physicalservice
-			WHERE id = ' . $physicalServiceID . ';
-		');
+        $query = $db->getQuery(true);
+        $query->select('resourceurl');
+        $query->from('#__sdi_physicalservice');
+        $query->where('id = ' . (int)$physicalServiceID);
+        
+        $db->setQuery($query);
 
         try {
             $db->execute();
@@ -503,17 +504,16 @@ class WmtsWebservice {
 
         $db = JFactory::getDbo();
 
-        $db->setQuery('
-			SELECT wp.id AS wp_id, sp.id AS sp_id
-			FROM #__sdi_wmtslayer_policy wp
-			JOIN #__sdi_physicalservice_policy pp
-			ON wp.physicalservicepolicy_id = pp.id
-			LEFT JOIN #__sdi_wmts_spatialpolicy sp
-			ON wp.spatialpolicy_id = sp.id
-			WHERE pp.physicalservice_id = ' . $physicalServiceID . '
-			AND pp.policy_id = ' . $policyID . '
-			AND wp.identifier = \'' . $layerID . '\';
-		');
+        $query = $db->getQuery(true);
+        $query->select('wp.id AS wp_id, sp.id AS sp_id');
+        $query->from('#__sdi_wmtslayer_policy wp');
+        $query->innerJoin('#__sdi_physicalservice_policy pp ON wp.physicalservicepolicy_id = pp.id');
+        $query->leftJoin('#__sdi_wmts_spatialpolicy sp ON wp.spatialpolicy_id = sp.id');
+        $query->where('pp.physicalservice_id = ' . (int)$physicalServiceID);
+        $query->where('pp.policy_id = ' . (int)$policyID);
+        $query->where('wp.identifier = ' . $query->quote($layerID));
+        
+        $db->setQuery($query);
 
         try {
             $db->execute();
@@ -571,26 +571,20 @@ class WmtsWebservice {
     private static function getXmlFromCache($physicalServiceID, $virtualServiceID) {
         $db = JFactory::getDbo();
 
-        $db->setQuery('
-			SELECT pssc.capabilities
-			FROM #__sdi_virtualservice vs
-			JOIN #__sdi_virtual_physical vp
-			ON vs.id = vp.virtualservice_id
-			JOIN #__sdi_physicalservice ps
-			ON ps.id = vp.physicalservice_id
-			JOIN #__sdi_physicalservice_servicecompliance pssc
-			ON ps.id = pssc.service_id
-			JOIN #__sdi_virtualservice_servicecompliance vssc
-			ON vs.id = vssc.service_id
-			JOIN #__sdi_sys_servicecompliance sc
-			ON sc.id = vssc.servicecompliance_id
-			JOIN #__sdi_sys_serviceversion sv
-			ON sv.id = sc.serviceversion_id
-			WHERE ps.id = ' . $physicalServiceID . '
-			AND vs.id = ' . $virtualServiceID . '
-			ORDER BY sv.ordering DESC
-			LIMIT 0,1;
-		');
+        $query = $db->getQuery(true);
+        $query->select('pssc.capabilities');
+        $query->from('#__sdi_virtualservice vs');
+        $query->innerJoin('#__sdi_virtual_physical vp ON vs.id = vp.virtualservice_id');
+        $query->innerJoin('#__sdi_physicalservice ps ON ps.id = vp.physicalservice_id');
+        $query->innerJoin('#__sdi_physicalservice_servicecompliance pssc ON ps.id = pssc.service_id');
+        $query->innerJoin('#__sdi_virtualservice_servicecompliance vssc ON vs.id = vssc.service_id');
+        $query->innerJoin('#__sdi_sys_servicecompliance sc ON sc.id = vssc.servicecompliance_id');
+        $query->innerJoin('#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id');
+        $query->where('ps.id = ' . $physicalServiceID);
+        $query->where('vs.id = ' . $virtualServiceID);
+        $query->order('sv.ordering DESC');
+        
+        $db->setQuery($query,0,1);
         try {
             $db->execute();
             return $db->loadResult();

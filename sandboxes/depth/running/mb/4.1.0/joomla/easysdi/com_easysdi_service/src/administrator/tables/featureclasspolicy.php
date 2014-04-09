@@ -37,6 +37,7 @@ class Easysdi_serviceTablefeatureclasspolicy extends sdiTable {
 		
 		foreach ($modif as $id => $value) {
 			$db = JFactory::getDbo();
+                        $query = $db->getQuery(true);
 			$db->setQuery('
 				SELECT COUNT(*) FROM #__sdi_featureclasspolicy WHERE featureclass_id = ' . $id . '
 				AND policy_id = ' . $src['id'] . ';
