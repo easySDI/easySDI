@@ -107,7 +107,7 @@ class Easysdi_shopModelorder extends JModelAdmin
                         'list.select', 'a.*'
                 )
         );
-        $query->from('`#__sdi_order` AS a');
+        $query->from('#__sdi_order AS a');
 
 
         // Join over the users for the checked out user.
@@ -139,7 +139,7 @@ class Easysdi_shopModelorder extends JModelAdmin
         ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion ON order_diffusion.order_id =a.id')
         ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id');*/
 
-        $query->select("GROUP_CONCAT(CONCAT(diffusion.name , ' (',organism.name,')') SEPARATOR '<br/>".PHP_EOL."') AS products")
+        $query->select($query->concatenate(array('diffusion.name', $query->quote(' ('), 'organism.name' , $query->quote(')') )) . ' as product')
                 ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion ON order_diffusion.order_id =a.id')
                 ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id')
                 ->join('LEFT', '#__sdi_resource AS resource ON resource.id=diffusion.version_id')
@@ -149,9 +149,16 @@ class Easysdi_shopModelorder extends JModelAdmin
         $query->where('a.id = '. (int)$pk);
 
         $db->setQuery($query);
-        $item= $db->loadObject();
-
-		return $item;
+        $items= $db->loadObjectList();
+        
+        $products = array();
+        foreach ($items as $item) {
+            $products[] = $item->product;
+        }
+        
+        $item->products = implode('</br>', $products);
+	
+        return $item;
 	}
 
 	/**
