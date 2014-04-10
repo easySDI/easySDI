@@ -53,12 +53,13 @@ class Easysdi_serviceTablewmtslayerpolicy extends sdiTable {
 				if (isset($layer_data['enabled'])) {
 					$enabled = ('on' == $layer_data['enabled'])?1:0;
 				}
-				$db->setQuery('
-					SELECT id
-					FROM #__sdi_wmtslayerpolicy
-					WHERE policy_id = ' . $policy_id . '
-					AND wmtslayer_id = ' . $layer_id . ';
-				');
+                                $query = $db->getQuery(true);
+                                $query->select('id');
+                                $query->from('#__sdi_wmtslayerpolicy');
+                                $query->where('policy_id = ' . (int)$policy_id);
+                                $query->where('wmtslayer_id = ' . (int)$layer_id);
+                                
+				$db->setQuery($query);
 				$db->execute();
 				$query = $db->getQuery(true);
 				if (0 != $db->getNumRows()) {
@@ -94,11 +95,12 @@ class Easysdi_serviceTablewmtslayerpolicy extends sdiTable {
 				var_dump((String) $query);
 				
 				foreach ($layer_data['tilematrixpolicy'] as $tms_id => $tm_id) {
-					$db->setQuery('
-						SELECT identifier
-						FROM #__sdi_tilematrix
-						WHERE id = ' . $tm_id . ';
-					');
+                                        $query = $db->getQuery(true);
+                                        $query->select('identifier');
+                                        $query->from('#__sdi_tilematrix');
+                                        $query->where('id = ' . (int)$tm_id);
+                                        
+					$db->setQuery($query);
 					$db->execute();
 					$tm_identifier = $db->loadResult();
 					var_dump($tm_id);
@@ -119,7 +121,8 @@ class Easysdi_serviceTablewmtslayerpolicy extends sdiTable {
 					}
 					
 					$query = $db->getQuery(true);
-					$query->delete('#__sdi_wmtslayerpolicy')->where(Array(
+					$query->delete('#__sdi_wmtslayerpolicy')
+                                                ->where(Array(
 						'wmtslayerpolicy_id = ' . $wmtslayerpolicy_id,
 						'tilematrixset_id = ' . $tms_id
 					));
@@ -142,12 +145,13 @@ class Easysdi_serviceTablewmtslayerpolicy extends sdiTable {
 	 */
 	public function getByIDs ($wmtslayer_id, $policy_id) {
 		$db = JFactory::getDbo();
-		$db->setQuery('
-			SELECT *
-			FROM #__sdi_wmtslayerpolicy
-			WHERE wmtslayer_id = ' . $wmtslayer_id . '
-			AND policy_id = ' . $policy_id . ';
-		');
+                $query = $db->getQuery(true);
+                $query->select('*');
+                $query->from('#__sdi_wmtslayerpolicy');
+                $query->where('wmtslayer_id = ' . (int)$wmtslayer_id);
+                $query->where('policy_id = ' . (int)$policy_id);
+                
+		$db->setQuery($query);
 		
 		try {
 			$resultSet = $db->loadObject();
