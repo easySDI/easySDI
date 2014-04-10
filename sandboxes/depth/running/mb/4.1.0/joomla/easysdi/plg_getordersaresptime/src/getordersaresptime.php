@@ -18,14 +18,23 @@ class PlgEasysdi_admin_infoGetordersaresptime extends JPlugin {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         /*TODO*/
-        $query->select('AVG(TIME_TO_SEC(TIMEDIFF(completed,sent))) as sec');
+        $query->select('completed,sent');
         $query->from('#__sdi_order');
         $query->where('orderstate_id < 4 ');
         $db->setQuery($query);
         $rows = $db->loadObjectList();
-        //Convert the stdClass object in an array
-        $values = get_object_vars($rows[0]);
-        $values = $values['sec'];
+        
+        $diffs = array();
+        foreach ($rows as $row) {
+            $timeFirst = strtotime($row->sent);
+            $timeSecond = strtotime($row->completed);
+            $diff = $timeSecond - $timeFirst;
+            if(!empty($timeSecond)){
+                $diffs[] = $timeSecond - $timeFirst;
+            }
+        }
+        
+        $values = array_sum($diffs) / count($diffs);
         if(is_null($values)){
                 $val = '--';
                 $txt = '';
