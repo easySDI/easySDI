@@ -102,6 +102,7 @@ class Easysdi_mapModelVisualization extends JModelForm {
     }
 
     public function getAuthorizedLayers($visualization_id) {
+        $db = JFactory::getDbo();
         $sdiUser = sdiFactory::getSdiUser();
 
         $cls = '(ml.accessscope_id = 1 OR ((ml.accessscope_id = 3) AND (' . (int)$sdiUser->id . ' IN (select a.user_id from #__sdi_accessscope a where a.entity_guid = ml.guid)))';
@@ -118,9 +119,9 @@ class Easysdi_mapModelVisualization extends JModelForm {
         endif;
         
         //Exclude layers from de Bing, Google et OSM
-        $exclusionbgo = 'ml.id NOT IN (select ml.id from #__sdi_maplayer ml, #__sdi_physicalservice as ps WHERE ml.service_id = ps.id AND ml.service_id = ps.id and ml.servicetype = "physical" and serviceconnector_id IN (12,13,14))';
+        $exclusionbgo = 'ml.id NOT IN (select ml.id from #__sdi_maplayer ml, #__sdi_physicalservice as ps WHERE ml.service_id = ps.id AND ml.service_id = ps.id and ml.servicetype = '. $db->quote('physical') .' and serviceconnector_id IN (12,13,14))';
 
-        $db = JFactory::getDbo();
+        
         $query = $db->getQuery(true)
                 ->select('*')
                 ->from('#__sdi_maplayer ml')
