@@ -35,7 +35,7 @@ class sdiPropertyValue {
                     ->from('#__sdi_translation t')
                     ->innerJoin('#__sdi_propertyvalue p ON p.guid = t.element_guid')
                     ->where('p.id = ' . (int)$this->id)
-                    ->where('t.language_id = (SELECT l.id FROM #__sdi_language l WHERE l.code = ' . $query->quote($lang->getTag()) . ')');
+                    ->where('t.language_id = (SELECT l.id FROM #__sdi_language l WHERE l.code = ' . $db->quote($lang->getTag()) . ')');
 
             $db->setQuery($query);
             $item = $db->loadObject();

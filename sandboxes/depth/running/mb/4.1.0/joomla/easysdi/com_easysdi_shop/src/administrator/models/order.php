@@ -156,7 +156,7 @@ class Easysdi_shopModelorder extends JModelAdmin
             $products[] = $item->product;
         }
         
-        $item->products = implode('</br>', $products);
+        $item->products = implode('</br>'.PHP_EOL, $products);
 	
         return $item;
 	}

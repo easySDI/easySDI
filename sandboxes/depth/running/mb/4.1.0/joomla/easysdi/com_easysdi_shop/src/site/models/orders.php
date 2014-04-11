@@ -160,7 +160,7 @@ class Easysdi_shopModelOrders extends JModelList {
         $query = $db->getQuery(true)
                 ->select('t.value, t.id ')
                 ->from('#__sdi_sys_ordertype t')
-                ->where('t.value <> '.$query->quote('draft'));
+                ->where('t.value <> '.$db->quote('draft'));
         $db->setQuery($query);
         return $db->loadObjectList();
     }

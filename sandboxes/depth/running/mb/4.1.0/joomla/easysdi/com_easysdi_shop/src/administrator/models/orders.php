@@ -150,7 +150,7 @@ class Easysdi_shopModelorders extends JModelList {
         ->join('LEFT', '#__sdi_sys_ordertype AS ordertype ON ordertype.id = a.ordertype_id');
 
         // Join over the diffusion field 'products'
-        $query->select("GROUP_CONCAT(diffusion.name SEPARATOR '<br/>".PHP_EOL."') AS products")
+        $query->select("diffusion.name AS products")
         ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion ON order_diffusion.order_id =a.id')
         ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id')
         ->group('a.id');
@@ -162,12 +162,6 @@ class Easysdi_shopModelorders extends JModelList {
         ->join('LEFT', '#__sdi_resource AS resource ON resource.id=diffusion.version_id')
         ->join('LEFT', '#__sdi_organism AS organism ON organism.id=resource.organism_id')
         ->group('a.id');*/
-
-
-
-
-
-
 
     // Filter by published state
     $published = $this->getState('filter.state');
