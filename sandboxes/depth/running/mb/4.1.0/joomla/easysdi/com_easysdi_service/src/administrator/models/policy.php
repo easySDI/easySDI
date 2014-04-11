@@ -293,6 +293,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                 $query->innerJoin('#__sdi_physicalservice_policy psp ON p.id = psp.policy_id');
                 $query->innerJoin('#__sdi_wmtslayer_policy wlp ON psp.id = wlp.physicalservicepolicy_id');
                 $query->leftJoin('#__sdi_tilematrixset_policy tmsp ON tmsp.wmtslayerpolicy_id = wlp.id');
+                $query->leftJoin('#__sdi_tilematrix_policy tmp ON tmp.tilematrixsetpolicy_id = tmsp.id');
                 $query->where('p.id = ' . $pk);
                 $query->where('psp.physicalservice_id = ' . $ps->id);
                 $query->group('wlp.identifier');
@@ -2086,6 +2087,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
      *
      */
     private function cacheXMLCapabilities($xml, $physicalServiceID, $virtualServiceID) {
+        $xml = trim(preg_replace('/\n/', ' ', $xml));
+        
         $db = $this->getDbo();
 
         $query = $db->getQuery(true);
@@ -2312,7 +2315,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                             $values = array($query->quote($tmsObj->identifier), $wpID, $query->quote($tmsObj->srs));
                             $query->insert('#__sdi_tilematrixset_policy')
                                     ->columns($query->quoteName($columns))
-                                    ->values(implode(',', $wmtsObj));
+                                    ->values(implode(',', $values));
                             $db->setQuery($query);
                             try {
                                 $db->execute();
@@ -2326,18 +2329,18 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
 
                         $query = $db->getQuery(true);
                         if (isset($tmID) && is_numeric($tmID)) {
-                            $query->update('#__sdi_tilematrix_policy')->set(Array(
-                                'tileminrow = ' . ((isset($tmObj->minTileRow)) ? $tmObj->minTileRow : '\'null\''),
-                                'tilemaxrow = ' . ((isset($tmObj->maxTileRow)) ? $tmObj->maxTileRow : '\'null\''),
-                                'tilemincol = ' . ((isset($tmObj->minTileCol)) ? $tmObj->minTileCol : '\'null\''),
-                                'tilemaxcol = ' . ((isset($tmObj->maxTileCol)) ? $tmObj->maxTileCol : '\'null\''),
-                            ))->where('id = ' . (int)$tmID);
+                            $query->update('#__sdi_tilematrix_policy')
+                                    ->set('tileminrow = ' . ((isset($tmObj->minTileRow)) ? $tmObj->minTileRow : 'null'))
+                                    ->set('tilemaxrow = ' . ((isset($tmObj->maxTileRow)) ? $tmObj->maxTileRow : 'null'))
+                                    ->set('tilemincol = ' . ((isset($tmObj->minTileCol)) ? $tmObj->minTileCol : 'null'))
+                                    ->set('tilemaxcol = ' . ((isset($tmObj->maxTileCol)) ? $tmObj->maxTileCol : 'null'))
+                             ->where('id = ' . (int)$tmID);
                         } else {
-                            $columns = Array('tilematrixsetpolicy_id','identifier','tileminrow','tilemaxrow','tilemincol','tilemaxcol');
-                            $values = array($tmsID, $query->quote($tmObj->identifier), ((isset($tmObj->minTileRow)) ? $tmObj->minTileRow : null), ((isset($tmObj->maxTileRow)) ? $tmObj->maxTileRow : null), ((isset($tmObj->minTileCol)) ? $tmObj->minTileCol : null), ((isset($tmObj->maxTileCol)) ? $tmObj->maxTileCol : null));
+                            $columns = array('tilematrixsetpolicy_id','identifier','tileminrow','tilemaxrow','tilemincol','tilemaxcol');
+                            $values = array($tmsID, $query->quote($tmObj->identifier), ((isset($tmObj->minTileRow)) ? $tmObj->minTileRow : 'null'), ((isset($tmObj->maxTileRow)) ? $tmObj->maxTileRow : 'null'), ((isset($tmObj->minTileCol)) ? $tmObj->minTileCol : 'null'), ((isset($tmObj->maxTileCol)) ? $tmObj->maxTileCol : 'null'));
                             $query->insert('#__sdi_tilematrix_policy')
                                     ->columns($query->quoteName($columns))
-                                    ->values(implode(',', $values));
+                                    ->values(implode(',',$values));
                         }
                         $db->setQuery($query);
                         try {

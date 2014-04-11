@@ -460,7 +460,7 @@ class WmtsWebservice {
             //save Tile Matrix Set
             $query = $db->getQuery(true);
             $columns = array('wmtslayerpolicy_id', 'identifier', 'anytilematrix');
-            $values = array($wmtslayerpolicy_id, $tmsObj->identifier, ((empty($maxTmsIdentifier)) ? 1 : 0));
+            $values = array($wmtslayerpolicy_id, $query->quote($tmsObj->identifier), ((empty($maxTmsIdentifier)) ? 1 : 0));
             $query->insert('#__sdi_tilematrixset_policy')
                     ->columns($query->quoteName($columns))
                     ->values(implode(',', $values));

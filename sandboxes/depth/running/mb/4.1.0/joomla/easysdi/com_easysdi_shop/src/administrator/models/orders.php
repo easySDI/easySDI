@@ -150,7 +150,7 @@ class Easysdi_shopModelorders extends JModelList {
         ->join('LEFT', '#__sdi_sys_ordertype AS ordertype ON ordertype.id = a.ordertype_id');
 
         // Join over the diffusion field 'products'
-        $query->select("diffusion.name AS products")
+        $query->select("diffusion.name AS product")
         ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion ON order_diffusion.order_id =a.id')
         ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id')
         ->group('a.id');
@@ -368,7 +368,22 @@ class Easysdi_shopModelorders extends JModelList {
     public function getItems() {
         $items = parent::getItems();
 
-        return $items;
+        $products = array();
+        
+        foreach ($items as $item) {
+            $item->products_array = array();
+            $products[$item->id] = $item;
+        }
+        
+        foreach ($items as $item) {
+            $products[$item->id]->products_array[] = $item->product;
+        }
+        
+        foreach ($products as $product) {
+            $product->products = implode('</br>'.PHP_EOL, $product->products_array);
+        }
+        
+        return $products;
     }
 
 

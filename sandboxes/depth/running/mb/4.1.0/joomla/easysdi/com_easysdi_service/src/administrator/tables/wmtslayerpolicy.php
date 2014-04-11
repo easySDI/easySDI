@@ -103,8 +103,6 @@ class Easysdi_serviceTablewmtslayerpolicy extends sdiTable {
 					$db->setQuery($query);
 					$db->execute();
 					$tm_identifier = $db->loadResult();
-					var_dump($tm_id);
-					var_dump($tm_identifier);
 					
 					//TODO : translate the query in multi DB language
 					$db->setQuery('
