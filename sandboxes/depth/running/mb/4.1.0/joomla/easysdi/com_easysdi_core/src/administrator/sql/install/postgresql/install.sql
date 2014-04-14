@@ -28,7 +28,7 @@ CREATE TABLE alerts (
     "ID_NEW_STATUS" bigint NOT NULL,
     "CAUSE" text NOT NULL,
     "ALERT_DATE_TIME" timestamp(3) without time zone NOT NULL,
-    "EXPOSE_RSS" bit(1) NOT NULL,
+    "EXPOSE_RSS" integer NOT NULL,
     "RESPONSE_DELAY" double precision NOT NULL,
     "HTTP_CODE" bigint,
     "IMAGE" bytea,
@@ -111,20 +111,20 @@ CREATE TABLE jobs (
     "ID_HTTP_METHOD" bigint NOT NULL,
     "TEST_INTERVAL" bigint NOT NULL,
     "TIMEOUT" bigint NOT NULL,
-    "BUSINESS_ERRORS" bit(1) DEFAULT B'0'::"bit" NOT NULL,
+    "BUSINESS_ERRORS" integer DEFAULT 0 NOT NULL,
     "SLA_START_TIME" timestamp(3) without time zone NOT NULL,
     "LOGIN" character varying(45),
     "PASSWORD" character varying(45),
-    "IS_PUBLIC" bit(1) DEFAULT B'0'::"bit" NOT NULL,
-    "IS_AUTOMATIC" bit(1) DEFAULT B'0'::"bit" NOT NULL,
-    "ALLOWS_REALTIME" bit(1) DEFAULT B'0'::"bit" NOT NULL,
-    "TRIGGERS_ALERTS" bit(1) DEFAULT B'0'::"bit" NOT NULL,
+    "IS_PUBLIC" integer DEFAULT 0 NOT NULL,
+    "IS_AUTOMATIC" integer DEFAULT 0 NOT NULL,
+    "ALLOWS_REALTIME" integer DEFAULT 0 NOT NULL,
+    "TRIGGERS_ALERTS" integer DEFAULT 0 NOT NULL,
     "ID_STATUS" bigint DEFAULT 4::bigint NOT NULL,
-    "HTTP_ERRORS" bit(1) DEFAULT B'0'::"bit" NOT NULL,
+    "HTTP_ERRORS" integer DEFAULT 0 NOT NULL,
     "SLA_END_TIME" timestamp(3) without time zone NOT NULL,
     "STATUS_UPDATE_TIME" timestamp without time zone DEFAULT '2014-04-02 15:33:38.886'::timestamp without time zone NOT NULL,
-    "SAVE_RESPONSE" bit(1) DEFAULT B'0'::"bit" NOT NULL,
-    "RUN_SIMULTANEOUS" bit(1) DEFAULT B'0'::"bit" NOT NULL
+    "SAVE_RESPONSE" integer DEFAULT 0 NOT NULL,
+    "RUN_SIMULTANEOUS" integer DEFAULT 0 NOT NULL
 );
 
 
@@ -164,7 +164,7 @@ CREATE TABLE jos_sdi_address (
     mobile character varying(20),
     fax character varying(20),
     email character varying(100),
-    sameascontact bit(1) DEFAULT B'1'::"bit" NOT NULL
+    sameascontact integer DEFAULT 1 NOT NULL
 );
 
 CREATE TABLE jos_sdi_allowedoperation (
@@ -182,7 +182,7 @@ CREATE TABLE jos_sdi_application (
     modified_by integer NOT NULL,
     modified timestamp(3) without time zone NOT NULL,
     ordering integer NOT NULL,
-    state bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
     checked_out integer NOT NULL,
     checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
@@ -308,7 +308,7 @@ CREATE TABLE jos_sdi_catalog (
     name character varying(255) NOT NULL,
     description character varying(500),
     xsldirectory character varying(255),
-    oninitrunsearch bit(1) DEFAULT B'0'::"bit",
+    oninitrunsearch integer DEFAULT 0,
     cswfilter text,
     access integer DEFAULT 1 NOT NULL,
     asset_id bigint DEFAULT 0::bigint NOT NULL
@@ -318,7 +318,7 @@ CREATE TABLE jos_sdi_catalog (
 CREATE TABLE jos_sdi_catalog_resourcetype (
     id serial NOT NULL ,
     ordering integer,
-    state bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
     catalog_id bigint NOT NULL,
     resourcetype_id bigint NOT NULL
 );
@@ -345,7 +345,7 @@ CREATE TABLE jos_sdi_catalog_searchcriteria (
 CREATE TABLE jos_sdi_catalog_searchsort (
     id serial NOT NULL ,
     ordering integer,
-    state bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
     catalog_id bigint NOT NULL,
     language_id bigint NOT NULL,
     ogcsearchsorting character varying(255)
@@ -366,8 +366,8 @@ CREATE TABLE jos_sdi_class (
     checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
     description character varying(500),
-    issystem bit(1) DEFAULT B'0'::"bit" NOT NULL,
-    isrootclass bit(1) DEFAULT B'0'::"bit" NOT NULL,
+    issystem integer DEFAULT 0 NOT NULL,
+    isrootclass integer DEFAULT 0 NOT NULL,
     namespace_id bigint NOT NULL,
     isocode character varying(255),
     stereotype_id bigint,
@@ -399,7 +399,7 @@ CREATE TABLE jos_sdi_diffusion (
     modified_by integer,
     modified timestamp(3) without time zone NOT NULL,
     ordering integer DEFAULT 1 NOT NULL,
-    state bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
     checked_out integer DEFAULT 0 NOT NULL,
     checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     version_id bigint NOT NULL,
@@ -415,9 +415,9 @@ CREATE TABLE jos_sdi_diffusion (
     file character varying(255),
     fileurl character varying(500),
     perimeter_id bigint,
-    hasdownload bit(1) DEFAULT B'0'::"bit" NOT NULL,
-    hasextraction bit(1) DEFAULT B'0'::"bit" NOT NULL,
-    restrictedperimeter bit(1) DEFAULT B'0'::"bit" NOT NULL,
+    hasdownload integer DEFAULT 0 NOT NULL,
+    hasextraction integer DEFAULT 0 NOT NULL,
+    restrictedperimeter integer DEFAULT 0 NOT NULL,
     access integer DEFAULT 1 NOT NULL,
     asset_id bigint DEFAULT 0::bigint NOT NULL
 );
@@ -433,7 +433,7 @@ CREATE TABLE jos_sdi_diffusion_download (
 CREATE TABLE jos_sdi_diffusion_notifieduser (
     id serial NOT NULL ,
     ordering integer NOT NULL,
-    state bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
     diffusion_id bigint NOT NULL,
     user_id bigint NOT NULL
 );
@@ -441,17 +441,17 @@ CREATE TABLE jos_sdi_diffusion_notifieduser (
 CREATE TABLE jos_sdi_diffusion_perimeter (
     id serial NOT NULL ,
     ordering integer NOT NULL,
-    state bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
     diffusion_id bigint NOT NULL,
     perimeter_id bigint NOT NULL,
-    buffer bit(1) NOT NULL
+    buffer integer NOT NULL
 );
 
 
 CREATE TABLE jos_sdi_diffusion_propertyvalue (
     id serial NOT NULL ,
     ordering integer NOT NULL,
-    state bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
     diffusion_id bigint NOT NULL,
     propertyvalue_id bigint NOT NULL
 );
@@ -467,8 +467,8 @@ CREATE TABLE jos_sdi_featuretype_policy (
     id serial NOT NULL ,
     name character varying(255) NOT NULL,
     description character varying(255),
-    enabled bit(1) DEFAULT B'1'::"bit" NOT NULL,
-    inheritedspatialpolicy bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    enabled integer DEFAULT 1 NOT NULL,
+    inheritedspatialpolicy integer DEFAULT 1 NOT NULL,
     spatialpolicy_id bigint,
     physicalservicepolicy_id bigint NOT NULL
 );
@@ -558,7 +558,7 @@ CREATE TABLE jos_sdi_layergroup (
     checked_out integer DEFAULT 0 NOT NULL,
     checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
-    isdefaultopen bit(1) DEFAULT B'0'::"bit" NOT NULL,
+    isdefaultopen integer DEFAULT 0 NOT NULL,
     access integer DEFAULT 1 NOT NULL,
     asset_id integer
 );
@@ -597,8 +597,8 @@ CREATE TABLE jos_sdi_map_layergroup (
     id serial NOT NULL ,
     map_id bigint NOT NULL,
     group_id bigint NOT NULL,
-    isbackground bit(1) DEFAULT B'0'::"bit" NOT NULL,
-    isdefault bit(1) DEFAULT B'0'::"bit" NOT NULL,
+    isbackground integer DEFAULT 0 NOT NULL,
+    isdefault integer DEFAULT 0 NOT NULL,
     ordering integer
 );
 
@@ -640,10 +640,10 @@ CREATE TABLE jos_sdi_maplayer (
     service_id bigint,
     servicetype character varying(10),
     layername character varying(255) NOT NULL,
-    istiled bit(1) DEFAULT B'0'::"bit" NOT NULL,
-    isdefaultvisible bit(1) DEFAULT B'0'::"bit" NOT NULL,
+    istiled integer DEFAULT 0 NOT NULL,
+    isdefaultvisible integer DEFAULT 0 NOT NULL,
     opacity numeric(3,2) DEFAULT 1.00 NOT NULL,
-    "asOL" bit(1) DEFAULT B'0'::"bit" NOT NULL,
+    "asOL" integer DEFAULT 0 NOT NULL,
     "asOLstyle" text,
     "asOLmatrixset" text,
     "asOLoptions" text,
@@ -671,7 +671,7 @@ CREATE TABLE jos_sdi_metadata (
     archived timestamp(3) without time zone,
     lastsynchronization timestamp(3) without time zone,
     synchronized_by bigint,
-    notification bit(1) DEFAULT B'0'::"bit" NOT NULL,
+    notification integer DEFAULT 0 NOT NULL,
     version_id bigint NOT NULL,
     access integer DEFAULT 1 NOT NULL,
     asset_id bigint DEFAULT 0::bigint NOT NULL
@@ -696,13 +696,13 @@ CREATE TABLE jos_sdi_namespace (
     modified_by integer,
     modified timestamp(3) without time zone,
     ordering integer DEFAULT 1 NOT NULL,
-    state bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
     checked_out integer DEFAULT 0 NOT NULL,
     checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
     prefix character varying(10) NOT NULL,
     uri character varying(255) NOT NULL,
-    system bit(1) DEFAULT B'0'::"bit" NOT NULL,
+    system integer DEFAULT 0 NOT NULL,
     access integer DEFAULT 1 NOT NULL,
     asset_id bigint DEFAULT 0::bigint NOT NULL
 );
@@ -717,7 +717,7 @@ CREATE TABLE jos_sdi_order (
     modified_by integer,
     modified timestamp(3) without time zone NOT NULL,
     ordering integer DEFAULT 1 NOT NULL,
-    state bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
     checked_out integer DEFAULT 0 NOT NULL,
     checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
@@ -802,7 +802,7 @@ CREATE TABLE jos_sdi_perimeter (
     modified_by integer,
     modified timestamp(3) without time zone,
     ordering integer DEFAULT 1 NOT NULL,
-    state bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
     checked_out integer DEFAULT 0 NOT NULL,
     checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
@@ -869,8 +869,8 @@ CREATE TABLE jos_sdi_physicalservice_policy (
     id serial NOT NULL ,
     prefix character varying(255),
     namespace character varying(255),
-    anyitem bit(1) DEFAULT B'1'::"bit" NOT NULL,
-    inheritedspatialpolicy bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    anyitem integer DEFAULT 1 NOT NULL,
+    inheritedspatialpolicy integer DEFAULT 1 NOT NULL,
     csw_spatialpolicy_id bigint,
     wms_spatialpolicy_id bigint,
     wmts_spatialpolicy_id bigint,
@@ -903,8 +903,8 @@ CREATE TABLE jos_sdi_policy (
     alias character varying(20) NOT NULL,
     allowfrom date DEFAULT '0002-11-30'::date NOT NULL,
     allowto date DEFAULT '0002-11-30'::date NOT NULL,
-    anyoperation bit(1) DEFAULT B'1'::"bit" NOT NULL,
-    anyservice bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    anyoperation integer DEFAULT 1 NOT NULL,
+    anyservice integer DEFAULT 1 NOT NULL,
     accessscope_id bigint DEFAULT 1::bigint NOT NULL,
     virtualservice_id bigint NOT NULL,
     csw_spatialpolicy_id bigint,
@@ -912,13 +912,13 @@ CREATE TABLE jos_sdi_policy (
     wmts_spatialpolicy_id bigint,
     wfs_spatialpolicy_id bigint,
     csw_version_id bigint DEFAULT 1::bigint NOT NULL,
-    csw_anyattribute bit(1) DEFAULT B'1'::"bit" NOT NULL,
-    csw_anycontext bit(1) DEFAULT B'1'::"bit" NOT NULL,
-    csw_anystate bit(1) DEFAULT B'1'::"bit" NOT NULL,
-    csw_anyvisibility bit(1) DEFAULT B'1'::"bit" NOT NULL,
-    csw_includeharvested bit(1) DEFAULT B'1'::"bit" NOT NULL,
-    csw_anyresourcetype bit(1) DEFAULT B'1'::"bit" NOT NULL,
-    csw_accessscope_id bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    csw_anyattribute integer DEFAULT 1 NOT NULL,
+    csw_anycontext integer DEFAULT 1 NOT NULL,
+    csw_anystate integer DEFAULT 1 NOT NULL,
+    csw_anyvisibility integer DEFAULT 1 NOT NULL,
+    csw_includeharvested integer DEFAULT 1 NOT NULL,
+    csw_anyresourcetype integer DEFAULT 1 NOT NULL,
+    csw_accessscope_id integer DEFAULT 1 NOT NULL,
     wms_minimumwidth character varying(255),
     wms_minimumheight character varying(255),
     wms_maximumwidth character varying(255),
@@ -996,7 +996,7 @@ CREATE TABLE jos_sdi_property (
     modified_by integer,
     modified timestamp(3) without time zone NOT NULL,
     ordering integer DEFAULT 1 NOT NULL,
-    state bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
     checked_out integer DEFAULT 0 NOT NULL,
     checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
@@ -1018,7 +1018,7 @@ CREATE TABLE jos_sdi_propertyvalue (
     modified_by integer,
     modified timestamp(3) without time zone NOT NULL,
     ordering integer DEFAULT 1 NOT NULL,
-    state bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
     checked_out integer DEFAULT 0 NOT NULL,
     checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
@@ -1053,7 +1053,7 @@ CREATE TABLE jos_sdi_relation (
     namespace_id bigint,
     isocode character varying(255),
     classassociation_id bigint,
-    issearchfilter bit(1) DEFAULT B'0'::"bit" NOT NULL,
+    issearchfilter integer DEFAULT 0 NOT NULL,
     relationscope_id bigint,
     editorrelationscope_id bigint,
     childresourcetype_id bigint,
@@ -1066,7 +1066,7 @@ CREATE TABLE jos_sdi_relation (
 CREATE TABLE jos_sdi_relation_catalog (
     id serial NOT NULL ,
     ordering integer,
-    state bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
     relation_id bigint NOT NULL,
     catalog_id bigint NOT NULL
 );
@@ -1084,7 +1084,7 @@ CREATE TABLE jos_sdi_relation_defaultvalue (
 CREATE TABLE jos_sdi_relation_profile (
     id serial NOT NULL ,
     ordering integer,
-    state bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
     relation_id bigint NOT NULL,
     profile_id bigint NOT NULL
 );
@@ -1099,7 +1099,7 @@ CREATE TABLE jos_sdi_resource (
     modified_by integer,
     modified timestamp(3) without time zone,
     ordering integer DEFAULT 1 NOT NULL,
-    state bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
     checked_out integer,
     checked_out_time timestamp(3) without time zone,
     name character varying(255) NOT NULL,
@@ -1121,18 +1121,18 @@ CREATE TABLE jos_sdi_resourcetype (
     modified_by integer NOT NULL,
     modified timestamp(3) without time zone NOT NULL,
     ordering integer NOT NULL,
-    state bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
     checked_out integer NOT NULL,
     checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
     description character varying(500) NOT NULL,
     logo character varying(255) NOT NULL,
-    meta bit(1) NOT NULL,
-    diffusion bit(1) NOT NULL,
-    view bit(1) NOT NULL,
-    monitoring bit(1) NOT NULL,
-    predefined bit(1) NOT NULL,
-    versioning bit(1) NOT NULL,
+    meta integer NOT NULL,
+    diffusion integer NOT NULL,
+    view integer NOT NULL,
+    monitoring integer NOT NULL,
+    predefined integer NOT NULL,
+    versioning integer NOT NULL,
     profile_id bigint NOT NULL,
     fragmentnamespace_id bigint,
     fragment character varying(255),
@@ -1151,7 +1151,7 @@ CREATE TABLE jos_sdi_resourcetypelink (
     modified_by integer NOT NULL,
     modified timestamp(3) without time zone NOT NULL,
     ordering integer NOT NULL,
-    state bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
     checked_out integer NOT NULL,
     checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     parent_id bigint NOT NULL,
@@ -1162,8 +1162,8 @@ CREATE TABLE jos_sdi_resourcetypelink (
     childboundupper integer NOT NULL,
     class_id bigint,
     attribute_id bigint,
-    viralversioning bit(1) NOT NULL,
-    inheritance bit(1) NOT NULL,
+    viralversioning integer NOT NULL,
+    inheritance integer NOT NULL,
     asset_id bigint DEFAULT 0::bigint NOT NULL
 );
 
@@ -1188,7 +1188,7 @@ CREATE TABLE jos_sdi_searchcriteria (
     checked_out integer DEFAULT 0 NOT NULL,
     checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
-    issystem bit(1) DEFAULT B'0'::"bit" NOT NULL,
+    issystem integer DEFAULT 0 NOT NULL,
     criteriatype_id bigint NOT NULL,
     rendertype_id bigint,
     relation_id bigint,
@@ -1200,7 +1200,7 @@ CREATE TABLE jos_sdi_searchcriteria (
 CREATE TABLE jos_sdi_searchcriteriafilter (
     id serial NOT NULL ,
     ordering integer,
-    state bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
     searchcriteria_id bigint NOT NULL,
     language_id bigint NOT NULL,
     ogcsearchfilter character varying(255) NOT NULL
@@ -1338,7 +1338,7 @@ CREATE TABLE jos_sdi_sys_operationcompliance (
     state integer DEFAULT 1 NOT NULL,
     servicecompliance_id bigint NOT NULL,
     serviceoperation_id bigint NOT NULL,
-    implemented bit(1) DEFAULT B'0'::"bit" NOT NULL
+    implemented integer DEFAULT 0 NOT NULL
 );
 
 
@@ -1470,10 +1470,10 @@ CREATE TABLE jos_sdi_sys_servicecompliance (
     state integer DEFAULT 1 NOT NULL,
     serviceconnector_id bigint NOT NULL,
     serviceversion_id bigint NOT NULL,
-    implemented bit(1) DEFAULT B'0'::"bit" NOT NULL,
-    relayable bit(1) DEFAULT B'0'::"bit" NOT NULL,
-    aggregatable bit(1) DEFAULT B'0'::"bit" NOT NULL,
-    harvestable bit(1) DEFAULT B'0'::"bit" NOT NULL
+    implemented integer DEFAULT 0 NOT NULL,
+    relayable integer DEFAULT 0 NOT NULL,
+    aggregatable integer DEFAULT 0 NOT NULL,
+    harvestable integer DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE jos_sdi_sys_servicecon_authenticationcon (
@@ -1631,7 +1631,7 @@ CREATE TABLE jos_sdi_tilematrix_policy (
     tilemaxrow integer,
     tilemincol integer,
     tilemaxcol integer,
-    anytile bit(1) DEFAULT B'1'::"bit" NOT NULL
+    anytile integer DEFAULT 1 NOT NULL
 );
 
 
@@ -1644,7 +1644,7 @@ CREATE TABLE jos_sdi_tilematrixset_policy (
     id serial NOT NULL ,
     wmtslayerpolicy_id bigint NOT NULL,
     identifier character varying(255) NOT NULL,
-    anytilematrix bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    anytilematrix integer DEFAULT 1 NOT NULL,
     srssource character varying(255)
 );
 
@@ -1691,7 +1691,7 @@ CREATE TABLE jos_sdi_user (
     checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     user_id integer NOT NULL,
     description text,
-    notificationrequesttreatment bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    notificationrequesttreatment integer DEFAULT 1 NOT NULL,
     catid integer,
     params character varying(1024),
     access integer DEFAULT 1 NOT NULL,
@@ -1739,7 +1739,7 @@ CREATE TABLE jos_sdi_version (
     modified_by integer,
     modified timestamp(3) without time zone,
     ordering integer NOT NULL,
-    state bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
     checked_out integer DEFAULT 0 NOT NULL,
     checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
@@ -1790,16 +1790,16 @@ CREATE TABLE jos_sdi_virtualmetadata (
     modified_by integer,
     modified timestamp(3) without time zone,
     title character varying(255),
-    inheritedtitle bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    inheritedtitle integer DEFAULT 1 NOT NULL,
     summary character varying(255),
-    inheritedsummary bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    inheritedsummary integer DEFAULT 1 NOT NULL,
     keyword character varying(255),
-    inheritedkeyword bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    inheritedkeyword integer DEFAULT 1 NOT NULL,
     fee character varying(255),
-    inheritedfee bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    inheritedfee integer DEFAULT 1 NOT NULL,
     accessconstraint character varying(255),
-    inheritedaccessconstraint bit(1) DEFAULT B'1'::"bit" NOT NULL,
-    inheritedcontact bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    inheritedaccessconstraint integer DEFAULT 1 NOT NULL,
+    inheritedcontact integer DEFAULT 1 NOT NULL,
     contactorganization character varying(255),
     contactname character varying(255),
     contactposition character varying(255),
@@ -1842,10 +1842,10 @@ CREATE TABLE jos_sdi_virtualservice (
     url character varying(500),
     serviceconnector_id bigint NOT NULL,
     reflectedurl character varying(255),
-    reflectedmetadata bit(1) DEFAULT B'0'::"bit" NOT NULL,
+    reflectedmetadata integer DEFAULT 0 NOT NULL,
     xsltfilename character varying(255),
     logpath character varying(255) NOT NULL,
-    harvester bit(1) DEFAULT B'0'::"bit" NOT NULL,
+    harvester integer DEFAULT 0 NOT NULL,
     maximumrecords integer,
     identifiersearchattribute character varying(255),
     proxytype_id bigint NOT NULL,
@@ -1947,8 +1947,8 @@ CREATE TABLE jos_sdi_wmslayer_policy (
     id serial NOT NULL ,
     name character varying(255) NOT NULL,
     description character varying(255) NOT NULL,
-    enabled bit(1) DEFAULT B'0'::"bit" NOT NULL,
-    inheritedspatialpolicy bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    enabled integer DEFAULT 0 NOT NULL,
+    inheritedspatialpolicy integer DEFAULT 1 NOT NULL,
     spatialpolicy_id bigint,
     physicalservicepolicy_id bigint NOT NULL
 );
@@ -1977,10 +1977,10 @@ CREATE TABLE jos_sdi_wmts_spatialpolicy (
 CREATE TABLE jos_sdi_wmtslayer_policy (
     id serial NOT NULL ,
     identifier character varying(255) NOT NULL,
-    enabled bit(1) DEFAULT B'1'::"bit" NOT NULL,
-    inheritedspatialpolicy bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    enabled integer DEFAULT 1 NOT NULL,
+    inheritedspatialpolicy integer DEFAULT 1 NOT NULL,
     spatialpolicy_id bigint,
-    anytilematrixset bit(1) DEFAULT B'1'::"bit" NOT NULL,
+    anytilematrixset integer DEFAULT 1 NOT NULL,
     physicalservicepolicy_id bigint NOT NULL
 );
 
@@ -2038,7 +2038,7 @@ CREATE TABLE log_entries (
 CREATE TABLE overview_page (
     "ID_OVERVIEW_PAGE" serial NOT NULL,
     "NAME" character varying(255) NOT NULL,
-    "IS_PUBLIC" bit(1) DEFAULT B'0'::"bit" NOT NULL
+    "IS_PUBLIC" integer DEFAULT 0 NOT NULL
 );
 
 
@@ -2063,17 +2063,17 @@ CREATE TABLE periods (
     "ID_PERIODS" serial NOT NULL,
     "ID_SLA" bigint NOT NULL,
     "NAME" character varying(45),
-    "MONDAY" bit(1) DEFAULT B'0'::"bit",
-    "TUESDAY" bit(1) DEFAULT B'0'::"bit",
-    "WEDNESDAY" bit(1) DEFAULT B'0'::"bit",
-    "THURSDAY" bit(1) DEFAULT B'0'::"bit",
-    "FRIDAY" bit(1) DEFAULT B'0'::"bit",
-    "SATURDAY" bit(1) DEFAULT B'0'::"bit",
-    "SUNDAY" bit(1) DEFAULT B'0'::"bit",
-    "HOLIDAYS" bit(1) DEFAULT B'0'::"bit",
+    "MONDAY" integer DEFAULT 0,
+    "TUESDAY" integer DEFAULT 0,
+    "WEDNESDAY" integer DEFAULT 0,
+    "THURSDAY" integer DEFAULT 0,
+    "FRIDAY" integer DEFAULT 0,
+    "SATURDAY" integer DEFAULT 0,
+    "SUNDAY" integer DEFAULT 0,
+    "HOLIDAYS" integer DEFAULT 0,
     "SLA_START_TIME" time without time zone NOT NULL,
     "SLA_END_TIME" time without time zone NOT NULL,
-    "INCLUDE" bit(1) DEFAULT B'0'::"bit",
+    "INCLUDE" integer DEFAULT 0,
     "DATE" character varying(45)
 );
 
@@ -2171,11 +2171,11 @@ CREATE TABLE query_params (
 CREATE TABLE query_validation_results (
     "ID_QUERY_VALIDATION_RESULT" integer NOT NULL,
     "ID_QUERY" bigint NOT NULL,
-    "SIZE_VALIDATION_RESULT" bit(1),
+    "SIZE_VALIDATION_RESULT" integer,
     "RESPONSE_SIZE" double precision,
-    "TIME_VALIDATION_RESULT" bit(1),
+    "TIME_VALIDATION_RESULT" integer,
     "DELIVERY_TIME" double precision,
-    "XPATH_VALIDATION_RESULT" bit(1),
+    "XPATH_VALIDATION_RESULT" integer,
     "XPATH_VALIDATION_OUTPUT" character varying(1000)
 );
 
@@ -2188,12 +2188,12 @@ CREATE TABLE query_validation_results (
 CREATE TABLE query_validation_settings (
     "ID_QUERY_VALIDATION_SETTINGS" integer NOT NULL,
     "ID_QUERY" bigint NOT NULL,
-    "USE_SIZE_VALIDATION" bit(1) DEFAULT B'0'::"bit" NOT NULL,
+    "USE_SIZE_VALIDATION" integer DEFAULT 0 NOT NULL,
     "NORM_SIZE" double precision,
     "NORM_SIZE_TOLERANCE" double precision,
-    "USE_TIME_VALIDATION" bit(1) DEFAULT B'0'::"bit" NOT NULL,
+    "USE_TIME_VALIDATION" integer DEFAULT 0 NOT NULL,
     "NORM_TIME" double precision,
-    "USE_XPATH_VALIDATION" bit(1) DEFAULT B'0'::"bit" NOT NULL,
+    "USE_XPATH_VALIDATION" integer DEFAULT 0 NOT NULL,
     "XPATH_EXPRESSION" character varying(1000),
     "XPATH_EXPECTED_OUTPUT" character varying(1000)
 );
@@ -2253,8 +2253,8 @@ CREATE TABLE service_types_methods (
 CREATE TABLE sla (
     "ID_SLA" serial NOT NULL,
     "NAME" character varying(45) NOT NULL,
-    "EXCLUDE_WORST" bit(1) DEFAULT B'0'::"bit",
-    "MEASURE_TIME_TO_FIRST" bit(1) DEFAULT B'0'::"bit"
+    "EXCLUDE_WORST" integer DEFAULT 0,
+    "MEASURE_TIME_TO_FIRST" integer DEFAULT 0
 );
 
 
@@ -2279,8 +2279,8 @@ CREATE TABLE users (
     "PASSWORD" character varying(45) NOT NULL,
     "ID_ROLE" bigint,
     "EXPIRATION" date,
-    "ENABLED" bit(1) DEFAULT B'1'::"bit" NOT NULL,
-    "LOCKED" bit(1) DEFAULT B'0'::"bit" NOT NULL
+    "ENABLED" integer DEFAULT 1 NOT NULL,
+    "LOCKED" integer DEFAULT 0 NOT NULL
 );
 
 
