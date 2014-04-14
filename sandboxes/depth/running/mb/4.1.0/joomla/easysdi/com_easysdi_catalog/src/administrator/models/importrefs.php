@@ -111,7 +111,7 @@ class Easysdi_catalogModelimportrefs extends JModelList {
                         'list.select', 'a.*'
                 )
         );
-        $query->from('#__sdi_`#_importref AS a');
+        $query->from('#__sdi_importref AS a');
 
 
         // Join over the users for the checked out user.

@@ -123,8 +123,8 @@ class Easysdi_shopModelorders extends JModelList {
 
         // Select the required fields from the table.
         $query->select(
-                $this->getState(
-                        'list.select', 'a.*'
+                $this->getState('DISTINCT '.
+                        'list.select', ' a.*'
                 )
         );
         $query->from('#__sdi_order AS a');
@@ -152,8 +152,7 @@ class Easysdi_shopModelorders extends JModelList {
         // Join over the diffusion field 'products'
         $query->select("diffusion.name AS product")
         ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion ON order_diffusion.order_id =a.id')
-        ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id')
-        ->group('a.id');
+        ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id');
 
         // product with provider
         /*$query->select("GROUP_CONCAT(CONCAT(organism.name,' - ',diffusion.name) SEPARATOR '<br/>".PHP_EOL."') AS products")
@@ -495,8 +494,7 @@ class Easysdi_shopModelorders extends JModelList {
         ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion ON order_diffusion.order_id =o.id')
         ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id')
         ->join('LEFT', '#__sdi_resource AS resource ON resource.id=diffusion.version_id')
-        ->join('LEFT', '#__sdi_organism AS organism ON organism.id=resource.organism_id')
-        ->group('organism.id');
+        ->join('LEFT', '#__sdi_organism AS organism ON organism.id=resource.organism_id');
 
 
         try
