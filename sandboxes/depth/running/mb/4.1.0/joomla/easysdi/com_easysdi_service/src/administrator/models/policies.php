@@ -138,7 +138,7 @@ class Easysdi_serviceModelpolicies extends JModelList
 				'a.*'
 			)
 		);
-		$query->from('`#__sdi_policy` AS a');
+		$query->from('#__sdi_policy AS a');
 
 	    // Join over the users for the checked out user.
 	    $query->select('uc.name AS editor');

@@ -119,7 +119,7 @@ class Easysdi_catalogModelrelations extends JModelList {
                         'list.select', 'a.*'
                 )
         );
-        $query->from('`#__sdi_relation` AS a');
+        $query->from('#__sdi_relation AS a');
 
 
         // Join over the users for the checked out user.

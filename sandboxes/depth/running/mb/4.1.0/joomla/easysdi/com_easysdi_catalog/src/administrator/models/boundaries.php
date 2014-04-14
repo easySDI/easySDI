@@ -110,7 +110,7 @@ class Easysdi_catalogModelboundaries extends JModelList {
                         'list.select', 'a.*'
                 )
         );
-        $query->from('`#__sdi_boundary` AS a');
+        $query->from('#__sdi_boundary AS a');
 
 
         // Join over the users for the checked out user.

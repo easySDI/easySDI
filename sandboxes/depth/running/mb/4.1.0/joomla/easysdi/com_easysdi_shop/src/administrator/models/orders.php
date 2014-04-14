@@ -127,7 +127,7 @@ class Easysdi_shopModelorders extends JModelList {
                         'list.select', 'a.*'
                 )
         );
-        $query->from('`#__sdi_order` AS a');
+        $query->from('#__sdi_order AS a');
 
 
         // Join over the users for the checked out user.
@@ -399,7 +399,7 @@ class Easysdi_shopModelorders extends JModelList {
 
         // Select the required fields from the table.
         $query->select('o.id as id, o.value as value');
-        $query->from('`#__sdi_sys_ordertype` AS o');
+        $query->from('#__sdi_sys_ordertype AS o');
         $query->where('o.state = 1');
         $query->order('o.ordering');
 
@@ -429,7 +429,7 @@ class Easysdi_shopModelorders extends JModelList {
 
         // Select the required fields from the table.
         $query->select('o.id as id, o.value as value');
-        $query->from('`#__sdi_sys_orderstate` AS o');
+        $query->from('#__sdi_sys_orderstate AS o');
         $query->where('o.state = 1');
         $query->order('o.ordering');
 
@@ -458,7 +458,7 @@ class Easysdi_shopModelorders extends JModelList {
 
         // Select the required fields from the table.
         $query->select('distinct o.user_id as id, jos_users.name as name');
-        $query->from('`#__sdi_order` AS o');
+        $query->from('#__sdi_order AS o');
         $query->join('LEFT', '#__sdi_user AS sdi_user ON sdi_user.id = o.user_id');
         $query->join('LEFT', '#__users AS jos_users ON jos_users.id = sdi_user.user_id');
 
@@ -491,7 +491,7 @@ class Easysdi_shopModelorders extends JModelList {
 
         // Select the required fields from the table.
         $query->select('distinct organism.id as id, organism.name as name')
-        ->from('`#__sdi_order` AS o')
+        ->from('#__sdi_order AS o')
         ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion ON order_diffusion.order_id =o.id')
         ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id')
         ->join('LEFT', '#__sdi_resource AS resource ON resource.id=diffusion.version_id')
@@ -527,7 +527,7 @@ class Easysdi_shopModelorders extends JModelList {
 
         // Select the required fields from the table.
         $query->select('distinct d.id as id, d.name as name');
-        $query->from('`#__sdi_diffusion` AS d');
+        $query->from('#__sdi_diffusion AS d');
         $query->innerJoin('#__sdi_order_diffusion AS sdi_order_diffusion ON sdi_order_diffusion.diffusion_id = d.id');
         $query->innerJoin('#__sdi_order AS o ON o.id = sdi_order_diffusion.order_id');
         $query->order('d.name');

@@ -114,7 +114,7 @@ class Easysdi_catalogModelattributes extends JModelList {
                         'list.select', 'a.*'
                 )
         );
-        $query->from('`#__sdi_attribute` AS a');
+        $query->from('#__sdi_attribute AS a');
 
 
         // Join over the users for the checked out user.

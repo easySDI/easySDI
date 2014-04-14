@@ -114,7 +114,7 @@ class Easysdi_catalogModelresourcetypelinks extends JModelList {
                         'list.select', 'a.*'
                 )
         );
-        $query->from('`#__sdi_resourcetypelink` AS a');
+        $query->from('#__sdi_resourcetypelink AS a');
 
 
         // Join over the users for the checked out user.

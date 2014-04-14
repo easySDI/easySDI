@@ -107,7 +107,7 @@ class Easysdi_catalogModelnamespaces extends JModelList {
                         'list.select', 'a.*'
                 )
         );
-        $query->from('`#__sdi_namespace` AS a');
+        $query->from('#__sdi_namespace AS a');
 
 
         // Join over the users for the checked out user.

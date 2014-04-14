@@ -97,7 +97,7 @@ class Easysdi_mapModelmaps extends JModelList
 	
 		// Select the required fields from the table.
 		$query->select('m.id as id, m.name as name');
-		$query->from('`#__sdi_map` AS m');
+		$query->from('#__sdi_map AS m');
 		$query->where('m.state = 1');
 		$query->order('m.ordering');
 	
@@ -155,7 +155,7 @@ class Easysdi_mapModelmaps extends JModelList
 						'a.*'
 				)
 		);
-		$query->from('`#__sdi_map` AS a');
+		$query->from('#__sdi_map AS a');
 
 		// Join over the users for the checked out user.
 		$query->select('uc.name AS editor');

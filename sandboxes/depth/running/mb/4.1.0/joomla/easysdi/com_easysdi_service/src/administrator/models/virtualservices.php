@@ -114,7 +114,7 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 
 		// Select the required fields from the table.
 		$query->select('a.id as id, a.name as name, c.value as connector');
-		$query->from('`#__sdi_virtualservice` AS a');
+		$query->from('#__sdi_virtualservice AS a');
 		$query->join('LEFT', '#__sdi_sys_serviceconnector AS c ON a.serviceconnector_id = c.id' );
 		if(!empty ($connector))
 			$query->where('c.id = '. $connector);
@@ -148,7 +148,7 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 		$query	= $db->getQuery(true);
 		$query->select('id');
 		$query->select('value');
-		$query->from('`#__sdi_sys_serviceconnector`');
+		$query->from('#__sdi_sys_serviceconnector');
 		$query->where('state=1');
 		$query->order('value');
 		$db->setQuery($query);
@@ -195,7 +195,7 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 				'a.*'
 			)
 		);
-		$query->from('`#__sdi_virtualservice` AS a');
+		$query->from('#__sdi_virtualservice AS a');
 
 	    // Join over the users for the checked out user.
 	    $query->select('uc.name AS editor');
