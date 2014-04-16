@@ -108,11 +108,11 @@ $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/sy
     #search_table{
         display: none;
     }
-    
+
     #searchModal{
         width: 900px;
         left: 40%;
-    } 
+    }
 </style>
 
 <script type="text/javascript">
@@ -120,7 +120,7 @@ $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/sy
     js = jQuery.noConflict();
     js('document').ready(function() {
 
-<?php 
+<?php
 if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
             Joomla.submitbutton('metadata.toggle');
             tabIsOpen = false;
@@ -171,7 +171,7 @@ foreach ($this->validators as $validator) {
     </form>
 
     <!-- Preview XML or XHTML Modal -->
-    <div class="modal fade" id="previewModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade hide" id="previewModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -189,7 +189,7 @@ foreach ($this->validators as $validator) {
     </div>
 
     <!-- Replicate modal -->
-    <div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal fade hide" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -248,7 +248,7 @@ foreach ($this->validators as $validator) {
                                     <tr><th></th><th><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_NOM') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_VERSION') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_GUID') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_TYPE') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_STATUS') ; ?></th></tr>
                                 </thead>
                                 <tbody id="search_result">
-                                    
+
                                 </tbody>
                             </table>
                         </form>
@@ -263,7 +263,7 @@ foreach ($this->validators as $validator) {
     </div>
 
     <!-- Import XML modal -->
-    <div class="modal fade" id="importXmlModal" tabindex="-1" role="dialog" aria-labelledby="importXmlModalLabel" aria-hidden="true">
+    <div class="modal fade hide" id="importXmlModal" tabindex="-1" role="dialog" aria-labelledby="importXmlModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -275,7 +275,7 @@ foreach ($this->validators as $validator) {
                         <input type="hidden" name="task" value="metadata.edit"/>
                         <input type="hidden" name="id" value="<?php echo $this->item->id; ?>"/>
                         <input type="hidden" name="import[importref_id]" class="import_importref_id" value=""/>
-                        
+
                         <div class="control-group">
                             <div class="control-label"><label id="xml_file-lbl" for="xml_file" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_XML_FILE') ; ?></label></div>
                             <div class="controls">
@@ -295,7 +295,7 @@ foreach ($this->validators as $validator) {
     </div>
 
     <!-- Import CSW modal -->
-    <div class="modal fade" id="importCswModal" tabindex="-1" role="dialog" aria-labelledby="importCswModalLabel" aria-hidden="true">
+    <div class="modal fade hide" id="importCswModal" tabindex="-1" role="dialog" aria-labelledby="importCswModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -307,7 +307,7 @@ foreach ($this->validators as $validator) {
                         <input type="hidden" name="task" value="metadata.edit"/>
                         <input type="hidden" name="id" value="<?php echo $this->item->id; ?>"/>
                         <input type="hidden" name="import[importref_id]" class="import_importref_id" value=""/>
-                        
+
                         <div class="control-group">
                             <div class="control-label"><label id="import_fileidentifier-lbl" for="import_fileidentifier" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_FILEIDENTIFIER') ; ?></label></div>
                             <div class="controls">
@@ -325,9 +325,9 @@ foreach ($this->validators as $validator) {
             </div>
         </div>
     </div>
-    
+
     <!-- Publish Modal -->
-    <div class="modal fade" id="publishModal" tabindex="-1" role="dialog" aria-labelledby="publishModalLabel" aria-hidden="true">
+    <div class="modal fade hide" id="publishModal" tabindex="-1" role="dialog" aria-labelledby="publishModalLabel" aria-hidden="true">
         <form id="form_publish" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -336,7 +336,7 @@ foreach ($this->validators as $validator) {
                     <h4 class="modal-title" id="publishModalLabel"><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_DATE'); ?></h4>
                 </div>
                 <div class="modal-body">
-                    
+
                         <div class="control-group">
                             <div class="control-label"><label id="publish_date-lbl" for="publish_date" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_DATE'); ?></label></div>
                             <div class="controls"><div class="input-append">
@@ -344,7 +344,7 @@ foreach ($this->validators as $validator) {
                                 </div>
                             </div>
                         </div>
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.publishWithDate')" ><?php echo JText::_('COM_EASYSDI_CATALOG_PUBLISH_ITEM'); ?></button>
