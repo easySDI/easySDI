@@ -110,6 +110,8 @@ foreach ($_GET as $key => $value){
 	}
 	$i++;
 }   
+
+
 $indexStrStart = strrpos($url,"contenttype");
 if(!($indexStrStart === false))
 {	
@@ -293,7 +295,7 @@ function getFile($fileLoc,$req_Content)
      //If auth requested
      if($info['http_code'] == 401){
      	   header('WWW-Authenticate: Basic realm="GeoServer Realm"',true,401); 
-     }   
+     }  
      curl_close($ch);
      return $file;
 }
