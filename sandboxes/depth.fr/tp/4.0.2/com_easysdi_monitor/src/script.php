@@ -21,11 +21,11 @@ class com_easysdi_monitorInstallerScript
 	function preflight( $type, $parent ) {
 		//Check if com_easysdi_core is installed
 		$db = JFactory::getDbo();
-		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = "com_easysdi_monitor"');
+		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = "com_easysdi_core"');
 		$install = $db->loadResult();
 		
 		if($install == 0){
-			JError::raiseWarning(null, JText::_('COM_EASYSDI_DASHBOARD_INSTALL_SCRIPT_CORE_ERROR'));
+			JError::raiseWarning(null, JText::_('COM_EASYSDI_MONITOR_INSTALL_SCRIPT_CORE_ERROR'));
 			return false;
 		}
 		
@@ -33,8 +33,7 @@ class com_easysdi_monitorInstallerScript
 		$this->release = $parent->get( "manifest" )->version;
 		
 		// Show the essential information at the install/update back-end
-		echo '<p>EasySDI component Contact [com_easysdi_contact]';
-		echo '<br />'.JText::_('COM_EASYSDI_CONTACT_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
+		echo '<p>EasySDI component Monitor [com_easysdi_monitor]';
 	}
  
 	/*
