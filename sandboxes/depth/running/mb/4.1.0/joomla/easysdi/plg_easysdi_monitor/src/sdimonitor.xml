@@ -2,7 +2,7 @@
 <extension group="content" method="upgrade" type="plugin" version="3.0">
   <name>EasySDI Monitor Plugin</name>
   <creationDate>10 January 2011</creationDate>
-  <releaseDate>10 avril 2014</releaseDate>
+  <releaseDate>18 avril 2014</releaseDate>
   <author>asitvd.ch</author>
   <authorEmail />
   <authorUrl>http://www.asitvd.ch</authorUrl>

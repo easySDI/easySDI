@@ -1,4 +1,4 @@
-﻿IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[users$FK_USERS_ROLE]') AND parent_object_id = OBJECT_ID(N'[users]'))
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[users$FK_USERS_ROLE]') AND parent_object_id = OBJECT_ID(N'[users]'))
 ALTER TABLE [users] DROP CONSTRAINT [users$FK_USERS_ROLE];
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[service_types_methods$FK_SERVICE_TYPES_METHODS_TYPE]') AND parent_object_id = OBJECT_ID(N'[service_types_methods]'))
 ALTER TABLE [service_types_methods] DROP CONSTRAINT [service_types_methods$FK_SERVICE_TYPES_METHODS_TYPE];

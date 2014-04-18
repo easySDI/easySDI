@@ -69,42 +69,38 @@ class com_easysdi_contactInstallerScript
 	 * postflight is run after the extension is registered in the database.
 	 */
 	function postflight( $type, $parent ) {
+                $db = JFactory::getDbo();
+            
 		if ( $type == 'install' ) {
-			JTable::addIncludePath(JPATH_ADMINISTRATOR."/../libraries/joomla/database/table");
-			
-			//Create a default EasySDI User Category
-			$row 					= JTable::getInstance('category');
-			$row->parent_id 		= 1;
-			$row->level			= 1;
-			$row->path 			= 'uncategorised';
-			$row->extension 		= 'com_easysdi_contact';
-			$row->title 			= 'Uncategorised';
-			$row->alias 			= 'uncategorised';
-			$row->published 		= 1;
-			$row->access 			= 1;
-			$row->params  			= '{"category_layout":"","image":""}';
-			$row->metadata 			= '{"author":"","robots":""}';
-                        $row->metadesc                  = 'uncategorised';
-                        $row->metakey                   = '';
-			if(!$row->store(true))
-			{
-				JError::raiseWarning(null, JText::_('COM_EASYSDI_CONTACT_POSTFLIGHT_SCRIPT_CATEGORY_ERROR'));
-				return false;
-			}
-			$row->moveByReference(0, 'last-child', $row->id);
-			
-			//Create new EasySDI User account
+                    
+                        require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/libraries/easysdi/database/sditable.php';
+                    
+                        $query = $db->getQuery(true);
+                        $columns = array('parent_id', 'level','path','extension','title','alias','published','access','params','metadata','metadesc','metakey','description','language');
+                        $values = array(1,1,$query->quote('uncategorised'),$query->quote('com_easysdi_contact'),$query->quote('Uncategorised'),$query->quote('uncategorised'),1,1,$query->quote('{"category_layout":"","image":""}'),$query->quote('{"author":"","robots":""}'),$query->quote('uncategorised'),$query->quote(' '),$query->quote(' '),$query->quote(' '));
+                        $query->insert('#__categories');
+                        $query->columns($query->quoteName($columns));
+                        $query->values(implode(',', $values));
+                        
+                        $db->setQuery($query);
+                        $db->execute();
+                        $catid = $db->insertid();
+                        
+                        
+                        //Create new EasySDI User account
 			$user	= JFactory::getUser();
-			JTable::addIncludePath(JPATH_ADMINISTRATOR."/components/com_easysdi_contact/tables");
-			$newaccount = JTable::getInstance('user', 'easysdi_contactTable');
+                        JTable::addIncludePath(JPATH_ADMINISTRATOR."/components/com_easysdi_contact/tables");
+			$newaccount = sdiTable::getInstance('user', 'easysdi_contactTable');
 			if (!$newaccount) {
 				JError::raiseWarning(null, JText::_('COM_EASYSDI_CONTACT_POSTFLIGHT_SCRIPT_USER_ERROR_INSTANCIATE'));
 				return false;
 			}
 			$newaccount->user_id 	= $user->id;
-			$newaccount->catid 	= $row->id;
+			$newaccount->catid 	= $catid;
 			$newaccount->ordering	= 1;
 			$result 		= $newaccount->store();
+                       
+			
 			if (!(isset($result)) || !$result) {
 				JError::raiseError(42, JText::_('COM_EASYSDI_CONTACT_POSTFLIGHT_SCRIPT_USER_ERROR_STORE'). $newaccount->getError());
 				return false;
@@ -118,7 +114,7 @@ class com_easysdi_contactInstallerScript
 			$this->setParams( $params );
 		}
 		
-		$db = JFactory::getDbo();
+		
                 $query = $db->getQuery(true);
                 $query->delete('#__menu');
                 $query->where('title = '.$db->quote('com_easysdi_contact'));

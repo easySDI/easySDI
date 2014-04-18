@@ -82,9 +82,7 @@ class Easysdi_contactTableuser extends sdiTable
             echo print_r($array) ;
             die();
         }
-    	
-        echo 'hello' ;
-        die();
+        
         
     	return parent::bind($array, $ignore);
     }

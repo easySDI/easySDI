@@ -258,6 +258,8 @@ abstract class sdiTable extends JTable {
 
         if ($this->_rules instanceof JAccessRules) {
             $asset->rules = (string) $this->_rules;
+        }else{
+            $asset->rules = '{}';
         }
 
         if (!$asset->check() || !$asset->store(false)) {

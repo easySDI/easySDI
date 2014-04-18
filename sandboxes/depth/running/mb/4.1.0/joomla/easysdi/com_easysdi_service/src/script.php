@@ -74,34 +74,24 @@ class com_easysdi_serviceInstallerScript
 		JTable::addIncludePath(JPATH_ADMINISTRATOR."/../libraries/joomla/database/table");
 		JTable::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_easysdi_service/tables');
 		
+                $db = JFactory::getDbo();
+                
 		if($type == 'install'){
-			//Create a default EasySDI Service Category
-			$row 					= JTable::getInstance('category');
-			$row->parent_id 		= 1;
-			$row->level				= 1;
-			$row->path 				= 'uncategorised';
-			$row->extension 		= 'com_easysdi_service';
-			$row->title 			= 'Uncategorised';
-			$row->alias 			= 'uncategorised';
-			$row->published 		= 1;
-			$row->access 			= 1;
-			$row->params  			= '{"category_layout":"","image":""}';
-			$row->metadata 			= '{"author":"","robots":""}';
-                        $row->metadesc                   = 'uncategorised';
-                        $row->metakey                   = '';
-			if(!$row->store(true))
-			{
-				JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_POSTFLIGHT_SCRIPT_CATEGORY_ERROR'));
-				return false;
-			}
-			$row->moveByReference(0, 'last-child', $row->id);
-			
-			
-		}
-		if($type == 'install')
-		{
+                        require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/libraries/easysdi/database/sditable.php';
+                    
+			$query = $db->getQuery(true);
+                        $columns = array('parent_id', 'level','path','extension','title','alias','published','access','params','metadata','metadesc','metakey','description','language');
+                        $values = array(1,1,$query->quote('uncategorised'),$query->quote('com_easysdi_service'),$query->quote('Uncategorised'),$query->quote('uncategorised'),1,1,$query->quote('{"category_layout":"","image":""}'),$query->quote('{"author":"","robots":""}'),$query->quote('uncategorised'),$query->quote(' '),$query->quote(' '),$query->quote(' '));
+                        $query->insert('#__categories');
+                        $query->columns($query->quoteName($columns));
+                        $query->values(implode(',', $values));
+                        
+                        $db->setQuery($query);
+                        $db->execute();
+                        
+		
 			//Create a Bing service
-			$row 						= JTable::getInstance('physicalservice','easysdi_serviceTable');
+			$row 						= sdiTable::getInstance('physicalservice','easysdi_serviceTable');
 			$row->alias					= 'Bing';
 			$row->ordering				= 1;
 			$row->state					= 1;
@@ -117,7 +107,7 @@ class com_easysdi_serviceInstallerScript
 			}
 			
 			//Create Bing layers
-			$layer 						= JTable::getInstance('layer','easysdi_serviceTable');
+			$layer 						= sdiTable::getInstance('layer','easysdi_serviceTable');
 			$layer->state				= 1;
 			$layer->name				= 'Road';
 			$layer->physicalservice_id	= $row->id;
@@ -126,7 +116,7 @@ class com_easysdi_serviceInstallerScript
 				JError::raiseError(42, JText::_('COM_EASYSDI_MAP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR'). $layer->getError());
 				return false;
 			}
-			$layer 						= JTable::getInstance('layer','easysdi_serviceTable');
+			$layer 						= sdiTable::getInstance('layer','easysdi_serviceTable');
 			$layer->state				= 1;
 			$layer->name				= 'Aerial';
 			$layer->physicalservice_id	= $row->id;
@@ -135,7 +125,7 @@ class com_easysdi_serviceInstallerScript
 				JError::raiseError(42, JText::_('COM_EASYSDI_MAP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR'). $layer->getError());
 				return false;
 			}
-			$layer 						= JTable::getInstance('layer','easysdi_serviceTable');
+			$layer 						= sdiTable::getInstance('layer','easysdi_serviceTable');
 			$layer->state				= 1;
 			$layer->name				= 'AerialWithLabels';
 			$layer->physicalservice_id	= $row->id;
@@ -146,7 +136,7 @@ class com_easysdi_serviceInstallerScript
 			}
 			
 			//Create a Google service
-			$row 						= JTable::getInstance('physicalservice','easysdi_serviceTable');
+			$row 						= sdiTable::getInstance('physicalservice','easysdi_serviceTable');
 			$row->alias					= 'Google';
 			$row->state					= 1;
 			$row->ordering				= 2;
@@ -161,7 +151,7 @@ class com_easysdi_serviceInstallerScript
 				return false;
 			}
 			//Create Google layers
-			$layer 						= JTable::getInstance('layer','easysdi_serviceTable');
+			$layer 						= sdiTable::getInstance('layer','easysdi_serviceTable');
 			$layer->state				= 1;
 			$layer->name				= 'ROADMAP';
 			$layer->physicalservice_id	= $row->id;
@@ -170,7 +160,7 @@ class com_easysdi_serviceInstallerScript
 				JError::raiseError(42, JText::_('COM_EASYSDI_MAP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR'). $layer->getError());
 				return false;
 			}
-			$layer 						= JTable::getInstance('layer','easysdi_serviceTable');
+			$layer 						= sdiTable::getInstance('layer','easysdi_serviceTable');
 			$layer->state				= 1;
 			$layer->name				= 'SATELLITE';
 			$layer->physicalservice_id	= $row->id;
@@ -179,7 +169,7 @@ class com_easysdi_serviceInstallerScript
 				JError::raiseError(42, JText::_('COM_EASYSDI_MAP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR'). $layer->getError());
 				return false;
 			}
-			$layer 						= JTable::getInstance('layer','easysdi_serviceTable');
+			$layer 						= sdiTable::getInstance('layer','easysdi_serviceTable');
 			$layer->state				= 1;
 			$layer->name				= 'HYBRID';
 			$layer->physicalservice_id	= $row->id;
@@ -188,7 +178,7 @@ class com_easysdi_serviceInstallerScript
 				JError::raiseError(42, JText::_('COM_EASYSDI_MAP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR'). $layer->getError());
 				return false;
 			}
-			$layer 						= JTable::getInstance('layer','easysdi_serviceTable');
+			$layer 						= sdiTable::getInstance('layer','easysdi_serviceTable');
 			$layer->state				= 1;
 			$layer->name				= 'TERRAIN';
 			$layer->physicalservice_id	= $row->id;
@@ -199,7 +189,7 @@ class com_easysdi_serviceInstallerScript
 			}
 			
 			//Create an OSM service
-			$row 						= JTable::getInstance('physicalservice','easysdi_serviceTable');
+			$row 						= sdiTable::getInstance('physicalservice','easysdi_serviceTable');
 			$row->alias					= 'OSM';
 			$row->state					= 1;
 			$row->ordering				= 3;
@@ -214,7 +204,7 @@ class com_easysdi_serviceInstallerScript
 				return false;
 			}
 			//Create OSM layers
-			$layer 						= JTable::getInstance('layer','easysdi_serviceTable');
+			$layer 						= sdiTable::getInstance('layer','easysdi_serviceTable');
 			$layer->state				= 1;
 			$layer->name				= 'mapnik';
 			$layer->physicalservice_id	= $row->id;
@@ -223,7 +213,7 @@ class com_easysdi_serviceInstallerScript
 				JError::raiseError(42, JText::_('COM_EASYSDI_MAP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR'). $layer->getError());
 				return false;
 			}
-			$layer 						= JTable::getInstance('layer','easysdi_serviceTable');
+			$layer 						= sdiTable::getInstance('layer','easysdi_serviceTable');
 			$layer->state				= 1;
 			$layer->name				= 'osmarender';
 			$layer->physicalservice_id	= $row->id;
@@ -234,7 +224,7 @@ class com_easysdi_serviceInstallerScript
 			}
 		}
 		
-		$db = JFactory::getDbo();
+		
                 $query = $db->getQuery(true);
                 $query->delete('#__menu');
                 $query->where('title = '.$db->quote('com_easysdi_service'));

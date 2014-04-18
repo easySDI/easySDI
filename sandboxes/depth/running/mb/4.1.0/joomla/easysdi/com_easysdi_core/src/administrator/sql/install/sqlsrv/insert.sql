@@ -1,4 +1,4 @@
-﻿SET IDENTITY_INSERT [jos_sdi_sys_role] ON;
+SET IDENTITY_INSERT [jos_sdi_sys_role] ON;
 
 INSERT [jos_sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'member');
 INSERT [jos_sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'resourcemanager');
@@ -9,6 +9,7 @@ INSERT [jos_sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (6, 6, 1, 
 INSERT [jos_sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (7, 7, 1, N'extractionresponsible');
 INSERT [jos_sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (8, 8, 1, N'ordereligible');
 SET IDENTITY_INSERT [jos_sdi_sys_role] OFF;
+
 SET IDENTITY_INSERT [jos_sdi_sys_criteriatype] ON;
 
 INSERT [jos_sdi_sys_criteriatype] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'system');
@@ -711,6 +712,7 @@ SET IDENTITY_INSERT [jos_sdi_sys_versiontype] ON;
 INSERT [jos_sdi_sys_versiontype] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'all');
 INSERT [jos_sdi_sys_versiontype] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'lastPublishedVersion');
 SET IDENTITY_INSERT [jos_sdi_sys_versiontype] OFF;
+
 INSERT [last_ids] ([TABLE_NAME], [LAST_ID]) VALUES (N'ACTIONS', 2);
 INSERT [last_ids] ([TABLE_NAME], [LAST_ID]) VALUES (N'ALERTS', 161);
 INSERT [last_ids] ([TABLE_NAME], [LAST_ID]) VALUES (N'HTTP_METHODS', 3);
@@ -726,6 +728,7 @@ INSERT [last_ids] ([TABLE_NAME], [LAST_ID]) VALUES (N'QUERY_VALIDATION_SETTINGS'
 INSERT [last_ids] ([TABLE_NAME], [LAST_ID]) VALUES (N'SERVICE_METHODS', 10);
 INSERT [last_ids] ([TABLE_NAME], [LAST_ID]) VALUES (N'SERVICE_TYPES', 8);
 INSERT [last_ids] ([TABLE_NAME], [LAST_ID]) VALUES (N'STATUSES', 5);
+
 INSERT [statuses] ([ID_STATUS], [NAME]) VALUES (1, N'AVAILABLE');
 INSERT [statuses] ([ID_STATUS], [NAME]) VALUES (2, N'OUT_OF_ORDER');
 INSERT [statuses] ([ID_STATUS], [NAME]) VALUES (3, N'UNAVAILABLE');
