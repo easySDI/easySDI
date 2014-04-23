@@ -139,7 +139,7 @@ class Easysdi_mapModellayers extends JModelList
 		$query->select(
 				$this->getState(
 						'list.select',
-						'a.*'
+						'a.id, a.state, a.ordering, a.name, a.access'
 				)
 		);
 		$query->from('#__sdi_maplayer AS a');

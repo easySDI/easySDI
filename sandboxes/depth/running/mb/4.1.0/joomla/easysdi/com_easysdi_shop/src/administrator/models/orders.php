@@ -137,7 +137,7 @@ class Easysdi_shopModelorders extends JModelList {
 
 
         // Join over the user field 'user'
-        $query->select('users2.name AS user')
+        $query->select($db->quoteName('users2.name', 'user'))
         ->join('LEFT', '#__sdi_user AS sdi_user ON sdi_user.id=a.user_id')
         ->join('LEFT', '#__users AS users2 ON users2.id=sdi_user.user_id');
 

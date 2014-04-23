@@ -102,7 +102,7 @@ class Easysdi_catalogModelboundariescategory extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.*'
+                        'list.select', 'a.id, a.state, a.ordering, a.name'
                 )
         );
         $query->from('#__sdi_boundarycategory AS a');

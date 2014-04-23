@@ -236,6 +236,7 @@ if (!empty($this->extra_sidebar)) {
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
+                <a href="../../profiles/tmpl/default.php"></a>
             </table>
 
             <input type="hidden" name="task" value="" />

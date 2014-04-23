@@ -105,7 +105,7 @@ class Easysdi_catalogModelcatalogs extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.*'
+                        'list.select', 'a.id, a.ordering, a.state, a.name'
                 )
         );
         $query->from('#__sdi_catalog AS a');
