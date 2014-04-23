@@ -54,683 +54,683 @@ REFERENCES [statuses] ([ID_STATUS]);
 
 ALTER TABLE [jobs] CHECK CONSTRAINT [jobs$FK_JOBS_STATUS];
 
-ALTER TABLE [jos_sdi_accessscope]  WITH CHECK ADD  CONSTRAINT [jos_sdi_accessscope$jos_sdi_accessscope_fk1] FOREIGN KEY([organism_id])
-REFERENCES [jos_sdi_organism] ([id])
+ALTER TABLE [#__sdi_accessscope]  WITH CHECK ADD  CONSTRAINT [#__sdi_accessscope$#__sdi_accessscope_fk1] FOREIGN KEY([organism_id])
+REFERENCES [#__sdi_organism] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_accessscope] CHECK CONSTRAINT [jos_sdi_accessscope$jos_sdi_accessscope_fk1];
+ALTER TABLE [#__sdi_accessscope] CHECK CONSTRAINT [#__sdi_accessscope$#__sdi_accessscope_fk1];
 
-ALTER TABLE [jos_sdi_accessscope]  WITH CHECK ADD  CONSTRAINT [jos_sdi_accessscope$jos_sdi_accessscope_fk2] FOREIGN KEY([user_id])
-REFERENCES [jos_sdi_user] ([id])
+ALTER TABLE [#__sdi_accessscope]  WITH CHECK ADD  CONSTRAINT [#__sdi_accessscope$#__sdi_accessscope_fk2] FOREIGN KEY([user_id])
+REFERENCES [#__sdi_user] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_accessscope] CHECK CONSTRAINT [jos_sdi_accessscope$jos_sdi_accessscope_fk2];
+ALTER TABLE [#__sdi_accessscope] CHECK CONSTRAINT [#__sdi_accessscope$#__sdi_accessscope_fk2];
 
-ALTER TABLE [jos_sdi_address]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_address$jos_sdi_address_fk1] FOREIGN KEY([addresstype_id])
-REFERENCES [jos_sdi_sys_addresstype] ([id]);
+ALTER TABLE [#__sdi_address]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_address$#__sdi_address_fk1] FOREIGN KEY([addresstype_id])
+REFERENCES [#__sdi_sys_addresstype] ([id]);
 
-ALTER TABLE [jos_sdi_address] CHECK CONSTRAINT [jos_sdi_address$jos_sdi_address_fk1];
+ALTER TABLE [#__sdi_address] CHECK CONSTRAINT [#__sdi_address$#__sdi_address_fk1];
 
-ALTER TABLE [jos_sdi_address]  WITH CHECK ADD  CONSTRAINT [jos_sdi_address$jos_sdi_address_fk3] FOREIGN KEY([user_id])
-REFERENCES [jos_sdi_user] ([id])
+ALTER TABLE [#__sdi_address]  WITH CHECK ADD  CONSTRAINT [#__sdi_address$#__sdi_address_fk3] FOREIGN KEY([user_id])
+REFERENCES [#__sdi_user] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_address] CHECK CONSTRAINT [jos_sdi_address$jos_sdi_address_fk3];
+ALTER TABLE [#__sdi_address] CHECK CONSTRAINT [#__sdi_address$#__sdi_address_fk3];
 
-ALTER TABLE [jos_sdi_address]  WITH CHECK ADD  CONSTRAINT [jos_sdi_address$jos_sdi_address_fk4] FOREIGN KEY([organism_id])
-REFERENCES [jos_sdi_organism] ([id])
+ALTER TABLE [#__sdi_address]  WITH CHECK ADD  CONSTRAINT [#__sdi_address$#__sdi_address_fk4] FOREIGN KEY([organism_id])
+REFERENCES [#__sdi_organism] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_address] CHECK CONSTRAINT [jos_sdi_address$jos_sdi_address_fk4];
+ALTER TABLE [#__sdi_address] CHECK CONSTRAINT [#__sdi_address$#__sdi_address_fk4];
 
-ALTER TABLE [jos_sdi_address]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_address$jos_sdi_address_fk5] FOREIGN KEY([country_id])
-REFERENCES [jos_sdi_sys_country] ([id]);
+ALTER TABLE [#__sdi_address]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_address$#__sdi_address_fk5] FOREIGN KEY([country_id])
+REFERENCES [#__sdi_sys_country] ([id]);
 
-ALTER TABLE [jos_sdi_address] CHECK CONSTRAINT [jos_sdi_address$jos_sdi_address_fk5];
+ALTER TABLE [#__sdi_address] CHECK CONSTRAINT [#__sdi_address$#__sdi_address_fk5];
 
-ALTER TABLE [jos_sdi_application]  WITH CHECK ADD  CONSTRAINT [jos_sdi_application$jos_sdi_application_fk1] FOREIGN KEY([resource_id])
-REFERENCES [jos_sdi_resource] ([id])
+ALTER TABLE [#__sdi_application]  WITH CHECK ADD  CONSTRAINT [#__sdi_application$#__sdi_application_fk1] FOREIGN KEY([resource_id])
+REFERENCES [#__sdi_resource] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_application] CHECK CONSTRAINT [jos_sdi_application$jos_sdi_application_fk1];
+ALTER TABLE [#__sdi_application] CHECK CONSTRAINT [#__sdi_application$#__sdi_application_fk1];
 
-ALTER TABLE [jos_sdi_assignment]  WITH CHECK ADD  CONSTRAINT [jos_sdi_assignment$jos_sdi_assignment_fk1] FOREIGN KEY([assigned_by])
-REFERENCES [jos_sdi_user] ([id]);
+ALTER TABLE [#__sdi_assignment]  WITH CHECK ADD  CONSTRAINT [#__sdi_assignment$#__sdi_assignment_fk1] FOREIGN KEY([assigned_by])
+REFERENCES [#__sdi_user] ([id]);
 
-ALTER TABLE [jos_sdi_assignment] CHECK CONSTRAINT [jos_sdi_assignment$jos_sdi_assignment_fk1];
+ALTER TABLE [#__sdi_assignment] CHECK CONSTRAINT [#__sdi_assignment$#__sdi_assignment_fk1];
 
-ALTER TABLE [jos_sdi_assignment]  WITH CHECK ADD  CONSTRAINT [jos_sdi_assignment$jos_sdi_assignment_fk2] FOREIGN KEY([assigned_to])
-REFERENCES [jos_sdi_user] ([id])
+ALTER TABLE [#__sdi_assignment]  WITH CHECK ADD  CONSTRAINT [#__sdi_assignment$#__sdi_assignment_fk2] FOREIGN KEY([assigned_to])
+REFERENCES [#__sdi_user] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_assignment] CHECK CONSTRAINT [jos_sdi_assignment$jos_sdi_assignment_fk2];
+ALTER TABLE [#__sdi_assignment] CHECK CONSTRAINT [#__sdi_assignment$#__sdi_assignment_fk2];
 
-ALTER TABLE [jos_sdi_assignment]  WITH CHECK ADD  CONSTRAINT [jos_sdi_assignment$jos_sdi_assignment_fk3] FOREIGN KEY([version_id])
-REFERENCES [jos_sdi_version] ([id])
+ALTER TABLE [#__sdi_assignment]  WITH CHECK ADD  CONSTRAINT [#__sdi_assignment$#__sdi_assignment_fk3] FOREIGN KEY([version_id])
+REFERENCES [#__sdi_version] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_assignment] CHECK CONSTRAINT [jos_sdi_assignment$jos_sdi_assignment_fk3];
+ALTER TABLE [#__sdi_assignment] CHECK CONSTRAINT [#__sdi_assignment$#__sdi_assignment_fk3];
 
-ALTER TABLE [jos_sdi_attribute]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_attribute$sdi_attribute_fk1] FOREIGN KEY([namespace_id])
-REFERENCES [jos_sdi_namespace] ([id]);
+ALTER TABLE [#__sdi_attribute]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_attribute$sdi_attribute_fk1] FOREIGN KEY([namespace_id])
+REFERENCES [#__sdi_namespace] ([id]);
 
-ALTER TABLE [jos_sdi_attribute] CHECK CONSTRAINT [jos_sdi_attribute$sdi_attribute_fk1];
+ALTER TABLE [#__sdi_attribute] CHECK CONSTRAINT [#__sdi_attribute$sdi_attribute_fk1];
 
-ALTER TABLE [jos_sdi_attribute]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_attribute$sdi_attribute_fk2] FOREIGN KEY([listnamespace_id])
-REFERENCES [jos_sdi_namespace] ([id]);
+ALTER TABLE [#__sdi_attribute]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_attribute$sdi_attribute_fk2] FOREIGN KEY([listnamespace_id])
+REFERENCES [#__sdi_namespace] ([id]);
 
-ALTER TABLE [jos_sdi_attribute] CHECK CONSTRAINT [jos_sdi_attribute$sdi_attribute_fk2];
+ALTER TABLE [#__sdi_attribute] CHECK CONSTRAINT [#__sdi_attribute$sdi_attribute_fk2];
 
-ALTER TABLE [jos_sdi_attribute]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_attribute$sdi_attribute_fk3] FOREIGN KEY([stereotype_id])
-REFERENCES [jos_sdi_sys_stereotype] ([id]);
+ALTER TABLE [#__sdi_attribute]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_attribute$sdi_attribute_fk3] FOREIGN KEY([stereotype_id])
+REFERENCES [#__sdi_sys_stereotype] ([id]);
 
-ALTER TABLE [jos_sdi_attribute] CHECK CONSTRAINT [jos_sdi_attribute$sdi_attribute_fk3];
+ALTER TABLE [#__sdi_attribute] CHECK CONSTRAINT [#__sdi_attribute$sdi_attribute_fk3];
 
-ALTER TABLE [jos_sdi_attributevalue]  WITH CHECK ADD  CONSTRAINT [jos_sdi_attributevalue$jos_sdi_attributevalue] FOREIGN KEY([attribute_id])
-REFERENCES [jos_sdi_attribute] ([id]);
+ALTER TABLE [#__sdi_attributevalue]  WITH CHECK ADD  CONSTRAINT [#__sdi_attributevalue$#__sdi_attributevalue] FOREIGN KEY([attribute_id])
+REFERENCES [#__sdi_attribute] ([id]);
 
-ALTER TABLE [jos_sdi_attributevalue] CHECK CONSTRAINT [jos_sdi_attributevalue$jos_sdi_attributevalue];
+ALTER TABLE [#__sdi_attributevalue] CHECK CONSTRAINT [#__sdi_attributevalue$#__sdi_attributevalue];
 
-ALTER TABLE [jos_sdi_boundary]  WITH CHECK ADD  CONSTRAINT [jos_sdi_boundary$jos_sdi_boundary_fk1] FOREIGN KEY([parent_id])
-REFERENCES [jos_sdi_boundary] ([id]);
+ALTER TABLE [#__sdi_boundary]  WITH CHECK ADD  CONSTRAINT [#__sdi_boundary$#__sdi_boundary_fk1] FOREIGN KEY([parent_id])
+REFERENCES [#__sdi_boundary] ([id]);
 
-ALTER TABLE [jos_sdi_boundary] CHECK CONSTRAINT [jos_sdi_boundary$jos_sdi_boundary_fk1];
+ALTER TABLE [#__sdi_boundary] CHECK CONSTRAINT [#__sdi_boundary$#__sdi_boundary_fk1];
 
-ALTER TABLE [jos_sdi_boundary]  WITH CHECK ADD  CONSTRAINT [jos_sdi_boundary$jos_sdi_boundary_fk2] FOREIGN KEY([category_id])
-REFERENCES [jos_sdi_boundarycategory] ([id]);
+ALTER TABLE [#__sdi_boundary]  WITH CHECK ADD  CONSTRAINT [#__sdi_boundary$#__sdi_boundary_fk2] FOREIGN KEY([category_id])
+REFERENCES [#__sdi_boundarycategory] ([id]);
 
-ALTER TABLE [jos_sdi_boundary] CHECK CONSTRAINT [jos_sdi_boundary$jos_sdi_boundary_fk2];
+ALTER TABLE [#__sdi_boundary] CHECK CONSTRAINT [#__sdi_boundary$#__sdi_boundary_fk2];
 
-ALTER TABLE [jos_sdi_boundarycategory]  WITH CHECK ADD  CONSTRAINT [jos_sdi_boundarycategory$jos_sdi_boundarycategory_fk1] FOREIGN KEY([parent_id])
-REFERENCES [jos_sdi_boundarycategory] ([id]);
+ALTER TABLE [#__sdi_boundarycategory]  WITH CHECK ADD  CONSTRAINT [#__sdi_boundarycategory$#__sdi_boundarycategory_fk1] FOREIGN KEY([parent_id])
+REFERENCES [#__sdi_boundarycategory] ([id]);
 
-ALTER TABLE [jos_sdi_boundarycategory] CHECK CONSTRAINT [jos_sdi_boundarycategory$jos_sdi_boundarycategory_fk1];
+ALTER TABLE [#__sdi_boundarycategory] CHECK CONSTRAINT [#__sdi_boundarycategory$#__sdi_boundarycategory_fk1];
 
-ALTER TABLE [jos_sdi_catalog_resourcetype]  WITH CHECK ADD  CONSTRAINT [jos_sdi_catalog_resourcetype$jos_sdi_catalog_resourcetype_fk1] FOREIGN KEY([catalog_id])
-REFERENCES [jos_sdi_catalog] ([id])
+ALTER TABLE [#__sdi_catalog_resourcetype]  WITH CHECK ADD  CONSTRAINT [#__sdi_catalog_resourcetype$#__sdi_catalog_resourcetype_fk1] FOREIGN KEY([catalog_id])
+REFERENCES [#__sdi_catalog] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_catalog_resourcetype] CHECK CONSTRAINT [jos_sdi_catalog_resourcetype$jos_sdi_catalog_resourcetype_fk1];
+ALTER TABLE [#__sdi_catalog_resourcetype] CHECK CONSTRAINT [#__sdi_catalog_resourcetype$#__sdi_catalog_resourcetype_fk1];
 
-ALTER TABLE [jos_sdi_catalog_resourcetype]  WITH CHECK ADD  CONSTRAINT [jos_sdi_catalog_resourcetype$jos_sdi_catalog_resourcetype_fk2] FOREIGN KEY([resourcetype_id])
-REFERENCES [jos_sdi_resourcetype] ([id])
+ALTER TABLE [#__sdi_catalog_resourcetype]  WITH CHECK ADD  CONSTRAINT [#__sdi_catalog_resourcetype$#__sdi_catalog_resourcetype_fk2] FOREIGN KEY([resourcetype_id])
+REFERENCES [#__sdi_resourcetype] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_catalog_resourcetype] CHECK CONSTRAINT [jos_sdi_catalog_resourcetype$jos_sdi_catalog_resourcetype_fk2];
+ALTER TABLE [#__sdi_catalog_resourcetype] CHECK CONSTRAINT [#__sdi_catalog_resourcetype$#__sdi_catalog_resourcetype_fk2];
 
-ALTER TABLE [jos_sdi_catalog_searchcriteria]  WITH CHECK ADD  CONSTRAINT [jos_sdi_catalog_searchcriteria$jos_sdi_catalog_searchcriteria_fk1] FOREIGN KEY([catalog_id])
-REFERENCES [jos_sdi_catalog] ([id])
+ALTER TABLE [#__sdi_catalog_searchcriteria]  WITH CHECK ADD  CONSTRAINT [#__sdi_catalog_searchcriteria$#__sdi_catalog_searchcriteria_fk1] FOREIGN KEY([catalog_id])
+REFERENCES [#__sdi_catalog] ([id])
 ON UPDATE CASCADE
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_catalog_searchcriteria] CHECK CONSTRAINT [jos_sdi_catalog_searchcriteria$jos_sdi_catalog_searchcriteria_fk1];
+ALTER TABLE [#__sdi_catalog_searchcriteria] CHECK CONSTRAINT [#__sdi_catalog_searchcriteria$#__sdi_catalog_searchcriteria_fk1];
 
-ALTER TABLE [jos_sdi_catalog_searchcriteria]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_catalog_searchcriteria$jos_sdi_catalog_searchcriteria_fk2] FOREIGN KEY([searchcriteria_id])
-REFERENCES [jos_sdi_searchcriteria] ([id])
+ALTER TABLE [#__sdi_catalog_searchcriteria]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_catalog_searchcriteria$#__sdi_catalog_searchcriteria_fk2] FOREIGN KEY([searchcriteria_id])
+REFERENCES [#__sdi_searchcriteria] ([id])
 ON UPDATE CASCADE
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_catalog_searchcriteria] CHECK CONSTRAINT [jos_sdi_catalog_searchcriteria$jos_sdi_catalog_searchcriteria_fk2];
+ALTER TABLE [#__sdi_catalog_searchcriteria] CHECK CONSTRAINT [#__sdi_catalog_searchcriteria$#__sdi_catalog_searchcriteria_fk2];
 
-ALTER TABLE [jos_sdi_catalog_searchcriteria]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_catalog_searchcriteria$jos_sdi_catalog_searchcriteria_fk3] FOREIGN KEY([searchtab_id])
-REFERENCES [jos_sdi_sys_searchtab] ([id])
+ALTER TABLE [#__sdi_catalog_searchcriteria]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_catalog_searchcriteria$#__sdi_catalog_searchcriteria_fk3] FOREIGN KEY([searchtab_id])
+REFERENCES [#__sdi_sys_searchtab] ([id])
 ON UPDATE CASCADE
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_catalog_searchcriteria] CHECK CONSTRAINT [jos_sdi_catalog_searchcriteria$jos_sdi_catalog_searchcriteria_fk3];
+ALTER TABLE [#__sdi_catalog_searchcriteria] CHECK CONSTRAINT [#__sdi_catalog_searchcriteria$#__sdi_catalog_searchcriteria_fk3];
 
-ALTER TABLE [jos_sdi_catalog_searchsort]  WITH CHECK ADD  CONSTRAINT [jos_sdi_catalog_searchsort$jos_sdi_catalog_searchsort_fk1] FOREIGN KEY([catalog_id])
-REFERENCES [jos_sdi_catalog] ([id]);
+ALTER TABLE [#__sdi_catalog_searchsort]  WITH CHECK ADD  CONSTRAINT [#__sdi_catalog_searchsort$#__sdi_catalog_searchsort_fk1] FOREIGN KEY([catalog_id])
+REFERENCES [#__sdi_catalog] ([id]);
 
-ALTER TABLE [jos_sdi_catalog_searchsort] CHECK CONSTRAINT [jos_sdi_catalog_searchsort$jos_sdi_catalog_searchsort_fk1];
+ALTER TABLE [#__sdi_catalog_searchsort] CHECK CONSTRAINT [#__sdi_catalog_searchsort$#__sdi_catalog_searchsort_fk1];
 
-ALTER TABLE [jos_sdi_catalog_searchsort]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_catalog_searchsort$jos_sdi_catalog_searchsort_fk2] FOREIGN KEY([language_id])
-REFERENCES [jos_sdi_language] ([id]);
+ALTER TABLE [#__sdi_catalog_searchsort]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_catalog_searchsort$#__sdi_catalog_searchsort_fk2] FOREIGN KEY([language_id])
+REFERENCES [#__sdi_language] ([id]);
 
-ALTER TABLE [jos_sdi_catalog_searchsort] CHECK CONSTRAINT [jos_sdi_catalog_searchsort$jos_sdi_catalog_searchsort_fk2];
+ALTER TABLE [#__sdi_catalog_searchsort] CHECK CONSTRAINT [#__sdi_catalog_searchsort$#__sdi_catalog_searchsort_fk2];
 
-ALTER TABLE [jos_sdi_class]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_class$jos_sdi_class_fk1] FOREIGN KEY([namespace_id])
-REFERENCES [jos_sdi_namespace] ([id]);
+ALTER TABLE [#__sdi_class]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_class$#__sdi_class_fk1] FOREIGN KEY([namespace_id])
+REFERENCES [#__sdi_namespace] ([id]);
 
-ALTER TABLE [jos_sdi_class] CHECK CONSTRAINT [jos_sdi_class$jos_sdi_class_fk1];
+ALTER TABLE [#__sdi_class] CHECK CONSTRAINT [#__sdi_class$#__sdi_class_fk1];
 
-ALTER TABLE [jos_sdi_class]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_class$jos_sdi_class_fk2] FOREIGN KEY([stereotype_id])
-REFERENCES [jos_sdi_sys_stereotype] ([id]);
+ALTER TABLE [#__sdi_class]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_class$#__sdi_class_fk2] FOREIGN KEY([stereotype_id])
+REFERENCES [#__sdi_sys_stereotype] ([id]);
 
-ALTER TABLE [jos_sdi_class] CHECK CONSTRAINT [jos_sdi_class$jos_sdi_class_fk2];
+ALTER TABLE [#__sdi_class] CHECK CONSTRAINT [#__sdi_class$#__sdi_class_fk2];
 
-ALTER TABLE [jos_sdi_diffusion]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_diffusion$jos_sdi_diffusion_fk1] FOREIGN KEY([accessscope_id])
-REFERENCES [jos_sdi_sys_accessscope] ([id]);
+ALTER TABLE [#__sdi_diffusion]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_diffusion$#__sdi_diffusion_fk1] FOREIGN KEY([accessscope_id])
+REFERENCES [#__sdi_sys_accessscope] ([id]);
 
-ALTER TABLE [jos_sdi_diffusion] CHECK CONSTRAINT [jos_sdi_diffusion$jos_sdi_diffusion_fk1];
+ALTER TABLE [#__sdi_diffusion] CHECK CONSTRAINT [#__sdi_diffusion$#__sdi_diffusion_fk1];
 
-ALTER TABLE [jos_sdi_diffusion]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_diffusion$jos_sdi_diffusion_fk2] FOREIGN KEY([productmining_id])
-REFERENCES [jos_sdi_sys_productmining] ([id]);
+ALTER TABLE [#__sdi_diffusion]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_diffusion$#__sdi_diffusion_fk2] FOREIGN KEY([productmining_id])
+REFERENCES [#__sdi_sys_productmining] ([id]);
 
-ALTER TABLE [jos_sdi_diffusion] CHECK CONSTRAINT [jos_sdi_diffusion$jos_sdi_diffusion_fk2];
+ALTER TABLE [#__sdi_diffusion] CHECK CONSTRAINT [#__sdi_diffusion$#__sdi_diffusion_fk2];
 
-ALTER TABLE [jos_sdi_diffusion]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_diffusion$jos_sdi_diffusion_fk3] FOREIGN KEY([productstorage_id])
-REFERENCES [jos_sdi_sys_productstorage] ([id]);
+ALTER TABLE [#__sdi_diffusion]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_diffusion$#__sdi_diffusion_fk3] FOREIGN KEY([productstorage_id])
+REFERENCES [#__sdi_sys_productstorage] ([id]);
 
-ALTER TABLE [jos_sdi_diffusion] CHECK CONSTRAINT [jos_sdi_diffusion$jos_sdi_diffusion_fk3];
+ALTER TABLE [#__sdi_diffusion] CHECK CONSTRAINT [#__sdi_diffusion$#__sdi_diffusion_fk3];
 
-ALTER TABLE [jos_sdi_diffusion]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_diffusion$jos_sdi_diffusion_fk4] FOREIGN KEY([perimeter_id])
-REFERENCES [jos_sdi_perimeter] ([id]);
+ALTER TABLE [#__sdi_diffusion]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_diffusion$#__sdi_diffusion_fk4] FOREIGN KEY([perimeter_id])
+REFERENCES [#__sdi_perimeter] ([id]);
 
-ALTER TABLE [jos_sdi_diffusion] CHECK CONSTRAINT [jos_sdi_diffusion$jos_sdi_diffusion_fk4];
+ALTER TABLE [#__sdi_diffusion] CHECK CONSTRAINT [#__sdi_diffusion$#__sdi_diffusion_fk4];
 
-ALTER TABLE [jos_sdi_diffusion]  WITH CHECK ADD  CONSTRAINT [jos_sdi_diffusion$jos_sdi_diffusion_fk5] FOREIGN KEY([version_id])
-REFERENCES [jos_sdi_version] ([id])
+ALTER TABLE [#__sdi_diffusion]  WITH CHECK ADD  CONSTRAINT [#__sdi_diffusion$#__sdi_diffusion_fk5] FOREIGN KEY([version_id])
+REFERENCES [#__sdi_version] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_diffusion] CHECK CONSTRAINT [jos_sdi_diffusion$jos_sdi_diffusion_fk5];
+ALTER TABLE [#__sdi_diffusion] CHECK CONSTRAINT [#__sdi_diffusion$#__sdi_diffusion_fk5];
 
-ALTER TABLE [jos_sdi_diffusion_download]  WITH CHECK ADD  CONSTRAINT [jos_sdi_diffusion_download$jos_sdi_diffusion_download_fk1] FOREIGN KEY([diffusion_id])
-REFERENCES [jos_sdi_diffusion] ([id])
+ALTER TABLE [#__sdi_diffusion_download]  WITH CHECK ADD  CONSTRAINT [#__sdi_diffusion_download$#__sdi_diffusion_download_fk1] FOREIGN KEY([diffusion_id])
+REFERENCES [#__sdi_diffusion] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_diffusion_download] CHECK CONSTRAINT [jos_sdi_diffusion_download$jos_sdi_diffusion_download_fk1];
+ALTER TABLE [#__sdi_diffusion_download] CHECK CONSTRAINT [#__sdi_diffusion_download$#__sdi_diffusion_download_fk1];
 
-ALTER TABLE [jos_sdi_diffusion_download]  WITH CHECK ADD  CONSTRAINT [jos_sdi_diffusion_download$jos_sdi_diffusion_download_fk2] FOREIGN KEY([user_id])
-REFERENCES [jos_sdi_user] ([id])
+ALTER TABLE [#__sdi_diffusion_download]  WITH CHECK ADD  CONSTRAINT [#__sdi_diffusion_download$#__sdi_diffusion_download_fk2] FOREIGN KEY([user_id])
+REFERENCES [#__sdi_user] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_diffusion_download] CHECK CONSTRAINT [jos_sdi_diffusion_download$jos_sdi_diffusion_download_fk2];
+ALTER TABLE [#__sdi_diffusion_download] CHECK CONSTRAINT [#__sdi_diffusion_download$#__sdi_diffusion_download_fk2];
 
-ALTER TABLE [jos_sdi_diffusion_notifieduser]  WITH CHECK ADD  CONSTRAINT [jos_sdi_diffusion_notifieduser$jos_sdi_diffusion_notifieduser_fk1] FOREIGN KEY([diffusion_id])
-REFERENCES [jos_sdi_diffusion] ([id])
+ALTER TABLE [#__sdi_diffusion_notifieduser]  WITH CHECK ADD  CONSTRAINT [#__sdi_diffusion_notifieduser$#__sdi_diffusion_notifieduser_fk1] FOREIGN KEY([diffusion_id])
+REFERENCES [#__sdi_diffusion] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_diffusion_notifieduser] CHECK CONSTRAINT [jos_sdi_diffusion_notifieduser$jos_sdi_diffusion_notifieduser_fk1];
+ALTER TABLE [#__sdi_diffusion_notifieduser] CHECK CONSTRAINT [#__sdi_diffusion_notifieduser$#__sdi_diffusion_notifieduser_fk1];
 
-ALTER TABLE [jos_sdi_diffusion_notifieduser]  WITH CHECK ADD  CONSTRAINT [jos_sdi_diffusion_notifieduser$jos_sdi_diffusion_notifieduser_fk2] FOREIGN KEY([user_id])
-REFERENCES [jos_sdi_user] ([id])
+ALTER TABLE [#__sdi_diffusion_notifieduser]  WITH CHECK ADD  CONSTRAINT [#__sdi_diffusion_notifieduser$#__sdi_diffusion_notifieduser_fk2] FOREIGN KEY([user_id])
+REFERENCES [#__sdi_user] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_diffusion_notifieduser] CHECK CONSTRAINT [jos_sdi_diffusion_notifieduser$jos_sdi_diffusion_notifieduser_fk2];
+ALTER TABLE [#__sdi_diffusion_notifieduser] CHECK CONSTRAINT [#__sdi_diffusion_notifieduser$#__sdi_diffusion_notifieduser_fk2];
 
-ALTER TABLE [jos_sdi_diffusion_perimeter]  WITH CHECK ADD  CONSTRAINT [jos_sdi_diffusion_perimeter$jos_sdi_diffusion_perimeter_fk1] FOREIGN KEY([diffusion_id])
-REFERENCES [jos_sdi_diffusion] ([id])
+ALTER TABLE [#__sdi_diffusion_perimeter]  WITH CHECK ADD  CONSTRAINT [#__sdi_diffusion_perimeter$#__sdi_diffusion_perimeter_fk1] FOREIGN KEY([diffusion_id])
+REFERENCES [#__sdi_diffusion] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_diffusion_perimeter] CHECK CONSTRAINT [jos_sdi_diffusion_perimeter$jos_sdi_diffusion_perimeter_fk1];
+ALTER TABLE [#__sdi_diffusion_perimeter] CHECK CONSTRAINT [#__sdi_diffusion_perimeter$#__sdi_diffusion_perimeter_fk1];
 
-ALTER TABLE [jos_sdi_diffusion_perimeter]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_diffusion_perimeter$jos_sdi_diffusion_perimeter_fk2] FOREIGN KEY([perimeter_id])
-REFERENCES [jos_sdi_perimeter] ([id])
+ALTER TABLE [#__sdi_diffusion_perimeter]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_diffusion_perimeter$#__sdi_diffusion_perimeter_fk2] FOREIGN KEY([perimeter_id])
+REFERENCES [#__sdi_perimeter] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_diffusion_perimeter] CHECK CONSTRAINT [jos_sdi_diffusion_perimeter$jos_sdi_diffusion_perimeter_fk2];
+ALTER TABLE [#__sdi_diffusion_perimeter] CHECK CONSTRAINT [#__sdi_diffusion_perimeter$#__sdi_diffusion_perimeter_fk2];
 
-ALTER TABLE [jos_sdi_diffusion_propertyvalue]  WITH CHECK ADD  CONSTRAINT [jos_sdi_diffusion_propertyvalue$jos_sdi_diffusion_propertyvalue_fk1] FOREIGN KEY([diffusion_id])
-REFERENCES [jos_sdi_diffusion] ([id])
+ALTER TABLE [#__sdi_diffusion_propertyvalue]  WITH CHECK ADD  CONSTRAINT [#__sdi_diffusion_propertyvalue$#__sdi_diffusion_propertyvalue_fk1] FOREIGN KEY([diffusion_id])
+REFERENCES [#__sdi_diffusion] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_diffusion_propertyvalue] CHECK CONSTRAINT [jos_sdi_diffusion_propertyvalue$jos_sdi_diffusion_propertyvalue_fk1];
+ALTER TABLE [#__sdi_diffusion_propertyvalue] CHECK CONSTRAINT [#__sdi_diffusion_propertyvalue$#__sdi_diffusion_propertyvalue_fk1];
 
-ALTER TABLE [jos_sdi_diffusion_propertyvalue]  WITH CHECK ADD  CONSTRAINT [jos_sdi_diffusion_propertyvalue$jos_sdi_diffusion_propertyvalue_fk2] FOREIGN KEY([propertyvalue_id])
-REFERENCES [jos_sdi_propertyvalue] ([id])
+ALTER TABLE [#__sdi_diffusion_propertyvalue]  WITH CHECK ADD  CONSTRAINT [#__sdi_diffusion_propertyvalue$#__sdi_diffusion_propertyvalue_fk2] FOREIGN KEY([propertyvalue_id])
+REFERENCES [#__sdi_propertyvalue] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_diffusion_propertyvalue] CHECK CONSTRAINT [jos_sdi_diffusion_propertyvalue$jos_sdi_diffusion_propertyvalue_fk2];
+ALTER TABLE [#__sdi_diffusion_propertyvalue] CHECK CONSTRAINT [#__sdi_diffusion_propertyvalue$#__sdi_diffusion_propertyvalue_fk2];
 
-ALTER TABLE [jos_sdi_importref]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_importref$jos_sdi_importref_fk1] FOREIGN KEY([importtype_id])
-REFERENCES [jos_sdi_sys_importtype] ([id]);
+ALTER TABLE [#__sdi_importref]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_importref$#__sdi_importref_fk1] FOREIGN KEY([importtype_id])
+REFERENCES [#__sdi_sys_importtype] ([id]);
 
-ALTER TABLE [jos_sdi_importref] CHECK CONSTRAINT [jos_sdi_importref$jos_sdi_importref_fk1];
+ALTER TABLE [#__sdi_importref] CHECK CONSTRAINT [#__sdi_importref$#__sdi_importref_fk1];
 
-ALTER TABLE [jos_sdi_importref]  WITH CHECK ADD  CONSTRAINT [jos_sdi_importref$jos_sdi_importref_fk2] FOREIGN KEY([cswservice_id])
-REFERENCES [jos_sdi_physicalservice] ([id])
+ALTER TABLE [#__sdi_importref]  WITH CHECK ADD  CONSTRAINT [#__sdi_importref$#__sdi_importref_fk2] FOREIGN KEY([cswservice_id])
+REFERENCES [#__sdi_physicalservice] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_importref] CHECK CONSTRAINT [jos_sdi_importref$jos_sdi_importref_fk2];
+ALTER TABLE [#__sdi_importref] CHECK CONSTRAINT [#__sdi_importref$#__sdi_importref_fk2];
 
-ALTER TABLE [jos_sdi_importref]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_importref$jos_sdi_importref_fk3] FOREIGN KEY([cswversion_id])
-REFERENCES [jos_sdi_sys_serviceversion] ([id])
+ALTER TABLE [#__sdi_importref]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_importref$#__sdi_importref_fk3] FOREIGN KEY([cswversion_id])
+REFERENCES [#__sdi_sys_serviceversion] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_importref] CHECK CONSTRAINT [jos_sdi_importref$jos_sdi_importref_fk3];
+ALTER TABLE [#__sdi_importref] CHECK CONSTRAINT [#__sdi_importref$#__sdi_importref_fk3];
 
-ALTER TABLE [jos_sdi_layer_layergroup]  WITH CHECK ADD  CONSTRAINT [jos_sdi_layer_layergroup$jos_sdi_layer_layergroup_fk1] FOREIGN KEY([layer_id])
-REFERENCES [jos_sdi_maplayer] ([id])
+ALTER TABLE [#__sdi_layer_layergroup]  WITH CHECK ADD  CONSTRAINT [#__sdi_layer_layergroup$#__sdi_layer_layergroup_fk1] FOREIGN KEY([layer_id])
+REFERENCES [#__sdi_maplayer] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_layer_layergroup] CHECK CONSTRAINT [jos_sdi_layer_layergroup$jos_sdi_layer_layergroup_fk1];
+ALTER TABLE [#__sdi_layer_layergroup] CHECK CONSTRAINT [#__sdi_layer_layergroup$#__sdi_layer_layergroup_fk1];
 
-ALTER TABLE [jos_sdi_layer_layergroup]  WITH CHECK ADD  CONSTRAINT [jos_sdi_layer_layergroup$jos_sdi_layer_layergroup_fk2] FOREIGN KEY([group_id])
-REFERENCES [jos_sdi_layergroup] ([id])
+ALTER TABLE [#__sdi_layer_layergroup]  WITH CHECK ADD  CONSTRAINT [#__sdi_layer_layergroup$#__sdi_layer_layergroup_fk2] FOREIGN KEY([group_id])
+REFERENCES [#__sdi_layergroup] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_layer_layergroup] CHECK CONSTRAINT [jos_sdi_layer_layergroup$jos_sdi_layer_layergroup_fk2];
+ALTER TABLE [#__sdi_layer_layergroup] CHECK CONSTRAINT [#__sdi_layer_layergroup$#__sdi_layer_layergroup_fk2];
 
-ALTER TABLE [jos_sdi_map]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_map$jos_sdi_map_fk2] FOREIGN KEY([unit_id])
-REFERENCES [jos_sdi_sys_unit] ([id]);
+ALTER TABLE [#__sdi_map]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_map$#__sdi_map_fk2] FOREIGN KEY([unit_id])
+REFERENCES [#__sdi_sys_unit] ([id]);
 
-ALTER TABLE [jos_sdi_map] CHECK CONSTRAINT [jos_sdi_map$jos_sdi_map_fk2];
+ALTER TABLE [#__sdi_map] CHECK CONSTRAINT [#__sdi_map$#__sdi_map_fk2];
 
-ALTER TABLE [jos_sdi_map_layergroup]  WITH CHECK ADD  CONSTRAINT [jos_sdi_map_layergroup$jos_sdi_map_layergroup_fk1] FOREIGN KEY([map_id])
-REFERENCES [jos_sdi_map] ([id])
+ALTER TABLE [#__sdi_map_layergroup]  WITH CHECK ADD  CONSTRAINT [#__sdi_map_layergroup$#__sdi_map_layergroup_fk1] FOREIGN KEY([map_id])
+REFERENCES [#__sdi_map] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_map_layergroup] CHECK CONSTRAINT [jos_sdi_map_layergroup$jos_sdi_map_layergroup_fk1];
+ALTER TABLE [#__sdi_map_layergroup] CHECK CONSTRAINT [#__sdi_map_layergroup$#__sdi_map_layergroup_fk1];
 
-ALTER TABLE [jos_sdi_map_layergroup]  WITH CHECK ADD  CONSTRAINT [jos_sdi_map_layergroup$jos_sdi_map_layergroup_fk2] FOREIGN KEY([group_id])
-REFERENCES [jos_sdi_layergroup] ([id])
+ALTER TABLE [#__sdi_map_layergroup]  WITH CHECK ADD  CONSTRAINT [#__sdi_map_layergroup$#__sdi_map_layergroup_fk2] FOREIGN KEY([group_id])
+REFERENCES [#__sdi_layergroup] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_map_layergroup] CHECK CONSTRAINT [jos_sdi_map_layergroup$jos_sdi_map_layergroup_fk2];
+ALTER TABLE [#__sdi_map_layergroup] CHECK CONSTRAINT [#__sdi_map_layergroup$#__sdi_map_layergroup_fk2];
 
-ALTER TABLE [jos_sdi_map_physicalservice]  WITH CHECK ADD  CONSTRAINT [jos_sdi_map_physicalservice$jos_sdi_map_physicalservice_fk1] FOREIGN KEY([map_id])
-REFERENCES [jos_sdi_map] ([id])
+ALTER TABLE [#__sdi_map_physicalservice]  WITH CHECK ADD  CONSTRAINT [#__sdi_map_physicalservice$#__sdi_map_physicalservice_fk1] FOREIGN KEY([map_id])
+REFERENCES [#__sdi_map] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_map_physicalservice] CHECK CONSTRAINT [jos_sdi_map_physicalservice$jos_sdi_map_physicalservice_fk1];
+ALTER TABLE [#__sdi_map_physicalservice] CHECK CONSTRAINT [#__sdi_map_physicalservice$#__sdi_map_physicalservice_fk1];
 
-ALTER TABLE [jos_sdi_map_physicalservice]  WITH CHECK ADD  CONSTRAINT [jos_sdi_map_physicalservice$jos_sdi_map_physicalservice_fk2] FOREIGN KEY([physicalservice_id])
-REFERENCES [jos_sdi_physicalservice] ([id])
+ALTER TABLE [#__sdi_map_physicalservice]  WITH CHECK ADD  CONSTRAINT [#__sdi_map_physicalservice$#__sdi_map_physicalservice_fk2] FOREIGN KEY([physicalservice_id])
+REFERENCES [#__sdi_physicalservice] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_map_physicalservice] CHECK CONSTRAINT [jos_sdi_map_physicalservice$jos_sdi_map_physicalservice_fk2];
+ALTER TABLE [#__sdi_map_physicalservice] CHECK CONSTRAINT [#__sdi_map_physicalservice$#__sdi_map_physicalservice_fk2];
 
-ALTER TABLE [jos_sdi_map_tool]  WITH CHECK ADD  CONSTRAINT [jos_sdi_map_tool$jos_sdi_map_tool_fk1] FOREIGN KEY([map_id])
-REFERENCES [jos_sdi_map] ([id])
+ALTER TABLE [#__sdi_map_tool]  WITH CHECK ADD  CONSTRAINT [#__sdi_map_tool$#__sdi_map_tool_fk1] FOREIGN KEY([map_id])
+REFERENCES [#__sdi_map] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_map_tool] CHECK CONSTRAINT [jos_sdi_map_tool$jos_sdi_map_tool_fk1];
+ALTER TABLE [#__sdi_map_tool] CHECK CONSTRAINT [#__sdi_map_tool$#__sdi_map_tool_fk1];
 
-ALTER TABLE [jos_sdi_map_tool]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_map_tool$jos_sdi_map_tool_fk2] FOREIGN KEY([tool_id])
-REFERENCES [jos_sdi_sys_maptool] ([id])
+ALTER TABLE [#__sdi_map_tool]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_map_tool$#__sdi_map_tool_fk2] FOREIGN KEY([tool_id])
+REFERENCES [#__sdi_sys_maptool] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_map_tool] CHECK CONSTRAINT [jos_sdi_map_tool$jos_sdi_map_tool_fk2];
+ALTER TABLE [#__sdi_map_tool] CHECK CONSTRAINT [#__sdi_map_tool$#__sdi_map_tool_fk2];
 
-ALTER TABLE [jos_sdi_map_virtualservice]  WITH CHECK ADD  CONSTRAINT [jos_sdi_map_virtualservice$jos_sdi_map_virtualservice_fk1] FOREIGN KEY([map_id])
-REFERENCES [jos_sdi_map] ([id])
+ALTER TABLE [#__sdi_map_virtualservice]  WITH CHECK ADD  CONSTRAINT [#__sdi_map_virtualservice$#__sdi_map_virtualservice_fk1] FOREIGN KEY([map_id])
+REFERENCES [#__sdi_map] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_map_virtualservice] CHECK CONSTRAINT [jos_sdi_map_virtualservice$jos_sdi_map_virtualservice_fk1];
+ALTER TABLE [#__sdi_map_virtualservice] CHECK CONSTRAINT [#__sdi_map_virtualservice$#__sdi_map_virtualservice_fk1];
 
-ALTER TABLE [jos_sdi_map_virtualservice]  WITH CHECK ADD  CONSTRAINT [jos_sdi_map_virtualservice$jos_sdi_map_virtualservice_fk2] FOREIGN KEY([virtualservice_id])
-REFERENCES [jos_sdi_virtualservice] ([id])
+ALTER TABLE [#__sdi_map_virtualservice]  WITH CHECK ADD  CONSTRAINT [#__sdi_map_virtualservice$#__sdi_map_virtualservice_fk2] FOREIGN KEY([virtualservice_id])
+REFERENCES [#__sdi_virtualservice] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_map_virtualservice] CHECK CONSTRAINT [jos_sdi_map_virtualservice$jos_sdi_map_virtualservice_fk2];
+ALTER TABLE [#__sdi_map_virtualservice] CHECK CONSTRAINT [#__sdi_map_virtualservice$#__sdi_map_virtualservice_fk2];
 
-ALTER TABLE [jos_sdi_maplayer]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_maplayer$jos_sdi_maplayer_fk1] FOREIGN KEY([accessscope_id])
-REFERENCES [jos_sdi_sys_accessscope] ([id])
+ALTER TABLE [#__sdi_maplayer]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_maplayer$#__sdi_maplayer_fk1] FOREIGN KEY([accessscope_id])
+REFERENCES [#__sdi_sys_accessscope] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_maplayer] CHECK CONSTRAINT [jos_sdi_maplayer$jos_sdi_maplayer_fk1];
+ALTER TABLE [#__sdi_maplayer] CHECK CONSTRAINT [#__sdi_maplayer$#__sdi_maplayer_fk1];
 
-ALTER TABLE [jos_sdi_metadata]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_metadata$jos_sdi_metadata_fk1] FOREIGN KEY([metadatastate_id])
-REFERENCES [jos_sdi_sys_metadatastate] ([id]);
+ALTER TABLE [#__sdi_metadata]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_metadata$#__sdi_metadata_fk1] FOREIGN KEY([metadatastate_id])
+REFERENCES [#__sdi_sys_metadatastate] ([id]);
 
-ALTER TABLE [jos_sdi_metadata] CHECK CONSTRAINT [jos_sdi_metadata$jos_sdi_metadata_fk1];
+ALTER TABLE [#__sdi_metadata] CHECK CONSTRAINT [#__sdi_metadata$#__sdi_metadata_fk1];
 
-ALTER TABLE [jos_sdi_metadata]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_metadata$jos_sdi_metadata_fk2] FOREIGN KEY([accessscope_id])
-REFERENCES [jos_sdi_sys_accessscope] ([id]);
+ALTER TABLE [#__sdi_metadata]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_metadata$#__sdi_metadata_fk2] FOREIGN KEY([accessscope_id])
+REFERENCES [#__sdi_sys_accessscope] ([id]);
 
-ALTER TABLE [jos_sdi_metadata] CHECK CONSTRAINT [jos_sdi_metadata$jos_sdi_metadata_fk2];
+ALTER TABLE [#__sdi_metadata] CHECK CONSTRAINT [#__sdi_metadata$#__sdi_metadata_fk2];
 
-ALTER TABLE [jos_sdi_metadata]  WITH CHECK ADD  CONSTRAINT [jos_sdi_metadata$jos_sdi_metadata_fk3] FOREIGN KEY([version_id])
-REFERENCES [jos_sdi_version] ([id]);
+ALTER TABLE [#__sdi_metadata]  WITH CHECK ADD  CONSTRAINT [#__sdi_metadata$#__sdi_metadata_fk3] FOREIGN KEY([version_id])
+REFERENCES [#__sdi_version] ([id]);
 
-ALTER TABLE [jos_sdi_metadata] CHECK CONSTRAINT [jos_sdi_metadata$jos_sdi_metadata_fk3];
+ALTER TABLE [#__sdi_metadata] CHECK CONSTRAINT [#__sdi_metadata$#__sdi_metadata_fk3];
 
-ALTER TABLE [jos_sdi_order]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_order$jos_sdi_order_fk1] FOREIGN KEY([ordertype_id])
-REFERENCES [jos_sdi_sys_ordertype] ([id]);
+ALTER TABLE [#__sdi_order]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_order$#__sdi_order_fk1] FOREIGN KEY([ordertype_id])
+REFERENCES [#__sdi_sys_ordertype] ([id]);
 
-ALTER TABLE [jos_sdi_order] CHECK CONSTRAINT [jos_sdi_order$jos_sdi_order_fk1];
+ALTER TABLE [#__sdi_order] CHECK CONSTRAINT [#__sdi_order$#__sdi_order_fk1];
 
-ALTER TABLE [jos_sdi_order]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_order$jos_sdi_order_fk2] FOREIGN KEY([orderstate_id])
-REFERENCES [jos_sdi_sys_orderstate] ([id]);
+ALTER TABLE [#__sdi_order]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_order$#__sdi_order_fk2] FOREIGN KEY([orderstate_id])
+REFERENCES [#__sdi_sys_orderstate] ([id]);
 
-ALTER TABLE [jos_sdi_order] CHECK CONSTRAINT [jos_sdi_order$jos_sdi_order_fk2];
+ALTER TABLE [#__sdi_order] CHECK CONSTRAINT [#__sdi_order$#__sdi_order_fk2];
 
-ALTER TABLE [jos_sdi_order]  WITH CHECK ADD  CONSTRAINT [jos_sdi_order$jos_sdi_order_fk3] FOREIGN KEY([user_id])
-REFERENCES [jos_sdi_user] ([id]);
+ALTER TABLE [#__sdi_order]  WITH CHECK ADD  CONSTRAINT [#__sdi_order$#__sdi_order_fk3] FOREIGN KEY([user_id])
+REFERENCES [#__sdi_user] ([id]);
 
-ALTER TABLE [jos_sdi_order] CHECK CONSTRAINT [jos_sdi_order$jos_sdi_order_fk3];
+ALTER TABLE [#__sdi_order] CHECK CONSTRAINT [#__sdi_order$#__sdi_order_fk3];
 
-ALTER TABLE [jos_sdi_order]  WITH CHECK ADD  CONSTRAINT [jos_sdi_order$jos_sdi_order_fk4] FOREIGN KEY([thirdparty_id])
-REFERENCES [jos_sdi_user] ([id]);
+ALTER TABLE [#__sdi_order]  WITH CHECK ADD  CONSTRAINT [#__sdi_order$#__sdi_order_fk4] FOREIGN KEY([thirdparty_id])
+REFERENCES [#__sdi_user] ([id]);
 
-ALTER TABLE [jos_sdi_order] CHECK CONSTRAINT [jos_sdi_order$jos_sdi_order_fk4];
+ALTER TABLE [#__sdi_order] CHECK CONSTRAINT [#__sdi_order$#__sdi_order_fk4];
 
-ALTER TABLE [jos_sdi_order_diffusion]  WITH CHECK ADD  CONSTRAINT [jos_sdi_order_diffusion$jos_sdi_order_diffusion_fk1] FOREIGN KEY([order_id])
-REFERENCES [jos_sdi_order] ([id])
+ALTER TABLE [#__sdi_order_diffusion]  WITH CHECK ADD  CONSTRAINT [#__sdi_order_diffusion$#__sdi_order_diffusion_fk1] FOREIGN KEY([order_id])
+REFERENCES [#__sdi_order] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_order_diffusion] CHECK CONSTRAINT [jos_sdi_order_diffusion$jos_sdi_order_diffusion_fk1];
+ALTER TABLE [#__sdi_order_diffusion] CHECK CONSTRAINT [#__sdi_order_diffusion$#__sdi_order_diffusion_fk1];
 
-ALTER TABLE [jos_sdi_order_diffusion]  WITH CHECK ADD  CONSTRAINT [jos_sdi_order_diffusion$jos_sdi_order_diffusion_fk2] FOREIGN KEY([diffusion_id])
-REFERENCES [jos_sdi_diffusion] ([id])
+ALTER TABLE [#__sdi_order_diffusion]  WITH CHECK ADD  CONSTRAINT [#__sdi_order_diffusion$#__sdi_order_diffusion_fk2] FOREIGN KEY([diffusion_id])
+REFERENCES [#__sdi_diffusion] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_order_diffusion] CHECK CONSTRAINT [jos_sdi_order_diffusion$jos_sdi_order_diffusion_fk2];
+ALTER TABLE [#__sdi_order_diffusion] CHECK CONSTRAINT [#__sdi_order_diffusion$#__sdi_order_diffusion_fk2];
 
-ALTER TABLE [jos_sdi_order_diffusion]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_order_diffusion$jos_sdi_order_diffusion_fk3] FOREIGN KEY([productstate_id])
-REFERENCES [jos_sdi_sys_productstate] ([id]);
+ALTER TABLE [#__sdi_order_diffusion]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_order_diffusion$#__sdi_order_diffusion_fk3] FOREIGN KEY([productstate_id])
+REFERENCES [#__sdi_sys_productstate] ([id]);
 
-ALTER TABLE [jos_sdi_order_diffusion] CHECK CONSTRAINT [jos_sdi_order_diffusion$jos_sdi_order_diffusion_fk3];
+ALTER TABLE [#__sdi_order_diffusion] CHECK CONSTRAINT [#__sdi_order_diffusion$#__sdi_order_diffusion_fk3];
 
-ALTER TABLE [jos_sdi_order_perimeter]  WITH CHECK ADD  CONSTRAINT [jos_sdi_order_perimeter$jos_sdi_order_perimeter_fk1] FOREIGN KEY([order_id])
-REFERENCES [jos_sdi_order] ([id])
+ALTER TABLE [#__sdi_order_perimeter]  WITH CHECK ADD  CONSTRAINT [#__sdi_order_perimeter$#__sdi_order_perimeter_fk1] FOREIGN KEY([order_id])
+REFERENCES [#__sdi_order] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_order_perimeter] CHECK CONSTRAINT [jos_sdi_order_perimeter$jos_sdi_order_perimeter_fk1];
+ALTER TABLE [#__sdi_order_perimeter] CHECK CONSTRAINT [#__sdi_order_perimeter$#__sdi_order_perimeter_fk1];
 
-ALTER TABLE [jos_sdi_order_perimeter]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_order_perimeter$jos_sdi_order_perimeter_fk2] FOREIGN KEY([perimeter_id])
-REFERENCES [jos_sdi_perimeter] ([id])
+ALTER TABLE [#__sdi_order_perimeter]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_order_perimeter$#__sdi_order_perimeter_fk2] FOREIGN KEY([perimeter_id])
+REFERENCES [#__sdi_perimeter] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_order_perimeter] CHECK CONSTRAINT [jos_sdi_order_perimeter$jos_sdi_order_perimeter_fk2];
+ALTER TABLE [#__sdi_order_perimeter] CHECK CONSTRAINT [#__sdi_order_perimeter$#__sdi_order_perimeter_fk2];
 
-ALTER TABLE [jos_sdi_order_propertyvalue]  WITH CHECK ADD  CONSTRAINT [jos_sdi_order_propertyvalue$jos_sdi_order_propertyvalue_fk1] FOREIGN KEY([orderdiffusion_id])
-REFERENCES [jos_sdi_order_diffusion] ([id])
+ALTER TABLE [#__sdi_order_propertyvalue]  WITH CHECK ADD  CONSTRAINT [#__sdi_order_propertyvalue$#__sdi_order_propertyvalue_fk1] FOREIGN KEY([orderdiffusion_id])
+REFERENCES [#__sdi_order_diffusion] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_order_propertyvalue] CHECK CONSTRAINT [jos_sdi_order_propertyvalue$jos_sdi_order_propertyvalue_fk1];
+ALTER TABLE [#__sdi_order_propertyvalue] CHECK CONSTRAINT [#__sdi_order_propertyvalue$#__sdi_order_propertyvalue_fk1];
 
-ALTER TABLE [jos_sdi_order_propertyvalue]  WITH CHECK ADD  CONSTRAINT [jos_sdi_order_propertyvalue$jos_sdi_order_propertyvalue_fk2] FOREIGN KEY([property_id])
-REFERENCES [jos_sdi_property] ([id])
+ALTER TABLE [#__sdi_order_propertyvalue]  WITH CHECK ADD  CONSTRAINT [#__sdi_order_propertyvalue$#__sdi_order_propertyvalue_fk2] FOREIGN KEY([property_id])
+REFERENCES [#__sdi_property] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_order_propertyvalue] CHECK CONSTRAINT [jos_sdi_order_propertyvalue$jos_sdi_order_propertyvalue_fk2];
+ALTER TABLE [#__sdi_order_propertyvalue] CHECK CONSTRAINT [#__sdi_order_propertyvalue$#__sdi_order_propertyvalue_fk2];
 
-ALTER TABLE [jos_sdi_order_propertyvalue]  WITH CHECK ADD  CONSTRAINT [jos_sdi_order_propertyvalue$jos_sdi_order_propertyvalue_fk3] FOREIGN KEY([propertyvalue_id])
-REFERENCES [jos_sdi_propertyvalue] ([id]);
+ALTER TABLE [#__sdi_order_propertyvalue]  WITH CHECK ADD  CONSTRAINT [#__sdi_order_propertyvalue$#__sdi_order_propertyvalue_fk3] FOREIGN KEY([propertyvalue_id])
+REFERENCES [#__sdi_propertyvalue] ([id]);
 
-ALTER TABLE [jos_sdi_order_propertyvalue] CHECK CONSTRAINT [jos_sdi_order_propertyvalue$jos_sdi_order_propertyvalue_fk3];
+ALTER TABLE [#__sdi_order_propertyvalue] CHECK CONSTRAINT [#__sdi_order_propertyvalue$#__sdi_order_propertyvalue_fk3];
 
-ALTER TABLE [jos_sdi_perimeter]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_perimeter$jos_sdi_perimeter_fk1] FOREIGN KEY([accessscope_id])
-REFERENCES [jos_sdi_sys_accessscope] ([id])
+ALTER TABLE [#__sdi_perimeter]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_perimeter$#__sdi_perimeter_fk1] FOREIGN KEY([accessscope_id])
+REFERENCES [#__sdi_sys_accessscope] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_perimeter] CHECK CONSTRAINT [jos_sdi_perimeter$jos_sdi_perimeter_fk1];
+ALTER TABLE [#__sdi_perimeter] CHECK CONSTRAINT [#__sdi_perimeter$#__sdi_perimeter_fk1];
 
-ALTER TABLE [jos_sdi_perimeter]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_perimeter$jos_sdi_perimeter_fk2] FOREIGN KEY([perimetertype_id])
-REFERENCES [jos_sdi_sys_perimetertype] ([id]);
+ALTER TABLE [#__sdi_perimeter]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_perimeter$#__sdi_perimeter_fk2] FOREIGN KEY([perimetertype_id])
+REFERENCES [#__sdi_sys_perimetertype] ([id]);
 
-ALTER TABLE [jos_sdi_perimeter] CHECK CONSTRAINT [jos_sdi_perimeter$jos_sdi_perimeter_fk2];
+ALTER TABLE [#__sdi_perimeter] CHECK CONSTRAINT [#__sdi_perimeter$#__sdi_perimeter_fk2];
 
-ALTER TABLE [jos_sdi_profile]  WITH CHECK ADD  CONSTRAINT [jos_sdi_profile$jos_sdi_profile_fk1] FOREIGN KEY([class_id])
-REFERENCES [jos_sdi_class] ([id]);
+ALTER TABLE [#__sdi_profile]  WITH CHECK ADD  CONSTRAINT [#__sdi_profile$#__sdi_profile_fk1] FOREIGN KEY([class_id])
+REFERENCES [#__sdi_class] ([id]);
 
-ALTER TABLE [jos_sdi_profile] CHECK CONSTRAINT [jos_sdi_profile$jos_sdi_profile_fk1];
+ALTER TABLE [#__sdi_profile] CHECK CONSTRAINT [#__sdi_profile$#__sdi_profile_fk1];
 
-ALTER TABLE [jos_sdi_property]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_property$jos_sdi_property_fk1] FOREIGN KEY([accessscope_id])
-REFERENCES [jos_sdi_sys_accessscope] ([id]);
+ALTER TABLE [#__sdi_property]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_property$#__sdi_property_fk1] FOREIGN KEY([accessscope_id])
+REFERENCES [#__sdi_sys_accessscope] ([id]);
 
-ALTER TABLE [jos_sdi_property] CHECK CONSTRAINT [jos_sdi_property$jos_sdi_property_fk1];
+ALTER TABLE [#__sdi_property] CHECK CONSTRAINT [#__sdi_property$#__sdi_property_fk1];
 
-ALTER TABLE [jos_sdi_property]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_property$jos_sdi_property_fk2] FOREIGN KEY([propertytype_id])
-REFERENCES [jos_sdi_sys_propertytype] ([id]);
+ALTER TABLE [#__sdi_property]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_property$#__sdi_property_fk2] FOREIGN KEY([propertytype_id])
+REFERENCES [#__sdi_sys_propertytype] ([id]);
 
-ALTER TABLE [jos_sdi_property] CHECK CONSTRAINT [jos_sdi_property$jos_sdi_property_fk2];
+ALTER TABLE [#__sdi_property] CHECK CONSTRAINT [#__sdi_property$#__sdi_property_fk2];
 
-ALTER TABLE [jos_sdi_propertyvalue]  WITH CHECK ADD  CONSTRAINT [jos_sdi_propertyvalue$jos_sdi_propertyvalue_fk1] FOREIGN KEY([property_id])
-REFERENCES [jos_sdi_property] ([id])
+ALTER TABLE [#__sdi_propertyvalue]  WITH CHECK ADD  CONSTRAINT [#__sdi_propertyvalue$#__sdi_propertyvalue_fk1] FOREIGN KEY([property_id])
+REFERENCES [#__sdi_property] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_propertyvalue] CHECK CONSTRAINT [jos_sdi_propertyvalue$jos_sdi_propertyvalue_fk1];
+ALTER TABLE [#__sdi_propertyvalue] CHECK CONSTRAINT [#__sdi_propertyvalue$#__sdi_propertyvalue_fk1];
 
-ALTER TABLE [jos_sdi_relation]  WITH CHECK ADD  CONSTRAINT [jos_sdi_relation$jos_sdi_relation_fk1] FOREIGN KEY([parent_id])
-REFERENCES [jos_sdi_class] ([id]);
+ALTER TABLE [#__sdi_relation]  WITH CHECK ADD  CONSTRAINT [#__sdi_relation$#__sdi_relation_fk1] FOREIGN KEY([parent_id])
+REFERENCES [#__sdi_class] ([id]);
 
-ALTER TABLE [jos_sdi_relation] CHECK CONSTRAINT [jos_sdi_relation$jos_sdi_relation_fk1];
+ALTER TABLE [#__sdi_relation] CHECK CONSTRAINT [#__sdi_relation$#__sdi_relation_fk1];
 
-ALTER TABLE [jos_sdi_relation]  WITH CHECK ADD  CONSTRAINT [jos_sdi_relation$jos_sdi_relation_fk10] FOREIGN KEY([childresourcetype_id])
-REFERENCES [jos_sdi_resourcetype] ([id]);
+ALTER TABLE [#__sdi_relation]  WITH CHECK ADD  CONSTRAINT [#__sdi_relation$#__sdi_relation_fk10] FOREIGN KEY([childresourcetype_id])
+REFERENCES [#__sdi_resourcetype] ([id]);
 
-ALTER TABLE [jos_sdi_relation] CHECK CONSTRAINT [jos_sdi_relation$jos_sdi_relation_fk10];
+ALTER TABLE [#__sdi_relation] CHECK CONSTRAINT [#__sdi_relation$#__sdi_relation_fk10];
 
-ALTER TABLE [jos_sdi_relation]  WITH CHECK ADD  CONSTRAINT [jos_sdi_relation$jos_sdi_relation_fk2] FOREIGN KEY([classchild_id])
-REFERENCES [jos_sdi_class] ([id]);
+ALTER TABLE [#__sdi_relation]  WITH CHECK ADD  CONSTRAINT [#__sdi_relation$#__sdi_relation_fk2] FOREIGN KEY([classchild_id])
+REFERENCES [#__sdi_class] ([id]);
 
-ALTER TABLE [jos_sdi_relation] CHECK CONSTRAINT [jos_sdi_relation$jos_sdi_relation_fk2];
+ALTER TABLE [#__sdi_relation] CHECK CONSTRAINT [#__sdi_relation$#__sdi_relation_fk2];
 
-ALTER TABLE [jos_sdi_relation]  WITH CHECK ADD  CONSTRAINT [jos_sdi_relation$jos_sdi_relation_fk3] FOREIGN KEY([attributechild_id])
-REFERENCES [jos_sdi_attribute] ([id]);
+ALTER TABLE [#__sdi_relation]  WITH CHECK ADD  CONSTRAINT [#__sdi_relation$#__sdi_relation_fk3] FOREIGN KEY([attributechild_id])
+REFERENCES [#__sdi_attribute] ([id]);
 
-ALTER TABLE [jos_sdi_relation] CHECK CONSTRAINT [jos_sdi_relation$jos_sdi_relation_fk3];
+ALTER TABLE [#__sdi_relation] CHECK CONSTRAINT [#__sdi_relation$#__sdi_relation_fk3];
 
-ALTER TABLE [jos_sdi_relation]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_relation$jos_sdi_relation_fk4] FOREIGN KEY([relationtype_id])
-REFERENCES [jos_sdi_sys_relationtype] ([id]);
+ALTER TABLE [#__sdi_relation]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_relation$#__sdi_relation_fk4] FOREIGN KEY([relationtype_id])
+REFERENCES [#__sdi_sys_relationtype] ([id]);
 
-ALTER TABLE [jos_sdi_relation] CHECK CONSTRAINT [jos_sdi_relation$jos_sdi_relation_fk4];
+ALTER TABLE [#__sdi_relation] CHECK CONSTRAINT [#__sdi_relation$#__sdi_relation_fk4];
 
-ALTER TABLE [jos_sdi_relation]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_relation$jos_sdi_relation_fk5] FOREIGN KEY([rendertype_id])
-REFERENCES [jos_sdi_sys_rendertype] ([id]);
+ALTER TABLE [#__sdi_relation]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_relation$#__sdi_relation_fk5] FOREIGN KEY([rendertype_id])
+REFERENCES [#__sdi_sys_rendertype] ([id]);
 
-ALTER TABLE [jos_sdi_relation] CHECK CONSTRAINT [jos_sdi_relation$jos_sdi_relation_fk5];
+ALTER TABLE [#__sdi_relation] CHECK CONSTRAINT [#__sdi_relation$#__sdi_relation_fk5];
 
-ALTER TABLE [jos_sdi_relation]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_relation$jos_sdi_relation_fk6] FOREIGN KEY([namespace_id])
-REFERENCES [jos_sdi_namespace] ([id]);
+ALTER TABLE [#__sdi_relation]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_relation$#__sdi_relation_fk6] FOREIGN KEY([namespace_id])
+REFERENCES [#__sdi_namespace] ([id]);
 
-ALTER TABLE [jos_sdi_relation] CHECK CONSTRAINT [jos_sdi_relation$jos_sdi_relation_fk6];
+ALTER TABLE [#__sdi_relation] CHECK CONSTRAINT [#__sdi_relation$#__sdi_relation_fk6];
 
-ALTER TABLE [jos_sdi_relation]  WITH CHECK ADD  CONSTRAINT [jos_sdi_relation$jos_sdi_relation_fk7] FOREIGN KEY([classassociation_id])
-REFERENCES [jos_sdi_class] ([id]);
+ALTER TABLE [#__sdi_relation]  WITH CHECK ADD  CONSTRAINT [#__sdi_relation$#__sdi_relation_fk7] FOREIGN KEY([classassociation_id])
+REFERENCES [#__sdi_class] ([id]);
 
-ALTER TABLE [jos_sdi_relation] CHECK CONSTRAINT [jos_sdi_relation$jos_sdi_relation_fk7];
+ALTER TABLE [#__sdi_relation] CHECK CONSTRAINT [#__sdi_relation$#__sdi_relation_fk7];
 
-ALTER TABLE [jos_sdi_relation]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_relation$jos_sdi_relation_fk8] FOREIGN KEY([relationscope_id])
-REFERENCES [jos_sdi_sys_relationscope] ([id]);
+ALTER TABLE [#__sdi_relation]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_relation$#__sdi_relation_fk8] FOREIGN KEY([relationscope_id])
+REFERENCES [#__sdi_sys_relationscope] ([id]);
 
-ALTER TABLE [jos_sdi_relation] CHECK CONSTRAINT [jos_sdi_relation$jos_sdi_relation_fk8];
+ALTER TABLE [#__sdi_relation] CHECK CONSTRAINT [#__sdi_relation$#__sdi_relation_fk8];
 
-ALTER TABLE [jos_sdi_relation]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_relation$jos_sdi_relation_fk9] FOREIGN KEY([editorrelationscope_id])
-REFERENCES [jos_sdi_sys_relationscope] ([id]);
+ALTER TABLE [#__sdi_relation]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_relation$#__sdi_relation_fk9] FOREIGN KEY([editorrelationscope_id])
+REFERENCES [#__sdi_sys_relationscope] ([id]);
 
-ALTER TABLE [jos_sdi_relation] CHECK CONSTRAINT [jos_sdi_relation$jos_sdi_relation_fk9];
+ALTER TABLE [#__sdi_relation] CHECK CONSTRAINT [#__sdi_relation$#__sdi_relation_fk9];
 
-ALTER TABLE [jos_sdi_relation_catalog]  WITH CHECK ADD  CONSTRAINT [jos_sdi_relation_catalog$jos_sdi_relation_catalog_fk1] FOREIGN KEY([relation_id])
-REFERENCES [jos_sdi_relation] ([id])
+ALTER TABLE [#__sdi_relation_catalog]  WITH CHECK ADD  CONSTRAINT [#__sdi_relation_catalog$#__sdi_relation_catalog_fk1] FOREIGN KEY([relation_id])
+REFERENCES [#__sdi_relation] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_relation_catalog] CHECK CONSTRAINT [jos_sdi_relation_catalog$jos_sdi_relation_catalog_fk1];
+ALTER TABLE [#__sdi_relation_catalog] CHECK CONSTRAINT [#__sdi_relation_catalog$#__sdi_relation_catalog_fk1];
 
-ALTER TABLE [jos_sdi_relation_catalog]  WITH CHECK ADD  CONSTRAINT [jos_sdi_relation_catalog$jos_sdi_relation_catalog_fk2] FOREIGN KEY([catalog_id])
-REFERENCES [jos_sdi_catalog] ([id])
+ALTER TABLE [#__sdi_relation_catalog]  WITH CHECK ADD  CONSTRAINT [#__sdi_relation_catalog$#__sdi_relation_catalog_fk2] FOREIGN KEY([catalog_id])
+REFERENCES [#__sdi_catalog] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_relation_catalog] CHECK CONSTRAINT [jos_sdi_relation_catalog$jos_sdi_relation_catalog_fk2];
+ALTER TABLE [#__sdi_relation_catalog] CHECK CONSTRAINT [#__sdi_relation_catalog$#__sdi_relation_catalog_fk2];
 
-ALTER TABLE [jos_sdi_relation_defaultvalue]  WITH CHECK ADD  CONSTRAINT [jos_sdi_relation_defaultvalue$jos_sdi_relation_defaultvalue_fk1] FOREIGN KEY([relation_id])
-REFERENCES [jos_sdi_relation] ([id])
+ALTER TABLE [#__sdi_relation_defaultvalue]  WITH CHECK ADD  CONSTRAINT [#__sdi_relation_defaultvalue$#__sdi_relation_defaultvalue_fk1] FOREIGN KEY([relation_id])
+REFERENCES [#__sdi_relation] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_relation_defaultvalue] CHECK CONSTRAINT [jos_sdi_relation_defaultvalue$jos_sdi_relation_defaultvalue_fk1];
+ALTER TABLE [#__sdi_relation_defaultvalue] CHECK CONSTRAINT [#__sdi_relation_defaultvalue$#__sdi_relation_defaultvalue_fk1];
 
-ALTER TABLE [jos_sdi_relation_defaultvalue]  WITH CHECK ADD  CONSTRAINT [jos_sdi_relation_defaultvalue$jos_sdi_relation_defaultvalue_fk2] FOREIGN KEY([attributevalue_id])
-REFERENCES [jos_sdi_attributevalue] ([id])
+ALTER TABLE [#__sdi_relation_defaultvalue]  WITH CHECK ADD  CONSTRAINT [#__sdi_relation_defaultvalue$#__sdi_relation_defaultvalue_fk2] FOREIGN KEY([attributevalue_id])
+REFERENCES [#__sdi_attributevalue] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_relation_defaultvalue] CHECK CONSTRAINT [jos_sdi_relation_defaultvalue$jos_sdi_relation_defaultvalue_fk2];
+ALTER TABLE [#__sdi_relation_defaultvalue] CHECK CONSTRAINT [#__sdi_relation_defaultvalue$#__sdi_relation_defaultvalue_fk2];
 
-ALTER TABLE [jos_sdi_relation_defaultvalue]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_relation_defaultvalue$jos_sdi_relation_defaultvalue_fk3] FOREIGN KEY([language_id])
-REFERENCES [jos_sdi_language] ([id])
+ALTER TABLE [#__sdi_relation_defaultvalue]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_relation_defaultvalue$#__sdi_relation_defaultvalue_fk3] FOREIGN KEY([language_id])
+REFERENCES [#__sdi_language] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_relation_defaultvalue] CHECK CONSTRAINT [jos_sdi_relation_defaultvalue$jos_sdi_relation_defaultvalue_fk3];
+ALTER TABLE [#__sdi_relation_defaultvalue] CHECK CONSTRAINT [#__sdi_relation_defaultvalue$#__sdi_relation_defaultvalue_fk3];
 
-ALTER TABLE [jos_sdi_relation_profile]  WITH CHECK ADD  CONSTRAINT [jos_sdi_relation_profile$jos_sdi_relation_profile_fk1] FOREIGN KEY([relation_id])
-REFERENCES [jos_sdi_relation] ([id])
+ALTER TABLE [#__sdi_relation_profile]  WITH CHECK ADD  CONSTRAINT [#__sdi_relation_profile$#__sdi_relation_profile_fk1] FOREIGN KEY([relation_id])
+REFERENCES [#__sdi_relation] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_relation_profile] CHECK CONSTRAINT [jos_sdi_relation_profile$jos_sdi_relation_profile_fk1];
+ALTER TABLE [#__sdi_relation_profile] CHECK CONSTRAINT [#__sdi_relation_profile$#__sdi_relation_profile_fk1];
 
-ALTER TABLE [jos_sdi_relation_profile]  WITH CHECK ADD  CONSTRAINT [jos_sdi_relation_profile$jos_sdi_relation_profile_fk2] FOREIGN KEY([profile_id])
-REFERENCES [jos_sdi_profile] ([id])
+ALTER TABLE [#__sdi_relation_profile]  WITH CHECK ADD  CONSTRAINT [#__sdi_relation_profile$#__sdi_relation_profile_fk2] FOREIGN KEY([profile_id])
+REFERENCES [#__sdi_profile] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_relation_profile] CHECK CONSTRAINT [jos_sdi_relation_profile$jos_sdi_relation_profile_fk2];
+ALTER TABLE [#__sdi_relation_profile] CHECK CONSTRAINT [#__sdi_relation_profile$#__sdi_relation_profile_fk2];
 
-ALTER TABLE [jos_sdi_resource]  WITH CHECK ADD  CONSTRAINT [jos_sdi_resource$jos_sdi_resource_fk1] FOREIGN KEY([organism_id])
-REFERENCES [jos_sdi_organism] ([id]);
+ALTER TABLE [#__sdi_resource]  WITH CHECK ADD  CONSTRAINT [#__sdi_resource$#__sdi_resource_fk1] FOREIGN KEY([organism_id])
+REFERENCES [#__sdi_organism] ([id]);
 
-ALTER TABLE [jos_sdi_resource] CHECK CONSTRAINT [jos_sdi_resource$jos_sdi_resource_fk1];
+ALTER TABLE [#__sdi_resource] CHECK CONSTRAINT [#__sdi_resource$#__sdi_resource_fk1];
 
-ALTER TABLE [jos_sdi_resource]  WITH CHECK ADD  CONSTRAINT [jos_sdi_resource$jos_sdi_resource_fk2] FOREIGN KEY([resourcetype_id])
-REFERENCES [jos_sdi_resourcetype] ([id]);
+ALTER TABLE [#__sdi_resource]  WITH CHECK ADD  CONSTRAINT [#__sdi_resource$#__sdi_resource_fk2] FOREIGN KEY([resourcetype_id])
+REFERENCES [#__sdi_resourcetype] ([id]);
 
-ALTER TABLE [jos_sdi_resource] CHECK CONSTRAINT [jos_sdi_resource$jos_sdi_resource_fk2];
+ALTER TABLE [#__sdi_resource] CHECK CONSTRAINT [#__sdi_resource$#__sdi_resource_fk2];
 
-ALTER TABLE [jos_sdi_resource]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_resource$jos_sdi_resource_fk3] FOREIGN KEY([accessscope_id])
-REFERENCES [jos_sdi_sys_accessscope] ([id]);
+ALTER TABLE [#__sdi_resource]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_resource$#__sdi_resource_fk3] FOREIGN KEY([accessscope_id])
+REFERENCES [#__sdi_sys_accessscope] ([id]);
 
-ALTER TABLE [jos_sdi_resource] CHECK CONSTRAINT [jos_sdi_resource$jos_sdi_resource_fk3];
+ALTER TABLE [#__sdi_resource] CHECK CONSTRAINT [#__sdi_resource$#__sdi_resource_fk3];
 
-ALTER TABLE [jos_sdi_resourcetype]  WITH CHECK ADD  CONSTRAINT [jos_sdi_resourcetype$jos_sdi_resourcetype_fk1] FOREIGN KEY([profile_id])
-REFERENCES [jos_sdi_profile] ([id]);
+ALTER TABLE [#__sdi_resourcetype]  WITH CHECK ADD  CONSTRAINT [#__sdi_resourcetype$#__sdi_resourcetype_fk1] FOREIGN KEY([profile_id])
+REFERENCES [#__sdi_profile] ([id]);
 
-ALTER TABLE [jos_sdi_resourcetype] CHECK CONSTRAINT [jos_sdi_resourcetype$jos_sdi_resourcetype_fk1];
+ALTER TABLE [#__sdi_resourcetype] CHECK CONSTRAINT [#__sdi_resourcetype$#__sdi_resourcetype_fk1];
 
-ALTER TABLE [jos_sdi_resourcetype]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_resourcetype$jos_sdi_resourcetype_fk2] FOREIGN KEY([fragmentnamespace_id])
-REFERENCES [jos_sdi_namespace] ([id]);
+ALTER TABLE [#__sdi_resourcetype]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_resourcetype$#__sdi_resourcetype_fk2] FOREIGN KEY([fragmentnamespace_id])
+REFERENCES [#__sdi_namespace] ([id]);
 
-ALTER TABLE [jos_sdi_resourcetype] CHECK CONSTRAINT [jos_sdi_resourcetype$jos_sdi_resourcetype_fk2];
+ALTER TABLE [#__sdi_resourcetype] CHECK CONSTRAINT [#__sdi_resourcetype$#__sdi_resourcetype_fk2];
 
-ALTER TABLE [jos_sdi_resourcetype]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_resourcetype$jos_sdi_resourcetype_fk3] FOREIGN KEY([accessscope_id])
-REFERENCES [jos_sdi_sys_accessscope] ([id]);
+ALTER TABLE [#__sdi_resourcetype]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_resourcetype$#__sdi_resourcetype_fk3] FOREIGN KEY([accessscope_id])
+REFERENCES [#__sdi_sys_accessscope] ([id]);
 
-ALTER TABLE [jos_sdi_resourcetype] CHECK CONSTRAINT [jos_sdi_resourcetype$jos_sdi_resourcetype_fk3];
+ALTER TABLE [#__sdi_resourcetype] CHECK CONSTRAINT [#__sdi_resourcetype$#__sdi_resourcetype_fk3];
 
-ALTER TABLE [jos_sdi_resourcetypelink]  WITH CHECK ADD  CONSTRAINT [jos_sdi_resourcetypelink$jos_sdi_resourcetypelink_fk1] FOREIGN KEY([parent_id])
-REFERENCES [jos_sdi_resourcetype] ([id]);
+ALTER TABLE [#__sdi_resourcetypelink]  WITH CHECK ADD  CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk1] FOREIGN KEY([parent_id])
+REFERENCES [#__sdi_resourcetype] ([id]);
 
-ALTER TABLE [jos_sdi_resourcetypelink] CHECK CONSTRAINT [jos_sdi_resourcetypelink$jos_sdi_resourcetypelink_fk1];
+ALTER TABLE [#__sdi_resourcetypelink] CHECK CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk1];
 
-ALTER TABLE [jos_sdi_resourcetypelink]  WITH CHECK ADD  CONSTRAINT [jos_sdi_resourcetypelink$jos_sdi_resourcetypelink_fk2] FOREIGN KEY([child_id])
-REFERENCES [jos_sdi_resourcetype] ([id]);
+ALTER TABLE [#__sdi_resourcetypelink]  WITH CHECK ADD  CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk2] FOREIGN KEY([child_id])
+REFERENCES [#__sdi_resourcetype] ([id]);
 
-ALTER TABLE [jos_sdi_resourcetypelink] CHECK CONSTRAINT [jos_sdi_resourcetypelink$jos_sdi_resourcetypelink_fk2];
+ALTER TABLE [#__sdi_resourcetypelink] CHECK CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk2];
 
-ALTER TABLE [jos_sdi_resourcetypelink]  WITH CHECK ADD  CONSTRAINT [jos_sdi_resourcetypelink$jos_sdi_resourcetypelink_fk3] FOREIGN KEY([class_id])
-REFERENCES [jos_sdi_class] ([id]);
+ALTER TABLE [#__sdi_resourcetypelink]  WITH CHECK ADD  CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk3] FOREIGN KEY([class_id])
+REFERENCES [#__sdi_class] ([id]);
 
-ALTER TABLE [jos_sdi_resourcetypelink] CHECK CONSTRAINT [jos_sdi_resourcetypelink$jos_sdi_resourcetypelink_fk3];
+ALTER TABLE [#__sdi_resourcetypelink] CHECK CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk3];
 
-ALTER TABLE [jos_sdi_resourcetypelink]  WITH CHECK ADD  CONSTRAINT [jos_sdi_resourcetypelink$jos_sdi_resourcetypelink_fk4] FOREIGN KEY([attribute_id])
-REFERENCES [jos_sdi_attribute] ([id]);
+ALTER TABLE [#__sdi_resourcetypelink]  WITH CHECK ADD  CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk4] FOREIGN KEY([attribute_id])
+REFERENCES [#__sdi_attribute] ([id]);
 
-ALTER TABLE [jos_sdi_resourcetypelink] CHECK CONSTRAINT [jos_sdi_resourcetypelink$jos_sdi_resourcetypelink_fk4];
+ALTER TABLE [#__sdi_resourcetypelink] CHECK CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk4];
 
-ALTER TABLE [jos_sdi_resourcetypelinkinheritance]  WITH CHECK ADD  CONSTRAINT [jos_sdi_resourcetypelinkinheritance$jos_sdi_resourcetypelinkinheritance_fk1] FOREIGN KEY([resourcetypelink_id])
-REFERENCES [jos_sdi_resourcetypelink] ([id]);
+ALTER TABLE [#__sdi_resourcetypelinkinheritance]  WITH CHECK ADD  CONSTRAINT [#__sdi_resourcetypelinkinheritance$#__sdi_resourcetypelinkinheritance_fk1] FOREIGN KEY([resourcetypelink_id])
+REFERENCES [#__sdi_resourcetypelink] ([id]);
 
-ALTER TABLE [jos_sdi_resourcetypelinkinheritance] CHECK CONSTRAINT [jos_sdi_resourcetypelinkinheritance$jos_sdi_resourcetypelinkinheritance_fk1];
+ALTER TABLE [#__sdi_resourcetypelinkinheritance] CHECK CONSTRAINT [#__sdi_resourcetypelinkinheritance$#__sdi_resourcetypelinkinheritance_fk1];
 
-ALTER TABLE [jos_sdi_searchcriteria]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_searchcriteria$jos_sdi_searchcriteria_fk1] FOREIGN KEY([criteriatype_id])
-REFERENCES [jos_sdi_sys_criteriatype] ([id]);
+ALTER TABLE [#__sdi_searchcriteria]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_searchcriteria$#__sdi_searchcriteria_fk1] FOREIGN KEY([criteriatype_id])
+REFERENCES [#__sdi_sys_criteriatype] ([id]);
 
-ALTER TABLE [jos_sdi_searchcriteria] CHECK CONSTRAINT [jos_sdi_searchcriteria$jos_sdi_searchcriteria_fk1];
+ALTER TABLE [#__sdi_searchcriteria] CHECK CONSTRAINT [#__sdi_searchcriteria$#__sdi_searchcriteria_fk1];
 
-ALTER TABLE [jos_sdi_searchcriteria]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_searchcriteria$jos_sdi_searchcriteria_fk2] FOREIGN KEY([rendertype_id])
-REFERENCES [jos_sdi_sys_rendertype] ([id]);
+ALTER TABLE [#__sdi_searchcriteria]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_searchcriteria$#__sdi_searchcriteria_fk2] FOREIGN KEY([rendertype_id])
+REFERENCES [#__sdi_sys_rendertype] ([id]);
 
-ALTER TABLE [jos_sdi_searchcriteria] CHECK CONSTRAINT [jos_sdi_searchcriteria$jos_sdi_searchcriteria_fk2];
+ALTER TABLE [#__sdi_searchcriteria] CHECK CONSTRAINT [#__sdi_searchcriteria$#__sdi_searchcriteria_fk2];
 
-ALTER TABLE [jos_sdi_searchcriteria]  WITH CHECK ADD  CONSTRAINT [jos_sdi_searchcriteria$jos_sdi_searchcriteria_fk3] FOREIGN KEY([relation_id])
-REFERENCES [jos_sdi_relation] ([id])
+ALTER TABLE [#__sdi_searchcriteria]  WITH CHECK ADD  CONSTRAINT [#__sdi_searchcriteria$#__sdi_searchcriteria_fk3] FOREIGN KEY([relation_id])
+REFERENCES [#__sdi_relation] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_searchcriteria] CHECK CONSTRAINT [jos_sdi_searchcriteria$jos_sdi_searchcriteria_fk3];
+ALTER TABLE [#__sdi_searchcriteria] CHECK CONSTRAINT [#__sdi_searchcriteria$#__sdi_searchcriteria_fk3];
 
-ALTER TABLE [jos_sdi_searchcriteriafilter]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_searchcriteriafilter$jos_sdi_searchcriteriafilter_fk1] FOREIGN KEY([searchcriteria_id])
-REFERENCES [jos_sdi_searchcriteria] ([id])
+ALTER TABLE [#__sdi_searchcriteriafilter]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_searchcriteriafilter$#__sdi_searchcriteriafilter_fk1] FOREIGN KEY([searchcriteria_id])
+REFERENCES [#__sdi_searchcriteria] ([id])
 ON UPDATE CASCADE
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_searchcriteriafilter] CHECK CONSTRAINT [jos_sdi_searchcriteriafilter$jos_sdi_searchcriteriafilter_fk1];
+ALTER TABLE [#__sdi_searchcriteriafilter] CHECK CONSTRAINT [#__sdi_searchcriteriafilter$#__sdi_searchcriteriafilter_fk1];
 
-ALTER TABLE [jos_sdi_searchcriteriafilter]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_searchcriteriafilter$jos_sdi_searchcriteriafilter_fk2] FOREIGN KEY([language_id])
-REFERENCES [jos_sdi_language] ([id])
+ALTER TABLE [#__sdi_searchcriteriafilter]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_searchcriteriafilter$#__sdi_searchcriteriafilter_fk2] FOREIGN KEY([language_id])
+REFERENCES [#__sdi_language] ([id])
 ON UPDATE CASCADE
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_searchcriteriafilter] CHECK CONSTRAINT [jos_sdi_searchcriteriafilter$jos_sdi_searchcriteriafilter_fk2];
+ALTER TABLE [#__sdi_searchcriteriafilter] CHECK CONSTRAINT [#__sdi_searchcriteriafilter$#__sdi_searchcriteriafilter_fk2];
 
-ALTER TABLE [jos_sdi_sys_rendertype_criteriatype]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_sys_rendertype_criteriatype$jos_sdi_sys_rendertype_criteriatype_fk1] FOREIGN KEY([criteriatype_id])
-REFERENCES [jos_sdi_sys_criteriatype] ([id])
+ALTER TABLE [#__sdi_sys_rendertype_criteriatype]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_sys_rendertype_criteriatype$#__sdi_sys_rendertype_criteriatype_fk1] FOREIGN KEY([criteriatype_id])
+REFERENCES [#__sdi_sys_criteriatype] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_sys_rendertype_criteriatype] CHECK CONSTRAINT [jos_sdi_sys_rendertype_criteriatype$jos_sdi_sys_rendertype_criteriatype_fk1];
+ALTER TABLE [#__sdi_sys_rendertype_criteriatype] CHECK CONSTRAINT [#__sdi_sys_rendertype_criteriatype$#__sdi_sys_rendertype_criteriatype_fk1];
 
-ALTER TABLE [jos_sdi_sys_rendertype_criteriatype]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_sys_rendertype_criteriatype$jos_sdi_sys_rendertype_criteriatype_fk2] FOREIGN KEY([rendertype_id])
-REFERENCES [jos_sdi_sys_rendertype] ([id])
+ALTER TABLE [#__sdi_sys_rendertype_criteriatype]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_sys_rendertype_criteriatype$#__sdi_sys_rendertype_criteriatype_fk2] FOREIGN KEY([rendertype_id])
+REFERENCES [#__sdi_sys_rendertype] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_sys_rendertype_criteriatype] CHECK CONSTRAINT [jos_sdi_sys_rendertype_criteriatype$jos_sdi_sys_rendertype_criteriatype_fk2];
+ALTER TABLE [#__sdi_sys_rendertype_criteriatype] CHECK CONSTRAINT [#__sdi_sys_rendertype_criteriatype$#__sdi_sys_rendertype_criteriatype_fk2];
 
-ALTER TABLE [jos_sdi_sys_rendertype_stereotype]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_sys_rendertype_stereotype$jos_sdi_sys_rendertype_stereotype_fk1] FOREIGN KEY([stereotype_id])
-REFERENCES [jos_sdi_sys_stereotype] ([id]);
+ALTER TABLE [#__sdi_sys_rendertype_stereotype]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_sys_rendertype_stereotype$#__sdi_sys_rendertype_stereotype_fk1] FOREIGN KEY([stereotype_id])
+REFERENCES [#__sdi_sys_stereotype] ([id]);
 
-ALTER TABLE [jos_sdi_sys_rendertype_stereotype] CHECK CONSTRAINT [jos_sdi_sys_rendertype_stereotype$jos_sdi_sys_rendertype_stereotype_fk1];
+ALTER TABLE [#__sdi_sys_rendertype_stereotype] CHECK CONSTRAINT [#__sdi_sys_rendertype_stereotype$#__sdi_sys_rendertype_stereotype_fk1];
 
-ALTER TABLE [jos_sdi_sys_rendertype_stereotype]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_sys_rendertype_stereotype$jos_sdi_sys_rendertype_stereotype_fk2] FOREIGN KEY([rendertype_id])
-REFERENCES [jos_sdi_sys_rendertype] ([id]);
+ALTER TABLE [#__sdi_sys_rendertype_stereotype]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_sys_rendertype_stereotype$#__sdi_sys_rendertype_stereotype_fk2] FOREIGN KEY([rendertype_id])
+REFERENCES [#__sdi_sys_rendertype] ([id]);
 
-ALTER TABLE [jos_sdi_sys_rendertype_stereotype] CHECK CONSTRAINT [jos_sdi_sys_rendertype_stereotype$jos_sdi_sys_rendertype_stereotype_fk2];
+ALTER TABLE [#__sdi_sys_rendertype_stereotype] CHECK CONSTRAINT [#__sdi_sys_rendertype_stereotype$#__sdi_sys_rendertype_stereotype_fk2];
 
-ALTER TABLE [jos_sdi_sys_stereotype]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_sys_stereotype$jos_sdi_sys_stereotype_fk1] FOREIGN KEY([entity_id])
-REFERENCES [jos_sdi_sys_entity] ([id]);
+ALTER TABLE [#__sdi_sys_stereotype]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_sys_stereotype$#__sdi_sys_stereotype_fk1] FOREIGN KEY([entity_id])
+REFERENCES [#__sdi_sys_entity] ([id]);
 
-ALTER TABLE [jos_sdi_sys_stereotype] CHECK CONSTRAINT [jos_sdi_sys_stereotype$jos_sdi_sys_stereotype_fk1];
+ALTER TABLE [#__sdi_sys_stereotype] CHECK CONSTRAINT [#__sdi_sys_stereotype$#__sdi_sys_stereotype_fk1];
 
-ALTER TABLE [jos_sdi_sys_stereotype]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_sys_stereotype$jos_sdi_sys_stereotype_fk2] FOREIGN KEY([namespace_id])
-REFERENCES [jos_sdi_namespace] ([id]);
+ALTER TABLE [#__sdi_sys_stereotype]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_sys_stereotype$#__sdi_sys_stereotype_fk2] FOREIGN KEY([namespace_id])
+REFERENCES [#__sdi_namespace] ([id]);
 
-ALTER TABLE [jos_sdi_sys_stereotype] CHECK CONSTRAINT [jos_sdi_sys_stereotype$jos_sdi_sys_stereotype_fk2];
+ALTER TABLE [#__sdi_sys_stereotype] CHECK CONSTRAINT [#__sdi_sys_stereotype$#__sdi_sys_stereotype_fk2];
 
-ALTER TABLE [jos_sdi_translation]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_translation$jos_sdi_translation_fk1] FOREIGN KEY([language_id])
-REFERENCES [jos_sdi_language] ([id]);
+ALTER TABLE [#__sdi_translation]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_translation$#__sdi_translation_fk1] FOREIGN KEY([language_id])
+REFERENCES [#__sdi_language] ([id]);
 
-ALTER TABLE [jos_sdi_translation] CHECK CONSTRAINT [jos_sdi_translation$jos_sdi_translation_fk1];
+ALTER TABLE [#__sdi_translation] CHECK CONSTRAINT [#__sdi_translation$#__sdi_translation_fk1];
 
-ALTER TABLE [jos_sdi_user]  WITH CHECK ADD  CONSTRAINT [jos_sdi_user$jos_sdi_user_fk1] FOREIGN KEY([user_id])
+ALTER TABLE [#__sdi_user]  WITH CHECK ADD  CONSTRAINT [#__sdi_user$#__sdi_user_fk1] FOREIGN KEY([user_id])
 REFERENCES [jos_users] ([id]);
 
-ALTER TABLE [jos_sdi_user] CHECK CONSTRAINT [jos_sdi_user$jos_sdi_user_fk1];
+ALTER TABLE [#__sdi_user] CHECK CONSTRAINT [#__sdi_user$#__sdi_user_fk1];
 
-ALTER TABLE [jos_sdi_user_role_resource]  WITH CHECK ADD  CONSTRAINT [jos_sdi_user_role_resource$jos_sdi_user_role_resource_fk1] FOREIGN KEY([user_id])
-REFERENCES [jos_sdi_user] ([id])
+ALTER TABLE [#__sdi_user_role_resource]  WITH CHECK ADD  CONSTRAINT [#__sdi_user_role_resource$#__sdi_user_role_resource_fk1] FOREIGN KEY([user_id])
+REFERENCES [#__sdi_user] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_user_role_resource] CHECK CONSTRAINT [jos_sdi_user_role_resource$jos_sdi_user_role_resource_fk1];
+ALTER TABLE [#__sdi_user_role_resource] CHECK CONSTRAINT [#__sdi_user_role_resource$#__sdi_user_role_resource_fk1];
 
-ALTER TABLE [jos_sdi_user_role_resource]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_user_role_resource$jos_sdi_user_role_resource_fk2] FOREIGN KEY([role_id])
-REFERENCES [jos_sdi_sys_role] ([id])
+ALTER TABLE [#__sdi_user_role_resource]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_user_role_resource$#__sdi_user_role_resource_fk2] FOREIGN KEY([role_id])
+REFERENCES [#__sdi_sys_role] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_user_role_resource] CHECK CONSTRAINT [jos_sdi_user_role_resource$jos_sdi_user_role_resource_fk2];
+ALTER TABLE [#__sdi_user_role_resource] CHECK CONSTRAINT [#__sdi_user_role_resource$#__sdi_user_role_resource_fk2];
 
-ALTER TABLE [jos_sdi_user_role_resource]  WITH CHECK ADD  CONSTRAINT [jos_sdi_user_role_resource$jos_sdi_user_role_resource_fk3] FOREIGN KEY([resource_id])
-REFERENCES [jos_sdi_resource] ([id])
+ALTER TABLE [#__sdi_user_role_resource]  WITH CHECK ADD  CONSTRAINT [#__sdi_user_role_resource$#__sdi_user_role_resource_fk3] FOREIGN KEY([resource_id])
+REFERENCES [#__sdi_resource] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_user_role_resource] CHECK CONSTRAINT [jos_sdi_user_role_resource$jos_sdi_user_role_resource_fk3];
+ALTER TABLE [#__sdi_user_role_resource] CHECK CONSTRAINT [#__sdi_user_role_resource$#__sdi_user_role_resource_fk3];
 
-ALTER TABLE [jos_sdi_version]  WITH CHECK ADD  CONSTRAINT [jos_sdi_version$jos_sdi_version_fk1] FOREIGN KEY([resource_id])
-REFERENCES [jos_sdi_resource] ([id]);
+ALTER TABLE [#__sdi_version]  WITH CHECK ADD  CONSTRAINT [#__sdi_version$#__sdi_version_fk1] FOREIGN KEY([resource_id])
+REFERENCES [#__sdi_resource] ([id]);
 
-ALTER TABLE [jos_sdi_version] CHECK CONSTRAINT [jos_sdi_version$jos_sdi_version_fk1];
+ALTER TABLE [#__sdi_version] CHECK CONSTRAINT [#__sdi_version$#__sdi_version_fk1];
 
-ALTER TABLE [jos_sdi_versionlink]  WITH CHECK ADD  CONSTRAINT [jos_sdi_versionlink$jos_sdi_versionlink_fk1] FOREIGN KEY([parent_id])
-REFERENCES [jos_sdi_version] ([id]);
+ALTER TABLE [#__sdi_versionlink]  WITH CHECK ADD  CONSTRAINT [#__sdi_versionlink$#__sdi_versionlink_fk1] FOREIGN KEY([parent_id])
+REFERENCES [#__sdi_version] ([id]);
 
-ALTER TABLE [jos_sdi_versionlink] CHECK CONSTRAINT [jos_sdi_versionlink$jos_sdi_versionlink_fk1];
+ALTER TABLE [#__sdi_versionlink] CHECK CONSTRAINT [#__sdi_versionlink$#__sdi_versionlink_fk1];
 
-ALTER TABLE [jos_sdi_versionlink]  WITH CHECK ADD  CONSTRAINT [jos_sdi_versionlink$jos_sdi_versionlink_fk2] FOREIGN KEY([child_id])
-REFERENCES [jos_sdi_version] ([id])
+ALTER TABLE [#__sdi_versionlink]  WITH CHECK ADD  CONSTRAINT [#__sdi_versionlink$#__sdi_versionlink_fk2] FOREIGN KEY([child_id])
+REFERENCES [#__sdi_version] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [jos_sdi_versionlink] CHECK CONSTRAINT [jos_sdi_versionlink$jos_sdi_versionlink_fk2];
+ALTER TABLE [#__sdi_versionlink] CHECK CONSTRAINT [#__sdi_versionlink$#__sdi_versionlink_fk2];
 
-ALTER TABLE [jos_sdi_visualization]  WITH NOCHECK ADD  CONSTRAINT [jos_sdi_visualization$jos_sdi_visualization_fk1] FOREIGN KEY([accessscope_id])
-REFERENCES [jos_sdi_sys_accessscope] ([id]);
+ALTER TABLE [#__sdi_visualization]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_visualization$#__sdi_visualization_fk1] FOREIGN KEY([accessscope_id])
+REFERENCES [#__sdi_sys_accessscope] ([id]);
 
-ALTER TABLE [jos_sdi_visualization] CHECK CONSTRAINT [jos_sdi_visualization$jos_sdi_visualization_fk1];
+ALTER TABLE [#__sdi_visualization] CHECK CONSTRAINT [#__sdi_visualization$#__sdi_visualization_fk1];
 
 ALTER TABLE [last_query_results]  WITH CHECK ADD  CONSTRAINT [last_query_results$FK_LAST_QUERY_QUERY] FOREIGN KEY([ID_QUERY])
 REFERENCES [queries] ([ID_QUERY])

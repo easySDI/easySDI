@@ -206,12 +206,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_accessscope](
+CREATE TABLE [#__sdi_accessscope](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[entity_guid] [nvarchar](36) NOT NULL,
 	[organism_id] [bigint] NULL,
 	[user_id] [bigint] NULL,
- CONSTRAINT [PK_jos_sdi_accessscope_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_accessscope_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -222,7 +222,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_address](
+CREATE TABLE [#__sdi_address](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NULL,
@@ -252,7 +252,7 @@ CREATE TABLE [jos_sdi_address](
 	[fax] [nvarchar](20) NULL,
 	[email] [nvarchar](100) NULL,
 	[sameascontact] [smallint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_address_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_address_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -263,11 +263,11 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_allowedoperation](
+CREATE TABLE [#__sdi_allowedoperation](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[policy_id] [bigint] NOT NULL,
 	[serviceoperation_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_allowedoperation_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_allowedoperation_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -278,7 +278,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_application](
+CREATE TABLE [#__sdi_application](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -298,7 +298,7 @@ CREATE TABLE [jos_sdi_application](
 	[windowname] [nvarchar](255) NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_application_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_application_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -309,7 +309,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_assignment](
+CREATE TABLE [#__sdi_assignment](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[assigned] [datetime2](0) NULL,
@@ -317,7 +317,7 @@ CREATE TABLE [jos_sdi_assignment](
 	[assigned_to] [bigint] NOT NULL,
 	[version_id] [bigint] NOT NULL,
 	[text] [nvarchar](500) NULL,
- CONSTRAINT [PK_jos_sdi_assignment_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_assignment_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -328,7 +328,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_attribute](
+CREATE TABLE [#__sdi_attribute](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -352,7 +352,7 @@ CREATE TABLE [jos_sdi_attribute](
 	[codelist] [nvarchar](255) NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_attribute_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_attribute_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -363,7 +363,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_attributevalue](
+CREATE TABLE [#__sdi_attributevalue](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -380,7 +380,7 @@ CREATE TABLE [jos_sdi_attributevalue](
 	[attribute_id] [bigint] NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_attributevalue_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_attributevalue_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -391,7 +391,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_boundary](
+CREATE TABLE [#__sdi_boundary](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -412,7 +412,7 @@ CREATE TABLE [jos_sdi_boundary](
 	[parent_id] [bigint] NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_boundary_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_boundary_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -423,7 +423,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_boundarycategory](
+CREATE TABLE [#__sdi_boundarycategory](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -439,7 +439,7 @@ CREATE TABLE [jos_sdi_boundarycategory](
 	[parent_id] [bigint] NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_boundarycategory_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_boundarycategory_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -450,7 +450,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_catalog](
+CREATE TABLE [#__sdi_catalog](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -469,7 +469,7 @@ CREATE TABLE [jos_sdi_catalog](
 	[cswfilter] [nvarchar](max) NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_catalog_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_catalog_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -480,13 +480,13 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_catalog_resourcetype](
+CREATE TABLE [#__sdi_catalog_resourcetype](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [smallint] NOT NULL,
 	[catalog_id] [bigint] NOT NULL,
 	[resourcetype_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_catalog_resourcetype_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_catalog_resourcetype_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -497,7 +497,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_catalog_searchcriteria](
+CREATE TABLE [#__sdi_catalog_searchcriteria](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[created_by] [int] NOT NULL,
@@ -513,7 +513,7 @@ CREATE TABLE [jos_sdi_catalog_searchcriteria](
 	[defaultvaluefrom] [datetime2](0) NULL,
 	[defaultvalueto] [datetime2](0) NULL,
 	[params] [nvarchar](500) NULL,
- CONSTRAINT [PK_jos_sdi_catalog_searchcriteria_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_catalog_searchcriteria_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -524,14 +524,14 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_catalog_searchsort](
+CREATE TABLE [#__sdi_catalog_searchsort](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [smallint] NOT NULL,
 	[catalog_id] [bigint] NOT NULL,
 	[language_id] [bigint] NOT NULL,
 	[ogcsearchsorting] [nvarchar](255) NULL,
- CONSTRAINT [PK_jos_sdi_catalog_searchsort_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_catalog_searchsort_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -542,7 +542,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_class](
+CREATE TABLE [#__sdi_class](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -563,7 +563,7 @@ CREATE TABLE [jos_sdi_class](
 	[stereotype_id] [bigint] NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_class_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_class_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -574,7 +574,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_csw_spatialpolicy](
+CREATE TABLE [#__sdi_csw_spatialpolicy](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[eastboundlongitude] [decimal](10, 6) NULL,
 	[westboundlongitude] [decimal](10, 6) NULL,
@@ -585,7 +585,7 @@ CREATE TABLE [jos_sdi_csw_spatialpolicy](
 	[minx] [decimal](18, 6) NULL,
 	[miny] [decimal](18, 6) NULL,
 	[srssource] [nvarchar](255) NULL,
- CONSTRAINT [PK_jos_sdi_csw_spatialpolicy_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_csw_spatialpolicy_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -596,7 +596,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_diffusion](
+CREATE TABLE [#__sdi_diffusion](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](255) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -626,7 +626,7 @@ CREATE TABLE [jos_sdi_diffusion](
 	[restrictedperimeter] [smallint] NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_diffusion_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_diffusion_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -637,12 +637,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_diffusion_download](
+CREATE TABLE [#__sdi_diffusion_download](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[diffusion_id] [bigint] NOT NULL,
 	[user_id] [bigint] NULL,
 	[executed] [datetime2](0) NOT NULL,
- CONSTRAINT [PK_jos_sdi_diffusion_download_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_diffusion_download_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -653,13 +653,13 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_diffusion_notifieduser](
+CREATE TABLE [#__sdi_diffusion_notifieduser](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [smallint] NOT NULL,
 	[diffusion_id] [bigint] NOT NULL,
 	[user_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_diffusion_notifieduser_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_diffusion_notifieduser_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -670,14 +670,14 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_diffusion_perimeter](
+CREATE TABLE [#__sdi_diffusion_perimeter](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [smallint] NOT NULL,
 	[diffusion_id] [bigint] NOT NULL,
 	[perimeter_id] [bigint] NOT NULL,
 	[buffer] [smallint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_diffusion_perimeter_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_diffusion_perimeter_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -688,13 +688,13 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_diffusion_propertyvalue](
+CREATE TABLE [#__sdi_diffusion_propertyvalue](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [smallint] NOT NULL,
 	[diffusion_id] [bigint] NOT NULL,
 	[propertyvalue_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_diffusion_propertyvalue_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_diffusion_propertyvalue_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -705,11 +705,11 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_excludedattribute](
+CREATE TABLE [#__sdi_excludedattribute](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[path] [nvarchar](500) NOT NULL,
 	[policy_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_excludedattribute_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_excludedattribute_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -720,7 +720,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_featuretype_policy](
+CREATE TABLE [#__sdi_featuretype_policy](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[name] [nvarchar](255) NOT NULL,
 	[description] [nvarchar](255) NULL,
@@ -728,7 +728,7 @@ CREATE TABLE [jos_sdi_featuretype_policy](
 	[inheritedspatialpolicy] [smallint] NOT NULL,
 	[spatialpolicy_id] [bigint] NULL,
 	[physicalservicepolicy_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_featuretype_policy_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_featuretype_policy_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -739,7 +739,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_importref](
+CREATE TABLE [#__sdi_importref](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -761,7 +761,7 @@ CREATE TABLE [jos_sdi_importref](
 	[importtype_id] [bigint] NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_importref_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_importref_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -772,11 +772,11 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_includedattribute](
+CREATE TABLE [#__sdi_includedattribute](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[name] [nvarchar](500) NOT NULL,
 	[featuretypepolicy_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_includedattribute_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_includedattribute_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -787,7 +787,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_language](
+CREATE TABLE [#__sdi_language](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [bigint] NOT NULL,
 	[state] [int] NULL,
@@ -798,7 +798,7 @@ CREATE TABLE [jos_sdi_language](
 	[iso639-1] [nvarchar](10) NULL,
 	[iso3166-1-alpha2] [nvarchar](10) NULL,
 	[iso639-2B] [nvarchar](10) NULL,
- CONSTRAINT [PK_jos_sdi_language_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_language_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -809,7 +809,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_layer](
+CREATE TABLE [#__sdi_layer](
 	[id] [bigint] IDENTITY(10,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[created_by] [int] NOT NULL,
@@ -823,7 +823,7 @@ CREATE TABLE [jos_sdi_layer](
 	[name] [nvarchar](255) NOT NULL,
 	[description] [nvarchar](255) NULL,
 	[physicalservice_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_layer_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_layer_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -834,12 +834,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_layer_layergroup](
+CREATE TABLE [#__sdi_layer_layergroup](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[layer_id] [bigint] NOT NULL,
 	[group_id] [bigint] NOT NULL,
 	[ordering] [int] NULL,
- CONSTRAINT [PK_jos_sdi_layer_layergroup_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_layer_layergroup_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -850,7 +850,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_layergroup](
+CREATE TABLE [#__sdi_layergroup](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](20) NOT NULL,
@@ -866,11 +866,11 @@ CREATE TABLE [jos_sdi_layergroup](
 	[isdefaultopen] [smallint] NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NULL,
- CONSTRAINT [PK_jos_sdi_layergroup_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_layergroup_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
- CONSTRAINT [jos_sdi_layergroup$alias] UNIQUE NONCLUSTERED 
+ CONSTRAINT [#__sdi_layergroup$alias] UNIQUE NONCLUSTERED 
 (
 	[alias] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -881,7 +881,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_map](
+CREATE TABLE [#__sdi_map](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](20) NOT NULL,
@@ -907,11 +907,11 @@ CREATE TABLE [jos_sdi_map](
 	[abstract] [nvarchar](max) NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NULL,
- CONSTRAINT [PK_jos_sdi_map_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_map_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
- CONSTRAINT [jos_sdi_map$alias] UNIQUE NONCLUSTERED 
+ CONSTRAINT [#__sdi_map$alias] UNIQUE NONCLUSTERED 
 (
 	[alias] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -922,14 +922,14 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_map_layergroup](
+CREATE TABLE [#__sdi_map_layergroup](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[map_id] [bigint] NOT NULL,
 	[group_id] [bigint] NOT NULL,
 	[isbackground] [smallint] NOT NULL,
 	[isdefault] [smallint] NOT NULL,
 	[ordering] [int] NULL,
- CONSTRAINT [PK_jos_sdi_map_layergroup_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_map_layergroup_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -940,11 +940,11 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_map_physicalservice](
+CREATE TABLE [#__sdi_map_physicalservice](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[map_id] [bigint] NOT NULL,
 	[physicalservice_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_map_physicalservice_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_map_physicalservice_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -955,12 +955,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_map_tool](
+CREATE TABLE [#__sdi_map_tool](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[map_id] [bigint] NOT NULL,
 	[tool_id] [bigint] NOT NULL,
 	[params] [nvarchar](500) NULL,
- CONSTRAINT [PK_jos_sdi_map_tool_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_map_tool_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -971,11 +971,11 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_map_virtualservice](
+CREATE TABLE [#__sdi_map_virtualservice](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[map_id] [bigint] NOT NULL,
 	[virtualservice_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_map_virtualservice_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_map_virtualservice_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -986,7 +986,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_maplayer](
+CREATE TABLE [#__sdi_maplayer](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](20) NOT NULL,
@@ -1014,11 +1014,11 @@ CREATE TABLE [jos_sdi_maplayer](
 	[accessscope_id] [bigint] NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NULL,
- CONSTRAINT [PK_jos_sdi_maplayer_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_maplayer_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
- CONSTRAINT [jos_sdi_maplayer$alias] UNIQUE NONCLUSTERED 
+ CONSTRAINT [#__sdi_maplayer$alias] UNIQUE NONCLUSTERED 
 (
 	[alias] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1029,7 +1029,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_metadata](
+CREATE TABLE [#__sdi_metadata](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[created_by] [int] NOT NULL,
@@ -1049,7 +1049,7 @@ CREATE TABLE [jos_sdi_metadata](
 	[version_id] [bigint] NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_metadata_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_metadata_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1060,13 +1060,13 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_monitor_exports](
+CREATE TABLE [#__sdi_monitor_exports](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[exportDesc] [nvarchar](500) NULL,
 	[exportName] [nvarchar](500) NULL,
 	[exportType] [nvarchar](10) NULL,
 	[xsltUrl] [nvarchar](500) NULL,
- CONSTRAINT [PK_jos_sdi_monitor_exports_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_monitor_exports_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1077,7 +1077,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_namespace](
+CREATE TABLE [#__sdi_namespace](
 	[id] [bigint] IDENTITY(6,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1095,7 +1095,7 @@ CREATE TABLE [jos_sdi_namespace](
 	[system] [smallint] NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_namespace_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_namespace_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1106,7 +1106,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_order](
+CREATE TABLE [#__sdi_order](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](255) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1130,7 +1130,7 @@ CREATE TABLE [jos_sdi_order](
 	[completed] [datetime2](0) NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_order_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_order_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1141,7 +1141,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_order_diffusion](
+CREATE TABLE [#__sdi_order_diffusion](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[order_id] [bigint] NOT NULL,
 	[diffusion_id] [bigint] NOT NULL,
@@ -1152,7 +1152,7 @@ CREATE TABLE [jos_sdi_order_diffusion](
 	[file] [nvarchar](500) NOT NULL,
 	[size] [decimal](10, 0) NOT NULL,
 	[created_by] [int] NOT NULL,
- CONSTRAINT [PK_jos_sdi_order_diffusion_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_order_diffusion_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1163,14 +1163,14 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_order_perimeter](
+CREATE TABLE [#__sdi_order_perimeter](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[order_id] [bigint] NOT NULL,
 	[perimeter_id] [bigint] NOT NULL,
 	[value] [nvarchar](max) NULL,
 	[text] [nvarchar](max) NULL,
 	[created_by] [int] NOT NULL,
- CONSTRAINT [PK_jos_sdi_order_perimeter_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_order_perimeter_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1181,14 +1181,14 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_order_propertyvalue](
+CREATE TABLE [#__sdi_order_propertyvalue](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[orderdiffusion_id] [bigint] NOT NULL,
 	[property_id] [bigint] NOT NULL,
 	[propertyvalue_id] [bigint] NOT NULL,
 	[propertyvalue] [nvarchar](4000) NOT NULL,
 	[created_by] [int] NOT NULL,
- CONSTRAINT [PK_jos_sdi_order_propertyvalue_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_order_propertyvalue_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1199,7 +1199,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_organism](
+CREATE TABLE [#__sdi_organism](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[created_by] [int] NOT NULL,
@@ -1220,7 +1220,7 @@ CREATE TABLE [jos_sdi_organism](
 	[asset_id] [int] NOT NULL,
 	[username] [nvarchar](150) NULL,
 	[password] [nvarchar](65) NULL,
- CONSTRAINT [PK_jos_sdi_organism_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_organism_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1231,7 +1231,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_perimeter](
+CREATE TABLE [#__sdi_perimeter](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](255) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1263,7 +1263,7 @@ CREATE TABLE [jos_sdi_perimeter](
 	[layername] [nvarchar](255) NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_perimeter_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_perimeter_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1274,7 +1274,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_physicalservice](
+CREATE TABLE [#__sdi_physicalservice](
 	[id] [bigint] IDENTITY(4,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](20) NOT NULL,
@@ -1301,11 +1301,11 @@ CREATE TABLE [jos_sdi_physicalservice](
 	[params] [nvarchar](1024) NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NULL,
- CONSTRAINT [PK_jos_sdi_physicalservice_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_physicalservice_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
- CONSTRAINT [jos_sdi_physicalservice$name] UNIQUE NONCLUSTERED 
+ CONSTRAINT [#__sdi_physicalservice$name] UNIQUE NONCLUSTERED 
 (
 	[name] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1316,11 +1316,11 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_physicalservice_organism](
+CREATE TABLE [#__sdi_physicalservice_organism](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[physicalservice_id] [bigint] NOT NULL,
 	[organism_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_physicalservice_organism_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_physicalservice_organism_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1331,7 +1331,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_physicalservice_policy](
+CREATE TABLE [#__sdi_physicalservice_policy](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[prefix] [nvarchar](255) NULL,
 	[namespace] [nvarchar](255) NULL,
@@ -1343,7 +1343,7 @@ CREATE TABLE [jos_sdi_physicalservice_policy](
 	[wfs_spatialpolicy_id] [bigint] NULL,
 	[physicalservice_id] [bigint] NOT NULL,
 	[policy_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_physicalservice_policy_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_physicalservice_policy_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1354,12 +1354,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_physicalservice_servicecompliance](
+CREATE TABLE [#__sdi_physicalservice_servicecompliance](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[service_id] [bigint] NOT NULL,
 	[servicecompliance_id] [bigint] NOT NULL,
 	[capabilities] [nvarchar](max) NULL,
- CONSTRAINT [PK_jos_sdi_physicalservice_servicecompliance_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_physicalservice_servicecompliance_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1370,7 +1370,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_policy](
+CREATE TABLE [#__sdi_policy](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[ordering] [int] NOT NULL,
@@ -1408,7 +1408,7 @@ CREATE TABLE [jos_sdi_policy](
 	[params] [nvarchar](1024) NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NULL,
- CONSTRAINT [PK_jos_sdi_policy_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_policy_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1419,12 +1419,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_policy_metadatastate](
+CREATE TABLE [#__sdi_policy_metadatastate](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[metadatastate_id] [bigint] NOT NULL,
 	[policy_id] [bigint] NOT NULL,
 	[metadataversion_id] [bigint] NULL,
- CONSTRAINT [PK_jos_sdi_policy_metadatastate_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_policy_metadatastate_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1435,11 +1435,11 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_policy_organism](
+CREATE TABLE [#__sdi_policy_organism](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[policy_id] [bigint] NOT NULL,
 	[organism_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_policy_organism_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_policy_organism_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1450,11 +1450,11 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_policy_resourcetype](
+CREATE TABLE [#__sdi_policy_resourcetype](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[resourcetype_id] [bigint] NOT NULL,
 	[policy_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_policy_resourcetype_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_policy_resourcetype_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1465,11 +1465,11 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_policy_user](
+CREATE TABLE [#__sdi_policy_user](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[policy_id] [bigint] NOT NULL,
 	[user_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_policy_user_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_policy_user_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1480,12 +1480,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_policy_visibility](
+CREATE TABLE [#__sdi_policy_visibility](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[policy_id] [bigint] NOT NULL,
 	[user_id] [bigint] NULL,
 	[organism_id] [bigint] NULL,
- CONSTRAINT [PK_jos_sdi_policy_visibility_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_policy_visibility_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1496,7 +1496,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_profile](
+CREATE TABLE [#__sdi_profile](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1514,7 +1514,7 @@ CREATE TABLE [jos_sdi_profile](
 	[metadataidentifier] [bigint] NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_profile_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_profile_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1525,7 +1525,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_property](
+CREATE TABLE [#__sdi_property](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](255) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1544,7 +1544,7 @@ CREATE TABLE [jos_sdi_property](
 	[propertytype_id] [bigint] NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_property_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_property_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1555,7 +1555,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_propertyvalue](
+CREATE TABLE [#__sdi_propertyvalue](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](255) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1572,7 +1572,7 @@ CREATE TABLE [jos_sdi_propertyvalue](
 	[property_id] [bigint] NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_propertyvalue_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_propertyvalue_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1583,7 +1583,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_relation](
+CREATE TABLE [#__sdi_relation](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1614,7 +1614,7 @@ CREATE TABLE [jos_sdi_relation](
 	[childtype_id] [bigint] NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_relation_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_relation_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1625,13 +1625,13 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_relation_catalog](
+CREATE TABLE [#__sdi_relation_catalog](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [smallint] NOT NULL,
 	[relation_id] [bigint] NOT NULL,
 	[catalog_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_relation_catalog_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_relation_catalog_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1642,13 +1642,13 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_relation_defaultvalue](
+CREATE TABLE [#__sdi_relation_defaultvalue](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[relation_id] [bigint] NOT NULL,
 	[attributevalue_id] [bigint] NULL,
 	[value] [nvarchar](500) NULL,
 	[language_id] [bigint] NULL,
- CONSTRAINT [PK_jos_sdi_relation_defaultvalue_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_relation_defaultvalue_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1659,13 +1659,13 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_relation_profile](
+CREATE TABLE [#__sdi_relation_profile](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [smallint] NOT NULL,
 	[relation_id] [bigint] NOT NULL,
 	[profile_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_relation_profile_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_relation_profile_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1676,7 +1676,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_resource](
+CREATE TABLE [#__sdi_resource](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1695,7 +1695,7 @@ CREATE TABLE [jos_sdi_resource](
 	[accessscope_id] [bigint] NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_resource_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_resource_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1706,7 +1706,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_resourcetype](
+CREATE TABLE [#__sdi_resourcetype](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1734,7 +1734,7 @@ CREATE TABLE [jos_sdi_resourcetype](
 	[accessscope_id] [bigint] NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_resourcetype_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_resourcetype_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1745,7 +1745,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_resourcetypelink](
+CREATE TABLE [#__sdi_resourcetypelink](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1768,7 +1768,7 @@ CREATE TABLE [jos_sdi_resourcetypelink](
 	[viralversioning] [smallint] NOT NULL,
 	[inheritance] [smallint] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_resourcetypelink_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_resourcetypelink_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1779,11 +1779,11 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_resourcetypelinkinheritance](
+CREATE TABLE [#__sdi_resourcetypelinkinheritance](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[resourcetypelink_id] [bigint] NOT NULL,
 	[xpath] [nvarchar](500) NOT NULL,
- CONSTRAINT [PK_jos_sdi_resourcetypelinkinheritance_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_resourcetypelinkinheritance_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1794,7 +1794,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_searchcriteria](
+CREATE TABLE [#__sdi_searchcriteria](
 	[id] [bigint] IDENTITY(14,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -1813,7 +1813,7 @@ CREATE TABLE [jos_sdi_searchcriteria](
 	[relation_id] [bigint] NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_searchcriteria_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_searchcriteria_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1824,14 +1824,14 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_searchcriteriafilter](
+CREATE TABLE [#__sdi_searchcriteriafilter](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [smallint] NOT NULL,
 	[searchcriteria_id] [bigint] NOT NULL,
 	[language_id] [bigint] NOT NULL,
 	[ogcsearchfilter] [nvarchar](255) NOT NULL,
- CONSTRAINT [PK_jos_sdi_searchcriteriafilter_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_searchcriteriafilter_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1842,12 +1842,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_accessscope](
+CREATE TABLE [#__sdi_sys_accessscope](
 	[id] [bigint] IDENTITY(4,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_accessscope_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_accessscope_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1858,12 +1858,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_addresstype](
+CREATE TABLE [#__sdi_sys_addresstype](
 	[id] [bigint] IDENTITY(4,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_addresstype_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_addresstype_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1874,13 +1874,13 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_authenticationconnector](
+CREATE TABLE [#__sdi_sys_authenticationconnector](
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [int] NOT NULL,
 	[authenticationlevel_id] [bigint] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_authenticationconnector_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_authenticationconnector_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1891,12 +1891,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_authenticationlevel](
+CREATE TABLE [#__sdi_sys_authenticationlevel](
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_authenticationlevel_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_authenticationlevel_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1907,14 +1907,14 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_country](
+CREATE TABLE [#__sdi_sys_country](
 	[id] [bigint] IDENTITY(242,1) NOT NULL,
 	[ordering] [bigint] NOT NULL,
 	[state] [int] NOT NULL,
 	[name] [nvarchar](100) NOT NULL,
 	[iso2] [nvarchar](2) NULL,
 	[iso3] [nvarchar](3) NULL,
- CONSTRAINT [PK_jos_sdi_sys_country_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_country_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1925,12 +1925,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_criteriatype](
+CREATE TABLE [#__sdi_sys_criteriatype](
 	[id] [bigint] IDENTITY(4,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_criteriatype_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_criteriatype_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1941,12 +1941,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_entity](
+CREATE TABLE [#__sdi_sys_entity](
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_entity_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_entity_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1957,12 +1957,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_exceptionlevel](
+CREATE TABLE [#__sdi_sys_exceptionlevel](
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](255) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_exceptionlevel_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_exceptionlevel_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1973,12 +1973,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_importtype](
+CREATE TABLE [#__sdi_sys_importtype](
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_importtype_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_importtype_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1989,12 +1989,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_isolanguage](
+CREATE TABLE [#__sdi_sys_isolanguage](
 	[id] [bigint] IDENTITY(4,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_isolanguage_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_isolanguage_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2005,12 +2005,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_loglevel](
+CREATE TABLE [#__sdi_sys_loglevel](
 	[id] [bigint] IDENTITY(9,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](255) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_loglevel_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_loglevel_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2021,12 +2021,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_logroll](
+CREATE TABLE [#__sdi_sys_logroll](
 	[id] [bigint] IDENTITY(5,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](255) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_logroll_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_logroll_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2037,13 +2037,13 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_maptool](
+CREATE TABLE [#__sdi_sys_maptool](
 	[id] [bigint] IDENTITY(21,1) NOT NULL,
 	[alias] [nvarchar](20) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [int] NOT NULL,
 	[name] [nvarchar](255) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_maptool_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_maptool_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2054,12 +2054,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_metadatastate](
+CREATE TABLE [#__sdi_sys_metadatastate](
 	[id] [bigint] IDENTITY(6,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_metadatastate_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_metadatastate_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2070,12 +2070,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_metadataversion](
+CREATE TABLE [#__sdi_sys_metadataversion](
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_metadataversion_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_metadataversion_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2086,14 +2086,14 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_operationcompliance](
+CREATE TABLE [#__sdi_sys_operationcompliance](
 	[id] [bigint] IDENTITY(50,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [int] NOT NULL,
 	[servicecompliance_id] [bigint] NOT NULL,
 	[serviceoperation_id] [bigint] NOT NULL,
 	[implemented] [smallint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_operationcompliance_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_operationcompliance_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2104,12 +2104,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_orderstate](
+CREATE TABLE [#__sdi_sys_orderstate](
 	[id] [bigint] IDENTITY(8,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_orderstate_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_orderstate_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2120,12 +2120,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_ordertype](
+CREATE TABLE [#__sdi_sys_ordertype](
 	[id] [bigint] IDENTITY(4,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_ordertype_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_ordertype_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2136,12 +2136,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_perimetertype](
+CREATE TABLE [#__sdi_sys_perimetertype](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_perimetertype_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_perimetertype_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2152,12 +2152,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_pricing](
+CREATE TABLE [#__sdi_sys_pricing](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_pricing_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_pricing_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2168,12 +2168,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_productmining](
+CREATE TABLE [#__sdi_sys_productmining](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_productmining_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_productmining_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2184,12 +2184,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_productstate](
+CREATE TABLE [#__sdi_sys_productstate](
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_productstate_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_productstate_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2200,12 +2200,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_productstorage](
+CREATE TABLE [#__sdi_sys_productstorage](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_productstorage_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_productstorage_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2216,12 +2216,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_propertytype](
+CREATE TABLE [#__sdi_sys_propertytype](
 	[id] [bigint] IDENTITY(7,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](255) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_propertytype_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_propertytype_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2232,12 +2232,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_proxytype](
+CREATE TABLE [#__sdi_sys_proxytype](
 	[id] [bigint] IDENTITY(4,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](255) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_proxytype_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_proxytype_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2248,12 +2248,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_relationscope](
+CREATE TABLE [#__sdi_sys_relationscope](
 	[id] [bigint] IDENTITY(4,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_relationscope_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_relationscope_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2264,12 +2264,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_relationtype](
+CREATE TABLE [#__sdi_sys_relationtype](
 	[id] [bigint] IDENTITY(5,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_relationtype_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_relationtype_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2280,12 +2280,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_rendertype](
+CREATE TABLE [#__sdi_sys_rendertype](
 	[id] [bigint] IDENTITY(7,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_rendertype_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_rendertype_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2296,11 +2296,11 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_rendertype_criteriatype](
+CREATE TABLE [#__sdi_sys_rendertype_criteriatype](
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[criteriatype_id] [bigint] NOT NULL,
 	[rendertype_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_rendertype_criteriatype_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_rendertype_criteriatype_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2311,11 +2311,11 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_rendertype_stereotype](
+CREATE TABLE [#__sdi_sys_rendertype_stereotype](
 	[id] [bigint] IDENTITY(21,1) NOT NULL,
 	[stereotype_id] [bigint] NOT NULL,
 	[rendertype_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_rendertype_stereotype_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_rendertype_stereotype_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2326,12 +2326,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_role](
+CREATE TABLE [#__sdi_sys_role](
 	[id] [bigint] IDENTITY(9,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_role_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_role_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2342,12 +2342,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_searchtab](
+CREATE TABLE [#__sdi_sys_searchtab](
 	[id] [bigint] IDENTITY(5,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_searchtab_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_searchtab_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2358,7 +2358,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_servicecompliance](
+CREATE TABLE [#__sdi_sys_servicecompliance](
 	[id] [bigint] IDENTITY(11,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [int] NOT NULL,
@@ -2368,7 +2368,7 @@ CREATE TABLE [jos_sdi_sys_servicecompliance](
 	[relayable] [smallint] NOT NULL,
 	[aggregatable] [smallint] NOT NULL,
 	[harvestable] [smallint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_servicecompliance_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_servicecompliance_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2379,11 +2379,11 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_servicecon_authenticationcon](
+CREATE TABLE [#__sdi_sys_servicecon_authenticationcon](
 	[id] [bigint] IDENTITY(12,1) NOT NULL,
 	[serviceconnector_id] [bigint] NOT NULL,
 	[authenticationconnector_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_servicecon_authenticationcon_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_servicecon_authenticationcon_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2394,12 +2394,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_serviceconnector](
+CREATE TABLE [#__sdi_sys_serviceconnector](
 	[id] [bigint] IDENTITY(15,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_serviceconnector_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_serviceconnector_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2410,12 +2410,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_serviceoperation](
+CREATE TABLE [#__sdi_sys_serviceoperation](
 	[id] [bigint] IDENTITY(22,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_serviceoperation_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_serviceoperation_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2426,12 +2426,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_servicescope](
+CREATE TABLE [#__sdi_sys_servicescope](
 	[id] [bigint] IDENTITY(4,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_servicescope_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_servicescope_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2442,12 +2442,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_servicetype](
+CREATE TABLE [#__sdi_sys_servicetype](
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_servicetype_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_servicetype_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2458,12 +2458,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_serviceversion](
+CREATE TABLE [#__sdi_sys_serviceversion](
 	[id] [bigint] IDENTITY(9,1) NOT NULL,
 	[ordering] [int] NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_serviceversion_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_serviceversion_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2474,12 +2474,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_spatialoperator](
+CREATE TABLE [#__sdi_sys_spatialoperator](
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_spatialoperator_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_spatialoperator_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2490,7 +2490,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_stereotype](
+CREATE TABLE [#__sdi_sys_stereotype](
 	[id] [bigint] IDENTITY(16,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
@@ -2499,7 +2499,7 @@ CREATE TABLE [jos_sdi_sys_stereotype](
 	[isocode] [nvarchar](255) NULL,
 	[namespace_id] [bigint] NULL,
 	[entity_id] [bigint] NULL,
- CONSTRAINT [PK_jos_sdi_sys_stereotype_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_stereotype_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2510,12 +2510,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_topiccategory](
+CREATE TABLE [#__sdi_sys_topiccategory](
 	[id] [bigint] IDENTITY(20,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_topiccategory_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_topiccategory_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2526,13 +2526,13 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_unit](
+CREATE TABLE [#__sdi_sys_unit](
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
 	[name] [nvarchar](255) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_unit_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_unit_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2543,12 +2543,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_sys_versiontype](
+CREATE TABLE [#__sdi_sys_versiontype](
 	[id] [bigint] IDENTITY(3,1) NOT NULL,
 	[ordering] [int] NOT NULL,
 	[state] [int] NOT NULL,
 	[value] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_jos_sdi_sys_versiontype_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_sys_versiontype_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2559,7 +2559,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_tilematrix_policy](
+CREATE TABLE [#__sdi_tilematrix_policy](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[tilematrixsetpolicy_id] [bigint] NOT NULL,
 	[identifier] [nvarchar](255) NOT NULL,
@@ -2568,7 +2568,7 @@ CREATE TABLE [jos_sdi_tilematrix_policy](
 	[tilemincol] [int] NULL,
 	[tilemaxcol] [int] NULL,
 	[anytile] [smallint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_tilematrix_policy_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_tilematrix_policy_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2579,13 +2579,13 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_tilematrixset_policy](
+CREATE TABLE [#__sdi_tilematrixset_policy](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[wmtslayerpolicy_id] [bigint] NOT NULL,
 	[identifier] [nvarchar](255) NOT NULL,
 	[anytilematrix] [smallint] NOT NULL,
 	[srssource] [nvarchar](255) NULL,
- CONSTRAINT [PK_jos_sdi_tilematrixset_policy_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_tilematrixset_policy_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2596,7 +2596,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_translation](
+CREATE TABLE [#__sdi_translation](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -2612,7 +2612,7 @@ CREATE TABLE [jos_sdi_translation](
 	[language_id] [bigint] NULL,
 	[text1] [nvarchar](255) NULL,
 	[text2] [nvarchar](500) NULL,
- CONSTRAINT [PK_jos_sdi_translation_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_translation_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2623,7 +2623,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_user](
+CREATE TABLE [#__sdi_user](
 	[id] [bigint] IDENTITY(2,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[created_by] [int] NOT NULL,
@@ -2641,7 +2641,7 @@ CREATE TABLE [jos_sdi_user](
 	[params] [nvarchar](1024) NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NULL,
- CONSTRAINT [PK_jos_sdi_user_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_user_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2652,12 +2652,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_user_role_organism](
+CREATE TABLE [#__sdi_user_role_organism](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[user_id] [bigint] NULL,
 	[role_id] [bigint] NULL,
 	[organism_id] [bigint] NULL,
- CONSTRAINT [PK_jos_sdi_user_role_organism_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_user_role_organism_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2668,12 +2668,12 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_user_role_resource](
+CREATE TABLE [#__sdi_user_role_resource](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[user_id] [bigint] NULL,
 	[role_id] [bigint] NULL,
 	[resource_id] [bigint] NULL,
- CONSTRAINT [PK_jos_sdi_user_role_resource_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_user_role_resource_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2684,7 +2684,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_version](
+CREATE TABLE [#__sdi_version](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](50) NOT NULL,
@@ -2700,7 +2700,7 @@ CREATE TABLE [jos_sdi_version](
 	[resource_id] [bigint] NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_version_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_version_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2711,11 +2711,11 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_versionlink](
+CREATE TABLE [#__sdi_versionlink](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[parent_id] [bigint] NOT NULL,
 	[child_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_versionlink_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_versionlink_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2726,11 +2726,11 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_virtual_physical](
+CREATE TABLE [#__sdi_virtual_physical](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[virtualservice_id] [bigint] NOT NULL,
 	[physicalservice_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_virtual_physical_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_virtual_physical_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2741,7 +2741,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_virtualmetadata](
+CREATE TABLE [#__sdi_virtualmetadata](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[ordering] [int] NOT NULL,
@@ -2780,7 +2780,7 @@ CREATE TABLE [jos_sdi_virtualmetadata](
 	[contactavailability] [nvarchar](255) NULL,
 	[contactinstruction] [nvarchar](255) NULL,
 	[virtualservice_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_virtualmetadata_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_virtualmetadata_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2791,7 +2791,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_virtualservice](
+CREATE TABLE [#__sdi_virtualservice](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[ordering] [int] NULL,
@@ -2821,7 +2821,7 @@ CREATE TABLE [jos_sdi_virtualservice](
 	[params] [nvarchar](1024) NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NULL,
- CONSTRAINT [PK_jos_sdi_virtualservice_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_virtualservice_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2832,11 +2832,11 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_virtualservice_organism](
+CREATE TABLE [#__sdi_virtualservice_organism](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[virtualservice_id] [bigint] NOT NULL,
 	[organism_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_virtualservice_organism_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_virtualservice_organism_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2847,11 +2847,11 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_virtualservice_servicecompliance](
+CREATE TABLE [#__sdi_virtualservice_servicecompliance](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[service_id] [bigint] NOT NULL,
 	[servicecompliance_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_virtualservice_servicecompliance_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_virtualservice_servicecompliance_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2862,7 +2862,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_visualization](
+CREATE TABLE [#__sdi_visualization](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[guid] [nvarchar](36) NOT NULL,
 	[alias] [nvarchar](20) NOT NULL,
@@ -2880,11 +2880,11 @@ CREATE TABLE [jos_sdi_visualization](
 	[maplayer_id] [bigint] NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NULL,
- CONSTRAINT [PK_jos_sdi_visualization_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_visualization_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
- CONSTRAINT [jos_sdi_visualization$alias] UNIQUE NONCLUSTERED 
+ CONSTRAINT [#__sdi_visualization$alias] UNIQUE NONCLUSTERED 
 (
 	[alias] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2895,11 +2895,11 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_wfs_spatialpolicy](
+CREATE TABLE [#__sdi_wfs_spatialpolicy](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[localgeographicfilter] [nvarchar](max) NULL,
 	[remotegeographicfilter] [nvarchar](max) NULL,
- CONSTRAINT [PK_jos_sdi_wfs_spatialpolicy_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_wfs_spatialpolicy_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2910,7 +2910,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_wms_spatialpolicy](
+CREATE TABLE [#__sdi_wms_spatialpolicy](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[maxx] [decimal](18, 6) NULL,
 	[maxy] [decimal](18, 6) NULL,
@@ -2920,7 +2920,7 @@ CREATE TABLE [jos_sdi_wms_spatialpolicy](
 	[maximumscale] [int] NULL,
 	[minimumscale] [int] NULL,
 	[srssource] [nvarchar](255) NULL,
- CONSTRAINT [PK_jos_sdi_wms_spatialpolicy_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_wms_spatialpolicy_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2931,7 +2931,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_wmslayer_policy](
+CREATE TABLE [#__sdi_wmslayer_policy](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[name] [nvarchar](255) NOT NULL,
 	[description] [nvarchar](255) NOT NULL,
@@ -2939,7 +2939,7 @@ CREATE TABLE [jos_sdi_wmslayer_policy](
 	[inheritedspatialpolicy] [smallint] NOT NULL,
 	[spatialpolicy_id] [bigint] NULL,
 	[physicalservicepolicy_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_wmslayer_policy_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_wmslayer_policy_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2950,14 +2950,14 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_wmts_spatialpolicy](
+CREATE TABLE [#__sdi_wmts_spatialpolicy](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[spatialoperator_id] [bigint] NOT NULL,
 	[eastboundlongitude] [decimal](10, 6) NULL,
 	[westboundlongitude] [decimal](10, 6) NULL,
 	[northboundlatitude] [decimal](10, 6) NULL,
 	[southboundlatitude] [decimal](10, 6) NULL,
- CONSTRAINT [PK_jos_sdi_wmts_spatialpolicy_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_wmts_spatialpolicy_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -2968,7 +2968,7 @@ SET ANSI_NULLS ON;
 
 SET QUOTED_IDENTIFIER ON;
 
-CREATE TABLE [jos_sdi_wmtslayer_policy](
+CREATE TABLE [#__sdi_wmtslayer_policy](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[identifier] [nvarchar](255) NOT NULL,
 	[enabled] [smallint] NOT NULL,
@@ -2976,7 +2976,7 @@ CREATE TABLE [jos_sdi_wmtslayer_policy](
 	[spatialpolicy_id] [bigint] NULL,
 	[anytilematrixset] [smallint] NOT NULL,
 	[physicalservicepolicy_id] [bigint] NOT NULL,
- CONSTRAINT [PK_jos_sdi_wmtslayer_policy_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_wmtslayer_policy_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -3436,1351 +3436,1351 @@ ALTER TABLE [jobs] ADD  DEFAULT ((0)) FOR [SAVE_RESPONSE];
 
 ALTER TABLE [jobs] ADD  DEFAULT ((0)) FOR [RUN_SIMULTANEOUS];
 
-ALTER TABLE [jos_sdi_accessscope] ADD  DEFAULT (NULL) FOR [organism_id];
+ALTER TABLE [#__sdi_accessscope] ADD  DEFAULT (NULL) FOR [organism_id];
 
-ALTER TABLE [jos_sdi_accessscope] ADD  DEFAULT (NULL) FOR [user_id];
+ALTER TABLE [#__sdi_accessscope] ADD  DEFAULT (NULL) FOR [user_id];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (NULL) FOR [alias];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [alias];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (NULL) FOR [user_id];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [user_id];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (NULL) FOR [organism_id];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [organism_id];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (NULL) FOR [civility];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [civility];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (NULL) FOR [firstname];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [firstname];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (NULL) FOR [lastname];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [lastname];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (NULL) FOR [function];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [function];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (NULL) FOR [address];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [address];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (NULL) FOR [addresscomplement];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [addresscomplement];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (NULL) FOR [postalcode];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [postalcode];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (NULL) FOR [postalbox];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [postalbox];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (NULL) FOR [locality];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [locality];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (NULL) FOR [country_id];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [country_id];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (NULL) FOR [phone];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [phone];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (NULL) FOR [mobile];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [mobile];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (NULL) FOR [fax];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [fax];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT (NULL) FOR [email];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT (NULL) FOR [email];
 
-ALTER TABLE [jos_sdi_address] ADD  DEFAULT ((1)) FOR [sameascontact];
+ALTER TABLE [#__sdi_address] ADD  DEFAULT ((1)) FOR [sameascontact];
 
-ALTER TABLE [jos_sdi_application] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_application] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_application] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_application] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_application] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_application] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_assignment] ADD  DEFAULT (NULL) FOR [assigned];
+ALTER TABLE [#__sdi_assignment] ADD  DEFAULT (NULL) FOR [assigned];
 
-ALTER TABLE [jos_sdi_assignment] ADD  DEFAULT (NULL) FOR [text];
+ALTER TABLE [#__sdi_assignment] ADD  DEFAULT (NULL) FOR [text];
 
-ALTER TABLE [jos_sdi_attribute] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_attribute] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_attribute] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_attribute] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_attribute] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_attribute] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_attribute] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_attribute] ADD  DEFAULT (NULL) FOR [description];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (NULL) FOR [description];
 
-ALTER TABLE [jos_sdi_attribute] ADD  DEFAULT (NULL) FOR [isocode];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (NULL) FOR [isocode];
 
-ALTER TABLE [jos_sdi_attribute] ADD  DEFAULT (NULL) FOR [length];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (NULL) FOR [length];
 
-ALTER TABLE [jos_sdi_attribute] ADD  DEFAULT (NULL) FOR [pattern];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (NULL) FOR [pattern];
 
-ALTER TABLE [jos_sdi_attribute] ADD  DEFAULT (NULL) FOR [listnamespace_id];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (NULL) FOR [listnamespace_id];
 
-ALTER TABLE [jos_sdi_attribute] ADD  DEFAULT (NULL) FOR [type_isocode];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (NULL) FOR [type_isocode];
 
-ALTER TABLE [jos_sdi_attribute] ADD  DEFAULT (NULL) FOR [codelist];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT (NULL) FOR [codelist];
 
-ALTER TABLE [jos_sdi_attribute] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_attribute] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_attribute] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_attributevalue] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_attributevalue] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_attributevalue] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_attributevalue] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_attributevalue] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_attributevalue] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_attributevalue] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_attributevalue] ADD  DEFAULT (NULL) FOR [value];
+ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT (NULL) FOR [value];
 
-ALTER TABLE [jos_sdi_attributevalue] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_attributevalue] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_attributevalue] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_boundary] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_boundary] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_boundary] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_boundary] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_boundary] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_boundary] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_boundary] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_boundary] ADD  DEFAULT (NULL) FOR [northbound];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (NULL) FOR [northbound];
 
-ALTER TABLE [jos_sdi_boundary] ADD  DEFAULT (NULL) FOR [southbound];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (NULL) FOR [southbound];
 
-ALTER TABLE [jos_sdi_boundary] ADD  DEFAULT (NULL) FOR [eastbound];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (NULL) FOR [eastbound];
 
-ALTER TABLE [jos_sdi_boundary] ADD  DEFAULT (NULL) FOR [westbound];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (NULL) FOR [westbound];
 
-ALTER TABLE [jos_sdi_boundary] ADD  DEFAULT (NULL) FOR [category_id];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (NULL) FOR [category_id];
 
-ALTER TABLE [jos_sdi_boundary] ADD  DEFAULT (NULL) FOR [parent_id];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT (NULL) FOR [parent_id];
 
-ALTER TABLE [jos_sdi_boundary] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_boundary] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_boundary] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_boundarycategory] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_boundarycategory] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_boundarycategory] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_boundarycategory] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_boundarycategory] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_boundarycategory] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_boundarycategory] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_boundarycategory] ADD  DEFAULT (NULL) FOR [parent_id];
+ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT (NULL) FOR [parent_id];
 
-ALTER TABLE [jos_sdi_boundarycategory] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_boundarycategory] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_boundarycategory] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_catalog] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_catalog] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_catalog] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_catalog] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_catalog] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_catalog] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_catalog] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_catalog] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_catalog] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_catalog] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_catalog] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_catalog] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_catalog] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_catalog] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_catalog] ADD  DEFAULT (NULL) FOR [description];
+ALTER TABLE [#__sdi_catalog] ADD  DEFAULT (NULL) FOR [description];
 
-ALTER TABLE [jos_sdi_catalog] ADD  DEFAULT (NULL) FOR [xsldirectory];
+ALTER TABLE [#__sdi_catalog] ADD  DEFAULT (NULL) FOR [xsldirectory];
 
-ALTER TABLE [jos_sdi_catalog] ADD  DEFAULT ((0)) FOR [oninitrunsearch];
+ALTER TABLE [#__sdi_catalog] ADD  DEFAULT ((0)) FOR [oninitrunsearch];
 
-ALTER TABLE [jos_sdi_catalog] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_catalog] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_catalog] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_catalog] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_catalog_resourcetype] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_catalog_resourcetype] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_catalog_resourcetype] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_catalog_resourcetype] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_catalog_searchcriteria] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_catalog_searchcriteria] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [defaultvalue];
+ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [defaultvalue];
 
-ALTER TABLE [jos_sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [defaultvaluefrom];
+ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [defaultvaluefrom];
 
-ALTER TABLE [jos_sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [defaultvalueto];
+ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [defaultvalueto];
 
-ALTER TABLE [jos_sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [params];
+ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT (NULL) FOR [params];
 
-ALTER TABLE [jos_sdi_catalog_searchsort] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_catalog_searchsort] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_catalog_searchsort] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_catalog_searchsort] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_catalog_searchsort] ADD  DEFAULT (NULL) FOR [ogcsearchsorting];
+ALTER TABLE [#__sdi_catalog_searchsort] ADD  DEFAULT (NULL) FOR [ogcsearchsorting];
 
-ALTER TABLE [jos_sdi_class] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_class] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_class] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_class] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_class] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_class] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_class] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_class] ADD  DEFAULT (NULL) FOR [description];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT (NULL) FOR [description];
 
-ALTER TABLE [jos_sdi_class] ADD  DEFAULT ((0)) FOR [issystem];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT ((0)) FOR [issystem];
 
-ALTER TABLE [jos_sdi_class] ADD  DEFAULT ((0)) FOR [isrootclass];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT ((0)) FOR [isrootclass];
 
-ALTER TABLE [jos_sdi_class] ADD  DEFAULT (NULL) FOR [isocode];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT (NULL) FOR [isocode];
 
-ALTER TABLE [jos_sdi_class] ADD  DEFAULT (NULL) FOR [stereotype_id];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT (NULL) FOR [stereotype_id];
 
-ALTER TABLE [jos_sdi_class] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_class] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_class] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [eastboundlongitude];
+ALTER TABLE [#__sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [eastboundlongitude];
 
-ALTER TABLE [jos_sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [westboundlongitude];
+ALTER TABLE [#__sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [westboundlongitude];
 
-ALTER TABLE [jos_sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [northboundlatitude];
+ALTER TABLE [#__sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [northboundlatitude];
 
-ALTER TABLE [jos_sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [southboundlatitude];
+ALTER TABLE [#__sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [southboundlatitude];
 
-ALTER TABLE [jos_sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [maxx];
+ALTER TABLE [#__sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [maxx];
 
-ALTER TABLE [jos_sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [maxy];
+ALTER TABLE [#__sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [maxy];
 
-ALTER TABLE [jos_sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [minx];
+ALTER TABLE [#__sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [minx];
 
-ALTER TABLE [jos_sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [miny];
+ALTER TABLE [#__sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [miny];
 
-ALTER TABLE [jos_sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [srssource];
+ALTER TABLE [#__sdi_csw_spatialpolicy] ADD  DEFAULT (NULL) FOR [srssource];
 
-ALTER TABLE [jos_sdi_diffusion] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_diffusion] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_diffusion] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_diffusion] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_diffusion] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_diffusion] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_diffusion] ADD  DEFAULT (NULL) FOR [deposit];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (NULL) FOR [deposit];
 
-ALTER TABLE [jos_sdi_diffusion] ADD  DEFAULT (NULL) FOR [productmining_id];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (NULL) FOR [productmining_id];
 
-ALTER TABLE [jos_sdi_diffusion] ADD  DEFAULT (NULL) FOR [surfacemin];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (NULL) FOR [surfacemin];
 
-ALTER TABLE [jos_sdi_diffusion] ADD  DEFAULT (NULL) FOR [surfacemax];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (NULL) FOR [surfacemax];
 
-ALTER TABLE [jos_sdi_diffusion] ADD  DEFAULT (NULL) FOR [productstorage_id];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (NULL) FOR [productstorage_id];
 
-ALTER TABLE [jos_sdi_diffusion] ADD  DEFAULT (NULL) FOR [file];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (NULL) FOR [file];
 
-ALTER TABLE [jos_sdi_diffusion] ADD  DEFAULT (NULL) FOR [fileurl];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (NULL) FOR [fileurl];
 
-ALTER TABLE [jos_sdi_diffusion] ADD  DEFAULT (NULL) FOR [perimeter_id];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT (NULL) FOR [perimeter_id];
 
-ALTER TABLE [jos_sdi_diffusion] ADD  DEFAULT ((0)) FOR [hasdownload];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT ((0)) FOR [hasdownload];
 
-ALTER TABLE [jos_sdi_diffusion] ADD  DEFAULT ((0)) FOR [hasextraction];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT ((0)) FOR [hasextraction];
 
-ALTER TABLE [jos_sdi_diffusion] ADD  DEFAULT ((0)) FOR [restrictedperimeter];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT ((0)) FOR [restrictedperimeter];
 
-ALTER TABLE [jos_sdi_diffusion] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_diffusion] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_diffusion] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_diffusion_download] ADD  DEFAULT (NULL) FOR [user_id];
+ALTER TABLE [#__sdi_diffusion_download] ADD  DEFAULT (NULL) FOR [user_id];
 
-ALTER TABLE [jos_sdi_diffusion_download] ADD  DEFAULT (getdate()) FOR [executed];
+ALTER TABLE [#__sdi_diffusion_download] ADD  DEFAULT (getdate()) FOR [executed];
 
-ALTER TABLE [jos_sdi_diffusion_notifieduser] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_diffusion_notifieduser] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_diffusion_perimeter] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_diffusion_perimeter] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_diffusion_propertyvalue] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_diffusion_propertyvalue] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_featuretype_policy] ADD  DEFAULT (NULL) FOR [description];
+ALTER TABLE [#__sdi_featuretype_policy] ADD  DEFAULT (NULL) FOR [description];
 
-ALTER TABLE [jos_sdi_featuretype_policy] ADD  DEFAULT ((1)) FOR [enabled];
+ALTER TABLE [#__sdi_featuretype_policy] ADD  DEFAULT ((1)) FOR [enabled];
 
-ALTER TABLE [jos_sdi_featuretype_policy] ADD  DEFAULT ((1)) FOR [inheritedspatialpolicy];
+ALTER TABLE [#__sdi_featuretype_policy] ADD  DEFAULT ((1)) FOR [inheritedspatialpolicy];
 
-ALTER TABLE [jos_sdi_featuretype_policy] ADD  DEFAULT (NULL) FOR [spatialpolicy_id];
+ALTER TABLE [#__sdi_featuretype_policy] ADD  DEFAULT (NULL) FOR [spatialpolicy_id];
 
-ALTER TABLE [jos_sdi_importref] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_importref] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_importref] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_importref] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_importref] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_importref] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_importref] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_importref] ADD  DEFAULT (NULL) FOR [description];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT (NULL) FOR [description];
 
-ALTER TABLE [jos_sdi_importref] ADD  DEFAULT (NULL) FOR [xsl4sdi];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT (NULL) FOR [xsl4sdi];
 
-ALTER TABLE [jos_sdi_importref] ADD  DEFAULT (NULL) FOR [xsl4ext];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT (NULL) FOR [xsl4ext];
 
-ALTER TABLE [jos_sdi_importref] ADD  DEFAULT (NULL) FOR [cswservice_id];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT (NULL) FOR [cswservice_id];
 
-ALTER TABLE [jos_sdi_importref] ADD  DEFAULT (NULL) FOR [cswversion_id];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT (NULL) FOR [cswversion_id];
 
-ALTER TABLE [jos_sdi_importref] ADD  DEFAULT (NULL) FOR [cswoutputschema];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT (NULL) FOR [cswoutputschema];
 
-ALTER TABLE [jos_sdi_importref] ADD  DEFAULT (NULL) FOR [importtype_id];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT (NULL) FOR [importtype_id];
 
-ALTER TABLE [jos_sdi_importref] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_importref] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_importref] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_language] ADD  DEFAULT ((0)) FOR [ordering];
+ALTER TABLE [#__sdi_language] ADD  DEFAULT ((0)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_language] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_language] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_language] ADD  DEFAULT (N'') FOR [gemet];
+ALTER TABLE [#__sdi_language] ADD  DEFAULT (N'') FOR [gemet];
 
-ALTER TABLE [jos_sdi_language] ADD  DEFAULT (NULL) FOR [iso639-2T];
+ALTER TABLE [#__sdi_language] ADD  DEFAULT (NULL) FOR [iso639-2T];
 
-ALTER TABLE [jos_sdi_language] ADD  DEFAULT (NULL) FOR [iso639-1];
+ALTER TABLE [#__sdi_language] ADD  DEFAULT (NULL) FOR [iso639-1];
 
-ALTER TABLE [jos_sdi_language] ADD  DEFAULT (NULL) FOR [iso3166-1-alpha2];
+ALTER TABLE [#__sdi_language] ADD  DEFAULT (NULL) FOR [iso3166-1-alpha2];
 
-ALTER TABLE [jos_sdi_language] ADD  DEFAULT (NULL) FOR [iso639-2B];
+ALTER TABLE [#__sdi_language] ADD  DEFAULT (NULL) FOR [iso639-2B];
 
-ALTER TABLE [jos_sdi_layer] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_layer] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_layer] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_layer] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_layer] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_layer] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_layer] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_layer] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_layer] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_layer] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_layer] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_layer] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_layer] ADD  DEFAULT (NULL) FOR [description];
+ALTER TABLE [#__sdi_layer] ADD  DEFAULT (NULL) FOR [description];
 
-ALTER TABLE [jos_sdi_layer_layergroup] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_layer_layergroup] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_layergroup] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_layergroup] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_layergroup] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_layergroup] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_layergroup] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_layergroup] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_layergroup] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_layergroup] ADD  DEFAULT ((0)) FOR [isdefaultopen];
+ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT ((0)) FOR [isdefaultopen];
 
-ALTER TABLE [jos_sdi_layergroup] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_layergroup] ADD  DEFAULT (NULL) FOR [asset_id];
+ALTER TABLE [#__sdi_layergroup] ADD  DEFAULT (NULL) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_map] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_map] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_map] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_map] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_map] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_map] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_map] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_map] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_map] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_map] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_map] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_map] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_map] ADD  DEFAULT (NULL) FOR [rootnodetext];
+ALTER TABLE [#__sdi_map] ADD  DEFAULT (NULL) FOR [rootnodetext];
 
-ALTER TABLE [jos_sdi_map] ADD  DEFAULT (NULL) FOR [maxresolution];
+ALTER TABLE [#__sdi_map] ADD  DEFAULT (NULL) FOR [maxresolution];
 
-ALTER TABLE [jos_sdi_map] ADD  DEFAULT (NULL) FOR [numzoomlevel];
+ALTER TABLE [#__sdi_map] ADD  DEFAULT (NULL) FOR [numzoomlevel];
 
-ALTER TABLE [jos_sdi_map] ADD  DEFAULT (NULL) FOR [restrictedextent];
+ALTER TABLE [#__sdi_map] ADD  DEFAULT (NULL) FOR [restrictedextent];
 
-ALTER TABLE [jos_sdi_map] ADD  DEFAULT (NULL) FOR [centercoordinates];
+ALTER TABLE [#__sdi_map] ADD  DEFAULT (NULL) FOR [centercoordinates];
 
-ALTER TABLE [jos_sdi_map] ADD  DEFAULT (NULL) FOR [zoom];
+ALTER TABLE [#__sdi_map] ADD  DEFAULT (NULL) FOR [zoom];
 
-ALTER TABLE [jos_sdi_map] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_map] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_map] ADD  DEFAULT (NULL) FOR [asset_id];
+ALTER TABLE [#__sdi_map] ADD  DEFAULT (NULL) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_map_layergroup] ADD  DEFAULT ((0)) FOR [isbackground];
+ALTER TABLE [#__sdi_map_layergroup] ADD  DEFAULT ((0)) FOR [isbackground];
 
-ALTER TABLE [jos_sdi_map_layergroup] ADD  DEFAULT ((0)) FOR [isdefault];
+ALTER TABLE [#__sdi_map_layergroup] ADD  DEFAULT ((0)) FOR [isdefault];
 
-ALTER TABLE [jos_sdi_map_layergroup] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_map_layergroup] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_map_tool] ADD  DEFAULT (NULL) FOR [params];
+ALTER TABLE [#__sdi_map_tool] ADD  DEFAULT (NULL) FOR [params];
 
-ALTER TABLE [jos_sdi_maplayer] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_maplayer] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_maplayer] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_maplayer] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_maplayer] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_maplayer] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_maplayer] ADD  DEFAULT (NULL) FOR [service_id];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT (NULL) FOR [service_id];
 
-ALTER TABLE [jos_sdi_maplayer] ADD  DEFAULT (NULL) FOR [servicetype];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT (NULL) FOR [servicetype];
 
-ALTER TABLE [jos_sdi_maplayer] ADD  DEFAULT ((0)) FOR [istiled];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT ((0)) FOR [istiled];
 
-ALTER TABLE [jos_sdi_maplayer] ADD  DEFAULT ((0)) FOR [isdefaultvisible];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT ((0)) FOR [isdefaultvisible];
 
-ALTER TABLE [jos_sdi_maplayer] ADD  DEFAULT ((1.00)) FOR [opacity];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT ((1.00)) FOR [opacity];
 
-ALTER TABLE [jos_sdi_maplayer] ADD  DEFAULT ((0)) FOR [asOL];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT ((0)) FOR [asOL];
 
-ALTER TABLE [jos_sdi_maplayer] ADD  DEFAULT (NULL) FOR [attribution];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT (NULL) FOR [attribution];
 
-ALTER TABLE [jos_sdi_maplayer] ADD  DEFAULT ((1)) FOR [accessscope_id];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT ((1)) FOR [accessscope_id];
 
-ALTER TABLE [jos_sdi_maplayer] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_maplayer] ADD  DEFAULT (NULL) FOR [asset_id];
+ALTER TABLE [#__sdi_maplayer] ADD  DEFAULT (NULL) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_metadata] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_metadata] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_metadata] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_metadata] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_metadata] ADD  DEFAULT ((1)) FOR [metadatastate_id];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT ((1)) FOR [metadatastate_id];
 
-ALTER TABLE [jos_sdi_metadata] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_metadata] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_metadata] ADD  DEFAULT (NULL) FOR [published];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT (NULL) FOR [published];
 
-ALTER TABLE [jos_sdi_metadata] ADD  DEFAULT (NULL) FOR [archived];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT (NULL) FOR [archived];
 
-ALTER TABLE [jos_sdi_metadata] ADD  DEFAULT (NULL) FOR [lastsynchronization];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT (NULL) FOR [lastsynchronization];
 
-ALTER TABLE [jos_sdi_metadata] ADD  DEFAULT (NULL) FOR [synchronized_by];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT (NULL) FOR [synchronized_by];
 
-ALTER TABLE [jos_sdi_metadata] ADD  DEFAULT ((0)) FOR [notification];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT ((0)) FOR [notification];
 
-ALTER TABLE [jos_sdi_metadata] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_metadata] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_metadata] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_monitor_exports] ADD  DEFAULT (NULL) FOR [exportDesc];
+ALTER TABLE [#__sdi_monitor_exports] ADD  DEFAULT (NULL) FOR [exportDesc];
 
-ALTER TABLE [jos_sdi_monitor_exports] ADD  DEFAULT (NULL) FOR [exportName];
+ALTER TABLE [#__sdi_monitor_exports] ADD  DEFAULT (NULL) FOR [exportName];
 
-ALTER TABLE [jos_sdi_monitor_exports] ADD  DEFAULT (NULL) FOR [exportType];
+ALTER TABLE [#__sdi_monitor_exports] ADD  DEFAULT (NULL) FOR [exportType];
 
-ALTER TABLE [jos_sdi_monitor_exports] ADD  DEFAULT (NULL) FOR [xsltUrl];
+ALTER TABLE [#__sdi_monitor_exports] ADD  DEFAULT (NULL) FOR [xsltUrl];
 
-ALTER TABLE [jos_sdi_namespace] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_namespace] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_namespace] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_namespace] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_namespace] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_namespace] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_namespace] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_namespace] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_namespace] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_namespace] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_namespace] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_namespace] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_namespace] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_namespace] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_namespace] ADD  DEFAULT ((0)) FOR [system];
+ALTER TABLE [#__sdi_namespace] ADD  DEFAULT ((0)) FOR [system];
 
-ALTER TABLE [jos_sdi_namespace] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_namespace] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_namespace] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_namespace] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_order] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_order] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_order] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_order] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_order] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_order] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_order] ADD  DEFAULT (NULL) FOR [ordertype_id];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT (NULL) FOR [ordertype_id];
 
-ALTER TABLE [jos_sdi_order] ADD  DEFAULT (NULL) FOR [thirdparty_id];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT (NULL) FOR [thirdparty_id];
 
-ALTER TABLE [jos_sdi_order] ADD  DEFAULT (NULL) FOR [buffer];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT (NULL) FOR [buffer];
 
-ALTER TABLE [jos_sdi_order] ADD  DEFAULT (NULL) FOR [surface];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT (NULL) FOR [surface];
 
-ALTER TABLE [jos_sdi_order] ADD  DEFAULT (getdate()) FOR [sent];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT (getdate()) FOR [sent];
 
-ALTER TABLE [jos_sdi_order] ADD  DEFAULT (getdate()) FOR [completed];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT (getdate()) FOR [completed];
 
-ALTER TABLE [jos_sdi_order] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_order] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_order] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_order_diffusion] ADD  DEFAULT (getdate()) FOR [completed];
+ALTER TABLE [#__sdi_order_diffusion] ADD  DEFAULT (getdate()) FOR [completed];
 
-ALTER TABLE [jos_sdi_organism] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_organism] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_organism] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_organism] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_organism] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_organism] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_organism] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_organism] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_organism] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_organism] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_organism] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_organism] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_organism] ADD  DEFAULT (NULL) FOR [acronym];
+ALTER TABLE [#__sdi_organism] ADD  DEFAULT (NULL) FOR [acronym];
 
-ALTER TABLE [jos_sdi_organism] ADD  DEFAULT (NULL) FOR [description];
+ALTER TABLE [#__sdi_organism] ADD  DEFAULT (NULL) FOR [description];
 
-ALTER TABLE [jos_sdi_organism] ADD  DEFAULT (NULL) FOR [logo];
+ALTER TABLE [#__sdi_organism] ADD  DEFAULT (NULL) FOR [logo];
 
-ALTER TABLE [jos_sdi_organism] ADD  DEFAULT (NULL) FOR [website];
+ALTER TABLE [#__sdi_organism] ADD  DEFAULT (NULL) FOR [website];
 
-ALTER TABLE [jos_sdi_organism] ADD  DEFAULT (NULL) FOR [username];
+ALTER TABLE [#__sdi_organism] ADD  DEFAULT (NULL) FOR [username];
 
-ALTER TABLE [jos_sdi_organism] ADD  DEFAULT (NULL) FOR [password];
+ALTER TABLE [#__sdi_organism] ADD  DEFAULT (NULL) FOR [password];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT (NULL) FOR [description];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [description];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT (NULL) FOR [wfsservice_id];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [wfsservice_id];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT (NULL) FOR [wfsservicetype_id];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [wfsservicetype_id];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypename];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypename];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT (NULL) FOR [prefix];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [prefix];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT (NULL) FOR [namespace];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [namespace];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypefieldid];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypefieldid];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypefieldname];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypefieldname];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypefieldsurface];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypefieldsurface];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypefielddescription];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypefielddescription];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypefieldgeometry];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypefieldgeometry];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypefieldresource];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [featuretypefieldresource];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT (NULL) FOR [wmsservice_id];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [wmsservice_id];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT (NULL) FOR [wmsservicetype_id];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [wmsservicetype_id];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT (NULL) FOR [layername];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT (NULL) FOR [layername];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_perimeter] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_physicalservice] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_physicalservice] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_physicalservice] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_physicalservice] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_physicalservice] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_physicalservice] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_physicalservice] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_physicalservice] ADD  DEFAULT (NULL) FOR [name];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [name];
 
-ALTER TABLE [jos_sdi_physicalservice] ADD  DEFAULT ((1)) FOR [servicescope_id];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT ((1)) FOR [servicescope_id];
 
-ALTER TABLE [jos_sdi_physicalservice] ADD  DEFAULT (NULL) FOR [resourceauthentication_id];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [resourceauthentication_id];
 
-ALTER TABLE [jos_sdi_physicalservice] ADD  DEFAULT (NULL) FOR [resourceurl];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [resourceurl];
 
-ALTER TABLE [jos_sdi_physicalservice] ADD  DEFAULT (NULL) FOR [resourceusername];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [resourceusername];
 
-ALTER TABLE [jos_sdi_physicalservice] ADD  DEFAULT (NULL) FOR [resourcepassword];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [resourcepassword];
 
-ALTER TABLE [jos_sdi_physicalservice] ADD  DEFAULT (NULL) FOR [serviceauthentication_id];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [serviceauthentication_id];
 
-ALTER TABLE [jos_sdi_physicalservice] ADD  DEFAULT (NULL) FOR [serviceurl];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [serviceurl];
 
-ALTER TABLE [jos_sdi_physicalservice] ADD  DEFAULT (NULL) FOR [serviceusername];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [serviceusername];
 
-ALTER TABLE [jos_sdi_physicalservice] ADD  DEFAULT (NULL) FOR [servicepassword];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [servicepassword];
 
-ALTER TABLE [jos_sdi_physicalservice] ADD  DEFAULT (NULL) FOR [params];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [params];
 
-ALTER TABLE [jos_sdi_physicalservice] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_physicalservice] ADD  DEFAULT (NULL) FOR [asset_id];
+ALTER TABLE [#__sdi_physicalservice] ADD  DEFAULT (NULL) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_physicalservice_policy] ADD  DEFAULT (NULL) FOR [prefix];
+ALTER TABLE [#__sdi_physicalservice_policy] ADD  DEFAULT (NULL) FOR [prefix];
 
-ALTER TABLE [jos_sdi_physicalservice_policy] ADD  DEFAULT (NULL) FOR [namespace];
+ALTER TABLE [#__sdi_physicalservice_policy] ADD  DEFAULT (NULL) FOR [namespace];
 
-ALTER TABLE [jos_sdi_physicalservice_policy] ADD  DEFAULT ((1)) FOR [anyitem];
+ALTER TABLE [#__sdi_physicalservice_policy] ADD  DEFAULT ((1)) FOR [anyitem];
 
-ALTER TABLE [jos_sdi_physicalservice_policy] ADD  DEFAULT ((1)) FOR [inheritedspatialpolicy];
+ALTER TABLE [#__sdi_physicalservice_policy] ADD  DEFAULT ((1)) FOR [inheritedspatialpolicy];
 
-ALTER TABLE [jos_sdi_physicalservice_policy] ADD  DEFAULT (NULL) FOR [csw_spatialpolicy_id];
+ALTER TABLE [#__sdi_physicalservice_policy] ADD  DEFAULT (NULL) FOR [csw_spatialpolicy_id];
 
-ALTER TABLE [jos_sdi_physicalservice_policy] ADD  DEFAULT (NULL) FOR [wms_spatialpolicy_id];
+ALTER TABLE [#__sdi_physicalservice_policy] ADD  DEFAULT (NULL) FOR [wms_spatialpolicy_id];
 
-ALTER TABLE [jos_sdi_physicalservice_policy] ADD  DEFAULT (NULL) FOR [wmts_spatialpolicy_id];
+ALTER TABLE [#__sdi_physicalservice_policy] ADD  DEFAULT (NULL) FOR [wmts_spatialpolicy_id];
 
-ALTER TABLE [jos_sdi_physicalservice_policy] ADD  DEFAULT (NULL) FOR [wfs_spatialpolicy_id];
+ALTER TABLE [#__sdi_physicalservice_policy] ADD  DEFAULT (NULL) FOR [wfs_spatialpolicy_id];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT (getdate()) FOR [allowfrom];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT (getdate()) FOR [allowfrom];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT (getdate()) FOR [allowto];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT (getdate()) FOR [allowto];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT ((1)) FOR [anyoperation];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [anyoperation];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT ((1)) FOR [anyservice];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [anyservice];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT ((1)) FOR [accessscope_id];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [accessscope_id];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT (NULL) FOR [csw_spatialpolicy_id];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [csw_spatialpolicy_id];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT (NULL) FOR [wms_spatialpolicy_id];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [wms_spatialpolicy_id];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT (NULL) FOR [wmts_spatialpolicy_id];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [wmts_spatialpolicy_id];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT (NULL) FOR [wfs_spatialpolicy_id];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [wfs_spatialpolicy_id];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT ((1)) FOR [csw_version_id];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [csw_version_id];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT ((1)) FOR [csw_anyattribute];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [csw_anyattribute];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT ((1)) FOR [csw_anycontext];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [csw_anycontext];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT ((1)) FOR [csw_anystate];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [csw_anystate];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT ((1)) FOR [csw_anyvisibility];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [csw_anyvisibility];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT ((1)) FOR [csw_includeharvested];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [csw_includeharvested];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT ((1)) FOR [csw_anyresourcetype];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [csw_anyresourcetype];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT ((1)) FOR [csw_accessscope_id];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [csw_accessscope_id];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT (NULL) FOR [wms_minimumwidth];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [wms_minimumwidth];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT (NULL) FOR [wms_minimumheight];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [wms_minimumheight];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT (NULL) FOR [wms_maximumwidth];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [wms_maximumwidth];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT (NULL) FOR [wms_maximumheight];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [wms_maximumheight];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT (NULL) FOR [params];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [params];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_policy] ADD  DEFAULT (NULL) FOR [asset_id];
+ALTER TABLE [#__sdi_policy] ADD  DEFAULT (NULL) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_policy_metadatastate] ADD  DEFAULT (NULL) FOR [metadataversion_id];
+ALTER TABLE [#__sdi_policy_metadatastate] ADD  DEFAULT (NULL) FOR [metadataversion_id];
 
-ALTER TABLE [jos_sdi_policy_visibility] ADD  DEFAULT (NULL) FOR [user_id];
+ALTER TABLE [#__sdi_policy_visibility] ADD  DEFAULT (NULL) FOR [user_id];
 
-ALTER TABLE [jos_sdi_policy_visibility] ADD  DEFAULT (NULL) FOR [organism_id];
+ALTER TABLE [#__sdi_policy_visibility] ADD  DEFAULT (NULL) FOR [organism_id];
 
-ALTER TABLE [jos_sdi_profile] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_profile] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_profile] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_profile] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_profile] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_profile] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_profile] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_profile] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_profile] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_profile] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_profile] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_profile] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_profile] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_profile] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_profile] ADD  DEFAULT (NULL) FOR [description];
+ALTER TABLE [#__sdi_profile] ADD  DEFAULT (NULL) FOR [description];
 
-ALTER TABLE [jos_sdi_profile] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_profile] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_profile] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_profile] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_property] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_property] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_property] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_property] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_property] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_property] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_property] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_property] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_property] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_property] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_property] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_property] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_property] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_property] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_property] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_property] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_propertyvalue] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_propertyvalue] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_propertyvalue] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_propertyvalue] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_propertyvalue] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_propertyvalue] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_propertyvalue] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_propertyvalue] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_propertyvalue] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT (NULL) FOR [description];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [description];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT (NULL) FOR [attributechild_id];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [attributechild_id];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT (NULL) FOR [classchild_id];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [classchild_id];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT (NULL) FOR [lowerbound];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [lowerbound];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT (NULL) FOR [upperbound];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [upperbound];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT (NULL) FOR [relationtype_id];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [relationtype_id];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT (NULL) FOR [rendertype_id];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [rendertype_id];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT (NULL) FOR [namespace_id];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [namespace_id];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT (NULL) FOR [isocode];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [isocode];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT (NULL) FOR [classassociation_id];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [classassociation_id];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT ((0)) FOR [issearchfilter];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT ((0)) FOR [issearchfilter];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT (NULL) FOR [relationscope_id];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [relationscope_id];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT (NULL) FOR [editorrelationscope_id];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [editorrelationscope_id];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT (NULL) FOR [childresourcetype_id];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [childresourcetype_id];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT (NULL) FOR [childtype_id];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT (NULL) FOR [childtype_id];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_relation] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_relation] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_relation_catalog] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_relation_catalog] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_relation_catalog] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_relation_catalog] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_relation_defaultvalue] ADD  DEFAULT (NULL) FOR [attributevalue_id];
+ALTER TABLE [#__sdi_relation_defaultvalue] ADD  DEFAULT (NULL) FOR [attributevalue_id];
 
-ALTER TABLE [jos_sdi_relation_defaultvalue] ADD  DEFAULT (NULL) FOR [value];
+ALTER TABLE [#__sdi_relation_defaultvalue] ADD  DEFAULT (NULL) FOR [value];
 
-ALTER TABLE [jos_sdi_relation_defaultvalue] ADD  DEFAULT (NULL) FOR [language_id];
+ALTER TABLE [#__sdi_relation_defaultvalue] ADD  DEFAULT (NULL) FOR [language_id];
 
-ALTER TABLE [jos_sdi_relation_profile] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_relation_profile] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_relation_profile] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_relation_profile] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_resource] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_resource] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_resource] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_resource] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_resource] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_resource] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_resource] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_resource] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_resource] ADD  DEFAULT (NULL) FOR [checked_out];
+ALTER TABLE [#__sdi_resource] ADD  DEFAULT (NULL) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_resource] ADD  DEFAULT (NULL) FOR [checked_out_time];
+ALTER TABLE [#__sdi_resource] ADD  DEFAULT (NULL) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_resource] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_resource] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_resourcetype] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_resourcetype] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_resourcetype] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_resourcetype] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_resourcetype] ADD  DEFAULT (NULL) FOR [fragmentnamespace_id];
+ALTER TABLE [#__sdi_resourcetype] ADD  DEFAULT (NULL) FOR [fragmentnamespace_id];
 
-ALTER TABLE [jos_sdi_resourcetype] ADD  DEFAULT (NULL) FOR [fragment];
+ALTER TABLE [#__sdi_resourcetype] ADD  DEFAULT (NULL) FOR [fragment];
 
-ALTER TABLE [jos_sdi_resourcetype] ADD  DEFAULT (NULL) FOR [sitemapparams];
+ALTER TABLE [#__sdi_resourcetype] ADD  DEFAULT (NULL) FOR [sitemapparams];
 
-ALTER TABLE [jos_sdi_resourcetype] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_resourcetype] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_resourcetypelink] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_resourcetypelink] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_resourcetypelink] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_resourcetypelink] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_resourcetypelink] ADD  DEFAULT (NULL) FOR [class_id];
+ALTER TABLE [#__sdi_resourcetypelink] ADD  DEFAULT (NULL) FOR [class_id];
 
-ALTER TABLE [jos_sdi_resourcetypelink] ADD  DEFAULT (NULL) FOR [attribute_id];
+ALTER TABLE [#__sdi_resourcetypelink] ADD  DEFAULT (NULL) FOR [attribute_id];
 
-ALTER TABLE [jos_sdi_resourcetypelink] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_resourcetypelink] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_searchcriteria] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_searchcriteria] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_searchcriteria] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_searchcriteria] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_searchcriteria] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_searchcriteria] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_searchcriteria] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_searchcriteria] ADD  DEFAULT ((0)) FOR [issystem];
+ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT ((0)) FOR [issystem];
 
-ALTER TABLE [jos_sdi_searchcriteria] ADD  DEFAULT (NULL) FOR [rendertype_id];
+ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT (NULL) FOR [rendertype_id];
 
-ALTER TABLE [jos_sdi_searchcriteria] ADD  DEFAULT (NULL) FOR [relation_id];
+ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT (NULL) FOR [relation_id];
 
-ALTER TABLE [jos_sdi_searchcriteria] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_searchcriteria] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_searchcriteria] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_searchcriteriafilter] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_searchcriteriafilter] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_searchcriteriafilter] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_searchcriteriafilter] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_accessscope] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_accessscope] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_accessscope] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_accessscope] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_addresstype] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_sys_addresstype] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_addresstype] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_addresstype] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_authenticationconnector] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_sys_authenticationconnector] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_authenticationconnector] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_authenticationconnector] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_authenticationlevel] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_sys_authenticationlevel] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_authenticationlevel] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_authenticationlevel] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_country] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_country] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_country] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_country] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_country] ADD  DEFAULT (NULL) FOR [iso2];
+ALTER TABLE [#__sdi_sys_country] ADD  DEFAULT (NULL) FOR [iso2];
 
-ALTER TABLE [jos_sdi_sys_country] ADD  DEFAULT (NULL) FOR [iso3];
+ALTER TABLE [#__sdi_sys_country] ADD  DEFAULT (NULL) FOR [iso3];
 
-ALTER TABLE [jos_sdi_sys_criteriatype] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_criteriatype] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_criteriatype] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_criteriatype] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_entity] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_entity] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_entity] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_entity] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_exceptionlevel] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_exceptionlevel] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_importtype] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_importtype] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_importtype] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_importtype] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_isolanguage] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_isolanguage] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_isolanguage] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_isolanguage] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_loglevel] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_loglevel] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_logroll] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_logroll] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_maptool] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_sys_maptool] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_maptool] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_maptool] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_metadatastate] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_metadatastate] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_metadatastate] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_metadatastate] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_metadataversion] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_metadataversion] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_metadataversion] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_metadataversion] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_operationcompliance] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_sys_operationcompliance] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_operationcompliance] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_operationcompliance] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_operationcompliance] ADD  DEFAULT ((0)) FOR [implemented];
+ALTER TABLE [#__sdi_sys_operationcompliance] ADD  DEFAULT ((0)) FOR [implemented];
 
-ALTER TABLE [jos_sdi_sys_orderstate] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_orderstate] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_orderstate] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_orderstate] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_ordertype] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_ordertype] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_ordertype] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_ordertype] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_perimetertype] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_perimetertype] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_perimetertype] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_perimetertype] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_pricing] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_pricing] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_pricing] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_pricing] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_productmining] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_productmining] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_productmining] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_productmining] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_productstate] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_productstate] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_productstate] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_productstate] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_productstorage] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_productstorage] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_productstorage] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_productstorage] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_propertytype] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_propertytype] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_proxytype] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_proxytype] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_relationscope] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_relationscope] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_relationscope] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_relationscope] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_relationtype] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_relationtype] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_relationtype] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_relationtype] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_rendertype] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_rendertype] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_rendertype] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_rendertype] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_role] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_role] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_role] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_role] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_searchtab] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_searchtab] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_searchtab] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_searchtab] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_servicecompliance] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_sys_servicecompliance] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_servicecompliance] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_servicecompliance] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_servicecompliance] ADD  DEFAULT ((0)) FOR [implemented];
+ALTER TABLE [#__sdi_sys_servicecompliance] ADD  DEFAULT ((0)) FOR [implemented];
 
-ALTER TABLE [jos_sdi_sys_servicecompliance] ADD  DEFAULT ((0)) FOR [relayable];
+ALTER TABLE [#__sdi_sys_servicecompliance] ADD  DEFAULT ((0)) FOR [relayable];
 
-ALTER TABLE [jos_sdi_sys_servicecompliance] ADD  DEFAULT ((0)) FOR [aggregatable];
+ALTER TABLE [#__sdi_sys_servicecompliance] ADD  DEFAULT ((0)) FOR [aggregatable];
 
-ALTER TABLE [jos_sdi_sys_servicecompliance] ADD  DEFAULT ((0)) FOR [harvestable];
+ALTER TABLE [#__sdi_sys_servicecompliance] ADD  DEFAULT ((0)) FOR [harvestable];
 
-ALTER TABLE [jos_sdi_sys_serviceconnector] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_sys_serviceconnector] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_serviceconnector] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_serviceconnector] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_serviceoperation] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_sys_serviceoperation] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_serviceoperation] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_serviceoperation] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_servicescope] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_servicescope] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_servicescope] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_servicescope] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_servicetype] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_servicetype] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_servicetype] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_servicetype] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_serviceversion] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_sys_serviceversion] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_serviceversion] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_serviceversion] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_spatialoperator] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_spatialoperator] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_spatialoperator] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_spatialoperator] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_stereotype] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_stereotype] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_stereotype] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_stereotype] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_stereotype] ADD  DEFAULT (NULL) FOR [defaultpattern];
+ALTER TABLE [#__sdi_sys_stereotype] ADD  DEFAULT (NULL) FOR [defaultpattern];
 
-ALTER TABLE [jos_sdi_sys_stereotype] ADD  DEFAULT (NULL) FOR [isocode];
+ALTER TABLE [#__sdi_sys_stereotype] ADD  DEFAULT (NULL) FOR [isocode];
 
-ALTER TABLE [jos_sdi_sys_stereotype] ADD  DEFAULT (NULL) FOR [namespace_id];
+ALTER TABLE [#__sdi_sys_stereotype] ADD  DEFAULT (NULL) FOR [namespace_id];
 
-ALTER TABLE [jos_sdi_sys_stereotype] ADD  DEFAULT (NULL) FOR [entity_id];
+ALTER TABLE [#__sdi_sys_stereotype] ADD  DEFAULT (NULL) FOR [entity_id];
 
-ALTER TABLE [jos_sdi_sys_topiccategory] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_topiccategory] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_topiccategory] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_topiccategory] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_unit] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_unit] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_sys_versiontype] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_sys_versiontype] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_sys_versiontype] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_sys_versiontype] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_tilematrix_policy] ADD  DEFAULT (NULL) FOR [tileminrow];
+ALTER TABLE [#__sdi_tilematrix_policy] ADD  DEFAULT (NULL) FOR [tileminrow];
 
-ALTER TABLE [jos_sdi_tilematrix_policy] ADD  DEFAULT (NULL) FOR [tilemaxrow];
+ALTER TABLE [#__sdi_tilematrix_policy] ADD  DEFAULT (NULL) FOR [tilemaxrow];
 
-ALTER TABLE [jos_sdi_tilematrix_policy] ADD  DEFAULT (NULL) FOR [tilemincol];
+ALTER TABLE [#__sdi_tilematrix_policy] ADD  DEFAULT (NULL) FOR [tilemincol];
 
-ALTER TABLE [jos_sdi_tilematrix_policy] ADD  DEFAULT (NULL) FOR [tilemaxcol];
+ALTER TABLE [#__sdi_tilematrix_policy] ADD  DEFAULT (NULL) FOR [tilemaxcol];
 
-ALTER TABLE [jos_sdi_tilematrix_policy] ADD  DEFAULT ((1)) FOR [anytile];
+ALTER TABLE [#__sdi_tilematrix_policy] ADD  DEFAULT ((1)) FOR [anytile];
 
-ALTER TABLE [jos_sdi_tilematrixset_policy] ADD  DEFAULT ((1)) FOR [anytilematrix];
+ALTER TABLE [#__sdi_tilematrixset_policy] ADD  DEFAULT ((1)) FOR [anytilematrix];
 
-ALTER TABLE [jos_sdi_tilematrixset_policy] ADD  DEFAULT (NULL) FOR [srssource];
+ALTER TABLE [#__sdi_tilematrixset_policy] ADD  DEFAULT (NULL) FOR [srssource];
 
-ALTER TABLE [jos_sdi_translation] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_translation] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_translation] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_translation] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_translation] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_translation] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_translation] ADD  DEFAULT ((1)) FOR [ordering];
+ALTER TABLE [#__sdi_translation] ADD  DEFAULT ((1)) FOR [ordering];
 
-ALTER TABLE [jos_sdi_translation] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_translation] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_translation] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_translation] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_translation] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_translation] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_translation] ADD  DEFAULT (NULL) FOR [language_id];
+ALTER TABLE [#__sdi_translation] ADD  DEFAULT (NULL) FOR [language_id];
 
-ALTER TABLE [jos_sdi_translation] ADD  DEFAULT (NULL) FOR [text1];
+ALTER TABLE [#__sdi_translation] ADD  DEFAULT (NULL) FOR [text1];
 
-ALTER TABLE [jos_sdi_translation] ADD  DEFAULT (NULL) FOR [text2];
+ALTER TABLE [#__sdi_translation] ADD  DEFAULT (NULL) FOR [text2];
 
-ALTER TABLE [jos_sdi_user] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_user] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_user] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_user] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_user] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_user] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_user] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_user] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_user] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_user] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_user] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_user] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_user] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_user] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_user] ADD  DEFAULT ((1)) FOR [notificationrequesttreatment];
+ALTER TABLE [#__sdi_user] ADD  DEFAULT ((1)) FOR [notificationrequesttreatment];
 
-ALTER TABLE [jos_sdi_user] ADD  DEFAULT (NULL) FOR [catid];
+ALTER TABLE [#__sdi_user] ADD  DEFAULT (NULL) FOR [catid];
 
-ALTER TABLE [jos_sdi_user] ADD  DEFAULT (NULL) FOR [params];
+ALTER TABLE [#__sdi_user] ADD  DEFAULT (NULL) FOR [params];
 
-ALTER TABLE [jos_sdi_user] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_user] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_user] ADD  DEFAULT (NULL) FOR [asset_id];
+ALTER TABLE [#__sdi_user] ADD  DEFAULT (NULL) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_user_role_organism] ADD  DEFAULT (NULL) FOR [user_id];
+ALTER TABLE [#__sdi_user_role_organism] ADD  DEFAULT (NULL) FOR [user_id];
 
-ALTER TABLE [jos_sdi_user_role_organism] ADD  DEFAULT (NULL) FOR [role_id];
+ALTER TABLE [#__sdi_user_role_organism] ADD  DEFAULT (NULL) FOR [role_id];
 
-ALTER TABLE [jos_sdi_user_role_organism] ADD  DEFAULT (NULL) FOR [organism_id];
+ALTER TABLE [#__sdi_user_role_organism] ADD  DEFAULT (NULL) FOR [organism_id];
 
-ALTER TABLE [jos_sdi_user_role_resource] ADD  DEFAULT (NULL) FOR [user_id];
+ALTER TABLE [#__sdi_user_role_resource] ADD  DEFAULT (NULL) FOR [user_id];
 
-ALTER TABLE [jos_sdi_user_role_resource] ADD  DEFAULT (NULL) FOR [role_id];
+ALTER TABLE [#__sdi_user_role_resource] ADD  DEFAULT (NULL) FOR [role_id];
 
-ALTER TABLE [jos_sdi_user_role_resource] ADD  DEFAULT (NULL) FOR [resource_id];
+ALTER TABLE [#__sdi_user_role_resource] ADD  DEFAULT (NULL) FOR [resource_id];
 
-ALTER TABLE [jos_sdi_version] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_version] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_version] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_version] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_version] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_version] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_version] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_version] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_version] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_version] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_version] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_version] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_version] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_version] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_version] ADD  DEFAULT ((0)) FOR [asset_id];
+ALTER TABLE [#__sdi_version] ADD  DEFAULT ((0)) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [title];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [title];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [inheritedtitle];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [inheritedtitle];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [summary];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [summary];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [inheritedsummary];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [inheritedsummary];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [keyword];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [keyword];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [inheritedkeyword];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [inheritedkeyword];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [fee];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [fee];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [inheritedfee];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [inheritedfee];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [accessconstraint];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [accessconstraint];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [inheritedaccessconstraint];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [inheritedaccessconstraint];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [inheritedcontact];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT ((1)) FOR [inheritedcontact];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactorganization];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactorganization];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactname];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactname];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactposition];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactposition];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactaddress];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactaddress];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactaddresstype];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactaddresstype];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactrole];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactrole];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactpostalcode];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactpostalcode];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactlocality];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactlocality];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactstate];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactstate];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [country_id];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [country_id];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactphone];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactphone];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactfax];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactfax];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactemail];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactemail];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contacturl];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contacturl];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactavailability];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactavailability];
 
-ALTER TABLE [jos_sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactinstruction];
+ALTER TABLE [#__sdi_virtualmetadata] ADD  DEFAULT (NULL) FOR [contactinstruction];
 
-ALTER TABLE [jos_sdi_virtualservice] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_virtualservice] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_virtualservice] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_virtualservice] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_virtualservice] ADD  DEFAULT (getdate()) FOR [created];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (getdate()) FOR [created];
 
-ALTER TABLE [jos_sdi_virtualservice] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_virtualservice] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_virtualservice] ADD  DEFAULT ((1)) FOR [servicescope_id];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT ((1)) FOR [servicescope_id];
 
-ALTER TABLE [jos_sdi_virtualservice] ADD  DEFAULT (NULL) FOR [url];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (NULL) FOR [url];
 
-ALTER TABLE [jos_sdi_virtualservice] ADD  DEFAULT (NULL) FOR [reflectedurl];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (NULL) FOR [reflectedurl];
 
-ALTER TABLE [jos_sdi_virtualservice] ADD  DEFAULT ((0)) FOR [reflectedmetadata];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT ((0)) FOR [reflectedmetadata];
 
-ALTER TABLE [jos_sdi_virtualservice] ADD  DEFAULT (NULL) FOR [xsltfilename];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (NULL) FOR [xsltfilename];
 
-ALTER TABLE [jos_sdi_virtualservice] ADD  DEFAULT ((0)) FOR [harvester];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT ((0)) FOR [harvester];
 
-ALTER TABLE [jos_sdi_virtualservice] ADD  DEFAULT (NULL) FOR [maximumrecords];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (NULL) FOR [maximumrecords];
 
-ALTER TABLE [jos_sdi_virtualservice] ADD  DEFAULT (NULL) FOR [identifiersearchattribute];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (NULL) FOR [identifiersearchattribute];
 
-ALTER TABLE [jos_sdi_virtualservice] ADD  DEFAULT (NULL) FOR [params];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (NULL) FOR [params];
 
-ALTER TABLE [jos_sdi_virtualservice] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_virtualservice] ADD  DEFAULT (NULL) FOR [asset_id];
+ALTER TABLE [#__sdi_virtualservice] ADD  DEFAULT (NULL) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_visualization] ADD  DEFAULT (NULL) FOR [modified_by];
+ALTER TABLE [#__sdi_visualization] ADD  DEFAULT (NULL) FOR [modified_by];
 
-ALTER TABLE [jos_sdi_visualization] ADD  DEFAULT (NULL) FOR [modified];
+ALTER TABLE [#__sdi_visualization] ADD  DEFAULT (NULL) FOR [modified];
 
-ALTER TABLE [jos_sdi_visualization] ADD  DEFAULT (NULL) FOR [ordering];
+ALTER TABLE [#__sdi_visualization] ADD  DEFAULT (NULL) FOR [ordering];
 
-ALTER TABLE [jos_sdi_visualization] ADD  DEFAULT ((1)) FOR [state];
+ALTER TABLE [#__sdi_visualization] ADD  DEFAULT ((1)) FOR [state];
 
-ALTER TABLE [jos_sdi_visualization] ADD  DEFAULT ((0)) FOR [checked_out];
+ALTER TABLE [#__sdi_visualization] ADD  DEFAULT ((0)) FOR [checked_out];
 
-ALTER TABLE [jos_sdi_visualization] ADD  DEFAULT (getdate()) FOR [checked_out_time];
+ALTER TABLE [#__sdi_visualization] ADD  DEFAULT (getdate()) FOR [checked_out_time];
 
-ALTER TABLE [jos_sdi_visualization] ADD  DEFAULT (NULL) FOR [maplayer_id];
+ALTER TABLE [#__sdi_visualization] ADD  DEFAULT (NULL) FOR [maplayer_id];
 
-ALTER TABLE [jos_sdi_visualization] ADD  DEFAULT ((1)) FOR [access];
+ALTER TABLE [#__sdi_visualization] ADD  DEFAULT ((1)) FOR [access];
 
-ALTER TABLE [jos_sdi_visualization] ADD  DEFAULT (NULL) FOR [asset_id];
+ALTER TABLE [#__sdi_visualization] ADD  DEFAULT (NULL) FOR [asset_id];
 
-ALTER TABLE [jos_sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [maxx];
+ALTER TABLE [#__sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [maxx];
 
-ALTER TABLE [jos_sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [maxy];
+ALTER TABLE [#__sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [maxy];
 
-ALTER TABLE [jos_sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [minx];
+ALTER TABLE [#__sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [minx];
 
-ALTER TABLE [jos_sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [miny];
+ALTER TABLE [#__sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [miny];
 
-ALTER TABLE [jos_sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [maximumscale];
+ALTER TABLE [#__sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [maximumscale];
 
-ALTER TABLE [jos_sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [minimumscale];
+ALTER TABLE [#__sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [minimumscale];
 
-ALTER TABLE [jos_sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [srssource];
+ALTER TABLE [#__sdi_wms_spatialpolicy] ADD  DEFAULT (NULL) FOR [srssource];
 
-ALTER TABLE [jos_sdi_wmslayer_policy] ADD  DEFAULT ((0)) FOR [enabled];
+ALTER TABLE [#__sdi_wmslayer_policy] ADD  DEFAULT ((0)) FOR [enabled];
 
-ALTER TABLE [jos_sdi_wmslayer_policy] ADD  DEFAULT ((1)) FOR [inheritedspatialpolicy];
+ALTER TABLE [#__sdi_wmslayer_policy] ADD  DEFAULT ((1)) FOR [inheritedspatialpolicy];
 
-ALTER TABLE [jos_sdi_wmslayer_policy] ADD  DEFAULT (NULL) FOR [spatialpolicy_id];
+ALTER TABLE [#__sdi_wmslayer_policy] ADD  DEFAULT (NULL) FOR [spatialpolicy_id];
 
-ALTER TABLE [jos_sdi_wmts_spatialpolicy] ADD  DEFAULT ((1)) FOR [spatialoperator_id];
+ALTER TABLE [#__sdi_wmts_spatialpolicy] ADD  DEFAULT ((1)) FOR [spatialoperator_id];
 
-ALTER TABLE [jos_sdi_wmts_spatialpolicy] ADD  DEFAULT (NULL) FOR [eastboundlongitude];
+ALTER TABLE [#__sdi_wmts_spatialpolicy] ADD  DEFAULT (NULL) FOR [eastboundlongitude];
 
-ALTER TABLE [jos_sdi_wmts_spatialpolicy] ADD  DEFAULT (NULL) FOR [westboundlongitude];
+ALTER TABLE [#__sdi_wmts_spatialpolicy] ADD  DEFAULT (NULL) FOR [westboundlongitude];
 
-ALTER TABLE [jos_sdi_wmts_spatialpolicy] ADD  DEFAULT (NULL) FOR [northboundlatitude];
+ALTER TABLE [#__sdi_wmts_spatialpolicy] ADD  DEFAULT (NULL) FOR [northboundlatitude];
 
-ALTER TABLE [jos_sdi_wmts_spatialpolicy] ADD  DEFAULT (NULL) FOR [southboundlatitude];
+ALTER TABLE [#__sdi_wmts_spatialpolicy] ADD  DEFAULT (NULL) FOR [southboundlatitude];
 
-ALTER TABLE [jos_sdi_wmtslayer_policy] ADD  DEFAULT ((1)) FOR [enabled];
+ALTER TABLE [#__sdi_wmtslayer_policy] ADD  DEFAULT ((1)) FOR [enabled];
 
-ALTER TABLE [jos_sdi_wmtslayer_policy] ADD  DEFAULT ((1)) FOR [inheritedspatialpolicy];
+ALTER TABLE [#__sdi_wmtslayer_policy] ADD  DEFAULT ((1)) FOR [inheritedspatialpolicy];
 
-ALTER TABLE [jos_sdi_wmtslayer_policy] ADD  DEFAULT (NULL) FOR [spatialpolicy_id];
+ALTER TABLE [#__sdi_wmtslayer_policy] ADD  DEFAULT (NULL) FOR [spatialpolicy_id];
 
-ALTER TABLE [jos_sdi_wmtslayer_policy] ADD  DEFAULT ((1)) FOR [anytilematrixset];
+ALTER TABLE [#__sdi_wmtslayer_policy] ADD  DEFAULT ((1)) FOR [anytilematrixset];
 
 ALTER TABLE [last_ids] ADD  DEFAULT ((0)) FOR [LAST_ID];
 
