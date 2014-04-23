@@ -1,3 +1,40 @@
+
+SET IDENTITY_INSERT [jos_sdi_language] ON 
+
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (2, 0, 1, N'العربية', N'ar-DZ', N'ar', N'ara', N'ar', N'DZ', N'ara');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (3, 0, 1, N'български език', N'bg-BG', N'bg', N'bul', N'bg', N'BG', N'bul');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (4, 0, 1, N'català', N'ca-ES', N'ca', N'cat', N'ca', N'ES', N'cat');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (5, 0, 1, N'čeština', N'cs-CZ', N'cs', N'ces', N'cs', N'CZ', N'cze');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (6, 0, 1, N'dansk', N'da-DK', N'da', N'dan', N'da', N'DK', N'dan');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (7, 0, 1, N'Deutsch', N'de-DE', N'de', N'deu', N'de', N'DE', N'ger');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (8, 0, 1, N'ελληνικά', N'el-GR', N'el', N'ell', N'el', N'GR', N'gre');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (10, 0, 1, N'English (UK)', N'en-GB', N'en', N'eng', N'en', N'GB', N'eng');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (11, 0, 1, N'English (US)', N'en-US', N'en-US', N'eng', N'en', N'US', N'eng');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (12, 0, 1, N'español', N'es-ES', N'es', N'spa', N'es', N'ES', N'spa');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (13, 0, 1, N'eesti', N'et-EE', N'et', N'est', N'et', N'EE', N'est');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (14, 0, 1, N'euskara', N'eu-ES', N'eu', N'eus', N'eu', N'ES', N'baq');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (15, 0, 1, N'suomi', N'fi-FI', N'fi', N'fin', N'fi', N'FI', N'fin');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (16, 0, 1, N'Français', N'fr-FR', N'fr', N'fra', N'fr', N'FR', N'fre');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (17, 0, 1, N'Gaeilge', N'ga-IE', N'ga', N'gle', N'ga', N'IE', N'gle');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (18, 0, 1, N'hrvatski jezik', N'hr-HR', N'hr', N'scr', N'hr', N'HR', N'hrv');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (19, 0, 1, N'magyar', N'hu-HU', N'hu', N'hun', N'hu', N'HU', N'hun');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (20, 0, 1, N'italiano', N'it-IT', N'it', N'ita', N'it', N'IT', N'ita');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (21, 0, 1, N'lietuvių kalba', N'lt-LT', N'lt', N'lit', N'lt', N'LT', N'lit');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (22, 0, 1, N'latviešu valoda', N'lv-LV', N'lv', N'lav', N'lv', N'LV', N'lav');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (23, 0, 1, N'Malti', N'mt-MT', N'mt', N'mlt', N'mt', N'MT', N'mlt');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (24, 0, 1, N'Nederlands', N'nl-NL', N'nl', N'nld', N'nl', N'NL', N'dut');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (25, 0, 1, N'Norsk', N'no-NO', N'no', N'nor', N'no', N'NO', N'nor');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (26, 0, 1, N'język polski', N'pl-PL', N'pl', N'pol', N'pl', N'PL', N'pol');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (27, 0, 1, N'português', N'pt-PT', N'pt', N'por', N'pt', N'PT', N'por');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (28, 0, 1, N'română', N'ro-RO', N'ro', N'ron', N'ro', N'RO', N'rum');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (29, 0, 1, N'русский язык', N'ru-RU', N'ru', N'rus', N'ru', N'RU', N'rus');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (30, 0, 1, N'slovenčina', N'sk-SK', N'sk', N'slk', N'sk', N'SK', N'slo');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (31, 0, 1, N'Svenska', N'sv-SE', N'sv', N'swe', N'sv', N'SE', N'swe');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (32, 0, 1, N'Türkçe', N'tr-TR', N'tr', N'tur', N'tr', N'TR', N'tur');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (33, 0, 1, N'українська мова', N'uk-UA', N'uk', N'ukr', N'uk', N'UA', N'ukr');
+INSERT [jos_sdi_language] ([id], [ordering], [state], [value], [code], [gemet], [iso639-2T], [iso639-1], [iso3166-1-alpha2], [iso639-2B]) VALUES (34, 0, 1, N'Chinese', N'zh-CN', N'zh-CN', N'zho', N'zh', N'CN', N'chi');
+SET IDENTITY_INSERT [jos_sdi_language] OFF
+
 SET IDENTITY_INSERT [jos_sdi_sys_role] ON;
 
 INSERT [jos_sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'member');
