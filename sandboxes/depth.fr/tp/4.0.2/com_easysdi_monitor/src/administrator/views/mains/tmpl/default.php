@@ -22,6 +22,7 @@ $document->addStyleSheet('components/com_easysdi_monitor/assets/css/easysdi_moni
 //Load css files
 $document->addStyleSheet('components/com_easysdi_monitor/libraries/ext/resources/css/ext-all.css');
 $document->addStyleSheet('components/com_easysdi_monitor/libraries/ext/resources/css/xtheme-gray.css');
+//$document->addStyleSheet('components/com_easysdi_monitor/libraries/ext/examples/shared/examples.css');
 $document->addStyleSheet('components/com_easysdi_monitor/libraries/ext/examples/ux/css/RowEditor.css');
 $document->addStyleSheet('components/com_easysdi_monitor/assets/css/monitor.css');
 
