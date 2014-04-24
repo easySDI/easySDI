@@ -192,7 +192,7 @@ class Easysdi_serviceModelvirtualservices extends JModelList
 		$query->select(
 			$this->getState(
 				'list.select',
-				'a.id, a.state, a.ordering, a.url, a.reflectedurl, a.access'
+				'a.id, a.name, a.alias, a.checked_out, a.checked_out_time, a.state, a.ordering, a.url, a.reflectedurl, a.access'
 			)
 		);
 		$query->from('#__sdi_virtualservice AS a');

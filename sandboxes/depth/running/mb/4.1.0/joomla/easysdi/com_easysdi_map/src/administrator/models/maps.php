@@ -152,7 +152,7 @@ class Easysdi_mapModelmaps extends JModelList
 		$query->select(
 				$this->getState(
 						'list.select',
-						'a.id, a.state, a.ordering, a.name, a.access'
+						'a.id, a.alias, a.state, a.checked_out, a.ordering, a.name, a.access'
 				)
 		);
 		$query->from('#__sdi_map AS a');

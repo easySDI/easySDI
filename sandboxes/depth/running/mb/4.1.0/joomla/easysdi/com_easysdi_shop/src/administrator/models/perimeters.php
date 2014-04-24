@@ -116,7 +116,7 @@ class Easysdi_shopModelperimeters extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.id, a.state, a.ordering'
+                        'list.select', 'a.id, a.alias, a.name, a.state, a.ordering, a.checked_out'
                 )
         );
         $query->from('#__sdi_perimeter AS a');

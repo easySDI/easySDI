@@ -108,7 +108,7 @@ class Easysdi_contactModelorganisms extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.id,a.ordering,a.state,a.name,a.access'
+                        'list.select', 'a.id, a.acronym, a.checked_out, a.checked_out_time, a.ordering,a.state,a.name,a.access'
                 )
         );
         $query->from('#__sdi_organism AS a');

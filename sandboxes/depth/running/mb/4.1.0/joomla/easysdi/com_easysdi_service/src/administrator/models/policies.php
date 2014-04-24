@@ -135,7 +135,7 @@ class Easysdi_serviceModelpolicies extends JModelList
 		$query->select(
 			$this->getState(
 				'list.select',
-				'a.id, a.state, a.ordering, a.name, a.access'
+				'a.id, a.alias, a.virtualservice_id, a.state, a.checked_out, a.checked_out_time, a.ordering, a.name, a.access'
 			)
 		);
 		$query->from('#__sdi_policy AS a');
