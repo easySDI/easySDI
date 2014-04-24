@@ -1,7 +1,7 @@
 package org.easysdi.proxy.namingStrategy;
 
 import org.hibernate.cfg.ImprovedNamingStrategy;
-import org.hibernate.util.StringHelper;
+import org.hibernate.internal.util.StringHelper;
 
 public class CustomNamingStrategy extends ImprovedNamingStrategy {
 
