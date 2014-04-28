@@ -4,7 +4,7 @@
 	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="org.easysdi.monitor.biz.job">
 	<class name="Sla" table="sla" lazy="false">
-		<id name="slaId" type="long" column="ID_SLA">
+		<id name="slaId" type="long" column="`ID_SLA`">
 			<generator class="org.hibernate.id.enhanced.TableGenerator">
 				<param name="table_name">last_ids</param>
 				<param name="value_column_name">LAST_ID</param>
@@ -14,16 +14,16 @@
 				<param name="increment_size">1</param>
 			</generator>
 		</id>
-		<property name="name" type="string" column="NAME" length="45"
+		<property name="name" type="string" column="`NAME`" length="45"
 				  lazy="false" />
-		<property name="excludeWorst" type="boolean" column="EXCLUDE_WORST"
+		<property name="excludeWorst" type="boolean" column="`EXCLUDE_WORST`"
 				  lazy="false" />
-		<property name="measureTimeToFirst" type="boolean" column="MEASURE_TIME_TO_FIRST"
+		<property name="measureTimeToFirst" type="boolean" column="`MEASURE_TIME_TO_FIRST`"
 				  lazy="false" />
 		<map name="slaPeriods" table="periods" lazy="false"
 			cascade="all-delete-orphan" inverse="true">
-			<key column="ID_SLA" not-null="true"></key>
-			<map-key type="long" column="ID_PERIODS"></map-key>
+			<key column="`ID_SLA`" not-null="true"></key>
+			<map-key type="long" column="`ID_PERIODS`"></map-key>
 			<one-to-many class="Period" />
 		</map>
 		
