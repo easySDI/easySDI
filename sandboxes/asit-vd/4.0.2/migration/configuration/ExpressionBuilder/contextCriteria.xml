@@ -1,0 +1,46 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:expression="http:///expression.ecore">
+  <expression:EMFExpression id="null=>write=>created" expression="TalendDate.getCurrentDate()">
+    <variables name="row1.id" value="0" talendType="id_Long"/>
+    <variables name="row1.context_id" value="0" talendType="id_Long"/>
+    <variables name="row1.criteria_id" value="0" talendType="id_Long"/>
+    <variables name="row1.defaultvalue" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row1.defaultvaluefrom" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="row1.defaultvalueto" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="row1.params" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row2.id" value="0" talendType="id_Long"/>
+    <variables name="row2.searchcriteria_id" value="0" talendType="id_Long"/>
+    <variables name="row2.context_id" value="0" talendType="id_Long"/>
+    <variables name="row2.tab_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row2.ordering" value="0" talendType="id_Long"/>
+  </expression:EMFExpression>
+  <expression:EMFExpression id="null=>write=>guid" expression="java.util.UUID.randomUUID().toString()">
+    <variables name="row1.id" value="0" talendType="id_Long"/>
+    <variables name="row1.context_id" value="0" talendType="id_Long"/>
+    <variables name="row1.criteria_id" value="0" talendType="id_Long"/>
+    <variables name="row1.defaultvalue" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row1.defaultvaluefrom" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="row1.defaultvalueto" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="row1.params" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row2.id" value="0" talendType="id_Long"/>
+    <variables name="row2.searchcriteria_id" value="0" talendType="id_Long"/>
+    <variables name="row2.context_id" value="0" talendType="id_Long"/>
+    <variables name="row2.tab_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row2.ordering" value="0" talendType="id_Long"/>
+  </expression:EMFExpression>
+  <expression:EMFExpression id="null=>Var=>tab_id" expression="searchCriteriaTab.tab_id != null ? searchCriteriaTab.tab_id : 1">
+    <variables name="searchCriteriaTab.id" value="0" talendType="id_Long"/>
+    <variables name="searchCriteriaTab.searchcriteria_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="searchCriteriaTab.context_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="searchCriteriaTab.tab_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="searchCriteriaTab.ordering" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="criteria.id" value="0" talendType="id_Long"/>
+    <variables name="criteria.context_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="criteria.criteria_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="criteria.defaultvalue" value="null" talendType="id_String" nullable="true"/>
+    <variables name="criteria.defaultvaluefrom" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="criteria.defaultvalueto" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="criteria.params" value="null" talendType="id_String" nullable="true"/>
+    <variables value="0" talendType="id_Integer"/>
+  </expression:EMFExpression>
+</xmi:XMI>
