@@ -167,6 +167,18 @@
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
         
+        <!-- Sql Server -->
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>sqljdbc4</artifactId>
+        </dependency>
+        
+        <!-- Postgresql -->
+        <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+        
         <!-- Divers -->
         <dependency>
             <groupId>log4j</groupId>
