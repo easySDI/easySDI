@@ -301,7 +301,7 @@ class FormGenerator {
                         $attribute->appendChild($st);
                     }
 
-                    if ($this->user->authorize($this->item->id, sdiUser::metadataeditor)) {
+                    if ($this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataeditor)) {
                         switch ($result->editorrelationscope_id) {
 
                             // Visible
