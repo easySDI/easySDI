@@ -73,7 +73,6 @@ $document->addStyleSheet('components/com_easysdi_contact/assets/css/easysdi_cont
 				<li class="active"><a href="#details" data-toggle="tab"><?php echo empty($this->item->id) ? JText::_('COM_EASYSDI_CONTACT_TAB_NEW_ORGANISM') : JText::sprintf('COM_EASYSDI_CONTACT_TAB_EDIT_ORGANISM', $this->item->id); ?></a></li>
 				<li><a href="#orderuser" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CONTACT_TAB_EXTRACT');?></a></li>
                                 <li><a href="#contactaddress" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CONTACT_TAB_CONTACTADDRESS');?></a></li>
-                                <li><a href="#contactaddress" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CONTACT_TAB_CONTACTADDRESS');?></a></li>
 				<li><a href="#billingaddress" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CONTACT_TAB_BILLINGADDRESS');?></a></li>
 				<li><a href="#delivryaddress" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CONTACT_TAB_DELIVRYADDRESS');?></a></li>	
 				<li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_EASYSDI_CONTACT_TAB_PUBLISHING');?></a></li>
