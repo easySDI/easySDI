@@ -27,6 +27,8 @@ class easysdiComponentHelper
         return $strings;
         
     }
+    
+    
  
 }
 ?>

@@ -63,7 +63,7 @@ abstract class PhysicalService {
                 return false;
             }
         }
-        echo $completeUrl;
+        //echo $completeUrl;
         $xmlCapa = simplexml_load_string($this->rawXml);
 
         $namespaces = $xmlCapa->getNamespaces(true);

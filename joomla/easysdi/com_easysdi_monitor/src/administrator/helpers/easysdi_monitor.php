@@ -20,7 +20,10 @@ class Easysdi_monitorHelper
 	 */
 	public static function addSubmenu($vName = '')
 	{
-		JHtmlSidebar::addEntry(
+            JHtmlSidebar::addEntry(
+                '<i class="icon-home"></i> ' . JText::_('COM_EASYSDI_MONITOR_TITLE_HOME'), 'index.php?option=com_easysdi_core&view=easysdi', $vName == 'easysdi'
+        );
+            JHtmlSidebar::addEntry(
 			JText::_('COM_EASYSDI_MONITOR_TITLE_MAINS'),
 			'index.php?option=com_easysdi_monitor&view=mains',
 			$vName == 'mains'
@@ -48,7 +51,7 @@ class Easysdi_monitorHelper
 		foreach ($actions as $action) {
 			$result->set($action, $user->authorise($action, $assetName));
 		}
-
+               
 		return $result;
 	}
 }

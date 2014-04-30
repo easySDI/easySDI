@@ -103,9 +103,6 @@ class Easysdi_catalogViewResourcestype extends JViewLegacy {
             JToolBarHelper::preferences('com_easysdi_catalog');
         }
 
-        JToolBarHelper::divider();
-        JToolBarHelper::custom('resourcetypelinks.display', 'chevron-left.png', 'chevron-left_f2.png', 'COM_EASYSDI_CATALOG_TOOLBAR_BACK', false);
-
         //Set sidebar action - New in 3.0
         JHtmlSidebar::setAction('index.php?option=com_easysdi_catalog&view=resourcestype');
 
