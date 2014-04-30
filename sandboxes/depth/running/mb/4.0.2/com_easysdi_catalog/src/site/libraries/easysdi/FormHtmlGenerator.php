@@ -395,7 +395,12 @@ class FormHtmlGenerator {
         }
 
         $attributeGroup = $this->formHtml->createElement('div');
-        $attributeGroup->setAttribute('class', 'attribute-group attribute-group-' . $this->removeIndex(FormUtils::serializeXpath($attribute->getNodePath())));
+        if($rendertypeId == 1000){
+            $attributeGroup->setAttribute('class', 'hidden attribute-group attribute-group-' . $this->removeIndex(FormUtils::serializeXpath($attribute->getNodePath())));
+        }else{
+            $attributeGroup->setAttribute('class', 'attribute-group attribute-group-' . $this->removeIndex(FormUtils::serializeXpath($attribute->getNodePath())));
+        }
+        
         $attributeGroup->setAttribute('id', 'attribute-group-' . FormUtils::serializeXpath($attribute->getNodePath()));
 
         switch ($stereotypeId) {

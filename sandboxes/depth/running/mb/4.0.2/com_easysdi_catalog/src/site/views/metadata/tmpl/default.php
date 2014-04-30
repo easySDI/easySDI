@@ -83,6 +83,11 @@ $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/sy
     .add-btn, .empty-btn, .preview-btn{
         margin-left: 10px;
     }
+    
+    .hidden {
+        display: none;
+        visibility: hidden;
+    }
 
     legend{
         font-size: 12px;
