@@ -32,3 +32,7 @@ function onVersionChange(resourceid) {
     });
 }
 
+function showDeleteModal(deleteUrl){
+    js('#btn_delete').attr('href',deleteUrl);
+    js('#deleteModal').modal('show');
+}
