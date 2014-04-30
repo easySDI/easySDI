@@ -85,8 +85,8 @@ GeoExt.Lang.add("fr", {
     },
 
     "gxp.plugins.Navigation.prototype": {
-        menuText: "Panner la carte",
-        tooltip: "Panner la carte"
+        menuText: "Déplacer la carte",
+        tooltip: "Déplacer la carte"
     },
 
     "gxp.plugins.NavigationHistory.prototype": {
@@ -172,8 +172,8 @@ GeoExt.Lang.add("fr", {
     },
     
     "gxp.plugins.ZoomToExtent.prototype": {
-        menuText: "Zoomer sur la carte max",
-        tooltip: "Zoomer sur la carte max"
+        menuText: "Étendue maximale de la carte",
+        tooltip: "Étendue maximale de la carte"
     },
     
     "gxp.plugins.ZoomToDataExtent.prototype": {

@@ -151,8 +151,6 @@ function setServiceConnector()
                 jQuery("#WMTS-info").css("display", "none");
                 jQuery("#jform_asOLmatrixset").css("display", "none");
                 jQuery("#jform_asOLmatrixset-lbl").css("display", "none");
-                jQuery("#jform_asOLstyle").addClass("required");
-                jQuery("#jform_asOLstyle-lbl").addClass("required");
             }
             else if (connector == 11) {
                 document.getElementById('WMTS-info').style.display = "none";

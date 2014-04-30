@@ -10,6 +10,7 @@
   <authorUrl>http://www.easysdi.org</authorUrl>
   <version>4.0.2</version>
   <description />
+  <scriptfile>script.php</scriptfile>
   <install>
     <sql>
       <file charset="utf8" driver="mysql">sql/install.mysql.utf8.sql</file>
