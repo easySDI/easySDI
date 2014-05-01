@@ -79,8 +79,7 @@ class Easysdi_contactTableuser extends sdiTable
     		$array['rules'] = $this->JAccessRulestoArray($array_jaccess);
     		
         }else{
-            echo print_r($array) ;
-            die();
+            
         }
         
         
