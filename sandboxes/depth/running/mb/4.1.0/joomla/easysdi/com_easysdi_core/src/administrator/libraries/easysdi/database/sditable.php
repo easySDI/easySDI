@@ -55,7 +55,7 @@ abstract class sdiTable extends JTable {
         }
 
         $query = $this->_db->getQuery(true);
-        $query->update($query->quote($this->_tbl));
+        $query->update($this->_tbl);
         $query->set('state = '. (int)$state);
         
         
