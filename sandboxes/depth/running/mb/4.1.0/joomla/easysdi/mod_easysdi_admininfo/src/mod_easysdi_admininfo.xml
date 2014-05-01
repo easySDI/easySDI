@@ -2,7 +2,7 @@
 <extension client="administrator" method="upgrade" type="module" version="3.0">
   <name>mod_easysdi_admininfo</name>
   <creationDate>15 September 2013</creationDate>
-  <releaseDate>18 avril 2014</releaseDate>
+  <releaseDate>01 mai 2014</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>

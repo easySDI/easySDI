@@ -3,7 +3,7 @@
   <name>plg_easysdi_service</name>
   <author>EasySDI Community</author>
   <creationDate>15 August 2012</creationDate>
-  <releaseDate>18 avril 2014</releaseDate>
+  <releaseDate>01 mai 2014</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
@@ -14,6 +14,7 @@
   <scriptfile>script.php</scriptfile>
   <files>
     <filename plugin="easysdiservice">easysdiservice.php</filename>
+    <filename plugin="easysdiservice">script.php</filename>
   </files>
   <languages>
     <language tag="en-GB">language/en-GB/en-GB.plg_content_easysdiservice.sys.ini</language>
