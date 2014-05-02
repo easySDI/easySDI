@@ -145,7 +145,7 @@ class Easysdi_catalogTablenamespace extends sdiTable {
         
         // Determine if there is checkin support for the table.
         if (property_exists($this, 'checked_out') || property_exists($this, 'checked_out_time')) {
-            $query->where('AND (checked_out = 0 OR checked_out = ' . (int) $userId . ')');
+            $query->where('(checked_out = 0 OR checked_out = ' . (int) $userId . ')');
         }
 
         // Update the publishing state for rows with the given primary keys.
