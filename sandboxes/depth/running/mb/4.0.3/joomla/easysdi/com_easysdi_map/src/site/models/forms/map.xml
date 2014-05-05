@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset>
+
+              <field name="id" type="text" default="0" label="COM_EASYSDI_MAP_FORM_LBL_MAP_ID"
+            readonly="true" class="readonly"
+            description="JGLOBAL_FIELD_ID_DESC" /> 
+
+       <field name="guid" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_MAP_FORM_LBL_MAP_GUID"
+            description="COM_EASYSDI_MAP_FORM_DESC_MAP_GUID" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="alias" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_MAP_FORM_LBL_MAP_ALIAS"
+            description="COM_EASYSDI_MAP_FORM_DESC_MAP_ALIAS" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="created" type="timecreated" default="" 
+            label="COM_EASYSDI_MAP_FORM_LBL_MAP_CREATED"
+            description="COM_EASYSDI_MAP_FORM_DESC_MAP_CREATED"  /> 
+
+       <field name="created_by" type="createdby" default="" 
+            label="COM_EASYSDI_MAP_FORM_LBL_MAP_CREATED_BY"
+            description="COM_EASYSDI_MAP_FORM_DESC_MAP_CREATED_BY"  /> 
+
+       <field name="modified_by" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_MAP_FORM_LBL_MAP_MODIFIED_BY"
+            description="COM_EASYSDI_MAP_FORM_DESC_MAP_MODIFIED_BY" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="modified" type="timeupdated" default="" 
+            label="COM_EASYSDI_MAP_FORM_LBL_MAP_MODIFIED"
+            description="COM_EASYSDI_MAP_FORM_DESC_MAP_MODIFIED"  /> 
+
+       <field name="name" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_MAP_FORM_LBL_MAP_NAME"
+            description="COM_EASYSDI_MAP_FORM_DESC_MAP_NAME" 
+        
+        
+         required="true" 
+        filter="safehtml" /> 
+
+       <field name="srs" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_MAP_FORM_LBL_MAP_SRS"
+            description="COM_EASYSDI_MAP_FORM_DESC_MAP_SRS" 
+        
+        
+         required="true" 
+        filter="safehtml" /> 
+
+       <field name="unit_id" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_MAP_FORM_LBL_MAP_UNIT_ID"
+            description="COM_EASYSDI_MAP_FORM_DESC_MAP_UNIT_ID" 
+        
+        
+         required="true" 
+        filter="safehtml" /> 
+
+       <field name="centercoordinates" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_MAP_FORM_LBL_MAP_CENTERCOORDINATES"
+            description="COM_EASYSDI_MAP_FORM_DESC_MAP_CENTERCOORDINATES" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="maxresolution" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_MAP_FORM_LBL_MAP_MAXRESOLUTION"
+            description="COM_EASYSDI_MAP_FORM_DESC_MAP_MAXRESOLUTION" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="maxextent" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_MAP_FORM_LBL_MAP_MAXEXTENT"
+            description="COM_EASYSDI_MAP_FORM_DESC_MAP_MAXEXTENT" 
+        
+        
+        
+        filter="safehtml" /> 
+
+       <field name="abstract" type="editor" buttons="true"
+        class="inputbox"
+        filter="safehtml"
+        
+        
+        
+        
+            label="COM_EASYSDI_MAP_FORM_LBL_MAP_ABSTRACT"
+            description="COM_EASYSDI_MAP_FORM_DESC_MAP_ABSTRACT"  /> 
+
+       <field name="access" type="accesslevel"
+                
+            label="COM_EASYSDI_MAP_FORM_LBL_MAP_ACCESS"
+            description="COM_EASYSDI_MAP_FORM_DESC_MAP_ACCESS" 
+                
+                
+                 required="true" 
+            filter="raw" /> 
+
+       <field name="asset_id" type="text" size="40" class="inputbox"
+        
+            label="COM_EASYSDI_MAP_FORM_LBL_MAP_ASSET_ID"
+            description="COM_EASYSDI_MAP_FORM_DESC_MAP_ASSET_ID" 
+        
+        
+        
+        filter="safehtml" /> 
+
+         <field
+        name="state"
+        type="list"
+        label="JSTATUS"
+        description="JFIELD_PUBLISHED_DESC"
+        class="inputbox"
+        size="1"
+        default="1">
+        <option value="1">JPUBLISHED</option>
+        <option value="0">JUNPUBLISHED</option>
+    </field> 
+
+                        <field name="checked_out" type="hidden" filter="unset" />
+        <field name="checked_out_time" type="hidden" filter="unset" />
+
+	</fieldset>
+
+</form>
