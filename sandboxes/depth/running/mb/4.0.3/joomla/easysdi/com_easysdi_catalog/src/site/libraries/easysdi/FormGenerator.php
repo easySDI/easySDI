@@ -138,6 +138,8 @@ class FormGenerator {
                     $parent->appendChild($relation);
                     $root = $class;
                     $this->ajaxXpath = $relation->getNodePath();
+                    
+                    $this->getChildTree($root);
                     break;
                 case EnumChildtype::$RELATIONTYPE:
                     $relation = $this->getDomElement($result->classass_ns_uri, $result->classass_ns_prefix, $result->name, $result->classass_id, EnumChildtype::$RELATIONTYPE, $result->guid, 1, $result->upperbound);
@@ -151,6 +153,8 @@ class FormGenerator {
                     $parent->appendChild($relation);
                     $root = $relation;
                     $this->ajaxXpath = $relation->getNodePath();
+                    
+                    $this->getChildTree($root);
                     break;
                 case EnumChildtype::$ATTRIBUT:
                     $parentname = $parent->nodeName;
@@ -165,8 +169,7 @@ class FormGenerator {
                     $this->ajaxXpath = $cloned->getNodePath();
                     break;
             }
-
-            $this->getChildTree($root);
+            
         }
 
         $this->setDomXpathStr();
@@ -257,8 +260,10 @@ class FormGenerator {
             }
         }
 
+        $parent_id = $parent->getAttributeNS($this->catalog_uri, 'dbid');
+        
         $query = $this->getRelationQuery();
-        $query->where('r.parent_id = ' . $parent->getAttributeNS($this->catalog_uri, 'dbid'));
+        $query->where('r.parent_id = ' . $parent_id);
         $query->where('r.state = 1');
         $query->order('r.ordering');
         $query->order('r.name');
