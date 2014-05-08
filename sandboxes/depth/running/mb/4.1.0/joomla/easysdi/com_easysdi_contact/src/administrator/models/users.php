@@ -122,7 +122,7 @@ class Easysdi_contactModelusers extends JModelList
 		$query->select(
 			$this->getState(
 				'list.select',
-				'a.*'
+				'a.id, a.checked_out, a.checked_out_time, a.created_by, a.ordering,a.state,a.catid'
 			)
 		);
 		$query->from('#__sdi_user AS a');

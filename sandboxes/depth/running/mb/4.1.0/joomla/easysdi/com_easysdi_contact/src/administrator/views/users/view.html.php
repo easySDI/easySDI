@@ -117,7 +117,7 @@ class Easysdi_contactViewUsers extends JViewLegacy {
         return array(
             'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
             'a.state' => JText::_('JSTATUS'),
-            'a.name' => JText::_('COM_EASYSDI_CONTACT_USERS_USER_NAME'),
+            'u.name' => JText::_('COM_EASYSDI_CONTACT_USERS_USER_NAME'),
             'a.access_level' => JText::_('JGRID_HEADING_ACCESS'),
             'a.id' => JText::_('JGRID_HEADING_ID'),
         );

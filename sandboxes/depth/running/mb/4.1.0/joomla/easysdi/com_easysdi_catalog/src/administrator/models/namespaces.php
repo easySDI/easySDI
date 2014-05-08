@@ -104,7 +104,7 @@ class Easysdi_catalogModelnamespaces extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.id, a.ordering, a.state, a.name, a.prefix, a.uri, a.system'
+                        'list.select', 'a.id, a.checked_out, a.checked_out_time, a.ordering, a.state, a.name, a.prefix, a.uri, a.system'
                 )
         );
         $query->from('#__sdi_namespace AS a');

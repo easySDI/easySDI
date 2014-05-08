@@ -108,7 +108,7 @@ class Easysdi_catalogModelimportrefs extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.id, a.alias, a.ordering, a.state, a.name'
+                        'list.select', 'a.id, a.checked_out, a.checked_out_time, a.alias, a.ordering, a.state, a.name'
                 )
         );
         $query->from('#__sdi_importref AS a');
