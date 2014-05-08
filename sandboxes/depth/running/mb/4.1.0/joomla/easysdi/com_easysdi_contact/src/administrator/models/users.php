@@ -79,7 +79,7 @@ class Easysdi_contactModelusers extends JModelList
 		$this->setState('params', $params);
 
 		// List state information.
-		parent::populateState('a.guid', 'asc');
+		parent::populateState('u.name', 'asc');
 	}
 
 	/**

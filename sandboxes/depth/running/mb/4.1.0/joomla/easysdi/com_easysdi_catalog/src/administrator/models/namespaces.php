@@ -37,8 +37,7 @@ class Easysdi_catalogModelnamespaces extends JModelList {
                 'state', 'a.state',
                 'name', 'a.name',
                 'prefix', 'a.prefix',
-                'uri', 'a.uri',
-                'system', 'a.system',
+                'uri', 'a.uri'
             );
         }
 
