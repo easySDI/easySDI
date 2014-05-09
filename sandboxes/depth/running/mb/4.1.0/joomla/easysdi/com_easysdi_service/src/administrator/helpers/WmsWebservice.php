@@ -301,7 +301,7 @@ class WmsWebservice {
                                 $query->innerJoin('#__sdi_physicalservice_policy psp ON psp.id = wlp.physicalservicepolicy_id');
                                 $query->where('psp.physicalservice_id = ' . (int)$physicalServiceID);
                                 $query->where('psp.policy_id = ' . (int)$policyID);
-                                $query->where('wlp.name = \'' . $query->quote($layer->name));
+                                $query->where('wlp.name =' . $query->quote($layer->name));
                             
 				$db->setQuery($query);
 				

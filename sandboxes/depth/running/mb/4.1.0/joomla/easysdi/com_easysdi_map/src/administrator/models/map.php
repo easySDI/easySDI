@@ -171,7 +171,7 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 $db->setQuery($query);
                 $scalelineparams = $db->loadResult();
                 if(!empty($scalelineparams)){
-                    $params = json_decode($scalelineparams);
+                    $params = json_decode(stripslashes($scalelineparams));
                     foreach ($params as $key => $value) {
                         $item->$key = $value;
                     } 
@@ -187,7 +187,7 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 $db->setQuery($query);
                 $wfslocator = $db->loadResult();
                 if(!empty($wfslocator)){
-                    $params = json_decode($wfslocator);
+                    $params = json_decode(stripslashes($wfslocator));
                     foreach ($params as $key => $value) {
                         $item->$key = $value;
                     }                    
