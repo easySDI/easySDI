@@ -433,11 +433,12 @@ class SearchJForm extends SearchForm {
                 $query->where('id IN (' . $ids . ')');
                 break;
             case 'versions':
+                $alias = 'versions';
                 $query = $this->db->getQuery(true);
                 $query->select('csc.defaultvalue as value');
                 $query->from('#__sdi_searchcriteria sc');
                 $query->innerJoin('#__sdi_catalog_searchcriteria csc on csc.searchcriteria_id = sc.id');
-                $query->where('sc.alias =' . $query->quote(versions));
+                $query->where('sc.alias =' . $query->quote($alias));
                 $query->where('csc.catalog_id = ' . (int)$this->item->id);
                 break;
             default :

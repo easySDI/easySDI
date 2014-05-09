@@ -165,7 +165,7 @@ class Easysdi_mapModelMap extends JModelForm {
                 try {
                     $scalelineparams = $db->loadResult();
                     if(!empty($scalelineparams)){
-                        $params = json_decode($scalelineparams);
+                        $params = json_decode(stripslashes($scalelineparams));
                         foreach ($params as $key => $value) {
                             $this->_item->$key = $value;
                         }
@@ -187,7 +187,7 @@ class Easysdi_mapModelMap extends JModelForm {
                 try {
                     $wfslocator = $db->loadResult();
                     if(!empty($wfslocator)){
-                        $params = json_decode($wfslocator);
+                        $params = json_decode(stripslashes($wfslocator));
                         foreach ($params as $key => $value) {
                             $this->_item->$key = $value;
                         }
