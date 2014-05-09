@@ -184,7 +184,7 @@ class Easysdi_serviceHelper {
         $query->innerJoin('#__sdi_sys_servicecompliance c ON c.serviceconnector_id = sc.id');
         $query->innerJoin('#__sdi_sys_serviceversion sv ON c.serviceversion_id = sv.id');
         $query->where('c.implemented = 1');
-        $query->where('c.value = ' . $query->quote($service));
+        $query->where('sc.value = ' . $query->quote($service));
         
         $db->setQuery($query);
         $implemented_versions = $db->loadObjectList();
