@@ -249,6 +249,10 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <finalName>proxy</finalName>
+    </build>
+
     <!--<build>
         <plugins>
             <plugin>
