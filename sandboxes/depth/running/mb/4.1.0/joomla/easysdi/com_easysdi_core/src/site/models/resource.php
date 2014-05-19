@@ -282,6 +282,8 @@ class Easysdi_coreModelResource extends JModelForm {
         $table = $this->getTable();
         if ($table->save($data) === true) {
             //Save accessscope
+            JFactory::getApplication()->setUserState('com_easysdi_core.edit.resource.id', $table->id);
+            $id = $table->id;
             $data['guid'] = $table->guid;
             if (!sdiModel::saveAccessScope($data))
                 return false;

@@ -695,7 +695,7 @@ class cswmetadata {
                 ->innerJoin('#__sdi_translation t ON t.element_guid = p.guid')
                 ->innerJoin('#__sdi_language l ON l.id = t.language_id')
                 ->where('dpv.diffusion_id = ' . $this->diffusion->id)
-                ->where('l.code = ' . $query->quote($language->getTag()))
+                ->where('l.code = ' . $this->db->quote($language->getTag()))
                 ->order('p.ordering');
         $this->db->setQuery($query);
         $properties = $this->db->loadObjectList();

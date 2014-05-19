@@ -110,19 +110,18 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
             $app->setUserState('com_easysdi_core.edit.resource.data', $data);
 
             // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_easysdi_core.edit.resource.id');
             $this->setMessage(JText::sprintf('Save failed', $model->getError()), 'warning');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resource&layout=edit&id=' . $id, false));
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resource&layout=edit&id=' . $return, false));
             return false;
         }
 
 
         if (!$andclose) {
             // Redirect back to the edit screen.
-            $id = (int) $app->getUserState('com_easysdi_core.edit.resource.id');
+            
             $app->setUserState('com_easysdi_core.edit.resource.data', null);
             $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_SAVED_SUCCESSFULLY'));
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resource&layout=edit&id=' . $id, false));
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resource&layout=edit&id=' . $return, false));
         } else {
             // Check in the profile.
             if ($return) {
