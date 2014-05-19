@@ -1,3 +1,0 @@
-ALTER TABLE `jos_sdi_order_diffusion` ADD CONSTRAINT `jos_sdi_order_diffusion_fk1` FOREIGN KEY (`order_id`) REFERENCES `jos_sdi_order` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-ALTER TABLE `jos_sdi_order_diffusion` ADD CONSTRAINT `jos_sdi_order_diffusion_fk2` FOREIGN KEY (`diffusion_id`) REFERENCES `jos_sdi_diffusion` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-ALTER TABLE `jos_sdi_order_diffusion` ADD CONSTRAINT `jos_sdi_order_diffusion_fk3` FOREIGN KEY (`productstate_id`) REFERENCES `jos_sdi_sys_pricing` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
