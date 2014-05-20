@@ -112,7 +112,7 @@ class Easysdi_coreModelResource extends JModelForm {
                 $query = $db->getQuery(true)
                         ->select('urr.user_id as user_id, urr.role_id as role_id')
                         ->from('#__sdi_user_role_resource urr')
-                        ->where('urr.resource_id = ' . $this->_item->id);
+                        ->where('urr.resource_id = ' . (int)$this->_item->id);
                 $db->setQuery($query);
                 $rows = $db->loadObjectList();
                 $this->_item->rights = json_encode($rows);
@@ -282,6 +282,8 @@ class Easysdi_coreModelResource extends JModelForm {
         $table = $this->getTable();
         if ($table->save($data) === true) {
             //Save accessscope
+            JFactory::getApplication()->setUserState('com_easysdi_core.edit.resource.id', $table->id);
+            $id = $table->id;
             $data['guid'] = $table->guid;
             if (!sdiModel::saveAccessScope($data))
                 return false;
@@ -341,7 +343,7 @@ class Easysdi_coreModelResource extends JModelForm {
                         ->from('#__sdi_metadata m ')
                         ->innerJoin('#__sdi_version v ON v.id = m.version_id')
                         ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
-                        ->where('r.id = ' . $table->id);
+                        ->where('r.id = ' . (int)$table->id);
                 $db->setQuery($query);
                 $metadatas = $db->loadColumn();
                 foreach($metadatas as $metadata):

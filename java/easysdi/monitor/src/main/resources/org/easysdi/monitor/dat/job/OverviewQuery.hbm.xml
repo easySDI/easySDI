@@ -4,7 +4,7 @@
 	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="org.easysdi.monitor.biz.job">
 	<class name="OverviewQuery" table="overview_queries" lazy="false">
-		<id name="overviewQueryID" column="ID_OVERVIEW_QUERY" type="long">
+		<id name="overviewQueryID" column="`ID_OVERVIEW_QUERY`" type="long">
 			<generator class="org.hibernate.id.enhanced.TableGenerator">
 				<param name="table_name">last_ids</param>
 				<param name="value_column_name">LAST_ID</param>
@@ -14,17 +14,17 @@
 				<param name="increment_size">1</param>
 			</generator>
 		</id>
- 		<many-to-one name="parentOverview" class="Overview" column="ID_OVERVIEW_PAGE"
+ 		<many-to-one name="parentOverview" class="Overview" column="`ID_OVERVIEW_PAGE`"
 			lazy="false" insert="false" update="false"></many-to-one>
 			 
-		<many-to-one name="query" class="Query" column="ID_QUERY"
+		<many-to-one name="query" class="Query" column="`ID_QUERY`"
 			lazy="false" insert="false" update="false"></many-to-one>
 	 
 	
- 	<property name="overviewId" type="long" column="ID_OVERVIEW_PAGE" />
-	<property name="queryId" type="long" column="ID_QUERY" />
+ 	<property name="overviewId" type="long" column="`ID_OVERVIEW_PAGE`" />
+	<property name="queryId" type="long" column="`ID_QUERY`" />
 	 		
-<!--	<many-to-one name="overviewLastQueryResult" class="OverviewLastQueryResult" column="ID_LAST_QUERY_RESULT"
+<!--	<many-to-one name="overviewLastQueryResult" class="OverviewLastQueryResult" column="`ID_LAST_QUERY_RESULT`"
 			lazy="false"></many-to-one>
 	 -->			
 	</class>

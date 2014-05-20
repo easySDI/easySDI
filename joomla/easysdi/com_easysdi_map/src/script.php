@@ -21,7 +21,11 @@ class com_easysdi_mapInstallerScript
 	function preflight( $type, $parent ) {
 		//Check if com_easysdi_core is installed
 		$db = JFactory::getDbo();
-		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = "com_easysdi_core"');
+                $query = $db->getQuery(true);
+                $query->select('COUNT(*)');
+                $query->from('#__extensions');
+                $query->where('name = '.$db->quote('com_easysdi_core'));
+		$db->setQuery($query);
 		$install = $db->loadResult();
 
 		if($install == 0){
@@ -98,7 +102,10 @@ class com_easysdi_mapInstallerScript
 				
 		}
 		$db = JFactory::getDbo();
-		$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_map'");
+                $query = $db->getQuery(true);
+                $query->delete('#__menu');
+                $query->where('title = '.$db->quote('com_easysdi_map'));
+		$db->setQuery($query);
 		$db->query();
 
 	}
@@ -116,7 +123,11 @@ class com_easysdi_mapInstallerScript
 	*/
 	function getParam( $name ) {
 		$db = JFactory::getDbo();
-		$db->setQuery('SELECT manifest_cache FROM #__extensions WHERE name = "com_easysdi_map"');
+                $query = $db->getQuery(true);
+                $query->select('manifest_cache');
+                $query->from('#__extensions');
+                $query->where('name = '.$db->quote('com_easysdi_map'));
+		$db->setQuery($query);
 		$manifest = json_decode( $db->loadResult(), true );
 		return $manifest[ $name ];
 	}
@@ -128,7 +139,11 @@ class com_easysdi_mapInstallerScript
 		if ( count($param_array) > 0 ) {
 			// read the existing component value(s)
 			$db = JFactory::getDbo();
-			$db->setQuery('SELECT params FROM #__extensions WHERE name = "com_easysdi_map"');
+                        $query = $db->getQuery(true);
+                        $query->select('params');
+                        $query->from('#__extensions');
+                        $query->where('name = '.$db->quote('com_easysdi_map'));
+			$db->setQuery($query);
 			$params = json_decode( $db->loadResult(), true );
 			// add the new variable(s) to the existing one(s)
 			foreach ( $param_array as $name => $value ) {
@@ -136,9 +151,11 @@ class com_easysdi_mapInstallerScript
 			}
 			// store the combined new and existing values back as a JSON string
 			$paramsString = json_encode( $params );
-			$db->setQuery('UPDATE #__extensions SET params = ' .
-					$db->quote( $paramsString ) .
-					' WHERE name = "com_easysdi_map"' );
+                        $query = $db->getQuery(true);
+                        $query->update('#__extensions');
+                        $query->set('params = ' . $db->quote( $paramsString ));
+                        $query->where('name = '.$db->quote('com_easysdi_map'));
+			$db->setQuery($query);
 			$db->query();
 		}
 	}

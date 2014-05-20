@@ -7,7 +7,7 @@
 
             <field name="catalogurl"
                    type="text"
-                   default="http://localhost:8080/proxy/geonetwork"
+                   default=""
                    class="inputbox input-xlarge"
                    required ="true"
                    size="500"
@@ -80,7 +80,7 @@
            
             <field name="metadataencodingcode"
                    type="text"
-                   default="utf8"
+                   default=""
                    class="inputbox input-xlarge"
                    required ="true"
                    size="500"
@@ -90,7 +90,7 @@
            
            <field name="metadataencodingvalue"
                    type="text"
-                   default="UTF8"
+                   default=""
                    class="inputbox input-xlarge"
                    required ="true"
                    size="500"
@@ -101,7 +101,7 @@
            
            <field name="idogcsearchfield"
                    type="text"
-                   default="fileId"
+                   default=""
                    class="inputbox input-xlarge"
                    required ="true"
                    size="500"
@@ -111,7 +111,7 @@
            
            <field name="metadatatitlexpath"
                    type="text"
-                   default="//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title"
+                   default=""
                    class="inputbox input-xlarge"
                    required ="false"
                    size="500"
@@ -121,7 +121,7 @@
            
            <field name="thesaurusurl"
                    type="text"
-                   default="http://inspire.ec.europa.eu/theme/"
+                   default=""
                    class="inputbox input-xlarge"
                    required ="false"
                    size="500"
@@ -155,7 +155,7 @@
            
            <field name="linkedfilebaseurl"
                    type="text"
-                   default="http://localhost/media/easysdi/images"
+                   default=""
                    class="inputbox input-xlarge"
                    required ="false"
                    label="COM_EASYSDI_CATALOG_CONFIG_LBL_LINKEDFILEBASEURL"

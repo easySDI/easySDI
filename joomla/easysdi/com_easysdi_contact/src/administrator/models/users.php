@@ -79,7 +79,7 @@ class Easysdi_contactModelusers extends JModelList
 		$this->setState('params', $params);
 
 		// List state information.
-		parent::populateState('a.guid', 'asc');
+		parent::populateState('u.name', 'asc');
 	}
 
 	/**
@@ -122,10 +122,10 @@ class Easysdi_contactModelusers extends JModelList
 		$query->select(
 			$this->getState(
 				'list.select',
-				'a.*'
+				'a.id, a.checked_out, a.checked_out_time, a.created_by, a.ordering,a.state,a.catid'
 			)
 		);
-		$query->from('`#__sdi_user` AS a');
+		$query->from('#__sdi_user AS a');
 
 
 		// Join over the users .

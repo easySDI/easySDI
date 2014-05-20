@@ -71,9 +71,10 @@
                filter="safehtml" /> 
 
         <field name="category_id" 
+                required="true"
                type="sql" 
                class="inputbox"
-                query=" SELECT NULL AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_boundarycategory WHERE state=1 ORDER BY ordering" 
+                query="SELECT id, name, ordering FROM #__sdi_boundarycategory WHERE state=1 ORDER BY ordering" 
                 key_field="id" 
                 value_field="name"
                label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARY_CATEGORY_ID"

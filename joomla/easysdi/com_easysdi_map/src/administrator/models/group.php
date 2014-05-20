@@ -121,7 +121,11 @@ class Easysdi_mapModelgroup extends JModelAdmin
 			// Set ordering to the last item if not set
 			if (@$table->ordering === '') {
 				$db = JFactory::getDbo();
-				$db->setQuery('SELECT MAX(ordering) FROM #__sdi_layergroup');
+                                $query = $db->getQuery(true);
+                                $query->select('MAX(ordering)');
+                                $query->from('#__sdi_layergroup');
+                                
+				$db->setQuery($query);
 				$max = $db->loadResult();
 				$table->ordering = $max+1;
 			}
@@ -157,7 +161,7 @@ class Easysdi_mapModelgroup extends JModelAdmin
 				$query
 				->select('layer_id')
 				->from('#__sdi_layer_layergroup ')
-				->where('group_id= '.$this->getItem()->get('id'));
+				->where('group_id= '. (int)$this->getItem()->get('id'));
 				$db->setQuery($query);
 				$pks = $db->loadColumn();
 			} catch (Exception $e) {
@@ -180,7 +184,7 @@ class Easysdi_mapModelgroup extends JModelAdmin
 					$query = $db->getQuery(true);
 					$query
 					->delete('#__sdi_layer_layergroup')
-					->where('group_id= '.$this->getItem()->get('id'))
+					->where('group_id= '. (int)$this->getItem()->get('id'))
 					->where('layer_id =' .$pk);
 					$db->setQuery($query);
 					try {
@@ -199,7 +203,7 @@ class Easysdi_mapModelgroup extends JModelAdmin
 				$query
 				->select('MAX(ordering)')
 				->from('#__sdi_layer_layergroup ')
-				->where('group_id= '.$this->getItem()->get('id'));
+				->where('group_id= '. (int)$this->getItem()->get('id'));
 				$db->setQuery($query);
 				$ordering = $db->loadResult();
 			} catch (Exception $e) {
@@ -286,8 +290,8 @@ class Easysdi_mapModelgroup extends JModelAdmin
 				$query
 				->update($db->quoteName('#__sdi_map_layergroup'))
 				->set('ordering='.$order)
-				->where('map_id= '.$map)
-				->where('group_id= '.$pks[$i]);
+				->where('map_id= '. (int)$map)
+				->where('group_id= '. (int)$pks[$i]);
 				$db->setQuery($query);
 				try {
 					$result = $db->execute();

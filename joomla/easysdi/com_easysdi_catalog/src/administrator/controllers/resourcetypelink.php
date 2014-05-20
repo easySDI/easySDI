@@ -27,12 +27,15 @@ class Easysdi_catalogControllerResourcetypelink extends JControllerForm
         $jinput = JFactory::getApplication()->input;
         $class_id = $jinput->get('class_id', '0', 'string');
         $db = JFactory::getDbo();
-        $db->setQuery('SELECT a.id , a.name 
-                        FROM #__sdi_attribute a 
-                        INNER JOIN #__sdi_relation rel ON a.id=rel.attributechild_id  
-                        WHERE a.stereotype_id=1 
-                        AND rel.parent_id=' . $class_id . ' 
-                        ORDER BY a.name');
+        $query = $db->getQuery(true);
+        $query->select('a.id , a.name');
+        $query->from('#__sdi_attribute a');
+        $query->innerJoin('#__sdi_relation rel ON a.id=rel.attributechild_id');
+        $query->where('a.stereotype_id=1');
+        $query->where('rel.parent_id=' . (int)$class_id);
+        $query->order('a.name');
+        
+        $db->setQuery($query);
         $attributes = $db->loadObjectList();
         echo json_encode($attributes);
         die();

@@ -53,12 +53,17 @@ class Easysdi_monitorController extends JControllerLegacy {
             die();
         }
 
-        $saveSql = "INSERT INTO #__sdi_monitor_exports
-		 (exportName, exportType, xsltUrl,exportDesc)
-			VALUES ('" . $row->exportName . "','" . $row->exportType . "','" . $row->xsltUrl . "','" . $row->exportDesc . "')";
+        $query = $database->getQuery(true);
+        
+        $columns = array('exportName', 'exportType', 'xsltUrl','exportDesc');
+        $values = array($query->quote($row->exportName), $query->quote($row->exportType), $query->quote($row->xsltUrl), $query->quote($row->exportDesc));
+        $query->insert('#__sdi_monitor_exports');
+        $query->columns($query->quoteName($columns));
+        $query->values(implode(',', $values));
+        
         try {
 
-            $database->setQuery($saveSql);
+            $database->setQuery($query);
             $rows = $database->loadObjectList();
             echo "{success:true}";
         } catch (Exception $e) {
@@ -79,16 +84,22 @@ class Easysdi_monitorController extends JControllerLegacy {
         $limit = JRequest::getVar('limit', 15);
         $limitstart = JRequest::getVar('start', 0);
         //get the total
-        $query = "select count(*)  from #__sdi_monitor_exports";
+        $query = $database->getQuery(true);
+        $query->select('count(*)');
+        $query->from('#__sdi_monitor_exports');
+        
         $database->setQuery($query);
         $total = $database->loadResult();
         $pagination = new JPagination($total, $limitstart, $limit);
 
-        $selectsql = "select * from #__sdi_monitor_exports order by id desc";
+        $query = $database->getQuery(true);
+        $query->select('*');
+        $query->from('#__sdi_monitor_exports');
+        $query->order('id desc');
 
         try {
 
-            $database->setQuery($selectsql, $pagination->limitstart, $pagination->limit);
+            $database->setQuery($query, $pagination->limitstart, $pagination->limit);
             $rows = $database->loadObjectList();
             echo "{success:true,results:" . $total . ",rows:" . json_encode($rows) . "}";
         } catch (Exception $e) {
@@ -106,14 +117,9 @@ class Easysdi_monitorController extends JControllerLegacy {
             echo "{success:false, error:user is not admin}";
             die();
         }
-        $updateSql = "UPDATE			 #__sdi_monitor_exports 
-						SET				 exportName='" . $row->exportName . "' 
-										, exportType='" . $row->exportType . "'
-										, exportDesc='" . $row->exportDesc . "'													
-										, xsltUrl='" . $row->xsltUrl . "'									
-					    WHERE id = " . $row->id;
-        $database->setQuery($updateSql);
-        $result = $database->query();
+        
+        $database->updateObject('#__sdi_monitor_exports', $row, $row->id);
+ 
         if ($database->getErrorNum()) {
 
             echo "{success:false, error:" . $e->getTraceAsString() . "}";
@@ -133,8 +139,11 @@ class Easysdi_monitorController extends JControllerLegacy {
             die();
         }
 
-        $deletesql = "DELETE FROM #__sdi_monitor_exports where id =" . $id;
-        $database->setQuery($deletesql);
+        $query = $database->getQuery(true);
+        $query->delete('#__sdi_monitor');
+        $query->where('id =' . (int)$id);
+        
+        $database->setQuery($query);
         $result = $database->query();
         if ($database->getErrorNum()) {
 

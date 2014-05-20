@@ -123,11 +123,11 @@ class Easysdi_shopModelorders extends JModelList {
 
         // Select the required fields from the table.
         $query->select(
-                $this->getState(
-                        'list.select', 'a.*'
+                $this->getState('DISTINCT '.
+                        'list.select', ' a.*'
                 )
         );
-        $query->from('`#__sdi_order` AS a');
+        $query->from('#__sdi_order AS a');
 
 
         // Join over the users for the checked out user.
@@ -137,7 +137,7 @@ class Easysdi_shopModelorders extends JModelList {
 
 
         // Join over the user field 'user'
-        $query->select('users2.name AS user')
+        $query->select($db->quoteName('users2.name', 'user'))
         ->join('LEFT', '#__sdi_user AS sdi_user ON sdi_user.id=a.user_id')
         ->join('LEFT', '#__users AS users2 ON users2.id=sdi_user.user_id');
 
@@ -150,10 +150,9 @@ class Easysdi_shopModelorders extends JModelList {
         ->join('LEFT', '#__sdi_sys_ordertype AS ordertype ON ordertype.id = a.ordertype_id');
 
         // Join over the diffusion field 'products'
-        $query->select("GROUP_CONCAT(diffusion.name SEPARATOR '<br/>".PHP_EOL."') AS products")
+        $query->select("diffusion.name AS product")
         ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion ON order_diffusion.order_id =a.id')
-        ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id')
-        ->group('a.id');
+        ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id');
 
         // product with provider
         /*$query->select("GROUP_CONCAT(CONCAT(organism.name,' - ',diffusion.name) SEPARATOR '<br/>".PHP_EOL."') AS products")
@@ -162,12 +161,6 @@ class Easysdi_shopModelorders extends JModelList {
         ->join('LEFT', '#__sdi_resource AS resource ON resource.id=diffusion.version_id')
         ->join('LEFT', '#__sdi_organism AS organism ON organism.id=resource.organism_id')
         ->group('a.id');*/
-
-
-
-
-
-
 
     // Filter by published state
     $published = $this->getState('filter.state');
@@ -374,7 +367,22 @@ class Easysdi_shopModelorders extends JModelList {
     public function getItems() {
         $items = parent::getItems();
 
-        return $items;
+        $products = array();
+        
+        foreach ($items as $item) {
+            $item->products_array = array();
+            $products[$item->id] = $item;
+        }
+        
+        foreach ($items as $item) {
+            $products[$item->id]->products_array[] = $item->product;
+        }
+        
+        foreach ($products as $product) {
+            $product->products = implode('</br>'.PHP_EOL, $product->products_array);
+        }
+        
+        return $products;
     }
 
 
@@ -390,7 +398,7 @@ class Easysdi_shopModelorders extends JModelList {
 
         // Select the required fields from the table.
         $query->select('o.id as id, o.value as value');
-        $query->from('`#__sdi_sys_ordertype` AS o');
+        $query->from('#__sdi_sys_ordertype AS o');
         $query->where('o.state = 1');
         $query->order('o.ordering');
 
@@ -420,7 +428,7 @@ class Easysdi_shopModelorders extends JModelList {
 
         // Select the required fields from the table.
         $query->select('o.id as id, o.value as value');
-        $query->from('`#__sdi_sys_orderstate` AS o');
+        $query->from('#__sdi_sys_orderstate AS o');
         $query->where('o.state = 1');
         $query->order('o.ordering');
 
@@ -449,7 +457,7 @@ class Easysdi_shopModelorders extends JModelList {
 
         // Select the required fields from the table.
         $query->select('distinct o.user_id as id, jos_users.name as name');
-        $query->from('`#__sdi_order` AS o');
+        $query->from('#__sdi_order AS o');
         $query->join('LEFT', '#__sdi_user AS sdi_user ON sdi_user.id = o.user_id');
         $query->join('LEFT', '#__users AS jos_users ON jos_users.id = sdi_user.user_id');
 
@@ -482,12 +490,11 @@ class Easysdi_shopModelorders extends JModelList {
 
         // Select the required fields from the table.
         $query->select('distinct organism.id as id, organism.name as name')
-        ->from('`#__sdi_order` AS o')
+        ->from('#__sdi_order AS o')
         ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion ON order_diffusion.order_id =o.id')
         ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id')
         ->join('LEFT', '#__sdi_resource AS resource ON resource.id=diffusion.version_id')
-        ->join('LEFT', '#__sdi_organism AS organism ON organism.id=resource.organism_id')
-        ->group('organism.id');
+        ->join('LEFT', '#__sdi_organism AS organism ON organism.id=resource.organism_id');
 
 
         try
@@ -518,7 +525,7 @@ class Easysdi_shopModelorders extends JModelList {
 
         // Select the required fields from the table.
         $query->select('distinct d.id as id, d.name as name');
-        $query->from('`#__sdi_diffusion` AS d');
+        $query->from('#__sdi_diffusion AS d');
         $query->innerJoin('#__sdi_order_diffusion AS sdi_order_diffusion ON sdi_order_diffusion.diffusion_id = d.id');
         $query->innerJoin('#__sdi_order AS o ON o.id = sdi_order_diffusion.order_id');
         $query->order('d.name');

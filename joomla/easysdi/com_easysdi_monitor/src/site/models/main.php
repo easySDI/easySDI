@@ -260,7 +260,7 @@ class Easysdi_monitorModelMain extends JModelForm
         $query 
             ->select('title')
             ->from('#__categories')
-            ->where('id = ' . $id);
+            ->where('id = ' . (int)$id);
         $db->setQuery($query);
         return $db->loadObject();
     }

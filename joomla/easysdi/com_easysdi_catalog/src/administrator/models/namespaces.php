@@ -37,8 +37,7 @@ class Easysdi_catalogModelnamespaces extends JModelList {
                 'state', 'a.state',
                 'name', 'a.name',
                 'prefix', 'a.prefix',
-                'uri', 'a.uri',
-                'system', 'a.system',
+                'uri', 'a.uri'
             );
         }
 
@@ -104,10 +103,10 @@ class Easysdi_catalogModelnamespaces extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.*'
+                        'list.select', 'a.id, a.checked_out, a.checked_out_time, a.ordering, a.state, a.name, a.prefix, a.uri, a.system'
                 )
         );
-        $query->from('`#__sdi_namespace` AS a');
+        $query->from('#__sdi_namespace AS a');
 
 
         // Join over the users for the checked out user.

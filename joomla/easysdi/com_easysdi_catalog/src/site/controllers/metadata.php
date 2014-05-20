@@ -121,7 +121,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $query->select('*');
         $query->from('#__sdi_importref');
-        $query->where('id = ' . $_GET['id']);
+        $query->where('id = ' . (int)$_GET['id']);
 
         $this->db->setQuery($query);
         $importRef = $this->db->loadObject();
@@ -245,13 +245,13 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
         $query->innerJoin('#__sdi_sys_metadatastate ms on ms.id = m.metadatastate_id');
         if ($_POST['status_id'] != '') {
-            $query->where('m.metadatastate_id = ' . $_POST['status_id']);
+            $query->where('m.metadatastate_id = ' . (int)$_POST['status_id']);
         }
         if (!empty($_POST['resourcetype_id'])) {
-            $query->where('r.resourcetype_id = ' . $_POST['resourcetype_id']);
+            $query->where('r.resourcetype_id = ' . (int)$_POST['resourcetype_id']);
         }
         if ($_POST['resource_name'] != '') {
-            $query->where('r.`name` like \'%' . $_POST['resource_name'] . '%\'');
+            $query->where('r.`name` like '.$query->quote('%' . $query->escape($_POST['resource_name']) . '%'));
         }
 
         $this->db->setQuery($query);
@@ -497,7 +497,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         // Delete old version
         $query = $this->db->getQuery(true);
-        $query = 'DELETE FROM #__sdi_translation WHERE element_guid = \'' . $guid . '\'';
+        $query->delete('#__sdi_translation');
+        $query->where('element_guid = '. $query->quote($guid));
 
         $this->db->setQuery($query);
         $this->db->execute();
@@ -544,12 +545,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query->update('#__sdi_metadata m');
         $query->set('m.metadatastate_id = ' . $metadatastate_id);
         if (isset($published)) {
-            $query->set('m.published = \'' . $published . '\'');
+            $query->set('m.published = ' . $query->quote($published));
         }
         if (isset($archived)) {
-            $query->set('m.archived = \'' . $archived . '\'');
+            $query->set('m.archived = ' . $query->quote($archived));
         }
-        $query->where('m.id = ' . $id);
+        $query->where('m.id = ' . (int)$id);
 
         $this->db->setQuery($query);
 
@@ -601,7 +602,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query->innerJoin('#__sdi_namespace as ns ON rt.fragmentnamespace_id = ns.id');
         $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
         $query->innerJoin('#__sdi_metadata m on v.id = m.version_id');
-        $query->where('m.guid = \'' . $guid . '\'');
+        $query->where('m.guid = ' . $query->quote($guid));
 
         $this->db->setQuery($query);
         $result = $this->db->loadObject();

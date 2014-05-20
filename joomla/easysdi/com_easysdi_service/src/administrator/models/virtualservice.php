@@ -228,7 +228,11 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 			// Set ordering to the last item if not set
 			if (@$table->ordering === '') {
 				$db = JFactory::getDbo();
-				$db->setQuery('SELECT MAX(ordering) FROM #__sdi_virtualservice');
+                                $query = $db->getQuery(true);
+                                $query->select('MAX(ordering)');
+                                $query->from('#__sdi_virtualservice');
+                                
+				$db->setQuery($query);
 				$max = $db->loadResult();
 				$table->ordering = $max+1;
 			}
@@ -307,19 +311,25 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	protected function savePhysicalServiceAggregation ($data, $id)
 	{
 		$db = $this->getDbo();
-		$db->setQuery(
-				'DELETE FROM #__sdi_virtual_physical WHERE virtualservice_id = '.$id
-		);
+                $query = $db->getQuery(true);
+                $query->delete('#__sdi_virtual_physical');
+                $query->where('virtualservice_id = '. (int)$id);
+                
+		$db->setQuery($query);
 		$db->query();
 		
 		$arr_pks = $data['physicalservice_id'];
 		foreach ($arr_pks as $pk)
 		{
 			try {
-				$db->setQuery(
-						'INSERT INTO #__sdi_virtual_physical (virtualservice_id, physicalservice_id) ' .
-						' VALUES ('.$id.','.$pk.')'
-				);
+                                $query = $db->getQuery(true);
+                                $columns = array('virtualservice_id', 'physicalservice_id');
+                                $values = array($id, $pk);
+                                $query->insert('#__sdi_virtual_physical');
+                                $query->columns($query->quoteName($columns));
+                                $query->values(implode(',', $values));
+                            
+				$db->setQuery($query);
 				if (!$db->query()) {
 					throw new Exception($db->getErrorMsg());
 				}
@@ -341,10 +351,12 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	
 		try {
 			$db = JFactory::getDbo();
-			$db->setQuery(
-					'SELECT physicalservice_id FROM #__sdi_virtual_physical  ' .
-					' WHERE virtualservice_id ='.$id
-			);
+                        $query = $db->getQuery(true);
+                        $query->select('physicalservice_id');
+                        $query->from('#__sdi_virtual_physical');
+                        $query->where('virtualservice_id ='. (int)$id);
+                        
+			$db->setQuery($query);
 			return  $db->loadColumn();
 	
 		} catch (Exception $e) {
@@ -368,19 +380,35 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	{
 		//Delete previously saved compliance
 		$db = $this->getDbo();
-		$db->setQuery(
-				'DELETE FROM #__sdi_virtualservice_servicecompliance WHERE service_id = '.$id
-		);
+                $query = $db->getQuery(true);
+                $query->delete('#__sdi_virtualservice_servicecompliance');
+                $query->where('service_id = '. (int)$id);
+                
+		$db->setQuery($query);
 		$db->query();
 	
 		$arr_pks = json_decode ($pks);
 		foreach ($arr_pks as $pk)
 		{
 			try {
-				$db->setQuery(
-						'INSERT INTO #__sdi_virtualservice_servicecompliance (service_id, servicecompliance_id) ' .
-						' VALUES ('.$id.',(SELECT c.id FROM #__sdi_sys_servicecompliance c INNER JOIN #__sdi_sys_serviceversion v ON c.serviceversion_id = v.id WHERE c.serviceconnector_id = '.$connector.' AND v.value="'.$pk.'"))'
-				);
+                                $queryvalue = $db->getQuery(true);
+                                $queryvalue->select('c.id');
+                                $queryvalue->from('#__sdi_sys_servicecompliance c');
+                                $queryvalue->innerJoin('#__sdi_sys_serviceversion v ON c.serviceversion_id = v.id');
+                                $queryvalue->where('c.serviceconnector_id = '. (int)$connector);
+                                $queryvalue->where('v.value='. (int)$pk);
+                                
+                                $db->setQuery($queryvalue);
+                                $servicecompliance = $db->loadObject();
+                            
+                                $query = $db->getQuery(true);
+                                $columns = array('service_id', 'servicecompliance_id');
+                                $values = array($id, $servicecompliance->id);
+                                $query->insert('#__sdi_virtualservice_servicecompliance');
+                                $query->columns($query->quoteName($columns));
+                                $query->values(implode(',', $values));
+                                
+				$db->setQuery($query);
 				if (!$db->query()) {
 					throw new Exception($db->getErrorMsg());
 				}
@@ -440,18 +468,24 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	{
 		//Delete previously saved compliance
 		$db = $this->getDbo();
-		$db->setQuery(
-				'DELETE FROM #__sdi_virtualservice_organism WHERE virtualservice_id = '.$id
-		);
+                $query = $db->getQuery(true);
+                $query->delete('#__sdi_virtualservice_organism');
+                $query->where('virtualservice_id = '. (int)$id);
+                
+		$db->setQuery($query);
 		$db->query();
 	
 		foreach ($pks as $pk)
 		{
 			try {
-				$db->setQuery(
-						'INSERT INTO #__sdi_virtualservice_organism (virtualservice_id, organism_id) ' .
-						' VALUES ('.$id.','.$pk.')'
-				);
+                                $query = $db->getQuery(true);
+                                $columns = array('virtualservice_id', 'organism_id');
+                                $values = array($id, $pk);
+                                $query->insert('#__sdi_virtualservice_organism');
+                                $query->columns($query->quote($columns));
+                                $query->values(implode(',', $values));
+                            
+				$db->setQuery($query);
 				if (!$db->query()) {
 					throw new Exception($db->getErrorMsg());
 				}

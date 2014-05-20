@@ -105,7 +105,7 @@ class sdiUser {
                     ->select('uro.role_id as  role_id, o.name as organism_name, o.id as organism_id')
                     ->from('#__sdi_user_role_organism  uro')
                     ->innerJoin('#__sdi_organism o ON o.id = uro.organism_id')
-                    ->where('uro.user_id = ' . $this->id)
+                    ->where('uro.user_id = ' . (int)$this->id)
             ;
             $db->setQuery($query);
             $roles = $db->loadObjectList();
@@ -131,7 +131,7 @@ class sdiUser {
                 ->innerJoin("#__sdi_organism o ON o.id = uro.organism_id")
                 ->innerJoin("#__users juser ON juser.id = u.user_id")
                 ->where("uro.role_id = 1")
-                ->where('u.id = ' . $sdiId)
+                ->where('u.id = ' . (int)$sdiId)
         ;
         $db->setQuery($query);
         $user = $db->loadObject();
@@ -154,7 +154,7 @@ class sdiUser {
                 ->innerJoin("#__sdi_user_role_organism uro ON uro.user_id=u.id" )
                 ->innerJoin("#__sdi_organism o ON o.id = uro.organism_id")
                 ->where("uro.role_id = 1")
-                ->where('u.user_id = ' . $this->juser->id)
+                ->where('u.user_id = ' . (int)$this->juser->id)
         ;
         $db->setQuery($query);
         return $db->loadObject();
@@ -200,7 +200,7 @@ class sdiUser {
                 ->from('#__sdi_resourcetype rt')
                 ->innerJoin('#__sdi_translation t ON t.element_guid = rt.guid')
                 ->innerJoin('#__sdi_language l ON l.id = t.language_id')
-                ->where('l.code = "' . $this->lang->getTag() . '"')
+                ->where('l.code = ' . $db->quote($this->lang->getTag()))
                 ->where('rt.predefined = 0')
                 ->where($cls)
         ;
@@ -317,8 +317,8 @@ class sdiUser {
             $query = $db->getQuery(true)
                     ->select('urr.role_id')
                     ->from('#__sdi_user_role_resource urr')
-                    ->where('urr.user_id = ' . $this->id)
-                    ->where('urr.resource_id = ' . $item);
+                    ->where('urr.user_id = ' . (int)$this->id)
+                    ->where('urr.resource_id = ' . (int)$item);
             $db->setQuery($query);
             return $db->loadObjectList();
         } else {
@@ -327,9 +327,9 @@ class sdiUser {
             $query = $db->getQuery(true)
                     ->select('urr.id')
                     ->from('#__sdi_user_role_resource urr')
-                    ->where('urr.user_id = ' . $this->id)
-                    ->where('urr.resource_id = ' . $item)
-                    ->where('urr.role_id = ' . $right);
+                    ->where('urr.user_id = ' . (int)$this->id)
+                    ->where('urr.resource_id = ' . (int)$item)
+                    ->where('urr.role_id = ' . (int)$right);
             $db->setQuery($query);
             $result = $db->loadObject();
             if ($result != null)
@@ -357,7 +357,7 @@ class sdiUser {
                 ->select('v.resource_id')
                 ->from('#__sdi_version v')
                 ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                ->where('m.id = ' . $item);
+                ->where('m.id = ' . (int)$item);
         $db->setQuery($query);
 
         return $this->authorize($db->loadResult(), $right);
@@ -381,7 +381,7 @@ class sdiUser {
         $query = $db->getQuery(true)
                 ->select('v.resource_id')
                 ->from('#__sdi_version v')
-                ->where('v.id = ' . $item);
+                ->where('v.id = ' . (int)$item);
         $db->setQuery($query);
 
         return $this->authorize($db->loadResult(), $right);
@@ -419,7 +419,7 @@ class sdiUser {
                 ->select('v.id')
                 ->from('#__sdi_visualization v')
                 ->where($cls)
-                ->where('v.id = ' . $item);
+                ->where('v.id = ' . (int)$item);
         $db->setQuery($query);
         $result = $db->loadResult();
         
@@ -485,7 +485,7 @@ class sdiUser {
                 ->from('#__sdi_user_role_resource urr')
                 ->innerJoin('#__sdi_version v ON v.resource_id = urr.resource_id')
                 ->innerJoin('#__sdi_diffusion d ON d.version_id = v.id')
-                ->where('urr.user_id = ' . $this->id)
+                ->where('urr.user_id = ' . (int)$this->id)
                 ->where('urr.role_id = 7');
         $db->setQuery($query);
 

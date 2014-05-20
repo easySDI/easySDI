@@ -183,7 +183,7 @@ public class CSWProxyMetadataContentManager {
 
             Authentication token = SecurityContextHolder.getContext().getAuthentication();
 
-            if (token != null && token.getPrincipal().toString() != null && token.getCredentials().toString() != null) {
+            if (token != null && token.getPrincipal() != null && token.getCredentials() != null) {
                 String user = token.getPrincipal().toString();
                 String password = token.getCredentials().toString();
                 if (password != null && !password.equals("")) {

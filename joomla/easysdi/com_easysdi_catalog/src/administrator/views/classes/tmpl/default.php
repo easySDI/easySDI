@@ -115,12 +115,7 @@ if (!empty($this->extra_sidebar)) {
                         <th class='left'>
                             <?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CATALOG_ATTRIBUTES_ISOCODE', 'namespace', $listDirn, $listOrder); ?>
                         </th>
-                        <th class='left'>
-                            <?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CATALOG_ATTRIBUTES_ISSYSTEM', 'a.issystem', $listDirn, $listOrder); ?>
-                        </th>
-                        <th class='left'>
-                            <?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CATALOG_CLASSES_ISROOTCLASS', 'a.isrootclass', $listDirn, $listOrder); ?>
-                        </th>
+                        
                         <?php if (isset($this->items[0]->id)): ?>
                             <th width="1%" class="nowrap center hidden-phone">
                                 <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
@@ -198,12 +193,7 @@ if (!empty($this->extra_sidebar)) {
                                     <?php echo $this->escape($item->namespace); ?>
                                 
                             </td>
-                            <td>
-                                <?php echo JHtml::_('grid.boolean', $i, $item->issystem); ?>
-                            </td>
-                            <td>
-                                <?php echo JHtml::_('grid.boolean', $i, $item->isrootclass); ?>
-                            </td>
+                            
                             <?php if (isset($this->items[0]->id)): ?>
                                 <td class="center hidden-phone">
                                     <?php echo (int) $item->id; ?>

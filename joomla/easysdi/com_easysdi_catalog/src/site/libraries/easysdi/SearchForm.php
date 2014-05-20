@@ -79,9 +79,9 @@ class SearchForm {
         $query->leftJoin('#__sdi_relation r on r.id = sc.relation_id');
         $query->leftJoin('#__sdi_attribute a on a.id = r.attributechild_id');
         if (isset($catalog_id)) {
-            $query->where('csc.catalog_id = ' . $catalog_id);
+            $query->where('csc.catalog_id = ' . (int)$catalog_id);
         } else {
-            $query->where('csc.catalog_id = ' . $this->item->id);
+            $query->where('csc.catalog_id = ' . (int)$this->item->id);
         }
         $query->order('csc.ordering ASC');
 

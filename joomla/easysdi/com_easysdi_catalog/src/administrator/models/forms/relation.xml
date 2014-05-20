@@ -93,7 +93,7 @@
 
         <field name="namespace_id" 
                type="sql" 
-               class="inputbox input-mini"
+               class="inputbox input-small"
                query=" SELECT null AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
                key_field="id" 
                value_field="name"
