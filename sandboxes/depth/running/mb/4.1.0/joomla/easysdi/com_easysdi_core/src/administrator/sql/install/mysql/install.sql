@@ -1315,8 +1315,8 @@ PRIMARY KEY (`id`) ,
   CONSTRAINT `#__sdi_catalog_searchsort_fk1`
     FOREIGN KEY (`catalog_id` )
     REFERENCES `#__sdi_catalog` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `#__sdi_catalog_searchsort_fk2`
     FOREIGN KEY (`language_id` )
     REFERENCES `#__sdi_language` (`id` )
