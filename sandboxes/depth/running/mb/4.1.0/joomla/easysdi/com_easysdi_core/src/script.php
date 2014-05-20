@@ -21,7 +21,25 @@ class com_easysdi_coreInstallerScript {
     function preflight($type, $parent) {
         // Installing component manifest file version
         $this->release = $parent->get("manifest")->version;
-
+        
+        // Alter joomla 3.1.1 schema to reflect the MySql version
+        $db = JFactory::getDbo();
+        if($db->name == 'sqlsrv'){
+            $sqls = array();
+            $sqls[] = "ALTER TABLE [#__extensions] ADD  DEFAULT ('') FOR [custom_data];";
+            $sqls[] = "ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [path];";
+            $sqls[] = "ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [img];";
+            $sqls[] = "ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [params];";
+            
+            foreach ($sqls as $sql) {
+                $query = $db->getQuery(true);
+                $query->setQuery($sql);
+                $db->execute();
+            }
+        }
+        
+        
+        
         // Alter joomla 3.1.1 schema to reflect the MySql version
         $db = JFactory::getDbo();
         if($db->name == 'sqlsrv'){
