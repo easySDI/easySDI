@@ -15,3 +15,7 @@ REFERENCES [#__sdi_version] ([id])
 ON DELETE CASCADE;
 
 ALTER TABLE [#__sdi_visualization] CHECK CONSTRAINT [#__sdi_visualization$#__sdi_visualization_fk2];
+
+# Correct definitions are inverted
+UPDATE [#__sdi_sys_isolanguage] SET [value] = 'iso639-1' WHERE [id] = 1;
+UPDATE [#__sdi_sys_isolanguage] SET [value] = 'iso639-2T' WHERE [id] = 3;

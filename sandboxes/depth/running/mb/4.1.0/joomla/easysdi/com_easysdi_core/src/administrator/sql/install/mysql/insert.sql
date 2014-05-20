@@ -1,6 +1,6 @@
-INSERT INTO `#__sdi_sys_isolanguage` VALUES ('1','1','1','iso639-2T');
+INSERT INTO `#__sdi_sys_isolanguage` VALUES ('1','1','1','iso639-1');
 INSERT INTO `#__sdi_sys_isolanguage` VALUES ('2','2','1','iso639-2B');
-INSERT INTO `#__sdi_sys_isolanguage` VALUES ('3','3','1','iso639-1');
+INSERT INTO `#__sdi_sys_isolanguage` VALUES ('3','3','1','iso639-2T');
 
 INSERT INTO `#__sdi_sys_unit` (ordering,state,alias,name) 
 VALUES 

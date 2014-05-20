@@ -456,9 +456,9 @@ INSERT [#__sdi_sys_importtype] ([id], [ordering], [state], [value]) VALUES (2, 2
 SET IDENTITY_INSERT [#__sdi_sys_importtype] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_isolanguage] ON;
 
-INSERT [#__sdi_sys_isolanguage] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'iso639-2T');
+INSERT [#__sdi_sys_isolanguage] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'iso639-1');
 INSERT [#__sdi_sys_isolanguage] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'iso639-2B');
-INSERT [#__sdi_sys_isolanguage] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'iso639-1');
+INSERT [#__sdi_sys_isolanguage] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'iso639-2T');
 SET IDENTITY_INSERT [#__sdi_sys_isolanguage] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_loglevel] ON;
 

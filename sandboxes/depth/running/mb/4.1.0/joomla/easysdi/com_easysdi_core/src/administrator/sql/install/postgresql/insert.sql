@@ -322,9 +322,9 @@ INSERT INTO jos_sdi_sys_exceptionlevel (ordering, state, value) VALUES (2, 1, 'r
 INSERT INTO jos_sdi_sys_importtype (ordering, state, value) VALUES (1, 1, 'replace');
 INSERT INTO jos_sdi_sys_importtype (ordering, state, value) VALUES (2, 1, 'merge');
 
-INSERT INTO jos_sdi_sys_isolanguage (ordering, state, value) VALUES (1, 1, 'iso639-2T');
+INSERT INTO jos_sdi_sys_isolanguage (ordering, state, value) VALUES (1, 1, 'iso639-1');
 INSERT INTO jos_sdi_sys_isolanguage (ordering, state, value) VALUES (2, 1, 'iso639-2B');
-INSERT INTO jos_sdi_sys_isolanguage (ordering, state, value) VALUES (3, 1, 'iso639-1');
+INSERT INTO jos_sdi_sys_isolanguage (ordering, state, value) VALUES (3, 1, 'iso639-2T');
 
 INSERT INTO jos_sdi_sys_loglevel (ordering, state, value) VALUES (1, 1, 'off');
 INSERT INTO jos_sdi_sys_loglevel (ordering, state, value) VALUES (2, 1, 'fatal');
