@@ -38,24 +38,6 @@ class com_easysdi_coreInstallerScript {
             }
         }
         
-        
-        
-        // Alter joomla 3.1.1 schema to reflect the MySql version
-        $db = JFactory::getDbo();
-        if($db->name == 'sqlsrv'){
-            $sqls = array();
-            $sqls[] = "ALTER TABLE [#__extensions] ADD  DEFAULT ('') FOR [custom_data];";
-            $sqls[] = "ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [path];";
-            $sqls[] = "ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [img];";
-            $sqls[] = "ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [params];";
-            
-            foreach ($sqls as $sql) {
-                $query = $db->getQuery(true);
-                $query->setQuery($sql);
-                $db->execute();
-            }
-        }
-        
         // Show the essential information at the install/update back-end
         echo '<p>EasySDI component Core [com_easysdi_core]';
         echo '<br />' . JText::_('COM_EASYSDI_CORE_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
