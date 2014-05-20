@@ -35,20 +35,18 @@ class Easysdi_serviceTabletilematrixpolicy extends sdiTable {
 	 */
 	public function exist ($param) {
 		$exist = false;
-		$query = 'SELECT * FROM #__sdi_tilematrixpolicy';
-		
-		$separator = ' WHERE ';
+                $query = $db->getQuery(true);
+                $query->select('*');
+                $query->from('#__sdi_tilematrixpolicy');
+
 		if (isset($param['wmtslayerpolicy_id'])) {
-			$query .= $separator . 'wmtslayerpolicy_id = ' . $param['wmtslayerpolicy_id'];
-			$separator = ' AND ';
+                        $query->where('wmtslayerpolicy_id = ' . $param['wmtslayerpolicy_id']);
 		}
 		if (isset($param['tilematrixset_id'])) {
-			$query .= $separator . 'tilematrixset_id = ' . $param['tilematrixset_id'];
-			$separator = ' AND ';
+                        $query->where('tilematrixset_id = ' . $param['tilematrixset_id']);
 		}
 		if (isset($param['tilematrix_id'])) {
-			$query .= $separator . 'tilematrix_id = ' . $param['tilematrix_id'];
-			$separator = ' AND ';
+                        $query->where('tilematrix_id = ' . $param['tilematrix_id']);
 		}
 		
 		$db = JFactory::getDbo();

@@ -102,9 +102,10 @@ class Easysdi_mapModelVisualization extends JModelForm {
     }
 
     public function getAuthorizedLayers($visualization_id) {
+        $db = JFactory::getDbo();
         $sdiUser = sdiFactory::getSdiUser();
 
-        $cls = '(ml.accessscope_id = 1 OR ((ml.accessscope_id = 3) AND (' . $sdiUser->id . ' IN (select a.user_id from #__sdi_accessscope a where a.entity_guid = ml.guid)))';
+        $cls = '(ml.accessscope_id = 1 OR ((ml.accessscope_id = 3) AND (' . (int)$sdiUser->id . ' IN (select a.user_id from #__sdi_accessscope a where a.entity_guid = ml.guid)))';
         $organisms = $sdiUser->getMemberOrganisms();
         $cls .= 'OR ((ml.accessscope_id = 2) AND (';
         $cls .= $organisms[0]->id . ' in (select a.organism_id from #__sdi_accessscope a where a.entity_guid = ml.guid)';
@@ -112,15 +113,15 @@ class Easysdi_mapModelVisualization extends JModelForm {
         $cls .= ')';
 
         if (!empty($visualization_id)):
-            $exclusioncls = 'ml.id NOT IN (SELECT v.maplayer_id FROM #__sdi_visualization v WHERE v.id <> ' . $visualization_id . ' AND v.maplayer_id IS NOT NULL)';
+            $exclusioncls = 'ml.id NOT IN (SELECT v.maplayer_id FROM #__sdi_visualization v WHERE v.id <> ' . (int)$visualization_id . ' AND v.maplayer_id IS NOT NULL)';
         else:
             $exclusioncls = 'ml.id NOT IN (SELECT v.maplayer_id FROM #__sdi_visualization v WHERE v.maplayer_id IS NOT NULL)';
         endif;
         
         //Exclude layers from de Bing, Google et OSM
-        $exclusionbgo = 'ml.id NOT IN (select ml.id from #__sdi_maplayer ml, #__sdi_physicalservice as ps WHERE ml.service_id = ps.id AND ml.service_id = ps.id and ml.servicetype = "physical" and serviceconnector_id IN (12,13,14))';
+        $exclusionbgo = 'ml.id NOT IN (select ml.id from #__sdi_maplayer ml, #__sdi_physicalservice as ps WHERE ml.service_id = ps.id AND ml.service_id = ps.id and ml.servicetype = '. $db->quote('physical') .' and serviceconnector_id IN (12,13,14))';
 
-        $db = JFactory::getDbo();
+        
         $query = $db->getQuery(true)
                 ->select('*')
                 ->from('#__sdi_maplayer ml')
@@ -322,7 +323,7 @@ class Easysdi_mapModelVisualization extends JModelForm {
         $query->select('m.id')
                 ->from('#__sdi_metadata m ')
                 ->innerJoin('#__sdi_version v ON v.id = m.version_id')
-                ->where('v.id = ' . $version_id);
+                ->where('v.id = ' . (int)$version_id);
         $db->setQuery($query);
         $metadata = $db->loadResult();
         $csw = new sdiMetadata((int) $metadata);

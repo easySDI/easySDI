@@ -139,10 +139,10 @@ class Easysdi_mapModellayers extends JModelList
 		$query->select(
 				$this->getState(
 						'list.select',
-						'a.*'
+						'a.id, a.alias, a.checked_out, a.checked_out_time, a.state, a.ordering, a.name, a.access'
 				)
 		);
-		$query->from('`#__sdi_maplayer` AS a');
+		$query->from('#__sdi_maplayer AS a');
 
 
 		// Join over the users for the checked out user.

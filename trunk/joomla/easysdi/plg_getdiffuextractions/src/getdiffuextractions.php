@@ -17,7 +17,7 @@ class PlgEasysdi_admin_infoGetdiffuextractions extends JPlugin {
         
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query->select('COUNT(*)');
+        $query->select('COUNT(*) as nbre');
         $query->from('#__sdi_order');
         $query->where('ordertype_id = 1');
         $query->where('orderstate_id < 4 ');
@@ -25,7 +25,7 @@ class PlgEasysdi_admin_infoGetdiffuextractions extends JPlugin {
         $rows = $db->loadObjectList();
         //Convert the stdClass object in an array
         $values = get_object_vars($rows[0]);
-        $values = $values['COUNT(*)'];
+        $values = $values['nbre'];
         //Create the return array with all the infos
         return array(
             'info' => $values,

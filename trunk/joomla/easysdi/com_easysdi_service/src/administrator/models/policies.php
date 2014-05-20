@@ -135,10 +135,10 @@ class Easysdi_serviceModelpolicies extends JModelList
 		$query->select(
 			$this->getState(
 				'list.select',
-				'a.*'
+				'a.id, a.alias, a.virtualservice_id, a.state, a.checked_out, a.checked_out_time, a.ordering, a.name, a.access'
 			)
 		);
-		$query->from('`#__sdi_policy` AS a');
+		$query->from('#__sdi_policy AS a');
 
 	    // Join over the users for the checked out user.
 	    $query->select('uc.name AS editor');

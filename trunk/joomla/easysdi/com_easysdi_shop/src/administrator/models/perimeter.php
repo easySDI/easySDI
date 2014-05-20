@@ -106,7 +106,11 @@ class Easysdi_shopModelperimeter extends sdiModel {
             // Set ordering to the last item if not set
             if (@$table->ordering === '') {
                 $db = JFactory::getDbo();
-                $db->setQuery('SELECT MAX(ordering) FROM #__sdi_perimeter');
+                $query = $db->getQuery(true);
+                $query->select('MAX(ordering)');
+                $query->from('#__sdi_perimeter');
+                
+                $db->setQuery($query);
                 $max = $db->loadResult();
                 $table->ordering = $max + 1;
             }

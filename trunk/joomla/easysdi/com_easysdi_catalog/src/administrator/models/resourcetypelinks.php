@@ -111,10 +111,10 @@ class Easysdi_catalogModelresourcetypelinks extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.*'
+                        'list.select', 'a.id, a.state, a.checked_out, a.ordering, a.viralversioning'
                 )
         );
-        $query->from('`#__sdi_resourcetypelink` AS a');
+        $query->from('#__sdi_resourcetypelink AS a');
 
 
         // Join over the users for the checked out user.

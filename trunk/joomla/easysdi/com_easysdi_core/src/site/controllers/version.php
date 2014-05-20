@@ -52,7 +52,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $query = $dbo->getQuery(true)
                 ->select('count(id)')
                 ->from('#__sdi_version')
-                ->where('resource_id = ' . $version->resource_id);
+                ->where('resource_id = ' . (int)$version->resource_id);
         $dbo->setQuery($query);
         $num = $dbo->loadResult();
 

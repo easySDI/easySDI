@@ -82,7 +82,7 @@ class SdiLanguageDao extends SdiDao{
 
         $query->select('*');
         $query->from('#__sdi_language');
-        $query->where('code = \'' . $code . '\'');
+        $query->where('code = ' . $query->quote($code) );
         $this->db->setQuery($query);
         $language = $this->db->loadObject();
         
@@ -95,7 +95,7 @@ class SdiLanguageDao extends SdiDao{
 
         $query->select('*');
         $query->from('#__sdi_language');
-        $query->where('`iso639-2T` = \'' . $code . '\'');
+        $query->where('`iso639-2T` = ' . $query->quote($code) );
         $this->db->setQuery($query);
         
         $language = $this->db->loadObject();
@@ -108,7 +108,7 @@ class SdiLanguageDao extends SdiDao{
 
         $query->select('*');
         $query->from('#__sdi_language');
-        $query->where('`iso3166-1-alpha2` = \'' . $code . '\'');
+        $query->where('`iso3166-1-alpha2` = ' . $query->quote($code) );
         $this->db->setQuery($query);
         
         $language = $this->db->loadObject();

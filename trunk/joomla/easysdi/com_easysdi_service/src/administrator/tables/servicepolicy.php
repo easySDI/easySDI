@@ -37,27 +37,32 @@ class Easysdi_serviceTableservicepolicy extends sdiTable {
 		
 		foreach ($modif as $id => $value) {
 			$db = JFactory::getDbo();
-			$db->setQuery('
-				SELECT COUNT(*) FROM #__sdi_servicepolicy WHERE physicalservice_id = ' . $id . '
-				AND policy_id = ' . $src['id'] . ';
-			');
+                        $query = $db->getQuery(true);
+                        $query->select('COUNT(*)');
+                        $query->from('#__sdi_servicepolicy');
+                        $query->where('physicalservice_id = ' . $id);
+                        $query->where('policy_id = ' . $src['id']);
+                        
+			$db->setQuery($query);
 			$num = $db->loadResult();
 			
 			if (0 < $num) {
-				$query = '
-					UPDATE #__sdi_servicepolicy
-					SET prefix = "' . $value['prefix'] . '",
-					namespace = "' . $value['namespace'] . '"
-					WHERE physicalservice_id = ' . $id . '
-					AND policy_id = ' . $src['id'] . ';
-				';
+                                $query = $db->getQuery(true);
+                                $query->update('#__sdi_servicepolicy');
+                                $query->set('prefix = ' . $query->quote($value['prefix']));
+                                $query->set('namespace = ' . $query->quote($value['namespace']));
+                                $query->where('physicalservice_id = ' . (int)$id);
+                                $query->where('policy_id = ' . (int)$src['id']);
+                                
 			}
 			else {
-				$query = '
-					INSERT #__sdi_servicepolicy
-					(prefix, namespace, physicalservice_id, policy_id)
-					VALUES ("' . $value['prefix'] . '","' . $value['namespace'] . '",' . $id . ',' . $src['id'] . ');
-				';
+                                $query = $db->getQuery(true);
+                                $columns = array('prefix', 'namespace', 'physicalservice_id', 'policy_id');
+                                $values = array($query->quote($value['prefix']), $query->quote($value['namespace']), $id, $src['id']);
+                                $query->insert('#__sdi_servicepolicy');
+                                $query->columns($query->quoteName($columns));
+                                $query->values(implode(',', $values));
+                            
 			}
 			
 			$db->setQuery($query);
@@ -74,12 +79,13 @@ class Easysdi_serviceTableservicepolicy extends sdiTable {
 	 */
 	public function getByIDs ($physicalservice_id, $policy_id) {
 		$db = JFactory::getDbo();
-		$db->setQuery('
-			SELECT *
-			FROM #__sdi_servicepolicy
-			WHERE physicalservice_id = ' . $physicalservice_id . '
-			AND policy_id = ' . $policy_id . ';
-		');
+                $query = $db->getQuery(true);
+                $query->select('*');
+                $query->from('#__sdi_servicepolicy');
+                $query->where('physicalservice_id = ' . (int)$physicalservice_id);
+                $query->where('policy_id = ' . (int)$policy_id);
+                
+		$db->setQuery($query);
 		
 		try {
 			$resultSet = $db->loadObject();

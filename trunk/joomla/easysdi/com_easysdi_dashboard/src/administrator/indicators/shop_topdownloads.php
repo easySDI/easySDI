@@ -22,8 +22,9 @@ class Indicator{
                 ->where('dd.executed between \''.date("c",$timestart).'\' and  \''.date("c",$timeend).'\' ')
 
                 ->group($db->quoteName('dif.id'))
+                ->group($db->quoteName('dif.name'))
                 
-                ->order('2 DESC');
+                ->order('count(dd.id) DESC');
                 
         if($organism != 'all'){
             $query->where($db->quoteName('org.id') . ' = ' . $organism);

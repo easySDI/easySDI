@@ -21,7 +21,11 @@ class com_easysdi_contactInstallerScript
 	function preflight( $type, $parent ) {
 		//Check if com_easysdi_core is installed
 		$db = JFactory::getDbo();
-		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = "com_easysdi_core"');
+                $query = $db->getQuery(true);
+                $query->select('COUNT(*)');
+                $query->from('#__extensions');
+                $query->where('name ='.$db->quote('com_easysdi_core'));
+		$db->setQuery($query);
 		$install = $db->loadResult();
 		
 		if($install == 0){
@@ -65,40 +69,38 @@ class com_easysdi_contactInstallerScript
 	 * postflight is run after the extension is registered in the database.
 	 */
 	function postflight( $type, $parent ) {
+                $db = JFactory::getDbo();
+            
 		if ( $type == 'install' ) {
-			JTable::addIncludePath(JPATH_ADMINISTRATOR."/../libraries/joomla/database/table");
-			
-			//Create a default EasySDI User Category
-			$row 					= JTable::getInstance('category');
-			$row->parent_id 		= 1;
-			$row->level				= 1;
-			$row->path 				= 'uncategorised';
-			$row->extension 		= 'com_easysdi_contact';
-			$row->title 			= 'Uncategorised';
-			$row->alias 			= 'uncategorised';
-			$row->published 		= 1;
-			$row->access 			= 1;
-			$row->params  			= '{"category_layout":"","image":""}';
-			$row->metadata 			= '{"author":"","robots":""}';
-			if(!$row->store(true))
-			{
-				JError::raiseWarning(null, JText::_('COM_EASYSDI_CONTACT_POSTFLIGHT_SCRIPT_CATEGORY_ERROR'));
-				return false;
-			}
-			$row->moveByReference(0, 'last-child', $row->id);
-			
-			//Create new EasySDI User account
+                    
+                        require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/libraries/easysdi/database/sditable.php';
+                    
+                        $query = $db->getQuery(true);
+                        $columns = array('parent_id', 'level','path','extension','title','alias','published','access','params','metadata','metadesc','metakey','description','language');
+                        $values = array(1,1,$query->quote('uncategorised'),$query->quote('com_easysdi_contact'),$query->quote('Uncategorised'),$query->quote('uncategorised'),1,1,$query->quote('{"category_layout":"","image":""}'),$query->quote('{"author":"","robots":""}'),$query->quote('uncategorised'),$query->quote(' '),$query->quote(' '),$query->quote(' '));
+                        $query->insert('#__categories');
+                        $query->columns($query->quoteName($columns));
+                        $query->values(implode(',', $values));
+                        
+                        $db->setQuery($query);
+                        $db->execute();
+                        $catid = $db->insertid();
+                        
+                        
+                        //Create new EasySDI User account
 			$user	= JFactory::getUser();
-			JTable::addIncludePath(JPATH_ADMINISTRATOR."/components/com_easysdi_contact/tables");
-			$newaccount = JTable::getInstance('user', 'easysdi_contactTable');
+                        JTable::addIncludePath(JPATH_ADMINISTRATOR."/components/com_easysdi_contact/tables");
+			$newaccount = sdiTable::getInstance('user', 'easysdi_contactTable');
 			if (!$newaccount) {
 				JError::raiseWarning(null, JText::_('COM_EASYSDI_CONTACT_POSTFLIGHT_SCRIPT_USER_ERROR_INSTANCIATE'));
 				return false;
 			}
 			$newaccount->user_id 	= $user->id;
-			$newaccount->catid 		= $row->id;
+			$newaccount->catid 	= $catid;
 			$newaccount->ordering	= 1;
-			$result 				= $newaccount->store();
+			$result 		= $newaccount->store();
+                       
+			
 			if (!(isset($result)) || !$result) {
 				JError::raiseError(42, JText::_('COM_EASYSDI_CONTACT_POSTFLIGHT_SCRIPT_USER_ERROR_STORE'). $newaccount->getError());
 				return false;
@@ -112,8 +114,11 @@ class com_easysdi_contactInstallerScript
 			$this->setParams( $params );
 		}
 		
-		$db = JFactory::getDbo();
-		$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_contact'");
+		
+                $query = $db->getQuery(true);
+                $query->delete('#__menu');
+                $query->where('title = '.$db->quote('com_easysdi_contact'));
+		$db->setQuery($query);
 		$db->query();
 	}
 
@@ -129,7 +134,12 @@ class com_easysdi_contactInstallerScript
 	 */
 	function getParam( $name ) {
 		$db = JFactory::getDbo();
-		$db->setQuery('SELECT manifest_cache FROM #__extensions WHERE name = "com_easysdi_contact"');
+                $query = $db->getQuery(true);
+                $query->select('manifest_cache');
+                $query->from('#__extensions');
+                $query->where('name ='.$db->quote('com_easysdi_contact'));
+                
+		$db->setQuery($query);
 		$manifest = json_decode( $db->loadResult(), true );
 		return $manifest[ $name ];
 	}
@@ -141,7 +151,11 @@ class com_easysdi_contactInstallerScript
 		if ( count($param_array) > 0 ) {
 			// read the existing component value(s)
 			$db = JFactory::getDbo();
-			$db->setQuery('SELECT params FROM #__extensions WHERE name = "com_easysdi_contact"');
+                        $query = $db->getQuery(true);
+                        $query->select('params');
+                        $query->from('#__extensions');
+                        $query->where('name = '.$db->quote('com_easysdi_contact'));
+			$db->setQuery($query);
 			$params = json_decode( $db->loadResult(), true );
 			// add the new variable(s) to the existing one(s)
 			foreach ( $param_array as $name => $value ) {
@@ -149,9 +163,11 @@ class com_easysdi_contactInstallerScript
 			}
 			// store the combined new and existing values back as a JSON string
 			$paramsString = json_encode( $params );
-			$db->setQuery('UPDATE #__extensions SET params = ' .
-				$db->quote( $paramsString ) .
-				' WHERE name = "com_easysdi_contact"' );
+                        $query = $db->getQuery(true);
+                        $query->update('#__extensions');
+                        $query->set('params = ' .$db->quote( $paramsString ));
+                        $query->where('name = '.$db->quote('com_easysdi_contact'));
+			$db->setQuery($query);
 				$db->query();
 		}
 	}

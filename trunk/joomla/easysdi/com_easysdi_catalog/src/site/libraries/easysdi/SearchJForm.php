@@ -323,12 +323,12 @@ class SearchJForm extends SearchForm {
                 if (!empty($params->searchboundarytype) && ($params->searchboundarytype == parent::SEARCHTYPEID)) {
                     $query->select('b.alias as value, t.text1 as name, b.guid');
                 } else {
-                    $query->select('CONCAT_WS("#",b.northbound, b.southbound, b.eastbound, b.westbound) as value, t.text1 as name, b.guid');
+                    $query->select($query->concatenate(array('b.northbound','b.southbound','b.eastbound','b.westbound'), '#').' as value, t.text1 as name, b.guid');
                 }
 
                 $query->from('#__sdi_boundary b');
                 $query->innerJoin('#__sdi_translation t on b.guid = t.element_guid');
-                $query->where('t.language_id = ' . $language->id);
+                $query->where('t.language_id = ' . (int)$language->id);
                 if (!empty($params->boundarycategory_id)) {
                     $query->where('b.category_id IN (' . implode(',', $params->boundarycategory_id) . ')');
                 }
@@ -372,8 +372,8 @@ class SearchJForm extends SearchForm {
 
         $query->select('scf.ogcsearchfilter');
         $query->from('#__sdi_searchcriteriafilter scf');
-        $query->where('scf.searchcriteria_id = ' . $searchCriteria->id);
-        $query->where('scf.language_id = ' . $language->id);
+        $query->where('scf.searchcriteria_id = ' . (int)$searchCriteria->id);
+        $query->where('scf.language_id = ' . (int)$language->id);
 
         $this->db->setQuery($query);
         $filter = $this->db->loadObject();
@@ -426,19 +426,20 @@ class SearchJForm extends SearchForm {
                 if ($params->searchboundarytype == parent::SEARCHTYPEID) {
                     $query->select('b.alias as value');
                 } else {
-                    $query->select('CONCAT_WS("#",b.northbound, b.southbound, b.eastbound, b.westbound) as value');
+                    $query->select($query->concatenate(array('b.northbound','b.southbound','b.eastbound','b.westbound'), '#').' as value');
                 }
 
                 $query->from('#__sdi_boundary as b');
                 $query->where('id IN (' . $ids . ')');
                 break;
             case 'versions':
+                $alias = 'versions';
                 $query = $this->db->getQuery(true);
                 $query->select('csc.defaultvalue as value');
                 $query->from('#__sdi_searchcriteria sc');
                 $query->innerJoin('#__sdi_catalog_searchcriteria csc on csc.searchcriteria_id = sc.id');
-                $query->where('sc.alias = "versions"');
-                $query->where('csc.catalog_id = ' . $this->item->id);
+                $query->where('sc.alias =' . $query->quote($alias));
+                $query->where('csc.catalog_id = ' . (int)$this->item->id);
                 break;
             default :
                 if (empty($ids)) {

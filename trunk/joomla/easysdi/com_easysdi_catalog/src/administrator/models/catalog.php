@@ -115,7 +115,11 @@ class Easysdi_catalogModelcatalog extends sdiModel {
             // Set ordering to the last item if not set
             if (@$table->ordering === '') {
                 $db = JFactory::getDbo();
-                $db->setQuery('SELECT MAX(ordering) FROM #__sdi_catalog');
+                $query = $db->getQuery(true);
+                $query->select('MAX(ordering)');
+                $query->from('#__sdi_catalog');
+                
+                $db->setQuery($query);
                 $max = $db->loadResult();
                 $table->ordering = $max + 1;
             }
@@ -169,7 +173,12 @@ class Easysdi_catalogModelcatalog extends sdiModel {
             //If it is a new catalog, save the default system search criterias
             if ($isNew) {
                 $db = JFactory::getDbo();
-                $db->setQuery('SELECT id FROM #__sdi_searchcriteria WHERE issystem = 1');
+                $query = $db->getQuery(true);
+                $query->select('id');
+                $query->from('#__sdi_searchcriteria');
+                $query->where('issystem = 1');
+                
+                $db->setQuery($query);
                 $searchcriterias = $db->loadColumn();
                 foreach ($searchcriterias as $searchcriteria):
                     $catalogsearchcriteria = JTable::getInstance('catalogsearchcriteria', 'Easysdi_catalogTable');

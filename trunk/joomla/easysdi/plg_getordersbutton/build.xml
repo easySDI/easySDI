@@ -42,6 +42,7 @@
                 <description>PLG_EASYSDI_ADMIN_BUTTON_GETORDERSBUTTON_XML_DESCRIPTION</description>
                 <scriptfile>script.php</scriptfile>
                 <files>
+                    <filename plugin="getordersbutton">script.php</filename>
                     <filename plugin="getordersbutton">getordersbutton.php</filename>
                     <filename>getordersbutton.xml</filename>
                     <filename>index.html</filename>

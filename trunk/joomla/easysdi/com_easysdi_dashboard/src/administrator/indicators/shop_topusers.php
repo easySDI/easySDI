@@ -25,8 +25,9 @@ class Indicator{
                 ->where('o.sent between \''.date("c",$timestart).'\' and  \''.date("c",$timeend).'\' ')
 
                 ->group($db->quoteName('eu.id'))
+                ->group($db->quoteName('ju.name'))
                 
-                ->order('2 DESC');
+                ->order('count(odif.id) DESC');
                 
         if($organism != 'all'){
             $query->where($db->quoteName('org.id') . ' = ' . $organism);

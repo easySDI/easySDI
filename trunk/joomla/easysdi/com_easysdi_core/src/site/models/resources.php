@@ -106,7 +106,7 @@ class Easysdi_coreModelResources extends JModelList {
         $query->join('LEFT', '#__sdi_resourcetype AS rt ON rt.id = a.resourcetype_id');
         $query->join('LEFT', '#__sdi_translation AS trans ON trans.element_guid = rt.guid');
         $query->join('LEFT', '#__sdi_language AS lang ON lang.id = trans.language_id');
-        $query->where('lang.code = "' . $lang->getTag() . '"');
+        $query->where('lang.code = ' . $query->quote($lang->getTag()));
         $query->where('rt.predefined = 0');
         
         //join over resourcetypelink to know if some relations are possible

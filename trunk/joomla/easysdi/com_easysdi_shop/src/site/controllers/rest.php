@@ -113,7 +113,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $query->innerJoin('#__sdi_version v on d.version_id = v.id');
         $query->innerJoin('#__sdi_resource r on r.id = v.resource_id');
         if (!empty($this->organism)) {
-            $query->where('r.organism_id = ' . $this->organism->id);
+            $query->where('r.organism_id = ' . (int)$this->organism->id);
         }
         $query->where('od.productstate_id = ' . self::PRODUCTSTATESENT);
         $query->group('o.id');
@@ -195,10 +195,10 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $query->innerJoin('#__sdi_version v on d.version_id = v.id');
         $query->innerJoin('#__sdi_resource r on r.id = v.resource_id');
         if (!empty($this->organism)) {
-            $query->where('r.organism_id = ' . $this->organism->id);
+            $query->where('r.organism_id = ' . (int)$this->organism->id);
         }
-        $query->where('od.order_id = ' . $orderId);
-        $query->where('od.diffusion_id = ' . $diffusionId);
+        $query->where('od.order_id = ' . (int)$orderId);
+        $query->where('od.diffusion_id = ' . (int)$diffusionId);
 
         $this->db->setQuery($query);
 
@@ -265,10 +265,10 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $query = $this->db->getQuery(true);
 
         $query->update('#__sdi_order_diffusion');
-        $query->set('remark = \'' . $remark . '\'');
-        $query->set('fee = \''.$amount.'\'');
-        $query->set('completed = \'' . $now . '\'');
-        $query->set('file = \'' . $filename . '\'');
+        $query->set('remark = ' . $query->quote($remark));
+        $query->set('fee = '. $query->quote($amount));
+        $query->set('completed = ' . $query->quote($now));
+        $query->set('file = ' . $query->quote($filename));
         $query->set('size = ' . $size);
         $query->where('id = ' . $orderdiffusionId);
 
@@ -339,7 +339,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
 
         $query->select('o.id, o.username, o.password');
         $query->from('#__sdi_organism o');
-        $query->where('o.username = \'' . $username . '\'');
+        $query->where('o.username = ' . $query->quote($username));
 
         $this->db->setQuery($query);
 
@@ -419,13 +419,13 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $query->from('#__sdi_address a ');
         switch ($for) {
             case 'client':
-                $query->where('a.user_id = ' . $order->user_id);
+                $query->where('a.user_id = ' . (int)$order->user_id);
                 break;
             case 'tierce':
-                $query->where('a.user_id = ' . $order->thirdparty_id);
+                $query->where('a.user_id = ' . (int)$order->thirdparty_id);
                 break;
         }
-        $query->where('a.addresstype_id = ' . $addressType);
+        $query->where('a.addresstype_id = ' . (int)$addressType);
 
         $this->db->setQuery($query);
         $addressdata = $this->db->loadObject();
@@ -509,10 +509,10 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $query->innerJoin('#__sdi_resource r on r.id = v.resource_id');
         $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
         if (!empty($this->organism)) {
-            $query->where('r.organism_id = ' . $this->organism->id);
+            $query->where('r.organism_id = ' . (int)$this->organism->id);
         }
         $query->where('od.productstate_id = ' . self::PRODUCTSTATESENT);
-        $query->where('od.order_id = ' . $order->id);
+        $query->where('od.order_id = ' . (int)$order->id);
 
 
         $this->db->setQuery($query);
@@ -566,7 +566,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $query->innerJoin('#__sdi_order_propertyvalue opv on opv.orderdiffusion_id = od.id');
         $query->innerJoin('#__sdi_propertyvalue pv on pv.id = opv.propertyvalue_id');
         $query->innerJoin('#__sdi_property p on p.id = pv.property_id');
-        $query->where('od.id = ' . $product->orderdiffusion_id);
+        $query->where('od.id = ' . (int)$product->orderdiffusion_id);
 
         $this->db->setQuery($query);
         $propertiesdata = $this->db->loadObjectList();
@@ -596,7 +596,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $query->select('p.`name` perimeter_name, p.alias, op.`value` perimeter_value');
         $query->from('#__sdi_order_perimeter op');
         $query->innerJoin('#__sdi_perimeter p on p.id = op.perimeter_id');
-        $query->where('op.order_id = ' . $order->id);
+        $query->where('op.order_id = ' . (int)$order->id);
 
         $this->db->setQuery($query);
         $contents = $this->db->loadObjectList();
@@ -671,8 +671,8 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $query = $this->db->getQuery(true);
 
         $query->update('#__sdi_order_diffusion od');
-        $query->set('od.productstate_id = ' . $to);
-        $query->where('od.id = ' . $orderdiffusion_id);
+        $query->set('od.productstate_id = ' . (int)$to);
+        $query->where('od.id = ' . (int)$orderdiffusion_id);
 
         $this->db->setQuery($query);
         $this->db->execute();
@@ -681,7 +681,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
 
         $query->select('*');
         $query->from('#__sdi_order_diffusion');
-        $query->where('id = ' . $orderdiffusion_id);
+        $query->where('id = ' . (int)$orderdiffusion_id);
 
         $this->db->setQuery($query);
         $orderdiffusion = $this->db->loadObject();
@@ -699,7 +699,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
 
         $query->select('id');
         $query->from('#__sdi_order_diffusion');
-        $query->where('order_id = ' . $orderId);
+        $query->where('order_id = ' . (int)$orderId);
 
         $this->db->setQuery($query);
         $total = $this->db->getNumRows($this->db->execute());
@@ -708,7 +708,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
 
         $query->select('id');
         $query->from('#__sdi_order_diffusion');
-        $query->where('order_id = ' . $orderId);
+        $query->where('order_id = ' . (int)$orderId);
         $query->where('productstate_id = ' . self::PRODUCTSTATEAWAIT);
 
         $this->db->setQuery($query);
@@ -718,7 +718,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
 
         $query->select('id');
         $query->from('#__sdi_order_diffusion');
-        $query->where('order_id = ' . $orderId);
+        $query->where('order_id = ' . (int)$orderId);
         $query->where('productstate_id = ' . self::PRODUCTSTATEAVAILABLE);
 
         $this->db->setQuery($query);
@@ -734,9 +734,9 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
             $query->update('#__sdi_order');
             $query->set('orderstate_id = ' . $orderstate);
             if($orderstate == self::ORDERSTATEFINISH){
-                $query->set('completed = \'' . $now . '\'');
+                $query->set('completed = ' . $query->quote($now) );
             }
-            $query->where('id = ' . $orderId);
+            $query->where('id = ' . (int)$orderId);
 
             $this->db->setQuery($query);
             $this->db->execute();
