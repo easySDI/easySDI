@@ -187,7 +187,7 @@ class FormGenerator {
 
         $this->session->set('structure', serialize($this->structure->saveXML()));
         $form = $this->buildForm($root);
-
+        
         return $form;
     }
 

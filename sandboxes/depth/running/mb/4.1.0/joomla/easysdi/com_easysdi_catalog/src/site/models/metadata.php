@@ -10,6 +10,8 @@
 // No direct access.
 defined('_JEXEC') or die;
 
+JHtml::_('behavior.formvalidation');
+
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormGenerator.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/CswMerge.php';
 

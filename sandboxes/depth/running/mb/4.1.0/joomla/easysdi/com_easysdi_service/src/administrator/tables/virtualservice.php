@@ -62,7 +62,7 @@ class Easysdi_serviceTablevirtualservice extends sdiTable {
 	*
 	* @since   11.1
 	*/
-	protected function _getAssetParentId($table = null, $id = null) {
+	protected function _getAssetParentId(JTable $table = null, $id = null) {
 		// We will retrieve the parent-asset from the Asset-table
 		$assetParent = JTable::getInstance('Asset');
 		// Default: if no asset-parent can be found we take the global asset

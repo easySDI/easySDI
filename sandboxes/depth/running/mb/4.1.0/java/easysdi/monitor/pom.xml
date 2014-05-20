@@ -11,7 +11,7 @@
     </parent>
     
     <scm>
-        <connection>scm:svn:http://www.easysdi.org/easysdi/branches/depth/running/v330/sandbox/mb/easysdi330/monitor</connection>
+        <connection>scm:svn:http://www.easysdi.org/easysdi/trunk/java/easysdi/monitor</connection>
     </scm>
     
     <properties>

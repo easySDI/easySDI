@@ -157,6 +157,7 @@ class Easysdi_serviceHelper {
             }
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_URL, $s_url);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
             curl_setopt($ch, CURLOPT_COOKIEJAR, "cookie.txt");
             curl_setopt($ch, CURLOPT_POSTFIELDS, "username=" . $s_user . "&password=" . $s_password);
@@ -202,6 +203,7 @@ class Easysdi_serviceHelper {
             }
             curl_setopt($session, CURLOPT_HEADER, false);
             curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($session, CURLOPT_SSL_VERIFYPEER, false);
             $response = curl_exec($session);
             curl_close($session);
 
@@ -310,6 +312,7 @@ class Easysdi_serviceHelper {
         }
         curl_setopt($session, CURLOPT_HEADER, false);
         curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($session, CURLOPT_SSL_VERIFYPEER, false);
         $response = curl_exec($session);
         $http_status = curl_getinfo($session, CURLINFO_HTTP_CODE);
         curl_close($session);

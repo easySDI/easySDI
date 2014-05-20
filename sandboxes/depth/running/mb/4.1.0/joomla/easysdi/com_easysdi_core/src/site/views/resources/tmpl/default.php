@@ -32,76 +32,77 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
             <div class="well">
                 <div class="row-fluid">
                     <form class="form-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=resources'); ?>" method="post">
-                        
-                            <div class="btn-group pull-left">
-                                    <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
-                                        <i class="icon-white icon-plus-sign"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW'); ?>
-                                        <span class="caret"></span>
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                        <?php foreach ($resourcetypes as $resourcetype): ?>
-                                            <li>
-                                                <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.edit&id=0&resourcetype=' . $resourcetype->id); ?>">
-                                                    <?php echo $resourcetype->label; ?></a>
-                                            </li>
-                                        <?php endforeach; ?>
-                                    </ul>
-                            </div>
-                            <div class="btn-group pull-right">
-                                
-                                    <div id="filtertype" >
-                                        <select id="filter_resourcetype" name="filter_resourcetype" onchange="this.form.submit();" class="inputbox">
-                                            <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESOURCE_TYPE_FILTER'); ?></option>
-                                            <?php foreach ($resourcetypes as $resourcetype): ?>
-                                                <option value="<?php echo $resourcetype->id; ?>" <?php
-                                    if ($this->state->get('filter.resourcetype') == $resourcetype->id) : echo 'selected="selected"';
-                                    endif;
-                                                ?> ><?php echo $resourcetype->label; ?></option>
-                                                    <?php endforeach; ?>
-                                        </select>
 
-                                        <?php
-                                        //Load all status value
-                                        $db = JFactory::getDbo();
-                                        $query = $db->getQuery(true)
-                                                ->select('s.value, s.id ')
-                                                ->from('#__sdi_sys_metadatastate s');
-                                        $db->setQuery($query);
-                                        $metadatastate = $db->loadObjectList();
-                                        ?>
-                                      </div>
-                                      <div id="filterstatus">
+                        <div class="btn-group pull-left">
+                            <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="icon-white icon-plus-sign"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW'); ?>
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <?php foreach ($resourcetypes as $resourcetype): ?>
+                                    <li>
+                                        <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.edit&id=0&resourcetype=' . $resourcetype->id); ?>">
+                                            <?php echo $resourcetype->label; ?></a>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                        <div class="btn-group pull-right">
 
-                                        <select id="filter_status" name="filter_status" onchange="this.form.submit();" class="inputbox">
-                                            <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_METADATA_STATE_FILTER'); ?></option>
-                                            <?php foreach ($metadatastate as $status): ?>
-                                                <option value="<?php echo $status->id; ?>" <?php if ($this->state->get('filter.status') == $status->id) : echo 'selected="selected"';
-                                    endif;
-                                    ?> >
-                                                    <?php echo JText::_($status->value); ?></option>
+                            <div id="filtertype" >
+                                <select id="filter_resourcetype" name="filter_resourcetype" onchange="this.form.submit();" class="inputbox">
+                                    <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESOURCE_TYPE_FILTER'); ?></option>
+                                    <?php foreach ($resourcetypes as $resourcetype): ?>
+                                        <option value="<?php echo $resourcetype->id; ?>" <?php
+                                        if ($this->state->get('filter.resourcetype') == $resourcetype->id) : echo 'selected="selected"';
+                                        endif;
+                                        ?> ><?php echo $resourcetype->label; ?></option>
                                             <?php endforeach; ?>
-                                        </select>
-                                      </div>
-                                        <div id="filtersearch" >
-                                            <div class="filter-search>
-                                                <label for="filter_search" class="element-invisible">Rechercher</label>
-                                                <input type="text" name="filter_search" id="filter_search" placeholder="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" value="<?php echo $this->state->get('filter.search'); ?>" title="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" />
-                                                
-                                                <button class="btn hasTooltip" type="submit" title="Rechercher"><i class="icon-search"></i></button>
-                                                <button class="btn hasTooltip" type="button" title="Effacer" onclick="document.id('filter_search').value = '';
-                                                        this.form.submit();"><i class="icon-remove"></i></button>
-                                                </div>
-                                        </div>
-                                
+                                </select>
+
+                                <?php
+                                //Load all status value
+                                $db = JFactory::getDbo();
+                                $query = $db->getQuery(true)
+                                        ->select('s.value, s.id ')
+                                        ->from('#__sdi_sys_metadatastate s');
+                                $db->setQuery($query);
+                                $metadatastate = $db->loadObjectList();
+                                ?>
                             </div>
+                            <div id="filterstatus">
+
+                                <select id="filter_status" name="filter_status" onchange="this.form.submit();" class="inputbox">
+                                    <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_METADATA_STATE_FILTER'); ?></option>
+                                    <?php foreach ($metadatastate as $status): ?>
+                                        <option value="<?php echo $status->id; ?>" <?php
+                                        if ($this->state->get('filter.status') == $status->id) : echo 'selected="selected"';
+                                        endif;
+                                        ?> >
+                                            <?php echo JText::_($status->value); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div id="filtersearch" >
+                                <div class="filter-search">
+                                    <label for="filter_search" class="element-invisible">Rechercher</label>
+                                    <input type="text" name="filter_search" id="filter_search" placeholder="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" value="<?php echo $this->state->get('filter.search'); ?>" title="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SEARCH_FILTER'); ?>" />
+
+                                    <button class="btn hasTooltip" type="submit" title="Rechercher"><i class="icon-search"></i></button>
+                                    <button class="btn hasTooltip" type="button" title="Effacer" onclick="document.id('filter_search').value = '';
+                                            this.form.submit();"><i class="icon-remove"></i></button>
+                                </div>
+                            </div>
+
+                        </div>
                     </form>
-                
+
+                </div>
             </div>
-        </div>
-        <?php
+            <?php
+        endif;
     endif;
-endif;
-?>
+    ?>
 
 <div class="items">
     <div class="well">
@@ -148,9 +149,7 @@ endif;
                         $db->setQuery($query);
                         $metadata = $db->loadObjectList();
 
-                        $s = $query->__toString();
-                        
-                           $show = true;
+
                             ?>
                             <tr>
                                 <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>
@@ -286,14 +285,14 @@ endif;
                                                 <li class="divider"></li>
                                                 <li>
                                                     <?php if ($item->versioning) : ?>
-                                                        <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $metadata[0]->version); ?>"><i class="icon-remove"></i> <?php
+                                                    <a href="#" onclick="showDeleteModal('<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $metadata[0]->version); ?>')"><i class="icon-remove"></i> <?php
                                                             if (count($metadata) > 1)
                                                                 echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_VERSION');
                                                             else
                                                                 echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE');
                                                             ?></a>
                                                     <?php else : ?>
-                                                        <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $metadata[0]->version); ?>"><i class="icon-remove"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE'); ?></a>
+                                                    <a href="#" onclick="showDeleteModal('<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $metadata[0]->version); ?>')"><i class="icon-remove"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE'); ?></a>
                                                     <?php endif; ?>
                                                 </li>
                                             <?php endif; ?>
@@ -302,26 +301,26 @@ endif;
                                 </td>
 
                             </tr>
-                        
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-            <?php
-            if (!$show):
-                echo JText::_('COM_EASYSDI_CORE_NO_ITEMS');
-            endif;
-            ?>
+
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+                <?php
+                if (!$show):
+                    echo JText::_('COM_EASYSDI_CORE_NO_ITEMS');
+                endif;
+                ?>
+            </div>
         </div>
     </div>
-</div>
-<?php if ($show): ?>
-    <div class="pagination">
-        <p class="counter">
-            <?php echo $this->pagination->getPagesCounter(); ?>
-        </p>
-        <?php echo $this->pagination->getPagesLinks(); ?>
-    </div>
-<?php endif; ?>
+    <?php if ($show): ?>
+        <div class="pagination">
+            <p class="counter">
+                <?php echo $this->pagination->getPagesCounter(); ?>
+            </p>
+            <?php echo $this->pagination->getPagesLinks(); ?>
+        </div>
+    <?php endif; ?>
 </div>
 
 <!-- Publish Modal -->
@@ -353,5 +352,24 @@ endif;
             </div>
         </div>
     </form>
+</div>
+
+<!-- Delete modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel"><?php echo JText::_('COM_EASYSDI_CORE_DELETE_ITEM'); ?></h4>
+            </div>
+            <div id="deleteModalBody" class="modal-body">
+                <?php echo JText::_('COM_EAYSDI_CORE_DELETE_CONFIRM') ; ?>
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="btn_delete"><button type="button" class="btn btn-danger"><?php echo JText::_('COM_EASYSDI_CORE_DELETE_ITEM') ; ?></button></a>
+                <button type="button" class="btn btn-success" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+            </div>
+        </div>
+    </div>
 </div>
 

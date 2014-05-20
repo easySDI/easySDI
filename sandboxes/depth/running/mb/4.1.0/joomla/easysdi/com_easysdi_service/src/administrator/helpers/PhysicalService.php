@@ -53,6 +53,7 @@ abstract class PhysicalService {
             }
             curl_setopt($session, CURLOPT_HEADER, false);
             curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($session, CURLOPT_SSL_VERIFYPEER, false);
             $this->rawXml = curl_exec($session);
             $http_status = curl_getinfo($session, CURLINFO_HTTP_CODE);
             curl_close($session);
