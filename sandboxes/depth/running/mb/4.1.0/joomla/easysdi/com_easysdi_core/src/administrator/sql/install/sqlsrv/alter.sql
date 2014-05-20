@@ -732,6 +732,12 @@ REFERENCES [#__sdi_sys_accessscope] ([id]);
 
 ALTER TABLE [#__sdi_visualization] CHECK CONSTRAINT [#__sdi_visualization$#__sdi_visualization_fk1];
 
+ALTER TABLE [#__sdi_visualization]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_visualization$#__sdi_visualization_fk2] FOREIGN KEY([version_id])
+REFERENCES [#__sdi_version] ([id])
+ON DELETE CASCADE;
+
+ALTER TABLE [#__sdi_visualization] CHECK CONSTRAINT [#__sdi_visualization$#__sdi_visualization_fk2];
+
 ALTER TABLE [last_query_results]  WITH CHECK ADD  CONSTRAINT [last_query_results$FK_LAST_QUERY_QUERY] FOREIGN KEY([ID_QUERY])
 REFERENCES [queries] ([ID_QUERY])
 ON DELETE CASCADE;

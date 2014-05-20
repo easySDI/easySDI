@@ -862,7 +862,7 @@ ALTER TABLE ONLY jos_sdi_catalog_searchcriteria
 ALTER TABLE ONLY jos_sdi_catalog_searchcriteria
     ADD CONSTRAINT jos_sdi_catalog_searchcriteria_fk3 FOREIGN KEY (searchtab_id) REFERENCES jos_sdi_sys_searchtab(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY jos_sdi_catalog_searchsort
-    ADD CONSTRAINT jos_sdi_catalog_searchsort_fk1 FOREIGN KEY (catalog_id) REFERENCES jos_sdi_catalog(id) MATCH FULL;
+    ADD CONSTRAINT jos_sdi_catalog_searchsort_fk1 FOREIGN KEY (catalog_id) REFERENCES jos_sdi_catalog(id) MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE ONLY jos_sdi_catalog_searchsort
     ADD CONSTRAINT jos_sdi_catalog_searchsort_fk2 FOREIGN KEY (language_id) REFERENCES jos_sdi_language(id) MATCH FULL;
 ALTER TABLE ONLY jos_sdi_class
@@ -1183,6 +1183,8 @@ ALTER TABLE ONLY jos_sdi_virtualservice_servicecompliance
     ADD CONSTRAINT jos_sdi_virtualservice_servicecompliance_fk2 FOREIGN KEY (servicecompliance_id) REFERENCES jos_sdi_sys_servicecompliance(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY jos_sdi_visualization
     ADD CONSTRAINT jos_sdi_visualization_fk1 FOREIGN KEY (accessscope_id) REFERENCES jos_sdi_sys_accessscope(id) MATCH FULL;
+ALTER TABLE #__sdi_visualization  
+    ADD CONSTRAINT #__sdi_visualization_fk2 FOREIGN KEY ("version_id") REFERENCES #__sdi_version ("id") MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE ONLY jos_sdi_wmslayer_policy
     ADD CONSTRAINT jos_sdi_wmslayer_policy_fk1 FOREIGN KEY (physicalservicepolicy_id) REFERENCES jos_sdi_physicalservice_policy(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY jos_sdi_wmslayer_policy
