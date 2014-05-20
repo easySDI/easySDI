@@ -38,7 +38,11 @@ class Easysdi_serviceViewPhysicalServices extends JViewLegacy {
         }
 
         $db = JFactory::getDBO();
-        $query = "SELECT id as value, value as text FROM #__sdi_sys_serviceconnector WHERE state=1";
+        $query = $db->getQuery(true);
+        $query->select('id as value, value as text');
+        $query->from('#__sdi_sys_serviceconnector');
+        $query->where('state=1');
+        
         $db->setQuery($query);
         $this->connectorlist = $db->loadObjectList();
 

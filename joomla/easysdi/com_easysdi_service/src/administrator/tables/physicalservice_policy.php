@@ -21,21 +21,18 @@ class Easysdi_serviceTablephysicalservice_policy extends sdiTable {
 		$db = JFactory::getDbo();
 		
 		// save each Physical Service Policy
-		$db->setQuery('
-			SELECT ps.id AS physicalservice_id, psp.id AS physicalservicepolicy_id, p.id AS policy_id
-			FROM #__sdi_policy p
-			JOIN #__sdi_virtualservice vs
-			ON vs.id = p.virtualservice_id
-			JOIN #__sdi_virtual_physical vp
-			ON vs.id = vp.virtualservice_id
-			JOIN #__sdi_physicalservice ps
-			ON ps.id = vp.physicalservice_id
-			LEFT JOIN #__sdi_physicalservice_policy psp
-			ON p.id = psp.policy_id AND ps.id = psp.physicalservice_id
-			WHERE vs.id = ' . $virtualservice_id . '
-			AND psp.policy_id IS NULL
-			AND p.id LIKE \'' . $policy_id . '\';
-		');
+                $query = $db->getQuery(true);
+                $query->select('ps.id AS physicalservice_id, psp.id AS physicalservicepolicy_id, p.id AS policy_id');
+                $query->from('#__sdi_policy p');
+                $query->innerJoin('#__sdi_virtualservice vs ON vs.id = p.virtualservice_id');
+                $query->innerJoin('#__sdi_virtual_physical vp ON vs.id = vp.virtualservice_id');
+                $query->innerJoin('#__sdi_physicalservice ps ON ps.id = vp.physicalservice_id');
+                $query->leftJoin('#__sdi_physicalservice_policy psp ON p.id = psp.policy_id AND ps.id = psp.physicalservice_id');
+                $query->where('vs.id = ' . $virtualservice_id);
+                $query->where('psp.policy_id IS NULL');
+                $query->where('p.id LIKE ' . $query->quote($policy_id));
+                
+		$db->setQuery($query);
 		
 		try {
 			$db->execute();
@@ -50,11 +47,11 @@ class Easysdi_serviceTablephysicalservice_policy extends sdiTable {
 		foreach ($resultset as $result) {
 			$query = $db->getQuery(true);
 			if (empty($result->physicalservicepolicy_id)) {
-				$query->insert('#__sdi_physicalservice_policy')->columns('
-					physicalservice_id, policy_id
-				')->values('
-					\'' . $result->physicalservice_id . '\', \'' . $result->policy_id . '\'
-				');
+                                $columns = array('physicalservice_id', 'policy_id');
+                                $values = array($result->physicalservice_id, $result->policy_id);
+				$query->insert('#__sdi_physicalservice_policy')
+                                        ->columns($query->quoteName($columns))
+                                        ->values(implode(',', $values));
 				$db->setQuery($query);
 					
 				try {

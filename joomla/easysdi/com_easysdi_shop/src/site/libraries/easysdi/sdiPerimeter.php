@@ -35,7 +35,7 @@ class sdiPerimeter {
             $query = $db->getQuery(true)
                     ->select('*')
                     ->from('#__sdi_perimeter p')
-                    ->where('p.id = ' . $this->id)
+                    ->where('p.id = ' . (int)$this->id)
             ;
 
             $db->setQuery($query);
@@ -51,12 +51,12 @@ class sdiPerimeter {
                     $query = $db->getQuery(true)
                             ->select('p.*')
                             ->from('#__sdi_physicalservice p')
-                            ->where('p.id = ' . $this->wmsservice_id);
+                            ->where('p.id = ' . (int)$this->wmsservice_id);
                 else :
                     $query = $db->getQuery(true)
                             ->select('p.*')
                             ->from('#__sdi_virtualservice p')
-                            ->where('p.id = ' . $this->wmsservice_id);
+                            ->where('p.id = ' . (int)$this->wmsservice_id);
                 endif;
 
                 $db->setQuery($query);
@@ -69,12 +69,12 @@ class sdiPerimeter {
                     $query = $db->getQuery(true)
                             ->select('p.*')
                             ->from('#__sdi_physicalservice p')
-                            ->where('p.id = ' . $this->wfsservice_id);
+                            ->where('p.id = ' . (int)$this->wfsservice_id);
                 else :
                     $query = $db->getQuery(true)
                             ->select('p.*')
                             ->from('#__sdi_virtualservice p')
-                            ->where('p.id = ' . $this->wfsservice_id);
+                            ->where('p.id = ' . (int)$this->wfsservice_id);
                 endif;
 
                 $db->setQuery($query);

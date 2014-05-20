@@ -40,8 +40,8 @@ abstract class sdiMultilingual
             $query = $db->getQuery(true)
                     ->select('t.'.$field)
                     ->from('#__sdi_translation t')
-                    ->where('t.element_guid="'.$guid.'"')
-                    ->where('t.language_id = (SELECT l.id FROM #__sdi_language l WHERE l.code = "' . $lang->getTag() . '")');
+                    ->where('t.element_guid='. $db->quote($guid))
+                    ->where('t.language_id = (SELECT l.id FROM #__sdi_language l WHERE l.code = ' . $db->quote($lang->getTag()) . ')');
             
             $db->setQuery($query);
             return $db->loadResult();

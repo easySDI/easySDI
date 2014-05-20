@@ -17,13 +17,13 @@ class PlgEasysdi_admin_infoGetdiffudownloads extends JPlugin {
         
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query->select('COUNT(*)');
+        $query->select('COUNT(*) as nbre');
         $query->from('#__sdi_diffusion_download');
         $db->setQuery($query);
         $rows = $db->loadObjectList();
         //Convert the stdClass object in an array
         $values = get_object_vars($rows[0]);
-        $values = $values['COUNT(*)'];
+        $values = $values['nbre'];
         //Create the return array with all the infos
         return array(
             'info' => $values,

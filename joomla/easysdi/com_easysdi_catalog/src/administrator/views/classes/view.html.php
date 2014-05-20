@@ -118,6 +118,7 @@ class Easysdi_catalogViewClasses extends JViewLegacy {
             'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
             'a.state' => JText::_('JSTATUS'),
             'a.name' => JText::_('COM_EASYSDI_CATALOG_BOUNDARIESCATEGORY_NAME'),
+            'namespace' => JText::_('COM_EASYSDI_CATALOG_ATTRIBUTES_ISOCODE'),
             'a.id' => JText::_('JGRID_HEADING_ID'),
         );
     }

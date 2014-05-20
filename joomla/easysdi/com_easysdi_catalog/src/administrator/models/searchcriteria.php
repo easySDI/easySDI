@@ -155,10 +155,13 @@ class Easysdi_catalogModelsearchcriteria extends sdiModel {
                     if ($item->attributestereotype_id == 6) {
                         //Retreive attribute list values
                         $db = JFactory::getDbo();
-                        $db->setQuery('SELECT av.id , av.value
-                        FROM #__sdi_attributevalue av 
-                        WHERE av.attribute_id=' . $attribute->id . ' 
-                        ORDER BY av.value');
+                        $query = $db->getQuery(true);
+                        $query->select('av.id , av.value');
+                        $query->from('#__sdi_attributevalue av');
+                        $query->where('av.attribute_id=' . (int)$attribute->id);
+                        $query->order('av.value');
+                        
+                        $db->setQuery($query);
                         $item->attributevalues = $db->loadObjectList();
                         //Decode defaultvalue
                         $item->defaultvalues = json_decode($catalogsearchcriteria->defaultvalue, true);
@@ -185,7 +188,11 @@ class Easysdi_catalogModelsearchcriteria extends sdiModel {
             // Set ordering to the last item if not set
             if (@$table->ordering === '') {
                 $db = JFactory::getDbo();
-                $db->setQuery('SELECT MAX(ordering) FROM #__sdi_searchcriteria');
+                $query = $db->getQuery(true);
+                $query->select('MAX(ordering)');
+                $query->from('#__sdi_searchcriteria');
+                
+                $db->setQuery($query);
                 $max = $db->loadResult();
                 $table->ordering = $max + 1;
             }

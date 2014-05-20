@@ -542,7 +542,7 @@ class FormHtmlGenerator {
         $query->innerJoin('#__sdi_layer_layergroup llg ON llg.group_id = mlg.group_id');
         $query->innerJoin('#__sdi_maplayer l ON l.id = llg.layer_id');
         $query->innerJoin('#__sdi_sys_unit u ON u.id = m.unit_id');
-        $query->where('m.id=' . $map_id);
+        $query->where('m.id=' . (int)$map_id);
         $query->where('mlg.isbackground = 1');
 
         $this->db->setQuery($query);
@@ -553,12 +553,12 @@ class FormHtmlGenerator {
             case 'physical':
                 $query->select('resourceurl as serviceurl, serviceconnector_id');
                 $query->from('#__sdi_physicalservice');
-                $query->where('id = ' . $map_config->service_id);
+                $query->where('id = ' . (int)$map_config->service_id);
                 break;
             case 'virtual':
                 $query->select('url, reflectedurl as serviceurl, serviceconnector_id');
                 $query->from('#__sdi_virtualservice');
-                $query->where('id = ' . $map_config->service_id);
+                $query->where('id = ' . (int)$map_config->service_id);
                 break;
         }
 

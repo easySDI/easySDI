@@ -143,7 +143,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                     $query = $db->getQuery(true);
                     $query->select('user_id')
                             ->from('#__sdi_diffusion_notifieduser')
-                            ->where('diffusion_id = ' . $diffusion->id);
+                            ->where('diffusion_id = ' . (int)$diffusion->id);
                     $db->setQuery($query);
                     $notifiedusers = $db->loadColumn();
 
@@ -163,7 +163,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                     $query->select('rr.user_id')
                             ->from('#__sdi_user_role_resource rr')
                             ->where('rr.role_id = 7')
-                            ->where('rr.resource_id = (SELECT r.id FROM #__sdi_resource r INNER JOIN #__sdi_version v ON v.resource_id = r.id WHERE v.id = ' . $diffusiontable->version_id . ')');
+                            ->where('rr.resource_id = (SELECT r.id FROM #__sdi_resource r INNER JOIN #__sdi_version v ON v.resource_id = r.id WHERE v.id = ' . (int)$diffusiontable->version_id . ')');
                     $db->setQuery($query);
                     $responsible = $db->loadResult();
                     $user = sdiFactory::getSdiUser($responsible);
@@ -214,21 +214,21 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         //Select orderdiffusion_id
         $query->select('id')
                 ->from('#__sdi_order_diffusion')
-                ->where('order_id = ' . $order_id);
+                ->where('order_id = ' . (int)$order_id);
         $db->setQuery($query);
         $orderdiffusion = $db->loadColumn();
 
         foreach ($orderdiffusion as $id):
             $query = $db->getQuery(true);
             $query->delete('#__sdi_order_propertyvalue')
-                    ->where('orderdiffusion_id =' . $id);
+                    ->where('orderdiffusion_id =' . (int)$id);
             $db->setQuery($query);
             $db->execute();
         endforeach;
 
         $query = $db->getQuery(true);
         $query->delete('#__sdi_order_diffusion')
-                ->where('order_id = ' . $order_id);
+                ->where('order_id = ' . (int)$order_id);
 
         $db->setQuery($query);
         if (!$db->execute())
@@ -236,7 +236,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
 
         $query = $db->getQuery(true);
         $query->delete('#__sdi_order_perimeter')
-                ->where('order_id = ' . $order_id);
+                ->where('order_id = ' . (int)$order_id);
 
         $db->setQuery($query);
         if (!$db->execute())

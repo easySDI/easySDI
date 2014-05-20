@@ -110,10 +110,12 @@ JText::script('COM_EASYSDI_SERVICE_POLICY_CSW_BTN_DELETE_EXCLUDED_ATTRIBUTE');
 							<?php
 								$policy_id = (!empty($this->item->id))?$this->item->id:-1;
 								$db = JFactory::getDbo();
-								$db->setQuery('
-									SELECT path FROM #__sdi_excludedattribute
-									WHERE policy_id = ' . $policy_id . ';
-								');
+                                                                $query = $db->getQuery(true);
+                                                                $query->select('path');
+                                                                $query->from('#__sdi_excludedattribute');
+                                                                $query->where('policy_id = ' . (int)$policy_id);
+                                                                
+								$db->setQuery($query);
 								$db->execute();
 								$paths = $db->loadColumn();
 								$path_count = 0;

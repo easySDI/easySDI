@@ -51,7 +51,7 @@ class Cswrecords extends SearchForm {
                 ->from('#__sdi_catalog_searchsort css')
                 ->innerJoin('#__sdi_language l ON l.id = css.language_id ')
                 ->where('css.catalog_id = ' . (int) $this->item->id)
-                ->where('l.code = "' . $lang . '"');
+                ->where('l.code = ' . $this->db->quote($lang) );
         $this->db->setQuery($q);
         $ogcsearchsorting = $this->db->loadResult();
 
@@ -516,7 +516,7 @@ class Cswrecords extends SearchForm {
         $query->select('t.alias');
         $query->from('#__sdi_resourcetype t');
         $query->innerJoin('#__sdi_catalog_resourcetype crt ON crt.resourcetype_id = t.id');
-        $query->where('crt.catalog_id = ' . $this->item->id);
+        $query->where('crt.catalog_id = ' . (int)$this->item->id);
 
         $this->db->setQuery($query);
         $results = $this->db->loadObjectList();
@@ -543,7 +543,7 @@ class Cswrecords extends SearchForm {
         $query->from('#__sdi_user u');
         $query->innerJoin('#__sdi_user_role_organism uro on uro.user_id = u.id');
         $query->innerJoin('#__sdi_organism o on uro.organism_id = o.id');
-        $query->where('u.user_id = ' . $id);
+        $query->where('u.user_id = ' . (int)$id);
 
         $this->db->setQuery($query);
         $results = $this->db->loadObjectList();

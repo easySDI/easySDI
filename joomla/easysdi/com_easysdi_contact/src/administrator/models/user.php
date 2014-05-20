@@ -157,7 +157,11 @@ class Easysdi_contactModeluser extends JModelAdmin {
             // Set ordering to the last item if not set
             if (@$table->ordering === '') {
                 $db = JFactory::getDbo();
-                $db->setQuery('SELECT MAX(ordering) FROM #__sdi_user');
+                $query = $db->getQuery(true);
+                $query->select('MAX(ordering)');
+                $query->from('#__sdi_user');
+                
+                $db->setQuery($query);
                 $max = $db->loadResult();
                 $table->ordering = $max + 1;
             }
@@ -291,7 +295,7 @@ class Easysdi_contactModeluser extends JModelAdmin {
         //Delete all rights on resources
         $query = $db->getQuery(true)
                 ->delete('#__sdi_user_role_resource ')
-                ->where('user_id = ' . $this->getItem()->get('id'))
+                ->where('user_id = ' . (int)$this->getItem()->get('id'))
                 ->where('role_id =  ' . (int) $role_id);
          $db->setQuery($query);
          

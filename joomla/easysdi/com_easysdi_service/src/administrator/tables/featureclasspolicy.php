@@ -37,28 +37,32 @@ class Easysdi_serviceTablefeatureclasspolicy extends sdiTable {
 		
 		foreach ($modif as $id => $value) {
 			$db = JFactory::getDbo();
-			$db->setQuery('
-				SELECT COUNT(*) FROM #__sdi_featureclasspolicy WHERE featureclass_id = ' . $id . '
-				AND policy_id = ' . $src['id'] . ';
-			');
+                        $query = $db->getQuery(true);
+                        $query->select('COUNT(*)');
+                        $query->from('#__sdi_featureclasspolicy');
+                        $query->where('featureclass_id = ' . (int)$id);
+                        $query->where('policy_id = ' . (int)$src['id']);
+                        
+			$db->setQuery($query);
 			$num = $db->loadResult();
 			
 			if (0 < $num) {
-				$query = '
-					UPDATE #__sdi_featureclasspolicy
-					SET attributeRestriction = "' . $value['attributerestriction'] . '",
-					boundingBoxFilter = "' . $value['boundingboxfilter'] . '",
-					geographicFilter = "' . $value['geographicfilter'] . '"
-					WHERE featureclass_id = ' . $id . '
-					AND policy_id = ' . $src['id'] . ';
-				';
+                                $query = $db->getQuery(true);
+                                $query->update('#__sdi_featureclasspolicy');
+                                $query->set('attributeRestriction = ' . $query->quote($value['attributerestriction']));
+                                $query->set('boundingBoxFilter = ' . $query->quote($value['boundingboxfilter']));
+                                $query->set('geographicFilter = "' . $query->quote($value['geographicfilter']));
+                                $query->where('featureclass_id = ' . (int)$id);
+                                $query->where('policy_id = ' . (int)$src['id']);
 			}
 			else {
-				$query = '
-					INSERT #__sdi_featureclasspolicy
-					(attributeRestriction, boundingBoxFilter, geographicFilter, featureclass_id, policy_id)
-					VALUES ("' . $value['attributerestriction'] . '","' . $value['boundingboxfilter'] . '","' . $value['geographicfilter'] . '",' . $id . ',' . $src['id'] . ');
-				';
+                                $query = $db->getQuery(true);
+                                $columns = array('attributeRestriction', 'boundingBoxFilter', 'geographicFilter', 'featureclass_id', 'policy_id');
+                                $values = array($query->quote($value['attributerestriction']), $query->quote($value['boundingboxfilter']), $query->quote($value['geographicfilter']), $id, $src['id']);
+                                $query->insert('#__sdi_featureclasspolicy');
+                                $query->columns($query->quoteName($columns));
+                                $query->values(implode(',', $values));
+                           
 			}
 			var_dump($query);
 			$db->setQuery($query);
@@ -76,12 +80,14 @@ class Easysdi_serviceTablefeatureclasspolicy extends sdiTable {
 	 */
 	public function getByIDs ($featureclass_id, $policy_id) {
 		$db = JFactory::getDbo();
-		$db->setQuery('
-			SELECT *
-			FROM #__sdi_featureclasspolicy
-			WHERE featureclass_id = ' . $featureclass_id . '
-			AND policy_id = ' . $policy_id . ';
-		');
+                
+                $query = $db->getQuery(true);
+                $query->select('*');
+                $query->from('#__sdi_featureclasspolicy');
+                $query->where('featureclass_id = ' . (int)$featureclass_id);
+                $query->where('policy_id = ' . (int)$policy_id);
+                
+		$db->setQuery($query);
 		
 		try {
 			$resultSet = $db->loadObject();

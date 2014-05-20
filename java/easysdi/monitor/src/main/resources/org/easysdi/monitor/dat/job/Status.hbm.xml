@@ -4,7 +4,7 @@
 	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="org.easysdi.monitor.biz.job">
 	<class name="Status" table="statuses" lazy="false">
-		<id name="id" type="long" column="ID_STATUS">
+		<id name="id" type="long" column="`ID_STATUS`">
 			<generator class="org.hibernate.id.enhanced.TableGenerator">
 				<param name="table_name">last_ids</param>
 				<param name="value_column_name">LAST_ID</param>
@@ -14,6 +14,6 @@
 				<param name="increment_size">1</param>
 			</generator>
 		</id>
-		<property name="value" type="string" length="45" column="NAME" lazy="false"></property>
+		<property name="value" type="string" length="45" column="`NAME`" lazy="false"></property>
 	</class>
 </hibernate-mapping>

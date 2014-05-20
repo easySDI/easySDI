@@ -1,19 +1,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.easysdi</groupId>
     <artifactId>easysdi</artifactId>
-    <version>4.0.3</version>
+    <version>4.1.0</version>
     <packaging>pom</packaging>
     <name>easysdi</name>
-    
+ 
     <properties>
-        <spring.version>3.0.2.RELEASE</spring.version>
-        <hibernate.version>3.6.10.Final</hibernate.version>
+        <spring.version>3.2.3.RELEASE</spring.version>
+        <hibernate.version>4.2.8.Final</hibernate.version>
         <mysql.connector.version>5.1.8</mysql.connector.version>
     </properties>
- 
+    
     <scm>
         <connection>scm:svn:http://www.easysdi.org/easysdi/trunk/java/easysdi</connection>
     </scm>
@@ -72,6 +71,17 @@
                 <artifactId>spring-orm</artifactId>
                 <version>${spring.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context-support</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            
             
             <!-- Hibernate -->
             <dependency>
@@ -84,6 +94,17 @@
                 <artifactId>hibernate-entitymanager</artifactId>
                 <version>${hibernate.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-ehcache</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-annotations</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+            
             
             <!-- MySql -->
             <dependency>
@@ -91,6 +112,21 @@
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql.connector.version}</version>
             </dependency>
+            
+            <!-- Sql server -->
+            <dependency>
+                <groupId>com.microsoft.sqlserver</groupId>
+                <artifactId>sqljdbc4</artifactId>
+                <version>3.0</version>
+            </dependency>
+            
+            <!-- Postgresql -->
+            <dependency>
+                <groupId>postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>9.1-901-1.jdbc4</version>
+            </dependency>
+            
         </dependencies>
     </dependencyManagement>
  

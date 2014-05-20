@@ -44,7 +44,7 @@ class sdiBasket {
                     ->select('o.id as id, o.name as name, o.thirdparty_id as thirdparty, org.name as thirdorganism, o.buffer as buffer , o.surface, o.created, o.created_by')
                     ->from('#__sdi_order o')
                     ->leftJoin('#__sdi_organism org ON org.id = o.thirdparty_id')
-                    ->where('o.id = ' . $orderId);
+                    ->where('o.id = ' . (int)$orderId);
             $db->setQuery($query);
             $order = $db->loadObject();
             $params = get_object_vars($order);
@@ -58,7 +58,7 @@ class sdiBasket {
                     ->from('#__sdi_diffusion d')
                     ->innerJoin('#__sdi_order_diffusion od ON od.diffusion_id = d.id')
                     ->innerJoin('#__sdi_order o ON o.id = od.order_id')
-                    ->where('o.id = ' . $orderId);
+                    ->where('o.id = ' . (int)$orderId);
             $db->setQuery($query);
             $extractions = $db->loadObjectList();
             foreach ($extractions as $extraction) :
@@ -69,7 +69,7 @@ class sdiBasket {
                 $query = $db->getQuery(true)
                         ->select('opv.property_id')
                         ->from('#__sdi_order_propertyvalue opv')
-                        ->where('opv.orderdiffusion_id = ' . $extraction->orderdiffusion_id)
+                        ->where('opv.orderdiffusion_id = ' . (int)$extraction->orderdiffusion_id)
                         ->group('opv.property_id');
                 $db->setQuery($query);
                 $properties = $db->loadObjectList();
@@ -77,8 +77,8 @@ class sdiBasket {
                     $query = $db->getQuery(true)
                             ->select('opv.propertyvalue_id, opv.propertyvalue')
                             ->from('#__sdi_order_propertyvalue opv')
-                            ->where('opv.orderdiffusion_id = ' . $extraction->orderdiffusion_id)
-                            ->where('property_id = ' . $property->property_id);
+                            ->where('opv.orderdiffusion_id = ' . (int)$extraction->orderdiffusion_id)
+                            ->where('property_id = ' . (int)$property->property_id);
                     $db->setQuery($query);
                     $properyvalues = $db->loadObjectList();
                     $propertyobject = new stdClass();
@@ -111,7 +111,7 @@ class sdiBasket {
                     ->select('op.*, p.name as perimeter_name')
                     ->from('#__sdi_order_perimeter op')
                     ->innerJoin('#__sdi_perimeter p ON p.id = op.perimeter_id')
-                    ->where('op.order_id = ' . $orderId);
+                    ->where('op.order_id = ' . (int)$orderId);
             $db->setQuery($query);
             $perimeters = $db->loadObjectList();
             $extent = new stdClass();

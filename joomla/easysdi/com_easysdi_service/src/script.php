@@ -21,16 +21,17 @@ class com_easysdi_serviceInstallerScript
 	function preflight( $type, $parent ) {
 		//Check if com_easysdi_core is installed
 		$db = JFactory::getDbo();
-		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = "com_easysdi_core"');
+                $query = $db->getQuery(true);
+                $query->select('COUNT(*)');
+                $query->from('#__extensions');
+                $query->where('name = '.$db->quote('com_easysdi_core'));
+		$db->setQuery($query);
 		$install = $db->loadResult();
 		
 		if($install == 0){
 			JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_INSTALL_SCRIPT_CORE_ERROR'));
 			return false;
-		}
-		
-		$db->setQuery('SELECT s.version_id FROM #__extensions e INNER JOIN #__schemas s ON e.extension_id = s.extension_id  WHERE e.name = "com_easysdi_service"');
-		$this->previousrelease = $db->loadResult();
+                }
 		
 		// Installing component manifest file version
 		$this->release = $parent->get( "manifest" )->version;
@@ -73,32 +74,24 @@ class com_easysdi_serviceInstallerScript
 		JTable::addIncludePath(JPATH_ADMINISTRATOR."/../libraries/joomla/database/table");
 		JTable::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_easysdi_service/tables');
 		
+                $db = JFactory::getDbo();
+                
 		if($type == 'install'){
-			//Create a default EasySDI Service Category
-			$row 					= JTable::getInstance('category');
-			$row->parent_id 		= 1;
-			$row->level				= 1;
-			$row->path 				= 'uncategorised';
-			$row->extension 		= 'com_easysdi_service';
-			$row->title 			= 'Uncategorised';
-			$row->alias 			= 'uncategorised';
-			$row->published 		= 1;
-			$row->access 			= 1;
-			$row->params  			= '{"category_layout":"","image":""}';
-			$row->metadata 			= '{"author":"","robots":""}';
-			if(!$row->store(true))
-			{
-				JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_POSTFLIGHT_SCRIPT_CATEGORY_ERROR'));
-				return false;
-			}
-			$row->moveByReference(0, 'last-child', $row->id);
-			
-			
-		}
-		if(($type == 'update' && strcmp ($this->previousrelease,'3.1.0') < 0) || $type == 'install')
-		{
+                        require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/libraries/easysdi/database/sditable.php';
+                    
+			$query = $db->getQuery(true);
+                        $columns = array('parent_id', 'level','path','extension','title','alias','published','access','params','metadata','metadesc','metakey','description','language');
+                        $values = array(1,1,$query->quote('uncategorised'),$query->quote('com_easysdi_service'),$query->quote('Uncategorised'),$query->quote('uncategorised'),1,1,$query->quote('{"category_layout":"","image":""}'),$query->quote('{"author":"","robots":""}'),$query->quote('uncategorised'),$query->quote(' '),$query->quote(' '),$query->quote(' '));
+                        $query->insert('#__categories');
+                        $query->columns($query->quoteName($columns));
+                        $query->values(implode(',', $values));
+                        
+                        $db->setQuery($query);
+                        $db->execute();
+                        
+		
 			//Create a Bing service
-			$row 						= JTable::getInstance('physicalservice','easysdi_serviceTable');
+			$row 						= sdiTable::getInstance('physicalservice','easysdi_serviceTable');
 			$row->alias					= 'Bing';
 			$row->ordering				= 1;
 			$row->state					= 1;
@@ -114,7 +107,7 @@ class com_easysdi_serviceInstallerScript
 			}
 			
 			//Create Bing layers
-			$layer 						= JTable::getInstance('layer','easysdi_serviceTable');
+			$layer 						= sdiTable::getInstance('layer','easysdi_serviceTable');
 			$layer->state				= 1;
 			$layer->name				= 'Road';
 			$layer->physicalservice_id	= $row->id;
@@ -123,7 +116,7 @@ class com_easysdi_serviceInstallerScript
 				JError::raiseError(42, JText::_('COM_EASYSDI_MAP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR'). $layer->getError());
 				return false;
 			}
-			$layer 						= JTable::getInstance('layer','easysdi_serviceTable');
+			$layer 						= sdiTable::getInstance('layer','easysdi_serviceTable');
 			$layer->state				= 1;
 			$layer->name				= 'Aerial';
 			$layer->physicalservice_id	= $row->id;
@@ -132,7 +125,7 @@ class com_easysdi_serviceInstallerScript
 				JError::raiseError(42, JText::_('COM_EASYSDI_MAP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR'). $layer->getError());
 				return false;
 			}
-			$layer 						= JTable::getInstance('layer','easysdi_serviceTable');
+			$layer 						= sdiTable::getInstance('layer','easysdi_serviceTable');
 			$layer->state				= 1;
 			$layer->name				= 'AerialWithLabels';
 			$layer->physicalservice_id	= $row->id;
@@ -143,7 +136,7 @@ class com_easysdi_serviceInstallerScript
 			}
 			
 			//Create a Google service
-			$row 						= JTable::getInstance('physicalservice','easysdi_serviceTable');
+			$row 						= sdiTable::getInstance('physicalservice','easysdi_serviceTable');
 			$row->alias					= 'Google';
 			$row->state					= 1;
 			$row->ordering				= 2;
@@ -158,7 +151,7 @@ class com_easysdi_serviceInstallerScript
 				return false;
 			}
 			//Create Google layers
-			$layer 						= JTable::getInstance('layer','easysdi_serviceTable');
+			$layer 						= sdiTable::getInstance('layer','easysdi_serviceTable');
 			$layer->state				= 1;
 			$layer->name				= 'ROADMAP';
 			$layer->physicalservice_id	= $row->id;
@@ -167,7 +160,7 @@ class com_easysdi_serviceInstallerScript
 				JError::raiseError(42, JText::_('COM_EASYSDI_MAP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR'). $layer->getError());
 				return false;
 			}
-			$layer 						= JTable::getInstance('layer','easysdi_serviceTable');
+			$layer 						= sdiTable::getInstance('layer','easysdi_serviceTable');
 			$layer->state				= 1;
 			$layer->name				= 'SATELLITE';
 			$layer->physicalservice_id	= $row->id;
@@ -176,7 +169,7 @@ class com_easysdi_serviceInstallerScript
 				JError::raiseError(42, JText::_('COM_EASYSDI_MAP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR'). $layer->getError());
 				return false;
 			}
-			$layer 						= JTable::getInstance('layer','easysdi_serviceTable');
+			$layer 						= sdiTable::getInstance('layer','easysdi_serviceTable');
 			$layer->state				= 1;
 			$layer->name				= 'HYBRID';
 			$layer->physicalservice_id	= $row->id;
@@ -185,7 +178,7 @@ class com_easysdi_serviceInstallerScript
 				JError::raiseError(42, JText::_('COM_EASYSDI_MAP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR'). $layer->getError());
 				return false;
 			}
-			$layer 						= JTable::getInstance('layer','easysdi_serviceTable');
+			$layer 						= sdiTable::getInstance('layer','easysdi_serviceTable');
 			$layer->state				= 1;
 			$layer->name				= 'TERRAIN';
 			$layer->physicalservice_id	= $row->id;
@@ -196,7 +189,7 @@ class com_easysdi_serviceInstallerScript
 			}
 			
 			//Create an OSM service
-			$row 						= JTable::getInstance('physicalservice','easysdi_serviceTable');
+			$row 						= sdiTable::getInstance('physicalservice','easysdi_serviceTable');
 			$row->alias					= 'OSM';
 			$row->state					= 1;
 			$row->ordering				= 3;
@@ -211,7 +204,7 @@ class com_easysdi_serviceInstallerScript
 				return false;
 			}
 			//Create OSM layers
-			$layer 						= JTable::getInstance('layer','easysdi_serviceTable');
+			$layer 						= sdiTable::getInstance('layer','easysdi_serviceTable');
 			$layer->state				= 1;
 			$layer->name				= 'mapnik';
 			$layer->physicalservice_id	= $row->id;
@@ -220,7 +213,7 @@ class com_easysdi_serviceInstallerScript
 				JError::raiseError(42, JText::_('COM_EASYSDI_MAP_POSTFLIGHT_SCRIPT_BACKGROUND_ERROR'). $layer->getError());
 				return false;
 			}
-			$layer 						= JTable::getInstance('layer','easysdi_serviceTable');
+			$layer 						= sdiTable::getInstance('layer','easysdi_serviceTable');
 			$layer->state				= 1;
 			$layer->name				= 'osmarender';
 			$layer->physicalservice_id	= $row->id;
@@ -231,8 +224,11 @@ class com_easysdi_serviceInstallerScript
 			}
 		}
 		
-		$db = JFactory::getDbo();
-		$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_service'");
+		
+                $query = $db->getQuery(true);
+                $query->delete('#__menu');
+                $query->where('title = '.$db->quote('com_easysdi_service'));
+		$db->setQuery($query);
 		$db->query();
 	}
 
@@ -249,7 +245,11 @@ class com_easysdi_serviceInstallerScript
 	 */
 	function getParam( $name ) {
 		$db = JFactory::getDbo();
-		$db->setQuery('SELECT manifest_cache FROM #__extensions WHERE name = "com_easysdi_service"');
+                $query = $db->getQuery(true);
+                $query->select('manifest_cache');
+                $query->from('#__extensions');
+                $query->where('name = '.$db->quote('com_easysdi_service'));
+		$db->setQuery($query);
 		$manifest = json_decode( $db->loadResult(), true );
 		return $manifest[ $name ];
 	}
@@ -261,7 +261,11 @@ class com_easysdi_serviceInstallerScript
 		if ( count($param_array) > 0 ) {
 			// read the existing component value(s)
 			$db = JFactory::getDbo();
-			$db->setQuery('SELECT params FROM #__extensions WHERE name = "com_easysdi_service"');
+                        $query = $db->getQuery(true);
+                        $query->select('params');
+                        $query->from('#__extensions');
+                        $query->where('name = '.$db->quote('com_easysdi_service'));
+			$db->setQuery($query);
 			$params = json_decode( $db->loadResult(), true );
 			// add the new variable(s) to the existing one(s)
 			foreach ( $param_array as $name => $value ) {
@@ -269,10 +273,12 @@ class com_easysdi_serviceInstallerScript
 			}
 			// store the combined new and existing values back as a JSON string
 			$paramsString = json_encode( $params );
-			$db->setQuery('UPDATE #__extensions SET params = ' .
-				$db->quote( $paramsString ) .
-				' WHERE name = "com_easysdi_service"' );
-				$db->query();
+                        $query = $db->getQuery(true);
+                        $query->update('#__extensions');
+                        $query->set('params = ' .$db->quote( $paramsString ));
+                        $query->where('name = '.$db->quote('com_easysdi_service'));
+			$db->setQuery($query);
+			$db->query();
 		}
 	}
 }

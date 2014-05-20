@@ -119,9 +119,7 @@ if (!empty($this->extra_sidebar)) {
                         <th class='left'>
                             <?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CATALOG_NAMESPACES_URI', 'a.uri', $listDirn, $listOrder); ?>
                         </th>
-                        <th class='left'>
-                            <?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CATALOG_NAMESPACES_SYSTEM', 'a.system', $listDirn, $listOrder); ?>
-                        </th>
+                        
 
 
 
@@ -203,9 +201,7 @@ if (!empty($this->extra_sidebar)) {
                             <td>
                                 <?php echo $item->uri; ?>
                             </td>
-                            <td class="center">
-                                <?php echo JHtml::_('grid.boolean', $i, $item->system); ?>
-                            </td>
+                            
                             <?php if (isset($this->items[0]->id)): ?>
                                 <td class="center hidden-phone">
                                     <?php echo (int) $item->id; ?>

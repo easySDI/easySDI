@@ -104,53 +104,52 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
     endif;
     ?>
 
-    <div class="items">
-        <div class="well">
-            <div class="row-fluid">
-                <?php $show = false; ?>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NAME'); ?></th>
-                            <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESOURCETYPE'); ?></th>
-                            <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_STATE'); ?></th>
-                            <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ACTIONS'); ?></th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tfoot>
-                    </tfoot>
-                    <tbody>
+<div class="items">
+    <div class="well">
+        <div class="row-fluid">
+            <?php $show = false; ?>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NAME'); ?></th>
+                        <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESOURCETYPE'); ?></th>
+                        <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_STATE'); ?></th>
+                        <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ACTIONS'); ?></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tfoot>
+                </tfoot>
+                <tbody>
+                    
+                    <?php 
+                    foreach ($this->items as $item) : ?>
+                        <?php
+                        //Load versions
+                        $db = JFactory::getDbo();
+                        $filter_status = $this->state->get('filter.status');
+                        if (!empty($filter_status)):
+                            $query = $db->getQuery(true)
+                                    ->select('m.id, v.name, s.value, s.id AS state, v.id as version')
+                                    ->from('#__sdi_version v')
+                                    ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
+                                    ->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id')
+                                    ->where('v.resource_id = ' . (int)$item->id)
+                                    ->where('m.metadatastate_id = ' . (int)$filter_status)
+                                    ->order('v.name DESC');
+                        else :
+                            $query = $db->getQuery(true)
+                                    ->select('m.id, v.name, s.value, s.id AS state, v.id as version')
+                                    ->from('#__sdi_version v')
+                                    ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
+                                    ->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id')
+                                    ->where('v.resource_id = ' . (int)$item->id)
+                                    ->order('v.name DESC');
+                        endif;
+                        $db->setQuery($query);
+                        $metadata = $db->loadObjectList();
 
-                        <?php foreach ($this->items as $item) : ?>
-                            <?php
-                            //Load versions
-                            $db = JFactory::getDbo();
-                            $filter_status = $this->state->get('filter.status');
-                            if (!empty($filter_status)):
-                                $query = $db->getQuery(true)
-                                        ->select('m.id, v.name, s.value, s.id AS state, v.id as version')
-                                        ->from('#__sdi_version v')
-                                        ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                                        ->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id')
-                                        ->where('v.resource_id = ' . $item->id)
-                                        ->where('m.metadatastate_id = ' . $filter_status)
-                                        ->order('v.name DESC');
-                            else :
-                                $query = $db->getQuery(true)
-                                        ->select('m.id, v.name, s.value, s.id AS state, v.id as version')
-                                        ->from('#__sdi_version v')
-                                        ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                                        ->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id')
-                                        ->where('v.resource_id = ' . $item->id)
-                                        ->order('v.name DESC');
-                            endif;
-                            $db->setQuery($query);
-                            $metadata = $db->loadObjectList();
 
-                            $s = $query->__toString();
-
-                            $show = true;
                             ?>
                             <tr>
                                 <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>

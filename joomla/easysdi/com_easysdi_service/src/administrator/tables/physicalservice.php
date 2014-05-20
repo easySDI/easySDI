@@ -98,7 +98,7 @@ class Easysdi_serviceTablephysicalservice extends sdiTable
 			// Initialise the query.
 			$query = $this->_db->getQuery(true);
 			$query->select('ps.id');
-			$query->from($this->_tbl.'  AS ps ');
+			$query->from($query->quoteName($this->_tbl).'  AS ps ');
 			$query->join('LEFT', '#__sdi_map_physicalservice AS cps ON cps.physicalservice_id=ps.id');
 			$query->where('cps.map_id = ' . (int) $map_id);
 			$query->where('ps.state = 1' );
@@ -215,13 +215,13 @@ class Easysdi_serviceTablephysicalservice extends sdiTable
 	 */
 	public function getListByConnectorType ($connectorType) {
 		$db = JFactory::getDbo();
-		$db->setQuery('
-			SELECT ps.*
-			FROM #__sdi_physicalservice ps
-			JOIN #__sdi_sys_serviceconnector sc
-			ON sc.id = ps.serviceconnector_id
-			WHERE sc.value = "' . $connectorType . '";
-		');
+                $query = $db->getQuery(true);
+                $query->select('ps.*');
+                $query->from('#__sdi_physicalservice ps');
+                $query->innerJoin('#__sdi_sys_serviceconnector sc ON sc.id = ps.serviceconnector_id');
+                $query->where('sc.value = ' . $query->quote($connectorType));
+                
+		$db->setQuery($query);
 		
 		try {
 			$resultSet = $db->loadObjectList();
@@ -252,13 +252,13 @@ class Easysdi_serviceTablephysicalservice extends sdiTable
 	 */
 	public function getListByVirtualService ($vs_id) {
 		$db = JFactory::getDbo();
-		$db->setQuery('
-				SELECT ps.*
-				FROM #__sdi_physicalservice ps
-				JOIN #__sdi_virtual_physical vp
-				ON vp.physicalservice_id = ps.id
-				WHERE vp.virtualservice_id = "' . $vs_id . '";
-				');
+                $query = $db->getQuery(true);
+                $query->select('ps.*');
+                $query->from('#__sdi_physicalservice ps');
+                $query->innerJoin('#__sdi_virtual_physical vp ON vp.physicalservice_id = ps.id');
+                $query->where('vp.virtualservice_id = ' . $query->quote($vs_id));
+                
+		$db->setQuery($query);
 	
 		try {
 			$resultSet = $db->loadObjectList();

@@ -85,6 +85,7 @@
 		<property name="maxConnectionAge"><value>${hibernate.c3p0.maxConnectionAge}</value></property> 
 		<property name="preferredTestQuery"><value>${hibernate.c3p0.preferredTestQuery}</value></property> 
 		<property name="testConnectionOnCheckin"><value>${hibernate.c3p0.testConnectionOnCheckin}</value></property>
+                <property name="numHelperThreads"><value>${hibernate.c3p0.numHelperThreads}</value></property>
 	</bean>
 
 	<bean id="hibernateSessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
@@ -124,7 +125,7 @@
 		</property>
 		<property name="hibernateProperties">
 			<props>
-				<prop key="hibernate.default_catalog">${hibernate.defaultCatalog}</prop>
+				
 				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
 				<prop key="cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
 				<prop key="hibernate.c3p0.acquire_increment">${hibernate.c3p0.acquireIncrement}</prop> 

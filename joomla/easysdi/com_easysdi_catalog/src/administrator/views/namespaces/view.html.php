@@ -120,7 +120,6 @@ class Easysdi_catalogViewNamespaces extends JViewLegacy {
             'a.name' => JText::_('COM_EASYSDI_CATALOG_NAMESPACES_NAME'),
             'a.prefix' => JText::_('COM_EASYSDI_CATALOG_NAMESPACES_PREFIX'),
             'a.uri' => JText::_('COM_EASYSDI_CATALOG_NAMESPACES_URI'),
-            'a.system' => JText::_('COM_EASYSDI_CATALOG_NAMESPACES_SYSTEM'),
             'a.id' => JText::_('JGRID_HEADING_ID'),
         );
     }
