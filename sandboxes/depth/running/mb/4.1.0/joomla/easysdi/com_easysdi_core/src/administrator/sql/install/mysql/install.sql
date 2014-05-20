@@ -1995,6 +1995,11 @@ CONSTRAINT `#__sdi_visualization_fk1`
     REFERENCES `#__sdi_sys_accessscope` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
+CONSTRAINT `#__sdi_visualization_fk2`
+    FOREIGN KEY (`version_id`)
+    REFERENCES `#__sdi_version` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
 UNIQUE (`alias`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
