@@ -1,0 +1,27 @@
+Gemetclient
+===========
+Gemetclient is JavaScript library for GEMET thesaurus.
+
+INSTALATION
+-----------
+You can copy the content of src directory somewhere to your web directory
+and you can either include original JavaScript files to your HTML page or
+you can build compressed version and include only one file. 
+
+BUILDING
+--------
+If you want to have the single file only, you have to compress the
+JavaScripts.  Just run
+
+    $ python tools/buildGemetClient.py
+
+And the resulting file will appear in the build directory. 
+
+POSTINSTALLATION
+----------------
+Do not to forget to copy img directory along with proxy.php file to proper
+place of the document root.
+
+For being able to use the client, you need to copy src/proxy.php file
+somewhere in your DOCS directory and  modify the thesaurus.js file to set
+the proper path to the proxy.
