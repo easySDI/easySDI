@@ -818,7 +818,7 @@ class FormHtmlGenerator {
 
         $script->nodeValue = $script_code;
 
-        $aModal = $this->formHtml->createElement('a', 'Thesaurus Gemet');
+        $aModal = $this->formHtml->createElement('a', JText::_('COM_EASYSDI_CATALOGE_THESAURUS_GEMET'));
         $aModal->setAttribute('data-toggle', 'modal');
         $aModal->setAttribute('href', '#myModal');
         $aModal->setAttribute('class', 'btn btn-primary btn-lg');
@@ -846,7 +846,7 @@ class FormHtmlGenerator {
         $btnClose->setAttribute('data-dismiss', 'modal');
         $btnClose->setAttribute('aria-hidden', 'true');
 
-        $h4 = $this->formHtml->createElement('h4', 'Thesaurus Gemet');
+        $h4 = $this->formHtml->createElement('h4', JText::_('COM_EASYSDI_CATALOGE_THESAURUS_GEMET'));
         $h4->setAttribute('class', 'modal-title');
 
         $divBody = $this->formHtml->createElement('div');
