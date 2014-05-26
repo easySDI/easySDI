@@ -1,6 +1,6 @@
 var fromreload = false;
 
-function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wmsurl, wmslayername, wfsurl, featuretypename, namespace, featuretypefieldgeometry, featuretypefieldid, featuretypefieldname) {
+function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wmsurl, wmslayername, wfsurl, featuretypename, namespace, featuretypefieldgeometry, featuretypefieldid, featuretypefieldname, prefix) {
     resetAll();
 
     fieldid = featuretypefieldid;
@@ -21,6 +21,7 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
                 url: wfsurl,
                 srsName: app.mapPanel.map.projection,
                 featureType: featuretypename,
+                featurePrefix: prefix,
                 featureNS: namespace,
                 geometryName: featuretypefieldgeometry
             }),
