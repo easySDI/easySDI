@@ -51,7 +51,16 @@
                filter="safehtml"
                label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_PERIMETER"
                description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_PERIMETER"  /> 
-       
+
+        <field name="categories" 
+               type="sql" 
+               query="SELECT id, name as value FROM #__sdi_category WHERE state=1" 
+               key_field="id"
+               value_field="value"
+               multiple="true"
+               class="multiselect input-xxlarge"
+               label="COM_EASYSDI_CONTACT_FORM_LBL_ORGANISM_CATEGORIES"
+               description="COM_EASYSDI_CONTACT_FORM_DESC_ORGANISM_CATEGORIES"  /> 
         <field name="id" 
                type="text" 
                default="0" 

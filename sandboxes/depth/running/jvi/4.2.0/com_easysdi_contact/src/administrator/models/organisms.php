@@ -72,6 +72,18 @@ class Easysdi_contactModelorganisms extends JModelList {
 
         // List state information.
         parent::populateState('a.id', 'asc');
+        
+        
+        /**
+         * [jvi]:
+         * Following code have to be after the parent::populateState to don't be overriden by it !
+         * As filter_category filter is a multiselect fields, if filter_category isnt sent, we 
+         * assume it's empty 
+         */
+        $category = !key_exists('filter_category', $_REQUEST)
+                ? array()
+                : $app->getUserStateFromRequest($this->context . '.filter.category', 'filter_category', array(), 'array'); 
+        $this->setState('filter.category', $category);
     }
 
     /**
@@ -108,7 +120,7 @@ class Easysdi_contactModelorganisms extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.id, a.acronym, a.checked_out, a.checked_out_time, a.ordering,a.state,a.name,a.access'
+                        'list.select', 'DISTINCT a.id, a.acronym, a.checked_out, a.checked_out_time, a.ordering,a.state,a.name,a.access'
                 )
         );
         $query->from('#__sdi_organism AS a');
@@ -154,6 +166,13 @@ class Easysdi_contactModelorganisms extends JModelList {
             }
         }
 
+
+        // Filter by organism's category
+        $category = $this->getState('filter.category');
+        if (count($category)) {
+            $query->join('left', '#__sdi_organism_category AS b ON b.organism_id=a.id')
+                    ->where('b.category_id IN ('. implode(',', $category).')');
+        }
 
 
 

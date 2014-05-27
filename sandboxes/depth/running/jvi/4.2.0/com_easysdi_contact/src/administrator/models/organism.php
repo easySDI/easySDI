@@ -84,7 +84,13 @@ class Easysdi_contactModelorganism extends JModelAdmin {
      */
     public function getItem($pk = null) {
         if ($item = parent::getItem($pk)) {
-            
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true)
+                        ->select($db->quoteName('oc.category_id'))
+                        ->from($db->quoteName('#__sdi_organism_category').' as oc')
+                        ->where('oc.organism_id='.(int)$item->id);
+            $db->setQuery($query);
+            $item->categories = $db->loadColumn();
         }
 
         return $item;
@@ -150,6 +156,25 @@ class Easysdi_contactModelorganism extends JModelAdmin {
         }
 
         if (parent::save($data)) {
+            
+            //Manage organism's categories
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true)
+                        ->delete($db->quoteName('#__sdi_organism_category'))
+                        ->where('organism_id = '. $data['id']);
+            $db->setQuery($query);
+            $delete = $db->execute();
+                
+            if($data['categories'] && is_array($data['categories'])){
+                $query = $db->getQuery(true)
+                            ->insert($db->quoteName('#__sdi_organism_category'), 'id')
+                            ->columns($db->quoteName(array('organism_id', 'category_id')));
+                foreach($data['categories'] as $category)
+                    $query->values(implode (',', array($data['id'], $category)));
+                $db->setQuery($query);
+                $insert = $db->execute();
+            }
+            
             //Instantiate an address JTable
             $addresstable = & JTable::getInstance('address', 'Easysdi_contactTable');
 
