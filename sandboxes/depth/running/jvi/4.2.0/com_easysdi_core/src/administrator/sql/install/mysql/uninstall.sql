@@ -57,6 +57,8 @@ DROP TABLE IF EXISTS `#__sdi_user`;
 DROP TABLE IF EXISTS `#__sdi_address`;
 DROP TABLE IF EXISTS `#__sdi_sys_addresstype`;
 DROP TABLE IF EXISTS `#__sdi_organism`;
+DROP TABLE IF EXISTS `#__sdi_category`;
+DROP TABLE IF EXISTS `#__sdi_organism_category`;
 DROP TABLE IF EXISTS `#__sdi_user_role_organism`;
 
 -- com_easysdi_service

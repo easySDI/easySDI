@@ -462,6 +462,9 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $client->appendChild($this->getAdresse(self::CONTACT, $order));
         $client->appendChild($this->getAdresse(self::BILLING, $order));
         $client->appendChild($this->getAdresse(self::DELIVERY, $order));
+        
+        /*if(!empty($this->organism))
+            $client->appendChild($this->getCategories($this->organism->id));*/
 
         return $client;
     }
@@ -479,8 +482,43 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
             $tierce->appendChild($this->getAdresse(self::CONTACT, $order, 'tierce'));
             $tierce->appendChild($this->getAdresse(self::BILLING, $order, 'tierce'));
             $tierce->appendChild($this->getAdresse(self::DELIVERY, $order, 'tierce'));
+            
+            /*$query = $this->db->getQuery(true);
+            $query->select('o.id')
+                    ->from('#__users u')
+                    ->join('LEFT', '#__sdi_user su ON su.user_id=u.id')
+                    ->join('LEFT', '#__sdi_organism o ON o.username=u.username');
+            $tierce->appendChild($this->getCategories($order->tp_organism_id));*/
         }
         return $tierce;
+    }
+
+    /**
+     * get an organism's categorie's list
+     * called from getClient and getTierce
+     * 
+     * @param int $organism_id
+     * @return DOMElement
+     */
+    private function getCategories($organism_id = 0){
+        $categories = $this->response->createElementNS($this->nsEasysdi, 'easysdi:CATEGORIES');
+        
+        $query = $this->db->getQuery(true);
+        $query->select('c.id, c.name')
+                ->from('#__sdi_organism_category oc')
+                ->join('LEFT', '#__sdi_category c ON c.id=oc.category_id')
+                ->where('oc.organism_id='.(int) $organism_id);
+        $this->db->setQuery($query);
+
+        foreach($this->db->loadObjectList() as $cat){
+            $category = $this->response->createElementNS($this->nsEasysdi, 'easysdi:CATEGORY');
+            $category->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:ID', $cat->id));
+            $category->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:NAME', $cat->name));
+
+            $categories->appendChild($category);
+        }
+        
+        return $categories;
     }
 
     private function getBuffer() {

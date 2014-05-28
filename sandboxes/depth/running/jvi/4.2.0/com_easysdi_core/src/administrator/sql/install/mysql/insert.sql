@@ -49,7 +49,8 @@ INSERT INTO `#__sdi_sys_accessscope` (ordering,state,value)
 VALUES 
 (1,1,'public'),
 (2,1,'organism'),
-(3,1,'user')
+(3,1,'user'),
+(4,1,'category')
 ;
 
 INSERT INTO `#__sdi_sys_authenticationlevel` (ordering,state,value) 
