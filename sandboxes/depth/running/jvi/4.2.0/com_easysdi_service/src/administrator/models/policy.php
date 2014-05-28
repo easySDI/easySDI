@@ -144,6 +144,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
         // Get the access scope
         $item->organisms = $this->getAccessScopeOrganism($item->id);
         $item->users = $this->getAccessScopeUser($item->id);
+        $item->categories = $this->getAccessScopeCategory($item->id);
 
         return $item;
     }
@@ -1240,6 +1241,13 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
         
         $db->setQuery($query);
         $db->query();
+        
+        $query = $db->getQuery(true);
+        $query->delete('#__sdi_policy_category');
+        $query->where('policy_id = ' . (int)$data['id']);
+        
+        $db->setQuery($query);
+        $db->query();
 
         $pks = $data['organisms'];
         foreach ($pks as $pk) {
@@ -1268,6 +1276,26 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                 $columns = array('policy_id', 'user_id');
                 $values = array($data['id'], $pk);
                 $query->insert('#__sdi_policy_user');
+                $query->columns($query->quoteName($columns));
+                $query->values(implode(',', $values));
+                
+                $db->setQuery($query);
+                if (!$db->query()) {
+                    throw new Exception($db->getErrorMsg());
+                }
+            } catch (Exception $e) {
+                $this->setError($e->getMessage());
+                return false;
+            }
+        }
+
+        $pks = $data['categories'];
+        foreach ($pks as $pk) {
+            try {
+                $query = $db->getQuery(true);
+                $columns = array('policy_id', 'category_id');
+                $values = array($data['id'], $pk);
+                $query->insert('#__sdi_policy_category');
                 $query->columns($query->quoteName($columns));
                 $query->values(implode(',', $values));
                 
@@ -1330,6 +1358,35 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
             $query = $db->getQuery(true);
             $query->select('p.user_id as id');
             $query->from('#__sdi_policy_user p');
+            $query->where('p.policy_id = ' . (int) $id);
+            $db->setQuery($query);
+
+            $scope = $db->loadColumn();
+            return $scope;
+        } catch (Exception $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Method to get the categories authorized to access this policy
+     *
+     * @param int		$id		primary key of the current policy to get.
+     *
+     * @return boolean 	Object list on success, False on error
+     *
+     * @since EasySDI 3.0.0
+     */
+    public function getAccessScopeCategory($id = null) {
+        if (!isset($id))
+            return null;
+
+        try {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->select('p.category_id as id');
+            $query->from('#__sdi_policy_category p');
             $query->where('p.policy_id = ' . (int) $id);
             $db->setQuery($query);
 

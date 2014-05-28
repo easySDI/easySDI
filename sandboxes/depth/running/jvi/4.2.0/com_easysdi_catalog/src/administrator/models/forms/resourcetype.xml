@@ -53,6 +53,18 @@
             value_field="name"
             translate="true"
         /> 
+        <field
+            name="categories" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT id, name FROM #__sdi_category WHERE state=1 ORDER BY ordering" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        /> 
 
         <field name="predefined" type="radio" class="btn-group" default="0"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_PREDEFINED"
