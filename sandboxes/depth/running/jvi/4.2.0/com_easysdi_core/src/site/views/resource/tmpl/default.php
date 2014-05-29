@@ -152,9 +152,12 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                         </div>
 
                         <div class="accordion" id="rights">
-                            <?php for ($index = 2; $index < 8; $index++) {
+                            <?php
+                            for ($index = 2; $index < 8; $index++) {
+                                $isHidden = false;
+                                $isHidden = (isset($this->item->resourcerights[$index]) && !$this->item->resourcerights[$index]);
                                 ?>
-                                <div class="accordion-group">
+                            <div class="accordion-group" <?php if($isHidden) echo " style='display:none'"; ?>>
                                     <div class="accordion-heading">
                                         <a class="accordion-toggle" data-toggle="collapse" data-parent="#rights" href="#collapse<?php echo $index; ?>">
                                             <?php echo JText::_('COM_EASYSDI_CORE_FORM_DESC_RESOURCE_' . $index); ?>

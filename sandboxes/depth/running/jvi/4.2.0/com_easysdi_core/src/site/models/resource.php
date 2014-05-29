@@ -105,6 +105,12 @@ class Easysdi_coreModelResource extends JModelForm {
                 $resourcetype->load($this->_item->resourcetype_id);
                 $resourcetype->loadLocalname();
                 $this->_item->resourcetype = $resourcetype->localname;
+                
+                $this->_item->resourcerights = array(
+                    5 => $resourcetype->diffusion,
+                    6 => $resourcetype->view,
+                    7 => $resourcetype->diffusion
+                );
             }
 
             //Load rights
