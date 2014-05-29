@@ -232,7 +232,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                                     <a id="<?php echo $item->id; ?>_child_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&parentid=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_CHILDREN_LIST'); ?> (<span id="<?php echo $item->id; ?>_child_num">0</span>)</a>
                                                 </li>
                                             <?php endif; ?>
-                                            <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>
+                                            <?php if ($item->supportapplication && $this->user->authorize($item->id, sdiUser::resourcemanager)): ?>
                                                 <li>
                                                     <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=applications&resource=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_APPLICATIONS'); ?></a>
                                                 </li>
