@@ -19,6 +19,7 @@ JHtml::_('behavior.calendar');
 
 $document = JFactory::getDocument();
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/resources.js');
+$document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css');
 ?>
 
 <div class="core front-end-edit">
@@ -60,21 +61,13 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                             <?php endforeach; ?>
                                 </select>
 
-                                <?php
-                                //Load all status value
-                                $db = JFactory::getDbo();
-                                $query = $db->getQuery(true)
-                                        ->select('s.value, s.id ')
-                                        ->from('#__sdi_sys_metadatastate s');
-                                $db->setQuery($query);
-                                $metadatastate = $db->loadObjectList();
-                                ?>
+                                
                             </div>
                             <div id="filterstatus">
 
                                 <select id="filter_status" name="filter_status" onchange="this.form.submit();" class="inputbox">
                                     <option value="" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_METADATA_STATE_FILTER'); ?></option>
-                                    <?php foreach ($metadatastate as $status): ?>
+                                    <?php foreach ($this->metadatastates as $status): ?>
                                         <option value="<?php echo $status->id; ?>" <?php
                                         if ($this->state->get('filter.status') == $status->id) : echo 'selected="selected"';
                                         endif;
@@ -124,33 +117,6 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                     
                     <?php 
                     foreach ($this->items as $item) : ?>
-                        <?php
-                        //Load versions
-                        $db = JFactory::getDbo();
-                        $filter_status = $this->state->get('filter.status');
-                        if (!empty($filter_status)):
-                            $query = $db->getQuery(true)
-                                    ->select('m.id, v.name, s.value, s.id AS state, v.id as version')
-                                    ->from('#__sdi_version v')
-                                    ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                                    ->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id')
-                                    ->where('v.resource_id = ' . (int)$item->id)
-                                    ->where('m.metadatastate_id = ' . (int)$filter_status)
-                                    ->order('v.name DESC');
-                        else :
-                            $query = $db->getQuery(true)
-                                    ->select('m.id, v.name, s.value, s.id AS state, v.id as version')
-                                    ->from('#__sdi_version v')
-                                    ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                                    ->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id')
-                                    ->where('v.resource_id = ' . (int)$item->id)
-                                    ->order('v.name DESC');
-                        endif;
-                        $db->setQuery($query);
-                        $metadata = $db->loadObjectList();
-
-
-                            ?>
                             <tr>
                                 <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>
                                     <td>
@@ -167,22 +133,22 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                 <td>
                                     <?php if ($item->versioning) : ?>
 
-                                        <select id="<?php echo $item->id; ?>_select" onchange="onVersionChange(<?php echo $item->id; ?>)" class="inputbox">
-                                            <?php foreach ($metadata as $key => $value) { ?>
+                                        <select id="<?php echo $item->id; ?>_select" onchange="onVersionChange(<?php echo $item->id; ?>)" class="inputbox version-status">
+                                            <?php foreach ($item->metadata as $key => $value) { ?>
                                                 <option value="<?php echo $value->id; ?>"><?php echo $value->name; ?> : <?php echo JText::_($value->value); ?></option>
                                             <?php } ?>
                                         </select>
                                     <?php else : ?>
-                                        <?php if ($metadata[0]->state == 1) : ?>
-                                            <span class="label label-warning"><?php echo JText::_($metadata[0]->value); ?></span>
-                                        <?php elseif ($metadata[0]->state == 2): ?>
-                                            <span class="label label-info"><?php echo JText::_($metadata[0]->value); ?></span>
-                                        <?php elseif ($metadata[0]->state == 3): ?>
-                                            <span class="label label-success"><?php echo JText::_($metadata[0]->value); ?></span>
-                                        <?php elseif ($metadata[0]->state == 4): ?>
-                                            <span class="label label-inverse"><?php echo JText::_($metadata[0]->value); ?></span>
-                                        <?php elseif ($metadata[0]->state == 5): ?>
-                                            <span class="label label-info"><?php echo JText::_($metadata[0]->value); ?></span>
+                                        <?php if ($item->metadata[0]->state == 1) : ?>
+                                            <span class="label label-warning"><?php echo JText::_($item->metadata[0]->value); ?></span>
+                                        <?php elseif ($item->metadata[0]->state == 2): ?>
+                                            <span class="label label-info"><?php echo JText::_($item->metadata[0]->value); ?></span>
+                                        <?php elseif ($item->metadata[0]->state == 3): ?>
+                                            <span class="label label-success"><?php echo JText::_($item->metadata[0]->value); ?></span>
+                                        <?php elseif ($item->metadata[0]->state == 4): ?>
+                                            <span class="label label-inverse"><?php echo JText::_($item->metadata[0]->value); ?></span>
+                                        <?php elseif ($item->metadata[0]->state == 5): ?>
+                                            <span class="label label-info"><?php echo JText::_($item->metadata[0]->value); ?></span>
                                         <?php endif; ?>
                                     <?php endif; ?>
                                 </td>
@@ -196,55 +162,56 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                         <ul class="dropdown-menu">
                                             <?php if ($this->user->authorize($item->id, sdiUser::metadataeditor) || $this->user->authorize($item->id, sdiUser::metadataresponsible)): ?>
                                                 <li>
-                                                    <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_EDIT_METADATA'); ?></a>
+                                                    <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_EDIT_METADATA'); ?></a>
                                                 </li>
                                                 <li>
-                                                    <a class="<?php echo $item->id; ?>_linker modal" rel="{handler:'iframe',size:{x:600,y:700}}" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&tmpl=component&view=sheet&preview=editor&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_VIEW_METADATA'); ?></a>
+                                                    <a class="<?php echo $item->id; ?>_linker modal" rel="{handler:'iframe',size:{x:600,y:700}}" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&tmpl=component&view=sheet&preview=editor&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_VIEW_METADATA'); ?></a>
                                                 </li>
                                             <?php endif; ?>
 
                                             <?php if ($this->user->authorize($item->id, sdiUser::metadataresponsible)): ?>
 
-                                                <?php if ($metadata[0]->state == sdiMetadata::VALIDATED): ?>
+                                                <?php if ($item->metadata[0]->state == sdiMetadata::VALIDATED): ?>
                                                     <li>
                                                         <a class="<?php echo $item->id; ?>_linker" onclick="showModal('<?php echo $item->id; ?>')"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_PUBLISH_METADATA'); ?></a>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($metadata[0]->state == sdiMetadata::PUBLISHED): ?>
+                                                <?php if ($item->metadata[0]->state == sdiMetadata::PUBLISHED): ?>
                                                     <li>
-                                                        <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.inprogress&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_INPROGRESS_ITEM'); ?></a>
+                                                        <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.inprogress&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_INPROGRESS_ITEM'); ?></a>
                                                     </li>
                                                     <li>
                                                         <a class="<?php echo $item->id; ?>_linker" onclick="showModal('<?php echo $item->id; ?>')"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_CHANGEPUBLISHEDDATE_METADATA'); ?></a>
                                                     </li>
                                                     <li>
-                                                        <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.archive&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ARCHIVE_METADATA'); ?></a>
+                                                        <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.archive&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ARCHIVE_METADATA'); ?></a>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($metadata[0]->state == sdiMetadata::ARCHIVED): ?>
+                                                <?php if ($item->metadata[0]->state == sdiMetadata::ARCHIVED): ?>
                                                     <li>
-                                                        <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.inprogress&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_INPROGRESS_ITEM'); ?></a>
+                                                        <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.inprogress&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_INPROGRESS_ITEM'); ?></a>
                                                     </li>
                                                 <?php endif; ?>
                                             <?php endif; ?>
                                             <?php /* if ($this->user->authorize($item->id, sdiUser::metadataeditor)): ?>
                                               <li class="divider"></li>
                                               <li>
-                                              <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.assign&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ASSIGN_METADATA'); ?></a>
+                                              <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.assign&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ASSIGN_METADATA'); ?></a>
                                               </li>
                                               <li>
-                                              <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.notify&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NOTIFY_METADATA'); ?></a>
+                                              <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.notify&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NOTIFY_METADATA'); ?></a>
                                               </li>
                                               <?php endif; */ ?>
                                             <?php /* if ($this->user->authorize($item->id, sdiUser::metadataresponsible)): ?>
                                               <li class="divider"></li>
                                               <li>
-                                              <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.synchronize&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_METADATA'); ?></a>
+                                              <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.synchronize&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_METADATA'); ?></a>
                                               </li>
                                               <?php endif; */ ?>
                                         </ul>
                                     </div>
                                 </td>
+                                <!-- Manage -->
                                 <td>
                                     <div class="btn-group">
                                         <a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#">
@@ -252,15 +219,18 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                             <span class="caret"></span>
                                         </a>
                                         <ul class="dropdown-menu">
-                                            <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->versioning): ?>
+                                            <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->versioning && !$item->hasUnpublishVersion)  : ?>
                                                 <li>
                                                     <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.create&resource=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
                                                 </li>
                                             <?php endif; ?>
                                             <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->supportrelation): ?>
                                                 <li>
-                                                    <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.edit&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RELATIONS'); ?></a>
-                                                </li>               
+                                                    <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.edit&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RELATIONS'); ?></a>
+                                                </li>
+                                                <li class="child_list" id="<?php echo $item->id; ?>_child_list">
+                                                    <a id="<?php echo $item->id; ?>_child_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&parentid=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_CHILDREN_LIST'); ?> (<span id="<?php echo $item->id; ?>_child_num">0</span>)</a>
+                                                </li>
                                             <?php endif; ?>
                                             <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>
                                                 <li>
@@ -273,26 +243,26 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                             <?php endif; ?>
                                             <?php if ($this->user->authorize($item->id, sdiUser::diffusionmanager) && $item->supportdiffusion): ?>
                                                 <li>
-                                                    <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.edit&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_DIFFUSION'); ?></a>
+                                                    <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.edit&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_DIFFUSION'); ?></a>
                                                 </li>
                                             <?php endif; ?>
                                             <?php if ($this->user->authorize($item->id, sdiUser::viewmanager) && $item->supportview): ?>
                                                 <li>
-                                                    <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_map&task=visualization.edit&id=' . $metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_VIEW'); ?></a>
+                                                    <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_map&task=visualization.edit&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_VIEW'); ?></a>
                                                 </li>
                                             <?php endif; ?>
                                             <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>
                                                 <li class="divider"></li>
                                                 <li>
                                                     <?php if ($item->versioning) : ?>
-                                                    <a href="#" onclick="showDeleteModal('<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $metadata[0]->version); ?>')"><i class="icon-remove"></i> <?php
-                                                            if (count($metadata) > 1)
+                                                    <a href="#" onclick="showDeleteModal('<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $item->metadata[0]->version); ?>')"><i class="icon-remove"></i> <?php
+                                                            if (count($item->metadata) > 1)
                                                                 echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_VERSION');
                                                             else
                                                                 echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE');
                                                             ?></a>
                                                     <?php else : ?>
-                                                    <a href="#" onclick="showDeleteModal('<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $metadata[0]->version); ?>')"><i class="icon-remove"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE'); ?></a>
+                                                    <a href="#" onclick="showDeleteModal('<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $item->metadata[0]->version); ?>')"><i class="icon-remove"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE'); ?></a>
                                                     <?php endif; ?>
                                                 </li>
                                             <?php endif; ?>

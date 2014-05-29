@@ -18,10 +18,12 @@ jimport('joomla.application.component.view');
 class Easysdi_coreViewResources extends JViewLegacy {
 
     protected $items;
+    protected $metadatastates;
     protected $pagination;
     protected $state;
     protected $params;
-    /** @var sdiUser Description **/
+
+    /** @var sdiUser Description * */
     protected $user;
 
     /**
@@ -36,17 +38,17 @@ class Easysdi_coreViewResources extends JViewLegacy {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             return;
         }
-        
+
         $this->state = $this->get('State');
         $this->items = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_easysdi_core');
-        
+
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
-        
+
         $this->_prepareDocument();
         parent::display($tpl);
     }
@@ -56,6 +58,7 @@ class Easysdi_coreViewResources extends JViewLegacy {
      */
     protected function _prepareDocument() {
         $app = JFactory::getApplication();
+        $db = JFactory::getDbo();
         $menus = $app->getMenu();
         $title = null;
 
@@ -88,6 +91,42 @@ class Easysdi_coreViewResources extends JViewLegacy {
         if ($this->params->get('robots')) {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
+
+        $filter_status = $this->state->get('filter.status');
+
+        // Load metadata for each resources
+        foreach ($this->items as $item) {
+            $query = $db->getQuery(true);
+            $query->select('m.id, v.name, s.value, s.id AS state, v.id as version');
+            $query->from('#__sdi_version v');
+            $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
+            $query->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id');
+            $query->where('v.resource_id = ' . (int) $item->id);
+            $query->order('v.name DESC');
+
+            // Check if resource has a "unpublish" version
+            $db->setQuery($query);
+            $item->hasUnpublishVersion = false;
+            foreach ($db->loadObjectList() as $metadata) {
+                if($metadata->state < 3){
+                    $item->hasUnpublishVersion = true;
+                }
+            }
+            
+            if (!empty($filter_status)) {
+                $query->where('m.metadatastate_id = ' . (int) $filter_status);
+            }
+
+            $db->setQuery($query);
+            $item->metadata = $db->loadObjectList();
+        }
+
+        // load all metadatastate
+        $query = $db->getQuery(true);
+        $query->select('s.value, s.id');
+        $query->from('#__sdi_sys_metadatastate s');
+        $db->setQuery($query);
+        $this->metadatastates = $db->loadObjectList();
     }
 
 }
