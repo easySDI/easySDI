@@ -22,6 +22,7 @@ class Easysdi_coreViewResources extends JViewLegacy {
     protected $pagination;
     protected $state;
     protected $params;
+    protected $parent;
 
     /** @var sdiUser Description * */
     protected $user;
@@ -92,6 +93,17 @@ class Easysdi_coreViewResources extends JViewLegacy {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
 
+        if (!empty($this->state->parentid)) {
+            $query = $db->getQuery(true);
+            $query->select('r.name, v.name as version_name');
+            $query->from('#__sdi_resource r');
+            $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
+            $query->where('v.id = ' . $this->state->parentid);
+            $db->setQuery($query);
+            $this->parent = $db->loadObject();
+        }
+
+
         $filter_status = $this->state->get('filter.status');
 
         // Load metadata for each resources
@@ -108,11 +120,11 @@ class Easysdi_coreViewResources extends JViewLegacy {
             $db->setQuery($query);
             $item->hasUnpublishVersion = false;
             foreach ($db->loadObjectList() as $metadata) {
-                if($metadata->state < 3){
+                if ($metadata->state < 3) {
                     $item->hasUnpublishVersion = true;
                 }
             }
-            
+
             if (!empty($filter_status)) {
                 $query->where('m.metadatastate_id = ' . (int) $filter_status);
             }

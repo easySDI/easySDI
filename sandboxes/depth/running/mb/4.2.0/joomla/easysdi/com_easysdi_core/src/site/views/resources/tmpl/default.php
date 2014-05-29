@@ -23,7 +23,12 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
 ?>
 
 <div class="core front-end-edit">
-    <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_RESOURCES'); ?></h1>
+    <?php if (!empty($this->parent)): ?>
+        <h1><?php echo $this->parent->name; ?>: <?php echo $this->parent->version_name; ?></h1>
+    <?php else : ?>
+        <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_RESOURCES'); ?></h1>
+    <?php endif; ?>
+
     <?php
     if (isset($this->user)):
         if ($this->user->isResourceManager()):
@@ -35,10 +40,16 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                     <form class="form-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=resources'); ?>" method="post">
 
                         <div class="btn-group pull-left">
-                            <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
-                                <i class="icon-white icon-plus-sign"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW'); ?>
-                                <span class="caret"></span>
-                            </a>
+                            <?php if (empty($this->parent)) : ?>
+                                <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <i class="icon-white icon-plus-sign"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW'); ?>
+                                    <span class="caret"></span>
+                                </a>
+                            <?php else: ?>
+                                 <a class="btn btn-success dropdown-toggle" href="<?php echo JRoute::_('index.php?option=com_easysdi_core'); ?>">
+                                    <i class="icon-white icon-plus-sign"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_BACK'); ?>
+                                </a>
+                            <?php endif; ?>
                             <ul class="dropdown-menu">
                                 <?php foreach ($resourcetypes as $resourcetype): ?>
                                     <li>
@@ -61,7 +72,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                             <?php endforeach; ?>
                                 </select>
 
-                                
+
                             </div>
                             <div id="filterstatus">
 
@@ -91,32 +102,33 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                     </form>
 
                 </div>
+
+
             </div>
             <?php
         endif;
     endif;
     ?>
 
-<div class="items">
-    <div class="well">
-        <div class="row-fluid">
-            <?php $show = false; ?>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NAME'); ?></th>
-                        <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESOURCETYPE'); ?></th>
-                        <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_STATE'); ?></th>
-                        <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ACTIONS'); ?></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tfoot>
-                </tfoot>
-                <tbody>
-                    
-                    <?php 
-                    foreach ($this->items as $item) : ?>
+    <div class="items">
+        <div class="well">
+            <div class="row-fluid">
+                <?php $show = false; ?>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NAME'); ?></th>
+                            <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RESOURCETYPE'); ?></th>
+                            <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_STATE'); ?></th>
+                            <th><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ACTIONS'); ?></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                    </tfoot>
+                    <tbody>
+
+                        <?php foreach ($this->items as $item) : ?>
                             <tr>
                                 <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>
                                     <td>
@@ -219,7 +231,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                             <span class="caret"></span>
                                         </a>
                                         <ul class="dropdown-menu">
-                                            <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->versioning && !$item->hasUnpublishVersion)  : ?>
+                                            <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->versioning && !$item->hasUnpublishVersion) : ?>
                                                 <li>
                                                     <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.create&resource=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
                                                 </li>
@@ -255,14 +267,14 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                                 <li class="divider"></li>
                                                 <li>
                                                     <?php if ($item->versioning) : ?>
-                                                    <a href="#" onclick="showDeleteModal('<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $item->metadata[0]->version); ?>')"><i class="icon-remove"></i> <?php
+                                                        <a href="#" onclick="showDeleteModal('<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $item->metadata[0]->version); ?>')"><i class="icon-remove"></i> <?php
                                                             if (count($item->metadata) > 1)
                                                                 echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_VERSION');
                                                             else
                                                                 echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE');
                                                             ?></a>
                                                     <?php else : ?>
-                                                    <a href="#" onclick="showDeleteModal('<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $item->metadata[0]->version); ?>')"><i class="icon-remove"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE'); ?></a>
+                                                        <a href="#" onclick="showDeleteModal('<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $item->metadata[0]->version); ?>')"><i class="icon-remove"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE'); ?></a>
                                                     <?php endif; ?>
                                                 </li>
                                             <?php endif; ?>
@@ -333,10 +345,10 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                 <h4 class="modal-title" id="myModalLabel"><?php echo JText::_('COM_EASYSDI_CORE_DELETE_ITEM'); ?></h4>
             </div>
             <div id="deleteModalBody" class="modal-body">
-                <?php echo JText::_('COM_EAYSDI_CORE_DELETE_CONFIRM') ; ?>
+                <?php echo JText::_('COM_EAYSDI_CORE_DELETE_CONFIRM'); ?>
             </div>
             <div class="modal-footer">
-                <a href="#" id="btn_delete"><button type="button" class="btn btn-danger"><?php echo JText::_('COM_EASYSDI_CORE_DELETE_ITEM') ; ?></button></a>
+                <a href="#" id="btn_delete"><button type="button" class="btn btn-danger"><?php echo JText::_('COM_EASYSDI_CORE_DELETE_ITEM'); ?></button></a>
                 <button type="button" class="btn btn-success" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
             </div>
         </div>
