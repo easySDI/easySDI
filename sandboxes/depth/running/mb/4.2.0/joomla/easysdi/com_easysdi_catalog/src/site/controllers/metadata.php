@@ -452,6 +452,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         if ($commit) {
             $this->structure->formatOutput = true;
             $xml = $this->structure->saveXML();
+            
             if ($smda->update($xml)) {
                 $this->saveTitle($data['guid']);
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_SAVE_VALIDE'), 'message');

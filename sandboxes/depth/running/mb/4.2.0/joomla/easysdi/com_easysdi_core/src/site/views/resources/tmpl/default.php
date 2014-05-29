@@ -19,6 +19,7 @@ JHtml::_('behavior.calendar');
 
 $document = JFactory::getDocument();
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/resources.js');
+$document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css');
 ?>
 
 <div class="core front-end-edit">
@@ -132,7 +133,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                 <td>
                                     <?php if ($item->versioning) : ?>
 
-                                        <select id="<?php echo $item->id; ?>_select" onchange="onVersionChange(<?php echo $item->id; ?>)" class="inputbox">
+                                        <select id="<?php echo $item->id; ?>_select" onchange="onVersionChange(<?php echo $item->id; ?>)" class="inputbox version-status">
                                             <?php foreach ($item->metadata as $key => $value) { ?>
                                                 <option value="<?php echo $value->id; ?>"><?php echo $value->name; ?> : <?php echo JText::_($value->value); ?></option>
                                             <?php } ?>
@@ -226,7 +227,10 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                             <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->supportrelation): ?>
                                                 <li>
                                                     <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.edit&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RELATIONS'); ?></a>
-                                                </li>               
+                                                </li>
+                                                <li class="child_list" id="<?php echo $item->id; ?>_child_list">
+                                                    <a id="<?php echo $item->id; ?>_child_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&parentid=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_CHILDREN_LIST'); ?> (<span id="<?php echo $item->id; ?>_child_num">0</span>)</a>
+                                                </li>
                                             <?php endif; ?>
                                             <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>
                                                 <li>

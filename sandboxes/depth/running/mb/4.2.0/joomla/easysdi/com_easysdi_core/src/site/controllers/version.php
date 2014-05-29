@@ -34,7 +34,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         //Delete the csw metadata in the remote catalog
         $csw = new sdiMetadata($metadata->id);
         if (!$csw->delete()):
-        // Redirect back to the list screen.
+            // Redirect back to the list screen.
             $this->setMessage(JText::_('Metadata can not be deleted from the remote catalog.'), 'error');
 //            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
 //            return false;
@@ -52,7 +52,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $query = $dbo->getQuery(true)
                 ->select('count(id)')
                 ->from('#__sdi_version')
-                ->where('resource_id = ' . (int)$version->resource_id);
+                ->where('resource_id = ' . (int) $version->resource_id);
         $dbo->setQuery($query);
         $num = $dbo->loadResult();
 
@@ -128,6 +128,34 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         // Redirect to the edit screen.
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=version&layout=edit', false));
+    }
+
+    public function getChildren() {
+        $parentId = JFactory::getApplication()->input->getInt('parentId', null);
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('v.resource_id');
+        $query->from('#__sdi_version v');
+        $query->where('v.id = ' . (int) $parentId);
+
+        $db->setQuery($query);
+        $resource = $db->loadObject();
+
+        $query = $db->getQuery(true);
+        $query->select('vl.id');
+        $query->from('#__sdi_versionlink vl');
+        $query->where('vl.parent_id = ' . $parentId);
+
+        $db->setQuery($query);
+        $childs = $db->loadObjectList();
+        
+        $response = array();
+        $response['success'] = 'true';
+        $response['resource_id'] = $resource->resource_id;
+        $response['num'] = count($childs);
+
+        echo json_encode($response);
+        die();
     }
 
     /**
@@ -300,7 +328,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             $app->setUserState('com_easysdi_core.edit.version.data', $data);
             // Redirect back to the edit screen.
             $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_SAVED_SUCCESSFULLY'));
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=version&layout=edit', false));            
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=version&layout=edit', false));
         } else {
             // Redirect to the list screen.
             $this->flushSessionData();
