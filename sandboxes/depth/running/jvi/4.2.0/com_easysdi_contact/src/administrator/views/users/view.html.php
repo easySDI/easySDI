@@ -103,7 +103,20 @@ class Easysdi_contactViewUsers extends JViewLegacy {
 
         //Set sidebar action - New in 3.0
         JHtmlSidebar::setAction('index.php?option=com_easysdi_contact&view=users');
-        $this->extra_sidebar = '';
+        
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                    ->select('id as value, name as text')
+                    ->from($db->quoteName('#__sdi_organism'))
+                    ->where('state=1');
+        $db->setQuery($query);
+        $organismsOptions = $db->loadObjectList();
+        
+        $this->extra_sidebar = 
+                '<select name="filter_organism[]" id="filter_organism" class="span12 small" multiple onchange="this.form.submit()" data-placeholder="'.JText::_('JOPTION_SELECT_ORGANISM').'">'
+                .JHtml::_('select.options', $organismsOptions, 'value', 'text', $this->state->get('filter.organism'))
+                .'</select>';
+
         JHtmlSidebar::addFilter(
                 JText::_('JOPTION_SELECT_PUBLISHED'), 'filter_published', JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), "value", "text", $this->state->get('filter.state'), true)
         );
