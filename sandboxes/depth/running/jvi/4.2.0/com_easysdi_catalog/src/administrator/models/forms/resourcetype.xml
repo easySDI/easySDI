@@ -86,14 +86,6 @@
                filter="raw"
                directory="logo" />
          
-        <field name="meta" type="radio" class="btn-group" default="1"
-               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_METADATA"
-               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_METADATA" 
-        > 
-            <option value="1">JYES</option>
-            <option value="0">JNO</option>
-        </field>
-         
         <field name="application" type="radio" class="btn-group" default="1"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_APPLICATION"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPE_APPLICATION" 
