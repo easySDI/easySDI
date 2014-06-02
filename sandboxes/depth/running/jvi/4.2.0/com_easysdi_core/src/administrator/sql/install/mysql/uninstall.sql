@@ -72,6 +72,7 @@ DROP TABLE IF EXISTS `#__sdi_virtualmetadata`;
 DROP TABLE IF EXISTS `#__sdi_virtual_physical`;
 DROP TABLE IF EXISTS `#__sdi_policy`;
 DROP TABLE IF EXISTS `#__sdi_policy_organism`;
+DROP TABLE IF EXISTS `#__sdi_policy_category`;
 DROP TABLE IF EXISTS `#__sdi_policy_user`;
 DROP TABLE IF EXISTS `#__sdi_allowedoperation`;
 DROP TABLE IF EXISTS `#__sdi_policy_metadatastate`;

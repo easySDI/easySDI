@@ -41,7 +41,7 @@ INDEX `#__sdi_organism_category_fk2` (`category_id` ASC) ,
 
 
 
-INSERT IGNORE INTO `#__sdi_sys_accessscope` SET id=`4`, ordering=4, state=1, `value`='category';
+INSERT IGNORE INTO `#__sdi_sys_accessscope` SET id=4, ordering=4, state=1, `value`='category';
 
 CREATE TABLE IF NOT EXISTS `#__sdi_policy_category` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -49,3 +49,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_policy_category` (
 `category_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+
+
+
+ALTER TABLE `#__sdi_resourcetype` CHANGE `meta` `application` tinyint (1);
