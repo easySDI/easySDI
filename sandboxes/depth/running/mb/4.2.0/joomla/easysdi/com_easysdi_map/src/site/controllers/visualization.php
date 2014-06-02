@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 require_once JPATH_COMPONENT . '/controller.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_core.php';
 
 /**
  * Group controller class.
@@ -144,7 +145,11 @@ class Easysdi_mapControllerVisualization extends Easysdi_mapController {
 
             // Redirect to the list screen.
             $this->setMessage(JText::_('COM_EASYSDI_MAP_ITEM_SAVED_SUCCESSFULLY'));
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+            $back_url = array('root' => 'index.php',
+                'option' => 'com_easysdi_core',
+                'view' => 'resources',
+                'parentid' => JFactory::getApplication()->getUserState('com_easysdi_core.parent.resource.version.id'));
+            $this->setRedirect(JRoute::_(Easysdi_coreHelper::array2URL($back_url), false));
         }
     }
 
@@ -157,7 +162,12 @@ class Easysdi_mapControllerVisualization extends Easysdi_mapController {
         $data = JFactory::getApplication()->input->get('jform', array(), 'array');
         $model->checkin($data['id']);
         $this->clearSession();
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+
+        $back_url = array('root' => 'index.php',
+            'option' => 'com_easysdi_core',
+            'view' => 'resources',
+            'parentid' => JFactory::getApplication()->getUserState('com_easysdi_core.parent.resource.version.id'));
+        $this->setRedirect(JRoute::_(Easysdi_coreHelper::array2URL($back_url), false));
     }
 
     public function remove() {
@@ -231,7 +241,7 @@ class Easysdi_mapControllerVisualization extends Easysdi_mapController {
         $this->setMessage(JText::_('COM_EASYSDI_MAP_ITEM_DELETED_SUCCESSFULLY'));
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
     }
-    
+
     function clearSession() {
         $app = JFactory::getApplication();
         // Clear the id from the session.

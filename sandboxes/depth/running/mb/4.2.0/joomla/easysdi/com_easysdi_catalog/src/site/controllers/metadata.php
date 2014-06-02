@@ -18,6 +18,7 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/For
 
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/cswmetadata.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_core.php';
 
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
@@ -121,7 +122,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $query->select('*');
         $query->from('#__sdi_importref');
-        $query->where('id = ' . (int)$_GET['id']);
+        $query->where('id = ' . (int) $_GET['id']);
 
         $this->db->setQuery($query);
         $importRef = $this->db->loadObject();
@@ -245,13 +246,13 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
         $query->innerJoin('#__sdi_sys_metadatastate ms on ms.id = m.metadatastate_id');
         if ($_POST['status_id'] != '') {
-            $query->where('m.metadatastate_id = ' . (int)$_POST['status_id']);
+            $query->where('m.metadatastate_id = ' . (int) $_POST['status_id']);
         }
         if (!empty($_POST['resourcetype_id'])) {
-            $query->where('r.resourcetype_id = ' . (int)$_POST['resourcetype_id']);
+            $query->where('r.resourcetype_id = ' . (int) $_POST['resourcetype_id']);
         }
         if ($_POST['resource_name'] != '') {
-            $query->where('r.`name` like '.$query->quote('%' . $query->escape($_POST['resource_name']) . '%'));
+            $query->where('r.`name` like ' . $query->quote('%' . $query->escape($_POST['resource_name']) . '%'));
         }
 
         $this->db->setQuery($query);
@@ -452,14 +453,20 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         if ($commit) {
             $this->structure->formatOutput = true;
             $xml = $this->structure->saveXML();
-            
+
             if ($smda->update($xml)) {
                 $this->saveTitle($data['guid']);
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_SAVE_VALIDE'), 'message');
                 if ($continue) {
                     $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $data['id']));
                 } else {
-                    $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+                   
+                    $back_url = array('root' => 'index.php',
+                        'option' => 'com_easysdi_core',
+                        'view' => 'resources',
+                        'parentid' => JFactory::getApplication()->getUserState('com_easysdi_core.parent.resource.version.id'));
+                    
+                    $this->setRedirect(JRoute::_(Easysdi_coreHelper::array2URL($back_url), false));
                 }
             } else {
                 $this->changeStatus($data['id'], $data['metadatastate_id']);
@@ -499,7 +506,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         // Delete old version
         $query = $this->db->getQuery(true);
         $query->delete('#__sdi_translation');
-        $query->where('element_guid = '. $query->quote($guid));
+        $query->where('element_guid = ' . $query->quote($guid));
 
         $this->db->setQuery($query);
         $this->db->execute();
@@ -551,7 +558,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         if (isset($archived)) {
             $query->set('m.archived = ' . $query->quote($archived));
         }
-        $query->where('m.id = ' . (int)$id);
+        $query->where('m.id = ' . (int) $id);
 
         $this->db->setQuery($query);
 

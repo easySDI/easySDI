@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_catalog/tables/metadata.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_core.php';
 
 /**
  * Version controller class.
@@ -148,7 +149,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         $db->setQuery($query);
         $childs = $db->loadObjectList();
-        
+
         $response = array();
         $response['success'] = 'true';
         $response['resource_id'] = $resource->resource_id;
@@ -333,13 +334,21 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             // Redirect to the list screen.
             $this->flushSessionData();
             $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_SAVED_SUCCESSFULLY'));
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+            $back_url = array('root' => 'index.php',
+                'option' => 'com_easysdi_core',
+                'view' => 'resources',
+                'parentid' => JFactory::getApplication()->getUserState('com_easysdi_core.parent.resource.version.id'));
+            $this->setRedirect(JRoute::_($back_url, false));
         }
     }
 
     function cancel() {
         $this->flushSessionData();
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+        $back_url = array('root' => 'index.php',
+            'option' => 'com_easysdi_core',
+            'view' => 'resources',
+            'parentid' => JFactory::getApplication()->getUserState('com_easysdi_core.parent.resource.version.id'));
+        $this->setRedirect(JRoute::_(Easysdi_coreHelper::array2URL($back_url), false));
     }
 
     function apply() {

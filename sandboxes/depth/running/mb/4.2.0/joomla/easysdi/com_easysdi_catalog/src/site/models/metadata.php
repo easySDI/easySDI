@@ -62,13 +62,14 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         $app = JFactory::getApplication('com_easysdi_catalog');
 
         // Load state from the request userState on edit or from the passed variable on default
-        if (JFactory::getApplication()->input->get('layout') == 'edit') {
-            $id = JFactory::getApplication()->getUserState('com_easysdi_catalog.edit.metadata.id');
-            $import = JFactory::getApplication()->getUserState('com_easysdi_catalog.edit.metadata.import');
+        if ($app->input->get('layout') == 'edit') {
+            $id = $app->getUserState('com_easysdi_catalog.edit.metadata.id');
+            $import = $app->getUserState('com_easysdi_catalog.edit.metadata.import');
         } else {
-            $id = JFactory::getApplication()->input->get('id');
-            JFactory::getApplication()->setUserState('com_easysdi_catalog.edit.metadata.id', $id);
+            $id = $app->input->get('id');
+            $app->setUserState('com_easysdi_catalog.edit.metadata.id', $id);
         }
+        
         $this->setState('metadata.id', $id);
         $this->setState('metadata.import', $import);
 
@@ -79,6 +80,8 @@ class Easysdi_catalogModelMetadata extends JModelForm {
             $this->setState('metadata.id', $params_array['item_id']);
         }
         $this->setState('params', $params);
+        $this->setState('parentid', $app->getUserState('com_easysdi_core.parent.resource.version.id'));
+        
     }
 
     /**

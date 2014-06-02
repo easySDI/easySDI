@@ -50,7 +50,7 @@ class Easysdi_coreModelResources extends JModelList {
         $limit = $app->getUserStateFromRequest('global.list.limit', 'limit', $app->getCfg('list_limit'));
         $this->setState('list.limit', $limit);
 
-        $limitstart = JFactory::getApplication()->input->getInt('limitstart', 0);
+        $limitstart = $app->input->getInt('limitstart', 0);
         $this->setState('list.start', $limitstart);
 
         // Load the filter state.
@@ -63,6 +63,8 @@ class Easysdi_coreModelResources extends JModelList {
         $search = $app->getUserStateFromRequest($this->context . '.filter.resourcetype', 'filter_resourcetype');
         $this->setState('filter.resourcetype', $search);
 
+        $parentid = $app->input->getInt('parentid', NULL);
+        $app->setUserState('com_easysdi_core.parent.resource.version.id', $parentid);
 
         if (empty($ordering)) {
             $ordering = 'a.ordering';

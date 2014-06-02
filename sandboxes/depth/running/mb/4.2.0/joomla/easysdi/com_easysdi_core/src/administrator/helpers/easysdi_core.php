@@ -19,7 +19,7 @@ class Easysdi_coreHelper {
      * Configure the Linkbar.
      */
     public static function addSubmenu($vName = '') {
-       
+        
     }
 
     /**
@@ -55,6 +55,29 @@ class Easysdi_coreHelper {
                 // 8 bits for "clk_seq_low"
                 mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535) // 48 bits for "node"
         );
+    }
+
+    /**
+     * Convert an array to an url
+     */
+    public static function array2URL($elements) {
+
+        $params = array();
+        foreach ($elements as $key => $value) {
+            if ($key == 'root') {
+                $root = $value;
+            } else {
+                if (!empty($value)) {
+                    $params[] = $key . '=' . $value;
+                }
+            }
+        }
+
+        if (empty($root)) {
+            return false;
+        } else {
+            return $root . '?' . implode('&', $params);
+        }
     }
 
 }
