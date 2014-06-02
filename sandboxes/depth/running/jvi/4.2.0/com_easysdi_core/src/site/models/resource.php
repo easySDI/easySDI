@@ -30,7 +30,6 @@ class Easysdi_coreModelResource extends JModelForm {
     const DIFFUSIONMANAGER = 5;
     const PREVIEWMANAGER = 6;
     const EXTRACTIONRESPONSIBLE = 7;
-    const ORDERELIGIBLE = 8;
     
 
     /**
@@ -142,8 +141,6 @@ class Easysdi_coreModelResource extends JModelForm {
                 $row = array("role_id" => "6", "user_id" => $user->id);
                 $rows [] = (object) $row;
                 $row = array("role_id" => "7", "user_id" => $user->id);
-                $rows [] = (object) $row;
-                $row = array("role_id" => "8", "user_id" => $user->id);
                 $rows [] = (object) $row;
                 $this->_item->rights = json_encode($rows);
             }
@@ -301,7 +298,7 @@ class Easysdi_coreModelResource extends JModelForm {
             $userroleresource = JTable::getInstance('userroleresource', 'Easysdi_coreTable');
             $userroleresource->deleteByResourceId($table->id);
 
-            for ($index = 2; $index < 9; $index++) {
+            for ($index = 2; $index < 8; $index++) {
                 if (!isset($jform[$index]))
                     continue;
 

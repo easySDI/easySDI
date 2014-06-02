@@ -15,7 +15,6 @@ INSERT INTO `#__sdi_sys_role` VALUES ('4','4','1','metadataeditor' );
 INSERT INTO `#__sdi_sys_role` VALUES ('5','5','1','diffusionmanager' );
 INSERT INTO `#__sdi_sys_role` VALUES ('6','6','1','previewmanager' );
 INSERT INTO `#__sdi_sys_role` VALUES ('7','7','1','extractionresponsible' );
-INSERT INTO `#__sdi_sys_role` VALUES ('8','8','1','ordereligible' );
 
 INSERT INTO `#__sdi_sys_versiontype` (ordering,state,value) 
 VALUES 

@@ -59,3 +59,6 @@ CREATE TABLE [#__sdi_policy_category](
 
 
 ALTER TABLE [#__sdi_resourcetype] RENAME COLUMN `meta` TO `application`;
+
+DELETE FROM [#__sdi_user_role_organism] WHERE role_id=(SELECT id FROM [#__sdi_sys_role] WHERE `value`='ordereligible');
+DELETE FROM [#__sdi_sys_role] WHERE `value`='ordereligible';

@@ -44,7 +44,6 @@ INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (4, 4, 1, N
 INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (5, 5, 1, N'diffusionmanager');
 INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (6, 6, 1, N'previewmanager');
 INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (7, 7, 1, N'extractionresponsible');
-INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (8, 8, 1, N'ordereligible');
 SET IDENTITY_INSERT [#__sdi_sys_role] OFF;
 
 SET IDENTITY_INSERT [#__sdi_sys_criteriatype] ON;

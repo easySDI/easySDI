@@ -76,7 +76,6 @@ class sdiUser {
     const diffusionmanager = 5;
     const viewmanager = 6;
     const extractionresponsible = 7;
-    const ordereligible = 8;
 
     /**
      * 
@@ -285,17 +284,6 @@ class sdiUser {
             return null;
         }
         return $this->role[7];
-    }
-
-    /**
-     * Get the Organisms for which the user is allowed to order
-     * @return type
-     */
-    public function getOrderEligibleOrganisms() {
-        if(!$this->isEasySDI || !isset($this->role[8])){
-            return null;
-        }
-        return $this->role[8];
     }
 
     /**

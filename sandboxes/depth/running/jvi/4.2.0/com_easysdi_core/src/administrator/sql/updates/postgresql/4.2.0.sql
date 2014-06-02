@@ -34,3 +34,7 @@ CREATE TABLE IF NOT EXISTS jos_sdi_policy_category (
 
 
 ALTER TABLE `jos_sdi_resourcetype` RENAME COLUMN `meta` TO `application`;
+
+
+DELETE FROM `jos_sdi_user_role_organism` WHERE role_id=(SELECT id FROM `jos_sdi_sys_role` WHERE `value`='ordereligible');
+DELETE FROM `jos_sdi_sys_role` WHERE `value`='ordereligible';
