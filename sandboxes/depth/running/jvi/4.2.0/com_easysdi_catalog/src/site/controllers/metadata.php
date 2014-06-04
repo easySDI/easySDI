@@ -22,6 +22,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormUtils.php';
+require_once JPATH_BASE . '/administrator/components/com_easysdi_core/libraries/easysdi/user/sdiuser.php';
 
 /**
  * Metadata controller class.
@@ -61,7 +62,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->nsdao = new SdiNamespaceDao();
         $this->ldao = new SdiLanguageDao();
         $this->structure = new DOMDocument('1.0', 'utf-8');
-        $this->structure->loadXML(unserialize($this->session->get('structure')));
+        $_structure = $this->session->get('structure');
+        if(!empty($_structure))
+            $this->structure->loadXML(unserialize($_structure));
         $this->structure->normalizeDocument();
         $this->domXpathStr = new DOMXPath($this->structure);
         $this->data = JFactory::getApplication()->input->get('jform', array(), 'array');
@@ -168,7 +171,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     /**
      * Change metadata status to publish
      */
-    public function publish() {
+    public function publish() {//var_dump($_POST);var_dump($this->data);exit();
         if (count($this->data) > 0) {
             $this->changeStatusAndSave(sdiMetadata::PUBLISHED);
         } else {
@@ -519,6 +522,117 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
             $this->db->insertObject('#__sdi_translation', $data, 'id');
         }
+    }
+
+    /**
+     * Change metadata assignment
+     */
+    public function assign() {
+        $data = JFactory::getApplication()->input->getArray();
+        
+        $cascade = (isset($data['assign_child']) && $data['assign_child']==1);
+        
+        $vids = array($data['id']);
+        $date = date('Y-m-d H:i.s');
+        
+        if($cascade){
+            $query = $this->db->getQuery(true);
+            $query->select('child_id as vid')
+                    ->from('#__sdi_versionlink')
+                    ->where('parent_id='.$data['id']);
+            $this->db->setQuery($query);
+            $vids = array_merge($vids, $this->db->loadColumn());
+        }
+        
+        $query = $this->db->getQuery(true);
+        $query->select('v.guid, v.id')
+                ->from('#__sdi_version v')
+                ->join('LEFT', '#__sdi_metadata m ON m.version_id=v.id')
+                ->where('m.metadatastate_id=1')
+                ->where('v.id IN ('.implode(',',$vids).')', 'AND')
+                ;
+        $this->db->setQuery($query);
+        $rows = $this->db->loadAssocList();
+        
+        $total = count($rows);
+        $success = array();
+        $fails = 0;
+        foreach($rows as $row){
+            $assignment = new stdClass();
+            
+            $assignment->id = null;
+            $assignment->guid = $row['guid'];
+            $assignment->assigned = $date;
+            $assignment->assigned_by = $data['assigned_by'];
+            $assignment->assigned_to = $data['assigned_to'];
+            $assignment->version_id = $row['id'];
+            $assignment->text = $data['assign_msg'];
+            
+            if($this->db->insertObject('#__sdi_assignment', $assignment, 'id'))
+                $success[] = $row['id'];
+            else
+                $fails++;
+        }
+        
+        if(count($success) == $total)
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_ASSIGNED_SUCCESS'), 'success');
+        elseif($fails == $total)
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_ASSIGNED_FAILS'), 'error');
+        else
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_ASSIGNED_WARNING'), 'warning');
+        
+        if(count($success)){
+            $byUser = new sdiUser($data['assigned_by']);
+            $toUser = new sdiUser($data['assigned_to']);
+            
+            $li = "";
+            foreach($success as $vid){
+                $link = JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id='.$vid, true, -1);
+                $li .= "<li><a href='{$link}'>{$link}</a></li>";
+            }
+            
+            $body = JText::sprintf('COM_EASYSDI_CATALOG_METADATA_ASSIGNED_NOTIFICATION_MAIL_BODY', $toUser->juser->name, $byUser->juser->name, count($success), nl2br($data['assign_msg']), $li);
+            
+            $toUser->sendMail(
+                    JText::_('COM_EASYSDI_CATALOG_METADATA_ASSIGNED_NOTIFICATION'), 
+                    $body
+            );
+        }
+        
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+    }
+    
+    public function getRoles(){
+        // Load roles for a resource
+        $versionId = JFactory::getApplication()->input->get('versionId');
+        
+        $query = $this->db->getQuery(true);
+
+        $query->select('su.id as user_id, u.name as username, urr.role_id, r.value as role_name')
+                ->from('#__sdi_version v')
+                ->join('left', '#__sdi_user_role_resource urr ON urr.resource_id=v.resource_id')
+                ->join('left', '#__sdi_user su ON su.id=urr.user_id')
+                ->join('left', '#__users u ON u.id=su.user_id')
+                ->join('left', '#__sdi_sys_role r ON r.id=urr.role_id')
+                ->where('v.id='.$versionId);
+
+        $this->db->setQuery($query);
+        $rows = $this->db->loadAssocList();
+
+        $roles = array();
+        foreach($rows as $row){
+            if(!isset($roles[$row['role_id']])){
+                $roles[$row['role_id']] = array(
+                    'role' => $row['role_name'],
+                    'users' => array()
+                );
+            }
+
+            $roles[$row['role_id']]['users'][$row['user_id']] = $row['username'];
+        }
+        
+        echo json_encode($roles);
+        die();
     }
 
     /**

@@ -40,10 +40,24 @@ function getChildNumer(parentId) {
     });
 }
 
-function showModal(id) {
+function showModal(id, modalId) {
+    modalId = modalId || 'publishModal';
     js('html, body').animate({scrollTop: 0}, 'slow');
-    js('input[name^="id"]').val(id);
-    js('#publishModal').modal('show');
+    js('#'+modalId+' input[name^="id"]').val(id);
+    js('#'+modalId).modal('show');
+}
+
+function showAssignmentModal(version_id){
+    js('#assigned_to').html('');
+    
+    js.get(currentUrl+'/?option=com_easysdi_catalog&task=metadata.getRoles&versionId='+version_id, function(data){
+        var roles = js.parseJSON(data);
+        
+        for(var user_id in roles[4].users)
+            js('#assigned_to').append(js('<option></option>').val(user_id).html(roles[4].users[user_id]));
+        js('#assigned_to').trigger('liszt:updated');
+        showModal(version_id, 'assignmentModal');
+    });
 }
 
 function onVersionChange(resourceid) {

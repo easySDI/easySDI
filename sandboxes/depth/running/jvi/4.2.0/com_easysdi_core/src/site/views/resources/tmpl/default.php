@@ -181,7 +181,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                                         <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.inprogress&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_INPROGRESS_ITEM'); ?></a>
                                                     </li>
                                                     <li>
-                                                        <a class="<?php echo $item->id; ?>_linker" onclick="showModal('<?php echo $item->id; ?>')"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_CHANGEPUBLISHEDDATE_METADATA'); ?></a>
+                                                        <a class="<?php echo $item->id; ?>_modaler" onclick="showModal('<?php echo $item->id; ?>')"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_CHANGEPUBLISHEDDATE_METADATA'); ?></a>
                                                     </li>
                                                     <li>
                                                         <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.archive&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ARCHIVE_METADATA'); ?></a>
@@ -193,15 +193,15 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                                     </li>
                                                 <?php endif; ?>
                                             <?php endif; ?>
-                                            <?php /* if ($this->user->authorize($item->id, sdiUser::metadataeditor)): ?>
+                                            <?php if ($item->metadata[0]->state == sdiMetadata::INPROGRESS && $this->user->authorize($item->id, sdiUser::metadataeditor)):?>
                                               <li class="divider"></li>
                                               <li>
-                                              <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.assign&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ASSIGN_METADATA'); ?></a>
+                                                  <a class="<?php echo $item->id; ?>_modaler" onclick="showAssignmentModal('<?php echo $item->metadata[0]->version; ?>')"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ASSIGN_METADATA'); ?></a>
                                               </li>
-                                              <li>
+                                              <!--<li>
                                               <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.notify&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NOTIFY_METADATA'); ?></a>
-                                              </li>
-                                              <?php endif; */ ?>
+                                              </li>-->
+                                              <?php endif; ?>
                                             <?php /* if ($this->user->authorize($item->id, sdiUser::metadataresponsible)): ?>
                                               <li class="divider"></li>
                                               <li>
@@ -266,6 +266,14 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                                     <?php endif; ?>
                                                 </li>
                                             <?php endif; ?>
+                                            <?php if($this->user->authorize($item->id, sdiUser::metadataeditor)): ?>
+                                                <li class="divider"></li>
+                                                <li>
+                                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=assignments&version=' . $item->metadata[0]->version); ?>">
+                                                        <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ASSIGNMENT_HISTORY'); ?>
+                                                    </a>
+                                                </li>
+                                            <?php endif;?>
                                         </ul>
                                     </div>
                                 </td>
@@ -341,5 +349,59 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
             </div>
         </div>
     </div>
+</div>
+
+<!-- Assignment Modal -->
+<div class="modal fade" id="assignmentModal" tabindex="-1" role="dialog" aria-labelledby="assignmentModalLabel" aria-hidden="true">
+    <form id="form_assign" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.assign'); ?>" method="post" class="form-validate form-horizontal">
+        <input type="hidden" id="id" name="id" value=""/>
+        <input type="hidden" id="task" name="task" value="metadata.assign"/>
+        <input type="hidden" id="assigned_by" name="assigned_by" value="<?php echo $this->user->id; ?>"/>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="assignModalLabel"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCE_ASSIGNMENT'); ?></h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="control-group">
+                        <!-- Assign To field -->
+                        <div class="control-label">
+                            <label id="assign_to-lbl" for="assigned_to" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCE_ASSIGN_TO'); ?></label>
+                        </div>
+                        <div class="controls">
+                            <div class="input-append">
+                                <select id="assigned_to" name="assigned_to"></select>
+                            </div>
+                        </div>
+                        <!-- Assign Message field -->
+                        <div class="control-label">
+                            <label id="assign_msg-lbl" for="assign_msg" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCE_ASSIGN_MESSAGE'); ?></label>
+                        </div>
+                        <div class="controls">
+                            <div class="input-append">
+                                <textarea cols="150" rows="15" id="assign_msg" name="assign_msg">Type a message...</textarea>
+                            </div>
+                        </div>
+                        <!-- Child Checkbox field -->
+                        <div class="control-label">
+                            <label id="assign_child-lbl" for="assign_child" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCE_ASSIGN_CHILD'); ?></label>
+                        </div>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input type="checkbox" id="assign_child" name="assign_child" value="1">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success" ><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ASSIGN_METADATA'); ?></button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 

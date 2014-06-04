@@ -94,8 +94,8 @@ class Easysdi_coreViewResources extends JViewLegacy {
 
         $filter_status = $this->state->get('filter.status');
 
-        // Load metadata for each resources
         foreach ($this->items as $item) {
+            // Load metadata for each resources
             $query = $db->getQuery(true);
             $query->select('m.id, v.name, s.value, s.id AS state, v.id as version');
             $query->from('#__sdi_version v');
@@ -119,6 +119,33 @@ class Easysdi_coreViewResources extends JViewLegacy {
 
             $db->setQuery($query);
             $item->metadata = $db->loadObjectList();
+            
+            // Load roles for each resources
+            $query = $db->getQuery(true);
+            
+            $query->select('u.id as user_id, u.username, urr.role_id, r.value as role_name')
+                    ->from('#__sdi_user_role_resource urr')
+                    ->join('left', '#__sdi_user su ON su.id=urr.user_id')
+                    ->join('left', '#__users u ON u.id=su.user_id')
+                    ->join('left', '#__sdi_sys_role r ON r.id=urr.role_id')
+                    ->where('urr.resource_id='.$item->id);
+            
+            $db->setQuery($query);
+            $rows = $db->loadAssocList();
+            
+            $item->roles = array();
+            foreach($rows as $row){
+                if(!isset($item->roles[$row['role_id']])){
+                    $item->roles[$row['role_id']] = array(
+                        'role' => $row['role_name'],
+                        'users' => array()
+                    );
+                }
+                
+                $item->roles[$row['role_id']]['users'][$row['user_id']] = $row['username'];
+            }
+            
+            //if($item->id==29){var_dump($item->roles);exit();}
         }
 
         // load all metadatastate
