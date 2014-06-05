@@ -200,6 +200,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_CHANGE_STATUS_ERROR'), 'error');
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $this->data['id']));
         }
+        
+        if(sdiMetadata::VALIDATED==$statusId)
+            $this->publishableNotification();
     }
 
     private function changeStatusAndUpdate($statusId) {
@@ -884,6 +887,90 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                 . substr($charid, 20, 12);
 
         return $uuid;
+    }
+    
+    private function publishableNotification(){
+        $tree = $this->getMetadataTree(array($this->data['id']));
+        
+        if($tree !== FALSE){ //Note: else, one of the metadata returns false
+            $list = $this->tree2List($tree);
+            
+            $body = JText::sprintf('COM_EASYSDI_CATALOG_METADATA_PUBLISHABLE_NOTIFICATION_MAIL_BODY', '%s', $list);
+            
+            $query = $this->db->getQuery(true);
+            $query->select('urr.user_id')
+                    ->from('#__sdi_user_role_resource urr')
+                    ->where('urr.resource_id='.$tree[0]->resource_id)
+                    ->where('urr.role_id=2', 'AND');
+            $this->db->setQuery($query);
+            
+            $users = $this->db->loadColumn();
+            
+            foreach($users as $user){
+                $sdiUser = new sdiUser($user);
+                
+                $sdiUser->sendMail(
+                        JText::_('COM_EASYSDI_CATALOG_METADATA_PUBLISHABLE_NOTIFICATION'), 
+                        JText::sprintf($body, $sdiUser->juser->name)
+                        );
+            }
+        }
+    }
+    
+    private function getMetadataTree($ids = array()){
+        $tree = array();
+        
+        $query = $this->db->getQuery(true);
+        $query->select('m.version_id as id, m.metadatastate_id as state, r.name as rname, v.name as vname, rt.versioning, v.resource_id')
+                ->from('#__sdi_metadata m')
+                ->join('LEFT', '#__sdi_version v ON v.id=m.version_id')
+                ->join('LEFT', '#__sdi_resource r ON r.id=v.resource_id')
+                ->join('LEFT', '#__sdi_resourcetype rt ON rt.id=r.resourcetype_id')
+                ->where('m.version_id IN ('.implode(',', $ids).')');
+        $this->db->setQuery($query);
+        
+        $metadatas = $this->db->loadAssocList();
+        
+        foreach($metadatas as $metadata){
+            if($metadata['state'] != 2)
+                return false; //Note: notification shouldn't be sent
+            
+            $branch = new stdClass();
+            $branch->id = $metadata['id'];
+            $branch->state = $metadata['state'];
+            $branch->name = $metadata['rname'];
+            if($metadata['versioning'] == 1)
+                $branch->name .= ' - '.$metadata['vname'];
+            $branch->resource_id = $metadata['resource_id'];
+            
+            $query = $this->db->getQuery(true);
+            $query->select('child_id')
+                    ->from('#__sdi_versionlink')
+                    ->where('parent_id='.$branch->id);
+            $this->db->setQuery($query);
+            
+            $children = $this->db->loadColumn();
+            $branch->children = count($children) ? $this->getMetadataTree($children) : array();
+            if($branch->children === FALSE)
+                return false; //Note: that mean's getMetadataTree returns FALSE
+            
+            $tree[] = $branch;
+        }
+        
+        return $tree;
+    }
+    
+    private function tree2List($tree = array()){
+        if(!count($tree))
+            return "";
+        
+        $li = "<ul>";
+        foreach($tree as $branch){
+            $li .= "<li>".$branch->name.$this->tree2List($branch->children)."</li>";
+        }
+        $li .= "</ul>";
+        
+        return $li;
     }
 
 }
