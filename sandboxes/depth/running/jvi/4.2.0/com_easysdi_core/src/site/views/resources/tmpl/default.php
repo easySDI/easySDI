@@ -173,7 +173,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
 
                                                 <?php if ($item->metadata[0]->state == sdiMetadata::VALIDATED): ?>
                                                     <li>
-                                                        <a class="<?php echo $item->id; ?>_linker" onclick="showModal('<?php echo $item->id; ?>')"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_PUBLISH_METADATA'); ?></a>
+                                                        <a class="<?php echo $item->id; ?>_linker" onclick="showModal('<?php echo $item->id; ?>'); return false;"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_PUBLISH_METADATA'); ?></a>
                                                     </li>
                                                 <?php endif; ?>
                                                 <?php if ($item->metadata[0]->state == sdiMetadata::PUBLISHED): ?>
@@ -181,7 +181,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                                         <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.inprogress&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_INPROGRESS_ITEM'); ?></a>
                                                     </li>
                                                     <li>
-                                                        <a class="<?php echo $item->id; ?>_modaler" onclick="showModal('<?php echo $item->id; ?>')"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_CHANGEPUBLISHEDDATE_METADATA'); ?></a>
+                                                        <a class="<?php echo $item->id; ?>_modaler" onclick="showModal('<?php echo $item->id; ?>'); return false;"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_CHANGEPUBLISHEDDATE_METADATA'); ?></a>
                                                     </li>
                                                     <li>
                                                         <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.archive&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ARCHIVE_METADATA'); ?></a>
@@ -196,7 +196,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                             <?php if ($item->metadata[0]->state == sdiMetadata::INPROGRESS && $this->user->authorize($item->id, sdiUser::metadataeditor)):?>
                                               <li class="divider"></li>
                                               <li>
-                                                  <a class="<?php echo $item->id; ?>_modaler" onclick="showAssignmentModal('<?php echo $item->metadata[0]->version; ?>')"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ASSIGN_METADATA'); ?></a>
+                                                  <a class="<?php echo $item->id; ?>_modaler" onclick="showAssignmentModal('<?php echo $item->metadata[0]->version; ?>'); return false;"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ASSIGN_METADATA'); ?></a>
                                               </li>
                                               <!--<li>
                                               <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.notify&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NOTIFY_METADATA'); ?></a>
@@ -255,14 +255,14 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                                 <li class="divider"></li>
                                                 <li>
                                                     <?php if ($item->versioning) : ?>
-                                                    <a href="#" onclick="showDeleteModal('<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $item->metadata[0]->version); ?>')"><i class="icon-remove"></i> <?php
+                                                    <a href="#" onclick="showDeleteModal('<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $item->metadata[0]->version); ?>'); return false;"><i class="icon-remove"></i> <?php
                                                             if (count($item->metadata) > 1)
                                                                 echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_VERSION');
                                                             else
                                                                 echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE');
                                                             ?></a>
                                                     <?php else : ?>
-                                                    <a href="#" onclick="showDeleteModal('<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $item->metadata[0]->version); ?>')"><i class="icon-remove"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE'); ?></a>
+                                                    <a href="#" onclick="showDeleteModal('<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $item->metadata[0]->version); ?>'); return false;"><i class="icon-remove"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE'); ?></a>
                                                     <?php endif; ?>
                                                 </li>
                                             <?php endif; ?>
