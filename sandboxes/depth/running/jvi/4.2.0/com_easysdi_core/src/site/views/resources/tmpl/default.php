@@ -300,7 +300,9 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
         </div>
     <?php endif; ?>
 </div>
-
+<style>
+    div.modal.fade{top:-100%}
+</style>
 <!-- Publish Modal -->
 <div class="modal fade" id="publishModal" tabindex="-1" role="dialog" aria-labelledby="publishModalLabel" aria-hidden="true">
     <form id="form_publish" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.publish'); ?>" method="post" class="form-validate form-horizontal">
