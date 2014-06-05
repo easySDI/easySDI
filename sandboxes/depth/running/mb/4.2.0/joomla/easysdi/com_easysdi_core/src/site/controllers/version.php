@@ -21,9 +21,11 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi
 class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
     private $versions = array();
+    private $md_rollback = array();
 
     public function remove() {
         // Initialise variables.
+        $db = JFactory::getDbo();
         $model = $this->getModel('Version', 'Easysdi_coreModel');
 
         // Get the user data.
@@ -34,66 +36,22 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         $versions = $this->getViralVersionnedChild($version);
 
-        //First Delete the metadata
-        $metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
-        $keys = array("version_id" => $data['id']);
+        try {
+            $db->transactionStart();
+            $this->deleteMetadatas($versions);
+            $this->deleteVersions($versions);
+            $db->transactionCommit();
 
-        $metadata->load($keys);
-        //Delete the csw metadata in the remote catalog
-        $csw = new sdiMetadata($metadata->id);
-        if (!$csw->delete()) {
-            // Redirect back to the list screen.
-            $this->setMessage(JText::_('Metadata can not be deleted from the remote catalog.'), 'error');
-//            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-//            return false;
-        }
-
-        if (!$metadata->delete($metadata->id)) {
-            // Redirect back to the list screen.
-            $this->setMessage(JText::_('Metadata can not be deleted.'), 'error');
+            // Redirect to the list screen.
+            $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_DELETED_SUCCESSFULLY'));
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+        } catch (Exception $exc) {
+            $db->transactionRollback();
+            $this->metadataRollback();
+            $this->setMessage(JText::_('Metadata can not be deleted.') . $exc->getMessage(), 'error');
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
         }
-
-        //Check how many versions left on the resource
-        $version = $model->getData($data['id']);
-        $dbo = JFactory::getDbo();
-        $query = $dbo->getQuery(true)
-                ->select('count(id)')
-                ->from('#__sdi_version')
-                ->where('resource_id = ' . (int) $version->resource_id);
-        $dbo->setQuery($query);
-        $num = $dbo->loadResult();
-
-        // Attempt to delete the version.
-        $return = $model->delete($data);
-        // Check for errors.
-        if ($return === false) {
-            // Redirect back to the list screen.
-            $this->setMessage(JText::sprintf('Delete failed', $model->getError()), 'warning');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-            return false;
-        }
-
-        //Delete resource if needed
-        if ($num == 1) {
-            $resource = JTable::getInstance('resource', 'Easysdi_coreTable');
-            $resource->load($version->resource_id);
-            if (!$resource->delete($resource->id)) {
-                $this->setMessage(JText::_('Resource can not be deleted.'), 'error');
-                $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-                return false;
-            }
-        }
-
-        // Check in the profile.
-        if ($return) {
-            $model->checkin($return);
-        }
-
-        // Redirect to the list screen.
-        $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_DELETED_SUCCESSFULLY'));
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
     }
 
     /*
@@ -145,7 +103,8 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $query = $db->getQuery(true);
         $query->select('v.resource_id');
         $query->from('#__sdi_version v');
-        $query->where('v.id = ' . (int) $parentId);
+        $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
+        $query->where('m.id = ' . (int) $parentId);
 
         $db->setQuery($query);
         $resource = $db->loadObject();
@@ -153,7 +112,8 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $query = $db->getQuery(true);
         $query->select('vl.id');
         $query->from('#__sdi_versionlink vl');
-        $query->where('vl.parent_id = ' . $parentId);
+        $query->innerJoin('#__sdi_metadata m on vl.parent_id = m.version_id');
+        $query->where('m.id = ' . $parentId);
 
         $db->setQuery($query);
         $childs = $db->loadObjectList();
@@ -234,12 +194,12 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         try {
             $dbo->transactionStart();
             $this->saveVersions($new_versions);
-            
+
             //Create the linked metadata
             require_once JPATH_SITE . '/components/com_easysdi_catalog/models/metadata.php';
             $metadata = JModelLegacy::getInstance('metadata', 'Easysdi_catalogModel');
             $model = $this->getModel('Version', 'Easysdi_coreModel');
-            
+
             $metadatas = array();
             foreach ($this->versions as $version) {
                 $mddata = array("metadatastate_id" => 1, "accessscope_id" => 1, "version_id" => $version['id']);
@@ -249,9 +209,8 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 // Check in the version.
                 $model->checkin($version['id']);
             }
-            
+
             $dbo->transactionCommit();
-            
         } catch (Exception $exc) {
             // if fail, clean metadata 
             foreach ($metadatas as $mddata) {
@@ -259,7 +218,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             }
             $dbo->transactionRollback();
             $model = $this->getModel('Version', 'Easysdi_coreModel');
-            $this->setMessage('Save failed: '. $exc->getMessage(), 'error');
+            $this->setMessage('Save failed: ' . $exc->getMessage(), 'error');
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
         }
@@ -400,8 +359,81 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         return $new_versions;
     }
 
+    /**
+     * 
+     * @param array $versions
+     * @return void
+     * 
+     * @throws Exception
+     */
     private function deleteVersions($versions) {
+
+        $model = $this->getModel('Version', 'Easysdi_coreModel');
+
+        foreach ($versions as $version) {
+            if (!empty($version->children)) {
+                $this->deleteVersions($version->children);
+            }
+
+            try {
+                // Get the user data.
+                $data = array();
+                $data['id'] = $version->id;
+
+                //Check how many versions left on the resource
+                $dbo = JFactory::getDbo();
+                $query = $dbo->getQuery(true)
+                        ->select('count(id)')
+                        ->from('#__sdi_version')
+                        ->where('resource_id = ' . (int) $version->resource_id);
+                $dbo->setQuery($query);
+                $num = $dbo->loadResult();
+
+                // Attempt to delete the version.
+                $return = $model->delete($data);
+
+                //Delete resource if needed
+                if ($num == 1) {
+                    $resource = JTable::getInstance('resource', 'Easysdi_coreTable');
+                    $resource->load($version->resource_id);
+                }
+
+                $model->checkin($return);
+            } catch (Exception $exc) {
+                throw $exc;
+            }
+        }
+    }
+
+    private function deleteMetadatas($versions) {
+
+        $md_rollback = array();
         
+        foreach ($versions as $version) {
+            if (!empty($version->children)) {
+                $md_rollback = array_merge($md_rollback,$this->deleteMetadatas($version->children));
+            }
+
+            $metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
+            $keys = array("version_id" => $version->id);
+
+            try {
+                $metadata->load($keys);
+                //Delete the csw metadata in the remote catalog
+                $csw = new sdiMetadata($metadata->id);
+                $this->md_rollback[$metadata->id] = $csw->load();
+                if (!$csw->delete()) {
+                    unset($this->md_rollback[$metadata->id]);
+                    throw new Exception(JText::_('Metadata can not be deleted from the remote catalog.'));
+                }
+
+                $metadata->delete($metadata->id);
+            } catch (Exception $exc) {
+                echo $exc->getTraceAsString();
+            }
+        }
+        
+        return $md_rollback;
     }
 
     /**
@@ -443,7 +475,8 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
      */
     private function getViralVersionnedChild($version) {
         $all_versions = array();
-
+        $all_versions[$version->id] = $version;
+        
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('cv.id, cv.name AS version_name, cr.name AS resource_name, cr.id AS resource_id');
@@ -461,7 +494,6 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         if (count($childs) > 0) {
             $version->children = $childs;
-            $all_versions[$version->id] = $version;
             $all_versions[$version->id]->children = $childs;
 
             foreach ($childs as $key => $child) {
@@ -493,6 +525,17 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             return $version;
         } else {
             return false;
+        }
+    }
+    
+    /**
+     * Reinsert metadata when delete fail
+     */
+    private function metadataRollback(){
+        $csw = new sdiMetadata();
+        foreach ($this->md_rollback as $metadata) {
+            
+            $csw->insert($metadata);
         }
     }
 
