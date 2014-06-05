@@ -69,7 +69,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
             $id = $app->input->get('id');
             $app->setUserState('com_easysdi_catalog.edit.metadata.id', $id);
         }
-        
+
         $this->setState('metadata.id', $id);
         $this->setState('metadata.import', $import);
 
@@ -81,7 +81,6 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         }
         $this->setState('params', $params);
         $this->setState('parentid', $app->getUserState('com_easysdi_core.parent.resource.version.id'));
-        
     }
 
     /**
@@ -143,7 +142,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                 $query->innerJoin('#__sdi_version v on v.id = m.version_id');
                 $query->innerJoin('#__sdi_resource r on v.resource_id = r.id');
                 $query->innerJoin('#__sdi_resourcetype rt on r.resourcetype_id = rt.id');
-                $query->where('m.id = ' . (int)$id);
+                $query->where('m.id = ' . (int) $id);
 
                 $this->db->setQuery($query);
                 $metadata = $this->db->loadObject();
@@ -164,34 +163,31 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                         if (key_exists('id', $import)) {
                             $cswm->preserveFileidentifier($result, $this->_item->guid);
                         }
-                        
+
                         $this->_item->csw = $result;
-                        
                     }
 
                     // If xml is upload
                     if (key_exists('xml', $import)) {
-                        $xml = new DOMDocument('1.0','utf-8');
+                        $xml = new DOMDocument('1.0', 'utf-8');
                         $xml->loadXML($import['xml']);
                         $cswm = new CswMerge($this->_item->csw, $xml);
 
-                        if($merged = $cswm->mergeImport($import['importref_id'])){
+                        if ($merged = $cswm->mergeImport($import['importref_id'])) {
                             $this->_item->csw = $merged;
                         }
                     }
-                    
+
                     // If fileidentifier is not null
-                    if(key_exists('fileidentifier', $import)){
-                       $cswm = new CswMerge($this->_item->csw);
-                      
-                       if($merged = $cswm->mergeImport($import['importref_id'], $import['fileidentifier'])){
+                    if (key_exists('fileidentifier', $import)) {
+                        $cswm = new CswMerge($this->_item->csw);
+
+                        if ($merged = $cswm->mergeImport($import['importref_id'], $import['fileidentifier'])) {
                             $this->_item->csw = $merged;
-                        }  else {
+                        } else {
                             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_NOT_FOUND_ERROR'), 'error');
                         }
                     }
-                    
-                    
                 }
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
@@ -339,16 +335,19 @@ class Easysdi_catalogModelMetadata extends JModelForm {
             $CSWmetadata = new sdiMetadata($table->id);
             if ($new) {
                 if (!$CSWmetadata->insert()) {
-                    $table->delete();
-                    return false;
+                    //$table->delete();
+                    throw new Exception('Echec de création dans le catalog');
                 }
             } else {
                 if (!$CSWmetadata->update()) {
-                    return false;
+                    throw new Exception('Echec de mise à jour du catalog');
                 }
             }
-
-            return $id;
+            if (!empty($id)) {
+                return $id;
+            } else {
+                return $table->id;
+            }
         } else {
             return false;
         }
@@ -374,6 +373,10 @@ class Easysdi_catalogModelMetadata extends JModelForm {
 
         $table = $this->getTable();
         if ($table->delete($data['id']) === true) {
+            /*$CSWmetadata = new sdiMetadata($table->id);
+            if (!$CSWmetadata->delete()) {
+                throw new Exception('Echec de suppression dans catalog');
+            }*/
             return $id;
         } else {
             return false;
