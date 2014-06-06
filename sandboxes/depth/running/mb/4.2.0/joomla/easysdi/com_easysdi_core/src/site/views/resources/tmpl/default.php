@@ -233,7 +233,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                         <ul class="dropdown-menu">
                                             <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->versioning && !$item->hasUnpublishVersion) : ?>
                                                 <li>
-                                                    <a onclick="showNewVersionModal('<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.create&resource=' . $item->id); ?>',<?php echo $item->id ; ?>);return false;" href="#"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
+                                                    <a onclick="showNewVersionModal(<?php echo $item->id ; ?>);return false;" href="#"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
                                                 </li>
                                             <?php endif; ?>
                                             <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->supportrelation): ?>
@@ -267,14 +267,14 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                                 <li class="divider"></li>
                                                 <li>
                                                     <?php if ($item->versioning) : ?>
-                                                        <a href="#" onclick="showDeleteModal('<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $item->metadata[0]->version); ?>'); return false;"><i class="icon-remove"></i> <?php
+                                                        <a href="#" onclick="showDeleteModal('<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $item->metadata[0]->version); ?>',<?php echo $item->metadata[0]->version; ?>); return false;"><i class="icon-remove"></i> <?php
                                                             if (count($item->metadata) > 1)
                                                                 echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_VERSION');
                                                             else
                                                                 echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE');
                                                             ?></a>
                                                     <?php else : ?>
-                                                        <a href="#" onclick="showDeleteModal('<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $item->metadata[0]->version); ?>'); return false;"><i class="icon-remove"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE'); ?></a>
+                                                        <a href="#" onclick="showDeleteModal('<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.remove&id=' . $item->metadata[0]->version); ?>',<?php echo $item->metadata[0]->version; ?>); return false;"><i class="icon-remove"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE'); ?></a>
                                                     <?php endif; ?>
                                                 </li>
                                             <?php endif; ?>
@@ -349,7 +349,6 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                 <span id="createModalChildrenList"></span>
             </div>
             <div class="modal-footer">
-                <a href="#" id="btn_create"><button type="button" class="btn btn-danger"><?php echo JText::_('COM_EASYSDI_CORE_DELETE_ITEM'); ?></button></a>
                 <button type="button" class="btn btn-success" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
             </div>
         </div>
@@ -366,6 +365,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
             </div>
             <div id="deleteModalBody" class="modal-body">
                 <?php echo JText::_('COM_EAYSDI_CORE_DELETE_CONFIRM'); ?>
+                <span id="deleteModalChildrenList"></span>
             </div>
             <div class="modal-footer">
                 <a href="#" id="btn_delete"><button type="button" class="btn btn-danger"><?php echo JText::_('COM_EASYSDI_CORE_DELETE_ITEM'); ?></button></a>

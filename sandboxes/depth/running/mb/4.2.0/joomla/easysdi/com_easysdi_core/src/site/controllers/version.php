@@ -183,16 +183,33 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $dbo = JFactory::getDbo();
 
         $resource_id = JFactory::getApplication()->input->get('resource', null, 'int');
-        
+
         $versions = array();
         if ($lastversion = $this->getLastVersion($resource_id)) {
             $versions = $this->getViralVersionnedChild($lastversion);
         }
 
-        
-        
+        // get version in progress
+        $versions_inprogress = $this->getChildrenByState($versions, sdiMetadata::INPROGRESS);
+
+        // try to delete version in progress
+        try {
+            $dbo->transactionStart();
+            $this->deleteMetadatas($versions_inprogress);
+            $this->deleteVersions($versions_inprogress);
+            $dbo->transactionCommit();
+        } catch (Exception $exc) {
+            $dbo->transactionRollback();
+            $this->metadataRollback();
+            $this->setMessage('Save failed: ' . $exc->getMessage(), 'error');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+            return false;
+        }
+
+        // get version to create
         $new_versions = $this->getNewVersions($versions);
 
+        // try to create the new versions
         try {
             $dbo->transactionStart();
             $this->saveVersions($new_versions);
@@ -340,6 +357,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
     }
 
     /**
+     * Create an array with the new versions
      * 
      * @param array $versions
      */
@@ -362,6 +380,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
     }
 
     /**
+     * Recursively delete versions.
      * 
      * @param array $versions
      * @return void
@@ -407,13 +426,20 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         }
     }
 
+    /**
+     * Recursively delete metadata.
+     * 
+     * @param array $versions
+     * @return array
+     * @throws Exception
+     */
     private function deleteMetadatas($versions) {
 
         $md_rollback = array();
-        
+
         foreach ($versions as $version) {
             if (!empty($version->children)) {
-                $md_rollback = array_merge($md_rollback,$this->deleteMetadatas($version->children));
+                $md_rollback = array_merge($md_rollback, $this->deleteMetadatas($version->children));
             }
 
             $metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
@@ -434,12 +460,12 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 echo $exc->getTraceAsString();
             }
         }
-        
+
         return $md_rollback;
     }
 
     /**
-     * Save versions recursivly
+     * Recursively create versions.
      * 
      * @throws RuntimeException
      * @param array $versions
@@ -478,7 +504,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
     private function getViralVersionnedChild($version) {
         $all_versions = array();
         $all_versions[$version->id] = $version;
-        
+
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('cv.id, cv.name AS version_name, cr.name AS resource_name, cr.id AS resource_id');
@@ -529,71 +555,92 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             return false;
         }
     }
-    
+
     /**
      * Reinsert metadata when delete fail
      */
-    private function metadataRollback(){
+    private function metadataRollback() {
         $csw = new sdiMetadata();
         foreach ($this->md_rollback as $metadata) {
             $csw->insert($metadata);
         }
     }
-    
-    /**
-     * 
-     * @return json Liste of version for the specific resource
-     */
-    public function getInProgressChildren(){
-        $resource_id = JFactory::getApplication()->input->get('resource', null, 'int');
-        
-        $versions = array();
-        if ($lastversion = $this->getLastVersion($resource_id)) {
-            $versions = $this->getViralVersionnedChild($lastversion);
-        }
-        
-        $inProgress = $this->getChildrenByState($versions, sdiMetadata::INPROGRESS);
+
+    public function getCascadeDeleteChild() {
+        $model = $this->getModel('Version', 'Easysdi_coreModel');
+
+        // Get the user data.
+        $data = array();
+        $data['id'] = JFactory::getApplication()->input->get('version_id', null, 'int');
+
+        $version = $model->getData($data['id']);
         
         $response = array();
-        $response['total'] = count($inProgress);
-        $response['versions'] = $inProgress;
+        $response['versions'] = $this->getViralVersionnedChild($version);
         
         echo json_encode($response);
         die();
     }
-    
+
+    /**
+     * 
+     * @return json Liste of version for the specific resource
+     */
+    public function getInProgressChildren() {
+        $resource_id = JFactory::getApplication()->input->get('resource', null, 'int');
+
+        $versions = array();
+        if ($lastversion = $this->getLastVersion($resource_id)) {
+            $versions = $this->getViralVersionnedChild($lastversion);
+        }
+
+        $inProgress = $this->getChildrenByState($versions, array(sdiMetadata::INPROGRESS, sdiMetadata::VALIDATED));
+
+        $response = array();
+        $response['total'] = count($inProgress);
+        $response['versions'] = $inProgress;
+
+        echo json_encode($response);
+        die();
+    }
+
     /**
      * 
      * @param array $versions
-     * @param int $state The state for the filter
+     * @param array $state The states for the filter
      * @return array Array filtered by metadatastate_id 
      */
-    private function getChildrenByState($versions, $state) {
+    private function getChildrenByState($versions, $states) {
         $db = JFactory::getDbo();
         $inProgressChildren = array();
-        
+
         foreach ($versions as $version) {
-            
-            if(!empty($version->children)){
-                $inProgressChildren = array_merge($inProgressChildren, $this->getChildrenByState($version->children, $state));
+
+            if (!empty($version->children)) {
+                $inProgressChildren = array_merge($inProgressChildren, $this->getChildrenByState($version->children, $states));
             }
-            
+
             $query = $db->getQuery(true);
-            $query->select('m.id,m.metadatastate_id');
+            $query->select('m.id, m.metadatastate_id, v.name as version_name, r.name as resource_name');
             $query->from('#__sdi_version v');
             $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
-            $query->where('v.id = '.$version->id);
-            
+            $query->innerJoin('#__sdi_resource r on r.id = v.resource_id');
+            $query->where('v.id = ' . $version->id);
+            $conditions = array();
+            foreach ($states as $state) {
+                $conditions[] = 'm.metadatastate_id = ' . $state;
+            }
+            $condition = implode(' OR ', $conditions);
+            $query->where('(' . $condition . ')');
+
             $db->setQuery($query);
             $metadata = $db->loadObject();
-            
-            if($metadata->metadatastate_id == $state){
-                $version->metadata_id = $metadata->id;
-                $inProgressChildren[] = $version;
+
+            if (!empty($metadata)) {
+                $inProgressChildren[] = $metadata;
             }
-            
         }
-        
+
         return $inProgressChildren;
     }
 
