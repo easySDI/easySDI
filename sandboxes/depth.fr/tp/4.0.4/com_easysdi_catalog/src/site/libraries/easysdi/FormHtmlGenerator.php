@@ -645,6 +645,22 @@ class FormHtmlGenerator {
 
                                 " . $layer_definition . "
                                 polygonLayer_$parent_path = new OpenLayers.Layer.Vector('Polygon Layer');
+                                
+                                var Navigation = new OpenLayers.Control.Navigation({
+                                    'zoomWheelEnabled': false,
+                                    'defaultDblClick': function ( event ) { 
+                                        return; 
+                                     }
+                                });
+
+                                map_$parent_path.addControl(Navigation);
+
+                                var NavigationControls = map_$parent_path.getControlsByClass('OpenLayers.Control.Navigation')
+                                  , i;
+
+                                for ( i = 0; i < NavigationControls.length; i++ ) {
+                                    NavigationControls[i].disableZoomWheel();
+                                }
 
                                 map_$parent_path.addLayers([layer_$parent_path, polygonLayer_$parent_path]);
 
