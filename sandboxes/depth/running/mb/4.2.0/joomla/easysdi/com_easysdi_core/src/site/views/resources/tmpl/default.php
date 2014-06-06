@@ -233,7 +233,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                         <ul class="dropdown-menu">
                                             <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->versioning && !$item->hasUnpublishVersion) : ?>
                                                 <li>
-                                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.create&resource=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
+                                                    <a onclick="showNewVersionModal('<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.create&resource=' . $item->id); ?>',<?php echo $item->id ; ?>);return false;" href="#"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
                                                 </li>
                                             <?php endif; ?>
                                             <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->supportrelation): ?>
@@ -334,6 +334,26 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
             </div>
         </div>
     </form>
+</div>
+
+<!-- Create new version modal -->
+<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel"><?php echo JText::_('COM_EASYSDI_CORE_ADD_ITEM_MODAL_TITLE'); ?></h4>
+            </div>
+            <div id="createModalBody" class="modal-body">
+                <b><?php echo JText::_('COM_EASYSDI_CORE_ADD_ITEM_MODAL_BODY'); ?></b>
+                <span id="createModalChildrenList"></span>
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="btn_create"><button type="button" class="btn btn-danger"><?php echo JText::_('COM_EASYSDI_CORE_DELETE_ITEM'); ?></button></a>
+                <button type="button" class="btn btn-success" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Delete modal -->

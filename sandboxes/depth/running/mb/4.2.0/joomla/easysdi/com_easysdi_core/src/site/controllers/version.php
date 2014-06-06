@@ -183,12 +183,14 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $dbo = JFactory::getDbo();
 
         $resource_id = JFactory::getApplication()->input->get('resource', null, 'int');
-
+        
         $versions = array();
         if ($lastversion = $this->getLastVersion($resource_id)) {
             $versions = $this->getViralVersionnedChild($lastversion);
         }
 
+        
+        
         $new_versions = $this->getNewVersions($versions);
 
         try {
@@ -471,7 +473,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
      * Check recursively if version has viral versionning child
      * 
      * @param stdClass $version
-     * @return stdClass[] if has child or false
+     * @return stdClass[] 
      */
     private function getViralVersionnedChild($version) {
         $all_versions = array();
@@ -534,9 +536,65 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
     private function metadataRollback(){
         $csw = new sdiMetadata();
         foreach ($this->md_rollback as $metadata) {
-            
             $csw->insert($metadata);
         }
+    }
+    
+    /**
+     * 
+     * @return json Liste of version for the specific resource
+     */
+    public function getInProgressChildren(){
+        $resource_id = JFactory::getApplication()->input->get('resource', null, 'int');
+        
+        $versions = array();
+        if ($lastversion = $this->getLastVersion($resource_id)) {
+            $versions = $this->getViralVersionnedChild($lastversion);
+        }
+        
+        $inProgress = $this->getChildrenByState($versions, sdiMetadata::INPROGRESS);
+        
+        $response = array();
+        $response['total'] = count($inProgress);
+        $response['versions'] = $inProgress;
+        
+        echo json_encode($response);
+        die();
+    }
+    
+    /**
+     * 
+     * @param array $versions
+     * @param int $state The state for the filter
+     * @return array Array filtered by metadatastate_id 
+     */
+    private function getChildrenByState($versions, $state) {
+        $db = JFactory::getDbo();
+        $inProgressChildren = array();
+        
+        foreach ($versions as $version) {
+            
+            if(!empty($version->children)){
+                $inProgressChildren = array_merge($inProgressChildren, $this->getChildrenByState($version->children, $state));
+            }
+            
+            $query = $db->getQuery(true);
+            $query->select('m.id,m.metadatastate_id');
+            $query->from('#__sdi_version v');
+            $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
+            $query->where('v.id = '.$version->id);
+            
+            $db->setQuery($query);
+            $metadata = $db->loadObject();
+            
+            if($metadata->metadatastate_id == $state){
+                $version->metadata_id = $metadata->id;
+                $inProgressChildren[] = $version;
+            }
+            
+        }
+        
+        return $inProgressChildren;
     }
 
 }

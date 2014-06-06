@@ -43,7 +43,7 @@ function getChildNumer(parentId) {
             if (response.num > 0) {
                 js('#' + response.resource_id + '_child_list').show();
                 js('#' + response.resource_id + '_child_num').html(response.num);
-            }else{
+            } else {
                 js('#' + response.resource_id + '_child_list').hide();
             }
         }
@@ -70,10 +70,10 @@ function showModal(id) {
  */
 function onVersionChange(resource_id) {
     var version_id = js("select#" + resource_id + "_select").val();
-    
+
     changeRelationLink(resource_id, version_id);
-    changeChildLink(resource_id,version_id);
-    
+    changeChildLink(resource_id, version_id);
+
     getChildNumer(version_id);
 }
 
@@ -83,7 +83,7 @@ function onVersionChange(resource_id) {
  * @param {int} resource_id
  * @param {int} version_id
  */
-function changeRelationLink(resource_id, version_id){
+function changeRelationLink(resource_id, version_id) {
     js('.' + resource_id + '_linker').each(function() {
         var href = js(this).attr("href");
         var i = href.lastIndexOf("/");
@@ -98,7 +98,7 @@ function changeRelationLink(resource_id, version_id){
  * @param {int} resource_id
  * @param {int} version_id
  */
-function changeChildLink(resource_id, version_id){
+function changeChildLink(resource_id, version_id) {
     js('#' + resource_id + '_child_linker').attr('href', '/resources?parentid=' + version_id);
 }
 
@@ -110,4 +110,27 @@ function changeChildLink(resource_id, version_id){
 function showDeleteModal(deleteUrl) {
     js('#btn_delete').attr('href', deleteUrl);
     js('#deleteModal').modal('show');
+}
+
+/**
+ * 
+ * @param {string} createUrl
+ * @param {int} resource_id
+ */
+function showNewVersionModal(createUrl, resource_id) {
+    js.get(currentUrl + '/?option=com_easysdi_core&task=version.getInProgressChildren&resource=' + resource_id, function(data) {
+        var response = js.parseJSON(data);
+        if (response.total > 0) {
+            var body = '<ul>';
+            js.each(response.versions, function(k, version) {
+                body += '<li>' + version.resource_name + ' : ' + version.version_name + ' <a href="/index.php?option=com_easysdi_catalog&task=metadata.edit&id=' + version.metadata_id + '" target="_top"><i class="icon-edit"></i></a></li>';
+            });
+            body += '</ul>';
+            js('#btn_create').attr('href', createUrl);
+            js('#createModalChildrenList').html(body);
+            js('#createModal').modal('show');
+        } else {
+            window.location.href = createUrl;
+        }
+    });
 }
