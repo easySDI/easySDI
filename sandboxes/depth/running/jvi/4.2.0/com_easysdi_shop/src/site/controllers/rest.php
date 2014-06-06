@@ -463,8 +463,8 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $client->appendChild($this->getAdresse(self::BILLING, $order));
         $client->appendChild($this->getAdresse(self::DELIVERY, $order));
         
-        /*if(!empty($this->organism))
-            $client->appendChild($this->getCategories($this->organism->id));*/
+        if(!empty($this->organism))
+            $client->appendChild($this->getCategories($this->organism->id));
 
         return $client;
     }
@@ -483,12 +483,13 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
             $tierce->appendChild($this->getAdresse(self::BILLING, $order, 'tierce'));
             $tierce->appendChild($this->getAdresse(self::DELIVERY, $order, 'tierce'));
             
-            /*$query = $this->db->getQuery(true);
-            $query->select('o.id')
-                    ->from('#__users u')
-                    ->join('LEFT', '#__sdi_user su ON su.user_id=u.id')
-                    ->join('LEFT', '#__sdi_organism o ON o.username=u.username');
-            $tierce->appendChild($this->getCategories($order->tp_organism_id));*/
+            $query = $this->db->getQuery(true);
+            $query->select('uro.organism_id')
+                    ->from('#__sdi_user_role_organism uro')
+                    ->where('uro.user_id='.$order->thirdparty_id);
+            $this->db->setQuery($query);
+            $organismId = $this->db->loadResult();
+            $tierce->appendChild($this->getCategories($organismId));
         }
         return $tierce;
     }
