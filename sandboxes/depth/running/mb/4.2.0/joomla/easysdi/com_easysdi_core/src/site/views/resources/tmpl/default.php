@@ -21,7 +21,16 @@ $document = JFactory::getDocument();
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/resources.js');
 $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css');
 ?>
-
+<style> 
+    .tooltip{
+        width: 250px;
+    }
+    
+    .tooltip-inner {
+        white-space:pre-wrap;
+    }
+    
+</style>
 <div class="core front-end-edit">
     <?php if (!empty($this->parent)): ?>
         <h1><?php echo $this->parent->name; ?>: <?php echo $this->parent->version_name; ?></h1>
@@ -231,17 +240,22 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                             <span class="caret"></span>
                                         </a>
                                         <ul class="dropdown-menu">
-                                            <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->versioning && !$item->hasUnpublishVersion) : ?>
+                                            <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->versioning) : ?>
                                                 <li>
-                                                    <a onclick="showNewVersionModal(<?php echo $item->id ; ?>);return false;" href="#"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
+                                                    <?php if($item->hasUnpublishVersion) :?>
+                                                        <a id="<?php echo $item->id; ?>_new_linker" style="color: #CBCBCB" class="disabled" href="#"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
+                                                    <?php else : ?>
+                                                        <a id="<?php echo $item->id; ?>_new_linker" href="#"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
+                                                    <?php endif; ?>
+                                                    
                                                 </li>
                                             <?php endif; ?>
                                             <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->supportrelation): ?>
                                                 <li>
-                                                    <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.edit&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RELATIONS'); ?></a>
+                                                    <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.edit&id=' . $item->metadata[0]->version); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RELATIONS'); ?></a>
                                                 </li>
                                                 <li class="child_list" id="<?php echo $item->id; ?>_child_list">
-                                                    <a id="<?php echo $item->id; ?>_child_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&parentid=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_CHILDREN_LIST'); ?> (<span id="<?php echo $item->id; ?>_child_num">0</span>)</a>
+                                                    <a id="<?php echo $item->id; ?>_child_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&parentid=' . $item->metadata[0]->version); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_CHILDREN_LIST'); ?> (<span id="<?php echo $item->id; ?>_child_num">0</span>)</a>
                                                 </li>
                                             <?php endif; ?>
                                             <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager)): ?>

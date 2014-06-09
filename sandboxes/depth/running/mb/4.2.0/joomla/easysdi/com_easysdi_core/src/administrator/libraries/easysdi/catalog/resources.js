@@ -17,17 +17,18 @@ js(document).ready(function() {
         firstDay: 1
     });
 
-    initChildrenList();
+    initActionList();
 
 });
 
 /**
  * Initalise child list
  */
-function initChildrenList() {
+function initActionList() {
     js('.version-status').each(function(i) {
-        var parentId = js(this).val();
-        getChildNumer(parentId);
+        var metadata_id = js(this).val();
+        getChildNumer(metadata_id);
+        getNewVersionRight(metadata_id);
     });
 }
 
@@ -46,6 +47,28 @@ function getChildNumer(parentId) {
             } else {
                 js('#' + response.resource_id + '_child_list').hide();
             }
+        }
+    });
+}
+
+function getNewVersionRight(metadata_id) {
+    js.get(currentUrl + '/?option=com_easysdi_core&task=version.getNewVersionRight&metadata_id=' + metadata_id, function(data) {
+        var response = js.parseJSON(data);
+        if (response.canCreate === false) {
+            js('#' + response.resource_id + '_new_linker').attr('class', 'disabled');
+
+            var message = '';
+            js.each(response.cause, function(k, cause) {
+                message += '<b>' + cause.message + '</b>' + '<br/>' + cause.elements + '</br>';
+            });
+
+            var options = {title: message, html: true};
+            js('#' + response.resource_id + '_new_linker').tooltip(options);
+        } else {
+            js('#' + response.resource_id + '_new_linker').removeAttr('style');
+            js('#' + response.resource_id + '_new_linker').removeAttr('css');
+            
+            js('#' + response.resource_id + '_new_linker').on('click', function(){showNewVersionModal(response.resource_id)});
         }
     });
 }
@@ -75,6 +98,7 @@ function onVersionChange(resource_id) {
     changeChildLink(resource_id, version_id);
 
     getChildNumer(version_id);
+    getNewVersionRight(version_id)
 }
 
 /**
@@ -108,23 +132,38 @@ function changeChildLink(resource_id, version_id) {
  * @param {string} deleteUrl
  */
 function showDeleteModal(deleteUrl, version_id) {
+
     js.get(currentUrl + '/?option=com_easysdi_core&task=version.getCascadeDeleteChild&version_id=' + version_id, function(data) {
         var response = js.parseJSON(data);
-        var body = '<ul>';
-        js.each(response.versions, function(k, version) {
-            body += '<li>' + version.resource_name + ' : ' + version.version_name + ' <a href="/index.php?option=com_easysdi_catalog&task=metadata.edit&id=' + version.metadata_id + '" target="_top"><i class="icon-edit"></i></a></li>';
-        });
-        body += '</ul>';
+        var body = buildDeletedTree(response.versions);
         js('#deleteModalChildrenList').html(body);
+        js('#btn_delete').attr('href', deleteUrl);
+        js('#deleteModal').modal('show');
+    });
+}
+
+function buildDeletedTree(versions) {
+    var body = '<ul>';
+
+    js.each(versions, function(k, version) {
+        body += '<li>' + version.resource_name + ' : ' + version.version_name + ' <a href="/index.php?option=com_easysdi_catalog&task=metadata.edit&id=' + version.metadata_id + '" target="_top"><i class="icon-edit"></i></a>';
+        if (typeof version.children === 'undefined') {
+            body += '</li>';
+        } else {
+            body += buildDeletedTree(version.children)
+            body += '</li>';
+        }
+
+
     });
 
-    js('#btn_delete').attr('href', deleteUrl);
-    js('#deleteModal').modal('show');
+    body += '</ul>'
+
+    return body;
 }
 
 /**
  * 
- * @param {string} createUrl
  * @param {int} resource_id
  */
 function showNewVersionModal(resource_id) {
@@ -139,6 +178,7 @@ function showNewVersionModal(resource_id) {
             js('#createModalChildrenList').html(body);
             js('#createModal').modal('show');
         } else {
+            var createUrl = currentUrl + '/?option=com_easysdi_core&task=version.create&resource=' + resource_id;
             window.location.href = createUrl;
         }
     });
