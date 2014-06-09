@@ -392,7 +392,7 @@ REFERENCES [#__sdi_user] ([id]);
 ALTER TABLE [#__sdi_order] CHECK CONSTRAINT [#__sdi_order$#__sdi_order_fk3];
 
 ALTER TABLE [#__sdi_order]  WITH CHECK ADD  CONSTRAINT [#__sdi_order$#__sdi_order_fk4] FOREIGN KEY([thirdparty_id])
-REFERENCES [#__sdi_user] ([id]);
+REFERENCES [#__sdi_organism] ([id]);
 
 ALTER TABLE [#__sdi_order] CHECK CONSTRAINT [#__sdi_order$#__sdi_order_fk4];
 

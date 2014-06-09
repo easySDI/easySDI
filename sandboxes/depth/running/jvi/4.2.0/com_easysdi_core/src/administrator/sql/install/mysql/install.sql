@@ -2272,7 +2272,7 @@ PRIMARY KEY (`id`),
     ON UPDATE NO ACTION,
   CONSTRAINT `#__sdi_order_fk4`
     FOREIGN KEY (`thirdparty_id`)
-    REFERENCES `#__sdi_user` (`id`)
+    REFERENCES `#__sdi_organism` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;

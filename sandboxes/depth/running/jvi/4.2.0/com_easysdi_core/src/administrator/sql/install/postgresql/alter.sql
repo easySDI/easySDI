@@ -954,7 +954,7 @@ ALTER TABLE ONLY jos_sdi_order
 ALTER TABLE ONLY jos_sdi_order
     ADD CONSTRAINT jos_sdi_order_fk3 FOREIGN KEY (user_id) REFERENCES jos_sdi_user(id) MATCH FULL;
 ALTER TABLE ONLY jos_sdi_order
-    ADD CONSTRAINT jos_sdi_order_fk4 FOREIGN KEY (thirdparty_id) REFERENCES jos_sdi_user(id) MATCH FULL;
+    ADD CONSTRAINT jos_sdi_order_fk4 FOREIGN KEY (thirdparty_id) REFERENCES jos_sdi_organism(id) MATCH FULL;
 ALTER TABLE ONLY jos_sdi_order_perimeter
     ADD CONSTRAINT jos_sdi_order_perimeter_fk1 FOREIGN KEY (order_id) REFERENCES jos_sdi_order(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY jos_sdi_order_perimeter

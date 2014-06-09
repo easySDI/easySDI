@@ -38,3 +38,9 @@ ALTER TABLE `jos_sdi_resourcetype` RENAME COLUMN `meta` TO `application`;
 
 DELETE FROM `jos_sdi_user_role_organism` WHERE role_id=(SELECT id FROM `jos_sdi_sys_role` WHERE `value`='ordereligible');
 DELETE FROM `jos_sdi_sys_role` WHERE `value`='ordereligible';
+
+
+ALTER TABLE ONLY jos_sdi_order
+    DROP CONSTRAINT jos_sdi_order_fk4;
+ALTER TABLE ONLY jos_sdi_order
+    ADD CONSTRAINT jos_sdi_order_fk4 FOREIGN KEY (thirdparty_id) REFERENCES jos_sdi_organism(id) MATCH FULL;
