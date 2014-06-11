@@ -107,8 +107,19 @@ class Easysdi_contactViewOrganisms extends JViewLegacy {
 
         //Set sidebar action - New in 3.0
         JHtmlSidebar::setAction('index.php?option=com_easysdi_contact&view=organisms');
-
-        $this->extra_sidebar = '';
+        
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                    ->select('id as value, name as text')
+                    ->from($db->quoteName('#__sdi_category'))
+                    ->where('state=1');
+        $db->setQuery($query);
+        $categoriesOptions = $db->loadObjectList();
+        
+        $this->extra_sidebar = 
+                '<select name="filter_category[]" id="filter_category" class="span12 small" multiple onchange="this.form.submit()" data-placeholder="'.JText::_('JOPTION_SELECT_CATEGORY').'">'
+                .JHtml::_('select.options', $categoriesOptions, 'value', 'text', $this->state->get('filter.category'))
+                .'</select>';
 
         JHtmlSidebar::addFilter(
                 JText::_('JOPTION_SELECT_PUBLISHED'), 'filter_published', JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), "value", "text", $this->state->get('filter.state'), true)
@@ -123,7 +134,7 @@ class Easysdi_contactViewOrganisms extends JViewLegacy {
         return array(
             'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
             'a.state' => JText::_('JSTATUS'),
-            'a.name' => JText::_('COM_EASYSDI_CONTACT_USERS_USER_NAME'),
+            'a.name' => JText::_('COM_EASYSDI_CONTACT_ORGANISMS_NAME'),
             'a.access_level' => JText::_('JGRID_HEADING_ACCESS'),
             'a.id' => JText::_('JGRID_HEADING_ID'),
         );

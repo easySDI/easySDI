@@ -30,7 +30,6 @@ class Easysdi_coreModelResource extends JModelForm {
     const DIFFUSIONMANAGER = 5;
     const PREVIEWMANAGER = 6;
     const EXTRACTIONRESPONSIBLE = 7;
-    const ORDERELIGIBLE = 8;
     
 
     /**
@@ -105,6 +104,12 @@ class Easysdi_coreModelResource extends JModelForm {
                 $resourcetype->load($this->_item->resourcetype_id);
                 $resourcetype->loadLocalname();
                 $this->_item->resourcetype = $resourcetype->localname;
+                
+                $this->_item->resourcerights = array(
+                    5 => $resourcetype->diffusion,
+                    6 => $resourcetype->view,
+                    7 => $resourcetype->diffusion
+                );
             }
 
             //Load rights
@@ -136,8 +141,6 @@ class Easysdi_coreModelResource extends JModelForm {
                 $row = array("role_id" => "6", "user_id" => $user->id);
                 $rows [] = (object) $row;
                 $row = array("role_id" => "7", "user_id" => $user->id);
-                $rows [] = (object) $row;
-                $row = array("role_id" => "8", "user_id" => $user->id);
                 $rows [] = (object) $row;
                 $this->_item->rights = json_encode($rows);
             }
@@ -244,6 +247,24 @@ class Easysdi_coreModelResource extends JModelForm {
 
         return $data;
     }
+    
+    public function validate($form, $data, $group = null){
+        $return = parent::validate($form, $data, $group);
+        
+        // validate extra fields
+        $jinput = JFactory::getApplication()->input;
+        $jform = $jinput->get('jform', '', 'ARRAY');
+        
+        // --extra fields : resources users rights
+        for($index=2; $index<8; $index++)
+            JFactory::getApplication()->setUserState('com_easysdi_core.edit.resource.ur[rights_'.$index.']',$jform[$index]);
+        if(!isset($jform[2])){
+            $this->setError(JText::_('COM_EASYSDI_CORE_RESOURCES_ITEM_SAVED_ERROR_RESOURCE_MANAGER'));
+            return false;
+        }
+        
+        return $return;
+    }
 
     /**
      * Method to save the form data.
@@ -294,8 +315,8 @@ class Easysdi_coreModelResource extends JModelForm {
 
             $userroleresource = JTable::getInstance('userroleresource', 'Easysdi_coreTable');
             $userroleresource->deleteByResourceId($table->id);
-
-            for ($index = 2; $index < 9; $index++) {
+            
+            for ($index = 2; $index < 8; $index++) {
                 if (!isset($jform[$index]))
                     continue;
 

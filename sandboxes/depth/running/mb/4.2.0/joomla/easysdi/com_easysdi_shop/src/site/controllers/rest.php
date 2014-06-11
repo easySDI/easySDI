@@ -337,7 +337,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
     private function isOrganismAccount($username, $password) {
         $query = $this->db->getQuery(true);
 
-        $query->select('o.id, o.username, o.password');
+        $query->select('o.id, o.username, o.password, o.acronym, o.website, o.name');
         $query->from('#__sdi_organism o');
         $query->where('o.username = ' . $query->quote($username));
 
@@ -392,10 +392,10 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
      * Get an address node from the specific type
      * 
      * @param int $addressType type of address 
-     * @param stdClass $order
+     * @param int $recipientId
      * @return DOMElement address node
      */
-    private function getAdresse($addressType, $order, $for = 'client') {
+    private function getAdresse($addressType, $recipientId, $for = 'client') {
         switch ($addressType) {
             case self::CONTACT:
                 $address = $this->response->createElementNS($this->nsEasysdi, 'easysdi:CONTACTADDRESS');
@@ -419,11 +419,14 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $query->from('#__sdi_address a ');
         switch ($for) {
             case 'client':
-                $query->where('a.user_id = ' . (int)$order->user_id);
+                $query->where('a.user_id = ' . (int)$recipientId);
                 break;
             case 'tierce':
-                $query->where('a.user_id = ' . (int)$order->thirdparty_id);
+                $query->where('a.organism_id = ' . (int)$recipientId);
                 break;
+            /*case 'organism':
+                $query->where('a.organism_id = ' . (int)$recipientId);
+                break;*/
         }
         $query->where('a.addresstype_id = ' . (int)$addressType);
 
@@ -459,9 +462,26 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
     private function getClient($order) {
         $client = $this->response->createElementNS($this->nsEasysdi, 'easysdi:CLIENT');
         $client->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:ID', $order->user_id));
-        $client->appendChild($this->getAdresse(self::CONTACT, $order));
-        $client->appendChild($this->getAdresse(self::BILLING, $order));
-        $client->appendChild($this->getAdresse(self::DELIVERY, $order));
+        $client->appendChild($this->getAdresse(self::CONTACT, $order->user_id));
+        $client->appendChild($this->getAdresse(self::BILLING, $order->user_id));
+        $client->appendChild($this->getAdresse(self::DELIVERY, $order->user_id));
+        
+        if(!empty($this->organism)){
+            $organism = $this->response->createElementNS($this->nsEasysdi, 'easysdi:ORGANISM');
+            
+            $organism->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:ID', $this->organism->id));
+            $organism->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:NAME', $this->organism->name));
+            $organism->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:ACRONYM', $this->organism->acronym));
+            $organism->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:WEBSITE', $this->organism->website));
+            
+            $organism->appendChild($this->getCategories($this->organism->id));
+            
+            $organism->appendChild($this->getAdresse(self::CONTACT, $this->organism->id, 'tierce'));
+            $organism->appendChild($this->getAdresse(self::BILLING, $this->organism->id, 'tierce'));
+            $organism->appendChild($this->getAdresse(self::DELIVERY, $this->organism->id, 'tierce'));
+            
+            $client->appendChild($organism);
+        }
 
         return $client;
     }
@@ -475,12 +495,57 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
     private function getTierce($order) {
         $tierce = $this->response->createElementNS($this->nsEasysdi, 'easysdi:TIERCE');
         if (!empty($order->thirdparty_id)) {
+            $query = $this->db->getQuery(true);
+            
+            $query->select('o.name, o.acronym, o.website')
+                    ->from('#__sdi_organism o')
+                    ->where('o.id='.(int)$order->thirdparty_id);
+            
+            $this->db->setQuery($query);
+            
+            $thirdparty = $this->db->loadObject();
+            
             $tierce->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:ID', $order->thirdparty_id));
-            $tierce->appendChild($this->getAdresse(self::CONTACT, $order, 'tierce'));
-            $tierce->appendChild($this->getAdresse(self::BILLING, $order, 'tierce'));
-            $tierce->appendChild($this->getAdresse(self::DELIVERY, $order, 'tierce'));
+            
+            $tierce->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:NAME', $thirdparty->name));
+            $tierce->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:ACRONYM', $thirdparty->acronym));
+            $tierce->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:WEBSITE', $thirdparty->website));
+            
+            $tierce->appendChild($this->getCategories($order->thirdparty_id));
+            
+            $tierce->appendChild($this->getAdresse(self::CONTACT, $order->thirdparty_id, 'tierce'));
+            $tierce->appendChild($this->getAdresse(self::BILLING, $order->thirdparty_id, 'tierce'));
+            $tierce->appendChild($this->getAdresse(self::DELIVERY, $order->thirdparty_id, 'tierce'));
         }
         return $tierce;
+    }
+
+    /**
+     * get an organism's categorie's list
+     * called from getClient and getTierce
+     * 
+     * @param int $organism_id
+     * @return DOMElement
+     */
+    private function getCategories($organism_id = 0){
+        $categories = $this->response->createElementNS($this->nsEasysdi, 'easysdi:CATEGORIES');
+        
+        $query = $this->db->getQuery(true);
+        $query->select('c.id, c.name')
+                ->from('#__sdi_organism_category oc')
+                ->join('LEFT', '#__sdi_category c ON c.id=oc.category_id')
+                ->where('oc.organism_id='.(int) $organism_id);
+        $this->db->setQuery($query);
+
+        foreach($this->db->loadObjectList() as $cat){
+            $category = $this->response->createElementNS($this->nsEasysdi, 'easysdi:CATEGORY');
+            $category->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:ID', $cat->id));
+            $category->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:NAME', $cat->name));
+
+            $categories->appendChild($category);
+        }
+        
+        return $categories;
     }
 
     private function getBuffer() {

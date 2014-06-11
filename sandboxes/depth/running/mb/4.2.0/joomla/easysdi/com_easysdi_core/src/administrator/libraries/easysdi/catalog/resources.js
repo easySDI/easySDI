@@ -86,6 +86,27 @@ function showModal(id) {
     js('#publishModal').modal('show');
 }
 
+
+function showModal(id, modalId) {
+    modalId = modalId || 'publishModal';
+    js('html, body').animate({scrollTop: 0}, 'slow');
+    js('#'+modalId+' input[name^="id"]').val(id);
+    js('#'+modalId).modal('show');
+}
+
+function showAssignmentModal(version_id){
+    js('#assigned_to').html('');
+    
+    js.get(currentUrl+'/?option=com_easysdi_catalog&task=metadata.getRoles&versionId='+version_id, function(data){
+        var roles = js.parseJSON(data);
+        
+        for(var user_id in roles[4].users)
+            js('#assigned_to').append(js('<option></option>').val(user_id).html(roles[4].users[user_id]));
+        js('#assigned_to').trigger('liszt:updated');
+        showModal(version_id, 'assignmentModal');
+    });
+}
+
 /**
  * Change link id on version change
  * 
@@ -110,9 +131,11 @@ function onVersionChange(resource_id) {
  */
 function changeRelationLink(resource_id, version_id) {
     js('.' + resource_id + '_linker').each(function() {
+
         var href = js(this).attr("href");
         var i = href.lastIndexOf("/");
         var newhref = href.substring(0, i + 1);
+        js(this).attr("href", newhref + js("select#" + resourceid + "_select").val());
         js(this).attr("href", newhref + version_id);
     });
 }

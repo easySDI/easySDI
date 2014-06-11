@@ -24,6 +24,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormUtils.php';
+require_once JPATH_BASE . '/administrator/components/com_easysdi_core/libraries/easysdi/user/sdiuser.php';
 
 /**
  * Metadata controller class.
@@ -66,7 +67,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->nsdao = new SdiNamespaceDao();
         $this->ldao = new SdiLanguageDao();
         $this->structure = new DOMDocument('1.0', 'utf-8');
-        $this->structure->loadXML(unserialize($this->session->get('structure')));
+        $_structure = $this->session->get('structure');
+        if(!empty($_structure))
+            $this->structure->loadXML(unserialize($_structure));
         $this->structure->normalizeDocument();
         $this->domXpathStr = new DOMXPath($this->structure);
         $this->data = JFactory::getApplication()->input->get('jform', array(), 'array');
@@ -195,7 +198,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     /**
      * Change metadata status to publish
      */
-    public function publish() {
+    public function publish() {//var_dump($_POST);var_dump($this->data);exit();
         if (count($this->data) > 0) {
             $this->changeStatusAndSave(sdiMetadata::PUBLISHED);
         } else {
@@ -224,6 +227,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_CHANGE_STATUS_ERROR'), 'error');
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $this->data['id']));
         }
+        
+        if(sdiMetadata::VALIDATED==$statusId)
+            $this->publishableNotification();
     }
 
     private function changeStatusAndUpdate($statusId) {
@@ -532,6 +538,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         // Delete old version
         $query = $this->db->getQuery(true);
         $query->delete('#__sdi_translation');
+
         $query->where('element_guid = ' . $query->quote($guid));
 
         $this->db->setQuery($query);
@@ -552,6 +559,117 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
             $this->db->insertObject('#__sdi_translation', $data, 'id');
         }
+    }
+
+    /**
+     * Change metadata assignment
+     */
+    public function assign() {
+        $data = JFactory::getApplication()->input->getArray();
+        
+        $cascade = (isset($data['assign_child']) && $data['assign_child']==1);
+        
+        $vids = array($data['id']);
+        $date = date('Y-m-d H:i.s');
+        
+        if($cascade){
+            $query = $this->db->getQuery(true);
+            $query->select('child_id as vid')
+                    ->from('#__sdi_versionlink')
+                    ->where('parent_id='.$data['id']);
+            $this->db->setQuery($query);
+            $vids = array_merge($vids, $this->db->loadColumn());
+        }
+        
+        $query = $this->db->getQuery(true);
+        $query->select('v.guid, v.id')
+                ->from('#__sdi_version v')
+                ->join('LEFT', '#__sdi_metadata m ON m.version_id=v.id')
+                ->where('m.metadatastate_id=1')
+                ->where('v.id IN ('.implode(',',$vids).')', 'AND')
+                ;
+        $this->db->setQuery($query);
+        $rows = $this->db->loadAssocList();
+        
+        $total = count($rows);
+        $success = array();
+        $fails = 0;
+        foreach($rows as $row){
+            $assignment = new stdClass();
+            
+            $assignment->id = null;
+            $assignment->guid = $row['guid'];
+            $assignment->assigned = $date;
+            $assignment->assigned_by = $data['assigned_by'];
+            $assignment->assigned_to = $data['assigned_to'];
+            $assignment->version_id = $row['id'];
+            $assignment->text = $data['assign_msg'];
+            
+            if($this->db->insertObject('#__sdi_assignment', $assignment, 'id'))
+                $success[] = $row['id'];
+            else
+                $fails++;
+        }
+        
+        if(count($success) == $total)
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_ASSIGNED_SUCCESS'), 'success');
+        elseif($fails == $total)
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_ASSIGNED_FAILS'), 'error');
+        else
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_ASSIGNED_WARNING'), 'warning');
+        
+        if(count($success)){
+            $byUser = new sdiUser($data['assigned_by']);
+            $toUser = new sdiUser($data['assigned_to']);
+            
+            $li = "";
+            foreach($success as $vid){
+                $link = JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id='.$vid, true, -1);
+                $li .= "<li><a href='{$link}'>{$link}</a></li>";
+            }
+            
+            $body = JText::sprintf('COM_EASYSDI_CATALOG_METADATA_ASSIGNED_NOTIFICATION_MAIL_BODY', $toUser->juser->name, $byUser->juser->name, count($success), nl2br($data['assign_msg']), $li);
+            
+            $toUser->sendMail(
+                    JText::_('COM_EASYSDI_CATALOG_METADATA_ASSIGNED_NOTIFICATION'), 
+                    $body
+            );
+        }
+        
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+    }
+    
+    public function getRoles(){
+        // Load roles for a resource
+        $versionId = JFactory::getApplication()->input->get('versionId');
+        
+        $query = $this->db->getQuery(true);
+
+        $query->select('su.id as user_id, u.name as username, urr.role_id, r.value as role_name')
+                ->from('#__sdi_version v')
+                ->join('left', '#__sdi_user_role_resource urr ON urr.resource_id=v.resource_id')
+                ->join('left', '#__sdi_user su ON su.id=urr.user_id')
+                ->join('left', '#__users u ON u.id=su.user_id')
+                ->join('left', '#__sdi_sys_role r ON r.id=urr.role_id')
+                ->where('v.id='.$versionId);
+
+        $this->db->setQuery($query);
+        $rows = $this->db->loadAssocList();
+
+        $roles = array();
+        foreach($rows as $row){
+            if(!isset($roles[$row['role_id']])){
+                $roles[$row['role_id']] = array(
+                    'role' => $row['role_name'],
+                    'users' => array()
+                );
+            }
+
+            $roles[$row['role_id']]['users'][$row['user_id']] = $row['username'];
+        }
+        
+        echo json_encode($roles);
+        die();
     }
 
     /**
@@ -584,6 +702,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         if (isset($archived)) {
             $query->set('m.archived = ' . $query->quote($archived));
         }
+
         $query->where('m.id = ' . (int) $id);
 
         $this->db->setQuery($query);
@@ -803,6 +922,90 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                 . substr($charid, 20, 12);
 
         return $uuid;
+    }
+    
+    private function publishableNotification(){
+        $tree = $this->getMetadataTree(array($this->data['id']));
+        
+        if($tree !== FALSE){ //Note: else, one of the metadata returns false
+            $list = $this->tree2List($tree);
+            
+            $body = JText::sprintf('COM_EASYSDI_CATALOG_METADATA_PUBLISHABLE_NOTIFICATION_MAIL_BODY', '%s', $list);
+            
+            $query = $this->db->getQuery(true);
+            $query->select('urr.user_id')
+                    ->from('#__sdi_user_role_resource urr')
+                    ->where('urr.resource_id='.$tree[0]->resource_id)
+                    ->where('urr.role_id=2', 'AND');
+            $this->db->setQuery($query);
+            
+            $users = $this->db->loadColumn();
+            
+            foreach($users as $user){
+                $sdiUser = new sdiUser($user);
+                
+                $sdiUser->sendMail(
+                        JText::_('COM_EASYSDI_CATALOG_METADATA_PUBLISHABLE_NOTIFICATION'), 
+                        JText::sprintf($body, $sdiUser->juser->name)
+                        );
+            }
+        }
+    }
+    
+    private function getMetadataTree($ids = array()){
+        $tree = array();
+        
+        $query = $this->db->getQuery(true);
+        $query->select('m.version_id as id, m.metadatastate_id as state, r.name as rname, v.name as vname, rt.versioning, v.resource_id')
+                ->from('#__sdi_metadata m')
+                ->join('LEFT', '#__sdi_version v ON v.id=m.version_id')
+                ->join('LEFT', '#__sdi_resource r ON r.id=v.resource_id')
+                ->join('LEFT', '#__sdi_resourcetype rt ON rt.id=r.resourcetype_id')
+                ->where('m.version_id IN ('.implode(',', $ids).')');
+        $this->db->setQuery($query);
+        
+        $metadatas = $this->db->loadAssocList();
+        
+        foreach($metadatas as $metadata){
+            if($metadata['state'] != 2)
+                return false; //Note: notification shouldn't be sent
+            
+            $branch = new stdClass();
+            $branch->id = $metadata['id'];
+            $branch->state = $metadata['state'];
+            $branch->name = $metadata['rname'];
+            if($metadata['versioning'] == 1)
+                $branch->name .= ' - '.$metadata['vname'];
+            $branch->resource_id = $metadata['resource_id'];
+            
+            $query = $this->db->getQuery(true);
+            $query->select('child_id')
+                    ->from('#__sdi_versionlink')
+                    ->where('parent_id='.$branch->id);
+            $this->db->setQuery($query);
+            
+            $children = $this->db->loadColumn();
+            $branch->children = count($children) ? $this->getMetadataTree($children) : array();
+            if($branch->children === FALSE)
+                return false; //Note: that mean's getMetadataTree returns FALSE
+            
+            $tree[] = $branch;
+        }
+        
+        return $tree;
+    }
+    
+    private function tree2List($tree = array()){
+        if(!count($tree))
+            return "";
+        
+        $li = "<ul>";
+        foreach($tree as $branch){
+            $li .= "<li>".$branch->name.$this->tree2List($branch->children)."</li>";
+        }
+        $li .= "</ul>";
+        
+        return $li;
     }
 
 }
