@@ -18,6 +18,7 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/For
 
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/cswmetadata.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/cswmetadata.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_core.php';
 
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
@@ -55,6 +56,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
     /** @var string[] Submit Form data */
     private $data;
+    
+    /** @var Easysdi_coreHelper */
+    private $core_helpers;
 
     function __construct() {
         $this->db = JFactory::getDbo();
@@ -69,8 +73,30 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         foreach ($this->nsdao->getAll() as $ns) {
             $this->nsArray[$ns->prefix] = $ns->uri;
         }
+        
+        $this->core_helpers = new Easysdi_coreHelper();
 
         parent::__construct();
+    }
+
+    public function synchronize() {
+        $metadata_id = JFactory::getApplication()->input->get('id', null, 'int');
+
+        $query = $this->db->getQuery(true);
+        $query->select('v.id,r.id AS resource_id');
+        $query->from('#__sdi_metadata m');
+        $query->innerJoin('jos_sdi_version v ON m.version_id = v.id');
+        $query->innerJoin('jos_sdi_resource r ON v.resource_id = r.id');
+        $query->where('m.id = ' . $metadata_id);
+        $this->db->setQuery($query);
+        
+        $version = $this->db->loadObject();
+        $version->name = date("Y-m-d H:i:s");
+
+        $versions = $this->core_helpers->getViralVersionnedChild($version);
+        
+
+        $csw = new sdiMetadata($metadata_id);
     }
 
     /**
@@ -460,12 +486,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                 if ($continue) {
                     $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $data['id']));
                 } else {
-                   
+
                     $back_url = array('root' => 'index.php',
                         'option' => 'com_easysdi_core',
                         'view' => 'resources',
                         'parentid' => JFactory::getApplication()->getUserState('com_easysdi_core.parent.resource.version.id'));
-                    
+
                     $this->setRedirect(JRoute::_(Easysdi_coreHelper::array2URL($back_url), false));
                 }
             } else {

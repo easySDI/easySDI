@@ -56,6 +56,7 @@ function getNewVersionRight(metadata_id) {
         var response = js.parseJSON(data);
         if (response.canCreate === false) {
             js('#' + response.resource_id + '_new_linker').attr('class', 'disabled');
+            js('#' + response.resource_id + '_new_linker').attr('style', 'color: #CBCBCB');
 
             var message = '';
             js.each(response.cause, function(k, cause) {

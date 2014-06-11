@@ -79,5 +79,42 @@ class Easysdi_coreHelper {
             return $root . '?' . implode('&', $params);
         }
     }
+    
+    /**
+     * Check recursively if version has viral versionning child
+     * 
+     * @param stdClass $version
+     * @return stdClass[] 
+     */
+    public function getViralVersionnedChild($version) {
+        $all_versions = array();
+        $all_versions[$version->id] = $version;
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('cv.id, cv.name AS version_name, cr.name AS resource_name, cr.id AS resource_id');
+        $query->from('#__sdi_versionlink vl');
+        $query->innerJoin('#__sdi_version pv ON vl.parent_id = pv.id');
+        $query->innerJoin('#__sdi_resource pr ON pv.resource_id = pr.id');
+        $query->innerJoin('#__sdi_resourcetypelink rtl ON pr.resourcetype_id = rtl.parent_id');
+        $query->innerJoin('#__sdi_version cv ON vl.child_id = cv.id');
+        $query->innerJoin('#__sdi_resource cr ON cv.resource_id = cr.id AND cr.resourcetype_id = rtl.child_id');
+        $query->where('rtl.viralversioning = 1');
+        $query->where('vl.parent_id = ' . (int) $version->id);
+
+        $db->setQuery($query);
+        $childs = $db->loadObjectList('id');
+
+        if (count($childs) > 0) {
+            $version->children = $childs;
+            $all_versions[$version->id]->children = $childs;
+
+            foreach ($childs as $key => $child) {
+                $this->getViralVersionnedChild($child);
+            }
+        }
+
+        return $all_versions;
+    }
 
 }

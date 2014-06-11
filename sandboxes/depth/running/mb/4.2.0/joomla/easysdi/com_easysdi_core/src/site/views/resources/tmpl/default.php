@@ -223,12 +223,12 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                               <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.notify&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NOTIFY_METADATA'); ?></a>
                                               </li>
                                               <?php endif; */ ?>
-                                            <?php /* if ($this->user->authorize($item->id, sdiUser::metadataresponsible)): ?>
-                                              <li class="divider"></li>
+                                            <?php  if ($this->user->authorize($item->id, sdiUser::metadataresponsible)): ?>
+                                              <!--<li class="divider"></li>
                                               <li>
-                                              <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.synchronize&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_METADATA'); ?></a>
-                                              </li>
-                                              <?php endif; */ ?>
+                                                   <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.synchronize&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_METADATA'); ?></a>
+                                              </li>-->
+                                              <?php endif; ?>
                                         </ul>
                                     </div>
                                 </td>
@@ -242,12 +242,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                         <ul class="dropdown-menu">
                                             <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->versioning) : ?>
                                                 <li>
-                                                    <?php if($item->hasUnpublishVersion) :?>
-                                                        <a id="<?php echo $item->id; ?>_new_linker" style="color: #CBCBCB" class="disabled" href="#"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
-                                                    <?php else : ?>
-                                                        <a id="<?php echo $item->id; ?>_new_linker" href="#"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
-                                                    <?php endif; ?>
-                                                    
+                                                   <a id="<?php echo $item->id; ?>_new_linker" href="#"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
                                                 </li>
                                             <?php endif; ?>
                                             <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->supportrelation): ?>

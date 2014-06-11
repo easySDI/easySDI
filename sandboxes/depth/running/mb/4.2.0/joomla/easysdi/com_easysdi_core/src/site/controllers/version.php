@@ -22,7 +22,15 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
     private $versions = array();
     private $md_rollback = array();
+    /** @var Easysdi_coreHelper */
+    private $core_helpers;
+    
+    function __construct() {
+        $this->core_helpers = new Easysdi_coreHelper();
+        parent::__construct();
+        }
 
+    
     public function remove() {
         // Initialise variables.
         $db = JFactory::getDbo();
@@ -34,7 +42,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         $version = $model->getData($data['id']);
 
-        $versions = $this->getViralVersionnedChild($version);
+        $versions = $this->core_helpers->getViralVersionnedChild($version);
 
         try {
             $db->transactionStart();
@@ -189,7 +197,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         $versions = array();
         if ($lastversion = $this->getLastVersion($resource_id)) {
-            $versions = $this->getViralVersionnedChild($lastversion);
+            $versions = $this->core_helpers->getViralVersionnedChild($lastversion);
         }
 
         // get version in progress
@@ -358,6 +366,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $app->setUserState('com_easysdi_core.edit.version.data', null);
         $app->setUserState('com_easysdi_core.edit.version.runsearch', null);
     }
+    
 
     /**
      * Create an array with the new versions
@@ -499,43 +508,6 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
     }
 
     /**
-     * Check recursively if version has viral versionning child
-     * 
-     * @param stdClass $version
-     * @return stdClass[] 
-     */
-    private function getViralVersionnedChild($version) {
-        $all_versions = array();
-        $all_versions[$version->id] = $version;
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        $query->select('cv.id, cv.name AS version_name, cr.name AS resource_name, cr.id AS resource_id');
-        $query->from('#__sdi_versionlink vl');
-        $query->innerJoin('#__sdi_version pv ON vl.parent_id = pv.id');
-        $query->innerJoin('#__sdi_resource pr ON pv.resource_id = pr.id');
-        $query->innerJoin('#__sdi_resourcetypelink rtl ON pr.resourcetype_id = rtl.parent_id');
-        $query->innerJoin('#__sdi_version cv ON vl.child_id = cv.id');
-        $query->innerJoin('#__sdi_resource cr ON cv.resource_id = cr.id AND cr.resourcetype_id = rtl.child_id');
-        $query->where('rtl.viralversioning = 1');
-        $query->where('vl.parent_id = ' . (int) $version->id);
-
-        $db->setQuery($query);
-        $childs = $db->loadObjectList('id');
-
-        if (count($childs) > 0) {
-            $version->children = $childs;
-            $all_versions[$version->id]->children = $childs;
-
-            foreach ($childs as $key => $child) {
-                $this->getViralVersionnedChild($child);
-            }
-        }
-
-        return $all_versions;
-    }
-
-    /**
      * Get last resource version
      * 
      * @param int $resource_id
@@ -584,7 +556,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $version->version_name = $version->name;
 
         $response = array();
-        $response['versions'] = $this->getViralVersionnedChild($version);
+        $response['versions'] = $this->core_helpers->getViralVersionnedChild($version);
 
         echo json_encode($response);
         die();
@@ -666,7 +638,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         $versions = array();
         if ($lastversion = $this->getLastVersion($resource_id)) {
-            $versions = $this->getViralVersionnedChild($lastversion);
+            $versions = $this->core_helpers->getViralVersionnedChild($lastversion);
         }
 
         $inProgress = $this->getChildrenByState($versions, array(sdiMetadata::INPROGRESS, sdiMetadata::VALIDATED));
