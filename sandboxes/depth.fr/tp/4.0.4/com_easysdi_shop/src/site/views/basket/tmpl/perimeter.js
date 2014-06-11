@@ -60,6 +60,7 @@ function selectPerimeter(isrestrictedbyperimeter, perimeterid, perimetername, wm
                 srsName: app.mapPanel.map.projection,
                 featureType: featuretypename,
                 featureNS: namespace,
+                featurePrefix: prefix,
                 geometryName: featuretypefieldgeometry,
                 defaultFilter: new OpenLayers.Filter.Spatial({
                     type: OpenLayers.Filter.Spatial.INTERSECTS,
