@@ -247,6 +247,24 @@ class Easysdi_coreModelResource extends JModelForm {
 
         return $data;
     }
+    
+    public function validate($form, $data, $group = null){
+        $return = parent::validate($form, $data, $group);
+        
+        // validate extra fields
+        $jinput = JFactory::getApplication()->input;
+        $jform = $jinput->get('jform', '', 'ARRAY');
+        
+        // --extra fields : resources users rights
+        for($index=2; $index<8; $index++)
+            JFactory::getApplication()->setUserState('com_easysdi_core.edit.resource.ur[rights_'.$index.']',$jform[$index]);
+        if(!isset($jform[2])){
+            $this->setError(JText::_('COM_EASYSDI_CORE_RESOURCES_ITEM_SAVED_ERROR_RESOURCE_MANAGER'));
+            return false;
+        }
+        
+        return $return;
+    }
 
     /**
      * Method to save the form data.
@@ -297,7 +315,7 @@ class Easysdi_coreModelResource extends JModelForm {
 
             $userroleresource = JTable::getInstance('userroleresource', 'Easysdi_coreTable');
             $userroleresource->deleteByResourceId($table->id);
-
+            
             for ($index = 2; $index < 8; $index++) {
                 if (!isset($jform[$index]))
                     continue;

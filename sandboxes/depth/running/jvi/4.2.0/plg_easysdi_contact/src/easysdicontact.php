@@ -7,6 +7,8 @@
 * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
 */
 
+require_once JPATH_BASE .'/components/com_easysdi_core/libraries/easysdi/user/sdiuser.php';
+
 defined('_JEXEC') or die( 'Restricted access' );
 
 jimport('joomla.plugin.plugin');
@@ -17,6 +19,42 @@ class plgUserEasysdicontact extends JPlugin {
 	{
 		parent::__construct($subject, $config);
 		$this->loadLanguage();
+	}
+
+	/**
+	 * Utility method to check if an easysdi account is the only one manager of at least one resource.
+	 *
+	 * @param	array		$user_id		the easySDI user_id
+	 *
+	 * @return	void
+	 * @since	EasySDI 4.2.0
+	 */
+	function onEasysdiUserBeforeDeleteRoleAttribution($data)
+	{
+            $user_id = $data['user_id'];
+            $organisms_ids = $data['organisms_ids'];
+            
+            $dbo = JFactory::getDbo();
+            $query = $dbo->getQuery(true)
+                    ->select('COUNT(urr2.id) cnt')
+                    ->from('#__sdi_user_role_resource urr')
+                    ->join('LEFT', '#__sdi_user_role_resource urr2 ON urr2.resource_id=urr.resource_id AND urr2.role_id=urr.role_id')
+                    ->join('LEFT', '#__sdi_resource r ON r.id=urr.resource_id')
+                    ->where('urr.user_id='.$user_id)
+                    ->where('urr.role_id=' . sdiUser::resourcemanager, 'AND');
+                    if(sizeof($organisms_ids))
+                        $query->where('r.organism_id NOT IN ('.implode(',',$organisms_ids).')');
+                    $query->group('urr2.resource_id')
+                    ->having('cnt=1');
+            
+            $dbo->setQuery($query);
+            $dbo->execute();
+            
+            if($dbo->getNumRows()>0){
+                return JText::_('PLG_EASYSDIUSER_ERR_USER_UNIQUE_MANAGER');
+            }
+            
+            return true;
 	}
 
 	/**
