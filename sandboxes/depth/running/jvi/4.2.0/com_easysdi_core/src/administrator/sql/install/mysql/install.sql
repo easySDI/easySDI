@@ -427,7 +427,13 @@ CREATE TABLE IF NOT EXISTS `#__sdi_user_role_organism` (
 `user_id` int(11) UNSIGNED ,
 `role_id` int(11) UNSIGNED ,
 `organism_id` int(11) UNSIGNED ,
-PRIMARY KEY (`id`)
+PRIMARY KEY (`id`),
+  KEY `jos_sdi_user_role_organism_fk1` (`user_id`),
+  KEY `jos_sdi_user_role_organism_fk2` (`role_id`),
+  KEY `jos_sdi_user_role_organism_fk3` (`organism_id`),
+  CONSTRAINT `jos_sdi_user_role_organism_fk1` FOREIGN KEY (`user_id`) REFERENCES `jos_sdi_user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `jos_sdi_user_role_organism_fk2` FOREIGN KEY (`role_id`) REFERENCES `jos_sdi_sys_role` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `jos_sdi_user_role_organism_fk3` FOREIGN KEY (`organism_id`) REFERENCES `jos_sdi_organism` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_category` (

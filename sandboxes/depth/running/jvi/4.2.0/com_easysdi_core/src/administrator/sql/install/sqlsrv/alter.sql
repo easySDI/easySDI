@@ -711,6 +711,24 @@ ON DELETE CASCADE;
 
 ALTER TABLE [#__sdi_user_role_resource] CHECK CONSTRAINT [#__sdi_user_role_resource$#__sdi_user_role_resource_fk3];
 
+ALTER TABLE [#__sdi_user_role_organism]  WITH CHECK ADD  CONSTRAINT [#__sdi_user_role_organism$#__sdi_user_role_organism_fk1] FOREIGN KEY([user_id])
+REFERENCES [#__sdi_user] ([id])
+ON DELETE CASCADE;
+
+ALTER TABLE [#__sdi_user_role_organism] CHECK CONSTRAINT [#__sdi_user_role_organism$#__sdi_user_role_organism_fk1];
+
+ALTER TABLE [#__sdi_user_role_organism]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_user_role_organism$#__sdi_user_role_organism_fk2] FOREIGN KEY([role_id])
+REFERENCES [#__sdi_sys_role] ([id])
+ON DELETE CASCADE;
+
+ALTER TABLE [#__sdi_user_role_organism] CHECK CONSTRAINT [#__sdi_user_role_organism$#__sdi_user_role_organism_fk2];
+
+ALTER TABLE [#__sdi_user_role_organism]  WITH CHECK ADD  CONSTRAINT [#__sdi_user_role_organism$#__sdi_user_role_organism_fk3] FOREIGN KEY([organism_id])
+REFERENCES [#__sdi_organism] ([id])
+ON DELETE CASCADE;
+
+ALTER TABLE [#__sdi_user_role_organism] CHECK CONSTRAINT [#__sdi_user_role_organism$#__sdi_user_role_organismfk3];
+
 ALTER TABLE [#__sdi_version]  WITH CHECK ADD  CONSTRAINT [#__sdi_version$#__sdi_version_fk1] FOREIGN KEY([resource_id])
 REFERENCES [#__sdi_resource] ([id]);
 

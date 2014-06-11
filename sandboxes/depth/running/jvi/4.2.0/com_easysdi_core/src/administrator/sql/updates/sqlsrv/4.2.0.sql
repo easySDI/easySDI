@@ -67,3 +67,12 @@ DELETE FROM [#__sdi_sys_role] WHERE `value`='ordereligible';
 ALTER TABLE [#__sdi_order] DROP CONSTRAINT [#__sdi_order$#__sdi_order_fk4];
 ALTER TABLE [#__sdi_order]  WITH CHECK ADD  CONSTRAINT [#__sdi_order$#__sdi_order_fk4] FOREIGN KEY([thirdparty_id])
 REFERENCES [#__sdi_organism] ([id]);
+
+
+
+ALTER TABLE [#__sdi_user_role_organism]  WITH CHECK ADD  CONSTRAINT [#__sdi_user_role_organism$#__sdi_user_role_organism_fk1] FOREIGN KEY([user_id])
+REFERENCES [#__sdi_user] ([id]);
+ALTER TABLE [#__sdi_user_role_organism]  WITH CHECK ADD  CONSTRAINT [#__sdi_user_role_organism$#__sdi_user_role_organism_fk2] FOREIGN KEY([role_id])
+REFERENCES [#__sdi_sys_role] ([id]);
+ALTER TABLE [#__sdi_user_role_organism]  WITH CHECK ADD  CONSTRAINT [#__sdi_user_role_organism$#__sdi_user_role_organism_fk3] FOREIGN KEY([organism_id])
+REFERENCES [#__sdi_organism] ([id]);

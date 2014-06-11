@@ -63,3 +63,9 @@ DELETE FROM `#__sdi_sys_role` WHERE `value`='ordereligible';
 
 ALTER TABLE `#__sdi_order` DROP FOREIGN KEY `jos_sdi_order_fk4`;
 ALTER TABLE `#__sdi_order` ADD CONSTRAINT `jos_sdi_order_fk4` FOREIGN KEY (`thirdparty_id`) REFERENCES `#__sdi_organism` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+
+
+ALTER TABLE `#__sdi_user_role_organism` ADD CONSTRAINT `jos_sdi_user_role_organism_fk1` FOREIGN KEY (`user_id`) REFERENCES `#__sdi_user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE `#__sdi_user_role_organism` ADD CONSTRAINT `jos_sdi_user_role_organism_fk2` FOREIGN KEY (`role_id`) REFERENCES `#__sdi_sys_role` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE `#__sdi_user_role_organism` ADD CONSTRAINT `jos_sdi_user_role_organism_fk3` FOREIGN KEY (`organism_id`) REFERENCES `#__sdi_organism` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;

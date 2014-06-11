@@ -44,3 +44,11 @@ ALTER TABLE ONLY jos_sdi_order
     DROP CONSTRAINT jos_sdi_order_fk4;
 ALTER TABLE ONLY jos_sdi_order
     ADD CONSTRAINT jos_sdi_order_fk4 FOREIGN KEY (thirdparty_id) REFERENCES jos_sdi_organism(id) MATCH FULL;
+
+
+ALTER TABLE ONLY jos_sdi_user_role_organism
+    ADD CONSTRAINT jos_sdi_user_role_organism_fk1 FOREIGN KEY (user_id) REFERENCES jos_sdi_user(id) MATCH FULL;
+ALTER TABLE ONLY jos_sdi_user_role_organism
+    ADD CONSTRAINT jos_sdi_user_role_organism_fk2 FOREIGN KEY (role_id) REFERENCES jos_sdi_sys_role(id) MATCH FULL;
+ALTER TABLE ONLY jos_sdi_user_role_organism
+    ADD CONSTRAINT jos_sdi_user_role_organism_fk3 FOREIGN KEY (organism_id) REFERENCES jos_sdi_organism(id) MATCH FULL;
