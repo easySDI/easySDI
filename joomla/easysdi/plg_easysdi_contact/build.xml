@@ -42,7 +42,6 @@
                 <scriptfile>script.php</scriptfile>
                 <files>
                     <filename plugin="easysdicontact">easysdicontact.php</filename>
-                    <filename plugin="easysdicontact">script.php</filename>
                 </files>
                 <languages>
                     <language tag="en-GB">language/en-GB/en-GB.plg_user_easysdicontact.sys.ini</language>

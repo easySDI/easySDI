@@ -19,12 +19,21 @@ class com_easysdi_monitorInstallerScript
 	 * If preflight returns false, Joomla will abort the update and undo everything already done.
 	 */
 	function preflight( $type, $parent ) {
+		//Check if com_easysdi_core is installed
+		$db = JFactory::getDbo();
+		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = "com_easysdi_core"');
+		$install = $db->loadResult();
+		
+		if($install == 0){
+			JError::raiseWarning(null, JText::_('COM_EASYSDI_MONITOR_INSTALL_SCRIPT_CORE_ERROR'));
+			return false;
+		}
+		
 		// Installing component manifest file version
 		$this->release = $parent->get( "manifest" )->version;
 		
 		// Show the essential information at the install/update back-end
 		echo '<p>EasySDI component Monitor [com_easysdi_monitor]';
-		echo '<br />'.JText::_('COM_EASYSDI_MONITOR_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
 	}
  
 	/*
@@ -58,10 +67,7 @@ class com_easysdi_monitorInstallerScript
 	 */
 	function postflight( $type, $parent ) {
 		$db = JFactory::getDbo();
-                $query = $db->getQuery(true);
-                $query->delete('#__menu');
-                $query->where('title = '.$db->quote('com_easysdi_monitor'));
-		$db->setQuery($query);
+		$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_monitor'");
 		$db->query();
 	}
 
@@ -78,11 +84,7 @@ class com_easysdi_monitorInstallerScript
 	 */
 	function getParam( $name ) {
 		$db = JFactory::getDbo();
-                $query = $db->getQuery(true);
-                $query->select('manifest_cache');
-                $query->from('#__extensions');
-                $query->where('name = '.$db->quote('com_easysdi_monitor'));
-		$db->setQuery($query);
+		$db->setQuery('SELECT manifest_cache FROM #__extensions WHERE name = "com_easysdi_monitor"');
 		$manifest = json_decode( $db->loadResult(), true );
 		return $manifest[ $name ];
 	}
@@ -94,11 +96,7 @@ class com_easysdi_monitorInstallerScript
 		if ( count($param_array) > 0 ) {
 			// read the existing component value(s)
 			$db = JFactory::getDbo();
-                        $query = $db->getQuery(true);
-                        $query->select('params');
-                        $query->from('#__extensions');
-                        $query->where('name = '.$db->quote('com_easysdi_monitor'));
-			$db->setQuery($query);
+			$db->setQuery('SELECT params FROM #__extensions WHERE name = "com_easysdi_monitor"');
 			$params = json_decode( $db->loadResult(), true );
 			// add the new variable(s) to the existing one(s)
 			foreach ( $param_array as $name => $value ) {
@@ -106,12 +104,10 @@ class com_easysdi_monitorInstallerScript
 			}
 			// store the combined new and existing values back as a JSON string
 			$paramsString = json_encode( $params );
-                        $query = $db->getQuery(true);
-                        $query->update('#__extensions');
-                        $query->set('params = ' .$db->quote( $paramsString ));
-                        $query->where('name = '.$db->quote('com_easysdi_monitor'));
-			$db->setQuery($query);
-                        $db->query();
+			$db->setQuery('UPDATE #__extensions SET params = ' .
+				$db->quote( $paramsString ) .
+				' WHERE name = "com_easysdi_monitor"' );
+				$db->query();
 		}
 	}
 }

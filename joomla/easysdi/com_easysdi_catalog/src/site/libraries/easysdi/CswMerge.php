@@ -269,7 +269,7 @@ class CswMerge {
         $query->select('*');
         $query->from('#__sdi_importref AS ir');
         $query->leftJoin('#__sdi_physicalservice ps on ps.id = ir.cswservice_id');
-        $query->where('ir.id = ' . (int)$importref_id);
+        $query->where('ir.id = ' . $importref_id);
 
         $this->db->setQuery($query);
         $importref = $this->db->loadObject();

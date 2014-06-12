@@ -113,7 +113,7 @@ class Easysdi_serviceTablevirtualmetadata extends sdiTable {
 		// Initialise the query.
 		$query = $this->_db->getQuery(true);
 		$query->select('*');
-		$query->from($query->quoteName($this->_tbl));
+		$query->from($this->_tbl);
 		$query->where($this->_db->quoteName('virtualservice_id') . ' = ' . (int) $virtualservice_id);
 
 		$this->_db->setQuery($query);

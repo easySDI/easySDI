@@ -42,12 +42,7 @@ class plgUserEasysdicontact extends JPlugin {
 		}
 
 		$dbo = JFactory::getDBO();
-                $query = $dbo->getQuery(true);
-                $query->select('id');
-                $query->from('#__sdi_user');
-                $query->where(' user_id = '. (int)$user_id);
-                
-		$dbo->setQuery($query);
+		$dbo->setQuery('SELECT id FROM #__sdi_user WHERE user_id = '. $user_id );
 		$id = $dbo->loadResult();
 		if($id){
 			JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDIUSER_ERR_CANT_DELETE'), 'error');
@@ -124,12 +119,7 @@ class plgUserEasysdicontact extends JPlugin {
 		//Get default user
 		$params = JComponentHelper::getParams('com_easysdi_contact');
 		$defaultaccount_id = $params->get( 'defaultaccount', null );
-                $query = $dbo->getQuery(true);
-                $query->select('*');
-                $query->from('#__sdi_user');
-                $query->where('user_id = '. (int)$defaultaccount_id);
-                
-		$dbo->setQuery($query);
+		$dbo->setQuery('SELECT * FROM #__sdi_user WHERE user_id = '. $defaultaccount_id );
 		$defaultaccount = $dbo->loadObject();
 		
 		if (!$defaultaccount) {

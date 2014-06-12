@@ -72,7 +72,7 @@ class sdiExtraction {
                     ->innerJoin('#__sdi_diffusion d ON d.version_id = v.id')
                     ->innerJoin('#__sdi_organism o ON r.organism_id = o.id')
                     ->leftJoin('#__sdi_visualization z ON z.version_id = v.id')
-                    ->where('d.id = ' . (int)$this->id);
+                    ->where('d.id = ' . $this->id);
             $db->setQuery($query);
             $item = $db->loadObject();
             $params = get_object_vars($item);

@@ -119,7 +119,7 @@ class Easysdi_catalogModelmetadatas extends JModelList
 				'a.*'
 			)
 		);
-		$query->from('#__sdi_metadata AS a');
+		$query->from('`#__sdi_metadata` AS a');
 
 
     // Join over the users for the checked out user.

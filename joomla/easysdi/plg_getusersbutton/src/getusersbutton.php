@@ -24,14 +24,14 @@ class PlgEasysdi_admin_buttonGetusersbutton extends JPlugin {
         $query = $db->getQuery(true);
 
         // Count unactivated users
-        $query->select('COUNT(*) as nbre');
+        $query->select('COUNT(*)');
         $query->from('#__sdi_user');
         $query->where('state != 1');
         $db->setQuery($query);
         $rows = $db->loadObjectList();
         //Convert the stdClass object in an array
         $values = get_object_vars($rows[0]);
-        $values = $values['nbre'];
+        $values = $values['COUNT(*)'];
         $state = 'important';
         $badgetooltip = null;
         

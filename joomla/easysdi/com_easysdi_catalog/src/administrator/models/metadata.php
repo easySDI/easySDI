@@ -112,11 +112,7 @@ class Easysdi_catalogModelmetadata extends JModelAdmin
 			// Set ordering to the last item if not set
 			if (@$table->ordering === '') {
 				$db = JFactory::getDbo();
-                                $query = $db->getQuery(true);
-                                $query->select('MAX(ordering)');
-                                $query->from('#__sdi_metadata');
-                                
-				$db->setQuery($query);
+				$db->setQuery('SELECT MAX(ordering) FROM #__sdi_metadata');
 				$max = $db->loadResult();
 				$table->ordering = $max+1;
 			}

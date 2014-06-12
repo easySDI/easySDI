@@ -20,7 +20,7 @@ public class Main {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"file:C:/apache-tomcat-7.0.53/webapps/proxy-4.1.0/WEB-INF/spring/hibernate-config.xml"});
+		ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"file:C:/Sources/Proxy330/proxy/src/main/webapp/WEB-INF/spring/hibernate-config.xml"});
 		
 		SdiUserHome pdao = (SdiUserHome)context.getBean("SdiUser");
 //		SdiUser u1 = pdao.findById(1);

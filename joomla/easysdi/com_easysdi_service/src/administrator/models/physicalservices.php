@@ -130,7 +130,7 @@ class Easysdi_serviceModelphysicalservices extends JModelList
 		$query	= $db->getQuery(true);
 		$query->select('id');
 		$query->select('value');
-		$query->from('#__sdi_sys_serviceconnector');
+		$query->from('`#__sdi_sys_serviceconnector`');
 		$query->where('state=1');
 		$query->order('value');
 		$db->setQuery($query);
@@ -157,7 +157,7 @@ class Easysdi_serviceModelphysicalservices extends JModelList
 				'a.*'
 			)
 		);
-		$query->from('#__sdi_physicalservice AS a');
+		$query->from('`#__sdi_physicalservice` AS a');
 
 
         // Join over the users for the checked out user.

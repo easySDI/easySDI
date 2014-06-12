@@ -102,7 +102,6 @@ class Easysdi_dashboardHelper {
                     ->join('INNER', $db->quoteName('#__sdi_resource','r') .  ' ON (' . $db->quoteName('v.resource_id') . ' = ' . $db->quoteName('r.id') . ')')
                     ->join('INNER', $db->quoteName('#__sdi_organism','o') .  ' ON (' . $db->quoteName('r.organism_id') . ' = ' . $db->quoteName('o.id') . ')')
                     ->group($db->quoteName('o.id'))
-                    ->group($db->quoteName('o.name'))
                     ->order($db->quoteName('o.name'));
             $db->setQuery($query, 0);
             $orgs = $db->loadObjectList();

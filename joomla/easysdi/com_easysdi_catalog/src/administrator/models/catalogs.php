@@ -105,10 +105,10 @@ class Easysdi_catalogModelcatalogs extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.id, a.checked_out, a.checked_out_time, a.alias, a.ordering, a.state, a.name'
+                        'list.select', 'a.*'
                 )
         );
-        $query->from('#__sdi_catalog AS a');
+        $query->from('`#__sdi_catalog` AS a');
 
 
         // Join over the users for the checked out user.

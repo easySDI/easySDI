@@ -21,11 +21,7 @@ class com_easysdi_dashboardInstallerScript
 	function preflight( $type, $parent ) {
 		//Check if com_easysdi_core is installed
 		$db = JFactory::getDbo();
-                $query = $db->getQuery(true);
-                $query->select('COUNT(*)');
-                $query->from('#__extensions');
-                $query->where('name ='.$db->quote('com_easysdi_core'));
-		$db->setQuery($query);
+		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = "com_easysdi_core"');
 		$install = $db->loadResult();
 		
 		if($install == 0){
@@ -37,8 +33,8 @@ class com_easysdi_dashboardInstallerScript
 		$this->release = $parent->get( "manifest" )->version;
 		
 		// Show the essential information at the install/update back-end
-		echo '<p>EasySDI component Dashboard [com_easysdi_dashboard]';
-		echo '<br />'.JText::_('COM_EASYSDI_DASHBOARD_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
+		echo '<p>EasySDI component Contact [com_easysdi_contact]';
+		echo '<br />'.JText::_('COM_EASYSDI_CONTACT_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
 	}
  
 	/*
@@ -72,10 +68,7 @@ class com_easysdi_dashboardInstallerScript
 	 */
 	function postflight( $type, $parent ) {
 		$db = JFactory::getDbo();
-                $query = $db->getQuery(true);
-                $query->delete('#__menu');
-                $query->where('title = '.$db->quote('com_easysdi_dashboard'));
-		$db->setQuery($query);
+		$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_dashboard'");
 		$db->query();
 	}
 
@@ -92,11 +85,7 @@ class com_easysdi_dashboardInstallerScript
 	 */
 	function getParam( $name ) {
 		$db = JFactory::getDbo();
-                $query = $db->getQuery(true);
-                $query->select('manifest_cache');
-                $query->from('#__extensions');
-                $query->where('name = '.$db->quote('com_easysdi_dashboard'));
-		$db->setQuery($query);
+		$db->setQuery('SELECT manifest_cache FROM #__extensions WHERE name = "com_easysdi_dashboard"');
 		$manifest = json_decode( $db->loadResult(), true );
 		return $manifest[ $name ];
 	}
@@ -108,11 +97,7 @@ class com_easysdi_dashboardInstallerScript
 		if ( count($param_array) > 0 ) {
 			// read the existing component value(s)
 			$db = JFactory::getDbo();
-                        $query = $db->getQuery(true);
-                        $query->select('params');
-                        $query->from('#__extensions');
-                        $query->where('name = '.$db->quote('com_easysdi_dashboard'));
-			$db->setQuery($query);
+			$db->setQuery('SELECT params FROM #__extensions WHERE name = "com_easysdi_dashboard"');
 			$params = json_decode( $db->loadResult(), true );
 			// add the new variable(s) to the existing one(s)
 			foreach ( $param_array as $name => $value ) {
@@ -120,12 +105,10 @@ class com_easysdi_dashboardInstallerScript
 			}
 			// store the combined new and existing values back as a JSON string
 			$paramsString = json_encode( $params );
-                        $query = $db->getQuery(true);
-                        $query->update('#__extensions');
-                        $query->set('params = ' .$db->quote( $paramsString ));
-                        $query->where('name = "com_easysdi_dashboard"');
-			
-                        $db->query();
+			$db->setQuery('UPDATE #__extensions SET params = ' .
+				$db->quote( $paramsString ) .
+				' WHERE name = "com_easysdi_dashboard"' );
+				$db->query();
 		}
 	}
 }

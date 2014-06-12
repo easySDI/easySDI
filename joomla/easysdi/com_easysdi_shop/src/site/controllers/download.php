@@ -117,7 +117,7 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         else:
             $id = null;
         endif;
-        $values = array($diffusion->id, $id, $query->quote(date("Y-m-d H:i:s")));
+        $values = array($diffusion->id, $id, '"' . date("Y-m-d H:i:s") . '"');
         $query = $db->getQuery(true)
                 ->insert('#__sdi_diffusion_download')
                 ->columns($columns)

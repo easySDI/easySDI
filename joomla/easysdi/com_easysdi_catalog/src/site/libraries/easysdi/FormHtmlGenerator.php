@@ -542,7 +542,7 @@ class FormHtmlGenerator {
         $query->innerJoin('#__sdi_layer_layergroup llg ON llg.group_id = mlg.group_id');
         $query->innerJoin('#__sdi_maplayer l ON l.id = llg.layer_id');
         $query->innerJoin('#__sdi_sys_unit u ON u.id = m.unit_id');
-        $query->where('m.id=' . (int)$map_id);
+        $query->where('m.id=' . $map_id);
         $query->where('mlg.isbackground = 1');
 
         $this->db->setQuery($query);
@@ -553,12 +553,12 @@ class FormHtmlGenerator {
             case 'physical':
                 $query->select('resourceurl as serviceurl, serviceconnector_id');
                 $query->from('#__sdi_physicalservice');
-                $query->where('id = ' . (int)$map_config->service_id);
+                $query->where('id = ' . $map_config->service_id);
                 break;
             case 'virtual':
                 $query->select('url, reflectedurl as serviceurl, serviceconnector_id');
                 $query->from('#__sdi_virtualservice');
-                $query->where('id = ' . (int)$map_config->service_id);
+                $query->where('id = ' . $map_config->service_id);
                 break;
         }
 
@@ -645,6 +645,22 @@ class FormHtmlGenerator {
 
                                 " . $layer_definition . "
                                 polygonLayer_$parent_path = new OpenLayers.Layer.Vector('Polygon Layer');
+                                
+                                var Navigation = new OpenLayers.Control.Navigation({
+                                    'zoomWheelEnabled': false,
+                                    'defaultDblClick': function ( event ) { 
+                                        return; 
+                                     }
+                                });
+
+                                map_$parent_path.addControl(Navigation);
+
+                                var NavigationControls = map_$parent_path.getControlsByClass('OpenLayers.Control.Navigation')
+                                  , i;
+
+                                for ( i = 0; i < NavigationControls.length; i++ ) {
+                                    NavigationControls[i].disableZoomWheel();
+                                }
 
                                 map_$parent_path.addLayers([layer_$parent_path, polygonLayer_$parent_path]);
 
@@ -818,7 +834,7 @@ class FormHtmlGenerator {
 
         $script->nodeValue = $script_code;
 
-        $aModal = $this->formHtml->createElement('a', 'Thesaurus Gemet');
+        $aModal = $this->formHtml->createElement('a', JText::_('COM_EASYSDI_CATALOGE_THESAURUS_GEMET'));
         $aModal->setAttribute('data-toggle', 'modal');
         $aModal->setAttribute('href', '#myModal');
         $aModal->setAttribute('class', 'btn btn-primary btn-lg');
@@ -846,7 +862,7 @@ class FormHtmlGenerator {
         $btnClose->setAttribute('data-dismiss', 'modal');
         $btnClose->setAttribute('aria-hidden', 'true');
 
-        $h4 = $this->formHtml->createElement('h4', 'Thesaurus Gemet');
+        $h4 = $this->formHtml->createElement('h4', JText::_('COM_EASYSDI_CATALOGE_THESAURUS_GEMET'));
         $h4->setAttribute('class', 'modal-title');
 
         $divBody = $this->formHtml->createElement('div');

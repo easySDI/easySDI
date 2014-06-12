@@ -35,12 +35,11 @@ class Easysdi_serviceTablewmtslayer extends sdiTable {
 	
 	public function getListByPhysicalService($physicalservice_id) {
 		$db = JFactory::getDbo();
-                $query = $db->getQuery(true);
-                $query->select('*');
-                $query->from('#__sdi_wmtslayer');
-                $query->where('physicalservice_id = ' . (int)$physicalservice_id);
-                
-		$db->setQuery($query);
+		$db->setQuery('
+			SELECT *
+			FROM #__sdi_wmtslayer
+			WHERE physicalservice_id = ' . $physicalservice_id . ';
+		');
 		
 		try {
 			$resultSet = $db->loadObjectList();
@@ -70,11 +69,10 @@ class Easysdi_serviceTablewmtslayer extends sdiTable {
 	*/
 	function wipeByPhysicalId($physicalservice_id) {
 		$db = JFactory::getDbo();
-                $query = $db->getQuery(true);
-                $query->delete('#__sdi_wmtslayer');
-                $query->where('physicalservice_id = ' . (int)$physicalservice_id);
-                
-		$db->setQuery($query);
+		$db->setQuery('
+			DELETE FROM #__sdi_wmtslayer
+			WHERE physicalservice_id = ' . $physicalservice_id . ';
+		');
 		$db->execute();
 	}
 }

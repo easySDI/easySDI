@@ -26,13 +26,7 @@ class plgEasysdi_admin_infoGetdiffudownloadsInstallerScript
 		if($type == 'install'){
 			//Activate the plugin
 			$db = JFactory::getDbo();
-                        $query = $db->getQuery(true);
-                        $query->update('#__extensions');
-                        $query->set('enabled=1');
-                        $query->where('type='.$db->quote('plugin'));
-                        $query->where('element='.$db->quote('getdiffudownloads'));
-                        $query->where('folder='.$db->quote('easysdi_admin_info'));
-			$db->setQuery($query);
+			$db->setQuery("UPDATE #__extensions SET enabled=1 WHERE type='plugin' AND element='getdiffudownloads' AND folder='easysdi_admin_info'");
 			$db->execute();
 		}
 	}

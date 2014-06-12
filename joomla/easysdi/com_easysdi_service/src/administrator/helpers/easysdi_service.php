@@ -178,15 +178,13 @@ class Easysdi_serviceHelper {
 
         //Get the implemented version of the requested ServiceConnector
         $db = JFactory::getDBO();
-        
-        $query = $db->getQuery(true);
-        $query->select('c.id as id, sv.value as value');
-        $query->from('#__sdi_sys_serviceconnector sc');
-        $query->innerJoin('#__sdi_sys_servicecompliance c ON c.serviceconnector_id = sc.id');
-        $query->innerJoin('#__sdi_sys_serviceversion sv ON c.serviceversion_id = sv.id');
-        $query->where('c.implemented = 1');
-        $query->where('sc.value = ' . $query->quote($service));
-        
+        $query = "SELECT c.id as id, sv.value as value
+		FROM #__sdi_sys_serviceconnector sc
+		INNER JOIN #__sdi_sys_servicecompliance c ON c.serviceconnector_id = sc.id
+		INNER JOIN #__sdi_sys_serviceversion sv ON c.serviceversion_id = sv.id
+		WHERE c.implemented = 1
+		AND sc.value = '" . $service . "'
+		";
         $db->setQuery($query);
         $implemented_versions = $db->loadObjectList();
 
@@ -245,46 +243,35 @@ class Easysdi_serviceHelper {
         $pos = strstr($service, 'physical_');
         if ($pos) {
             $id = substr($service, strrpos($service, '_') + 1);
-            $query = $db->getQuery(true);
-            $query->select('s.resourceurl as url, sc.value as connector');
-            $query->from('#__sdi_physicalservice s');
-            $query->innerJoin('#__sdi_sys_serviceconnector sc  ON sc.id = s.serviceconnector_id');
-            $query->where('s.id=' . (int)$id);
-            
+            $query = 'SELECT s.resourceurl as url, sc.value as connector FROM #__sdi_physicalservice s 
+								INNER JOIN #__sdi_sys_serviceconnector sc  ON sc.id = s.serviceconnector_id
+								WHERE s.id=' . $id;
             $db->setQuery($query);
             $resource = $db->loadObject();
-            
-            $query = $db->getQuery(true);
-            $query->select('sv.value as value, sc.id as id');
-            $query->from('#__sdi_physicalservice_servicecompliance ssc');
-            $query->innerJoin('#__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id');
-            $query->innerJoin('#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id');
-            $query->where('ssc.service_id =' . (int)$id);
-            
-            $db->setQuery($query,0,1);
+            $db->setQuery(
+                    'SELECT sv.value as value, sc.id as id FROM #__sdi_physicalservice_servicecompliance ssc ' .
+                    ' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id ' .
+                    ' INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id' .
+                    ' WHERE ssc.service_id =' . $id .
+                    ' LIMIT 1'
+            );
             $compliance = $db->loadObject();
             $physical_id = $id;
         } else {
             $id = substr($service, strrpos($service, '_') + 1);
-            
-            $query = $db->getQuery(true);
-            $query->select('ps.id as physicalservice_id, ps.resourceurl as url, sc.value as connector');
-            $query->from('#__sdi_virtualservice vs');
-            $query->innerJoin('#__sdi_physicalservice ps ON ps.id = vs.physicalservice_id');
-            $query->innerJoin('#__sdi_sys_serviceconnector sc  ON sc.id = ps.serviceconnector_id');
-            $query->where('vs.id=' . (int)$id);
-            
+            $query = 'SELECT ps.id as physicalservice_id, ps.resourceurl as url, sc.value as connector FROM #__sdi_virtualservice vs
+								INNER JOIN #__sdi_physicalservice ps ON ps.id = vs.physicalservice_id
+								INNER JOIN #__sdi_sys_serviceconnector sc  ON sc.id = ps.serviceconnector_id
+								WHERE vs.id=' . $id;
             $db->setQuery($query);
             $resource = $db->loadObject();
-            
-            $query = $db->getQuery(true);
-            $query->select('sv.value as value, sc.id as id');
-            $query->from('#__sdi_physicalservice_servicecompliance pssc');
-            $query->innerJoin('#__sdi_sys_servicecompliance sc ON sc.id = pssc.servicecompliance_id');
-            $query->innerJoin('#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id');
-            $query->where('pssc.service_id =' . $resource->physicalservice_id);
+            $query = 'SELECT sv.value as value, sc.id as id FROM #__sdi_physicalservice_servicecompliance pssc
+							INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = pssc.servicecompliance_id
+							INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id
+							WHERE pssc.service_id =' . $resource->physicalservice_id . '
+							LIMIT 1';
 
-            $db->setQuery($query,0,1);
+            $db->setQuery($query);
             $compliance = $db->loadObject();
             $physical_id = $resource->physicalservice_id;
         }

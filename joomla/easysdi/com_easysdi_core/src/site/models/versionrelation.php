@@ -260,7 +260,7 @@ class Easysdi_coreModelVersionrelation extends JModelForm
         $query 
             ->select('title')
             ->from('#__categories')
-            ->where('id = ' . (int)$id);
+            ->where('id = ' . $id);
         $db->setQuery($query);
         return $db->loadObject();
     }

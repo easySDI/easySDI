@@ -111,7 +111,7 @@ class Easysdi_shopModelpropertyvalues extends JModelList {
                         'list.select', 'a.*'
                 )
         );
-        $query->from('#__sdi_propertyvalue AS a');
+        $query->from('`#__sdi_propertyvalue` AS a');
 
 
         // Join over the users for the checked out user.

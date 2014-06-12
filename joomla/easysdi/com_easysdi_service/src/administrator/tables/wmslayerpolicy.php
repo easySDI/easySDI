@@ -37,33 +37,28 @@ class Easysdi_serviceTablewmslayerpolicy extends sdiTable {
 		
 		foreach ($modif as $id => $value) {
 			$db = JFactory::getDbo();
-                        $query = $db->getQuery(true);
-                        $query->select('COUNT(*)');
-                        $query->from('#__sdi_wmslayerpolicy');
-                        $query->where('wmslayer_id = ' . (int)$id);
-                        $query->where('policy_id = ' . (int)$src['id']);
-                        
-			$db->setQuery($query);
+			$db->setQuery('
+				SELECT COUNT(*) FROM #__sdi_wmslayerpolicy WHERE wmslayer_id = ' . $id . '
+				AND policy_id = ' . $src['id'] . ';
+			');
 			$num = $db->loadResult();
 			
 			if (0 < $num) {
-                                $query = $db->getQuery(true);
-                                $query->update('#__sdi_wmslayerpolicy');
-                                $query->set('minimumScale = ' . $query->quote($value['minimumscale']));
-                                $query->set('maximumScale = ' . $query->quote($value['maximumscale']));
-                                $query->set('geographicFilter = ' . $query->quote($value['geographicfilter']));
-                                $query->where('wmslayer_id = ' . (int)$id);
-                                $query->where('policy_id = ' . (int)$src['id']);
-                                
+				$query = '
+					UPDATE #__sdi_wmslayerpolicy
+					SET minimumScale = "' . $value['minimumscale'] . '",
+					maximumScale = "' . $value['maximumscale'] . '",
+					geographicFilter = "' . $value['geographicfilter'] . '"
+					WHERE wmslayer_id = ' . $id . '
+					AND policy_id = ' . $src['id'] . ';
+				';
 			}
 			else {
-                                $query = $db->getQuery(true);
-                                $columns = array('minimumScale', 'maximumScale', 'geographicFilter', 'wmslayer_id', 'policy_id');
-                                $values = array($query->quote($value['minimumscale']), $query->quote($value['maximumscale']), $query->quote($value['geographicfilter']), $id, $src['id']);
-                                $query->insert('#__sdi_wmslayerpolicy');
-                                $query->columns($query->quoteName($columns));
-                                $query->values(implode(',', $values));
-                            
+				$query = '
+					INSERT #__sdi_wmslayerpolicy
+					(minimumScale, maximumScale, geographicFilter, wmslayer_id, policy_id)
+					VALUES ("' . $value['minimumscale'] . '","' . $value['maximumscale'] . '","' . $value['geographicfilter'] . '",' . $id . ',' . $src['id'] . ');
+				';
 			}
 			
 			$db->setQuery($query);
@@ -81,13 +76,12 @@ class Easysdi_serviceTablewmslayerpolicy extends sdiTable {
 	 */
 	public function getByIDs ($wmslayer_id, $policy_id) {
 		$db = JFactory::getDbo();
-                $query = $db->getQuery(true);
-                $query->select('*');
-                $query->from('#__sdi_wmslayerpolicy');
-                $query->where('wmslayer_id = ' . (int)$wmslayer_id);
-                $query->where('policy_id = ' . (int)$policy_id);
-                
-		$db->setQuery($query);
+		$db->setQuery('
+			SELECT *
+			FROM #__sdi_wmslayerpolicy
+			WHERE wmslayer_id = ' . $wmslayer_id . '
+			AND policy_id = ' . $policy_id . ';
+		');
 		
 		try {
 			$resultSet = $db->loadObject();

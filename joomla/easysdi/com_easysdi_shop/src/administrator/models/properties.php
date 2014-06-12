@@ -107,10 +107,10 @@ class Easysdi_shopModelproperties extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.id, a.checked_out, a.checked_out_time, a.alias, a.propertytype_id, a.state, a.ordering, a.name'
+                        'list.select', 'a.*'
                 )
         );
-        $query->from('#__sdi_property AS a');
+        $query->from('`#__sdi_property` AS a');
 
 
         // Join over the users for the checked out user.

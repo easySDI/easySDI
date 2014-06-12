@@ -32,7 +32,7 @@ class Easysdi_shopTablediffusionnotifieduser extends JTable {
         // Initialise the query.
         $query = $this->_db->getQuery(true);
         $query->select('user_id');
-        $query->from($query->quoteName($this->_tbl));
+        $query->from($this->_tbl);
         $query->where($this->_db->quoteName('diffusion_id') . ' = ' . (int) $id);
         $this->_db->setQuery($query);
 

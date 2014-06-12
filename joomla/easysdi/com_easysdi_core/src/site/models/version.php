@@ -374,7 +374,7 @@ class Easysdi_coreModelVersion extends JModelForm {
         $query
                 ->select('title')
                 ->from('#__categories')
-                ->where('id = ' . (int)$id);
+                ->where('id = ' . $id);
         $db->setQuery($query);
         return $db->loadObject();
     }

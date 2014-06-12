@@ -53,12 +53,11 @@ class JFormFieldMultilingual extends JFormField
                // $html .= '<label >'.JText::_($this->element['label']).'</label>';
                
                 foreach($languages as $language){
-                    $query = $db->getQuery(true);
-                    $query->select('value');
-                    $query->from('#__sdi_language');
-                    $query->where('id='. $language);
                     
-                    $db->setQuery($query);
+                    $db->setQuery('
+                            SELECT value
+                            FROM #__sdi_language
+                            WHERE id='.$language);
                     $db->execute();
                     $lang = $db->loadResult();
                     

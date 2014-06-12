@@ -87,13 +87,7 @@ class Easysdi_mapModelMap extends JModelForm {
 
                 //Get the unit value
                 $db = JFactory::getDbo();
-                
-                $query = $db->getQuery(true);
-                $query->select('alias');
-                $query->from('#__sdi_sys_unit');
-                $query->where('id=' . (int)$this->_item->unit_id);
-                
-                $db->setQuery($query);
+                $db->setQuery('SELECT alias FROM #__sdi_sys_unit WHERE id=' . $this->_item->unit_id);
                 try {
                     $unit = $db->loadResult();
                     $this->_item->unit = $unit;
@@ -155,17 +149,11 @@ class Easysdi_mapModelMap extends JModelForm {
                 }
                 
                 //Load the scaleline parameters
-                $query = $db->getQuery(true);
-                $query->select('params');
-                $query->from('#__sdi_map_tool');
-                $query->where('tool_id=14');
-                $query->where('map_id = ' . (int)$id);
-                
-                $db->setQuery($query);
+                $db->setQuery('SELECT params FROM #__sdi_map_tool WHERE tool_id=14 AND map_id = ' . $id);
                 try {
                     $scalelineparams = $db->loadResult();
                     if(!empty($scalelineparams)){
-                        $params = json_decode(stripslashes($scalelineparams));
+                        $params = json_decode($scalelineparams);
                         foreach ($params as $key => $value) {
                             $this->_item->$key = $value;
                         }
@@ -177,17 +165,11 @@ class Easysdi_mapModelMap extends JModelForm {
                 }
                 
                 //Load the wfs locator
-                $query = $db->getQuery(true);
-                $query->select('params');
-                $query->from('#__sdi_map_tool');
-                $query->where('tool_id=16');
-                $query->where('map_id = ' . (int)$id);
-                
-                $db->setQuery($query);
+                $db->setQuery('SELECT params FROM #__sdi_map_tool WHERE tool_id=16 AND map_id = ' . $id);
                 try {
                     $wfslocator = $db->loadResult();
                     if(!empty($wfslocator)){
-                        $params = json_decode(stripslashes($wfslocator));
+                        $params = json_decode($wfslocator);
                         foreach ($params as $key => $value) {
                             $this->_item->$key = $value;
                         }

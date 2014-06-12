@@ -4015,9 +4015,9 @@ Ext.onReady(function() {
 				name:           'jobComboFilter',
 				displayField:   'name',
 				valueField:     'name',
+                                width:          100,
 				emptyText: EasySDI_Mon.lang.getLocal('combo select a job'),
-				store:jobComboStore,
-                                width:150
+				store:jobComboStore
 			}]
 		},{
 			html:EasySDI_Mon.lang.getLocal('report request select')+':'
@@ -4034,9 +4034,9 @@ Ext.onReady(function() {
 				name:           'reqComboFilter',
 				displayField:   'name',
 				valueField:     'name',
+                                width:          100,
 				emptyText:EasySDI_Mon.lang.getLocal('combo select a method'),
-				store:methodComboStore,
-                                width:150
+				store:methodComboStore
 			}]
 		},{
 			html:EasySDI_Mon.lang.getLocal('period')+':'
@@ -4051,12 +4051,12 @@ Ext.onReady(function() {
 			emptyText: EasySDI_Mon.lang.getLocal('combo select a period'),
 			displayField:   'name',
 			valueField:     'value',
+                        width: 100,
 			value: 'today',
 			store:          new Ext.data.SimpleStore({
 				fields : ['name', 'value'],
 				data : EasySDI_Mon.RepPeriodStore
 			}),
-                                width:150
 		},
 		{
 			html:EasySDI_Mon.lang.getLocal('report sla')+':'
@@ -4073,10 +4073,10 @@ Ext.onReady(function() {
 				fieldLabel:     'Sla',
 				name:           'slaComboFilter',
 				displayField:   'name',
+                                width:          100,
 				valueField:     'id',
 				emptyText: EasySDI_Mon.lang.getLocal('report combo select a sla'),
-				store:  slaComboStore,
-                                width:100
+				store:  slaComboStore
 			}]
 		},
 		{

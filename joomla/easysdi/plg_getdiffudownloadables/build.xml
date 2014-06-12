@@ -42,7 +42,6 @@
                 <description>PLG_EASYSDI_ADMIN_INFO_GETDIFFUDOWNLOADABLES_XML_DESCRIPTION</description>
                 <scriptfile>script.php</scriptfile>
                 <files>
-                    <filename plugin="getdiffudownloadables">script.php</filename>
                     <filename plugin="getdiffudownloadables">getdiffudownloadables.php</filename>
                     <filename>index.html</filename>
                 </files>

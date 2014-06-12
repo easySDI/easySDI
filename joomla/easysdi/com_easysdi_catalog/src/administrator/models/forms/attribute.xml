@@ -20,7 +20,7 @@
          <field name="namespace_id" 
                type="sql" 
                required="true"
-               class="inputbox input-small"
+               class="inputbox input-mini"
                query="SELECT id, prefix, ordering FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
                key_field="id" 
                value_field="prefix"

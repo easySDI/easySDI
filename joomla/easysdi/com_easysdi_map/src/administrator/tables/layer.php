@@ -125,7 +125,7 @@ class Easysdi_mapTablelayer extends sdiTable {
 		{
 			$query = $this->_db->getQuery(true);
 			$query->select('l.*,  m.guid as metadata_guid, d.id as diffusion_id, d.hasdownload as hasdownload, d.hasextraction as hasextraction');
-			$query->from($this->_db->quoteName($this->_tbl).' AS l');
+			$query->from($this->_tbl.' AS l');
 			$query->join('INNER', '#__sdi_layer_layergroup AS lg ON lg.layer_id=l.id');
                         $query->join('LEFT', '#__sdi_visualization v ON v.maplayer_id = l.id');
                         $query->join('LEFT', '#__sdi_version version ON version.id = v.version_id');
@@ -145,7 +145,7 @@ class Easysdi_mapTablelayer extends sdiTable {
 									cv.value as virtualconnector,
 									v.alias as virtualservicealias,
 									v.id as virtualserviceid');
-					$query->from($this->_db->quoteName($this->_tbl).' AS l');
+					$query->from($this->_tbl.' AS l');
 					$query->join('LEFT', '#__sdi_virtualservice AS v ON l.service_id=v.id');
 					$query->join('LEFT', '#__sdi_sys_serviceconnector AS cv ON v.serviceconnector_id=cv.id');
 					$query->where('l.id = ' . (int) $row->id);
@@ -163,7 +163,7 @@ class Easysdi_mapTablelayer extends sdiTable {
 									cp.value as physicalconnector,
 									p.alias as physicalservicealias,
 									p.id as physicalserviceid');
-					$query->from($this->_db->quoteName($this->_tbl).' AS l');
+					$query->from($this->_tbl.' AS l');
 					$query->join('LEFT', '#__sdi_physicalservice AS p ON l.service_id=p.id');
 					$query->join('LEFT', '#__sdi_sys_serviceconnector AS cp ON p.serviceconnector_id=cp.id');
 					$query->where('l.id = ' . (int) $row->id);

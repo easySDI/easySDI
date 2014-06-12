@@ -4,9 +4,9 @@
 	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="org.easysdi.monitor.biz.alert">
 	<class name="ActionType" table="action_types">
-		<id name="typeId" type="long" column="`ID_ACTION_TYPE`">
+		<id name="typeId" type="long" column="ID_ACTION_TYPE">
 			<generator class="assigned"></generator>
 		</id>
-		<property name="name" type="string" length="45" column="`NAME`"></property>
+		<property name="name" type="string" length="45" column="NAME"></property>
 	</class>
 </hibernate-mapping>

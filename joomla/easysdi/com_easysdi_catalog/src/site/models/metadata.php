@@ -140,7 +140,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                 $query->innerJoin('#__sdi_version v on v.id = m.version_id');
                 $query->innerJoin('#__sdi_resource r on v.resource_id = r.id');
                 $query->innerJoin('#__sdi_resourcetype rt on r.resourcetype_id = rt.id');
-                $query->where('m.id = ' . (int)$id);
+                $query->where('m.id = ' . $id);
 
                 $this->db->setQuery($query);
                 $metadata = $this->db->loadObject();

@@ -42,7 +42,6 @@
                 <description>PLG_EASYSDI_ADMIN_INFO_GETDIFFUEXTRACTABLES_XML_DESCRIPTION</description>
                 <scriptfile>script.php</scriptfile>
                 <files>
-                    <filename plugin="getdiffuextractables">script.php</filename>
                     <filename plugin="getdiffuextractables">getdiffuextractables.php</filename>
                     <filename>index.html</filename>
                 </files>

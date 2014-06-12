@@ -17,11 +17,7 @@ class plgUserEasysdicontactInstallerScript
 		if($type == 'install'){
 			//Check if com_easysdi_core is installed
 			$db = JFactory::getDbo();
-                        $query = $db->getQuery(true);
-                        $query->select('COUNT(*)');
-                        $query->from('#__extensions');
-                        $query->where('name ='.$db->quote('com_easysdi_core'));
-			$db->setQuery($query);
+			$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = "com_easysdi_core"');
 			$install = $db->loadResult();
 			if($install == 0){
 				JError::raiseWarning(null, JText::_('PLG_EASYSDIUSER_INSTALL_SCRIPT_CORE_ERROR'));
@@ -46,13 +42,7 @@ class plgUserEasysdicontactInstallerScript
 		if($type == 'install'){
 			//Activate the plugin
 			$db = JFactory::getDbo();
-                        $query = $db->getQuery(true);
-                        $query->update('#__extensions');
-                        $query->set('enabled=1');
-                        $query->where('type='.$db->quote('plugin'));
-                        $query->where('element='.$db->quote('easysdicontact'));
-                        $query->where('folder='.$db->quote('user'));
-			$db->setQuery($query);
+			$db->setQuery("UPDATE #__extensions SET enabled=1 WHERE type='plugin' AND element='easysdicontact' AND folder='user'");
 			$db->execute();
 		}
 	}

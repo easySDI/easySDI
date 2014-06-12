@@ -30,13 +30,10 @@ class Easysdi_catalogControllerSearchcriteria extends JControllerForm {
         $categories = implode(',', $categories);
 
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        $query->select('id, name');
-        $query->from('#__sdi_boundary');
-        $query->where('category_id IN (' . $categories . ' )');
-        $query->order('ordering');
-        
-        $db->setQuery($query);
+        $db->setQuery('SELECT id, name
+                        FROM #__sdi_boundary  
+                        WHERE category_id IN (' . $categories . ' )
+                        ORDER BY ordering');
 
         $boundaries = $db->loadObjectList();
         echo json_encode($boundaries);
@@ -55,7 +52,7 @@ class Easysdi_catalogControllerSearchcriteria extends JControllerForm {
         $query->select('r.id, r.`name`');
         $query->from('#__sdi_catalog_resourcetype cr');
         $query->innerJoin('#__sdi_resourcetype r on r.id = cr.resourcetype_id');
-        $query->where('cr.catalog_id = '.(int)$catalogId);
+        $query->where('cr.catalog_id = '.$catalogId);
         $query->order('r.`name` ASC');
         
         $db->setQuery($query);

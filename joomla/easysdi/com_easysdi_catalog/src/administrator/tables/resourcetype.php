@@ -98,8 +98,8 @@ class Easysdi_catalogTableresourcetype extends sdiTable {
                     ->select('t.text1')
                     ->from('#__sdi_translation t')
                     ->innerJoin($this->_tbl . ' rt ON rt.guid = t.element_guid')
-                    ->where('rt.id = ' . (int)$this->id)
-                    ->where('t.language_id = (SELECT l.id FROM #__sdi_language l WHERE l.code = ' . $this->_db->quote($lang->getTag()) . ')');
+                    ->where('rt.id = ' . $this->id)
+                    ->where('t.language_id = (SELECT l.id FROM #__sdi_language l WHERE l.code = "' . $lang->getTag() . '")');
             
             $this->_db->setQuery($query);
             $this->localname = $this->_db->loadResult();
