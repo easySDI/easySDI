@@ -86,12 +86,6 @@ class Easysdi_mapViewPreview extends JViewLegacy {
             $mapparams = JComponentHelper::getParams('com_easysdi_map');
             $mwidth = $mapparams->get('iframewidth');
             $mheight = $mapparams->get('iframeheight');
-            if (isset($preview->service->resourceurl))
-            {
-                $url = $preview->service->resourceurl;
-            }else{
-                $url = $preview->service->serviceurl;
-            }
             
             
             
