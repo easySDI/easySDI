@@ -73,7 +73,6 @@
                 </update>
 
                 <administration>
-                    <menu img="components/com_easysdi_dashboard/assets/images/s_com_easysdi_core.ico" >COM_EASYSDI_SOLUTION</menu>
         
                     <files folder="administrator">
                         <filename>access.xml</filename>

@@ -2,13 +2,13 @@
 <extension method="upgrade" type="component" version="3.0.0">
   <name>com_easysdi_dashboard</name>
   <creationDate>15 August 2012</creationDate>
-  <releaseDate>26 March 2014</releaseDate>
+  <releaseDate>07 April 2014</releaseDate>
   <copyright>Copyright (C) 2012. All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
   <author>EasySDI Community</author>
   <authorEmail>contact@easysdi.org</authorEmail>
   <authorUrl>http://www.easysdi.org</authorUrl>
-  <version>4.0.0</version>
+  <version>4.0.1</version>
   <description />
   <scriptfile>script.php</scriptfile>
   <install>
@@ -29,7 +29,6 @@
     </schemas>
   </update>
   <administration>
-    <menu img="components/com_easysdi_dashboard/assets/images/s_com_easysdi_core.ico">COM_EASYSDI_SOLUTION</menu>
     <files folder="administrator">
       <filename>access.xml</filename>
       <filename>config.xml</filename>
