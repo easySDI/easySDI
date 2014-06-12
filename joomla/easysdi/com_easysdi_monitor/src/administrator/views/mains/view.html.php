@@ -17,6 +17,8 @@ jimport('joomla.application.component.view');
  */
 class Easysdi_monitorViewMains extends JViewLegacy
 {
+	protected $items;
+	protected $pagination;
 	protected $state;
 
 	/**
@@ -25,7 +27,8 @@ class Easysdi_monitorViewMains extends JViewLegacy
 	public function display($tpl = null)
 	{
 		$this->state		= $this->get('State');
-                $params = JComponentHelper::getParams('com_easysdi_monitor'); 
+		
+		
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
@@ -36,7 +39,7 @@ class Easysdi_monitorViewMains extends JViewLegacy
         
 		$this->addToolbar();
         
-                $this->sidebar = JHtmlSidebar::render();
+        $this->sidebar = JHtmlSidebar::render();
 		parent::display($tpl);
 	}
 
@@ -49,18 +52,73 @@ class Easysdi_monitorViewMains extends JViewLegacy
 	{
 		require_once JPATH_COMPONENT.'/helpers/easysdi_monitor.php';
 
-		//$state	= $this->get('State');
-		$canDo	= Easysdi_monitorHelper::getActions('core.admin');
+		$state	= $this->get('State');
+		$canDo	= Easysdi_monitorHelper::getActions($state->get('filter.category_id'));
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_MONITOR_TITLE_MAINS'), 'mains.png');
-                $formPath = JPATH_COMPONENT_ADMINISTRATOR . '/views/mains';
 
-                //JToolBarHelper::divider();
-                if ($canDo->get('core.admin')) {
-                        JToolBarHelper::preferences('com_easysdi_monitor');
-                }
+        //Check if the form exists before showing the add/edit buttons
+        $formPath = JPATH_COMPONENT_ADMINISTRATOR.'/views/main';
+        if (file_exists($formPath)) {
 
-                //Set sidebar action - New in 3.0
+            if ($canDo->get('core.create')) {
+			    JToolBarHelper::addNew('main.add','JTOOLBAR_NEW');
+		    }
+
+		    if ($canDo->get('core.edit') && isset($this->items[0])) {
+			    JToolBarHelper::editList('main.edit','JTOOLBAR_EDIT');
+		    }
+
+        }
+
+		if ($canDo->get('core.edit.state')) {
+
+            if (isset($this->items[0]->state)) {
+			    JToolBarHelper::divider();
+			    JToolBarHelper::custom('mains.publish', 'publish.png', 'publish_f2.png','JTOOLBAR_PUBLISH', true);
+			    JToolBarHelper::custom('mains.unpublish', 'unpublish.png', 'unpublish_f2.png', 'JTOOLBAR_UNPUBLISH', true);
+            } else if (isset($this->items[0])) {
+                //If this component does not use state then show a direct delete button as we can not trash
+                JToolBarHelper::deleteList('', 'mains.delete','JTOOLBAR_DELETE');
+            }
+
+            if (isset($this->items[0]->state)) {
+			    JToolBarHelper::divider();
+			    JToolBarHelper::archiveList('mains.archive','JTOOLBAR_ARCHIVE');
+            }
+            if (isset($this->items[0]->checked_out)) {
+            	JToolBarHelper::custom('mains.checkin', 'checkin.png', 'checkin_f2.png', 'JTOOLBAR_CHECKIN', true);
+            }
+		}
+        
+        //Show trash and delete for components that uses the state field
+        if (isset($this->items[0]->state)) {
+		    if ($state->get('filter.state') == -2 && $canDo->get('core.delete')) {
+			    JToolBarHelper::deleteList('', 'mains.delete','JTOOLBAR_EMPTY_TRASH');
+			    JToolBarHelper::divider();
+		    } else if ($canDo->get('core.edit.state')) {
+			    JToolBarHelper::trash('mains.trash','JTOOLBAR_TRASH');
+			    JToolBarHelper::divider();
+		    }
+        }
+
+		if ($canDo->get('core.admin')) {
+			JToolBarHelper::preferences('com_easysdi_monitor');
+		}
+        
+        //Set sidebar action - New in 3.0
 		JHtmlSidebar::setAction('index.php?option=com_easysdi_monitor&view=mains');
-	}    
+        
+        $this->extra_sidebar = '';
+        //
+        
+	}
+    
+	protected function getSortFields()
+	{
+		return array(
+		);
+	}
+
+    
 }

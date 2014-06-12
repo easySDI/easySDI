@@ -8,7 +8,7 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/For
 
 /**
  * This Class will browse the xml structure in session and create the tree fielset.
- *
+ * 
  * @version     4.0.0
  * @package     com_easysdi_catalog
  * @copyright   Copyright (C) 2012. All rights reserved.
@@ -19,7 +19,7 @@ class FormHtmlGenerator {
 
     /**
      *
-     * @var JForm
+     * @var JForm 
      */
     private $form;
 
@@ -37,37 +37,37 @@ class FormHtmlGenerator {
 
     /**
      *
-     * @var SdiNamespaceDao
+     * @var SdiNamespaceDao 
      */
     private $nsdao;
 
     /**
      *
-     * @var DOMDocument
+     * @var DOMDocument 
      */
     private $formHtml;
 
     /**
      *
-     * @var DOMXPath
+     * @var DOMXPath 
      */
     private $domXpathStr;
 
     /**
      *
-     * @var DOMXPath
+     * @var DOMXPath 
      */
     private $domXpathFormHtml;
 
     /**
      *
-     * @var JDatabaseDriver
+     * @var JDatabaseDriver 
      */
     protected $db;
 
     /**
      *
-     * @var string
+     * @var string 
      */
     private $ajaxXpath;
     private $catalog_uri = 'http://www.easysdi.org/2011/sdi/catalog';
@@ -85,7 +85,7 @@ class FormHtmlGenerator {
 
     /**
      * This function returns the form in HTML.
-     *
+     * 
      * @author Depth S.A.
      * @since 4.0
      * @return string
@@ -129,10 +129,10 @@ class FormHtmlGenerator {
 
     /**
      * This function recursively browse the XML structure to create the HTML form.
-     *
+     * 
      * @author Depth S.A.
      * @since 4.0
-     *
+     * 
      * @param DOMElement $parent Parent element in the XML structure.
      * @param DOMElement $parentHtml Parent element in the HTML structure.
      */
@@ -216,10 +216,10 @@ class FormHtmlGenerator {
 
     /**
      * Built on the action bar to add new relation instance.
-     *
+     * 
      * @author Depth S.A.
      * @since 4.0
-     *
+     * 
      * @param DOMElement $relation Current relation.
      * @return DOMElement The DIV block that contains the label and the button "add" if necessary.
      */
@@ -273,12 +273,12 @@ class FormHtmlGenerator {
     }
 
     /**
-     * Built fieldset corresponding to a relation instance.
+     * Built fieldset corresponding to a relation instance. 
      * This method also creates the "Close" button and, if necessary, the "Delete" button.
-     *
+     * 
      * @author Depth S.A.
      * @since 4.0
-     *
+     * 
      * @param DOMElement $element
      * @return DOMElement A fieldset containing the necessary buttons.
      */
@@ -358,10 +358,10 @@ class FormHtmlGenerator {
 
     /**
      * Encode special characters into HTML entities. Unless the <> characters.
-     *
+     * 
      * @author Depth S.A.
      * @since 4.0
-     *
+     * 
      * @param string $text
      * @return string
      */
@@ -372,12 +372,12 @@ class FormHtmlGenerator {
     }
 
     /**
-     * This method constructs a set of attributes.
+     * This method constructs a set of attributes. 
      * It will contain either a single field or a field for each language or a group of fields corresponding to a stereotype.
-     *
+     * 
      * @author Depth S.A.
      * @since 4.0
-     *
+     * 
      * @param DOMElement $attribute The current attribute.
      * @return DOMElement DIV containing a group of fields.
      */
@@ -395,12 +395,7 @@ class FormHtmlGenerator {
         }
 
         $attributeGroup = $this->formHtml->createElement('div');
-        if($rendertypeId == 1000){
-            $attributeGroup->setAttribute('class', 'hidden attribute-group attribute-group-' . $this->removeIndex(FormUtils::serializeXpath($attribute->getNodePath())));
-        }else{
-            $attributeGroup->setAttribute('class', 'attribute-group attribute-group-' . $this->removeIndex(FormUtils::serializeXpath($attribute->getNodePath())));
-        }
-        
+        $attributeGroup->setAttribute('class', 'attribute-group attribute-group-' . $this->removeIndex(FormUtils::serializeXpath($attribute->getNodePath())));
         $attributeGroup->setAttribute('id', 'attribute-group-' . FormUtils::serializeXpath($attribute->getNodePath()));
 
         switch ($stereotypeId) {
@@ -505,10 +500,10 @@ class FormHtmlGenerator {
 
     /**
      * Returns a DIV containing the fields of the stereotype "geographic extent."
-     *
+     * 
      * @author Depth S.A.
      * @since 4.0
-     *
+     * 
      * @param DOMElement $attribute The current attribute.
      * @return DOMElement The DIV.
      */
@@ -542,7 +537,7 @@ class FormHtmlGenerator {
         $query->innerJoin('#__sdi_layer_layergroup llg ON llg.group_id = mlg.group_id');
         $query->innerJoin('#__sdi_maplayer l ON l.id = llg.layer_id');
         $query->innerJoin('#__sdi_sys_unit u ON u.id = m.unit_id');
-        $query->where('m.id=' . (int)$map_id);
+        $query->where('m.id=' . $map_id);
         $query->where('mlg.isbackground = 1');
 
         $this->db->setQuery($query);
@@ -553,12 +548,12 @@ class FormHtmlGenerator {
             case 'physical':
                 $query->select('resourceurl as serviceurl, serviceconnector_id');
                 $query->from('#__sdi_physicalservice');
-                $query->where('id = ' . (int)$map_config->service_id);
+                $query->where('id = ' . $map_config->service_id);
                 break;
             case 'virtual':
                 $query->select('url, reflectedurl as serviceurl, serviceconnector_id');
                 $query->from('#__sdi_virtualservice');
-                $query->where('id = ' . (int)$map_config->service_id);
+                $query->where('id = ' . $map_config->service_id);
                 break;
         }
 
@@ -628,10 +623,10 @@ class FormHtmlGenerator {
         $centercoords = explode(',', $map_config->centercoordinates);
         $script->nodeValue = "var map_$parent_path, layer_$parent_path, polygonLayer_$parent_path, polygonControl_$parent_path ;
                             js('document').ready(function() {
+                                
 
-
-                                var map_options = {projection: \"" . $map_config->srs . "\"
-                                    , maxResolution: " . $map_config->maxresolution . "
+                                var map_options = {projection: \"" . $map_config->srs . "\" 
+                                    , maxResolution: " . $map_config->maxresolution . " 
                                     , units: \"" . $map_config->unit_alias . "\"
                                     , maxExtent: [" . $map_config->maxextent . "]";
         if (!empty($map_config->restrictedextent)) {
@@ -642,15 +637,15 @@ class FormHtmlGenerator {
 
 
         $script->nodeValue.= " map_$parent_path = new OpenLayers.Map(\"map_$parent_path\", map_options);
-
+                                 
                                 " . $layer_definition . "
                                 polygonLayer_$parent_path = new OpenLayers.Layer.Vector('Polygon Layer');
 
                                 map_$parent_path.addLayers([layer_$parent_path, polygonLayer_$parent_path]);
-
+                      
                                     var psource = new proj4.Proj(\"" . $map_config->srs . "\");
                                     var pdest   = new proj4.Proj(\"EPSG:4326\");
-
+                                   
                     ";
 
 
@@ -674,18 +669,18 @@ class FormHtmlGenerator {
                                         {handlerOptions: polyOptions});
 
                                 map_$parent_path.addControl(polygonControl_$parent_path);
-
+                                    
                                drawBB('$parent_path');
-
+                                    
                                polygonLayer_$parent_path.events.register('featureadded', polygonLayer_$parent_path, function(e) {
                                     polygonControl_$parent_path.deactivate();
                                     js('#editBtn_$parent_path').removeClass('active');
 
                                     var bounds = e.feature.geometry.getBounds();
-
+                                    
                                     var source = new proj4.Proj(map_" . $parent_path . ".getProjection());
                                     var dest   = new proj4.Proj(\"EPSG:4326\");
-
+                                    
                                     var bottom_left = new proj4.Point(bounds.left, bounds.bottom);
                                     var top_right = new proj4.Point(bounds.right, bounds.top);
 
@@ -704,7 +699,7 @@ class FormHtmlGenerator {
                                     polygonLayer_$parent_path.removeAllFeatures();
 
                                 });
-
+                               
                             });";
 
         $div->appendChild($btnEdit);
@@ -717,10 +712,10 @@ class FormHtmlGenerator {
 
     /**
      * This method returns a DIV containing the fields of the stereotype "GEMET".
-     *
+     * 
      * @author Depth S.A.
      * @since 4.0
-     *
+     * 
      * @param DOMElement $attribute
      * @return DOMElement
      */
@@ -741,7 +736,7 @@ class FormHtmlGenerator {
         $script_code = "js = jQuery.noConflict();
 
                                 js('document').ready(function() {
-
+                                
                                 var languages = new Array(" . implode(',', $languages) . ");
                                 var index = '';
                                 if(js('#jform_" . $parent_path . "_sla_gmd_dp_keyword_sla_gco_dp_CharacterString').length == 0){
@@ -772,10 +767,10 @@ class FormHtmlGenerator {
 
                                     thes.render('gemet');
                                 });
-
-
+                                  
+                                    
                                     js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString').on('change',function(evt, params){
-
+                                        
                                                 var id_default = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString option[value=\''+params.deselected+'\']').attr('id');
                                                 var index_number = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString option[value=\''+params.deselected+'\']').attr('index');
 
@@ -784,24 +779,24 @@ class FormHtmlGenerator {
                                                     js('option[id=\''+id_i18n+'\']').remove();
                                                     js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()).trigger('liszt:updated');
                                                 }
-
+                                                
                                                 removeFromStructure('" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "-sla-gmd-dp-keyword-la-'+index_number+'-ra-');
-
+                                                
                                     });
 
-
-
+                                
+                                
                                 var writeTerms = function(result) {
-
+                                    
                                     for(var i=0; i < languages.length; i++){
                                         var paths = result.terms[languages[i]].split('>');
                                         var keyword = paths[paths.length - 1];
                                         var option_string = '<option class=\''+result.uri+'\' value=\"'+keyword+'\" selected>'+keyword+'</option>';
-
+                                        
                                         if(i==0){
                                             var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString');
                                             var current_div = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString_chzn ul li[class=\'search-field\'] input');
-
+                                        
                                         }else{
                                             var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase());
                                             var current_div = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()+'_chzn ul li[class=\'search-field\'] input');
@@ -809,11 +804,11 @@ class FormHtmlGenerator {
                                         current_select.append(option_string);
                                         current_select.trigger('liszt:updated');
                                         current_div.attr('style','width: 0px');
-
+                                        
                                         addToStructure('" . $attribute->getAttributeNS($this->catalog_uri, 'relid') . "','" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "');
                                     }
                                 }
-
+                                
                             });";
 
         $script->nodeValue = $script_code;
@@ -824,7 +819,7 @@ class FormHtmlGenerator {
         $aModal->setAttribute('class', 'btn btn-primary btn-lg');
 
         $divModal = $this->formHtml->createElement('div');
-        $divModal->setAttribute('class', 'modal fade hide');
+        $divModal->setAttribute('class', 'modal fade');
         $divModal->setAttribute('id', 'myModal');
         $divModal->setAttribute('tabindex', '-1');
         $divModal->setAttribute('role', 'dialog');
@@ -877,14 +872,14 @@ class FormHtmlGenerator {
 
     /**
      * This method builds up the field retrieve structure Joomla field.
-     *
+     * 
      * @author Depth S.A.
      * @since 4.0
-     *
+     * 
      * @param DOMElement $attribute The current attribute.
      * @param JField $field The Joomla JField
      * @param boolean $addButton Defines whether the "Add" button must be created.
-     * @return DOMElement[]
+     * @return DOMElement[] 
      */
     private function buildField(DOMElement $attribute, $field, $addButton = FALSE) {
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
@@ -940,10 +935,10 @@ class FormHtmlGenerator {
 
     /**
      * Import the HTML structure of the label in a DOMElement.
-     *
+     * 
      * @author Depth S.A.
      * @since 4.0
-     *
+     * 
      * @param JField $field The Joomla JField
      * @return DOMElement
      */
@@ -964,7 +959,7 @@ class FormHtmlGenerator {
 
     /**
      * Import HTML structure of input field in a DOMElement.
-     *
+     * 
      * @param JField $field The Joomla JField.
      * @return DOMElement
      */
@@ -984,10 +979,10 @@ class FormHtmlGenerator {
 
     /**
      * This method creates the tooltip script.
-     *
+     * 
      * @author Depth S.A.
      * @since 4.0
-     *
+     * 
      * @param JFormField $field The Joomla JField
      * @param string $guid Guid find in translations.
      * @return DOMElement
@@ -1007,25 +1002,25 @@ class FormHtmlGenerator {
 
     /**
      * This method creates the tooltip script.
-     *
+     * 
      * @author Depth S.A.
      * @since 4.0
-     *
+     * 
      * @param JFormField $field The Joomla JField
      * @return DOMElement
      */
     private function getMultiSelectScript($field, DOMElement $attribute) {
 
         $script_content = "js = jQuery.noConflict();
-
+            
                             js('#" . $field->__get('id') . "').chosen().change(function(e, params) {
-
+                                
                                 if(params.selected != null){
                                     addToStructure(" . $attribute->getAttributeNS($this->catalog_uri, 'relid') . ", '" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "');
                                 }else{
                                     removeFromStructure('" . FormUtils::serializeXpath($attribute->getNodePath()) . "');
                                 }
-
+                              
                             });";
 
         $script = $this->formHtml->createElement('script', $script_content);
@@ -1036,10 +1031,10 @@ class FormHtmlGenerator {
 
     /**
      * Create the "ADD" bouton, if necessary.
-     *
+     * 
      * @author Depth S.A.
      * @since 4.0
-     *
+     * 
      * @param DOMElement $attribute The current attribute.
      * @return DOMElement
      */
@@ -1075,10 +1070,10 @@ class FormHtmlGenerator {
 
     /**
      * Adds the "Preview" button to the File stereotype.
-     *
+     * 
      * @author Depth S.A.
      * @since 4.0
-     *
+     * 
      * @param DOMElement $attribute
      * @return DOMElement
      */
@@ -1101,10 +1096,10 @@ class FormHtmlGenerator {
 
     /**
      * Adds the "Clear" button to the File stereotype.
-     *
+     * 
      * @author Depth S.A.
      * @since 4.0
-     *
+     * 
      * @param DOMElement $attribute The current attribute.
      * @return DOMElement
      */
@@ -1125,7 +1120,7 @@ class FormHtmlGenerator {
 
     /**
      * Remove index from XPath
-     *
+     * 
      * @param string $xpath
      * @return string
      */

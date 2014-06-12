@@ -5,7 +5,7 @@
 <hibernate-mapping package="org.easysdi.monitor.biz.job">
 	<class name="ServiceType" table="service_types" mutable="false" dynamic-update="false"
 		lazy="false">
-		<id name="id" type="long" column="`ID_SERVICE_TYPE`">
+		<id name="id" type="long" column="ID_SERVICE_TYPE">
 			<generator class="org.hibernate.id.enhanced.TableGenerator">
 				<param name="table_name">last_ids</param>
 				<param name="value_column_name">LAST_ID</param>
@@ -15,7 +15,7 @@
 				<param name="increment_size">1</param>
 			</generator>
 		</id>
-		<property name="name" type="string" length="20" column="`NAME`" lazy="false"></property>
-		<property name="version" type="string" length="10" column="`VERSION`" lazy="false"></property>
+		<property name="name" type="string" length="20" column="NAME" lazy="false"></property>
+		<property name="version" type="string" length="10" column="VERSION" lazy="false"></property>
 	</class>
 </hibernate-mapping>

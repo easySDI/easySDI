@@ -65,6 +65,7 @@ class Easysdi_contactTableuser extends sdiTable
      */
     public function bind($array, $ignore = '') {
     
+    	
     	if(!JFactory::getUser()->authorise('core.admin', 'com_easysdi_contact.user.'.$array['id'])){
     		
     		$actions = JFactory::getACL()->getActions('com_easysdi_contact','user');
@@ -78,11 +79,8 @@ class Easysdi_contactTableuser extends sdiTable
     		
     		$array['rules'] = $this->JAccessRulestoArray($array_jaccess);
     		
-        }else{
-            
-        }
-        
-        
+    	}
+    	
     	return parent::bind($array, $ignore);
     }
     

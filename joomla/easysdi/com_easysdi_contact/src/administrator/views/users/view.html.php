@@ -101,11 +101,18 @@ class Easysdi_contactViewUsers extends JViewLegacy {
             JToolBarHelper::preferences('com_easysdi_contact');
         }
 
+        JToolBarHelper::divider();
+        JToolBarHelper::custom('easySDIHome', 'home.png', 'home_f2.png', 'COM_EASYSDI_CONTACT_TOOLBAR_HOME', false);
+
         //Set sidebar action - New in 3.0
         JHtmlSidebar::setAction('index.php?option=com_easysdi_contact&view=users');
         $this->extra_sidebar = '';
         JHtmlSidebar::addFilter(
                 JText::_('JOPTION_SELECT_PUBLISHED'), 'filter_published', JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), "value", "text", $this->state->get('filter.state'), true)
+        );
+
+        JHtmlSidebar::addFilter(
+                JText::_('JOPTION_SELECT_CATEGORY'), 'filter_category_id', JHtml::_('select.options', JHtml::_('category.options', 'com_easysdi_contact'), 'value', 'text', $this->state->get('filter.category_id'))
         );
 
         JHtmlSidebar::addFilter(
@@ -117,7 +124,8 @@ class Easysdi_contactViewUsers extends JViewLegacy {
         return array(
             'a.ordering' => JText::_('JGRID_HEADING_ORDERING'),
             'a.state' => JText::_('JSTATUS'),
-            'u.name' => JText::_('COM_EASYSDI_CONTACT_USERS_USER_NAME'),
+            'a.name' => JText::_('COM_EASYSDI_CONTACT_USERS_USER_NAME'),
+            'a.category_title' => JText::_('JCATEGORY'),
             'a.access_level' => JText::_('JGRID_HEADING_ACCESS'),
             'a.id' => JText::_('JGRID_HEADING_ID'),
         );

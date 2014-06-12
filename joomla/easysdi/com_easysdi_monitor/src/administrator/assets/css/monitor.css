@@ -254,6 +254,10 @@ background-repeat:no-repeat;
     background-color: #E8E8E8;
 }
 
+#toolbar{
+    display: none;
+}
+
 #exportBtn{
     display:none;
 }

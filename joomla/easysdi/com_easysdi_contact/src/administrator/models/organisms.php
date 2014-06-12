@@ -108,10 +108,10 @@ class Easysdi_contactModelorganisms extends JModelList {
         // Select the required fields from the table.
         $query->select(
                 $this->getState(
-                        'list.select', 'a.id, a.acronym, a.checked_out, a.checked_out_time, a.ordering,a.state,a.name,a.access'
+                        'list.select', 'a.*'
                 )
         );
-        $query->from('#__sdi_organism AS a');
+        $query->from('`#__sdi_organism` AS a');
 
 
         // Join over the users for the checked out user.
@@ -123,11 +123,11 @@ class Easysdi_contactModelorganisms extends JModelList {
         $query->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
 
         // Join over the user field 'created_by'
-        $query->select('created_by_table.name AS created_by');
-        $query->join('LEFT', '#__users AS created_by_table ON created_by_table.id = a.created_by');
+        $query->select('created_by.name AS created_by');
+        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
         // Join over the user field 'modified_by'
-        $query->select('modified_by_table.name AS modified_by');
-        $query->join('LEFT', '#__users AS modified_by_table ON modified_by_table.id = a.modified_by');
+        $query->select('modified_by.name AS modified_by');
+        $query->join('LEFT', '#__users AS modified_by ON modified_by.id = a.modified_by');
 
 
         // Filter by published state

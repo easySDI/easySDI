@@ -42,7 +42,6 @@
                 <description>PLG_EASYSDI_ADMIN_INFO_GETORGANISMS_XML_DESCRIPTION</description>
                 <scriptfile>script.php</scriptfile>
                 <files>
-                     <filename plugin="getorganisms">script.php</filename>
                     <filename plugin="getorganisms">getorganisms.php</filename>
                     <filename>index.html</filename>
                 </files>

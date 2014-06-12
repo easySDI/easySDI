@@ -164,8 +164,8 @@ class Easysdi_shopTableorderperimeter extends JTable {
 
         // Update the publishing state for rows with the given primary keys.
         $this->_db->setQuery(
-                'UPDATE ' . $this->_db->quoteName($this->_tbl) .
-                ' SET state = ' . (int) $state .
+                'UPDATE `' . $this->_tbl . '`' .
+                ' SET `state` = ' . (int) $state .
                 ' WHERE (' . $where . ')' .
                 $checkin
         );
@@ -210,7 +210,7 @@ class Easysdi_shopTableorderperimeter extends JTable {
       *
       * @see JTable::_getAssetParentId 
     */
-    protected function _getAssetParentId(JTable $table = null, $id = null){
+    protected function _getAssetParentId($table = null, $id = null){
         // We will retrieve the parent-asset from the Asset-table
         $assetParent = JTable::getInstance('Asset');
         // Default: if no asset-parent can be found we take the global asset

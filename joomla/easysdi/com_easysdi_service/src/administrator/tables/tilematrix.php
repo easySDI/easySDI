@@ -26,12 +26,11 @@ class Easysdi_serviceTabletilematrix extends sdiTable {
 	
 	public function getListByTileMatrixSet($tileMatrixSetID) {
 		$db = JFactory::getDbo();
-                $query = $db->getQuery(true);
-                $query->select('*');
-                $query->from('#__sdi_tilematrix');
-                $query->where('tilematrixset_id = ' . (int)$tileMatrixSetID);
-                
-		$db->setQuery($query);
+		$db->setQuery('
+			SELECT *
+			FROM #__sdi_tilematrix
+			WHERE tilematrixset_id = ' . $tileMatrixSetID . ';
+		');
 		
 		try {
 			$resultSet = $db->loadObjectList();
@@ -56,7 +55,7 @@ class Easysdi_serviceTabletilematrix extends sdiTable {
 	public function saveBatch ($src) {
 		$query = 'INSERT INTO #__sdi_tilematrix (identifier, scaledenominator, topleftcorner, tilewidth, tileheight, matrixwidth, matrixheight, tilematrixset_id) VALUES ';
 		foreach ($src as $tileMatrix) {
-			$query .= '(' . $query->quote($tileMatrix['identifier']) . ', ' . $query->quote($tileMatrix['scaledenominator']) . ', ' . $query->quote($tileMatrix['topleftcorner']) . ', ' . $query->quote($tileMatrix['tilewidth']) . ', ' . $query->quote($tileMatrix['tileheight']) . ', ' . $query->quote($tileMatrix['matrixwidth']) . ', ' . $query->quote($tileMatrix['matrixheight']) . ', ' . $query->quote($tileMatrix['tilematrixset_id']) . '),';
+			$query .= '(\'' . $tileMatrix['identifier'] . '\', \'' . $tileMatrix['scaledenominator'] . '\', \'' . $tileMatrix['topleftcorner'] . '\', \'' . $tileMatrix['tilewidth'] . '\', \'' . $tileMatrix['tileheight'] . '\', \'' . $tileMatrix['matrixwidth'] . '\', \'' . $tileMatrix['matrixheight'] . '\', \'' . $tileMatrix['tilematrixset_id'] . '\'),';
 		}
 		$query = substr($query, 0, -1) . ';';
 		$db = JFactory::getDbo();

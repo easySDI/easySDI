@@ -24,9 +24,8 @@ class Indicator{
                 ->where('o.ordertype_id = 1')
 
                 ->group($db->quoteName('dif.id'))
-                ->group($db->quoteName('dif.name'))
                 
-                ->order('count(odif.id) DESC');
+                ->order('2 DESC');
                 
         if($organism != 'all'){
             $query->where($db->quoteName('org.id') . ' = ' . $organism);

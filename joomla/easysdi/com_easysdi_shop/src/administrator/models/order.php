@@ -107,7 +107,7 @@ class Easysdi_shopModelorder extends JModelAdmin
                         'list.select', 'a.*'
                 )
         );
-        $query->from('#__sdi_order AS a');
+        $query->from('`#__sdi_order` AS a');
 
 
         // Join over the users for the checked out user.
@@ -139,26 +139,19 @@ class Easysdi_shopModelorder extends JModelAdmin
         ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion ON order_diffusion.order_id =a.id')
         ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id');*/
 
-        $query->select($query->concatenate(array('diffusion.name', $query->quote(' ('), 'organism.name' , $query->quote(')') )) . ' as product')
+        $query->select("GROUP_CONCAT(CONCAT(diffusion.name , ' (',organism.name,')') SEPARATOR '<br/>".PHP_EOL."') AS products")
                 ->join('LEFT', '#__sdi_order_diffusion AS order_diffusion ON order_diffusion.order_id =a.id')
                 ->join('LEFT', '#__sdi_diffusion AS diffusion ON diffusion.id=order_diffusion.diffusion_id')
                 ->join('LEFT', '#__sdi_resource AS resource ON resource.id=diffusion.version_id')
                 ->join('LEFT', '#__sdi_organism AS organism ON organism.id=resource.organism_id')
                 ->group('a.id');
 
-        $query->where('a.id = '. (int)$pk);
+        $query->where('a.id = '.$pk);
 
         $db->setQuery($query);
-        $items= $db->loadObjectList();
-        
-        $products = array();
-        foreach ($items as $item) {
-            $products[] = $item->product;
-        }
-        
-        $item->products = implode('</br>'.PHP_EOL, $products);
-	
-        return $item;
+        $item= $db->loadObject();
+
+		return $item;
 	}
 
 	/**
@@ -175,11 +168,7 @@ class Easysdi_shopModelorder extends JModelAdmin
 			// Set ordering to the last item if not set
 			if (@$table->ordering === '') {
 				$db = JFactory::getDbo();
-                                $query = $db->getQuery(true);
-                                $query->select('MAX(ordering)');
-                                $query->from('FROM #__sdi_order');
-                                
-				$db->setQuery($query);
+				$db->setQuery('SELECT MAX(ordering) FROM #__sdi_order');
 				$max = $db->loadResult();
 				$table->ordering = $max+1;
 			}

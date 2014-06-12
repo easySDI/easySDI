@@ -102,7 +102,6 @@ class Easysdi_dashboardHelper {
                     ->join('INNER', $db->quoteName('#__sdi_resource','r') .  ' ON (' . $db->quoteName('v.resource_id') . ' = ' . $db->quoteName('r.id') . ')')
                     ->join('INNER', $db->quoteName('#__sdi_organism','o') .  ' ON (' . $db->quoteName('r.organism_id') . ' = ' . $db->quoteName('o.id') . ')')
                     ->group($db->quoteName('o.id'))
-                    ->group($db->quoteName('o.name'))
                     ->order($db->quoteName('o.name'));
             $db->setQuery($query, 0);
             $orgs = $db->loadObjectList();
@@ -142,7 +141,6 @@ class Easysdi_dashboardHelper {
         $c = curl_init();
         curl_setopt($c, CURLOPT_URL, $birturl . 'run?');
         curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($c, CURLOPT_HEADER, false);
         curl_setopt($c, CURLOPT_POST, true);
         curl_setopt($c, CURLOPT_POSTFIELDS, 

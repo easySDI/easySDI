@@ -33,33 +33,33 @@ JText::script('COM_EASYSDI_SERVICE_POLICY_LAYER_SETTINGS_INHERITED');
 
 function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	$db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        $query->select('*');
-        $query->from('#__sdi_sys_spatialoperator');
-        $query->where('state = 1');
-        $query->order('ordering');
-        
-	$db->setQuery($query);
+	$db->setQuery('
+		SELECT *
+		FROM #__sdi_sys_spatialoperator
+		WHERE state = 1
+		ORDER BY ordering;
+	');
 	$db->execute();
 	$resultset = $db->loadObjectList();
 	
 	$wfs_spatialpolicy_id = (!empty($data->wfs_spatialpolicy_id)) ? $data->wfs_spatialpolicy_id : -1;
 	
 	if (0 == $physicalServiceID) {
-                $query = $db->getQuery(true);
-                $query->select('*');
-                $query->from('#__sdi_wfs_spatialpolicy');
-                $query->where('id = ' . $query->quote($data->wfs_spatialpolicy_id));
-                
+		$query = '
+			SELECT *
+			FROM #__sdi_wfs_spatialpolicy
+			WHERE id = \'' . $data->wfs_spatialpolicy_id . '\';
+		';
 	}
 	else {
-                $query = $db->getQuery(true);
-                $query->select('wsp.*, psp.anyitem');
-                $query->from('#__sdi_wfs_spatialpolicy wsp');
-                $query->innerJoin('JOIN #__sdi_physicalservice_policy psp ON wsp.id = psp.wfs_spatialpolicy_id');
-                $query->where('psp.physicalservice_id = ' . (int)$physicalServiceID);
-                $query->where('psp.policy_id = ' . (int)$data->id);
-            
+		$query = '
+			SELECT wsp.*, psp.anyitem
+			FROM #__sdi_wfs_spatialpolicy wsp
+			JOIN #__sdi_physicalservice_policy psp
+			ON wsp.id = psp.wfs_spatialpolicy_id
+			WHERE psp.physicalservice_id = ' . $physicalServiceID . '
+			AND psp.policy_id = ' . $data->id . ';
+		';
 	}
 	$db->setQuery($query);
 	$db->execute();
@@ -78,13 +78,12 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 	}
 	else {
 		$prefix .= '_server[' . $physicalServiceID . ']';
-                $query = $db->getQuery(true);
-                $query->select('psp.anyitem, psp.prefix, psp.namespace');
-                $query->from('#__sdi_physicalservice_policy psp');
-                $query->where('psp.physicalservice_id = ' . (int)$physicalServiceID);
-                $query->where('psp.policy_id = ' . (int)$data->id);
-                
-		$db->setQuery($query);
+		$db->setQuery('
+				SELECT psp.anyitem, psp.prefix, psp.namespace
+				FROM #__sdi_physicalservice_policy psp
+				WHERE psp.physicalservice_id = ' . $physicalServiceID . '
+				AND psp.policy_id = ' . $data->id . ';
+				');
 		$db->execute();
 		$psp = $db->loadObject();
 		

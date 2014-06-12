@@ -156,11 +156,7 @@ class Easysdi_mapModellayer extends sdiModel
 			// Set ordering to the last item if not set
 			if (@$table->ordering === '') {
 				$db = JFactory::getDbo();
-                                $query = $db->getQuery(true);
-                                $query->select('MAX(ordering)');
-                                $query->from('#__sdi_maplayer');
-                                
-				$db->setQuery($query);
+				$db->setQuery('SELECT MAX(ordering) FROM #__sdi_maplayer');
 				$max = $db->loadResult();
 				$table->ordering = $max+1;
 			}
@@ -221,8 +217,8 @@ class Easysdi_mapModellayer extends sdiModel
 				$query
 				->update($db->quoteName('#__sdi_layer_layergroup'))
 				->set('ordering='.$order)
-				->where('layer_id= '. (int)$pks[$i])
-				->where('group_id= '. (int)$group);
+				->where('layer_id= '.$pks[$i])
+				->where('group_id= '.$group);
 				$db->setQuery($query);
 				try {
 					$result = $db->execute();

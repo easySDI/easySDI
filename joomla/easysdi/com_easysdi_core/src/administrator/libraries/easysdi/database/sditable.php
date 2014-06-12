@@ -54,23 +54,23 @@ abstract class sdiTable extends JTable {
             }
         }
 
-        $query = $this->_db->getQuery(true);
-        $query->update($this->_tbl);
-        $query->set('state = '. (int)$state);
-        
-        
         // Build the WHERE clause for the primary keys.
         $where = $k . '=' . implode(' OR ' . $k . '=', $pks);
 
-        $query->where($where);
-        
         // Determine if there is checkin support for the table.
-        if (property_exists($this, 'checked_out') || property_exists($this, 'checked_out_time')) {
-            $query->where('(checked_out = 0 OR checked_out = ' . (int) $userId . ')');
+        if (!property_exists($this, 'checked_out') || !property_exists($this, 'checked_out_time')) {
+            $checkin = '';
+        } else {
+            $checkin = ' AND (checked_out = 0 OR checked_out = ' . (int) $userId . ')';
         }
 
         // Update the publishing state for rows with the given primary keys.
-        $this->_db->setQuery($query);
+        $this->_db->setQuery(
+                'UPDATE `' . $this->_tbl . '`' .
+                ' SET `state` = ' . (int) $state .
+                ' WHERE (' . $where . ')' .
+                $checkin
+        );
         $this->_db->query();
 
         // Check for a database error.
@@ -258,8 +258,6 @@ abstract class sdiTable extends JTable {
 
         if ($this->_rules instanceof JAccessRules) {
             $asset->rules = (string) $this->_rules;
-        }else{
-            $asset->rules = '{}';
         }
 
         if (!$asset->check() || !$asset->store(false)) {
@@ -287,10 +285,10 @@ abstract class sdiTable extends JTable {
     private function getUniqueAlias($alias) {
         $query = $this->_db->getQuery(true);
         $query->select('count(*)');
-        $query->from( $query->quoteName($this->_tbl));
-        $query->where('alias = ' . $query->quote($alias) );
+        $query->from('`' . $this->_tbl . '`');
+        $query->where('alias = "' . $alias . '"');
         if ($this->id)
-            $query->where('id <> ' . (int)$this->id);
+            $query->where('id <> ' . $this->id);
         $this->_db->setQuery($query);
 
         // Check for a database error.
@@ -359,7 +357,7 @@ abstract class sdiTable extends JTable {
      *
      * @since   11.1
      */
-    protected function _getAssetParentId(JTable $table = null, $id = null) {
+    protected function _getAssetParentId($table = null, $id = null) {
         // Initialise variables.
         $assetId = null;
 

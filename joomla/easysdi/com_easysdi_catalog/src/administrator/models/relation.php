@@ -157,11 +157,7 @@ class Easysdi_catalogModelrelation extends sdiModel {
             // Set ordering to the last item if not set
             if (@$table->ordering === '') {
                 $db = JFactory::getDbo();
-                $query = $db->getQuery(true);
-                $query->select('MAX(ordering)');
-                $query->from('#__sdi_relation');
-                
-                $db->setQuery($query);
+                $db->setQuery('SELECT MAX(ordering) FROM #__sdi_relation');
                 $max = $db->loadResult();
                 $table->ordering = $max + 1;
             }

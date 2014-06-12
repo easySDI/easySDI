@@ -43,7 +43,6 @@
                 <scriptfile>script.php</scriptfile>
                 <files>
                     <filename plugin="easysdiservice">easysdiservice.php</filename>
-                    <filename plugin="easysdiservice">script.php</filename>
                 </files>
                 <languages>
                     <language tag="en-GB">language/en-GB/en-GB.plg_content_easysdiservice.sys.ini</language>

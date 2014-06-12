@@ -97,8 +97,8 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         $query->innerJoin('#__sdi_boundarycategory as bc ON b.category_id = bc.id');
         $query->innerJoin('#__sdi_translation t ON b.guid = t.element_guid');
         $query->innerJoin('#__sdi_language as l ON l.id = t.language_id');
-        $query->where('bc.`name` = ' . $this->db->quote($name) );
-        $query->where('l.code = ' . $this->db->quote($default_lang) );
+        $query->where('bc.`name` = \'' . $name . '\'');
+        $query->where('l.code = \'' . $default_lang . '\'');
         
 
         $this->db->setQuery($query);
@@ -121,7 +121,7 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         $query->select('t.text1, b.alias, b.northbound, b.southbound, b.westbound, b.eastbound');
         $query->from('#__sdi_boundary AS b');
         $query->innerJoin('#__sdi_translation t ON b.guid = t.element_guid ');
-        $query->where('t.text1 = ' . $this->db->quote($name) );
+        $query->where('t.text1 = \'' . $name . '\'');
         
         $this->db->setQuery($query);
         $result = $this->db->loadObject();

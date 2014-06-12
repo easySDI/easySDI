@@ -32,7 +32,7 @@ class Easysdi_shopTablediffusionnotifieduser extends JTable {
         // Initialise the query.
         $query = $this->_db->getQuery(true);
         $query->select('user_id');
-        $query->from($query->quoteName($this->_tbl));
+        $query->from($this->_tbl);
         $query->where($this->_db->quoteName('diffusion_id') . ' = ' . (int) $id);
         $this->_db->setQuery($query);
 
@@ -79,7 +79,7 @@ class Easysdi_shopTablediffusionnotifieduser extends JTable {
      *
      * @see JTable::_getAssetParentId 
      */
-    protected function _getAssetParentId(JTable $table = null, $id = null) {
+    protected function _getAssetParentId($table = null, $id = null) {
         // We will retrieve the parent-asset from the Asset-table
         $assetParent = JTable::getInstance('Asset');
         // Default: if no asset-parent can be found we take the global asset

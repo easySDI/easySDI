@@ -108,13 +108,7 @@ class JFormFieldSdidatabaseradio extends JFormField
 		$tools = array();
 
 		$db = JFactory::getDbo();
-                $query = $db->getQuery(true);
-                $query->select($query->quoteName($this->element['valuefield']).' as value');
-                $query->select($query->quoteName($this->element['textfield']).' as text');
-                $query->from($query->quoteName($this->element['sourcetable']));
-                $query->order('ordering');
-                
-		$db->setQuery($query);
+		$db->setQuery('SELECT '.$this->element['valuefield'].' as value, '.$this->element['textfield'].' as text FROM '.$this->element['sourcetable'].' ORDER BY ordering');
 		$tools = $db->loadObjectList();
 		
 		return $tools;

@@ -382,7 +382,7 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         $query->select('m.id')
                 ->from('#__sdi_metadata m ')
                 ->innerJoin('#__sdi_version v ON v.id = m.version_id')
-                ->where('v.id = ' . (int)$version_id);
+                ->where('v.id = ' . $version_id);
         $db->setQuery($query);
         $metadata = $db->loadResult();
         $csw = new sdiMetadata((int) $metadata);
@@ -424,10 +424,10 @@ class Easysdi_shopModelDiffusion extends JModelForm {
         if (strlen($ids) > 0) {
             $query->delete($table)
                     ->where('id NOT IN (' . $ids . ')')
-                    ->where('diffusion_id =' . (int)$id);
+                    ->where('diffusion_id =' . $id);
         } else {
             $query->delete($table)
-                    ->where('diffusion_id =' . (int)$id);
+                    ->where('diffusion_id =' . $id);
         }
         $db->setQuery($query);
         if (!$db->execute())

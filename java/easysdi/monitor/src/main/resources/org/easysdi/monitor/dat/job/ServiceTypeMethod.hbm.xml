@@ -5,8 +5,8 @@
 <hibernate-mapping package="org.easysdi.monitor.biz.job">
   <class name="ServiceTypeMethod" table="service_types_methods">
   	<composite-id>
-  		<key-property name="serviceTypeId" column="`ID_SERVICE_TYPE`" type="long"></key-property>
-  		<key-property name="serviceMethodId" column="`ID_SERVICE_METHOD`" type="long"></key-property>
+  		<key-property name="serviceTypeId" column="ID_SERVICE_TYPE" type="long"></key-property>
+  		<key-property name="serviceMethodId" column="ID_SERVICE_METHOD" type="long"></key-property>
   	</composite-id>
   </class>
 </hibernate-mapping>

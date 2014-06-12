@@ -56,22 +56,9 @@ class JFormFieldServicegroupedList extends JFormField
                 }
                         
 		$db = JFactory::getDbo();
-                $query = $db->getQuery(true);
-                $query->select('id, name,serviceconnector_id');
-                $query->from('#__sdi_physicalservice');
-                $query->where('state=1');
-                $query->where('serviceconnector_id IN ('.$connectors.')');
-                
-		$db->setQuery($query);
+		$db->setQuery('SELECT id, name,serviceconnector_id FROM #__sdi_physicalservice WHERE state=1 AND serviceconnector_id IN ('.$connectors.')');
 		$physicals = $db->loadObjectList();
-                
-                $query = $db->getQuery(true);
-                $query->select('id, name,serviceconnector_id');
-                $query->from('#__sdi_virtualservice');
-                $query->where('state=1');
-                $query->where('serviceconnector_id IN ('.$connectors.')');
-                
-		$db->setQuery($query);
+		$db->setQuery('SELECT id, name,serviceconnector_id FROM #__sdi_virtualservice WHERE state=1 AND serviceconnector_id IN ('.$connectors.')');
 		$virtuals = $db->loadObjectList();
 		
 		//Javascript Chosen library :
@@ -120,24 +107,14 @@ class JFormFieldServicegroupedList extends JFormField
                 
 		$text = '';
 		$db = JFactory::getDbo();
-                $query = $db->getQuery(true);
-                $query->select('id, name,serviceconnector_id');
-                $query->from('#__sdi_physicalservice');
-                $query->where('state=1');
-                $query->where('serviceconnector_id IN ('.$connectors.')');
-                
-		$db->setQuery($query);
+		$db->setQuery('SELECT id, name,serviceconnector_id FROM #__sdi_physicalservice WHERE state=1 AND serviceconnector_id IN ('.$connectors.')');
 		$physicals = $db->loadObjectList();
 		foreach ($physicals as $physical)
 		{
 			if($physical->serviceconnector_id == 12 || $physical->serviceconnector_id == 13 || $physical->serviceconnector_id == 14)
 			{
-				$query = $db->getQuery(true);
-                                $query->select('name');
-                                $query->from('#__sdi_layer');
-                                $query->where('physicalservice_id=' . (int)$physical->id);
-                                
-				$db->setQuery($query);
+				
+				$db->setQuery('SELECT name FROM #__sdi_layer WHERE physicalservice_id='.$physical->id);
 				$layers = $db->loadColumn();				
 				$text .= '<input type="hidden" name="physical_'.$physical->id.'" id="physical_'.$physical->id.'" value="'.htmlentities(json_encode($layers)).'" />';
 			}

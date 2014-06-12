@@ -109,7 +109,7 @@ class Easysdi_catalogModelsearchcriterias extends JModelList {
                         'list.select', 'a.*'
                 )
         );
-        $query->from('#__sdi_searchcriteria AS a');
+        $query->from('`#__sdi_searchcriteria` AS a');
 
 
         // Join over the users for the checked out user.

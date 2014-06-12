@@ -17,8 +17,6 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_easysdi_monitor'))
 	throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'));
 }
 
-require_once JPATH_COMPONENT.'/helpers/easysdi_monitor.php';
-
 // Include dependancies
 jimport('joomla.application.component.controller');
 

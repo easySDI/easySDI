@@ -163,22 +163,12 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 			}
 			
 			$db = JFactory::getDbo();
-                        
-                        $query = $db->getQuery(true);
-                        $query->select('0 AS id, \'- None -\' AS value');
-                        
-                        $unionquery = $db->getQuery(true);
-                        $unionquery->select('ac.id, ac.value');
-                        $unionquery->from('#__sdi_sys_authenticationconnector ac');
-                        $unionquery->innerJoin('#__sdi_sys_servicecon_authenticationcon sc ON sc.authenticationconnector_id = ac.id');
-                        $unionquery->innerJoin('#__sdi_sys_serviceconnector c ON c.id = sc.serviceconnector_id');
-                        $unionquery->innerJoin('#__sdi_sys_authenticationlevel al ON ac.authenticationlevel_id = al.id');
-                        $unionquery->where('c.state = 1');
-                        $unionquery->where('al.id = 1');
-                        $unionquery->where('c.id = '. (int)$item->serviceconnector_id);
-                        
-                        $query->union($unionquery);
-                       
+			$query	= "SELECT 0 AS id, '- None -' AS value UNION SELECT ac.id, ac.value FROM #__sdi_sys_authenticationconnector ac
+			INNER JOIN #__sdi_sys_servicecon_authenticationcon sc ON sc.authenticationconnector_id = ac.id
+			INNER JOIN #__sdi_sys_serviceconnector c ON c.id = sc.serviceconnector_id
+			INNER JOIN #__sdi_sys_authenticationlevel al ON ac.authenticationlevel_id = al.id
+			WHERE c.state = 1 AND al.id = 1
+			AND c.id = ".$item->serviceconnector_id;
 			$db->setQuery($query);
 			$item->currentresourceauthenticationconnectorlist = $db->loadObjectList();
 			if ($error = $db->getErrorMsg()) {
@@ -186,21 +176,12 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 				return false;
 			}
 				
-                        $query = $db->getQuery(true);
-                        $query->select('0 AS id, \'- None -\' AS value');
-                        
-                        $unionquery = $db->getQuery(true);
-                        $unionquery->select('ac.id, ac.value');
-                        $unionquery->from('#__sdi_sys_authenticationconnector ac');
-                        $unionquery->innerJoin('#__sdi_sys_servicecon_authenticationcon sc ON sc.authenticationconnector_id = ac.id');
-                        $unionquery->innerJoin('#__sdi_sys_serviceconnector c ON c.id = sc.serviceconnector_id');
-                        $unionquery->innerJoin('#__sdi_sys_authenticationlevel al ON ac.authenticationlevel_id = al.id');
-                        $unionquery->where('c.state = 1');
-                        $unionquery->where('al.id = 2');
-                        $unionquery->where('c.id = '. (int)$item->serviceconnector_id);
-                        
-			$query->union($unionquery);
-                        
+			$query	= "SELECT 0 AS id, '- None -' AS value UNION SELECT ac.id, ac.value FROM #__sdi_sys_authenticationconnector ac
+			INNER JOIN #__sdi_sys_servicecon_authenticationcon sc ON sc.authenticationconnector_id = ac.id
+			INNER JOIN #__sdi_sys_serviceconnector c ON c.id = sc.serviceconnector_id
+			INNER JOIN #__sdi_sys_authenticationlevel al ON ac.authenticationlevel_id = al.id
+			WHERE c.state = 1 AND al.id = 2
+			AND c.id = ".$item->serviceconnector_id;
 			$db->setQuery($query);
 			$item->currentserviceauthenticationconnectorlist = $db->loadObjectList();
 			if ($error = $db->getErrorMsg()) {
@@ -208,11 +189,7 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 				return false;
 			}
 			
-                        $query = $db->getQuery(true);
-                        $query->select('value');
-                        $query->from('#__sdi_sys_serviceconnector');
-                        $query->where('id='. (int)$item->serviceconnector_id);
-                       
+			$query = "SELECT value FROM #__sdi_sys_serviceconnector WHERE id=".$item->serviceconnector_id;
 			$db->setQuery($query);
 			$item->serviceconnector = $db->loadResult();
 			if ($error = $db->getErrorMsg()) {
@@ -244,11 +221,7 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 			// Set ordering to the last item if not set
 			if (@$table->ordering === '') {
 				$db = JFactory::getDbo();
-                                $query = $db->getQuery(true);
-                                $query->select('MAX(ordering)');
-                                $query->from('#__sdi_physicalservice');
-                                
-				$db->setQuery($query);
+				$db->setQuery('SELECT MAX(ordering) FROM #__sdi_physicalservice');
 				$max = $db->loadResult();
 				$table->ordering = $max+1;
 			}
@@ -300,25 +273,19 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 	{
 		//Delete previously saved compliance
 		$db = $this->getDbo();
-                $query =$db->getQuery(true);
-                $query->delete('#__sdi_physicalservice_servicecompliance');
-                $query->where('service_id = '. (int)$id);
-                
-		$db->setQuery($query);
+		$db->setQuery(
+				'DELETE FROM #__sdi_physicalservice_servicecompliance WHERE service_id = '.$id
+		);
 		$db->query();
 		
 		$arr_pks = json_decode ($pks);
 		foreach ($arr_pks as $pk)
 		{
 			try {
-                                $query = $db->getQuery(true);
-                                $columns = array('service_id', 'servicecompliance_id');
-                                $values = array($id, $pk);
-                                $query->insert('#__sdi_physicalservice_servicecompliance');
-                                $query->columns($query->quoteName($columns));
-                                $query->values(implode(',', $values));
-                            
-				$db->setQuery($query);
+				$db->setQuery(
+						'INSERT INTO #__sdi_physicalservice_servicecompliance (service_id, servicecompliance_id) ' .
+						' VALUES ('.$id.','.$pk.')'
+				);
 				if (!$db->query()) {
 					throw new Exception($db->getErrorMsg());
 				}
@@ -380,24 +347,18 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 	{
 		//Delete previously saved compliance
 		$db = $this->getDbo();
-                $query = $db->getQuery(true);
-                $query->delete('#__sdi_physicalservice_organism');
-                $query->where('physicalservice_id = '. (int)$id);
-                
-		$db->setQuery($query);
+		$db->setQuery(
+				'DELETE FROM #__sdi_physicalservice_organism WHERE physicalservice_id = '.$id
+		);
 		$db->query();
 	
 		foreach ($pks as $pk)
 		{
 			try {
-                                $query = $db->getQuery(true);
-                                $columns = array('physicalservice_id', 'organism_id');
-                                $values = array($id, $pk);
-                                $query->insert('#__sdi_physicalservice_organism');
-                                $query->columns($query->quoteName($columns));
-                                $query->values(implode(',', $values));
-                            
-				$db->setQuery($query);
+				$db->setQuery(
+						'INSERT INTO #__sdi_physicalservice_organism (physicalservice_id, organism_id) ' .
+						' VALUES ('.$id.','.$pk.')'
+				);
 				if (!$db->query()) {
 					throw new Exception($db->getErrorMsg());
 				}

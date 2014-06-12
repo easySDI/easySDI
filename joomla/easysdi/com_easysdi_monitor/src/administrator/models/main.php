@@ -112,12 +112,7 @@ class Easysdi_monitorModelmain extends JModelAdmin
 			// Set ordering to the last item if not set
 			if (@$table->ordering === '') {
 				$db = JFactory::getDbo();
-                                
-                                $query = $db->getQuery(true);
-                                $query->select('MAX(ordering)');
-                                $query->from('main');
-                                
-				$db->setQuery($query);
+				$db->setQuery('SELECT MAX(ordering) FROM main');
 				$max = $db->loadResult();
 				$table->ordering = $max+1;
 			}

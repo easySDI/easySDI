@@ -116,8 +116,8 @@ class Easysdi_mapViewVisualization extends JViewLegacy {
         $bar->appendButton('Separator');*/
         $bar->appendButton('Standard', 'save', JText::_('COM_EASYSDI_CORE_SAVE'), 'visualization.save', false);
         $bar->appendButton('Separator');
-        /*$bar->appendButton('Standard', 'remove', JText::_('COM_EASYSDI_CORE_DELETE'), 'visualization.remove', false);
-        $bar->appendButton('Separator');*/
+        $bar->appendButton('Standard', 'remove', JText::_('COM_EASYSDI_CORE_DELETE'), 'visualization.remove', false);
+        $bar->appendButton('Separator');
         $bar->appendButton('Standard', 'cancel', JText::_('JCancel'), 'visualization.cancel', false);
         //generate the html and return
         return $bar->render();

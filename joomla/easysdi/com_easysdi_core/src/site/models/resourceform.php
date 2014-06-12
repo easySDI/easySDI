@@ -98,7 +98,7 @@ class Easysdi_coreModelResourceForm extends JModelForm {
                 $query = $db->getQuery(true)
                         ->select('urr.user_id as user_id, urr.role_id as role_id')
                         ->from('#__sdi_user_role_resource urr')
-                        ->where('urr.resource_id = ' . (int)$this->_item->id);
+                        ->where('urr.resource_id = ' . $this->_item->id);
                 $db->setQuery($query);
                 $rows = $db->loadObjectList();
                 $this->_item->rights = json_encode($rows);

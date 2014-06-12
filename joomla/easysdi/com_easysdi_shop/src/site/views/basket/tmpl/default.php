@@ -12,6 +12,7 @@ JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 
+
 JText::script('FREEPERIMETER');
 JText::script('MYPERIMETER');
 JText::script('COM_EASYSDI_SHOP_BASKET_KILOMETER');
@@ -98,14 +99,11 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                             <div class="accordion" id="accordion_<?php echo $extraction->id; ?>_properties">
                                                 <div class="accordion-group">
                                                     <div class="accordion-heading">
-                                                        <!--a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_<?php echo $extraction->id; ?>_properties" href="#<?php echo $extraction->id; ?>_collapse"-->
-
-                                                        <span style='display: block; padding: 5px 15px;'>
+                                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_<?php echo $extraction->id; ?>_properties" href="#<?php echo $extraction->id; ?>_collapse">
                                                             <?php echo JText::_("COM_EASYSDI_SHOP_BASKET_EXTRACTION_PROPERTIES"); ?>
-                                                        </span>
-                                                        <!--/a-->
+                                                        </a>
                                                     </div>
-                                                    <div id="<?php echo $extraction->id; ?>_collapse" class="accordion-body collapse in">
+                                                    <div id="<?php echo $extraction->id; ?>_collapse" class="accordion-body in">
                                                         <div class="accordion-inner">
                                                             <?php
                                                             foreach ($extraction->properties as $property):

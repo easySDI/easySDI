@@ -81,30 +81,28 @@ class sdiMetadata extends cswmetadata {
 
         //Get from the metadata structure, the attribute to store the metadata ID
         $query = $this->db->getQuery(true);
-        $query->select('a.name as name, ns.prefix as ns');
-        $query->select($query->concatenate(array('ns.prefix','a.isocode'), ':').' as attribute_isocode');
-        $query->select($query->concatenate(array('atns.prefix','at.isocode'), ':').' as type_isocode');
-        $query->from('#__sdi_profile p');
-        $query->innerJoin('#__sdi_resourcetype rt on p.id=rt.profile_id ');
-        $query->innerJoin('#__sdi_attribute a on a.id=p.metadataidentifier');
-        $query->innerJoin('#__sdi_relation rel on rel.attributechild_id=a.id');
-        $query->innerJoin('#__sdi_sys_stereotype as at ON at.id=a.stereotype_id');
-        $query->leftJoin('#__sdi_namespace ns ON a.namespace_id=ns.id');
-        $query->leftJoin('#__sdi_namespace atns ON at.namespace_id=atns.id');
-        $query->where('rt.id=' . (int)$this->resource->resourcetype_id);
-        
+        $query = "SELECT a.name as name, ns.prefix as ns, 
+                        CONCAT(ns.prefix, ':', a.isocode) as attribute_isocode, 
+                        CONCAT(atns.prefix, ':', at.isocode) as type_isocode 
+                        FROM #__sdi_profile p
+                            INNER JOIN #__sdi_resourcetype rt on p.id=rt.profile_id 
+                            INNER JOIN #__sdi_attribute a on a.id=p.metadataidentifier 
+                            INNER JOIN #__sdi_relation rel on rel.attributechild_id=a.id
+                            INNER JOIN #__sdi_sys_stereotype as at ON at.id=a.stereotype_id 
+                            LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id 
+                            LEFT OUTER JOIN #__sdi_namespace atns ON at.namespace_id=atns.id 
+                        WHERE rt.id=" . $this->resource->resourcetype_id;
         $this->db->setQuery($query);
         $attributeIdentifier = $this->db->loadObject();
 
         //Get from the metadata structure the root classe
         $query = $this->db->getQuery(true);
-        $query->select($query->concatenate(array('ns.prefix','c.isocode'), ':').' as isocode');
-        $query->from('#__sdi_profile p');
-        $query->innerJoin('#__sdi_resourcetype rt ON p.id=rt.profile_id');
-        $query->innerJoin('#__sdi_class c ON c.id=p.class_id');
-        $query->leftJoin('#__sdi_namespace as ns ON c.namespace_id=ns.id');
-        $query->where('rt.id=' . (int)$this->resource->resourcetype_id);
-        
+        $query = "SELECT CONCAT(ns.prefix,':',c.isocode) as isocode 
+                                FROM #__sdi_profile p 
+                                INNER JOIN #__sdi_resourcetype rt ON p.id=rt.profile_id
+                                INNER JOIN #__sdi_class c ON c.id=p.class_id  
+                                LEFT OUTER JOIN #__sdi_namespace as ns ON c.namespace_id=ns.id 
+                                WHERE rt.id=" . $this->resource->resourcetype_id;
         $this->db->setQuery($query);
         $rootclass = $this->db->loadObject();
 
@@ -320,7 +318,7 @@ class sdiMetadata extends cswmetadata {
         $query = $this->db->getQuery(true);
         $query->select('alias')
                 ->from('#__sdi_resourcetype')
-                ->where('id = ' . (int)$this->resource->resourcetype_id);
+                ->where('id = ' . $this->resource->resourcetype_id);
         $this->db->setQuery($query);
         $resourcetype = $this->db->loadResult();
 
@@ -328,7 +326,7 @@ class sdiMetadata extends cswmetadata {
         $query = $this->db->getQuery(true);
         $query->select('guid')
                 ->from('#__sdi_organism')
-                ->where('id = ' . (int)$this->resource->organism_id);
+                ->where('id = ' . $this->resource->organism_id);
         $this->db->setQuery($query);
         $organism = $this->db->loadResult();
 
@@ -336,7 +334,7 @@ class sdiMetadata extends cswmetadata {
         $query = $this->db->getQuery(true);
         $query->select('value')
                 ->from('#__sdi_sys_accessscope')
-                ->where('id = ' . (int)$this->resource->accessscope_id);
+                ->where('id = ' . $this->resource->accessscope_id);
         $this->db->setQuery($query);
         $accessscope = $this->db->loadResult();
 
@@ -346,7 +344,7 @@ class sdiMetadata extends cswmetadata {
                 ->from('#__sdi_accessscope a')
                 ->leftJoin('#__sdi_organism o ON o.id = a.organism_id')
                 ->leftJoin('#__sdi_user u ON u.id = a.user_id')
-                ->where('entity_guid = ' . $query->quote($this->resource->guid));
+                ->where('entity_guid = "' . $this->resource->guid . '"');
         $this->db->setQuery($query);
         $accessscopes = $this->db->loadObjectList();
         
@@ -355,7 +353,7 @@ class sdiMetadata extends cswmetadata {
         $query->select('ms.`value`')
                 ->from('jos_sdi_metadata m')
                 ->innerJoin('jos_sdi_sys_metadatastate ms on ms.id = m.metadatastate_id')
-                ->where('m.id  = '. (int)$this->metadata->id);
+                ->where('m.id  = '.$this->metadata->id);
         $this->db->setQuery($query);
         $metadatastate = $this->db->loadResult();
         
@@ -388,7 +386,7 @@ class sdiMetadata extends cswmetadata {
         $query = $this->db->getQuery(true)
                 ->select('id, guid ,pricing_id, hasdownload, hasextraction, accessscope_id')
                 ->from('#__sdi_diffusion')
-                ->where('version_id = ' . (int)$this->metadata->version_id)
+                ->where('version_id = ' . $this->metadata->version_id)
                 ->where('state = 1');
         $this->db->setQuery($query);
         $diffusionobj = $this->db->loadObject();
@@ -411,7 +409,7 @@ class sdiMetadata extends cswmetadata {
         $query = $this->db->getQuery(true)
                 ->select('id, maplayer_id, accessscope_id')
                 ->from('#__sdi_visualization')
-                ->where('version_id = ' . (int)$this->metadata->version_id)
+                ->where('version_id = ' . $this->metadata->version_id)
                 ->where('state = 1');
         $this->db->setQuery($query);
         $viewobj = $this->db->loadObject();
@@ -454,13 +452,12 @@ class sdiMetadata extends cswmetadata {
     protected function getMetadataRootClass() {
         //Get from the metadata structure the root classe
         $query = $this->db->getQuery(true);
-        $query->select($query->concatenate(array('ns.prefix','c.isocode'), ':').' as isocode');
-        $query->from('#__sdi_profile p');
-        $query->innerJoin('#__sdi_resourcetype rt ON p.id=rt.profile_id');
-        $query->innerJoin('#__sdi_class c ON c.id=p.class_id');
-        $query->leftJoin('#__sdi_namespace as ns ON c.namespace_id=ns.id');
-        $query->where('rt.id=' . $this->resource->resourcetype_id);
-        
+        $query = "SELECT CONCAT(ns.prefix,':',c.isocode) as isocode 
+                                FROM #__sdi_profile p 
+                                INNER JOIN #__sdi_resourcetype rt ON p.id=rt.profile_id
+                                INNER JOIN #__sdi_class c ON c.id=p.class_id  
+                                LEFT OUTER JOIN #__sdi_namespace as ns ON c.namespace_id=ns.id 
+                                WHERE rt.id=" . $this->resource->resourcetype_id;
         $this->db->setQuery($query);
         return $this->db->loadObject();
     }

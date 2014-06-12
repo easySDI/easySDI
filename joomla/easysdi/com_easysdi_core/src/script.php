@@ -21,23 +21,7 @@ class com_easysdi_coreInstallerScript {
     function preflight($type, $parent) {
         // Installing component manifest file version
         $this->release = $parent->get("manifest")->version;
-        
-        // Alter joomla 3.1.1 schema to reflect the MySql version
-        $db = JFactory::getDbo();
-        if($db->name == 'sqlsrv'){
-            $sqls = array();
-            $sqls[] = "ALTER TABLE [#__extensions] ADD  DEFAULT ('') FOR [custom_data];";
-            $sqls[] = "ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [path];";
-            $sqls[] = "ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [img];";
-            $sqls[] = "ALTER TABLE [#__menu] ADD  DEFAULT ('') FOR [params];";
-            
-            foreach ($sqls as $sql) {
-                $query = $db->getQuery(true);
-                $query->setQuery($sql);
-                $db->execute();
-            }
-        }
-        
+
         // Show the essential information at the install/update back-end
         echo '<p>EasySDI component Core [com_easysdi_core]';
         echo '<br />' . JText::_('COM_EASYSDI_CORE_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
@@ -80,7 +64,7 @@ class com_easysdi_coreInstallerScript {
             $this->setParams($params);
         }
 
-        if ($type == 'install') {
+        if ($type == 'install' || ($type == 'update' && ($this->getParam('version') < '4.0.0-alpha-18') == 1)) {
             // import joomla's filesystem classes
             jimport('joomla.filesystem.folder');
 
@@ -112,11 +96,7 @@ class com_easysdi_coreInstallerScript {
 
     function getParam($name) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        $query->select('manifest_cache');
-        $query->from('#__extensions');
-        $query->where('name = '.$db->quote('com_easysdi_core'));
-        $db->setQuery($query);
+        $db->setQuery('SELECT manifest_cache FROM #__extensions WHERE name = "com_easysdi_core"');
         $manifest = json_decode($db->loadResult(), true);
         return $manifest[$name];
     }
@@ -129,11 +109,7 @@ class com_easysdi_coreInstallerScript {
         if (count($param_array) > 0) {
             // read the existing component value(s)
             $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
-            $query->select('manifest_cache');
-            $query->from('#__extensions');
-            $query->where('name = '.$db->quote('com_easysdi_core'));
-            $db->setQuery($query);
+            $db->setQuery('SELECT params FROM #__extensions WHERE name = "com_easysdi_core"');
             $params = json_decode($db->loadResult(), true);
             // add the new variable(s) to the existing one(s)
             foreach ($param_array as $name => $value) {
@@ -141,11 +117,9 @@ class com_easysdi_coreInstallerScript {
             }
             // store the combined new and existing values back as a JSON string
             $paramsString = json_encode($params);
-            $query = $db->getQuery(true);
-            $query->select('params');
-            $query->from('#__extensions');
-            $query->where('name = '.$db->quote('com_easysdi_core'));
-            $db->setQuery($query);
+            $db->setQuery('UPDATE #__extensions SET params = ' .
+                    $db->quote($paramsString) .
+                    ' WHERE name = "com_easysdi_core"');
             $db->query();
         }
     }

@@ -105,7 +105,7 @@ class Easysdi_mapModelgroups extends JModelList
 	
 		// Select the required fields from the table.
 		$query->select('g.id as id, g.name as name');
-		$query->from('#__sdi_layergroup AS g');
+		$query->from('`#__sdi_layergroup` AS g');
 		$query->where('g.state = 1');
 		$query->order('g.ordering');
 	
@@ -165,10 +165,10 @@ class Easysdi_mapModelgroups extends JModelList
 		$query->select(
 				$this->getState(
 						'list.select',
-						'a.id, a.alias, a.checked_out, a.checked_out_time, a.state, a.ordering, a.name, a.access'
+						'a.*'
 				)
 		);
-		$query->from('#__sdi_layergroup AS a');
+		$query->from('`#__sdi_layergroup` AS a');
 
 
 		// Join over the users for the checked out user.

@@ -97,8 +97,8 @@ class FormGenerator {
             $query->innerJoin('#__sdi_relation AS r ON p.class_id = r.parent_id');
             $query->innerJoin('#__sdi_class AS c ON c.id = r.parent_id');
             $query->innerJoin('#__sdi_namespace AS ns ON ns.id = c.namespace_id');
-            $query->where('p.id = ' . (int)$this->item->profile_id);
-            $query->where('c.isrootclass = '.$query->quote(true));
+            $query->where('p.id = ' . $this->item->profile_id);
+            $query->where('c.isrootclass = true');
             $query->group('c.id');
 
             $this->db->setQuery($query);
@@ -138,8 +138,6 @@ class FormGenerator {
                     $parent->appendChild($relation);
                     $root = $class;
                     $this->ajaxXpath = $relation->getNodePath();
-                    
-                    $this->getChildTree($root);
                     break;
                 case EnumChildtype::$RELATIONTYPE:
                     $relation = $this->getDomElement($result->classass_ns_uri, $result->classass_ns_prefix, $result->name, $result->classass_id, EnumChildtype::$RELATIONTYPE, $result->guid, 1, $result->upperbound);
@@ -153,8 +151,6 @@ class FormGenerator {
                     $parent->appendChild($relation);
                     $root = $relation;
                     $this->ajaxXpath = $relation->getNodePath();
-                    
-                    $this->getChildTree($root);
                     break;
                 case EnumChildtype::$ATTRIBUT:
                     $parentname = $parent->nodeName;
@@ -169,7 +165,8 @@ class FormGenerator {
                     $this->ajaxXpath = $cloned->getNodePath();
                     break;
             }
-            
+
+            $this->getChildTree($root);
         }
 
         $this->setDomXpathStr();
@@ -187,7 +184,7 @@ class FormGenerator {
 
         $this->session->set('structure', serialize($this->structure->saveXML()));
         $form = $this->buildForm($root);
-        
+
         return $form;
     }
 
@@ -260,10 +257,8 @@ class FormGenerator {
             }
         }
 
-        $parent_id = $parent->getAttributeNS($this->catalog_uri, 'dbid');
-        
         $query = $this->getRelationQuery();
-        $query->where('r.parent_id = ' . $parent_id);
+        $query->where('r.parent_id = ' . $parent->getAttributeNS($this->catalog_uri, 'dbid'));
         $query->where('r.state = 1');
         $query->order('r.ordering');
         $query->order('r.name');
@@ -1355,7 +1350,7 @@ class FormGenerator {
                 $query->from('#__sdi_resource r');
                 $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
                 $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
-                $query->where('resourcetype_id = ' . (int)$attribute->getAttributeNS($this->catalog_uri, 'resourcetypeId'));
+                $query->where('resourcetype_id = ' . $attribute->getAttributeNS($this->catalog_uri, 'resourcetypeId'));
                 $query->order('name ASC');
 
                 $this->db->setQuery($query);
@@ -1533,7 +1528,7 @@ class FormGenerator {
         $query->leftJoin('#__sdi_namespace AS nsstc ON nsstc.id = stc.namespace_id');
         $query->leftJoin('#__sdi_namespace AS nsl ON nsl.id = a.listnamespace_id');
         $query->leftJoin('#__sdi_namespace AS nsrt ON nsrt.id = rt.fragmentnamespace_id');
-        $query->where('rp.profile_id = ' . (int)$this->item->profile_id);
+        $query->where('rp.profile_id = ' . $this->item->profile_id);
 
         return $query;
     }
@@ -1555,12 +1550,12 @@ class FormGenerator {
             $query->select('av.`value`');
             $query->from('#__sdi_relation_defaultvalue rdv');
             $query->innerJoin('#__sdi_attributevalue av on av.id = rdv.attributevalue_id');
-            $query->where('rdv.relation_id = ' . (int)$relation_id);
+            $query->where('rdv.relation_id = ' . $relation_id);
         } else {
             $query->select('attributevalue_id, `value`');
             $query->from('#__sdi_relation_defaultvalue');
-            $query->where('relation_id = ' . (int)$relation_id);
-            $query->where('language_id = ' . (int)$language->id);
+            $query->where('relation_id = ' . $relation_id);
+            $query->where('language_id = ' . $language->id);
         }
 
         $this->db->setQuery($query);

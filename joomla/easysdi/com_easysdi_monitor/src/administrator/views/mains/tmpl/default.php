@@ -22,7 +22,7 @@ $document->addStyleSheet('components/com_easysdi_monitor/assets/css/easysdi_moni
 //Load css files
 $document->addStyleSheet('components/com_easysdi_monitor/libraries/ext/resources/css/ext-all.css');
 $document->addStyleSheet('components/com_easysdi_monitor/libraries/ext/resources/css/xtheme-gray.css');
-//$document->addStyleSheet('components/com_easysdi_monitor/libraries/ext/examples/shared/examples.css');
+$document->addStyleSheet('components/com_easysdi_monitor/libraries/ext/examples/shared/examples.css');
 $document->addStyleSheet('components/com_easysdi_monitor/libraries/ext/examples/ux/css/RowEditor.css');
 $document->addStyleSheet('components/com_easysdi_monitor/assets/css/monitor.css');
 
@@ -56,6 +56,7 @@ if ($saveOrder)
 require_once( JPATH_COMPONENT_ADMINISTRATOR.'/'.'i18n'.'/'.'lang.php' );
 
 ?>
+
 <script type="text/javascript">
 	Joomla.orderTable = function() {
 		table = document.getElementById("sortTable");
@@ -89,22 +90,6 @@ require_once( JPATH_COMPONENT_ADMINISTRATOR.'/'.'i18n'.'/'.'lang.php' );
            //
 </script>
 
-<?php
-//Joomla Component Creator code to allow adding non select list filters
-if (!empty($this->extra_sidebar)) {
-    $this->sidebar .= $this->extra_sidebar;
-}
-?>
-
-<?php if(!empty($this->sidebar)): ?>
-	<div id="j-sidebar-container" class="span2">
-		<?php echo $this->sidebar; ?>
-	</div>
-	<div id="j-main-container" class="span10">
-<?php else : ?>
-	<div id="j-main-container">
-<?php endif;?>
-
 <div id="tabsContainer"></div>
 <table id="graphTable" style="width: 100%">
  <tr>                                   
@@ -125,7 +110,12 @@ if (!empty($this->extra_sidebar)) {
  </tr>
 </table>
 
-
+<?php
+//Joomla Component Creator code to allow adding non select list filters
+if (!empty($this->extra_sidebar)) {
+    $this->sidebar .= $this->extra_sidebar;
+}
+?>
 
         
 

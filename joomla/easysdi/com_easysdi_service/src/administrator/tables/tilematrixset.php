@@ -35,12 +35,11 @@ class Easysdi_serviceTabletilematrixset extends sdiTable {
 	
 	public function getListByWMTSLayer($wmtsLayerID) {
 		$db = JFactory::getDbo();
-                $query = $db->getQuery(true);
-                $query->select('*');
-                $query->from('#__sdi_tilematrixset');
-                $query->where('wmtslayer_id = ' . $wmtsLayerID);
-                
-		$db->setQuery($query);
+		$db->setQuery('
+			SELECT *
+			FROM #__sdi_tilematrixset
+			WHERE wmtslayer_id = ' . $wmtsLayerID . ';
+		');
 		
 		try {
 			$resultSet = $db->loadObjectList();

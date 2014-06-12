@@ -78,12 +78,9 @@ class Easysdi_mapHelper {
         $pos = strstr($service, 'physical_');
         if ($pos) {
             $id = substr($service, strrpos($service, '_') + 1);
-            $query = $db->getQuery(true);
-            $query->select('s.resourceurl as url, sc.value as connector, s.resourceusername as username, s.resourcepassword as password');
-            $query->from('#__sdi_physicalservice s');
-            $query->innerJoin('#__sdi_sys_serviceconnector sc  ON sc.id = s.serviceconnector_id');
-            $query->where('s.id=' . substr($service, strrpos($service, '_') + 1));
-            
+            $query = 'SELECT s.resourceurl as url, sc.value as connector, s.resourceusername as username, s.resourcepassword as password FROM #__sdi_physicalservice s 
+								INNER JOIN #__sdi_sys_serviceconnector sc  ON sc.id = s.serviceconnector_id
+								WHERE s.id=' . substr($service, strrpos($service, '_') + 1);
             $db->setQuery($query);
             $resource = $db->loadObject();
             if ($resource->username) {
@@ -91,24 +88,19 @@ class Easysdi_mapHelper {
                 $password = $resource->password;
             }
 
-            $query = $db->getQuery(true);
-            $query->select('sv.value as value, sc.id as id');
-            $query->from('#__sdi_physicalservice_servicecompliance ssc');
-            $query->innerJoin('#__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id');
-            $query->innerJoin('#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id');
-            $query->where('ssc.service_id =' . $id);
-            
-            $db->setQuery($query,0,1);
+            $db->setQuery(
+                    'SELECT sv.value as value, sc.id as id FROM #__sdi_physicalservice_servicecompliance ssc ' .
+                    ' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id ' .
+                    ' INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id' .
+                    ' WHERE ssc.service_id =' . $id .
+                    ' LIMIT 1'
+            );
             $compliance = $db->loadObject();
         } else {
             $id = substr($service, strrpos($service, '_') + 1);
-            
-            $query = $db->getQuery(true);
-            $query->select('s.url as url,  sc.value as connector, s.alias as alias');
-            $query->from('#__sdi_virtualservice s');
-            $query->innerJoin('#__sdi_sys_serviceconnector sc  ON sc.id = s.serviceconnector_id');
-            $query->where('s.id=' . substr($service, strrpos($service, '_') + 1));
-            
+            $query = 'SELECT s.url as url,  sc.value as connector, s.alias as alias FROM #__sdi_virtualservice s
+								INNER JOIN #__sdi_sys_serviceconnector sc  ON sc.id = s.serviceconnector_id
+								WHERE s.id=' . substr($service, strrpos($service, '_') + 1);
             $db->setQuery($query);
             $resource = $db->loadObject();
             $Juser = JFactory::getUser();
@@ -118,13 +110,13 @@ class Easysdi_mapHelper {
             $params = JComponentHelper::getParams('com_easysdi_service');
             $resource->url = $params->get('proxyurl') . $resource->alias;
 
-            $query = $db->getQuery(true);
-            $query->select('sv.value as value, sc.id as id FROM #__sdi_virtualservice_servicecompliance ssc');
-            $query->innerJoin('#__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id');
-            $query->innerJoin('#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id');
-            $query->where('ssc.service_id =' . (int)$id);
-            
-            $db->setQuery($query,0,1);
+            $db->setQuery(
+                    'SELECT sv.value as value, sc.id as id FROM #__sdi_virtualservice_servicecompliance ssc ' .
+                    ' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id ' .
+                    ' INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id' .
+                    ' WHERE ssc.service_id =' . $id .
+                    ' LIMIT 1'
+            );
             $compliance = $db->loadObject();
         }
 
@@ -151,7 +143,6 @@ class Easysdi_mapHelper {
         }
         curl_setopt($session, CURLOPT_HEADER, false);
         curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($session, CURLOPT_SSL_VERIFYPEER, false);
         $response = curl_exec($session);
         $http_status = curl_getinfo($session, CURLINFO_HTTP_CODE);
         curl_close($session);

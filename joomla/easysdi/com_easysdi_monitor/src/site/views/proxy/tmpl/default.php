@@ -20,6 +20,7 @@
  * initialy based on PageForward v1.5 by Joshua Dick
  *
  */
+
 error_reporting(0);
 
 global $fh;
@@ -30,10 +31,7 @@ global $resp_header;
 $req_Content = "";
 
 //require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-$params  = JComponentHelper::getParams('com_easysdi_monitor');
-
-// TODO Config changes needed
-$monitorUrl = $params->get('servletUrl');
+$monitorUrl = "http://localhost:8080/Monitor";
 
 //logger
 $myFile = JPATH_SITE.DS.'components'.DS.'com_easysdi_monitor'.DS.'views'.DS.'proxy'.DS.'tmpl'.DS.'logs'.DS.'log.txt';
@@ -356,7 +354,7 @@ function getFile($fileLoc,$req_Content)
      
      //If auth requested
      if($info['http_code'] == 401){
-     	   header('WWW-Authenticate: Basic realm="Authentification Monitor"',true,401); 
+     	   header('WWW-Authenticate: Basic realm="GeoServer Realm"',true,401); 
      }
      
      curl_close($ch);

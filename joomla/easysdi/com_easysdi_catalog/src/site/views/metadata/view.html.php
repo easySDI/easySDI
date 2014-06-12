@@ -132,7 +132,7 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         $query->from('#__sdi_version v');
         $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
         $query->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id');
-        $query->where('v.id = ' . (int)$this->item->id);
+        $query->where('v.id = ' . $this->item->id);
         $query->order('v.name DESC');
 
         $this->db->setQuery($query);
@@ -178,7 +178,7 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
         $query->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id');
         $query->innerJoin('#__sdi_resource r ON r.id = v.resource_id');
-        $query->where('v.resource_id = ' . (int)$this->item->id);
+        $query->where('v.resource_id = ' . $this->item->id);
         $query->order('v.name DESC');
 
         $this->db->setQuery($query);
@@ -204,7 +204,7 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         $query->from('#__sdi_version v');
         $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
         $query->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id');
-        $query->where('v.id = ' . (int)$this->item->id);
+        $query->where('v.id = ' . $this->item->id);
         $query->order('v.name DESC');
 
         $this->db->setQuery($query);

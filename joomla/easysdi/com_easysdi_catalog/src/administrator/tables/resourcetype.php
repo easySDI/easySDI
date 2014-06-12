@@ -77,7 +77,7 @@ class Easysdi_catalogTableresourcetype extends sdiTable {
      *
      * @see JTable::_getAssetParentId 
      */
-    protected function _getAssetParentId(JTable $table = null, $id = null) {
+    protected function _getAssetParentId($table = null, $id = null) {
         // We will retrieve the parent-asset from the Asset-table
         $assetParent = JTable::getInstance('Asset');
         // Default: if no asset-parent can be found we take the global asset
@@ -98,8 +98,8 @@ class Easysdi_catalogTableresourcetype extends sdiTable {
                     ->select('t.text1')
                     ->from('#__sdi_translation t')
                     ->innerJoin($this->_tbl . ' rt ON rt.guid = t.element_guid')
-                    ->where('rt.id = ' . (int)$this->id)
-                    ->where('t.language_id = (SELECT l.id FROM #__sdi_language l WHERE l.code = ' . $this->_db->quote($lang->getTag()) . ')');
+                    ->where('rt.id = ' . $this->id)
+                    ->where('t.language_id = (SELECT l.id FROM #__sdi_language l WHERE l.code = "' . $lang->getTag() . '")');
             
             $this->_db->setQuery($query);
             $this->localname = $this->_db->loadResult();

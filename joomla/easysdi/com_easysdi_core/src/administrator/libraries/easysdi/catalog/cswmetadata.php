@@ -199,7 +199,7 @@ class cswmetadata {
                 $query = $this->db->getQuery(true)
                         ->select('name, logo')
                         ->from('#__sdi_organism')
-                        ->where('id = ' . (int)$this->resource->organism_id);
+                        ->where('id = ' . $this->resource->organism_id);
                 $this->db->setQuery($query);
                 $organism = $this->db->loadObject();
 
@@ -223,7 +223,7 @@ class cswmetadata {
                 $query = $this->db->getQuery(true)
                         ->select('name, alias, logo')
                         ->from('#__sdi_resourcetype')
-                        ->where('id = ' . (int)$this->resource->resourcetype_id);
+                        ->where('id = ' . $this->resource->resourcetype_id);
                 $this->db->setQuery($query);
                 $resourcetype = $this->db->loadObject();
                 $exresourcetype = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Resourcetype');
@@ -245,7 +245,7 @@ class cswmetadata {
                 $query = $this->db->getQuery(true)
                         ->select('id, guid ,pricing_id, hasdownload, hasextraction, accessscope_id')
                         ->from('#__sdi_diffusion')
-                        ->where('version_id = ' . (int)$this->version->id)
+                        ->where('version_id = ' . $this->version->id)
                         ->where('state = 1');
                 $this->db->setQuery($query);
                 $diffusion = $this->db->loadObject();
@@ -317,7 +317,7 @@ class cswmetadata {
                                 ->from('#__sdi_user_role_resource urr')
                                 ->innerJoin('#__sdi_user u ON u.id = urr.user_id')
                                 ->innerJoin('#__users ju ON ju.id = u.user_id')
-                                ->where('urr.resource_id = ' . (int)$this->resource->id)
+                                ->where('urr.resource_id = ' . $this->resource->id)
                                 ->where('urr.role_id = 5')
                         ;
                         $this->db->setQuery($query);
@@ -338,7 +338,7 @@ class cswmetadata {
                         ->select('v.id, v.guid, v.maplayer_id, v.accessscope_id, ml.layername, ml.service_id, ml.servicetype, ml.attribution')
                         ->from('#__sdi_visualization v')
                         ->join('LEFT', '#__sdi_maplayer ml ON ml.id = v.maplayer_id')
-                        ->where('v.version_id = ' . (int)$this->version->id)
+                        ->where('v.version_id = ' . $this->version->id)
                         ->where('v.state = 1');
                 $this->db->setQuery($query);
                 $visualization = $this->db->loadObject();
@@ -374,7 +374,7 @@ class cswmetadata {
                             $query = $this->db->getQuery(true)
                                     ->select('id, alias, resourceurl, serviceconnector_id')
                                     ->from('#__sdi_physicalservice')
-                                    ->where('id = ' . (int)$visualization->service_id)
+                                    ->where('id = ' . $visualization->service_id)
                             ;
                             $this->db->setQuery($query);
                             $service = $this->db->loadObject();
@@ -382,7 +382,7 @@ class cswmetadata {
                             $query = $this->db->getQuery(true)
                                     ->select('id, alias, url, reflectedurl, serviceconnector_id')
                                     ->from('#__sdi_virtualservice')
-                                    ->where('id = ' . (int)$visualization->service_id)
+                                    ->where('id = ' . $visualization->service_id)
                             ;
                             $this->db->setQuery($query);
                             $service = $this->db->loadObject();
@@ -401,7 +401,7 @@ class cswmetadata {
                                     ->from('#__sdi_map m')
                                     ->innerJoin('#__sdi_map_layergroup mg ON mg.map_id = m.id AND mg.isdefault = 1')
                                     ->innerJoin('#__sdi_layergroup g ON mg.group_id = g.id')
-                                    ->where('m.id = ' . (int)$mapid);
+                                    ->where('m.id = ' . $mapid);
                             $this->db->setQuery($query);
                             $group = $this->db->loadResult();
                         }
@@ -508,7 +508,7 @@ class cswmetadata {
                         ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
                         ->leftJoin('#__sdi_translation t on t.element_guid = m.guid')
                         ->leftJoin('#__sdi_language l ON l.id = t.language_id AND l.code = "' . $lang . '"')
-                        ->where('vl.child_id = ' . (int)$this->version->id)
+                        ->where('vl.child_id = ' . $this->version->id)
                 ;
                 $this->db->setQuery($query);
                 $parentsitem = $this->db->loadObjectList();
@@ -534,8 +534,8 @@ class cswmetadata {
                         ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
                         ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
                         ->leftJoin('#__sdi_translation t on t.element_guid = m.guid')
-                        ->leftJoin('#__sdi_language l ON l.id = t.language_id AND l.code = ' . $query->quote($lang) )
-                        ->where('vl.parent_id = ' . (int)$this->version->id);
+                        ->leftJoin('#__sdi_language l ON l.id = t.language_id AND l.code = "' . $lang . '"')
+                        ->where('vl.parent_id = ' . $this->version->id);
                 $this->db->setQuery($query);
                 $childrenitem = $this->db->loadObjectList();
                 $children = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:children');
@@ -559,7 +559,7 @@ class cswmetadata {
                 $query = $this->db->getQuery(true)
                         ->select('*')
                         ->from('#__sdi_application')
-                        ->where('resource_id = ' . (int)$this->resource->id);
+                        ->where('resource_id = ' . $this->resource->id);
                 $this->db->setQuery($query);
                 $applicationsitem = $this->db->loadObjectList();
                 $applications = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:applications');
@@ -695,7 +695,7 @@ class cswmetadata {
                 ->innerJoin('#__sdi_translation t ON t.element_guid = p.guid')
                 ->innerJoin('#__sdi_language l ON l.id = t.language_id')
                 ->where('dpv.diffusion_id = ' . $this->diffusion->id)
-                ->where('l.code = ' . $this->db->quote($language->getTag()))
+                ->where('l.code = "' . $language->getTag() . '"')
                 ->order('p.ordering');
         $this->db->setQuery($query);
         $properties = $this->db->loadObjectList();
@@ -747,7 +747,7 @@ class cswmetadata {
                         ->innerJoin('#__sdi_language l ON l.id = t.language_id')
                         ->where('dpv.diffusion_id = ' . (int) $this->diffusion->id)
                         ->where('p.id = ' . (int) $property->property_id)
-                        ->where('l.code = ' . $query->quote($language->getTag()))
+                        ->where('l.code = "' . $language->getTag() . '"')
                 ;
                 $this->db->setQuery($query);
                 $values = $this->db->loadObjectList();

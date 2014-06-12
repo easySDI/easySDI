@@ -7,11 +7,11 @@
     <parent>
         <groupId>org.easysdi</groupId>
         <artifactId>easysdi</artifactId>
-        <version>4.1.0</version>
+        <version>4.0.0</version>
     </parent>
     
     <scm>
-        <connection>scm:svn:http://www.easysdi.org/easysdi/trunk/java/easysdi/monitor</connection>
+        <connection>scm:svn:http://www.easysdi.org/easysdi/branches/depth/running/v330/sandbox/mb/easysdi330/monitor</connection>
     </scm>
     
     <properties>
@@ -167,18 +167,6 @@
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
         
-        <!-- Sql Server -->
-        <dependency>
-            <groupId>com.microsoft.sqlserver</groupId>
-            <artifactId>sqljdbc4</artifactId>
-        </dependency>
-        
-        <!-- Postgresql -->
-        <dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-        </dependency>
-        
         <!-- Divers -->
         <dependency>
             <groupId>log4j</groupId>
@@ -238,7 +226,7 @@
     </dependencies>
     
     <build>
-        <finalName>monitor</finalName>
+        <finalName>Monitor</finalName>
     </build>
     
 </project>

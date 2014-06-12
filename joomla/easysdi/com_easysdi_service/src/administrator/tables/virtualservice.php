@@ -62,7 +62,7 @@ class Easysdi_serviceTablevirtualservice extends sdiTable {
 	*
 	* @since   11.1
 	*/
-	protected function _getAssetParentId(JTable $table = null, $id = null) {
+	protected function _getAssetParentId($table = null, $id = null) {
 		// We will retrieve the parent-asset from the Asset-table
 		$assetParent = JTable::getInstance('Asset');
 		// Default: if no asset-parent can be found we take the global asset
@@ -98,8 +98,8 @@ class Easysdi_serviceTablevirtualservice extends sdiTable {
 		// Initialise the query.
 		$query = $this->_db->getQuery(true);
 		$query->select('*');
-		$query->from($query->quoteName($this->_tbl));
-		$query->where($this->_db->quoteName('alias') . ' = ' .  $query->quote($alias));
+		$query->from($this->_tbl);
+		$query->where($this->_db->quoteName('alias') . ' = "' .  $alias. '"');
 		 
 		$this->_db->setQuery($query);
 	
@@ -159,7 +159,7 @@ class Easysdi_serviceTablevirtualservice extends sdiTable {
 		// Initialise the query.
 		$query = $this->_db->getQuery(true);
 		$query->select('vs.id');
-		$query->from($query->quoteName($this->_tbl).'  AS vs ');
+		$query->from($this->_tbl.'  AS vs ');
 		$query->join('LEFT', '#__sdi_map_virtualservice AS cvs ON cvs.virtualservice_id=vs.id');
 		$query->where('cvs.map_id = ' . (int) $map_id);
 		$query->where('vs.state = 1' );
@@ -226,7 +226,7 @@ class Easysdi_serviceTablevirtualservice extends sdiTable {
 				$query->from('#__sdi_sys_servicecompliance  AS sc ');
 				$query->join('INNER', '#__sdi_sys_serviceversion AS sv ON sv.id = sc.serviceversion_id');
 				$query->where('sc.serviceconnector_id = ' . (int) $this->serviceconnector_id);
-				$query->where('sv.value = '. $query->quote($pk));
+				$query->where('sv.value = "'.$pk.'"');
 				$this->_db->setQuery($query);
 				$servicecompliance = $this->_db->loadResult();
 

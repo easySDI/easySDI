@@ -7,11 +7,11 @@
     <parent>
         <groupId>org.easysdi</groupId>
         <artifactId>easysdi</artifactId>
-        <version>4.1.0</version>
+        <version>4.0.0</version>
     </parent>
 	
     <scm>
-        <connection>scm:svn:http://www.easysdi.org/easysdi/trunk/java/easysdi/proxy</connection>
+        <connection>scm:svn:http://www.easysdi.org/easysdi/branches/4.0.0/java/easysdi/proxy</connection>
     </scm>
         
     <properties>
@@ -44,7 +44,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>3.2.8.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -159,7 +158,16 @@
             <artifactId>fop</artifactId>
             <version>0.95-1</version>
         </dependency>
-        
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache-core</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache-web</artifactId>
+            <version>2.0.1</version>
+        </dependency>
         <dependency>
             <groupId>net.sf.json-lib</groupId>
             <artifactId>json-lib</artifactId>
@@ -188,15 +196,6 @@
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-ehcache</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.ehcache</groupId>
-            <artifactId>ehcache-web</artifactId>
-            <version>2.0.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
             <artifactId>hibernate-tools</artifactId>
             <version>4.0.0-CR1</version>
             <scope>provided</scope>
@@ -206,18 +205,6 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-        
-        <!-- Sql Server -->
-        <dependency>
-            <groupId>com.microsoft.sqlserver</groupId>
-            <artifactId>sqljdbc4</artifactId>
-        </dependency>
-        
-        <!-- Postgresql -->
-        <dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
         </dependency>
 
         <!-- Provided -->
@@ -248,10 +235,6 @@
             <version>6.1.20</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <finalName>proxy</finalName>
-    </build>
 
     <!--<build>
         <plugins>
