@@ -1,4 +1,4 @@
-<?php
+ï»¿<?php
 
 /**
  * @version     4.0.0
@@ -103,34 +103,6 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         // Redirect to the edit screen.
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=version&layout=edit', false));
-    }
-
-    public function getChildren() {
-        $parentId = JFactory::getApplication()->input->getInt('parentId', null);
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        $query->select('v.resource_id');
-        $query->from('#__sdi_version v');
-        $query->where('v.id = ' . (int) $parentId);
-
-        $db->setQuery($query);
-        $resource = $db->loadObject();
-
-        $query = $db->getQuery(true);
-        $query->select('vl.id');
-        $query->from('#__sdi_versionlink vl');
-        $query->where('vl.parent_id = ' . $parentId);
-
-        $db->setQuery($query);
-        $childs = $db->loadObjectList();
-        
-        $response = array();
-        $response['success'] = 'true';
-        $response['resource_id'] = $resource->resource_id;
-        $response['num'] = count($childs);
-
-        echo json_encode($response);
-        die();
     }
 
     /**
@@ -627,7 +599,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 $elements[] = $metadata->resource_name .': '.$metadata->version_name;
             }
             $response['canCreate'] = false;
-            $response['cause'][0]['message'] = 'Cette ressource est soumise à une versionnalisation virale par: ';
+            $response['cause'][0]['message'] = JText::_('COM_EASYSDI_CORE_VERSIONS_ERROR_VIRAL_VERSIONNING');
             $response['cause'][0]['elements'] = implode('<br/>', $elements);
         }
 
@@ -649,10 +621,11 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 $elements[] = $metadata->resource_name .': '.$metadata->version_name;
             }
             $response['canCreate'] = false;
-            $response['cause'][1]['message'] = 'Une version en travail existe déjà pour cette ressource';
+            $response['cause'][1]['message'] = JText::_('COM_EASYSDI_CORE_VERSIONS_ERROR_INPROGRESS_VERSION');
             $response['cause'][1]['elements'] = implode('<br/>', $elements);
         }
-        
+		
+		
         echo json_encode($response);
         die();
     }
