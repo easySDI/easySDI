@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
-	<fieldset name="component"
+	<fieldset name="component_monitor"
 		label="COM_EASYSDI_MONITOR_COMPONENT_LABEL"
-		description="COM_EASYSDI_MONITOR_COMPONENT_DESC"
-	>
+		description="COM_EASYSDI_MONITOR_COMPONENT_DESC">
 
         <field name="servletUrl"
                     type="text"
-                    default=""
+                    default="http://localhost:8080/Monitor"
                     class="input"             
                     size="100"
                     label="COM_EASYSDI_MONITOR_URL_LABEL"
