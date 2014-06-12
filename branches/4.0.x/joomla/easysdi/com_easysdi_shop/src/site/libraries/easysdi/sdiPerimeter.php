@@ -70,16 +70,20 @@ class sdiPerimeter {
                             ->select('p.*')
                             ->from('#__sdi_physicalservice p')
                             ->where('p.id = ' . $this->wfsservice_id);
+                    $db->setQuery($query);
+                    $wfsservice = $db->loadObject();
+                    $this->wfsurl = $wfsservice->resourceurl;
                 else :
                     $query = $db->getQuery(true)
                             ->select('p.*')
                             ->from('#__sdi_virtualservice p')
                             ->where('p.id = ' . $this->wfsservice_id);
-                endif;
-
-                $db->setQuery($query);
-                $wfsservice = $db->loadObject();
-                $this->wfsurl = $wfsservice->resourceurl;
+                    $db->setQuery($query);
+                    $wfsservice = $db->loadObject();
+                    $this->wfsurl = $wfsservice->reflectedurl;
+                    if ($this->wfsurl =='')
+                        $this->wfsurl = $wfsservice->url;
+                endif;      
             endif;
         } catch (JDatabaseException $e) {
             
