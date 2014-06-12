@@ -34,6 +34,15 @@ class Easysdi_monitorController extends JControllerLegacy {
 
         return $this;
     }
+    
+    /**
+     * Method to redirect to EasySDI home page (driven by easysdi_com_core)
+     *
+     * @since EasySDI 3.3.0
+     */
+    public function easySDIHome() {
+        $this->setRedirect('index.php?option=com_easysdi_core');
+    }
 
     function create() {
         $database = & JFactory::getDBO();
