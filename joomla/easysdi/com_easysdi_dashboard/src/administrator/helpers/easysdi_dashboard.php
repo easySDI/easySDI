@@ -141,6 +141,7 @@ class Easysdi_dashboardHelper {
         $c = curl_init();
         curl_setopt($c, CURLOPT_URL, $birturl . 'run?');
         curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($c, CURLOPT_HEADER, false);
         curl_setopt($c, CURLOPT_POST, true);
         curl_setopt($c, CURLOPT_POSTFIELDS, 
