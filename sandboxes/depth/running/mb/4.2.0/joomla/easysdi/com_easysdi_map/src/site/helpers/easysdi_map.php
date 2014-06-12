@@ -889,7 +889,7 @@ abstract class Easysdi_mapHelper {
                     }
 
                     if (!empty($layer->attribution)) {
-                        $config .= 'attribution: "' . $layer->attribution . '",';
+                        $config .= "attribution: '" . $layer->attribution . "',";
                     }
                     $config .= 'name: "' . $layer->layername . '",
                     title: "' . $layer->name . '",';
