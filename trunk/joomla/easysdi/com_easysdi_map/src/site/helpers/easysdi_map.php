@@ -45,11 +45,10 @@ abstract class Easysdi_mapHelper {
 
         $output = '';
 
-        $doc->addScript(JURI::base(true) . '/media/jui/js/jquery.js');
-        $doc->addScript(JURI::base(true) . '/media/jui/js/jquery-noconflict.js');
-        $doc->addScript(JURI::base(true) . '/media/jui/js/bootstrap.js');
-
         if (JDEBUG) {
+            $doc->addScript($base_url . '/media/jui/js/jquery.js');
+            $doc->addScript($base_url . '/media/jui/js/jquery-noconflict.js');
+            $doc->addScript($base_url . '/media/jui/js/bootstrap.js');             
             $doc->addScript($base_url . '/ext/adapter/ext/ext-base-debug.js');
             $doc->addScript($base_url . '/ext/ext-all-debug.js');
             $doc->addScript($base_url . '/ux/ext/RowExpander.js');
@@ -79,6 +78,9 @@ abstract class Easysdi_mapHelper {
             $doc->addScript(JURI::base(true) . '/media/system/js/mootools-core-uncompressed.js');
             $doc->addScript(JURI::base(true) . '/media/system/js/core-uncompressed.js');
         } else {
+            $doc->addScript($base_url . '/media/jui/js/jquery.min.js');
+            $doc->addScript($base_url . '/media/jui/js/jquery-noconflict.js');
+            $doc->addScript($base_url . '/media/jui/js/bootstrap.min.js');              
             $doc->addScript($base_url . '/ext/adapter/ext/ext-base.js');
             $doc->addScript($base_url . '/ext/ext-all.js');
             $doc->addScript($base_url . '/ux/ext/RowExpander.js');
@@ -887,7 +889,7 @@ abstract class Easysdi_mapHelper {
                     }
 
                     if (!empty($layer->attribution)) {
-                        $config .= 'attribution: "' . $layer->attribution . '",';
+                        $config .= "attribution: '" . $layer->attribution . "',";
                     }
                     $config .= 'name: "' . $layer->layername . '",
                     title: "' . $layer->name . '",';

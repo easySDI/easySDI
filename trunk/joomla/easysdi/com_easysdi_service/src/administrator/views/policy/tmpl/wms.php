@@ -210,8 +210,10 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
 								<div class="accordion-body collapse" id="collapse_<?php echo $ps->id; ?>">
 								  <div class="accordion-inner">
 										
-										<?php printSpatialPolicyForm($this->item, $ps->id); ?>
-										
+										<?php printSpatialPolicyForm($this->item, $ps->id); 
+                                                                                echo '<input type="hidden" name="enabled[' . $ps->id . ']" value="0"/>';
+                                                                                ?>
+                                                                      
 										<table class="table table-striped" id="table-layers-<?php echo $ps->id; ?>" >
 											<thead>
 												<tr>
