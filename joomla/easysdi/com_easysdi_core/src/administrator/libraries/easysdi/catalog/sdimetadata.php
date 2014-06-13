@@ -77,13 +77,13 @@ class sdiMetadata extends cswmetadata {
       </sdi:resource>
       </sdi:platform>
      */
-    public function insert() {
+    public function insert(DOMDocument $xml = null) {
 
         //Get from the metadata structure, the attribute to store the metadata ID
         $query = $this->db->getQuery(true);
         $query->select('a.name as name, ns.prefix as ns');
-        $query->select($query->concatenate(array('ns.prefix','a.isocode'), ':').' as attribute_isocode');
-        $query->select($query->concatenate(array('atns.prefix','at.isocode'), ':').' as type_isocode');
+        $query->select($query->concatenate(array('ns.prefix', 'a.isocode'), ':') . ' as attribute_isocode');
+        $query->select($query->concatenate(array('atns.prefix', 'at.isocode'), ':') . ' as type_isocode');
         $query->from('#__sdi_profile p');
         $query->innerJoin('#__sdi_resourcetype rt on p.id=rt.profile_id ');
         $query->innerJoin('#__sdi_attribute a on a.id=p.metadataidentifier');
@@ -91,20 +91,20 @@ class sdiMetadata extends cswmetadata {
         $query->innerJoin('#__sdi_sys_stereotype as at ON at.id=a.stereotype_id');
         $query->leftJoin('#__sdi_namespace ns ON a.namespace_id=ns.id');
         $query->leftJoin('#__sdi_namespace atns ON at.namespace_id=atns.id');
-        $query->where('rt.id=' . (int)$this->resource->resourcetype_id);
-        
+        $query->where('rt.id=' . (int) $this->resource->resourcetype_id);
+
         $this->db->setQuery($query);
         $attributeIdentifier = $this->db->loadObject();
 
         //Get from the metadata structure the root classe
         $query = $this->db->getQuery(true);
-        $query->select($query->concatenate(array('ns.prefix','c.isocode'), ':').' as isocode');
+        $query->select($query->concatenate(array('ns.prefix', 'c.isocode'), ':') . ' as isocode, ns.uri, c.isocode as nodeName');
         $query->from('#__sdi_profile p');
         $query->innerJoin('#__sdi_resourcetype rt ON p.id=rt.profile_id');
         $query->innerJoin('#__sdi_class c ON c.id=p.class_id');
         $query->leftJoin('#__sdi_namespace as ns ON c.namespace_id=ns.id');
-        $query->where('rt.id=' . (int)$this->resource->resourcetype_id);
-        
+        $query->where('rt.id=' . (int) $this->resource->resourcetype_id);
+
         $this->db->setQuery($query);
         $rootclass = $this->db->loadObject();
 
@@ -120,22 +120,29 @@ class sdiMetadata extends cswmetadata {
 
         $insert = $this->dom->createElementNS(self::csw_uri, 'csw:Insert');
 
-        $root = $this->dom->createElement($rootclass->isocode);
-        $root->setAttributeNS(self::xmlns_uri, 'xmlns:gmd', 'http://www.isotc211.org/2005/gmd');
-        $root->setAttributeNS(self::xmlns_uri, 'xmlns:gco', 'http://www.isotc211.org/2005/gco');
-        $root->setAttributeNS(self::xmlns_uri, 'xmlns:gml', 'http://www.opengis.net/gml');
-        $root->setAttributeNS(self::xmlns_uri, 'xmlns:sdi', 'http://www.easysdi.org/2011/sdi');
+        if (!empty($xml)) {
+            $root = $xml->getElementsByTagNameNS($rootclass->uri, $rootclass->nodeName);
+            $insert->appendChild($this->dom->importNode($xml->documentElement, true));
+        } else {
+            $root = $this->dom->createElement($rootclass->isocode);
+            $root->setAttributeNS(self::xmlns_uri, 'xmlns:gmd', 'http://www.isotc211.org/2005/gmd');
+            $root->setAttributeNS(self::xmlns_uri, 'xmlns:gco', 'http://www.isotc211.org/2005/gco');
+            $root->setAttributeNS(self::xmlns_uri, 'xmlns:gml', 'http://www.opengis.net/gml');
+            $root->setAttributeNS(self::xmlns_uri, 'xmlns:sdi', 'http://www.easysdi.org/2011/sdi');
 
 
-        $identifier = $this->dom->createElement($attributeIdentifier->attribute_isocode);
-        $identifiertype = $this->dom->createElement($attributeIdentifier->type_isocode, $this->metadata->guid);
+            $identifier = $this->dom->createElement($attributeIdentifier->attribute_isocode);
+            $identifiertype = $this->dom->createElement($attributeIdentifier->type_isocode, $this->metadata->guid);
 
-        $platform = $this->getPlatformNode($this->dom);
+            $platform = $this->getPlatformNode($this->dom);
 
-        $identifier->appendChild($identifiertype);
-        $root->appendChild($identifier);
-        $root->appendChild($platform);
-        $insert->appendChild($root);
+            $identifier->appendChild($identifiertype);
+            $root->appendChild($identifier);
+            $root->appendChild($platform);
+
+            $insert->appendChild($root);
+        }
+
         $transaction->appendChild($insert);
         $this->dom->appendChild($transaction);
         $this->dom->formatOutput = true;
@@ -189,24 +196,24 @@ class sdiMetadata extends cswmetadata {
         //Create metadata XML
         $this->dom = new DOMDocument('1.0', 'utf-8');
 
-        $transaction = $this->dom->createElementNS(self::csw_uri,'csw:Transaction');
-        $transaction->setAttributeNS(self::xmlns_uri,'xmlns:csw', self::csw_uri);
-        $transaction->setAttributeNS(self::xmlns_uri,'xmlns:ogc', self::ogc_uri);
+        $transaction = $this->dom->createElementNS(self::csw_uri, 'csw:Transaction');
+        $transaction->setAttributeNS(self::xmlns_uri, 'xmlns:csw', self::csw_uri);
+        $transaction->setAttributeNS(self::xmlns_uri, 'xmlns:ogc', self::ogc_uri);
         $transaction->setAttribute('service', "CSW");
         $transaction->setAttribute('version', "2.0.2");
 
-        $delete = $this->dom->createElementNS(self::csw_uri,'csw:Delete');
+        $delete = $this->dom->createElementNS(self::csw_uri, 'csw:Delete');
 
-        $constraint = $this->dom->createElementNS(self::csw_uri,'csw:Constraint');
+        $constraint = $this->dom->createElementNS(self::csw_uri, 'csw:Constraint');
         $constraint->setAttribute('version', '1.0.0');
 
-        $filter = $this->dom->createElementNS(self::ogc_uri,'ogc:Filter');
-        $propertyEqual = $this->dom->createElementNS(self::ogc_uri,'ogc:PropertyIsLike');
+        $filter = $this->dom->createElementNS(self::ogc_uri, 'ogc:Filter');
+        $propertyEqual = $this->dom->createElementNS(self::ogc_uri, 'ogc:PropertyIsLike');
         $propertyEqual->setAttribute('wildCard', '%');
         $propertyEqual->setAttribute('singleChar', '_');
         $propertyEqual->setAttribute('escape', '/');
-        $propertyName = $this->dom->createElementNS(self::ogc_uri,'ogc:PropertyName', JComponentHelper::getParams('com_easysdi_catalog')->get('idogcsearchfield'));
-        $literal = $this->dom->createElementNS(self::ogc_uri,'ogc:Literal', $this->metadata->guid);
+        $propertyName = $this->dom->createElementNS(self::ogc_uri, 'ogc:PropertyName', JComponentHelper::getParams('com_easysdi_catalog')->get('idogcsearchfield'));
+        $literal = $this->dom->createElementNS(self::ogc_uri, 'ogc:Literal', $this->metadata->guid);
 
         $propertyEqual->appendChild($propertyName);
         $propertyEqual->appendChild($literal);
@@ -250,24 +257,24 @@ class sdiMetadata extends cswmetadata {
         $metadata = $xpathmetadata->query($this->getMetadataRootClass()->isocode)->item(0);
 
         $newdom = new DOMDocument('1.0', 'utf-8');
-        $transaction = $newdom->createElementNS(self::csw_uri,'csw:Transaction');
-        $transaction->setAttributeNS(self::xmlns_uri,'xmlns:csw', self::csw_uri);
-        $transaction->setAttributeNS(self::xmlns_uri,'xmlns:ogc', self::ogc_uri);
+        $transaction = $newdom->createElementNS(self::csw_uri, 'csw:Transaction');
+        $transaction->setAttributeNS(self::xmlns_uri, 'xmlns:csw', self::csw_uri);
+        $transaction->setAttributeNS(self::xmlns_uri, 'xmlns:ogc', self::ogc_uri);
         $transaction->setAttribute('service', "CSW");
         $transaction->setAttribute('version', "2.0.2");
-        $update = $newdom->createElementNS(self::csw_uri,'csw:Update');
+        $update = $newdom->createElementNS(self::csw_uri, 'csw:Update');
         $update->appendChild($newdom->importNode($metadata, true));
 
-        $constraint = $newdom->createElementNS(self::csw_uri,'csw:Constraint');
+        $constraint = $newdom->createElementNS(self::csw_uri, 'csw:Constraint');
         $constraint->setAttribute('version', '1.0.0');
 
-        $filter = $newdom->createElementNS(self::ogc_uri,'ogc:Filter');
-        $propertyEqual = $newdom->createElementNS(self::ogc_uri,'ogc:PropertyIsLike');
+        $filter = $newdom->createElementNS(self::ogc_uri, 'ogc:Filter');
+        $propertyEqual = $newdom->createElementNS(self::ogc_uri, 'ogc:PropertyIsLike');
         $propertyEqual->setAttribute('wildCard', '%');
         $propertyEqual->setAttribute('singleChar', '_');
         $propertyEqual->setAttribute('escape', '/');
-        $propertyName = $newdom->createElementNS(self::ogc_uri,'ogc:PropertyName', JComponentHelper::getParams('com_easysdi_catalog')->get('idogcsearchfield'));
-        $literal = $newdom->createElementNS(self::ogc_uri,'ogc:Literal', $this->metadata->guid);
+        $propertyName = $newdom->createElementNS(self::ogc_uri, 'ogc:PropertyName', JComponentHelper::getParams('com_easysdi_catalog')->get('idogcsearchfield'));
+        $literal = $newdom->createElementNS(self::ogc_uri, 'ogc:Literal', $this->metadata->guid);
 
         $propertyEqual->appendChild($propertyName);
         $propertyEqual->appendChild($literal);
@@ -320,7 +327,7 @@ class sdiMetadata extends cswmetadata {
         $query = $this->db->getQuery(true);
         $query->select('alias')
                 ->from('#__sdi_resourcetype')
-                ->where('id = ' . (int)$this->resource->resourcetype_id);
+                ->where('id = ' . (int) $this->resource->resourcetype_id);
         $this->db->setQuery($query);
         $resourcetype = $this->db->loadResult();
 
@@ -328,7 +335,7 @@ class sdiMetadata extends cswmetadata {
         $query = $this->db->getQuery(true);
         $query->select('guid')
                 ->from('#__sdi_organism')
-                ->where('id = ' . (int)$this->resource->organism_id);
+                ->where('id = ' . (int) $this->resource->organism_id);
         $this->db->setQuery($query);
         $organism = $this->db->loadResult();
 
@@ -336,7 +343,7 @@ class sdiMetadata extends cswmetadata {
         $query = $this->db->getQuery(true);
         $query->select('value')
                 ->from('#__sdi_sys_accessscope')
-                ->where('id = ' . (int)$this->resource->accessscope_id);
+                ->where('id = ' . (int) $this->resource->accessscope_id);
         $this->db->setQuery($query);
         $accessscope = $this->db->loadResult();
 
@@ -349,16 +356,16 @@ class sdiMetadata extends cswmetadata {
                 ->where('entity_guid = ' . $query->quote($this->resource->guid));
         $this->db->setQuery($query);
         $accessscopes = $this->db->loadObjectList();
-        
+
         // Get the metadatastate
         $query = $this->db->getQuery(true);
         $query->select('ms.`value`')
                 ->from('jos_sdi_metadata m')
                 ->innerJoin('jos_sdi_sys_metadatastate ms on ms.id = m.metadatastate_id')
-                ->where('m.id  = '. (int)$this->metadata->id);
+                ->where('m.id  = ' . (int) $this->metadata->id);
         $this->db->setQuery($query);
         $metadatastate = $this->db->loadResult();
-        
+
         //Get the infrastructureID
         $infrastructureID = JComponentHelper::getParams('com_easysdi_core')->get('infrastructureID');
 
@@ -388,7 +395,7 @@ class sdiMetadata extends cswmetadata {
         $query = $this->db->getQuery(true)
                 ->select('id, guid ,pricing_id, hasdownload, hasextraction, accessscope_id')
                 ->from('#__sdi_diffusion')
-                ->where('version_id = ' . (int)$this->metadata->version_id)
+                ->where('version_id = ' . (int) $this->metadata->version_id)
                 ->where('state = 1');
         $this->db->setQuery($query);
         $diffusionobj = $this->db->loadObject();
@@ -411,7 +418,7 @@ class sdiMetadata extends cswmetadata {
         $query = $this->db->getQuery(true)
                 ->select('id, maplayer_id, accessscope_id')
                 ->from('#__sdi_visualization')
-                ->where('version_id = ' . (int)$this->metadata->version_id)
+                ->where('version_id = ' . (int) $this->metadata->version_id)
                 ->where('state = 1');
         $this->db->setQuery($query);
         $viewobj = $this->db->loadObject();
@@ -454,13 +461,13 @@ class sdiMetadata extends cswmetadata {
     protected function getMetadataRootClass() {
         //Get from the metadata structure the root classe
         $query = $this->db->getQuery(true);
-        $query->select($query->concatenate(array('ns.prefix','c.isocode'), ':').' as isocode');
+        $query->select($query->concatenate(array('ns.prefix', 'c.isocode'), ':') . ' as isocode');
         $query->from('#__sdi_profile p');
         $query->innerJoin('#__sdi_resourcetype rt ON p.id=rt.profile_id');
         $query->innerJoin('#__sdi_class c ON c.id=p.class_id');
         $query->leftJoin('#__sdi_namespace as ns ON c.namespace_id=ns.id');
         $query->where('rt.id=' . $this->resource->resourcetype_id);
-        
+
         $this->db->setQuery($query);
         return $this->db->loadObject();
     }

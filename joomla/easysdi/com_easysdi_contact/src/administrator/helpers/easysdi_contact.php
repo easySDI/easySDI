@@ -48,6 +48,12 @@ class Easysdi_contactHelper
 				'index.php?option=com_easysdi_contact&view=organisms',
 				$vName == 'organisms'
 		);
+		
+		JHtmlSidebar::addEntry(
+				JText::_('COM_EASYSDI_CONTACT_TITLE_CATEGORIES'),
+				'index.php?option=com_easysdi_contact&view=categories',
+				$vName == 'categories'
+		);
 
 	}
 
@@ -62,11 +68,13 @@ class Easysdi_contactHelper
 	 * 
 	 */
 	public static function getActions($type = null, $categoryId = null, $id = null)
-	{
+	{ //var_dump($type);exit();
 		if(empty($type) || $type == "user" )
 			return Easysdi_contactHelper::getActionsUser ($categoryId, $id);
 		else if ($type == "organism")
 			return Easysdi_contactHelper::getActionsOrganism ($id);
+		else if ($type == "category")
+			return Easysdi_contactHelper::getActionsCategory ($id);
 	}
 	
 	/**
@@ -108,10 +116,9 @@ class Easysdi_contactHelper
 	
 
 	/**
-	 * Gets a list of the actions that can be performed on a user item.
+	 * Gets a list of the actions that can be performed on a organism item.
 	 *
-	 * @param	int		The category ID.
-	 * @param	int		The user ID.
+	 * @param	int		The organism ID.
 	 *
 	 * @return	JObject
 	 * @since	1.6
@@ -128,6 +135,40 @@ class Easysdi_contactHelper
 		}
 		else{
 			$assetName = 'com_easysdi_contact.organism.'.(int) $organismId;
+		}
+	
+		$actions = array(
+				'core.admin', 'core.manage', 'core.create', 'core.edit', 'core.edit.own', 'core.edit.state', 'core.delete'
+		);
+	
+		foreach ($actions as $action) {
+			$result->set($action,	$user->authorise($action, $assetName));
+		}
+	
+		return $result;
+	}
+	
+
+	/**
+	 * Gets a list of the actions that can be performed on a organism's category item.
+	 *
+	 * @param	int		The organism's category ID.
+	 *
+	 * @return	JObject
+	 * @since	1.6
+	 *
+	 */
+	public static function getActionsCategory($categoryId = null)
+	{
+		$user	= JFactory::getUser();
+		$result	= new JObject;
+	
+	
+		if (empty($categoryId)) {
+			$assetName = 'com_easysdi_contact';
+		}
+		else{
+			$assetName = 'com_easysdi_contact.category.'.(int) $categoryId;
 		}
 	
 		$actions = array(

@@ -57,6 +57,8 @@ DROP TABLE IF EXISTS `#__sdi_user`;
 DROP TABLE IF EXISTS `#__sdi_address`;
 DROP TABLE IF EXISTS `#__sdi_sys_addresstype`;
 DROP TABLE IF EXISTS `#__sdi_organism`;
+DROP TABLE IF EXISTS `#__sdi_category`;
+DROP TABLE IF EXISTS `#__sdi_organism_category`;
 DROP TABLE IF EXISTS `#__sdi_user_role_organism`;
 
 -- com_easysdi_service
@@ -70,6 +72,7 @@ DROP TABLE IF EXISTS `#__sdi_virtualmetadata`;
 DROP TABLE IF EXISTS `#__sdi_virtual_physical`;
 DROP TABLE IF EXISTS `#__sdi_policy`;
 DROP TABLE IF EXISTS `#__sdi_policy_organism`;
+DROP TABLE IF EXISTS `#__sdi_policy_category`;
 DROP TABLE IF EXISTS `#__sdi_policy_user`;
 DROP TABLE IF EXISTS `#__sdi_allowedoperation`;
 DROP TABLE IF EXISTS `#__sdi_policy_metadatastate`;

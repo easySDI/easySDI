@@ -427,6 +427,38 @@ CREATE TABLE IF NOT EXISTS `#__sdi_user_role_organism` (
 `user_id` int(11) UNSIGNED ,
 `role_id` int(11) UNSIGNED ,
 `organism_id` int(11) UNSIGNED ,
+PRIMARY KEY (`id`),
+  KEY `jos_sdi_user_role_organism_fk1` (`user_id`),
+  KEY `jos_sdi_user_role_organism_fk2` (`role_id`),
+  KEY `jos_sdi_user_role_organism_fk3` (`organism_id`),
+  CONSTRAINT `jos_sdi_user_role_organism_fk1` FOREIGN KEY (`user_id`) REFERENCES `jos_sdi_user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `jos_sdi_user_role_organism_fk2` FOREIGN KEY (`role_id`) REFERENCES `jos_sdi_sys_role` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `jos_sdi_user_role_organism_fk3` FOREIGN KEY (`organism_id`) REFERENCES `jos_sdi_organism` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_category` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`guid` VARCHAR(36)  NOT NULL ,
+`created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`modified_by` INT(11)   ,
+`modified` DATETIME  ,
+`ordering` INT(11)  NOT NULL ,
+`state` int(11) NOT NULL DEFAULT '1',
+`checked_out` INT(11) NOT NULL DEFAULT '0'  ,
+`checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+`alias` VARCHAR(150)   ,
+`description` VARCHAR(500)  ,
+`name` VARCHAR(255)  NOT NULL ,
+`access` INT(11)  NOT NULL ,
+`asset_id` INT(10)  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_organism_category` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`organism_id` INT(11) UNSIGNED ,
+`category_id` INT(11) UNSIGNED ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -655,6 +687,13 @@ CREATE TABLE IF NOT EXISTS `#__sdi_policy_user` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `policy_id` INT(11) UNSIGNED  NOT NULL ,
 `user_id` INT(11) UNSIGNED  NOT NULL ,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+
+CREATE TABLE IF NOT EXISTS `#__sdi_policy_category` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`policy_id` INT(11) UNSIGNED  NOT NULL ,
+`category_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -1055,7 +1094,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_resourcetype` (
 `name` VARCHAR(255)  NOT NULL ,
 `description` VARCHAR(500)  NOT NULL ,
 `logo` VARCHAR(255)  NOT NULL ,
-`meta` BOOLEAN NOT NULL ,
+`application` BOOLEAN NOT NULL ,
 `diffusion` BOOLEAN NOT NULL ,
 `view` BOOLEAN NOT NULL ,
 `monitoring` BOOLEAN NOT NULL ,
@@ -2239,7 +2278,7 @@ PRIMARY KEY (`id`),
     ON UPDATE NO ACTION,
   CONSTRAINT `#__sdi_order_fk4`
     FOREIGN KEY (`thirdparty_id`)
-    REFERENCES `#__sdi_user` (`id`)
+    REFERENCES `#__sdi_organism` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;

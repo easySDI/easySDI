@@ -15,7 +15,6 @@ INSERT INTO `#__sdi_sys_role` VALUES ('4','4','1','metadataeditor' );
 INSERT INTO `#__sdi_sys_role` VALUES ('5','5','1','diffusionmanager' );
 INSERT INTO `#__sdi_sys_role` VALUES ('6','6','1','previewmanager' );
 INSERT INTO `#__sdi_sys_role` VALUES ('7','7','1','extractionresponsible' );
-INSERT INTO `#__sdi_sys_role` VALUES ('8','8','1','ordereligible' );
 
 INSERT INTO `#__sdi_sys_versiontype` (ordering,state,value) 
 VALUES 
@@ -49,7 +48,8 @@ INSERT INTO `#__sdi_sys_accessscope` (ordering,state,value)
 VALUES 
 (1,1,'public'),
 (2,1,'organism'),
-(3,1,'user')
+(3,1,'user'),
+(4,1,'category')
 ;
 
 INSERT INTO `#__sdi_sys_authenticationlevel` (ordering,state,value) 
