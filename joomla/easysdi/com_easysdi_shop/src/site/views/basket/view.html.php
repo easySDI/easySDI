@@ -36,7 +36,6 @@ class Easysdi_shopViewBasket extends JViewLegacy {
         $this->params = $app->getParams('com_easysdi_shop');
         $this->paramsarray = $this->params->toArray();
         $this->user = sdiFactory::getSdiUser();
-        $this->thirdParties = $this->user->getOrderEligibleOrganisms();
 
         if($this->_layout != 'confirm'){            
             if(isset($this->paramsarray['ordermap'])){

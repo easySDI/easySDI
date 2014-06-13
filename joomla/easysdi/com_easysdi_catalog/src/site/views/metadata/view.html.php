@@ -14,6 +14,7 @@ jimport('joomla.application.component.view');
 
 require_once JPATH_COMPONENT . '/libraries/easysdi/FormHtmlGenerator.php';
 require_once JPATH_BASE . '/administrator/components/com_easysdi_core/libraries/easysdi/common/SdiToolbar.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_core.php';
 
 /**
  * View to edit
@@ -128,11 +129,11 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
     public function getActionToolbar() {
         $query = $this->db->getQuery(true);
 
-        $query->select('m.id, v.name, s.value, s.id AS state, v.id as version');
+        $query->select('m.id, v.name, s.value, s.id AS state, v.id as version_id');
         $query->from('#__sdi_version v');
         $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
         $query->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id');
-        $query->where('v.id = ' . (int)$this->item->id);
+        $query->where('m.id = ' . (int) $this->item->id);
         $query->order('v.name DESC');
 
         $this->db->setQuery($query);
@@ -142,25 +143,24 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
 
         switch ($metadata->state) {
             case sdiMetadata::INPROGRESS:
-                if ($this->user->authorize($this->item->id, sdiUser::metadataeditor)) {
-                    
+                if ($this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataeditor)) {
+
                     $toolbar->append(JText::_('COM_EASYSDI_CATALOG_PREVIEW_ITEM'), 'previsulisation', 'btn-small', array(JText::_('COM_EASYSDI_CATALOG_PREVIEW_XML_ITEM') => 'metadata.show', JText::_('COM_EASYSDI_CATALOG_PREVIEW_XHTML_ITEM') => 'metadata.preview'), true);
                     $toolbar->append(JText::_('COM_EASYSDI_CATALOG_SAVE_ITEM'), 'enregistrer', 'btn-small', array(JText::_('COM_EASYSDI_CATALOG_SAVE_AND_CONTINUE_ITEM') => 'metadata.saveAndContinue', JText::_('COM_EASYSDI_CATALOG_SAVE_AND_CLOSE_ITEM') => 'metadata.save'), true);
                     $toolbar->append(JText::_('COM_EASYSDI_CATALOG_VALIDATE_ITEM'), 'Valider', 'btn-small btn-success', array(JText::_('COM_EASYSDI_CATALOG_VALIDATE_ITEM') => 'metadata.control', JText::_('COM_EASYSDI_CATALOG_VALIDATE_AND_SAVE_ITEM') => 'metadata.valid'), true);
                 }
                 break;
             case sdiMetadata::VALIDATED:
-                if ($this->user->authorize($this->item->id, sdiUser::metadataresponsible)) {
+                if ($this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataresponsible)) {
                     
                     $toolbar->append(JText::_('COM_EASYSDI_CATALOG_PREVIEW_ITEM'), 'previsulisation', 'btn-small', array(JText::_('COM_EASYSDI_CATALOG_PREVIEW_XML_ITEM') => 'metadata.show', JText::_('COM_EASYSDI_CATALOG_PREVIEW_XHTML_ITEM') => 'metadata.preview'), true);
                     $toolbar->append(JText::_('COM_EASYSDI_CATALOG_SAVE_ITEM'), 'enregistrer', 'btn-small', array(JText::_('COM_EASYSDI_CATALOG_SAVE_AND_CONTINUE_ITEM') => 'metadata.valid', JText::_('COM_EASYSDI_CATALOG_SAVE_AND_CLOSE_ITEM') => 'metadata.validAndClose'), true);
                     $toolbar->append(JText::_('COM_EASYSDI_CATALOG_INPROGRESS_ITEM'), 'inprogress', 'btn-small', 'metadata.inprogress');
                     $toolbar->append(JText::_('COM_EASYSDI_CATALOG_PUBLISH_ITEM'), 'publier', 'btn-small btn-success', array(JText::_('COM_EASYSDI_CATALOG_VALIDATE_ITEM') => 'metadata.control', JText::_('COM_EASYSDI_CATALOG_PUBLISH_AND_SAVE_ITEM') => 'metadata.setPublishDate'), true);
-                    
                 }
                 break;
             case sdiMetadata::PUBLISHED:
-                if ($this->user->authorize($this->item->id, sdiUser::metadataresponsible)) {
+                if ($this->user->authorizeOnMetadata($this->item->id, sdiUser::metadataresponsible)) {
                     $toolbar->append(JText::_('COM_EASYSDI_CATALOG_PREVIEW_ITEM'), 'previsulisation', 'btn-small', array(JText::_('COM_EASYSDI_CATALOG_PREVIEW_XML_ITEM') => 'metadata.show', JText::_('COM_EASYSDI_CATALOG_PREVIEW_XHTML_ITEM') => 'metadata.preview'), true);
                     $toolbar->append(JText::_('COM_EASYSDI_CATALOG_SAVE_ITEM'), 'enregistrer', 'btn-small', array(JText::_('COM_EASYSDI_CATALOG_SAVE_AND_CONTINUE_ITEM') => 'metadata.publish', JText::_('COM_EASYSDI_CATALOG_SAVE_AND_CLOSE_ITEM') => 'metadata.publishAndClose'), true);
                     $toolbar->append(JText::_('COM_EASYSDI_CATALOG_INPROGRESS_ITEM'), 'inprogress', 'btn-small', 'metadata.inprogress');
@@ -178,16 +178,17 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
         $query->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id');
         $query->innerJoin('#__sdi_resource r ON r.id = v.resource_id');
-        $query->where('v.resource_id = ' . (int)$this->item->id);
+        $query->where('m.id = ' . (int) $this->item->id);
         $query->order('v.name DESC');
 
         $this->db->setQuery($query);
         $metadata = $this->db->loadObjectList();
-        
+
         return $metadata[0];
     }
 
     public function getTopActionBar() {
+
         $query = $this->db->getQuery(true);
 
         $query->select('ir.id, ir.name');
@@ -204,12 +205,12 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         $query->from('#__sdi_version v');
         $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
         $query->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id');
-        $query->where('v.id = ' . (int)$this->item->id);
+        $query->where('m.id = ' . (int) $this->item->id);
         $query->order('v.name DESC');
 
         $this->db->setQuery($query);
         $metadata = $this->db->loadObject();
-        
+
         $importrefactions = array();
         $importrefactions[JText::_('COM_EASYSDI_CATALOGE_REPLICATE')] = 'metadata.replicate';
         foreach ($importref as $ir) {
@@ -218,15 +219,21 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
 
         $toolbar = new SdiToolbar();
 
-        if ($this->params->get('editmetadatafieldsetstate') == "allopen"){
+        if ($this->params->get('editmetadatafieldsetstate') == "allopen") {
             $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_CLOSE_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
-        }else{
+        } else {
             $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_OPEN_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
         }
-        if($metadata->state == sdiMetadata::INPROGRESS){
+        if ($metadata->state == sdiMetadata::INPROGRESS) {
             $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_IMPORT'), 'import', 'btn-small', $importrefactions, true);
         }
-        $toolbar->appendBtnRoute(JText::_('COM_EASYSDI_CATALOG_BACK'), JRoute::_('index.php?option=com_easysdi_core&view=resources'), 'btn-small btn-danger btn-back-ressources');
+
+        $back_url = array('root' => 'index.php',
+            'option' => 'com_easysdi_core',
+            'view' => 'resources',
+            'parentid' => $this->state->parentid);
+        
+        $toolbar->appendBtnRoute(JText::_('COM_EASYSDI_CATALOG_BACK'), JRoute::_(Easysdi_coreHelper::array2URL($back_url)), 'btn-small btn-danger btn-back-ressources');
 
         return $toolbar->renderToolbar();
     }

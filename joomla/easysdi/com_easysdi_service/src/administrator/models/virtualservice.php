@@ -396,7 +396,7 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
                                 $queryvalue->from('#__sdi_sys_servicecompliance c');
                                 $queryvalue->innerJoin('#__sdi_sys_serviceversion v ON c.serviceversion_id = v.id');
                                 $queryvalue->where('c.serviceconnector_id = '. (int)$connector);
-                                $queryvalue->where('v.value='. (int)$pk);
+                                $queryvalue->where('v.value='. $queryvalue->quote($pk));
                                 
                                 $db->setQuery($queryvalue);
                                 $servicecompliance = $db->loadObject();

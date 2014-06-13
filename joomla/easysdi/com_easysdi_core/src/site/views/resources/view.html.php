@@ -18,10 +18,13 @@ jimport('joomla.application.component.view');
 class Easysdi_coreViewResources extends JViewLegacy {
 
     protected $items;
+    protected $metadatastates;
     protected $pagination;
     protected $state;
     protected $params;
-    /** @var sdiUser Description **/
+    protected $parent;
+
+    /** @var sdiUser Description * */
     protected $user;
 
     /**
@@ -36,17 +39,17 @@ class Easysdi_coreViewResources extends JViewLegacy {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             return;
         }
-        
+
         $this->state = $this->get('State');
         $this->items = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         $this->params = $app->getParams('com_easysdi_core');
-        
+
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
-        
+
         $this->_prepareDocument();
         parent::display($tpl);
     }
@@ -56,6 +59,7 @@ class Easysdi_coreViewResources extends JViewLegacy {
      */
     protected function _prepareDocument() {
         $app = JFactory::getApplication();
+        $db = JFactory::getDbo();
         $menus = $app->getMenu();
         $title = null;
 
@@ -88,6 +92,80 @@ class Easysdi_coreViewResources extends JViewLegacy {
         if ($this->params->get('robots')) {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
-    }
+
+        if (!empty($this->state->parentid)) {
+            $query = $db->getQuery(true);
+            $query->select('r.name, v.name as version_name');
+            $query->from('#__sdi_resource r');
+            $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
+            $query->where('v.id = ' . $this->state->parentid);
+            $db->setQuery($query);
+            $this->parent = $db->loadObject();
+        }
+
+
+        $filter_status = $this->state->get('filter.status');
+
+        // Load metadata for each resources
+        foreach ($this->items as $item) {
+            $query = $db->getQuery(true);
+            $query->select('m.id, v.name, s.value, s.id AS state, v.id as version');
+            $query->from('#__sdi_version v');
+            $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
+            $query->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id');
+            $query->leftJoin('#__sdi_versionlink vl ON vl.child_id = v.id');
+            $query->where('v.resource_id = ' . (int) $item->id);
+            $query->order('v.name DESC');
+
+            // Check if resource has a "unpublish" version
+            $db->setQuery($query);
+            $item->hasUnpublishVersion = false;
+            foreach ($db->loadObjectList() as $metadata) {
+                if ($metadata->state < 3) {
+                    $item->hasUnpublishVersion = true;
+                }
+            }
+
+            if (!empty($filter_status)) {
+                $query->where('m.metadatastate_id = ' . (int) $filter_status);
+            }
+
+            $db->setQuery($query);
+            $item->metadata = $db->loadObjectList();
+			
+			// Load roles for each resources
+            $query = $db->getQuery(true);
+            
+            $query->select('u.id as user_id, u.username, urr.role_id, r.value as role_name')
+                    ->from('#__sdi_user_role_resource urr')
+                    ->join('left', '#__sdi_user su ON su.id=urr.user_id')
+                    ->join('left', '#__users u ON u.id=su.user_id')
+                    ->join('left', '#__sdi_sys_role r ON r.id=urr.role_id')
+                    ->where('urr.resource_id='.$item->id);
+            
+            $db->setQuery($query);
+            $rows = $db->loadAssocList();
+            
+            $item->roles = array();
+            foreach($rows as $row){
+                if(!isset($item->roles[$row['role_id']])){
+                    $item->roles[$row['role_id']] = array(
+                        'role' => $row['role_name'],
+                        'users' => array()
+                    );
+                }
+                
+                $item->roles[$row['role_id']]['users'][$row['user_id']] = $row['username'];
+            }
+            
+            //if($item->id==29){var_dump($item->roles);exit();}
+        }
+
+        // load all metadatastate
+        $query = $db->getQuery(true);
+        $query->select('s.value, s.id');
+        $query->from('#__sdi_sys_metadatastate s');
+        $db->setQuery($query);
+        $this->metadatastates = $db->loadObjectList();    }
 
 }

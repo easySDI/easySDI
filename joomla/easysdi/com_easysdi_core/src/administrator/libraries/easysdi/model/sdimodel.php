@@ -170,6 +170,25 @@ abstract class sdiModel extends JModelAdmin {
                 }
             }
         }
+        if (isset($data['categories'])) {
+            $pks = $data['categories'];
+            foreach ($pks as $pk) {
+                try {
+                    $columns = array('entity_guid', 'category_id');
+                    $values = array($query->quote($data['guid']), $query->quote($pk));
+                    
+                    $query = $db->getQuery(true);
+                    $query->insert('#__sdi_accessscope');
+                    $query->columns($query->quoteName($columns));
+                    $query->values(implode(',', $values));
+                    $db->setQuery($query);
+                    $db->execute();
+                } catch (Exception $e) {
+                    $this->setError($e->getMessage());
+                    return false;
+                }
+            }
+        }
         return true;
     }
 

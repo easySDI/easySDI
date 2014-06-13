@@ -39,6 +39,7 @@ class Easysdi_catalogModelresourcestype extends JModelList {
                 'description', 'a.description',
                 'logo', 'a.logo',
                 'metadata', 'a.metadata',
+                'application', 'a.application',
                 'diffusion', 'a.diffusion',
                 'view', 'a.view',
                 'monitoring', 'a.monitoring',

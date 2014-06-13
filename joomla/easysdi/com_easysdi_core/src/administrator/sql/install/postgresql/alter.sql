@@ -714,6 +714,12 @@ CREATE INDEX jos_sdi_user_role_resource_fk21 ON jos_sdi_user_role_resource USING
  
 CREATE INDEX jos_sdi_user_role_resource_fk31 ON jos_sdi_user_role_resource USING btree (resource_id);
  
+CREATE INDEX jos_sdi_user_role_organism_fk11 ON jos_sdi_user_role_organism USING btree (user_id);
+ 
+CREATE INDEX jos_sdi_user_role_organism_fk21 ON jos_sdi_user_role_organism USING btree (role_id);
+ 
+CREATE INDEX jos_sdi_user_role_organism_fk31 ON jos_sdi_user_role_organism USING btree (organism_id);
+ 
 CREATE INDEX jos_sdi_version_fk11 ON jos_sdi_version USING btree (resource_id);
  
 CREATE INDEX jos_sdi_versionlink_fk11 ON jos_sdi_versionlink USING btree (parent_id);
@@ -954,7 +960,7 @@ ALTER TABLE ONLY jos_sdi_order
 ALTER TABLE ONLY jos_sdi_order
     ADD CONSTRAINT jos_sdi_order_fk3 FOREIGN KEY (user_id) REFERENCES jos_sdi_user(id) MATCH FULL;
 ALTER TABLE ONLY jos_sdi_order
-    ADD CONSTRAINT jos_sdi_order_fk4 FOREIGN KEY (thirdparty_id) REFERENCES jos_sdi_user(id) MATCH FULL;
+    ADD CONSTRAINT jos_sdi_order_fk4 FOREIGN KEY (thirdparty_id) REFERENCES jos_sdi_organism(id) MATCH FULL;
 ALTER TABLE ONLY jos_sdi_order_perimeter
     ADD CONSTRAINT jos_sdi_order_perimeter_fk1 FOREIGN KEY (order_id) REFERENCES jos_sdi_order(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY jos_sdi_order_perimeter
@@ -1147,6 +1153,12 @@ ALTER TABLE ONLY jos_sdi_user_role_resource
     ADD CONSTRAINT jos_sdi_user_role_resource_fk2 FOREIGN KEY (role_id) REFERENCES jos_sdi_sys_role(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY jos_sdi_user_role_resource
     ADD CONSTRAINT jos_sdi_user_role_resource_fk3 FOREIGN KEY (resource_id) REFERENCES jos_sdi_resource(id) MATCH FULL ON DELETE CASCADE;
+ALTER TABLE ONLY jos_sdi_user_role_organism
+    ADD CONSTRAINT jos_sdi_user_role_organism_fk1 FOREIGN KEY (user_id) REFERENCES jos_sdi_user(id) MATCH FULL ON DELETE CASCADE;
+ALTER TABLE ONLY jos_sdi_user_role_organism
+    ADD CONSTRAINT jos_sdi_user_role_organism_fk2 FOREIGN KEY (role_id) REFERENCES jos_sdi_sys_role(id) MATCH FULL ON DELETE CASCADE;
+ALTER TABLE ONLY jos_sdi_user_role_organism
+    ADD CONSTRAINT jos_sdi_user_role_organism_fk3 FOREIGN KEY (organism_id) REFERENCES jos_sdi_organism(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY jos_sdi_version
     ADD CONSTRAINT jos_sdi_version_fk1 FOREIGN KEY (resource_id) REFERENCES jos_sdi_resource(id) MATCH FULL;
 ALTER TABLE ONLY jos_sdi_versionlink

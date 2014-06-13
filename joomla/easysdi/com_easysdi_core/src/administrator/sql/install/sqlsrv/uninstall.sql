@@ -612,3 +612,11 @@ IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[actions]') 
 DROP TABLE [actions];
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[action_types]') AND type in (N'U'))
 DROP TABLE [action_types];
+
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[#__sdi_category]') AND type in (N'U'))
+DROP TABLE [#__sdi_category];
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[#__sdi_organism_category]') AND type in (N'U'))
+DROP TABLE [#__sdi_organism_category];
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[#__sdi_policy_category]') AND type in (N'U'))
+DROP TABLE [#__sdi_policy_category];

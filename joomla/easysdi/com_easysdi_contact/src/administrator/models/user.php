@@ -178,7 +178,31 @@ class Easysdi_contactModeluser extends JModelAdmin {
      * @since   11.1
      */
     public function save($data) {
-
+        $fieldRole = array(
+            2   => 'organismsRM',
+            3   => 'organismsMR',
+            4   => 'organismsME',
+            5   => 'organismsDM',
+            6   => 'organismsVM',
+            7   => 'organismsER',
+            8   => 'organismsOE'
+        );
+        
+        // Trigger the onEasysdiUserBeforeDeleteRoleAttribution event.
+        JPluginHelper::importPlugin('user');
+        $dispatcher = JEventDispatcher::getInstance();      
+        
+        $canContinue = $dispatcher->trigger('onEasysdiUserBeforeDeleteRoleAttribution', array(array(
+            'user_id' => $data['id'],
+            'organisms_ids' => isset($data['organismsRM']) ? $data['organismsRM'] : array()))
+        );
+        
+        // Fire the onEasysdiUserBeforeDeleteRoleAttribution event.
+        if($canContinue[0] !== true){
+            $this->setError($canContinue[0]);
+            return false;
+        }
+        
         if (parent::save($data)) {
             $item = parent::getItem($data['id']);
             $data['id'] = $item->id;
@@ -187,42 +211,9 @@ class Easysdi_contactModeluser extends JModelAdmin {
             $role = JTable::getInstance('role', 'Easysdi_contactTable');
             $role->deleteByUserId($data['id']);
 
-            //Insert new role attribution           
-            if (isset($data['organismsRM'])):
-                $this->saveRoleAttribution($data['organismsRM'], 2);
-            else :
-                $this->deleteRoleAttribution(2);
-            endif;
-            if (isset($data['organismsMR'])):
-                $this->saveRoleAttribution($data['organismsMR'], 3);
-            else :
-                $this->deleteRoleAttribution(3);
-            endif;
-            if (isset($data['organismsME'])):
-                $this->saveRoleAttribution($data['organismsME'], 4);
-            else :
-                $this->deleteRoleAttribution(4);
-            endif;
-            if (isset($data['organismsDM'])):
-                $this->saveRoleAttribution($data['organismsDM'], 5);
-            else :
-                $this->deleteRoleAttribution(5);
-            endif;
-            if (isset($data['organismsVM'])):
-                $this->saveRoleAttribution($data['organismsVM'], 6);
-            else :
-                $this->deleteRoleAttribution(6);
-            endif;
-            if (isset($data['organismsER'])):
-                $this->saveRoleAttribution($data['organismsER'], 7);
-            else :
-                $this->deleteRoleAttribution(7);
-            endif;
-            if (isset($data['organismsOE'])):
-                $this->saveRoleAttribution($data['organismsOE'], 8);
-            else :
-                $this->deleteRoleAttribution(8);
-            endif;
+            //Insert new role attribution  
+            foreach($fieldRole as $role_id => $fieldName)
+                isset($data[$fieldName]) ? $this->saveRoleAttribution ($data[$fieldName], $role_id) : $this->deleteRoleAttribution ($role_id);
             
 
             $array = array();
@@ -255,52 +246,45 @@ class Easysdi_contactModeluser extends JModelAdmin {
     }
 
     function saveRoleAttribution($organisms, $role_id) {
+        if(!is_array($organisms))
+            $organisms = array($organisms);
+        
+        foreach($organisms as $organism){
+            $role = JTable::getInstance('role', 'Easysdi_contactTable');
+            $array = array(
+                'user_id'       => $this->getItem()->get('id'),
+                'role_id'       => $role_id,
+                'organism_id'   => $organism
+            );
+            $role->save($array);
+        }
+        
         $db = JFactory::getDbo();
-        //Delete previous rights attributed to this user on a resource
-        if (is_array($organisms)):
-            foreach ($organisms as $organism) {
-                $array = array();
-                $array['user_id'] = $this->getItem()->get('id');
-                $array['role_id'] = $role_id;
-                $array['organism_id'] = $organism;
-                $role = JTable::getInstance('role', 'Easysdi_contactTable');
-                $role->save($array);
-            }
-
-            //Delete no more available right on a resource
-            $query = $db->getQuery(true)
-                    ->select('r.id')
-                    ->from('#__sdi_resource r')
-                    ->where('r.organism_id IN (' . implode(",", $organisms) . ')');
-            $db->setQuery($query);
-            $resources = $db->loadColumn();
-            
-            if (sizeof($resources)>0):
-                $query = $db->getQuery(true)
-                        ->delete('#__sdi_user_role_resource ')
-                        ->where('user_id = ' . $this->getItem()->get('id'))
-                        ->where('resource_id NOT IN ( ' . implode(',', $resources) . ')')
-                        ->where('role_id =  ' . (int) $role_id);
-                $db->setQuery($query);
-
-                $result = $db->query();
-            endif;
-        else:
-            $this->deleteRoleAttribution($role_id);
-        endif;
+        
+        $query = $db->getQuery(true)
+                ->select('id')
+                ->from('#__sdi_resource')
+                ->where('organism_id IN ('. implode(',',$organisms) .')');
+        $db->setQuery($query);
+        $resources = $db->loadColumn();
+        
+        $this->deleteRoleAttribution($role_id, $resources);
     }
 
-    function deleteRoleAttribution($role_id) {
-        $db = JFactory::getDbo();
-        //Delete all rights on resources
-        $query = $db->getQuery(true)
-                ->delete('#__sdi_user_role_resource ')
-                ->where('user_id = ' . (int)$this->getItem()->get('id'))
-                ->where('role_id =  ' . (int) $role_id);
-         $db->setQuery($query);
-         
-         $result = $db->query();       
-        
+    function deleteRoleAttribution($role_id, $resources = false) {
+        if(sizeof($resources)>0 || $resources===false){
+            $db = JFactory::getDbo();
+            
+            $query = $db->getQuery(true)
+                ->delete('#__sdi_user_role_resource')
+                ->where('user_id='.(int)$this->getItem()->get('id'))
+                ->where('role_id='.(int)$role_id);
+            if($resources==true && sizeof($resources)>0)
+                $query->where('resource_id NOT IN ('. implode(',', $resources) .')');
+
+            $db->setQuery($query);
+            $db->execute();
+        }
     }
 
 }

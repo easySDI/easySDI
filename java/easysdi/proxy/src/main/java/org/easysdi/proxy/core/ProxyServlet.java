@@ -50,6 +50,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import org.apache.commons.io.IOUtils;
 
 import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.FileAppender;
@@ -554,12 +555,10 @@ public abstract class ProxyServlet extends HttpServlet {
             os.flush();
             os.close();
         } else {
-            byte[] buf = new byte[in.available()];
-            int nread;
-            while ((nread = in.read(buf)) != -1) {
-                os.write(buf, 0, nread);
-                os.flush();
-            }
+            
+            IOUtils.copy(in, os);
+            
+            os.flush();
             os.close();
             in.close();
         }

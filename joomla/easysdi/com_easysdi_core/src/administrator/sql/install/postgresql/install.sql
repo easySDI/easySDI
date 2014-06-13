@@ -792,6 +792,30 @@ CREATE TABLE jos_sdi_organism (
     password character varying(65)
 );
 
+CREATE TABLE IF NOT EXISTS jos_sdi_category (
+    id serial NOT NULL ,
+    guid character varying(36) NOT NULL,
+    created_by integer NOT NULL,
+    created timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
+    modified_by integer,
+    modified timestamp(3) without time zone,
+    ordering integer NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
+    checked_out integer DEFAULT 0 NOT NULL,
+    checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
+    alias character varying(150),
+    description character varying(500),
+    name character varying(255) NOT NULL,
+    access integer NOT NULL,
+    asset_id integer NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS jos_sdi_organism_category (
+    id serial NOT NULL ,
+    organism_id integer NOT NULL references jos_sdi_organism(id),
+    category_id integer NOT NULL references jos_sdi_category(id)
+);
+
 
 CREATE TABLE jos_sdi_perimeter (
     id serial NOT NULL ,
@@ -941,6 +965,12 @@ CREATE TABLE jos_sdi_policy_organism (
     id serial NOT NULL ,
     policy_id bigint NOT NULL,
     organism_id bigint NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS jos_sdi_policy_category (
+    id serial NOT NULL ,
+    policy_id bigint NOT NULL,
+    category_id bigint NOT NULL
 );
 
 
@@ -1127,7 +1157,7 @@ CREATE TABLE jos_sdi_resourcetype (
     name character varying(255) NOT NULL,
     description character varying(500) NOT NULL,
     logo character varying(255) NOT NULL,
-    meta integer NOT NULL,
+    application integer NOT NULL,
     diffusion integer NOT NULL,
     view integer NOT NULL,
     monitoring integer NOT NULL,
