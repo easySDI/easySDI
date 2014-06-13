@@ -40,7 +40,19 @@
 			key_field="id" 
 			value_field="name"
 			translate="true"
-		/> 
+		/>  
+        <field
+            name="categories" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT id, name FROM #__sdi_category WHERE state=1 ORDER BY ordering" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        /> 
 		<field name="layout" type="text" size="40"  label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_CONNECTOR" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_CONNECTOR" readonly="true" class="readonly" filter="safehtml" />
 		<field name="virtualservice" type="text" size="40"  label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_VIRTUALSERVICE" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_VIRTUALSERVICE" readonly="true" class="readonly" filter="safehtml" />
 		<field

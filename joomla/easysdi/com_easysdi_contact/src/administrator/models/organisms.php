@@ -72,6 +72,16 @@ class Easysdi_contactModelorganisms extends JModelList {
 
         // List state information.
         parent::populateState('a.id', 'asc');
+
+
+        /**
+         * [jvi]:
+         * Following code have to be after the parent::populateState to don't be overriden by it !
+         * As filter_category filter is a multiselect fields, if filter_category isnt sent, we 
+         * assume it's empty 
+         */
+        $category = !key_exists('filter_category', $_REQUEST) ? array() : $app->getUserStateFromRequest($this->context . '.filter.category', 'filter_category', array(), 'array');
+        $this->setState('filter.category', $category);
     }
 
     /**
@@ -155,6 +165,13 @@ class Easysdi_contactModelorganisms extends JModelList {
         }
 
 
+        // Filter by organism's category
+        $categories = $this->getState('filter.category');
+        if (count($categories)) {
+            $query->join('left', '#__sdi_organism_category AS b ON b.organism_id=a.id')
+                    ->where('b.category_id IN (' . implode(',', $categories) . ')');
+        }
+
 
 
         // Add the list ordering clause.
@@ -163,6 +180,9 @@ class Easysdi_contactModelorganisms extends JModelList {
         if ($orderCol && $orderDirn) {
             $query->order($db->escape($orderCol . ' ' . $orderDirn));
         }
+
+        // group by user.id to have unique rows in result
+        $query->group('a.id');
 
         return $query;
     }

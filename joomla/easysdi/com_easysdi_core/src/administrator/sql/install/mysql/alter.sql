@@ -44,6 +44,12 @@ ADD CONSTRAINT `#__sdi_address_fk4` FOREIGN KEY (`organism_id`) REFERENCES `#__s
 ALTER TABLE `#__sdi_address`
 ADD CONSTRAINT `#__sdi_address_fk5` FOREIGN KEY (`country_id`) REFERENCES `#__sdi_sys_country` (`id`) ;
 
+ALTER TABLE `#__sdi_organism_category`
+ADD CONSTRAINT `#__sdi_organism_category_fk1` FOREIGN KEY (`organism_id`) REFERENCES `#__sdi_organism` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `#__sdi_organism_category`
+ADD CONSTRAINT `#__sdi_organism_category_fk2` FOREIGN KEY (`category_id`) REFERENCES `#__sdi_category` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
 
 -- com_easysdi_map
 

@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 
 require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/model/sdimodel.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi_core.php';
 
 /**
  * Diffusion controller class.
@@ -147,7 +148,12 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
 
             // Redirect to the list screen.
             $this->setMessage(JText::_('COM_EASYSDI_SHOP_ITEM_SAVED_SUCCESSFULLY'));
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+            $back_url = array('root' => 'index.php',
+                'option' => 'com_easysdi_core',
+                'view' => 'resources',
+                'parentid' => JFactory::getApplication()->getUserState('com_easysdi_core.parent.resource.version.id'));
+
+            $this->setRedirect(JRoute::_(Easysdi_coreHelper::array2URL($back_url), false));
 
             // Flush the data from the session.
             $app->setUserState('com_easysdi_shop.edit.diffusion.data', null);
@@ -163,7 +169,12 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
         $data = JFactory::getApplication()->input->get('jform', array(), 'array');
         $model->checkin($data['id']);
         $this->clearSession();
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
+
+        $back_url = array('root' => 'index.php',
+            'option' => 'com_easysdi_core',
+            'view' => 'resources',
+            'parentid' => JFactory::getApplication()->getUserState('com_easysdi_core.parent.resource.version.id'));
+        $this->setRedirect(JRoute::_(Easysdi_coreHelper::array2URL($back_url), false));
     }
 
     public function remove() {
@@ -241,11 +252,12 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
         $app->setUserState('com_easysdi_shop.edit.diffusion.data', null);
     }
 
-    public function clearSession(){
+    public function clearSession() {
         $app = JFactory::getApplication();
         // Clear the id from the session.
         $app->setUserState('com_easysdi_shop.edit.diffusionmetadata.id', null);
         $app->setUserState('com_easysdi_shop.edit.diffusion.id', null);
         $app->setUserState('com_easysdi_shop.edit.diffusionversion.id', null);
     }
+
 }

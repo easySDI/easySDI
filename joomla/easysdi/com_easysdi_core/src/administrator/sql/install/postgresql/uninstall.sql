@@ -178,3 +178,7 @@ DROP TABLE IF EXISTS "service_types_methods" CASCADE;
 DROP TABLE IF EXISTS "sla" CASCADE;
 DROP TABLE IF EXISTS "statuses" CASCADE;
 DROP TABLE IF EXISTS "users" CASCADE;
+
+DROP TABLE IF EXISTS "jos_sdi_category" CASCADE;
+DROP TABLE IF EXISTS "jos_sdi_organism_category" CASCADE;
+DROP TABLE IF EXISTS "jos_sdi_policy_category" CASCADE;

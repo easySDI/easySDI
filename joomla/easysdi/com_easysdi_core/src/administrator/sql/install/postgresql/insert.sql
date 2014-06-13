@@ -56,6 +56,7 @@ INSERT INTO jos_sdi_searchcriteria (guid, alias, created_by, created, modified_b
 INSERT INTO jos_sdi_sys_accessscope (ordering, state, value) VALUES (1, 1, 'public');
 INSERT INTO jos_sdi_sys_accessscope (ordering, state, value) VALUES (2, 1, 'organism');
 INSERT INTO jos_sdi_sys_accessscope (ordering, state, value) VALUES (3, 1, 'user');
+INSERT INTO jos_sdi_sys_accessscope (ordering, state, `value`) VALUES (4, 1, 'category');
 
 INSERT INTO jos_sdi_sys_addresstype (ordering, state, value) VALUES (1, 1, 'contact');
 INSERT INTO jos_sdi_sys_addresstype (ordering, state, value) VALUES (2, 1, 'billing');
@@ -507,7 +508,6 @@ INSERT INTO jos_sdi_sys_role (ordering, state, value) VALUES (4, 1, 'metadataedi
 INSERT INTO jos_sdi_sys_role (ordering, state, value) VALUES (5, 1, 'diffusionmanager');
 INSERT INTO jos_sdi_sys_role (ordering, state, value) VALUES (6, 1, 'previewmanager');
 INSERT INTO jos_sdi_sys_role (ordering, state, value) VALUES (7, 1, 'extractionresponsible');
-INSERT INTO jos_sdi_sys_role (ordering, state, value) VALUES (8, 1, 'ordereligible');
 
 INSERT INTO jos_sdi_sys_searchtab (ordering, state, value) VALUES (1, 1, 'simple');
 INSERT INTO jos_sdi_sys_searchtab (ordering, state, value) VALUES (2, 1, 'advanced');

@@ -333,7 +333,6 @@ class Easysdi_coreModelVersion extends JModelForm {
                     endif;
                 endforeach;
             endif;
-
             return $table->id;
         } else {
             return false;

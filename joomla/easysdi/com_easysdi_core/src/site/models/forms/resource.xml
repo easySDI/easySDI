@@ -12,7 +12,7 @@
               description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_ALIAS" 
               filter="safehtml" /> 
 
-        <field name="description" type="text" size="40" class="inputbox"
+        <field name="description" type="textarea" cols="40" rows="5" class="inputbox"
               label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_DESCRIPTION"
               description="COM_EASYSDI_CORE_FORM_DESC_RESOURCE_DESCRIPTION" 
               filter="safehtml" /> 
@@ -57,19 +57,7 @@
             key_field="id" 
             value_field="name"
             translate="true"
-        /> 
-        
-        <field
-            name="state"
-            type="list"
-            label="JSTATUS"
-            description="JFIELD_PUBLISHED_DESC"
-            class="inputbox"
-            size="1"
-            default="1">
-            <option value="1">JPUBLISHED</option>
-            <option value="0">JUNPUBLISHED</option>
-        </field> 
+        />
         
     </fieldset> 
     

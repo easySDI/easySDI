@@ -194,13 +194,13 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 }
                 
                 $query = $db->getQuery(true);
-                $query->select($query->concatenate(array('"physical_"','physicalservice_id')));
-                $query->from('#__sdi_map_physicalservice');
+                $query->select($query->concatenate(array('"physical_"','ps.physicalservice_id')));
+                $query->from('#__sdi_map_physicalservice ps');
                 $query->where('map_id = ' . $item->id);
                 
                 $query2 = $db->getQuery(true);
-                $query2->select($query->concatenate(array('"physical_"','physicalservice_id')));
-                $query2->from('#__sdi_map_virtualservice');
+                $query2->select($query->concatenate(array('"virtual_"','vs.virtualservice_id')));
+                $query2->from('#__sdi_map_virtualservice vs');
                 $query2->where('map_id = ' . $item->id);
                 $query->union($query2);
                 
