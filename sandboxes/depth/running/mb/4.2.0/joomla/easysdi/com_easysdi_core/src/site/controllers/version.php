@@ -200,23 +200,6 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             $versions = $this->core_helpers->getViralVersionnedChild($lastversion);
         }
 
-        // get version in progress
-        $versions_inprogress = $this->getChildrenByState($versions, array(sdiMetadata::INPROGRESS));
-
-        // try to delete version in progress
-        try {
-            $dbo->transactionStart();
-            $this->deleteMetadatas($versions_inprogress);
-            $this->deleteVersions($versions_inprogress);
-            $dbo->transactionCommit();
-        } catch (Exception $exc) {
-            $dbo->transactionRollback();
-            $this->metadataRollback();
-            $this->setMessage('Save failed: ' . $exc->getMessage(), 'error');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-            return false;
-        }
-
         // get version to create
         $new_versions = $this->getNewVersions($versions);
 

@@ -41,6 +41,15 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         padding-left:60px;
         padding-top:70px;
     }
+    div.divider {
+            *width: 100%;
+            height: 1px;
+            margin: 8px 1px;
+            *margin: -5px 0 5px;
+            overflow: hidden;
+            background-color: #e5e5e5;
+            border-bottom: 1px solid #fff;
+    }
 </style>
 <script type="text/javascript">
     function getScript(url, success) {
@@ -170,14 +179,8 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                 </select>
                             </div>
                         </div>
-                        
-                        <div class="control-group">
-                            <div class="control-label"></div>
-                            <div class="controls">
-                                <input type="button" value="<?php echo JText::_('COM_EASYSDI_CORE_ADD_ALL_USERS_BTN'); ?>" id="addAllUsersBtn" class="btn btn-primary">
-                                <input type="button" value="<?php echo JText::_('COM_EASYSDI_CORE_REMOVE_ALL_USERS_BTN'); ?>" id="removeAllUsersBtn" class="btn btn-danger">
-                            </div>
-                        </div>
+                        <div class='divider'></div>
+                        <h2><?php echo JText::_('COM_EASYSDI_CORE_RESOURCE_ROLE_MANAGEMENT_TITLE'); ?></h2>
                         <?php for($index = 2; $index < 8; $index++): 
                             $sessionData = JFactory::getApplication()->getUserState('com_easysdi_core.edit.resource.ur[rights_'.$index.']');
                             ?>
@@ -194,6 +197,13 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                 </div>
                             </div>
                         <?php endfor; ?>
+                        <div class="control-group">
+                            <div class="control-label"></div>
+                            <div class="controls">
+                                <input type="button" value="<?php echo JText::_('COM_EASYSDI_CORE_ADD_ALL_USERS_BTN'); ?>" id="addAllUsersBtn" class="btn btn-primary">
+                                <input type="button" value="<?php echo JText::_('COM_EASYSDI_CORE_REMOVE_ALL_USERS_BTN'); ?>" id="removeAllUsersBtn" class="btn btn-danger">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="tab-pane" id="publishing">

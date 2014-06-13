@@ -7,7 +7,7 @@
 * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
 */
 
-require_once JPATH_BASE .'/components/com_easysdi_core/libraries/easysdi/user/sdiuser.php';
+require_once JPATH_ADMINISTRATOR .'/components/com_easysdi_core/libraries/easysdi/user/sdiuser.php';
 
 defined('_JEXEC') or die( 'Restricted access' );
 

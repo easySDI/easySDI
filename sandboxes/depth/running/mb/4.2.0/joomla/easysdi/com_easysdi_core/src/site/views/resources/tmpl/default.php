@@ -240,27 +240,29 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                             <span class="caret"></span>
                                         </a>
                                         <ul class="dropdown-menu">
-                                            <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->versioning) : ?>
-                                                <li>
-                                                   <a id="<?php echo $item->id; ?>_new_linker" href="#"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
-                                                </li>
-                                            <?php endif; ?>
-                                            <?php if ($this->user->authorize($item->id, sdiUser::resourcemanager) && $item->supportrelation): ?>
-                                                <li>
-                                                    <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.edit&id=' . $item->metadata[0]->version); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RELATIONS'); ?></a>
-                                                </li>
-                                                <li class="child_list" id="<?php echo $item->id; ?>_child_list">
-                                                    <a id="<?php echo $item->id; ?>_child_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&parentid=' . $item->metadata[0]->version); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_CHILDREN_LIST'); ?> (<span id="<?php echo $item->id; ?>_child_num">0</span>)</a>
-                                                </li>
-                                            <?php endif; ?>
-                                            <?php if ($item->supportapplication && $this->user->authorize($item->id, sdiUser::resourcemanager)): ?>
-                                                <li>
-                                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=applications&resource=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_APPLICATIONS'); ?></a>
-                                                </li>
-                                            <?php endif; ?>
+                                            <?php if($this->user->authorize($item->id, sdiUser::resourcemanager)) : ?>
+                                                <?php if ($item->versioning) : ?>
+                                                    <li>
+                                                       <a id="<?php echo $item->id; ?>_new_linker" href="#"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($item->supportrelation): ?>
+                                                    <li>
+                                                        <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.edit&id=' . $item->metadata[0]->version); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RELATIONS'); ?></a>
+                                                    </li>
+                                                    <li class="child_list" id="<?php echo $item->id; ?>_child_list">
+                                                        <a id="<?php echo $item->id; ?>_child_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&parentid=' . $item->metadata[0]->version); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_CHILDREN_LIST'); ?> (<span id="<?php echo $item->id; ?>_child_num">0</span>)</a>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($item->supportapplication): ?>
+                                                    <li>
+                                                        <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=applications&resource=' . $item->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_APPLICATIONS'); ?></a>
+                                                    </li>
+                                                <?php endif; ?>
 
-                                            <?php if (($this->user->authorize($item->id, sdiUser::diffusionmanager) && $item->supportdiffusion) || ($this->user->authorize($item->id, sdiUser::viewmanager) && $item->supportview)): ?>
-                                                <li class="divider"></li>
+                                                <?php if ($item->versioning || $item->supportrelation || $item->supportapplication): ?>
+                                                    <li class="divider"></li>
+                                                <?php endif; ?>
                                             <?php endif; ?>
                                             <?php if ($this->user->authorize($item->id, sdiUser::diffusionmanager) && $item->supportdiffusion): ?>
                                                 <li>

@@ -129,7 +129,7 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
     public function getActionToolbar() {
         $query = $this->db->getQuery(true);
 
-        $query->select('m.id, v.name, s.value, s.id AS state, v.id as version_id);
+        $query->select('m.id, v.name, s.value, s.id AS state, v.id as version_id');
         $query->from('#__sdi_version v');
         $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
         $query->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id');
