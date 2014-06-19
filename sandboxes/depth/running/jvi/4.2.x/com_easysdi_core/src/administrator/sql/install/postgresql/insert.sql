@@ -54,9 +54,9 @@ INSERT INTO jos_sdi_searchcriteria (guid, alias, created_by, created, modified_b
 INSERT INTO jos_sdi_searchcriteria (guid, alias, created_by, created, modified_by, modified, ordering, state, checked_out, checked_out_time, name, issystem, criteriatype_id, rendertype_id, relation_id, access, asset_id) VALUES ('a9a44261-05da-4ee8-a3f2-4ec1c53bcb00', 'isViewable', 356, '2013-06-17 11:22:36', NULL, NULL, 0, 1, 0, '2013-06-21 12:12:47', 'isViewable', 1, 1, 1, NULL, 0, 0);
 
 INSERT INTO jos_sdi_sys_accessscope (ordering, state, value) VALUES (1, 1, 'public');
-INSERT INTO jos_sdi_sys_accessscope (ordering, state, value) VALUES (2, 1, 'organism');
-INSERT INTO jos_sdi_sys_accessscope (ordering, state, value) VALUES (3, 1, 'user');
-INSERT INTO jos_sdi_sys_accessscope (ordering, state, `value`) VALUES (4, 1, 'category');
+INSERT INTO jos_sdi_sys_accessscope (ordering, state, value) VALUES (3, 1, 'organism');
+INSERT INTO jos_sdi_sys_accessscope (ordering, state, value) VALUES (4, 1, 'user');
+INSERT INTO jos_sdi_sys_accessscope (ordering, state, `value`) VALUES (2, 1, 'category');
 
 INSERT INTO jos_sdi_sys_addresstype (ordering, state, value) VALUES (1, 1, 'contact');
 INSERT INTO jos_sdi_sys_addresstype (ordering, state, value) VALUES (2, 1, 'billing');
