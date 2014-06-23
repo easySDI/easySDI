@@ -1,0 +1,108 @@
+#!/usr/bin/env python
+
+# Purpose: build compressed and uncompressed version of GemetClient
+# Author: Jachym Cepicky jachym at bnhelp dot cz
+# Licence: GNU/GPL
+
+"""Build script for GetmetClient JavaScript library
+
+buildGemetClient.py [-u]
+
+Options:
+    -u              build uncompressed
+    -h              show this help message
+
+Examples:
+    none
+
+"""
+
+import sys,os
+
+BUILDSCRIPT=os.path.abspath('@CMAKE_CURRENT_SOURCE_DIR@/tools/')
+sys.path.append(BUILDSCRIPT)
+
+import getopt,jsmin
+
+BUILD_PATH="@CMAKE_CURRENT_BINARY_DIR@"
+SRC_PATH="@CMAKE_CURRENT_SOURCE_DIR@/src"
+CFG_FILE="@CMAKE_CURRENT_SOURCE_DIR@/tools/buildGemetClient.cfg"
+
+def main(compressed = True):
+    """
+    """
+    name = "GemetClient.js"
+    if compressed == False:
+        name = "GemetClient-uncompressed.js"
+
+    path = "@CMAKE_CURRENT_SOURCE_DIR@"
+    srcPath = SRC_PATH
+    buildPath = BUILD_PATH
+
+    configFile = open(CFG_FILE,"r")
+    outFile = open(os.path.join(buildPath,name),"w")
+
+    print >> outFile, """/**
+ * Name: Gemetclient
+ * Purpose: Graphical ExtJS-based JavaScript client for GEMET Thesaurus
+ * Author: Stepan Kafka <kafka email cz>
+ * Copyright: Help Service - Remote Sensing s.r.o 2009
+ * URL: http://bnhelp.cz
+ * Licence: GNU/LGPL v3
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */"""
+
+    for l in configFile.readlines():
+        l = l.strip()
+        if l[0] == "#":
+            continue
+        if l == "":
+            continue
+
+        js = open(os.path.join(srcPath, l),"r").read()
+
+        if (compressed) :
+            outFile.write(jsmin.jsmin(js))
+        else:
+            outFile.write(js)
+
+    outFile.close()
+
+
+def usage():
+    print __doc__
+
+if __name__ == "__main__":
+
+    compressed = True
+    opts = None
+    args = None
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:],"uh",["help"])
+    except getopt.GetoptError:
+        usage()
+        sys.exit(2)
+
+
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            usage()
+            sys.exit() 
+        elif opt == '-c':
+            compressed = False 
+ 
+    main(compressed)
