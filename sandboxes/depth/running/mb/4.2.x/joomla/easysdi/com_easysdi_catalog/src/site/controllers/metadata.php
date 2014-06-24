@@ -24,6 +24,8 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/helpers/easysdi
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiLanguageDao.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormUtils.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/CswMerge.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormGenerator.php';
 require_once JPATH_BASE . '/administrator/components/com_easysdi_core/libraries/easysdi/user/sdiuser.php';
 
 /**
@@ -86,7 +88,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $metadata_id = JFactory::getApplication()->input->get('id', null, 'int');
 
         $query = $this->db->getQuery(true);
-        $query->select('v.id,r.id AS resource_id');
+        $query->select('v.id, r.resourcetype_id, r.id AS resource_id, m.id AS metadata_id, m.guid AS fileidentifier');
         $query->from('#__sdi_metadata m');
         $query->innerJoin('jos_sdi_version v ON m.version_id = v.id');
         $query->innerJoin('jos_sdi_resource r ON v.resource_id = r.id');
@@ -97,11 +99,42 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $version->name = date("Y-m-d H:i:s");
 
         $versions = $this->core_helpers->getViralVersionnedChild($version);
-        
 
-        $csw = new sdiMetadata($metadata_id);
+        $this->_syncronize($versions);
     }
 
+    private function _syncronize($versions){
+        
+        foreach ($versions as $version) {
+            if(!empty($version->children)){
+                $merger = new CswMerge();
+                
+                $db = JFactory::getDbo();
+                foreach ($version->children as $children) {
+                    $query = $db->getQuery(true);
+                    $query->select('rtli.xpath');
+                    $query->from('#__sdi_resourcetypelinkinheritance rtli');
+                    $query->innerJoin('#__sdi_resourcetypelink rtl ON rtli.resourcetypelink_id = rtl.id');
+                    $query->where('rtl.parent_id = '.(int)$version->resourcetype_id);
+                    $query->where('rtl.child_id ='. (int)$children->resourcetype_id);
+                    
+                    $db->setQuery($query);
+                    $xpaths = $db->loadObjectList();
+                    
+                    $child_sdimetadata = new sdiMetadata($children->metadata_id);
+                    
+                    $merger->setOriginal($child_sdimetadata->load());
+                    if($result = $merger->mergeImport(NULL, $version->fileidentifier, $xpaths)){
+                        
+                    }
+                    
+                }
+                
+                $this->_syncronize($version->children);
+            }
+        }
+    }
+    
     /**
      * Method to check out an item for editing and redirect to the edit form.
      *
@@ -958,10 +991,10 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query = $this->db->getQuery(true);
         $query->select('m.version_id as id, m.metadatastate_id as state, r.name as rname, v.name as vname, rt.versioning, v.resource_id')
                 ->from('#__sdi_metadata m')
-                ->join('LEFT', '#__sdi_version v ON v.id=m.version_id')
-                ->join('LEFT', '#__sdi_resource r ON r.id=v.resource_id')
-                ->join('LEFT', '#__sdi_resourcetype rt ON rt.id=r.resourcetype_id')
-                ->where('m.version_id IN ('.implode(',', $ids).')');
+                ->join('INNER', '#__sdi_version v ON v.id=m.version_id')
+                ->join('INNER', '#__sdi_resource r ON r.id=v.resource_id')
+                ->join('INNER', '#__sdi_resourcetype rt ON rt.id=r.resourcetype_id')
+                ->where('m.id IN ('.implode(',', $ids).')');
         $this->db->setQuery($query);
         
         $metadatas = $this->db->loadAssocList();
