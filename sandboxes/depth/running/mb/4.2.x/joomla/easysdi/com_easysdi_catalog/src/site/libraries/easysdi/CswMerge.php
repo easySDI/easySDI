@@ -29,10 +29,10 @@ class CswMerge {
     function __construct($original = '', $import = '') {
         $this->db = JFactory::getDbo();
         if (!empty($import)) {
-            $this->import = $import;
+            $this->setImport($import);
         }
         if (!empty($original)) {
-            $this->original = $original;
+            $this->setOriginal($original);
         }
         $this->original = $original;
         $this->nsdao = new SdiNamespaceDao();
@@ -44,8 +44,11 @@ class CswMerge {
      * @param string $fileidentifier
      * @return DOMDocument
      */
-    public function mergeImport($importref_id = '', $fileidentifier = '', $xpaths = '') {
-        $importref = null;
+    public function mergeImport($importref_id = '', $fileidentifier = '', $xpaths = array()) {
+        // Add static xpath for clean sdi node
+        $xpath = array('xpath' => '/gmd:MD_Metadata/sdi:platform');
+        $xpaths[] = JArrayHelper::toObject($xpath);
+
         // Import from a CSW catalog
         if (!empty($importref_id) && !empty($fileidentifier)) {
             $importref = $this->getImportRef($importref_id);
@@ -68,7 +71,7 @@ class CswMerge {
      * @param string $fileidentifier
      * @return DOMDocument
      */
-    private function mergeInheriteCsw($fileidentifier, $xpaths = '') {
+    private function mergeInheriteCsw($fileidentifier, $xpaths) {
         $catalog_params = JComponentHelper::getParams('com_easysdi_catalog');
 
         $importrefarray = array();
@@ -89,7 +92,7 @@ class CswMerge {
      * @param string $fileidentifier
      * @return boolean
      */
-    private function mergeImportService($importref, $fileidentifier, $xpaths = '') {
+    private function mergeImportService($importref, $fileidentifier, $xpaths) {
         if ($response = $this->getImportCsw($fileidentifier, $importref->resourceurl, $importref->resourceusername, $importref->resourcepassword)) {
             $this->import = $response;
         } else {
@@ -103,9 +106,8 @@ class CswMerge {
         if (!empty($xpaths)) {
             $this->removeXpath($xpaths);
         }
-        
+
         return $this->switchOnImportType($importref);
-        
     }
 
     /**
@@ -114,10 +116,8 @@ class CswMerge {
      * @param type $importref
      * @return type
      */
-    private function mergeImportCsw($importref) {
+    private function mergeImportCsw($importref, $xpath) {
         $this->preserveFileidentifier($this->import, '', $this->original);
-
-        $this->addGetRecordById();
 
         $this->transformXml($importref);
 
@@ -137,6 +137,31 @@ class CswMerge {
             case self::MERGE:
                 $this->merge();
                 return $this->original;
+        }
+    }
+
+    /**
+     * 
+     * @param DOMDocument $doc
+     * @return DOMDocument
+     */
+    private function removeGetRecordBy(DOMDocument $doc) {
+        $elements = $doc->getElementsByTagName('GetRecordByIdResponse');
+
+        if ($elements->length > 0) {
+
+            $dom = new DOMDocument('1.0', 'UTF-8');
+            $children = $elements->item(0)->childNodes;
+            foreach ($children as $child) {
+                if ($child->nodeType == XML_ELEMENT_NODE) {
+                    $xmlContent = $dom->importNode($child, true);
+                    $dom->appendChild($xmlContent);
+                    break;
+                }
+            }
+            return $dom;
+        } else {
+            return $doc;
         }
     }
 
@@ -192,7 +217,7 @@ class CswMerge {
         }
 
         foreach ($xpaths as $xpath) {
-            $elementsToDelete = $domXpathImport->query('/csw:GetRecordByIdResponse' . $xpath->xpath);
+            $elementsToDelete = $domXpathImport->query($xpath->xpath);
 
             foreach ($elementsToDelete as $elementToDelete) {
                 $parent = $elementToDelete->parentNode;
@@ -246,26 +271,24 @@ class CswMerge {
         }
 
         $this->import->save('D:\\tmp\\import.xml');
-       
+        
         /* @var $originalNode DOMNode */
         foreach ($domXpathOriginal->query('descendant::*', $this->original->firstChild) as $originalNode) {
-            if(!$this->hasChild($originalNode)){
+            if (!$this->hasChild($originalNode)) {
                 $originalName = $originalNode->nodeName;
                 if ($importNode = $domXpathImport->query($originalNode->getNodePath())->item(0)) {
-                    
+
                     $importedNode = $this->original->importNode($importNode, true);
                     $importName = $importNode->nodeName;
                     $importValue = $importNode->nodeValue;
                     $success = $originalNode->parentNode->replaceChild($importedNode, $originalNode);
                     $sucName = $success->nodeName;
                     $sucValue = $success->nodeValue;
-                    
                 }
             }
         }
         
-        
-         $this->original->save('D:\\tmp\\original.xml');
+        $this->original->save('D:\\tmp\\original.xml');
     }
 
     /**
@@ -346,10 +369,10 @@ class CswMerge {
     /**
      * Retrives metadadata from service
      * 
+     * @param string $fileidentifier
      * @param string $resourceUrl
      * @param string $username
      * @param string $password
-     * @param string $fileidentifier
      * @return DOMDocument or false if not found
      */
     private function getImportCsw($fileidentifier, $resourceUrl = '', $username = '', $password = '') {
@@ -364,7 +387,7 @@ class CswMerge {
         $dom->loadXML($response);
 
         if ($dom->firstChild->hasChildNodes()) {
-            return $dom;
+            return $this->removeGetRecordBy($dom);
         } else {
             return FALSE;
         }
@@ -406,11 +429,11 @@ class CswMerge {
     }
 
     public function setOriginal(DOMDocument $original) {
-        $this->original = $original;
+        $this->original = $this->removeGetRecordBy($original);
     }
 
     public function setImport(DOMDocument $import) {
-        $this->import = $import;
+        $this->import = $this->removeGetRecordBy($import);
     }
 
 }

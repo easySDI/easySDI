@@ -171,7 +171,6 @@ class sdiMetadata extends cswmetadata {
      * 
      */
     public function update($xml) {
-
         $reponse = $this->CURLRequest('POST', $this->catalogurl, $xml);
         $dom = new DOMDocument();
         $dom->loadXML($reponse);
