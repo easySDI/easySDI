@@ -100,9 +100,6 @@ class CswMerge {
 
         $this->transformXml($importref);
 
-        $this->import->save('D:\\tmp\\avant_import' . $fileidentifier . '.xml');
-        $this->original->save('D:\\tmp\\avant_original' . $fileidentifier . '.xml');
-
         if (!empty($xpaths)) {
             $this->removeXpath($xpaths);
         }
@@ -248,18 +245,27 @@ class CswMerge {
             $domXpathOriginal->registerNamespace($ns->prefix, $ns->uri);
         }
 
-        /* @var $importNode DOMNode */
-        foreach ($domXpathImport->query('descendant::*', $this->import->firstChild) as $importNode) {
-            if (!$this->hasChild($importNode)) {
-                /* @var $originalNode DOMNode */
-                if ($originalNode = $domXpathOriginal->query($importNode->getNodePath())->item(0)) {
+        $this->import->save('D:\\tmp\\import.xml');
+       
+        /* @var $originalNode DOMNode */
+        foreach ($domXpathOriginal->query('descendant::*', $this->original->firstChild) as $originalNode) {
+            if(!$this->hasChild($originalNode)){
+                $originalName = $originalNode->nodeName;
+                if ($importNode = $domXpathImport->query($originalNode->getNodePath())->item(0)) {
+                    
                     $importedNode = $this->original->importNode($importNode, true);
-                    $originalNode->parentNode->replaceChild($importedNode, $originalNode);
-                } else {
-                    $this->getFirstShareAncestor($importNode);
+                    $importName = $importNode->nodeName;
+                    $importValue = $importNode->nodeValue;
+                    $success = $originalNode->parentNode->replaceChild($importedNode, $originalNode);
+                    $sucName = $success->nodeName;
+                    $sucValue = $success->nodeValue;
+                    
                 }
             }
         }
+        
+        
+         $this->original->save('D:\\tmp\\original.xml');
     }
 
     /**
