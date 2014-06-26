@@ -689,7 +689,7 @@ REFERENCES [#__sdi_language] ([id]);
 ALTER TABLE [#__sdi_translation] CHECK CONSTRAINT [#__sdi_translation$#__sdi_translation_fk1];
 
 ALTER TABLE [#__sdi_user]  WITH CHECK ADD  CONSTRAINT [#__sdi_user$#__sdi_user_fk1] FOREIGN KEY([user_id])
-REFERENCES [jos_users] ([id]);
+REFERENCES [#__users] ([id]);
 
 ALTER TABLE [#__sdi_user] CHECK CONSTRAINT [#__sdi_user$#__sdi_user_fk1];
 

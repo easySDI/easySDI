@@ -90,8 +90,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query = $this->db->getQuery(true);
         $query->select('v.id, r.resourcetype_id, r.id AS resource_id, m.id AS metadata_id, m.guid AS fileidentifier');
         $query->from('#__sdi_metadata m');
-        $query->innerJoin('jos_sdi_version v ON m.version_id = v.id');
-        $query->innerJoin('jos_sdi_resource r ON v.resource_id = r.id');
+        $query->innerJoin('#__sdi_version v ON m.version_id = v.id');
+        $query->innerJoin('#__sdi_resource r ON v.resource_id = r.id');
         $query->where('m.id = ' . $metadata_id);
         $this->db->setQuery($query);
 

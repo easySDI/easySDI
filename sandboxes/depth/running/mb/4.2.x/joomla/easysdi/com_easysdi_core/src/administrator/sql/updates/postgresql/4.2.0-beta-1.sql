@@ -1,5 +1,5 @@
 
-CREATE TABLE IF NOT EXISTS jos_sdi_category (
+CREATE TABLE IF NOT EXISTS #__sdi_category (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     created_by integer NOT NULL,
@@ -17,15 +17,15 @@ CREATE TABLE IF NOT EXISTS jos_sdi_category (
     asset_id integer NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS jos_sdi_organism_category (
+CREATE TABLE IF NOT EXISTS #__sdi_organism_category (
     id serial NOT NULL ,
-    organism_id integer NOT NULL references jos_sdi_organism(id),
-    category_id integer NOT NULL references jos_sdi_category(id)
+    organism_id integer NOT NULL references #__sdi_organism(id),
+    category_id integer NOT NULL references #__sdi_category(id)
 );
 
-INSERT INTO jos_sdi_sys_accessscope (id, ordering, state, `value`) VALUES (4, 4, 1, 'category');
+INSERT INTO #__sdi_sys_accessscope (id, ordering, state, `value`) VALUES (4, 4, 1, 'category');
 
-CREATE TABLE IF NOT EXISTS jos_sdi_policy_category (
+CREATE TABLE IF NOT EXISTS #__sdi_policy_category (
     id serial NOT NULL ,
     policy_id bigint NOT NULL,
     category_id bigint NOT NULL
@@ -33,22 +33,22 @@ CREATE TABLE IF NOT EXISTS jos_sdi_policy_category (
 
 
 
-ALTER TABLE `jos_sdi_resourcetype` RENAME COLUMN `meta` TO `application`;
+ALTER TABLE `#__sdi_resourcetype` RENAME COLUMN `meta` TO `application`;
 
 
-DELETE FROM `jos_sdi_user_role_organism` WHERE role_id=(SELECT id FROM `jos_sdi_sys_role` WHERE `value`='ordereligible');
-DELETE FROM `jos_sdi_sys_role` WHERE `value`='ordereligible';
+DELETE FROM `#__sdi_user_role_organism` WHERE role_id=(SELECT id FROM `#__sdi_sys_role` WHERE `value`='ordereligible');
+DELETE FROM `#__sdi_sys_role` WHERE `value`='ordereligible';
 
 
-ALTER TABLE ONLY jos_sdi_order
-    DROP CONSTRAINT jos_sdi_order_fk4;
-ALTER TABLE ONLY jos_sdi_order
-    ADD CONSTRAINT jos_sdi_order_fk4 FOREIGN KEY (thirdparty_id) REFERENCES jos_sdi_organism(id) MATCH FULL;
+ALTER TABLE ONLY #__sdi_order
+    DROP CONSTRAINT #__sdi_order_fk4;
+ALTER TABLE ONLY #__sdi_order
+    ADD CONSTRAINT #__sdi_order_fk4 FOREIGN KEY (thirdparty_id) REFERENCES #__sdi_organism(id) MATCH FULL;
 
 
-ALTER TABLE ONLY jos_sdi_user_role_organism
-    ADD CONSTRAINT jos_sdi_user_role_organism_fk1 FOREIGN KEY (user_id) REFERENCES jos_sdi_user(id) MATCH FULL;
-ALTER TABLE ONLY jos_sdi_user_role_organism
-    ADD CONSTRAINT jos_sdi_user_role_organism_fk2 FOREIGN KEY (role_id) REFERENCES jos_sdi_sys_role(id) MATCH FULL;
-ALTER TABLE ONLY jos_sdi_user_role_organism
-    ADD CONSTRAINT jos_sdi_user_role_organism_fk3 FOREIGN KEY (organism_id) REFERENCES jos_sdi_organism(id) MATCH FULL;
+ALTER TABLE ONLY #__sdi_user_role_organism
+    ADD CONSTRAINT #__sdi_user_role_organism_fk1 FOREIGN KEY (user_id) REFERENCES #__sdi_user(id) MATCH FULL;
+ALTER TABLE ONLY #__sdi_user_role_organism
+    ADD CONSTRAINT #__sdi_user_role_organism_fk2 FOREIGN KEY (role_id) REFERENCES #__sdi_sys_role(id) MATCH FULL;
+ALTER TABLE ONLY #__sdi_user_role_organism
+    ADD CONSTRAINT #__sdi_user_role_organism_fk3 FOREIGN KEY (organism_id) REFERENCES #__sdi_organism(id) MATCH FULL;

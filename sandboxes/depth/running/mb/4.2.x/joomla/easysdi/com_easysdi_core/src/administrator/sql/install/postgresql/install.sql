@@ -128,14 +128,14 @@ CREATE TABLE jobs (
 );
 
 
-CREATE TABLE jos_sdi_accessscope (
+CREATE TABLE #__sdi_accessscope (
     id serial NOT NULL ,
     entity_guid character varying(36) NOT NULL,
     organism_id bigint,
     user_id bigint
 );
 
-CREATE TABLE jos_sdi_address (
+CREATE TABLE #__sdi_address (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(50),
@@ -167,13 +167,13 @@ CREATE TABLE jos_sdi_address (
     sameascontact integer DEFAULT 1 NOT NULL
 );
 
-CREATE TABLE jos_sdi_allowedoperation (
+CREATE TABLE #__sdi_allowedoperation (
     id serial NOT NULL ,
     policy_id bigint NOT NULL,
     serviceoperation_id bigint NOT NULL
 );
 
-CREATE TABLE jos_sdi_application (
+CREATE TABLE #__sdi_application (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -195,7 +195,7 @@ CREATE TABLE jos_sdi_application (
     asset_id bigint DEFAULT 0::bigint NOT NULL
 );
 
-CREATE TABLE jos_sdi_assignment (
+CREATE TABLE #__sdi_assignment (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     assigned timestamp(3) without time zone,
@@ -205,7 +205,7 @@ CREATE TABLE jos_sdi_assignment (
     text character varying(500)
 );
 
-CREATE TABLE jos_sdi_attribute (
+CREATE TABLE #__sdi_attribute (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -232,7 +232,7 @@ CREATE TABLE jos_sdi_attribute (
 );
 
 
-CREATE TABLE jos_sdi_attributevalue (
+CREATE TABLE #__sdi_attributevalue (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -251,7 +251,7 @@ CREATE TABLE jos_sdi_attributevalue (
     asset_id bigint DEFAULT 0::bigint NOT NULL
 );
 
-CREATE TABLE jos_sdi_boundary (
+CREATE TABLE #__sdi_boundary (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -275,7 +275,7 @@ CREATE TABLE jos_sdi_boundary (
 );
 
 
-CREATE TABLE jos_sdi_boundarycategory (
+CREATE TABLE #__sdi_boundarycategory (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -293,7 +293,7 @@ CREATE TABLE jos_sdi_boundarycategory (
     asset_id bigint DEFAULT 0::bigint NOT NULL
 );
 
-CREATE TABLE jos_sdi_catalog (
+CREATE TABLE #__sdi_catalog (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -315,7 +315,7 @@ CREATE TABLE jos_sdi_catalog (
 );
 
 
-CREATE TABLE jos_sdi_catalog_resourcetype (
+CREATE TABLE #__sdi_catalog_resourcetype (
     id serial NOT NULL ,
     ordering integer,
     state integer DEFAULT 1 NOT NULL,
@@ -323,7 +323,7 @@ CREATE TABLE jos_sdi_catalog_resourcetype (
     resourcetype_id bigint NOT NULL
 );
 
-CREATE TABLE jos_sdi_catalog_searchcriteria (
+CREATE TABLE #__sdi_catalog_searchcriteria (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     created_by integer NOT NULL,
@@ -342,7 +342,7 @@ CREATE TABLE jos_sdi_catalog_searchcriteria (
 );
 
 
-CREATE TABLE jos_sdi_catalog_searchsort (
+CREATE TABLE #__sdi_catalog_searchsort (
     id serial NOT NULL ,
     ordering integer,
     state integer DEFAULT 1 NOT NULL,
@@ -352,7 +352,7 @@ CREATE TABLE jos_sdi_catalog_searchsort (
 );
 
 
-CREATE TABLE jos_sdi_class (
+CREATE TABLE #__sdi_class (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -376,7 +376,7 @@ CREATE TABLE jos_sdi_class (
 );
 
 
-CREATE TABLE jos_sdi_csw_spatialpolicy (
+CREATE TABLE #__sdi_csw_spatialpolicy (
     id serial NOT NULL ,
     eastboundlongitude numeric(10,6),
     westboundlongitude numeric(10,6),
@@ -390,7 +390,7 @@ CREATE TABLE jos_sdi_csw_spatialpolicy (
 );
 
 
-CREATE TABLE jos_sdi_diffusion (
+CREATE TABLE #__sdi_diffusion (
     id serial NOT NULL ,
     guid character varying(255) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -423,14 +423,14 @@ CREATE TABLE jos_sdi_diffusion (
 );
 
 
-CREATE TABLE jos_sdi_diffusion_download (
+CREATE TABLE #__sdi_diffusion_download (
     id serial NOT NULL ,
     diffusion_id bigint NOT NULL,
     user_id bigint,
     executed timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL
 );
 
-CREATE TABLE jos_sdi_diffusion_notifieduser (
+CREATE TABLE #__sdi_diffusion_notifieduser (
     id serial NOT NULL ,
     ordering integer NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -438,7 +438,7 @@ CREATE TABLE jos_sdi_diffusion_notifieduser (
     user_id bigint NOT NULL
 );
 
-CREATE TABLE jos_sdi_diffusion_perimeter (
+CREATE TABLE #__sdi_diffusion_perimeter (
     id serial NOT NULL ,
     ordering integer NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -448,7 +448,7 @@ CREATE TABLE jos_sdi_diffusion_perimeter (
 );
 
 
-CREATE TABLE jos_sdi_diffusion_propertyvalue (
+CREATE TABLE #__sdi_diffusion_propertyvalue (
     id serial NOT NULL ,
     ordering integer NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -457,13 +457,13 @@ CREATE TABLE jos_sdi_diffusion_propertyvalue (
 );
 
 
-CREATE TABLE jos_sdi_excludedattribute (
+CREATE TABLE #__sdi_excludedattribute (
     id serial NOT NULL ,
     path character varying(500) NOT NULL,
     policy_id bigint NOT NULL
 );
 
-CREATE TABLE jos_sdi_featuretype_policy (
+CREATE TABLE #__sdi_featuretype_policy (
     id serial NOT NULL ,
     name character varying(255) NOT NULL,
     description character varying(255),
@@ -474,7 +474,7 @@ CREATE TABLE jos_sdi_featuretype_policy (
 );
 
 
-CREATE TABLE jos_sdi_importref (
+CREATE TABLE #__sdi_importref (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -499,14 +499,14 @@ CREATE TABLE jos_sdi_importref (
 );
 
 
-CREATE TABLE jos_sdi_includedattribute (
+CREATE TABLE #__sdi_includedattribute (
     id serial NOT NULL ,
     name character varying(500) NOT NULL,
     featuretypepolicy_id bigint NOT NULL
 );
 
 
-CREATE TABLE jos_sdi_language (
+CREATE TABLE #__sdi_language (
     id serial NOT NULL ,
     ordering bigint DEFAULT 0::bigint NOT NULL,
     state integer DEFAULT 1,
@@ -520,7 +520,7 @@ CREATE TABLE jos_sdi_language (
 );
 
 
-CREATE TABLE jos_sdi_layer (
+CREATE TABLE #__sdi_layer (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     created_by integer NOT NULL,
@@ -537,7 +537,7 @@ CREATE TABLE jos_sdi_layer (
 );
 
 
-CREATE TABLE jos_sdi_layer_layergroup (
+CREATE TABLE #__sdi_layer_layergroup (
     id serial NOT NULL ,
     layer_id bigint NOT NULL,
     group_id bigint NOT NULL,
@@ -545,7 +545,7 @@ CREATE TABLE jos_sdi_layer_layergroup (
 );
 
 
-CREATE TABLE jos_sdi_layergroup (
+CREATE TABLE #__sdi_layergroup (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(20) NOT NULL,
@@ -564,7 +564,7 @@ CREATE TABLE jos_sdi_layergroup (
 );
 
 
-CREATE TABLE jos_sdi_map (
+CREATE TABLE #__sdi_map (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(20) NOT NULL,
@@ -593,7 +593,7 @@ CREATE TABLE jos_sdi_map (
 );
 
 
-CREATE TABLE jos_sdi_map_layergroup (
+CREATE TABLE #__sdi_map_layergroup (
     id serial NOT NULL ,
     map_id bigint NOT NULL,
     group_id bigint NOT NULL,
@@ -603,28 +603,28 @@ CREATE TABLE jos_sdi_map_layergroup (
 );
 
 
-CREATE TABLE jos_sdi_map_physicalservice (
+CREATE TABLE #__sdi_map_physicalservice (
     id serial NOT NULL ,
     map_id bigint NOT NULL,
     physicalservice_id bigint NOT NULL
 );
 
 
-CREATE TABLE jos_sdi_map_tool (
+CREATE TABLE #__sdi_map_tool (
     id serial NOT NULL ,
     map_id bigint NOT NULL,
     tool_id bigint NOT NULL,
     params character varying(500)
 );
 
-CREATE TABLE jos_sdi_map_virtualservice (
+CREATE TABLE #__sdi_map_virtualservice (
     id serial NOT NULL ,
     map_id bigint NOT NULL,
     virtualservice_id bigint NOT NULL
 );
 
 
-CREATE TABLE jos_sdi_maplayer (
+CREATE TABLE #__sdi_maplayer (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(20) NOT NULL,
@@ -655,7 +655,7 @@ CREATE TABLE jos_sdi_maplayer (
 );
 
 
-CREATE TABLE jos_sdi_metadata (
+CREATE TABLE #__sdi_metadata (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     created_by integer NOT NULL,
@@ -678,7 +678,7 @@ CREATE TABLE jos_sdi_metadata (
 );
 
 
-CREATE TABLE jos_sdi_monitor_exports (
+CREATE TABLE #__sdi_monitor_exports (
     id serial NOT NULL ,
     "exportDesc" character varying(500),
     "exportName" character varying(500),
@@ -687,7 +687,7 @@ CREATE TABLE jos_sdi_monitor_exports (
 );
 
 
-CREATE TABLE jos_sdi_namespace (
+CREATE TABLE #__sdi_namespace (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -708,7 +708,7 @@ CREATE TABLE jos_sdi_namespace (
 );
 
 
-CREATE TABLE jos_sdi_order (
+CREATE TABLE #__sdi_order (
     id serial NOT NULL ,
     guid character varying(255) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -735,7 +735,7 @@ CREATE TABLE jos_sdi_order (
 );
 
 
-CREATE TABLE jos_sdi_order_diffusion (
+CREATE TABLE #__sdi_order_diffusion (
     id serial NOT NULL ,
     order_id bigint NOT NULL,
     diffusion_id bigint NOT NULL,
@@ -749,7 +749,7 @@ CREATE TABLE jos_sdi_order_diffusion (
 );
 
 
-CREATE TABLE jos_sdi_order_perimeter (
+CREATE TABLE #__sdi_order_perimeter (
     id serial NOT NULL ,
     order_id bigint NOT NULL,
     perimeter_id bigint NOT NULL,
@@ -759,7 +759,7 @@ CREATE TABLE jos_sdi_order_perimeter (
 );
 
 
-CREATE TABLE jos_sdi_order_propertyvalue (
+CREATE TABLE #__sdi_order_propertyvalue (
     id serial NOT NULL ,
     orderdiffusion_id bigint NOT NULL,
     property_id bigint NOT NULL,
@@ -769,7 +769,7 @@ CREATE TABLE jos_sdi_order_propertyvalue (
 );
 
 
-CREATE TABLE jos_sdi_organism (
+CREATE TABLE #__sdi_organism (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     created_by integer NOT NULL,
@@ -792,7 +792,7 @@ CREATE TABLE jos_sdi_organism (
     password character varying(65)
 );
 
-CREATE TABLE IF NOT EXISTS jos_sdi_category (
+CREATE TABLE IF NOT EXISTS #__sdi_category (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     created_by integer NOT NULL,
@@ -810,14 +810,14 @@ CREATE TABLE IF NOT EXISTS jos_sdi_category (
     asset_id integer NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS jos_sdi_organism_category (
+CREATE TABLE IF NOT EXISTS #__sdi_organism_category (
     id serial NOT NULL ,
-    organism_id integer NOT NULL references jos_sdi_organism(id),
-    category_id integer NOT NULL references jos_sdi_category(id)
+    organism_id integer NOT NULL references #__sdi_organism(id),
+    category_id integer NOT NULL references #__sdi_category(id)
 );
 
 
-CREATE TABLE jos_sdi_perimeter (
+CREATE TABLE #__sdi_perimeter (
     id serial NOT NULL ,
     guid character varying(255) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -852,7 +852,7 @@ CREATE TABLE jos_sdi_perimeter (
 );
 
 
-CREATE TABLE jos_sdi_physicalservice (
+CREATE TABLE #__sdi_physicalservice (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(20) NOT NULL,
@@ -882,14 +882,14 @@ CREATE TABLE jos_sdi_physicalservice (
 );
 
 
-CREATE TABLE jos_sdi_physicalservice_organism (
+CREATE TABLE #__sdi_physicalservice_organism (
     id serial NOT NULL ,
     physicalservice_id bigint NOT NULL,
     organism_id bigint NOT NULL
 );
 
 
-CREATE TABLE jos_sdi_physicalservice_policy (
+CREATE TABLE #__sdi_physicalservice_policy (
     id serial NOT NULL ,
     prefix character varying(255),
     namespace character varying(255),
@@ -904,7 +904,7 @@ CREATE TABLE jos_sdi_physicalservice_policy (
 );
 
 
-CREATE TABLE jos_sdi_physicalservice_servicecompliance (
+CREATE TABLE #__sdi_physicalservice_servicecompliance (
     id serial NOT NULL ,
     service_id bigint NOT NULL,
     servicecompliance_id bigint NOT NULL,
@@ -912,7 +912,7 @@ CREATE TABLE jos_sdi_physicalservice_servicecompliance (
 );
 
 
-CREATE TABLE jos_sdi_policy (
+CREATE TABLE #__sdi_policy (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     ordering integer NOT NULL,
@@ -953,7 +953,7 @@ CREATE TABLE jos_sdi_policy (
 );
 
 
-CREATE TABLE jos_sdi_policy_metadatastate (
+CREATE TABLE #__sdi_policy_metadatastate (
     id serial NOT NULL ,
     metadatastate_id bigint NOT NULL,
     policy_id bigint NOT NULL,
@@ -961,34 +961,34 @@ CREATE TABLE jos_sdi_policy_metadatastate (
 );
 
 
-CREATE TABLE jos_sdi_policy_organism (
+CREATE TABLE #__sdi_policy_organism (
     id serial NOT NULL ,
     policy_id bigint NOT NULL,
     organism_id bigint NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS jos_sdi_policy_category (
+CREATE TABLE IF NOT EXISTS #__sdi_policy_category (
     id serial NOT NULL ,
     policy_id bigint NOT NULL,
     category_id bigint NOT NULL
 );
 
 
-CREATE TABLE jos_sdi_policy_resourcetype (
+CREATE TABLE #__sdi_policy_resourcetype (
     id serial NOT NULL ,
     resourcetype_id bigint NOT NULL,
     policy_id bigint NOT NULL
 );
 
 
-CREATE TABLE jos_sdi_policy_user (
+CREATE TABLE #__sdi_policy_user (
     id serial NOT NULL ,
     policy_id bigint NOT NULL,
     user_id bigint NOT NULL
 );
 
 
-CREATE TABLE jos_sdi_policy_visibility (
+CREATE TABLE #__sdi_policy_visibility (
     id serial NOT NULL ,
     policy_id bigint NOT NULL,
     user_id bigint,
@@ -996,7 +996,7 @@ CREATE TABLE jos_sdi_policy_visibility (
 );
 
 
-CREATE TABLE jos_sdi_profile (
+CREATE TABLE #__sdi_profile (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -1017,7 +1017,7 @@ CREATE TABLE jos_sdi_profile (
 );
 
 
-CREATE TABLE jos_sdi_property (
+CREATE TABLE #__sdi_property (
     id serial NOT NULL ,
     guid character varying(255) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -1039,7 +1039,7 @@ CREATE TABLE jos_sdi_property (
 );
 
 
-CREATE TABLE jos_sdi_propertyvalue (
+CREATE TABLE #__sdi_propertyvalue (
     id serial NOT NULL ,
     guid character varying(255) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -1059,7 +1059,7 @@ CREATE TABLE jos_sdi_propertyvalue (
 );
 
 
-CREATE TABLE jos_sdi_relation (
+CREATE TABLE #__sdi_relation (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -1093,7 +1093,7 @@ CREATE TABLE jos_sdi_relation (
 );
 
 
-CREATE TABLE jos_sdi_relation_catalog (
+CREATE TABLE #__sdi_relation_catalog (
     id serial NOT NULL ,
     ordering integer,
     state integer DEFAULT 1 NOT NULL,
@@ -1102,7 +1102,7 @@ CREATE TABLE jos_sdi_relation_catalog (
 );
 
 
-CREATE TABLE jos_sdi_relation_defaultvalue (
+CREATE TABLE #__sdi_relation_defaultvalue (
     id serial NOT NULL ,
     relation_id bigint NOT NULL,
     attributevalue_id bigint,
@@ -1111,7 +1111,7 @@ CREATE TABLE jos_sdi_relation_defaultvalue (
 );
 
 
-CREATE TABLE jos_sdi_relation_profile (
+CREATE TABLE #__sdi_relation_profile (
     id serial NOT NULL ,
     ordering integer,
     state integer DEFAULT 1 NOT NULL,
@@ -1120,7 +1120,7 @@ CREATE TABLE jos_sdi_relation_profile (
 );
 
 
-CREATE TABLE jos_sdi_resource (
+CREATE TABLE #__sdi_resource (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -1142,7 +1142,7 @@ CREATE TABLE jos_sdi_resource (
 );
 
 
-CREATE TABLE jos_sdi_resourcetype (
+CREATE TABLE #__sdi_resourcetype (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -1172,7 +1172,7 @@ CREATE TABLE jos_sdi_resourcetype (
     asset_id bigint DEFAULT 0::bigint NOT NULL
 );
 
-CREATE TABLE jos_sdi_resourcetypelink (
+CREATE TABLE #__sdi_resourcetypelink (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -1198,14 +1198,14 @@ CREATE TABLE jos_sdi_resourcetypelink (
 );
 
 
-CREATE TABLE jos_sdi_resourcetypelinkinheritance (
+CREATE TABLE #__sdi_resourcetypelinkinheritance (
     id serial NOT NULL ,
     resourcetypelink_id bigint NOT NULL,
     xpath character varying(500) NOT NULL
 );
 
 
-CREATE TABLE jos_sdi_searchcriteria (
+CREATE TABLE #__sdi_searchcriteria (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -1227,7 +1227,7 @@ CREATE TABLE jos_sdi_searchcriteria (
 );
 
 
-CREATE TABLE jos_sdi_searchcriteriafilter (
+CREATE TABLE #__sdi_searchcriteriafilter (
     id serial NOT NULL ,
     ordering integer,
     state integer DEFAULT 1 NOT NULL,
@@ -1236,7 +1236,7 @@ CREATE TABLE jos_sdi_searchcriteriafilter (
     ogcsearchfilter character varying(255) NOT NULL
 );
 
-CREATE TABLE jos_sdi_sys_accessscope (
+CREATE TABLE #__sdi_sys_accessscope (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1244,7 +1244,7 @@ CREATE TABLE jos_sdi_sys_accessscope (
 );
 
 
-CREATE TABLE jos_sdi_sys_addresstype (
+CREATE TABLE #__sdi_sys_addresstype (
     id serial NOT NULL ,
     ordering integer,
     state integer DEFAULT 1 NOT NULL,
@@ -1252,7 +1252,7 @@ CREATE TABLE jos_sdi_sys_addresstype (
 );
 
 
-CREATE TABLE jos_sdi_sys_authenticationconnector (
+CREATE TABLE #__sdi_sys_authenticationconnector (
     id serial NOT NULL ,
     ordering integer,
     state integer DEFAULT 1 NOT NULL,
@@ -1262,7 +1262,7 @@ CREATE TABLE jos_sdi_sys_authenticationconnector (
 
 
 
-CREATE TABLE jos_sdi_sys_authenticationlevel (
+CREATE TABLE #__sdi_sys_authenticationlevel (
     id serial NOT NULL ,
     ordering integer,
     state integer DEFAULT 1 NOT NULL,
@@ -1271,7 +1271,7 @@ CREATE TABLE jos_sdi_sys_authenticationlevel (
 
 
 
-CREATE TABLE jos_sdi_sys_country (
+CREATE TABLE #__sdi_sys_country (
     id serial NOT NULL ,
     ordering bigint DEFAULT 1::bigint NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1281,7 +1281,7 @@ CREATE TABLE jos_sdi_sys_country (
 );
 
 
-CREATE TABLE jos_sdi_sys_criteriatype (
+CREATE TABLE #__sdi_sys_criteriatype (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1289,7 +1289,7 @@ CREATE TABLE jos_sdi_sys_criteriatype (
 );
 
 
-CREATE TABLE jos_sdi_sys_entity (
+CREATE TABLE #__sdi_sys_entity (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1297,7 +1297,7 @@ CREATE TABLE jos_sdi_sys_entity (
 );
 
 
-CREATE TABLE jos_sdi_sys_exceptionlevel (
+CREATE TABLE #__sdi_sys_exceptionlevel (
     id serial NOT NULL ,
     ordering integer NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1305,7 +1305,7 @@ CREATE TABLE jos_sdi_sys_exceptionlevel (
 );
 
 
-CREATE TABLE jos_sdi_sys_importtype (
+CREATE TABLE #__sdi_sys_importtype (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1313,7 +1313,7 @@ CREATE TABLE jos_sdi_sys_importtype (
 );
 
 
-CREATE TABLE jos_sdi_sys_isolanguage (
+CREATE TABLE #__sdi_sys_isolanguage (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1321,7 +1321,7 @@ CREATE TABLE jos_sdi_sys_isolanguage (
 );
 
 
-CREATE TABLE jos_sdi_sys_loglevel (
+CREATE TABLE #__sdi_sys_loglevel (
     id serial NOT NULL ,
     ordering integer NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1329,7 +1329,7 @@ CREATE TABLE jos_sdi_sys_loglevel (
 );
 
 
-CREATE TABLE jos_sdi_sys_logroll (
+CREATE TABLE #__sdi_sys_logroll (
     id serial NOT NULL ,
     ordering integer NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1337,7 +1337,7 @@ CREATE TABLE jos_sdi_sys_logroll (
 );
 
 
-CREATE TABLE jos_sdi_sys_maptool (
+CREATE TABLE #__sdi_sys_maptool (
     id serial NOT NULL ,
     alias character varying(20) NOT NULL,
     ordering integer,
@@ -1346,7 +1346,7 @@ CREATE TABLE jos_sdi_sys_maptool (
 );
 
 
-CREATE TABLE jos_sdi_sys_metadatastate (
+CREATE TABLE #__sdi_sys_metadatastate (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1354,7 +1354,7 @@ CREATE TABLE jos_sdi_sys_metadatastate (
 );
 
 
-CREATE TABLE jos_sdi_sys_metadataversion (
+CREATE TABLE #__sdi_sys_metadataversion (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1362,7 +1362,7 @@ CREATE TABLE jos_sdi_sys_metadataversion (
 );
 
 
-CREATE TABLE jos_sdi_sys_operationcompliance (
+CREATE TABLE #__sdi_sys_operationcompliance (
     id serial NOT NULL ,
     ordering integer,
     state integer DEFAULT 1 NOT NULL,
@@ -1372,7 +1372,7 @@ CREATE TABLE jos_sdi_sys_operationcompliance (
 );
 
 
-CREATE TABLE jos_sdi_sys_orderstate (
+CREATE TABLE #__sdi_sys_orderstate (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1380,7 +1380,7 @@ CREATE TABLE jos_sdi_sys_orderstate (
 );
 
 
-CREATE TABLE jos_sdi_sys_ordertype (
+CREATE TABLE #__sdi_sys_ordertype (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1388,7 +1388,7 @@ CREATE TABLE jos_sdi_sys_ordertype (
 );
 
 
-CREATE TABLE jos_sdi_sys_perimetertype (
+CREATE TABLE #__sdi_sys_perimetertype (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1396,7 +1396,7 @@ CREATE TABLE jos_sdi_sys_perimetertype (
 );
 
 
-CREATE TABLE jos_sdi_sys_pricing (
+CREATE TABLE #__sdi_sys_pricing (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1404,7 +1404,7 @@ CREATE TABLE jos_sdi_sys_pricing (
 );
 
 
-CREATE TABLE jos_sdi_sys_productmining (
+CREATE TABLE #__sdi_sys_productmining (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1412,7 +1412,7 @@ CREATE TABLE jos_sdi_sys_productmining (
 );
 
 
-CREATE TABLE jos_sdi_sys_productstate (
+CREATE TABLE #__sdi_sys_productstate (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1420,14 +1420,14 @@ CREATE TABLE jos_sdi_sys_productstate (
 );
 
 
-CREATE TABLE jos_sdi_sys_productstorage (
+CREATE TABLE #__sdi_sys_productstorage (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
     value character varying(150) NOT NULL
 );
 
-CREATE TABLE jos_sdi_sys_propertytype (
+CREATE TABLE #__sdi_sys_propertytype (
     id serial NOT NULL ,
     ordering integer NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1435,7 +1435,7 @@ CREATE TABLE jos_sdi_sys_propertytype (
 );
 
 
-CREATE TABLE jos_sdi_sys_proxytype (
+CREATE TABLE #__sdi_sys_proxytype (
     id serial NOT NULL ,
     ordering integer NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1443,22 +1443,14 @@ CREATE TABLE jos_sdi_sys_proxytype (
 );
 
 
-CREATE TABLE jos_sdi_sys_relationscope (
+CREATE TABLE #__sdi_sys_relationscope (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
     value character varying(150) NOT NULL
 );
 
-CREATE TABLE jos_sdi_sys_relationtype (
-    id serial NOT NULL ,
-    ordering integer DEFAULT 1 NOT NULL,
-    state integer DEFAULT 1 NOT NULL,
-    value character varying(150) NOT NULL
-);
-
-
-CREATE TABLE jos_sdi_sys_rendertype (
+CREATE TABLE #__sdi_sys_relationtype (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1466,20 +1458,28 @@ CREATE TABLE jos_sdi_sys_rendertype (
 );
 
 
-CREATE TABLE jos_sdi_sys_rendertype_criteriatype (
+CREATE TABLE #__sdi_sys_rendertype (
+    id serial NOT NULL ,
+    ordering integer DEFAULT 1 NOT NULL,
+    state integer DEFAULT 1 NOT NULL,
+    value character varying(150) NOT NULL
+);
+
+
+CREATE TABLE #__sdi_sys_rendertype_criteriatype (
     id serial NOT NULL ,
     criteriatype_id bigint NOT NULL,
     rendertype_id bigint NOT NULL
 );
 
-CREATE TABLE jos_sdi_sys_rendertype_stereotype (
+CREATE TABLE #__sdi_sys_rendertype_stereotype (
     id serial NOT NULL ,
     stereotype_id bigint NOT NULL,
     rendertype_id bigint NOT NULL
 );
 
 
-CREATE TABLE jos_sdi_sys_role (
+CREATE TABLE #__sdi_sys_role (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1487,14 +1487,14 @@ CREATE TABLE jos_sdi_sys_role (
 );
 
 
-CREATE TABLE jos_sdi_sys_searchtab (
+CREATE TABLE #__sdi_sys_searchtab (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
     value character varying(150) NOT NULL
 );
 
-CREATE TABLE jos_sdi_sys_servicecompliance (
+CREATE TABLE #__sdi_sys_servicecompliance (
     id serial NOT NULL ,
     ordering integer,
     state integer DEFAULT 1 NOT NULL,
@@ -1506,7 +1506,7 @@ CREATE TABLE jos_sdi_sys_servicecompliance (
     harvestable integer DEFAULT 0 NOT NULL
 );
 
-CREATE TABLE jos_sdi_sys_servicecon_authenticationcon (
+CREATE TABLE #__sdi_sys_servicecon_authenticationcon (
     id serial NOT NULL ,
     serviceconnector_id bigint NOT NULL,
     authenticationconnector_id bigint NOT NULL
@@ -1518,7 +1518,7 @@ CREATE TABLE jos_sdi_sys_servicecon_authenticationcon (
 
 
 
-CREATE TABLE jos_sdi_sys_serviceconnector (
+CREATE TABLE #__sdi_sys_serviceconnector (
     id serial NOT NULL ,
     ordering integer,
     state integer DEFAULT 1 NOT NULL,
@@ -1531,7 +1531,7 @@ CREATE TABLE jos_sdi_sys_serviceconnector (
 
 
 
-CREATE TABLE jos_sdi_sys_serviceoperation (
+CREATE TABLE #__sdi_sys_serviceoperation (
     id serial NOT NULL ,
     ordering integer,
     state integer DEFAULT 1 NOT NULL,
@@ -1544,7 +1544,7 @@ CREATE TABLE jos_sdi_sys_serviceoperation (
 
 
 
-CREATE TABLE jos_sdi_sys_servicescope (
+CREATE TABLE #__sdi_sys_servicescope (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1557,7 +1557,7 @@ CREATE TABLE jos_sdi_sys_servicescope (
 
 
 
-CREATE TABLE jos_sdi_sys_servicetype (
+CREATE TABLE #__sdi_sys_servicetype (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1570,7 +1570,7 @@ CREATE TABLE jos_sdi_sys_servicetype (
 
 
 
-CREATE TABLE jos_sdi_sys_serviceversion (
+CREATE TABLE #__sdi_sys_serviceversion (
     id serial NOT NULL ,
     ordering integer,
     state integer DEFAULT 1 NOT NULL,
@@ -1583,7 +1583,7 @@ CREATE TABLE jos_sdi_sys_serviceversion (
 
 
 
-CREATE TABLE jos_sdi_sys_spatialoperator (
+CREATE TABLE #__sdi_sys_spatialoperator (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1596,7 +1596,7 @@ CREATE TABLE jos_sdi_sys_spatialoperator (
 
 
 
-CREATE TABLE jos_sdi_sys_stereotype (
+CREATE TABLE #__sdi_sys_stereotype (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1613,7 +1613,7 @@ CREATE TABLE jos_sdi_sys_stereotype (
 
 
 
-CREATE TABLE jos_sdi_sys_topiccategory (
+CREATE TABLE #__sdi_sys_topiccategory (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1626,7 +1626,7 @@ CREATE TABLE jos_sdi_sys_topiccategory (
 
 
 
-CREATE TABLE jos_sdi_sys_unit (
+CREATE TABLE #__sdi_sys_unit (
     id serial NOT NULL ,
     ordering integer NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1640,7 +1640,7 @@ CREATE TABLE jos_sdi_sys_unit (
 
 
 
-CREATE TABLE jos_sdi_sys_versiontype (
+CREATE TABLE #__sdi_sys_versiontype (
     id serial NOT NULL ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
@@ -1653,7 +1653,7 @@ CREATE TABLE jos_sdi_sys_versiontype (
 
 
 
-CREATE TABLE jos_sdi_tilematrix_policy (
+CREATE TABLE #__sdi_tilematrix_policy (
     id serial NOT NULL ,
     tilematrixsetpolicy_id bigint NOT NULL,
     identifier character varying(255) NOT NULL,
@@ -1670,7 +1670,7 @@ CREATE TABLE jos_sdi_tilematrix_policy (
 
 
 
-CREATE TABLE jos_sdi_tilematrixset_policy (
+CREATE TABLE #__sdi_tilematrixset_policy (
     id serial NOT NULL ,
     wmtslayerpolicy_id bigint NOT NULL,
     identifier character varying(255) NOT NULL,
@@ -1684,7 +1684,7 @@ CREATE TABLE jos_sdi_tilematrixset_policy (
 
 
 
-CREATE TABLE jos_sdi_translation (
+CREATE TABLE #__sdi_translation (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -1708,7 +1708,7 @@ CREATE TABLE jos_sdi_translation (
 
 
 
-CREATE TABLE jos_sdi_user (
+CREATE TABLE #__sdi_user (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     created_by integer NOT NULL,
@@ -1734,7 +1734,7 @@ CREATE TABLE jos_sdi_user (
 
 
 
-CREATE TABLE jos_sdi_user_role_organism (
+CREATE TABLE #__sdi_user_role_organism (
     id serial NOT NULL ,
     user_id bigint,
     role_id bigint,
@@ -1747,7 +1747,7 @@ CREATE TABLE jos_sdi_user_role_organism (
 
 
 
-CREATE TABLE jos_sdi_user_role_resource (
+CREATE TABLE #__sdi_user_role_resource (
     id serial NOT NULL ,
     user_id bigint,
     role_id bigint,
@@ -1760,7 +1760,7 @@ CREATE TABLE jos_sdi_user_role_resource (
 
 
 
-CREATE TABLE jos_sdi_version (
+CREATE TABLE #__sdi_version (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(50) NOT NULL,
@@ -1784,7 +1784,7 @@ CREATE TABLE jos_sdi_version (
 
 
 
-CREATE TABLE jos_sdi_versionlink (
+CREATE TABLE #__sdi_versionlink (
     id serial NOT NULL ,
     parent_id bigint NOT NULL,
     child_id bigint NOT NULL
@@ -1796,7 +1796,7 @@ CREATE TABLE jos_sdi_versionlink (
 
 
 
-CREATE TABLE jos_sdi_virtual_physical (
+CREATE TABLE #__sdi_virtual_physical (
     id serial NOT NULL ,
     virtualservice_id bigint NOT NULL,
     physicalservice_id bigint NOT NULL
@@ -1808,7 +1808,7 @@ CREATE TABLE jos_sdi_virtual_physical (
 
 
 
-CREATE TABLE jos_sdi_virtualmetadata (
+CREATE TABLE #__sdi_virtualmetadata (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     ordering integer NOT NULL,
@@ -1855,7 +1855,7 @@ CREATE TABLE jos_sdi_virtualmetadata (
 
 
 
-CREATE TABLE jos_sdi_virtualservice (
+CREATE TABLE #__sdi_virtualservice (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     ordering integer,
@@ -1893,7 +1893,7 @@ CREATE TABLE jos_sdi_virtualservice (
 
 
 
-CREATE TABLE jos_sdi_virtualservice_organism (
+CREATE TABLE #__sdi_virtualservice_organism (
     id serial NOT NULL ,
     virtualservice_id bigint NOT NULL,
     organism_id bigint NOT NULL
@@ -1905,7 +1905,7 @@ CREATE TABLE jos_sdi_virtualservice_organism (
 
 
 
-CREATE TABLE jos_sdi_virtualservice_servicecompliance (
+CREATE TABLE #__sdi_virtualservice_servicecompliance (
     id serial NOT NULL ,
     service_id bigint NOT NULL,
     servicecompliance_id bigint NOT NULL
@@ -1917,7 +1917,7 @@ CREATE TABLE jos_sdi_virtualservice_servicecompliance (
 
 
 
-CREATE TABLE jos_sdi_visualization (
+CREATE TABLE #__sdi_visualization (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(20) NOT NULL,
@@ -1943,7 +1943,7 @@ CREATE TABLE jos_sdi_visualization (
 
 
 
-CREATE TABLE jos_sdi_wfs_spatialpolicy (
+CREATE TABLE #__sdi_wfs_spatialpolicy (
     id serial NOT NULL ,
     localgeographicfilter text,
     remotegeographicfilter text
@@ -1955,7 +1955,7 @@ CREATE TABLE jos_sdi_wfs_spatialpolicy (
 
 
 
-CREATE TABLE jos_sdi_wms_spatialpolicy (
+CREATE TABLE #__sdi_wms_spatialpolicy (
     id serial NOT NULL ,
     maxx numeric(18,6),
     maxy numeric(18,6),
@@ -1973,7 +1973,7 @@ CREATE TABLE jos_sdi_wms_spatialpolicy (
 
 
 
-CREATE TABLE jos_sdi_wmslayer_policy (
+CREATE TABLE #__sdi_wmslayer_policy (
     id serial NOT NULL ,
     name character varying(255) NOT NULL,
     description character varying(255) NOT NULL,
@@ -1989,7 +1989,7 @@ CREATE TABLE jos_sdi_wmslayer_policy (
 
 
 
-CREATE TABLE jos_sdi_wmts_spatialpolicy (
+CREATE TABLE #__sdi_wmts_spatialpolicy (
     id serial NOT NULL ,
     spatialoperator_id bigint DEFAULT 1::bigint NOT NULL,
     eastboundlongitude numeric(10,6),
@@ -2004,7 +2004,7 @@ CREATE TABLE jos_sdi_wmts_spatialpolicy (
 
 
 
-CREATE TABLE jos_sdi_wmtslayer_policy (
+CREATE TABLE #__sdi_wmtslayer_policy (
     id serial NOT NULL ,
     identifier character varying(255) NOT NULL,
     enabled integer DEFAULT 1 NOT NULL,
