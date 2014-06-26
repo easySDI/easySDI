@@ -1,0 +1,128 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:expression="http:///expression.ecore">
+  <expression:EMFExpression id="null=>Var=>checked_out_time" expression="row1.checked_out_time!=null?row1.checked_out_time:new Date()">
+    <variables name="row1.id" value="0" talendType="id_Long"/>
+    <variables name="row1.guid" value="null" talendType="id_String"/>
+    <variables name="row1.parent_id" value="0" talendType="id_Long"/>
+    <variables name="row1.attributechild_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row1.classchild_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row1.name" value="null" talendType="id_String"/>
+    <variables name="row1.lowerbound" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="row1.upperbound" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="row1.rendertype_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row1.relationtype_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row1.isocode" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row1.description" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row1.created" value="null" talendType="id_Date"/>
+    <variables name="row1.updated" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="row1.createdby" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="row1.updatedby" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="row1.ordering" value="0" talendType="id_Integer"/>
+    <variables name="row1.published" value="0" talendType="id_Byte"/>
+    <variables name="row1.classassociation_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row1.checked_out" value="0" talendType="id_Integer"/>
+    <variables name="row1.checked_out_time" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="row1.objecttypechild_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row1.namespace_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row1.issearchfilter" value="false" talendType="id_Boolean"/>
+    <variables name="row1.editable" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row1.editoraccessibility" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row1.istitle" value="false" talendType="id_Boolean"/>
+    <variables name="" value="null" talendType="id_Date"/>
+  </expression:EMFExpression>
+  <expression:EMFExpression id="null=>Var=>childtype_id" expression="Utils.getChildType_id(row1.classchild_id, row1.attributechild_id, row1.objecttypechild_id) ">
+    <variables name="row1.id" value="0" talendType="id_Long"/>
+    <variables name="row1.guid" value="null" talendType="id_String"/>
+    <variables name="row1.parent_id" value="0" talendType="id_Long"/>
+    <variables name="row1.attributechild_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row1.classchild_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row1.name" value="null" talendType="id_String"/>
+    <variables name="row1.lowerbound" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="row1.upperbound" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="row1.rendertype_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row1.relationtype_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row1.isocode" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row1.description" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row1.created" value="null" talendType="id_Date"/>
+    <variables name="row1.updated" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="row1.createdby" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="row1.updatedby" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="row1.ordering" value="0" talendType="id_Integer"/>
+    <variables name="row1.published" value="0" talendType="id_Byte"/>
+    <variables name="row1.classassociation_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row1.checked_out" value="0" talendType="id_Integer"/>
+    <variables name="row1.checked_out_time" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="row1.objecttypechild_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row1.namespace_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row1.issearchfilter" value="false" talendType="id_Boolean"/>
+    <variables name="row1.editable" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row1.editoraccessibility" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row1.istitle" value="false" talendType="id_Boolean"/>
+    <variables name="row1.checked_out_time!=null?row1.checked_out_time:new Date() " value="null" talendType="id_Date"/>
+    <variables name="Utils.getChildType_id(row1.classchild_id, row1.attributechild_id, row1.objecttypechild_id) " value="0" talendType="id_Integer"/>
+    <variables name="Utils " value="0" talendType="id_Integer"/>
+    <variables name="" value="0" talendType="id_Integer"/>
+  </expression:EMFExpression>
+  <expression:EMFExpression id="null=>Var=>rendertype_id" expression="Utils.getRenderType_id(row2.stereotype_id)">
+    <variables name="row2.id" value="0" talendType="id_Long"/>
+    <variables name="row2.rendertype_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row2.stereotype_id" value="0" talendType="id_Long"/>
+    <variables name="write.id" value="0" talendType="id_Long"/>
+    <variables name="write.guid" value="null" talendType="id_String"/>
+    <variables name="write.alias" value="null" talendType="id_String"/>
+    <variables name="write.created_by" value="0" talendType="id_Integer"/>
+    <variables name="write.created" value="null" talendType="id_Date"/>
+    <variables name="write.modified_by" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="write.modified" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="write.ordering" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="write.state" value="false" talendType="id_Boolean"/>
+    <variables name="write.checked_out" value="0" talendType="id_Integer"/>
+    <variables name="write.checked_out_time" value="null" talendType="id_Date"/>
+    <variables name="write.name" value="null" talendType="id_String"/>
+    <variables name="write.description" value="null" talendType="id_String" nullable="true"/>
+    <variables name="write.parent_id" value="0" talendType="id_Long"/>
+    <variables name="write.attributechild_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="write.classchild_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="write.lowerbound" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="write.upperbound" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="write.relationtype_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="write.rendertype_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="write.namespace_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="write.isocode" value="null" talendType="id_String" nullable="true"/>
+    <variables name="write.classassociation_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="write.issearchfilter" value="false" talendType="id_Boolean"/>
+    <variables name="write.relationscope_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="write.editorrelationscope_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="write.childresourcetype_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="write.childtype_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="write.access" value="0" talendType="id_Integer"/>
+    <variables name="write.asset_id" value="0" talendType="id_Long"/>
+    <variables name="row2.guid" value="null" talendType="id_String"/>
+    <variables name="row2.code" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row2.name" value="null" talendType="id_String"/>
+    <variables name="row2.description" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row2.created" value="null" talendType="id_Date"/>
+    <variables name="row2.updated" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="row2.createdby" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row2.updatedby" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row2.label" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row2.ordering" value="0" talendType="id_Long"/>
+    <variables name="row2.isocode" value="null" talendType="id_String"/>
+    <variables name="row2.information" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row2.attributetype_id" value="0" talendType="id_Long"/>
+    <variables name="row2._default" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row2.length" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row2.pattern" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row2.issystem" value="null" talendType="id_Boolean" nullable="true"/>
+    <variables name="row2.type_isocode" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row2.codeList" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row2.checked_out" value="0" talendType="id_Long"/>
+    <variables name="row2.checked_out_time" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="row2.namespace_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row2.listnamespace_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="Utils.getRenderType_id(write.rendertype_id, write.attributechild_id)        " value="null" talendType="id_Long" nullable="true"/>
+    <variables name="Utils.getRenderType_id(write.rendertype_id, )      write.attributechild_id " value="0" talendType="id_Long"/>
+    <variables name="Utils.getRenderType_id(write.rendertype_id, row2.attributetype_id)     " value="0" talendType="id_Long"/>
+    <variables name="row2.attributetype_id  write.rendertype_id " value="0" talendType="id_Long"/>
+  </expression:EMFExpression>
+</xmi:XMI>
