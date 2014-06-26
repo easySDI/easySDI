@@ -72,20 +72,19 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         // Get the previous edit id (if any) and the current edit id.
         $previousId = (int) $app->getUserState('com_easysdi_core.edit.version.id');
 
-        $metadataId = JFactory::getApplication()->input->getInt('id', null);
+        $versionId = JFactory::getApplication()->input->getInt('id', null);
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
                 ->select('v.id as id')
                 ->from('#__sdi_version v')
                 ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                ->where('m.id = ' . (int) $metadataId);
+                ->where('v.id = ' . (int) $versionId);
         $db->setQuery($query);
         $item = $db->loadObject();
 
         $editId = $item->id;
 
         // Set session variables
-        $app->setUserState('com_easysdi_core.edit.version.metadataid', $metadataId);
         $app->setUserState('com_easysdi_core.edit.version.id', $editId);
 
         // Get the model.
@@ -553,8 +552,8 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         
         $query = $db->getQuery(true);
         $query->select('v.resource_id AS id');
-        $query->from('jos_sdi_metadata m');
-        $query->innerJoin('jos_sdi_version v ON m.version_id = v.id');
+        $query->from('#__sdi_metadata m');
+        $query->innerJoin('#__sdi_version v ON m.version_id = v.id');
         $query->where('m.id = ' . $metadata_id);
         $db->setQuery($query);
         $resource = $db->loadObject();
@@ -562,12 +561,12 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $query = $db->getQuery(true);
         $query->select('m.id, pv.name AS version_name, pr.name AS resource_name');
         $query->from('#__sdi_metadata m');
-        $query->innerJoin('jos_sdi_versionlink vl ON m.version_id = vl.child_id');
-        $query->innerJoin('jos_sdi_version pv ON vl.parent_id = pv.id');
-        $query->innerJoin('jos_sdi_resource pr ON pv.resource_id = pr.id');
-        $query->innerJoin('jos_sdi_resourcetypelink rtl ON pr.resourcetype_id = rtl.parent_id');
-        $query->innerJoin('jos_sdi_version cv ON vl.child_id = cv.id');
-        $query->innerJoin('jos_sdi_resource cr ON cv.resource_id = cr.id AND cr.resourcetype_id = rtl.child_id');
+        $query->innerJoin('#__sdi_versionlink vl ON m.version_id = vl.child_id');
+        $query->innerJoin('#__sdi_version pv ON vl.parent_id = pv.id');
+        $query->innerJoin('#__sdi_resource pr ON pv.resource_id = pr.id');
+        $query->innerJoin('#__sdi_resourcetypelink rtl ON pr.resourcetype_id = rtl.parent_id');
+        $query->innerJoin('#__sdi_version cv ON vl.child_id = cv.id');
+        $query->innerJoin('#__sdi_resource cr ON cv.resource_id = cr.id AND cr.resourcetype_id = rtl.child_id');
         $query->where('m.id = ' . $metadata_id);
 
         $db->setQuery($query);
@@ -588,11 +587,11 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         $query = $db->getQuery(true);
         $query->select('m.id, av.name AS version_name, r.name AS resource_name');
-        $query->from('jos_sdi_metadata m');
-        $query->innerJoin('jos_sdi_version v ON m.version_id = v.id');
-        $query->innerJoin('jos_sdi_resource r ON v.resource_id = r.id');
-        $query->innerJoin('jos_sdi_version av ON r.id = av.resource_id');
-        $query->innerJoin('jos_sdi_metadata am ON av.id = am.version_id');
+        $query->from('#__sdi_metadata m');
+        $query->innerJoin('#__sdi_version v ON m.version_id = v.id');
+        $query->innerJoin('#__sdi_resource r ON v.resource_id = r.id');
+        $query->innerJoin('#__sdi_version av ON r.id = av.resource_id');
+        $query->innerJoin('#__sdi_metadata am ON av.id = am.version_id');
         $query->where('m.id = ' . $metadata_id);
         $query->where('am.metadatastate_id = ' . sdiMetadata::INPROGRESS);
         $db->setQuery($query);
