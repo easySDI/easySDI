@@ -29,10 +29,10 @@ class CswMerge {
     function __construct($original = '', $import = '') {
         $this->db = JFactory::getDbo();
         if (!empty($import)) {
-            $this->import = $import;
+            $this->setImport($import);
         }
-        if(!empty($original)){
-            $this->original = $original;
+        if (!empty($original)) {
+            $this->setOriginal($original);
         }
         $this->original = $original;
         $this->nsdao = new SdiNamespaceDao();
@@ -42,23 +42,135 @@ class CswMerge {
      * 
      * @param int $importref_id
      * @param string $fileidentifier
-     * @return DOMDocument or false if fail
+     * @return DOMDocument
      */
-    public function mergeImport($importref_id, $fileidentifier = '') {
-        $importref = $this->getImportRef($importref_id);
+    public function mergeImport($importref_id = '', $fileidentifier = '', $xpaths = array()) {
+        // Add static xpath for clean sdi node
+        $xpath = array('xpath' => '/gmd:MD_Metadata/sdi:platform');
+        $xpaths[] = JArrayHelper::toObject($xpath);
 
-        /* Retrieves metadata from the CSW server. */
-        if (!empty($fileidentifier)) {
-            if ($response = $this->getImportCsw($importref->resourceurl, $importref->resourceusername, $importref->resourcepassword, $fileidentifier)) {
-                $this->import = $response;
-            }  else {
-                return FALSE;
-            }
+        // Import from a CSW catalog
+        if (!empty($importref_id) && !empty($fileidentifier)) {
+            $importref = $this->getImportRef($importref_id);
+            return $this->mergeImportService($importref, $fileidentifier);
+        }
+        // Import from an provided document
+        elseif (!empty($importref_id)) {
+            $importref = $this->getImportRef($importref_id);
+            return $this->mergeImportCsw($importref);
+        }
+        // import from the local catalog
+        elseif (!empty($fileidentifier)) {
+            return $this->mergeInheriteCsw($fileidentifier, $xpaths);
+        }
+    }
+
+    /**
+     * Merge from the local catalog
+     * 
+     * @param string $fileidentifier
+     * @return DOMDocument
+     */
+    private function mergeInheriteCsw($fileidentifier, $xpaths) {
+        $catalog_params = JComponentHelper::getParams('com_easysdi_catalog');
+
+        $importrefarray = array();
+        $importrefarray['resourceurl'] = $catalog_params->get('catalogurl');
+        $importrefarray['resourceusername'] = '';
+        $importrefarray['resourcepassword'] = '';
+        $importrefarray['importtype_id'] = self::MERGE;
+
+        $importref = JArrayHelper::toObject($importrefarray);
+
+        return $this->mergeImportService($importref, $fileidentifier, $xpaths);
+    }
+
+    /**
+     * Merge from a catalog
+     * 
+     * @param type $importref
+     * @param string $fileidentifier
+     * @return boolean
+     */
+    private function mergeImportService($importref, $fileidentifier, $xpaths) {
+        if ($response = $this->getImportCsw($fileidentifier, $importref->resourceurl, $importref->resourceusername, $importref->resourcepassword)) {
+            $this->import = $response;
+        } else {
+            return FALSE;
         }
 
+        $this->preserveFileidentifier($this->import, '', $this->original);
+
+        $this->transformXml($importref);
+
+        if (!empty($xpaths)) {
+            $this->removeXpath($xpaths);
+        }
+
+        return $this->switchOnImportType($importref);
+    }
+
+    /**
+     * Merge from a provided XML document
+     * 
+     * @param type $importref
+     * @return type
+     */
+    private function mergeImportCsw($importref, $xpath) {
+        $this->preserveFileidentifier($this->import, '', $this->original);
+
+        $this->transformXml($importref);
+
+        return $this->switchOnImportType($importref);
+    }
+
+    /**
+     * Switch on import type and return the replaced or the merged DOMDocument
+     * 
+     * @param type $importref
+     * @return DOMDocument
+     */
+    private function switchOnImportType($importref) {
+        switch ($importref->importtype_id) {
+            case self::REPLACE:
+                return $this->replace();
+            case self::MERGE:
+                $this->merge();
+                return $this->original;
+        }
+    }
+
+    /**
+     * 
+     * @param DOMDocument $doc
+     * @return DOMDocument
+     */
+    private function removeGetRecordBy(DOMDocument $doc) {
+        $elements = $doc->getElementsByTagName('GetRecordByIdResponse');
+
+        if ($elements->length > 0) {
+
+            $dom = new DOMDocument('1.0', 'UTF-8');
+            $children = $elements->item(0)->childNodes;
+            foreach ($children as $child) {
+                if ($child->nodeType == XML_ELEMENT_NODE) {
+                    $xmlContent = $dom->importNode($child, true);
+                    $dom->appendChild($xmlContent);
+                    break;
+                }
+            }
+            return $dom;
+        } else {
+            return $doc;
+        }
+    }
+
+    /**
+     * Add GetRecordById to import file if necessary
+     */
+    private function addGetRecordById() {
         $firstChildName = $this->import->firstChild->nodeName;
 
-        /* Add tag GetRecordById Response if necessary. */
         if ($firstChildName != 'csw:GetRecordByIdResponse') {
             $dom = new DOMDocument('1.0', 'utf-8');
             $dom->appendChild($dom->createElementNS('http://www.opengis.net/cat/csw/2.0.2', 'csw:GetRecordByIdResponse'));
@@ -68,12 +180,15 @@ class CswMerge {
 
                 $this->import = $dom;
             }
-        
         }
-        
-        // preserve original fileidentifier
-        $this->preserveFileidentifier($this->import, '', $this->original);
-        
+    }
+
+    /**
+     * Transform Xml if necessary
+     * 
+     * @param type $importref
+     */
+    private function transformXml($importref) {
         /* Transform the external xml if necessary. */
         if (!empty($importref->xsl4ext)) {
             if ($xmltranform = $this->xslProceed($this->import, $importref->xsl4ext)) {
@@ -87,14 +202,27 @@ class CswMerge {
                 $this->original = $xmltranform;
             }
         }
+    }
 
-        /* Switch on import type */
-        switch ($importref->importtype_id) {
-            case self::REPLACE:
-                return $this->replace();
-            case self::MERGE:
-                $this->merge();
-                return $this->original;
+    /**
+     * Remove xpaths from imported DOMDocument
+     * 
+     * @param string[] $xpaths
+     */
+    private function removeXpath($xpaths) {
+        $domXpathImport = new DOMXPath($this->import);
+
+        foreach ($this->nsdao->getAll() as $ns) {
+            $domXpathImport->registerNamespace($ns->prefix, $ns->uri);
+        }
+
+        foreach ($xpaths as $xpath) {
+            $elementsToDelete = $domXpathImport->query($xpath->xpath);
+
+            foreach ($elementsToDelete as $elementToDelete) {
+                $parent = $elementToDelete->parentNode;
+                $parent->removeChild($elementToDelete);
+            }
         }
     }
 
@@ -107,21 +235,21 @@ class CswMerge {
      */
     public function preserveFileidentifier(DOMDocument $import, $fileIdentifier = '', DOMDocument $original = null) {
         $fileidentifierImportNode = $import->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'fileIdentifier')->item(0);
-        
-        if(!empty($original)){
+
+        if (!empty($original)) {
             $fileidentifierOriginalNode = $original->getElementsByTagNameNS('http://www.isotc211.org/2005/gmd', 'fileIdentifier')->item(0);
             $fileidentifierImportedNode = $import->importNode($fileidentifierOriginalNode, true);
-        }  else {
+        } else {
             $fileidentifierImportedNode = $import->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:fileIdentifier');
-            $gco_character = $import->createElementNS('http://www.isotc211.org/2005/gco', 'gco:CharacterString',$fileIdentifier);
+            $gco_character = $import->createElementNS('http://www.isotc211.org/2005/gco', 'gco:CharacterString', $fileIdentifier);
             $fileidentifierImportedNode->appendChild($gco_character);
         }
-        
+
         $fileidentifierImportNode->parentNode->replaceChild($fileidentifierImportedNode, $fileidentifierImportNode);
- 
     }
-    
+
     /**
+     * Replace original DOMDocument by Imported DOMDocument
      * 
      * @return DOMElement
      */
@@ -142,18 +270,25 @@ class CswMerge {
             $domXpathOriginal->registerNamespace($ns->prefix, $ns->uri);
         }
 
-        /* @var $importNode DOMNode */
-        foreach ($domXpathImport->query('descendant::*', $this->import->firstChild) as $importNode) {
-            if (!$this->hasChild($importNode)) {
-                /* @var $originalNode DOMNode */
-                if ($originalNode = $domXpathOriginal->query($importNode->getNodePath())->item(0)) {
+        $this->import->save('D:\\tmp\\import.xml');
+        
+        /* @var $originalNode DOMNode */
+        foreach ($domXpathOriginal->query('descendant::*', $this->original->firstChild) as $originalNode) {
+            if (!$this->hasChild($originalNode)) {
+                $originalName = $originalNode->nodeName;
+                if ($importNode = $domXpathImport->query($originalNode->getNodePath())->item(0)) {
+
                     $importedNode = $this->original->importNode($importNode, true);
-                    $originalNode->parentNode->replaceChild($importedNode, $originalNode);
-                } else {
-                    $this->getFirstShareAncestor($importNode);
+                    $importName = $importNode->nodeName;
+                    $importValue = $importNode->nodeValue;
+                    $success = $originalNode->parentNode->replaceChild($importedNode, $originalNode);
+                    $sucName = $success->nodeName;
+                    $sucValue = $success->nodeValue;
                 }
             }
         }
+        
+        $this->original->save('D:\\tmp\\original.xml');
     }
 
     /**
@@ -234,13 +369,13 @@ class CswMerge {
     /**
      * Retrives metadadata from service
      * 
+     * @param string $fileidentifier
      * @param string $resourceUrl
      * @param string $username
      * @param string $password
-     * @param string $fileidentifier
      * @return DOMDocument or false if not found
      */
-    private function getImportCsw($resourceUrl, $username, $password, $fileidentifier) {
+    private function getImportCsw($fileidentifier, $resourceUrl = '', $username = '', $password = '') {
         $url = array();
         $url[] = $resourceUrl;
         $url[] = '?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&';
@@ -252,7 +387,7 @@ class CswMerge {
         $dom->loadXML($response);
 
         if ($dom->firstChild->hasChildNodes()) {
-            return $dom;
+            return $this->removeGetRecordBy($dom);
         } else {
             return FALSE;
         }
@@ -269,12 +404,36 @@ class CswMerge {
         $query->select('*');
         $query->from('#__sdi_importref AS ir');
         $query->leftJoin('#__sdi_physicalservice ps on ps.id = ir.cswservice_id');
-        $query->where('ir.id = ' . (int)$importref_id);
+        $query->where('ir.id = ' . (int) $importref_id);
 
         $this->db->setQuery($query);
         $importref = $this->db->loadObject();
 
         return $importref;
+    }
+
+    /**
+     * 
+     * @return DOMDocument
+     */
+    public function getOriginal() {
+        return $this->original;
+    }
+
+    /**
+     * 
+     * @return DOMDocument
+     */
+    public function getImport() {
+        return $this->import;
+    }
+
+    public function setOriginal(DOMDocument $original) {
+        $this->original = $this->removeGetRecordBy($original);
+    }
+
+    public function setImport(DOMDocument $import) {
+        $this->import = $this->removeGetRecordBy($import);
     }
 
 }
