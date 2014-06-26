@@ -348,14 +348,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      */
     public function show() {
         $this->save($_POST['jform'], false);
-        /** @var DOMElement */
-        $update = $this->structure->getElementsByTagNameNS($this->cswUri, 'Update')->item(0);
         $this->structure->formatOutput = true;
         $xml = $this->structure->saveXML();
 
         $response = array();
         $response['success'] = true;
-        $response['xml'] = '<pre class="brush: xml">' . addslashes(htmlspecialchars($this->structure->saveXML($update->firstChild))) . '</pre>';
+        $response['xml'] = '<pre class="brush: xml">' . addslashes(htmlspecialchars($this->structure->saveXML())) . '</pre>';
         echo json_encode($response);
         die();
     }
@@ -366,12 +364,10 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     public function preview() {
         $this->save($_POST['jform'], false);
 
-        $update = $this->structure->getElementsByTagNameNS($this->cswUri, 'Update')->item(0);
-
         $lang = JFactory::getLanguage();
 
         $cswm = new cswmetadata();
-        $cswm->init($update->firstChild);
+        $cswm->init($this->structure->firstChild);
         $extend = $cswm->extend('', '', 'editor', 1, 'fr-FR');
 
         $response = array();
