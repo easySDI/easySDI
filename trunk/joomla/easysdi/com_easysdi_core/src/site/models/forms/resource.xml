@@ -33,6 +33,18 @@
             key_field="id" 
             value_field="value"
             translate="true"
+        />  
+        <field
+            name="categories" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT id, name FROM #__sdi_category WHERE state=1 ORDER BY name" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
         /> 
         <field
             name="organisms" 
@@ -41,7 +53,7 @@
             multiple="true"
             label=""
             description="" 
-            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY ordering" 
+            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY name" 
             key_field="id" 
             value_field="name"
             translate="true"
@@ -53,7 +65,7 @@
             multiple="true"
             label=""
             description="" 
-            query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY ordering" 
+            query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY u.name" 
             key_field="id" 
             value_field="name"
             translate="true"

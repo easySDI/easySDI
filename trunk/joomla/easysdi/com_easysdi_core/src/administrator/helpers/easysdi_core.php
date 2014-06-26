@@ -92,12 +92,13 @@ class Easysdi_coreHelper {
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query->select('cv.id, cv.name AS version_name, cr.name AS resource_name, cr.id AS resource_id');
+        $query->select('cv.id, cv.name AS version_name, cr.resourcetype_id, cr.name AS resource_name, cr.id AS resource_id, cm.guid AS fileidentifier, cm.id AS metadata_id');
         $query->from('#__sdi_versionlink vl');
         $query->innerJoin('#__sdi_version pv ON vl.parent_id = pv.id');
         $query->innerJoin('#__sdi_resource pr ON pv.resource_id = pr.id');
         $query->innerJoin('#__sdi_resourcetypelink rtl ON pr.resourcetype_id = rtl.parent_id');
         $query->innerJoin('#__sdi_version cv ON vl.child_id = cv.id');
+        $query->innerJoin('#__sdi_metadata cm ON cm.version_id = cv.id');
         $query->innerJoin('#__sdi_resource cr ON cv.resource_id = cr.id AND cr.resourcetype_id = rtl.child_id');
         $query->where('rtl.viralversioning = 1');
         $query->where('vl.parent_id = ' . (int) $version->id);

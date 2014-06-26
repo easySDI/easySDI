@@ -171,7 +171,6 @@ class sdiMetadata extends cswmetadata {
      * 
      */
     public function update($xml) {
-
         $reponse = $this->CURLRequest('POST', $this->catalogurl, $xml);
         $dom = new DOMDocument();
         $dom->loadXML($reponse);
@@ -360,8 +359,8 @@ class sdiMetadata extends cswmetadata {
         // Get the metadatastate
         $query = $this->db->getQuery(true);
         $query->select('ms.`value`')
-                ->from('jos_sdi_metadata m')
-                ->innerJoin('jos_sdi_sys_metadatastate ms on ms.id = m.metadatastate_id')
+                ->from('#__sdi_metadata m')
+                ->innerJoin('#__sdi_sys_metadatastate ms on ms.id = m.metadatastate_id')
                 ->where('m.id  = ' . (int) $this->metadata->id);
         $this->db->setQuery($query);
         $metadatastate = $this->db->loadResult();

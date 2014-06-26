@@ -61,6 +61,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
     protected function populateState() {
         $app = JFactory::getApplication('com_easysdi_catalog');
 
+        $import = array();
         // Load state from the request userState on edit or from the passed variable on default
         if ($app->input->get('layout') == 'edit') {
             $id = $app->getUserState('com_easysdi_catalog.edit.metadata.id');
