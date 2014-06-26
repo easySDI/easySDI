@@ -29,6 +29,7 @@ function initActionList() {
         var metadata_id = js(this).val();
         getChildNumer(metadata_id);
         getNewVersionRight(metadata_id);
+        getSynchronisationInfo(metadata_id);
     });
 }
 
@@ -70,6 +71,18 @@ function getNewVersionRight(metadata_id) {
             js('#' + response.resource_id + '_new_linker').removeAttr('css');
             
             js('#' + response.resource_id + '_new_linker').on('click', function(){showNewVersionModal(response.resource_id)});
+        }
+    });
+}
+
+function getSynchronisationInfo(metadata_id){
+    js.get(currentUrl + '/?option=com_easysdi_catalog&task=metadata.getSynchronisationInfo&metadata_id=' + metadata_id, function(data) {
+        var response = js.parseJSON(data);
+        if (response.synchronized === true) {
+            
+            var message = Joomla.JText._('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_BY')+' '+response.synchronized_by+'<br/>'+ Joomla.JText._('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_THE') +' '+ response.lastsynchronization;
+            var options = {title: message, html: true};
+            js('#' + response.resource_id + '_sync_linker').tooltip(options);
         }
     });
 }

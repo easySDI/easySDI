@@ -17,6 +17,9 @@ JHtml::_('formbehavior.chosen', 'select');
 JHtml::_('behavior.modal');
 JHtml::_('behavior.calendar');
 
+JText::script('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_BY');
+JText::script('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_THE');
+
 $document = JFactory::getDocument();
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/resources.js');
 $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css');
@@ -224,10 +227,10 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                               </li>-->
                                               <?php endif; ?>
                                             <?php  if ($this->user->authorize($item->id, sdiUser::metadataresponsible)): ?>
-                                              <!--<li class="divider"></li>
+                                              <li class="divider"></li>
                                               <li>
-                                                   <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.synchronize&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_METADATA'); ?></a>
-                                              </li>-->
+                                                   <a id="<?php echo $item->id; ?>_sync_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.synchronize&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_METADATA'); ?></a>
+                                              </li>
                                               <?php endif; ?>
                                         </ul>
                                     </div>
