@@ -128,14 +128,14 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                         $toSave = $this->CreateUpdateBody($result->firstChild, $children->fileidentifier);
                         $toSave->save('D:\\tmp\\tosave.xml');
                         if (!$child_sdimetadata->update($toSave->saveXML())) {
-                           return false;
-                        }else{
+                            return false;
+                        } else {
                             $query = $db->getQuery(true);
                             $query->update('#__sdi_metadata m');
-                            $query->set('lastsynchronization = '. $query->quote(date('Y-m-d h:i:s')));
-                            $query->set('synchronized_by = '.(int)$version->metadata_id);
-                            $query->where('id = '.(int)$children->metadata_id);
-                            
+                            $query->set('lastsynchronization = ' . $query->quote(date('Y-m-d h:i:s')));
+                            $query->set('synchronized_by = ' . (int) $version->metadata_id);
+                            $query->where('id = ' . (int) $children->metadata_id);
+
                             $db->setQuery($query);
                             $db->execute();
                         }
@@ -708,6 +708,38 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         }
 
         echo json_encode($roles);
+        die();
+    }
+
+    public function getSynchronisationInfo() {
+        $metadataId = JFactory::getApplication()->input->get('metadata_id');
+
+        $query = $this->db->getQuery(true);
+
+        $query->select('m.id, m.synchronized_by, m.lastsynchronization, r.name AS resource_name, v.name AS version_name, rc.id AS resource_id');
+        $query->from('#__sdi_metadata m');
+        $query->leftJoin('#__sdi_metadata msb ON m.synchronized_by = msb.id');
+        $query->leftJoin('#__sdi_version v ON msb.version_id = v.id');
+        $query->leftJoin('#__sdi_resource r ON v.resource_id = r.id');
+        $query->innerJoin('#__sdi_version vc ON m.version_id = vc.id');
+        $query->innerJoin('#__sdi_resource rc ON vc.resource_id = rc.id');
+        $query->where('m.id = ' . (int) $metadataId);
+
+        $this->db->setQuery($query);
+
+        $parent = $this->db->loadObject();
+
+        $response = array();
+        if (!empty($parent->synchronized_by)) {
+            $response['synchronized'] = true;
+            $response['lastsynchronization'] = $parent->lastsynchronization;
+            $response['synchronized_by'] = $parent->resource_name . ' : ' . $parent->version_name;
+            $response['resource_id'] = $parent->resource_id;
+        } else {
+            $response['synchronized'] = false;
+        }
+
+        echo json_encode($response);
         die();
     }
 
