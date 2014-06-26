@@ -72,20 +72,19 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         // Get the previous edit id (if any) and the current edit id.
         $previousId = (int) $app->getUserState('com_easysdi_core.edit.version.id');
 
-        $metadataId = JFactory::getApplication()->input->getInt('id', null);
+        $versionId = JFactory::getApplication()->input->getInt('id', null);
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
                 ->select('v.id as id')
                 ->from('#__sdi_version v')
                 ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
-                ->where('m.id = ' . (int) $metadataId);
+                ->where('v.id = ' . (int) $versionId);
         $db->setQuery($query);
         $item = $db->loadObject();
 
         $editId = $item->id;
 
         // Set session variables
-        $app->setUserState('com_easysdi_core.edit.version.metadataid', $metadataId);
         $app->setUserState('com_easysdi_core.edit.version.id', $editId);
 
         // Get the model.
