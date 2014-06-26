@@ -180,7 +180,8 @@ class Easysdi_contactModelusers extends JModelList {
         $organisms = $this->getState('filter.organism');
         if (count($organisms)) {
             $query->join('left', '#__sdi_user_role_organism uro ON uro.user_id=a.id')
-                    ->where('uro.organism_id IN ('.  implode(',', $organisms).')');
+                    ->where('uro.organism_id IN ('.  implode(',', $organisms).')')
+                    ->where('uro.role_id=1'); // filtering by organism should consider 'Member of' role
         }
 
         // Filter by search in title

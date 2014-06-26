@@ -122,7 +122,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
     <div class="items">
         <div class="well">
             <div class="row-fluid">
-                <?php $show = false; ?>
+                <?php $show = count($this->items); ?>
                 <table class="table table-striped">
                     <thead>
                         <tr>
