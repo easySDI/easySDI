@@ -156,7 +156,8 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Build>${buildNumber}</Build>
+                            <Version>${project.version}</Version>
+                            <Revision>${buildNumber}</Revision>
                         </manifestEntries>
                     </archive>
                 </configuration>
