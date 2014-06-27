@@ -38,26 +38,41 @@ function enableVisibility(){
     if(jQuery('#jform_csw_anyvisibility0').is(":checked")){
         jQuery("#jform_csw_organisms").val("").trigger('liszt:updated');
         jQuery("#jform_csw_users").val("").trigger('liszt:updated');
+        jQuery("#jform_csw_categories").val("").trigger('liszt:updated');
         jQuery('#jform_csw_accessscope_id').parent().parent().hide();
         jQuery("#csw_organisms").hide();
         jQuery("#csw_users").hide();
+        jQuery("#csw_categories").hide();
     }else{
         jQuery('#jform_csw_accessscope_id').parent().parent().show();
-        if(jQuery('#jform_csw_accessscope_id').val() == 1){            
+        if(jQuery('#jform_csw_accessscope_id').val() == 1){    // accessscope:public        
 		jQuery("#jform_csw_organisms").val("").trigger('liszt:updated');
 		jQuery("#jform_csw_users").val("").trigger('liszt:updated');
+                jQuery("#jform_csw_categories").val("").trigger('liszt:updated');
 		jQuery("#csw_organisms").hide();
 		jQuery("#csw_users").hide();
+                jQuery("#csw_categories").hide();
 	}
-	else if(jQuery('#jform_csw_accessscope_id').val() == 2){
+	else if(jQuery('#jform_csw_accessscope_id').val() == 2){    // accessscope:organism
 		jQuery("#csw_organisms").show();
 		jQuery("#jform_csw_users").val("").trigger('liszt:updated');
 		jQuery("#csw_users").hide();
+                jQuery("#jform_csw_categories").val("").trigger('liszt:updated');
+                jQuery("#csw_categories").hide();
 	}
 	else if(jQuery('#jform_csw_accessscope_id').val() == 3){
 		jQuery("#csw_users").show();
 		jQuery("#jform_csw_organisms").val("").trigger('liszt:updated');
 		jQuery("#csw_organisms").hide();
+                jQuery("#jform_csw_categories").val("").trigger('liszt:updated');
+                jQuery("#csw_categories").hide();
+	}
+	else if(jQuery('#jform_csw_accessscope_id').val() == 4){
+		jQuery("#csw_categories").show();
+		jQuery("#jform_csw_organisms").val("").trigger('liszt:updated');
+		jQuery("#csw_organisms").hide();
+		jQuery("#jform_csw_users").val("").trigger('liszt:updated');
+		jQuery("#csw_users").hide();
 	}
     }	
 }
