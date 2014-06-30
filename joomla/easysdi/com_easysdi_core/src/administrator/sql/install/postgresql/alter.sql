@@ -829,6 +829,8 @@ ALTER TABLE ONLY #__sdi_accessscope
     ADD CONSTRAINT #__sdi_accessscope_fk1 FOREIGN KEY (organism_id) REFERENCES #__sdi_organism(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY #__sdi_accessscope
     ADD CONSTRAINT #__sdi_accessscope_fk2 FOREIGN KEY (user_id) REFERENCES #__sdi_user(id) MATCH FULL ON DELETE CASCADE;
+ALTER TABLE ONLY #__sdi_accessscope
+    ADD CONSTRAINT #__sdi_accessscope_fk3 FOREIGN KEY (category_id) REFERENCES #__sdi_category(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY #__sdi_address
     ADD CONSTRAINT #__sdi_address_fk1 FOREIGN KEY (addresstype_id) REFERENCES #__sdi_sys_addresstype(id) MATCH FULL;
 ALTER TABLE ONLY #__sdi_address
