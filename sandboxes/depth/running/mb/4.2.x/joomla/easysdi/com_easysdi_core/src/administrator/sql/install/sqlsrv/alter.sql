@@ -66,6 +66,12 @@ ON DELETE CASCADE;
 
 ALTER TABLE [#__sdi_accessscope] CHECK CONSTRAINT [#__sdi_accessscope$#__sdi_accessscope_fk2];
 
+ALTER TABLE [#__sdi_accessscope]  WITH CHECK ADD  CONSTRAINT [#__sdi_accessscope$#__sdi_accessscope_fk3] FOREIGN KEY([category_id])
+REFERENCES [#__sdi_category] ([id])
+ON DELETE CASCADE;
+
+ALTER TABLE [#__sdi_accessscope] CHECK CONSTRAINT [#__sdi_accessscope$#__sdi_accessscope_fk3];
+
 ALTER TABLE [#__sdi_address]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_address$#__sdi_address_fk1] FOREIGN KEY([addresstype_id])
 REFERENCES [#__sdi_sys_addresstype] ([id]);
 

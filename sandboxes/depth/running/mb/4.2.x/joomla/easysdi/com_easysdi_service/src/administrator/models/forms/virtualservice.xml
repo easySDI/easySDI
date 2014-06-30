@@ -51,7 +51,7 @@
 				multiple="true"
 				label=""
 				description="" 
-                query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY ordering" 
+                query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY name" 
                 key_field="id" 
                 value_field="name"
                  /> 

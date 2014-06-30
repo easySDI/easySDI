@@ -58,7 +58,7 @@
         
         <field name="organism_id" 
                type="sql" 
-               query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER by ordering" 
+               query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER by name" 
                key_field="id" 
                value_field="name"
                translate="true"
