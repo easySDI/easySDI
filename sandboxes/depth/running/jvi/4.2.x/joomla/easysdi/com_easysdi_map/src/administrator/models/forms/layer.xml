@@ -25,7 +25,7 @@
                 class="inputbox"
                 label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ACCESSSCOPE"
                 description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ACCESSSCOPE" 
-                query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 ORDER BY ordering" 
+                query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 AND `value`!='category' ORDER BY ordering" 
                 key_field="id" 
                 value_field="value"
                 translate="true"
