@@ -468,9 +468,11 @@ CREATE TABLE IF NOT EXISTS `#__sdi_accessscope` (
 `entity_guid` VARCHAR(36)  NOT NULL ,
 `organism_id` INT(11) UNSIGNED   ,
 `user_id` INT(11) UNSIGNED   ,
+`category_id` INT(11) UNSIGNED   ,
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_accessscope_fk1` (`organism_id` ASC) ,
   INDEX `#__sdi_accessscope_fk2` (`user_id` ASC) ,
+  INDEX `#__sdi_accessscope_fk3` (`category_id` ASC) ,
   CONSTRAINT `#__sdi_accessscope_fk1`
     FOREIGN KEY (`organism_id`)
     REFERENCES `#__sdi_organism` (`id`)
@@ -479,6 +481,11 @@ PRIMARY KEY (`id`) ,
   CONSTRAINT `#__sdi_accessscope_fk2`
     FOREIGN KEY (`user_id`)
     REFERENCES `#__sdi_user` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+  CONSTRAINT `#__sdi_accessscope_fk3`
+    FOREIGN KEY (`category_id`)
+    REFERENCES `#__sdi_category` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
