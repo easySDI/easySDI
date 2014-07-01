@@ -847,7 +847,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * 
      */
     private function getHeader($encoding = 'utf8') {
-        $languageid = $this->ldao->getByCode(JFactory::getLanguage()->getTag());
+        
+        $languageid = $this->ldao->getDefaultLanguage();
 
         $headers = array();
 
@@ -878,7 +879,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $characterSetCode->setAttribute('codeList', 'http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode');
         $characterSet->appendChild($characterSetCode);
 
-        $headers[] = $characterSet;
+        $headers[] = $characterSet; 
 
         $locale = $this->structure->createElementNS($this->nsArray['gmd'], 'locale');
         $characterEncoding = $this->structure->createElementNS($this->nsArray['gmd'], 'characterEncoding');
