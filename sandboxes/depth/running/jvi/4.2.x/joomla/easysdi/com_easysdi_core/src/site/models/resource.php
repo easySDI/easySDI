@@ -86,6 +86,7 @@ class Easysdi_coreModelResource extends JModelForm {
                 //Load accessscope
                 $this->_item->organisms = sdiModel::getAccessScopeOrganism($this->_item->guid);
                 $this->_item->users = sdiModel::getAccessScopeUser($this->_item->guid);
+                $this->_item->categories = sdiModel::getAccessScopeCategory($this->_item->guid);
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
