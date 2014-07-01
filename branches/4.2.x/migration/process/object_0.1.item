@@ -2,32 +2,15 @@
 <talendfile:ProcessType xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.talend.org/mapper" xmlns:talendfile="platform:/resource/org.talend.model/model/TalendFile.xsd" defaultContext="Default">
   <context confirmationNeeded="false" name="Default">
     <contextParameter comment="" name="destination_AdditionalParams" prompt="destination_AdditionalParams?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="noDatetimeStringSync=true"/>
-    <contextParameter comment="" name="destination_Database" prompt="destination_Database?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="joomlaAlpha10"/>
+    <contextParameter comment="" name="destination_Database" prompt="destination_Database?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="easysdi"/>
     <contextParameter comment="" name="destination_Login" prompt="destination_Login?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="root"/>
     <contextParameter comment="" name="destination_Password" prompt="destination_Password?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_Password" value=""/>
     <contextParameter comment="" name="destination_Port" prompt="destination_Port?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="3306"/>
     <contextParameter comment="" name="destination_Server" prompt="destination_Server?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="localhost"/>
     <contextParameter comment="" name="source_AdditionalParams" prompt="source_AdditionalParams?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="noDatetimeStringSync=true"/>
-    <contextParameter comment="" name="source_Database" prompt="source_Database?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="agi_source"/>
+    <contextParameter comment="" name="source_Database" prompt="source_Database?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="agi_v2"/>
     <contextParameter comment="" name="source_Login" prompt="source_Login?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="root"/>
-    <contextParameter comment="" name="source_Password" prompt="source_Password?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_Password" value=""/>
-    <contextParameter comment="" name="source_Port" prompt="source_Port?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="3306"/>
-    <contextParameter comment="" name="source_Server" prompt="source_Server?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="localhost"/>
-    <contextParameter comment="" name="access" prompt="access?" promptNeeded="false" repositoryContextId="_gpId0OoLEeKUb5Y27QN5QQ" type="id_Integer" value="1"/>
-    <contextParameter comment="" name="accessscope_id" prompt="accessscope_id?" promptNeeded="false" repositoryContextId="_gpId0OoLEeKUb5Y27QN5QQ" type="id_Integer" value="1"/>
-    <contextParameter comment="" name="ordering" prompt="ordering?" promptNeeded="false" repositoryContextId="_gpId0OoLEeKUb5Y27QN5QQ" type="id_Integer" value="1"/>
-  </context>
-  <context confirmationNeeded="false" name="destination">
-    <contextParameter comment="" name="destination_AdditionalParams" prompt="destination_AdditionalParams?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="noDatetimeStringSync=true"/>
-    <contextParameter comment="" name="destination_Database" prompt="destination_Database?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="joomlatest"/>
-    <contextParameter comment="" name="destination_Login" prompt="destination_Login?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="root"/>
-    <contextParameter comment="" name="destination_Password" prompt="destination_Password?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_Password" value=""/>
-    <contextParameter comment="" name="destination_Port" prompt="destination_Port?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="3306"/>
-    <contextParameter comment="" name="destination_Server" prompt="destination_Server?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="localhost"/>
-    <contextParameter comment="" name="source_AdditionalParams" prompt="source_AdditionalParams?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="noDatetimeStringSync=true"/>
-    <contextParameter comment="" name="source_Database" prompt="source_Database?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="agi_source"/>
-    <contextParameter comment="" name="source_Login" prompt="source_Login?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="root"/>
-    <contextParameter comment="" name="source_Password" prompt="source_Password?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_Password" value=""/>
+    <contextParameter comment="" name="source_Password" prompt="source_Password?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_Password" value="8+qxVEJMEpx8hMTY3vulaQ=="/>
     <contextParameter comment="" name="source_Port" prompt="source_Port?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="3306"/>
     <contextParameter comment="" name="source_Server" prompt="source_Server?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="localhost"/>
     <contextParameter comment="" name="access" prompt="access?" promptNeeded="false" repositoryContextId="_gpId0OoLEeKUb5Y27QN5QQ" type="id_Integer" value="1"/>
@@ -51,6 +34,8 @@
     <elementParameter field="FILE" name="IMPLICIT_TCONTEXTLOAD_FILE" value="&quot;&quot;"/>
     <elementParameter field="TEXT" name="FIELDSEPARATOR" value="&quot;&quot;"/>
     <elementParameter field="CLOSED_LIST" name="DB_VERSION_IMPLICIT_CONTEXT" value=""/>
+    <elementParameter field="CLOSED_LIST" name="LOAD_NEW_VARIABLE" value=""/>
+    <elementParameter field="CLOSED_LIST" name="NOT_LOAD_OLD_VARIABLE" value=""/>
     <elementParameter field="CHECK" name="DISABLE_WARNINGS" value="false"/>
     <elementParameter field="CHECK" name="DISABLE_INFO" value="false"/>
     <elementParameter field="TECHNICAL" name="ENCODING:ENCODING_TYPE" value="ISO-8859-15"/>
@@ -77,7 +62,7 @@
     <elementParameter field="TEXT" name="DBNAME" value="context.source_Database"/>
     <elementParameter field="TEXT" name="PROPERTIES" value="context.source_AdditionalParams"/>
     <elementParameter field="TEXT" name="USER" value="context.source_Login"/>
-    <elementParameter field="TEXT" name="PASS" value="context.source_Password"/>
+    <elementParameter field="PASSWORD" name="PASS" value="4D9onkGJm3erpivxDj26s5xe983mg/uAEncrypt"/>
     <elementParameter field="ENCODING_TYPE" name="ENCODING" value="&quot;ISO-8859-15&quot;"/>
     <elementParameter field="TECHNICAL" name="ENCODING:ENCODING_TYPE" value="ISO-8859-15"/>
     <elementParameter field="CHECK" name="USE_SHARED_CONNECTION" value="false"/>
@@ -103,7 +88,7 @@
     <elementParameter field="TEXT" name="DBNAME" value="context.destination_Database"/>
     <elementParameter field="TEXT" name="PROPERTIES" value="context.destination_AdditionalParams"/>
     <elementParameter field="TEXT" name="USER" value="context.destination_Login"/>
-    <elementParameter field="TEXT" name="PASS" value="context.destination_Password"/>
+    <elementParameter field="PASSWORD" name="PASS" value="4D9onkGJm3eGEELxAq9OiZxcq8wlfwfeopBD/BMKePg=Encrypt"/>
     <elementParameter field="ENCODING_TYPE" name="ENCODING" value="&quot;ISO-8859-15&quot;"/>
     <elementParameter field="TECHNICAL" name="ENCODING:ENCODING_TYPE" value="ISO-8859-15"/>
     <elementParameter field="CHECK" name="USE_SHARED_CONNECTION" value="false"/>
@@ -131,7 +116,7 @@
     <elementParameter field="TEXT" name="DBNAME" value="context.source_Database"/>
     <elementParameter field="TEXT" name="TYPE" value="MYSQL"/>
     <elementParameter field="TEXT" name="USER" value="context.source_Login"/>
-    <elementParameter field="TEXT" name="PASS" value="context.source_Password"/>
+    <elementParameter field="PASSWORD" name="PASS" value="4D9onkGJm3erpivxDj26s5xe983mg/uAEncrypt"/>
     <elementParameter field="DBTABLE" name="TABLE" value="&quot;jos_sdi_object&quot;"/>
     <elementParameter field="QUERYSTORE_TYPE" name="QUERYSTORE" value="&quot;&quot;"/>
     <elementParameter field="TECHNICAL" name="QUERYSTORE:REPOSITORY_QUERYSTORE_TYPE" value=""/>
@@ -256,6 +241,7 @@
     <elementParameter field="CHECK" name="DIE_ON_ERROR" value="true"/>
     <elementParameter field="CHECK" name="LKUP_PARALLELIZE" value="false"/>
     <elementParameter field="TEXT" name="ROWS_BUFFER_SIZE" value="2000000"/>
+    <elementParameter field="CHECK" name="CHANGE_HASH_AND_EQUALS_FOR_BIGDECIMAL" value="false"/>
     <elementParameter field="TEXT" name="CONNECTION_FORMAT" value="row"/>
     <elementParameter field="CHECK" name="INFORMATION" value="false"/>
     <elementParameter field="MEMO" name="COMMENT" value=""/>
@@ -373,7 +359,7 @@
     <elementParameter field="TEXT" name="PORT" value="context.destination_Port"/>
     <elementParameter field="TEXT" name="DBNAME" value="context.destination_Database"/>
     <elementParameter field="TEXT" name="USER" value="context.destination_Login"/>
-    <elementParameter field="TEXT" name="PASS" value="context.destination_Password"/>
+    <elementParameter field="PASSWORD" name="PASS" value="4D9onkGJm3eGEELxAq9OiZxcq8wlfwfeopBD/BMKePg=Encrypt"/>
     <elementParameter field="DBTABLE" name="TABLE" value="&quot;jos_sdi_resource&quot;"/>
     <elementParameter field="CLOSED_LIST" name="TABLE_ACTION" value="NONE"/>
     <elementParameter field="CLOSED_LIST" name="DATA_ACTION" value="INSERT"/>
