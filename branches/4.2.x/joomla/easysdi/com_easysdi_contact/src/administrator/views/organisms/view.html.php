@@ -112,7 +112,8 @@ class Easysdi_contactViewOrganisms extends JViewLegacy {
         $query = $db->getQuery(true)
                     ->select('id as value, name as text')
                     ->from($db->quoteName('#__sdi_category'))
-                    ->where('state=1');
+                    ->where('state=1')
+                    ->order('name');
         $db->setQuery($query);
         $categoriesOptions = $db->loadObjectList();
         
