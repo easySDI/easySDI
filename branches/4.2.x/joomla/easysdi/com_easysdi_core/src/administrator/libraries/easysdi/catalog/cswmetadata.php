@@ -709,21 +709,6 @@ class cswmetadata {
         $html .= '<div class="row-fluid" >';
         foreach ($properties as $property):
             try {
-                if ($property->accessscope_id == 2):
-                    $organisms = sdiModel::getAccessScopeOrganism($this->guid);
-                    if (!in_array(array_shift(sdiFactory::getSdiUser()->getMemberOrganisms()), $organisms)):
-                        //Property not allowed for this user
-                        continue;
-                    endif;
-                endif;
-                if ($property->accessscope_id == 3):
-                    $users = sdiModel::getAccessScopeUser($this->guid);
-                    if (!in_array(sdiFactory::getSdiUser()->id, $users)):
-                        //Property not allowed for this user
-                        continue;
-                    endif;
-                endif;
-
                 $required = '';
                 $classrequired = '';
                 $labelrequired = '';

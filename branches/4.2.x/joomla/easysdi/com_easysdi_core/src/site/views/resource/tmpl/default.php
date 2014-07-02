@@ -184,8 +184,8 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                         <div class="control-group">
                             <div class="control-label"></div>
                             <div class="controls">
-                                <input type="button" value="<?php echo JText::_('COM_EASYSDI_CORE_ADD_ALL_USERS_BTN'); ?>" id="addAllUsersBtn" class="mini">
-                                <input type="button" value="<?php echo JText::_('COM_EASYSDI_CORE_REMOVE_ALL_USERS_BTN'); ?>" id="removeAllUsersBtn" class="mini">
+                                <button type="button" id="addAllUsersBtn" class="btn btn-mini"><?php echo JText::_('COM_EASYSDI_CORE_ADD_ALL_USERS_BTN'); ?></button>
+                                <button type="button" id="removeAllUsersBtn" class="btn btn-mini"><?php echo JText::_('COM_EASYSDI_CORE_REMOVE_ALL_USERS_BTN'); ?></button>
                             </div>
                         </div>
                         <?php for($index = 2; $index < 8; $index++): 
