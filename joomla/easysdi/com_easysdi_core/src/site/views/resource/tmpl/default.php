@@ -70,7 +70,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         };
         head.appendChild(script);
     }
-
+    
     js = jQuery.noConflict();
     js(document).ready(function() {
         enableAccessScope();
@@ -80,32 +80,37 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         js('#form-resource').submit(function(event) {
 
         });
-    })
+    });
     
     var users = false,
         rightsarray = false;
+
     
-    var addUsersToSelect = function(right, users, limit){
+    var addUsersToSelect = function(right, rusers, limit, startup){
         var userState = js('#jform_'+right).attr('data-orig') || false;
         if(userState) userState = userState.split(',');
-        js.each(users, function(key, user) {
+        js.each(rusers, function(key, user) {
             var option = js('<option></option>').val(user.id).text(user.name);
             
-            if( ( (limit && right==2 && js.inArray(user.id,rightsarray[right])>-1 && userState===false) || !limit || (userState!==false && js.inArray(user.id, userState)>-1) ) )
+            if(
+                (limit && startup===true && userState!==false && js.inArray(user.id, userState)>-1) ||
+                (limit && startup===false && right==2 && js.inArray(user.id, rightsarray[right])>-1) ||
+                limit===false
+            )
                 option.attr('selected', 'selected');
             
             js('#jform_' + right).append(option).trigger("liszt:updated");
         });
     };
     
-    var toggleAllUsers = function(limit){
+    var toggleAllUsers = function(limit, startup){
         limit = Boolean(limit) || false;
+        startup = Boolean(startup) || false;
         
         js.each(users, function(right, rightUsers) {
-            //js('#jform_' + right + 'option:selected').removeAttr("selected");
             js('#jform_' + right).empty().trigger("liszt:updated");
 
-            addUsersToSelect(right, rightUsers, limit);
+            addUsersToSelect(right, rightUsers, limit, startup);
         });
     };
     
@@ -130,7 +135,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                     rightsarray[ur.role_id].push(ur.user_id);
                 });
                 
-                toggleAllUsers(true);
+                toggleAllUsers(true, true);
                 js('#loader').hide();
             }})
     }

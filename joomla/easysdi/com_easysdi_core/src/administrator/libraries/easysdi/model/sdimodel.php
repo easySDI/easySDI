@@ -250,6 +250,35 @@ abstract class sdiModel extends JModelAdmin {
         }
     }
 
+    /**
+     * Method to get the categories authorized to access this resourcetype
+     *
+     * @param int		$id		primary key of the current resourcetype to get.
+     *
+     * @return boolean 	Object list on success, False on error
+     *
+     * @since EasySDI 3.0.0
+     */
+    public static function getAccessScopeCategory($guid) {
+        if (!isset($guid))
+            return null;
+
+        try {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->select('p.category_id as id');
+            $query->from('#__sdi_accessscope p');
+            $query->where('p.entity_guid = ' . $query->quote($guid) );
+            $db->setQuery($query);
+
+            $scope = $db->loadColumn();
+            return $scope;
+        } catch (Exception $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+    }
+
     public static function deleteAccessScope($guid) {
 
         $db = JFactory::getDbo();
