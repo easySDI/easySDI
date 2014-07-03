@@ -33,9 +33,9 @@
         -->
         
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/joomla?zeroDateTimeBehavior=convertToNull" />
+        <property name="url" value="jdbc:mysql://localhost:3306/easysdi?zeroDateTimeBehavior=convertToNull" />
         <property name="username" value="root" />
-        <property name="password" value="4TIk033aM" />
+        <property name="password" value="Y251WvUIjh" />
     </bean>
 
     <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
