@@ -189,6 +189,11 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
         cache.evictCollectionRegion("org.easysdi.proxy.domain.SdiUser.sdiUserRoleOrganisms");
         cache.evictEntity("org.easysdi.proxy.domain.SdiOrganism", id);
     }
+    
+    public void requestInvalidateSdiCategory(){
+        cache.evictCollectionRegion("org.easysdi.proxy.domain.SdiOrganism.sdiCategories");
+        cache.evictEntity("org.easysdi.proxy.domain.SdiCategory", id);
+    }
 
     public void InvalidateSdiVirtualServiceCache() {
         SdiVirtualserviceHome sdiVirtualServiceHome = (SdiVirtualserviceHome) context.getBean("sdiVirtualServiceHome");
