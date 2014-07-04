@@ -12,7 +12,7 @@
 			class="inputbox"
 			label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ACCESSSCOPE"
 			description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ACCESSSCOPE" 
-			query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 ORDER BY ordering" 
+			query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 AND `value`!='category' ORDER BY ordering" 
 			key_field="id" 
 			value_field="value"
 			translate="true"
@@ -40,19 +40,7 @@
 			key_field="id" 
 			value_field="name"
 			translate="true"
-		/>  
-        <field
-            name="categories" 
-            type="sql" 
-            class="multiselect input-xxlarge"
-            multiple="true"
-            label=""
-            description="" 
-            query="SELECT id, name FROM #__sdi_category WHERE state=1 ORDER BY ordering" 
-            key_field="id" 
-            value_field="name"
-            translate="true"
-        /> 
+		/> 
 		<field name="allowfrom" type="calendar" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWFROM" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWFROM"  filter="safehtml" />
 		<field name="allowto" type="calendar" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ALLOWTO" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ALLOWTO"  filter="safehtml" />
 		<field name="anyoperation" type="radio" class="btn-group" default="1" label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_ANYOPERATION" description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_ANYOPERATION">
@@ -94,7 +82,7 @@
 			class="inputbox"
 			label="COM_EASYSDI_SERVICE_FORM_LBL_POLICY_VISIBILITY"
 			description="COM_EASYSDI_SERVICE_FORM_DESC_POLICY_VISIBILITY" 
-			query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 ORDER BY ordering" 
+			query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 AND `value`!='category' ORDER BY ordering" 
 			key_field="id" 
 			value_field="value"
 			translate="true"
@@ -120,19 +108,7 @@
 			query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY ordering" 
 			key_field="id" 
 			value_field="name"
-		/>   
-        <field
-            name="csw_categories" 
-            type="sql" 
-            class="multiselect input-xxlarge"
-            multiple="true"
-            label=""
-            description="" 
-            query="SELECT id, name FROM #__sdi_category WHERE state=1 ORDER BY name" 
-            key_field="id" 
-            value_field="name"
-            translate="true"
-        /> 
+		/>  
 		
 		<field 	name="csw_anystate" 
 			type="radio" 
