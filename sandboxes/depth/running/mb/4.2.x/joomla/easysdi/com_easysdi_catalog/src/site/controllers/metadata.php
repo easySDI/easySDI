@@ -479,6 +479,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             }
         }
 
+        $keyword = $this->domXpathStr->query('descendant::*[@catalog:stereotypeId="'.EnumStereotype::$GEMET.'"]')->item(0);
+        
+        if(!empty($keyword)){
+            $this->cleanEmptyNode($this->structure, $keyword->parentNode);
+        }
+        
         $root = $this->domXpathStr->query('/*')->item(0);
 
         foreach ($this->getHeader() as $header) {
@@ -518,6 +524,31 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         }
     }
 
+    
+    /**
+     * 
+     * @param DOMDocument $from
+     * @param DOMElement $element
+     */
+    private function cleanEmptyNode(DOMDocument $from, DOMElement $element){
+
+        $toRemove = array();
+        foreach ($element->childNodes as $child) {
+            if(empty($child->nodeValue)){
+                $toRemove[] = $child;
+            }
+        }
+        
+        foreach ($toRemove as $child) {
+            $element->removeChild($child);
+        }
+        
+        if(!$element->hasChildNodes()){
+            $parent = $element->parentNode->parentNode;
+            $parent->removeChild($element->parentNode);
+        }
+    }
+    
     /**
      * Create xml for update request
      * 

@@ -770,6 +770,29 @@ class FormHtmlGenerator {
                                 // sets the user interface language
                                 HS.setLang('" . $default->gemet . "');
 
+                                var writeTerms = function(result) {
+
+                                    for(var i=0; i < languages.length; i++){
+                                        var paths = result.terms[languages[i]].split('>');
+                                        var keyword = paths[paths.length - 1];
+                                        var option_string = '<option class=\''+result.uri+'\' value=\"'+keyword+'\" selected>'+keyword+'</option>';
+
+                                        if(i==0){
+                                            var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString');
+                                            var current_div = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString_chzn ul li[class=\'search-field\'] input');
+
+                                        }else{
+                                            var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase());
+                                            var current_div = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()+'_chzn ul li[class=\'search-field\'] input');
+                                        }
+                                        current_select.append(option_string);
+                                        current_select.trigger('liszt:updated');
+                                        current_div.attr('style','width: 0px');
+
+                                        addToStructure('" . $attribute->getAttributeNS($this->catalog_uri, 'relid') . "','" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "');
+                                    }
+                                }
+
                                 Ext.onReady(function() {
 
                                     var thes = new ThesaurusReader({
@@ -804,31 +827,6 @@ class FormHtmlGenerator {
                                                 removeFromStructure('" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "-sla-gmd-dp-keyword-la-'+index_number+'-ra-');
 
                                     });
-
-
-
-                                var writeTerms = function(result) {
-
-                                    for(var i=0; i < languages.length; i++){
-                                        var paths = result.terms[languages[i]].split('>');
-                                        var keyword = paths[paths.length - 1];
-                                        var option_string = '<option class=\''+result.uri+'\' value=\"'+keyword+'\" selected>'+keyword+'</option>';
-
-                                        if(i==0){
-                                            var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString');
-                                            var current_div = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString_chzn ul li[class=\'search-field\'] input');
-
-                                        }else{
-                                            var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase());
-                                            var current_div = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()+'_chzn ul li[class=\'search-field\'] input');
-                                        }
-                                        current_select.append(option_string);
-                                        current_select.trigger('liszt:updated');
-                                        current_div.attr('style','width: 0px');
-
-                                        addToStructure('" . $attribute->getAttributeNS($this->catalog_uri, 'relid') . "','" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "');
-                                    }
-                                }
 
                             });";
 
