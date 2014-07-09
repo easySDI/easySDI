@@ -9,6 +9,7 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/enu
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/dao/SdiNamespaceDao.php';
 
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormUtils.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormStereotype.php';
 
 /**
  * This Class will generate a form in XML format for Joomla.
@@ -262,6 +263,8 @@ class FormGenerator {
 
         $parent_id = $parent->getAttributeNS($this->catalog_uri, 'dbid');
         
+        $formStereotype = new FormStereotype();
+        
         $query = $this->getRelationQuery();
         $query->where('r.parent_id = ' . $parent_id);
         $query->where('r.state = 1');
@@ -269,8 +272,7 @@ class FormGenerator {
         $query->order('r.name');
 
         $this->db->setQuery($query);
-
-
+        
         foreach ($this->db->loadObjectList() as $result) {
 
             switch ($result->childtype_id) {
@@ -284,9 +286,12 @@ class FormGenerator {
                         case EnumStereotype::$GEOGRAPHICEXTENT:
                             $params = array();
                             $params['stereotype_id'] = $result->class_stereotype_id;
+                            $params['upperbound'] = $result->upperbound;
+                            $params['lowerbound'] = $result->lowerbound;
+                            $params['id'] = $result->id;
 
-                            foreach ($this->getStereotype((object) $params) as $st) {
-                                $relation->appendChild($st);
+                            foreach ($formStereotype->getStereotype(JArrayHelper::toObject($params)) as $st) {
+                                $relation->appendChild($this->structure->importNode($st, true));
                             }
 
                             break;
@@ -302,8 +307,8 @@ class FormGenerator {
                 case EnumChildtype::$ATTRIBUT:
                     $attribute = $this->getDomElement($result->attribute_ns_uri, $result->attribute_ns_prefix, $result->attribute_isocode, $result->attribute_id, EnumChildtype::$ATTRIBUT, $result->attribute_guid, $result->lowerbound, $result->upperbound, $result->stereotype_id, $result->rendertype_id);
 
-                    foreach ($this->getStereotype($result) as $st) {
-                        $attribute->appendChild($st);
+                    foreach ($formStereotype->getStereotype($result) as $st) {
+                        $attribute->appendChild($this->structure->importNode($st, true));
                     }
 
                     if ($this->user->authorize($this->item->id, sdiUser::metadataeditor)) {
@@ -397,199 +402,7 @@ class FormGenerator {
 
         return $element;
     }
-
-    /**
-     * Returns the structure of a stereotype.
-     * 
-     * @param stdClass $result
-     * @return DOMElement[]
-     */
-    private function getStereotype($result) {
-        $elements = array();
-        //$defaultLanguage = 'DE';
-        $sdiLangue = new SdiLanguageDao();
-        $languages = $sdiLangue->getSupported();
-
-
-        switch ($result->stereotype_id) {
-
-            case EnumStereotype::$LOCALE:
-            case EnumStereotype::$LOCALECHOICE:
-            case EnumStereotype::$GEMET:
-                $characterString = $this->structure->createElementNS('http://www.isotc211.org/2005/gco', 'gco:CharacterString');
-                $elements[] = $characterString;
-                foreach ($languages as $key => $value) {
-                    $pt_freetext = $this->structure->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:PT_FreeText');
-                    $textGroup = $this->structure->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:textGroup');
-                    $localisedcs = $this->structure->createElementNS('http://www.isotc211.org/2005/gmd', 'gmd:LocalisedCharacterString');
-                    $localisedcs->setAttribute('locale', '#' . $key);
-
-                    $textGroup->appendChild($localisedcs);
-                    $pt_freetext->appendChild($textGroup);
-
-                    $elements[] = $pt_freetext;
-                }
-
-                break;
-
-            case EnumStereotype::$LIST:
-
-                $element = $this->structure->createElementNS($result->list_ns_uri, $result->list_ns_prefix . ':' . $result->attribute_type_isocode);
-
-                if (!empty($result->attribute_codelist)) {
-                    $element->setAttribute('codeList', $result->attribute_codelist);
-                    $element->setAttribute('codeListValue', '');
-                }
-
-                $elements[] = $element;
-                break;
-
-            case EnumStereotype::$GEOGRAPHICEXTENT:
-                $element = $this->getExtendStereotype();
-                $elements[] = $element;
-                break;
-            case EnumStereotype::$MAPGEOGRAPHICEXTENT:
-                $elements[] = $this->structure->createElement('stereotype');
-                break;
-            case EnumStereotype::$FREEMAPGEOGRAPHICEXTENT:
-                $elements[] = $this->structure->createElement('stereotype');
-                break;
-
-            default:
-                $elements[] = $this->structure->createElementNS($result->stereotype_ns_uri, $result->stereotype_ns_prefix . ':' . $result->stereotype_isocode);
-                break;
-        }
-
-        return $elements;
-    }
-
-    /**
-     * Returns the structure of the stereotype "Extent".
-     * 
-     * @return DOMElement
-     */
-    private function getExtendStereotype() {
-        $namspaces = array();
-        foreach ($this->nsdao->getAll() as $ns) {
-            $namspaces[$ns->prefix] = $ns->uri;
-        }
-
-        $EX_Extent = $this->structure->createElementNS($namspaces['gmd'], 'gmd:EX_Extent');
-        $EX_Extent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':dbid', '0');
-        $EX_Extent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$CLASS);
-        $EX_Extent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', EnumStereotype::$GEOGRAPHICEXTENT);
-
-        $extentType = $this->structure->createElementNS($namspaces['sdi'], 'sdi:extentType');
-        $extentType->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$ATTRIBUT);
-        $extentType->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', EnumStereotype::$BOUNDARYCATEGORY);
-        $extentType->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$LIST);
-        $extentType->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_TYPE');
-
-        $description = $this->structure->createElementNS($namspaces['gmd'], 'gmd:description');
-        $description->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$ATTRIBUT);
-        $description->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', EnumStereotype::$BOUNDARY);
-        $description->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$LIST);
-        $description->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_DESCRIPTION');
-
-        $geographicElement = $this->structure->createElementNS($namspaces['gmd'], 'gmd:geographicElement');
-        $geographicElement->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$RELATION);
-        $geographicElement->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':lowerbound', '3');
-        $geographicElement->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':upperbound', '3');
-
-        $geographicElement1 = $geographicElement->cloneNode();
-        $geographicElement1->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
-        $geographicElement1->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_GEOGRAPHICELEMENT');
-
-        $EX_GeographicBoundingBox = $this->structure->createElementNS($namspaces['gmd'], 'gmd:EX_GeographicBoundingBox');
-        $EX_GeographicBoundingBox->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$CLASS);
-
-        $extentTypeCode = $this->structure->createElementNS($namspaces['gmd'], 'gmd:extentTypeCode');
-        $extentTypeCode->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$ATTRIBUT);
-        $extentTypeCode->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$HIDDEN);
-
-        $northBoundLatitude = $this->structure->createElementNS($namspaces['gmd'], 'gmd:northBoundLatitude');
-        $northBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$ATTRIBUT);
-        $northBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$TEXTBOX);
-        $northBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', EnumStereotype::$NUMBER);
-        $northBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_NORTHBOUNDLATITUDE');
-        $northBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':boundingbox', 'true');
-
-        $southBoundLatitude = $this->structure->createElementNS($namspaces['gmd'], 'gmd:southBoundLatitude');
-        $southBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$ATTRIBUT);
-        $southBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$TEXTBOX);
-        $southBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', EnumStereotype::$NUMBER);
-        $southBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_SOUTHBOUNDLATITUDE');
-        $southBoundLatitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':boundingbox', 'true');
-
-        $eastBoundLongitude = $this->structure->createElementNS($namspaces['gmd'], 'gmd:eastBoundLongitude');
-        $eastBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$ATTRIBUT);
-        $eastBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$TEXTBOX);
-        $eastBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', EnumStereotype::$NUMBER);
-        $eastBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_EASTBOUNDLONGITUDE');
-        $eastBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':boundingbox', 'true');
-
-        $westBoundLongitude = $this->structure->createElementNS($namspaces['gmd'], 'gmd:westBoundLongitude');
-        $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$ATTRIBUT);
-        $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$TEXTBOX);
-        $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':stereotypeId', EnumStereotype::$NUMBER);
-        $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':label', 'COM_EASYSDI_CATALOGE_EXTENT_WESTBOUNDLONGITUDE');
-        $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':boundingbox', 'true');
-        $westBoundLongitude->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':map', 'true');
-
-        $geographicElement2 = $geographicElement->cloneNode();
-        $geographicElement2->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
-
-        $EX_GeographicDescription = $this->structure->createElementNS($namspaces['gmd'], 'gmd:EX_GeographicDescription');
-        $EX_GeographicDescription->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$CLASS);
-
-        $geographicIdentifier = $this->structure->createElementNS($namspaces['gmd'], 'gmd:geographicIdentifier');
-        $geographicIdentifier->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$RELATION);
-        $geographicIdentifier->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':lowerbound', '1');
-        $geographicIdentifier->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':upperbound', '1');
-        $geographicIdentifier->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
-
-        $MD_Identifier = $this->structure->createElementNS($namspaces['gmd'], 'gmd:MD_Identifier');
-        $MD_Identifier->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$CLASS);
-
-        $code = $this->structure->createElementNS($namspaces['gmd'], 'gmd:code');
-        $code->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':childtypeId', EnumChildtype::$ATTRIBUT);
-        $code->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':rendertypeId', EnumRendertype::$HIDDEN);
-
-        $CharacterString = $this->structure->createElementNS($namspaces['gco'], 'gco:CharacterString');
-        $Boolean = $this->structure->createElementNS($namspaces['gco'], 'gco:Boolean', 'true');
-        $Decimal = $this->structure->createElementNS($namspaces['gco'], 'gco:Decimal');
-
-        $extentType->appendChild($CharacterString->cloneNode());
-        $description->appendChild($CharacterString->cloneNode());
-        $extentTypeCode->appendChild($Boolean->cloneNode(true));
-        $northBoundLatitude->appendChild($Decimal->cloneNode());
-        $southBoundLatitude->appendChild($Decimal->cloneNode());
-        $eastBoundLongitude->appendChild($Decimal->cloneNode());
-        $westBoundLongitude->appendChild($Decimal->cloneNode());
-        $code->appendChild($CharacterString->cloneNode());
-
-        $MD_Identifier->appendChild($code);
-        $geographicIdentifier->appendChild($MD_Identifier);
-
-        $EX_GeographicBoundingBox->appendChild($extentTypeCode->cloneNode(true));
-        $EX_GeographicBoundingBox->appendChild($northBoundLatitude);
-        $EX_GeographicBoundingBox->appendChild($southBoundLatitude);
-        $EX_GeographicBoundingBox->appendChild($eastBoundLongitude);
-        $EX_GeographicBoundingBox->appendChild($westBoundLongitude);
-
-        $EX_GeographicDescription->appendChild($extentTypeCode->cloneNode(true));
-        $EX_GeographicDescription->appendChild($geographicIdentifier);
-
-        $geographicElement1->appendChild($EX_GeographicBoundingBox);
-        $geographicElement2->appendChild($EX_GeographicDescription);
-
-        $EX_Extent->appendChild($extentType);
-        $EX_Extent->appendChild($description);
-        $EX_Extent->appendChild($geographicElement1);
-        $EX_Extent->appendChild($geographicElement2);
-
-        return $EX_Extent;
-    }
+    
 
     /**
      * This method adds the required number of occurrences of a relation.
@@ -1062,7 +875,9 @@ class FormGenerator {
                     $option->setAttribute('value', $opt->name);
 
                     $field->appendChild($option);
-                    $field->setAttribute('onchange', 'setBoundary(\'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
+                    if($upperbound<2){
+                        $field->setAttribute('onchange', 'setBoundary(\'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
+                    }
                     break;
                 case EnumStereotype::$BOUNDARYCATEGORY:
                     $field->setAttribute('type', 'list');

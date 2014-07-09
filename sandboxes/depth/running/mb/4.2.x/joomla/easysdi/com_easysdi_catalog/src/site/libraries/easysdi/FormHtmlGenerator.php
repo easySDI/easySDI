@@ -395,12 +395,12 @@ class FormHtmlGenerator {
         }
 
         $attributeGroup = $this->formHtml->createElement('div');
-        if($rendertypeId == 1000){
+        if ($rendertypeId == 1000) {
             $attributeGroup->setAttribute('class', 'hidden attribute-group attribute-group-' . $this->removeIndex(FormUtils::serializeXpath($attribute->getNodePath())));
-        }else{
+        } else {
             $attributeGroup->setAttribute('class', 'attribute-group attribute-group-' . $this->removeIndex(FormUtils::serializeXpath($attribute->getNodePath())));
         }
-        
+
         $attributeGroup->setAttribute('id', 'attribute-group-' . FormUtils::serializeXpath($attribute->getNodePath()));
 
         switch ($stereotypeId) {
@@ -500,6 +500,7 @@ class FormHtmlGenerator {
             }
         }
 
+
         return $attributeGroup;
     }
 
@@ -542,7 +543,7 @@ class FormHtmlGenerator {
         $query->innerJoin('#__sdi_layer_layergroup llg ON llg.group_id = mlg.group_id');
         $query->innerJoin('#__sdi_maplayer l ON l.id = llg.layer_id');
         $query->innerJoin('#__sdi_sys_unit u ON u.id = m.unit_id');
-        $query->where('m.id=' . (int)$map_id);
+        $query->where('m.id=' . (int) $map_id);
         $query->where('mlg.isbackground = 1');
 
         $this->db->setQuery($query);
@@ -553,12 +554,12 @@ class FormHtmlGenerator {
             case 'physical':
                 $query->select('resourceurl as serviceurl, serviceconnector_id');
                 $query->from('#__sdi_physicalservice');
-                $query->where('id = ' . (int)$map_config->service_id);
+                $query->where('id = ' . (int) $map_config->service_id);
                 break;
             case 'virtual':
                 $query->select('url, reflectedurl as serviceurl, serviceconnector_id');
                 $query->from('#__sdi_virtualservice');
-                $query->where('id = ' . (int)$map_config->service_id);
+                $query->where('id = ' . (int) $map_config->service_id);
                 break;
         }
 
@@ -796,7 +797,7 @@ class FormHtmlGenerator {
                                 Ext.onReady(function() {
 
                                     var thes = new ThesaurusReader({
-                                        appPath: '". JUri::base() ."administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/',
+                                        appPath: '" . JUri::base() . "administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/',
                                         lang: '" . $default->gemet . "',
                                         outputLangs: [" . implode(',', $languages) . "],
                                         title: 'GEMET Thesaurus',
@@ -1030,10 +1031,26 @@ class FormHtmlGenerator {
      */
     private function getMultiSelectScript($field, DOMElement $attribute) {
 
-        $script_content = "js = jQuery.noConflict();
+       $stereotype_id = $attribute->getAttributeNS($this->catalog_uri, 'stereotypeId');
 
-                            js('#" . $field->__get('id') . "').chosen().change(function(e, params) {
+       switch ($stereotype_id) {
+           case EnumStereotype::$BOUNDARY:
+               $script_content = "js = jQuery.noConflict();
+                            js('#" . $field->__get('id') . "').on('change',function(e, params) {
+                                
+                                if(params.selected != null){
+                                    addToStructure(" . $attribute->getAttributeNS($this->catalog_uri, 'relid') . ", '" . FormUtils::serializeXpath($attribute->parentNode->parentNode->parentNode->getNodePath()) . "');
+                                }else{
+                                    removeFromStructure('" . FormUtils::serializeXpath($attribute->getNodePath()) . "');
+                                }
 
+                            });";
+               break;
+
+           default:
+               $script_content = "js = jQuery.noConflict();
+                            js('#" . $field->__get('id') . "').on('change',function(e, params) {
+                                
                                 if(params.selected != null){
                                     addToStructure(" . $attribute->getAttributeNS($this->catalog_uri, 'relid') . ", '" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "');
                                 }else{
@@ -1041,6 +1058,13 @@ class FormHtmlGenerator {
                                 }
 
                             });";
+               
+               break;
+       }
+       
+       
+
+
 
         $script = $this->formHtml->createElement('script', $script_content);
         $script->setAttribute('type', 'text/javascript');

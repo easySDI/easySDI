@@ -482,7 +482,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $keyword = $this->domXpathStr->query('descendant::*[@catalog:stereotypeId="'.EnumStereotype::$GEMET.'"]')->item(0);
         
         if(!empty($keyword)){
-            $this->cleanEmptyNode($this->structure, $keyword->parentNode);
+            $this->cleanEmptyNode($keyword->parentNode);
         }
         
         $root = $this->domXpathStr->query('/*')->item(0);
@@ -496,6 +496,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         //$root->insertBefore($smda->getPlatformNode($this->structure), $root->firstChild);
         $root->appendChild($smda->getPlatformNode($this->structure));
 
+        echo $this->structure->saveXML();
+        die();
+        
         $this->removeNoneExist();
         $this->removeCatalogNS();
 
@@ -527,10 +530,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     
     /**
      * 
-     * @param DOMDocument $from
      * @param DOMElement $element
      */
-    private function cleanEmptyNode(DOMDocument $from, DOMElement $element){
+    private function cleanEmptyNode(DOMElement $element){
 
         $toRemove = array();
         foreach ($element->childNodes as $child) {
@@ -1000,7 +1002,6 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     }
 
     private function removeCatalogNS() {
-        ;
         $attributeNames = array('id', 'dbid', 'childtypeId', 'index', 'lowerbound', 'upperbound', 'rendertypeId', 'stereotypeId', 'relGuid', 'relid', 'maxlength', 'readonly', 'exist', 'resourcetypeId', 'relationId', 'label', 'boundingbox', 'map', 'level');
 
         foreach ($this->domXpathStr->query('//*') as $element) {
