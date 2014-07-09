@@ -141,7 +141,11 @@ class FormStereotype {
      * 
      * @return DOMElement
      */
-    private function getExtendStereotype() {
+    public function getExtendStereotype($name='') {
+        if(!empty($name)){
+            $boundary = $this->getBoundaryByName($name);
+        }
+        
         $dom = new DOMDocument('1.0', 'utf-8');
 
         $EX_Extent = $dom->createElementNS($this->namespaces['gmd'], 'gmd:EX_Extent');
@@ -258,7 +262,38 @@ class FormStereotype {
         $EX_Extent->appendChild($geographicElement1);
         $EX_Extent->appendChild($geographicElement2);
 
+        if(!empty($boundary)){
+            $extentType->nodeValue = $boundary->extent_type;
+            $description->nodeValue = $boundary->description;
+            $northBoundLatitude->nodeValue = $boundary->northbound;
+            $southBoundLatitude->nodeValue = $boundary->southbound;
+            $eastBoundLongitude->nodeValue = $boundary->eastbound;
+            $westBoundLongitude->nodeValue = $boundary->westbound;
+            $code->nodeValue = $boundary->code;
+            
+        }
+        
         return $EX_Extent;
     }
 
+    /**
+     * 
+     * @param string $name
+     * @return stdClass Object representation of boundary
+     */
+    private function getBoundaryByName($name){
+        $db = JFactory::getDbo();
+        
+        $query = $db->getQuery(true);
+        $query->select('b.id AS code, b.`name` AS description, b.northbound, b.southbound, b.eastbound,b.westbound, bc.`name` AS extent_type');
+        $query->from('#__sdi_boundary b');
+        $query->innerJoin('#__sdi_boundarycategory bc ON bc.id = b.category_id');
+        $query->where('b.name = ' . $query->quote($name));
+        
+        $db->setQuery($query);
+        $boundary = $db->loadObject();
+        
+        return $boundary;
+    }
+    
 }

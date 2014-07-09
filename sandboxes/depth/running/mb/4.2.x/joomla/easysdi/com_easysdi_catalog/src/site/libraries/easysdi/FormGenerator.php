@@ -112,8 +112,6 @@ class FormGenerator {
 
             $root->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
 
-            
-            
             $this->structure->appendChild($root);
 
             $this->getChildTree($root);
@@ -132,7 +130,19 @@ class FormGenerator {
 
             switch ($result->childtype_id) {
                 case EnumChildtype::$CLASS:
+                    
                     $relation = $this->getDomElement($result->uri, $result->prefix, $result->name, $result->id, EnumChildtype::$RELATION, $result->guid, 1, $result->upperbound);
+                    
+                     if($result->class_stereotype_id == EnumStereotype::$GEOGRAPHICEXTENT){
+                        $forStereotype = new FormStereotype();
+                        $class = $this->structure->importNode($forStereotype->getExtendStereotype($_GET['valeur']),true);
+                        $relation->appendChild($class);
+                        $parent->appendChild($relation);
+                        $root = $class->firstChild;
+                        $this->ajaxXpath = $relation->getNodePath();
+                        break;
+                    }
+                    
                     $class = $this->getDomElement($result->class_ns_uri, $result->class_ns_prefix, $result->class_name, $result->class_id, EnumChildtype::$CLASS, $result->class_guid);
                     $relation->appendChild($class);
 
@@ -187,9 +197,10 @@ class FormGenerator {
         $html = $this->structure->saveXML();
 
         $this->session->set('structure', serialize($this->structure->saveXML()));
-        $form = $this->buildForm($root);
         
+        $form = $this->buildForm($root);
         return $form;
+        
     }
 
     /**

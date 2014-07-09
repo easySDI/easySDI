@@ -906,6 +906,7 @@ class FormHtmlGenerator {
         $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
         $stereotypeId = $attribute->getAttributeNS($this->catalog_uri, 'stereotypeId');
         $rendertypeId = $attribute->getAttributeNS($this->catalog_uri, 'rendertypeId');
+        $name = $attribute->nodeName;
 
         $elements = array();
 
@@ -1039,7 +1040,7 @@ class FormHtmlGenerator {
                             js('#" . $field->__get('id') . "').on('change',function(e, params) {
                                 
                                 if(params.selected != null){
-                                    addToStructure(" . $attribute->getAttributeNS($this->catalog_uri, 'relid') . ", '" . FormUtils::serializeXpath($attribute->parentNode->parentNode->parentNode->getNodePath()) . "');
+                                    addToStructure(" . $attribute->getAttributeNS($this->catalog_uri, 'relid') . ", '" . FormUtils::serializeXpath($attribute->parentNode->parentNode->parentNode->getNodePath()) . "',params.selected);
                                 }else{
                                     removeFromStructure('" . FormUtils::serializeXpath($attribute->getNodePath()) . "');
                                 }
