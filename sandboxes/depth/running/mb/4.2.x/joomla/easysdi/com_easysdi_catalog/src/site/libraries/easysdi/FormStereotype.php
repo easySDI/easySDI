@@ -8,7 +8,7 @@ class FormStereotype {
     private $namespaces = array();
 
     function __construct() {
-        
+
         $nsdao = new SdiNamespaceDao();
 
         foreach ($nsdao->getAll() as $ns) {
@@ -25,7 +25,7 @@ class FormStereotype {
     public function getStereotype($result) {
         $elements = array();
         $dom = new DOMDocument('1.0', 'utf-8');
-        
+
         switch ($result->stereotype_id) {
 
             case EnumStereotype::$LOCALE:
@@ -68,7 +68,7 @@ class FormStereotype {
      */
     private function getListStereotype($result) {
         $dom = new DOMDocument('1.0', 'utf-8');
-        
+
         $element = $dom->createElementNS($result->list_ns_uri, $result->list_ns_prefix . ':' . $result->attribute_type_isocode);
 
         if (!empty($result->attribute_codelist)) {
@@ -137,15 +137,26 @@ class FormStereotype {
     }
 
     /**
+     * 
+     * @param type $name
+     */
+    public function getMultipleExtentStereotype($name) {
+        $dom = new DOMDocument('1.0', 'utf-8');
+        $boundary = $this->getBoundaryByName($name);
+
+        $extent = $dom->createElementNS($this->namespaces['gmd'], 'gmd:extent');
+        $extent->appendChild($dom->importNode($this->getExtendStereotype($boundary->extent_type, $boundary->description, $boundary->northbound, $boundary->southbound, $boundary->eastbound, $boundary->westbound, $boundary->code), true));
+    
+        return $extent;
+        
+    }
+
+    /**
      * Returns the structure of the stereotype "Extent".
      * 
      * @return DOMElement
      */
-    public function getExtendStereotype($name='') {
-        if(!empty($name)){
-            $boundary = $this->getBoundaryByName($name);
-        }
-        
+    private function getExtendStereotype($extent_type_value = '', $description_value = '', $northbound_value = '', $southbound_value = '', $eastbound_value = '', $westbound_value = '', $code_value = '') {
         $dom = new DOMDocument('1.0', 'utf-8');
 
         $EX_Extent = $dom->createElementNS($this->namespaces['gmd'], 'gmd:EX_Extent');
@@ -211,7 +222,7 @@ class FormStereotype {
         $westBoundLongitude->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':map', 'true');
 
         $geographicElement2 = $geographicElement->cloneNode();
-        $geographicElement2->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':exist', '0');
+        //$geographicElement2->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':exist', '0');
 
         $EX_GeographicDescription = $dom->createElementNS($this->namespaces['gmd'], 'gmd:EX_GeographicDescription');
         $EX_GeographicDescription->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$CLASS);
@@ -220,7 +231,7 @@ class FormStereotype {
         $geographicIdentifier->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$RELATION);
         $geographicIdentifier->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':lowerbound', '1');
         $geographicIdentifier->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':upperbound', '1');
-        $geographicIdentifier->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':exist', '0');
+        //$geographicIdentifier->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':exist', '0');
 
         $MD_Identifier = $dom->createElementNS($this->namespaces['gmd'], 'gmd:MD_Identifier');
         $MD_Identifier->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$CLASS);
@@ -262,16 +273,13 @@ class FormStereotype {
         $EX_Extent->appendChild($geographicElement1);
         $EX_Extent->appendChild($geographicElement2);
 
-        if(!empty($boundary)){
-            $extentType->nodeValue = $boundary->extent_type;
-            $description->nodeValue = $boundary->description;
-            $northBoundLatitude->nodeValue = $boundary->northbound;
-            $southBoundLatitude->nodeValue = $boundary->southbound;
-            $eastBoundLongitude->nodeValue = $boundary->eastbound;
-            $westBoundLongitude->nodeValue = $boundary->westbound;
-            $code->nodeValue = $boundary->code;
-            
-        }
+        $extentType->firstChild->nodeValue = $extent_type_value;
+        $description->firstChild->nodeValue = $description_value;
+        $northBoundLatitude->firstChild->nodeValue = $northbound_value;
+        $southBoundLatitude->firstChild->nodeValue = $southbound_value;
+        $eastBoundLongitude->firstChild->nodeValue = $eastbound_value;
+        $westBoundLongitude->firstChild->nodeValue = $westbound_value;
+        $code->firstChild->nodeValue = $code_value;
         
         return $EX_Extent;
     }
@@ -281,19 +289,19 @@ class FormStereotype {
      * @param string $name
      * @return stdClass Object representation of boundary
      */
-    private function getBoundaryByName($name){
+    private function getBoundaryByName($name) {
         $db = JFactory::getDbo();
-        
+
         $query = $db->getQuery(true);
         $query->select('b.id AS code, b.`name` AS description, b.northbound, b.southbound, b.eastbound,b.westbound, bc.`name` AS extent_type');
         $query->from('#__sdi_boundary b');
         $query->innerJoin('#__sdi_boundarycategory bc ON bc.id = b.category_id');
         $query->where('b.name = ' . $query->quote($name));
-        
+
         $db->setQuery($query);
         $boundary = $db->loadObject();
-        
+
         return $boundary;
     }
-    
+
 }

@@ -352,8 +352,8 @@ function addBoundaryToStructure(name, parent_path){
     });
 }
 
-function addToStructure(relid, parent_path, valeur) {
-    js.get(currentUrl + '?option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid + '&valeur= ' + valeur);
+function addToStructure(relid, parent_path) {
+    js.get(currentUrl + '?option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid);
 }
 
 function addFieldset(id, idwi, relid, parent_path, lowerbound, upperbound) {

@@ -118,6 +118,16 @@ $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/sy
         width: 900px;
         left: 40%;
     }
+    
+    .sdi-multi-extent-select.chzn-container-multi .chzn-choices li.search-choice {
+        min-width: 89%;
+    }
+    
+    .sdi-multi-extent-select.chzn-container-multi .chzn-choices {
+        max-height: 200px;
+        max-height: 200px;
+        overflow:auto;
+    }
 </style>
 
 <script type="text/javascript">

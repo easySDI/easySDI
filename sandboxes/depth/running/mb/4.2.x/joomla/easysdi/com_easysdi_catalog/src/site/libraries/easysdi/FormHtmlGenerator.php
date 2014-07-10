@@ -465,7 +465,16 @@ class FormHtmlGenerator {
                     case EnumRendertype::$LIST:
                         // Mutiple list
                         if ($upperbound > 1) {
-                            $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath)));
+                            switch ($stereotypeId) {
+                                case EnumStereotype::$BOUNDARY:
+                                    $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath), 12, 15));
+                                    break;
+
+                                default:
+                                    $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath)));
+                                    break;
+                            }
+                            
                             $fieldid = $jfield->__get('id');
                             $query = 'descendant::*[@id="' . $fieldid . '"]';
                             $nbrOccurance = $this->domXpathFormHtml->query($query)->length;
@@ -947,7 +956,7 @@ class FormHtmlGenerator {
 
         $elements[] = $this->getInputScript($field, $guid);
 
-        if ($rendertypeId == EnumRendertype::$LIST && $upperbound > 1) {
+        if ($rendertypeId == EnumRendertype::$LIST && $upperbound > 1 && $stereotypeId != EnumStereotype::$BOUNDARY) {
             $elements[] = $this->getMultiSelectScript($field, $attribute);
         }
 
@@ -1032,24 +1041,7 @@ class FormHtmlGenerator {
      */
     private function getMultiSelectScript($field, DOMElement $attribute) {
 
-       $stereotype_id = $attribute->getAttributeNS($this->catalog_uri, 'stereotypeId');
-
-       switch ($stereotype_id) {
-           case EnumStereotype::$BOUNDARY:
-               $script_content = "js = jQuery.noConflict();
-                            js('#" . $field->__get('id') . "').on('change',function(e, params) {
-                                
-                                if(params.selected != null){
-                                    addToStructure(" . $attribute->getAttributeNS($this->catalog_uri, 'relid') . ", '" . FormUtils::serializeXpath($attribute->parentNode->parentNode->parentNode->getNodePath()) . "',params.selected);
-                                }else{
-                                    removeFromStructure('" . FormUtils::serializeXpath($attribute->getNodePath()) . "');
-                                }
-
-                            });";
-               break;
-
-           default:
-               $script_content = "js = jQuery.noConflict();
+        $script_content = "js = jQuery.noConflict();
                             js('#" . $field->__get('id') . "').on('change',function(e, params) {
                                 
                                 if(params.selected != null){
@@ -1059,12 +1051,6 @@ class FormHtmlGenerator {
                                 }
 
                             });";
-               
-               break;
-       }
-       
-       
-
 
 
         $script = $this->formHtml->createElement('script', $script_content);
