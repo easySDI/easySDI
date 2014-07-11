@@ -27,6 +27,7 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/For
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/CswMerge.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormGenerator.php';
 require_once JPATH_BASE . '/administrator/components/com_easysdi_core/libraries/easysdi/user/sdiuser.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormStereotype.php';
 
 /**
  * Metadata controller class.
@@ -432,6 +433,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         // Multiple list decomposer
         $dataWithoutArray = array();
         foreach ($data as $xpath => $values) {
+            // if is boundary
+            if(strpos($xpath, 'EX_Extent')!==false){
+                $this->addBoundaries($xpath, $values);
+                unset($data[$xpath]);
+            }
+            
             if (is_array($values)) {
 
                 foreach ($values as $key => $value) {
@@ -479,6 +486,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             }
         }
 
+        $keyword = $this->domXpathStr->query('descendant::*[@catalog:stereotypeId="'.EnumStereotype::$GEMET.'"]')->item(0);
+        
+        if(!empty($keyword)){
+            $this->cleanEmptyNode($keyword->parentNode);
+        }
+        
         $root = $this->domXpathStr->query('/*')->item(0);
 
         foreach ($this->getHeader() as $header) {
@@ -490,6 +503,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         //$root->insertBefore($smda->getPlatformNode($this->structure), $root->firstChild);
         $root->appendChild($smda->getPlatformNode($this->structure));
 
+        /*echo $this->structure->saveXML();
+        die();*/
+        
         $this->removeNoneExist();
         $this->removeCatalogNS();
 
@@ -518,6 +534,57 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         }
     }
 
+    /**
+     * Add boundary stereotype into xpath
+     * 
+     * @param string $xpath
+     * @param array $boundaries
+     */
+    private function addBoundaries($xpath, $boundaries){
+        $formStereotype = new FormStereotype();
+        
+        $query = FormUtils::unSerializeXpath($xpath);
+        $elements = $this->domXpathStr->query($query);
+        $toDeletes = array();
+        foreach ($elements as $element) {
+            $toDeletes[] = $element->parentNode->parentNode->parentNode;
+            $parent = $element->parentNode->parentNode->parentNode->parentNode;
+        }
+        
+        foreach ($toDeletes as $toDelete) {
+            $parent->removeChild($toDelete);
+        }
+        
+        foreach ($boundaries as $boundary) {
+            if(!empty($boundary)){
+                $parent->appendChild($this->structure->importNode($formStereotype->getMultipleExtentStereotype($boundary), true));
+            }
+        }
+    }
+    
+    /**
+     * 
+     * @param DOMElement $element
+     */
+    private function cleanEmptyNode(DOMElement $element){
+
+        $toRemove = array();
+        foreach ($element->childNodes as $child) {
+            if(empty($child->nodeValue)){
+                $toRemove[] = $child;
+            }
+        }
+        
+        foreach ($toRemove as $child) {
+            $element->removeChild($child);
+        }
+        
+        if(!$element->hasChildNodes()){
+            $parent = $element->parentNode->parentNode;
+            $parent->removeChild($element->parentNode);
+        }
+    }
+    
     /**
      * Create xml for update request
      * 
@@ -969,7 +1036,6 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     }
 
     private function removeCatalogNS() {
-        ;
         $attributeNames = array('id', 'dbid', 'childtypeId', 'index', 'lowerbound', 'upperbound', 'rendertypeId', 'stereotypeId', 'relGuid', 'relid', 'maxlength', 'readonly', 'exist', 'resourcetypeId', 'relationId', 'label', 'boundingbox', 'map', 'level');
 
         foreach ($this->domXpathStr->query('//*') as $element) {
