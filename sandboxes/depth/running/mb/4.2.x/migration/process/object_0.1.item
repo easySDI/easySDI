@@ -4,7 +4,7 @@
     <contextParameter comment="" name="destination_AdditionalParams" prompt="destination_AdditionalParams?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="noDatetimeStringSync=true"/>
     <contextParameter comment="" name="destination_Database" prompt="destination_Database?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="easysdi"/>
     <contextParameter comment="" name="destination_Login" prompt="destination_Login?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="root"/>
-    <contextParameter comment="" name="destination_Password" prompt="destination_Password?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_Password" value=""/>
+    <contextParameter comment="" name="destination_Password" prompt="destination_Password?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_Password" value="8+qxVEJMEpx8hMTY3vulaQ=="/>
     <contextParameter comment="" name="destination_Port" prompt="destination_Port?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="3306"/>
     <contextParameter comment="" name="destination_Server" prompt="destination_Server?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="localhost"/>
     <contextParameter comment="" name="source_AdditionalParams" prompt="source_AdditionalParams?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="noDatetimeStringSync=true"/>
@@ -15,7 +15,9 @@
     <contextParameter comment="" name="source_Server" prompt="source_Server?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="localhost"/>
     <contextParameter comment="" name="access" prompt="access?" promptNeeded="false" repositoryContextId="_gpId0OoLEeKUb5Y27QN5QQ" type="id_Integer" value="1"/>
     <contextParameter comment="" name="accessscope_id" prompt="accessscope_id?" promptNeeded="false" repositoryContextId="_gpId0OoLEeKUb5Y27QN5QQ" type="id_Integer" value="1"/>
+    <contextParameter comment="" name="language_id" prompt="language_id?" promptNeeded="false" repositoryContextId="_gpId0OoLEeKUb5Y27QN5QQ" type="id_Integer" value="7"/>
     <contextParameter comment="" name="ordering" prompt="ordering?" promptNeeded="false" repositoryContextId="_gpId0OoLEeKUb5Y27QN5QQ" type="id_Integer" value="1"/>
+    <contextParameter comment="" name="prefix" prompt="prefix?" promptNeeded="false" repositoryContextId="_gpId0OoLEeKUb5Y27QN5QQ" type="id_String" value="&quot;jos&quot;"/>
   </context>
   <parameters>
     <elementParameter field="TEXT" name="JOB_RUN_VM_ARGUMENTS" value=" -Xms256M -Xmx1024M"/>
@@ -65,8 +67,8 @@
     <elementParameter field="PASSWORD" name="PASS" value="4D9onkGJm3erpivxDj26s5xe983mg/uAEncrypt"/>
     <elementParameter field="ENCODING_TYPE" name="ENCODING" value="&quot;ISO-8859-15&quot;"/>
     <elementParameter field="TECHNICAL" name="ENCODING:ENCODING_TYPE" value="ISO-8859-15"/>
-    <elementParameter field="CHECK" name="USE_SHARED_CONNECTION" value="false"/>
-    <elementParameter field="TEXT" name="SHARED_CONNECTION_NAME" value=""/>
+    <elementParameter field="CHECK" name="USE_SHARED_CONNECTION" value="true"/>
+    <elementParameter field="TEXT" name="SHARED_CONNECTION_NAME" value="&quot;source&quot;"/>
     <elementParameter field="LABEL" name="NOTE" value="This option only applies when deploying and running in the Talend Runtime"/>
     <elementParameter field="CHECK" name="SPECIFY_DATASOURCE_ALIAS" value="false"/>
     <elementParameter field="TEXT" name="DATASOURCE_ALIAS" value="&quot;&quot;"/>
@@ -91,8 +93,8 @@
     <elementParameter field="PASSWORD" name="PASS" value="4D9onkGJm3eGEELxAq9OiZxcq8wlfwfeopBD/BMKePg=Encrypt"/>
     <elementParameter field="ENCODING_TYPE" name="ENCODING" value="&quot;ISO-8859-15&quot;"/>
     <elementParameter field="TECHNICAL" name="ENCODING:ENCODING_TYPE" value="ISO-8859-15"/>
-    <elementParameter field="CHECK" name="USE_SHARED_CONNECTION" value="false"/>
-    <elementParameter field="TEXT" name="SHARED_CONNECTION_NAME" value="destination"/>
+    <elementParameter field="CHECK" name="USE_SHARED_CONNECTION" value="true"/>
+    <elementParameter field="TEXT" name="SHARED_CONNECTION_NAME" value="&quot;destination&quot;"/>
     <elementParameter field="LABEL" name="NOTE" value="This option only applies when deploying and running in the Talend Runtime"/>
     <elementParameter field="CHECK" name="SPECIFY_DATASOURCE_ALIAS" value="false"/>
     <elementParameter field="TEXT" name="DATASOURCE_ALIAS" value="&quot;&quot;"/>
@@ -292,6 +294,7 @@
       <column comment="" key="false" length="10" name="resourcetype_id" nullable="false" pattern="" precision="0" sourceType="INT UNSIGNED" type="id_Long" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
+      <column comment="" key="false" name="accessscope_id" nullable="false" pattern="" sourceType="" type="id_Integer" usefulColumn="true"/>
       <column comment="" key="false" length="10" name="access" nullable="false" pattern="" precision="0" sourceType="INT" type="id_Integer" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
@@ -321,6 +324,7 @@
         <mapperTableEntries name="description" expression="Var.description " type="id_String"/>
         <mapperTableEntries name="organism_id" expression="row1.account_id " type="id_Long"/>
         <mapperTableEntries name="resourcetype_id" expression="row1.objecttype_id " type="id_Long"/>
+        <mapperTableEntries name="accessscope_id" expression="context.accessscope_id" type="id_Integer"/>
         <mapperTableEntries name="access" expression="context.access" type="id_Integer"/>
         <mapperTableEntries name="asset_id" type="id_Long"/>
       </outputTables>
@@ -360,11 +364,9 @@
     <elementParameter field="TEXT" name="DBNAME" value="context.destination_Database"/>
     <elementParameter field="TEXT" name="USER" value="context.destination_Login"/>
     <elementParameter field="PASSWORD" name="PASS" value="4D9onkGJm3eGEELxAq9OiZxcq8wlfwfeopBD/BMKePg=Encrypt"/>
-    <elementParameter field="DBTABLE" name="TABLE" value="&quot;jos_sdi_resource&quot;"/>
-    <elementParameter field="CLOSED_LIST" name="TABLE_ACTION" value="NONE"/>
+    <elementParameter field="DBTABLE" name="TABLE" value="context.prefix+&quot;_sdi_resource&quot;"/>
+    <elementParameter field="CLOSED_LIST" name="TABLE_ACTION" value="TRUNCATE"/>
     <elementParameter field="CLOSED_LIST" name="DATA_ACTION" value="INSERT"/>
-    <elementParameter field="TECHNICAL" name="SCHEMA_FLOW:SCHEMA_TYPE" value="REPOSITORY"/>
-    <elementParameter field="TECHNICAL" name="SCHEMA_FLOW:REPOSITORY_SCHEMA_TYPE" value="__rFsUOlCEeKBqfdsBsKH6w - jos_sdi_resource"/>
     <elementParameter field="LABEL" name="NOTE" value="This option only applies when deploying and running in the Talend Runtime"/>
     <elementParameter field="CHECK" name="SPECIFY_DATASOURCE_ALIAS" value="false"/>
     <elementParameter field="TEXT" name="DATASOURCE_ALIAS" value="&quot;&quot;"/>
@@ -457,6 +459,11 @@
       <elementValue elementRef="DELETE_KEY" value="false"/>
       <elementValue elementRef="UPDATABLE" value="true"/>
       <elementValue elementRef="INSERTABLE" value="true"/>
+      <elementValue elementRef="SCHEMA_COLUMN" value="accessscope_id"/>
+      <elementValue elementRef="UPDATE_KEY" value="false"/>
+      <elementValue elementRef="DELETE_KEY" value="false"/>
+      <elementValue elementRef="UPDATABLE" value="true"/>
+      <elementValue elementRef="INSERTABLE" value="true"/>
       <elementValue elementRef="SCHEMA_COLUMN" value="access"/>
       <elementValue elementRef="UPDATE_KEY" value="false"/>
       <elementValue elementRef="DELETE_KEY" value="false"/>
@@ -480,7 +487,7 @@
     <elementParameter field="MEMO" name="COMMENT" value=""/>
     <elementParameter field="CHECK" name="VALIDATION_RULES" value="false"/>
     <metadata connector="FLOW" label="jos_sdi_resource" name="tMysqlOutput_1">
-      <column comment="" key="true" length="10" name="id" nullable="false" pattern="" precision="0" sourceType="INT UNSIGNED" type="id_Long" usefulColumn="true">
+      <column comment="" key="true" length="10" name="id" nullable="false" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
       <column comment="" key="false" length="36" name="guid" nullable="false" pattern="" precision="0" sourceType="VARCHAR" type="id_String" usefulColumn="true">
@@ -519,21 +526,22 @@
       <column comment="" key="false" length="500" name="description" nullable="false" pattern="" precision="0" sourceType="VARCHAR" type="id_String" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
-      <column comment="" key="false" length="10" name="organism_id" nullable="false" pattern="" precision="0" sourceType="INT UNSIGNED" type="id_Long" usefulColumn="true">
+      <column comment="" key="false" length="10" name="organism_id" nullable="false" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
-      <column comment="" key="false" length="10" name="resourcetype_id" nullable="false" pattern="" precision="0" sourceType="INT UNSIGNED" type="id_Long" usefulColumn="true">
+      <column comment="" key="false" length="10" name="resourcetype_id" nullable="false" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
+      <column comment="" key="false" name="accessscope_id" nullable="false" pattern="" sourceType="INT" type="id_Integer" usefulColumn="true"/>
       <column comment="" key="false" length="10" name="access" nullable="false" pattern="" precision="0" sourceType="INT" type="id_Integer" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
-      <column comment="" defaultValue="0" key="false" length="10" name="asset_id" nullable="false" pattern="" precision="0" sourceType="INT UNSIGNED" type="id_Long" usefulColumn="true">
+      <column comment="" defaultValue="0" key="false" length="10" name="asset_id" nullable="false" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
     </metadata>
     <metadata connector="REJECT" label="jos_sdi_resource" name="REJECT">
-      <column comment="" key="true" length="10" name="id" nullable="false" pattern="" precision="0" sourceType="INT UNSIGNED" type="id_Long" usefulColumn="true">
+      <column comment="" key="true" length="10" name="id" nullable="false" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
       <column comment="" key="false" length="36" name="guid" nullable="false" pattern="" precision="0" sourceType="VARCHAR" type="id_String" usefulColumn="true">
@@ -572,16 +580,17 @@
       <column comment="" key="false" length="500" name="description" nullable="false" pattern="" precision="0" sourceType="VARCHAR" type="id_String" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
-      <column comment="" key="false" length="10" name="organism_id" nullable="false" pattern="" precision="0" sourceType="INT UNSIGNED" type="id_Long" usefulColumn="true">
+      <column comment="" key="false" length="10" name="organism_id" nullable="false" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
-      <column comment="" key="false" length="10" name="resourcetype_id" nullable="false" pattern="" precision="0" sourceType="INT UNSIGNED" type="id_Long" usefulColumn="true">
+      <column comment="" key="false" length="10" name="resourcetype_id" nullable="false" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
+      <column comment="" key="false" name="accessscope_id" nullable="false" pattern="" sourceType="INT" type="id_Integer" usefulColumn="true"/>
       <column comment="" key="false" length="10" name="access" nullable="false" pattern="" precision="0" sourceType="INT" type="id_Integer" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
-      <column comment="" defaultValue="0" key="false" length="10" name="asset_id" nullable="false" pattern="" precision="0" sourceType="INT UNSIGNED" type="id_Long" usefulColumn="true">
+      <column comment="" defaultValue="0" key="false" length="10" name="asset_id" nullable="false" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
       <column defaultValue="" key="false" length="255" name="errorCode" nullable="true" precision="0" sourceType="" type="id_String" usefulColumn="true"/>
@@ -715,6 +724,9 @@
       <elementValue elementRef="TRACE_COLUMN_CHECKED" value="true"/>
       <elementValue elementRef="TRACE_COLUMN_CONDITION" value=""/>
       <elementValue elementRef="TRACE_COLUMN" value="asset_id"/>
+      <elementValue elementRef="TRACE_COLUMN_CHECKED" value="true"/>
+      <elementValue elementRef="TRACE_COLUMN_CONDITION" value=""/>
+      <elementValue elementRef="TRACE_COLUMN" value="accessscope_id"/>
       <elementValue elementRef="TRACE_COLUMN_CHECKED" value="true"/>
       <elementValue elementRef="TRACE_COLUMN_CONDITION" value=""/>
     </elementParameter>

@@ -4,5 +4,5 @@
   <contextParameter comment="" name="accessscope_id" prompt="accessscope_id?" promptNeeded="false" type="id_Integer" value="1"/>
   <contextParameter comment="" name="ordering" prompt="ordering?" promptNeeded="false" type="id_Integer" value="1"/>
   <contextParameter comment="" name="language_id" prompt="language_id?" promptNeeded="false" type="id_Integer" value="7"/>
-  <contextParameter comment="" name="prefix" prompt="prefix?" promptNeeded="false" type="id_String" value="&quot;slnvp&quot;"/>
+  <contextParameter comment="" name="prefix" prompt="prefix?" promptNeeded="false" type="id_String" value="&quot;jos&quot;"/>
 </talendfile:ContextType>

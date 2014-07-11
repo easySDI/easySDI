@@ -4,7 +4,7 @@
     <contextParameter comment="" name="destination_AdditionalParams" prompt="destination_AdditionalParams?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="noDatetimeStringSync=true"/>
     <contextParameter comment="" name="destination_Database" prompt="destination_Database?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="easysdi"/>
     <contextParameter comment="" name="destination_Login" prompt="destination_Login?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="root"/>
-    <contextParameter comment="" name="destination_Password" prompt="destination_Password?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_Password" value=""/>
+    <contextParameter comment="" name="destination_Password" prompt="destination_Password?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_Password" value="8+qxVEJMEpx8hMTY3vulaQ=="/>
     <contextParameter comment="" name="destination_Port" prompt="destination_Port?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="3306"/>
     <contextParameter comment="" name="destination_Server" prompt="destination_Server?" promptNeeded="false" repositoryContextId="_L_W6UOlDEeKBqfdsBsKH6w" type="id_String" value="localhost"/>
     <contextParameter comment="" name="source_AdditionalParams" prompt="source_AdditionalParams?" promptNeeded="false" repositoryContextId="_9OLlAOlCEeKBqfdsBsKH6w" type="id_String" value="noDatetimeStringSync=true"/>
@@ -17,7 +17,7 @@
     <contextParameter comment="" name="accessscope_id" prompt="accessscope_id?" promptNeeded="false" repositoryContextId="_gpId0OoLEeKUb5Y27QN5QQ" type="id_Integer" value="1"/>
     <contextParameter comment="" name="language_id" prompt="language_id?" promptNeeded="false" repositoryContextId="_gpId0OoLEeKUb5Y27QN5QQ" type="id_Integer" value="7"/>
     <contextParameter comment="" name="ordering" prompt="ordering?" promptNeeded="false" repositoryContextId="_gpId0OoLEeKUb5Y27QN5QQ" type="id_Integer" value="1"/>
-    <contextParameter comment="" name="prefix" prompt="prefix?" promptNeeded="false" repositoryContextId="_gpId0OoLEeKUb5Y27QN5QQ" type="id_String" value="&quot;slnvp&quot;"/>
+    <contextParameter comment="" name="prefix" prompt="prefix?" promptNeeded="false" repositoryContextId="_gpId0OoLEeKUb5Y27QN5QQ" type="id_String" value="&quot;jos&quot;"/>
   </context>
   <parameters>
     <elementParameter field="TEXT" name="JOB_RUN_VM_ARGUMENTS" value=" -Xms256M -Xmx1024M"/>
