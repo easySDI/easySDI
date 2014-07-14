@@ -277,12 +277,12 @@
       </column>
     </metadata>
     <nodeData xsi:type="MapperData">
-      <uiProperties/>
+      <uiProperties shellMaximized="true"/>
       <varTables sizeState="INTERMEDIATE" name="Var"/>
       <outputTables sizeState="INTERMEDIATE" name="write" expressionFilter="!row1.system" activateExpressionFilter="true">
         <mapperTableEntries name="id" expression="row1.id" type="id_Long"/>
         <mapperTableEntries name="guid" expression="row1.guid" type="id_String"/>
-        <mapperTableEntries name="alias" expression="&quot;default&quot;" type="id_String"/>
+        <mapperTableEntries name="alias" expression="row1.prefix " type="id_String"/>
         <mapperTableEntries name="created_by" expression="row1.created_by" type="id_Integer"/>
         <mapperTableEntries name="created" expression="row1.created" type="id_Date"/>
         <mapperTableEntries name="modified_by" expression="row1.modified_by" type="id_Integer" nullable="true"/>
@@ -291,7 +291,7 @@
         <mapperTableEntries name="state" expression="row1.state" type="id_Boolean"/>
         <mapperTableEntries name="checked_out" expression="0" type="id_Integer"/>
         <mapperTableEntries name="checked_out_time" expression="new Date()" type="id_Date"/>
-        <mapperTableEntries name="name" expression="&quot;Default&quot;" type="id_String"/>
+        <mapperTableEntries name="name" expression="row1.prefix " type="id_String"/>
         <mapperTableEntries name="prefix" expression="row1.prefix" type="id_String"/>
         <mapperTableEntries name="uri" expression="row1.uri" type="id_String"/>
         <mapperTableEntries name="system" expression="row1.system" type="id_Boolean"/>

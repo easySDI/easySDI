@@ -1,0 +1,52 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:expression="http:///expression.ecore">
+  <expression:EMFExpression id="null=>Var=>var1" expression="row1.stereotype_id = 0:null?row1.stereotype_id">
+    <variables name="row1.id" value="0" talendType="id_Long"/>
+    <variables name="row1.guid" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row1.code" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row1.name" value="null" talendType="id_String"/>
+    <variables name="row1.description" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row1.created" value="null" talendType="id_Date"/>
+    <variables name="row1.updated" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="row1.createdby" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="row1.updatedby" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="row1.label" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row1.ordering" value="0" talendType="id_Integer"/>
+    <variables name="row1.isocode" value="null" talendType="id_String"/>
+    <variables name="row1.isextensible" value="null" talendType="id_Boolean" nullable="true"/>
+    <variables name="row1.issystem" value="null" talendType="id_Boolean" nullable="true"/>
+    <variables name="row1.isrootclass" value="null" talendType="id_Boolean" nullable="true"/>
+    <variables name="row1.checked_out" value="0" talendType="id_Integer"/>
+    <variables name="row1.checked_out_time" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="row1.namespace_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row1.stereotype_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="Utils.sansAccent(row1.name) " value="null" talendType="id_String"/>
+    <variables name="row1.checked_out_time!=null?row1.checked_out_time:new Date() " value="null" talendType="id_Date"/>
+    <variables value="null" talendType="id_String"/>
+  </expression:EMFExpression>
+  <expression:EMFExpression id="null=>Var=>stereotype_id" expression="row1.stereotype_id == 0?null:row1.stereotype_id  ">
+    <variables name="row1.id" value="0" talendType="id_Long"/>
+    <variables name="row1.guid" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row1.code" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row1.name" value="null" talendType="id_String"/>
+    <variables name="row1.description" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row1.created" value="null" talendType="id_Date"/>
+    <variables name="row1.updated" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="row1.createdby" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="row1.updatedby" value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="row1.label" value="null" talendType="id_String" nullable="true"/>
+    <variables name="row1.ordering" value="0" talendType="id_Integer"/>
+    <variables name="row1.isocode" value="null" talendType="id_String"/>
+    <variables name="row1.isextensible" value="null" talendType="id_Boolean" nullable="true"/>
+    <variables name="row1.issystem" value="null" talendType="id_Boolean" nullable="true"/>
+    <variables name="row1.isrootclass" value="null" talendType="id_Boolean" nullable="true"/>
+    <variables name="row1.checked_out" value="0" talendType="id_Integer"/>
+    <variables name="row1.checked_out_time" value="null" talendType="id_Date" nullable="true"/>
+    <variables name="row1.namespace_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="row1.stereotype_id" value="null" talendType="id_Long" nullable="true"/>
+    <variables name="Utils.sansAccent(row1.name) " value="null" talendType="id_String"/>
+    <variables name="row1.checked_out_time!=null?row1.checked_out_time:new Date() " value="null" talendType="id_Date"/>
+    <variables name="row1.stereotype_id = 0?null:row1.stereotype_id  " value="null" talendType="id_Integer" nullable="true"/>
+    <variables name="row1.stereotype_id = 0:null?row1.stereotype_id " value="null" talendType="id_Integer" nullable="true"/>
+  </expression:EMFExpression>
+</xmi:XMI>

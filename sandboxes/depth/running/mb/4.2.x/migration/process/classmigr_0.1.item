@@ -316,10 +316,11 @@
       </column>
     </metadata>
     <nodeData xsi:type="MapperData">
-      <uiProperties/>
+      <uiProperties shellMaximized="true"/>
       <varTables sizeState="INTERMEDIATE" name="Var">
         <mapperTableEntries name="alias" expression="Utils.sansAccent(row1.name) " type="id_String"/>
         <mapperTableEntries name="checked_out_time" expression="row1.checked_out_time!=null?row1.checked_out_time:new Date() " type="id_Date"/>
+        <mapperTableEntries name="stereotype_id" expression="row1.stereotype_id == 0?null:row1.stereotype_id   " type="id_Integer" nullable="true"/>
       </varTables>
       <outputTables sizeState="INTERMEDIATE" name="write">
         <mapperTableEntries name="id" expression="row1.id" type="id_Long"/>
@@ -341,7 +342,7 @@
         <mapperTableEntries name="isocode" expression="row1.isocode" type="id_String" nullable="true"/>
         <mapperTableEntries name="stereotype_id" expression="row1.stereotype_id" type="id_Long" nullable="true"/>
         <mapperTableEntries name="access" expression="context.access" type="id_Integer"/>
-        <mapperTableEntries name="asset_id" type="id_Long"/>
+        <mapperTableEntries name="asset_id" expression="Var.stereotype_id " type="id_Long"/>
       </outputTables>
       <inputTables sizeState="INTERMEDIATE" name="row1" matchingMode="UNIQUE_MATCH" lookupMode="LOAD_ONCE">
         <mapperTableEntries name="id" type="id_Long"/>

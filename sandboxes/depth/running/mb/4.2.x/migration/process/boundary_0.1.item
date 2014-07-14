@@ -297,7 +297,7 @@
       <column comment="" key="false" length="255" name="westbound" nullable="true" pattern="" precision="0" sourceType="VARCHAR" type="id_String" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
-      <column comment="" key="false" length="10" name="category_id" nullable="true" pattern="" precision="0" sourceType="INT UNSIGNED" type="id_Long" usefulColumn="true">
+      <column comment="" key="false" length="10" name="category_id" nullable="true" pattern="" precision="0" sourceType="INT UNSIGNED" type="id_Integer" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
       <column comment="" key="false" length="10" name="parent_id" nullable="true" pattern="" precision="0" sourceType="INT UNSIGNED" type="id_Long" usefulColumn="true">
@@ -311,7 +311,7 @@
       </column>
     </metadata>
     <nodeData xsi:type="MapperData">
-      <uiProperties/>
+      <uiProperties shellMaximized="true"/>
       <varTables sizeState="INTERMEDIATE" name="Var">
         <mapperTableEntries name="alias" expression="Utils.sansAccent(row1.name) " type="id_String"/>
       </varTables>
@@ -332,7 +332,7 @@
         <mapperTableEntries name="southbound" expression="String.valueOf(row1.southbound)  " type="id_String" nullable="true"/>
         <mapperTableEntries name="eastbound" expression="String.valueOf(row1.eastbound) " type="id_String" nullable="true"/>
         <mapperTableEntries name="westbound" expression="String.valueOf(row1.westbound) " type="id_String" nullable="true"/>
-        <mapperTableEntries name="category_id" expression="row1.category_id" type="id_Long" nullable="true"/>
+        <mapperTableEntries name="category_id" expression="1" type="id_Integer" nullable="true"/>
         <mapperTableEntries name="parent_id" expression="row1.parent_id" type="id_Long" nullable="true"/>
         <mapperTableEntries name="access" expression="context.access" type="id_Integer"/>
         <mapperTableEntries name="asset_id" type="id_Long"/>
@@ -554,7 +554,7 @@
       <column comment="" key="false" length="255" name="westbound" nullable="true" pattern="" precision="0" sourceType="VARCHAR" type="id_String" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
-      <column comment="" key="false" length="10" name="category_id" nullable="true" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">
+      <column comment="" key="false" length="10" name="category_id" nullable="true" pattern="" precision="0" sourceType="INT" type="id_Integer" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
       <column comment="" key="false" length="10" name="parent_id" nullable="true" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">
@@ -616,7 +616,7 @@
       <column comment="" key="false" length="255" name="westbound" nullable="true" pattern="" precision="0" sourceType="VARCHAR" type="id_String" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
-      <column comment="" key="false" length="10" name="category_id" nullable="true" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">
+      <column comment="" key="false" length="10" name="category_id" nullable="true" pattern="" precision="0" sourceType="INT" type="id_Integer" usefulColumn="true">
         <additionalField key="Comment" value=""/>
       </column>
       <column comment="" key="false" length="10" name="parent_id" nullable="true" pattern="" precision="0" sourceType="BIGINT" type="id_Long" usefulColumn="true">

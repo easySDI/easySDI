@@ -386,9 +386,10 @@
       </column>
     </metadata>
     <nodeData xsi:type="MapperData">
-      <uiProperties/>
+      <uiProperties shellMaximized="true"/>
       <varTables sizeState="INTERMEDIATE" name="Var">
         <mapperTableEntries name="childtype_id" expression="Utils.getChildType_id(row1.classchild_id, row1.attributechild_id, row1.objecttypechild_id)  " type="id_Long"/>
+        <mapperTableEntries name="rendertype_id" expression="row1.rendertype_id==0?null:row1.rendertype_id " type="id_Integer" nullable="true"/>
       </varTables>
       <outputTables sizeState="INTERMEDIATE" name="write">
         <mapperTableEntries name="id" expression="row1.id" type="id_Long"/>
@@ -410,7 +411,7 @@
         <mapperTableEntries name="lowerbound" expression="row1.lowerbound" type="id_Integer" nullable="true"/>
         <mapperTableEntries name="upperbound" expression="row1.upperbound" type="id_Integer" nullable="true"/>
         <mapperTableEntries name="relationtype_id" expression="row1.relationtype_id" type="id_Long" nullable="true"/>
-        <mapperTableEntries name="rendertype_id" expression="row1.rendertype_id" type="id_Long" nullable="true"/>
+        <mapperTableEntries name="rendertype_id" expression="Var.rendertype_id " type="id_Long" nullable="true"/>
         <mapperTableEntries name="namespace_id" expression="row1.namespace_id" type="id_Long" nullable="true"/>
         <mapperTableEntries name="isocode" expression="row1.isocode" type="id_String" nullable="true"/>
         <mapperTableEntries name="classassociation_id" expression="row1.classassociation_id" type="id_Long" nullable="true"/>
