@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<talendfile:ContextType xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:talendfile="platform:/resource/org.talend.model/model/TalendFile.xsd" confirmationNeeded="false" name="Default">
-  <contextParameter comment="" name="access" prompt="access?" promptNeeded="false" type="id_Integer" value="1"/>
-  <contextParameter comment="" name="accessscope_id" prompt="accessscope_id?" promptNeeded="false" type="id_Integer" value="1"/>
-  <contextParameter comment="" name="ordering" prompt="ordering?" promptNeeded="false" type="id_Integer" value="1"/>
-  <contextParameter comment="" name="language_id" prompt="language_id?" promptNeeded="false" type="id_Integer" value="7"/>
-  <contextParameter comment="" name="prefix" prompt="prefix?" promptNeeded="false" type="id_String" value="&quot;slnvp&quot;"/>
-</talendfile:ContextType>
