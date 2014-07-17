@@ -20,6 +20,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
 ?>
 
 <script type="text/javascript">
+    
     js = jQuery.noConflict();
     js(document).ready(function() {
         enableAccessScope();
@@ -28,7 +29,8 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         enableDownload();
         enableExtraction();
         enableFreePerimeter();
-        js('#adminForm').submit(function(event) {
+        
+        js('#adminForm').submit(function(event) { console.log('here');return false;
             if (js('#jform_deposit').val() != '') {
                 js('#jform_deposit_hidden').val(js('#jform_deposit').val());
             }
@@ -37,6 +39,9 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
             }
         });
         js('#jform_restrictedperimeter').change(enableFreePerimeter);
+        
+        js('#jform_testurlauthentication').click(onTestUrlAuthenticationClick);
+        js('#jform_testurlauthentication').parent().append('<span id="result_testurlauthentication"></span>');
     });
     Joomla.submitbutton = function(task)
     {
@@ -73,17 +78,17 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         switch (storage) {
             case "1":
                 js('#file').show();
-                js('#fileurl').hide();
+                js('#fileurl, #userurl, #passurl, #testurlauthentication').hide();
                 js('#perimeter_id').hide();
                 break;
             case "2":
                 js('#file').hide();
-                js('#fileurl').show();
+                js('#fileurl, #userurl, #passurl, #testurlauthentication').show();
                 js('#perimeter_id').hide();
                 break;
             case "3":
                 js('#file').hide();
-                js('#fileurl').hide();
+                js('#fileurl, #userurl, #passurl, #testurlauthentication').hide();
                 js('#perimeter_id').show();
                 break;
         }
@@ -146,7 +151,51 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         }
         js('#jform_perimeter1').trigger("liszt:updated");
     }
+    
+    function onTestUrlAuthenticationClick(){
+        js.ajax({
+            url: "<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.testURLAccessibility') ?>",
+            type: "POST",
+            data: {
+                url: js('#jform_fileurl').val(),
+                user: js('#jform_userurl').val(),
+                password: js('#jform_passurl').val()
+            }
+        }).fail(function(){
+            console.log('todo');
+        }).done(function(data){
+            js('#result_testurlauthentication').removeClass('success error');
+            if(data == 1)
+                js('#result_testurlauthentication').html('<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_OK'); ?>').addClass('success');
+            else{
+                js('#result_testurlauthentication').html('<?php echo JText::_('COM_EASYSDI_SHOP_TEST_URL_AUTHENTICATION_FAILURE'); ?>').addClass('error');
+                console.log(data);
+            }
+        }).always(function(){
+            js('#jform_testurlauthentication').blur();
+        })
+        ;
+        
+        return false;
+    };
+    
+    
 </script>
+
+<style type="text/css">
+    #result_testurlauthentication{
+        padding: 5px 0 0 15px;
+        display: inline-block;
+    }
+    
+    #result_testurlauthentication.success{
+        color: green;
+    }
+    
+    #result_testurlauthentication.error{
+        color: red;
+    }
+</style>
 
 <div class="diffusion-edit front-end-edit">
     <?php if (!empty($this->item->id)): ?>

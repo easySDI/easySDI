@@ -17,6 +17,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easys
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/resource.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/tables/version.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_core/libraries/easysdi/catalog/sdimetadata.php';
+require_once JPATH_COMPONENT . '/helpers/easysdi_shop.php';
 
 /**
  * Easysdi_shop model.
@@ -94,6 +95,15 @@ class Easysdi_shopModelDiffusion extends JModelForm {
                         $this->_item->perimeter [$perimeter->perimeter_id] = $perimeter->buffer;
                     }
                 }
+                //Parse fileurl to retrieve user/pwd
+                $url = parse_url($this->_item->fileurl);
+                            
+                $this->_item->userurl = $url['user'];
+                $this->_item->passurl = $url['pass'];
+                unset($url['user'], $url['pass']);
+
+                $this->_item->fileurl = Easysdi_shopHelper::unparse_url($url);
+                
                 //Load properties and properties values
                 $diffusionpropertyvalue = JTable::getInstance('diffusionpropertyvalue', 'Easysdi_shopTable');
                 $properties = $diffusionpropertyvalue->loadBydiffusionID($this->_item->id);

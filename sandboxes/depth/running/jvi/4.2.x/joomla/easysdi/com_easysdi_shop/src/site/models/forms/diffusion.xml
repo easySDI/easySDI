@@ -94,6 +94,23 @@
               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_FILEURL"
               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_FILEURL" 
               filter="safehtml" /> 
+        
+        <field name="userurl" type="text" size="10" class="inputbox input-xlarge"
+              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_USERURL"
+              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_USERURL" 
+              filter="safehtml" /> 
+        
+        <field name="passurl" type="text" size="10" class="inputbox input-xlarge"
+              label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PASSURL"
+              description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PASSURL" 
+              filter="safehtml" /> 
+
+        <field 	name="testurlauthentication" 
+                id="testurlauthentication" 
+                type="testurlauthentication" 
+                label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_TESTURLAUTHENTICATION"
+                description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_TESTURLAUTHENTICATION" 
+                filter="safehtml" />
 
         <field name="perimeter_id" 
                type="sqlperimeterwithaccessscope" 
