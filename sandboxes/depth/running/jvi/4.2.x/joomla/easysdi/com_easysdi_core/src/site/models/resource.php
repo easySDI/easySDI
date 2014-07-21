@@ -121,7 +121,7 @@ class Easysdi_coreModelResource extends JModelForm {
                         ->where('urr.resource_id = ' . (int)$this->_item->id);
                 $db->setQuery($query);
                 $rows = $db->loadObjectList();
-                $this->_item->rights = json_encode($rows);
+                $rights = json_encode($rows);
             } else {
                 //Set current user as default selection for all role
                 $user = sdiFactory::getSdiUser();
@@ -143,8 +143,16 @@ class Easysdi_coreModelResource extends JModelForm {
                 $rows [] = (object) $row;
                 $row = array("role_id" => "7", "user_id" => $user->id);
                 $rows [] = (object) $row;
-                $this->_item->rights = json_encode($rows);
+                $rights = json_encode($rows);
             }
+            
+            $userRights = array();
+            foreach($rights as $right){
+                if(!isset($userRights[$right->role_id]))
+                    $userRights[$right->role_id] = array();
+                array_push($userRights[$right->role_id], $right->user_id);
+            }
+            $this->item->rights = $userRights;
         }
 
         return $this->_item;
@@ -257,8 +265,6 @@ class Easysdi_coreModelResource extends JModelForm {
         $jform = $jinput->get('jform', '', 'ARRAY');
         
         // --extra fields : resources users rights
-        for($index=2; $index<8; $index++)
-            JFactory::getApplication()->setUserState('com_easysdi_core.edit.resource.ur[rights_'.$index.']',$jform[$index]);
         if(!isset($jform[2])){
             $this->setError(JText::_('COM_EASYSDI_CORE_RESOURCES_ITEM_SAVED_ERROR_RESOURCE_MANAGER'));
             return false;

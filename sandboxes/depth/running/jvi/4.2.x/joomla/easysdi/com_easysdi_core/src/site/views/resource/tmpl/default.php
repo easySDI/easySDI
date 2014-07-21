@@ -193,9 +193,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                 <button type="button" id="removeAllUsersBtn" class="btn btn-mini"><?php echo JText::_('COM_EASYSDI_CORE_REMOVE_ALL_USERS_BTN'); ?></button>
                             </div>
                         </div>
-                        <?php for($index = 2; $index < 8; $index++): 
-                            $sessionData = JFactory::getApplication()->getUserState('com_easysdi_core.edit.resource.ur[rights_'.$index.']');
-                            ?>
+                        <?php for($index = 2; $index < 8; $index++): ?>
                             <div class="control-group" <?php if(isset($this->item->resourcerights[$index]) && !$this->item->resourcerights[$index]): ?>style="display:none"<?php endif; ?>>
                                 <div class="control-label">
                                     <label id="jform_<?php echo $index ?>-lbl" for="jform_<?php echo $index ?>">
@@ -204,7 +202,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                 </div>
                                 <div class="controls">
                                     <select id="jform_<?php echo $index ?>" name="jform[<?php echo $index ?>][]" class="multiselect input-xxlarge" multiple="multiple" 
-                                        <?php if($sessionData !== null):?> data-orig="<?php echo implode(',',$sessionData); ?>"<?php endif;?>
+                                        <?php if($this->item->rights[$index] !== null):?> data-orig="<?php echo implode(',',$this->item->rights[$index]); ?>"<?php endif;?>
                                     ></select>
                                 </div>
                             </div>
