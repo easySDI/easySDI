@@ -289,6 +289,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         if ($changeStatus != FALSE) {
             $this->update($id);
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_CHANGE_STATUS_OK'), 'message');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
         } else {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_CHANGE_STATUS_ERROR'), 'error');
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));

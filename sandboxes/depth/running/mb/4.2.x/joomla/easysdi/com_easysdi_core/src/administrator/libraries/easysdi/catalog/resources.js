@@ -70,7 +70,7 @@ function getNewVersionRight(metadata_id) {
             js('#' + response.resource_id + '_new_linker').removeAttr('style');
             js('#' + response.resource_id + '_new_linker').removeAttr('css');
             
-            js('#' + response.resource_id + '_new_linker').on('click', function(){showNewVersionModal(response.resource_id)});
+            js('#' + response.resource_id + '_new_linker').on('click', function(){showNewVersionModal(response.resource_id);return false;});
         }
     });
 }
