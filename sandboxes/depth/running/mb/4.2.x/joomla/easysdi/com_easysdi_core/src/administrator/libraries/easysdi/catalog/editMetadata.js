@@ -427,6 +427,14 @@ function confirmField(id, idwi, lowerbound, upperbound) {
     });
 }
 
+function confirmReset(){
+    bootbox.confirm("Are you sure?", function(result) {
+        if(result){
+            
+        }
+    }); 
+}
+
 function removeFromStructure(id) {
     var uuid = getUuid('remove-btn-', id);
     js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
