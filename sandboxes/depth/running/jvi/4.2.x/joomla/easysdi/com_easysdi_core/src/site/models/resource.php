@@ -121,7 +121,7 @@ class Easysdi_coreModelResource extends JModelForm {
                         ->where('urr.resource_id = ' . (int)$this->_item->id);
                 $db->setQuery($query);
                 $rows = $db->loadObjectList();
-                $rights = json_encode($rows);
+                $this->_item->rights = json_encode($rows);
             } else {
                 //Set current user as default selection for all role
                 $user = sdiFactory::getSdiUser();
@@ -143,16 +143,8 @@ class Easysdi_coreModelResource extends JModelForm {
                 $rows [] = (object) $row;
                 $row = array("role_id" => "7", "user_id" => $user->id);
                 $rows [] = (object) $row;
-                $rights = json_encode($rows);
+                $this->_item->rights = json_encode($rows);
             }
-            
-            $userRights = array();
-            foreach($rights as $right){
-                if(!isset($userRights[$right->role_id]))
-                    $userRights[$right->role_id] = array();
-                array_push($userRights[$right->role_id], $right->user_id);
-            }
-            $this->item->rights = $userRights;
         }
 
         return $this->_item;
@@ -323,7 +315,7 @@ class Easysdi_coreModelResource extends JModelForm {
             $userroleresource = JTable::getInstance('userroleresource', 'Easysdi_coreTable');
             $userroleresource->deleteByResourceId($table->id);
             
-            for ($index = 2; $index < 8; $index++) {
+            for ($index = 2; $index < 8; $index++) { // $index refers to sys_role ID - role with id 8 was removed !
                 if (!isset($jform[$index]))
                     continue;
 

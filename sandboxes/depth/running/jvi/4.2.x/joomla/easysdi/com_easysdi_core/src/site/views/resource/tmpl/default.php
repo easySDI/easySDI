@@ -75,15 +75,16 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
     js(document).ready(function() {
         enableAccessScope();
         onChangeOrganism();
-        js('#addAllUsersBtn').on('click', function(){toggleAllUsers(false)});
-        js('#removeAllUsersBtn').on('click', function(){toggleAllUsers(true)});
+        js('#addAllUsersBtn').on('click', function(mEvt){toggleAllUsers(false);mEvt.srcElement.blur();});
+        js('#removeAllUsersBtn').on('click', function(mEvt){toggleAllUsers(true);mEvt.srcElement.blur();});
         js('#form-resource').submit(function(event) {
 
         });
     });
     
     var users = false,
-        rightsarray = false;
+        rightsarray = false,
+        currentUserId = <?php echo $this->user->id;?>;
 
     
     var addUsersToSelect = function(right, rusers, limit, startup){
@@ -91,11 +92,15 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         if(userState) userState = userState.split(',');
         js.each(rusers, function(key, user) {
             var option = js('<option></option>').val(user.id).text(user.name);
-            
             if(
-                (limit && startup===true && userState!==false && js.inArray(user.id, userState)>-1) ||
-                (limit && startup===false && right==2 && js.inArray(user.id, rightsarray[right])>-1) ||
                 limit===false
+                ||  (startup===true
+                    && (
+                        (userState===false && js.inArray(user.id, rightsarray[right])>-1)
+                        || js.inArray(user.id, userState)>-1
+                        )
+                    )
+                || (startup===false && right==2 && user.id==currentUserId)
             )
                 option.attr('selected', 'selected');
             
@@ -108,9 +113,11 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         startup = Boolean(startup) || false;
         
         js.each(users, function(right, rightUsers) {
-            js('#jform_' + right).empty().trigger("liszt:updated");
+            if(js('#jform_' + right).length){
+                js('#jform_' + right).empty().trigger("liszt:updated");
 
-            addUsersToSelect(right, rightUsers, limit, startup);
+                addUsersToSelect(right, rightUsers, limit, startup);
+            }
         });
     };
     
@@ -193,7 +200,9 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                 <button type="button" id="removeAllUsersBtn" class="btn btn-mini"><?php echo JText::_('COM_EASYSDI_CORE_REMOVE_ALL_USERS_BTN'); ?></button>
                             </div>
                         </div>
-                        <?php for($index = 2; $index < 8; $index++): ?>
+                        <?php for($index = 2; $index < 8; $index++): 
+                            $sessionData = JFactory::getApplication()->getUserState('com_easysdi_core.edit.resource.ur[rights_'.$index.']');
+                        ?>
                             <div class="control-group" <?php if(isset($this->item->resourcerights[$index]) && !$this->item->resourcerights[$index]): ?>style="display:none"<?php endif; ?>>
                                 <div class="control-label">
                                     <label id="jform_<?php echo $index ?>-lbl" for="jform_<?php echo $index ?>">
@@ -202,7 +211,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                                 </div>
                                 <div class="controls">
                                     <select id="jform_<?php echo $index ?>" name="jform[<?php echo $index ?>][]" class="multiselect input-xxlarge" multiple="multiple" 
-                                        <?php if($this->item->rights[$index] !== null):?> data-orig="<?php echo implode(',',$this->item->rights[$index]); ?>"<?php endif;?>
+                                        <?php if($sessionData !== null):?> data-orig="<?php echo implode(',',$sessionData); ?>"<?php endif;?>
                                     ></select>
                                 </div>
                             </div>
