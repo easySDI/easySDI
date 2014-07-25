@@ -433,12 +433,14 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                             </div>
                         </div>
                         <!-- Child Checkbox field -->
-                        <div class="control-label">
-                            <label id="assign_child-lbl" for="assign_child" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCE_ASSIGN_CHILD'); ?></label>
-                        </div>
-                        <div class="controls">
-                            <div class="input-append">
-                                <input type="checkbox" id="assign_child" name="assign_child" value="1">
+                        <div id="assign_child_controls">
+                            <div class="control-label">
+                                <label id="assign_child-lbl" for="assign_child" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCE_ASSIGN_CHILD'); ?></label>
+                            </div>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input type="checkbox" id="assign_child" name="assign_child" value="1">
+                                </div>
                             </div>
                         </div>
                     </div>

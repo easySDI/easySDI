@@ -771,11 +771,22 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
             $roles[$row['role_id']]['users'][$row['user_id']] = $row['username'];
         }
+        
+        $version = new stdClass();
+        $version->id = JFactory::getApplication()->input->get('versionId');
+        
+        $versions = $this->core_helpers->getViralVersionnedChild($version);
 
+        if(empty($versions[$version->id]->children)){
+            $roles['hasChildren'] = 'false';
+        }else{
+            $roles['hasChildren'] = 'true';
+        }
+        
         echo json_encode($roles);
         die();
     }
-
+    
     public function getSynchronisationInfo() {
         $metadataId = JFactory::getApplication()->input->get('metadata_id');
 

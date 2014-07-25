@@ -116,6 +116,12 @@ function showAssignmentModal(version_id){
         for(var user_id in roles[4].users)
             js('#assigned_to').append(js('<option></option>').val(user_id).html(roles[4].users[user_id]));
         js('#assigned_to').trigger('liszt:updated');
+        
+        if(roles['hasChildren']==='false'){
+            js('#assign_child_controls').hide();
+        }else{
+            js('#assign_child_controls').show();
+        }
         showModal(version_id, 'assignmentModal');
     });
 }
