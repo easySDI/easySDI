@@ -295,7 +295,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                             <?php if($this->user->authorize($item->id, sdiUser::metadataeditor)): ?>
                                                 <li class="divider"></li>
                                                 <li>
-                                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=assignments&version=' . $item->metadata[0]->version); ?>">
+                                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=assignments&version=' . $item->metadata[0]->version); ?>&limitstart=<?php echo JFactory::getApplication()->input->getInt('start', 0, 'int'); ?>" >
                                                         <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ASSIGNMENT_HISTORY'); ?>
                                                     </a>
                                                 </li>
