@@ -210,7 +210,7 @@ CREATE TABLE [#__sdi_accessscope](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[entity_guid] [nvarchar](36) NOT NULL,
 	[organism_id] [bigint] NULL,
-	[user_id] [bigint] NULL,,
+	[user_id] [bigint] NULL,
 	[category_id] [bigint] NULL,
  CONSTRAINT [PK_#__sdi_accessscope_id] PRIMARY KEY CLUSTERED 
 (
@@ -1247,11 +1247,11 @@ CREATE TABLE [#__sdi_category](
 	[name] [nvarchar](255) NOT NULL,
 	[access] [int] NOT NULL,
 	[asset_id] [int] NOT NULL,
- CONSTRAINT [PK_#__sdi_organism_id] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_#__sdi_category_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
+) ON [PRIMARY];
 
 SET ANSI_NULLS ON;
 
@@ -1265,7 +1265,7 @@ CREATE TABLE [#__sdi_organism_category](
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
+) ON [PRIMARY];
 
 
 SET ANSI_NULLS ON;
@@ -1498,7 +1498,7 @@ CREATE TABLE [#__sdi_policy_category](
 (
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
+) ON [PRIMARY];
 
 
 SET ANSI_NULLS ON;
