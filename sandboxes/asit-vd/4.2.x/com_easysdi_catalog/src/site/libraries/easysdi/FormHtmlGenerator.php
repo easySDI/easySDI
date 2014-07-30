@@ -395,12 +395,12 @@ class FormHtmlGenerator {
         }
 
         $attributeGroup = $this->formHtml->createElement('div');
-        if($rendertypeId == 1000){
+        if ($rendertypeId == 1000) {
             $attributeGroup->setAttribute('class', 'hidden attribute-group attribute-group-' . $this->removeIndex(FormUtils::serializeXpath($attribute->getNodePath())));
-        }else{
+        } else {
             $attributeGroup->setAttribute('class', 'attribute-group attribute-group-' . $this->removeIndex(FormUtils::serializeXpath($attribute->getNodePath())));
         }
-        
+
         $attributeGroup->setAttribute('id', 'attribute-group-' . FormUtils::serializeXpath($attribute->getNodePath()));
 
         switch ($stereotypeId) {
@@ -465,7 +465,17 @@ class FormHtmlGenerator {
                     case EnumRendertype::$LIST:
                         // Mutiple list
                         if ($upperbound > 1) {
-                            $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath)));
+                            switch ($stereotypeId) {
+                                case EnumStereotype::$BOUNDARY:
+                                    $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath), 12, 15));
+                                    $jfield->__set('class','sdi-extent-multiselect');
+                                    break;
+
+                                default:
+                                    $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath)));
+                                    break;
+                            }
+                            
                             $fieldid = $jfield->__get('id');
                             $query = 'descendant::*[@id="' . $fieldid . '"]';
                             $nbrOccurance = $this->domXpathFormHtml->query($query)->length;
@@ -499,6 +509,7 @@ class FormHtmlGenerator {
                 $attributeGroup->appendChild($this->getMap($attribute, $map_id));
             }
         }
+
 
         return $attributeGroup;
     }
@@ -542,7 +553,7 @@ class FormHtmlGenerator {
         $query->innerJoin('#__sdi_layer_layergroup llg ON llg.group_id = mlg.group_id');
         $query->innerJoin('#__sdi_maplayer l ON l.id = llg.layer_id');
         $query->innerJoin('#__sdi_sys_unit u ON u.id = m.unit_id');
-        $query->where('m.id=' . (int)$map_id);
+        $query->where('m.id=' . (int) $map_id);
         $query->where('mlg.isbackground = 1');
 
         $this->db->setQuery($query);
@@ -553,12 +564,12 @@ class FormHtmlGenerator {
             case 'physical':
                 $query->select('resourceurl as serviceurl, serviceconnector_id');
                 $query->from('#__sdi_physicalservice');
-                $query->where('id = ' . (int)$map_config->service_id);
+                $query->where('id = ' . (int) $map_config->service_id);
                 break;
             case 'virtual':
                 $query->select('url, reflectedurl as serviceurl, serviceconnector_id');
                 $query->from('#__sdi_virtualservice');
-                $query->where('id = ' . (int)$map_config->service_id);
+                $query->where('id = ' . (int) $map_config->service_id);
                 break;
         }
 
@@ -770,10 +781,33 @@ class FormHtmlGenerator {
                                 // sets the user interface language
                                 HS.setLang('" . $default->gemet . "');
 
+                                var writeTerms = function(result) {
+
+                                    for(var i=0; i < languages.length; i++){
+                                        var paths = result.terms[languages[i]].split('>');
+                                        var keyword = paths[paths.length - 1];
+                                        var option_string = '<option class=\''+result.uri+'\' value=\"'+keyword+'\" selected>'+keyword+'</option>';
+
+                                        if(i==0){
+                                            var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString');
+                                            var current_div = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString_chzn ul li[class=\'search-field\'] input');
+
+                                        }else{
+                                            var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase());
+                                            var current_div = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()+'_chzn ul li[class=\'search-field\'] input');
+                                        }
+                                        current_select.append(option_string);
+                                        current_select.trigger('liszt:updated');
+                                        current_div.attr('style','width: 0px');
+
+                                        addToStructure('" . $attribute->getAttributeNS($this->catalog_uri, 'relid') . "','" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "');
+                                    }
+                                }
+
                                 Ext.onReady(function() {
 
                                     var thes = new ThesaurusReader({
-                                        appPath: '". JUri::base() ."administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/',
+                                        appPath: '" . JUri::base() . "administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/',
                                         lang: '" . $default->gemet . "',
                                         outputLangs: [" . implode(',', $languages) . "],
                                         title: 'GEMET Thesaurus',
@@ -804,31 +838,6 @@ class FormHtmlGenerator {
                                                 removeFromStructure('" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "-sla-gmd-dp-keyword-la-'+index_number+'-ra-');
 
                                     });
-
-
-
-                                var writeTerms = function(result) {
-
-                                    for(var i=0; i < languages.length; i++){
-                                        var paths = result.terms[languages[i]].split('>');
-                                        var keyword = paths[paths.length - 1];
-                                        var option_string = '<option class=\''+result.uri+'\' value=\"'+keyword+'\" selected>'+keyword+'</option>';
-
-                                        if(i==0){
-                                            var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString');
-                                            var current_div = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString_chzn ul li[class=\'search-field\'] input');
-
-                                        }else{
-                                            var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase());
-                                            var current_div = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()+'_chzn ul li[class=\'search-field\'] input');
-                                        }
-                                        current_select.append(option_string);
-                                        current_select.trigger('liszt:updated');
-                                        current_div.attr('style','width: 0px');
-
-                                        addToStructure('" . $attribute->getAttributeNS($this->catalog_uri, 'relid') . "','" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "');
-                                    }
-                                }
 
                             });";
 
@@ -907,6 +916,7 @@ class FormHtmlGenerator {
         $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
         $stereotypeId = $attribute->getAttributeNS($this->catalog_uri, 'stereotypeId');
         $rendertypeId = $attribute->getAttributeNS($this->catalog_uri, 'rendertypeId');
+        $name = $attribute->nodeName;
 
         $elements = array();
 
@@ -947,7 +957,7 @@ class FormHtmlGenerator {
 
         $elements[] = $this->getInputScript($field, $guid);
 
-        if ($rendertypeId == EnumRendertype::$LIST && $upperbound > 1) {
+        if ($rendertypeId == EnumRendertype::$LIST && $upperbound > 1 && $stereotypeId != EnumStereotype::$BOUNDARY) {
             $elements[] = $this->getMultiSelectScript($field, $attribute);
         }
 
@@ -1012,7 +1022,7 @@ class FormHtmlGenerator {
         $script_content = "js = jQuery.noConflict();
 
                     js('document').ready(function() {
-                        js('#" . $field->id . "').tooltip({'trigger':'focus', 'title': \"" . addslashes(EText::_($guid, 2)) . "\"});
+                        js('#" . $field->id . "').tooltip({'trigger':'focus', 'title': \"" . preg_replace('/(\r\n|\n|\r)/','<br/>',addslashes(EText::_($guid, 2))) . "\"});
                     });";
 
         $script = $this->formHtml->createElement('script', $script_content);
@@ -1033,9 +1043,8 @@ class FormHtmlGenerator {
     private function getMultiSelectScript($field, DOMElement $attribute) {
 
         $script_content = "js = jQuery.noConflict();
-
-                            js('#" . $field->__get('id') . "').chosen().change(function(e, params) {
-
+                            js('#" . $field->__get('id') . "').on('change',function(e, params) {
+                                
                                 if(params.selected != null){
                                     addToStructure(" . $attribute->getAttributeNS($this->catalog_uri, 'relid') . ", '" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "');
                                 }else{
@@ -1043,6 +1052,7 @@ class FormHtmlGenerator {
                                 }
 
                             });";
+
 
         $script = $this->formHtml->createElement('script', $script_content);
         $script->setAttribute('type', 'text/javascript');

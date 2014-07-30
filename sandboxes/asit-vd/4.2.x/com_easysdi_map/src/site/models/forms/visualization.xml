@@ -13,11 +13,23 @@
             class="inputbox"
             label="COM_EASYSDI_MAP_FORM_LBL_VISUALIZATION_ACCESSSCOPE_ID"
             description="COM_EASYSDI_MAP_FORM_DESC_VISUALIZATION_ACCESSSCOPE_ID" 
-            query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 AND `value`!='category' ORDER BY ordering" 
+            query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 ORDER BY ordering" 
             key_field="id" 
             value_field="value"
             translate="true"
         /> 
+        <field
+            name="categories" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT id, name FROM #__sdi_category WHERE state=1 ORDER BY name" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        />         
         <field
             name="organisms" 
             type="sql" 
@@ -38,6 +50,18 @@
             label=""
             description="" 
             query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY ordering" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        /> 
+        <field
+            name="categories" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT id, name FROM #__sdi_category WHERE state=1 ORDER BY name" 
             key_field="id" 
             value_field="name"
             translate="true"

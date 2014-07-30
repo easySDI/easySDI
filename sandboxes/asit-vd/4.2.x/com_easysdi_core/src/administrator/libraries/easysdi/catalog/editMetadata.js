@@ -342,6 +342,16 @@ function addOrRemoveCheckbox(id, relid, parent_path, path) {
 
 }
 
+function addBoundaryToStructure(name, parent_path){
+    console.log(name);
+    console.log(parent_path);
+    
+    js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
+        var response = js.parseJSON(data);
+        return response.success;
+    });
+}
+
 function addToStructure(relid, parent_path) {
     js.get(currentUrl + '?option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid);
 }

@@ -181,6 +181,7 @@
                 multiple="true"
                 query="SELECT id, name FROM #__sdi_resourcetype WHERE state=1 ORDER BY ordering"
                 label="COM_EASYSDI_CATALOG_CONFIG_LBL_SITEMAPRESOURCESTYPE"
+                description="COM_EASYSDI_CATALOG_CONFIG_DESC_SITEMAPRESOURCESTYPE"
                 key_field="id"
                 value_field="name"
             >
@@ -190,6 +191,7 @@
                 name="sitemapextraparameters"
                 type="text"
                 label="COM_EASYSDI_CATALOG_CONFIG_LBL_SITEMAPEXTRAPARAMETERS"
+                description="COM_EASYSDI_CATALOG_CONFIG_DESC_SITEMAPEXTRAPARAMETERS"
             >
             </field>
             
@@ -197,6 +199,7 @@
                 name="sitemappriority"
                 type="list"
                 label="COM_EASYSDI_CATALOG_CONFIG_LBL_SITEMAPPRIORITY"
+                description="COM_EASYSDI_CATALOG_CONFIG_DESC_SITEMAPPRIORITY"
                 default="0.5"
             >
                 <option value="0">0</option>

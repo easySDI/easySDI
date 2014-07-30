@@ -69,6 +69,7 @@ class Easysdi_shopModelDownload extends JModelLegacy {
                 //Load accessscope
                 $this->_item->organisms = sdiModel::getAccessScopeOrganism($this->_item->guid);
                 $this->_item->users = sdiModel::getAccessScopeUser($this->_item->guid);
+                $this->_item->categories = sdiModel::getAccessScopeCategory($this->_item->guid);
                 //Load notified user
                 $diffusionnotifieduser = JTable::getInstance('diffusionnotifieduser', 'Easysdi_shopTable');
                 $this->_item->notifieduser_id = $diffusionnotifieduser->loadBydiffusionID($this->_item->id);
