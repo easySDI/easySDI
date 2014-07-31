@@ -66,6 +66,12 @@ ON DELETE CASCADE;
 
 ALTER TABLE [#__sdi_accessscope] CHECK CONSTRAINT [#__sdi_accessscope$#__sdi_accessscope_fk2];
 
+ALTER TABLE [#__sdi_accessscope]  WITH CHECK ADD  CONSTRAINT [#__sdi_accessscope$#__sdi_accessscope_fk3] FOREIGN KEY([category_id])
+REFERENCES [#__sdi_category] ([id])
+ON DELETE CASCADE;
+
+ALTER TABLE [#__sdi_accessscope] CHECK CONSTRAINT [#__sdi_accessscope$#__sdi_accessscope_fk3];
+
 ALTER TABLE [#__sdi_address]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_address$#__sdi_address_fk1] FOREIGN KEY([addresstype_id])
 REFERENCES [#__sdi_sys_addresstype] ([id]);
 
@@ -689,7 +695,7 @@ REFERENCES [#__sdi_language] ([id]);
 ALTER TABLE [#__sdi_translation] CHECK CONSTRAINT [#__sdi_translation$#__sdi_translation_fk1];
 
 ALTER TABLE [#__sdi_user]  WITH CHECK ADD  CONSTRAINT [#__sdi_user$#__sdi_user_fk1] FOREIGN KEY([user_id])
-REFERENCES [jos_users] ([id]);
+REFERENCES [#__users] ([id]);
 
 ALTER TABLE [#__sdi_user] CHECK CONSTRAINT [#__sdi_user$#__sdi_user_fk1];
 
@@ -727,7 +733,7 @@ ALTER TABLE [#__sdi_user_role_organism]  WITH CHECK ADD  CONSTRAINT [#__sdi_user
 REFERENCES [#__sdi_organism] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [#__sdi_user_role_organism] CHECK CONSTRAINT [#__sdi_user_role_organism$#__sdi_user_role_organismfk3];
+ALTER TABLE [#__sdi_user_role_organism] CHECK CONSTRAINT [#__sdi_user_role_organism$#__sdi_user_role_organism_fk3];
 
 ALTER TABLE [#__sdi_version]  WITH CHECK ADD  CONSTRAINT [#__sdi_version$#__sdi_version_fk1] FOREIGN KEY([resource_id])
 REFERENCES [#__sdi_resource] ([id]);

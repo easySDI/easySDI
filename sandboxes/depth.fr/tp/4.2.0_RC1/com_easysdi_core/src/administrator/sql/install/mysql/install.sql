@@ -428,12 +428,12 @@ CREATE TABLE IF NOT EXISTS `#__sdi_user_role_organism` (
 `role_id` int(11) UNSIGNED ,
 `organism_id` int(11) UNSIGNED ,
 PRIMARY KEY (`id`),
-  KEY `jos_sdi_user_role_organism_fk1` (`user_id`),
-  KEY `jos_sdi_user_role_organism_fk2` (`role_id`),
-  KEY `jos_sdi_user_role_organism_fk3` (`organism_id`),
-  CONSTRAINT `jos_sdi_user_role_organism_fk1` FOREIGN KEY (`user_id`) REFERENCES `jos_sdi_user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `jos_sdi_user_role_organism_fk2` FOREIGN KEY (`role_id`) REFERENCES `jos_sdi_sys_role` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `jos_sdi_user_role_organism_fk3` FOREIGN KEY (`organism_id`) REFERENCES `jos_sdi_organism` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  KEY `#__sdi_user_role_organism_fk1` (`user_id`),
+  KEY `#__sdi_user_role_organism_fk2` (`role_id`),
+  KEY `#__sdi_user_role_organism_fk3` (`organism_id`),
+  CONSTRAINT `#__sdi_user_role_organism_fk1` FOREIGN KEY (`user_id`) REFERENCES `#__sdi_user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `#__sdi_user_role_organism_fk2` FOREIGN KEY (`role_id`) REFERENCES `#__sdi_sys_role` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `#__sdi_user_role_organism_fk3` FOREIGN KEY (`organism_id`) REFERENCES `#__sdi_organism` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_category` (
@@ -468,9 +468,11 @@ CREATE TABLE IF NOT EXISTS `#__sdi_accessscope` (
 `entity_guid` VARCHAR(36)  NOT NULL ,
 `organism_id` INT(11) UNSIGNED   ,
 `user_id` INT(11) UNSIGNED   ,
+`category_id` INT(11) UNSIGNED   ,
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_accessscope_fk1` (`organism_id` ASC) ,
   INDEX `#__sdi_accessscope_fk2` (`user_id` ASC) ,
+  INDEX `#__sdi_accessscope_fk3` (`category_id` ASC) ,
   CONSTRAINT `#__sdi_accessscope_fk1`
     FOREIGN KEY (`organism_id`)
     REFERENCES `#__sdi_organism` (`id`)
@@ -479,6 +481,11 @@ PRIMARY KEY (`id`) ,
   CONSTRAINT `#__sdi_accessscope_fk2`
     FOREIGN KEY (`user_id`)
     REFERENCES `#__sdi_user` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+  CONSTRAINT `#__sdi_accessscope_fk3`
+    FOREIGN KEY (`category_id`)
+    REFERENCES `#__sdi_category` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;

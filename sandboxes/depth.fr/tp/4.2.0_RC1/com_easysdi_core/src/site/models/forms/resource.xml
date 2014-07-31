@@ -33,6 +33,18 @@
             key_field="id" 
             value_field="value"
             translate="true"
+        />  
+        <field
+            name="categories" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT id, name FROM #__sdi_category WHERE state=1 ORDER BY name" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
         /> 
         <field
             name="organisms" 
@@ -41,7 +53,7 @@
             multiple="true"
             label=""
             description="" 
-            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY ordering" 
+            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY name" 
             key_field="id" 
             value_field="name"
             translate="true"
@@ -53,7 +65,7 @@
             multiple="true"
             label=""
             description="" 
-            query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY ordering" 
+            query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY u.name" 
             key_field="id" 
             value_field="name"
             translate="true"
@@ -68,14 +80,14 @@
                         label="com_easysdi_contact_FORM_LBL_USER_ORGANISMS_MEMBER"
                         description="com_easysdi_contact_FORM_DESC_USER_ORGANISMS_MEMBER" 
                         translate="true" 
-                        query="SELECT id, name as value FROM #__sdi_organism WHERE state=1" key_field="id" value_field="value"
+                        query="SELECT id, name as value FROM #__sdi_organism WHERE state=1 ORDER BY name" key_field="id" value_field="value"
         />
     
     <field  name="organism_id" 
             required="true"
             type="sql" 
             class="inputbox"
-            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY ordering" 
+            query="SELECT id, name FROM #__sdi_organism WHERE state=1 ORDER BY name" 
             key_field="id" 
             value_field="name"
             label="COM_EASYSDI_CORE_FORM_LBL_RESOURCE_ORGANISM_ID"
