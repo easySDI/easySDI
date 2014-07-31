@@ -76,7 +76,7 @@
 	
     <bean id="namingStrategy" class="org.easysdi.proxy.namingStrategy.CustomNamingStrategy">
         <property name="prefix">
-            <value>jos_</value>
+            <value>sdi_</value>
         </property>
     </bean>
 
