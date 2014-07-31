@@ -42,6 +42,7 @@ abstract class sdiModel extends JModelAdmin {
             // Get the access scope
             $item->organisms = sdiModel::getAccessScopeOrganism($item->guid);
             $item->users = sdiModel::getAccessScopeUser($item->guid);
+            $item->categories = sdiModel::getAccessScopeCategory($item->guid);
         }
         return $item;
     }
@@ -249,9 +250,10 @@ abstract class sdiModel extends JModelAdmin {
             return false;
         }
     }
-
+    
+    
     /**
-     * Method to get the categories authorized to access this resourcetype
+     * Method to get the organism categories authorized to access this resourcetype
      *
      * @param int		$id		primary key of the current resourcetype to get.
      *
@@ -277,7 +279,7 @@ abstract class sdiModel extends JModelAdmin {
             $this->setError($e->getMessage());
             return false;
         }
-    }
+    }    
 
     public static function deleteAccessScope($guid) {
 
