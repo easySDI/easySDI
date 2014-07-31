@@ -417,7 +417,7 @@ abstract class Easysdi_mapHelper {
                     },
                     {
                     ptype: "gxp_measure",
-                    toggleGroup: "measure",
+                    toggleGroup: "navigation",
                     actionTarget: "map.tbar"
                     },
                     ';
