@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="main">
+        <field name="name"
+            type="text"
+            size="75"
+            class="inputbox"
+            label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGPROFILE_NAME"
+            description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGPROFILE_NAME"
+            default="profile_X"        />
+    </fieldset>
+    
+    <fieldset name="pricing" label="COM_EASYSDI_SHOP_FORM_FIELDSET_PRICINGPROFILE_PRICING">
+        <field name="fixed_price"
+            type="text"
+            size="6"
+            class="inputbox"
+            label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGPROFILE_FIXED_PRICE"
+            description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGPROFILE_FIXED_PRICE"
+            default="0" />
+        
+        <field name="surface_price"
+            type="text"
+            size="6"
+            class="inputbox"
+            label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGPROFILE_SURFACE_PRICE"
+            description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGPROFILE_SURFACE_PRICE"
+            default="0" />
+        
+        <field name="min_price"
+            type="text"
+            size="6"
+            class="inputbox"
+            label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGPROFILE_MIN_PRICE"
+            description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGPROFILE_MIN_PRICE"
+            default="0" />
+        
+        <field name="max_price"
+            type="text"
+            size="6"
+            class="inputbox"
+            label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGPROFILE_MAX_PRICE"
+            description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGPROFILE_MAX_PRICE"
+            default="0" />
+    </fieldset>
+    
+    <fieldset name="free_categories" label="COM_EASYSDI_SHOP_FORM_FIELDSET_PRICINGPROFILE_FREE_CATEGORIES"/>
+</form>
