@@ -25,7 +25,18 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.
 $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 
 ?>
-<?php if ($this->item && $this->item->extractions) : ?>
+
+<style type="text/css">
+    div.shop-product .table td{ width: 75%; word-break: break-all}
+    div.shop-product .table td.price_column{ width: 10%; text-align: right}
+    div.shop-product .table td.action_column{ width: 5%}
+    
+    div.shop-product .table tfoot td{ text-align: right}
+</style>
+
+<?php if ($this->item /*&& $this->item->extractions*/) : 
+    $currency = $this->item->prices->currency;
+?>
     <script>
         var request;
         var current_id;
@@ -40,9 +51,26 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
             jQuery('#id').val(current_id);
             jQuery('#adminForm').submit();
         }
+        
+        var checkTouState = function(){
+            jQuery('#toolbar-edit>button, #toolbar-publish>button').attr('disabled', !jQuery('#termsofuse').prop('checked'));
+        };
 
 
         jQuery(document).ready(function() {
+            jQuery('#btn-login').on('click', function(){
+                document.location.href = 'index.php?option=com_users&view=login&return='+btoa(document.location.href);
+                return false;
+            });
+            
+            jQuery('#btn-create-account').on('click', function(){
+                document.location.href = 'index.php?option=com_users&view=registration&return='+btoa(document.location.href);
+                return false;
+            });
+            
+            jQuery('#termsofuse').on('change', checkTouState);
+            checkTouState();
+            
             Joomla.submitbutton = function(task)
             {
                 if (jQuery('#features').val() === '') {
@@ -55,7 +83,11 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                     var format = new OpenLayers.Format.WMC({'layerOptions': {buffer: 0}});
                     var text = format.write(minimap);
                     jQuery('#wmc').val(text);
-                    Joomla.submitform(task, document.getElementById('adminForm'));
+                    
+                    taskArray = task.split('.');
+                    jQuery('input[name=action]').val(taskArray[1]);
+                    
+                    Joomla.submitform('basket.save', document.getElementById('adminForm'));
                 }
 
             }
@@ -67,81 +99,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
         <div class="basket-edit front-end-edit">
             <h1><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TITLE'); ?></h1>
             <div class="well">
-                <div class="row-fluid shop-product">
-                    <div class="row-fluid" >
-                        <div class="span6" >
-                            <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_EXTRACTION_NAME'); ?></h3>
-                        </div>
-                        <div class="span6" >
-                            <?php if (!empty($this->item->visualization)): ?>
-                                <div class="pull-right">
-                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_map&view=preview') . '&id=' . $this->item->visualization; ?>" target="_blank"
-                                       title="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TOOLTIP_PREVIEW'); ?>"
-                                       class="btn btn-success btn-mini pull-right" >
-                                        <i class="icon-eye"></i>
-                                    </a>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <div class="row-fluid" >
-                        <hr>
-                        <table id="table-extractions" class="table table-striped">
-                            <tfoot>
-                            </tfoot>
-                            <tbody>
-                                <?php foreach ($this->item->extractions as $extraction) : ?>
-                                    <tr id="<?php echo $extraction->id; ?>">
-                                        <td>
-                                            <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=sheet&guid=' . $extraction->metadataguid); ?>"><?php echo $extraction->name; ?></a>
-                                            <div class="small"><?php echo $extraction->organism; ?></div>
-                                            <div class="accordion" id="accordion_<?php echo $extraction->id; ?>_properties">
-                                                <div class="accordion-group">
-                                                    <div class="accordion-heading">
-                                                        <!--a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_<?php echo $extraction->id; ?>_properties" href="#<?php echo $extraction->id; ?>_collapse"-->
-
-                                                        <span style='display: block; padding: 5px 15px;'>
-                                                            <?php echo JText::_("COM_EASYSDI_SHOP_BASKET_EXTRACTION_PROPERTIES"); ?>
-                                                        </span>
-                                                        <!--/a-->
-                                                    </div>
-                                                    <div id="<?php echo $extraction->id; ?>_collapse" class="accordion-body collapse in">
-                                                        <div class="accordion-inner">
-                                                            <?php
-                                                            foreach ($extraction->properties as $property):
-                                                                ?>
-                                                                <div class="small"><?php echo $property->name; ?> : 
-                                                                    <?php
-                                                                    foreach ($property->values as $value) :
-                                                                        if (!empty($value->value)) :
-                                                                            echo $value->value;
-                                                                        else :
-                                                                            echo $value->name;
-                                                                        endif;
-                                                                        echo', ';
-                                                                    endforeach;
-                                                                    ?>
-                                                                </div>
-                                                                <?php
-                                                            endforeach;
-                                                            ?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <a href="#" class="btn btn-danger btn-mini pull-right" title="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REMOVE'); ?>" onClick="removeFromBasket(<?php echo $extraction->id; ?>);
-                                                    return false;"><i class="icon-white icon-remove"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <!-- PERIMETER -->
                 <div class="row-fluid shop-perimeter" >
                     <div class="row-fluid" ><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h3></div>
                     <hr>
@@ -205,6 +163,9 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                          
                         </div>
                 </div>
+                <!-- ENDOF PERIMETER -->
+                
+                <!-- THIRD PARTY -->
                 <?php if (!empty($this->thirdParties)): ?>
                     <div class="row-fluid shop-third-party" >
                         <div class="row-fluid" ><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY'); ?></h3>
@@ -217,22 +178,151 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                        </select></div>
                     </div>
                 <?php endif; ?>
-                <?php if (!empty($this->paramsarray['shopinfomessage'])): ?>
+                <!-- ENDOF THIRD PARTY -->
+                
+                <!-- PRODUCTS -->
+                <div class="row-fluid shop-product">
+                    <div class="row-fluid" >
+                        <div class="span6" >
+                            <h3><?php //echo JText::_('COM_EASYSDI_SHOP_BASKET_EXTRACTION_NAME'); ?></h3>
+                        </div>
+                        <div class="span6" >
+                            <?php if (!empty($this->item->visualization)): ?>
+                                <div class="pull-right">
+                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_map&view=preview') . '&id=' . $this->item->visualization; ?>" target="_blank"
+                                       title="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TOOLTIP_PREVIEW'); ?>"
+                                       class="btn btn-success btn-mini pull-right" >
+                                        <i class="icon-eye"></i>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="row-fluid" >
+                        <hr>
+                        <h3>X <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SELECTED_DATA'); ?> ( XXX.XX <?php echo $currency;?>)</h3>
+                        
+                        <?php foreach($this->item->extractions as $supplier_id => $supplier): ?>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <td><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_DATA_SUPPLIER') . ' : ' . $supplier->name; ?></h4></td>
+                                    <td class="price_column"><?php echo JText::_('COM_EASYSDI_SHOP_PRICES_TTC'); ?></td>
+                                    <td class="action_column">&nbsp;</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach($supplier->items as $item): ?>
+                                <tr>
+                                    <td>
+                                        <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=sheet&guid=' . $item->metadataguid); ?>"><?php echo $item->name; ?></a>
+                                        <ul>
+                                            <?php foreach($item->properties as $property): ?>
+                                            <li><?php echo $property->name; ?> : 
+                                                <?php 
+                                                $c=count($property->values);
+                                                $i=0;
+                                                foreach($property->values as $value): 
+                                                    echo empty($value->value) ? $value->name : $value->value;
+                                                    $i++;
+                                                    if($i<$c) echo ', ';
+                                                endforeach;
+                                                ?></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </td>
+                                    <td class="price_column">XXX.XX <?php echo $currency;?></td>
+                                    <td class="action_column">
+                                        <a href="#" class="btn btn-danger btn-mini pull-right" title="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REMOVE'); ?>" 
+                                           onClick="removeFromBasket(<?php echo $item->id; ?>);return false;"><i class="icon-white icon-remove"></i></a>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TAX'); ?></td>
+                                    <td class="price_column">XXX.XX <?php echo $currency;?></td>
+                                    <td class="action_column">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_SUBTOTAL'); ?></td>
+                                    <td class="price_column">XXX.XX <?php echo $currency;?></td>
+                                    <td class="action_column">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_REBATE'); ?></td>
+                                    <td class="price_column">XXX.XX <?php echo $currency;?></td>
+                                    <td class="action_column">&nbsp;</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <?php endforeach; ?>
+                        
+                        <!-- TOTAL -->
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <td><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PLATFORM'); ?></h4></td>
+                                    <td class="price_column">&nbsp;</td>
+                                    <td class="action_column">&nbsp;</td>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FEE'); ?></td>
+                                    <td class="price_column">XXX.XX <?php echo $currency;?></td>
+                                    <td class="action_column">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TOTAL'); ?></td>
+                                    <td class="price_column">XXX.XX <?php echo $currency;?></td>
+                                    <td class="action_column">&nbsp;</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <!-- ENDOF TOTAL -->
+                        
+                    </div>
+                </div>
+                <!-- ENDOF PRODUCTS -->
+                
+                <!-- INFORMATIONS -->
+                <?php if (empty($this->paramsarray['shopinfomessage'])): ?>
                     <div class="row-fluid shop-info" >
                         <div class="row-fluid" ><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_MESSAGE'); ?></h3>
                         <hr>
                         <div class="shop-information"><?php echo $this->paramsarray['shopinfomessage']; ?></div></div>
                     </div>
                 <?php endif; ?>
+                <!-- ENDOF INFORMATIONS -->
+                
+                <!-- TOOLBAR -->
                 <div class="row-fluid " >
                     <hr>
-                    <div  class="span5 pull-right" >
-                        <?php echo $this->getToolbar(); ?>
-                    </div>
-                    <div class="pull-right">
-                        <input class="btn-toolbar" id="ordername" name="ordername" type="text" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ORDER_NAME'); ?>" value="<?php if (!empty($this->item->name)) echo $this->item->name; ?>">
-                    </div>
+                    <?php if($this->get('user')->isEasySDI):?>
+                        <div>
+                            <label class="checkbox">
+                                    <input type="checkbox" id="termsofuse" > <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_I_ACCEPT') ?> <a href="<?php echo $this->paramsarray['termsofuse'] ; ?>" target="_blank"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_TERMS') ?></a> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_OF_USE') ?>
+                                </label>
+                        </div>
+                        <div  class="span5 pull-right" >
+                            <?php echo $this->getToolbar(); ?>
+                            <input type="hidden" name="action" value="" />
+                        </div>
+                        <div class="pull-right">
+                            <input class="btn-toolbar" id="ordername" name="ordername" type="text" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ORDER_NAME'); ?>" value="<?php if (!empty($this->item->name)) echo $this->item->name; ?>">
+                        </div>
+                    <?php else:?>
+                        <div  class="span5 pull-right" >
+                            <button class="btn btn-small" id="btn-login" name="btn-login"><?php echo JText::_('COM_EASYSDI_CORE_LOGIN');?></button>
+                            <button class="btn btn-small" id="btn-create-account" name="btn-create-account"><?php echo JText::_('COM_EASYSDI_CORE_CREATE_ACCOUNT');?></button>
+                        </div>
+                    <?php endif; ?>
                 </div>
+                <!-- ENDOF TOOLBAR -->
+                
             </div>
         </div>
 
@@ -268,7 +358,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                         <a href="#" id="btn-pan" class="btn btn-perimeter-selection <?php if (!isset($this->item->extent->id) || $this->item->extent->id===''){echo "active";};?>"  onClick="toggleSelectControl('pan');jQuery('#help-perimeter').html('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PAN_HELP'); ?>'); return false;"><i class="icon-move"></i> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PAN'); ?></a><br>
                                                     <br>
                                         <?php
-                                        foreach ($this->item->perimeters as $perimeter):
+                                        foreach ($item->perimeters as $perimeter):
                                             if ($perimeter->id == 1):
                                                 if (!$this->item->isrestrictedbyperimeter):
                                                     ?>

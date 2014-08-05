@@ -17,26 +17,26 @@ require_once JPATH_COMPONENT . '/controller.php';
  * Basket controller class.
  */
 class Easysdi_shopControllerBasket extends Easysdi_shopController {
-
+    // @TODO: changing the basket workflow (feature #752), it seems that we never will run into estimate, order and draft methods : to check and confirm ! (jvi - 2014-07-21)
     public function estimate() {
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
         $this->saveBasketToSession();
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=basket&layout=confirm&action=estimate', false));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&task=basket.save&action=estimate', false));
     }
 
     public function order() {
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
         $this->saveBasketToSession();
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=basket&layout=confirm&action=order', false));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&task=basket.save&action=order', false));
     }
 
     public function draft() {
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
         $this->saveBasketToSession();
-        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=basket&layout=confirm&action=draft', false));
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&task=basket.save&action=draft', false));
     }
 
     public function load() {
@@ -74,9 +74,10 @@ class Easysdi_shopControllerBasket extends Easysdi_shopController {
     public function save() {
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-
+        $this->saveBasketToSession();
         $app = JFactory::getApplication();
 
+        // @TODO: changing the basket workflow (feature #752), it seems that we never will run into the following condition : to check and confirm ! (jvi - 2014-07-21)
         $sdiUser = sdiFactory::getSdiUser();
         if ($sdiUser->juser->guest) {
             // Authentication
