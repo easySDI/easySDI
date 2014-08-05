@@ -63,6 +63,13 @@
                query="SELECT id, value FROM #__sdi_sys_pricing WHERE state=1 ORDER BY ordering" 
                key_field="id" 
                value_field="value"
+               translate="true" />
+        
+        <field name="pricing_profile_id" 
+               type="list" 
+               class="inputbox input-xlarge"
+               label="COM_EASYSDI_SHOP_FORM_LBL_DIFFUSION_PRICING_PROFILE_ID"
+               description="COM_EASYSDI_SHOP_FORM_DESC_DIFFUSION_PRICING_PROFILE_ID" 
                translate="true" /> 
 
         <field

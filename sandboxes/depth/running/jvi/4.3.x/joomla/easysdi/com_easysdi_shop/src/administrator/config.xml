@@ -130,6 +130,65 @@
 			label="JCONFIG_PERMISSIONS_LABEL"
 			section="component" />
 	</fieldset>
+        
+        <fieldset name="pricing" description="COM_EASYSDI_SHOP_CONFIG_PRICING_DESC" label="COM_EASYSDI_SHOP_CONFIG_PRICING_LABEL" >
+
+		<field name="is_activated" 
+                    type="radio" 
+                    class="radio btn-group btn-group-yesno"
+                    label="COM_EASYSDI_SHOP_FORM_LBL_PRICING_IS_ACTIVATED"
+                    description="COM_EASYSDI_SHOP_FORM_DESC_PRICING_IS_ACTIVATED"
+                    default="0">
+                 <option value="0">JNO</option>
+                 <option value="1">JYES</option>
+             </field> 
+
+             <field name="tva" 
+                    type="text" 
+                    size="6" 
+                    class="inputbox"
+                    label="COM_EASYSDI_SHOP_FORM_LBL_PRICING_TVA"
+                    description="COM_EASYSDI_SHOP_FORM_DESC_PRICING_TVA"
+                    default="8" /> 
+
+             <field name="currency" 
+                    type="text"
+                    size="3"
+                    class="inputbox"
+                    label="COM_EASYSDI_SHOP_FORM_LBL_PRICING_CURRENCY"
+                    description="COM_EASYSDI_SHOP_FORM_DESC_PRICING_CURRENCY"
+                    default="CHF"             /> 
+
+             <field name="roundish" 
+                    type="text"
+                    size="4"
+                    class="inputbox"
+                    label="COM_EASYSDI_SHOP_FORM_LBL_PRICING_ROUNDISH"
+                    description="COM_EASYSDI_SHOP_FORM_DESC_PRICING_ROUNDISH"
+                    default="0.05"             /> 
+
+             <field name="overall_tax" type="note" label="COM_EASYSDI_SHOP_FORM_LBL_PRICING_OVERALL_TAX" />
+
+             <field name="overall_default_tax" 
+                    type="text" 
+                    size="6" 
+                    class="inputbox"
+                    label="COM_EASYSDI_SHOP_FORM_LBL_PRICING_OVERALL_DEFAULT_TAX"
+                    description="COM_EASYSDI_SHOP_FORM_DESC_PRICING_OVERALL_DEFAULT_TAX"
+                    default="0" /> 
+             
+             <field name="tax_if_free_data"  
+                    type="radio" 
+                    class="radio btn-group btn-group-yesno"
+                    label="COM_EASYSDI_SHOP_FORM_LBL_PRICING_TAX_IF_FREE_DATA"
+                    description="COM_EASYSDI_SHOP_FORM_DESC_PRICING_TAX_IF_FREE_DATA"
+                    default="0" >
+                 <option value="0">JNO</option>
+                 <option value="1">JYES</option>
+             </field> 
+             
+             <field name="pricing_by_category" type="note" class="alert alert-info" description="COM_EASYSDI_SHOP_FORM_DESC_PRICING_BY_CATEGORY" />
+	</fieldset>
 
 </config>
 <!--

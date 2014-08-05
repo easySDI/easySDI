@@ -93,12 +93,44 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                 break;
         }
     }
-
+var globdata;
     function onPricingChange() {
-        if (js('#jform_pricing_id').val() == 1) {
-            js('#fieldset_download').show();
-        } else {
-            js('#fieldset_download').hide();
+        
+        switch(js('#jform_pricing_id').val()){
+            case '1': // FREE
+                js('#fieldset_download').show();
+                js('#pricing_profile_id').hide();
+                break;
+                
+            case '2': // FEE WITHOUT PRICING PROFILE
+                js('#fieldset_download').hide();
+                js('#pricing_profile_id').hide();
+                break;
+                
+            case '3': // FEE WITH PRICING PROFILE
+                js('#fieldset_download').hide();
+                
+                if(!js('#pricing_profile_id option').length){
+                    js.ajax({
+                        url: "<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=diffusion.getAvailableProfiles') ?>",
+                        type: "POST",
+                        data: {
+                            version_id: <?php echo $this->item->version_id;?>
+                        }
+                        }).fail(function(){
+                        console.log('todo');
+                    }).done(function(data){
+                        data.each(function(item){
+                            js('#pricing_profile_id select').append(js('<option>', {
+                                value: item.id,
+                                text: item.name
+                            })).trigger('liszt:updated');
+                        });
+                    });
+                }
+                
+                js('#pricing_profile_id').show();
+                break;
         }
     }
 

@@ -231,7 +231,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                             <?php endforeach; ?>
                                         </ul>
                                     </td>
-                                    <td class="price_column">XXX.XX <?php echo $currency;?></td>
+                                    <td class="price_column"><?php echo isset($this->item->prices->suppliers[$supplier_id]->products[$item->id]->priceIT) ? number_format($this->item->prices->suppliers[$supplier_id]->products[$item->id]->priceIT, 2) : '-';?> <?php echo $currency;?></td>
                                     <td class="action_column">
                                         <a href="#" class="btn btn-danger btn-mini pull-right" title="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REMOVE'); ?>" 
                                            onClick="removeFromBasket(<?php echo $item->id; ?>);return false;"><i class="icon-white icon-remove"></i></a>
@@ -242,17 +242,17 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                             <tfoot>
                                 <tr>
                                     <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TAX'); ?></td>
-                                    <td class="price_column">XXX.XX <?php echo $currency;?></td>
+                                    <td class="price_column"><?php echo isset($this->item->prices->suppliers[$supplier_id]->tax) ? number_format($this->item->prices->suppliers[$supplier_id]->tax, 2) : '-';?> <?php echo $currency;?></td>
                                     <td class="action_column">&nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_SUBTOTAL'); ?></td>
-                                    <td class="price_column">XXX.XX <?php echo $currency;?></td>
+                                    <td class="price_column"><?php echo isset($this->item->prices->suppliers[$supplier_id]->priceIT) ? number_format($this->item->prices->suppliers[$supplier_id]->priceIT, 2) : '-';?> <?php echo $currency;?></td>
                                     <td class="action_column">&nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_REBATE'); ?></td>
-                                    <td class="price_column">XXX.XX <?php echo $currency;?></td>
+                                    <td class="price_column"><?php echo isset($this->item->prices->suppliers[$supplier_id]->rebate['total']) ? number_format($this->item->prices->suppliers[$supplier_id]->rebate['total'], 2) : '-';?> <?php echo $currency;?></td>
                                     <td class="action_column">&nbsp;</td>
                                 </tr>
                             </tfoot>
@@ -272,12 +272,12 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                             <tfoot>
                                 <tr>
                                     <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FEE'); ?></td>
-                                    <td class="price_column">XXX.XX <?php echo $currency;?></td>
+                                    <td class="price_column"><?php echo isset($this->item->prices->tax) ? number_format($this->item->prices->tax, 2) : '-';?> <?php echo $currency;?></td>
                                     <td class="action_column">&nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TOTAL'); ?></td>
-                                    <td class="price_column">XXX.XX <?php echo $currency;?></td>
+                                    <td class="price_column"><?php echo isset($this->item->prices->priceIT) ? number_format($this->item->prices->priceIT, 2) : '-';?> <?php echo $currency;?></td>
                                     <td class="action_column">&nbsp;</td>
                                 </tr>
                             </tfoot>
