@@ -3,11 +3,9 @@
  */
 
 GeoExt.Lang.add("en", {
-
     "gxp.menu.LayerMenu.prototype": {
         layerText: "Layer"
     },
-
     "gxp.plugins.AddLayers.prototype": {
         addActionMenuText: "Add layers",
         addActionTip: "Add layers",
@@ -21,17 +19,15 @@ GeoExt.Lang.add("en", {
         layerSelectionText: "View available data from:",
         doneText: "Done",
         uploadText: "Upload layers",
-		addFeedActionMenuText: "Add feeds",
+        addFeedActionMenuText: "Add feeds",
         searchText: "Search for layers"
     },
-    
     "gxp.plugins.BingSource.prototype": {
         title: "Bing Layers",
         roadTitle: "Bing Roads",
         aerialTitle: "Bing Aerial",
         labeledAerialTitle: "Bing Aerial With Labels"
     },
-
     "gxp.plugins.FeatureEditor.prototype": {
         splitButtonText: "Edit",
         createFeatureActionText: "Create",
@@ -41,7 +37,6 @@ GeoExt.Lang.add("en", {
         commitTitle: "Commit message",
         commitText: "Please enter a commit message for this edit:"
     },
-    
     "gxp.plugins.FeatureGrid.prototype": {
         displayFeatureText: "Display on map",
         firstPageTip: "First page",
@@ -51,12 +46,10 @@ GeoExt.Lang.add("en", {
         lastPageTip: "Last page",
         totalMsg: "Features {1} to {2} of {0}"
     },
-
     "gxp.plugins.GoogleEarth.prototype": {
         menuText: "3D Viewer",
         tooltip: "Switch to 3D Viewer"
     },
-    
     "gxp.plugins.GoogleSource.prototype": {
         title: "Google Layers",
         roadmapAbstract: "Show street map",
@@ -64,32 +57,26 @@ GeoExt.Lang.add("en", {
         hybridAbstract: "Show imagery with street names",
         terrainAbstract: "Show street map with terrain"
     },
-
     "gxp.plugins.LayerProperties.prototype": {
         menuText: "Layer Properties",
         toolTip: "Layer Properties"
     },
-    
     "gxp.plugins.LayerTree.prototype": {
         shortTitle: "Layers",
         rootNodeText: "Layers",
         overlayNodeText: "Overlays",
         baseNodeText: "Base Layers"
     },
-	
-	"gxp.plugins.LayerManager.prototype": {
+    "gxp.plugins.LayerManager.prototype": {
         baseNodeText: "Base Maps"
     },
-
     "gxp.plugins.Legend.prototype": {
         menuText: "Show legend",
         tooltip: "Show legend"
     },
-
     "gxp.plugins.LoadingIndicator.prototype": {
         loadingMapMessage: "Loading map..."
     },
-
     "gxp.plugins.MapBoxSource.prototype": {
         title: "MapBox Layers",
         blueMarbleTopoBathyJanTitle: "Blue Marble Topography & Bathymetry (January)",
@@ -106,7 +93,6 @@ GeoExt.Lang.add("en", {
         worldLightTitle: "World Light",
         worldPrintTitle: "World Print"
     },
-
     "gxp.plugins.Measure.prototype": {
         buttonText: "Measure",
         lengthMenuText: "Length",
@@ -115,27 +101,23 @@ GeoExt.Lang.add("en", {
         areaTooltip: "Measure area",
         measureTooltip: "Measure"
     },
-
     "gxp.plugins.Navigation.prototype": {
         menuText: "Pan map",
         tooltip: "Pan map"
     },
-
     "gxp.plugins.NavigationHistory.prototype": {
         previousMenuText: "Zoom to previous extent",
         nextMenuText: "Zoom to next extent",
         previousTooltip: "Zoom to previous extent",
         nextTooltip: "Zoom to next extent"
     },
-
     "gxp.plugins.OSMSource.prototype": {
         title: "OpenStreetMap Layers",
         mapnikAttribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
         osmarenderAttribution: "Data CC-By-SA by <a href='http://openstreetmap.org/'>OpenStreetMap</a>"
     },
-
     "gxp.plugins.Print.prototype": {
-        buttonText:"Print",
+        buttonText: "Print",
         menuText: "Print map",
         tooltip: "Print map",
         previewText: "Print Preview",
@@ -145,7 +127,6 @@ GeoExt.Lang.add("en", {
         notAllNotPrintableText: "Not All Layers Can Be Printed",
         nonePrintableText: "None of your current map layers can be printed"
     },
-
     "gxp.plugins.MapQuestSource.prototype": {
         title: "MapQuest Layers",
         osmAttribution: "Tiles Courtesy of <a href='http://open.mapquest.co.uk/' target='_blank'>MapQuest</a> <img src='http://developer.mapquest.com/content/osm/mq_logo.png' border='0'>",
@@ -153,7 +134,6 @@ GeoExt.Lang.add("en", {
         naipAttribution: "Tiles Courtesy of <a href='http://open.mapquest.co.uk/' target='_blank'>MapQuest</a> <img src='http://developer.mapquest.com/content/osm/mq_logo.png' border='0'>",
         naipTitle: "MapQuest Imagery"
     },
-
     "gxp.plugins.QueryForm.prototype": {
         queryActionText: "Query",
         queryMenuText: "Query layer",
@@ -165,24 +145,20 @@ GeoExt.Lang.add("en", {
         noFeaturesTitle: "No Match",
         noFeaturesMessage: "Your query did not return any results."
     },
-
     "gxp.plugins.RemoveLayer.prototype": {
         removeMenuText: "Remove layer",
         removeActionTip: "Remove layer"
     },
-    
     "gxp.plugins.Styler.prototype": {
         menuText: "Layer Styles",
         tooltip: "Layer Styles"
 
     },
-
     "gxp.plugins.WMSGetFeatureInfo.prototype": {
-        buttonText:"Identify",
+        buttonText: "Identify",
         infoActionTip: "Get Feature Info",
         popupTitle: "Feature Info"
     },
-
     "gxp.plugins.Zoom.prototype": {
         zoomMenuText: "Zoom box",
         zoomInMenuText: "Zoom in",
@@ -191,27 +167,22 @@ GeoExt.Lang.add("en", {
         zoomInTooltip: "Zoom in",
         zoomOutTooltip: "Zoom out"
     },
-    
     "gxp.plugins.ZoomToExtent.prototype": {
         menuText: "Zoom to max extent",
         tooltip: "Zoom to max extent"
     },
-    
     "gxp.plugins.ZoomToDataExtent.prototype": {
         menuText: "Zoom to layer extent",
         tooltip: "Zoom to layer extent"
     },
-
     "gxp.plugins.ZoomToLayerExtent.prototype": {
         menuText: "Zoom to layer extent",
         tooltip: "Zoom to layer extent"
     },
-    
     "gxp.plugins.ZoomToSelectedFeatures.prototype": {
         menuText: "Zoom to selected features",
         tooltip: "Zoom to selected features"
     },
-
     "gxp.FeatureEditPopup.prototype": {
         closeMsgTitle: "Save Changes?",
         closeMsg: "This feature has unsaved changes. Would you like to save your changes?",
@@ -226,13 +197,11 @@ GeoExt.Lang.add("en", {
         saveButtonText: "Save",
         saveButtonTooltip: "Save changes"
     },
-    
     "gxp.FillSymbolizer.prototype": {
         fillText: "Fill",
         colorText: "Color",
         opacityText: "Opacity"
     },
-    
     "gxp.FilterBuilder.prototype": {
         builderTypeNames: ["any", "all", "none", "not all"],
         preComboText: "Match",
@@ -241,16 +210,14 @@ GeoExt.Lang.add("en", {
         addGroupText: "add group",
         removeConditionText: "remove condition"
     },
-    
     "gxp.grid.CapabilitiesGrid.prototype": {
-        nameHeaderText : "Name",
-        titleHeaderText : "Title",
-        queryableHeaderText : "Queryable",
+        nameHeaderText: "Name",
+        titleHeaderText: "Title",
+        queryableHeaderText: "Queryable",
         layerSelectionLabel: "View available data from:",
         layerAdditionLabel: "or add a new server.",
         expanderTemplateText: "<p><b>Abstract:</b> {abstract}</p>"
     },
-    
     "gxp.PointSymbolizer.prototype": {
         graphicCircleText: "circle",
         graphicSquareText: "square",
@@ -265,14 +232,12 @@ GeoExt.Lang.add("en", {
         sizeText: "Size",
         rotationText: "Rotation"
     },
-
     "gxp.QueryPanel.prototype": {
         queryByLocationText: "Query by location",
         currentTextText: "Current extent",
         queryByAttributesText: "Query by attributes",
         layerText: "Layer"
     },
-    
     "gxp.RulePanel.prototype": {
         scaleSliderTemplate: "{scaleType} Scale 1:{scale}",
         labelFeaturesText: "Label Features",
@@ -284,13 +249,11 @@ GeoExt.Lang.add("en", {
         symbolText: "Symbol",
         nameText: "Name"
     },
-    
     "gxp.ScaleLimitPanel.prototype": {
         scaleSliderTemplate: "{scaleType} Scale 1:{scale}",
         minScaleLimitText: "Min scale limit",
         maxScaleLimitText: "Max scale limit"
     },
-    
     "gxp.StrokeSymbolizer.prototype": {
         solidStrokeName: "solid",
         dashStrokeName: "dash",
@@ -301,22 +264,19 @@ GeoExt.Lang.add("en", {
         widthText: "Width",
         opacityText: "Opacity"
     },
-    
-    "gxp.StylePropertiesDialog.prototype": {   
+    "gxp.StylePropertiesDialog.prototype": {
         titleText: "General",
         nameFieldText: "Name",
         titleFieldText: "Title",
         abstractFieldText: "Abstract"
     },
-    
     "gxp.TextSymbolizer.prototype": {
         labelValuesText: "Label values",
         haloText: "Halo",
         sizeText: "Size"
     },
-    
     "gxp.WMSLayerPanel.prototype": {
-	    attributionText: "Attribution",
+        attributionText: "Attribution",
         aboutText: "About",
         titleText: "Title",
         nameText: "Name",
@@ -341,7 +301,6 @@ GeoExt.Lang.add("en", {
         singleTileText: "Single tile",
         singleTileFieldText: "Use a single tile"
     },
-
     "gxp.EmbedMapDialog.prototype": {
         publishMessage: "Your map is ready to be published to the web! Simply copy the following HTML to embed the map in your website:",
         heightLabel: 'Height',
@@ -352,34 +311,32 @@ GeoExt.Lang.add("en", {
         premiumSizeLabel: 'Premium',
         largeSizeLabel: 'Large'
     },
-    
     "gxp.WMSStylesDialog.prototype": {
-         addStyleText: "Add",
-         addStyleTip: "Add a new style",
-         chooseStyleText: "Choose style",
-         deleteStyleText: "Remove",
-         deleteStyleTip: "Delete the selected style",
-         editStyleText: "Edit",
-         editStyleTip: "Edit the selected style",
-         duplicateStyleText: "Duplicate",
-         duplicateStyleTip: "Duplicate the selected style",
-         addRuleText: "Add",
-         addRuleTip: "Add a new rule",
-         newRuleText: "New Rule",
-         deleteRuleText: "Remove",
-         deleteRuleTip: "Delete the selected rule",
-         editRuleText: "Edit",
-         editRuleTip: "Edit the selected rule",
-         duplicateRuleText: "Duplicate",
-         duplicateRuleTip: "Duplicate the selected rule",
-         cancelText: "Cancel",
-         saveText: "Save",
-         styleWindowTitle: "User Style: {0}",
-         ruleWindowTitle: "Style Rule: {0}",
-         stylesFieldsetTitle: "Styles",
-         rulesFieldsetTitle: "Rules"
+        addStyleText: "Add",
+        addStyleTip: "Add a new style",
+        chooseStyleText: "Choose style",
+        deleteStyleText: "Remove",
+        deleteStyleTip: "Delete the selected style",
+        editStyleText: "Edit",
+        editStyleTip: "Edit the selected style",
+        duplicateStyleText: "Duplicate",
+        duplicateStyleTip: "Duplicate the selected style",
+        addRuleText: "Add",
+        addRuleTip: "Add a new rule",
+        newRuleText: "New Rule",
+        deleteRuleText: "Remove",
+        deleteRuleTip: "Delete the selected rule",
+        editRuleText: "Edit",
+        editRuleTip: "Edit the selected rule",
+        duplicateRuleText: "Duplicate",
+        duplicateRuleTip: "Duplicate the selected rule",
+        cancelText: "Cancel",
+        saveText: "Save",
+        styleWindowTitle: "User Style: {0}",
+        ruleWindowTitle: "Style Rule: {0}",
+        stylesFieldsetTitle: "Styles",
+        rulesFieldsetTitle: "Rules"
     },
-
     "gxp.LayerUploadPanel.prototype": {
         titleLabel: "Title",
         titleEmptyText: "Layer title",
@@ -388,7 +345,7 @@ GeoExt.Lang.add("en", {
         fileLabel: "Data",
         fieldEmptyText: "Browse for data archive...",
         uploadText: "Upload",
-		uploadFailedText: "Upload failed",
+        uploadFailedText: "Upload failed",
         processingUploadText: "Processing upload...",
         waitMsgText: "Uploading your data...",
         invalidFileExtensionText: "File extension must be one of: ",
@@ -402,7 +359,6 @@ GeoExt.Lang.add("en", {
         crsEmptyText: "Coordinate Reference System ID",
         invalidCrsText: "CRS identifier should be an EPSG code (e.g. EPSG:4326)"
     },
-    
     "gxp.NewSourceDialog.prototype": {
         title: "Add new server...",
         cancelText: "Cancel",
@@ -410,30 +366,24 @@ GeoExt.Lang.add("en", {
         invalidURLText: "Enter a valid URL to a WMS endpoint (e.g. http://example.com/geoserver/wms)",
         contactingServerText: "Contacting Server..."
     },
-
-    "gxp.ScaleOverlay.prototype": { 
+    "gxp.ScaleOverlay.prototype": {
         zoomLevelText: "Zoom level"
     },
-    
     "sdi.plugins.LayerDetailSheet.prototype": {
         layerDetailMenuText: "Fiche de la métadonnée",
         layerDetailActionTip: "Afficher la fiche de la métadonnée"
     },
-    
     "sdi.plugins.LayerDownload.prototype": {
         layerDownloadMenuText: "Télécharger le produit",
         layerDownloadActionTip: "Télécharger le produit"
     },
-    
-     "sdi.plugins.LayerOrder.prototype": {
+    "sdi.plugins.LayerOrder.prototype": {
         layerOrderMenuText: "Commander la donnée",
         layerOrderActionTip: "Vers la commande de la donnée"
-    }
-	
-	"gxp.Viewer.prototype": {
+    },
+    "gxp.Viewer.prototype": {
         saveErrorText: "Trouble saving: "
     },
-
     "gxp.FeedSourceDialog.prototype": {
         feedTypeText: "Source",
         addPicasaText: "Picasa Photos",
