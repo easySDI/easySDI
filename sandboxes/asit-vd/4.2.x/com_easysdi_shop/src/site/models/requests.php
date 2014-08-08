@@ -121,10 +121,7 @@ class Easysdi_shopModelRequests extends JModelList {
         $diffusions = sdiFactory::getSdiUser()->getResponsibleExtraction();
         $query->innerjoin('#__sdi_order_diffusion od ON od.order_id = a.id');
         $query->innerjoin('#__sdi_diffusion d ON d.id = od.diffusion_id');
-        if (sizeof($diffusions)>0)
-            $query->where('d.id IN (-1, ' . implode(',', $diffusions) . ')');
-        else
-            $query->where('d.id IN (-1)');
+        $query->where('d.id IN ( ' . implode(',', $diffusions) . ')');
         $query->where('od.productstate_id = 3');
         
         //And the product minig is manual

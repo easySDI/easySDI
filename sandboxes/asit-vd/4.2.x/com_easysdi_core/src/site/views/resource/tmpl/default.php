@@ -75,16 +75,15 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
     js(document).ready(function() {
         enableAccessScope();
         onChangeOrganism();
-        js('#addAllUsersBtn').on('click', function(mEvt){toggleAllUsers(false);mEvt.srcElement.blur();});
-        js('#removeAllUsersBtn').on('click', function(mEvt){toggleAllUsers(true);mEvt.srcElement.blur();});
+        js('#addAllUsersBtn').on('click', function(){toggleAllUsers(false)});
+        js('#removeAllUsersBtn').on('click', function(){toggleAllUsers(true)});
         js('#form-resource').submit(function(event) {
 
         });
     });
     
     var users = false,
-        rightsarray = false,
-        currentUserId = <?php echo $this->user->id;?>;
+        rightsarray = false;
 
     
     var addUsersToSelect = function(right, rusers, limit, startup){
@@ -92,15 +91,11 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         if(userState) userState = userState.split(',');
         js.each(rusers, function(key, user) {
             var option = js('<option></option>').val(user.id).text(user.name);
+            
             if(
+                (limit && startup===true && userState!==false && js.inArray(user.id, userState)>-1) ||
+                (limit && startup===false && right==2 && js.inArray(user.id, rightsarray[right])>-1) ||
                 limit===false
-                ||  (startup===true
-                    && (
-                        (userState===false && js.inArray(user.id, rightsarray[right])>-1)
-                        || js.inArray(user.id, userState)>-1
-                        )
-                    )
-                || (startup===false && right==2 && user.id==currentUserId)
             )
                 option.attr('selected', 'selected');
             
@@ -113,11 +108,9 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
         startup = Boolean(startup) || false;
         
         js.each(users, function(right, rightUsers) {
-            if(js('#jform_' + right).length){
-                js('#jform_' + right).empty().trigger("liszt:updated");
+            js('#jform_' + right).empty().trigger("liszt:updated");
 
-                addUsersToSelect(right, rightUsers, limit, startup);
-            }
+            addUsersToSelect(right, rightUsers, limit, startup);
         });
     };
     
@@ -202,7 +195,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                         </div>
                         <?php for($index = 2; $index < 8; $index++): 
                             $sessionData = JFactory::getApplication()->getUserState('com_easysdi_core.edit.resource.ur[rights_'.$index.']');
-                        ?>
+                            ?>
                             <div class="control-group" <?php if(isset($this->item->resourcerights[$index]) && !$this->item->resourcerights[$index]): ?>style="display:none"<?php endif; ?>>
                                 <div class="control-label">
                                     <label id="jform_<?php echo $index ?>-lbl" for="jform_<?php echo $index ?>">

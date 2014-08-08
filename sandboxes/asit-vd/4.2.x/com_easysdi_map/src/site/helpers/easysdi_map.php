@@ -43,17 +43,16 @@ abstract class Easysdi_mapHelper {
         $doc->addStyleSheet($base_url . '/gxp/theme/all.css');
         $doc->addStyleSheet(Juri::base(true) . '/components/com_easysdi_map/views/map/tmpl/easysdi.css');
 
-        $output = '';      
-        
+        $output = '';
+
         if (JDEBUG) {
-            $doc->addScript(Juri::base(true) . '/media/jui/js/jquery.js');
-            $doc->addScript(Juri::base(true) . '/media/jui/js/jquery-noconflict.js');
-            $doc->addScript(Juri::base(true) . '/media/jui/js/bootstrap.js');    
-            $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js.js');
+            $doc->addScript($base_url . '/media/jui/js/jquery.js');
+            $doc->addScript($base_url . '/media/jui/js/jquery-noconflict.js');
+            $doc->addScript($base_url . '/media/jui/js/bootstrap.js');             
             $doc->addScript($base_url . '/ext/adapter/ext/ext-base-debug.js');
             $doc->addScript($base_url . '/ext/ext-all-debug.js');
             $doc->addScript($base_url . '/ux/ext/RowExpander.js');
-            $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.debug.js');
+            $doc->addScript($base_url . '/openlayers/OpenLayers.debug.js');
             $doc->addScript($base_url . '/geoext/lib/GeoExt.js');
             $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
             $doc->addScript($base_url . '/gxp/script/loader.js');
@@ -79,14 +78,13 @@ abstract class Easysdi_mapHelper {
             $doc->addScript(JURI::base(true) . '/media/system/js/mootools-core-uncompressed.js');
             $doc->addScript(JURI::base(true) . '/media/system/js/core-uncompressed.js');
         } else {
-            $doc->addScript(Juri::base(true) . '/media/jui/js/jquery.min.js');
-            $doc->addScript(Juri::base(true) . '/media/jui/js/jquery-noconflict.js');
-            $doc->addScript(Juri::base(true) . '/media/jui/js/bootstrap.min.js');        
-            $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
+            $doc->addScript($base_url . '/media/jui/js/jquery.min.js');
+            $doc->addScript($base_url . '/media/jui/js/jquery-noconflict.js');
+            $doc->addScript($base_url . '/media/jui/js/bootstrap.min.js');              
             $doc->addScript($base_url . '/ext/adapter/ext/ext-base.js');
             $doc->addScript($base_url . '/ext/ext-all.js');
             $doc->addScript($base_url . '/ux/ext/RowExpander.js');
-            $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.js');
+            $doc->addScript($base_url . '/openlayers/OpenLayers.js');
             $doc->addScript($base_url . '/geoext/lib/geoext.min.js');
             $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
             $doc->addScript($base_url . '/gxp/script/gxp.min.js');
@@ -110,7 +108,6 @@ abstract class Easysdi_mapHelper {
             var loadingMask;
             Ext.Container.prototype.bufferResize = false;
             Ext.onReady(function(){
-
                 loadingMask = new Ext.LoadMask(Ext.getBody(), {
                 msg:"';
         $output .= JText::_('COM_EASYSDI_MAP_MAP_LOAD_MESSAGE');
@@ -417,7 +414,7 @@ abstract class Easysdi_mapHelper {
                     },
                     {
                     ptype: "gxp_measure",
-                    toggleGroup: "navigation",
+                    toggleGroup: "measure",
                     actionTarget: "map.tbar"
                     },
                     ';
@@ -572,14 +569,12 @@ abstract class Easysdi_mapHelper {
         {
         "ol": { ptype: "sdi_gxp_olsource" }, ';
 
-        if (isset($item->physicalservices)) :
-            foreach ($item->physicalservices as $service) :
-                //Acces not allowed
-                if (!in_array($service->access, $user->getAuthorisedViewLevels()))
-                    continue;
-                $config .= Easysdi_mapHelper::getServiceDescription($service);
-            endforeach;
-        endif;
+        foreach ($item->physicalservices as $service) :
+            //Acces not allowed
+            if (!in_array($service->access, $user->getAuthorisedViewLevels()))
+                continue;
+            $config .= Easysdi_mapHelper::getServiceDescription($service);
+        endforeach;
 
         if (isset($item->virtualservices)) :
             foreach ($item->virtualservices as $service) {
