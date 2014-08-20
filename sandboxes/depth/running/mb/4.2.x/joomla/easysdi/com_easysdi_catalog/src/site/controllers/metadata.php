@@ -436,11 +436,11 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $dataWithoutArray = array();
         foreach ($data as $xpath => $values) {
             // if is boundary
-            if(strpos($xpath, 'EX_Extent')!==false){
+            if (strpos($xpath, 'EX_Extent') !== false) {
                 $this->addBoundaries($xpath, $values);
                 unset($data[$xpath]);
             }
-            
+
             if (is_array($values)) {
 
                 foreach ($values as $key => $value) {
@@ -488,12 +488,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             }
         }
 
-        $keyword = $this->domXpathStr->query('descendant::*[@catalog:stereotypeId="'.EnumStereotype::$GEMET.'"]')->item(0);
-        
-        if(!empty($keyword)){
+        $keyword = $this->domXpathStr->query('descendant::*[@catalog:stereotypeId="' . EnumStereotype::$GEMET . '"]')->item(0);
+
+        if (!empty($keyword)) {
             $this->cleanEmptyNode($keyword->parentNode);
         }
-        
+
         $root = $this->domXpathStr->query('/*')->item(0);
 
         foreach ($this->getHeader() as $header) {
@@ -505,9 +505,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         //$root->insertBefore($smda->getPlatformNode($this->structure), $root->firstChild);
         $root->appendChild($smda->getPlatformNode($this->structure));
 
-        /*echo $this->structure->saveXML();
-        die();*/
-        
+        /* echo $this->structure->saveXML();
+          die(); */
+
         $this->removeNoneExist();
         $this->removeCatalogNS();
 
@@ -542,9 +542,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * @param string $xpath
      * @param array $boundaries
      */
-    private function addBoundaries($xpath, $boundaries){
+    private function addBoundaries($xpath, $boundaries) {
         $formStereotype = new FormStereotype();
-        
+
         $query = FormUtils::unSerializeXpath($xpath);
         $elements = $this->domXpathStr->query($query);
         $toDeletes = array();
@@ -552,41 +552,43 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $toDeletes[] = $element->parentNode->parentNode->parentNode;
             $parent = $element->parentNode->parentNode->parentNode->parentNode;
         }
-        
+
         foreach ($toDeletes as $toDelete) {
             $parent->removeChild($toDelete);
         }
-        
-        foreach ($boundaries as $boundary) {
-            if(!empty($boundary)){
-                $parent->appendChild($this->structure->importNode($formStereotype->getMultipleExtentStereotype($boundary), true));
+
+        if (is_array($boundaries)) {
+            foreach ($boundaries as $boundary) {
+                if (!empty($boundary)) {
+                    $parent->appendChild($this->structure->importNode($formStereotype->getMultipleExtentStereotype($boundary), true));
+                }
             }
         }
     }
-    
+
     /**
      * 
      * @param DOMElement $element
      */
-    private function cleanEmptyNode(DOMElement $element){
+    private function cleanEmptyNode(DOMElement $element) {
 
         $toRemove = array();
         foreach ($element->childNodes as $child) {
-            if(empty($child->nodeValue)){
+            if (empty($child->nodeValue)) {
                 $toRemove[] = $child;
             }
         }
-        
+
         foreach ($toRemove as $child) {
             $element->removeChild($child);
         }
-        
-        if(!$element->hasChildNodes()){
+
+        if (!$element->hasChildNodes()) {
             $parent = $element->parentNode->parentNode;
             $parent->removeChild($element->parentNode);
         }
     }
-    
+
     /**
      * Create xml for update request
      * 
@@ -771,22 +773,22 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
             $roles[$row['role_id']]['users'][$row['user_id']] = $row['username'];
         }
-        
+
         $version = new stdClass();
         $version->id = JFactory::getApplication()->input->get('versionId');
-        
+
         $versions = $this->core_helpers->getViralVersionnedChild($version);
 
-        if(empty($versions[$version->id]->children)){
+        if (empty($versions[$version->id]->children)) {
             $roles['hasChildren'] = 'false';
-        }else{
+        } else {
             $roles['hasChildren'] = 'true';
         }
-        
+
         echo json_encode($roles);
         die();
     }
-    
+
     public function getSynchronisationInfo() {
         $metadataId = JFactory::getApplication()->input->get('metadata_id');
 
@@ -927,7 +929,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * 
      */
     private function getHeader($encoding = 'utf8') {
-        
+
         $languageid = $this->ldao->getDefaultLanguage();
 
         $headers = array();
@@ -959,7 +961,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $characterSetCode->setAttribute('codeList', 'http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode');
         $characterSet->appendChild($characterSetCode);
 
-        $headers[] = $characterSet; 
+        $headers[] = $characterSet;
 
         $locale = $this->structure->createElementNS($this->nsArray['gmd'], 'locale');
         $characterEncoding = $this->structure->createElementNS($this->nsArray['gmd'], 'characterEncoding');
