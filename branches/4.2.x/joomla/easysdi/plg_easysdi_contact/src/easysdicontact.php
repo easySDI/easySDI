@@ -67,9 +67,7 @@ class plgUserEasysdicontact extends JPlugin {
 	 */
 	function onUserBeforeDelete($user)
 	{
-                $app = JFactory::getApplication();
-                
-                // ensure the user id is really an int
+		// ensure the user id is really an int
 		$user_id = (int)$user['id'];
 
 		// Load user_easysdi plugin language (not done automatically).
@@ -89,11 +87,10 @@ class plgUserEasysdicontact extends JPlugin {
                 
 		$dbo->setQuery($query);
 		$id = $dbo->loadResult();
-                
-		if(isset($id)){
+		if($id){
 			JFactory::getApplication()->enqueueMessage(JText::_('PLG_EASYSDIUSER_ERR_CANT_DELETE'), 'error');
-                        $app->redirect(JRoute::_('index.php?option=com_users&view=profile&layout=edit'));
-                        jExit();
+			//throw new Exception (JText::_('PLG_EASYSDIUSER_ERR_CANT_DELETE'));
+			return false;
 		}
 		return true;
 	}
