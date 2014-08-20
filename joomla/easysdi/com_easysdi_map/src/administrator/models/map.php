@@ -280,17 +280,10 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 if (substr($key, 0, 4) == "tool") {
                     if ($value == 1) {
                         $tool = substr($key, 4);
+                        ($tool == '17')? $params= $data['catalog_id']: $params = 'NULL';   
+                        
                         $columns = array('map_id', 'tool_id', 'params');
-                        
-//                        ($tool == '17')? $params = $data['catalog_id']: $params = 'NULL';   
-//                        $values = array($this->getItem()->get('id'),$query->quote($tool), $query->quote($params));
-                        if($tool == '17'){
-                            $params = $data['catalog_id'];
-                            $values = array($this->getItem()->get('id'),$query->quote($tool), $query->quote($params));
-                        }else{
-                            $values = array($this->getItem()->get('id'),$query->quote($tool), 'NULL');
-                        }                            
-                        
+                        $values = array($this->getItem()->get('id'),$query->quote($tool), $query->quote($params));
                         $query = $db->getQuery(true);
                         $query->insert('#__sdi_map_tool');
                         $query->columns($query->quoteName($columns));
