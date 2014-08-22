@@ -88,7 +88,7 @@ class cswmetadata {
      * @return DOMDocument 
      */
     public function load($content = 'CORE') {
-        
+
         $catalogUrlGetRecordById = $this->catalogurl . "?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=" . $content . "&id=" . $this->guid;
 
         $response = $this->CURLRequest("GET", $catalogUrlGetRecordById);
@@ -133,7 +133,7 @@ class cswmetadata {
                 $this->dom = $metadata;
             } else
             if ($metadata instanceof DOMElement) {
-                
+
                 $this->dom = new DOMDocument('1.0', 'UTF-8');
                 $xmlContent = $this->dom->importNode($metadata, true);
                 $this->dom->appendChild($xmlContent);
@@ -158,14 +158,14 @@ class cswmetadata {
      * Buils an extended Metadata containing EasySDI information fields for XSL transformation
      */
     public function extend($catalog, $type, $preview, $callfromJoomla, $lang) {
-        
-        
+
+
         //Is it an harvested metadata
         $xpath = new DomXPath($this->dom);
         $xpath->registerNamespace('sdi', 'http://www.easysdi.org/2011/sdi');
         $sdiplatform = $xpath->query('descendant::sdi:platform');
         $isharvested = $sdiplatform->item(0)->getAttribute('harvested');
-        
+
         $root = $this->dom->documentElement;
 
         $this->extendeddom = new DOMDocument('1.0', 'UTF-8');
@@ -199,7 +199,7 @@ class cswmetadata {
                 $query = $this->db->getQuery(true)
                         ->select('name, logo')
                         ->from('#__sdi_organism')
-                        ->where('id = ' . (int)$this->resource->organism_id);
+                        ->where('id = ' . (int) $this->resource->organism_id);
                 $this->db->setQuery($query);
                 $organism = $this->db->loadObject();
 
@@ -223,7 +223,7 @@ class cswmetadata {
                 $query = $this->db->getQuery(true)
                         ->select('name, alias, logo')
                         ->from('#__sdi_resourcetype')
-                        ->where('id = ' . (int)$this->resource->resourcetype_id);
+                        ->where('id = ' . (int) $this->resource->resourcetype_id);
                 $this->db->setQuery($query);
                 $resourcetype = $this->db->loadObject();
                 $exresourcetype = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:ex_Resourcetype');
@@ -243,9 +243,9 @@ class cswmetadata {
                 $exmetadata->setAttribute('updated', $this->metadata->modified);
 
                 $query = $this->db->getQuery(true)
-                        ->select('id, guid ,pricing_id, hasdownload, hasextraction, accessscope_id')
+                        ->select('id, guid ,pricing_id, hasdownload, hasextraction, accessscope_id,surfacemin,surfacemax')
                         ->from('#__sdi_diffusion')
-                        ->where('version_id = ' . (int)$this->version->id)
+                        ->where('version_id = ' . (int) $this->version->id)
                         ->where('state = 1');
                 $this->db->setQuery($query);
                 $diffusion = $this->db->loadObject();
@@ -257,10 +257,11 @@ class cswmetadata {
                     $exdiffusion->setAttribute('isfree', $isfree);
                     $exdiffusion->setAttribute('isDownladable', $isDownladable);
                     $exdiffusion->setAttribute('isOrderable', $isOrderable);
+                    $exdiffusion->setAttribute('surfacemin', is_null($diffusion->surfacemin )?'':$diffusion->surfacemin);
+                    $exdiffusion->setAttribute('surfacemax', is_null($diffusion->surfacemax )?'':$diffusion->surfacemax);                    
                     $exdiffusion->setAttribute('file_size', '');
                     $exdiffusion->setAttribute('size_unit', '');
                     $exdiffusion->setAttribute('file_type', '');
-
                     $exmetadata->appendChild($exdiffusion);
                 endif;
 
@@ -285,20 +286,28 @@ class cswmetadata {
                 if (!empty($diffusion) && $diffusion->hasdownload == 1):
                     //check if the user has the right to download
                     $right = true;
+                    $sdiUser = sdiFactory::getSdiUser();
                     if ($diffusion->accessscope_id != 1):
-                        if (!sdiFactory::getSdiUser()->isEasySDI):
+                        if (!$sdiUser->isEasySDI):
                             $right = false;
                         else:
                             if ($diffusion->accessscope_id == 2):
                                 $organisms = sdiModel::getAccessScopeOrganism($diffusion->guid);
-                                $organism = sdiFactory::getSdiUser()->getMemberOrganisms();
+                                $organism = $sdiUser->getMemberOrganisms();
                                 if (empty($organisms) || !in_array($organism[0]->id, $organisms)):
                                     $right = false;
                                 endif;
                             endif;
                             if ($diffusion->accessscope_id == 3):
                                 $users = sdiModel::getAccessScopeUser($diffusion->guid);
-                                if (empty($users) || !in_array(sdiFactory::getSdiUser()->id, $users)):
+                                if (empty($users) || !in_array($sdiUser->id, $users)):
+                                    $right = false;
+                                endif;
+                            endif;
+                            if ($diffusion->accessscope_id == 4):
+                                $orgCategoriesIdList = $sdiUser->getMemberOrganismsCategoriesIds();
+                                $allowedCategories = sdiModel::getAccessScopeCategory($diffusion->guid);
+                                if (count(array_intersect($orgCategoriesIdList, $allowedCategories)) < 1):
                                     $right = false;
                                 endif;
                             endif;
@@ -317,7 +326,7 @@ class cswmetadata {
                                 ->from('#__sdi_user_role_resource urr')
                                 ->innerJoin('#__sdi_user u ON u.id = urr.user_id')
                                 ->innerJoin('#__users ju ON ju.id = u.user_id')
-                                ->where('urr.resource_id = ' . (int)$this->resource->id)
+                                ->where('urr.resource_id = ' . (int) $this->resource->id)
                                 ->where('urr.role_id = 5')
                         ;
                         $this->db->setQuery($query);
@@ -338,27 +347,35 @@ class cswmetadata {
                         ->select('v.id, v.guid, v.maplayer_id, v.accessscope_id, ml.layername, ml.service_id, ml.servicetype, ml.attribution')
                         ->from('#__sdi_visualization v')
                         ->join('LEFT', '#__sdi_maplayer ml ON ml.id = v.maplayer_id')
-                        ->where('v.version_id = ' . (int)$this->version->id)
+                        ->where('v.version_id = ' . (int) $this->version->id)
                         ->where('v.state = 1');
                 $this->db->setQuery($query);
                 $visualization = $this->db->loadObject();
                 if (!empty($visualization) && !empty($visualization->maplayer_id)) :
                     //check if the user has the right to view
                     $right = true;
+                    $sdiUser = sdiFactory::getSdiUser();
                     if ($visualization->accessscope_id != 1):
-                        if (!sdiFactory::getSdiUser()->isEasySDI):
+                        if (!$sdiUser->isEasySDI):
                             $right = false;
                         else:
                             if ($visualization->accessscope_id == 2):
                                 $organisms = sdiModel::getAccessScopeOrganism($visualization->guid);
-                                $organism = sdiFactory::getSdiUser()->getMemberOrganisms();
+                                $organism = $sdiUser->getMemberOrganisms();
                                 if (!in_array($organism[0]->id, $organisms)):
                                     $right = false;
                                 endif;
                             endif;
                             if ($visualization->accessscope_id == 3):
                                 $users = sdiModel::getAccessScopeUser($visualization->guid);
-                                if (!in_array(sdiFactory::getSdiUser()->id, $users)):
+                                if (!in_array($sdiUser->id, $users)):
+                                    $right = false;
+                                endif;
+                            endif;
+                            if ($visualization->accessscope_id == 4):
+                                $orgCategoriesIdList = $sdiUser->getMemberOrganismsCategoriesIds();
+                                $allowedCategories = sdiModel::getAccessScopeCategory($visualization->guid);
+                                if (count(array_intersect($orgCategoriesIdList, $allowedCategories)) < 1):
                                     $right = false;
                                 endif;
                             endif;
@@ -374,7 +391,7 @@ class cswmetadata {
                             $query = $this->db->getQuery(true)
                                     ->select('id, alias, resourceurl, serviceconnector_id')
                                     ->from('#__sdi_physicalservice')
-                                    ->where('id = ' . (int)$visualization->service_id)
+                                    ->where('id = ' . (int) $visualization->service_id)
                             ;
                             $this->db->setQuery($query);
                             $service = $this->db->loadObject();
@@ -382,7 +399,7 @@ class cswmetadata {
                             $query = $this->db->getQuery(true)
                                     ->select('id, alias, url, reflectedurl, serviceconnector_id')
                                     ->from('#__sdi_virtualservice')
-                                    ->where('id = ' . (int)$visualization->service_id)
+                                    ->where('id = ' . (int) $visualization->service_id)
                             ;
                             $this->db->setQuery($query);
                             $service = $this->db->loadObject();
@@ -392,56 +409,56 @@ class cswmetadata {
                                 $service->resourceurl = $service->url;
                             endif;
                         endif;
-                        
+
                         //Get the current displayed map, from which the call is made
                         $mapid = JFactory::getApplication()->getUserState('com_easysdi_map.edit.map.id');
-                        if(!empty($mapid)){
+                        if (!empty($mapid)) {
                             $query = $this->db->getQuery(true)
                                     ->select('g.alias')
                                     ->from('#__sdi_map m')
                                     ->innerJoin('#__sdi_map_layergroup mg ON mg.map_id = m.id AND mg.isdefault = 1')
                                     ->innerJoin('#__sdi_layergroup g ON mg.group_id = g.id')
-                                    ->where('m.id = ' . (int)$mapid);
+                                    ->where('m.id = ' . (int) $mapid);
                             $this->db->setQuery($query);
                             $group = $this->db->loadResult();
                         }
-                        
+
                         $maplayer = JTable::getInstance('layer', 'Easysdi_mapTable');
                         $maplayer->load($visualization->maplayer_id);
-                       
+
 //                        $href = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $this->metadata->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview . '&tmpl=component');
-                        $href = Easysdi_mapHelper::getLayerDetailSheetToolUrl($this->metadata->guid, $lang, $catalog, $preview) ;
+                        $href = Easysdi_mapHelper::getLayerDetailSheetToolUrl($this->metadata->guid, $lang, $catalog, $preview);
                         //$sourceconfig = '{id :"' . $service->alias . '",hidden : "true", ptype: "sdi_gxp_wmssource",url: "' . $service->resourceurl . '"}';
                         $sourceconfig = Easysdi_mapHelper::getExtraServiceDescription($service);
 
                         $mapparams = JComponentHelper::getParams('com_easysdi_map');
                         $mwidth = $mapparams->get('iframewidth');
                         $mheight = $mapparams->get('iframeheight');
-                        
-                        
+
+
                         //Get the default group to use to add the layer
-                        /*$model = JModelLegacy::getInstance('map', 'Easysdi_mapModel');
-                        $item = $model->getData($mapparams->data->previewmap);
-                        foreach ($item->groups as $group):
-                            if ($group->isdefault) {
-                                $defaultgroup = $group;
-                                break;
-                            }
-                        endforeach;*/
-                         $downloadurl='';
-                         $orderurl='';
+                        /* $model = JModelLegacy::getInstance('map', 'Easysdi_mapModel');
+                          $item = $model->getData($mapparams->data->previewmap);
+                          foreach ($item->groups as $group):
+                          if ($group->isdefault) {
+                          $defaultgroup = $group;
+                          break;
+                          }
+                          endforeach; */
+                        $downloadurl = '';
+                        $orderurl = '';
                         if (!empty($diffusion) && $diffusion->hasdownload == 1):
-                            $downloadurl = Easysdi_mapHelper::getLayerDownloadToolUrl($diffusion->id) ;                         
+                            $downloadurl = Easysdi_mapHelper::getLayerDownloadToolUrl($diffusion->id);
                         endif;
                         if (!empty($diffusion) && $diffusion->hasextraction == 1):
-                            $orderurl = Easysdi_mapHelper::getLayerOrderToolUrl($this->metadata->guid, $lang, $catalog);                 
+                            $orderurl = Easysdi_mapHelper::getLayerOrderToolUrl($this->metadata->guid, $lang, $catalog);
                         endif;
-                        
-                        $layerConfig = '{ ';//group: "' . $defaultgroup->alias . '",';
+
+                        $layerConfig = '{ '; //group: "' . $defaultgroup->alias . '",';
                         switch ($service->serviceconnector_id) :
                             case 2 :
                             case 11 :
-                                $layerConfig .=  'type: "OpenLayers.Layer.WMS",';
+                                $layerConfig .= 'type: "OpenLayers.Layer.WMS",';
                                 $layerConfig .= ' name: "' . $maplayer->layername . '",
                                                 attribution: "' . addslashes($maplayer->attribution) . '",
                                                 href : "' . $href . '",
@@ -456,40 +473,40 @@ class cswmetadata {
                                                 visibility: true}';
                                 break;
                             case 3 :
-                                $layerConfig .=  'type: "OpenLayers.Layer.WMTS",';
+                                $layerConfig .= 'type: "OpenLayers.Layer.WMTS",';
                                 $layerConfig .= ' name: "' . $maplayer->layername . '",';
                                 $layerConfig .= ' href: "' . $href . '",';
                                 $layerConfig .= ' download: "' . $downloadurl . '",';
                                 $layerConfig .= ' order: "' . $orderurl . '",';
-                                $layerConfig .=  'source : "'.$service->alias.'",';
-                                $layerConfig .=  'title : "'.$maplayer->name.'",';
-                                $layerConfig .=  'args: [{';
-                                $layerConfig .=  'name : "'.$maplayer->name.'",';
-                                $layerConfig .=  'layer : "'.$maplayer->layername.'",';
-                                $layerConfig .=  'matrixSet: "'.$maplayer->asOLmatrixset.'",';
-                                $layerConfig .=  'url: "'.$service->resourceurl.'",';
-                                $layerConfig .=  'style : "'.$maplayer->asOLstyle.'",';
-                                $layerConfig .=  $maplayer->asOLoptions;    
-                                $layerConfig .=  '}]}';
+                                $layerConfig .= 'source : "' . $service->alias . '",';
+                                $layerConfig .= 'title : "' . $maplayer->name . '",';
+                                $layerConfig .= 'args: [{';
+                                $layerConfig .= 'name : "' . $maplayer->name . '",';
+                                $layerConfig .= 'layer : "' . $maplayer->layername . '",';
+                                $layerConfig .= 'matrixSet: "' . $maplayer->asOLmatrixset . '",';
+                                $layerConfig .= 'url: "' . $service->resourceurl . '",';
+                                $layerConfig .= 'style : "' . $maplayer->asOLstyle . '",';
+                                $layerConfig .= $maplayer->asOLoptions;
+                                $layerConfig .= '}]}';
                                 break;
                         endswitch;
-                        
 
-                       /*$layerconfig = '{ name: "' . $visualization->layername . '",attribution: "' . addslashes($visualization->attribution) . '",opacity: 1,source: "' . $service->alias . '",tiled: true,title: "' . $visualization->layername . '", visibility: true, href: "' . $href . '"';
-                        if (!empty($diffusion) && $diffusion->hasdownload == 1):
-//                            $downloadurl = htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&tmpl=component&id=' . $diffusion->id);
-                            $downloadurl = Easysdi_mapHelper::getLayerDownloadToolUrl($diffusion->id) ;    
-                        $layerconfig .= ', download: "' . $downloadurl . '"';                        
-                        endif;
-                        if (!empty($diffusion) && $diffusion->hasextraction == 1):
-//                            $orderurl = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $this->metadata->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&type=shop&preview=map&tmpl=component');
-                            $orderurl = Easysdi_mapHelper::getLayerOrderToolUrl($this->metadata->guid, $lang, $catalog);
-                            $layerconfig .= ', order: "' . $orderurl . '"';                        
-                        endif;
-                        if(!empty($group)):
-                            $layerconfig .= ', group: "' . $group . '"';  
-                        endif;
-                        $layerconfig .='}';*/
+
+                        /* $layerconfig = '{ name: "' . $visualization->layername . '",attribution: "' . addslashes($visualization->attribution) . '",opacity: 1,source: "' . $service->alias . '",tiled: true,title: "' . $visualization->layername . '", visibility: true, href: "' . $href . '"';
+                          if (!empty($diffusion) && $diffusion->hasdownload == 1):
+                          //                            $downloadurl = htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&tmpl=component&id=' . $diffusion->id);
+                          $downloadurl = Easysdi_mapHelper::getLayerDownloadToolUrl($diffusion->id) ;
+                          $layerconfig .= ', download: "' . $downloadurl . '"';
+                          endif;
+                          if (!empty($diffusion) && $diffusion->hasextraction == 1):
+                          //                            $orderurl = htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $this->metadata->guid . '&lang=' . $lang . '&catalog=' . $catalog . '&type=shop&preview=map&tmpl=component');
+                          $orderurl = Easysdi_mapHelper::getLayerOrderToolUrl($this->metadata->guid, $lang, $catalog);
+                          $layerconfig .= ', order: "' . $orderurl . '"';
+                          endif;
+                          if(!empty($group)):
+                          $layerconfig .= ', group: "' . $group . '"';
+                          endif;
+                          $layerconfig .='}'; */
 
                         $addtomap = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:addtomap');
                         $addtomaponclick = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:onclick', ' window.parent.app.addExtraLayer(' . $sourceconfig . ', ' . $layerConfig . ')');
@@ -508,7 +525,7 @@ class cswmetadata {
                         ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
                         ->leftJoin('#__sdi_translation t on t.element_guid = m.guid')
                         ->leftJoin('#__sdi_language l ON l.id = t.language_id AND l.code = "' . $lang . '"')
-                        ->where('vl.child_id = ' . (int)$this->version->id)
+                        ->where('vl.child_id = ' . (int) $this->version->id)
                 ;
                 $this->db->setQuery($query);
                 $parentsitem = $this->db->loadObjectList();
@@ -534,8 +551,8 @@ class cswmetadata {
                         ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
                         ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
                         ->leftJoin('#__sdi_translation t on t.element_guid = m.guid')
-                        ->leftJoin('#__sdi_language l ON l.id = t.language_id AND l.code = ' . $query->quote($lang) )
-                        ->where('vl.parent_id = ' . (int)$this->version->id);
+                        ->leftJoin('#__sdi_language l ON l.id = t.language_id AND l.code = ' . $query->quote($lang))
+                        ->where('vl.parent_id = ' . (int) $this->version->id);
                 $this->db->setQuery($query);
                 $childrenitem = $this->db->loadObjectList();
                 $children = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:children');
@@ -559,7 +576,7 @@ class cswmetadata {
                 $query = $this->db->getQuery(true)
                         ->select('*')
                         ->from('#__sdi_application')
-                        ->where('resource_id = ' . (int)$this->resource->id);
+                        ->where('resource_id = ' . (int) $this->resource->id);
                 $this->db->setQuery($query);
                 $applicationsitem = $this->db->loadObjectList();
                 $applications = $this->extendeddom->createElementNS('http://www.easysdi.org/2011/sdi', 'sdi:applications');
@@ -619,7 +636,7 @@ class cswmetadata {
         }
 
         $xml = $dom->saveXML();
-        
+
         $style = new DomDocument();
         if (!$style->load(JPATH_BASE . '/media/easysdi/catalog/xsl/' . $this->rootxslfile)):
             return false;
@@ -664,13 +681,16 @@ class cswmetadata {
 
         if ($this->diffusion->hasextraction == 0)
             return null;
-
         //Check access scope
+        $sdiUser = sdiFactory::getSdiUser();
         if ($this->diffusion->accessscope_id != 1):
+            if (!$sdiUser->isEasySDI):
+                return null;
+            endif;
             if ($this->diffusion->accessscope_id == 2):
                 $organisms = sdiModel::getAccessScopeOrganism($this->diffusion->guid);
-                $organism = sdiFactory::getSdiUser()->getMemberOrganisms();
-                if(empty($organism)):
+                $organism = $sdiUser->getMemberOrganisms();
+                if (empty($organism)):
                     return null;
                 endif;
                 if (!in_array($organism[0]->id, $organisms)):
@@ -679,7 +699,14 @@ class cswmetadata {
             endif;
             if ($this->diffusion->accessscope_id == 3):
                 $users = sdiModel::getAccessScopeUser($this->diffusion->guid);
-                if (!in_array(sdiFactory::getSdiUser()->id, $users)):
+                if (!in_array($sdiUser->id, $users)):
+                    return null;
+                endif;
+            endif;
+            if ($this->diffusion->accessscope_id == 4):
+                $orgCategoriesIdList = $sdiUser->getMemberOrganismsCategoriesIds();
+                $allowedCategories = sdiModel::getAccessScopeCategory($this->diffusion->guid);
+                if (count(array_intersect($orgCategoriesIdList, $allowedCategories)) < 1):
                     return null;
                 endif;
             endif;
@@ -801,18 +828,18 @@ class cswmetadata {
                 //User is not an EasySDI user
             }
         endforeach;
-        
+
         $html .="</div>";
         $html .="</div>";
         $html .="</form>";
-        
+
         //Submit to shop button
         //Load lang to translate button label
         $lang = JFactory::getLanguage();
         $lang->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
         $html .= '
             <div class="sdi-shop-toolbar-add-basket pull-right">
-                <button id="sdi-shop-btn-add-basket" class="btn btn-success btn-small" onclick="Joomla.submitbutton(); return false;">'.JText::_('COM_EASYSDI_SHOP_BASKET_ADD_TO_BASKET').'</button>
+                <button id="sdi-shop-btn-add-basket" class="btn btn-success btn-small" onclick="Joomla.submitbutton(); return false;">' . JText::_('COM_EASYSDI_SHOP_BASKET_ADD_TO_BASKET') . '</button>
                 <input type="hidden" name="diffusion_id" id="diffusion_id" value="' . $this->diffusion->id . '" />
             </div>
             ';
@@ -820,6 +847,7 @@ class cswmetadata {
 
         return $html;
     }
+
 
     protected function CURLRequest($type, $url, $xmlBody = "") {
         // Get COOKIE as key=value
@@ -856,7 +884,7 @@ class cswmetadata {
 
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($ch, CURLOPT_USERPWD, $juser->username . ":" . $juser->password);
-        
+
         $output = curl_exec($ch);
         curl_close($ch);
 

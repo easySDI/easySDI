@@ -19,6 +19,18 @@
             translate="true"
         /> 
         <field
+            name="categories" 
+            type="sql" 
+            class="multiselect input-xxlarge"
+            multiple="true"
+            label=""
+            description="" 
+            query="SELECT id, name FROM #__sdi_category WHERE state=1 ORDER BY name" 
+            key_field="id" 
+            value_field="name"
+            translate="true"
+        />         
+        <field
             name="organisms" 
             type="sql" 
             class="multiselect input-xxlarge"

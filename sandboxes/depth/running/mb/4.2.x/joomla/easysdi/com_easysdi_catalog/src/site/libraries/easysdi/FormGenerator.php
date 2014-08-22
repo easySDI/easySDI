@@ -1130,6 +1130,9 @@ class FormGenerator {
 
         $name = $relationtype->nodeName;
 
+        $validator = $this->getValidatorClass($relationtype);
+        
+        $field->setAttribute('class', $validator);
         $field->setAttribute('name', FormUtils::serializeXpath($relationtype->getNodePath()));
         $field->setAttribute('type', 'list');
         $field->setAttribute('label', 'Name');
@@ -1208,6 +1211,9 @@ class FormGenerator {
 
                 $this->db->setQuery($query);
                 $result = $this->db->loadObjectList();
+
+                $first = array('id' => '', 'guid' => '', 'name' => '');
+                array_unshift($result, (object) $first);
                 break;
             case EnumChildtype::$ATTRIBUT:
                 switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
@@ -1277,7 +1283,7 @@ class FormGenerator {
         $validator = '';
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
         $patterns = $this->getPatterns();
-
+        
         if ($attribute->getAttributeNS($this->catalog_uri, 'lowerbound') > 0) {
             $validator .= ' required ';
         }
@@ -1289,6 +1295,8 @@ class FormGenerator {
                 $validator .= ' validate-sdi' . $patterns[$guid]->stereotype_name;
             }
 
+            return $validator;
+        } elseif($attribute->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE){
             return $validator;
         } else {
             return '';

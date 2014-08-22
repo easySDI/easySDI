@@ -733,7 +733,7 @@ ALTER TABLE [#__sdi_user_role_organism]  WITH CHECK ADD  CONSTRAINT [#__sdi_user
 REFERENCES [#__sdi_organism] ([id])
 ON DELETE CASCADE;
 
-ALTER TABLE [#__sdi_user_role_organism] CHECK CONSTRAINT [#__sdi_user_role_organism$#__sdi_user_role_organismfk3];
+ALTER TABLE [#__sdi_user_role_organism] CHECK CONSTRAINT [#__sdi_user_role_organism$#__sdi_user_role_organism_fk3];
 
 ALTER TABLE [#__sdi_version]  WITH CHECK ADD  CONSTRAINT [#__sdi_version$#__sdi_version_fk1] FOREIGN KEY([resource_id])
 REFERENCES [#__sdi_resource] ([id]);

@@ -238,7 +238,9 @@ class SearchJForm extends SearchForm {
 
         $field->appendChild($this->dom->createElement('option'));
         foreach ($this->getAttributOptions($searchCriteria) as $opt) {
-            $option = $this->dom->createElement('option', EText::_($opt->guid, 1, $opt->name));
+            $option = $this->dom->createElement('option');
+            $optionTxt = $this->dom->createTextNode(EText::_($opt->guid, 1, $opt->name));
+            $option->appendChild($optionTxt);
             $option->setAttribute('value', $opt->value);
 
             $field->appendChild($option);
@@ -312,8 +314,10 @@ class SearchJForm extends SearchForm {
 
         switch ($searchCriteria->name) {
             case 'organism':
-                $query->select('t.id, t.guid, t.guid as value, t.name');
-                $query->from('#__sdi_organism t');
+                $query->select('DISTINCT o.id, o.guid, o.guid as value, o.name');
+                $query->from('#__sdi_organism o');
+                $query->innerJoin('#__sdi_resource r on o.id = r.organism_id');
+                $query->order('o.name');
                 break;
             case 'definedBoundary':
 
@@ -332,7 +336,7 @@ class SearchJForm extends SearchForm {
                 if (!empty($params->boundarycategory_id)) {
                     $query->where('b.category_id IN (' . implode(',', $params->boundarycategory_id) . ')');
                 }
-
+                $query->order('t.text1');
                 //$query->select('t.id, t.guid, t.guid as value, t.name');
                 //$query->from('#__sdi_boundary t');
                 break;

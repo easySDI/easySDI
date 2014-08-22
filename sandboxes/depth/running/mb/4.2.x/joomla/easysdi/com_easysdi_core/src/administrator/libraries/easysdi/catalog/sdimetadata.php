@@ -350,10 +350,11 @@ class sdiMetadata extends cswmetadata {
 
         //Get the accessscope
         $query = $this->db->getQuery(true);
-        $query->select('a.organism_id, a.user_id, o.guid as  o_guid, u.guid as u_guid')
+        $query->select('a.organism_id, a.user_id, a.category_id, o.guid as  o_guid, u.guid as u_guid, c.guid as c_guid')
                 ->from('#__sdi_accessscope a')
                 ->leftJoin('#__sdi_organism o ON o.id = a.organism_id')
                 ->leftJoin('#__sdi_user u ON u.id = a.user_id')
+                ->leftJoin('#__sdi_category c ON c.id = a.category_id')
                 ->where('entity_guid = ' . $query->quote($this->resource->guid));
         $this->db->setQuery($query);
         $accessscopes = $this->db->loadObjectList();
@@ -444,6 +445,12 @@ class sdiMetadata extends cswmetadata {
                 $user = $dom->createElementNS(self::sdi_uri, 'sdi:user');
                 $user->setAttribute('guid', $a->u_guid);
                 $users->appendChild($user);
+            elseif ($a->category_id != null):
+                if (!isset($categories))
+                    $categories = $dom->createElementNS(self::sdi_uri, 'sdi:categories');
+                $category = $dom->createElementNS(self::sdi_uri, 'sdi:category');
+                $category->setAttribute('guid', $a->c_guid);
+                $categories->appendChild($category);                
             endif;
         }
 
@@ -453,6 +460,8 @@ class sdiMetadata extends cswmetadata {
             $resource->appendChild($organisms);
         if (isset($users))
             $resource->appendChild($users);
+        if (isset($categories))
+            $resource->appendChild($categories);        
         $resource->appendChild($metadata);
         $platform->appendChild($resource);
 

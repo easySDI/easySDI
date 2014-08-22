@@ -468,6 +468,7 @@ class FormHtmlGenerator {
                             switch ($stereotypeId) {
                                 case EnumStereotype::$BOUNDARY:
                                     $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath), 12, 15));
+                                    $jfield->__set('class','sdi-extent-multiselect');
                                     break;
 
                                 default:
@@ -1021,7 +1022,7 @@ class FormHtmlGenerator {
         $script_content = "js = jQuery.noConflict();
 
                     js('document').ready(function() {
-                        js('#" . $field->id . "').tooltip({'trigger':'focus', 'title': \"" . addslashes(EText::_($guid, 2)) . "\"});
+                        js('#" . $field->id . "').tooltip({'trigger':'focus', 'title': \"" . preg_replace('/(\r\n|\n|\r)/','<br/>',addslashes(EText::_($guid, 2))) . "\"});
                     });";
 
         $script = $this->formHtml->createElement('script', $script_content);
