@@ -648,7 +648,7 @@ abstract class Easysdi_mapHelper {
             }        
             ,
             {
-                xtype: "gxp_scaleoverlay"
+                xtype: "sdi_gxp_scaleoverlay"
             }
         ],
         ';
