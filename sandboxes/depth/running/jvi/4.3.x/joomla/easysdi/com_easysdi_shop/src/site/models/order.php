@@ -27,6 +27,8 @@ class Easysdi_shopModelOrder extends JModelForm {
     const PROGRESS = 5;
     const SENT = 6;
     const SAVED = 7;
+    const VALIDATION = 8;
+    const REJECTED = 9;
 
     /**
      * Method to auto-populate the model state.
@@ -37,13 +39,21 @@ class Easysdi_shopModelOrder extends JModelForm {
      */
     protected function populateState() {
         $app = JFactory::getApplication('com_easysdi_shop');
-
+        $layout = $app->input->get('layout');
+        
+        
         // Load state from the request userState on edit or from the passed variable on default
-        if (JFactory::getApplication()->input->get('layout') == 'edit') {
-            $id = JFactory::getApplication()->getUserState('com_easysdi_shop.edit.order.id');
+        if ($layout == 'edit') {
+            $id = $app->getUserState('com_easysdi_shop.edit.order.id');
         } else {
-            $id = JFactory::getApplication()->input->get('id');
-            JFactory::getApplication()->setUserState('com_easysdi_shop.edit.order.id', $id);
+            if($layout == 'validation'){
+                $this->setState('layout.validation', true);
+                if($app->input->get('vm')){
+                    $this->setState('validation.manager', $app->input->get('vm'));
+                }
+            }
+            $id = $app->input->get('id');
+            $app->setUserState('com_easysdi_shop.edit.order.id', $id);
         }
         $this->setState('order.id', $id);
 
@@ -202,6 +212,36 @@ class Easysdi_shopModelOrder extends JModelForm {
         $table->orderstate_id = $state;
         return $table->store();
         
+    }
+    
+    public function thirdpartyValidation($id, $reason=null){
+        $id = (!empty($id)) ? $id : (int) $this->getState('order.id');
+        $table = $this->getTable();
+        if(!$table->load($id)){
+            return false;
+        }
+        
+        $table->orderstate_id = self::SENT;
+        $table->validated = true;
+        $table->validated_date = date('Y-m-d H:i:s');
+        $table->validated_reason= $reason;
+        
+        return $table->store();
+    }
+    
+    public function thirdpartyRejection($id, $reason=null){
+        $id = (!empty($id)) ? $id : (int) $this->getState('order.id');
+        $table = $this->getTable();
+        if(!$table->load($id) || is_null($reason)){
+            return false;
+        }
+        
+        $table->orderstate_id = self::REJECTED;
+        $table->validated = false;
+        $table->validated_date = date('Y-m-d H:i:s');
+        $table->validated_reason = $reason;
+        
+        return $table->store();
     }
 
     function delete($data) {

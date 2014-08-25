@@ -38,6 +38,61 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         // Redirect to the edit screen.
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=edit', false));
     }
+    
+    public function validate(){
+        $app = JFactory::getApplication();
+        $validateId = $app->input->getInt('id', 0, 'int');
+        
+        if($validateId == 0){
+            // Set message
+            $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATION_NO_ID'));
+        }
+        else{
+            $model = $this->getModel('Order', 'Easysdi_shopModel');
+            $model->checkout($validateId);
+
+            $model->thirdpartyValidation($validateId, $app->input->get('reason', null, 'html'));
+
+            $model->checkin($validateId);
+
+            // Clear the profile id from the session.
+            $app->setUserState('com_easysdi_shop.edit.order.id', null);
+
+            // Set message
+            $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATED_SUCCESSFULLY'));
+        }
+        
+        // Redirect to the list screen.
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders&layout=validation', false));
+    }
+    
+    public function reject(){
+        $app = JFactory::getApplication();
+        $validateId = $app->input->getInt('id', 0, 'int');
+        $reason = $app->input->get('reason', null, 'html');
+        
+        if($validateId == 0 || $reason == ''){
+            // Set message
+            $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_REJECTION_NO_ID_OR_REASON'));
+        }
+        else{
+            $model = $this->getModel('Order', 'Easysdi_shopModel');
+            $model->checkout($validateId);
+
+            $model->thirdpartyRejection($validateId, $reason);
+
+            $model->checkin($validateId);
+
+            // Clear the profile id from the session.
+            $app->setUserState('com_easysdi_shop.edit.order.id', null);
+
+            // Set message
+            $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_REJECTED_SUCCESSFULLY'));
+        }
+        
+        // Redirect to the list screen.
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders&layout=validation', false));
+    }
 
     /**
      * 

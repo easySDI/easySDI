@@ -21,6 +21,33 @@ require_once JPATH_COMPONENT . "/libraries/easysdi/sdiBasket.php";
 class Easysdi_shopModelBasket extends JModelLegacy {
 
     var $_item = null;
+    
+    // ORDERSTATE
+    const ORDERSTATE_ARCHIVED   = 1;
+    const ORDERSTATE_HISTORIZED = 2;
+    const ORDERSTATE_FINISH     = 3;
+    const ORDERSTATE_AWAIT      = 4;
+    const ORDERSTATE_PROGRESS   = 5;
+    const ORDERSTATE_SENT       = 6;
+    const ORDERSTATE_SAVED      = 7;
+    const ORDERSTATE_VALIDATION = 8;
+    const ORDERSTATE_REJECTED   = 9;
+    
+    // ORDERTYPE
+    const ORDERTYPE_ORDER       = 1;
+    const ORDERTYPE_ESTIMATE    = 2;
+    const ORDERTYPE_DRAFT       = 3;
+    
+    // ROLE
+    const ROLE_MEMBER                   = 1;
+    const ROLE_RESOURCEMANAGER          = 2;
+    const ROLE_METADATARESPONSIBLE      = 3;
+    const ROLE_METADATAEDITOR           = 4;
+    const ROLE_DIFFUSIONMANAGER         = 5;
+    const ROLE_PREVIEWMANAGER           = 6;
+    const ROLE_EXTRACTIONRESPONSIBLE    = 7;
+    const ROLE_PRICINGMANAGER           = 9;
+    const ROLE_VALIDATIONMANAGER        = 10;
 
     /**
      * Method to auto-populate the model state.
@@ -93,16 +120,16 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         $data['thirdparty_id'] = (($basket->thirdparty != -1)&&($basket->thirdparty != ""))? $basket->thirdparty : NULL;
         switch (JFactory::getApplication()->input->get('action', 'save', 'string')) {
             case 'order':
-                $data['ordertype_id'] = 1;
-                $data['orderstate_id'] = 6;
+                $data['ordertype_id'] = self::ORDERTYPE_ORDER;
+                $data['orderstate_id'] = ($data['thirdparty_id'] !== NULL) ? self::ORDERSTATE_VALIDATION : self::ORDERSTATE_SENT;
                 break;
             case 'estimate':
-                $data['ordertype_id'] = 2;
-                $data['orderstate_id'] = 6;
+                $data['ordertype_id'] = self::ORDERTYPE_ESTIMATE;
+                $data['orderstate_id'] = self::ORDERSTATE_SENT;
                 break;
             case 'draft':
-                $data['ordertype_id'] = 3;
-                $data['orderstate_id'] = 7;
+                $data['ordertype_id'] = self::ORDERTYPE_DRAFT;
+                $data['orderstate_id'] = self::ORDERSTATE_SAVED;
                 break;
         }
         $data['user_id'] = sdiFactory::getSdiUser()->id;
@@ -112,6 +139,10 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         if ($table->save($data) === true) {
             if (!empty($basket->id)) {
                 $this->cleanTables($basket->id);
+            }
+            
+            if($table->orderstate_id == self::ORDERSTATE_VALIDATION){
+                $this->notifyThirdPartyValidationManager($table->id, $table->thirdparty_id);
             }
 
             //Save diffusions
@@ -196,7 +227,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         }
 
         //If the basket is not a draft
-        if ($data['orderstate_id'] != 7):
+        if ($data['orderstate_id'] != self::ORDERSTATE_SAVED):
             //Send an email to the user to confirm his order
             $user = sdiFactory::getSdiUser();
             if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_CONFIRM_ORDER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_CONFIRM_ORDER_BODY', $data['name']))):
@@ -205,6 +236,30 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         endif;
 
         return true;
+    }
+    
+    private function notifyThirdPartyValidationManager($order_id, $thirdparty_id){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        //Select orderdiffusion_id
+        $query->select('user_id as id')
+                ->from('#__sdi_user_role_organism')
+                ->where('role_id='.self::ROLE_VALIDATIONMANAGER.' AND organism_id='.(int)$thirdparty_id);
+        $db->setQuery($query);
+        $users_ids = $db->loadColumn();
+        
+        $url = JRoute::_(JURI::base().'index.php?option=com_easysdi_shop&view=order&layout=validation&id='.$order_id.'&vm=%s&lang=fr');
+        
+        foreach($users_ids as $user_id){
+            $user = sdiFactory::getSdiUser();
+            $url = sprintf($url, $user->id);
+            
+            $user->sendMail(
+                    JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_VALIDATIONMANAGER_SUBJECT'), 
+                    JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_VALIDATIONMANAGER_BODY', 
+                    $order_id, $url));
+        }
     }
 
     private function cleanTables($order_id) {

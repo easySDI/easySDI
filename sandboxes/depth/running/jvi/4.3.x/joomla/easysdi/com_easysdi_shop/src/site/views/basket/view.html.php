@@ -49,6 +49,8 @@ class Easysdi_shopViewBasket extends JViewLegacy {
             }
         }
         
+        $this->thirdParties = $this->getAvailableThirdParties();
+        
         // rebuild extractions array to allow by supplier grouping
         Easysdi_shopHelper::extractionsBySupplierGrouping($this->item);
         
@@ -117,6 +119,17 @@ class Easysdi_shopViewBasket extends JViewLegacy {
         
         //generate the html and return
         return $bar->render();
+    }
+    
+    private function getAvailableThirdParties(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('id, name')
+                ->from('#__sdi_organism')
+                ->where('selectable_as_thirdparty = ' . (int)1);
+        $db->setQuery($query);
+        $thirdparties = $db->loadObjectList();
+        return $thirdparties;
     }
 
 }

@@ -139,6 +139,7 @@ class Easysdi_contactModeluser extends JModelAdmin {
             $item->organismsER = $role->loadByUserID($item->id, 7);
             /* $item->organismsOE = $role->loadByUserID($item->id, 8); // role removed */
             $item->organismsPM = $role->loadByUserID($item->id, 9);
+            $item->organismsTM = $role->loadByUserID($item->id, 10);
             $item->organismsMember = $role->loadByUserID($item->id, 1);
         }
 
@@ -187,7 +188,8 @@ class Easysdi_contactModeluser extends JModelAdmin {
             6   => 'organismsVM',
             7   => 'organismsER',
             /* 8   => 'organismsOE', // role removed */
-            9   => 'organismsPM'
+            9   => 'organismsPM',
+            10  => 'organismsTM'
         );
         
         // Trigger the onEasysdiUserBeforeDeleteRoleAttribution event.

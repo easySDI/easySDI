@@ -17,7 +17,11 @@ require_once JPATH_SITE . '/components/com_easysdi_map/helpers/easysdi_map.php';
  * Methods supporting a list of Easysdi_shop records.
  */
 class Easysdi_shopModelOrders extends JModelList {
-
+    
+    const ORDERTYPE_ORDER       = 1;
+    const ORDERTYPE_ESTIMATE    = 2;
+    const ORDERTYPE_DRAFT       = 3;
+    
     /**
      * Constructor.
      *
@@ -61,6 +65,8 @@ class Easysdi_shopModelOrders extends JModelList {
 
         $limitstart = JFactory::getApplication()->input->getInt('limitstart', 0);
         $this->setState('list.start', $limitstart);
+        
+        $this->setState('layout.validation', (JFactory::getApplication()->input->get('layout') == 'validation'));
 
 
         if (empty($ordering)) {
@@ -115,7 +121,7 @@ class Easysdi_shopModelOrders extends JModelList {
         }
         
         // Filter by type
-        $type = $this->getState('filter.type');
+        $type = $this->getState('layout.validation') ? self::ORDERTYPE_ORDER : $this->getState('filter.type');
         if (is_numeric($type)) {
         	$query->where('a.ordertype_id = ' . (int) $type);
         }
@@ -131,8 +137,16 @@ class Easysdi_shopModelOrders extends JModelList {
             }
         }
         
-        //Only order which belong to the current user
-        $query->where('a.user_id = ' . (int) sdiFactory::getSdiUser()->id);
+        if($this->getState('layout.validation')){
+            $query->join('LEFT', '#__sdi_user_role_organism uro ON uro.organism_id=a.thirdparty_id')
+                    ->where('uro.user_id='.(int)  sdiFactory::getSdiUser()->id);
+        }
+        else{
+            //Only order which belong to the current user
+            $query->where('a.user_id = ' . (int) sdiFactory::getSdiUser()->id);
+        }
+        
+        
         
         //Don't include historized item
         $query->where('a.orderstate_id <> 2');
