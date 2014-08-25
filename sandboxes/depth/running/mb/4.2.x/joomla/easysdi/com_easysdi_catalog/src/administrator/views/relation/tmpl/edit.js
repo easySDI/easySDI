@@ -90,9 +90,14 @@ function onChangeRenderType() {
                         .trigger("liszt:updated")
                         ;
             });
+            console.log(selected);
+           
             js.each(selected, function (i, value){
-                js('#jform_defaultmultiplelist option[value=' + value + ']').attr('selected', 'selected').trigger("liszt:updated");
+                if(value.length > 0){
+                    js('#jform_defaultmultiplelist option[value=' + value + ']').attr('selected', 'selected').trigger("liszt:updated");
+                }
             })
+            
             js('#jform_defaultmultiplelist').trigger("change");
             js('#defaultvalue-multiplelist').show();
         }
