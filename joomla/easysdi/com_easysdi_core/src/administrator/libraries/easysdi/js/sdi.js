@@ -67,6 +67,11 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
             }
         });
         
+        var baseAttrs;
+        if (this.initialConfig.loader && this.initialConfig.loader.baseAttrs) {
+            baseAttrs = this.initialConfig.loader.baseAttrs;
+        }
+        
         var defaultGroup = this.defaultGroup,
             plugin = this,
             groupConfig,
@@ -83,8 +88,8 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
                 group: group == this.defaultGroup ? undefined : group,
                 loader: new GeoExt.tree.LayerLoader({
                     baseAttrs: exclusive ?
-                        {checkedGroup: Ext.isString(exclusive) ? exclusive : group} :
-                        undefined,
+                        Ext.apply({checkedGroup: Ext.isString(exclusive) ? exclusive : group}, baseAttrs) :
+                        baseAttrs,
                     store: this.target.mapPanel.layers,
                     filter: (function(group) {
                         return function(record) {
@@ -126,80 +131,14 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
                     beforeselect: this.handleBeforeSelect,
                     scope: this
                 }
-            }),
-            listeners: {
-                contextmenu: this.handleTreeContextMenu,
-                beforemovenode: this.handleBeforeMoveNode,                
-                scope: this
-            },
+            }),           
             contextMenu: new Ext.menu.Menu({
                 items: []
             })
         };
     },
     
-    /** private: method[configureLayerNode]
-     *  :arg loader: ``GeoExt.tree.LayerLoader``
-     *  :arg node: ``Object`` The node
-     */
-    configureLayerNode: function(loader, attr) {
-        attr.uiProvider = this.treeNodeUI;
-        var layer = attr.layer;
-        var store = attr.layerStore;
-        if (layer && store) {
-            var record = store.getAt(store.findBy(function(r) {
-                return r.getLayer() === layer;
-            }));
-            if (record) {
-                attr.qtip = record.get('abstract');
-                if (!record.get("queryable")) {
-                    attr.iconCls = "gxp-tree-rasterlayer-icon";
-                }
-                if (record.get("fixed")) {
-                    attr.allowDrag = false;
-                }
-               
-                if(record.json)
-                {
-                	if(record.json.metadataURL)
-                	{
-                		attr.href = record.json.metadataURL;
-                        attr.hrefTarget = "_blank";
-                        attr.cls="sdiMDlink";
-                	}	
-                }
-                if(record.data)
-                {
-                	if(record.data.metadataURL)
-                	{
-                		attr.href = record.data.metadataURL;
-                        attr.hrefTarget = "_blank";
-                        attr.cls="sdiMDlink";
-                	}	
-                }
-                if(layer.metadataURL)
-                {
-                	attr.href = layer.metadataURL;
-                    attr.hrefTarget = "_blank";
-                    attr.cls="sdiMDlink";
-                }
-                
-                attr.listeners = {
-                    rendernode: function(node) {
-                        if (record === this.target.selectedLayer) {
-                            node.select();
-                        }
-                        this.target.on("layerselectionchange", function(rec) {
-                            if (!this.selectionChanging && rec === record) {
-                                node.select();
-                            }
-                        }, this);
-                    },
-                    scope: this
-                };
-            }
-        }
-    },
+
    
         
 });
@@ -225,6 +164,7 @@ Ext.preg(sdi.gxp.plugins.LayerTree.prototype.ptype,sdi.gxp.plugins.LayerTree);
  * @requires plugins/Tool.js
  * @requires GeoExt/data/PrintProvider.js
  * @requires GeoExt/widgets/PrintMapPanel.js
+ * @requires OpenLayers/Control/ScaleLine.js
  */
 
 /** api: (define)
@@ -252,11 +192,11 @@ sdi.gxp.plugins.Print = Ext.extend(gxp.plugins.Print, {
 	/** api: ptype = gxp_print */
     ptype: "sdi_gxp_print",
 
-    /** private: method[constructor]
-     */
-    constructor: function(config) {
-        sdi.gxp.plugins.Print.superclass.constructor.apply(this, arguments);
-    },
+//    /** private: method[constructor]
+//     */
+//    constructor: function(config) {
+//        sdi.gxp.plugins.Print.superclass.constructor.apply(this, arguments);
+//    },
 
     
     /** api: method[addActions]
@@ -657,37 +597,42 @@ sdi.gxp.plugins.LayerManager = Ext.extend(sdi.gxp.plugins.LayerTree, {
         return tree;        
     },
     
-    /** private: method[configureLayerNode] */
-    configureLayerNode: function(loader, attr) {
-        sdi.gxp.plugins.LayerManager.superclass.configureLayerNode.apply(this, arguments);
-        var legendXType;
-        // add a WMS legend to each node created
-        if (OpenLayers.Layer.WMS && attr.layer instanceof OpenLayers.Layer.WMS) {
-            legendXType = "gx_wmslegend";
-        } else if (OpenLayers.Layer.Vector && attr.layer instanceof OpenLayers.Layer.Vector) {
-            legendXType = "gx_vectorlegend";
-        }
-        if (legendXType) {
-            Ext.apply(attr, {
-                component: {
-                    xtype: legendXType,
-                    // TODO these baseParams were only tested with GeoServer,
-                    // so maybe they should be configurable - and they are
-                    // only relevant for gx_wmslegend.
-                    baseParams: {
-                        transparent: true,
-                        format: "image/png",
-                        legend_options: "fontAntiAliasing:true;fontSize:11;fontName:Arial"
-                    },
-                    layerRecord: this.target.mapPanel.layers.getByLayer(attr.layer),
-                    showTitle: false,
-                    // custom class for css positioning
-                    // see tree-legend.html
-                    cls: "legend"
-                }
-            });
-        }
-    }
+//    /** private: method[configureLayerNode] */
+//    configureLayerNode: function(loader, attr) {
+//        sdi.gxp.plugins.LayerManager.superclass.configureLayerNode.apply(this, arguments);
+//        var legendXType;
+//        // add a WMS legend to each node created
+//        if (OpenLayers.Layer.WMS && attr.layer instanceof OpenLayers.Layer.WMS) {
+//            legendXType = "gx_wmslegend";
+//        } else if (OpenLayers.Layer.Vector && attr.layer instanceof OpenLayers.Layer.Vector) {
+//            legendXType = "gx_vectorlegend";
+//        }
+//        if (legendXType) {
+//            var baseParams;
+//            if (loader && loader.baseAttrs && loader.baseAttrs.baseParams) {
+//                baseParams = loader.baseAttrs.baseParams;
+//            }
+//            Ext.apply(attr, {
+//                component: {
+//                    xtype: legendXType,
+//                    // TODO these baseParams were only tested with GeoServer,
+//                    // so maybe they should be configurable - and they are
+//                    // only relevant for gx_wmslegend.
+//                    hidden: !attr.layer.getVisibility(),
+//                    baseParams: Ext.apply({
+//                        transparent: true,
+//                        format: "image/png",
+//                        legend_options: "fontAntiAliasing:true;fontSize:11;fontName:Arial"
+//                    }, baseParams),
+//                    layerRecord: this.target.mapPanel.layers.getByLayer(attr.layer),
+//                    showTitle: false,
+//                    // custom class for css positioning
+//                    // see tree-legend.html
+//                    cls: "legend"
+//                }
+//            });
+//        }
+//    }
     
 });
 
@@ -745,21 +690,19 @@ sdi.gxp.plugins.BingSource = Ext.extend(gxp.plugins.BingSource, {
     createLayerRecord: function(config) {
     	var record = sdi.gxp.plugins.BingSource.superclass.createLayerRecord.apply(this, arguments);
         
-        record.set("metadataURL", config.metadataURL);
-        record.commit();
-        
-        return record;
+       record.json = config;
+       return record;
     }
 });
 
 Ext.preg(sdi.gxp.plugins.BingSource.prototype.ptype, sdi.gxp.plugins.BingSource);
 /**
  * @version     4.0.0
-* * @package     com_easysdi_core
-* @copyright   Copyright (C) 2012. All rights reserved.
-* @license     GNU General Public License version 3 or later; see LICENSE.txt
-* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
-*/
+ * @package     com_easysdi_core
+ * @copyright   Copyright (C) 2012. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+ */
 Ext.namespace("sdi.gxp.plugins");
 
 /** api: constructor
@@ -771,7 +714,7 @@ Ext.namespace("sdi.gxp.plugins");
  *
  *    Available layer names for this source are "ROADMAP", "SATELLITE",
  *    "HYBRID" and "TERRAIN"
- */   
+ */
 /** api: example
  *  The configuration in the ``sources`` property of the :class:`gxp.Viewer` is
  *  straightforward:
@@ -794,22 +737,18 @@ Ext.namespace("sdi.gxp.plugins");
  *
  */
 sdi.gxp.plugins.GoogleSource = Ext.extend(gxp.plugins.GoogleSource, {
-	
-	/** api: ptype = gxp_googlesource */
+    /** api: ptype = gxp_googlesource */
     ptype: "sdi_gxp_googlesource",
-    
-	 /** api: method[createLayerRecord]
+    /** api: method[createLayerRecord]
      *  :arg config:  ``Object``  The application config for this layer.
      *  :returns: ``GeoExt.data.LayerRecord``
      *
      *  Create a layer record given the config.
      */
     createLayerRecord: function(config) {
-    	var record = sdi.gxp.plugins.GoogleSource.superclass.createLayerRecord.apply(this, arguments);
+        var record = sdi.gxp.plugins.GoogleSource.superclass.createLayerRecord.apply(this, arguments);
         
-        record.set("metadataURL", config.metadataURL);
-        record.commit();
-        
+        record.json = config;
         return record;
     }
 });
@@ -817,11 +756,11 @@ sdi.gxp.plugins.GoogleSource = Ext.extend(gxp.plugins.GoogleSource, {
 Ext.preg(sdi.gxp.plugins.GoogleSource.prototype.ptype, sdi.gxp.plugins.GoogleSource);
 /**
  * @version     4.0.0
-* * @package     com_easysdi_core
-* @copyright   Copyright (C) 2012. All rights reserved.
-* @license     GNU General Public License version 3 or later; see LICENSE.txt
-* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
-*/
+ * @package     com_easysdi_core
+ * @copyright   Copyright (C) 2012. All rights reserved.
+ * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+ */
 Ext.namespace("sdi.gxp.plugins");
 
 /** api: constructor
@@ -853,22 +792,18 @@ Ext.namespace("sdi.gxp.plugins");
  *
  */
 sdi.gxp.plugins.OSMSource = Ext.extend(gxp.plugins.OSMSource, {
-	
-	/** api: ptype = gxp_googlesource */
+    /** api: ptype = gxp_googlesource */
     ptype: "sdi_gxp_osmsource",
-    
-	 /** api: method[createLayerRecord]
+    /** api: method[createLayerRecord]
      *  :arg config:  ``Object``  The application config for this layer.
      *  :returns: ``GeoExt.data.LayerRecord``
      *
      *  Create a layer record given the config.
      */
     createLayerRecord: function(config) {
-    	var record = sdi.gxp.plugins.OSMSource.superclass.createLayerRecord.apply(this, arguments);
+        var record = sdi.gxp.plugins.OSMSource.superclass.createLayerRecord.apply(this, arguments);
         
-        record.set("metadataURL", config.metadataURL);
-        record.commit();
-        
+        record.json = config;
         return record;
     }
 });
@@ -920,7 +855,9 @@ sdi.gxp.plugins.LoadingIndicator = Ext.extend(gxp.plugins.LoadingIndicator, {
      *  :arg target: ``Object``
      */
     init: function(target) {
-        target.map.events.register("preaddlayer", this, function(e) {
+         var map = target instanceof GeoExt.MapPanel ?
+            target.map : target.mapPanel.map;
+        map.events.register("preaddlayer", this, function(e) {
             var layer = e.layer;
             if (layer instanceof OpenLayers.Layer.WMS || layer instanceof OpenLayers.Layer.WMTS) {
                 layer.events.on({
@@ -928,7 +865,7 @@ sdi.gxp.plugins.LoadingIndicator = Ext.extend(gxp.plugins.LoadingIndicator, {
                         this.layerCount++;
                         if (!this.busyMask) {
                             this.busyMask = new Ext.LoadMask(
-                                target.map.div, {
+                                map.div, {
                                     msg: this.loadingMapMessage
                                 }
                             );
@@ -1020,122 +957,126 @@ sdi.gxp.plugins.WMSSource = Ext.extend(gxp.plugins.WMSSource, {
      *  configuration if necessary.
      */
     createLayerRecord: function(config) {
-        var record, original;
-        var index = this.store.findExact("name", config.name);
-        if (index > -1) {
-            original = this.store.getAt(index);
-        } else if (Ext.isObject(config.capability)) {
-            original = this.store.reader.readRecords({capability: {
-                request: {getmap: {href: this.trimUrl(this.url, this.baseParams)}},
-                layers: [config.capability]}
-            }).records[0];
-        } else if (this.layerConfigComplete(config)) {
-            original = this.createLazyLayerRecord(config);
-        }
-        if (original) {
-
-            var layer = original.getLayer().clone();
-
-            /**
-             * TODO: The WMSCapabilitiesReader should allow for creation
-             * of layers in different SRS.
-             */
-            var projection = this.getMapProjection();
-            
-            // If the layer is not available in the map projection, find a
-            // compatible projection that equals the map projection. This helps
-            // us in dealing with the different EPSG codes for web mercator.
-            var layerProjection = this.getProjection(original);
-
-            var projCode = (layerProjection || projection).getCode(),
-                bbox = original.get("bbox"), maxExtent;
-            if (bbox && bbox[projCode]){
-                layer.addOptions({projection: layerProjection});
-                maxExtent = OpenLayers.Bounds.fromArray(bbox[projCode].bbox, layer.reverseAxisOrder());
-            } else {
-                var llbbox = original.get("llbbox");
-                if (llbbox) {
-                    var extent = OpenLayers.Bounds.fromArray(llbbox).transform("EPSG:4326", projection);
-                    // make sure maxExtent is valid (transform does not succeed for all llbbox)
-                    if ((1 / extent.getHeight() > 0) && (1 / extent.getWidth() > 0)) {
-                        // maxExtent has infinite or non-numeric width or height
-                        // in this case, the map maxExtent must be specified in the config
-                        maxExtent = extent;
-                    }
-                }
-            }
-            
-            // update params from config
-            layer.mergeNewParams({
-                STYLES: config.styles,
-                FORMAT: config.format,
-                TRANSPARENT: config.transparent,
-                CQL_FILTER: config.cql_filter
-            });
-            
-            var singleTile = false;
-            if ("tiled" in config) {
-                singleTile = !config.tiled;
-            } else {
-                // for now, if layer has a time dimension, use single tile
-                if (original.data.dimensions && original.data.dimensions.time) {
-                    singleTile = true;
-                }
-            }
-
-            layer.setName(config.title || layer.name);
-            layer.addOptions({
-                attribution: config.attribution,
-                maxExtent: maxExtent,
-                restrictedExtent: maxExtent,
-                singleTile: singleTile,
-                ratio: config.ratio || 1,
-                visibility: ("visibility" in config) ? config.visibility : true,
-                opacity: ("opacity" in config) ? config.opacity : 1,
-                buffer: ("buffer" in config) ? config.buffer : 1,
-                dimensions: original.data.dimensions,
-                transitionEffect: singleTile ? 'resize' : null,
-                minScale: config.minscale,
-                maxScale: config.maxscale
-            });
-            
-            // data for the new record
-            var data = Ext.applyIf({
-                title: layer.name,
-                group: config.group,
-                infoFormat: config.infoFormat,
-                source: config.source,
-                properties: "gxp_wmslayerpanel",
-                fixed: config.fixed,
-                selected: "selected" in config ? config.selected : false,
-                restUrl: this.restUrl,
-                layer: layer
-            }, original.data);
-            
-            // add additional fields
-            var fields = [
-                {name: "source", type: "string"}, 
-                {name: "group", type: "string"},
-                {name: "properties", type: "string"},
-                {name: "fixed", type: "boolean"},
-                {name: "selected", type: "boolean"},
-                {name: "restUrl", type: "string"},
-                {name: "infoFormat", type: "string"}
-            ];
-            original.fields.each(function(field) {
-                fields.push(field);
-            });
-
-            var Record = GeoExt.data.LayerRecord.create(fields);
-            record = new Record(data, layer.id);
-            record.json = config;
-
-        } else {
-            if (window.console && this.store.getCount() > 0 && config.name !== undefined) {
-                console.warn("Could not create layer record for layer '" + config.name + "'. Check if the layer is found in the WMS GetCapabilities response.");
-            }
-        }
+        var record = sdi.gxp.plugins.WMSSource.superclass.createLayerRecord.apply(this, arguments);
+        record.data.layer.attribution = config.attribution;
         return record;
+        
+//        var record, original;
+//        var index = this.store.findExact("name", config.name);
+//        if (index > -1) {
+//            original = this.store.getAt(index);
+//        } else if (Ext.isObject(config.capability)) {
+//            original = this.store.reader.readRecords({capability: {
+//                request: {getmap: {href: this.trimUrl(this.url, this.baseParams)}},
+//                layers: [config.capability]}
+//            }).records[0];
+//        } else if (this.layerConfigComplete(config)) {
+//            original = this.createLazyLayerRecord(config);
+//        }
+//        if (original) {
+//
+//            var layer = original.getLayer().clone();
+//
+//            /**
+//             * TODO: The WMSCapabilitiesReader should allow for creation
+//             * of layers in different SRS.
+//             */
+//            var projection = this.getMapProjection();
+//            
+//            // If the layer is not available in the map projection, find a
+//            // compatible projection that equals the map projection. This helps
+//            // us in dealing with the different EPSG codes for web mercator.
+//            var layerProjection = this.getProjection(original);
+//
+//            var projCode = (layerProjection || projection).getCode(),
+//                bbox = original.get("bbox"), maxExtent;
+//            if (bbox && bbox[projCode]){
+//                layer.addOptions({projection: layerProjection});
+//                maxExtent = OpenLayers.Bounds.fromArray(bbox[projCode].bbox, layer.reverseAxisOrder());
+//            } else {
+//                var llbbox = original.get("llbbox");
+//                if (llbbox) {
+//                    var extent = OpenLayers.Bounds.fromArray(llbbox).transform("EPSG:4326", projection);
+//                    // make sure maxExtent is valid (transform does not succeed for all llbbox)
+//                    if ((1 / extent.getHeight() > 0) && (1 / extent.getWidth() > 0)) {
+//                        // maxExtent has infinite or non-numeric width or height
+//                        // in this case, the map maxExtent must be specified in the config
+//                        maxExtent = extent;
+//                    }
+//                }
+//            }
+//            
+//            // update params from config
+//            layer.mergeNewParams({
+//                STYLES: config.styles,
+//                FORMAT: config.format,
+//                TRANSPARENT: config.transparent,
+//                CQL_FILTER: config.cql_filter
+//            });
+//            
+//            var singleTile = false;
+//            if ("tiled" in config) {
+//                singleTile = !config.tiled;
+//            } else {
+//                // for now, if layer has a time dimension, use single tile
+//                if (original.data.dimensions && original.data.dimensions.time) {
+//                    singleTile = true;
+//                }
+//            }
+//
+//            layer.setName(config.title || layer.name);
+//            layer.addOptions({
+//                attribution: config.attribution,
+//                maxExtent: maxExtent,
+//                restrictedExtent: maxExtent,
+//                singleTile: singleTile,
+//                ratio: config.ratio || 1,
+//                visibility: ("visibility" in config) ? config.visibility : true,
+//                opacity: ("opacity" in config) ? config.opacity : 1,
+//                buffer: ("buffer" in config) ? config.buffer : 1,
+//                dimensions: original.data.dimensions,
+//                transitionEffect: singleTile ? 'resize' : null,
+//                minScale: config.minscale,
+//                maxScale: config.maxscale
+//            });
+//            
+//            // data for the new record
+//            var data = Ext.applyIf({
+//                title: layer.name,
+//                group: config.group,
+//                infoFormat: config.infoFormat,
+//                source: config.source,
+//                properties: "gxp_wmslayerpanel",
+//                fixed: config.fixed,
+//                selected: "selected" in config ? config.selected : false,
+//                restUrl: this.restUrl,
+//                layer: layer
+//            }, original.data);
+//            
+//            // add additional fields
+//            var fields = [
+//                {name: "source", type: "string"}, 
+//                {name: "group", type: "string"},
+//                {name: "properties", type: "string"},
+//                {name: "fixed", type: "boolean"},
+//                {name: "selected", type: "boolean"},
+//                {name: "restUrl", type: "string"},
+//                {name: "infoFormat", type: "string"}
+//            ];
+//            original.fields.each(function(field) {
+//                fields.push(field);
+//            });
+//
+//            var Record = GeoExt.data.LayerRecord.create(fields);
+//            record = new Record(data, layer.id);
+//            record.json = config;
+//
+//        } else {
+//            if (window.console && this.store.getCount() > 0 && config.name !== undefined) {
+//                console.warn("Could not create layer record for layer '" + config.name + "'. Check if the layer is found in the WMS GetCapabilities response.");
+//            }
+//        }
+//        return record;
     }
     
     
@@ -1144,10 +1085,30 @@ sdi.gxp.plugins.WMSSource = Ext.extend(gxp.plugins.WMSSource, {
 
 Ext.preg(sdi.gxp.plugins.WMSSource.prototype.ptype, sdi.gxp.plugins.WMSSource);
 
-Ext.namespace("gxp");
+/**
+* @version     4.0.0
+* @package     com_easysdi_core
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+*/
+Ext.namespace("sdi.gxp.widgets");
 
-gxp.ScaleOverlay.prototype.addScaleLine = function() {
-        var scaleLinePanel = new Ext.BoxComponent({
+/** api: constructor
+ *  .. class:: ScaleOverlay(config)
+ *   
+ *      Create a panel for showing a ScaleLine control and a combobox for 
+ *      selecting the map scale.
+ */
+sdi.gxp.ScaleOverlay = Ext.extend(gxp.ScaleOverlay, {
+ 
+
+    /** private: method[addScaleLine]
+     *  
+     *  Create the scale line control and add it to the panel.
+     */
+    addScaleLine: function() {
+       var scaleLinePanel = new Ext.BoxComponent({
             autoEl: {
                 tag: "div",
                 cls: "olControlScaleLine overlay-element overlay-scaleline"
@@ -1174,7 +1135,12 @@ gxp.ScaleOverlay.prototype.addScaleLine = function() {
             scaleLine.activate();
         }, this);
         this.add(scaleLinePanel);
-    };
+    }
+
+});
+
+Ext.reg('sdi_gxp_scaleoverlay', sdi.gxp.ScaleOverlay);
+
 Ext.namespace("gxp");
 
 var sourceConfig;
@@ -1598,52 +1564,47 @@ Ext.namespace("sdi.plugins");
  
  */
 sdi.plugins.LayerDetailSheet = Ext.extend(gxp.plugins.Tool, {
-    
     /** api: ptype = sdi_layerdetailsheet */
     ptype: "sdi_layerdetailsheet",
-    
     /** api: config[layerDetailMenuText]
      *  ``String``
      *  Text for detail sheet menu item (i18n).
      */
     layerDetailMenuText: "Layer details sheet",
-
     /** api: config[layerDetailActionTip]
      *  ``String``
      *  Text for detail sheet action tooltip (i18n).
      */
     layerDetailActionTip: "Layer details sheet",
-    
     /** api: method[addActions]
      */
     addActions: function() {
         var selectedLayer;
         var actions = sdi.plugins.LayerDetailSheet.superclass.addActions.apply(this, [{
-            menuText: this.layerDetailMenuText,
-            iconCls: "gxp-icon-getfeatureinfo",
-            disabled: true,
-            tooltip: this.layerDetailActionTip,
-            handler: function() {
-               var record = selectedLayer;
-               SqueezeBox.initialize({});
-               SqueezeBox.resize({x: this.initialConfig.iwidth, y: this.initialConfig.iheight});
-               SqueezeBox.setContent('iframe', record.json.href);
-               
-            },
-            scope: this
-        }]);
+                menuText: this.layerDetailMenuText,
+                iconCls: "gxp-icon-getfeatureinfo",
+                disabled: true,
+                tooltip: this.layerDetailActionTip,
+                handler: function() {
+                    var record = selectedLayer;
+                    SqueezeBox.initialize({});
+                    SqueezeBox.resize({x: this.initialConfig.iwidth, y: this.initialConfig.iheight});
+                    SqueezeBox.setContent('iframe', record.json.href);
+                },
+                scope: this
+            }]);
         var layerDetailAction = actions[0];
 
         this.target.on("layerselectionchange", function(record) {
             selectedLayer = record;
             layerDetailAction.setDisabled(
-                !record || !record.json || !record.json.href
-            );
+                    !record || !record.json || !record.json.href 
+                    );
         }, this);
-                
+
         return actions;
     }
-        
+
 });
 
 Ext.preg(sdi.plugins.LayerDetailSheet.prototype.ptype, sdi.plugins.LayerDetailSheet);
@@ -1841,11 +1802,9 @@ Ext.namespace("sdi.gxp.plugins");
  *    }
  *
  */
-sdi.gxp.plugins.OLSource = Ext.extend(gxp.plugins.LayerSource, {
-    
+sdi.gxp.plugins.OLSource = Ext.extend(gxp.plugins.OLSource, {
     /** api: ptype = gxp_olsource */
     ptype: "sdi_gxp_olsource",
-    
     /** api: method[createLayerRecord]
      *  :arg config:  ``Object``  The application config for this layer.
      *  :returns: ``GeoExt.data.LayerRecord``
@@ -1853,84 +1812,11 @@ sdi.gxp.plugins.OLSource = Ext.extend(gxp.plugins.LayerSource, {
      *  Create a layer record given the config.
      */
     createLayerRecord: function(config) {
-
-        var record;
+        var record = sdi.gxp.plugins.OLSource.superclass.createLayerRecord.apply(this, arguments);
         
-        // get class based on type in config
-        var Class = window;
-        var parts = config.type.split(".");
-        for (var i=0, ii=parts.length; i<ii; ++i) {
-            Class = Class[parts[i]];
-            if (!Class) {
-                break;
-            }
-        }
-
-        // TODO: consider static method on OL classes to construct instance with args
-        if (Class && Class.prototype && Class.prototype.initialize) {
-            
-            // create a constructor for the given layer type
-            var Constructor = function() {
-                // this only works for args that can be serialized as JSON
-                Class.prototype.initialize.apply(this, config.args);
-            };
-            Constructor.prototype = Class.prototype;
-
-            // create a new layer given type and args
-            var layer = new Constructor();
-
-            // apply properties that may have come from saved config
-            if ("visibility" in config) {
-                layer.visibility = config.visibility;
-            }
-            
-            // create a layer record for this layer
-            var Record = GeoExt.data.LayerRecord.create([
-                {name: "name", type: "string"},
-                {name: "source", type: "string"}, 
-                {name: "group", type: "string"},
-                {name: "fixed", type: "boolean"},
-                {name: "selected", type: "boolean"},
-                {name: "type", type: "string"},
-                {name: "args"}
-            ]);
-            var data = {
-                layer: layer,
-                title: layer.name,
-                name: config.name || layer.name,
-                source: config.source,
-                group: config.group,
-                fixed: ("fixed" in config) ? config.fixed : false,
-                selected: ("selected" in config) ? config.selected : false,
-                type: config.type,
-                args: config.args,
-                properties: ("properties" in config) ? config.properties : undefined
-            };
-            record = new Record(data, layer.id);
-            record.json = config;
-        } else {
-            throw new Error("Cannot construct OpenLayers layer from given type: " + config.type);
-        }
+        record.json = config;
         return record;
-    },
-
-    /** api: method[getConfigForRecord]
-     *  :arg record: :class:`GeoExt.data.LayerRecord`
-     *  :returns: ``Object``
-     *
-     *  Create a config object that can be used to recreate the given record.
-     */
-    getConfigForRecord: function(record) {
-        // get general config
-        var config = sdi.gxp.plugins.OLSource.superclass.getConfigForRecord.apply(this, arguments);
-        // add config specific to this source
-        var layer = record.getLayer();
-        return Ext.apply(config, {
-            type: record.get("type"),
-            args: record.get("args")
-        });
     }
-
 });
 
 Ext.preg(sdi.gxp.plugins.OLSource.prototype.ptype, sdi.gxp.plugins.OLSource);

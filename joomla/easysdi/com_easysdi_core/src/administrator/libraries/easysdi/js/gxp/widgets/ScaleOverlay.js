@@ -1,7 +1,27 @@
-Ext.namespace("gxp");
+/**
+* @version     4.0.0
+* @package     com_easysdi_core
+* @copyright   Copyright (C) 2012. All rights reserved.
+* @license     GNU General Public License version 3 or later; see LICENSE.txt
+* @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
+*/
+Ext.namespace("sdi.gxp.widgets");
 
-gxp.ScaleOverlay.prototype.addScaleLine = function() {
-        var scaleLinePanel = new Ext.BoxComponent({
+/** api: constructor
+ *  .. class:: ScaleOverlay(config)
+ *   
+ *      Create a panel for showing a ScaleLine control and a combobox for 
+ *      selecting the map scale.
+ */
+sdi.gxp.ScaleOverlay = Ext.extend(gxp.ScaleOverlay, {
+ 
+
+    /** private: method[addScaleLine]
+     *  
+     *  Create the scale line control and add it to the panel.
+     */
+    addScaleLine: function() {
+       var scaleLinePanel = new Ext.BoxComponent({
             autoEl: {
                 tag: "div",
                 cls: "olControlScaleLine overlay-element overlay-scaleline"
@@ -28,4 +48,8 @@ gxp.ScaleOverlay.prototype.addScaleLine = function() {
             scaleLine.activate();
         }, this);
         this.add(scaleLinePanel);
-    };
+    }
+
+});
+
+Ext.reg('sdi_gxp_scaleoverlay', sdi.gxp.ScaleOverlay);
