@@ -50,10 +50,8 @@ sdi.gxp.plugins.BingSource = Ext.extend(gxp.plugins.BingSource, {
     createLayerRecord: function(config) {
     	var record = sdi.gxp.plugins.BingSource.superclass.createLayerRecord.apply(this, arguments);
         
-        record.set("metadataURL", config.metadataURL);
-        record.commit();
-        
-        return record;
+       record.json = config;
+       return record;
     }
 });
 
