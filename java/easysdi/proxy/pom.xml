@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.easysdi</groupId>
         <artifactId>easysdi</artifactId>
-        <version>4.2.0-beta-2</version>
+        <version>4.2.0-beta-5</version>
     </parent>
 	
     <scm>
@@ -183,7 +183,12 @@
             <artifactId>jaxen</artifactId>
             <version>1.1.4</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-artifact</artifactId>
+            <version>3.2.2</version>
+        </dependency>
+        
         <!-- Hibernate -->
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -254,6 +259,7 @@
             <artifactId>jetty</artifactId>
             <version>6.1.20</version>
         </dependency>
+        
     </dependencies>
 
     <build>

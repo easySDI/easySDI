@@ -27,6 +27,7 @@ require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/For
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/CswMerge.php';
 require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormGenerator.php';
 require_once JPATH_BASE . '/administrator/components/com_easysdi_core/libraries/easysdi/user/sdiuser.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/libraries/easysdi/FormStereotype.php';
 
 /**
  * Metadata controller class.
@@ -288,6 +289,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         if ($changeStatus != FALSE) {
             $this->update($id);
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_CHANGE_STATUS_OK'), 'message');
+            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
         } else {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_CHANGE_STATUS_ERROR'), 'error');
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
@@ -432,8 +435,15 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         // Multiple list decomposer
         $dataWithoutArray = array();
         foreach ($data as $xpath => $values) {
+            
             if (is_array($values)) {
-
+                
+                // if is boundary
+                if (strpos($xpath, 'EX_Extent') !== false) {
+                    $this->addBoundaries($xpath, $values);
+                    unset($data[$xpath]);
+                }
+                
                 foreach ($values as $key => $value) {
                     $index = $key + 1;
                     $indexedXpath = str_replace('MD_Keywords-sla-gmd-dp-keyword', 'MD_Keywords-sla-gmd-dp-keyword-la-' . $index . '-ra-', $xpath, $nbrReplace);
@@ -479,6 +489,12 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             }
         }
 
+        $keyword = $this->domXpathStr->query('descendant::*[@catalog:stereotypeId="' . EnumStereotype::$GEMET . '"]')->item(0);
+
+        if (!empty($keyword)) {
+            $this->cleanEmptyNode($keyword->parentNode);
+        }
+
         $root = $this->domXpathStr->query('/*')->item(0);
 
         foreach ($this->getHeader() as $header) {
@@ -489,6 +505,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         //$root->insertBefore($smda->getPlatformNode($this->structure), $root->firstChild);
         $root->appendChild($smda->getPlatformNode($this->structure));
+
+        /* echo $this->structure->saveXML();
+          die(); */
 
         $this->removeNoneExist();
         $this->removeCatalogNS();
@@ -515,6 +534,59 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_SAVE_ERROR'), 'error');
                 $this->setRedirect(JRoute::_('index.php?view=metadata&layout=edit', false));
             }
+        }
+    }
+
+    /**
+     * Add boundary stereotype into xpath
+     * 
+     * @param string $xpath
+     * @param array $boundaries
+     */
+    private function addBoundaries($xpath, $boundaries) {
+        $formStereotype = new FormStereotype();
+
+        $query = FormUtils::unSerializeXpath($xpath);
+        $elements = $this->domXpathStr->query($query);
+        $toDeletes = array();
+        foreach ($elements as $element) {
+            $toDeletes[] = $element->parentNode->parentNode->parentNode;
+            $parent = $element->parentNode->parentNode->parentNode->parentNode;
+        }
+
+        foreach ($toDeletes as $toDelete) {
+            $parent->removeChild($toDelete);
+        }
+
+        if (is_array($boundaries)) {
+            foreach ($boundaries as $boundary) {
+                if (!empty($boundary)) {
+                    $parent->appendChild($this->structure->importNode($formStereotype->getMultipleExtentStereotype($boundary), true));
+                }
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param DOMElement $element
+     */
+    private function cleanEmptyNode(DOMElement $element) {
+
+        $toRemove = array();
+        foreach ($element->childNodes as $child) {
+            if (empty($child->nodeValue)) {
+                $toRemove[] = $child;
+            }
+        }
+
+        foreach ($toRemove as $child) {
+            $element->removeChild($child);
+        }
+
+        if (!$element->hasChildNodes()) {
+            $parent = $element->parentNode->parentNode;
+            $parent->removeChild($element->parentNode);
         }
     }
 
@@ -703,6 +775,17 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $roles[$row['role_id']]['users'][$row['user_id']] = $row['username'];
         }
 
+        $version = new stdClass();
+        $version->id = JFactory::getApplication()->input->get('versionId');
+
+        $versions = $this->core_helpers->getViralVersionnedChild($version);
+
+        if (empty($versions[$version->id]->children)) {
+            $roles['hasChildren'] = 'false';
+        } else {
+            $roles['hasChildren'] = 'true';
+        }
+
         echo json_encode($roles);
         die();
     }
@@ -847,7 +930,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * 
      */
     private function getHeader($encoding = 'utf8') {
-        $languageid = $this->ldao->getByCode(JFactory::getLanguage()->getTag());
+
+        $languageid = $this->ldao->getDefaultLanguage();
 
         $headers = array();
 
@@ -968,7 +1052,6 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     }
 
     private function removeCatalogNS() {
-        ;
         $attributeNames = array('id', 'dbid', 'childtypeId', 'index', 'lowerbound', 'upperbound', 'rendertypeId', 'stereotypeId', 'relGuid', 'relid', 'maxlength', 'readonly', 'exist', 'resourcetypeId', 'relationId', 'label', 'boundingbox', 'map', 'level');
 
         foreach ($this->domXpathStr->query('//*') as $element) {

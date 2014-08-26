@@ -167,6 +167,7 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
                 }
                 break;
         }
+        
         return $toolbar->renderToolbar();
     }
 
@@ -228,6 +229,14 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
             $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_IMPORT'), 'import', 'btn-small', $importrefactions, true);
         }
 
+        $reset_url = array('root' => 'index.php',
+            'option' => 'com_easysdi_catalog',
+            'view' => 'metadata',
+            'layout' => 'edit',
+            'id'=>  $this->item->id);
+        
+        $toolbar->appendBtnRoute(JText::_('COM_EASYSDI_CATALOG_RESET'), JRoute::_(Easysdi_coreHelper::array2URL($reset_url),false), 'btn-small', 'btn-reset');
+        
         $back_url = array('root' => 'index.php',
             'option' => 'com_easysdi_core',
             'view' => 'resources',

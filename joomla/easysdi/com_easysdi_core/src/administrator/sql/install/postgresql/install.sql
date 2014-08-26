@@ -132,7 +132,8 @@ CREATE TABLE #__sdi_accessscope (
     id serial NOT NULL ,
     entity_guid character varying(36) NOT NULL,
     organism_id bigint,
-    user_id bigint
+    user_id bigint,
+    category_id bigint
 );
 
 CREATE TABLE #__sdi_address (

@@ -33,9 +33,9 @@
         -->
         
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/joomla?zeroDateTimeBehavior=convertToNull" />
-        <property name="username" value="root" />
-        <property name="password" value="4TIk033aM" />
+        <property name="url" value="jdbc:mysql://localhost:3306/easysdi?zeroDateTimeBehavior=convertToNull" />
+        <property name="username" value="easysdi" />
+        <property name="password" value="QdYjW6KGpwTAYb5H" />
     </bean>
 
     <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
@@ -76,7 +76,7 @@
 	
     <bean id="namingStrategy" class="org.easysdi.proxy.namingStrategy.CustomNamingStrategy">
         <property name="prefix">
-            <value>jos_</value>
+            <value>sdi_</value>
         </property>
     </bean>
 

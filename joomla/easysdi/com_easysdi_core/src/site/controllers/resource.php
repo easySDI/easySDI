@@ -118,7 +118,6 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
 
         if (!$andclose) {
             // Redirect back to the edit screen.
-            $app->setUserState('com_easysdi_core.edit.resource.ur', null);
             $app->setUserState('com_easysdi_core.edit.resource.data', null);
             $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_SAVED_SUCCESSFULLY'));
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resource&layout=edit&id=' . $return, false));
@@ -257,6 +256,7 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
         $app->setUserState('com_easysdi_core.edit.resource.id', null);
         $app->setUserState('com_easysdi_core.edit.resource.resourcetype.id', null);
         // Flush the data from the session.
+        $app->setUserState('com_easysdi_core.edit.resource.ur', null);
         $app->setUserState('com_easysdi_core.edit.resource.data', null);
     }
 

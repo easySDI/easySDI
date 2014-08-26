@@ -285,7 +285,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         if (empty($form)) {
             return false;
         }
-
+        //print_r($form->getXml()->saveXML());die();
         return $form;
     }
 

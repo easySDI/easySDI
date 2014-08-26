@@ -144,7 +144,6 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
         // Get the access scope
         $item->organisms = $this->getAccessScopeOrganism($item->id);
         $item->users = $this->getAccessScopeUser($item->id);
-        $item->categories = $this->getAccessScopeCategory($item->id);
 
         return $item;
     }
@@ -2005,7 +2004,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                     //create Wmts Layer Policy if don't exist
                     $query = $db->getQuery(true);
                     $columns = array('name', 'enabled', 'physicalservicepolicy_id');
-                    $values = array($layerID, 1, $physicalservice_policy_id);
+                    $values = array($db->quote($layerID), 1, $physicalservice_policy_id);
                     $query->insert('#__sdi_wmslayer_policy')
                             ->columns($query->quoteName($columns))
                             ->values(implode(',', $values));
@@ -2101,7 +2100,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                     //create Wmts Layer Policy if don't exist
                     $query = $db->getQuery(true);
                     $columns = array('name', 'enabled', 'physicalservicepolicy_id');
-                    $values = array($layerID, 1, $physicalservice_policy_id);
+                    $values = array($db->quote($layerID), 1, $physicalservice_policy_id);
                     $query->insert('#__sdi_featuretype_policy')
                             ->columns($query->quoteName($columns))
                             ->values(implode(',', $values));
