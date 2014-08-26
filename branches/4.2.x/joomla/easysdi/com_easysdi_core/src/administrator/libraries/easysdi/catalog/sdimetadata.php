@@ -82,8 +82,8 @@ class sdiMetadata extends cswmetadata {
         //Get from the metadata structure, the attribute to store the metadata ID
         $query = $this->db->getQuery(true);
         $query->select('a.name as name, ns.prefix as ns');
-        $query->select($query->concatenate(array('ns.prefix', 'a.isocode'), ':') . ' as attribute_isocode');
-        $query->select($query->concatenate(array('atns.prefix', 'at.isocode'), ':') . ' as type_isocode');
+        $query->select('ns.prefix as ns_prefix, a.isocode as a_isocode');
+        $query->select('atns.prefix as atns_prefix, at.isocode as at_isocode');
         $query->from('#__sdi_profile p');
         $query->innerJoin('#__sdi_resourcetype rt on p.id=rt.profile_id ');
         $query->innerJoin('#__sdi_attribute a on a.id=p.metadataidentifier');
@@ -95,6 +95,8 @@ class sdiMetadata extends cswmetadata {
 
         $this->db->setQuery($query);
         $attributeIdentifier = $this->db->loadObject();
+        $attributeIdentifier->attribute_isocode = $attributeIdentifier->ns_prefix.':'.$attributeIdentifier->a_isocode;
+        $attributeIdentifier->type_isocode = $attributeIdentifier->atns_prefix.':'.$attributeIdentifier->at_isocode;
 
         //Get from the metadata structure the root classe
         $query = $this->db->getQuery(true);
