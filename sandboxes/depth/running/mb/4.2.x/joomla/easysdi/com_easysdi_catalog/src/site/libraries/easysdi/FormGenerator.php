@@ -178,14 +178,11 @@ class FormGenerator {
             $this->mergeCsw();
 
             $this->csw->formatOutput = true;
-            $response = $this->csw->saveXML();
         }
 
 
 
         $this->structure->formatOutput = true;
-        $html = $this->structure->saveXML();
-
         $this->session->set('structure', serialize($this->structure->saveXML()));
 
         $form = $this->buildForm($root);
@@ -268,11 +265,8 @@ class FormGenerator {
             if ($stereotype_id == EnumStereotype::$GEOGRAPHICEXTENT) {
                 $occurance = $this->domXpathStr->query($relationExist->getNodePath())->length;
 
-                if ($occurance == 0) {
-                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
-                } else {
-                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
-                }
+                $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
+                
             }
         }
 
@@ -1224,7 +1218,7 @@ class FormGenerator {
                         }else{
                             $query->select('b.id, b.guid, b.name');
                         }
-                        $query->from('#__sdi_boundary');
+                        $query->from('#__sdi_boundary b');
                         $query->innerJoin('#__sdi_boundarycategory bc ON b.category_id = bc.id');
                         $query->order('name ASC');
 

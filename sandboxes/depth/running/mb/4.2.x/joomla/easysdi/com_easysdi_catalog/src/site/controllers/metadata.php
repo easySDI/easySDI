@@ -435,14 +435,15 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         // Multiple list decomposer
         $dataWithoutArray = array();
         foreach ($data as $xpath => $values) {
-            // if is boundary
-            if (strpos($xpath, 'EX_Extent') !== false) {
-                $this->addBoundaries($xpath, $values);
-                unset($data[$xpath]);
-            }
-
+            
             if (is_array($values)) {
-
+                
+                // if is boundary
+                if (strpos($xpath, 'EX_Extent') !== false) {
+                    $this->addBoundaries($xpath, $values);
+                    unset($data[$xpath]);
+                }
+                
                 foreach ($values as $key => $value) {
                     $index = $key + 1;
                     $indexedXpath = str_replace('MD_Keywords-sla-gmd-dp-keyword', 'MD_Keywords-sla-gmd-dp-keyword-la-' . $index . '-ra-', $xpath, $nbrReplace);
