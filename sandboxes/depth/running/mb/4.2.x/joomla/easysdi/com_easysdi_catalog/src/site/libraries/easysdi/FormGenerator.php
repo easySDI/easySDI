@@ -1219,8 +1219,13 @@ class FormGenerator {
                 switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
 
                     case EnumStereotype::$BOUNDARY:
-                        $query->select('id, guid, name');
+                        if($attribute->getAttributeNS($this->catalog_uri, 'upperbound')>1){
+                            $query->select('b.id, b.guid' . $query->concatenate(array('[', 'bc.name', ']')));
+                        }else{
+                            $query->select('b.id, b.guid, b.name');
+                        }
                         $query->from('#__sdi_boundary');
+                        $query->innerJoin('#__sdi_boundarycategory bc ON b.category_id = bc.id');
                         $query->order('name ASC');
 
                         $this->db->setQuery($query);
