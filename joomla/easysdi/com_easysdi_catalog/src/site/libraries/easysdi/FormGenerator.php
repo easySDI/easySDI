@@ -178,14 +178,11 @@ class FormGenerator {
             $this->mergeCsw();
 
             $this->csw->formatOutput = true;
-            $response = $this->csw->saveXML();
         }
 
 
 
         $this->structure->formatOutput = true;
-        $html = $this->structure->saveXML();
-
         $this->session->set('structure', serialize($this->structure->saveXML()));
 
         $form = $this->buildForm($root);
@@ -268,11 +265,8 @@ class FormGenerator {
             if ($stereotype_id == EnumStereotype::$GEOGRAPHICEXTENT) {
                 $occurance = $this->domXpathStr->query($relationExist->getNodePath())->length;
 
-                if ($occurance == 0) {
-                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
-                } else {
-                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
-                }
+                $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
+                
             }
         }
 
@@ -646,7 +640,11 @@ class FormGenerator {
 
         $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
         if ($guid != '') {
-            $field->setAttribute('label', EText::_($guid));
+            if ($this->domXpathStr->query('*/*/*', $attribute)->length > 0) {
+                $field->setAttribute('label', EText::_($guid) . ' (' . $this->ldao->getDefaultLanguage()->value . ')');
+            } else {
+                $field->setAttribute('label', EText::_($guid));
+            }
         } else {
             $field->setAttribute('label', JText::_($label));
         }
@@ -670,7 +668,7 @@ class FormGenerator {
             $field->setAttribute('default', $i18nChild->nodeValue);
             $field->setAttribute('name', FormUtils::serializeXpath($i18nChild->getNodePath()) . $i18nChild->getAttribute('locale'));
             $localeValue = str_replace('#', '', $i18nChild->getAttribute('locale'));
-            $field->setAttribute('label', EText::_($guid) . ' ' . $this->ldao->getByIso3166($localeValue)->value);
+            $field->setAttribute('label', EText::_($guid) . ' (' . $this->ldao->getByIso3166($localeValue)->value . ')');
             $field->setAttribute('description', EText::_($guid, 2));
 
             $fields[] = $field;
@@ -706,8 +704,11 @@ class FormGenerator {
 
         $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue));
         $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
-        $field->setAttribute('label', EText::_($guid));
-        $field->setAttribute('description', EText::_($guid, 2));
+        if ($this->domXpathStr->query('*/*/*', $attribute)->length > 0) {
+            $field->setAttribute('label', EText::_($guid) . ' (' . $this->ldao->getDefaultLanguage()->value . ')');
+        } else {
+            $field->setAttribute('description', EText::_($guid, 2));
+        }
 
         $fields[] = $field;
 
@@ -726,7 +727,7 @@ class FormGenerator {
             $field->setAttribute('default', $i18nChild->nodeValue);
             $field->setAttribute('name', FormUtils::serializeXpath($i18nChild->getNodePath()) . $i18nChild->getAttribute('locale'));
             $localeValue = str_replace('#', '', $i18nChild->getAttribute('locale'));
-            $field->setAttribute('label', EText::_($guid) . ' ' . $this->ldao->getByIso3166($localeValue)->value);
+            $field->setAttribute('label', EText::_($guid) . ' (' . $this->ldao->getByIso3166($localeValue)->value . ')');
             $field->setAttribute('description', EText::_($guid, 2));
 
             $fields[] = $field;
@@ -1212,8 +1213,13 @@ class FormGenerator {
                 switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
 
                     case EnumStereotype::$BOUNDARY:
-                        $query->select('id, guid, name');
-                        $query->from('#__sdi_boundary');
+                        if($attribute->getAttributeNS($this->catalog_uri, 'upperbound')>1){
+                            $query->select('b.id, b.guid' . $query->concatenate(array('[', 'bc.name', ']')));
+                        }else{
+                            $query->select('b.id, b.guid, b.name');
+                        }
+                        $query->from('#__sdi_boundary b');
+                        $query->innerJoin('#__sdi_boundarycategory bc ON b.category_id = bc.id');
                         $query->order('name ASC');
 
                         $this->db->setQuery($query);
