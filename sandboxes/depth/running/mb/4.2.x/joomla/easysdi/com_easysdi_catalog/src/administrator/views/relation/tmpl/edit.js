@@ -74,7 +74,10 @@ function onChangeRenderType() {
                         .trigger("liszt:updated")
                         ;
             });
-            js('#jform_defaultlist option[value=' + selected + ']').attr('selected', 'selected').trigger("liszt:updated");
+            
+            if(selected.length > 0){
+                js('#jform_defaultlist option[value=' + selected + ']').attr('selected', 'selected').trigger("liszt:updated");
+            }
             js('#jform_defaultlist').trigger("change");
             js('#defaultvalue-list').show();
         } else {
