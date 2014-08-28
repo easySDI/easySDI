@@ -432,17 +432,19 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $this->domXpathStr->registerNamespace($ns->prefix, $ns->uri);
         }
 
+        
+        
         // Multiple list decomposer
         $dataWithoutArray = array();
         foreach ($data as $xpath => $values) {
             
+            // if is boundary
+            if (strpos($xpath, 'EX_Extent-sla-gmd-dp-description-sla-gco-dp-CharacterString') !== false) {
+                $this->addBoundaries($xpath, $values);
+                unset($data[$xpath]);
+            }
+            
             if (is_array($values)) {
-                
-                // if is boundary
-                if (strpos($xpath, 'EX_Extent') !== false) {
-                    $this->addBoundaries($xpath, $values);
-                    unset($data[$xpath]);
-                }
                 
                 foreach ($values as $key => $value) {
                     $index = $key + 1;
@@ -564,6 +566,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                     $parent->appendChild($this->structure->importNode($formStereotype->getMultipleExtentStereotype($boundary), true));
                 }
             }
+        }else{
+            $parent->appendChild($this->structure->importNode($formStereotype->getExtendStereotype('', 'Kanton Bern', '6.387222', '6.447233', '46.531578', '46.579213', '35', true), true));
         }
     }
 

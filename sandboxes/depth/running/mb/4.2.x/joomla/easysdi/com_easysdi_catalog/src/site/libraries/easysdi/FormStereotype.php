@@ -81,7 +81,7 @@ class FormStereotype {
 
     /**
      * 
-     * @return DOMDocument[]
+     * @return DOMElement[]
      */
     private function getI18nStereotype() {
         $sdiLangue = new SdiLanguageDao();
@@ -150,15 +150,17 @@ class FormStereotype {
         return $extent;
         
     }
-
+    
     /**
      * Returns the structure of the stereotype "Extent".
      * 
      * @return DOMElement
      */
-    private function getExtendStereotype($extent_type_value = '', $description_value = '', $northbound_value = '', $southbound_value = '', $eastbound_value = '', $westbound_value = '', $code_value = '') {
+    public function getExtendStereotype($extent_type_value = '', $description_value = '', $northbound_value = '', $southbound_value = '', $eastbound_value = '', $westbound_value = '', $code_value = '', $wrap_extent = false) {
         $dom = new DOMDocument('1.0', 'utf-8');
-
+        
+        $extent = $dom->createElementNS($this->namespaces['gmd'], 'gmd:extent');
+        
         $EX_Extent = $dom->createElementNS($this->namespaces['gmd'], 'gmd:EX_Extent');
         $EX_Extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':dbid', '0');
         $EX_Extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$CLASS);
@@ -245,13 +247,17 @@ class FormStereotype {
         $Decimal = $dom->createElementNS($this->namespaces['gco'], 'gco:Decimal');
 
         $extentType->appendChild($CharacterString->cloneNode());
-        $description->appendChild($CharacterString->cloneNode());
+        foreach ($this->getI18nStereotype() as $element) {
+            $description->appendChild($dom->importNode($element,true));
+        }
         $extentTypeCode->appendChild($Boolean->cloneNode(true));
         $northBoundLatitude->appendChild($Decimal->cloneNode());
         $southBoundLatitude->appendChild($Decimal->cloneNode());
         $eastBoundLongitude->appendChild($Decimal->cloneNode());
         $westBoundLongitude->appendChild($Decimal->cloneNode());
-        $code->appendChild($CharacterString->cloneNode());
+        foreach ($this->getI18nStereotype() as $element) {
+            $code->appendChild($dom->importNode($element,true));
+        }
 
         $MD_Identifier->appendChild($code);
         $geographicIdentifier->appendChild($MD_Identifier);
@@ -271,7 +277,10 @@ class FormStereotype {
         $EX_Extent->appendChild($extentType);
         $EX_Extent->appendChild($description);
         $EX_Extent->appendChild($geographicElement1);
-        $EX_Extent->appendChild($geographicElement2);
+        if(!empty($description_value)){
+            $EX_Extent->appendChild($geographicElement2);
+            $code->firstChild->nodeValue = $code_value;
+        }
 
         $extentType->firstChild->nodeValue = $extent_type_value;
         $description->firstChild->nodeValue = $description_value;
@@ -279,9 +288,14 @@ class FormStereotype {
         $southBoundLatitude->firstChild->nodeValue = $southbound_value;
         $eastBoundLongitude->firstChild->nodeValue = $eastbound_value;
         $westBoundLongitude->firstChild->nodeValue = $westbound_value;
-        $code->firstChild->nodeValue = $code_value;
         
-        return $EX_Extent;
+        if($wrap_extent){
+             $extent->appendChild($EX_Extent);
+             return $extent;
+        }else{
+            return $EX_Extent;
+        }
+        
     }
 
     /**
