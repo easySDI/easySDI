@@ -152,7 +152,17 @@ class FormStereotype {
     }
     
     /**
-     * Returns the structure of the stereotype "Extent".
+     * 
+     * Returns the structure of the stereotype "Extent"
+     * 
+     * @param type $extent_type_value
+     * @param type $description_value
+     * @param type $northbound_value
+     * @param type $southbound_value
+     * @param type $eastbound_value
+     * @param type $westbound_value
+     * @param type $code_value
+     * @param type $wrap_extent
      * 
      * @return DOMElement
      */

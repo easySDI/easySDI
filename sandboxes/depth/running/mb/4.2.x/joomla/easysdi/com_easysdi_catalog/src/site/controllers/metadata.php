@@ -432,20 +432,20 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $this->domXpathStr->registerNamespace($ns->prefix, $ns->uri);
         }
 
-        
-        
+
+
         // Multiple list decomposer
         $dataWithoutArray = array();
         foreach ($data as $xpath => $values) {
-            
+
             // if is boundary
             if (strpos($xpath, 'EX_Extent-sla-gmd-dp-description-sla-gco-dp-CharacterString') !== false) {
                 $this->addBoundaries($xpath, $values);
                 unset($data[$xpath]);
             }
-            
+
             if (is_array($values)) {
-                
+
                 foreach ($values as $key => $value) {
                     $index = $key + 1;
                     $indexedXpath = str_replace('MD_Keywords-sla-gmd-dp-keyword', 'MD_Keywords-sla-gmd-dp-keyword-la-' . $index . '-ra-', $xpath, $nbrReplace);
@@ -551,6 +551,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query = FormUtils::unSerializeXpath($xpath);
         $elements = $this->domXpathStr->query($query);
         $toDeletes = array();
+        /* @var $parent DOMElement */
+        $parent;
         foreach ($elements as $element) {
             $toDeletes[] = $element->parentNode->parentNode->parentNode;
             $parent = $element->parentNode->parentNode->parentNode->parentNode;
@@ -566,8 +568,18 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                     $parent->appendChild($this->structure->importNode($formStereotype->getMultipleExtentStereotype($boundary), true));
                 }
             }
-        }else{
-            $parent->appendChild($this->structure->importNode($formStereotype->getExtendStereotype('', 'Kanton Bern', '6.387222', '6.447233', '46.531578', '46.579213', '35', true), true));
+        } else {
+            if (!empty($boundary)) {
+                $parent->appendChild($this->structure->importNode($formStereotype->getMultipleExtentStereotype($boundary), true));
+            }else{
+                $northBoundLatitude = $this->domXpathStr->query($parent->getNodePath() . '/gmd:extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal')->item(0);
+                $southBoundLatitude = $this->domXpathStr->query($parent->getNodePath() . '/gmd:extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:southBoundLatitude/gco:Decimal')->item(0);
+                $eastBoundLongitude = $this->domXpathStr->query($parent->getNodePath() . '/gmd:extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:eastBoundLongitude/gco:Decimal')->item(0);
+                $westBoundLongitude = $this->domXpathStr->query($parent->getNodePath() . '/gmd:extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:westBoundLongitude/gco:Decimal')->item(0);
+
+                $parent->appendChild($this->structure->importNode($formStereotype->getExtendStereotype('', $boundaries, $northBoundLatitude, $southBoundLatitude, $eastBoundLongitude, $westBoundLongitude, '35', true), true));
+            }
+            
         }
     }
 
