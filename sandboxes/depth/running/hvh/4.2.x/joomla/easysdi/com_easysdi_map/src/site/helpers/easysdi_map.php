@@ -45,14 +45,17 @@ abstract class Easysdi_mapHelper {
 
         $output = '';
 
+
+
         if (JDEBUG) {
-            $doc->addScript($base_url . '/media/jui/js/jquery.js');
-            $doc->addScript($base_url . '/media/jui/js/jquery-noconflict.js');
-            $doc->addScript($base_url . '/media/jui/js/bootstrap.js');             
+            $doc->addScript(Juri::base(true) . '/media/jui/js/jquery.js');
+            $doc->addScript(Juri::base(true) . '/media/jui/js/jquery-noconflict.js');
+            $doc->addScript(Juri::base(true) . '/media/jui/js/bootstrap.js');
+            $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js.js');
             $doc->addScript($base_url . '/ext/adapter/ext/ext-base-debug.js');
             $doc->addScript($base_url . '/ext/ext-all-debug.js');
             $doc->addScript($base_url . '/ux/ext/RowExpander.js');
-            $doc->addScript($base_url . '/openlayers/OpenLayers.debug.js');
+            $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.debug.js');
             $doc->addScript($base_url . '/geoext/lib/GeoExt.js');
             $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
             $doc->addScript($base_url . '/gxp/script/loader.js');
@@ -78,13 +81,14 @@ abstract class Easysdi_mapHelper {
             $doc->addScript(JURI::base(true) . '/media/system/js/mootools-core-uncompressed.js');
             $doc->addScript(JURI::base(true) . '/media/system/js/core-uncompressed.js');
         } else {
-            $doc->addScript($base_url . '/media/jui/js/jquery.min.js');
-            $doc->addScript($base_url . '/media/jui/js/jquery-noconflict.js');
-            $doc->addScript($base_url . '/media/jui/js/bootstrap.min.js');              
+            $doc->addScript(Juri::base(true) . '/media/jui/js/jquery.min.js');
+            $doc->addScript(Juri::base(true) . '/media/jui/js/jquery-noconflict.js');
+            $doc->addScript(Juri::base(true) . '/media/jui/js/bootstrap.min.js');
+            $doc->addScript($base_url . '/proj4js-1.1.0/lib/proj4js-compressed.js');
             $doc->addScript($base_url . '/ext/adapter/ext/ext-base.js');
             $doc->addScript($base_url . '/ext/ext-all.js');
             $doc->addScript($base_url . '/ux/ext/RowExpander.js');
-            $doc->addScript($base_url . '/openlayers/OpenLayers.js');
+            $doc->addScript($base_url . '/OpenLayers-2.13.1/OpenLayers.js');
             $doc->addScript($base_url . '/geoext/lib/geoext.min.js');
             $doc->addScript($base_url . '/ux/geoext/PrintPreview.js');
             $doc->addScript($base_url . '/gxp/script/gxp.min.js');
@@ -98,7 +102,7 @@ abstract class Easysdi_mapHelper {
 //        foreach ($files as $file) {
 //            $doc->addScript($file);
 //        }
-        
+
         $doc->addScript(JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/fr.js');
         $doc->addScript(JURI::base(true) . '/administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/locale/en.js');
 
@@ -108,6 +112,7 @@ abstract class Easysdi_mapHelper {
             var loadingMask;
             Ext.Container.prototype.bufferResize = false;
             Ext.onReady(function(){
+
                 loadingMask = new Ext.LoadMask(Ext.getBody(), {
                 msg:"';
         $output .= JText::_('COM_EASYSDI_MAP_MAP_LOAD_MESSAGE');
@@ -132,6 +137,8 @@ abstract class Easysdi_mapHelper {
                 break;
             }
         }
+
+
 
         $output .= 'var locator = null';
 
@@ -349,7 +356,7 @@ abstract class Easysdi_mapHelper {
 
         $width = $params->get('iframewidth');
         $height = $params->get('iframeheight');
-                        
+
         foreach ($item->tools as $tool) :
             switch ($tool->alias) :
                 case 'googleearth':
@@ -414,7 +421,7 @@ abstract class Easysdi_mapHelper {
                     },
                     {
                     ptype: "gxp_measure",
-                    toggleGroup: "measure",
+                    toggleGroup: "navigation",
                     actionTarget: "map.tbar"
                     },
                     ';
@@ -430,7 +437,7 @@ abstract class Easysdi_mapHelper {
                     }
                     break;
                 case 'searchcatalog':
-                    if ($layertreeactivated) {                        
+                    if ($layertreeactivated) {
                         $config .= '
                         {
                         ptype: "sdi_searchcatalog",
@@ -440,10 +447,10 @@ abstract class Easysdi_mapHelper {
                         iheight : "' . $height . '"
                         },
                         ';
-                        }
-                        break;
-               case 'layerdetailsheet':
-                   if ($layertreeactivated) {
+                    }
+                    break;
+                case 'layerdetailsheet':
+                    if ($layertreeactivated) {
                         $config .= '
                         {
                         ptype: "sdi_layerdetailsheet",
@@ -451,10 +458,10 @@ abstract class Easysdi_mapHelper {
                         iwidth : "' . $width . '",
                         iheight : "' . $height . '"
                         },';
-                   }
+                    }
                     break;
                 case 'layerdownload':
-                   if ($layertreeactivated) {
+                    if ($layertreeactivated) {
                         $config .= '
                         {
                         ptype: "sdi_layerdownload",
@@ -462,10 +469,10 @@ abstract class Easysdi_mapHelper {
                         iwidth : "' . $width . '",
                         iheight : "' . $height . '"
                         },';
-                   }
+                    }
                     break;
                 case 'layerorder':
-                   if ($layertreeactivated) {
+                    if ($layertreeactivated) {
                         $config .= '
                         {
                         ptype: "sdi_layerorder",
@@ -473,7 +480,7 @@ abstract class Easysdi_mapHelper {
                         iwidth : "' . $width . '",
                         iheight : "' . $height . '"
                         },';
-                   }
+                    }
                     break;
                 case 'removelayer':
                     if ($layertreeactivated) {
@@ -569,12 +576,14 @@ abstract class Easysdi_mapHelper {
         {
         "ol": { ptype: "sdi_gxp_olsource" }, ';
 
-        foreach ($item->physicalservices as $service) :
-            //Acces not allowed
-            if (!in_array($service->access, $user->getAuthorisedViewLevels()))
-                continue;
-            $config .= Easysdi_mapHelper::getServiceDescription($service);
-        endforeach;
+        if (isset($item->physicalservices)) :
+            foreach ($item->physicalservices as $service) :
+                //Acces not allowed
+                if (!in_array($service->access, $user->getAuthorisedViewLevels()))
+                    continue;
+                $config .= Easysdi_mapHelper::getServiceDescription($service);
+            endforeach;
+        endif;
 
         if (isset($item->virtualservices)) :
             foreach ($item->virtualservices as $service) {
@@ -625,9 +634,7 @@ abstract class Easysdi_mapHelper {
                     if (!in_array($layer->access, $user->getAuthorisedViewLevels()))
                         continue;
 
-                    $config .= Easysdi_mapHelper::getLayerDescription($layer,$group);
-                    
-                    
+                    $config .= Easysdi_mapHelper::getLayerDescription($layer, $group);
                 }
             }
         }
@@ -666,129 +673,127 @@ abstract class Easysdi_mapHelper {
 
         return $config;
     }
-    
-    
-    public static function getServiceDescription($service){
-        $url='';
+
+    public static function getServiceDescription($service) {
+        $url = '';
         //Initilization of the service url if the service is physic or virtual
-        if (isset($service->resourceurl)){
+        if (isset($service->resourceurl)) {
             $url = $service->resourceurl;
-        }elseif (isset($service->url)){
+        } elseif (isset($service->url)) {
             $url = $service->url;
         }
-            $config='';
-            switch ($service->serviceconnector_id) :
-                case 2 :
-                    $config = ' 
+        $config = '';
+        switch ($service->serviceconnector_id) :
+            case 2 :
+                $config = ' 
                     "' . $service->alias . '":
                     {
                     ptype: "sdi_gxp_wmssource",
                     url: "' . $url . '"
                     },
                     ';
-                    break;
-                case 11 :
-                    $config = ' 
+                break;
+            case 11 :
+                $config = ' 
                     "' . $service->alias . '":
                     {
                     ptype: "gxp_wmscsource",
                      url: "' . $url . '"
                     },
                     ';
-                    break;
-                case 12 :
-                    $config = ' 
+                break;
+            case 12 :
+                $config = ' 
                     "' . $service->alias . '":
                     {
                     ptype: "sdi_gxp_bingsource"
                     },
                     ';
-                    break;
-                case 13 :
-                    $config = ' 
+                break;
+            case 13 :
+                $config = ' 
                     "' . $service->alias . '":
                     {
                     ptype: "sdi_gxp_googlesource"
                     },
                     ';
-                    break;
-                case 14 :
-                    $config = ' 
+                break;
+            case 14 :
+                $config = ' 
                     "' . $service->alias . '":
                     {
                     ptype: "sdi_gxp_osmsource"
                     },
                     ';
-                    break;
-            endswitch;
-            return $config;
+                break;
+        endswitch;
+        return $config;
     }
-    
-    
-    public static function getExtraServiceDescription($service){
-        $url='';
-        $config='';
+
+    public static function getExtraServiceDescription($service) {
+        $url = '';
+        $config = '';
         //Initilization of the service url if the service is physic or virtual
-        if (isset($service->resourceurl)){
+        if (isset($service->resourceurl)) {
             $url = $service->resourceurl;
-        }elseif (isset($service->url)){
+        } elseif (isset($service->url)) {
             $url = $service->url;
         }
-            switch ($service->serviceconnector_id) :
-                case 2 :
-                    $config ='{id:"' . $service->alias . '",';
-                    $config .= '
+        switch ($service->serviceconnector_id) :
+            case 2 :
+                $config = '{id:"' . $service->alias . '",';
+                $config .= '
                     ptype: "sdi_gxp_wmssource",
                     hidden : "true",
                     url: "' . $url . '"
                     }
                     ';
-                    break;
-                case 11 :
-                    $config ='{id:"' . $service->alias . '",';
-                    $config .= ' 
+                break;
+            case 11 :
+                $config = '{id:"' . $service->alias . '",';
+                $config .= ' 
                     ptype: "gxp_wmscsource",
                     hidden : "true",
                     url: "' . $url . '"
                     }
                     ';
-                    break;
-                case 12 :
-                    $config ='{id:"' . $service->alias . '",';
-                    $config .= '
+                break;
+            case 12 :
+                $config = '{id:"' . $service->alias . '",';
+                $config .= '
                     ptype: "sdi_gxp_bingsource",
                     hidden : "true",
                     }
                     ';
-                    break;
-                case 13 :
-                    $config ='{id:"' . $service->alias . '",';
-                    $config .= '
+                break;
+            case 13 :
+                $config = '{id:"' . $service->alias . '",';
+                $config .= '
                     ptype: "sdi_gxp_googlesource",
                     hidden : "true",
                     }
                     ';
-                    break;
-                case 14 :
-                    $config ='{id:"' . $service->alias . '",';
-                    $config .= '
+                break;
+            case 14 :
+                $config = '{id:"' . $service->alias . '",';
+                $config .= '
                     ptype: "sdi_gxp_osmsource",
                     hidden : "true",
                     }
                     ';
-                    break;
-                default :
-                    $config ='{id:"' . $service->alias . '",';
-                    $config .= '
+                break;
+            default :
+                $config = '{id:"' . $service->alias . '",';
+                $config .= '
                     ptype: "sdi_gxp_olsource",
                     hidden : "true",
                     }
                     ';
-            endswitch;
-            return $config;
+        endswitch;
+        return $config;
     }
-        
-    public static function getLayerDescription($layer, $group){
+
+    public static function getLayerDescription($layer, $group) {
         $config = ' { ';
 
         if ($layer->asOL) {
@@ -837,7 +842,7 @@ abstract class Easysdi_mapHelper {
                     {
                     layers: "' . $layer->layername . '", 
                     version: "' . $layer->version . '"';
-                    if($layer->serviceconnector == 'WMSC'):
+                    if ($layer->serviceconnector == 'WMSC'):
                         $config .= ', tiled: true';
                     endif;
 
@@ -914,7 +919,7 @@ abstract class Easysdi_mapHelper {
 
         if (!empty($layer->metadata_guid)):
             $config .= 'href: "' . Easysdi_mapHelper::getLayerDetailSheetToolUrl($layer->metadata_guid, JFactory::getLanguage()->getTag(), '', 'map') . '",';
-        elseif(!empty($layer->metadatalink)):
+        elseif (!empty($layer->metadatalink)):
             $config .= 'href: "' . $layer->metadatalink . '",';
         endif;
         if (!empty($layer->hasdownload)):
@@ -925,21 +930,20 @@ abstract class Easysdi_mapHelper {
         endif;
 
         $config .= ' }, ';
-        
+
         return $config;
     }
-    
-    public static function getLayerDownloadToolUrl ($diffusion_id){
+
+    public static function getLayerDownloadToolUrl($diffusion_id) {
         return htmlentities(JURI::root() . 'index.php?option=com_easysdi_shop&task=download.direct&tmpl=component&id=' . $diffusion_id);
     }
-    
-    public static function getLayerOrderToolUrl ($metadata_guid, $lang, $catalog){
+
+    public static function getLayerOrderToolUrl($metadata_guid, $lang, $catalog) {
         return htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $metadata_guid . '&lang=' . $lang . '&catalog=' . $catalog . '&type=shop&preview=map&tmpl=component');
     }
-    
-    public static function getLayerDetailSheetToolUrl ($metadata_guid, $lang, $catalog, $preview){
+
+    public static function getLayerDetailSheetToolUrl($metadata_guid, $lang, $catalog, $preview) {
         return htmlentities(JURI::root() . 'index.php?option=com_easysdi_catalog&view=sheet&guid=' . $metadata_guid . '&lang=' . $lang . '&catalog=' . $catalog . '&preview=' . $preview . '&tmpl=component');
     }
 
 }
-
