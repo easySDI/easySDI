@@ -164,23 +164,26 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 			
 			$db = JFactory::getDbo();
                         
-                        $query = $db->getQuery(true);
-                        $query->select('0 AS id, \'- None -\' AS value');
-                        
-                        $unionquery = $db->getQuery(true);
-                        $unionquery->select('ac.id, ac.value');
-                        $unionquery->from('#__sdi_sys_authenticationconnector ac');
-                        $unionquery->innerJoin('#__sdi_sys_servicecon_authenticationcon sc ON sc.authenticationconnector_id = ac.id');
-                        $unionquery->innerJoin('#__sdi_sys_serviceconnector c ON c.id = sc.serviceconnector_id');
-                        $unionquery->innerJoin('#__sdi_sys_authenticationlevel al ON ac.authenticationlevel_id = al.id');
-                        $unionquery->where('c.state = 1');
-                        $unionquery->where('al.id = 1');
-                        $unionquery->where('c.id = '. (int)$item->serviceconnector_id);
-                        
-                        $query->union($unionquery);
-                       
-			$db->setQuery($query);
+            $query = $db->getQuery(true);
+            $query->select('0 AS id, \'- None -\' AS value');
+            $db->setQuery($query);
 			$item->currentresourceauthenticationconnectorlist = $db->loadObjectList();
+			
+            $unionquery = $db->getQuery(true);
+			$unionquery->select('ac.id, ac.value');
+			$unionquery->from('#__sdi_sys_authenticationconnector ac');
+			$unionquery->innerJoin('#__sdi_sys_servicecon_authenticationcon sc ON sc.authenticationconnector_id = ac.id');
+			$unionquery->innerJoin('#__sdi_sys_serviceconnector c ON c.id = sc.serviceconnector_id');
+			$unionquery->innerJoin('#__sdi_sys_authenticationlevel al ON ac.authenticationlevel_id = al.id');
+			$unionquery->where('c.state = 1');
+			$unionquery->where('al.id = 1');
+			$unionquery->where('c.id = '. (int)$item->serviceconnector_id);
+                        
+			//Method union is not working on SQL Server			
+			//$query->union($unionquery);
+			$db->setQuery($unionquery);			
+			$item->currentresourceauthenticationconnectorlist = array_merge($item->currentresourceauthenticationconnectorlist, $db->loadObjectList());
+                        
 			if ($error = $db->getErrorMsg()) {
 				$this->setError($error);
 				return false;

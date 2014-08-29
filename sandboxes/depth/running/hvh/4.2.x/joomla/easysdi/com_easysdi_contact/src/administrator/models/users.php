@@ -201,8 +201,9 @@ class Easysdi_contactModelusers extends JModelList {
         if ($orderCol && $orderDirn) {
             $query->order($db->escape($orderCol . ' ' . $orderDirn));
         }
+		//Not necessary
         // group by user.id to have unique rows in result
-        $query->group('a.id');
+        //$query->group('a.id');
 
         return $query;
     }
