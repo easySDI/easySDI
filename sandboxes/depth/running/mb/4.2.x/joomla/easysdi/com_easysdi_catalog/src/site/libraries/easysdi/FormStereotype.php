@@ -83,19 +83,26 @@ class FormStereotype {
      * 
      * @return DOMElement[]
      */
-    private function getI18nStereotype() {
+    private function getI18nStereotype($values = '') {
         $sdiLangue = new SdiLanguageDao();
         $languages = $sdiLangue->getSupported();
+        $default = $sdiLangue->getDefaultLanguage();
         $dom = new DOMDocument('1.0', 'utf-8');
         $elements = array();
 
         $characterString = $dom->createElementNS($this->namespaces['gco'], 'gco:CharacterString');
+        if(!empty($values)){
+            $characterString->nodeValue = $values[$default->{'iso3166-1-alpha2'}];
+        }
         $elements[] = $characterString;
         foreach ($languages as $key => $value) {
             $pt_freetext = $dom->createElementNS($this->namespaces['gmd'], 'gmd:PT_FreeText');
             $textGroup = $dom->createElementNS($this->namespaces['gmd'], 'gmd:textGroup');
             $localisedcs = $dom->createElementNS($this->namespaces['gmd'], 'gmd:LocalisedCharacterString');
             $localisedcs->setAttribute('locale', '#' . $key);
+            if(!empty($values)){
+                $localisedcs->nodeValue = $values[$key];
+            }
 
             $textGroup->appendChild($localisedcs);
             $pt_freetext->appendChild($textGroup);
@@ -145,7 +152,7 @@ class FormStereotype {
         $boundary = $this->getBoundaryByName($name);
 
         $extent = $dom->createElementNS($this->namespaces['gmd'], 'gmd:extent');
-        $extent->appendChild($dom->importNode($this->getExtendStereotype($boundary->extent_type, $boundary->description, $boundary->northbound, $boundary->southbound, $boundary->eastbound, $boundary->westbound, $boundary->code), true));
+        $extent->appendChild($dom->importNode($this->getExtendStereotype($boundary->extent_type, $boundary->descriptions, $boundary->northbound, $boundary->southbound, $boundary->eastbound, $boundary->westbound, $boundary->codes), true));
     
         return $extent;
         
@@ -156,17 +163,17 @@ class FormStereotype {
      * Returns the structure of the stereotype "Extent"
      * 
      * @param type $extent_type_value
-     * @param type $description_value
+     * @param array $descriptions
      * @param type $northbound_value
      * @param type $southbound_value
      * @param type $eastbound_value
      * @param type $westbound_value
-     * @param type $code_value
+     * @param array $codes
      * @param type $wrap_extent
      * 
      * @return DOMElement
      */
-    public function getExtendStereotype($extent_type_value = '', $description_value = '', $northbound_value = '', $southbound_value = '', $eastbound_value = '', $westbound_value = '', $code_value = '', $wrap_extent = false) {
+    public function getExtendStereotype($extent_type_value = '', $descriptions = '', $northbound_value = '', $southbound_value = '', $eastbound_value = '', $westbound_value = '', $codes = '', $wrap_extent = false) {
         $dom = new DOMDocument('1.0', 'utf-8');
         
         $extent = $dom->createElementNS($this->namespaces['gmd'], 'gmd:extent');
@@ -257,7 +264,7 @@ class FormStereotype {
         $Decimal = $dom->createElementNS($this->namespaces['gco'], 'gco:Decimal');
 
         $extentType->appendChild($CharacterString->cloneNode());
-        foreach ($this->getI18nStereotype() as $element) {
+        foreach ($this->getI18nStereotype($descriptions) as $element) {
             $description->appendChild($dom->importNode($element,true));
         }
         $extentTypeCode->appendChild($Boolean->cloneNode(true));
@@ -265,7 +272,7 @@ class FormStereotype {
         $southBoundLatitude->appendChild($Decimal->cloneNode());
         $eastBoundLongitude->appendChild($Decimal->cloneNode());
         $westBoundLongitude->appendChild($Decimal->cloneNode());
-        foreach ($this->getI18nStereotype() as $element) {
+        foreach ($this->getI18nStereotype($codes) as $element) {
             $code->appendChild($dom->importNode($element,true));
         }
 
@@ -287,13 +294,11 @@ class FormStereotype {
         $EX_Extent->appendChild($extentType);
         $EX_Extent->appendChild($description);
         $EX_Extent->appendChild($geographicElement1);
-        if(!empty($description_value)){
+        if(!empty($descriptions)){
             $EX_Extent->appendChild($geographicElement2);
-            $code->firstChild->nodeValue = $code_value;
         }
 
         $extentType->firstChild->nodeValue = $extent_type_value;
-        $description->firstChild->nodeValue = $description_value;
         $northBoundLatitude->firstChild->nodeValue = $northbound_value;
         $southBoundLatitude->firstChild->nodeValue = $southbound_value;
         $eastBoundLongitude->firstChild->nodeValue = $eastbound_value;
@@ -317,7 +322,7 @@ class FormStereotype {
         $db = JFactory::getDbo();
 
         $query = $db->getQuery(true);
-        $query->select('b.id AS code, b.`name` AS description, b.northbound, b.southbound, b.eastbound,b.westbound, bc.`name` AS extent_type');
+        $query->select('b.guid, b.id AS code, b.`name` AS description, b.northbound, b.southbound, b.eastbound,b.westbound, bc.`name` AS extent_type');
         $query->from('#__sdi_boundary b');
         $query->innerJoin('#__sdi_boundarycategory bc ON bc.id = b.category_id');
         $query->where('b.name = ' . $query->quote($name));
@@ -325,6 +330,25 @@ class FormStereotype {
         $db->setQuery($query);
         $boundary = $db->loadObject();
 
+        $query = $db->getQuery(true);
+        $query->select('t.text1 AS description, t.text3 AS code, l.'.$query->quoteName('iso3166-1-alpha2').' AS lang_code');
+        $query->from('#__sdi_translation t');
+        $query->innerJoin('#__sdi_language l ON l.id = t.language_id');
+        $query->where('element_guid = '.$query->quote($boundary->guid));
+        
+        $db->setQuery($query);
+        $translations = $db->loadObjectList();
+        
+        $descriptions = array();
+        $codes = array();
+        foreach ($translations as $translation) {
+            $descriptions[$translation->lang_code] = $translation->description;
+            $codes[$translation->lang_code] = $translation->code;
+        }
+        
+        $boundary->descriptions = $descriptions;
+        $boundary->codes = $codes;
+        
         return $boundary;
     }
 

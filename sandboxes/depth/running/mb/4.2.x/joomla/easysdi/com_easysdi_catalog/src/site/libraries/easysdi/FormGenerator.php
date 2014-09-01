@@ -265,8 +265,11 @@ class FormGenerator {
             if ($stereotype_id == EnumStereotype::$GEOGRAPHICEXTENT) {
                 $occurance = $this->domXpathStr->query($relationExist->getNodePath())->length;
 
-                $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
-                
+                if ($occurance == 0) {
+                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
+                } else {
+                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
+                }
             }
         }
 
@@ -417,26 +420,30 @@ class FormGenerator {
      */
     private function mergeCsw() {
 
+        $exclude_node = array('gmd:geographicElement');
+
         foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="0"]|//*[@catalog:childtypeId="2"]|//*[@catalog:childtypeId="3"]') as $relation) {
             $xpath = $relation->getNodePath();
             $nbr = $this->domXpathCsw->query('/*' . $xpath)->length;
 
-            $hasSibling = isset($relation->nextSibling);
-            if ($hasSibling) {
-                $nextSibling = $relation->nextSibling;
-            }
-            for ($i = 1; $i < $nbr; $i++) {
-                $clone = $relation->cloneNode(true);
-                $clone->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':index', $i + 1);
+            if (!in_array($relation->nodeName, $exclude_node)) {
+                $hasSibling = isset($relation->nextSibling);
                 if ($hasSibling) {
-                    $relation->parentNode->insertBefore($clone, $nextSibling);
-                } else {
-                    $relation->parentNode->appendChild($clone);
+                    $nextSibling = $relation->nextSibling;
                 }
+                for ($i = 1; $i < $nbr; $i++) {
+                    $clone = $relation->cloneNode(true);
+                    $clone->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':index', $i + 1);
+                    if ($hasSibling) {
+                        $relation->parentNode->insertBefore($clone, $nextSibling);
+                    } else {
+                        $relation->parentNode->appendChild($clone);
+                    }
+                }
+
+                $this->getValue($this->structure->getElementsByTagNameNS('*', '*')->item(0));
             }
         }
-
-        $this->getValue($this->structure->getElementsByTagNameNS('*', '*')->item(0));
     }
 
     /**
@@ -904,6 +911,7 @@ class FormGenerator {
                         $field->setAttribute('css', 'sdi-multi-extent-select');
                     } else {
                         $field->setAttribute('onchange', 'setBoundary(\'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
+                        $field->setAttribute('default', $attribute->firstChild->nodeValue) ;
                     }
                     break;
                 case EnumStereotype::$BOUNDARYCATEGORY:
@@ -1125,7 +1133,7 @@ class FormGenerator {
         $name = $relationtype->nodeName;
 
         $validator = $this->getValidatorClass($relationtype);
-        
+
         $field->setAttribute('class', $validator);
         $field->setAttribute('name', FormUtils::serializeXpath($relationtype->getNodePath()));
         $field->setAttribute('type', 'list');
@@ -1213,9 +1221,9 @@ class FormGenerator {
                 switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
 
                     case EnumStereotype::$BOUNDARY:
-                        if($attribute->getAttributeNS($this->catalog_uri, 'upperbound')>1){
+                        if ($attribute->getAttributeNS($this->catalog_uri, 'upperbound') > 1) {
                             $query->select('b.id, b.guid' . $query->concatenate(array('[', 'bc.name', ']')));
-                        }else{
+                        } else {
                             $query->select('b.id, b.guid, b.name');
                         }
                         $query->from('#__sdi_boundary b');
@@ -1282,7 +1290,7 @@ class FormGenerator {
         $validator = '';
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
         $patterns = $this->getPatterns();
-        
+
         if ($attribute->getAttributeNS($this->catalog_uri, 'lowerbound') > 0) {
             $validator .= ' required ';
         }
@@ -1295,7 +1303,7 @@ class FormGenerator {
             }
 
             return $validator;
-        } elseif($attribute->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE){
+        } elseif ($attribute->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE) {
             return $validator;
         } else {
             return '';

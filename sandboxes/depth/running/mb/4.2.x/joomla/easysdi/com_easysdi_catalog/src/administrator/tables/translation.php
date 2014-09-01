@@ -139,6 +139,7 @@ class Easysdi_catalogTabletranslation extends sdiTable {
                 foreach ($rows as $row){
                    $result['text1'] [$row['language_id']] = $row['text1'];
                    $result['text2'] [$row['language_id']] = $row['text2'];
+                   $result['text3'] [$row['language_id']] = $row['text3'];
                 }
                 
                 return $result;

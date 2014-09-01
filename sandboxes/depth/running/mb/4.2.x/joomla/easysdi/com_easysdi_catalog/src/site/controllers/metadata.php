@@ -569,8 +569,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                 }
             }
         } else {
-            if (!empty($boundary)) {
-                $parent->appendChild($this->structure->importNode($formStereotype->getMultipleExtentStereotype($boundary), true));
+            if (!empty($boundaries)) {
+                $parent->appendChild($this->structure->importNode($formStereotype->getMultipleExtentStereotype($boundaries), true));
             }else{
                 $northBoundLatitude = $this->domXpathStr->query($parent->getNodePath() . '/gmd:extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal')->item(0);
                 $southBoundLatitude = $this->domXpathStr->query($parent->getNodePath() . '/gmd:extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:southBoundLatitude/gco:Decimal')->item(0);
