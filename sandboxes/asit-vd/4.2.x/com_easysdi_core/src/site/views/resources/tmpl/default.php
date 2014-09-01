@@ -197,7 +197,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
 
                                                 <?php if ($item->metadata[0]->state == sdiMetadata::VALIDATED): ?>
                                                     <li>
-                                                        <a class="<?php echo $item->id; ?>_linker" onclick="showModal('<?php echo $item->id; ?>'); return false;"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_PUBLISH_METADATA'); ?></a>
+                                                        <a class="<?php echo $item->id; ?>_linker" onclick="showModal('<?php echo $item->metadata[0]->id; ?>'); return false;"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_PUBLISH_METADATA'); ?></a>
                                                     </li>
                                                 <?php endif; ?>
                                                 <?php if ($item->metadata[0]->state == sdiMetadata::PUBLISHED): ?>
@@ -205,7 +205,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                                         <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.inprogress&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_INPROGRESS_ITEM'); ?></a>
                                                     </li>
                                                     <li>
-                                                        <a class="<?php echo $item->id; ?>_modaler" onclick="showModal('<?php echo $item->id; ?>'); return false;"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_CHANGEPUBLISHEDDATE_METADATA'); ?></a>
+                                                        <a class="<?php echo $item->id; ?>_modaler" onclick="showModal('<?php echo $item->metadata[0]->id; ?>'); return false;"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_CHANGEPUBLISHEDDATE_METADATA'); ?></a>
                                                     </li>
                                                     <li>
                                                         <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.archive&id=' . $item->metadata[0]->id); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ARCHIVE_METADATA'); ?></a>
@@ -246,7 +246,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                             <?php if($this->user->authorize($item->id, sdiUser::resourcemanager)) : ?>
                                                 <?php if ($item->versioning) : ?>
                                                     <li>
-                                                       <a id="<?php echo $item->id; ?>_new_linker" href="#"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
+                                                       <a id="<?php echo $item->id; ?>_new_linker" href=""><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
                                                     </li>
                                                 <?php endif; ?>
                                                 <?php if ($item->supportrelation): ?>
@@ -295,7 +295,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                             <?php if($this->user->authorize($item->id, sdiUser::metadataeditor)): ?>
                                                 <li class="divider"></li>
                                                 <li>
-                                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=assignments&version=' . $item->metadata[0]->version); ?>">
+                                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=assignments&version=' . $item->metadata[0]->version); ?>&limitstart=<?php echo JFactory::getApplication()->input->getInt('start', 0, 'int'); ?>" >
                                                         <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ASSIGNMENT_HISTORY'); ?>
                                                     </a>
                                                 </li>
@@ -433,12 +433,14 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                             </div>
                         </div>
                         <!-- Child Checkbox field -->
-                        <div class="control-label">
-                            <label id="assign_child-lbl" for="assign_child" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCE_ASSIGN_CHILD'); ?></label>
-                        </div>
-                        <div class="controls">
-                            <div class="input-append">
-                                <input type="checkbox" id="assign_child" name="assign_child" value="1">
+                        <div id="assign_child_controls">
+                            <div class="control-label">
+                                <label id="assign_child-lbl" for="assign_child" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCE_ASSIGN_CHILD'); ?></label>
+                            </div>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input type="checkbox" id="assign_child" name="assign_child" value="1">
+                                </div>
                             </div>
                         </div>
                     </div>
