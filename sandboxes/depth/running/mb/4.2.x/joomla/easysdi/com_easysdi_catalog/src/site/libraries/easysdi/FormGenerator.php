@@ -888,13 +888,8 @@ class FormGenerator {
                         $field->setAttribute('label', JText::_($label));
                     }
 
-                    if ($opt->guid != '') {
-                        $option = $this->form->createElement('option', EText::_($opt->guid));
-                    } else {
-                        $option = $this->form->createElement('option');
-                    }
-
-                    $option->setAttribute('value', $opt->name);
+                    $option = $this->form->createElement('option', $opt->name);
+                    $option->setAttribute('value', $opt->value);
 
                     $field->appendChild($option);
 
@@ -1222,18 +1217,26 @@ class FormGenerator {
 
                     case EnumStereotype::$BOUNDARY:
                         if ($attribute->getAttributeNS($this->catalog_uri, 'upperbound') > 1) {
-                            $query->select('b.id, b.guid' . $query->concatenate(array('[', 'bc.name', ']')));
+                            $query->select('b.id, b.guid, b.name as value, bc.name as cat_name');
                         } else {
-                            $query->select('b.id, b.guid, b.name');
+                            $query->select('b.id, b.guid, b.name, b.name as value');
                         }
                         $query->from('#__sdi_boundary b');
                         $query->innerJoin('#__sdi_boundarycategory bc ON b.category_id = bc.id');
-                        $query->order('name ASC');
+                        $query->order('b.name ASC');
 
                         $this->db->setQuery($query);
                         $result = $this->db->loadObjectList();
+                        
+                        foreach ($result as $r) {
+                            if(!empty($r->cat_name)){
+                                $r->name = EText::_($r->guid).' ['.$r->cat_name.']';
+                            }else{
+                                $r->name = EText::_($r->guid);
+                            }
+                        }
 
-                        $first = array('id' => '', 'guid' => '', 'name' => '');
+                        $first = array('id' => '', 'guid' => '', 'value' => '', 'name' => '');
                         array_unshift($result, (object) $first);
                         break;
 
