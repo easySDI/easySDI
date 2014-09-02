@@ -26,7 +26,7 @@ class JFormFieldAllowedoperationSQL extends JFormFieldSQL {
      *
      * @var    string
      */
-    protected $serviceconnectorField;
+    protected $serviceconnector;
 
     /**
      * Method to get certain otherwise inaccessible properties from the form field object.
@@ -39,7 +39,7 @@ class JFormFieldAllowedoperationSQL extends JFormFieldSQL {
      */
     public function __get($name) {
         switch ($name) {
-            case 'serviceconnectorField':
+            case 'serviceconnector':
                 return $this->$name;
         }
 
@@ -58,7 +58,7 @@ class JFormFieldAllowedoperationSQL extends JFormFieldSQL {
      */
     public function __set($name, $value) {
         switch ($name) {
-            case 'serviceconnectorField':
+            case 'serviceconnector':
                 $this->$name = (string) $value;
                 break;
 
@@ -85,7 +85,7 @@ class JFormFieldAllowedoperationSQL extends JFormFieldSQL {
         $return = parent::setup($element, $value, $group);
 
         if ($return) {
-            $this->serviceconnectorField = (string) $this->element['serviceconnectorField'];
+            $this->serviceconnector = (string) $this->element['serviceconnector'];
         }
 
         return $return;
@@ -111,6 +111,18 @@ class JFormFieldAllowedoperationSQL extends JFormFieldSQL {
         $db = JFactory::getDbo();
 
         // Set the query and get the result list.
+        $subquery = "SELECT sv.value, sv.ordering
+					FROM #__sdi_sys_servicecompliance sc
+					INNER JOIN #__sdi_sys_serviceversion sv
+					ON sv.id = sc.serviceversion_id
+					INNER JOIN #__sdi_sys_serviceconnector scc
+					ON scc.id = sc.serviceconnector_id
+					WHERE scc.value = 'CSW'
+					ORDER BY sv.ordering DESC
+					";
+        $db->setQuery($subquery);
+        $serviceversions = $db->loadObjectlist();
+        
         $query = "SELECT so.id as id, so.value as value
 				FROM #__sdi_sys_serviceoperation so
 				INNER JOIN #__sdi_sys_operationcompliance oc
@@ -121,20 +133,10 @@ class JFormFieldAllowedoperationSQL extends JFormFieldSQL {
 				ON sv.id = sc.serviceversion_id
 				INNER JOIN #__sdi_sys_serviceconnector scc
 				ON scc.id = sc.serviceconnector_id
-				WHERE scc.value = '" . $this->serviceconnectorField . "'
+				WHERE scc.value = '" . $this->serviceconnector . "'
 				AND oc.implemented = 1
 				AND so.state = 1
-				AND sv.value = (
-					SELECT sv.value
-					FROM #__sdi_sys_servicecompliance sc
-					INNER JOIN #__sdi_sys_serviceversion sv
-					ON sv.id = sc.serviceversion_id
-					INNER JOIN #__sdi_sys_serviceconnector scc
-					ON scc.id = sc.serviceconnector_id
-					WHERE scc.value = 'CSW'
-					ORDER BY sv.ordering DESC
-					LIMIT 0,1
-				)";
+				AND sv.value = '" . $serviceversions[0]->value . "'";
 
         $db->setQuery($query);
         $items = $db->loadObjectlist();
