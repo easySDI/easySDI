@@ -87,8 +87,7 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
      * get defined boundary, filter by category
      */
     public function getBoundaryByCategory() {
-        $user = JFactory::getUser();
-        $default_lang = $user->getParam('language', JFactory::getLanguage());
+        $default_lang = JFactory::getLanguage();
 
         $name = addslashes($_GET['value']);
         $query = $this->db->getQuery(true);
@@ -98,9 +97,9 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         $query->innerJoin('#__sdi_translation t ON b.guid = t.element_guid');
         $query->innerJoin('#__sdi_language as l ON l.id = t.language_id');
         $query->where('bc.`name` = ' . $this->db->quote($name) );
-        $query->where('l.code = ' . $this->db->quote($default_lang) );
+        $query->where('l.code = ' . $this->db->quote($default_lang->getTag()) );
+        $query->order('b.ordering ASC');
         
-
         $this->db->setQuery($query);
         $results = $this->db->loadObjectList();
 
