@@ -35,7 +35,7 @@ class sdiPerimeter {
             $query = $db->getQuery(true)
                     ->select('*')
                     ->from('#__sdi_perimeter p')
-                    ->where('p.id = ' . (int) $this->id)
+                    ->where('p.id = ' . (int)$this->id)
             ;
 
             $db->setQuery($query);
@@ -51,23 +51,17 @@ class sdiPerimeter {
                     $query = $db->getQuery(true)
                             ->select('p.*')
                             ->from('#__sdi_physicalservice p')
-                            ->where('p.id = ' . (int) $this->wmsservice_id);
-                    $db->setQuery($query);
-                    $wmsservice = $db->loadObject();
-                    $this->wmsurl = $wmsservice->resourceurl;
+                            ->where('p.id = ' . (int)$this->wmsservice_id);
                 else :
                     $query = $db->getQuery(true)
                             ->select('p.*')
                             ->from('#__sdi_virtualservice p')
-                            ->where('p.id = ' . (int) $this->wmsservice_id);
-                    $db->setQuery($query);
-                    $wmsservice = $db->loadObject();
-                    $this->wmsurl = $wmsservice->reflectedurl;
-                    if ($this->wmsurl == '')
-                        $this->wmsurl = $wmsservice->url;                    
+                            ->where('p.id = ' . (int)$this->wmsservice_id);
                 endif;
 
-
+                $db->setQuery($query);
+                $wmsservice = $db->loadObject();
+                $this->wmsurl = $wmsservice->resourceurl;
             endif;
 
             if (!empty($this->wfsservice_id)):
@@ -75,7 +69,7 @@ class sdiPerimeter {
                     $query = $db->getQuery(true)
                             ->select('p.*')
                             ->from('#__sdi_physicalservice p')
-                            ->where('p.id = ' . (int) $this->wfsservice_id);
+                            ->where('p.id = ' . (int)$this->wfsservice_id);
                     $db->setQuery($query);
                     $wfsservice = $db->loadObject();
                     $this->wfsurl = $wfsservice->resourceurl;
@@ -83,13 +77,13 @@ class sdiPerimeter {
                     $query = $db->getQuery(true)
                             ->select('p.*')
                             ->from('#__sdi_virtualservice p')
-                            ->where('p.id = ' . (int) $this->wfsservice_id);
+                            ->where('p.id = ' . (int)$this->wfsservice_id);
                     $db->setQuery($query);
                     $wfsservice = $db->loadObject();
                     $this->wfsurl = $wfsservice->reflectedurl;
-                    if ($this->wfsurl == '')
+                    if ($this->wfsurl =='')
                         $this->wfsurl = $wfsservice->url;
-                endif;
+                endif;      
             endif;
         } catch (JDatabaseException $e) {
             
@@ -97,19 +91,18 @@ class sdiPerimeter {
     }
 
     public function setAllowedBuffer($extractions) {
-        if (empty($extractions))
-            return;
-
+        if(empty($extractions)) return;
+        
         foreach ($extractions as $extraction):
             foreach ($extraction->perimeters as $perimeter):
-                if ($perimeter->id == $this->id):
-                    if ($perimeter->allowedbuffer == 0):
+                if($perimeter->id == $this->id):
+                    if($perimeter->allowedbuffer == 0):
                         $this->allowedbuffer = 0;
                         return $this->allowedbuffer;
                     endif;
                 endif;
             endforeach;
-        endforeach;
+        endforeach;        
     }
 
 }

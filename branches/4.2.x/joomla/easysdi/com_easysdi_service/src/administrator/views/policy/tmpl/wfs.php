@@ -56,7 +56,7 @@ function printSpatialPolicyForm ($data, $physicalServiceID = 0) {
                 $query = $db->getQuery(true);
                 $query->select('wsp.*, psp.anyitem');
                 $query->from('#__sdi_wfs_spatialpolicy wsp');
-                $query->innerJoin('#__sdi_physicalservice_policy psp ON wsp.id = psp.wfs_spatialpolicy_id');
+                $query->innerJoin('JOIN #__sdi_physicalservice_policy psp ON wsp.id = psp.wfs_spatialpolicy_id');
                 $query->where('psp.physicalservice_id = ' . (int)$physicalServiceID);
                 $query->where('psp.policy_id = ' . (int)$data->id);
             
