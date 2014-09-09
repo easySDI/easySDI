@@ -24,11 +24,7 @@ class Easysdi_shopTablediffusionpropertyvalue extends JTable {
         parent::__construct('#__sdi_diffusion_propertyvalue', 'id', $db);
     }
 
-    public function loadByDiffusionID($id = null, $reset = true) {
-        if ($reset) {
-            $this->reset();
-        }
-
+    public function loadByDiffusionID($id = null) {
         // Initialise the query.
         $query = $this->_db->getQuery(true);
         $query->select('d.propertyvalue_id, pv.property_id');

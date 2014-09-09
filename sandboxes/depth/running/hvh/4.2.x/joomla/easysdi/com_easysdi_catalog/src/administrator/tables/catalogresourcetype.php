@@ -79,13 +79,8 @@ class Easysdi_catalogTablecatalogresourcetype extends JTable {
     	return true;
     }
 
-    public function loadByCatalogID($id = null, $reset = true)
+    public function loadByCatalogID($id = null)
     {
-    	if ($reset)
-    	{
-    		$this->reset();
-    	}
-    
     	// Initialise the query.
     	$query = $this->_db->getQuery(true);
     	$query->select('resourcetype_id');

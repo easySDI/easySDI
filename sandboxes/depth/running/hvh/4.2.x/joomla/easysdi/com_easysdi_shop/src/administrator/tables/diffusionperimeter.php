@@ -26,11 +26,7 @@ class Easysdi_shopTablediffusionperimeter extends JTable {
         parent::__construct('#__sdi_diffusion_perimeter', 'id', $db);
     }
 
-    public function loadByDiffusionID($id = null, $reset = true) {
-        if ($reset) {
-            $this->reset();
-        }
-
+    public function loadByDiffusionID($id = null) {
         // Initialise the query.
         $query = $this->_db->getQuery(true);
         $query->select('perimeter_id, buffer ');

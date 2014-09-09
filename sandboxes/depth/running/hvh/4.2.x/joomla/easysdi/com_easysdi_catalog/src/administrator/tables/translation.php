@@ -97,18 +97,13 @@ class Easysdi_catalogTabletranslation extends sdiTable {
 	  * @throws  RuntimeException
 	 * @throws  UnexpectedValueException
 	 */
-	public function loadAll($element_guid = null, $reset = true)
+	public function loadAll($element_guid = null)
 	{
 		if (empty($element_guid))
 		{
 			return false;
 		}
 		
-		if ($reset)
-		{
-			$this->reset();
-		}
-
 		// Initialise the query.
 		$query = $this->_db->getQuery(true)
 			->select('*')

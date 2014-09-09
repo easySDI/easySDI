@@ -82,18 +82,13 @@ class Easysdi_catalogTablesearchsort extends JTable {
 	  * @throws  RuntimeException
 	 * @throws  UnexpectedValueException
 	 */
-	public function loadAll($id = null, $reset = true)
+	public function loadAll($id = null)
 	{
 		if (empty($id))
 		{
 			return false;
 		}
 		
-		if ($reset)
-		{
-			$this->reset();
-		}
-
 		// Initialise the query.
 		$query = $this->_db->getQuery(true)
 			->select('*')

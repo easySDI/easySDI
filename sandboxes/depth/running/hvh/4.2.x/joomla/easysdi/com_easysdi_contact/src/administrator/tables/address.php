@@ -70,13 +70,8 @@ class Easysdi_contactTableaddress extends sdiTable
      * @param unknown_type $addresstype_id : Address type identifier
      * @param unknown_type $reset : reset
      */
-    private function loadBy($by, $id = null,$addresstype_id=null, $reset = true)
+    private function loadBy($by, $id = null,$addresstype_id=null)
     {
-    	if ($reset)
-    	{
-    		$this->reset();
-    	}
-    
     	// Initialise the query.
     	$query = $this->_db->getQuery(true);
     	$query->select('*');
