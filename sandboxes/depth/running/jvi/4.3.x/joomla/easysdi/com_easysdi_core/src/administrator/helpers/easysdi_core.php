@@ -84,7 +84,7 @@ class Easysdi_coreHelper {
      * Check recursively if version has viral versionning child
      * 
      * @param stdClass $version
-     * @return stdClass[] 
+     * @return array
      */
     public function getViralVersionnedChild($version) {
         $all_versions = array();
