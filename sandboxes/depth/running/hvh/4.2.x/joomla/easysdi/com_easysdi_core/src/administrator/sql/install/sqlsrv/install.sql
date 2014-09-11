@@ -3736,6 +3736,8 @@ ALTER TABLE [#__sdi_organism] ADD  DEFAULT '0'  FOR [checked_out];
 
 ALTER TABLE [#__sdi_organism] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [checked_out_time];
 
+ALTER TABLE [#__sdi_organism] ADD  DEFAULT '0'  FOR [asset_id];
+
 ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
 ALTER TABLE [#__sdi_perimeter] ADD  DEFAULT '1' FOR [ordering];
