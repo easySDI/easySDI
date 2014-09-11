@@ -3562,6 +3562,8 @@ ALTER TABLE [#__sdi_catalog_searchcriteria] ADD  DEFAULT '1' FOR [state];
 
 ALTER TABLE [#__sdi_catalog_searchsort] ADD  DEFAULT '1' FOR [state];
 
+ALTER TABLE [#__sdi_category] ADD  DEFAULT '0' FOR [asset_id];
+
 ALTER TABLE [#__sdi_class] ADD  DEFAULT '1900-01-01T00:00:00.000' FOR [created];
 
 ALTER TABLE [#__sdi_class] ADD  DEFAULT '1' FOR [state];

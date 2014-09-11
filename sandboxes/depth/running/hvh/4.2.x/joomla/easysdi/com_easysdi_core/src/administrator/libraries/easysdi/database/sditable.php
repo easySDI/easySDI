@@ -331,12 +331,9 @@ abstract class sdiTable extends JTable {
             if (empty($this->alias)) {
                 $this->alias = $this->name;
             }
-            $this->alias = preg_replace('/\s+/', '-', $this->alias);
-            $this->alias = str_replace(array('Ã ', 'Ã¡', 'Ã¢', 'Ã£', 'Ã¤', 'Ã§', 'Ã¨', 'Ã©', 'Ãª', 'Ã«', 'Ã¬', 'Ã­', 'Ã®', 'Ã¯', 'Ã±', 'Ã²', 'Ã³', 'Ã´', 'Ãµ', 'Ã¶', 'Ã¹', 'Ãº', 'Ã»', 'Ã¼', 'Ã½', 'Ã¿', 'Ã€', 'Ã�', 'Ã‚', 'Ãƒ', 'Ã„', 'Ã‡', 'Ãˆ', 'Ã‰', 'ÃŠ', 'Ã‹', 'ÃŒ', 'Ã�', 'ÃŽ', 'Ã�', 'Ã‘', 'Ã’', 'Ã“', 'Ã”', 'Ã•', 'Ã–', 'Ã™', 'Ãš', 'Ã›', 'Ãœ', 'Ã�'), array('a', 'a', 'a', 'a', 'a', 'c', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'n', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u', 'y', 'y', 'A', 'A', 'A', 'A', 'A', 'C', 'E', 'E', 'E', 'E', 'I', 'I', 'I', 'I', 'N', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'Y'), $this->alias);
-            $this->alias = str_replace("'", "_", $this->alias);
-            $this->alias = strtolower($this->alias);
+            $this->alias = JApplication::stringURLSafe($this->alias);
             $this->alias = $this::getUniqueAlias($this->alias);
-            $this->alias = JFilterOutput::stringURLSafe($this->alias);
+            
         }
         //If there is an ordering column and this is a new row then get the next ordering value
         if (property_exists($this, 'ordering') && $this->id == 0) {
