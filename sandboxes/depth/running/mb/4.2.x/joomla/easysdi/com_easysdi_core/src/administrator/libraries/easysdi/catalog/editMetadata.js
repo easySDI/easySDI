@@ -61,12 +61,12 @@ js('document').ready(function() {
         if (tabIsOpen) {
             btn.text('Tout ouvrir');
             js('.inner-fds').hide();
-            js('.collapse-btn').attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/expand.png'});
+            js('.collapse-btn i').removeClass( "icon-arrow-up" ).addClass( "icon-arrow-down" );
             tabIsOpen = true;
         } else {
             btn.text('Tout fermer');
             js('.inner-fds').show();
-            js('.collapse-btn').attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/collapse_top.png'});
+            js('.collapse-btn i').removeClass( "icon-arrow-down" ).addClass( "icon-arrow-up" );
             tabIsOpen = false;
         }
 
@@ -286,12 +286,12 @@ function toggleAll() {
     if (tabIsOpen) {
         btn.text('Tout ouvrir');
         js('.inner-fds').hide();
-        js('.collapse-btn').attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/expand.png'});
+        js('.collapse-btn i').removeClass( "icon-arrow-up" ).addClass( "icon-arrow-down" );
         tabIsOpen = false;
     } else {
         btn.text('Tout fermer');
         js('.inner-fds').show();
-        js('.collapse-btn').attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/collapse_top.png'});
+        js('.collapse-btn i').removeClass( "icon-arrow-down" ).addClass( "icon-arrow-up" );
         tabIsOpen = true;
     }
 }
@@ -300,12 +300,12 @@ function collapse(id) {
 
     var uuid = getUuid('collapse-btn-', id);
     var current_div = js('#inner-fds-' + uuid);
-    var current_btn = js('#' + id);
+    var current_btn_icon = js('#' + id + ' i');
     current_div.toggle('fast', function() {
         if (current_div.css('display') == 'none') {
-            current_btn.attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/expand.png'});
+            current_btn_icon.removeClass( "icon-arrow-up" ).addClass( "icon-arrow-down" );
         } else {
-            current_btn.attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/collapse_top.png'});
+            current_btn_icon.removeClass( "icon-arrow-down" ).addClass( "icon-arrow-up" );
         }
     });
 }
