@@ -82,8 +82,8 @@ class sdiMetadata extends cswmetadata {
         //Get from the metadata structure, the attribute to store the metadata ID
         $query = $this->db->getQuery(true);
         $query->select('a.name as name, ns.prefix as ns');
-        $query->select($query->concatenate(array('ns.prefix', 'a.isocode'), ':') . ' as attribute_isocode');
-        $query->select($query->concatenate(array('atns.prefix', 'at.isocode'), ':') . ' as type_isocode');
+        $query->select('ns.prefix as ns_prefix, a.isocode as a_isocode');
+        $query->select('atns.prefix as atns_prefix, at.isocode as at_isocode');
         $query->from('#__sdi_profile p');
         $query->innerJoin('#__sdi_resourcetype rt on p.id=rt.profile_id ');
         $query->innerJoin('#__sdi_attribute a on a.id=p.metadataidentifier');
@@ -95,6 +95,8 @@ class sdiMetadata extends cswmetadata {
 
         $this->db->setQuery($query);
         $attributeIdentifier = $this->db->loadObject();
+        $attributeIdentifier->attribute_isocode = $attributeIdentifier->ns_prefix.':'.$attributeIdentifier->a_isocode;
+        $attributeIdentifier->type_isocode = $attributeIdentifier->atns_prefix.':'.$attributeIdentifier->at_isocode;
 
         //Get from the metadata structure the root classe
         $query = $this->db->getQuery(true);
@@ -348,10 +350,11 @@ class sdiMetadata extends cswmetadata {
 
         //Get the accessscope
         $query = $this->db->getQuery(true);
-        $query->select('a.organism_id, a.user_id, o.guid as  o_guid, u.guid as u_guid')
+        $query->select('a.organism_id, a.user_id, a.category_id, o.guid as  o_guid, u.guid as u_guid, c.guid as c_guid')
                 ->from('#__sdi_accessscope a')
                 ->leftJoin('#__sdi_organism o ON o.id = a.organism_id')
                 ->leftJoin('#__sdi_user u ON u.id = a.user_id')
+                ->leftJoin('#__sdi_category c ON c.id = a.category_id')
                 ->where('entity_guid = ' . $query->quote($this->resource->guid));
         $this->db->setQuery($query);
         $accessscopes = $this->db->loadObjectList();
@@ -442,6 +445,12 @@ class sdiMetadata extends cswmetadata {
                 $user = $dom->createElementNS(self::sdi_uri, 'sdi:user');
                 $user->setAttribute('guid', $a->u_guid);
                 $users->appendChild($user);
+            elseif ($a->category_id != null):
+                if (!isset($categories))
+                    $categories = $dom->createElementNS(self::sdi_uri, 'sdi:categories');
+                $category = $dom->createElementNS(self::sdi_uri, 'sdi:category');
+                $category->setAttribute('guid', $a->c_guid);
+                $categories->appendChild($category);                
             endif;
         }
 
@@ -451,6 +460,8 @@ class sdiMetadata extends cswmetadata {
             $resource->appendChild($organisms);
         if (isset($users))
             $resource->appendChild($users);
+        if (isset($categories))
+            $resource->appendChild($categories);        
         $resource->appendChild($metadata);
         $platform->appendChild($resource);
 

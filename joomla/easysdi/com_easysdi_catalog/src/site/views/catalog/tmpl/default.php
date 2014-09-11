@@ -43,7 +43,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/openla
 
 
 
-<form class="form-horizontal form-validate " action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=catalog&search=true&id=' . $this->item->id . '&preview=' . $this->preview); ?>#results" method="post" id="searchform" name="searchform" enctype="multipart/form-data">
+<form class="form-horizontal form-validate sdi-catalog-fe-search" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=catalog&search=true&id=' . $this->item->id . '&preview=' . $this->preview); ?>#results" method="post" id="searchform" name="searchform" enctype="multipart/form-data">
     <?php 
     $tmpl = JFactory::getApplication()->input->get('tmpl', null, 'string');
     if(isset($tmpl)):?>

@@ -2,11 +2,12 @@ package org.easysdi.proxy.ehcache;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -14,7 +15,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
@@ -233,7 +233,7 @@ public class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPageCachin
 		if (!response.containsHeader("easysdi-proxy-error-occured")) {
 			// add expires and last-modified headers
 			Date now = new Date();
-			List<String[]> headers = pageInfo.getResponseHeaders();
+                        List<String[]> headers = new ArrayList<String[]>(pageInfo.getResponseHeaders());
 			HttpDateFormatter httpDateFormatter = new HttpDateFormatter();
 			String lastModified = httpDateFormatter.formatHttpDate(pageInfo.getCreated());
 			long ttlMilliseconds = calculateTimeToLiveMilliseconds();

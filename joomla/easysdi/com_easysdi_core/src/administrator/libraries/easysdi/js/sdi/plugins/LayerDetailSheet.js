@@ -19,52 +19,47 @@ Ext.namespace("sdi.plugins");
  
  */
 sdi.plugins.LayerDetailSheet = Ext.extend(gxp.plugins.Tool, {
-    
     /** api: ptype = sdi_layerdetailsheet */
     ptype: "sdi_layerdetailsheet",
-    
     /** api: config[layerDetailMenuText]
      *  ``String``
      *  Text for detail sheet menu item (i18n).
      */
     layerDetailMenuText: "Layer details sheet",
-
     /** api: config[layerDetailActionTip]
      *  ``String``
      *  Text for detail sheet action tooltip (i18n).
      */
     layerDetailActionTip: "Layer details sheet",
-    
     /** api: method[addActions]
      */
     addActions: function() {
         var selectedLayer;
         var actions = sdi.plugins.LayerDetailSheet.superclass.addActions.apply(this, [{
-            menuText: this.layerDetailMenuText,
-            iconCls: "gxp-icon-getfeatureinfo",
-            disabled: true,
-            tooltip: this.layerDetailActionTip,
-            handler: function() {
-               var record = selectedLayer;
-               SqueezeBox.initialize({});
-               SqueezeBox.resize({x: this.initialConfig.iwidth, y: this.initialConfig.iheight});
-               SqueezeBox.setContent('iframe', record.json.href);
-               
-            },
-            scope: this
-        }]);
+                menuText: this.layerDetailMenuText,
+                iconCls: "gxp-icon-getfeatureinfo",
+                disabled: true,
+                tooltip: this.layerDetailActionTip,
+                handler: function() {
+                    var record = selectedLayer;
+                    SqueezeBox.initialize({});
+                    SqueezeBox.resize({x: this.initialConfig.iwidth, y: this.initialConfig.iheight});
+                    SqueezeBox.setContent('iframe', record.json.href);
+                },
+                scope: this
+            }]);
         var layerDetailAction = actions[0];
 
         this.target.on("layerselectionchange", function(record) {
             selectedLayer = record;
             layerDetailAction.setDisabled(
-                !record || !record.json || !record.json.href
-            );
+                    !record || !record.json || !record.json.href 
+                    );
         }, this);
-                
+
         return actions;
     }
-        
+
 });
 
 Ext.preg(sdi.plugins.LayerDetailSheet.prototype.ptype, sdi.plugins.LayerDetailSheet);

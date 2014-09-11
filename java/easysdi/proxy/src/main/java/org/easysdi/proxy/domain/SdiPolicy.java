@@ -75,6 +75,8 @@ public class SdiPolicy implements java.io.Serializable {
             0);
     private Set<SdiOrganism> sdiOrganisms = new HashSet<SdiOrganism>(
             0);
+    private Set<SdiCategory> sdiCategories = new HashSet<SdiCategory>(
+            0);
     private Set<SdiAllowedoperation> sdiAllowedoperations = new HashSet<SdiAllowedoperation>(
             0);
     private Set<SdiUser> sdiUsers = new HashSet<SdiUser>(0);
@@ -548,6 +550,20 @@ public class SdiPolicy implements java.io.Serializable {
 
     public void setSdiOrganisms(Set<SdiOrganism> sdiOrganisms) {
         this.sdiOrganisms = sdiOrganisms;
+    }
+    
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "SdiPolicyCategory", joinColumns = {
+        @JoinColumn(name = "policy_id")}, inverseJoinColumns = {
+        @JoinColumn(name = "category_id")})
+    @Filter(name = "entityState", condition = "State = 1")
+    @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+    public Set<SdiCategory> getSdiCategories() {
+        return this.sdiCategories;
+    }
+
+    public void setSdiCategories(Set<SdiCategory> sdiCategories) {
+        this.sdiCategories = sdiCategories;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "sdiPolicy")
