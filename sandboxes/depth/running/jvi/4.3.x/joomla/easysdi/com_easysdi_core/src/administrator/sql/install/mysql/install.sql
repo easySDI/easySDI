@@ -1,3 +1,38 @@
+/**
+@TODO: sql statement should be review to be more concistent ; each CREATE TABLE
+should :
+    - be preceded by a DROP TABLE
+    - define its ENGINE
+    - define its COLLATE
+    - define its CHARSET
+    - have COMMENT to describe its utility and its options if necessary
+
+Proposed template:
+DROP TABLE IF EXISTS `tbl_name`;
+CREATE TABLE `tbl_name` (
+    column_definition
+    key_definition
+) ENGINE=tbl_engine AUTO_INCREMENT=tbl_autoincrement DEFAULT CHARACTER SET tbl_charset COLLATE tbl_collate;
+
+Notes/Reflexions:
+    - column_definition can override the default table charset/collate : add a comment on that column to explain the reason
+    - key_definition should at least define the PRIMARY_KEY
+    - need INDEX/CONSTRAINT to be defined here or in the alter file ? (open question)
+    - ON DELETE/UPDATE have to be defined for each FOREIGN KEY - check of the actual actions setted needed !
+    - need CONSTRAINT to be defined on an existing INDEX ? (open question)
+ */
+
+-- force default storage to InnoDB in case of missing in CREATE statement
+SET storage_engine=InnoDB;
+
+-- force default charset/collation for the same reason
+SET NAMES 'utf8';
+SET CHARACTER SET utf8;
+
+-- force default collation for the same reason
+-- find how ?!
+
+
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_unit` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `ordering` INT(11)  NOT NULL ,
@@ -136,7 +171,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_logroll` (
 `state` INT(11)  NOT NULL DEFAULT '1',
 `value` VARCHAR(255)  NOT NULL ,
 PRIMARY KEY (`id`)
-) DEFAULT COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_loglevel` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -632,7 +667,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualmetadata` (
 `contactinstruction` VARCHAR(255)  ,
 `virtualservice_id` INT(11) UNSIGNED  NOT NULL,
 PRIMARY KEY (`id`)
-) DEFAULT COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_virtual_physical` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -748,7 +783,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_csw_spatialpolicy` (
 `miny` DECIMAL(18,6) ,
 `srssource` VARCHAR (255) ,
 PRIMARY KEY (`id`)
-) DEFAULT COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_wmts_spatialpolicy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -758,7 +793,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_wmts_spatialpolicy` (
 `northboundlatitude` DECIMAL(10,6) ,
 `southboundlatitude` DECIMAL(10,6) ,
 PRIMARY KEY (`id`)
-) DEFAULT COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_wms_spatialpolicy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -771,14 +806,14 @@ CREATE TABLE IF NOT EXISTS `#__sdi_wms_spatialpolicy` (
 `minimumscale` INT(11),
 `srssource` VARCHAR (255) ,
 PRIMARY KEY (`id`)
-) DEFAULT COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_wfs_spatialpolicy` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `localgeographicfilter` TEXT,
 `remotegeographicfilter` TEXT,
 PRIMARY KEY (`id`)
-) DEFAULT COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 -- CSW
 CREATE TABLE IF NOT EXISTS `#__sdi_excludedattribute` (
@@ -2313,14 +2348,14 @@ PRIMARY KEY (`id`),
   CONSTRAINT `#__sdi_order_diffusion_fk2`
     FOREIGN KEY (`diffusion_id`)
     REFERENCES `#__sdi_diffusion` (`id`)
-    ON DELETE CASCADE
+    ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `#__sdi_order_diffusion_fk3`
     FOREIGN KEY (`productstate_id`)
     REFERENCES `#__sdi_sys_productstate` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
-) DEFAULT COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_order_propertyvalue` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -2348,7 +2383,7 @@ PRIMARY KEY (`id`),
     REFERENCES `#__sdi_propertyvalue` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION
-) DEFAULT COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_order_perimeter` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -2370,7 +2405,7 @@ PRIMARY KEY (`id`),
     REFERENCES `#__sdi_perimeter` (`id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION
-) DEFAULT COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_diffusion_notifieduser` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
