@@ -1102,8 +1102,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
         foreach ($_POST['inherit_server'] as $physicalServiceID => $spatialPolicy) {
             $physicalServicePolicyUpdates = Array(
                 'anyitem = ' . ((isset($spatialPolicy['anyitem'])) ? 1 : 0),
-                'prefix = ' . ((isset($spatialPolicy['prefix'])) ? '"' . $spatialPolicy['prefix'] . '"' : NULL),
-                'namespace = ' . ((isset($spatialPolicy['namespace'])) ? '"' . $spatialPolicy['namespace'] . '"' : NULL),
+                'prefix = ' . ((isset($spatialPolicy['prefix'])) ? '\'' . $spatialPolicy['prefix'] . '\'' : NULL),
+                'namespace = ' . ((isset($spatialPolicy['namespace'])) ? '\'' . $spatialPolicy['namespace'] . '\'' : NULL),
             );
 
             //check if a spatial policy exists for that physicalservice_policy
