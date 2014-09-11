@@ -180,13 +180,13 @@ class FormGenerator {
             $this->csw->formatOutput = true;
         }
 
-
-
+        
+        
         $this->structure->formatOutput = true;
         $this->session->set('structure', serialize($this->structure->saveXML()));
 
         $form = $this->buildForm($root);
-
+       
         return $form;
     }
 
@@ -248,7 +248,7 @@ class FormGenerator {
             }
 
             if (!$relationExist->hasAttributeNS($this->catalog_uri, 'exist')) {
-
+                
                 $exist = $lowerbound + $occurance;
 
                 if ($exist < 1) {
@@ -257,20 +257,19 @@ class FormGenerator {
                 } else {
                     $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
                 }
+                
             }
-
+            
             // Specific case for Stereotype boundary
             $stereotype_id = $parent->getAttributeNS($this->catalog_uri, 'stereotypeId');
-
-            if ($stereotype_id == EnumStereotype::$GEOGRAPHICEXTENT) {
+            
+            if($stereotype_id == EnumStereotype::$GEOGRAPHICEXTENT){
                 $occurance = $this->domXpathStr->query($relationExist->getNodePath())->length;
 
-                if ($occurance == 0) {
-                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
-                } else {
-                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
-                }
+                $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
+                
             }
+            
         }
 
         $parent_id = $parent->getAttributeNS($this->catalog_uri, 'dbid');
@@ -515,7 +514,7 @@ class FormGenerator {
         $this->form->formatOutput = true;
         return $this->form->saveXML();
     }
-
+    
     /**
      * Creates hidden fields added to the form.
      * 
@@ -892,18 +891,19 @@ class FormGenerator {
                     $option->setAttribute('value', $opt->value);
 
                     $field->appendChild($option);
-
+                    
                     if ($upperbound > 1) {
                         $allValues = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode->parentNode->parentNode);
                         $default = array();
                         foreach ($allValues as $node) {
-                            if (!empty($node->firstChild->nodeValue)) {
+                            if(!empty($node->firstChild->nodeValue)){
                                 $default[] = $node->firstChild->nodeValue;
                             }
                         }
                         $field->setAttribute('type', 'MultipleDefaultList');
                         $field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $default), true));
                         $field->setAttribute('css', 'sdi-multi-extent-select');
+                        
                     } else {
                         $field->setAttribute('onchange', 'setBoundary(\'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
                         $field->setAttribute('default', $attribute->firstChild->nodeValue) ;
@@ -1208,9 +1208,6 @@ class FormGenerator {
 
                 $this->db->setQuery($query);
                 $result = $this->db->loadObjectList();
-
-                $first = array('id' => '', 'guid' => '', 'name' => '');
-                array_unshift($result, (object) $first);
                 break;
             case EnumChildtype::$ATTRIBUT:
                 switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
