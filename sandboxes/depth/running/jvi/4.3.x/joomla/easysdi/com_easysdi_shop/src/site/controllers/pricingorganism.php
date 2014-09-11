@@ -73,8 +73,10 @@ class Easysdi_shopControllerPricingOrganism extends Easysdi_shopController {
             $query = $db->getQuery(true)
                         ->insert($db->quoteName('#__sdi_organism_category_pricing_rebate'))
                         ->columns('`organism_id`, `category_id`, `rebate`');
-            foreach($dataCategories as $category_id => $rebate)
+            foreach($dataCategories as $category_id => $rebate){
+                if("" === $rebate) continue;
                 $query->values("{$id}, {$category_id}, {$rebate}");
+            }
 
             $db->setQuery($query);
             $insert = $db->execute();
@@ -90,7 +92,7 @@ class Easysdi_shopControllerPricingOrganism extends Easysdi_shopController {
             $app->setUserState('com_easysdi_shop.edit.pricingorganism.data', $data);
 
             // Redirect back to the edit screen.
-            $this->setMessage(JText::sprintf('Save failed', $ex->getError()), 'warning');
+            $this->setMessage(JText::sprintf('Save failed', $ex->getMessage()), 'warning');
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=pricingorganism&layout=edit&id=' . $id, false));
             return false;
         }

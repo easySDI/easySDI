@@ -65,7 +65,7 @@ class Easysdi_shopModelPricingOrganism extends JModelForm {
 
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
-                        ->select('o.id, o.name, o.internal_free, o.order_fixed_costs, o.fixed_costs_if_data_free')
+                        ->select('o.id, o.name, o.internal_free, o.fixed_fee_ti, o.data_free_fixed_fee')
                         ->from($db->quoteName('#__sdi_organism').' as o')
                         ->where('o.id='.(int)$id);
             $db->setQuery($query);
@@ -79,9 +79,9 @@ class Easysdi_shopModelPricingOrganism extends JModelForm {
             $this->_item->categories = $db->loadObjectList();
 
             $query = $db->getQuery(true)
-                        ->select('pp.id, pp.name, pp.fixed_price, pp.surface_price, pp.min_price, pp.max_price, COUNT(ppcf.id) as free_category')
+                        ->select('pp.id, pp.name, pp.fixed_fee, pp.surface_rate, pp.min_fee, pp.max_fee, COUNT(ppcpr.id) as free_category')
                         ->from($db->quoteName('#__sdi_pricing_profile').' as pp')
-                        ->join('LEFT', '#__sdi_pricing_profile_category_free as ppcf ON ppcf.pricing_profile_id=pp.id')
+                        ->join('LEFT', '#__sdi_pricing_profile_category_pricing_rebate as ppcpr ON ppcpr.pricing_profile_id=pp.id')
                         ->where('pp.organism_id='.(int)$id)
                         ->group('pp.id')
                         ->having('pp.id IS NOT NULL');

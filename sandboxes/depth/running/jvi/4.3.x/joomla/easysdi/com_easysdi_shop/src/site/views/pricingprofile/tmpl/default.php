@@ -63,7 +63,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                     <?php foreach($this->form->getFieldset($fieldset->name) as $field): ?>
                     <tr>
                         <td><?php echo $field->label; ?></td>
-                        <td><?php echo $field->input; ?></td>
+                        <td><?php echo $field->input; ?> <?php echo $field->name=="jform[name]" ? "" : ($field->name=="jform[surface_rate]" ? "km2" : $this->paramsarray["currency"]); ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </table>

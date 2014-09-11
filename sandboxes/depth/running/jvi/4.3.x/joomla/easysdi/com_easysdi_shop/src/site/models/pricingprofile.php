@@ -75,9 +75,9 @@ class Easysdi_shopModelPricingProfile extends JModelForm {
             $this->_item = $db->loadObject();
             
             $query = $db->getQuery(true)
-                        ->select('c.id, c.name, COUNT(ppcf.id) as isFree')
+                        ->select('c.id, c.name, COUNT(ppcpr.id) as isFree')
                         ->from($db->quoteName('#__sdi_category').' as c')
-                        ->join('LEFT', '#__sdi_pricing_profile_category_free ppcf ON ppcf.category_id=c.id AND ppcf.pricing_profile_id='. (int)$id)
+                        ->join('LEFT', '#__sdi_pricing_profile_category_pricing_rebate ppcpr ON ppcpr.category_id=c.id AND ppcpr.pricing_profile_id='. (int)$id)
                         ->group('c.id');
             $db->setQuery($query);
             $this->_item->categories = $db->loadObjectList();
@@ -116,6 +116,70 @@ class Easysdi_shopModelPricingProfile extends JModelForm {
         $data = $this->getData();
 
         return $data;
+    }
+
+    public function getTable($type = 'PricingProfile', $prefix = 'Easysdi_shopTable', $config = array()) {
+        $this->addTablePath(JPATH_COMPONENT_ADMINISTRATOR . '/tables');
+        return JTable::getInstance($type, $prefix, $config);
+    }
+
+    /**
+     * Method to check in an item.
+     *
+     * @param	integer		The id of the row to check out.
+     * @return	boolean		True on success, false on failure.
+     * @since	1.6
+     */
+    public function checkin($id = null) {
+        // Get the id.
+        $id = (!empty($id)) ? $id : (int) $this->getState('order.id');
+
+        if ($id) {
+
+            // Initialise the table
+            $table = $this->getTable();
+
+            // Attempt to check the row in.
+            if (method_exists($table, 'checkin')) {
+                if (!$table->checkin($id)) {
+                    $this->setError($table->getError());
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Method to check out an item for editing.
+     *
+     * @param	integer		The id of the row to check out.
+     * @return	boolean		True on success, false on failure.
+     * @since	1.6
+     */
+    public function checkout($id = null) {
+        // Get the user id.
+        $id = (!empty($id)) ? $id : (int) $this->getState('order.id');
+
+        if ($id) {
+
+            // Initialise the table
+            $table = $this->getTable();
+
+            // Get the current user object.
+            $user = JFactory::getUser();
+
+            // Attempt to check the row out.
+            if (method_exists($table, 'checkout')) {
+                if (!$table->checkout($user->get('id'), $id)) {
+                    $this->setError($table->getError());
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
 }

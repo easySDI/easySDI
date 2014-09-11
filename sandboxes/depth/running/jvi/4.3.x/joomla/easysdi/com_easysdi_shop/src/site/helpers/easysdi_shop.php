@@ -323,14 +323,30 @@ abstract class Easysdi_shopHelper {
         return "$scheme$user$pass$host$port$path$query$fragment";
     }
     
-    private static function roundish($value, $roundish){
-        return round($value/$roundish, 0)*$roundish;
+    /**
+     * rounding - round a value
+     * 
+     * @param float $value
+     * @param float $rounding
+     * @return float
+     * @since 4.3.0
+     */
+    private static function rounding($value, $rounding = 0.01){
+        return round($value/$rounding, 0)*$rounding;
     }
     
+    /**
+     * extractionsBySupplierGrouping - reword extractions array grouping products by suppliers
+     * 
+     * @param type $basket
+     * @return voide
+     * @since 4.3.0
+     */
     public static function extractionsBySupplierGrouping(&$basket){
         $myItems = $basket->extractions;
+        $basket->extractionsNb = count($myItems);
         $basket->extractions = array();
-        if(count($myItems)){
+        if($basket->extractionsNb){
             foreach($myItems as $myItem){
                 if(!isset($basket->extractions[$myItem->organism_id])){
                     $basket->extractions[$myItem->organism_id] = new stdClass();
@@ -344,85 +360,92 @@ abstract class Easysdi_shopHelper {
         }
     }
     
+    /**
+     * basketPriceCalculation - calculate pricing for a basket
+     * 
+     * @param type $basket
+     * @return void
+     * @since 4.3.0
+     */
     public static function basketPriceCalculation(&$basket){
         
-        // init prices object
-        $prices = new stdClass();
-        $prices->priceET = 0;
-        $prices->rebate = 0;
-        $prices->priceIT = 0;
-        
-        // timestamp when price was calculated
-        $prices->tmstp = mktime();
-        
-        // set the invoiced user (based on current user and third-party
-        $prices->debtor = new stdClass();
-        if(isset($basket->thirdparty)){
-            $prices->debtor->id = $basket->thirdparty;
-        }
-        else{
-            $prices->debtor->id = $basket->sdiUser->role[2][0]->id;
-            $prices->debtor->name = $basket->sdiUser->role[2][0]->name;
-        }
-        
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true)
-                ->select('c.id')
-                ->from('#__sdi_organism_category oc')
-                ->join('LEFT', '#__sdi_category c ON c.id=oc.category_id')
-                ->where('oc.organism_id='.(int)$prices->debtor->id);
-        $db->setQuery($query);
-        $prices->debtor->categories = $db->loadColumn();
-        
         // test if pricing is activated
-        $prices->isActivated = (bool)JComponentHelper::getParams('com_easysdi_shop')->get('is_activated');
-        if($prices->isActivated){
+        if((bool)JComponentHelper::getParams('com_easysdi_shop')->get('is_activated')){
+            // init prices object
+            $prices = new stdClass();
+
+            // set the invoiced user (based on current user and third-party)
+            $prices->debtor = new stdClass();
+            if(isset($basket->thirdparty)){
+                $prices->debtor->id = $basket->thirdparty;
+            }
+            else{
+                $prices->debtor->id = $basket->sdiUser->role[2][0]->id;
+                $prices->debtor->name = $basket->sdiUser->role[2][0]->name;
+            }
+
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true)
+                    ->select('c.id')
+                    ->from('#__sdi_organism_category oc')
+                    ->join('LEFT', '#__sdi_category c ON c.id=oc.category_id')
+                    ->where('oc.organism_id='.(int)$prices->debtor->id);
+            $db->setQuery($query);
+            $prices->debtor->categories = $db->loadColumn();
+            
             // get easysdishop config
-            $prices->tva = (float)JComponentHelper::getParams('com_easysdi_shop')->get('tva');
-            $prices->tva_factor = 1 + $prices->tva/100;
-            $prices->currency = JComponentHelper::getParams('com_easysdi_shop')->get('currency');
-            $prices->roundish = (float)JComponentHelper::getParams('com_easysdi_shop')->get('roundish');
-            $prices->overall_default_tax = (float)JComponentHelper::getParams('com_easysdi_shop')->get('overall_default_tax');
-            $prices->tax_if_free_data = (bool)JComponentHelper::getParams('com_easysdi_shop')->get('tax_if_free_data');
+            $prices->cfg_vat = (float)JComponentHelper::getParams('com_easysdi_shop')->get('vat', 0);
+            $prices->cfg_currency = JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF');
+            $prices->cfg_rounding = (float)JComponentHelper::getParams('com_easysdi_shop')->get('rounding', 0.05);
+            $prices->cfg_overall_default_fee = (float)JComponentHelper::getParams('com_easysdi_shop')->get('overall_default_fee', 0);
+            $prices->cfg_free_data_fee = (bool)JComponentHelper::getParams('com_easysdi_shop')->get('free_data_fee', false);
             
             // get the surface ordered - default to 0
-            $prices->surface = isset($basket->extent) && isset($basket->extent->surface) ? $basket->extent->surface : 0;
+            $prices->surface = isset($basket->extent) && isset($basket->extent->surface) ? $basket->extent->surface/1000000 : 0;
 
             // calculate prices by supplier
             $prices->suppliers = array();
-            $prices->suppliersTaxes = 0;
+            $prices->cal_total_amount_ti = 0;
             foreach($basket->extractions as $supplier_id => $supplier){
                 $prices->suppliers[$supplier_id] = self::basketPriceCalculationBySupplier($supplier, $prices);
-                $prices->suppliersTaxes += $prices->suppliers[$supplier_id]->tax;
-                $prices->priceET += $prices->suppliers[$supplier_id]->priceET;
-                $prices->rebate += $prices->suppliers[$supplier_id]->rebate['total'];
+                $prices->cal_total_amount_ti += $prices->suppliers[$supplier_id]->cal_total_amount_ti;
             }
-        }
-        
-        // set the platform tax
-        $prices->tax = $prices->overall_default_tax;
-        
-        if( ($prices->tax_if_free_data || $prices->priceET>0) && count($prices->debtor->categories)){
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true)
-                    ->select('MAX(c.tax) as tax')
-                    ->from('#__sdi_category c')
-                    ->where('c.id IN ('.implode(',', $prices->debtor->categories).')');
-            $db->setQuery($query);
-            $tax = $db->loadResult();
             
-            if($tax !== null) $prices->tax = $tax;
+            // set the platform tax
+            $prices->cal_fee_ti = $prices->cfg_overall_default_fee;
+
+            if( ($prices->cfg_free_data_fee==true || $prices->cal_total_amount_ti>0) && count($prices->debtor->categories)){
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true)
+                        ->select('c.overall_fee, c.name')
+                        ->from('#__sdi_category c')
+                        ->where('c.id IN ('.implode(',', $prices->debtor->categories).') AND c.overall_fee IS NOT NULL');
+                $db->setQuery($query, 0, 1);
+                $category = $db->loadObject();
+                
+                if($category !== null){
+                    $prices->cal_fee_ti = $category->overall_fee;
+                    $prices->ind_lbl_category_order_fee = $category->name;
+                }
+            }
+            
+            $prices->cal_fee_ti = self::rounding($prices->cal_fee_ti, $prices->cfg_rounding);
+            
+            // total amount for the platform
+            $prices->cal_total_amount_ti += $prices->cal_fee_ti;
+            
+            $basket->pricing = $prices;
         }
-        
-        // calculate total for the basket
-        $prices->priceIT = ($prices->priceET - $prices->rebate) * $prices->tva_factor + $prices->suppliersTaxes + $prices->tax;
-        
-        // roundish the total price
-        $prices->priceIT = self::roundish($prices->priceIT, $prices->roundish);
-        
-        $basket->prices = $prices;
     }
     
+    /**
+     * basketPriceCalculationBySupplier - calculate pricing by supplier
+     * 
+     * @param type $supplier
+     * @param type $prices
+     * @return \stdClass
+     * @since 4.3.0
+     */
     private static function basketPriceCalculationBySupplier($supplier, $prices){
         
         // init provider sub-object
@@ -432,105 +455,217 @@ abstract class Easysdi_shopHelper {
         // get organism pricing params
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('o.name, o.internal_free, o.order_fixed_costs, o.fixed_costs_if_data_free')
+                ->select('o.name, o.internal_free, o.fixed_fee_ti, o.data_free_fixed_fee')
                 ->from('#__sdi_organism o')
                 ->where('o.id='.$provider->id);
         $db->setQuery($query);
         $organism = $db->loadObject();
         
         $provider->name = $organism->name;
-        $provider->internal_free = (bool)$organism->internal_free;
-        $provider->order_fixed_costs = $organism->order_fixed_costs;
-        $provider->fixed_costs_if_data_free = (bool)$organism->fixed_costs_if_data_free;
-        $provider->priceET = 0;
-        $provider->rebate = array('products' => 0, 'supplier' => 0, 'total' => 0);
-        $provider->priceIT = 0;
-        $provider->products = array();
-        
-        // calculate price for each product and increment the provider sub-total
-        foreach($supplier->items as $product){
-            $provider->products[$product->id] = self::basketPriceCalculationByProduct($product, $prices);
-            $provider->priceET += $provider->products[$product->id]->priceET;
-            $provider->rebate['products'] += $provider->products[$product->id]->rebate;
-        }
+        $provider->cfg_internal_free = (bool)$organism->internal_free;
+        $provider->cfg_fixed_fee_ti = $organism->fixed_fee_ti;
+        $provider->cfg_data_free_fixed_fee = (bool)$organism->data_free_fixed_fee;
         
         // calculate supplier rebate
-        if($provider->internal_free && $prices->debtor->id==$provider->id){
-            $provider->rebate['supplier'] = 100;
+        $prices->supplierRebate = new stdClass();
+        if($provider->internal_free==true && $prices->debtor->id==$provider->id){
+            $prices->supplierRebate->pct = 100;
+            $prices->supplierRebate->name = $organism->name;
         }
         elseif(count($prices->debtor->categories)){
             $db = JFactory::getDbo();
             $query = $db->getQuery(true)
-                    ->select('MAX(ocpr.rebate) as rebate')
+                    ->select('ocpr.rebate, c.name')
                     ->from('#__sdi_organism_category_pricing_rebate ocpr')
-                    ->where('ocpr.organism_id='.$provider->id.' AND ocpr.category_id IN ('.implode(',', $prices->debtor->categories).')');
-            $db->setQuery($query);
-            $provider->rebate['supplier'] = $db->loadResult();
+                    ->join('LEFT', '#__sdi_category c ON c.id=ocpr.category_id')
+                    ->where('ocpr.organism_id='.$provider->id.' AND ocpr.category_id IN ('.implode(',', $prices->debtor->categories).')')
+                    ->order('rebate DESC')
+                    ;
+            $db->setQuery($query, 0, 1);
+            $supplierRebate = $db->loadAssoc();
+            $prices->supplierRebate->pct = $supplierRebate['rebate'];
+            $prices->supplierRebate->name = $supplierRebate['name'];
         }
         
-        $provider->rebate['total'] = $provider->priceET * $provider->rebate['supplier']/100 + $provider->rebate['products'];
-        $provider->rebate['total'] = self::roundish($provider->rebate['total'], $prices->roundish);
+        // calculate price for each product and increment the provider sub-total
+        $provider->products = array();
+        $provider->cal_total_amount_ti = 0;
+        $provider->cal_total_rebate_ti = 0;
+        foreach($supplier->items as $product){
+            $provider->products[$product->id] = self::basketPriceCalculationByProduct($product, $prices);
+            $provider->cal_total_amount_ti += $provider->products[$product->id]->cal_total_amount_ti;
+            $provider->cal_total_rebate_ti += $provider->products[$product->id]->cal_total_rebate_ti;
+        }
         
         // set the provider tax
-        $provider->tax = ($provider->priceET>0 || $provider->fixed_costs_if_data_free===true) ? $provider->order_fixed_costs : 0;
+        $provider->cal_fee_ti = ($provider->cal_total_amount_ti>0 || $provider->cfg_data_free_fixed_fee) ? self::rounding($provider->cfg_fixed_fee_ti, $prices->cfg_rounding) : 0;
         
-        // calculate total for the current provider
-        $provider->priceIT = ($provider->priceET - $provider->rebate['total']) * $prices->tva_factor + $provider->tax;
-        
-        // roundish the total price
-        $provider->priceIT = self::roundish($provider->priceIT, $prices->roundish);
+        // total amount for this provider
+        $provider->cal_total_amount_ti += $provider->cal_fee_ti;
         
         return $provider;
     }
     
+    /**
+     * basketPriceCalculationByProduct - calculate pricing by product
+     * 
+     * @param type $product
+     * @param type $prices
+     * @return \stdClass
+     * @since 4.3.0
+     */
     private static function basketPriceCalculationByProduct($product, $prices){
+        
+        // init product sub-object
         $price = new stdClass();
+        
+        $price->cfg_pricing_type = $product->pricing;
+        
+        if($price->cfg_pricing_type != 3)
+            return $price;
+        
+        // get base parameters to calculate product price
         $pricingProfile = new sdiPricingProfile($product->pricing_profile);
+        $price->cfg_profile_id = $pricingProfile->id;
+        $price->cfg_profile_guid = $pricingProfile->guid;
+        $price->cfg_profile_name = $pricingProfile->name;
+        $price->cfg_fixed_fee = $pricingProfile->fixed_fee;
+        $price->cfg_surface_rate = $pricingProfile->surface_rate;
+        $price->cfg_min_fee = $pricingProfile->min_fee;
+        $price->cfg_max_fee = $pricingProfile->max_fee;
+        
+        // calculate product price
+        $price->cal_amount_data_te = self::rounding($price->cfg_fixed_fee + ($price->cfg_surface_rate * $prices->surface));
+        
+        // limit price according to min and max price
+        if($price->cfg_max_fee>0 && $price->cal_amount_data_te > $price->cfg_max_fee){
+            $price->cal_amount_data_te = $price->cfg_max_fee;
+        }
+        elseif($price->cfg_min_fee>0 && $price->cal_amount_data_te < $price->cfg_min_fee){
+            $price->cal_amount_data_te = $price->cfg_min_fee;
+        }
+        
+        // rebate based on category and profile
+        $price->cfg_pct_category_profile_discount = 0;
+        $price->ind_lbl_category_profile_discount = '';
         
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('ppcf.category_id')
-                ->from('#__sdi_pricing_profile_category_free ppcf')
-                ->where('ppcf.pricing_profile_id='.(int)$pricingProfile->id);
+                ->select('ppcpr.category_id, c.name')
+                ->from('#__sdi_pricing_profile_category_pricing_rebate ppcpr')
+                ->join('LEFT', '#__sdi_category c ON c.id=ppcpr.category_id')
+                ->where('ppcpr.pricing_profile_id='.(int)$pricingProfile->id);
+        if(count($prices->debtor->categories))
+            $query->where('ppcpr.category_id IN ('.  implode(',', $prices->debtor->categories).')');
         $db->setQuery($query);
-        $price->category_free = $db->loadColumn();
+        $category_free = $db->loadAssoc();
         
-        // get base parameters to calculate product price
-        $price->fixedPrice = $pricingProfile->fixed_price;
-        $price->surfacePrice = $pricingProfile->surface_price;
-        
-        // calculate product price
-        $price->priceET = $price->fixedPrice + ($price->surfacePrice * $prices->surface);
-        
-        // get min and max pricing profile price
-        $price->minPrice = $pricingProfile->min_price;
-        $price->minPriceReached = false;
-        $price->maxPrice = $pricingProfile->max_price;
-        $price->maxPriceReached = false;
-        
-        // limit price according to min and max price
-        if($price->maxPrice>0 && $price->priceET > $price->maxPrice){
-            $price->priceET = $price->maxPrice;
-            $price->maxPriceReached = true;
-        }
-        elseif($price->minPrice>0 && $price->priceET < $price->minPrice){
-            $price->priceET = $price->minPrice;
-            $price->minPriceReached = true;
+        if($category_free !== null){
+            $price->cfg_pct_category_profile_discount = 100;
+            $price->ind_lbl_category_profile_discount = $category_free['name'];
         }
         
-        // calculate rebate
-        $rebate = 0;
-        if(count(array_intersect($price->category_free, $prices->debtor->categories)))
-            $rebate = 100;
-        $price->rebate = $price->priceET * $rebate/100;
+        // rebate based on category and supplier
+        $price->cfg_pct_category_supplier_discount = $prices->supplierRebate->pct;
+        $price->ind_lbl_category_supplier_discount = $prices->supplierRebate->name;
         
-        // calculate final price applying VAT and rebate
-        $price->priceIT = ($price->priceET - $price->rebate) * $prices->tva_factor;
+        // final price TE
+        $price->cal_total_amount_te = self::rounding($price->cal_amount_data_te * (1 - $price->cfg_pct_category_profile_discount/100) * (1 - $price->cfg_pct_category_supplier_discount/100));
+        $cal_total_rebate_te = self::rounding($price->cal_amount_data_te - $price->cal_total_amount_te);
         
-        // roundish the total price
-        $price->priceIT = self::roundish($price->priceIT, $prices->roundish);
+        // final price TI
+        $price->cal_total_amount_ti = self::rounding($price->cal_total_amount_te * (1 + $prices->cfg_vat/100), $prices->cfg_rounding);
+        $price->cal_total_rebate_ti = self::rounding($cal_total_rebate_te * (1 + $prices->cfg_vat/100), $prices->cfg_rounding);
         
         return $price;
+    }
+    
+    /**
+     * priceFormatter - format price according to the shop configuration
+     * 
+     * @param float $price
+     * @param boolean $displayCurrency
+     * @return string
+     * @since 4.3.0
+     */
+    public static function priceFormatter($price, $displayCurrency = true){
+        return number_format(
+                $price, 
+                JComponentHelper::getParams('com_easysdi_shop')->get('digit_after_decimal', 2), 
+                JComponentHelper::getParams('com_easysdi_shop')->get('decimal_symbol', '.'), 
+                JComponentHelper::getParams('com_easysdi_shop')->get('digit_grouping_symbol', "'"))
+                .' '.
+                ($displayCurrency ? JComponentHelper::getParams('com_easysdi_shop')->get('currency', 'CHF') : '');
+    }
+    
+    /**************************/
+    /** NOTIFICATION METHODS **/
+    /**************************/
+    
+    /**
+     * notifyCustomer - notify the customer of its order
+     * 
+     * @param string $orderName
+     * @return void
+     * @since 4.3.0
+     */
+    public static function notifyCustomer($orderName){
+        $user = sdiFactory::getSdiUser();
+        if(!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_CONFIRM_ORDER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_CONFIRM_ORDER_BODY', $orderName)))
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
+    }
+    
+    /**
+     * notifyNotifiedUsers - notify the defined notified users for a diffusion
+     * 
+     * @param integer $diffusionId
+     * @return void
+     * @since 4.3.0
+     */
+    public static function notifyNotifiedUsers($diffusionId){
+        //Get the user to notified when the order is saved
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('user_id')
+                ->from('#__sdi_diffusion_notifieduser')
+                ->where('diffusion_id = ' . (int)$diffusionId);
+        $db->setQuery($query);
+        $notifiedusers = $db->loadColumn();
+
+        $diffusiontable = JTable::getInstance('diffusion', 'Easysdi_shopTable');
+        $diffusiontable->load($diffusionId);
+
+        //Send mail to notifieduser
+        foreach ($notifiedusers as $notifieduser){
+            $user = sdiFactory::getSdiUser($notifieduser);
+            if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_BODY', $diffusiontable->name)))
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
+        }
+    }
+    
+    /**
+     * notifyExtractionResponsible - notify the extraction responsible
+     * 
+     * @param integer $diffusionId
+     * @return void
+     * @since 4.3.0
+     */
+    public static function notifyExtractionResponsible($diffusionId){
+        $diffusiontable = JTable::getInstance('diffusion', 'Easysdi_shopTable');
+        $diffusiontable->load($diffusionId);
+        
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('rr.user_id')
+                ->from('#__sdi_user_role_resource rr')
+                ->where('rr.role_id = 7')
+                ->where('rr.resource_id = (SELECT r.id FROM #__sdi_resource r INNER JOIN #__sdi_version v ON v.resource_id = r.id WHERE v.id = ' . (int)$diffusiontable->version_id . ')');
+        $db->setQuery($query);
+        $responsible = $db->loadResult();
+        
+        $user = sdiFactory::getSdiUser($responsible);
+        if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_RESPONSIBLE_BODY', $diffusiontable->name)))
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
     }
 
 }

@@ -30,7 +30,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 </script>
 
 <div class="shop front-end-edit">
-    <h1><?php echo JText::_('COM_EASYSDI_SHOP_PRICINGORGANISM_TITLE'); ?> : <?php echo $this->item->organism->name;?></h1>
+    <h1><?php echo JText::_('COM_EASYSDI_SHOP_PRICINGORGANISM_TITLE'); ?> : <?php echo $this->item->name;?></h1>
     
     <div class="well">
     
@@ -103,10 +103,10 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                     <td>
                         <a href="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=pricingprofile.edit&id='.$profile->id.'&organism=' . $this->item->id); ?>"><?php echo $profile->name;?></a>
                     </td>
-                    <td><?php echo $profile->fixed_price;?></td>
-                    <td><?php echo $profile->surface_price;?></td>
-                    <td><?php echo $profile->min_price;?></td>
-                    <td><?php echo $profile->max_price;?></td>
+                    <td><?php echo $profile->fixed_fee;?></td>
+                    <td><?php echo $profile->surface_rate;?></td>
+                    <td><?php echo $profile->min_fee;?></td>
+                    <td><?php echo $profile->max_fee;?></td>
                     <td><?php echo (bool)$profile->free_category ? JText::_('YES') : JText::_('NO');?></td>
                 </tr>
                 <?php endforeach;?>

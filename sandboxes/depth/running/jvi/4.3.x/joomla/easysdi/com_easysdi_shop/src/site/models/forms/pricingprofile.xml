@@ -11,36 +11,36 @@
     </fieldset>
     
     <fieldset name="pricing" label="COM_EASYSDI_SHOP_FORM_FIELDSET_PRICINGPROFILE_PRICING">
-        <field name="fixed_price"
+        <field name="fixed_fee"
             type="text"
             size="6"
             class="inputbox"
-            label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGPROFILE_FIXED_PRICE"
-            description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGPROFILE_FIXED_PRICE"
+            label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGPROFILE_FIXED_FEE"
+            description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGPROFILE_FIXED_FEE"
             default="0" />
         
-        <field name="surface_price"
+        <field name="surface_rate"
             type="text"
             size="6"
             class="inputbox"
-            label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGPROFILE_SURFACE_PRICE"
-            description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGPROFILE_SURFACE_PRICE"
+            label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGPROFILE_SURFACE_RATE"
+            description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGPROFILE_SURFACE_RATE"
             default="0" />
         
-        <field name="min_price"
+        <field name="min_fee"
             type="text"
             size="6"
             class="inputbox"
-            label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGPROFILE_MIN_PRICE"
-            description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGPROFILE_MIN_PRICE"
+            label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGPROFILE_MIN_FEE"
+            description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGPROFILE_MIN_FEE"
             default="0" />
         
-        <field name="max_price"
+        <field name="max_fee"
             type="text"
             size="6"
             class="inputbox"
-            label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGPROFILE_MAX_PRICE"
-            description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGPROFILE_MAX_PRICE"
+            label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGPROFILE_MAX_FEE"
+            description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGPROFILE_MAX_FEE"
             default="0" />
     </fieldset>
     

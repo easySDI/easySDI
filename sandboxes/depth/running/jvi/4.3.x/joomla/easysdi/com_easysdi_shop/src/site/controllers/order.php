@@ -14,6 +14,7 @@ require_once JPATH_COMPONENT . '/controller.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/order.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_easysdi_shop/tables/orderdiffusion.php';
 require_once JPATH_COMPONENT . '/models/order.php';
+require_once JPATH_COMPONENT . '/helpers/easysdi_shop.php';
 
 /**
  * Order controller class.
@@ -39,6 +40,12 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=order&layout=edit', false));
     }
     
+    /**
+     * validate - thirdparty validation of an order
+     * 
+     * @return void
+     * @since 4.3.0
+     */
     public function validate(){
         $app = JFactory::getApplication();
         $validateId = $app->input->getInt('id', 0, 'int');
@@ -57,6 +64,19 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
 
             // Clear the profile id from the session.
             $app->setUserState('com_easysdi_shop.edit.order.id', null);
+            
+            // Notify notifiedusers and extractionresponsible for each orderdiffusion of the current order
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true)
+                    ->select('diffusion_id as id')
+                    ->from('#__sdi_order_diffusion')
+                    ->where('order_id='.(int)$validateId);
+            $db->setQuery($query);
+            $diffusions = $db->loadObjectList();
+            foreach($diffusions as $diffusion){
+                Easysdi_shopHelper::notifyNotifiedUsers($diffusion->id);
+                Easysdi_shopHelper::notifyExtractionResponsible($diffusion->id);
+            }
 
             // Set message
             $this->setMessage(JText::_('COM_EASYSDI_SHOP_ORDER_VALIDATED_SUCCESSFULLY'));
@@ -66,6 +86,12 @@ class Easysdi_shopControllerOrder extends Easysdi_shopController {
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=orders&layout=validation', false));
     }
     
+    /**
+     * reject - thirdparty rejection of an order
+     * 
+     * @return void
+     * @since 4.3.0
+     */
     public function reject(){
         $app = JFactory::getApplication();
         $validateId = $app->input->getInt('id', 0, 'int');

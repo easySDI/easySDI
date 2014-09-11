@@ -15,7 +15,7 @@
             <option value="1">JYES</option>
         </field>
 
-        <field name="order_fixed_costs" 
+        <field name="fixed_fee_ti" 
             type="text" 
             size="6" 
             class="inputbox"
@@ -23,7 +23,7 @@
             description="COM_EASYSDI_SHOP_FORM_DESC_PRICINGORGANISM_ORDER_FIXED_COSTS"
             default="0" />
         
-        <field name="fixed_costs_if_data_free" 
+        <field name="data_free_fixed_fee" 
                type="radio" 
                class="radio"
                label="COM_EASYSDI_SHOP_FORM_LBL_PRICINGORGANISM_FIXED_COSTS_IF_DATA_FREE"

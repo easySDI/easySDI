@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
+require_once JPATH_COMPONENT . '/helpers/easysdi_shop.php';
 
 /**
  * Easysdi_shop model.
@@ -20,6 +21,7 @@ class Easysdi_shopModelOrder extends JModelForm {
 
     var $_item = null;
     
+    // orderstate
     const ARCHIVED = 1;
     const HISTORIZED = 2;
     const FINISHED = 3;
@@ -29,6 +31,13 @@ class Easysdi_shopModelOrder extends JModelForm {
     const SAVED = 7;
     const VALIDATION = 8;
     const REJECTED = 9;
+    
+    // productstate
+    const PRODUCT_AVAILABLE = 1;
+    const PRODUCT_AWAIT = 2;
+    const PRODUCT_SENT = 3;
+    const PRODUCT_VALIDATION = 4;
+    const PRODUCT_REJECTED = 5; // rejected by thirdparty !
 
     /**
      * Method to auto-populate the model state.
@@ -214,6 +223,15 @@ class Easysdi_shopModelOrder extends JModelForm {
         
     }
     
+    /**
+     * thirdpartyValidation - validation of an order by a thirdparty
+     * 
+     * @param integer $id
+     * @param mixed $reason optional string parameters to attach a message
+     * 
+     * @return boolean
+     * @since 4.3.0
+     */
     public function thirdpartyValidation($id, $reason=null){
         $id = (!empty($id)) ? $id : (int) $this->getState('order.id');
         $table = $this->getTable();
@@ -226,9 +244,27 @@ class Easysdi_shopModelOrder extends JModelForm {
         $table->validated_date = date('Y-m-d H:i:s');
         $table->validated_reason= $reason;
         
-        return $table->store();
+        if(($orderStored = $table->store()) === true){
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true)
+                    ->update('#__sdi_order_diffusion')
+                    ->set('`productstate_id`='.self::PRODUCT_SENT)
+                    ->where('order_id = ' . (int)$id);
+            $db->setQuery($query);
+            $db->execute();
+        }
+        
+        return $orderStored;
     }
     
+    /**
+     * thirdpartyRejection - rejection of an order by a thirdparty
+     * 
+     * @param integer $id
+     * @param mixed $reason - defined as optional but $reason have to be set !
+     * @return boolean
+     * @since 4.3.0
+     */
     public function thirdpartyRejection($id, $reason=null){
         $id = (!empty($id)) ? $id : (int) $this->getState('order.id');
         $table = $this->getTable();
@@ -241,7 +277,20 @@ class Easysdi_shopModelOrder extends JModelForm {
         $table->validated_date = date('Y-m-d H:i:s');
         $table->validated_reason = $reason;
         
-        return $table->store();
+        if(($orderStored = $table->store()) === true){
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true)
+                    ->update('#__sdi_order_diffusion')
+                    ->set('`productstate_id`='.self::PRODUCT_REJECTED)
+                    ->where('order_id = ' . (int)$id);
+            $db->setQuery($query);
+            $db->execute();
+            
+            // Notify customer
+            Easysdi_shopHelper::notifyCustomer($table->name);
+        }
+        
+        return $orderStored;
     }
 
     function delete($data) {

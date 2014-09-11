@@ -40,13 +40,18 @@ class Easysdi_shopControllerPricingProfile extends Easysdi_shopController {
     }
     
     public function save($andclose = true){
+        $model = $this->getModel('PricingProfile', 'Easysdi_shopModel');
+        $pricingProfile = $model->getTable();
         $app = JFactory::getApplication();
         $inputs = $app->input;
         
-        $id = $inputs->get('id', 0, 'int');
-        $originalId = $id; // use in case of rollback
-        $organism_id = $inputs->get('organism_id', 0, 'int');
+        $id = $inputs->get('id');
+        
+        $pricingProfile->load($id);
+        
         $data = $inputs->get('jform', array(), 'array');
+        if(empty($id))
+            $data['organism_id'] = $inputs->get('organism_id');
         
         $dataProfile = $data;
         unset($dataProfile['categories']);
@@ -58,43 +63,27 @@ class Easysdi_shopControllerPricingProfile extends Easysdi_shopController {
             $db->transactionStart();
             
             //save pricing profile
-            if($id == 0){
-                $query = $db->getQuery(true)
-                            ->insert($db->quoteName('#__sdi_pricing_profile'));
-                foreach($dataProfile as $prop => $val)
-                    $query->set("`{$prop}`='{$val}'");
+            foreach($dataProfile as $prop => $value)
+                $pricingProfile->$prop = $value;
+            
+            $pricingProfile->check();
+            $pricingProfile->store();
 
-                $query->set('`organism_id`='.(int)$organism_id);
-                $db->setQuery($query);
-                $insert = $db->execute();
-                $id = $db->insertid();
-            }
-            else{
-                $query = $db->getQuery(true)
-                            ->update($db->quoteName('#__sdi_pricing_profile').' as pp');
-                foreach($dataProfile as $prop => $val)
-                    $query->set("`{$prop}`='{$val}'");
-
-                $query->where('pp.id='.(int)$id . ' AND pp.organism_id='.(int)$organism_id);
-                $db->setQuery($query);
-                $update = $db->execute();
-            }
-
-            //save pricing profile free categories
+            //save pricing profile categories rebate
             $query = $db->getQuery(true)
-                        ->delete($db->quoteName('#__sdi_pricing_profile_category_free'))
-                        ->where('pricing_profile_id='.(int)$id);
+                        ->delete($db->quoteName('#__sdi_pricing_profile_category_pricing_rebate'))
+                        ->where('pricing_profile_id='.(int)$pricingProfile->id);
             $db->setQuery($query);
             $delete = $db->execute();
             
             $query = $db->getQuery(true)
-                        ->insert($db->quoteName('#__sdi_pricing_profile_category_free'))
+                        ->insert($db->quoteName('#__sdi_pricing_profile_category_pricing_rebate'))
                         ->columns('`pricing_profile_id`, `category_id`');
             $doInsert = false;
             foreach($dataCategories as $category_id => $isFree){
                 if((bool)$isFree){
                     $doInsert = true;
-                    $query->values($id.','.$category_id);
+                    $query->values($pricingProfile->id.','.$category_id);
                 }
             }
             
@@ -106,7 +95,6 @@ class Easysdi_shopControllerPricingProfile extends Easysdi_shopController {
             $db->transactionCommit();
         } catch (Exception $ex) {
             $db->transactionRollback();
-            $id = $originalId;
         }
 
         // Check for errors.
@@ -124,7 +112,7 @@ class Easysdi_shopControllerPricingProfile extends Easysdi_shopController {
         if (!$andclose) {
             // Redirect back to the edit screen.
             $app->setUserState('com_easysdi_shop.edit.pricingprofile.data', null);
-            $app->setUserState('com_easysdi_shop.edit.pricingprofile.id', $id);
+            $app->setUserState('com_easysdi_shop.edit.pricingprofile.id', $pricingProfile->id);
             $app->setUserState('com_easysdi_shop.edit.pricingprofile.organism_id', $organism_id);
             $this->setMessage(JText::_('COM_EASYSDI_CORE_ITEM_SAVED_SUCCESSFULLY'));
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_shop&view=pricingprofile&layout=edit', false));

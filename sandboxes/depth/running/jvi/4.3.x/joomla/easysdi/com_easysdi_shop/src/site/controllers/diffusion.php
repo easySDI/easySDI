@@ -295,5 +295,24 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
         echo $curlError===false ? 1 : $curlError;
         die();
     }
+    
+    public function getAvailableProfiles(){
+        $data = JFactory::getApplication()->input->getArray();
+        
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('pp.id, pp.name')
+                ->from($db->quoteName('#__sdi_version').' as v')
+                ->join('LEFT', '#__sdi_resource as r ON r.id=v.resource_id')
+                ->join('LEFT', '#__sdi_pricing_profile as pp ON pp.organism_id=r.organism_id')
+                ->where('v.id='.$data['version_id'])
+                ;
+        $db->setQuery($query);
+        $profiles = $db->loadAssocList();
+        
+        header('Content-type: application/json');
+        echo json_encode($profiles);
+        die();
+    }
 
 }
