@@ -475,11 +475,13 @@ class FormHtmlGenerator {
                                     $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath)));
                                     break;
                             }
-                            
-                            $fieldid = $jfield->__get('id');
-                            $query = 'descendant::*[@id="' . $fieldid . '"]';
-                            $nbrOccurance = $this->domXpathFormHtml->query($query)->length;
-                            $showButton = false;
+                            if ($jfield)
+                            {
+                                $fieldid = $jfield->__get('id');
+                                $query = 'descendant::*[@id="' . $fieldid . '"]';
+                                $nbrOccurance = $this->domXpathFormHtml->query($query)->length;
+                                $showButton = false;
+                            }
                             // Single list
                         } else {
                             $jfield = $this->form->getField(FormUtils::serializeXpath($nodePath));

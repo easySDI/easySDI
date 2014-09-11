@@ -691,6 +691,7 @@ class FormGenerator {
         $relid = $attribute->getAttributeNS($this->catalog_uri, 'relid');
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'relGuid');
         $validator = $this->getValidatorClass($attribute);
+        $label = $attribute->getAttributeNS($this->catalog_uri, 'label');
 
         $fields = array();
         $field = $this->form->createElement('field');
@@ -706,9 +707,11 @@ class FormGenerator {
 
         $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue));
         $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
+        
         if ($this->domXpathStr->query('*/*/*', $attribute)->length > 0) {
             $field->setAttribute('label', EText::_($guid) . ' (' . $this->ldao->getDefaultLanguage()->value . ')');
         } else {
+            $field->setAttribute('label', EText::_($guid));
             $field->setAttribute('description', EText::_($guid, 2));
         }
 
@@ -1129,7 +1132,7 @@ class FormGenerator {
 
         $field->setAttribute('name', FormUtils::serializeXpath($relationtype->getNodePath()));
         $field->setAttribute('type', 'list');
-        $field->setAttribute('label', 'Name');
+        $field->setAttribute('label', '');
 
         foreach ($this->getAttributOptions($relationtype) as $opt) {
             $option = $this->form->createElement('option', $opt->name);
