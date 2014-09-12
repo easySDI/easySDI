@@ -108,7 +108,23 @@ abstract class sdiTable extends JTable {
         if (!isset($array['created_by']) || $array['created_by'] == 0) {
             $array['created_by'] = JFactory::getUser()->id;
         }
-
+        
+        if (!isset($array['created'])) {
+            $array['created'] = JFactory::getDate()->toSql();
+        }
+        
+        if (!isset($array['state'])) {
+            $array['state'] = 1;
+        }
+        
+        if (!isset($array['checked_out'])) {
+            $array['checked_out'] = 0;
+        }
+        
+        if (!isset($array['checked_out_time'])) {
+            $array['checked_out_time'] = JFactory::getDate()->toSql();
+        }
+        
         if (isset($array['params']) && is_array($array['params'])) {
             $registry = new JRegistry();
             $registry->loadArray($array['params']);

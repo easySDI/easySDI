@@ -45,7 +45,7 @@ class plgUserEasysdicontact extends JPlugin {
                     if(sizeof($organisms_ids))
                         $query->where('r.organism_id NOT IN ('.implode(',',$organisms_ids).')');
                     $query->group('urr2.resource_id')
-                    ->having('cnt=1');
+                    ->having('COUNT(urr2.id)=1');
             
             $dbo->setQuery($query);
             $dbo->execute();
