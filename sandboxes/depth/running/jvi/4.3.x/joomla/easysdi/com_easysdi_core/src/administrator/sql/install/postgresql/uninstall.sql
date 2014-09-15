@@ -48,6 +48,7 @@ DROP TABLE IF EXISTS "#__sdi_sys_isolanguage" CASCADE;
 DROP TABLE IF EXISTS "#__sdi_sys_perimetertype" CASCADE;
 DROP TABLE IF EXISTS "#__sdi_sys_propertytype" CASCADE;
 DROP TABLE IF EXISTS "#__sdi_sys_servicetype" CASCADE;
+DROP TABLE IF EXISTS "#__sdi_sys_extractstorage" CASCADE;
 
 -- com_easysdi_contact
 
@@ -145,6 +146,13 @@ DROP TABLE IF EXISTS "#__sdi_order" CASCADE;
 DROP TABLE IF EXISTS "#__sdi_order_diffusion" CASCADE;
 DROP TABLE IF EXISTS "#__sdi_order_propertyvalue" CASCADE;
 DROP TABLE IF EXISTS "#__sdi_order_perimeter" CASCADE;
+DROP TABLE IF EXISTS "#__sdi_organism_category_pricing_rebate" CASCADE;
+DROP TABLE IF EXISTS "#__sdi_pricing_profile" CASCADE;
+DROP TABLE IF EXISTS "#__sdi_pricing_profile_category_pricing_rebate" CASCADE;
+DROP TABLE IF EXISTS "#__sdi_pricing_order" CASCADE;
+DROP TABLE IF EXISTS "#__sdi_pricing_order_supplier" CASCADE;
+DROP TABLE IF EXISTS "#__sdi_pricing_order_supplier_product" CASCADE;
+DROP TABLE IF EXISTS "#__sdi_pricing_order_supplier_product_profile" CASCADE;
 
 -- com_easysdi_monitor
 

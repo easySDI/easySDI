@@ -40,13 +40,15 @@ ALTER TABLE `#__sdi_order_perimeter` ADD CONSTRAINT `#__sdi_order_perimeter_fk2`
 
 
 
-INSERT IGNORE INTO `#__sdi_sys_role` SET id=9, ordering=9, `state`=1, value='pricingmanager';
+INSERT INTO `#__sdi_sys_role` SET id=9, ordering=9, `state`=1, value='pricingmanager';
+INSERT INTO `#__sdi_sys_role` SET id=10, ordering=10, `state`=1, `value`='validationmanager';
 
-ALTER TABLE `#__sdi_category` ADD overall_fee FLOAT(6,2) UNSIGNED DEFAULT 0;
+ALTER TABLE `#__sdi_category` ADD `overall_fee` FLOAT(6,2) UNSIGNED DEFAULT 0;
 
 ALTER TABLE `#__sdi_organism` ADD `internal_free` TINYINT DEFAULT 0;
 ALTER TABLE `#__sdi_organism` ADD `fixed_fee_ti` FLOAT(6,2) UNSIGNED DEFAULT 0;
 ALTER TABLE `#__sdi_organism` ADD `data_free_fixed_fee` TINYINT DEFAULT 0;
+ALTER TABLE `#__sdi_organism` ADD `selectable_as_thirdparty` TINYINT(1) DEFAULT 0 AFTER perimeter;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_organism_category_pricing_rebate` (
     `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -58,10 +60,10 @@ CREATE TABLE IF NOT EXISTS `#__sdi_organism_category_pricing_rebate` (
   KEY `#__sdi_organism_category_pricing_rebate_fk2` (`category_id`),
   CONSTRAINT `#__sdi_organism_category_pricing_rebate_fk1` FOREIGN KEY (`organism_id`) REFERENCES `#__sdi_organism` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `#__sdi_organism_category_pricing_rebate_fk2` FOREIGN KEY (`category_id`) REFERENCES `#__sdi_category` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 UPDATE `#__sdi_sys_pricing` SET `value`='fee without a pricing profile' WHERE id=2;
-INSERT IGNORE INTO `#__sdi_sys_pricing` SET `ordering`=3, `state`=1, `value`='fee with a pricing profile';
+INSERT INTO `#__sdi_sys_pricing` SET `ordering`=3, `state`=1, `value`='fee with a pricing profile';
 
 CREATE TABLE IF NOT EXISTS `#__sdi_pricing_profile` (
     `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -84,7 +86,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_pricing_profile` (
     PRIMARY KEY (`id`),
     KEY `#__sdi_pricing_profile_fk1` (`organism_id`),
     CONSTRAINT `#__sdi_pricing_profile_fk1` FOREIGN KEY (`organism_id`) REFERENCES `#__sdi_organism` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_pricing_profile_category_pricing_rebate` (
     `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -96,22 +98,20 @@ CREATE TABLE IF NOT EXISTS `#__sdi_pricing_profile_category_pricing_rebate` (
     KEY `#__sdi_pricing_profile_category_pricing_rebate_fk2` (`category_id`),
     CONSTRAINT `#__sdi_pricing_profile_category_pricing_rebate_fk1` FOREIGN KEY (`pricing_profile_id`) REFERENCES `#__sdi_pricing_profile` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
     CONSTRAINT `#__sdi_pricing_profile_category_pricing_rebate_fk2` FOREIGN KEY (`category_id`) REFERENCES `#__sdi_category` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 ALTER TABLE `#__sdi_diffusion` ADD pricing_profile_id int(11) UNSIGNED AFTER pricing_id;
 ALTER TABLE `#__sdi_diffusion` ADD CONSTRAINT `#__sdi_diffusion_fk6` FOREIGN KEY (`pricing_profile_id`) REFERENCES `#__sdi_pricing_profile` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION;
 
-INSERT IGNORE INTO `#__sdi_sys_role` SET id=10, ordering=10, `state`=1, `value`='validationmanager';
 
-ALTER TABLE `#__sdi_organism` ADD selectable_as_thirdparty TINYINT(1) DEFAULT 0 AFTER perimeter;
 
-INSERT IGNORE INTO `#__sdi_sys_orderstate` SET id=8, ordering=8, `state`=1, `value`='validation';
-INSERT IGNORE INTO `#__sdi_sys_orderstate` SET id=9, ordering=9, `state`=1, `value`='rejected by thirdparty';
-INSERT IGNORE INTO `#__sdi_sys_orderstate` SET id=10, ordering=10, `state`=1, `value`='rejected by supplier';
+INSERT INTO `#__sdi_sys_orderstate` SET id=8, ordering=8, `state`=1, `value`='validation';
+INSERT INTO `#__sdi_sys_orderstate` SET id=9, ordering=9, `state`=1, `value`='rejected by thirdparty';
+INSERT INTO `#__sdi_sys_orderstate` SET id=10, ordering=10, `state`=1, `value`='rejected by supplier';
 
-ALTER TABLE `#__sdi_order` ADD validated TINYINT(1) DEFAULT NULL AFTER thirdparty_id;
-ALTER TABLE `#__sdi_order` ADD validated_date DATETIME DEFAULT NULL AFTER validated;
-ALTER TABLE `#__sdi_order` ADD validated_reason VARCHAR(500) AFTER validated_date;
+ALTER TABLE `#__sdi_order` ADD `validated` TINYINT(1) DEFAULT NULL AFTER thirdparty_id;
+ALTER TABLE `#__sdi_order` ADD `validated_date` DATETIME DEFAULT NULL AFTER validated;
+ALTER TABLE `#__sdi_order` ADD `validated_reason` VARCHAR(500) AFTER validated_date;
 
 
 CREATE TABLE IF NOT EXISTS `#__sdi_pricing_order` (
@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_pricing_order` (
     PRIMARY KEY (`id`),
     KEY `#__sdi_pricing_order_fk1` (`order_id`),
     CONSTRAINT `#__sdi_pricing_order_fk1` FOREIGN KEY (`order_id`) REFERENCES `#__sdi_order` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_pricing_order_supplier` (
     `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -164,7 +164,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_pricing_order_supplier` (
     KEY `#__sdi_pricing_order_supplier_fk2` (`supplier_id`),
     CONSTRAINT `#__sdi_pricing_order_supplier_fk1` FOREIGN KEY (`pricing_order_id`) REFERENCES `#__sdi_pricing_order` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
     CONSTRAINT `#__sdi_pricing_order_supplier_fk2` FOREIGN KEY (`supplier_id`) REFERENCES `#__sdi_organism` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_pricing_order_supplier_product` (
     `id` int(11) unsigned not null auto_increment,
@@ -193,7 +193,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_pricing_order_supplier_product` (
     CONSTRAINT `#__sdi_pricing_order_supplier_product_fk1` FOREIGN KEY (`pricing_order_supplier_id`) REFERENCES `#__sdi_pricing_order_supplier` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
     CONSTRAINT `#__sdi_pricing_order_supplier_product_fk2` FOREIGN KEY (`product_id`) REFERENCES `#__sdi_diffusion` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
     CONSTRAINT `#__sdi_pricing_order_supplier_product_fk3` FOREIGN KEY (`pricing_id`) REFERENCES `#__sdi_sys_pricing` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_pricing_order_supplier_product_profile` (
     `id` int(11) unsigned not null auto_increment,
@@ -220,11 +220,11 @@ CREATE TABLE IF NOT EXISTS `#__sdi_pricing_order_supplier_product_profile` (
     KEY `#__sdi_pricing_order_supplier_product_profile_fk2` (`pricing_profile_id`),
     CONSTRAINT `#__sdi_pricing_order_supplier_product_profile_fk1` FOREIGN KEY (`pricing_order_supplier_product_id`) REFERENCES `#__sdi_pricing_order_supplier_product` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
     CONSTRAINT `#__sdi_pricing_order_supplier_product_profile_fk2` FOREIGN KEY (`pricing_profile_id`) REFERENCES `#__sdi_pricing_profile` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-INSERT IGNORE INTO `#__sdi_sys_productstate` SET id=4, ordering=4, `state`=1, `value`='validation';
-INSERT IGNORE INTO `#__sdi_sys_productstate` SET id=5, ordering=5, `state`=1, `value`='rejected by thirdparty';
-INSERT IGNORE INTO `#__sdi_sys_productstate` SET id=6, ordering=6, `state`=1, `value`='rejected by supplier';
+INSERT INTO `#__sdi_sys_productstate` SET id=4, ordering=4, `state`=1, `value`='validation';
+INSERT INTO `#__sdi_sys_productstate` SET id=5, ordering=5, `state`=1, `value`='rejected by thirdparty';
+INSERT INTO `#__sdi_sys_productstate` SET id=6, ordering=6, `state`=1, `value`='rejected by supplier';
 
 CREATE TABLE IF NOT EXISTS `#__sdi_sys_extractstorage` (
     `id` int(11) unsigned not null auto_increment,
@@ -232,9 +232,9 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_extractstorage` (
     `state` int(11) not null default '1',
     `value` varchar(255) not null,
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-INSERT IGNORE INTO `#__sdi_sys_extractstorage` SET id=1, ordering=1, `state`=1, `value`='local';
-INSERT IGNORE INTO `#__sdi_sys_extractstorage` SET id=2, ordering=2, `state`=1, `value`='remote';
+INSERT INTO `#__sdi_sys_extractstorage` SET id=1, ordering=1, `state`=1, `value`='local';
+INSERT INTO `#__sdi_sys_extractstorage` SET id=2, ordering=2, `state`=1, `value`='remote';
 
 

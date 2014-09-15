@@ -44,6 +44,8 @@ INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (4, 4, 1, N
 INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (5, 5, 1, N'diffusionmanager');
 INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (6, 6, 1, N'previewmanager');
 INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (7, 7, 1, N'extractionresponsible');
+INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (9, 9, 1, N'pricingmanager');
+INSERT [#__sdi_sys_role] ([id], [ordering], [state], [value]) VALUES (10, 10, 1, N'validationmanager');
 SET IDENTITY_INSERT [#__sdi_sys_role] OFF;
 
 SET IDENTITY_INSERT [#__sdi_sys_criteriatype] ON;
@@ -575,6 +577,9 @@ INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES (4, 4
 INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES (5, 5, 1, N'progress');
 INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES (6, 6, 1, N'sent');
 INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES (7, 7, 1, N'saved');
+INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES ('8', '8', '1', N'validation');
+INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES ('9', '9', '1', N'rejected by thirdparty');
+INSERT [#__sdi_sys_orderstate] ([id], [ordering], [state], [value]) VALUES ('10', '10', '1', N'rejected by supplier');
 SET IDENTITY_INSERT [#__sdi_sys_orderstate] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_ordertype] ON;
 
@@ -586,7 +591,16 @@ SET IDENTITY_INSERT [#__sdi_sys_productstate] ON;
 
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'available');
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'await');
+INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'sent');
+INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (4, 4, 1, N'validation');
+INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (5, 5, 1, N'rejected by thirdparty');
+INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (6, 6, 1, N'rejected by supplier');
 SET IDENTITY_INSERT [#__sdi_sys_productstate] OFF;
+SET IDENTITY_INSERT [#__sdi_sys_extractstorage] ON;
+
+INSERT [#__sdi_sys_extractstorage] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'local');
+INSERT [#__sdi_sys_extractstorage] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'remote');
+SET IDENTITY_INSERT [#__sdi_sys_extractstorage] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_propertytype] ON;
 
 INSERT [#__sdi_sys_propertytype] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'list');
@@ -796,3 +810,7 @@ INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], 
 INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (12, N'a9a44261-05da-4ee8-a3f2-4ec1c53bcb00', N'isViewable', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'isViewable', 1, 1, 2, NULL, 0, 0);
 SET IDENTITY_INSERT [#__sdi_searchcriteria] OFF;
 
+
+INSERT [#__sdi_sys_pricing] ([id], [ordering], [state], [value]) VALUES ('1', '1', '1', 'free');
+INSERT [#__sdi_sys_pricing] ([id], [ordering], [state], [value]) VALUES ('2', '2', '1', 'fee without a pricing profile');
+INSERT [#__sdi_sys_pricing] ([id], [ordering], [state], [value]) VALUES ('3', '3', '1', 'fee with a pricing profile');
