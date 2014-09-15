@@ -434,7 +434,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_organism` (
 `password` VARCHAR(65) ,
 `internal_free` TINYINT DEFAULT 0,
 `fixed_fee_ti` FLOAT(6,2) UNSIGNED DEFAULT 0,
-`data_free_fixed_fee` TINYINT DEFAULT 0
+`data_free_fixed_fee` TINYINT DEFAULT 0,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
