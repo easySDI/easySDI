@@ -515,7 +515,7 @@ function chosenRefresh() {
 
 function filterBoundary(parentPath, value) {
 
-    js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.getBoundaryByCategory&value=' + value, function(data) {
+    js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.getBoundaryByCategory&value=' + encodeURIComponent(value), function(data) {
 
         var response = js.parseJSON(data);
         var replaceId = parentPath.replace(/-/g, '_');
