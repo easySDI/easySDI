@@ -257,7 +257,6 @@ class FormGenerator {
                 } else {
                     $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
                 }
-                
             }
             
             // Specific case for Stereotype boundary
@@ -269,7 +268,6 @@ class FormGenerator {
                 $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
                 
             }
-            
         }
 
         $parent_id = $parent->getAttributeNS($this->catalog_uri, 'dbid');
@@ -904,7 +902,6 @@ class FormGenerator {
                         $field->setAttribute('type', 'MultipleDefaultList');
                         $field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $default), true));
                         $field->setAttribute('css', 'sdi-multi-extent-select');
-                        
                     } else {
                         $field->setAttribute('onchange', 'setBoundary(\'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
                     }
@@ -1127,6 +1124,9 @@ class FormGenerator {
 
         $name = $relationtype->nodeName;
 
+        $validator = $this->getValidatorClass($relationtype);
+        
+        $field->setAttribute('class', $validator);
         $field->setAttribute('name', FormUtils::serializeXpath($relationtype->getNodePath()));
         $field->setAttribute('type', 'list');
         $field->setAttribute('label', 'Name');
@@ -1205,6 +1205,9 @@ class FormGenerator {
 
                 $this->db->setQuery($query);
                 $result = $this->db->loadObjectList();
+
+                $first = array('id' => '', 'guid' => '', 'name' => '');
+                array_unshift($result, (object) $first);
                 break;
             case EnumChildtype::$ATTRIBUT:
                 switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
@@ -1291,6 +1294,8 @@ class FormGenerator {
                 $validator .= ' validate-sdi' . $patterns[$guid]->stereotype_name;
             }
 
+            return $validator;
+        } elseif($attribute->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE){
             return $validator;
         } else {
             return '';
