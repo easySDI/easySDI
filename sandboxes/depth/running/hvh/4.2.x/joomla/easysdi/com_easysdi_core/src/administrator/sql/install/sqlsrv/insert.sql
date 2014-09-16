@@ -796,3 +796,8 @@ INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], 
 INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (12, N'a9a44261-05da-4ee8-a3f2-4ec1c53bcb00', N'isViewable', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'isViewable', 1, 1, 1, NULL, 0, 0);
 SET IDENTITY_INSERT [#__sdi_searchcriteria] OFF;
 
+
+INSERT [#__sdi_sys_perimetertype] ([ordering], [state], [value]) VALUES (1,1,'extraction');
+INSERT [#__sdi_sys_perimetertype] ([ordering], [state], [value]) VALUES (2,1,'download');
+INSERT [#__sdi_sys_perimetertype] ([ordering], [state], [value]) VALUES (3,1,'both');
+
