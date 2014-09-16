@@ -55,6 +55,7 @@ class Easysdi_catalogTablesearchsort extends JTable {
                     $this->catalog_id = $catalog_id;
                     $this->language_id = $language_id;
                     $this->ogcsearchsorting = $value;
+                    $this->state = 1;
                 }
                 
                 if (!$this->store())

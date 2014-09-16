@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 /**
  * importref Table class
  */
-class Easysdi_catalogTablecatalogresourcetype extends JTable {
+class Easysdi_catalogTablecatalogresourcetype extends sdiTable {
 
     /**
      * Constructor
