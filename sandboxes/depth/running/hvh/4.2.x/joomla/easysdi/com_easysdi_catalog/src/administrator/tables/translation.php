@@ -54,7 +54,7 @@ class Easysdi_catalogTabletranslation extends sdiTable {
                 $keys = array ();
                 $keys ['element_guid'] = $element_guid;
                 $keys ['language_id'] = $language_id;
-                if($this->load($keys)){
+                if($this->load($keys, false)){
                     //Update
                     $this->text1 = $value;
                 }else{
@@ -72,7 +72,7 @@ class Easysdi_catalogTabletranslation extends sdiTable {
                     }
                 }
                 
-                if (!$this->store())
+                if (!$this->save())
 		{
                      $this->setError('Can t store');
                     return false;

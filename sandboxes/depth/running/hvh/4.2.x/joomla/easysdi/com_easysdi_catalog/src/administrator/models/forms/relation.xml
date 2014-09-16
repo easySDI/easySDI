@@ -42,26 +42,26 @@
         <field name="profile_id" type="sql" class="inputbox" multiple="true" 
                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_PROFILE_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_PROFILE_ID" 
-               query="SELECT `id`, `name` FROM `#__sdi_profile`" key_field="id" value_field="name"
+               query="SELECT id, name FROM #__sdi_profile" key_field="id" value_field="name"
         />
 
         <field name="parent_id" type="sql" class="inputbox" required="true"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_PARENT_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_PARENT_ID" 
-               query="SELECT null AS `id`, '' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_class`" key_field="id" value_field="name"
+               query="SELECT null AS id, '' AS name UNION SELECT id, name FROM #__sdi_class" key_field="id" value_field="name"
         /> 
 
         <field name="attributechild_id" type="sql" class="inputbox"
                onchange="onChangeAttributeChild()"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_ATTRIBUTECHILD_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_ATTRIBUTECHILD_ID" 
-               query="SELECT null AS `id`, '' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_attribute`" key_field="id" value_field="name"
+               query="SELECT null AS id, '' AS name UNION SELECT id, name FROM #__sdi_attribute" key_field="id" value_field="name"
         /> 
 
         <field name="classchild_id" type="sql" class="inputbox"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CLASSCHILD_ID"
                description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_CLASSCHILD_ID" 
-               query="SELECT null AS `id`, '' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_class`" key_field="id" value_field="name"
+               query="SELECT null AS id, '' AS name UNION SELECT id, name FROM #__sdi_class" key_field="id" value_field="name"
         /> 
 
         <field name="lowerbound" type="text" size="40" class="inputbox"
@@ -109,7 +109,7 @@
         <field name="classassociation_id" type="sql" class="inputbox"
                 label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CLASSASSOCIATION_ID"
                 description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_CLASSASSOCIATION_ID" 
-                query="SELECT null AS `id`, '' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_class`" key_field="id" value_field="name"
+                query="SELECT null AS id, '' AS name UNION SELECT id, name FROM #__sdi_class" key_field="id" value_field="name"
         />         
 
         <field name="relationscope_id" type="sql"  class="inputbox" required="true"
@@ -207,7 +207,7 @@
         <field name="catalog_id" type="sql" class="inputbox" multiple="true"
               label="COM_EASYSDI_CATALOG_FORM_LBL_RELATION_CATALOG_ID"
               description="COM_EASYSDI_CATALOG_FORM_DESC_RELATION_CATALOG_ID" 
-              query="SELECT `id`, `name` FROM `#__sdi_catalog`" key_field="id" value_field="name"
+              query="SELECT id, name FROM #__sdi_catalog" key_field="id" value_field="name"
         />
     </fieldset>
     

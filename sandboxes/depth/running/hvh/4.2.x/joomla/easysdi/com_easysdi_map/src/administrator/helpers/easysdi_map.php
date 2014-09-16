@@ -123,6 +123,7 @@ class Easysdi_mapHelper {
             $query->innerJoin('#__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id');
             $query->innerJoin('#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id');
             $query->where('ssc.service_id =' . (int)$id);
+            $query->order('sv.value DESC');
             
             $db->setQuery($query,0,1);
             $compliance = $db->loadObject();
