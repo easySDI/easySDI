@@ -2193,6 +2193,29 @@ PRIMARY KEY (`id`),
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
+CREATE TABLE IF NOT EXISTS `#__sdi_pricing_profile` (
+    `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `guid` VARCHAR(36)  NOT NULL ,
+    `alias` VARCHAR(50)   ,
+    `created_by` INT(11)  NOT NULL ,
+    `created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    `modified_by` INT(11)   ,
+    `modified` DATETIME ,
+    `ordering` INT(11)  ,
+    `state` int(11)  NOT NULL DEFAULT '1',
+    `checked_out` INT(11) NOT NULL DEFAULT '0'  ,
+    `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+    `organism_id` int(11) UNSIGNED NOT NULL,
+    `name` varchar(75) NOT NULL,
+    `fixed_fee` FLOAT(6,2),
+    `surface_rate` FLOAT(6,2),
+    `min_fee` FLOAT(6,2),
+    `max_fee` FLOAT(6,2),
+    PRIMARY KEY (`id`),
+    KEY `#__sdi_pricing_profile_fk1` (`organism_id`),
+    CONSTRAINT `#__sdi_pricing_profile_fk1` FOREIGN KEY (`organism_id`) REFERENCES `#__sdi_organism` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
 CREATE TABLE IF NOT EXISTS `#__sdi_diffusion` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(255)  NOT NULL ,
@@ -2494,29 +2517,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_organism_category_pricing_rebate` (
   KEY `#__sdi_organism_category_pricing_rebate_fk2` (`category_id`),
   CONSTRAINT `#__sdi_organism_category_pricing_rebate_fk1` FOREIGN KEY (`organism_id`) REFERENCES `#__sdi_organism` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `#__sdi_organism_category_pricing_rebate_fk2` FOREIGN KEY (`category_id`) REFERENCES `#__sdi_category` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-
-CREATE TABLE IF NOT EXISTS `#__sdi_pricing_profile` (
-    `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-    `guid` VARCHAR(36)  NOT NULL ,
-    `alias` VARCHAR(50)   ,
-    `created_by` INT(11)  NOT NULL ,
-    `created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-    `modified_by` INT(11)   ,
-    `modified` DATETIME ,
-    `ordering` INT(11)  ,
-    `state` int(11)  NOT NULL DEFAULT '1',
-    `checked_out` INT(11) NOT NULL DEFAULT '0'  ,
-    `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-    `organism_id` int(11) UNSIGNED NOT NULL,
-    `name` varchar(75) NOT NULL,
-    `fixed_fee` FLOAT(6,2),
-    `surface_rate` FLOAT(6,2),
-    `min_fee` FLOAT(6,2),
-    `max_fee` FLOAT(6,2),
-    PRIMARY KEY (`id`),
-    KEY `#__sdi_pricing_profile_fk1` (`organism_id`),
-    CONSTRAINT `#__sdi_pricing_profile_fk1` FOREIGN KEY (`organism_id`) REFERENCES `#__sdi_organism` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_pricing_profile_category_pricing_rebate` (

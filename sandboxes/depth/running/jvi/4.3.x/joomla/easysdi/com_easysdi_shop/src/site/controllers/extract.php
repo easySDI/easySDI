@@ -49,8 +49,9 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
     // Namespace and XSD
     private $nsSdi = 'http://www.easysdi.org/2011/sdi';
     private $xmlnsXsi = 'http://www.w3.org/2001/XMLSchema-instance';
-    private $xsiGetOrders = 'http://localhost/getorders.xsd';// 'http://www.easysdi.org/2011/sdi/getorders.xsd';
-    private $xsiSetProduct = 'http://localhost/setproduct.xsd';// 'http://www.easysdi.org/2011/sdi/setproduct.xsd';
+    private $xsiGetOrders = 'http://www.easysdi.org/2011/sdi/getorders.xsd';
+    private $xsiSetProduct = 'http://www.easysdi.org/2011/sdi/setproduct.xsd';
+    private $xsiException = 'http://www.easysdi.org/2011/sdi/exception.xsd';
 
     /** @var JDatabaseDriver Description */
     private $db;
@@ -188,13 +189,18 @@ class Easysdi_shopControllerExtract extends Easysdi_shopController {
         
         $response = new DOMDocument('1.0', 'utf-8');
         
-        $root = $response->createElement('exception');
+        $root = $response->createElementNS($this->xsiException,'exception');
         
-        $root->appendChild($response->createElement('code', $code));
-        $root->appendChild($response->createElement('message', $message));
-        $root->appendChild($response->createElement('details', $details));
+        $root->appendChild($response->createElementNS($this->xsiException,'code', $code));
+        $root->appendChild($response->createElementNS($this->xsiException,'message', $message));
+        $root->appendChild($response->createElementNS($this->xsiException,'details', $details));
         
         $response->appendChild($root);
+        
+        if(!$response->schemaValidate($this->xsiException)){
+            var_dump(libxml_get_errors());
+            die();
+        }
         
         echo $response->saveXML();
         JFactory::getApplication()->close($code);
