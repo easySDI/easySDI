@@ -285,10 +285,12 @@ class FormHtmlGenerator {
     private function getFieldset(DOMElement $element) {
         $lowerbound = $element->getAttributeNS($this->catalog_uri, 'lowerbound');
         $upperbound = $element->getAttributeNS($this->catalog_uri, 'upperbound');
-        $occurance = $this->domXpathStr->query($this->removeIndex($element->getNodePath()))->length;
+        $guid = $element->getAttributeNS($this->catalog_uri, 'id');
+        
+        $occurance = $this->domXpathStr->query('descendant::*[@catalog:id="' . $guid . '"]')->length;
         $index = $element->getAttributeNS($this->catalog_uri, 'index');
         $exist = $element->getAttributeNS($this->catalog_uri, 'exist');
-        $guid = $element->getAttributeNS($this->catalog_uri, 'id');
+        
         $legendAttribute = $element->getAttributeNS($this->catalog_uri, 'legend');
         $level = $element->getAttributeNS($this->catalog_uri, 'level');
 //        $stereotypeId = $element->firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId');
@@ -842,7 +844,7 @@ class FormHtmlGenerator {
 
         $script->nodeValue = $script_code;
 
-        $aModal = $this->formHtml->createElement('a', JText::_('COM_EASYSDI_CATALOGE_THESAURUS_GEMET'));
+        $aModal = $this->formHtml->createElement('a', JText::_('COM_EASYSDI_CATALOG_THESAURUS_GEMET'));
         $aModal->setAttribute('data-toggle', 'modal');
         $aModal->setAttribute('href', '#myModal');
         $aModal->setAttribute('class', 'btn btn-primary btn-lg');
@@ -870,7 +872,7 @@ class FormHtmlGenerator {
         $btnClose->setAttribute('data-dismiss', 'modal');
         $btnClose->setAttribute('aria-hidden', 'true');
 
-        $h4 = $this->formHtml->createElement('h4', JText::_('COM_EASYSDI_CATALOGE_THESAURUS_GEMET'));
+        $h4 = $this->formHtml->createElement('h4', JText::_('COM_EASYSDI_CATALOG_THESAURUS_GEMET'));
         $h4->setAttribute('class', 'modal-title');
 
         $divBody = $this->formHtml->createElement('div');
@@ -1021,7 +1023,7 @@ class FormHtmlGenerator {
         $script_content = "js = jQuery.noConflict();
 
                     js('document').ready(function() {
-                        js('#" . $field->id . "').tooltip({'trigger':'focus', 'title': \"" . preg_replace('/(\r\n|\n|\r)/','<br/>',addslashes(EText::_($guid, 2))) . "\"});
+                        js('#" . $field->id . "').tooltip({'trigger':'focus', 'title': \"" . preg_replace('/(\r\n|\n|\r)/','<br/>',addslashes(EText::_($guid, 2, null))) . "\"});
                     });";
 
         $script = $this->formHtml->createElement('script', $script_content);

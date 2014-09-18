@@ -166,7 +166,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                     $import['xml'] = $xml;
                 }
             } else {
-                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_XML_IMPORT_ERROR'), 'error');
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_XML_IMPORT_ERROR'), 'error');
             }
         }
 
@@ -267,10 +267,10 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     private function changeStatusAndSave($statusId, $continue = true) {
 
         if ($this->changeStatus($this->data['id'], $statusId, $this->data['published']) != FALSE) {
-            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_CHANGE_STATUS_OK'), 'message');
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_OK'), 'message');
             $this->save(null, true, $continue);
         } else {
-            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_CHANGE_STATUS_ERROR'), 'error');
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_ERROR'), 'error');
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $this->data['id']));
         }
 
@@ -289,10 +289,10 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         if ($changeStatus != FALSE) {
             $this->update($id);
-            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_CHANGE_STATUS_OK'), 'message');
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_OK'), 'message');
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
         } else {
-            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_CHANGE_STATUS_ERROR'), 'error');
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_ERROR'), 'error');
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
         }
     }
@@ -305,9 +305,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     private function update($id) {
         $smd = new sdiMetadata($id);
         if ($smd->updateSDIElement()) {
-            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_CHANGE_STATUS_OK'), 'message');
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_OK'), 'message');
         } else {
-            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_CHANGE_STATUS_ERROR'), 'error');
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_ERROR'), 'error');
         }
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
     }
@@ -445,13 +445,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             }
 
             if (is_array($values)) {
-                
-                // if is boundary
-                if (strpos($xpath, 'EX_Extent') !== false) {
-                    $this->addBoundaries($xpath, $values);
-                    unset($data[$xpath]);
-                }
-                
+
                 foreach ($values as $key => $value) {
                     $index = $key + 1;
                     $indexedXpath = str_replace('MD_Keywords-sla-gmd-dp-keyword', 'MD_Keywords-sla-gmd-dp-keyword-la-' . $index . '-ra-', $xpath, $nbrReplace);
@@ -525,7 +519,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
             if ($smda->update($xml)) {
                 $this->saveTitle($data['guid']);
-                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_SAVE_VALIDE'), 'message');
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_SAVE_VALIDE'), 'message');
                 if ($continue) {
                     $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $data['id']));
                 } else {
@@ -539,7 +533,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                 }
             } else {
                 $this->changeStatus($data['id'], $data['metadatastate_id']);
-                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_SAVE_ERROR'), 'error');
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_SAVE_ERROR'), 'error');
                 $this->setRedirect(JRoute::_('index.php?view=metadata&layout=edit', false));
             }
         }
