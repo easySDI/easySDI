@@ -113,7 +113,7 @@ js('document').ready(function() {
                 case 'control':
                     if (document.formvalidator.isValid(form)) {
                         js('#system-message-container').remove();
-                        bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK', 'COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK'));
+                        bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_CONTROL_OK', 'COM_EASYSDI_CATALOG_METADATA_CONTROL_OK'));
                         break;
                     } else {
                         js('html, body').animate({scrollTop: 0}, 'slow');
@@ -395,7 +395,7 @@ function allopen() {
 }
 
 function confirmImport(task) {
-    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_SAVE_WARNING', 'COM_EASYSDI_CATALOGE_METADATA_SAVE_WARNING'), function(result) {
+    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING', 'COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING'), function(result) {
         if (result) {
             importSwitch(task);
         }
@@ -403,7 +403,7 @@ function confirmImport(task) {
 }
 
 function confirmReplicate() {
-    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_SAVE_WARNING', 'COM_EASYSDI_CATALOGE_METADATA_SAVE_WARNING'), function(result) {
+    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING', 'COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING'), function(result) {
         if (result) {
             js('#searchModal').modal('show');
         }
@@ -412,7 +412,7 @@ function confirmReplicate() {
 }
 
 function confirmFieldset(id, idwi, lowerbound, upperbound) {
-    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_EMPTY_WARNING', 'COM_EASYSDI_CATALOGE_METADATA_EMPTY_WARNING'), function(result) {
+    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING', 'COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING'), function(result) {
         if (result) {
             removeFieldset(id, idwi, lowerbound, upperbound);
         }
@@ -420,7 +420,7 @@ function confirmFieldset(id, idwi, lowerbound, upperbound) {
 }
 
 function confirmField(id, idwi, lowerbound, upperbound) {
-    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_EMPTY_WARNING', 'COM_EASYSDI_CATALOGE_METADATA_EMPTY_WARNING'), function(result) {
+    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING', 'COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING'), function(result) {
         if (result) {
             removeField(id, idwi, lowerbound, upperbound);
         }
@@ -428,7 +428,7 @@ function confirmField(id, idwi, lowerbound, upperbound) {
 }
 
 function confirmReset(){
-    bootbox.confirm("Are you sure?", function(result) {
+    bootbox.confirm("COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE", function(result) {
         if(result){
             
         }
@@ -532,13 +532,13 @@ function filterBoundary(parentPath, value) {
         selectList.html(items);
         selectList.trigger("liszt:updated");
 
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', response['0'].northbound);
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', response['0'].southbound);
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', response['0'].eastbound);
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', response['0'].westbound);
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_2_ra__sla_gmd_dp_EX_GeographicDescription_sla_gmd_dp_geographicIdentifier_sla_gmd_dp_MD_Identifier_sla_gmd_dp_code_sla_gco_dp_CharacterString').attr('value', response['0'].alias);
+        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', response['0'].northbound);
+        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', response['0'].southbound);
+        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', response['0'].eastbound);
+        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', response['0'].westbound);
+        //js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_2_ra__sla_gmd_dp_EX_GeographicDescription_sla_gmd_dp_geographicIdentifier_sla_gmd_dp_MD_Identifier_sla_gmd_dp_code_sla_gco_dp_CharacterString').attr('value', response['0'].alias);
 
-        var map_parent_path = replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox';
+        var map_parent_path = replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox';
         drawBB(map_parent_path);
     });
 }
@@ -547,13 +547,13 @@ function setBoundary(parentPath, value) {
     js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.getBoundaryByName&value=' + value, function(data) {
         var response = js.parseJSON(data);
         var replaceId = parentPath.replace(/-/g, '_');
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', response.northbound);
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', response.southbound);
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', response.eastbound);
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', response.westbound);
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_2_ra__sla_gmd_dp_EX_GeographicDescription_sla_gmd_dp_geographicIdentifier_sla_gmd_dp_MD_Identifier_sla_gmd_dp_code_sla_gco_dp_CharacterString').attr('value', response.alias);
+        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', response.northbound);
+        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', response.southbound);
+        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', response.eastbound);
+        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', response.westbound);
+        //js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_2_ra__sla_gmd_dp_EX_GeographicDescription_sla_gmd_dp_geographicIdentifier_sla_gmd_dp_MD_Identifier_sla_gmd_dp_code_sla_gco_dp_CharacterString').attr('value', response.alias);
 
-        var map_parent_path = replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox';
+        var map_parent_path = replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox';
         drawBB(map_parent_path);
     });
 }

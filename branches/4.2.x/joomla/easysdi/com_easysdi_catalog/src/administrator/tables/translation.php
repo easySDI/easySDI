@@ -72,6 +72,15 @@ class Easysdi_catalogTabletranslation extends sdiTable {
                     }
                 }
                 
+                if (isset($src['text3']) && is_array($src['text3'])) {
+                    foreach($src['text3'] as $k => $v) {
+                        if($k == $key){
+                             $this->text3 = $v;
+                             break;
+                        }
+                    }
+                }
+                
                 if (!$this->store())
 		{
                      $this->setError('Can t store');
@@ -130,6 +139,7 @@ class Easysdi_catalogTabletranslation extends sdiTable {
                 foreach ($rows as $row){
                    $result['text1'] [$row['language_id']] = $row['text1'];
                    $result['text2'] [$row['language_id']] = $row['text2'];
+                   $result['text3'] [$row['language_id']] = $row['text3'];
                 }
                 
                 return $result;
