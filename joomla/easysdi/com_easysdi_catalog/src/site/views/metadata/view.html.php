@@ -213,7 +213,7 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         $metadata = $this->db->loadObject();
 
         $importrefactions = array();
-        $importrefactions[JText::_('COM_EASYSDI_CATALOGE_REPLICATE')] = 'metadata.replicate';
+        $importrefactions[JText::_('COM_EASYSDI_CATALOG_REPLICATE')] = 'metadata.replicate';
         foreach ($importref as $ir) {
             $importrefactions[$ir->name] = 'metadata.import.' . $ir->id;
         }
@@ -221,12 +221,12 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         $toolbar = new SdiToolbar();
 
         if ($this->params->get('editmetadatafieldsetstate') == "allopen") {
-            $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_CLOSE_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
+            $toolbar->append(JText::_('COM_EASYSDI_CATALOG_CLOSE_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
         } else {
-            $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_OPEN_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
+            $toolbar->append(JText::_('COM_EASYSDI_CATALOG_OPEN_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
         }
         if ($metadata->state == sdiMetadata::INPROGRESS) {
-            $toolbar->append(JText::_('COM_EASYSDI_CATALOGE_IMPORT'), 'import', 'btn-small', $importrefactions, true);
+            $toolbar->append(JText::_('COM_EASYSDI_CATALOG_IMPORT'), 'import', 'btn-small', $importrefactions, true);
         }
 
         $reset_url = array('root' => 'index.php',

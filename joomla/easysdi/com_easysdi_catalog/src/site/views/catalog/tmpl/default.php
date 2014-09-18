@@ -52,15 +52,15 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/openla
     <div class="catalog front-end-edit">
         <fieldset id="searchtype" class="radio btn-group pull-right" style="display: none">
             <input type="radio" id="jform_searchtype_simple" class="input-searchtype"  name="jform[searchtype]" value="simple" <?php if(!$this->isAdvanced()){ echo 'checked="checked"'; }?>>
-            <label for="jform_searchtype_simple" class="btn searchtype active"><?php echo JText::_('COM_EASYSDI_CATALOGE_SIMPLE') ; ?></label>
+            <label for="jform_searchtype_simple" class="btn searchtype active"><?php echo JText::_('COM_EASYSDI_CATALOG_SIMPLE') ; ?></label>
             <input type="radio" id="jform_searchtype_advanced" class="input-searchtype" name="jform[searchtype]" value="advanced" <?php if($this->isAdvanced()){ echo 'checked="checked"'; }?>>
-            <label for="jform_searchtype_advanced" class="btn btn-danger searchtype "><?php echo JText::_('COM_EASYSDI_CATALOGE_ADVANCED'); ?></label>
+            <label for="jform_searchtype_advanced" class="btn btn-danger searchtype "><?php echo JText::_('COM_EASYSDI_CATALOG_ADVANCED'); ?></label>
         </fieldset>
         <h1><?php echo JText::_('COM_EASYSDI_CATALOG_TITLE'); ?></h1>
 
         <div class="well">
             <?php echo $this->getSearchForm(); ?>
-            <button id="btn-submit" class="btn btn-primary" type="submit" ><?php echo JText::_('COM_EASYSDI_CATALOGE_SEARCH') ; ?></button>
+            <button id="btn-submit" class="btn btn-primary" type="submit" ><?php echo JText::_('COM_EASYSDI_CATALOG_SEARCH') ; ?></button>
         </div>
     </div>
 </form>

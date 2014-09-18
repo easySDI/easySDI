@@ -1521,8 +1521,9 @@ CREATE TABLE IF NOT EXISTS `#__sdi_translation` (
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `element_guid` VARCHAR(36)  NOT NULL ,
 `language_id` INT(11) UNSIGNED ,
-`text1` VARCHAR(255)   ,
+`text1` VARCHAR(255) ,
 `text2` VARCHAR(500) ,
+`text3` VARCHAR(255) ,
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_translation_fk1` (`language_id` ASC) ,
   CONSTRAINT `#__sdi_translation_fk1`
