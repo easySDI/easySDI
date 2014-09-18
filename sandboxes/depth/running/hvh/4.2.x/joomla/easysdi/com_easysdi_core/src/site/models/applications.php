@@ -76,7 +76,7 @@ class Easysdi_coreModelApplications extends JModelList {
                 )
         );
 
-        $query->from('`#__sdi_application` AS a');
+        $query->from('#__sdi_application AS a');
 
 
         // Join over the users for the checked out user.

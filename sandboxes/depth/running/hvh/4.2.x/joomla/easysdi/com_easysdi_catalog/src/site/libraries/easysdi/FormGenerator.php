@@ -1195,7 +1195,7 @@ class FormGenerator {
 
         switch ($attribute->getAttributeNS($this->catalog_uri, 'childtypeId')) {
             case EnumChildtype::$RELATIONTYPE:
-                $query->select('r.id, r.`name`,m.guid');
+                $query->select('r.id, r.name,m.guid');
                 $query->from('#__sdi_resource r');
                 $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
                 $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
@@ -1236,7 +1236,7 @@ class FormGenerator {
                         break;
 
                     default:
-                        $query->select('id, guid, `name`, `value`');
+                        $query->select('id, guid, name, value');
                         $query->from('#__sdi_attributevalue');
                         $query->where('attribute_id = ' . $attribute->getAttributeNS($this->catalog_uri, 'dbid'));
                         $query->where('state = 1');
@@ -1304,11 +1304,11 @@ class FormGenerator {
     private function getPatterns() {
         $query = $this->db->getQuery(true);
 
-        $query->select('a.id, a.guid, a.pattern as attribute_pattern, s.defaultpattern as stereotype_pattern, s.`value` as stereotype_name');
+        $query->select('a.id, a.guid, a.pattern as attribute_pattern, s.defaultpattern as stereotype_pattern, s.value as stereotype_name');
         $query->from('#__sdi_relation as r');
         $query->innerJoin('#__sdi_attribute as a on r.attributechild_id = a.id');
         $query->leftJoin('#__sdi_sys_stereotype as s on a.stereotype_id = s.id');
-        $query->where('r.`state` = 1');
+        $query->where('r.state = 1');
 
         $this->db->setQuery($query);
         return $this->db->loadObjectList('guid');
@@ -1352,9 +1352,9 @@ class FormGenerator {
     private function getRelationQuery() {
         $query = $this->db->getQuery(true);
         $query->select('r.name, r.id, r.ordering, r.guid, r.childtype_id, r.parent_id, r.lowerbound, r.upperbound, r.rendertype_id, r.relationscope_id, r.editorrelationscope_id');
-        $query->select('c.id as class_id, c.`name` AS class_name, c.guid AS class_guid');
-        $query->select('ca.id as classass_id, ca.`name` AS classass_name, ca.guid AS classass_guid');
-        $query->select('a.id as attribute_id, a.`name` AS attribute_name, a.guid AS attribute_guid, a.isocode AS attribute_isocode, a.type_isocode as attribute_type_isocode, a.codelist as attribute_codelist, a.pattern as attribute_pattern, a.length as attribute_length');
+        $query->select('c.id as class_id, c.name AS class_name, c.guid AS class_guid');
+        $query->select('ca.id as classass_id, ca.name AS classass_name, ca.guid AS classass_guid');
+        $query->select('a.id as attribute_id, a.name AS attribute_name, a.guid AS attribute_guid, a.isocode AS attribute_isocode, a.type_isocode as attribute_type_isocode, a.codelist as attribute_codelist, a.pattern as attribute_pattern, a.length as attribute_length');
         $query->select('rt.id as resourcetype_id, rt.name as resourcetype_name, rt.fragment as resourcetype_fragment');
         $query->select('st.id as stereotype_id, st.value as stereotype_value, st.isocode as stereotype_isocode, st.defaultpattern as stereotype_defaultpattern');
         $query->select('stc.id as class_stereotype_id, stc.value as class_stereotype_value, stc.isocode as class_stereotype_isocode, stc.defaultpattern as class_stereotype_defaultpattern');
@@ -1401,12 +1401,12 @@ class FormGenerator {
         $query = $this->db->getQuery(true);
 
         if ($isList) {
-            $query->select('av.`value`');
+            $query->select('av.value');
             $query->from('#__sdi_relation_defaultvalue rdv');
             $query->innerJoin('#__sdi_attributevalue av on av.id = rdv.attributevalue_id');
             $query->where('rdv.relation_id = ' . (int) $relation_id);
         } else {
-            $query->select('attributevalue_id, `value`');
+            $query->select('attributevalue_id, value');
             $query->from('#__sdi_relation_defaultvalue');
             $query->where('relation_id = ' . (int) $relation_id);
             $query->where('language_id = ' . (int) $language->id);

@@ -102,11 +102,11 @@ class Easysdi_coreModelResources extends JModelList {
         $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
 
         // Join over the created by field 'created_by'
-        $query->select('created_by.name AS created_by');
+        $query->select('created_by.name AS created_by_name');
         $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
 
         // Join over the foreign key 'resourcetype_id'
-        $query->select('trans.text1 AS resourcetype_name, rt.versioning as versioning, rt.view as supportview, rt.diffusion as supportdiffusion, rt.application as supportapplication');
+        $query->select('trans.text1 AS resourcetype_name, rt.versioning as versioning,'. $query->quoteName('rt.view') .' as supportview, rt.diffusion as supportdiffusion, rt.application as supportapplication');
         $query->join('LEFT', '#__sdi_resourcetype AS rt ON rt.id = a.resourcetype_id');
         $query->join('LEFT', '#__sdi_translation AS trans ON trans.element_guid = rt.guid');
         $query->join('LEFT', '#__sdi_language AS lang ON lang.id = trans.language_id');
@@ -115,14 +115,15 @@ class Easysdi_coreModelResources extends JModelList {
 
         //join over resourcetypelink to know if some relations are possible
         $query->select('rtl.state as supportrelation');
-        $query->join('LEFT', '(SELECT n.parent_id, state FROM #__sdi_resourcetypelink n GROUP BY n.parent_id) rtl ON rtl.parent_id = rt.id');
+//        $query->join('LEFT', '(SELECT n.parent_id, state FROM #__sdi_resourcetypelink n GROUP BY n.parent_id) rtl ON rtl.parent_id = rt.id');
+        $query->join('LEFT', '(SELECT n.parent_id, state FROM #__sdi_resourcetypelink n ) rtl ON rtl.parent_id = rt.id');
 
         //join over rights table, check if user have any right on resource
         $query->innerJoin('#__sdi_user_role_resource AS urr ON urr.resource_id = a.id');
         $query->where('urr.user_id = ' . $this->user->id);
 
 
-        $query->group('a.id');
+        //$query->group('a.id');
 
         // Filter by resource type
         $resourcetype = $this->getState('filter.resourcetype');

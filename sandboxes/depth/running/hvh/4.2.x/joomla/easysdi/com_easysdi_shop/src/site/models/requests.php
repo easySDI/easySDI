@@ -80,14 +80,14 @@ class Easysdi_shopModelRequests extends JModelList {
                 )
         );
 
-        $query->from('`#__sdi_order` AS a');
+        $query->from('#__sdi_order AS a');
 
         // Join over the users for the checked out user.
         $query->select('uc.name AS editor');
         $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
 
         // Join over the created by field 'created_by'
-        $query->select('created_by.name AS created_by');
+        $query->select('created_by.name AS created_by_name');
         $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
 
         //Join over the order state value
@@ -119,6 +119,7 @@ class Easysdi_shopModelRequests extends JModelList {
 
         //Only order that the current user has something to do with
         $diffusions = sdiFactory::getSdiUser()->getResponsibleExtraction();
+        if(count($diffusions) == 0) $diffusions[0] = -1;
         $query->innerjoin('#__sdi_order_diffusion od ON od.order_id = a.id');
         $query->innerjoin('#__sdi_diffusion d ON d.id = od.diffusion_id');
         $query->where('d.id IN ( ' . implode(',', $diffusions) . ')');
@@ -128,7 +129,7 @@ class Easysdi_shopModelRequests extends JModelList {
         $query->innerjoin('#__sdi_sys_productmining pm ON pm.id = d.productmining_id');
         $query->where('pm.value = '. $query->quote('manual') );
 
-        $query->group('a.id');
+//        $query->group('a.id');
         $query->order('a.created DESC');
 
         return $query;

@@ -293,7 +293,7 @@ class FormStereotype {
         $db = JFactory::getDbo();
 
         $query = $db->getQuery(true);
-        $query->select('b.id AS code, b.`name` AS description, b.northbound, b.southbound, b.eastbound,b.westbound, bc.`name` AS extent_type');
+        $query->select('b.id AS code, b.name AS description, b.northbound, b.southbound, b.eastbound,b.westbound, bc.name AS extent_type');
         $query->from('#__sdi_boundary b');
         $query->innerJoin('#__sdi_boundarycategory bc ON bc.id = b.category_id');
         $query->where('b.name = ' . $query->quote($name));

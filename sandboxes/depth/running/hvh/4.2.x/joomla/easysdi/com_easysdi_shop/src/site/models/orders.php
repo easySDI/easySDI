@@ -90,14 +90,14 @@ class Easysdi_shopModelOrders extends JModelList {
                 )
         );
 
-        $query->from('`#__sdi_order` AS a');
+        $query->from('#__sdi_order AS a');
 
         // Join over the users for the checked out user.
         $query->select('uc.name AS editor');
         $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
 
         // Join over the created by field 'created_by'
-        $query->select('created_by.name AS created_by');
+        $query->select('created_by.name AS created_by_name');
         $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
 
         //Join over the order state value

@@ -317,7 +317,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     public function searchresource() {
         $query = $this->db->getQuery(true);
 
-        $query->select('m.id, r.`name`, v.created, m.guid, rt.`name` as rt_name, ms.`value` as status');
+        $query->select('m.id, r.name, v.created, m.guid, rt.name as rt_name, ms.value as status');
         $query->from('#__sdi_resource r');
         $query->innerJoin('#__sdi_resourcetype rt on r.resourcetype_id = rt.id');
         $query->innerJoin('#__sdi_version v on v.resource_id = r.id');
@@ -330,7 +330,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $query->where('r.resourcetype_id = ' . (int) $_POST['resourcetype_id']);
         }
         if ($_POST['resource_name'] != '') {
-            $query->where('r.`name` like ' . $query->quote('%' . $query->escape($_POST['resource_name']) . '%'));
+            $query->where('r.name like ' . $query->quote('%' . $query->escape($_POST['resource_name']) . '%'));
         }
 
         $this->db->setQuery($query);
@@ -883,7 +883,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     private function getHref($guid) {
 
         $query = $this->db->getQuery(true);
-        $query->select('m.guid ,ns.`prefix`, rt.fragment');
+        $query->select('m.guid ,ns.prefix, rt.fragment');
         $query->from('#__sdi_resource as r');
         $query->innerJoin('#__sdi_resourcetype as rt ON r.resourcetype_id = rt.id');
         $query->innerJoin('#__sdi_namespace as ns ON rt.fragmentnamespace_id = ns.id');

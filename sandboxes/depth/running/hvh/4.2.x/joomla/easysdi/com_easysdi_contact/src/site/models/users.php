@@ -67,7 +67,7 @@ class Easysdi_coreModelUsers extends JModelList {
                         'list.select', 'a.*'
                 )
         );
-        $query->from('`#__sdi_user` AS a');
+        $query->from('#__sdi_user AS a');
 
         
         // Filter by published state
