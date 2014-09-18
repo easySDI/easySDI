@@ -138,8 +138,6 @@ abstract class Easysdi_mapHelper {
             }
         }
 
-
-
         $output .= 'var locator = null';
 
         $output .= '

@@ -122,7 +122,10 @@ class Easysdi_shopModelRequests extends JModelList {
         if(count($diffusions) == 0) $diffusions[0] = -1;
         $query->innerjoin('#__sdi_order_diffusion od ON od.order_id = a.id');
         $query->innerjoin('#__sdi_diffusion d ON d.id = od.diffusion_id');
-        $query->where('d.id IN ( ' . implode(',', $diffusions) . ')');
+        if (sizeof($diffusions)>0)
+            $query->where('d.id IN (-1, ' . implode(',', $diffusions) . ')');
+        else
+            $query->where('d.id IN (-1)');
         $query->where('od.productstate_id = 3');
         
         //And the product minig is manual

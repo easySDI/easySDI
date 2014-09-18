@@ -178,18 +178,15 @@ class FormGenerator {
             $this->mergeCsw();
 
             $this->csw->formatOutput = true;
-            $response = $this->csw->saveXML();
         }
 
-
-
+        
+        
         $this->structure->formatOutput = true;
-        $html = $this->structure->saveXML();
-
         $this->session->set('structure', serialize($this->structure->saveXML()));
 
         $form = $this->buildForm($root);
-
+       
         return $form;
     }
 
@@ -251,7 +248,7 @@ class FormGenerator {
             }
 
             if (!$relationExist->hasAttributeNS($this->catalog_uri, 'exist')) {
-
+                
                 $exist = $lowerbound + $occurance;
 
                 if ($exist < 1) {
@@ -260,20 +257,19 @@ class FormGenerator {
                 } else {
                     $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
                 }
+                
             }
-
+            
             // Specific case for Stereotype boundary
             $stereotype_id = $parent->getAttributeNS($this->catalog_uri, 'stereotypeId');
-
-            if ($stereotype_id == EnumStereotype::$GEOGRAPHICEXTENT) {
+            
+            if($stereotype_id == EnumStereotype::$GEOGRAPHICEXTENT){
                 $occurance = $this->domXpathStr->query($relationExist->getNodePath())->length;
 
-                if ($occurance == 0) {
-                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
-                } else {
-                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
-                }
+                $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
+                
             }
+            
         }
 
         $parent_id = $parent->getAttributeNS($this->catalog_uri, 'dbid');
@@ -423,26 +419,30 @@ class FormGenerator {
      */
     private function mergeCsw() {
 
+        $exclude_node = array('gmd:geographicElement');
+
         foreach ($this->domXpathStr->query('//*[@catalog:childtypeId="0"]|//*[@catalog:childtypeId="2"]|//*[@catalog:childtypeId="3"]') as $relation) {
             $xpath = $relation->getNodePath();
             $nbr = $this->domXpathCsw->query('/*' . $xpath)->length;
 
-            $hasSibling = isset($relation->nextSibling);
-            if ($hasSibling) {
-                $nextSibling = $relation->nextSibling;
-            }
-            for ($i = 1; $i < $nbr; $i++) {
-                $clone = $relation->cloneNode(true);
-                $clone->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':index', $i + 1);
+            if (!in_array($relation->nodeName, $exclude_node)) {
+                $hasSibling = isset($relation->nextSibling);
                 if ($hasSibling) {
-                    $relation->parentNode->insertBefore($clone, $nextSibling);
-                } else {
-                    $relation->parentNode->appendChild($clone);
+                    $nextSibling = $relation->nextSibling;
                 }
+                for ($i = 1; $i < $nbr; $i++) {
+                    $clone = $relation->cloneNode(true);
+                    $clone->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':index', $i + 1);
+                    if ($hasSibling) {
+                        $relation->parentNode->insertBefore($clone, $nextSibling);
+                    } else {
+                        $relation->parentNode->appendChild($clone);
+                    }
+                }
+
+                $this->getValue($this->structure->getElementsByTagNameNS('*', '*')->item(0));
             }
         }
-
-        $this->getValue($this->structure->getElementsByTagNameNS('*', '*')->item(0));
     }
 
     /**
@@ -514,7 +514,7 @@ class FormGenerator {
         $this->form->formatOutput = true;
         return $this->form->saveXML();
     }
-
+    
     /**
      * Creates hidden fields added to the form.
      * 
@@ -646,7 +646,11 @@ class FormGenerator {
 
         $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
         if ($guid != '') {
-            $field->setAttribute('label', EText::_($guid));
+            if ($this->domXpathStr->query('*/*/*', $attribute)->length > 0) {
+                $field->setAttribute('label', EText::_($guid) . ' (' . $this->ldao->getDefaultLanguage()->value . ')');
+            } else {
+                $field->setAttribute('label', EText::_($guid));
+            }
         } else {
             $field->setAttribute('label', JText::_($label));
         }
@@ -670,7 +674,7 @@ class FormGenerator {
             $field->setAttribute('default', $i18nChild->nodeValue);
             $field->setAttribute('name', FormUtils::serializeXpath($i18nChild->getNodePath()) . $i18nChild->getAttribute('locale'));
             $localeValue = str_replace('#', '', $i18nChild->getAttribute('locale'));
-            $field->setAttribute('label', EText::_($guid) . ' ' . $this->ldao->getByIso3166($localeValue)->value);
+            $field->setAttribute('label', EText::_($guid) . ' (' . $this->ldao->getByIso3166($localeValue)->value . ')');
             $field->setAttribute('description', EText::_($guid, 2));
 
             $fields[] = $field;
@@ -706,8 +710,11 @@ class FormGenerator {
 
         $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue));
         $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
-        $field->setAttribute('label', EText::_($guid));
-        $field->setAttribute('description', EText::_($guid, 2));
+        if ($this->domXpathStr->query('*/*/*', $attribute)->length > 0) {
+            $field->setAttribute('label', EText::_($guid) . ' (' . $this->ldao->getDefaultLanguage()->value . ')');
+        } else {
+            $field->setAttribute('description', EText::_($guid, 2));
+        }
 
         $fields[] = $field;
 
@@ -726,7 +733,7 @@ class FormGenerator {
             $field->setAttribute('default', $i18nChild->nodeValue);
             $field->setAttribute('name', FormUtils::serializeXpath($i18nChild->getNodePath()) . $i18nChild->getAttribute('locale'));
             $localeValue = str_replace('#', '', $i18nChild->getAttribute('locale'));
-            $field->setAttribute('label', EText::_($guid) . ' ' . $this->ldao->getByIso3166($localeValue)->value);
+            $field->setAttribute('label', EText::_($guid) . ' (' . $this->ldao->getByIso3166($localeValue)->value . ')');
             $field->setAttribute('description', EText::_($guid, 2));
 
             $fields[] = $field;
@@ -880,29 +887,26 @@ class FormGenerator {
                         $field->setAttribute('label', JText::_($label));
                     }
 
-                    if ($opt->guid != '') {
-                        $option = $this->form->createElement('option', EText::_($opt->guid));
-                    } else {
-                        $option = $this->form->createElement('option');
-                    }
-
-                    $option->setAttribute('value', $opt->name);
+                    $option = $this->form->createElement('option', $opt->name);
+                    $option->setAttribute('value', $opt->value);
 
                     $field->appendChild($option);
-
+                    
                     if ($upperbound > 1) {
                         $allValues = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode->parentNode->parentNode);
                         $default = array();
                         foreach ($allValues as $node) {
-                            if (!empty($node->firstChild->nodeValue)) {
+                            if(!empty($node->firstChild->nodeValue)){
                                 $default[] = $node->firstChild->nodeValue;
                             }
                         }
                         $field->setAttribute('type', 'MultipleDefaultList');
                         $field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $default), true));
                         $field->setAttribute('css', 'sdi-multi-extent-select');
+                        
                     } else {
                         $field->setAttribute('onchange', 'setBoundary(\'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\',this.value);');
+                        $field->setAttribute('default', $attribute->firstChild->nodeValue) ;
                     }
                     break;
                 case EnumStereotype::$BOUNDARYCATEGORY:
@@ -1124,7 +1128,7 @@ class FormGenerator {
         $name = $relationtype->nodeName;
 
         $validator = $this->getValidatorClass($relationtype);
-        
+
         $field->setAttribute('class', $validator);
         $field->setAttribute('name', FormUtils::serializeXpath($relationtype->getNodePath()));
         $field->setAttribute('type', 'list');
@@ -1204,22 +1208,32 @@ class FormGenerator {
 
                 $this->db->setQuery($query);
                 $result = $this->db->loadObjectList();
-
-                $first = array('id' => '', 'guid' => '', 'name' => '');
-                array_unshift($result, (object) $first);
                 break;
             case EnumChildtype::$ATTRIBUT:
                 switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
 
                     case EnumStereotype::$BOUNDARY:
-                        $query->select('id, guid, name');
-                        $query->from('#__sdi_boundary');
-                        $query->order('name ASC');
+                        if ($attribute->getAttributeNS($this->catalog_uri, 'upperbound') > 1) {
+                            $query->select('b.id, b.guid, b.name as value, bc.name as cat_name');
+                        } else {
+                            $query->select('b.id, b.guid, b.name, b.name as value');
+                        }
+                        $query->from('#__sdi_boundary b');
+                        $query->innerJoin('#__sdi_boundarycategory bc ON b.category_id = bc.id');
+                        $query->order('b.name ASC');
 
                         $this->db->setQuery($query);
                         $result = $this->db->loadObjectList();
+                        
+                        foreach ($result as $r) {
+                            if(!empty($r->cat_name)){
+                                $r->name = EText::_($r->guid).' ['.$r->cat_name.']';
+                            }else{
+                                $r->name = EText::_($r->guid);
+                            }
+                        }
 
-                        $first = array('id' => '', 'guid' => '', 'name' => '');
+                        $first = array('id' => '', 'guid' => '', 'value' => '', 'name' => '');
                         array_unshift($result, (object) $first);
                         break;
 
@@ -1276,7 +1290,7 @@ class FormGenerator {
         $validator = '';
         $guid = $attribute->getAttributeNS($this->catalog_uri, 'id');
         $patterns = $this->getPatterns();
-        
+
         if ($attribute->getAttributeNS($this->catalog_uri, 'lowerbound') > 0) {
             $validator .= ' required ';
         }
@@ -1289,7 +1303,7 @@ class FormGenerator {
             }
 
             return $validator;
-        } elseif($attribute->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE){
+        } elseif ($attribute->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE) {
             return $validator;
         } else {
             return '';

@@ -10,29 +10,29 @@ js('document').ready(function() {
     js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.getResourceType', function(data) {
         resourcetypes = js.parseJSON(data);
 
-        for (var i in resourcetypes){
-            if(resourcetypes[i].versioning != 0){
+        for (var i in resourcetypes) {
+            if (resourcetypes[i].versioning != 0) {
                 js('#version-control-group').show();
             }
         }
 
     });
-    
+
     /**
      * displays or not the checkboxes versions on change event
      */
-    js('#resourcetype_id').change(function(){
-        js('#resourcetype_id option:selected').each(function(){
-            if(js(this).val() == 0){
-                for (var i in resourcetypes){
-                    if(resourcetypes[i].versioning != 0){
+    js('#resourcetype_id').change(function() {
+        js('#resourcetype_id option:selected').each(function() {
+            if (js(this).val() == 0) {
+                for (var i in resourcetypes) {
+                    if (resourcetypes[i].versioning != 0) {
                         js('#version-control-group').show();
                     }
                 }
-            }else{
-                if(resourcetypes[js(this).val()].versioning == 1){
+            } else {
+                if (resourcetypes[js(this).val()].versioning == 1) {
                     js('#version-control-group').show();
-                }else{
+                } else {
                     js('#version-control-group').hide();
                 }
             }
@@ -61,12 +61,12 @@ js('document').ready(function() {
         if (tabIsOpen) {
             btn.text('Tout ouvrir');
             js('.inner-fds').hide();
-            js('.collapse-btn i').removeClass( "icon-arrow-up" ).addClass( "icon-arrow-down" );
+            js('.collapse-btn').attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/expand.png'});
             tabIsOpen = true;
         } else {
             btn.text('Tout fermer');
             js('.inner-fds').show();
-            js('.collapse-btn i').removeClass( "icon-arrow-down" ).addClass( "icon-arrow-up" );
+            js('.collapse-btn').attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/collapse_top.png'});
             tabIsOpen = false;
         }
 
@@ -101,11 +101,11 @@ js('document').ready(function() {
                     break;
                 case 'save':
                 case 'saveAndContinue':
-                    js('.required').removeClass('required').addClass('remove-required');
+                    js('.required').removeClass('required').addClass('remove-required').removeAttr('required').removeAttr('aria-required');
                     if (document.formvalidator.isValid(form)) {
                         Joomla.submitform(task, form);
                     } else {
-                        js('.remove-required').removeClass('remove-required').addClass('required');
+                        js('.remove-required').removeClass('remove-required').addClass('required').attr('aria-required', 'true').attr('required', 'required');
                         js('html, body').animate({scrollTop: 0}, 'slow');
                     }
                     return true;
@@ -113,7 +113,7 @@ js('document').ready(function() {
                 case 'control':
                     if (document.formvalidator.isValid(form)) {
                         js('#system-message-container').remove();
-                        bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK', 'COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK'));
+                        bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_CONTROL_OK', 'COM_EASYSDI_CATALOG_METADATA_CONTROL_OK'));
                         break;
                     } else {
                         js('html, body').animate({scrollTop: 0}, 'slow');
@@ -157,7 +157,7 @@ js('document').ready(function() {
                             if (response.success) {
                                 var options = {size: {x: 600, y: 700}};
                                 SqueezeBox.initialize(options);
-                                SqueezeBox.setContent('iframe', currentUrl+'?option=com_easysdi_catalog&tmpl=component&view=sheet&preview=editor&guid=' + response.guid);
+                                SqueezeBox.setContent('iframe', currentUrl + '?option=com_easysdi_catalog&tmpl=component&view=sheet&preview=editor&guid=' + response.guid);
                             }
 
                         }
@@ -240,7 +240,7 @@ function searchResource(task) {
             if (response.success) {
                 var items = '';
                 js.each(response.result, function() {
-                    items += '<tr><td><input type="radio" name="import[id]" id="import_id_' + this.id + '" value="' + this.id + '" checked=""</td><td>' + this.name + '</td><td>' + this.created + '</td><td>' + this.guid + '</td><td>'+ this.rt_name +'</td><td>'+ Joomla.JText._(this.status) +'</td></tr>';
+                    items += '<tr><td><input type="radio" name="import[id]" id="import_id_' + this.id + '" value="' + this.id + '" checked=""</td><td>' + this.name + '</td><td>' + this.created + '</td><td>' + this.guid + '</td><td>' + this.rt_name + '</td><td>' + Joomla.JText._(this.status) + '</td></tr>';
                 });
                 js('#search_result').html(items);
                 if (response.total > 0) {
@@ -286,12 +286,12 @@ function toggleAll() {
     if (tabIsOpen) {
         btn.text('Tout ouvrir');
         js('.inner-fds').hide();
-        js('.collapse-btn i').removeClass( "icon-arrow-up" ).addClass( "icon-arrow-down" );
+        js('.collapse-btn').attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/expand.png'});
         tabIsOpen = false;
     } else {
         btn.text('Tout fermer');
         js('.inner-fds').show();
-        js('.collapse-btn i').removeClass( "icon-arrow-down" ).addClass( "icon-arrow-up" );
+        js('.collapse-btn').attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/collapse_top.png'});
         tabIsOpen = true;
     }
 }
@@ -300,12 +300,12 @@ function collapse(id) {
 
     var uuid = getUuid('collapse-btn-', id);
     var current_div = js('#inner-fds-' + uuid);
-    var current_btn_icon = js('#' + id + ' i');
+    var current_btn = js('#' + id);
     current_div.toggle('fast', function() {
         if (current_div.css('display') == 'none') {
-            current_btn_icon.removeClass( "icon-arrow-up" ).addClass( "icon-arrow-down" );
+            current_btn.attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/expand.png'});
         } else {
-            current_btn_icon.removeClass( "icon-arrow-down" ).addClass( "icon-arrow-up" );
+            current_btn.attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/collapse_top.png'});
         }
     });
 }
@@ -342,10 +342,10 @@ function addOrRemoveCheckbox(id, relid, parent_path, path) {
 
 }
 
-function addBoundaryToStructure(name, parent_path){
+function addBoundaryToStructure(name, parent_path) {
     console.log(name);
     console.log(parent_path);
-    
+
     js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
         var response = js.parseJSON(data);
         return response.success;
@@ -395,7 +395,7 @@ function allopen() {
 }
 
 function confirmImport(task) {
-    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_SAVE_WARNING', 'COM_EASYSDI_CATALOGE_METADATA_SAVE_WARNING'), function(result) {
+    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING', 'COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING'), function(result) {
         if (result) {
             importSwitch(task);
         }
@@ -403,7 +403,7 @@ function confirmImport(task) {
 }
 
 function confirmReplicate() {
-    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_SAVE_WARNING', 'COM_EASYSDI_CATALOGE_METADATA_SAVE_WARNING'), function(result) {
+    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING', 'COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING'), function(result) {
         if (result) {
             js('#searchModal').modal('show');
         }
@@ -412,7 +412,7 @@ function confirmReplicate() {
 }
 
 function confirmFieldset(id, idwi, lowerbound, upperbound) {
-    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_EMPTY_WARNING', 'COM_EASYSDI_CATALOGE_METADATA_EMPTY_WARNING'), function(result) {
+    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING', 'COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING'), function(result) {
         if (result) {
             removeFieldset(id, idwi, lowerbound, upperbound);
         }
@@ -420,11 +420,19 @@ function confirmFieldset(id, idwi, lowerbound, upperbound) {
 }
 
 function confirmField(id, idwi, lowerbound, upperbound) {
-    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOGE_METADATA_EMPTY_WARNING', 'COM_EASYSDI_CATALOGE_METADATA_EMPTY_WARNING'), function(result) {
+    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING', 'COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING'), function(result) {
         if (result) {
             removeField(id, idwi, lowerbound, upperbound);
         }
     });
+}
+
+function confirmReset(){
+    bootbox.confirm("COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE", function(result) {
+        if(result){
+            
+        }
+    }); 
 }
 
 function removeFromStructure(id) {
@@ -524,13 +532,13 @@ function filterBoundary(parentPath, value) {
         selectList.html(items);
         selectList.trigger("liszt:updated");
 
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', response['0'].northbound);
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', response['0'].southbound);
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', response['0'].eastbound);
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', response['0'].westbound);
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_2_ra__sla_gmd_dp_EX_GeographicDescription_sla_gmd_dp_geographicIdentifier_sla_gmd_dp_MD_Identifier_sla_gmd_dp_code_sla_gco_dp_CharacterString').attr('value', response['0'].alias);
+        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', response['0'].northbound);
+        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', response['0'].southbound);
+        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', response['0'].eastbound);
+        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', response['0'].westbound);
+        //js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_2_ra__sla_gmd_dp_EX_GeographicDescription_sla_gmd_dp_geographicIdentifier_sla_gmd_dp_MD_Identifier_sla_gmd_dp_code_sla_gco_dp_CharacterString').attr('value', response['0'].alias);
 
-        var map_parent_path = replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox';
+        var map_parent_path = replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox';
         drawBB(map_parent_path);
     });
 }
@@ -539,13 +547,13 @@ function setBoundary(parentPath, value) {
     js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.getBoundaryByName&value=' + value, function(data) {
         var response = js.parseJSON(data);
         var replaceId = parentPath.replace(/-/g, '_');
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', response.northbound);
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', response.southbound);
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', response.eastbound);
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', response.westbound);
-        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_2_ra__sla_gmd_dp_EX_GeographicDescription_sla_gmd_dp_geographicIdentifier_sla_gmd_dp_MD_Identifier_sla_gmd_dp_code_sla_gco_dp_CharacterString').attr('value', response.alias);
+        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', response.northbound);
+        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', response.southbound);
+        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').attr('value', response.eastbound);
+        js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').attr('value', response.westbound);
+        //js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_la_2_ra__sla_gmd_dp_EX_GeographicDescription_sla_gmd_dp_geographicIdentifier_sla_gmd_dp_MD_Identifier_sla_gmd_dp_code_sla_gco_dp_CharacterString').attr('value', response.alias);
 
-        var map_parent_path = replaceId + '_sla_gmd_dp_geographicElement_la_1_ra__sla_gmd_dp_EX_GeographicBoundingBox';
+        var map_parent_path = replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox';
         drawBB(map_parent_path);
     });
 }

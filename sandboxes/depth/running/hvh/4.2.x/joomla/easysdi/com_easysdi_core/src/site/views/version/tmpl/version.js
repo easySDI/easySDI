@@ -16,7 +16,7 @@ js(document).ready(function() {
             "sInfoEmpty": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_SHOWING') + " 0 " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_TO') + " 0 " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_OF') + " 0 " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_RECORDS'),
             "sInfoFiltered": "(filtered from _MAX_ total records)"
 
-                    ,
+            ,
             "oPaginate": {
                 "sNext": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_NEXT'),
                 "sPrevious": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_PREVIOUS')
@@ -38,7 +38,7 @@ js(document).ready(function() {
             "sInfoEmpty": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_SHOWING') + " 0 " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_TO') + " 0 " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_OF') + " 0 " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_RECORDS'),
             "sInfoFiltered": "(filtered from _MAX_ total records)"
 
-                    ,
+            ,
             "oPaginate": {
                 "sNext": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_NEXT'),
                 "sPrevious": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_PREVIOUS')
@@ -59,7 +59,7 @@ js(document).ready(function() {
             "sInfoEmpty": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_SHOWING') + " 0 " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_TO') + " 0 " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_OF') + " 0 " + Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_RECORDS'),
             "sInfoFiltered": "(filtered from _MAX_ total records)"
 
-                    ,
+            ,
             "oPaginate": {
                 "sNext": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_NEXT'),
                 "sPrevious": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_PREVIOUS')
@@ -71,15 +71,17 @@ js(document).ready(function() {
 });
 
 function addChild(child) {
-    js('#sdi-children').dataTable().fnAddData([
-        child.id,
-        child.resource,
-        child.version,
-        child.resourcetype,
-        Joomla.JText._(child.state),
-        '<button type="button" id="sdi-childbutton-' + child.id + '" onClick="deleteChild(\'' + child.id + '\');" class="btn btn-warning btn-mini"><i class="icon-white icon-minus"></i></button>'
+    if(js('#sdi-childbutton-'+child.id).length === 0){
+        js('#sdi-children').dataTable().fnAddData([
+            child.id,
+            child.resource,
+            child.version,
+            child.resourcetype,
+            Joomla.JText._(child.state),
+            '<button type="button" id="sdi-childbutton-' + child.id + '" onClick="deleteChild(\'' + child.id + '\');" class="btn btn-warning btn-mini"><i class="icon-white icon-minus"></i></button>'
 
-    ]);
+        ]);
+    }
 }
 
 function deleteChild(child) {

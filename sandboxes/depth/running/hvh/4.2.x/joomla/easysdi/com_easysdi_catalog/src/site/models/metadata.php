@@ -186,7 +186,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                         if ($merged = $cswm->mergeImport($import['importref_id'], $import['fileidentifier'])) {
                             $this->_item->csw = $merged;
                         } else {
-                            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_NOT_FOUND_ERROR'), 'error');
+                            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_NOT_FOUND_ERROR'), 'error');
                         }
                     }
                 }

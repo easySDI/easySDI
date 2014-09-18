@@ -2667,6 +2667,7 @@ CREATE TABLE [#__sdi_translation](
 	[language_id] [bigint] NULL,
 	[text1] [nvarchar](255) NULL,
 	[text2] [nvarchar](500) NULL,
+	[text3] [nvarchar](255) NULL,
  CONSTRAINT [PK_#__sdi_translation_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC

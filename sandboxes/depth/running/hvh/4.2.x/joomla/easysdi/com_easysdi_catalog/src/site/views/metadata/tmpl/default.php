@@ -16,9 +16,9 @@ JHtml::_('formbehavior.chosen', 'select');
 JHtml::_('behavior.calendar');
 JHtml::_('behavior.modal');
 
-JText::script('COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK');
-JText::script('COM_EASYSDI_CATALOGE_METADATA_SAVE_WARNING');
-JText::script('COM_EASYSDI_CATALOGE_METADATA_EMPTY_WARNING');
+JText::script('COM_EASYSDI_CATALOG_METADATA_CONTROL_OK');
+JText::script('COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING');
+JText::script('COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING');
 JText::script('ARCHIVED');
 JText::script('INPROGRESS');
 JText::script('PUBLISHED');
@@ -159,7 +159,7 @@ foreach ($this->validators as $validator) {
     ?>
 
     <div>
-        <h2><?php echo JText::_('COM_EASYSDI_CATALOGE_TITLE_EDIT_METADATA') . ' ' . $title->resource_name ?></h2>
+        <h2><?php echo JText::_('COM_EASYSDI_CATALOG_TITLE_EDIT_METADATA') . ' ' . $title->resource_name ?></h2>
         <h5><?php echo $title->name . ': ' . JText::_($title->value); ?></h5>
     </div>
 
@@ -209,24 +209,24 @@ foreach ($this->validators as $validator) {
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="searchModalLabel"><?php echo JText::_('COM_EASYSDI_CATALOGE_TITLE_IMPORT_METADATA') ; ?></h4>
+                    <h4 class="modal-title" id="searchModalLabel"><?php echo JText::_('COM_EASYSDI_CATALOG_TITLE_IMPORT_METADATA') ; ?></h4>
                 </div>
                 <div class="modal-body">
                     <div>
                         <form id="form_search_resource" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal">
                             <input type="hidden" name="task" value="">
                             <div class="control-group">
-                                <label class="control-label" for="inputEmail"><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_TYPE') ; ?></label>
+                                <label class="control-label" for="inputEmail"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE') ; ?></label>
                                 <div class="controls">
                                     <select id="resourcetype_id" name="resourcetype_id">
                                         <?php foreach ($this->getResourceType() as $resource) { ?>
-                                        <option value="<?php echo $resource->id; ?>"><?php echo EText::_($resource->guid,1,  JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_TYPE_ALL')); ?></option>
+                                        <option value="<?php echo $resource->id; ?>"><?php echo EText::_($resource->guid,1,  JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE_ALL')); ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
                             </div>
                             <div id="resource_name_group" class="control-group">
-                                <label class="control-label" for="inputEmail"><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_NOM') ; ?></label>
+                                <label class="control-label" for="inputEmail"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_NAME') ; ?></label>
                                 <div class="controls">
                                     <input id="resource_name" name="resource_name" type="text" value="">
                                 </div>
@@ -245,12 +245,12 @@ foreach ($this->validators as $validator) {
                                 <label class="control-label" for="version">Version</label>
                                 <div class="controls">
                                     <select id="version" name="version">
-                                       <option value="all"><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_VERSION_ALL') ; ?></option>
-                                       <option value="last" selected="selected"><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_VERSION_LAST') ; ?></option>
+                                       <option value="all"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_VERSION_ALL') ; ?></option>
+                                       <option value="last" selected="selected"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_VERSION_LAST') ; ?></option>
                                     </select>
                                 </div>
                             </div>
-                            <button onclick="Joomla.submitbutton('metadata.searchresource')" type="button" class="btn btn-success btn-small pull-right"><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_SEARCH') ; ?></button>
+                            <button onclick="Joomla.submitbutton('metadata.searchresource')" type="button" class="btn btn-success btn-small pull-right"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_SEARCH') ; ?></button>
                         </form>
 
                         <!-- Select replicate form -->
@@ -260,7 +260,7 @@ foreach ($this->validators as $validator) {
 
                             <table id="search_table" class="table table-bordered">
                                 <thead>
-                                    <tr><th></th><th><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_NOM') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_VERSION') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_GUID') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_TYPE') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_STATUS') ; ?></th></tr>
+                                    <tr><th></th><th><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_NAME') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_VERSION') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_GUID') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_STATUS') ; ?></th></tr>
                                 </thead>
                                 <tbody id="search_result">
 
@@ -271,7 +271,7 @@ foreach ($this->validators as $validator) {
                 </div>
                 <div class="modal-footer">
                     <button id="import-btn" style="display: none" type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.edit')">Importer</button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_CLOSE') ; ?></button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_CLOSE') ; ?></button>
                 </div>
             </div>
         </div>
@@ -292,7 +292,7 @@ foreach ($this->validators as $validator) {
                         <input type="hidden" name="import[importref_id]" class="import_importref_id" value=""/>
 
                         <div class="control-group">
-                            <div class="control-label"><label id="xml_file-lbl" for="xml_file" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_XML_FILE') ; ?></label></div>
+                            <div class="control-label"><label id="xml_file-lbl" for="xml_file" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_XML_FILE') ; ?></label></div>
                             <div class="controls">
                                 <div class="input-append">
                                     <input type="file" name="xml_file" id="xml_file"/>
@@ -302,7 +302,7 @@ foreach ($this->validators as $validator) {
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.importxml')" ><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_IMPORT') ; ?></button>
+                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.importxml')" ><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_IMPORT') ; ?></button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
                 </div>
             </div>
@@ -324,7 +324,7 @@ foreach ($this->validators as $validator) {
                         <input type="hidden" name="import[importref_id]" class="import_importref_id" value=""/>
 
                         <div class="control-group">
-                            <div class="control-label"><label id="import_fileidentifier-lbl" for="import_fileidentifier" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_FILEIDENTIFIER') ; ?></label></div>
+                            <div class="control-label"><label id="import_fileidentifier-lbl" for="import_fileidentifier" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_FILEIDENTIFIER') ; ?></label></div>
                             <div class="controls">
                                 <div class="input-append">
                                     <input class="required" type="text" name="import[fileidentifier]" id="import_fileidentifier"/>
@@ -334,7 +334,7 @@ foreach ($this->validators as $validator) {
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.importcsw')" ><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_IMPORT') ; ?></button>
+                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.importcsw')" ><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_IMPORT') ; ?></button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
                 </div>
             </div>

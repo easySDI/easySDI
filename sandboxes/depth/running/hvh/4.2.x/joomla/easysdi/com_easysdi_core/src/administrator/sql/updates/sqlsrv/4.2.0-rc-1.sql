@@ -1,3 +1,4 @@
+ALTER TABLE #__sdi_translation ADD text3  varchar(255) NULL;
 
 ALTER TABLE #__sdi_resourcetype ALTER COLUMN modified_by int NULL;
 
