@@ -116,6 +116,8 @@ class Easysdi_coreModelResources extends JModelList {
         //join over resourcetypelink to know if some relations are possible
         $query->select('rtl.state as supportrelation');
         $query->join('LEFT', '(SELECT n.parent_id, state FROM #__sdi_resourcetypelink n GROUP BY n.parent_id) rtl ON rtl.parent_id = rt.id');
+        $query->select('rtl2.state as canbechild');
+        $query->join('LEFT', '(SELECT child_id, state FROM #__sdi_resourcetypelink GROUP BY child_id) rtl2 ON rtl2.child_id=rt.id');
 
         //join over rights table, check if user have any right on resource
         $query->innerJoin('#__sdi_user_role_resource AS urr ON urr.resource_id = a.id');

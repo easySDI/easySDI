@@ -43,9 +43,18 @@ if ($this->item) :
                 <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_EDIT_VERSION') . ' ' . $this->item->resourcename; ?></h1>
             <?php endif; ?>
         <?php endif; ?>
+                
+                <?php if($this->item->availablechildren): ?>
         <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+            <?php else:?>
+            <div>
+                <?php echo $this->getTopActionBar(); ?>
+            </div>
+            <?php endif;?>
 
             <div class="row-fluid">
+                <?php if($this->item->availablechildren): ?>
+                <!-- Criteria -->
                 <div class="span12">
                     <div class="well">
                         <div class="sdi-searchcriteria">
@@ -102,7 +111,8 @@ if ($this->item) :
                         </div>
                     </div>
                 </div>
-
+                
+                <!-- Child -->
                 <div class="row-fluid">
                     <div class="span12">
                         <div class="well">
@@ -142,7 +152,9 @@ if ($this->item) :
                         </div>
                     </div>
                 </div>
-
+                <?php endif;?>
+                
+                <!-- Parents -->
                 <div class="row-fluid">
                     <div class="span12">
                         <div class="well">
@@ -181,7 +193,7 @@ if ($this->item) :
                 </div>
             </div>
 
-
+<?php if($this->item->availablechildren): ?>
             <div>
                 <?php echo $this->getToolbar(); ?>
             </div>
@@ -193,7 +205,7 @@ if ($this->item) :
             <input type = "hidden" name = "option" value = "com_easysdi_core" />
             <?php echo JHtml::_('form.token'); ?>
         </form>
-
+<?php endif;?>
 
 
     </div>

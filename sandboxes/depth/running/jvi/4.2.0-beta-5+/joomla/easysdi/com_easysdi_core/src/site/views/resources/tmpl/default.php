@@ -249,7 +249,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                                        <a id="<?php echo $item->id; ?>_new_linker" href=""><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_NEW_VERSION'); ?></a>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($item->supportrelation): ?>
+                                                <?php if ($item->supportrelation || $item->canbechild): ?>
                                                     <li>
                                                         <a class="<?php echo $item->id; ?>_linker" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.edit&id=' . $item->metadata[0]->version); ?>"><?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_RELATIONS'); ?></a>
                                                     </li>
