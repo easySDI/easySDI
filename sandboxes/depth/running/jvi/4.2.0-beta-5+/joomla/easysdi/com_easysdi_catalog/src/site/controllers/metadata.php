@@ -102,6 +102,10 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $versions = $this->core_helpers->getViralVersionnedChild($version);
 
         $this->_syncronize($versions);
+        
+        // Redirect to resources list
+        JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_SYNCHRONIZE_SUCCESS'), 'message');
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
     }
 
     private function _syncronize($versions) {

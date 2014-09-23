@@ -263,7 +263,11 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                             
                                             if($item->supportrelation || $item->canbechild)
                                                 array_push($section,
-                                                    "<li><a class='{$item->id}_linker' href='".JRoute::_("index.php?option=com_easysdi_core&task=version.edit&id={$item->metadata[0]->version}")."'>".JText::_('COM_EASYSDI_CORE_RESOURCES_RELATIONS')."</a></li>",
+                                                    "<li><a class='{$item->id}_linker' href='".JRoute::_("index.php?option=com_easysdi_core&task=version.edit&id={$item->metadata[0]->version}")."'>".JText::_('COM_EASYSDI_CORE_RESOURCES_RELATIONS')."</a></li>"
+                                                    );
+                                            
+                                            if($item->supportrelation)
+                                                array_push($section,
                                                     "<li class='child_list' id='{$item->id}_child_list'><a id='{$item->id}_child_linker' href='".JRoute::_("index.php?option=com_easysdi_core&parentid={$item->metadata[0]->version}")."'>".JText::_('COM_EASYSDI_CORE_RESOURCES_CHILDREN_LIST')." (<span id='{$item->metadata[0]->version}_child_num'>0</span>)</a></li>"
                                                     );
                                             
