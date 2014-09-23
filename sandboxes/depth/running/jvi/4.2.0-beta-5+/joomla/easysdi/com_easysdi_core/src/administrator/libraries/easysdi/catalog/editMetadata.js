@@ -179,6 +179,9 @@ js('document').ready(function() {
                         js('#publishModal').modal('show');
                         break;
                     }
+                    else{
+                        js('html, body').animate({scrollTop: 0}, 'slow');
+                    }
                     break;
                 case 'publishAndClose':
                     if (document.formvalidator.isValid(form)) {
@@ -366,14 +369,16 @@ function addFieldset(id, idwi, relid, parent_path, lowerbound, upperbound) {
 
         js(data).find('button').each(function() {
             idbtn = js(this).attr('id');
-            Calendar.setup({
-                inputField: idbtn.replace('_img', ''),
-                ifFormat: "%Y-%m-%d",
-                button: idbtn,
-                align: "Tl",
-                singleClick: true,
-                firstDay: 1
-            });
+            if('undefined' !== typeof idbtn)
+                Calendar.setup({
+                    inputField: idbtn.replace('_img', ''),
+                    ifFormat: "%Y-%m-%d",
+                    button: idbtn,
+                    align: "Tl",
+                    singleClick: true,
+                    firstDay: 1
+                });
+            //else console.log(js(this));
         });
         var occurance = getOccuranceCount('.outer-fds-' + idwi);
         if (upperbound > occurance) {
