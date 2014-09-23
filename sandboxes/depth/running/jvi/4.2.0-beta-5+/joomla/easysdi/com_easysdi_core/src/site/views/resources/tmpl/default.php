@@ -201,13 +201,13 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                         if ($this->user->authorize($item->id, sdiUser::metadataresponsible)){
                                             if ($item->metadata[0]->state == sdiMetadata::VALIDATED)
                                                 array_push($section, 
-                                                    "<li><a class='{$item->id}_linker' onclick='showModal(\"{$item->metadata[0]->id}\");return false;'>".JText::_('COM_EASYSDI_CORE_RESOURCES_PUBLISH_METADATA')."</a></li>"
+                                                    "<li><a class='{$item->id}_linker' href='#' onclick='showModal(\"{$item->metadata[0]->id}\");return false;'>".JText::_('COM_EASYSDI_CORE_RESOURCES_PUBLISH_METADATA')."</a></li>"
                                                 );
                                             
                                             if ($item->metadata[0]->state == sdiMetadata::PUBLISHED)
                                                 array_push($section, 
                                                     "<li><a class='{$item->id}_linker' href='".JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.inprogress&id=' . $item->metadata[0]->id)."'>".JText::_('COM_EASYSDI_CORE_INPROGRESS_ITEM')."</a></li>",
-                                                    "<li><a class='{$item->id}_modaler' onclick='showModal(\"{$item->metadata[0]->id}\");return false;'>".JText::_('COM_EASYSDI_CORE_RESOURCES_CHANGEPUBLISHEDDATE_METADATA')."</a></li>",
+                                                    "<li><a class='{$item->id}_modaler' href='#' onclick='showModal(\"{$item->metadata[0]->id}\");return false;'>".JText::_('COM_EASYSDI_CORE_RESOURCES_CHANGEPUBLISHEDDATE_METADATA')."</a></li>",
                                                     "<li><a class='{$item->id}_linker' href='".JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.archive&id=' . $item->metadata[0]->id)."'>".JText::_('COM_EASYSDI_CORE_RESOURCES_ARCHIVE_METADATA')."</a></li>"
                                                 );
                                             
@@ -221,7 +221,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                         
                                         if ($item->metadata[0]->state == sdiMetadata::INPROGRESS && $this->user->authorize($item->id, sdiUser::metadataeditor))
                                             array_push($dropdown, array(
-                                                "<li><a class='{$item->id}_modaler' onclick='showAssignementModal(\"{$item->metadata[0]->version}\");return false;'>".JText::_('COM_EASYSDI_CORE_RESOURCES_ASSIGN_METADATA')."</a></li>"
+                                                "<li><a class='{$item->id}_modaler' href='#' onclick='showAssignmentModal(\"{$item->metadata[0]->version}\");return false;'>".JText::_('COM_EASYSDI_CORE_RESOURCES_ASSIGN_METADATA')."</a></li>"
                                                 //, "<li><a class='{$item->id}_linker' href='".JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.notify&id=' . $item->metadata[0]->id)."'>".JText::_('COM_EASYSDI_CORE_RESOURCES_NOTIFY_METADATA')."</a></li>"
                                             ));
                                         
