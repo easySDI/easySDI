@@ -10,9 +10,7 @@ defined('_JEXEC') or die;
 
 <div class='catalog catalog-assignments'>
     <h1><?php echo JText::_('COM_EASYSDI_CATALOG_TITLE_ASSIGNMENTS'); ?> <a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=resource.edit&id=' . (int) $this->state->resource['id']); ?>"><?php echo $this->state->resource['name'] ?></a></h1>
-    <?php echo $title; ?>
-
-
+    
     <div class="items">
         <div class="well">
             <div class="row-fluid">

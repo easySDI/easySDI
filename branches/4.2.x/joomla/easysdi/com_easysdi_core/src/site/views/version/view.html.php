@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 jimport('joomla.html.toolbar');
+require_once JPATH_BASE . '/administrator/components/com_easysdi_core/libraries/easysdi/common/SdiToolbar.php';
 
 /**
  * View to edit
@@ -88,6 +89,19 @@ class Easysdi_coreViewVersion extends JViewLegacy {
         if ($this->params->get('robots')) {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
+    }
+    
+    public function getTopActionBar(){
+        $toolbar = new SdiToolbar();
+        
+        $back_url = array('root' => 'index.php',
+            'option' => 'com_easysdi_core',
+            'view' => 'resources',
+            'parentid' => $this->state->parentid);
+        
+        $toolbar->appendBtnRoute(JText::_('COM_EASYSDI_CORE_BACK'), JRoute::_(Easysdi_coreHelper::array2URL($back_url)), 'btn-small btn-danger btn-back-ressources');
+        
+        return $toolbar->renderToolbar();
     }
 
     function getToolbar() {

@@ -18,8 +18,18 @@ js(document).ready(function() {
     });
 
     initActionList();
+    
+    js('#search-reset').on('click', resetSearch);
 
 });
+
+var resetSearch = function(){
+    js('#filter_resourcetype option:first, #filter_resourcetype_children option:first').attr('selected', true);
+    js('#filter_status option:first, #filter_status_children option:first').attr('selected', true);
+    js('#filter_search, #filter_search_children').val('');
+    js('form.form-search').submit();
+    return false;
+};
 
 /**
  * Initalise child list

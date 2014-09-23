@@ -163,6 +163,7 @@ class Easysdi_coreModelVersion extends JModelForm {
                         $this->_item->availablechildren = $result;
                     }
                 }
+                else $this->_item->availablechildren = false;
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }

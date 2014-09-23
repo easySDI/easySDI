@@ -108,29 +108,25 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
      * Get children of a metadata
      */
     public function getChildren() {
+        $user = new sdiUser();
+        
         $parentId = JFactory::getApplication()->input->getInt('parentId', null);
+        
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        $query->select('v.resource_id');
-        $query->from('#__sdi_version v');
-        $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
-        $query->where('m.id = ' . (int) $parentId);
-
-        $db->setQuery($query);
-        $resource = $db->loadObject();
-
-        $query = $db->getQuery(true);
-        $query->select('vl.id');
-        $query->from('#__sdi_versionlink vl');
-        $query->innerJoin('#__sdi_metadata m on vl.parent_id = m.version_id');
-        $query->where('m.id = ' . $parentId);
-
+        $query = $db->getQuery(true)
+                ->select('r.id, vl.parent_id')
+                ->from('#__sdi_resource r')
+                ->innerJoin('#__sdi_user_role_resource urr ON urr.resource_id=r.id')
+                ->innerJoin('#__sdi_version v ON v.resource_id=r.id')
+                ->innerJoin('#__sdi_versionlink vl ON v.id=vl.child_id')
+                ->where('vl.parent_id='.(int)$parentId.' AND urr.user_id='.(int)$user->id);
+        
         $db->setQuery($query);
         $childs = $db->loadObjectList();
 
         $response = array();
         $response['success'] = 'true';
-        $response['resource_id'] = $resource->resource_id;
+        $response['resource_id'] = $childs[0]->parent_id;
         $response['num'] = count($childs);
 
         echo json_encode($response);
