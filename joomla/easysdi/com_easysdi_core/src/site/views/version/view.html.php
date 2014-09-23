@@ -96,8 +96,9 @@ class Easysdi_coreViewVersion extends JViewLegacy {
         
         $back_url = array('root' => 'index.php',
             'option' => 'com_easysdi_core',
-            'view' => 'resources',
-            'parentid' => $this->state->parentid);
+            'view' => 'resources');
+        if(isset($this->state->parentid))
+            $back_url['parentid'] = $this->state->parentid;
         
         $toolbar->appendBtnRoute(JText::_('COM_EASYSDI_CORE_BACK'), JRoute::_(Easysdi_coreHelper::array2URL($back_url)), 'btn-small btn-danger btn-back-ressources');
         

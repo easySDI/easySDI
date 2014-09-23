@@ -1426,10 +1426,14 @@ class FormGenerator {
             $query->innerJoin('#__sdi_attributevalue av on av.id = rdv.attributevalue_id');
             $query->where('rdv.relation_id = ' . (int) $relation_id);
         } else {
-            $query->select('attributevalue_id, `value`');
+            /*$query->select('attributevalue_id, `value`');
             $query->from('#__sdi_relation_defaultvalue');
             $query->where('relation_id = ' . (int) $relation_id);
-            $query->where('language_id = ' . (int) $language->id);
+            $query->where('language_id = ' . (int) $language->id);*/
+            
+            $query->select('value')
+                    ->from('#__sdi_relation_defaultvalue')
+                    ->where('relation_id='.(int)$relation_id);
         }
 
         $this->db->setQuery($query);

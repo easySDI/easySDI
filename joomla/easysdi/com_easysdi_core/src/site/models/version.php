@@ -126,8 +126,8 @@ class Easysdi_coreModelVersion extends JModelForm {
 
                 //Get search result
                 if (!empty($resourcetypechild)) {//No resourcetype can be child
-                    $run = $app->getUserState('com_easysdi_core.edit.version.runsearch');
-                    if (!empty($run)) {
+                    //$run = $app->getUserState('com_easysdi_core.edit.version.runsearch');
+                    //if (!empty($run)) {
                         $query = $db->getQuery(true)
                                 ->select('v.id as id, v.name as version, r.name as resource, rt.alias as resourcetype, ms.value as state')
                                 ->from('#__sdi_version v')
@@ -161,7 +161,7 @@ class Easysdi_coreModelVersion extends JModelForm {
                         $db->setQuery($query);
                         $result = $db->loadObjectList();
                         $this->_item->availablechildren = $result;
-                    }
+                    //}
                 }
                 else $this->_item->availablechildren = false;
             } elseif ($error = $table->getError()) {
