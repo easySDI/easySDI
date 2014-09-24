@@ -36,8 +36,8 @@ var resetSearch = function(){
  */
 function initActionList() {
     js('.version-status').each(function(i) {
+        getChildNumer(js(this).find('option:selected').attr('rel'));
         var metadata_id = js(this).val();
-        getChildNumer(metadata_id);
         getNewVersionRight(metadata_id);
         getSynchronisationInfo(metadata_id);
     });
@@ -148,7 +148,7 @@ function onVersionChange(resource_id) {
     changeRelationLink(resource_id, version_id);
     changeChildLink(resource_id, version_id);
 
-    getChildNumer(version_id);
+    getChildNumer(js("select#" + resource_id + "_select").find('option:selected').attr('rel'));
     getNewVersionRight(version_id)
 }
 
