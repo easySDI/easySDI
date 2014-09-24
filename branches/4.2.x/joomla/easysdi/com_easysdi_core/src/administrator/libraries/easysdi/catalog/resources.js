@@ -103,11 +103,11 @@ function getSynchronisationInfo(metadata_id){
  * @param {int} id
  * @returns void
  */
-function showModal(id) {
+/*function showModal(id) {
     js('html, body').animate({scrollTop: 0}, 'slow');
     js('input[name^="id"]').val(id);
     js('#publishModal').modal('show');
-}
+}*/
 
 
 function showModal(id, modalId) {
