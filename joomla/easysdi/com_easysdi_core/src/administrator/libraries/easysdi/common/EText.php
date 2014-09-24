@@ -12,7 +12,11 @@
  */
 class EText {
 
-    public static function _($guid, $text = 1, $default = 'Translation not found') {
+    public static function _($guid, $text = 1, $default = '') {
+        /*if(is_null($default)){
+            $default = JText::_('COM_EASYSDI_CORE_TRANSLATION_NOT_FOUND');
+        }*/
+        
         $lang = JFactory::getLanguage();
         $db = JFactory::getDbo();
 
