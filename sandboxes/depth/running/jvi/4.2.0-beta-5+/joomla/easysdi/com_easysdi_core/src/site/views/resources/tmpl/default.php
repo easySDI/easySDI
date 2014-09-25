@@ -58,7 +58,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                     <span class="caret"></span>
                                 </a>
                             <?php else: ?>
-                                 <a class="btn btn-success dropdown-toggle" href="<?php echo JRoute::_('index.php?option=com_easysdi_core'); ?>">
+                                 <a class="btn btn-success dropdown-toggle" href="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=resources'); ?>">
                                     <i class="icon-white icon-plus-sign"></i> <?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_BACK'); ?>
                                 </a>
                             <?php endif; ?>
@@ -277,7 +277,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                             
                                             if($item->supportrelation)
                                                 array_push($section,
-                                                    "<li class='child_list' id='{$item->id}_child_list'><a id='{$item->id}_child_linker' href='".JRoute::_("index.php?option=com_easysdi_core&parentid={$item->metadata[0]->version}")."'>".JText::_('COM_EASYSDI_CORE_RESOURCES_CHILDREN_LIST')." (<span id='{$item->metadata[0]->version}_child_num'>0</span>)</a></li>"
+                                                    "<li class='child_list' id='{$item->id}_child_list'><a id='{$item->id}_child_linker' href='".JRoute::_("index.php?option=com_easysdi_core&view=resources&parentid={$item->metadata[0]->version}")."'>".JText::_('COM_EASYSDI_CORE_RESOURCES_CHILDREN_LIST')." (<span id='{$item->metadata[0]->version}_child_num'>0</span>)</a></li>"
                                                     );
                                             
                                             if($item->supportapplication)
