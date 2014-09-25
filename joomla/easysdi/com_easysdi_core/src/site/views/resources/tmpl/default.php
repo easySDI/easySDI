@@ -160,7 +160,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
 
                                         <select id="<?php echo $item->id; ?>_select" onchange="onVersionChange(<?php echo $item->id; ?>)" class="inputbox version-status">
                                             <?php foreach ($item->metadata as $key => $value) { ?>
-                                                <option value="<?php echo $value->id; ?>"><?php echo $value->name; ?> : <?php echo JText::_($value->value); ?></option>
+                                                <option value="<?php echo $value->id; ?>" rel="<?php echo $value->version; ?>"><?php echo $value->name; ?> : <?php echo JText::_($value->value); ?></option>
                                             <?php } ?>
                                         </select>
                                     <?php else : ?>
