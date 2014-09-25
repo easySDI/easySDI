@@ -263,7 +263,7 @@ class FormHtmlGenerator {
         $divOuter->setAttribute('id', 'outer-fds-' . FormUtils::serializeXpath($relation->getNodePath()));
         $divOuter->setAttribute('class', 'outer-' . $level . ' outer-fds-' . FormUtils::serializeXpath($relation->getNodePath()));
 
-        $divAction = $this->formHtml->createElement('div', EText::_($relation->getAttributeNS($this->catalog_uri, 'id')) . ' ' . $debug);
+        $divAction = $this->formHtml->createElement('div', EText::_($relation->getAttributeNS($this->catalog_uri, 'id')) . ' ' . $debug);//
         $divAction->setAttribute('class', 'action-' . $level);
 
         $aAdd->appendChild($iAdd);
@@ -319,7 +319,7 @@ class FormHtmlGenerator {
         $fieldset->setAttribute('id', 'fds-' . FormUtils::serializeXpath($element->getNodePath()));
 
         if ($guid != '') {
-            $spanLegend = $this->formHtml->createElement('span', EText::_($guid));
+            $spanLegend = $this->formHtml->createElement('span', EText::_($guid));//
         } else {
             $spanLegend = $this->formHtml->createElement('span', JText::_($legendAttribute));
         }
@@ -476,6 +476,12 @@ class FormHtmlGenerator {
                                 default:
                                     $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath)));
                                     break;
+                            }
+                            
+                            // Prevent against metadata corruption
+                            if($jfield === false){
+                                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_RESOURCES_METADATA_CORRUPT'), 'warning');
+                                return JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', true));
                             }
                             
                             $fieldid = $jfield->__get('id');
@@ -754,12 +760,22 @@ class FormHtmlGenerator {
      * @return DOMElement
      */
     private function getGemet(DOMElement $attribute) {
+        // predefine default language
+        $default = $this->ldao->getDefaultLanguage();
+        
+        // retrieve user data
+        $user = new sdiUser();
+        $userParams = json_decode($user->juser->params);
+        
+        // build languages array
         $languages = array();
         foreach ($this->ldao->getAll() as $language) {
             $languages[] = '\'' . $language->gemet . '\'';
+            
+            // if match, override default language
+            if($language->code == $userParams->language)
+                $default = $language;
         }
-
-        $default = $this->ldao->getDefaultLanguage();
 
         $parent_path = str_replace('-', '_', FormUtils::serializeXpath($attribute->parentNode->getNodePath()));
         $div = $this->formHtml->createElement('div');
