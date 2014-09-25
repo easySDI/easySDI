@@ -610,6 +610,27 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         echo json_encode($response);
         die();
     }
+    
+    public function getPublishRight(){
+        $metadata_id = JFactory::getApplication()->input->get('metadata_id', null, 'int');
+
+        // Check if metadata has parent viral versionned version
+        $db = JFactory::getDbo();
+        
+        $query = $db->getQuery(true)
+                ->select('v.resource_id AS id, COUNT(md.id) as canPublish')
+                ->from('#__sdi_metadata m')
+                ->innerJoin('#__sdi_version v ON m.version_id = v.id')
+                ->innerJoin('#__sdi_versionlink vl ON v.id=vl.parent_id')
+                ->innerJoin('#__sdi_metadata md ON vl.child_id=md.version_id')
+                ->where('m.id = ' . $metadata_id.' AND md.metadatastate_id != '.sdiMetadata::PUBLISHED)
+                ;
+        
+        $result = $db->setQuery($query)->loadAssoc();
+        
+        echo json_encode($result);
+        die();
+    }
 
     /**
      * 
