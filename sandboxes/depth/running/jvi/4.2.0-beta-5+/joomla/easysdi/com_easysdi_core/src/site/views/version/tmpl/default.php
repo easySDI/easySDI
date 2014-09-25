@@ -33,6 +33,13 @@ if ($this->item) :
     JText::script('COM_EASYSDI_CORE_DATATABLES_NEXT');
     JText::script('COM_EASYSDI_CORE_DATATABLES_PREVIOUS');
     JText::script('COM_EASYSDI_CORE_DATATABLES_SEARCH');
+    
+    //METADATASTATES
+    JText::script('INPROGRESS');
+    JText::script('VALIDATED');
+    JText::script('PUBLISHED');
+    JText::script('ARCHIVED');
+    JText::script('TRASHED');
     ?>
 
     <div class="version-edit front-end-edit">

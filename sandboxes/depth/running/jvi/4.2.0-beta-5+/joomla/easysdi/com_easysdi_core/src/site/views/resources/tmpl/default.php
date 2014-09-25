@@ -19,6 +19,7 @@ JHtml::_('behavior.calendar');
 
 JText::script('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_BY');
 JText::script('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_THE');
+JText::script('COM_EASYSDI_CORE_UNPUBLISHED_CHILDREN');
 
 $document = JFactory::getDocument();
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/resources.js');
@@ -204,7 +205,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                         if ($this->user->authorize($item->id, sdiUser::metadataresponsible)){
                                             if ($item->metadata[0]->state == sdiMetadata::VALIDATED)
                                                 array_push($section, 
-                                                    "<li><a class='{$item->id}_linker' href='#' onclick='showModal(\"{$item->metadata[0]->id}\");return false;'>".JText::_('COM_EASYSDI_CORE_RESOURCES_PUBLISH_METADATA')."</a></li>"
+                                                    "<li><a class='{$item->id}_linker' id='{$item->metadata[0]->id}_publish_linker' href=''>".JText::_('COM_EASYSDI_CORE_RESOURCES_PUBLISH_METADATA')."</a></li>"
                                                 );
                                             
                                             if ($item->metadata[0]->state == sdiMetadata::PUBLISHED)
