@@ -186,14 +186,17 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                         </a>
                                         
                                         <?php
-                                        
+                                        /**
+                                         * building the dropdown accross an array of arrays solves divider defect
+                                         */
                                         $dropdown = array();
                                         
+                                        /* FIRST SECTION */
                                         $section = array(
                                             "<li><a class='{$item->id}_linker modal' rel='{handler:\"iframe\",size:{x:600,y:700}}' href='".JRoute::_('index.php?option=com_easysdi_catalog&tmpl=component&view=sheet&preview=editor&id=' . $item->metadata[0]->id)."'>".JText::_('COM_EASYSDI_CORE_RESOURCES_VIEW_METADATA')."</a></li>"
                                         );
                                         
-                                        if ($this->user->authorize($item->id, sdiUser::metadataeditor) || $this->user->authorize($item->id, sdiUser::metadataresponsible))
+                                        if ($this->user->authorize($item->id, sdiUser::metadataeditor))
                                             array_push($section, 
                                                 "<li><a class='{$item->id}_linker' href='".JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $item->metadata[0]->id)."'>".JText::_('COM_EASYSDI_CORE_RESOURCES_EDIT_METADATA')."</a></li>"
                                             );
@@ -219,12 +222,14 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                         
                                         array_push($dropdown, $section);
                                         
+                                        /* SECOND SECTION - optional */
                                         if ($item->metadata[0]->state == sdiMetadata::INPROGRESS && $this->user->authorize($item->id, sdiUser::metadataeditor))
                                             array_push($dropdown, array(
                                                 "<li><a class='{$item->id}_modaler' href='#' onclick='showAssignmentModal(\"{$item->metadata[0]->version}\");return false;'>".JText::_('COM_EASYSDI_CORE_RESOURCES_ASSIGN_METADATA')."</a></li>"
                                                 //, "<li><a class='{$item->id}_linker' href='".JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.notify&id=' . $item->metadata[0]->id)."'>".JText::_('COM_EASYSDI_CORE_RESOURCES_NOTIFY_METADATA')."</a></li>"
                                             ));
                                         
+                                        /* THIRD SECTION - optional */
                                         if ($this->user->authorize($item->id, sdiUser::metadataresponsible) && $item->supportrelation)
                                             array_push($dropdown, array(
                                                 "<li><a class='{$item->id}_sync_linker' href='".JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.synchronize&id=' . $item->metadata[0]->id)."'>".JText::_('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_METADATA')."</a></li>"
@@ -253,8 +258,12 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                         </a>
                                         
                                         <?php
+                                        /**
+                                         * building the dropdown accross an array of arrays solves divider defect
+                                         */
                                         $dropdown = array();
                                         
+                                        /* FIRST SECTION - optional */
                                         if($this->user->authorize($item->id, sdiUser::resourcemanager)){
                                             $section = array();
                                             
@@ -279,16 +288,19 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                             $section = false;
                                         }
                                         
+                                        /* SECOND SECTION - optional */
                                         if($this->user->authorize($item->id, sdiUser::diffusionmanager) && $item->supportdiffusion)
                                             array_push($dropdown, array(
                                                 "<li><a class='{$item->id}_linker' href='".JRoute::_("index.php?option=com_easysdi_shop&task=diffusion.edit&id={$item->metadata[0]->id}")."'>".JText::_('COM_EASYSDI_CORE_RESOURCES_DIFFUSION')."</a></li>"
                                             ));
                                         
+                                        /* THIRD SECTION - optional */
                                         if($this->user->authorize($item->id, sdiUser::viewmanager) && $item->supportview)
                                             array_push($dropdown, array(
                                                 "<li><a class='{$item->id}_linker' href='".JRoute::_("index.php?option=com_easysdi_map&task=visualization.edit&id={$item->metadata[0]->id}")."'>".JText::_('COM_EASYSDI_CORE_RESOURCES_VIEW')."</a></li>"
                                             ));
                                         
+                                        /* FOURTH SECTION - optional */
                                         if($this->user->authorize($item->id, sdiUser::resourcemanager)){
                                             if($item->versioning)
                                                 array_push($dropdown, array(
@@ -300,6 +312,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                                 ));
                                         }
                                         
+                                        /* FIFTH SECTION - optional */
                                         if($this->user->authorize($item->id, sdiUser::metadataeditor))
                                             array_push($dropdown, array(
                                                 "<li><a href='".JRoute::_("index.php?option=com_easysdi_catalog&view=assignments&version={$item->metadata[0]->version}&limitstart=".JFactory::getApplication()->input->getInt('start', 0, 'int'))."'>".JText::_('COM_EASYSDI_CORE_RESOURCES_ASSIGNMENT_HISTORY')."</a></li>"
