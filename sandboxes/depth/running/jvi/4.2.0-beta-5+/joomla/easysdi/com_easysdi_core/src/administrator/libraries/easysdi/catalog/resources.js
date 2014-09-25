@@ -136,6 +136,14 @@ function showAssignmentModal(version_id){
     });
 }
 
+function showPublishModal(id, publishDate){
+    if(null !== typeof publishDate){
+        var datetime = publishDate.split(' ');
+        js('#publishModal #published').val(datetime[0]);
+    }
+    showModal(id);
+}
+
 /**
  * Change link id on version change
  * 

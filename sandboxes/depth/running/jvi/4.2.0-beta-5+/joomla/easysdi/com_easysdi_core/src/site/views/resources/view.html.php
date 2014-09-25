@@ -109,7 +109,7 @@ class Easysdi_coreViewResources extends JViewLegacy {
         // Load metadata for each resources
         foreach ($this->items as $item) {
             $query = $db->getQuery(true);
-            $query->select('m.id, v.name, s.value, s.id AS state, v.id as version');
+            $query->select('m.id, v.name, s.value, s.id AS state, v.id as version, m.published');
             $query->from('#__sdi_version v');
             $query->innerJoin('#__sdi_metadata m ON m.version_id = v.id');
             $query->innerJoin('#__sdi_sys_metadatastate s ON s.id = m.metadatastate_id');
