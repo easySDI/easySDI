@@ -358,10 +358,6 @@ abstract class sdiTable extends JTable {
         return parent::check();
     }
 
-    public function getNextOrder($where = '') {
-        return parent::getNextOrder($where);
-    }
-
     /**
      * Method to get the parent asset id for the record
      *

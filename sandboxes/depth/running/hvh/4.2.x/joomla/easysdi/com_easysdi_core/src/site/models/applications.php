@@ -83,11 +83,6 @@ class Easysdi_coreModelApplications extends JModelList {
         $query->select('uc.name AS editor');
         $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
 
-        // Join over the created by field 'created_by'
-        $query->select('created_by.name AS created_by');
-        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
-
-
         // Filter by search in title
         $search = $this->getState('filter.search');
         if (!empty($search)) {

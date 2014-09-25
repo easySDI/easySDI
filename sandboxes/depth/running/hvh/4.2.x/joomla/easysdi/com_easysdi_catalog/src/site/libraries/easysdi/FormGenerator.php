@@ -96,12 +96,12 @@ class FormGenerator {
             $query->select('ns.id as ns_id, ns.prefix as ns_prefix, ns.uri as ns_uri');
             $query->from('#__sdi_profile AS p');
             $query->innerJoin('#__sdi_relation AS r ON p.class_id = r.parent_id');
+            $query->innerJoin('#__sdi_attribute AS a ON a.id = p.metadataidentifier');
             $query->innerJoin('#__sdi_class AS c ON c.id = r.parent_id');
             $query->innerJoin('#__sdi_namespace AS ns ON ns.id = c.namespace_id');
             $query->where('p.id = ' . (int) $this->item->profile_id);
             $query->where('c.isrootclass = ' . $query->quote(true));
-            $query->group('c.id');
-
+            
             $this->db->setQuery($query);
             $result = $this->db->loadObject();
 

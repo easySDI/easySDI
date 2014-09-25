@@ -7,3 +7,11 @@ ALTER TABLE #__sdi_resourcetype MODIFY modified datetime NULL;
 ALTER TABLE #__sdi_resourcetypelink MODIFY modified_by int(11) NULL;
 
 ALTER TABLE #__sdi_resourcetypelink MODIFY modified datetime NULL;
+
+ALTER TABLE #__sdi_application MODIFY modified_by int(11) NULL;
+
+ALTER TABLE #__sdi_application MODIFY modified datetime NULL;
+
+ALTER TABLE #__sdi_diffusion MODIFY modified datetime NULL;
+
+ALTER TABLE #__sdi_diffusion MODIFY description VARCHAR(500) NULL,

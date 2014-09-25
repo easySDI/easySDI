@@ -101,6 +101,7 @@
         <field name="guid" type="hidden" filter="safehtml" /> 
         <field name="resourcetype_id" type="hidden" filter="safehtml" /> 
         <field name="rights" type="hidden" filter="safehtml" /> 
+        <field name="ordering" type="hidden" filter="safehtml" /> 
     </fieldset>
     
     <fieldset name="publishing">

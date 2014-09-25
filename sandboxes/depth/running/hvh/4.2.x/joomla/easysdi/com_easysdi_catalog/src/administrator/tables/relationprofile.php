@@ -110,5 +110,20 @@ class Easysdi_catalogTablerelationprofile extends JTable {
         // Bind the object with the row and return.
         return $rows;
     }
+    
+    /**
+     * Overloaded bind function to pre-process the params.
+     *
+     * @param	array		Named array
+     * @return	null|string	null is operation was satisfactory, otherwise returns an error
+     * @see		JTable:bind
+     * @since	1.5
+     */
+    public function bind($array, $ignore = '') {
+        if (!isset($array['state'])) {
+            $array['state'] = 1;
+        }
+        return parent::bind($array, $ignore);
+    }
 
 }

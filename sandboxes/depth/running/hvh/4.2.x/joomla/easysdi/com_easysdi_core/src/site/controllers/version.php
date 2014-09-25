@@ -45,7 +45,13 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $versions = $this->core_helpers->getViralVersionnedChild($version);
 
         try {
-            $db->transactionStart();
+            try{
+                $db->transactionStart();
+            }catch (Exception $exc){
+                $db->connect();                
+                $driver_begin_transaction = $db->name . '_begin_transaction';
+                $driver_begin_transaction($db->getConnection());
+            }
             $this->deleteMetadatas($versions);
             $this->deleteVersions($versions);
             $db->transactionCommit();
@@ -204,7 +210,13 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         // try to create the new versions
         try {
-            $dbo->transactionStart();
+            try{
+                $dbo->transactionStart();
+            }catch (Exception $exc){
+                $dbo->connect();                
+                $driver_begin_transaction = $dbo->name . '_begin_transaction';
+                $driver_begin_transaction($dbo->getConnection());
+            }
             $this->saveVersions($new_versions);
 
             //Create the linked metadata
@@ -439,20 +451,18 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             $metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
             $keys = array("version_id" => $version->id);
 
-            try {
-                $metadata->load($keys);
-                //Delete the csw metadata in the remote catalog
-                $csw = new sdiMetadata($metadata->id);
-                $this->md_rollback[$metadata->id] = $csw->load();
-                if (!$csw->delete()) {
-                    unset($this->md_rollback[$metadata->id]);
-                    throw new Exception(JText::_('Metadata can not be deleted from the remote catalog.'));
-                }
-
-                $metadata->delete($metadata->id);
-            } catch (Exception $exc) {
-                echo $exc->getTraceAsString();
+           
+            $metadata->load($keys);
+            //Delete the csw metadata in the remote catalog
+            $csw = new sdiMetadata($metadata->id);
+            $this->md_rollback[$metadata->id] = $csw->load();
+            if (!$csw->delete()) {
+                unset($this->md_rollback[$metadata->id]);
+                throw new Exception(JText::_('Metadata can not be deleted from the remote catalog.'));
             }
+
+            $metadata->delete($metadata->id);
+            
         }
 
         return $md_rollback;

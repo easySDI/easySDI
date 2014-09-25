@@ -669,19 +669,15 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->db->execute();
 
         foreach ($titles as $language_id => $text1) {
-
-            $data = new stdClass();
-
-            $data->id = null;
-            $data->guid = $this->getGUID();
-            $data->created_by = $user->id;
-            $data->created = date('Y-m-d H:i:s');
-            $data->element_guid = $guid;
-            $data->language_id = $language_id;
-            $data->text1 = $text1;
-
-
-            $this->db->insertObject('#__sdi_translation', $data, 'id');
+            $translationtable = $this->getModel('Metadata', 'Easysdi_catalogModel')->getTable('Translation', 'Easysdi_catalogTable', array());
+            
+            $data['guid'] = $this->getGUID();
+            $data['created_by'] = $user->id;
+            $data['created'] = date($this->db->getDateFormat());
+            $data['element_guid'] = $guid;
+            $data['language_id'] = $language_id;
+            $data['text1'] = $text1;
+            $translationtable->save($data);            
         }
     }
 
@@ -689,12 +685,18 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * Change metadata assignment
      */
     public function assign() {
-        $data = JFactory::getApplication()->input->getArray();
-
+        //Build the array of fields to get from the input
+        $fields = array();
+        $fields['id'] = '';
+        $fields['assign_child'] = '';
+        $fields['assigned_by'] = '';
+        $fields['assigned_to'] = '';
+        $fields['assign_msg'] = '';
+        $data = JFactory::getApplication()->input->getArray($fields);
+        
         $cascade = (isset($data['assign_child']) && $data['assign_child'] == 1);
 
         $vids = array($data['id']);
-        $date = date('Y-m-d H:i.s');
 
         if ($cascade) {
             $query = $this->db->getQuery(true);
@@ -723,7 +725,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
             $assignment->id = null;
             $assignment->guid = $row['guid'];
-            $assignment->assigned = $date;
+            $assignment->assigned = date($this->db->getDateFormat());
             $assignment->assigned_by = $data['assigned_by'];
             $assignment->assigned_to = $data['assigned_to'];
             $assignment->version_id = $row['id'];
