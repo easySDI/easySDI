@@ -75,6 +75,10 @@ if ($this->item) :
                         </div>
                         <hr>
                         <div class="sdi-searchresult">
+                            <script type="text/javascript">
+                                availablechildrenData = <?php echo json_encode($this->item->availablechildren); ?>;
+                            </script>
+                            
                             <h3><?php echo JText::_('COM_EASYSDI_CORE_TITLE_SEARCH_RESULTS'); ?></h3>
                             <table cellpadding="0" cellspacing="0" border="0" class="display" id="sdi-availablechildren" width="100%">
                                 <thead>
@@ -90,7 +94,7 @@ if ($this->item) :
                                 <tbody>
 
                                     <?php
-                                    if (!empty($this->item->availablechildren)):
+                                    /*if (!empty($this->item->availablechildren)):
                                         foreach ($this->item->availablechildren as $child):
                                             JText::script($child->state);
                                             ?>
@@ -104,7 +108,7 @@ if ($this->item) :
                                             </tr>
                                             <?php
                                         endforeach;
-                                    endif;
+                                    endif;*/
                                     ?>
                                 </tbody>
                             </table>
@@ -116,6 +120,10 @@ if ($this->item) :
                 <div class="row-fluid">
                     <div class="span12">
                         <div class="well">
+                            <script type="text/javascript">
+                                childrenData = <?php echo json_encode($this->item->children); ?>;
+                            </script>
+                            
                             <h3><?php echo JText::_('COM_EASYSDI_CORE_TITLE_VERSION_CHILDREN'); ?></h3>
                             <table cellpadding="0" cellspacing="0" border="0" class="display" id="sdi-children" width="100%">
                                 <thead>
@@ -131,7 +139,7 @@ if ($this->item) :
                                 <tbody>
 
                                     <?php
-                                    if (!empty($this->item->children)):
+                                    /*if (!empty($this->item->children)):
                                         foreach ($this->item->children as $child):
                                             JText::script($child->state);
                                             ?>
@@ -145,7 +153,7 @@ if ($this->item) :
                                             </tr>
                                             <?php
                                         endforeach;
-                                    endif;
+                                    endif;*/
                                     ?>
                                 </tbody>
                             </table>

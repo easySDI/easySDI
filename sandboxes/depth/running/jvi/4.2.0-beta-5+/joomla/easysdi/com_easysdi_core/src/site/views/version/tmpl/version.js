@@ -1,14 +1,11 @@
 js = jQuery.noConflict();
 var childrenTable, availablechildrenTable, parents;
-js(document).ready(function() {
 
+js(document).ready(function() {
+    
     availablechildrenTable = js('#sdi-availablechildren').dataTable({
         "bFilter": false,
         "bLengthChange": false,
-        "aoColumnDefs": [
-            {"bVisible": false, "aTargets": [0]},
-            {"bVisible": versioning, "aTargets": [2]}
-        ],
         "oLanguage": {
             "sSearch": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_SEARCH'),
             "sZeroRecords": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_NORESULT'),
@@ -21,16 +18,29 @@ js(document).ready(function() {
                 "sNext": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_NEXT'),
                 "sPrevious": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_PREVIOUS')
             }
-        }
+        },
+        aaData: availablechildrenData,
+        aoColumnDefs: [
+            { bVisible: false, aTargets: [0], mData: 'id' },
+            { aTargets: [1], mData: 'resource' },
+            { bVisible: versioning, aTargets: [2], mData: 'version' },
+            { aTargets: [3], mData: 'resourcetype' },
+            { aTargets: [4], mData: function(child){
+                    return Joomla.JText._(child.state, child.state);
+            }},
+            {
+                aTargets: [5],
+                mData: function(child){
+                    return "<button type='button' id='sdi-availablechildbutton-"+child.id+"' class='btn btn-success btn-mini' onclick='addChild("+JSON.stringify(child)+");'><i class='icon-white icon-new'></i></button>";
+                },
+                sClass: 'center'
+            }
+            
+        ]
     });
 
     childrenTable = js('#sdi-children').dataTable({
         "bLengthChange": false,
-        "aoColumnDefs": [
-            {"bVisible": false, "aTargets": [0]},
-            {"bVisible": versioning, "aTargets": [2]},
-            {"sClass": "center", "aTargets": [5]}
-        ],
         "oLanguage": {
             "sSearch": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_SEARCH'),
             "sZeroRecords": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_NORESULT'),
@@ -43,7 +53,25 @@ js(document).ready(function() {
                 "sNext": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_NEXT'),
                 "sPrevious": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_PREVIOUS')
             }
-        }
+        },
+        aaData: childrenData,
+        aoColumnDefs: [
+            { bVisible: false, aTargets: [0], mData: 'id' },
+            { aTargets: [1], mData: 'resource' },
+            { bVisible: versioning, aTargets: [2], mData: 'version' },
+            { aTargets: [3], mData: 'resourcetype' },
+            { aTargets: [4], mData: function(child){
+                    return Joomla.JText._(child.state, child.state);
+            }},
+            {
+                aTargets: [5],
+                mData: function(child){
+                    return "<button type='button' id='sdi-childbutton-"+child.id+"' class='btn btn-warning btn-mini' onclick='deleteChild("+JSON.stringify(child)+");'><i class='icon-white icon-minus'></i></button>";
+                },
+                sClass: 'center'
+            }
+            
+        ]
     });
     parents = js('#sdi-parents').dataTable({
         "bFilter": true,
@@ -71,21 +99,13 @@ js(document).ready(function() {
 });
 
 function addChild(child) {
-    if(js('#sdi-childbutton-'+child.id).length === 0){
-        js('#sdi-children').dataTable().fnAddData([
-            child.id,
-            child.resource,
-            child.version,
-            child.resourcetype,
-            Joomla.JText._(child.state),
-            '<button type="button" id="sdi-childbutton-' + child.id + '" onClick="deleteChild(\'' + child.id + '\');" class="btn btn-warning btn-mini"><i class="icon-white icon-minus"></i></button>'
-
-        ]);
-    }
+    childrenTable.fnAddData(child);
+    availablechildrenTable.fnDeleteRow(js('#sdi-availablechildbutton-' + child.id).parent().parent()[0]);
 }
 
 function deleteChild(child) {
-    childrenTable.fnDeleteRow(js('#sdi-childbutton-' + child).parent().parent()[0]);
+    availablechildrenTable.fnAddData(child);
+    childrenTable.fnDeleteRow(js('#sdi-childbutton-' + child.id).parent().parent()[0]);
 }
 
 Joomla.submitbutton = function(task)
@@ -94,7 +114,7 @@ Joomla.submitbutton = function(task)
         var results = [];
         var children = childrenTable.fnGetData();
         children.each(function(value) {
-            results.push(value[0]);
+            results.push(value.id);
         });
 
         var r = JSON.stringify(results);
