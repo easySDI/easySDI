@@ -51,7 +51,7 @@ if ($this->item) :
             <?php endif; ?>
         <?php endif; ?>
                 
-                <?php if($this->item->availablechildren): ?>
+                <?php if($this->item->resourcetypechild): ?>
         <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
             <?php else:?>
             <div>
@@ -60,7 +60,7 @@ if ($this->item) :
             <?php endif;?>
 
             <div class="row-fluid">
-                <?php if($this->item->availablechildren): ?>
+                <?php if($this->item->resourcetypechild): ?>
                 <!-- Criteria -->
                 <div class="span12">
                     <div class="well">
@@ -208,7 +208,7 @@ if ($this->item) :
                 </div>
             </div>
 
-<?php if($this->item->availablechildren): ?>
+<?php if($this->item->resourcetypechild): ?>
             <div>
                 <?php echo $this->getToolbar(); ?>
             </div>
