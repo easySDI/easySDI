@@ -228,6 +228,7 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
         $query->innerJoin('#__sdi_user u ON u.id = uro.user_id');
         $query->innerJoin('#__users s ON u.user_id = s.id');
         $query->where('organism_id=' . (int)$organism_id);
+        $query->order('user.name');
         
         $db->setQuery($query);
         $users = $db->loadObjectList();

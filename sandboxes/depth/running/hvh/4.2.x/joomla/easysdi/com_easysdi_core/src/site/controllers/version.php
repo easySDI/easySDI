@@ -114,30 +114,29 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
      * Get children of a metadata
      */
     public function getChildren() {
+        $user = new sdiUser();
+        
         $parentId = JFactory::getApplication()->input->getInt('parentId', null);
+        
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        $query->select('v.resource_id');
-        $query->from('#__sdi_version v');
-        $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
-        $query->where('m.id = ' . (int) $parentId);
+        $query = $db->getQuery(true)
+                ->select('r.id')
+                ->from('#__sdi_resource r')
+                ->innerJoin('#__sdi_user_role_resource urr ON urr.resource_id=r.id')
+                ->innerJoin('#__sdi_version v ON v.resource_id=r.id')
+                ->innerJoin('#__sdi_metadata m ON m.version_id=v.id')
+                ->innerJoin('#__sdi_versionlink vl ON v.id=vl.child_id')
+                ->where('vl.parent_id='.(int)$parentId.' AND urr.user_id='.(int)$user->id)
+                ->group('r.id')
+                ;
 
-        $db->setQuery($query);
-        $resource = $db->loadObject();
-
-        $query = $db->getQuery(true);
-        $query->select('vl.id');
-        $query->from('#__sdi_versionlink vl');
-        $query->innerJoin('#__sdi_metadata m on vl.parent_id = m.version_id');
-        $query->where('m.id = ' . $parentId);
-
-        $db->setQuery($query);
-        $childs = $db->loadObjectList();
+        $db->setQuery($query)->execute();
+        $cnt = $db->getNumRows();
 
         $response = array();
         $response['success'] = 'true';
-        $response['resource_id'] = $resource->resource_id;
-        $response['num'] = count($childs);
+        $response['resource_id'] = $parentId;
+        $response['num'] = (int)$cnt;
 
         echo json_encode($response);
         die();
@@ -619,6 +618,27 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 		
 		
         echo json_encode($response);
+        die();
+    }
+    
+    public function getPublishRight(){
+        $metadata_id = JFactory::getApplication()->input->get('metadata_id', null, 'int');
+
+        // Check if metadata has parent viral versionned version
+        $db = JFactory::getDbo();
+        
+        $query = $db->getQuery(true)
+                ->select('v.resource_id AS id, COUNT(md.id) as canPublish')
+                ->from('#__sdi_metadata m')
+                ->innerJoin('#__sdi_version v ON m.version_id = v.id')
+                ->innerJoin('#__sdi_versionlink vl ON v.id=vl.parent_id')
+                ->innerJoin('#__sdi_metadata md ON vl.child_id=md.version_id')
+                ->where('m.id = ' . $metadata_id.' AND md.metadatastate_id != '.sdiMetadata::PUBLISHED)
+                ;
+        
+        $result = $db->setQuery($query)->loadAssoc();
+        
+        echo json_encode($result);
         die();
     }
 

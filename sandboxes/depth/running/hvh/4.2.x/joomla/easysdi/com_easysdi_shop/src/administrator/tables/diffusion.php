@@ -89,8 +89,8 @@ class Easysdi_shopTablediffusion extends sdiTable {
 
         $params = JFactory::getApplication()->getParams('com_easysdi_shop');
         $fileFolder = $params->get('fileFolder');
-        $depositFolder = $params->get('depositFolder');
-        $maxfilesize = $params->get('maxuploadfilesize');
+        $depositFolder = $params->get('depositFolder', '/');
+        $maxfilesize = $params->get('maxuploadfilesize', 0);
         //Support for file field: deposit
         if (isset($_FILES['jform']['name']['deposit'])):
             jimport('joomla.filesystem.file');
@@ -118,7 +118,9 @@ class Easysdi_shopTablediffusion extends sdiTable {
                 endif;
             }
             else if ($fileError == 4) {
-                if (!isset($array['deposit'])):
+                if (isset($array['deposit_hidden'])):;
+                    $array['deposit'] = $array['deposit_hidden'];
+                else :
                     //delete existing file
                     if (isset($array['id'])) {
                         $db = JFactory::getDbo();
@@ -187,7 +189,9 @@ class Easysdi_shopTablediffusion extends sdiTable {
                 endif;
             }
             else if ($fileError == 4) {
-                if (!isset($array['file'])):
+                if (isset($array['file_hidden'])):;
+                    $array['file'] = $array['file_hidden'];
+                else :
                     //delete existing file
                     if (isset($array['id'])) {
                         $db = JFactory::getDbo();

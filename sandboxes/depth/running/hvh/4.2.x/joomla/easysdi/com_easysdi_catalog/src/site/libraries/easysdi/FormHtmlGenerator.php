@@ -263,7 +263,7 @@ class FormHtmlGenerator {
         $divOuter->setAttribute('id', 'outer-fds-' . FormUtils::serializeXpath($relation->getNodePath()));
         $divOuter->setAttribute('class', 'outer-' . $level . ' outer-fds-' . FormUtils::serializeXpath($relation->getNodePath()));
 
-        $divAction = $this->formHtml->createElement('div', EText::_($relation->getAttributeNS($this->catalog_uri, 'id')) . ' ' . $debug);
+        $divAction = $this->formHtml->createElement('div', EText::_($relation->getAttributeNS($this->catalog_uri, 'id')) . ' ' . $debug);//
         $divAction->setAttribute('class', 'action-' . $level);
 
         $aAdd->appendChild($iAdd);
@@ -319,7 +319,7 @@ class FormHtmlGenerator {
         $fieldset->setAttribute('id', 'fds-' . FormUtils::serializeXpath($element->getNodePath()));
 
         if ($guid != '') {
-            $spanLegend = $this->formHtml->createElement('span', EText::_($guid));
+            $spanLegend = $this->formHtml->createElement('span', EText::_($guid));//
         } else {
             $spanLegend = $this->formHtml->createElement('span', JText::_($legendAttribute));
         }
@@ -478,6 +478,12 @@ class FormHtmlGenerator {
                                     break;
                             }
                             
+                            // Prevent against metadata corruption
+                            if($jfield === false){
+                                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_RESOURCES_METADATA_CORRUPT'), 'warning');
+                                return JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', true));
+                            }
+                            
                             $fieldid = $jfield->__get('id');
                             $query = 'descendant::*[@id="' . $fieldid . '"]';
                             $nbrOccurance = $this->domXpathFormHtml->query($query)->length;
@@ -618,19 +624,19 @@ class FormHtmlGenerator {
                 $layer_definition = "layer_$parent_path = new OpenLayers.Layer.Bing({
                                         name: 'Bing',
                                         key: apiKey,
-                                        type: " . $map_config->layername . "
+                                        type: '" . $map_config->layername . "'
                                     });";
                 break;
             case EnumServiceConnector::$WMS:
                 $layer_definition = "layer_$parent_path = new OpenLayers.Layer.WMS( 'WMS name',
-                                    " . $service->serviceurl . ",
-                                    {layers: " . $map_config->layername . "});";
+                                    '" . $service->serviceurl . "',
+                                    {layers: '" . $map_config->layername . "'});";
                 break;
             case EnumServiceConnector::$WMTS:
                 $layer_definition = "layer_$parent_path = new OpenLayers.Layer.WMTS({
                                         name: 'Couche WMTS',
-                                        url: " . $service->serviceurl . ",
-                                        layer: " . $map_config->layername . ",
+                                        url: '" . $service->serviceurl . "',
+                                        layer: '" . $map_config->layername . "',
                                         matrixSet: " . $map_config->asOLmatrixset . ",
                                         style: " . $map_config->asOLstyle . ",
                                         " . $map_config->asOLoptions . "
@@ -677,19 +683,19 @@ class FormHtmlGenerator {
 
                                 map_$parent_path.addLayers([layer_$parent_path, polygonLayer_$parent_path]);
 
-                                    var psource = new proj4.Proj(\"" . $map_config->srs . "\");
-                                    var pdest   = new proj4.Proj(\"EPSG:4326\");
+                                    var psource = new Proj4js.Proj(\"" . $map_config->srs . "\");
+                                    var pdest   = new Proj4js.Proj(\"EPSG:4326\");
 
                     ";
 
 
         if (!empty($map_config->centercoordinates) && !empty($map_config->zoom)) {
             $script->nodeValue .= "
-                                    var centercoord = new proj4.Point(" . $centercoords[0] . ", " . $centercoords[1] . ");
+                                    var centercoord = new Proj4js.Point(" . $centercoords[0] . ", " . $centercoords[1] . ");
                                     map_$parent_path.setCenter(new OpenLayers.LonLat(centercoord.x, centercoord.y), $map_config->zoom);";
         } else if (!empty($map_config->centercoordinates)) {
             $script->nodeValue .= "
-                                    var centercoord = new proj4.Point(" . $centercoords[0] . ", " . $centercoords[1] . ");
+                                    var centercoord = new Proj4js.Point(" . $centercoords[0] . ", " . $centercoords[1] . ");
                                     map_$parent_path.setCenter(new OpenLayers.LonLat(centercoord.x, centercoord.y));";
         } else {
             $script->nodeValue .= "map_$parent_path.zoomToMaxExtent(); ";
@@ -712,14 +718,14 @@ class FormHtmlGenerator {
 
                                     var bounds = e.feature.geometry.getBounds();
 
-                                    var source = new proj4.Proj(map_" . $parent_path . ".getProjection());
-                                    var dest   = new proj4.Proj(\"EPSG:4326\");
+                                    var source = new Proj4js.Proj(map_" . $parent_path . ".getProjection());
+                                    var dest   = new Proj4js.Proj(\"EPSG:4326\");
 
-                                    var bottom_left = new proj4.Point(bounds.left, bounds.bottom);
-                                    var top_right = new proj4.Point(bounds.right, bounds.top);
+                                    var bottom_left = new Proj4js.Point(bounds.left, bounds.bottom);
+                                    var top_right = new Proj4js.Point(bounds.right, bounds.top);
 
-                                    proj4.transform(source, dest, bottom_left);
-                                    proj4.transform(source, dest, top_right);
+                                    Proj4js.transform(source, dest, bottom_left);
+                                    Proj4js.transform(source, dest, top_right);
 
                                     js('#jform_" . $parent_path . "_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', top_right.y);
                                     js('#jform_" . $parent_path . "_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').attr('value', bottom_left.y);
@@ -754,12 +760,22 @@ class FormHtmlGenerator {
      * @return DOMElement
      */
     private function getGemet(DOMElement $attribute) {
+        // predefine default language
+        $default = $this->ldao->getDefaultLanguage();
+        
+        // retrieve user data
+        $user = new sdiUser();
+        $userParams = json_decode($user->juser->params);
+        
+        // build languages array
         $languages = array();
         foreach ($this->ldao->getAll() as $language) {
             $languages[] = '\'' . $language->gemet . '\'';
+            
+            // if match, override default language
+            if($language->code == $userParams->language)
+                $default = $language;
         }
-
-        $default = $this->ldao->getDefaultLanguage();
 
         $parent_path = str_replace('-', '_', FormUtils::serializeXpath($attribute->parentNode->getNodePath()));
         $div = $this->formHtml->createElement('div');
