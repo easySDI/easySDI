@@ -77,7 +77,9 @@ HS.Lang = {};
  * (end)
  */
 HS.i18n = function() {
-
+    
+    return Joomla.JText._('COM_EASYSDI_CATALOG_GEMET_'+arguments[0]);
+    
     if (!HS.getLang()) {
         HS.setLang(HS.defaultLang);
     }

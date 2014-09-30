@@ -101,7 +101,7 @@ function getNewVersionRight(metadata_id) {
 
 function getPublishRight(metadata_id){
     js.get(currentUrl+'/?option=com_easysdi_core&task=version.getPublishRight&metadata_id='+metadata_id, function(data){
-        var response = js.parseJSON(data);console.log(response.canPublish);
+        var response = js.parseJSON(data);
         if(response.canPublish>0){
             js('#'+metadata_id+'_publish_linker')
                     .attr('class', 'disabled')
