@@ -105,14 +105,14 @@ class Easysdi_coreModelResources extends JModelList {
         $query->select('rtl.state as supportrelation');
         $query->join('LEFT', '(SELECT n.parent_id, n.state FROM #__sdi_resourcetypelink n ) rtl ON rtl.parent_id = rt.id');
         $query->select('rtl2.state as canbechild');
-        $query->join('LEFT', '(SELECT child_id, state FROM #__sdi_resourcetypelink GROUP BY child_id) rtl2 ON rtl2.child_id=rt.id');
+        $query->join('LEFT', '(SELECT child_id, state FROM #__sdi_resourcetypelink GROUP BY child_id, state) rtl2 ON rtl2.child_id=rt.id');
 
         //join over rights table, check if user have any right on resource
         $query->innerJoin('#__sdi_user_role_resource AS urr ON urr.resource_id = a.id');
         $query->where('urr.user_id = ' . $this->user->id);
 
         $query->group('a.id');
-		$query->group('a.guid');
+	$query->group('a.guid');
         $query->group('a.alias');
         $query->group('a.name');
         $query->group('trans.text1');
@@ -121,7 +121,9 @@ class Easysdi_coreModelResources extends JModelList {
         $query->group($query->quoteName('rt.view'));
         $query->group('rt.application');
         $query->group('rtl.state');
- 		$query->innerJoin('#__sdi_version v ON v.resource_id = a.id');
+        $query->group('rtl2.state');
+ 	
+        $query->innerJoin('#__sdi_version v ON v.resource_id = a.id');
         $query->innerJoin('#__sdi_metadata md ON md.version_id = v.id');
         
         if(!empty($parentId)){
@@ -152,8 +154,15 @@ class Easysdi_coreModelResources extends JModelList {
                 $query->where('md.metadatastate_id = ' . $status);
             }
         }
-        else{            // Filter by search in title
-            $search = $this->getState('filter.search.children');
+        else{            
+           // Filter by resource type
+            $resourcetype = $this->getState('filter.resourcetype');
+            if (is_numeric($resourcetype)) {
+                $query->where('a.resourcetype_id = ' . (int) $resourcetype);
+            }
+
+            // Filter by search in title
+            $search = $this->getState('filter.search');
             if (!empty($search)) {
                 if (stripos($search, 'id:') === 0) {
                     $query->where('a.id = ' . (int) substr($search, 3));
@@ -164,39 +173,12 @@ class Easysdi_coreModelResources extends JModelList {
             }
 
             //Controls whether a version of the metadata has a status matching the filter.
-            $status = $this->getState('filter.status.children');
+            $status = $this->getState('filter.status');
             if (!empty($status)) {
                 $query->where('md.metadatastate_id = ' . $status);
             }
         }
-        else{
-        // Filter by resource type
-        $resourcetype = $this->getState('filter.resourcetype');
-        if (is_numeric($resourcetype)) {
-            $query->where('a.resourcetype_id = ' . (int) $resourcetype);
-        }
-
-        // Filter by search in title
-        $search = $this->getState('filter.search');
-        if (!empty($search)) {
-            if (stripos($search, 'id:') === 0) {
-                $query->where('a.id = ' . (int) substr($search, 3));
-            } else {
-                $search = $db->Quote('%' . $db->escape($search, true) . '%');
-                $query->where('( a.name LIKE ' . $search . ' )');
-            }
-        }
-
-        //Controls whether a version of the metadata has a status matching the filter.
-        $status = $this->getState('filter.status');
-        if (!empty($status)) {
-            $query->where('md.metadatastate_id = ' . $status);
-        }
-        }
-        
-        
-        
-        
+             
         $query->order('a.name');
 
         return $query;

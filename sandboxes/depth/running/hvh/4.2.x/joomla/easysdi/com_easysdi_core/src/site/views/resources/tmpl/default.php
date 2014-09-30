@@ -21,6 +21,7 @@ JText::script('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_BY');
 JText::script('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_THE');
 JText::script('COM_EASYSDI_CORE_UNPUBLISHED_CHILDREN');
 
+
 $document = JFactory::getDocument();
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/resources.js');
 $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css');
@@ -35,6 +36,9 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
     }
     
 </style>
+ <script type="text/javascript">
+      var baseUrl = "<?php echo JUri::base(); ?>index.php?" ;
+    </script>
 <div class="core front-end-edit">
     <?php if (!empty($this->parent)): ?>
         <h1><?php echo $this->parent->name; ?>: <?php echo $this->parent->version_name; ?></h1>

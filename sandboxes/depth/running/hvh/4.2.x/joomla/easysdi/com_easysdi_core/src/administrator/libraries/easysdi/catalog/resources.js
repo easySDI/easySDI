@@ -1,5 +1,5 @@
 js = jQuery.noConflict();
-var currentUrl = location.protocol + '//' + location.host + location.pathname;
+//var baseUrl = location.protocol + '//' + location.host + location.pathname;
 
 js(document).ready(function() {
 
@@ -63,7 +63,7 @@ function initActionList() {
  * @returns void
  */
 function getChildNumer(parentId) {
-    js.get(currentUrl + '/?option=com_easysdi_core&task=version.getChildren&parentId=' + parentId, function(data) {
+    js.get(baseUrl + 'option=com_easysdi_core&task=version.getChildren&parentId=' + parentId, function(data) {
         var response = js.parseJSON(data);
         if (response.success == 'true') {
             if (response.num > 0) {
@@ -77,7 +77,7 @@ function getChildNumer(parentId) {
 }
 
 function getNewVersionRight(metadata_id) {
-    js.get(currentUrl + '/?option=com_easysdi_core&task=version.getNewVersionRight&metadata_id=' + metadata_id, function(data) {
+    js.get(baseUrl + 'option=com_easysdi_core&task=version.getNewVersionRight&metadata_id=' + metadata_id, function(data) {
         var response = js.parseJSON(data);
         if (response.canCreate === false) {
             var message = '';
@@ -100,9 +100,9 @@ function getNewVersionRight(metadata_id) {
 }
 
 function getPublishRight(metadata_id){
-    js.get(currentUrl+'/?option=com_easysdi_core&task=version.getPublishRight&metadata_id='+metadata_id, function(data){
-        var response = js.parseJSON(data);console.log(response.canPublish);
-        if(response.canPublish>0){
+    js.get(baseUrl+'option=com_easysdi_core&task=version.getPublishRight&metadata_id='+metadata_id, function(data){
+        var response = js.parseJSON(data);        
+        if(response != null && response.canPublish>0){
             js('#'+metadata_id+'_publish_linker')
                     .attr('class', 'disabled')
                     .attr('style', 'color: #cbcbcb')
@@ -119,7 +119,7 @@ function getPublishRight(metadata_id){
 }
 
 function getSynchronisationInfo(metadata_id){
-    js.get(currentUrl + '/?option=com_easysdi_catalog&task=metadata.getSynchronisationInfo&metadata_id=' + metadata_id, function(data) {
+    js.get(baseUrl + 'option=com_easysdi_catalog&task=metadata.getSynchronisationInfo&metadata_id=' + metadata_id, function(data) {
         var response = js.parseJSON(data);
         if (response.synchronized === true) {
             
@@ -153,7 +153,7 @@ function showModal(id, modalId) {
 function showAssignmentModal(version_id){
     js('#assigned_to').html('');
     
-    js.get(currentUrl+'/?option=com_easysdi_catalog&task=metadata.getRoles&versionId='+version_id, function(data){
+    js.get(baseUrl+'option=com_easysdi_catalog&task=metadata.getRoles&versionId='+version_id, function(data){
         var roles = js.parseJSON(data);
         
         for(var user_id in roles[4].users)
@@ -228,7 +228,7 @@ function changeChildLink(resource_id, version_id) {
  */
 function showDeleteModal(deleteUrl, version_id) {
 
-    js.get(currentUrl + '/?option=com_easysdi_core&task=version.getCascadeDeleteChild&version_id=' + version_id, function(data) {
+    js.get(baseUrl + 'option=com_easysdi_core&task=version.getCascadeDeleteChild&version_id=' + version_id, function(data) {
         var response = js.parseJSON(data);
         var body = buildDeletedTree(response.versions);
         js('#deleteModalChildrenList').html(body);
@@ -262,7 +262,7 @@ function buildDeletedTree(versions) {
  * @param {int} resource_id
  */
 function showNewVersionModal(resource_id) {
-    js.get(currentUrl + '/?option=com_easysdi_core&task=version.getInProgressChildren&resource=' + resource_id, function(data) {
+    js.get(baseUrl + 'option=com_easysdi_core&task=version.getInProgressChildren&resource=' + resource_id, function(data) {
         var response = js.parseJSON(data);
         if (response.total > 0) {
             var body = '<ul>';
@@ -273,7 +273,7 @@ function showNewVersionModal(resource_id) {
             js('#createModalChildrenList').html(body);
             js('#createModal').modal('show');
         } else {
-            var createUrl = currentUrl + '/?option=com_easysdi_core&task=version.create&resource=' + resource_id;
+            var createUrl = baseUrl + 'option=com_easysdi_core&task=version.create&resource=' + resource_id;
             window.location.href = createUrl;
         }
     });
