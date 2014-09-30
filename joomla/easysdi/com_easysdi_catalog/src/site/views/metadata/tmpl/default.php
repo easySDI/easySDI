@@ -25,6 +25,22 @@ JText::script('PUBLISHED');
 JText::script('TRASHED');
 JText::script('VALIDATED');
 
+JText::script('COM_EASYSDI_CATALOG_GEMET_HOME');
+JText::script('COM_EASYSDI_CATALOG_GEMET_SEARCH');
+JText::script('COM_EASYSDI_CATALOG_GEMET_BT');
+JText::script('COM_EASYSDI_CATALOG_GEMET_NT');
+JText::script('COM_EASYSDI_CATALOG_GEMET_RT');
+JText::script('COM_EASYSDI_CATALOG_GEMET_TH');
+JText::script('COM_EASYSDI_CATALOG_GEMET_USE');
+JText::script('COM_EASYSDI_CATALOG_GEMET_THEMES');
+JText::script('COM_EASYSDI_CATALOG_GEMET_GROUPS');
+JText::script('COM_EASYSDI_CATALOG_GEMET_WARNING');
+JText::script('COM_EASYSDI_CATALOG_GEMET_CHARACTERS_REQUIRED');
+JText::script('COM_EASYSDI_CATALOG_GEMET_TOP_CONCEPTS');
+JText::script('COM_EASYSDI_CATALOG_GEMET_FOUND');
+JText::script('COM_EASYSDI_CATALOG_GEMET_INSPIRE_THEMES');
+JText::script('COM_EASYSDI_CATALOG_GEMET_GEMET_TOP_CONCEPTS');
+
 
 //Load admin language file
 $lang = JFactory::getLanguage();
@@ -38,10 +54,10 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/OpenLa
 $document->addScript('administrator/components/com_easysdi_core/libraries/proj4js-1.1.0/lib/proj4js.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base-debug.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');
+//$document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/thesaur.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/HS.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/translations.js');
+//$document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/translations.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/js/jquery.dataTables.min.js');
 
 $document->addScript('http://maps.google.com/maps/api/js?v=3&amp;sensor=false');
@@ -53,6 +69,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
 
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/syntaxhighlighter/styles/shCore.css');
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/syntaxhighlighter/styles/shThemeDefault.css');
+$document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/css/easysdi_catalog.css');
 ?>
 
 <style>

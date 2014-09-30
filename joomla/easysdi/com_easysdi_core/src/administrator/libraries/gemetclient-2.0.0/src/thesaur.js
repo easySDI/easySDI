@@ -431,7 +431,7 @@ var ThesaurusReader = function(config){
       collapseMode: 'mini',
       autoScroll: true, 
       cls: 'thes-description', 
-      split:true
+      split:false
     });
           
     this.tb = new Ext.Toolbar({

@@ -66,7 +66,17 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
             $this->domXpathStr->registerNamespace($ns->prefix, $ns->uri);
         }
         $query = FormUtils::unSerializeXpath($_GET['uuid']);
-        $element = $this->domXpathStr->query($query)->item(0);
+        
+        $elements = $this->domXpathStr->query($query);//->item(0);
+        
+        if($elements->length)
+            $element = $elements->item(0);
+        else{ // HACK TO ALLOW FIRST KEYWORD REMOVAL
+            $tabQuery = explode('/', $query);
+            array_pop($tabQuery);
+            $query = implode('/', $tabQuery);
+            $element = $this->domXpathStr->query($query)->item(0)->childNodes->item(1);
+        }
 
         $response = array();
         try {
@@ -87,7 +97,8 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
      * get defined boundary, filter by category
      */
     public function getBoundaryByCategory() {
-        $default_lang = JFactory::getLanguage();
+        $user = JFactory::getUser();
+        $default_lang = $user->getParam('language', JFactory::getLanguage());
 
         $name = addslashes($_GET['value']);
         $query = $this->db->getQuery(true);
@@ -97,9 +108,9 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
         $query->innerJoin('#__sdi_translation t ON b.guid = t.element_guid');
         $query->innerJoin('#__sdi_language as l ON l.id = t.language_id');
         $query->where('bc.`name` = ' . $this->db->quote($name) );
-        $query->where('l.code = ' . $this->db->quote($default_lang->getTag()) );
-        $query->order('b.ordering ASC');
+        $query->where('l.code = ' . $this->db->quote($default_lang) );
         
+
         $this->db->setQuery($query);
         $results = $this->db->loadObjectList();
 
