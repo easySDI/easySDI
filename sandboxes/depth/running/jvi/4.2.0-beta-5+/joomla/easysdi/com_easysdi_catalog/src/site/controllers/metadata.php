@@ -494,11 +494,11 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                 }
             }
         }
+        
+        $keywords = $this->domXpathStr->query('descendant::*[@catalog:stereotypeId="' . EnumStereotype::$GEMET . '"]');
 
-        $keyword = $this->domXpathStr->query('descendant::*[@catalog:stereotypeId="' . EnumStereotype::$GEMET . '"]')->item(0);
-
-        if (!empty($keyword)) {
-            $this->cleanEmptyNode($keyword->parentNode);
+        if ($keywords->length) {
+            $this->cleanEmptyNode($keywords);
         }
 
         $root = $this->domXpathStr->query('/*')->item(0);
@@ -520,7 +520,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         if ($commit) {
             $xml = $this->CreateUpdateBody($root, $data['guid'])->saveXML();
-
+//echo $xml; die();
             if ($smda->update($xml)) {
                 $this->saveTitle($data['guid']);
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_SAVE_VALIDE'), 'message');
@@ -589,25 +589,22 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
     /**
      * 
-     * @param DOMElement $element
+     * @param DOMNodeList $element
      */
-    private function cleanEmptyNode(DOMElement $element) {
-
-        $toRemove = array();
-        foreach ($element->childNodes as $child) {
-            if (empty($child->nodeValue)) {
-                $toRemove[] = $child;
-            }
+    private function cleanEmptyNode(DOMNodeList $keywords) {
+        $parent = false;
+        $registeredKeywords = array();
+        foreach($keywords as $keyword){
+            if($parent === false) $parent = $keyword->parentNode->parentNode;
+            $defaultChild = trim($keyword->childNodes->item(1)->nodeValue);
+            if(in_array($defaultChild, $registeredKeywords) || empty($defaultChild))
+                $keyword->parentNode->removeChild($keyword);
+            else
+                array_push($registeredKeywords, $defaultChild);
         }
-
-        foreach ($toRemove as $child) {
-            $element->removeChild($child);
-        }
-
-        if (!$element->hasChildNodes()) {
-            $parent = $element->parentNode->parentNode;
-            $parent->removeChild($element->parentNode);
-        }
+        
+        if(count($registeredKeywords) == 0)
+            $parent->parentNode->removeChild($parent);
     }
 
     /**

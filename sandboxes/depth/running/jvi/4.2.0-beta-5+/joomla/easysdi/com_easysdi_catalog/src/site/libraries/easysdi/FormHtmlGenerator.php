@@ -384,12 +384,17 @@ class FormHtmlGenerator {
      * @return DOMElement DIV containing a group of fields.
      */
     private function getAttribute(DOMElement $attribute) {
+        
+        $languages = $this->ldao->getSupported();
+        // retrieve user data
+        $user = new sdiUser();
+        $userParams = json_decode($user->juser->params);
+        $userLanguageIndex = 0;
 
         $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
         $stereotypeId = $attribute->getAttributeNS($this->catalog_uri, 'stereotypeId');
         $rendertypeId = $attribute->getAttributeNS($this->catalog_uri, 'rendertypeId');
 
-        $languages = $this->ldao->getSupported();
         if ($upperbound > 1) {
             $showButton = true;
         } else {
@@ -418,8 +423,9 @@ class FormHtmlGenerator {
                 foreach ($this->buildField($attribute, $jfield, $showButton) as $element) {
                     $attributeGroup->appendChild($element);
                 }
-
+                
                 foreach ($languages as $key => $value) {
+                    
                     $jfield = $this->form->getField(FormUtils::serializeXpath($attribute->getNodePath() . '/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString#' . $key));
                     if ($jfield) {
                         foreach ($this->buildField($attribute, $jfield) as $element) {
@@ -429,9 +435,22 @@ class FormHtmlGenerator {
                 }
 
                 if ($stereotypeId == EnumStereotype::$GEMET) {
-
-                    foreach ($this->domXpathFormHtml->query('descendant::div[@class="control-group"][position()>1]', $attributeGroup) as $control_group) {
-                        $control_group->setAttribute('style', 'height:0px; opacity:0;');
+                    
+                    $cnt = 0;
+                    foreach($this->ldao->getAll() as $key => $value){
+                        if(strpos($userParams->language, $key)){
+                            $userLanguageIndex = $cnt;
+                            break;
+                        }
+                        $cnt++;
+                    }
+                    
+                    $cnt = 0;
+                    foreach ($this->domXpathFormHtml->query('descendant::div[@class="control-group"][position()>0]', $attributeGroup) as $control_group) {
+                        if($cnt != $userLanguageIndex){
+                            $control_group->setAttribute('style', 'display: none;');
+                        }
+                        $cnt++;
                     }
 
                     foreach ($this->domXpathFormHtml->query('descendant::select', $attributeGroup) as $select) {
@@ -770,11 +789,11 @@ class FormHtmlGenerator {
         // build languages array
         $languages = array();
         foreach ($this->ldao->getAll() as $language) {
-            $languages[] = '\'' . $language->gemet . '\'';
+            $languages[] = "'{$language->gemet}'";
             
             // if match, override default language
             if($language->code == $userParams->language)
-                $default = $language;
+                $default = $language->gemet;
         }
 
         $parent_path = str_replace('-', '_', FormUtils::serializeXpath($attribute->parentNode->getNodePath()));
@@ -785,78 +804,89 @@ class FormHtmlGenerator {
 
         $script_code = "js = jQuery.noConflict();
 
-                                js('document').ready(function() {
+        js('document').ready(function() {
 
-                                var languages = new Array(" . implode(',', $languages) . ");
-                                var index = '';
-                                if(js('#jform_" . $parent_path . "_sla_gmd_dp_keyword_sla_gco_dp_CharacterString').length == 0){
-                                     index = '_la_1_ra_';
-                                }
+            var languages = new Array(" . implode(',', $languages) . ");
+            var index = '';
+            if(js('#jform_" . $parent_path . "_sla_gmd_dp_keyword_sla_gco_dp_CharacterString').length == 0){
+                 index = '_la_1_ra_';
+            }
 
-                                // path to Ext images
-                                Ext.BLANK_IMAGE_URL = 'http://gis.bnhelp.cz/wwwlibs/ext/ext3/resources/images/default/s.gif';
+            // path to Ext images
+            Ext.BLANK_IMAGE_URL = 'http://gis.bnhelp.cz/wwwlibs/ext/ext3/resources/images/default/s.gif';
 
-                                // sets the user interface language
-                                HS.setLang('" . $default->gemet . "');
+            // sets the user interface language
+            HS.setLang('" . $default . "');
 
-                                var writeTerms = function(result) {
+            var writeTerms = function(result) {
 
-                                    for(var i=0; i < languages.length; i++){
-                                        var paths = result.terms[languages[i]].split('>');
-                                        var keyword = paths[paths.length - 1];
-                                        var option_string = '<option class=\''+result.uri+'\' value=\"'+keyword+'\" selected>'+keyword+'</option>';
+                for(var i=0; i < languages.length; i++){
+                    var paths = result.terms[languages[i]].split('>');
+                    var keyword = paths[paths.length - 1];
+                    var option_string = '<option class=\''+result.uri+'\' value=\"'+keyword+'\" selected>'+keyword+'</option>';
 
-                                        if(i==0){
-                                            var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString');
-                                            var current_div = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString_chzn ul li[class=\'search-field\'] input');
+                    if(i==0){
+                        var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString');
+                        var current_div = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString_chzn ul li[class=\'search-field\'] input');
 
-                                        }else{
-                                            var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase());
-                                            var current_div = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()+'_chzn ul li[class=\'search-field\'] input');
-                                        }
-                                        current_select.append(option_string);
-                                        current_select.trigger('liszt:updated');
-                                        current_div.attr('style','width: 0px');
+                    }else{
+                        var current_select = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase());
+                        var current_div = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()+'_chzn ul li[class=\'search-field\'] input');
+                    }
+                    current_select.append(option_string);
+                    current_select.trigger('liszt:updated');
+                    current_div.attr('style','width: 0px');
 
-                                        addToStructure('" . $attribute->getAttributeNS($this->catalog_uri, 'relid') . "','" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "');
-                                    }
-                                }
+                    addToStructure('" . $attribute->getAttributeNS($this->catalog_uri, 'relid') . "','" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "');
+                }
+            }
 
-                                Ext.onReady(function() {
+            Ext.onReady(function() {
 
-                                    var thes = new ThesaurusReader({
-                                        appPath: '" . JUri::base() . "administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/',
-                                        lang: '" . $default->gemet . "',
-                                        outputLangs: [" . implode(',', $languages) . "],
-                                        title: 'GEMET Thesaurus',
-                                        separator: ' > ',
-                                        returnPath: true,
-                                        returnInspire: true,
-                                        width: 520, height: 300,
-                                        layout: 'fit',
-                                        proxy: '" . JUri::base() . "administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/proxy.php?url=',
-                                        handler: writeTerms
-                                    });
+                var thes = new ThesaurusReader({
+                    appPath: '" . JUri::base() . "administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/',
+                    lang: '" . $default . "',
+                    outputLangs: [" . implode(',', $languages) . "],
+                    title: 'GEMET Thesaurus',
+                    separator: ' > ',
+                    returnPath: true,
+                    returnInspire: true,
+                    width: 520, height: 300,
+                    layout: 'fit',
+                    proxy: '" . JUri::base() . "administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/proxy.php?url=',
+                    handler: writeTerms
+                });
 
-                                    thes.render('gemet');
-                                });
+                thes.render('gemet');
 
+                // HACK TO FIX RENDER
+                js('#ext-gen10').css('width', 'auto');
+                js('html').remove('#gemet #ext-comp-1002-xcollapsed');
+            });
 
-                                    js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString').on('change',function(evt, params){
-                                                var id_default = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString option[value=\''+params.deselected+'\']').attr('id');
-                                                var index_number = js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString option[value=\''+params.deselected+'\']').attr('index');
+            js('select[id^=jform_{$parent_path}_sla_gmd_dp_keyword]').on('change',function(evt, params){
+                if(params.deselected){
+                    var opt = js('select[id^=jform_{$parent_path}_sla_gmd_dp_keyword] option[value=\"'+params.deselected+'\"]');
+                    
+                    var index_number = opt[0].index;
+                    
+                    for(var i=0; i<languages.length; i++){
+                        if(i == 0){
+                            var select = js('#jform_{$parent_path}_sla_gmd_dp_keyword'+index+'_sla_gco_dp_CharacterString');
+                        }
+                        else{
+                            var select = js('#jform_{$parent_path}_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase());
+                        }
+                        
+                        js('#'+select[0][index_number].id).remove();
+                        js('#'+select[0].id).trigger('liszt:updated');
+                    }
+                    
+                    removeFromStructure('" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "-sla-gmd-dp-keyword-la-'+index_number+'-ra-');
+                }
+            });
 
-                                                for(var i=1; i < languages.length; i++){
-                                                    var id_i18n = id_default.replace('_sla_gco_dp_CharacterString','_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase());
-                                                    js('option[id=\''+id_i18n+'\']').remove();
-                                                    js('#jform_" . $parent_path . "_sla_gmd_dp_keyword'+index+'_sla_gmd_dp_PT_FreeText_sla_gmd_dp_textGroup_sla_gmd_dp_LocalisedCharacterString_'+languages[i].toUpperCase()).trigger('liszt:updated');
-                                                }
-
-                                                removeFromStructure('" . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . "-sla-gmd-dp-keyword-la-'+index_number+'-ra-');
-
-                                    });
-
-                            });";
+        });";
 
         $script->nodeValue = $script_code;
 
@@ -866,7 +896,7 @@ class FormHtmlGenerator {
         $aModal->setAttribute('class', 'btn btn-primary btn-lg');
 
         $divModal = $this->formHtml->createElement('div');
-        $divModal->setAttribute('class', 'modal fade hide');
+        $divModal->setAttribute('class', 'modal fade hide ext-strict');
         $divModal->setAttribute('id', 'myModal');
         $divModal->setAttribute('tabindex', '-1');
         $divModal->setAttribute('role', 'dialog');
