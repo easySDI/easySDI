@@ -54,7 +54,7 @@ class sdiBasket {
 
             //Load diffusion
             $query = $db->getQuery(true)
-                    ->select('d.id as id, od.id as orderdiffusion_id, od.productstate_id, od.remark, od.fee, od.completed, od.file, od.size, od.created_by')
+                    ->select('d.id as id, od.id as orderdiffusion_id, od.productstate_id, od.remark, od.fee, od.completed,' . $db->quoteName('od.file') . ' , od.size, od.created_by')
                     ->from('#__sdi_diffusion d')
                     ->innerJoin('#__sdi_order_diffusion od ON od.diffusion_id = d.id')
                     ->innerJoin('#__sdi_order o ON o.id = od.order_id')

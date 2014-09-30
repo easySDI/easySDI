@@ -266,11 +266,11 @@ class FormGenerator {
             if($stereotype_id == EnumStereotype::$GEOGRAPHICEXTENT){
                 $occurance = $this->domXpathStr->query($relationExist->getNodePath())->length;
 
-                $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
+                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
                 
-            }
+                }
             
-        }
+            }
 
         $parent_id = $parent->getAttributeNS($this->catalog_uri, 'dbid');
 
@@ -426,22 +426,22 @@ class FormGenerator {
             $nbr = $this->domXpathCsw->query('/*' . $xpath)->length;
 
             if (!in_array($relation->nodeName, $exclude_node)) {
-                $hasSibling = isset($relation->nextSibling);
-                if ($hasSibling) {
-                    $nextSibling = $relation->nextSibling;
-                }
-                for ($i = 1; $i < $nbr; $i++) {
-                    $clone = $relation->cloneNode(true);
-                    $clone->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':index', $i + 1);
-                    if ($hasSibling) {
-                        $relation->parentNode->insertBefore($clone, $nextSibling);
-                    } else {
-                        $relation->parentNode->appendChild($clone);
-                    }
-                }
-
-                $this->getValue($this->structure->getElementsByTagNameNS('*', '*')->item(0));
+            $hasSibling = isset($relation->nextSibling);
+            if ($hasSibling) {
+                $nextSibling = $relation->nextSibling;
             }
+            for ($i = 1; $i < $nbr; $i++) {
+                $clone = $relation->cloneNode(true);
+                $clone->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':index', $i + 1);
+                if ($hasSibling) {
+                    $relation->parentNode->insertBefore($clone, $nextSibling);
+                } else {
+                    $relation->parentNode->appendChild($clone);
+                }
+            }
+
+        $this->getValue($this->structure->getElementsByTagNameNS('*', '*')->item(0));
+    }
         }
     }
 
@@ -649,7 +649,7 @@ class FormGenerator {
             if ($this->domXpathStr->query('*/*/*', $attribute)->length > 0) {
                 $field->setAttribute('label', EText::_($guid) . ' (' . $this->ldao->getDefaultLanguage()->value . ')');
             } else {
-                $field->setAttribute('label', EText::_($guid));
+            $field->setAttribute('label', EText::_($guid));
             }
         } else {
             $field->setAttribute('label', JText::_($label));
@@ -674,7 +674,7 @@ class FormGenerator {
             $field->setAttribute('default', $i18nChild->nodeValue);
             $field->setAttribute('name', FormUtils::serializeXpath($i18nChild->getNodePath()) . $i18nChild->getAttribute('locale'));
             $localeValue = str_replace('#', '', $i18nChild->getAttribute('locale'));
-            $field->setAttribute('label', EText::_($guid) . ' (' . $this->ldao->getByIso3166($localeValue)->value . ')');
+            $field->setAttribute('label', EText::_($guid) . ' ' . $this->ldao->getByIso3166($localeValue)->value);
             $field->setAttribute('description', EText::_($guid, 2));
 
             $fields[] = $field;
@@ -713,7 +713,7 @@ class FormGenerator {
         if ($this->domXpathStr->query('*/*/*', $attribute)->length > 0) {
             $field->setAttribute('label', EText::_($guid) . ' (' . $this->ldao->getDefaultLanguage()->value . ')');
         } else {
-            $field->setAttribute('description', EText::_($guid, 2));
+        $field->setAttribute('description', EText::_($guid, 2));
         }
 
         $fields[] = $field;

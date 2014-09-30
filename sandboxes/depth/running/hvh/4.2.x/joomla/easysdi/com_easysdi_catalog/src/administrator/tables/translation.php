@@ -171,5 +171,20 @@ class Easysdi_catalogTabletranslation extends sdiTable {
 		return true;
 	}
         
+        /**
+	 * Method to perform sanity checks on the JTable instance properties to ensure
+	 * they are safe to store in the database. 
+	 *
+	 * @return  boolean  True if the instance is sane and able to be stored in the database.
+	 *
+	 * @link    http://docs.joomla.org/JTable/check
+	 * @since   11.1
+	 */
+    public function check() {
+        $this->alias = $this->element_guid;
+        
+        return parent::check();
+    }
+        
 
 }

@@ -172,11 +172,11 @@
             <option value="1">LAST</option>
         </field>
 
-        <field name="from" type="calendar" default="null"
+        <field name="from" type="calendar" default=""
                label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_FROM"
                description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_FROM"  />
 
-        <field name="to" type="calendar" default="null"
+        <field name="to" type="calendar" default=""
                label="COM_EASYSDI_CATALOG_FORM_LBL_SEARCH_CRITERIA_TO"
                description="COM_EASYSDI_CATALOG_FORM_DESC_SEARCH_CRITERIA_TO"  />
         

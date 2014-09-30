@@ -44,3 +44,13 @@ SET IDENTITY_INSERT [#__sdi_perimeter] ON;
 INSERT [#__sdi_perimeter] ([id], [guid], [alias], [created_by], [created], [ordering], [state], [name], [description], [accessscope_id], [perimetertype_id]) VALUES (1, N'1a9f342c-bb1e-9bc4-dd19-38910dff0f59', N'freeperimeter', 356, CAST(0x00FC9F003B370B0000 AS DateTime2),1, 1, N'Free perimeter', '',1,1);
 INSERT [#__sdi_perimeter] ([id], [guid], [alias], [created_by], [created], [ordering], [state], [name], [description], [accessscope_id], [perimetertype_id]) VALUES (2, N'9adc6d4e-262a-d6e4-e152-6de437ba80ed', N'myperimeter', 356, CAST(0x00FC9F003B370B0000 AS DateTime2),1, 1, N'My perimeter', '',1,1);
 SET IDENTITY_INSERT [#__sdi_perimeter] OFF;
+
+ALTER TABLE #__sdi_order ALTER COLUMN modified datetime2 NULL;
+
+ALTER TABLE #__sdi_order ALTER COLUMN remark [nvarchar](500) NULL;
+
+ALTER TABLE #__sdi_order_diffusion ALTER COLUMN remark [nvarchar](500) NULL;
+ALTER TABLE #__sdi_order_diffusion ALTER COLUMN fee [decimal](10,0) NULL;
+ALTER TABLE #__sdi_order_diffusion ALTER COLUMN completed datetime2 NULL;
+ALTER TABLE #__sdi_order_diffusion ALTER COLUMN [file] [nvarchar](500) NULL;
+ALTER TABLE #__sdi_order_diffusion ALTER COLUMN size [decimal](10,0) NULL;

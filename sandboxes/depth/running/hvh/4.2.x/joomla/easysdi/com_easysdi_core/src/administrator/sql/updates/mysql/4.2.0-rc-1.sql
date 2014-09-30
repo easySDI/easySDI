@@ -14,4 +14,14 @@ ALTER TABLE #__sdi_application MODIFY modified datetime NULL;
 
 ALTER TABLE #__sdi_diffusion MODIFY modified datetime NULL;
 
-ALTER TABLE #__sdi_diffusion MODIFY description VARCHAR(500) NULL,
+ALTER TABLE #__sdi_diffusion MODIFY description VARCHAR(500) NULL;
+
+ALTER TABLE #__sdi_order MODIFY modified datetime NULL;
+
+ALTER TABLE #__sdi_order MODIFY remark VARCHAR(500) NULL;
+
+ALTER TABLE #__sdi_order_diffusion MODIFY remark VARCHAR(500) NULL;
+ALTER TABLE #__sdi_order_diffusion MODIFY fee DECIMAL(10) NULL;
+ALTER TABLE #__sdi_order_diffusion MODIFY completed datetime NULL;
+ALTER TABLE #__sdi_order_diffusion MODIFY `file` VARCHAR(500) NULL;
+ALTER TABLE #__sdi_order_diffusion MODIFY `size` DECIMAL(10 NULL;

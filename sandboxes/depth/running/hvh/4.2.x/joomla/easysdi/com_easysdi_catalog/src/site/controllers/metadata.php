@@ -563,11 +563,11 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         }
 
         if (is_array($boundaries)) {
-            foreach ($boundaries as $boundary) {
+        foreach ($boundaries as $boundary) {
                 if (!empty($boundary)) {
-                    $parent->appendChild($this->structure->importNode($formStereotype->getMultipleExtentStereotype($boundary), true));
-                }
+                $parent->appendChild($this->structure->importNode($formStereotype->getMultipleExtentStereotype($boundary), true));
             }
+        }
         } else {
             if (!empty($boundaries)) {
                 $parent->appendChild($this->structure->importNode($formStereotype->getMultipleExtentStereotype($boundaries), true));
@@ -578,8 +578,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                 $westBoundLongitude = $this->domXpathStr->query($parent->getNodePath() . '/gmd:extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:westBoundLongitude/gco:Decimal')->item(0);
 
                 $parent->appendChild($this->structure->importNode($formStereotype->getExtendStereotype('', $boundaries, $northBoundLatitude, $southBoundLatitude, $eastBoundLongitude, $westBoundLongitude, '35', true), true));
-            }
-            
+    }
+    
         }
     }
 
@@ -862,16 +862,16 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $query = $this->db->getQuery(true);
 
-        $query->update('#__sdi_metadata m');
-        $query->set('m.metadatastate_id = ' . $metadatastate_id);
+        $query->update('#__sdi_metadata ');
+        $query->set('metadatastate_id = ' . $metadatastate_id);
         if (isset($published)) {
-            $query->set('m.published = ' . $query->quote($published));
+            $query->set('published = ' . $query->quote($published));
         }
         if (isset($archived)) {
-            $query->set('m.archived = ' . $query->quote($archived));
+            $query->set('archived = ' . $query->quote($archived));
         }
 
-        $query->where('m.id = ' . (int) $id);
+        $query->where('id = ' . (int) $id);
 
         $this->db->setQuery($query);
 
