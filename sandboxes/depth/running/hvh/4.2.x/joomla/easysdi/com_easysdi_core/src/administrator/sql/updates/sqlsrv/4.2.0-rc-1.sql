@@ -54,3 +54,18 @@ ALTER TABLE #__sdi_order_diffusion ALTER COLUMN fee [decimal](10,0) NULL;
 ALTER TABLE #__sdi_order_diffusion ALTER COLUMN completed datetime2 NULL;
 ALTER TABLE #__sdi_order_diffusion ALTER COLUMN [file] [nvarchar](500) NULL;
 ALTER TABLE #__sdi_order_diffusion ALTER COLUMN size [decimal](10,0) NULL;
+
+UPDATE  [#__sdi_searchcriteria] SET [rendertype_id] = 5 WHERE [id] = 1;
+UPDATE  [#__sdi_searchcriteria] SET [rendertype_id] = 2 WHERE [id] = 2;
+UPDATE  [#__sdi_searchcriteria] SET [rendertype_id] = 2 WHERE [id] = 3;
+UPDATE  [#__sdi_searchcriteria] SET [rendertype_id] = 5 WHERE [id] = 4;
+UPDATE  [#__sdi_searchcriteria] SET [rendertype_id] = 6 WHERE [id] = 5;
+UPDATE  [#__sdi_searchcriteria] SET [rendertype_id] = 6 WHERE [id] = 6;
+UPDATE  [#__sdi_searchcriteria] SET [rendertype_id] = 4 WHERE [id] = 7;
+UPDATE  [#__sdi_searchcriteria] SET [rendertype_id] = 4 WHERE [id] = 8;
+UPDATE  [#__sdi_searchcriteria] SET [rendertype_id] = 2 WHERE [id] = 9;
+UPDATE  [#__sdi_searchcriteria] SET [rendertype_id] = 2 WHERE [id] = 10;
+UPDATE  [#__sdi_searchcriteria] SET [rendertype_id] = 2 WHERE [id] = 11;
+UPDATE  [#__sdi_searchcriteria] SET [rendertype_id] = 2 WHERE [id] = 12;
+
+
