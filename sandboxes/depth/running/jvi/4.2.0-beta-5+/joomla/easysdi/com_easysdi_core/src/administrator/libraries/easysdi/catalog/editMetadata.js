@@ -577,12 +577,12 @@ function drawBB(parent_path) {
     if (top != '' && bottom != '' && left != '' && right != '') {
 
         var map = window['map_' + parent_path];
-        var dest = new proj4.Proj(map.getProjection());
-        var source = new proj4.Proj("EPSG:4326");
-        var bottom_left = new proj4.Point(left, bottom);
-        var top_right = new proj4.Point(right, top);
-        proj4.transform(source, dest, bottom_left);
-        proj4.transform(source, dest, top_right);
+        var dest = new Proj4js.Proj(map.getProjection());
+        var source = new Proj4js.Proj("EPSG:4326");
+        var bottom_left = new Proj4js.Point(left, bottom);
+        var top_right = new Proj4js.Point(right, top);
+        Proj4js.transform(source, dest, bottom_left);
+        Proj4js.transform(source, dest, top_right);
         var bounds = new OpenLayers.Bounds(bottom_left.x, bottom_left.y, top_right.x, top_right.y);
         var box = new OpenLayers.Feature.Vector(bounds.toGeometry());
         var layer = window['polygonLayer_' + parent_path];
