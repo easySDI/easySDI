@@ -17,6 +17,19 @@ js('document').ready(function() {
         }
 
     });
+    
+    /**
+     * Boundaries NSEW inputs events
+     */
+    js('input[id$=_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal]').each(function(){
+        var parentPath = js(this).attr('id').replace('jform_','').replace('_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal','');
+        
+        js('input[id^=jform_'+parentPath+'_sla_gmd_dp_][id$=_sla_gco_dp_Decimal]').on('change', function(){
+            clearbbselect(parentPath.replace('_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox',''));
+            drawBB(parentPath);
+        });
+        
+    });
 
     /**
      * displays or not the checkboxes versions on change event
@@ -587,6 +600,12 @@ function drawBB(parent_path) {
         var box = new OpenLayers.Feature.Vector(bounds.toGeometry());
         var layer = window['polygonLayer_' + parent_path];
         layer.addFeatures([box]);
+        
+        // re-set NSEW input values to avoid any projection changes
+        js('#jform_' + parent_path + '_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').val(top);
+        js('#jform_' + parent_path + '_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').val(bottom);
+        js('#jform_' + parent_path + '_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').val(right);
+        js('#jform_' + parent_path + '_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').val(left);
     }
 }
 

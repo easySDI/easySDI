@@ -639,9 +639,9 @@ class FormGenerator {
             $field->setAttribute('readonly', 'true');
         }
 
-        if ($boundingbox) {
+        /*if ($boundingbox) {
             $field->setAttribute('onchange', 'drawBB();');
-        }
+        }*/
 
         $field->setAttribute('default', $this->getDefaultValue($relId, $attribute->firstChild->nodeValue));
 
