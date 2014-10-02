@@ -91,18 +91,15 @@ class FormStereotype {
         $elements = array();
 
         $characterString = $dom->createElementNS($this->namespaces['gco'], 'gco:CharacterString');
-        if(!empty($values)){
-            $characterString->nodeValue = $values[$default->{'iso3166-1-alpha2'}];
-        }
+        $characterString->nodeValue = isset($values[$default->{'iso3166-1-alpha2'}]) ? $values[$default->{'iso3166-1-alpha2'}] : '';
+        
         $elements[] = $characterString;
         foreach ($languages as $key => $value) {
             $pt_freetext = $dom->createElementNS($this->namespaces['gmd'], 'gmd:PT_FreeText');
             $textGroup = $dom->createElementNS($this->namespaces['gmd'], 'gmd:textGroup');
             $localisedcs = $dom->createElementNS($this->namespaces['gmd'], 'gmd:LocalisedCharacterString');
             $localisedcs->setAttribute('locale', '#' . $key);
-            if(!empty($values)){
-                $localisedcs->nodeValue = $values[$key];
-            }
+            $localisedcs->nodeValue = isset($values[$default->{'iso3166-1-alpha2'}]) ? $values[$key] : '';
 
             $textGroup->appendChild($localisedcs);
             $pt_freetext->appendChild($textGroup);
@@ -320,12 +317,14 @@ class FormStereotype {
      */
     private function getBoundaryByName($name) {
         $db = JFactory::getDbo();
-
+        
         $query = $db->getQuery(true);
-        $query->select('b.guid, b.id AS code, b.`name` AS description, b.northbound, b.southbound, b.eastbound,b.westbound, bc.`name` AS extent_type');
-        $query->from('#__sdi_boundary b');
-        $query->innerJoin('#__sdi_boundarycategory bc ON bc.id = b.category_id');
-        $query->where('b.name = ' . $query->quote($name));
+        $query->select('b.guid, b.id AS code, b.`name` AS description, b.northbound, b.southbound, b.eastbound,b.westbound, bc.`name` AS extent_type')
+                ->from('#__sdi_boundary b')
+                ->innerJoin('#__sdi_translation t ON b.guid=t.element_guid')
+                ->innerJoin('#__sdi_boundarycategory bc ON bc.id=b.category_id')
+                ->where('t.text1='.$query->quote($name))
+                ;
 
         $db->setQuery($query);
         $boundary = $db->loadObject();
