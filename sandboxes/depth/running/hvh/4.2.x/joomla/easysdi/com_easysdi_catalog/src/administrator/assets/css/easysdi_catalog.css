@@ -107,3 +107,15 @@
       background-image: url(../images/l_importrefs.png);
       padding-left:60px!important;
 }
+
+/* HACK TO FIX RENDER */
+
+#gemet #ext-gen9{ position: relative; float: left; }
+
+#gemet #ext-gen9 div img{ position: relative; }
+
+#gemet #ext-comp-1007{ position: absolute; }
+
+#gemet #ext-gen26{ position: absolute; width: 100%; }
+
+#gemet div[id^=ext-comp-1002]{ display: none !important; }
