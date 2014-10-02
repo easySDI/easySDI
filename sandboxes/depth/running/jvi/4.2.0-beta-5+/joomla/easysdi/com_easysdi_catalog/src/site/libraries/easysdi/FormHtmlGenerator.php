@@ -729,7 +729,7 @@ class FormHtmlGenerator {
 
                                 map_$parent_path.addControl(polygonControl_$parent_path);
 
-                               setTimeout(function(){drawBB('$parent_path');}, 500);
+                               setTimeout(function(){drawBB('$parent_path');}, 2000);
 
                                polygonLayer_$parent_path.events.register('featureadded', polygonLayer_$parent_path, function(e) {
                                     polygonControl_$parent_path.deactivate();
