@@ -163,11 +163,12 @@ class FormHtmlGenerator {
             }
         }
 
-        foreach ($this->domXpathStr->query($query, $parent) as $child) {
+        foreach ($this->domXpathStr->query($query, $parent) as $index => $child) {
 
             switch ($child->getAttributeNS($this->catalog_uri, 'childtypeId')) {
                 case EnumChildtype::$RELATION:
-                    if (($child->getAttributeNS($this->catalog_uri, 'lowerbound') - $child->getAttributeNS($this->catalog_uri, 'upperbound')) != 0 && $child->getAttributeNS($this->catalog_uri, 'index') == 1) {
+                    if (($child->getAttributeNS($this->catalog_uri, 'lowerbound') - $child->getAttributeNS($this->catalog_uri, 'upperbound')) != 0 
+                            && $child->getAttributeNS($this->catalog_uri, 'index') == 1) {
                         $action = $this->getAction($child);
                         $parentInner->appendChild($action);
                     }
@@ -198,10 +199,13 @@ class FormHtmlGenerator {
                         $action = $this->getAction($child);
                         $parentInner->appendChild($action);
                     }
-                    $searchField = $this->getAttribute($child);
+                    
                     $fieldset = $this->getFieldset($child);
-
-                    $fieldset->getElementsByTagName('div')->item(0)->appendChild($searchField);
+                    
+                    if ($this->domXpathStr->query('*[@catalog:childtypeId="2"]', $child)->length > 0) {
+                        $searchField = $this->getAttribute($child);
+                        $fieldset->getElementsByTagName('div')->item(0)->appendChild($searchField);
+                    }
 
 
                     $parentInner->appendChild($fieldset);
