@@ -1818,8 +1818,6 @@ CREATE TABLE [#__sdi_resourcetypelink](
 	[parentboundupper] [int] NOT NULL,
 	[childboundlower] [int] NOT NULL,
 	[childboundupper] [int] NOT NULL,
-	[class_id] [bigint] NULL,
-	[attribute_id] [bigint] NULL,
 	[viralversioning] [smallint] NOT NULL,
 	[inheritance] [smallint] NOT NULL,
 	[asset_id] [bigint] NOT NULL,
@@ -2666,7 +2664,8 @@ CREATE TABLE [#__sdi_translation](
 	[element_guid] [nvarchar](36) NOT NULL,
 	[language_id] [bigint] NULL,
 	[text1] [nvarchar](255) NULL,
-	[text2] [nvarchar](500) NULL,
+	[text2] [nvarchar](500) NULL,,
+	[text3] [nvarchar](255) NULL
  CONSTRAINT [PK_#__sdi_translation_id] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -4384,10 +4383,6 @@ ALTER TABLE [#__sdi_resourcetype] ADD  DEFAULT ((0)) FOR [asset_id];
 ALTER TABLE [#__sdi_resourcetypelink] ADD  DEFAULT ((1)) FOR [state];
 
 ALTER TABLE [#__sdi_resourcetypelink] ADD  DEFAULT (getdate()) FOR [checked_out_time];
-
-ALTER TABLE [#__sdi_resourcetypelink] ADD  DEFAULT (NULL) FOR [class_id];
-
-ALTER TABLE [#__sdi_resourcetypelink] ADD  DEFAULT (NULL) FOR [attribute_id];
 
 ALTER TABLE [#__sdi_resourcetypelink] ADD  DEFAULT ((0)) FOR [asset_id];
 
