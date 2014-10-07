@@ -4,7 +4,7 @@
 	   
         <field 	name="name" 
                 type="text" 
-                size="255" 
+                size="50" 
                 class="inputbox"
                 label="COM_EASYSDI_MAP_FORM_LBL_LAYER_NAME"
                 description="COM_EASYSDI_MAP_FORM_DESC_LAYER_NAME" 
