@@ -41,6 +41,9 @@ JText::script('COM_EASYSDI_CATALOG_GEMET_FOUND');
 JText::script('COM_EASYSDI_CATALOG_GEMET_INSPIRE_THEMES');
 JText::script('COM_EASYSDI_CATALOG_GEMET_GEMET_TOP_CONCEPTS');
 
+JText::script('COM_EASYSDI_CATALOG_OPEN_ALL');
+JText::script('COM_EASYSDI_CATALOG_CLOSE_ALL');
+
 
 //Load admin language file
 $lang = JFactory::getLanguage();
@@ -361,6 +364,7 @@ foreach ($this->validators as $validator) {
     <!-- Publish Modal -->
     <div class="modal fade hide" id="publishModal" tabindex="-1" role="dialog" aria-labelledby="publishModalLabel" aria-hidden="true">
         <form id="form_publish" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal">
+            <input type="hidden" id="viral" name="viral" value="0"/>
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -376,6 +380,8 @@ foreach ($this->validators as $validator) {
                                 </div>
                             </div>
                         </div>
+                    <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CONFIRM'); ?>
+                    <span id="publishModalChildrenList"></span>
 
                 </div>
                 <div class="modal-footer">

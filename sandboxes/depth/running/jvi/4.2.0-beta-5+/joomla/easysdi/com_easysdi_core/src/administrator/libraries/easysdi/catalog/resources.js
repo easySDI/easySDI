@@ -1,8 +1,68 @@
 js = jQuery.noConflict();
 var currentUrl = location.protocol + '//' + location.host + location.pathname;
 
-js(document).ready(function() {
+// Reflect the metadatastate sys table
+var metadataState = {
+    INPROGRESS: 1,
+    VALIDATED:  2,
+    PUBLISHED:  3,
+    ARCHIVED:   4,
+    TRASHED:    5
+};
 
+var resetSearch = function(){
+    js('#filter_resourcetype option:first, #filter_resourcetype_children option:first').attr('selected', true);
+    js('#filter_status option:first, #filter_status_children option:first').attr('selected', true);
+    js('#filter_search, #filter_search_children').val('');
+    js('form.form-search').submit();
+    return false;
+};
+
+var getResourceId = function(element, attribute){
+    attribute = attribute || 'id';
+    //if(typeof js(element).attr(attribute) === 'undefined') console.log(attribute);
+    var tabId = js(element).attr(attribute).split('_');
+    return tabId[0];
+};
+
+var getMetadataId = function(element, attribute){
+    var resource_id = getResourceId(element, attribute);
+    return js('select#'+resource_id+'_select option:selected').val();
+};
+
+var getVersionId = function(element, attribute){
+    var resource_id = getResourceId(element, attribute);
+    return js('select#'+resource_id+'_select option:selected').attr('rel');
+};
+
+js(document).ready(function() {
+    
+    js('li[id$=_child_list]').each(function(){
+        var version_id = getVersionId(this, 'id');
+        getChildNumer(version_id);
+    });
+    
+    js('a[id$=_new_linker]').each(function(){
+        var metadata_id = getMetadataId(this, 'id');
+        getNewVersionRight(metadata_id);
+    });
+    
+    js('a[class$=_sync_linker]').each(function(){
+        var metadata_id = getMetadataId(this, 'class'),
+            version_id = getVersionId(this, 'class');
+        getSynchronisationInfo(this, metadata_id, version_id);
+    });
+    
+    js('a[id$=_publish_linker]').each(function(){
+        var metadata_id = getMetadataId(this, 'id');
+        getPublishRight(this, metadata_id);
+    });
+    
+    js('a[class$=_inprogress_linker]').each(function(){
+        var version_id = getVersionId(this, 'class');
+        getSetInProgressRight(this, version_id);
+    });
+    
     // Change publish date field to Calendar field
     Calendar.setup({
         // Id of the input field
@@ -16,46 +76,55 @@ js(document).ready(function() {
         singleClick: true,
         firstDay: 1
     });
-
-    initActionList();
     
     js('#search-reset').on('click', resetSearch);
+    
+    js(document).on('click', 'a[id$=_deleter]', function(){
+        showDeleteModal(js(this).attr('rel'));
+        return false;
+    });
+    
+    js(document).on('change', 'select.version-status', function(){
+        var resource_id = getResourceId(this, 'id'),
+            metadata_id = getMetadataId(this, 'id'),
+            version_id = getVersionId(this, 'id');
+        
+        changeRelationLink(resource_id, version_id);
+        changeChildLink(resource_id, metadata_id);
+        
+        getChildNumer(version_id);
+        getNewVersionRight(metadata_id);
+        getPublishRight(js('a#'+resource_id+'_publish_linker'), metadata_id);
+        getSynchronisationInfo(js('a.'+resource_id+'_sync_linker'), metadata_id, version_id);
+        getSetInProgressRight(js('a.'+resource_id+'_inprogress_linker'), version_id);
+
+        // change delete link
+        js('a#'+resource_id+'_deleter').attr('rel', version_id);
+    });
 
 });
 
-var resetSearch = function(){
-    js('#filter_resourcetype option:first, #filter_resourcetype_children option:first').attr('selected', true);
-    js('#filter_status option:first, #filter_status_children option:first').attr('selected', true);
-    js('#filter_search, #filter_search_children').val('');
-    js('form.form-search').submit();
-    return false;
-};
-
-/**
- * Initalise child list
- */
-function initActionList() {
-    /**
-     * loop on '.version-status doesn't take care about use rights,
-     * thus send un-necessary ajax call
-     */
-    js('.version-status').each(function(i) {
-        getChildNumer(js(this).find('option:selected').attr('rel'));
-        var metadata_id = js(this).val();
-        getNewVersionRight(metadata_id);
-        getSynchronisationInfo(metadata_id);
-    });
+var getSetInProgressRight = function(element, version_id){
+    if(element.length == 0) return;
     
-    /**
-     * loop on the affected DOM Object is more efficient because
-     * it sends only necessary ajax call
-     */
-    js('a[id$=_publish_linker]').each(function(){
-        var id = js(this).attr('id').split('_');
-        
-        getPublishRight(id[0]);
+    js.get(currentUrl + '/?option=com_easysdi_core&task=version.getParent&versionId=' + version_id+'&parentState='+metadataState.PUBLISHED, function(data){
+        var response = js.parseJSON(data);
+        if(response.num>0){
+            js(element)
+                    .attr('class', 'disabled')
+                    .attr('style', 'color: #cbcbcb')
+                    .tooltip({title: Joomla.JText._('COM_EASYSDI_CORE_HAS_PUBLISHED_PARENT'), html: true})
+                    .on('click', function(){ return false;});
+        }
+        else{
+            js(element)
+                    .removeClass('disabled')
+                    .removeAttr('style')
+                    .tooltip('destroy')
+                    .on('click', function(){ return true;});
+        }
     });
-}
+};
 
 /**
  * 
@@ -99,33 +168,53 @@ function getNewVersionRight(metadata_id) {
     });
 }
 
-function getPublishRight(metadata_id){
+function getPublishRight(element, metadata_id){
+    if(element.length == 0) return;
+    
     js.get(currentUrl+'/?option=com_easysdi_core&task=version.getPublishRight&metadata_id='+metadata_id, function(data){
         var response = js.parseJSON(data);
         if(response.canPublish>0){
-            js('#'+metadata_id+'_publish_linker')
+            js(element)
                     .attr('class', 'disabled')
                     .attr('style', 'color: #cbcbcb')
-                    .tooltip({title: Joomla.JText._('COM_EASYSDI_CORE_UNPUBLISHED_CHILDREN'), html: true});
+                    .tooltip({title: Joomla.JText._('COM_EASYSDI_CORE_UNPUBLISHED_OR_UNVALIDATED_CHILDREN'), html: true})
+                    .off('click');
         }
         else{
-            js('#'+metadata_id+'_publish_linker')
+            js(element)
                     .removeClass('disabled')
                     .removeAttr('style')
                     .tooltip('destroy')
-                    .on('click', function(){showModal(response.id);return false;});
+                    .on('click', function(){showPublishModal(metadata_id, response.id);return false;});
         }
     });
 }
 
-function getSynchronisationInfo(metadata_id){
-    js.get(currentUrl + '/?option=com_easysdi_catalog&task=metadata.getSynchronisationInfo&metadata_id=' + metadata_id, function(data) {
+function getSynchronisationInfo(element, metadata_id, version_id){
+    if(element.length == 0) return;
+    
+    // check the number of resource's children - if no children, no right to synchronize
+    js.get(currentUrl + '/?option=com_easysdi_core&task=version.getChildren&parentId=' + version_id, function(data) {
         var response = js.parseJSON(data);
-        if (response.synchronized === true) {
-            
-            var message = Joomla.JText._('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_BY')+' '+response.synchronized_by+'<br/>'+ Joomla.JText._('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_THE') +' '+ response.lastsynchronization;
-            var options = {title: message, html: true};
-            js('#' + response.resource_id + '_sync_linker').tooltip(options);
+        if (response.success == 'true') {
+            if (response.num > 0) {
+                js.get(currentUrl + '/?option=com_easysdi_catalog&task=metadata.getSynchronisationInfo&metadata_id=' + metadata_id, function(data) {
+                    var response = js.parseJSON(data);
+                    if (response.synchronized === true) {
+
+                        var message = Joomla.JText._('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_BY')+' '+response.synchronized_by+'<br/>'+ Joomla.JText._('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_THE') +' '+ response.lastsynchronization;
+                        js(element)
+                                .tooltip({title: message, html: true})
+                                .on('click', function(){return true;});
+                    }
+                });
+            } else {
+                js(element)
+                    .attr('class', 'disabled')
+                    .attr('style', 'color: #cbcbcb')
+                    .tooltip({title: Joomla.JText._('COM_EASYSDI_CORE_NOT_SYNCHRONIZABLE_CAUSE_HAS_NO_CHILDREN'), html: true})
+                    .on('click', function(){return false;});
+            }
         }
     });
 }
@@ -169,29 +258,24 @@ function showAssignmentModal(version_id){
     });
 }
 
-function showPublishModal(id, publishDate){
-    if(null !== typeof publishDate){
-        var datetime = publishDate.split(' ');
-        js('#publishModal #published').val(datetime[0]);
-    }
-    showModal(id);
-}
-
-/**
- * Change link id on version change
- * 
- * @param {int} resource_id
- * @returns void
- */
-function onVersionChange(resource_id) {
-    var version_id = js("select#" + resource_id + "_select").val();
-
-    changeRelationLink(resource_id, version_id);
-    changeChildLink(resource_id, version_id);
-
-    getChildNumer(js("select#" + resource_id + "_select").find('option:selected').attr('rel'));
-    getNewVersionRight(version_id);
-    getPublishRight(version_id);
+function showPublishModal(id, version_id, publishDate){
+    js.get(currentUrl + '/?option=com_easysdi_core&task=version.getCascadeChild&version_id=' + version_id, function(data) {
+        var response = js.parseJSON(data);
+        var body = buildDeletedTree(response.versions);
+        js('#publishModalChildrenList').html(body);
+        
+        if('undefined' !== typeof publishDate){
+            var datetime = publishDate.split(' ');
+            js('#publishModal #published').val(datetime[0]);
+        }
+        
+        if(js(response.versions).length){
+            js('#publishModal #viral').val(1);
+        }
+        
+        showModal(id);
+    });
+    return false;
 }
 
 /**
@@ -200,14 +284,12 @@ function onVersionChange(resource_id) {
  * @param {int} resource_id
  * @param {int} version_id
  */
-function changeRelationLink(resource_id, version_id) {
-    js('.' + resource_id + '_linker').each(function() {
-
+function changeRelationLink(resource_id, metadata_id) {
+    js('.' + resource_id + '_linker', '.' + resource_id + '_inprogress_linker').each(function() {
         var href = js(this).attr("href");
         var i = href.lastIndexOf("/");
         var newhref = href.substring(0, i + 1);
-        js(this).attr("href", newhref + js("select#" + resourceid + "_select").val());
-        js(this).attr("href", newhref + version_id);
+        js(this).attr("href", newhref + metadata_id);
     });
 }
 
@@ -215,10 +297,10 @@ function changeRelationLink(resource_id, version_id) {
  * Change link from child list link
  * 
  * @param {int} resource_id
- * @param {int} version_id
+ * @param {int} metadata_id
  */
-function changeChildLink(resource_id, version_id) {
-    js('#' + resource_id + '_child_linker').attr('href', '/resources?parentid=' + version_id);
+function changeChildLink(resource_id, metadata_id) {
+    js('#' + resource_id + '_child_linker').attr('href', '/resources?parentid=' + metadata_id);
 }
 
 /**
@@ -226,15 +308,15 @@ function changeChildLink(resource_id, version_id) {
  * 
  * @param {string} deleteUrl
  */
-function showDeleteModal(deleteUrl, version_id) {
-
+function showDeleteModal(version_id) {
     js.get(currentUrl + '/?option=com_easysdi_core&task=version.getCascadeDeleteChild&version_id=' + version_id, function(data) {
         var response = js.parseJSON(data);
         var body = buildDeletedTree(response.versions);
         js('#deleteModalChildrenList').html(body);
-        js('#btn_delete').attr('href', deleteUrl);
+        js('#btn_delete').attr('href', location.host+'/index.php?option=com_easysdi_core&task=version.remove&id='+version_id);
         js('#deleteModal').modal('show');
     });
+    return false;
 }
 
 function buildDeletedTree(versions) {
