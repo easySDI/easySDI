@@ -2,6 +2,9 @@ js = jQuery.noConflict();
 var childrenTable, availablechildrenTable, parents;
 
 js(document).ready(function() {
+    availablechildrenData = availablechildrenData || [];
+    childrenData = childrenData || [];
+    parentsData = parentsData || [];
     
     availablechildrenTable = js('#sdi-availablechildren').dataTable({
         "bFilter": false,
@@ -36,7 +39,8 @@ js(document).ready(function() {
                 sClass: 'center'
             }
             
-        ]
+        ],
+        aaSorting: [[2, 'desc']]
     });
 
     childrenTable = js('#sdi-children').dataTable({
@@ -65,6 +69,7 @@ js(document).ready(function() {
             }},
             {
                 aTargets: [5],
+                bVisible: !isReadonly,
                 mData: function(child){
                     return "<button type='button' id='sdi-childbutton-"+child.id+"' class='btn btn-warning btn-mini' onclick='deleteChild("+JSON.stringify(child)+");'><i class='icon-white icon-minus'></i></button>";
                 },
@@ -73,13 +78,10 @@ js(document).ready(function() {
             
         ]
     });
+    
     parents = js('#sdi-parents').dataTable({
         "bFilter": true,
         "bLengthChange": false,
-        "aoColumnDefs": [
-            {"bVisible": false, "aTargets": [0]},
-            {"bVisible": versioning, "aTargets": [2]}
-        ],
         "oLanguage": {
             "sSearch": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_SEARCH'),
             "sZeroRecords": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_NORESULT'),
@@ -92,7 +94,18 @@ js(document).ready(function() {
                 "sNext": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_NEXT'),
                 "sPrevious": Joomla.JText._('COM_EASYSDI_CORE_DATATABLES_PREVIOUS')
             }
-        }
+        },
+        aaData: parentsData,
+        aoColumnDefs: [
+            { bVisible: false, aTargets: [0], mData: 'id' },
+            { aTargets: [1], mData: 'resource' },
+            { bVisible: versioning, aTargets: [2], mData: 'version' },
+            { aTargets: [3], mData: 'resourcetype' },
+            { aTargets: [4], mData: function(parent){
+                    return Joomla.JText._(parent.state, parent.state);
+            }}
+            
+        ]
     });
 
 
