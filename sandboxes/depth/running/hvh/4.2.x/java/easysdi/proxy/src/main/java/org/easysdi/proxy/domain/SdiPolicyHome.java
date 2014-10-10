@@ -68,9 +68,7 @@ public class SdiPolicyHome {
                         Date to = policy.getAllowto();
                         if (currentDate.after(from) && currentDate.before(to)) {
                             return policy;
-                        } else {
-                            continue;
-                        }
+                        } 
                     }
                 }
             }
@@ -106,9 +104,7 @@ public class SdiPolicyHome {
                         Date to = policy.getAllowto();
                         if (currentDate.after(from) && currentDate.before(to)) {
                             return policy;
-                        } else {
-                            continue;
-                        }
+                        } 
                     }
                 }
 
@@ -131,12 +127,9 @@ public class SdiPolicyHome {
                         Date to = policy.getAllowto();
                         if (currentDate.after(from) && currentDate.before(to)) {
                             return policy;
-                        } else {
-                            continue;
-                        }
+                        } 
                     }
                 }
-
             }
 
 			//If no authorities are SdiOrganism id, or if no policies are defined for the authorities, try to load a public policy
@@ -155,9 +148,7 @@ public class SdiPolicyHome {
                     Date to = policy.getAllowto();
                     if (currentDate.after(from) && currentDate.before(to)) {
                         return policy;
-                    } else {
-                        continue;
-                    }
+                    } 
                 }
             }
 

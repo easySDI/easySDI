@@ -141,6 +141,7 @@ public class SdiPolicy implements java.io.Serializable {
             Integer Asset_id,
             Set<SdiPhysicalservicePolicy> sdiPhysicalservicePolicies,
             Set<SdiOrganism> sdiOrganisms,
+            Set<SdiCategory> sdiCategories,
             Set<SdiAllowedoperation> sdiAllowedoperations,
             Set<SdiUser> sdiUsers,
             Set<SdiExcludedattribute> sdiExcludedattributes,
@@ -185,6 +186,7 @@ public class SdiPolicy implements java.io.Serializable {
         this.Asset_id = Asset_id;
         this.sdiPhysicalservicePolicies = sdiPhysicalservicePolicies;
         this.sdiOrganisms = sdiOrganisms;
+        this.sdiCategories = sdiCategories;
         this.sdiAllowedoperations = sdiAllowedoperations;
         this.sdiUsers = sdiUsers;
         this.sdiPolicyMetadatastates = sdiPolicyMetadatastates;
