@@ -2,6 +2,27 @@ js = jQuery.noConflict();
 var currentUrl = location.protocol + '//' + location.host + location.pathname;
 var tabIsOpen;
 var resourcetypes;
+
+var buildDeletedTree = function(versions) {
+    var body = '<ul>';
+
+    js.each(versions, function(k, version) {
+        body += '<li>' + version.resource_name + ' : ' + version.version_name + ' <a href="/index.php?option=com_easysdi_catalog&task=metadata.edit&id=' + version.metadata_id + '" target="_top"><i class="icon-edit"></i></a>';
+        if (typeof version.children === 'undefined') {
+            body += '</li>';
+        } else {
+            body += buildDeletedTree(version.children)
+            body += '</li>';
+        }
+
+
+    });
+
+    body += '</ul>'
+
+    return body;
+};
+
 js('document').ready(function() {
 
     /**
@@ -97,8 +118,8 @@ js('document').ready(function() {
      * @param {string} task The task to execute.
      * @returns {Boolean}
      */
-    Joomla.submitbutton = function(task) {
-
+    Joomla.submitbutton = function(task, rel) {
+        
         if (task == '') {
             return false;
         } else {
@@ -189,7 +210,19 @@ js('document').ready(function() {
                 case 'setPublishDate':
                     if (document.formvalidator.isValid(form)) {
                         js('html, body').animate({scrollTop: 0}, 'slow');
-                        js('#publishModal').modal('show');
+                        
+                        js.get(currentUrl + '/?option=com_easysdi_core&task=version.getCascadeChild&version_id=' + rel, function(data) {
+                            var response = js.parseJSON(data);
+                            var body = buildDeletedTree(response.versions);
+                            js('#publishModalChildrenList').html(body);
+
+                            if(js(response.versions).length){
+                                js('#publishModal #viral').val(1);
+                            }
+
+                            js('#publishModal').modal('show');
+                        });
+                        
                         break;
                     }
                     else{
@@ -300,12 +333,12 @@ function importSwitch(task) {
 function toggleAll() {
     var btn = js('#btn_toogle_all');
     if (tabIsOpen) {
-        btn.text('Tout ouvrir');
+        btn.text(Joomla.JText._('COM_EASYSDI_CATALOG_OPEN_ALL'));
         js('.inner-fds').hide();
         js('.collapse-btn').attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/expand.png'});
         tabIsOpen = false;
     } else {
-        btn.text('Tout fermer');
+        btn.text(Joomla.JText._('COM_EASYSDI_CATALOG_CLOSE_ALL'));
         js('.inner-fds').show();
         js('.collapse-btn').attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/collapse_top.png'});
         tabIsOpen = true;
@@ -372,10 +405,10 @@ function addToStructure(relid, parent_path) {
     js.get(currentUrl + '?option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid);
 }
 
-function addFieldset(id, idwi, relid, parent_path, lowerbound, upperbound) {
+function addFieldset(id, idwi, relid, parent_path, lowerbound, upperbound) { console.log(arguments);
     var uuid = getUuid('add-btn-', id);
     js.get(currentUrl + '?option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
-        js('#bottom-' + idwi).before(data);
+        js('#bottom-' + uuid).before(data);
         if (js(data).find('select') !== null) {
             chosenRefresh();
         }
@@ -393,17 +426,17 @@ function addFieldset(id, idwi, relid, parent_path, lowerbound, upperbound) {
                 });
             //else console.log(js(this));
         });
-        var occurance = getOccuranceCount('.outer-fds-' + idwi);
+        var occurance = getOccuranceCount('.outer-fds-' + uuid);
         if (upperbound > occurance) {
-            js('.add-btn-' + idwi).show();
+            js('.add-btn-' + uuid).show();
         }
 
         if (occurance > lowerbound) {
-            js('.remove-btn-' + idwi).show();
+            js('.remove-btn-' + uuid).show();
         }
 
         if (upperbound == occurance) {
-            js('.add-btn-' + idwi).hide();
+            js('.add-btn-' + uuid).hide();
         }
     });
 }

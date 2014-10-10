@@ -339,7 +339,7 @@ class FormHtmlGenerator {
         }
 
         $divBottom = $this->formHtml->createElement('div');
-        $divBottom->setAttribute('id', 'bottom-' . FormUtils::serializeXpath($this->removeIndex($element->getNodePath())));
+        $divBottom->setAttribute('id', 'bottom-' . FormUtils::serializeXpath($element->getNodePath()));
 
         if ($exist == 1) {
             $aCollapse->appendChild($iCollapse);
@@ -497,6 +497,26 @@ class FormHtmlGenerator {
                                     break;
 
                                 default:
+                                    if(!empty($this->ajaxXpath)){
+                                        $path = explode('/', $nodePath);
+                                        $lastPart = $path[count($path)-1];
+                                        unset($path[count($path)-1]);
+                                        $xpath = explode('[', $lastPart);
+                                        $newPath = implode('/', $path).'/'.$xpath[0];
+                                        
+                                        $nodePath = str_replace($this->ajaxXpath, $newPath, $nodePath);
+                                        
+                                        /*$path = explode('/', $this->ajaxXpath);
+                                        foreach($path as $k => $part){
+                                            if(($pos = strpos($part, '['))>-1){
+                                                $path[$k] = substr($part, 0, $pos);
+                                                //break;
+                                            }
+                                        }
+                                        $newPath = implode('/', $path);
+                                        $nodePath = str_replace($this->ajaxXpath, $newPath, $nodePath);*/
+                                    }
+                                    
                                     $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath)));
                                     break;
                             }

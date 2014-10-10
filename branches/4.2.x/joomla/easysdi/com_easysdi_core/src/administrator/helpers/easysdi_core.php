@@ -85,8 +85,20 @@ class Easysdi_coreHelper {
      * 
      * @param stdClass $version
      * @return array
+     * @deprecated since version 4.2.0 - replaced by getChildrenVersion
      */
     public function getViralVersionnedChild($version) {
+        return $this->getChildrenVersion($version, true);
+    }
+    
+    /**
+     * getChildrenVersion - retrieves the children metadata's version of the given metadata's version
+     * 
+     * @param int $version
+     * @param bool $viralVersioning - limit or not to the viral versionned child
+     * @return array
+     */
+    public function getChildrenVersion($version, $viralVersioning = false){
         $all_versions = array();
         $all_versions[$version->id] = $version;
 
@@ -100,7 +112,9 @@ class Easysdi_coreHelper {
         $query->innerJoin('#__sdi_version cv ON vl.child_id = cv.id');
         $query->innerJoin('#__sdi_metadata cm ON cm.version_id = cv.id');
         $query->innerJoin('#__sdi_resource cr ON cv.resource_id = cr.id AND cr.resourcetype_id = rtl.child_id');
-        $query->where('rtl.viralversioning = 1');
+        if($viralVersioning){
+            $query->where('rtl.viralversioning = 1');
+        }
         $query->where('vl.parent_id = ' . (int) $version->id);
 
         $db->setQuery($query);
