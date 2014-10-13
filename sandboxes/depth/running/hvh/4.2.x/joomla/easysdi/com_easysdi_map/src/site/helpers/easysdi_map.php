@@ -185,7 +185,44 @@ abstract class Easysdi_mapHelper {
                         ' . $appname . '.portal.setWidth(Ext.get("' . $renderto . '").getWidth());
                         ' . $appname . '.portal.setHeight(Ext.get("' . $renderto . '").getWidth() * 1/2);
                     });
-            });';
+            
+// create permalink provider
+//var permalinkProvider = new GeoExt.state.PermalinkProvider();
+
+// set it in the state manager
+//Ext.state.Manager.setProvider(permalinkProvider);
+// display permalink each time state is changed
+//permalinkProvider.on({
+  //  statechanged: function(provider, name, value) {
+    //    alert(provider.getLink());
+  //  }
+//})
+
+//function refreshWMSLayer(){
+//        // use a CQL parser for easy filter creation
+//        var format = new OpenLayers.Format.CQL();
+//
+//        // this rule will get a filter from the CQL text in the form
+//        var rule = new OpenLayers.Rule({
+//        symbolizer: {
+//            fillColor: "#ff0000",
+//            strokeColor: "#ffcccc",
+//            fillOpacity: "0.5"
+//            }    
+//        });
+//        var filter;    
+//        filter = format.read("States = \'California\'");
+//        if (filter) {
+//            var states = app.mapPanel.map.getLayersByName("arcgis_0")[0];
+//            rule.filter = filter;
+//            states.redraw();
+//        }
+// 
+//        };
+        
+
+        
+});';
         $output .= '</script>';
 
         return $output;
@@ -637,7 +674,9 @@ abstract class Easysdi_mapHelper {
             }
         }
         $config .= '
-        ]
+        ],
+        //stateId : "map",
+        //prettyStateKeys : true
         }
         ,';
 
