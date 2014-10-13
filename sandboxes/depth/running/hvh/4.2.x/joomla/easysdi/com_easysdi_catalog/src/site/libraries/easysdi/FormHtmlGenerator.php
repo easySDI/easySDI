@@ -489,7 +489,6 @@ class FormHtmlGenerator {
                             switch ($stereotypeId) {
                                 case EnumStereotype::$BOUNDARY:
                                     $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath), 12, 15));
-                                    $jfield->__set('class','sdi-extent-multiselect');
                                     break;
 
                                 default:
