@@ -98,7 +98,7 @@ class Easysdi_coreHelper {
      * @param bool $viralVersioning - limit or not to the viral versionned child
      * @return array
      */
-    public function getChildrenVersion($version, $viralVersioning = false){
+    public function getChildrenVersion($version, $viralVersioning = false, $unpublished = false){
         $all_versions = array();
         $all_versions[$version->id] = $version;
 
@@ -115,6 +115,9 @@ class Easysdi_coreHelper {
         if($viralVersioning){
             $query->where('rtl.viralversioning = 1');
         }
+        if($unpublished){
+            $query->where('cm.metadatastate_id NOT IN (3, 4)'); // @TODO: should be replaced by sdiMetadata::PUBLISHED/ARCHIVED
+        }
         $query->where('vl.parent_id = ' . (int) $version->id);
 
         $db->setQuery($query);
@@ -128,6 +131,7 @@ class Easysdi_coreHelper {
                 $this->getViralVersionnedChild($child);
             }
         }
+        else $version->children = array();
 
         return $all_versions;
     }
