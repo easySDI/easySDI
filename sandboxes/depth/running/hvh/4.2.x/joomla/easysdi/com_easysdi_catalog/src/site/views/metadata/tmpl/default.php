@@ -48,6 +48,7 @@ JText::script('COM_EASYSDI_CATALOG_CLOSE_ALL');
 //Load admin language file
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
+$lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 $document = JFactory::getDocument();
 
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/ext/resources/css/ext-all.css');
@@ -149,9 +150,9 @@ $document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/cs
         overflow:auto;
     }
 </style>
-
 <script type="text/javascript">
 
+  
     js = jQuery.noConflict();
     js('document').ready(function() {
 

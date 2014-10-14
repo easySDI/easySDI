@@ -681,9 +681,8 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 ->innerJoin('#__sdi_versionlink vl ON v.id=vl.parent_id')
                 ->innerJoin('#__sdi_metadata md ON vl.child_id=md.version_id')
                 ->where('m.id = ' . $metadata_id.' AND md.metadatastate_id != '.sdiMetadata::PUBLISHED.' AND md.metadatastate_id != '.sdiMetadata::VALIDATED)
-                ->group('v.resource_id')
+                ->group('v.resource_id, v.id')
                 ;
-        
         $result = $db->setQuery($query)->loadAssoc();
         
         echo json_encode($result);

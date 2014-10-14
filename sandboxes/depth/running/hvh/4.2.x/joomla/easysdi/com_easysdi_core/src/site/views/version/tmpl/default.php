@@ -68,7 +68,7 @@ if ($this->item) :
         <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
             <?php else:?>
             <div>
-                <?php echo $this->getTopActionBar(); ?>
+                <?php echo $this->getTopActionBar();?>
             </div>
             <?php endif;?>
 
@@ -116,7 +116,7 @@ if ($this->item) :
                         </div>
                     </div>
                 </div>
-                <?php endif; ?>
+                
                 
                 <!-- Child -->
                 <div class="row-fluid">

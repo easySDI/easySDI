@@ -105,7 +105,7 @@ js(document).ready(function() {
 var getSetInProgressRight = function(element, version_id){
     if(element.length == 0) return;
     
-    js.get(currentUrl + '/?option=com_easysdi_core&task=version.getParent&versionId=' + version_id+'&parentState='+metadataState.PUBLISHED, function(data){
+    js.get(baseUrl + 'option=com_easysdi_core&task=version.getParent&versionId=' + version_id+'&parentState='+metadataState.PUBLISHED, function(data){
         var response = js.parseJSON(data);
         if(response.num>0){
             js(element)
@@ -171,7 +171,7 @@ function getPublishRight(element, metadata_id){
     
     js.get(baseUrl+'option=com_easysdi_core&task=version.getPublishRight&metadata_id='+metadata_id, function(data){
         var response = js.parseJSON(data);        
-        if(response != null && response.canPublish>0){
+        if(response.canPublish>0){
             js(element)
                     .attr('class', 'disabled')
                     .attr('style', 'color: #cbcbcb')
