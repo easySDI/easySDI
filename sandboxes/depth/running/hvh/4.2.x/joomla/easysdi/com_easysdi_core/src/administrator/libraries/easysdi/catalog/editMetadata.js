@@ -1,5 +1,5 @@
 js = jQuery.noConflict();
-var currentUrl = location.protocol + '//' + location.host + location.pathname;
+//var currentUrl = location.protocol + '//' + location.host + location.pathname;
 var tabIsOpen;
 var resourcetypes;
 
@@ -28,7 +28,7 @@ js('document').ready(function() {
     /**
      * Retrieves resource types and displays or not the checkboxes versions. 
      */
-    js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.getResourceType', function(data) {
+    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.getResourceType', function(data) {
         resourcetypes = js.parseJSON(data);
 
         for (var i in resourcetypes) {
@@ -165,7 +165,7 @@ js('document').ready(function() {
                 case 'show':
                     js('input[name="task"]').val(task);
                     js.ajax({
-                        url: currentUrl + '?' + task,
+                        url: baseUrl + task,
                         type: js('#form-metadata').attr('method'),
                         data: js('#form-metadata').serialize(),
                         success: function(data) {
@@ -182,7 +182,7 @@ js('document').ready(function() {
                 case 'preview':
                     js('input[name="task"]').val(task);
                     js.ajax({
-                        url: currentUrl + '?' + task,
+                        url: baseUrl + task,
                         type: js('#form-metadata').attr('method'),
                         data: js('#form-metadata').serialize(),
                         success: function(data) {
@@ -191,7 +191,7 @@ js('document').ready(function() {
                             if (response.success) {
                                 var options = {size: {x: 600, y: 700}};
                                 SqueezeBox.initialize(options);
-                                SqueezeBox.setContent('iframe', currentUrl + '?option=com_easysdi_catalog&tmpl=component&view=sheet&preview=editor&guid=' + response.guid);
+                                SqueezeBox.setContent('iframe', baseUrl + 'option=com_easysdi_catalog&tmpl=component&view=sheet&preview=editor&guid=' + response.guid);
                             }
 
                         }
@@ -211,7 +211,7 @@ js('document').ready(function() {
                     if (document.formvalidator.isValid(form)) {
                         js('html, body').animate({scrollTop: 0}, 'slow');
                         
-                        js.get(currentUrl + '/?option=com_easysdi_core&task=version.getCascadeChild&version_id=' + rel, function(data) {
+                        js.get(baseUrl + 'option=com_easysdi_core&task=version.getCascadeChild&version_id=' + rel, function(data) {
                             var response = js.parseJSON(data);
                             var body = buildDeletedTree(response.versions);
                             js('#publishModalChildrenList').html(body);
@@ -281,7 +281,7 @@ function searchResource(task) {
     js('input[name="task"]').val(task);
 
     js.ajax({
-        url: currentUrl + '?' + task,
+        url: baseUrl + task,
         type: js('#form_search_resource').attr('method'),
         data: js('#form_search_resource').serialize(),
         success: function(data) {
@@ -316,7 +316,7 @@ function searchResource(task) {
 function importSwitch(task) {
     var actions = task.split('.');
 
-    js.get(currentUrl + '?task=' + actions[0] + '.' + actions[1] + '&id=' + actions[2], function(data) {
+    js.get(baseUrl + 'task=' + actions[0] + '.' + actions[1] + '&id=' + actions[2], function(data) {
         var response = js.parseJSON(data);
 
         if (response.success) {
@@ -360,7 +360,7 @@ function collapse(id) {
 }
 
 function addField(id, idwi, relid, parent_path, lowerbound, upperbound) {
-    js.get(currentUrl + '?option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
+    js.get(baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
 
         js('#attribute-group-' + idwi + ':last').after(data);
         if (js(data).find('select') !== null) {
@@ -395,19 +395,19 @@ function addBoundaryToStructure(name, parent_path) {
     console.log(name);
     console.log(parent_path);
 
-    js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
+    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
         var response = js.parseJSON(data);
         return response.success;
     });
 }
 
 function addToStructure(relid, parent_path) {
-    js.get(currentUrl + '?option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid);
+    js.get(baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid);
 }
 
 function addFieldset(id, idwi, relid, parent_path, lowerbound, upperbound) { console.log(arguments);
     var uuid = getUuid('add-btn-', id);
-    js.get(currentUrl + '?option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
+    js.get(baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
         js('#bottom-' + uuid).before(data);
         if (js(data).find('select') !== null) {
             chosenRefresh();
@@ -488,7 +488,7 @@ function confirmReset(){
 
 function removeFromStructure(id) {
     var uuid = getUuid('remove-btn-', id);
-    js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
+    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
         var response = js.parseJSON(data);
         return response.success;
     });
@@ -496,7 +496,7 @@ function removeFromStructure(id) {
 
 function removeField(id, idwi, lowerbound, upperbound) {
     var uuid = getUuid('remove-btn-', id);
-    js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
+    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
         var response = js.parseJSON(data);
         if (response.success) {
             var toRemove = js('#attribute-group-' + uuid);
@@ -507,7 +507,7 @@ function removeField(id, idwi, lowerbound, upperbound) {
 
 function removeFieldset(id, idwi, lowerbound, upperbound) {
     var uuid = getUuid('remove-btn-', id);
-    js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
+    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
         var response = js.parseJSON(data);
         if (response.success) {
 
@@ -566,7 +566,7 @@ function chosenRefresh() {
 
 function filterBoundary(parentPath, value) {
 
-    js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.getBoundaryByCategory&value=' + value, function(data) {
+    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByCategory&value=' + value, function(data) {
 
         var response = js.parseJSON(data);
         var replaceId = parentPath.replace(/-/g, '_');
@@ -595,7 +595,7 @@ function filterBoundary(parentPath, value) {
 }
 
 function setBoundary(parentPath, value) {
-    js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.getBoundaryByName&value=' + value, function(data) {
+    js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.getBoundaryByName&value=' + value, function(data) {
         var response = js.parseJSON(data);
         var replaceId = parentPath.replace(/-/g, '_');
         js('#jform_' + replaceId + '_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').attr('value', response.northbound);
