@@ -568,16 +568,24 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
     /**
      * Get a list of cascading deleting children
-     * @deprecated since version 4.2.0 - replaced by getCascadeChild
+     * 
      */
     public function getCascadeDeleteChild() {
         return $this->getCascadeChild(true);
+    }
+
+    /**
+     * Get a list of cascading deleting children
+     * 
+     */
+    public function getCascadePublicableChild() {
+        return $this->getCascadeChild(true, true);
     }
     
     /**
      * getCascadeChild - get the list of the version's children
      */
-    public function getCascadeChild($viralVersioning = false){
+    public function getCascadeChild($viralVersioning = false, $unpublished = false){
         $model = $this->getModel('Version', 'Easysdi_coreModel');
 
         // Get the user data.
@@ -594,7 +602,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $version->version_name = $version->name;
 
         $response = array();
-        $response['versions'] = $this->core_helpers->getChildrenVersion($version, $viralVersioning);
+        $response['versions'] = $this->core_helpers->getChildrenVersion($version, $viralVersioning, $unpublished);
 
         echo json_encode($response);
         die();

@@ -250,7 +250,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      */
     public function publish($continue = true) {
         if (!$continue || count($this->data) > 0) {
-            $this->changeStatusAndSave(sdiMetadata::PUBLISHED, $close);
+            $this->changeStatusAndSave(sdiMetadata::PUBLISHED, $continue);
         } else {
             $this->changeStatusAndUpdate(sdiMetadata::PUBLISHED);
         }
@@ -920,7 +920,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         try{
             $this->db->transactionStart();
             foreach($versions[$version->id]->children as $children){
-                $this->changeStatus($children->metadata_id, $metadatastate_id, $published);
+                if($children->metadatastate_id == sdiMetadata::VALIDATED){
+                    $this->changeStatus($children->metadata_id, $metadatastate_id, $published);
+                }
             }
             $this->changeStatus($id, $metadatastate_id, $published);
             $this->db->transactionCommit();
@@ -1199,8 +1201,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $branch->resource_id = $metadata['resource_id'];
 
             $query = $this->db->getQuery(true);
-            $query->select('child_id')
-                    ->from('#__sdi_versionlink')
+            $query->select('m.id')
+                    ->from('#__sdi_versionlink vl')
+                    ->innerJoin('#__sdi_metadata m ON m.version_id=vl.child_id')
                     ->where('parent_id=' . $branch->id);
             $this->db->setQuery($query);
 
