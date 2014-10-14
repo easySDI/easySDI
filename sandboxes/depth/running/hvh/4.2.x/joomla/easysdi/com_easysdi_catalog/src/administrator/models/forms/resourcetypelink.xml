@@ -27,27 +27,6 @@
 
     </fieldset>
     
-    <field name="class_id"  required="true"
-           type="sql" 
-           class="inputbox"
-           onchange="onClassChange()"
-           query=" SELECT null AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_class WHERE state=1 AND isrootclass= 1 ORDER BY ordering" 
-           key_field="id" 
-           value_field="name"
-           label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_CLASS_ID"
-           description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_CLASS_ID" 
-    /> 
-        
-    <field name="attribute_id"  required="true"
-               type="sql" 
-               class="inputbox"
-               query=" SELECT null AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_attribute WHERE state=1 ORDER BY ordering" 
-               key_field="id" 
-               value_field="name"
-               label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_ATTRIBUTE_ID"
-               description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_ATTRIBUTE_ID" 
-    /> 
-    
     <field name="parentboundlower" type="text" size="40" class="inputbox" required="true"
            label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPELINK_PARENTBOUNDLOWER"
            description="COM_EASYSDI_CATALOG_FORM_DESC_RESOURCETYPELINK_PARENTBOUNDLOWER" 

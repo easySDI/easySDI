@@ -163,11 +163,12 @@ class FormHtmlGenerator {
             }
         }
 
-        foreach ($this->domXpathStr->query($query, $parent) as $child) {
+        foreach ($this->domXpathStr->query($query, $parent) as $index => $child) {
 
             switch ($child->getAttributeNS($this->catalog_uri, 'childtypeId')) {
                 case EnumChildtype::$RELATION:
-                    if (($child->getAttributeNS($this->catalog_uri, 'lowerbound') - $child->getAttributeNS($this->catalog_uri, 'upperbound')) != 0 && $child->getAttributeNS($this->catalog_uri, 'index') == 1) {
+                    if (($child->getAttributeNS($this->catalog_uri, 'lowerbound') - $child->getAttributeNS($this->catalog_uri, 'upperbound')) != 0 
+                            && $child->getAttributeNS($this->catalog_uri, 'index') == 1) {
                         $action = $this->getAction($child);
                         $parentInner->appendChild($action);
                     }
@@ -198,10 +199,13 @@ class FormHtmlGenerator {
                         $action = $this->getAction($child);
                         $parentInner->appendChild($action);
                     }
-                    $searchField = $this->getAttribute($child);
+                    
                     $fieldset = $this->getFieldset($child);
-
-                    $fieldset->getElementsByTagName('div')->item(0)->appendChild($searchField);
+                    
+                    if ($this->domXpathStr->query('*[@catalog:childtypeId="2"]', $child)->length > 0) {
+                        $searchField = $this->getAttribute($child);
+                        $fieldset->getElementsByTagName('div')->item(0)->appendChild($searchField);
+                    }
 
 
                     $parentInner->appendChild($fieldset);
@@ -335,7 +339,7 @@ class FormHtmlGenerator {
         }
 
         $divBottom = $this->formHtml->createElement('div');
-        $divBottom->setAttribute('id', 'bottom-' . FormUtils::serializeXpath($this->removeIndex($element->getNodePath())));
+        $divBottom->setAttribute('id', 'bottom-' . FormUtils::serializeXpath($element->getNodePath()));
 
         if ($exist == 1) {
             $aCollapse->appendChild($iCollapse);
@@ -492,15 +496,35 @@ class FormHtmlGenerator {
                                     break;
 
                                 default:
+                                    if(!empty($this->ajaxXpath)){
+                                        $path = explode('/', $nodePath);
+                                        $lastPart = $path[count($path)-1];
+                                        unset($path[count($path)-1]);
+                                        $xpath = explode('[', $lastPart);
+                                        $newPath = implode('/', $path).'/'.$xpath[0];
+                                        
+                                        $nodePath = str_replace($this->ajaxXpath, $newPath, $nodePath);
+                                        
+                                        /*$path = explode('/', $this->ajaxXpath);
+                                        foreach($path as $k => $part){
+                                            if(($pos = strpos($part, '['))>-1){
+                                                $path[$k] = substr($part, 0, $pos);
+                                                //break;
+                                            }
+                                        }
+                                        $newPath = implode('/', $path);
+                                        $nodePath = str_replace($this->ajaxXpath, $newPath, $nodePath);*/
+                                    }
+                                    
                                     $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath)));
                                     break;
                             }
                             
                             // Prevent against metadata corruption
-                            if($jfield === false){
+                            /*if($jfield === false){
                                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_RESOURCES_METADATA_CORRUPT'), 'warning');
                                 return JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', true));
-                            }
+                            }*/
                             
                             $fieldid = $jfield->__get('id');
                             $query = 'descendant::*[@id="' . $fieldid . '"]';
@@ -728,7 +752,7 @@ class FormHtmlGenerator {
 
                                 map_$parent_path.addControl(polygonControl_$parent_path);
 
-                               drawBB('$parent_path');
+                               setTimeout(function(){drawBB('$parent_path');}, 2000);
 
                                polygonLayer_$parent_path.events.register('featureadded', polygonLayer_$parent_path, function(e) {
                                     polygonControl_$parent_path.deactivate();

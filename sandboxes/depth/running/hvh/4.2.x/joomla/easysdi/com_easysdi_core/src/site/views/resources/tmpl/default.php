@@ -19,7 +19,9 @@ JHtml::_('behavior.calendar');
 
 JText::script('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_BY');
 JText::script('COM_EASYSDI_CORE_RESOURCES_SYNCHRONIZE_THE');
-JText::script('COM_EASYSDI_CORE_UNPUBLISHED_CHILDREN');
+JText::script('COM_EASYSDI_CORE_UNPUBLISHED_OR_UNVALIDATED_CHILDREN');
+JText::script('COM_EASYSDI_CORE_HAS_PUBLISHED_PARENT');
+JText::script('COM_EASYSDI_CORE_NOT_SYNCHRONIZABLE_CAUSE_HAS_NO_CHILDREN');
 
 
 $document = JFactory::getDocument();
@@ -163,7 +165,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                 <td>
                                     <?php if ($item->versioning) : ?>
 
-                                        <select id="<?php echo $item->id; ?>_select" onchange="onVersionChange(<?php echo $item->id; ?>)" class="inputbox version-status">
+                                        <select id="<?php echo $item->id; ?>_select" class="inputbox version-status">
                                             <?php foreach ($item->metadata as $key => $value) { ?>
                                                 <option value="<?php echo $value->id; ?>" rel="<?php echo $value->version; ?>"><?php echo $value->name; ?> : <?php echo JText::_($value->value); ?></option>
                                             <?php } ?>
@@ -209,13 +211,13 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                         if ($this->user->authorize($item->id, sdiUser::metadataresponsible)){
                                             if ($item->metadata[0]->state == sdiMetadata::VALIDATED)
                                                 array_push($section, 
-                                                    "<li><a class='{$item->id}_linker' id='{$item->metadata[0]->id}_publish_linker' href=''>".JText::_('COM_EASYSDI_CORE_RESOURCES_PUBLISH_METADATA')."</a></li>"
+                                                    "<li><a class='{$item->id}_linker' id='{$item->id}_publish_linker' href=''>".JText::_('COM_EASYSDI_CORE_RESOURCES_PUBLISH_METADATA')."</a></li>"
                                                 );
                                             
                                             if ($item->metadata[0]->state == sdiMetadata::PUBLISHED)
                                                 array_push($section, 
-                                                    "<li><a class='{$item->id}_linker' href='".JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.inprogress&id=' . $item->metadata[0]->id)."'>".JText::_('COM_EASYSDI_CORE_INPROGRESS_ITEM')."</a></li>",
-                                                    "<li><a class='{$item->id}_modaler' href='#' onclick='showPublishModal({$item->metadata[0]->id}, \"{$item->metadata[0]->published}\");return false;'>".JText::_('COM_EASYSDI_CORE_RESOURCES_CHANGEPUBLISHEDDATE_METADATA')."</a></li>",
+                                                    "<li><a class='{$item->id}_inprogress_linker' href='".JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.inprogress&id=' . $item->metadata[0]->id)."'>".JText::_('COM_EASYSDI_CORE_INPROGRESS_ITEM')."</a></li>",
+                                                    "<li><a class='{$item->id}_modaler' href='#' onclick='showPublishModal({$item->metadata[0]->id}, {$item->metadata[0]->version}, \"{$item->metadata[0]->published}\");return false;'>".JText::_('COM_EASYSDI_CORE_RESOURCES_CHANGEPUBLISHEDDATE_METADATA')."</a></li>",
                                                     "<li><a class='{$item->id}_linker' href='".JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.archive&id=' . $item->metadata[0]->id)."'>".JText::_('COM_EASYSDI_CORE_RESOURCES_ARCHIVE_METADATA')."</a></li>"
                                                 );
                                             
@@ -308,12 +310,12 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                                         /* FOURTH SECTION - optional */
                                         if($this->user->authorize($item->id, sdiUser::resourcemanager)){
                                             if($item->versioning)
-                                                array_push($dropdown, array(
-                                                    "<li><a href='#' onclick='showDeleteModal(\"".JRoute::_("index.php?option=com_easysdi_core&task=version.remove&id={$item->metadata[0]->version}")."\", {$item->metadata[0]->version});return false;'><i class='icon-remove'></i> ".JText::_(count($item->metadata)>1?'COM_EASYSDI_CORE_RESOURCES_DELETE_VERSION':'COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE')."</a></li>"
+                                                array_push($dropdown, array( //\"".JRoute::_("index.php?option=com_easysdi_core&task=version.remove&id={$item->metadata[0]->version}")."\", 
+                                                    "<li><a href='' rel='{$item->metadata[0]->version}' id='{$item->id}_deleter'><i class='icon-remove'></i> ".JText::_(count($item->metadata)>1?'COM_EASYSDI_CORE_RESOURCES_DELETE_VERSION':'COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE')."</a></li>"
                                                 ));
                                             else
                                                 array_push($dropdown, array(
-                                                    "<li><a href='#' onclick='showDeleteModal(\"".JRoute::_("index.php?option=com_easysdi_core&task=version.remove&id={$item->metadata[0]->version}")."\", {$item->metadata[0]->version});return false;'><i class='icon-remove'></i> ".JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE')."</a></li>"
+                                                    "<li><a href='' rel='{$item->metadata[0]->version}' id='{$item->id}_deleter'><i class='icon-remove'></i> ".JText::_('COM_EASYSDI_CORE_RESOURCES_DELETE_RESOURCE')."</a></li>"
                                                 ));
                                         }
                                         
@@ -366,6 +368,8 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
 <div class="modal fade" id="publishModal" tabindex="-1" role="dialog" aria-labelledby="publishModalLabel" aria-hidden="true">
     <form id="form_publish" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.publish'); ?>" method="post" class="form-validate form-horizontal">
         <input type="hidden" id="id" name="id" value=""/>
+        <input type="hidden" id="viral" name="viral" value="0"/>
+        <input type="hidden" id="redirectURL" name="redirectURL" value="index.php?option=com_easysdi_core&view=resources"/>
         <input type="hidden" id="task" name="task" value="metadata.publish"/>
         <div class="modal-dialog">
             <div class="modal-content">
@@ -382,6 +386,8 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css')
                             </div>
                         </div>
                     </div>
+                    <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CONFIRM'); ?>
+                    <span id="publishModalChildrenList"></span>
 
                 </div>
                 <div class="modal-footer">

@@ -75,6 +75,14 @@ class Easysdi_coreModelVersion extends JModelForm {
                 $result = $db->loadObject();
                 $this->_item->versioning = $result->versioning;
                 $this->_item->resourcename = $result->name;
+                
+                //Get metadatastate
+                $query = $db->getQuery(true)
+                        ->select('m.metadatastate_id')
+                        ->from('#__sdi_metadata m')
+                        ->where('m.version_id='.(int)$this->_item->id);
+                $db->setQuery($query);
+                $this->_item->metadatastate = (int)$db->loadResult();
 
                 //Allowed resourcetype as children
                 $query = $db->getQuery(true)

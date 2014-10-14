@@ -658,10 +658,6 @@ CREATE INDEX #__sdi_resourcetypelink_fk11 ON #__sdi_resourcetypelink USING btree
  
 CREATE INDEX #__sdi_resourcetypelink_fk21 ON #__sdi_resourcetypelink USING btree (child_id);
  
-CREATE INDEX #__sdi_resourcetypelink_fk31 ON #__sdi_resourcetypelink USING btree (class_id);
- 
-CREATE INDEX #__sdi_resourcetypelink_fk41 ON #__sdi_resourcetypelink USING btree (attribute_id);
- 
 CREATE INDEX #__sdi_resourcetypelinkinheritance_fk11 ON #__sdi_resourcetypelinkinheritance USING btree (resourcetypelink_id);
  
 CREATE INDEX #__sdi_searchcriteria_fk11 ON #__sdi_searchcriteria USING btree (criteriatype_id);
@@ -1099,10 +1095,6 @@ ALTER TABLE ONLY #__sdi_resourcetypelink
     ADD CONSTRAINT #__sdi_resourcetypelink_fk1 FOREIGN KEY (parent_id) REFERENCES #__sdi_resourcetype(id) MATCH FULL;
 ALTER TABLE ONLY #__sdi_resourcetypelink
     ADD CONSTRAINT #__sdi_resourcetypelink_fk2 FOREIGN KEY (child_id) REFERENCES #__sdi_resourcetype(id) MATCH FULL;
-ALTER TABLE ONLY #__sdi_resourcetypelink
-    ADD CONSTRAINT #__sdi_resourcetypelink_fk3 FOREIGN KEY (class_id) REFERENCES #__sdi_class(id) MATCH FULL;
-ALTER TABLE ONLY #__sdi_resourcetypelink
-    ADD CONSTRAINT #__sdi_resourcetypelink_fk4 FOREIGN KEY (attribute_id) REFERENCES #__sdi_attribute(id) MATCH FULL;
 ALTER TABLE ONLY #__sdi_resourcetypelinkinheritance
     ADD CONSTRAINT #__sdi_resourcetypelinkinheritance_fk1 FOREIGN KEY (resourcetypelink_id) REFERENCES #__sdi_resourcetypelink(id) MATCH FULL;
 ALTER TABLE ONLY #__sdi_searchcriteria

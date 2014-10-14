@@ -622,16 +622,6 @@ REFERENCES [#__sdi_resourcetype] ([id]);
 
 ALTER TABLE [#__sdi_resourcetypelink] CHECK CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk2];
 
-ALTER TABLE [#__sdi_resourcetypelink]  WITH CHECK ADD  CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk3] FOREIGN KEY([class_id])
-REFERENCES [#__sdi_class] ([id]);
-
-ALTER TABLE [#__sdi_resourcetypelink] CHECK CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk3];
-
-ALTER TABLE [#__sdi_resourcetypelink]  WITH CHECK ADD  CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk4] FOREIGN KEY([attribute_id])
-REFERENCES [#__sdi_attribute] ([id]);
-
-ALTER TABLE [#__sdi_resourcetypelink] CHECK CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk4];
-
 ALTER TABLE [#__sdi_resourcetypelinkinheritance]  WITH CHECK ADD  CONSTRAINT [#__sdi_resourcetypelinkinheritance$#__sdi_resourcetypelinkinheritance_fk1] FOREIGN KEY([resourcetypelink_id])
 REFERENCES [#__sdi_resourcetypelink] ([id]);
 

@@ -453,7 +453,7 @@ class FormGenerator {
      */
     private function getValue(DOMNode $child) {
         foreach ($child->childNodes as $node) {
-            if ($node->hasChildNodes()) {
+            if ($this->hasChildElement($node)) {
                 if ($node->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE) {
                     $nodeCsw = $this->domXpathCsw->query('/*' . $node->getNodePath())->item(0);
                     if (isset($nodeCsw)) {
@@ -475,6 +475,23 @@ class FormGenerator {
                 }
             }
         }
+    }
+
+    /**
+     * 
+     * @param type $node
+     * 
+     * Check if node has DOMElement child
+     */
+    private function hasChildElement(DOMNode $node){
+        $hasElementChild = false;
+        foreach ($node->childNodes as $child) {
+            if($child->nodeType == XML_ELEMENT_NODE ){
+                $hasElementChild = true;
+            }
+        }
+        
+        return $hasElementChild;
     }
 
     /**
@@ -639,9 +656,9 @@ class FormGenerator {
             $field->setAttribute('readonly', 'true');
         }
 
-        if ($boundingbox) {
+        /*if ($boundingbox) {
             $field->setAttribute('onchange', 'drawBB();');
-        }
+        }*/
 
         $field->setAttribute('default', $this->getDefaultValue($relId, $attribute->firstChild->nodeValue));
 
@@ -714,9 +731,12 @@ class FormGenerator {
 
         $field->setAttribute('default', $this->getDefaultValue($relid, $attribute->firstChild->nodeValue));
         $field->setAttribute('name', FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
+ 
+        
         if ($this->domXpathStr->query('*/*/*', $attribute)->length > 0) {
             $field->setAttribute('label', EText::_($guid) . ' (' . $this->ldao->getDefaultLanguage()->value . ')');
         } else {
+            $field->setAttribute('label', EText::_($guid));
         $field->setAttribute('description', EText::_($guid, 2));
         }
 
@@ -847,9 +867,11 @@ class FormGenerator {
 
         if ($upperbound > 1) {
 
-            $name = FormUtils::removeIndexToXpath(FormUtils::serializeXpath($attribute->firstChild->getNodePath()), 12, 15);
+            $name = FormUtils::removeIndexToXpath(FormUtils::serializeXpath($attribute->firstChild->getNodePath()));
             $field->setAttribute('name', $name);
             $field->setAttribute('multiple', 'true');
+            $field->setAttribute('type', 'MultipleDefaultList');
+            
         } else {
             $validator = $this->getValidatorClass($attribute);
             $field->setAttribute('class', $validator);
@@ -904,7 +926,7 @@ class FormGenerator {
                                 $default[] = $node->firstChild->nodeValue;
                             }
                         }
-                        $field->setAttribute('type', 'MultipleDefaultList');
+                        
                         $field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $default), true));
                         $field->setAttribute('css', 'sdi-multi-extent-select');
                     } else {
@@ -958,7 +980,11 @@ class FormGenerator {
                         $allValues = $this->domXpathStr->query('child::*[@catalog:relid="' . $relid . '"]', $attribute->parentNode);
                         $default = array();
                         foreach ($allValues as $node) {
+                            if($node->firstChild->hasAttribute('codeListValue')){
+                                $default[] = $node->firstChild->getAttribute('codeListValue');
+                            }else{
                             $default[] = $node->firstChild->nodeValue;
+                        }
                         }
                         $field->setAttribute('type', 'MultipleDefaultList');
                         $field->setAttribute('default', $this->getDefaultValue($relid, implode(',', $default), true));

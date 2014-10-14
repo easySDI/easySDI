@@ -1818,8 +1818,6 @@ CREATE TABLE [#__sdi_resourcetypelink](
 	[parentboundupper] [int] NOT NULL,
 	[childboundlower] [int] NOT NULL,
 	[childboundupper] [int] NOT NULL,
-	[class_id] [bigint] NULL,
-	[attribute_id] [bigint] NULL,
 	[viralversioning] [smallint] NOT NULL,
 	[inheritance] [smallint] NOT NULL,
 	[asset_id] [bigint] NOT NULL,

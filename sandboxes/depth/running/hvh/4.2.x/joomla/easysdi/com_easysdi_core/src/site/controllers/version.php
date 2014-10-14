@@ -141,6 +141,40 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         echo json_encode($response);
         die();
     }
+    
+    public function getParent(){
+        $user = new sdiUser();
+        
+        $versionId = JFactory::getApplication()->input->getInt('versionId', null);
+        $parentState = JFactory::getApplication()->input->getInt('parentState', null);
+        
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('r.id')
+                ->from('#__sdi_resource r')
+                ->innerJoin('#__sdi_user_role_resource urr ON urr.resource_id=r.id')
+                ->innerJoin('#__sdi_version v ON v.resource_id=r.id')
+                ->innerJoin('#__sdi_metadata m ON m.version_id=v.id')
+                ->innerJoin('#__sdi_versionlink vl ON v.id=vl.parent_id')
+                ->where('vl.child_id='.(int)$versionId.' AND urr.user_id='.(int)$user->id)
+                ->group('r.id')
+                ;
+        
+        if(!empty($parentState)){
+            $query->where('m.metadatastate_id='.(int)$parentState);
+        }
+
+        $db->setQuery($query)->execute();
+        $cnt = $db->getNumRows();
+
+        $response = array();
+        $response['success'] = 'true';
+        $response['resource_id'] = $versionId;
+        $response['num'] = (int)$cnt;
+
+        echo json_encode($response);
+        die();
+    }
 
     /**
      * 
@@ -534,20 +568,33 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
     /**
      * Get a list of cascading deleting children
+     * @deprecated since version 4.2.0 - replaced by getCascadeChild
      */
     public function getCascadeDeleteChild() {
+        return $this->getCascadeChild(true);
+    }
+    
+    /**
+     * getCascadeChild - get the list of the version's children
+     */
+    public function getCascadeChild($viralVersioning = false){
         $model = $this->getModel('Version', 'Easysdi_coreModel');
 
         // Get the user data.
+        $id = JFactory::getApplication()->input->get('version_id', null, 'int');
+        if(empty($id)){
+            $jform = JFactory::getApplication()->input->get('jform', array(), 'array');
+            $id = $jform['id'];
+        }
         $data = array();
-        $data['id'] = JFactory::getApplication()->input->get('version_id', null, 'int');
+        $data['id'] = $id;
 
         $version = $model->getData($data['id']);
         $version->resource_name = $version->resourcename;
         $version->version_name = $version->name;
 
         $response = array();
-        $response['versions'] = $this->core_helpers->getViralVersionnedChild($version);
+        $response['versions'] = $this->core_helpers->getChildrenVersion($version, $viralVersioning);
 
         echo json_encode($response);
         die();
@@ -628,12 +675,12 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $db = JFactory::getDbo();
         
         $query = $db->getQuery(true)
-                ->select('v.resource_id AS id, COUNT(md.id) as canPublish')
+                ->select('v.id, COUNT(md.id) as canPublish')
                 ->from('#__sdi_metadata m')
                 ->innerJoin('#__sdi_version v ON m.version_id = v.id')
                 ->innerJoin('#__sdi_versionlink vl ON v.id=vl.parent_id')
                 ->innerJoin('#__sdi_metadata md ON vl.child_id=md.version_id')
-                ->where('m.id = ' . $metadata_id.' AND md.metadatastate_id != '.sdiMetadata::PUBLISHED)
+                ->where('m.id = ' . $metadata_id.' AND md.metadatastate_id != '.sdiMetadata::PUBLISHED.' AND md.metadatastate_id != '.sdiMetadata::VALIDATED)
                 ->group('v.resource_id')
                 ;
         

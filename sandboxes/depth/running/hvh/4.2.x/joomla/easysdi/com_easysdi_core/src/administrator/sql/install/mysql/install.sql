@@ -1677,8 +1677,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_resourcetypelink` (
 `parentboundupper` INT(10)  NOT NULL ,
 `childboundlower` INT(10)  NOT NULL ,
 `childboundupper` INT(10)  NOT NULL ,
-`class_id` INT(11) UNSIGNED NULL ,
-`attribute_id` INT(11) UNSIGNED  NULL ,
 `viralversioning` TINYINT(1)  NOT NULL ,
 `inheritance` TINYINT(1)  NOT NULL ,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
@@ -1686,8 +1684,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_resourcetypelink` (
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_resourcetypelink_fk1` (`parent_id` ASC) ,
 INDEX `#__sdi_resourcetypelink_fk2` (`child_id` ASC) ,
-INDEX `#__sdi_resourcetypelink_fk3` (`class_id` ASC) ,
-INDEX `#__sdi_resourcetypelink_fk4` (`attribute_id` ASC) ,
   CONSTRAINT `#__sdi_resourcetypelink_fk1`
     FOREIGN KEY (`parent_id` )
     REFERENCES `#__sdi_resourcetype` (`id` )
@@ -1696,16 +1692,6 @@ INDEX `#__sdi_resourcetypelink_fk4` (`attribute_id` ASC) ,
 CONSTRAINT `#__sdi_resourcetypelink_fk2`
     FOREIGN KEY (`child_id` )
     REFERENCES `#__sdi_resourcetype` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-CONSTRAINT `#__sdi_resourcetypelink_fk3`
-    FOREIGN KEY (`class_id` )
-    REFERENCES `#__sdi_class` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-CONSTRAINT `#__sdi_resourcetypelink_fk4`
-    FOREIGN KEY (`attribute_id` )
-    REFERENCES `#__sdi_attribute` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;

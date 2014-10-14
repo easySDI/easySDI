@@ -1,4 +1,12 @@
+ALTER TABLE #__sdi_translation  ADD CONSTRAINT unique_lang_element UNIQUE (element_guid, language_id);
+
 ALTER TABLE #__sdi_translation ADD text3  varchar(255) NULL;
+
+ALTER TABLE #__sdi_resourcetypelink DROP CONSTRAINT #__sdi_resourcetypelink$#__sdi_resourcetypelink_fk3;
+ALTER TABLE #__sdi_resourcetypelink DROP COLUMN class_id;
+
+ALTER TABLE #__sdi_resourcetypelink DROP CONSTRAINT #__sdi_resourcetypelink$#__sdi_resourcetypelink_fk4;
+ALTER TABLE #__sdi_resourcetypelink DROP COLUMN attribute_id;
 
 ALTER TABLE #__sdi_resourcetype ALTER COLUMN modified_by int NULL;
 

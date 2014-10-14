@@ -2,6 +2,27 @@ js = jQuery.noConflict();
 var currentUrl = location.protocol + '//' + location.host + location.pathname;
 var tabIsOpen;
 var resourcetypes;
+
+var buildDeletedTree = function(versions) {
+    var body = '<ul>';
+
+    js.each(versions, function(k, version) {
+        body += '<li>' + version.resource_name + ' : ' + version.version_name + ' <a href="/index.php?option=com_easysdi_catalog&task=metadata.edit&id=' + version.metadata_id + '" target="_top"><i class="icon-edit"></i></a>';
+        if (typeof version.children === 'undefined') {
+            body += '</li>';
+        } else {
+            body += buildDeletedTree(version.children)
+            body += '</li>';
+        }
+
+
+    });
+
+    body += '</ul>'
+
+    return body;
+};
+
 js('document').ready(function() {
 
     /**
@@ -16,6 +37,19 @@ js('document').ready(function() {
             }
         }
 
+    });
+    
+    /**
+     * Boundaries NSEW inputs events
+     */
+    js('input[id$=_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal]').each(function(){
+        var parentPath = js(this).attr('id').replace('jform_','').replace('_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal','');
+        
+        js('input[id^=jform_'+parentPath+'_sla_gmd_dp_][id$=_sla_gco_dp_Decimal]').on('change', function(){
+            clearbbselect(parentPath.replace('_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox',''));
+            drawBB(parentPath);
+        });
+        
     });
 
     /**
@@ -84,8 +118,8 @@ js('document').ready(function() {
      * @param {string} task The task to execute.
      * @returns {Boolean}
      */
-    Joomla.submitbutton = function(task) {
-
+    Joomla.submitbutton = function(task, rel) {
+        
         if (task == '') {
             return false;
         } else {
@@ -176,7 +210,19 @@ js('document').ready(function() {
                 case 'setPublishDate':
                     if (document.formvalidator.isValid(form)) {
                         js('html, body').animate({scrollTop: 0}, 'slow');
-                        js('#publishModal').modal('show');
+                        
+                        js.get(currentUrl + '/?option=com_easysdi_core&task=version.getCascadeChild&version_id=' + rel, function(data) {
+                            var response = js.parseJSON(data);
+                            var body = buildDeletedTree(response.versions);
+                            js('#publishModalChildrenList').html(body);
+
+                            if(js(response.versions).length){
+                                js('#publishModal #viral').val(1);
+                            }
+
+                            js('#publishModal').modal('show');
+                        });
+                        
                         break;
                     }
                     else{
@@ -287,12 +333,12 @@ function importSwitch(task) {
 function toggleAll() {
     var btn = js('#btn_toogle_all');
     if (tabIsOpen) {
-        btn.text('Tout ouvrir');
+        btn.text(Joomla.JText._('COM_EASYSDI_CATALOG_OPEN_ALL'));
         js('.inner-fds').hide();
         js('.collapse-btn').attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/expand.png'});
         tabIsOpen = false;
     } else {
-        btn.text('Tout fermer');
+        btn.text(Joomla.JText._('COM_EASYSDI_CATALOG_CLOSE_ALL'));
         js('.inner-fds').show();
         js('.collapse-btn').attr({'src': '/joomla/administrator/components/com_easysdi_catalog/assets/images/collapse_top.png'});
         tabIsOpen = true;
@@ -359,10 +405,10 @@ function addToStructure(relid, parent_path) {
     js.get(currentUrl + '?option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid);
 }
 
-function addFieldset(id, idwi, relid, parent_path, lowerbound, upperbound) {
+function addFieldset(id, idwi, relid, parent_path, lowerbound, upperbound) { console.log(arguments);
     var uuid = getUuid('add-btn-', id);
     js.get(currentUrl + '?option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
-        js('#bottom-' + idwi).before(data);
+        js('#bottom-' + uuid).before(data);
         if (js(data).find('select') !== null) {
             chosenRefresh();
         }
@@ -380,17 +426,17 @@ function addFieldset(id, idwi, relid, parent_path, lowerbound, upperbound) {
                 });
             //else console.log(js(this));
         });
-        var occurance = getOccuranceCount('.outer-fds-' + idwi);
+        var occurance = getOccuranceCount('.outer-fds-' + uuid);
         if (upperbound > occurance) {
-            js('.add-btn-' + idwi).show();
+            js('.add-btn-' + uuid).show();
         }
 
         if (occurance > lowerbound) {
-            js('.remove-btn-' + idwi).show();
+            js('.remove-btn-' + uuid).show();
         }
 
         if (upperbound == occurance) {
-            js('.add-btn-' + idwi).hide();
+            js('.add-btn-' + uuid).hide();
         }
     });
 }
@@ -577,16 +623,22 @@ function drawBB(parent_path) {
     if (top != '' && bottom != '' && left != '' && right != '') {
 
         var map = window['map_' + parent_path];
-        var dest = new proj4.Proj(map.getProjection());
-        var source = new proj4.Proj("EPSG:4326");
-        var bottom_left = new proj4.Point(left, bottom);
-        var top_right = new proj4.Point(right, top);
-        proj4.transform(source, dest, bottom_left);
-        proj4.transform(source, dest, top_right);
+        var dest = new Proj4js.Proj(map.getProjection());
+        var source = new Proj4js.Proj("EPSG:4326");
+        var bottom_left = new Proj4js.Point(left, bottom);
+        var top_right = new Proj4js.Point(right, top);
+        Proj4js.transform(source, dest, bottom_left);
+        Proj4js.transform(source, dest, top_right);
         var bounds = new OpenLayers.Bounds(bottom_left.x, bottom_left.y, top_right.x, top_right.y);
         var box = new OpenLayers.Feature.Vector(bounds.toGeometry());
         var layer = window['polygonLayer_' + parent_path];
         layer.addFeatures([box]);
+        
+        // re-set NSEW input values to avoid any projection changes
+        js('#jform_' + parent_path + '_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').val(top);
+        js('#jform_' + parent_path + '_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').val(bottom);
+        js('#jform_' + parent_path + '_sla_gmd_dp_eastBoundLongitude_sla_gco_dp_Decimal').val(right);
+        js('#jform_' + parent_path + '_sla_gmd_dp_westBoundLongitude_sla_gco_dp_Decimal').val(left);
     }
 }
 

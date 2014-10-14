@@ -1467,7 +1467,7 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 }
 .x-btn{
 	cursor:pointer;
-	white-space: nowrap;
+	/* white-space: nowrap; */
 }
 
 .x-btn button{
@@ -1931,7 +1931,7 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 }
 
 .x-toolbar td,.x-toolbar span,.x-toolbar input,.x-toolbar div,.x-toolbar select,.x-toolbar label{
-	white-space: nowrap;
+	/* white-space: nowrap; */
 }
 
 .x-toolbar .x-item-disabled {
@@ -3826,7 +3826,9 @@ a.x-menu-item {
     border:1px solid;
     border-top:0 none;
     overflow:hidden;
-    position: relative; /* added for item scroll positioning */
+    position: a; /* added for item scroll positioning */
+    width: 100%;
+    height: 100%;
 }
 
 .x-panel-bbar .x-toolbar, .x-panel-tbar .x-toolbar {
@@ -3957,6 +3959,7 @@ a.x-menu-item {
     zoom:1;
     left:0;
     top:0;
+    bottom: 0;
 }
 .x-panel-body {
     overflow:hidden;
@@ -4771,9 +4774,12 @@ body.ext-ie6.x-body-masked .x-window select {
 }
 
 .x-border-panel {
-    position:absolute;
+    position: relative;
     left:0;
     top:0;
+    width: 100%;
+    height: 100%;
+    bottom: 0;
 }
 
 .x-tool-collapse-south {

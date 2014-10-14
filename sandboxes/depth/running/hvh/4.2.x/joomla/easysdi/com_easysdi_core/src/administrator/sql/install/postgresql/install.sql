@@ -1191,8 +1191,6 @@ CREATE TABLE #__sdi_resourcetypelink (
     parentboundupper integer NOT NULL,
     childboundlower integer NOT NULL,
     childboundupper integer NOT NULL,
-    class_id bigint,
-    attribute_id bigint,
     viralversioning integer NOT NULL,
     inheritance integer NOT NULL,
     asset_id bigint DEFAULT 0::bigint NOT NULL
@@ -1700,7 +1698,8 @@ CREATE TABLE #__sdi_translation (
     element_guid character varying(36) NOT NULL,
     language_id bigint,
     text1 character varying(255),
-    text2 character varying(500)
+    text2 character varying(500),
+    text3 character varying(255)
 );
 
 

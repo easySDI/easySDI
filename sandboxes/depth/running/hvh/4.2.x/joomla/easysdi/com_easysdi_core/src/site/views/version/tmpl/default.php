@@ -21,8 +21,23 @@ $document->addScript('components/com_easysdi_core/views/version/tmpl/version.js'
 ?>
 <?php
 if ($this->item) :
+    //METADATASTATES
+    JText::script('INPROGRESS');
+    JText::script('VALIDATED');
+    JText::script('PUBLISHED');
+    JText::script('ARCHIVED');
+    JText::script('TRASHED');
+    
+    $METADATASTATE_INPROGRESS = 1;
+    $METADATASTATE_VALIDATED = 2;
+    $METADATASTATE_PUBLISHED = 3;
+    $METADATASTATE_ARCHIVED = 4;
+    $METADATASTATE_TRASHED = 5;
+    
     $versioning = ($this->item->versioning == 1) ? 'true' : 'false';
     $document->addScriptDeclaration('var versioning=' . $versioning . ';');
+    $isReadonly = !in_array($this->item->metadatastate, array($METADATASTATE_INPROGRESS, $METADATASTATE_VALIDATED));
+    $document->addScriptDeclaration("var isReadonly = '{$isReadonly}';");
     JText::script('COM_EASYSDI_CORE_DATATABLES_DISPLAY');
     JText::script('COM_EASYSDI_CORE_DATATABLES_RECORDSPERPAGE');
     JText::script('COM_EASYSDI_CORE_DATATABLES_SHOWING');
@@ -33,14 +48,12 @@ if ($this->item) :
     JText::script('COM_EASYSDI_CORE_DATATABLES_NEXT');
     JText::script('COM_EASYSDI_CORE_DATATABLES_PREVIOUS');
     JText::script('COM_EASYSDI_CORE_DATATABLES_SEARCH');
-    
-    //METADATASTATES
-    JText::script('INPROGRESS');
-    JText::script('VALIDATED');
-    JText::script('PUBLISHED');
-    JText::script('ARCHIVED');
-    JText::script('TRASHED');
     ?>
+
+<style type="text/css">
+    #searchlast > div.controls > fieldset > *{float:left;}
+    #searchlast > div.controls > fieldset > label{margin-right: 1em;}
+</style>
 
     <div class="version-edit front-end-edit">
         <?php if (!empty($this->item->id)): ?>
@@ -98,30 +111,12 @@ if ($this->item) :
                                         <th><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_ADD'); ?></th>
                                     </tr>
                                 </thead>
-                                <tbody>
-
-                                    <?php
-                                    /*if (!empty($this->item->availablechildren)):
-                                        foreach ($this->item->availablechildren as $child):
-                                            JText::script($child->state);
-                                            ?>
-                                            <tr>
-                                                <td><?php echo $child->id; ?></td>
-                                                <td><?php echo $child->resource; ?></td>
-                                                <td><?php echo $child->version; ?></td>
-                                                <td><?php echo $child->resourcetype; ?></td>
-                                                <td><?php echo JText::_($child->state); ?></td>
-                                                <td class="center"><button type="button" onClick='addChild(<?php echo htmlspecialchars(json_encode($child),ENT_QUOTES); ?>);' class="btn btn-success btn-mini"><i class="icon-white icon-new"></i></button></td> 
-                                            </tr>
-                                            <?php
-                                        endforeach;
-                                    endif;*/
-                                    ?>
-                                </tbody>
+                                <tbody></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
+                <?php endif; ?>
                 
                 <!-- Child -->
                 <div class="row-fluid">
@@ -143,26 +138,7 @@ if ($this->item) :
                                         <th><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_REMOVE'); ?></th>
                                     </tr>
                                 </thead>
-                                <tbody>
-
-                                    <?php
-                                    /*if (!empty($this->item->children)):
-                                        foreach ($this->item->children as $child):
-                                            JText::script($child->state);
-                                            ?>
-                                            <tr class="sdi-child-<?php echo $child->id; ?>">
-                                                <td><?php echo $child->id; ?></td>
-                                                <td><?php echo $child->resource; ?></td>
-                                                <td><?php echo $child->version; ?></td>
-                                                <td><?php echo $child->resourcetype; ?></td>
-                                                <td><?php echo JText::_($child->state); ?></td> 
-                                                <td class="center"><button type="button" id="sdi-childbutton-<?php echo $child->id; ?>" onClick="deleteChild('<?php echo $child->id; ?>');" class="btn btn-danger btn-mini"><i class="icon-white icon-minus"></i></button></td>                                                 
-                                            </tr>
-                                            <?php
-                                        endforeach;
-                                    endif;*/
-                                    ?>
-                                </tbody>
+                                <tbody></tbody>
                             </table>
                         </div>
                     </div>
@@ -173,6 +149,9 @@ if ($this->item) :
                 <div class="row-fluid">
                     <div class="span12">
                         <div class="well">
+                            <script type="text/javascript">
+                                parentsData = <?php echo json_encode($this->item->parents); ?>;
+                            </script>
                             <h3><?php echo JText::_('COM_EASYSDI_CORE_TITLE_VERSION_PARENT'); ?></h3>
                             <table cellpadding="0" cellspacing="0" border="0" class="display" id="sdi-parents" width="100%">
                                 <thead>
@@ -184,24 +163,7 @@ if ($this->item) :
                                         <th><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_METADATASTATE'); ?></th>
                                     </tr>
                                 </thead>
-                                <tbody>
-
-                                    <?php
-                                    if (!empty($this->item->parents)):
-                                        foreach ($this->item->parents as $parent):
-                                            ?>
-                                            <tr>
-                                                <td><?php echo $parent->id; ?></td>
-                                                <td><?php echo $parent->resource; ?></td>
-                                                <td><?php echo $parent->version; ?></td>
-                                                <td><?php echo $parent->resourcetype; ?></td>
-                                                <td><?php echo JText::_($parent->state); ?></td> 
-                                            </tr>
-                                            <?php
-                                        endforeach;
-                                    endif;
-                                    ?>
-                                </tbody>
+                                <tbody></tbody>
                             </table>
                         </div>
                     </div>
