@@ -522,10 +522,10 @@ class FormHtmlGenerator {
                             }
                             
                             // Prevent against metadata corruption
-                            if($jfield === false){
+                            /*if($jfield === false){
                                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_RESOURCES_METADATA_CORRUPT'), 'warning');
                                 return JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', true));
-                            }
+                            }*/
                             
                             $fieldid = $jfield->__get('id');
                             $query = 'descendant::*[@id="' . $fieldid . '"]';
