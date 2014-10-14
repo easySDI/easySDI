@@ -27,8 +27,7 @@
         <echoxml file="${tpl.admin.src.out.dir}/templateDetails.xml">
             <extension version="3.0" type="template" client="administrator" method="upgrade">
                 <name>EasySdi Admin Positions</name>
-                <creationDate>15 spetember 2013</creationDate>
-                <releaseDate>${xml.releaseDate}</releaseDate>
+                <creationDate>${xml.releaseDate}</creationDate>               
                 <copyright>${xml.copyright}</copyright>
                 <license>${xml.license}</license>
                 <author>${xml.author}</author>
