@@ -250,10 +250,14 @@ class FormHtmlGenerator {
         $debug = '';
 
         $aAdd = $this->formHtml->createElement('a');
-        $aAdd->setAttribute('id', 'add-btn-' . FormUtils::serializeXpath($relation->getNodePath()));
-        $aAdd->setAttribute('class', 'btn btn-success btn-mini add-btn add-btn-' . FormUtils::serializeXpath($this->removeIndex($relation->getNodePath())));
-        $aAdd->setAttribute('onclick', 'addFieldset(this.id, \'' . FormUtils::serializeXpath($this->removeIndex($relation->getNodePath())) . '\',' . $relid . ', \'' . FormUtils::serializeXpath($relation->parentNode->getNodePath()) . '\' ,' . $lowerbound . ',' . $upperbound . ')');
-
+        $aAdd->setAttribute('id', 'add-btn' . FormUtils::serializeXpath($this->removeIndex($relation->getNodePath())));
+        $aAdd->setAttribute('class', 'btn btn-success btn-mini add-btn');
+        $aAdd->setAttribute('data-relid', $relid);
+        $aAdd->setAttribute('data-parentpath', FormUtils::serializeXpath($relation->parentNode->getNodePath()));
+        $aAdd->setAttribute('data-lowerbound', $lowerbound);
+        $aAdd->setAttribute('data-upperbound', $upperbound);
+        
+        
         if ($exist == 1) {
             if ($upperbound <= $occurance) {
                 $aAdd->setAttribute('style', 'display:none;');
@@ -264,10 +268,10 @@ class FormHtmlGenerator {
         $iAdd->setAttribute('class', 'icon-white icon-plus-2');
 
         $divOuter = $this->formHtml->createElement('div');
-        $divOuter->setAttribute('id', 'outer-fds-' . FormUtils::serializeXpath($relation->getNodePath()));
-        $divOuter->setAttribute('class', 'outer-' . $level . ' outer-fds-' . FormUtils::serializeXpath($relation->getNodePath()));
+        $divOuter->setAttribute('id', 'outer-fds' . FormUtils::serializeXpath($this->removeIndex($relation->getNodePath())));
+        $divOuter->setAttribute('class', 'outer-' . $level);
 
-        $divAction = $this->formHtml->createElement('div', EText::_($relation->getAttributeNS($this->catalog_uri, 'id')) . ' ' . $debug);//
+        $divAction = $this->formHtml->createElement('div', EText::_($relation->getAttributeNS($this->catalog_uri, 'id')));
         $divAction->setAttribute('class', 'action-' . $level);
 
         $aAdd->appendChild($iAdd);
@@ -300,27 +304,25 @@ class FormHtmlGenerator {
 //        $stereotypeId = $element->firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId');
 
         $aCollapse = $this->formHtml->createElement('a');
-        $aCollapse->setAttribute('id', 'collapse-btn-' . FormUtils::serializeXpath($element->getNodePath()));
+        $aCollapse->setAttribute('id', 'collapse-btn' . FormUtils::serializeXpath($element->getNodePath()));
         $aCollapse->setAttribute('class', 'btn btn-mini collapse-btn');
-        $aCollapse->setAttribute('onclick', 'collapse(this.id)');
 
         $iCollapse = $this->formHtml->createElement('i');
         $iCollapse->setAttribute('class', 'icon-white icon-arrow-down');
 
         $aRemove = $this->formHtml->createElement('a');
-        $aRemove->setAttribute('id', 'remove-btn-' . FormUtils::serializeXpath($element->getNodePath()));
-        $aRemove->setAttribute('class', 'btn btn-danger btn-mini pull-right remove-btn-' . FormUtils::serializeXpath($this->removeIndex($element->getNodePath())));
-        $aRemove->setAttribute('onclick', 'confirmFieldset(this.id, \'' . FormUtils::serializeXpath($this->removeIndex($element->getNodePath())) . '\' , ' . $lowerbound . ',' . $upperbound . ')');
+        $aRemove->setAttribute('id', 'remove-btn' . FormUtils::serializeXpath($element->getNodePath()));
+        $aRemove->setAttribute('class', 'btn btn-danger btn-mini pull-right remove-btn');
+        $aRemove->setAttribute('data-lowerbound', $lowerbound);
+        $aRemove->setAttribute('data-upperbound', $upperbound);
+        $aRemove->setAttribute('data-xpath', FormUtils::serializeXpath($this->removeIndex($element->getNodePath())));
 
         $iRemove = $this->formHtml->createElement('i');
         $iRemove->setAttribute('class', 'icon-white icon-cancel-2');
 
-        $divOuter = $this->formHtml->createElement('div');
-        $divOuter->setAttribute('id', 'outer-fds-' . FormUtils::serializeXpath($element->getNodePath()));
-        $divOuter->setAttribute('class', ' outer-' . $level . ' outer-fds-' . FormUtils::serializeXpath($this->removeIndex($element->getNodePath())));
-
         $fieldset = $this->formHtml->createElement('fieldset');
-        $fieldset->setAttribute('id', 'fds-' . FormUtils::serializeXpath($element->getNodePath()));
+        $fieldset->setAttribute('id', 'fds' . FormUtils::serializeXpath($element->getNodePath()));
+        $fieldset->setAttribute('class', 'fds' . FormUtils::serializeXpath($this->removeIndex($element->getNodePath())));
 
         if ($guid != '') {
             $spanLegend = $this->formHtml->createElement('span', EText::_($guid));//
@@ -332,14 +334,11 @@ class FormHtmlGenerator {
         $legend = $this->formHtml->createElement('legend');
 
         $divInner = $this->formHtml->createElement('div');
-        $divInner->setAttribute('id', 'inner-fds-' . FormUtils::serializeXpath($element->getNodePath()));
+        $divInner->setAttribute('id', 'inner-fds' . FormUtils::serializeXpath($element->getNodePath()));
         $divInner->setAttribute('class', 'inner-fds');
         if (!isset($_GET['relid'])) {
             $divInner->setAttribute('style', 'display:none;');
         }
-
-        $divBottom = $this->formHtml->createElement('div');
-        $divBottom->setAttribute('id', 'bottom-' . FormUtils::serializeXpath($element->getNodePath()));
 
         if ($exist == 1) {
             $aCollapse->appendChild($iCollapse);
@@ -352,14 +351,10 @@ class FormHtmlGenerator {
             $fieldset->appendChild($legend);
             $fieldset->appendChild($divInner);
 
-            $divOuter->appendChild($fieldset);
+            
         }
-
-        if ($index == $occurance) {
-            $divOuter->appendChild($divBottom);
-        }
-
-        return $divOuter;
+        
+        return $fieldset;
     }
 
     /**
@@ -1145,15 +1140,12 @@ class FormHtmlGenerator {
         $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
         $relid = $attribute->getAttributeNS($this->catalog_uri, 'relid');
 
-        $debug = ' [oc: lb:' . $lowerbound . ' ub:' . $upperbound . ']';
-        $action = $this->formHtml->createElement('div', 'attribute actions' . $debug);
-
         $aAdd = $this->formHtml->createElement('a');
         $iAdd = $this->formHtml->createElement('i');
 
         if (isset($_GET['relid'])) {
-            $aAdd->setAttribute('id', 'remove-btn-' . FormUtils::serializeXpath($attribute->getNodePath()));
-            $aAdd->setAttribute('class', 'btn btn-danger btn-mini remove-btn remove-btn-' . FormUtils::serializeXpath($this->removeIndex($attribute->getNodePath())));
+            $aAdd->setAttribute('id', 'remove-btn' . FormUtils::serializeXpath($attribute->getNodePath()));
+            $aAdd->setAttribute('class', 'btn btn-danger btn-mini remove-btn');
             $aAdd->setAttribute('onclick', 'confirmField(this.id, \'' . $this->removeIndex(FormUtils::serializeXpath($attribute->getNodePath())) . '\',' . $relid . ', \'' . FormUtils::serializeXpath($attribute->parentNode->getNodePath()) . '\' ,' . $lowerbound . ',' . $upperbound . ')');
 
             $iAdd->setAttribute('class', 'icon-white icon-cancel-2');
