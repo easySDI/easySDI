@@ -267,6 +267,29 @@ js('document').ready(function() {
 
         }
     };
+    
+    js('#search_table').dataTable({
+        "bFilter": false,
+        "oLanguage": {
+            "sLengthMenu": "Afficher _MENU_ resultats par page",
+            "sZeroRecords": "Aucune réponse",
+            "sInfo": "Afficher _START_ à _END_ de _TOTAL_ resultats",
+            "sInfoEmpty": "Afficher 0 à 0 de 0 resultats",
+            "sInfoFiltered": "(Filtré de _MAX_ total resultats)"
+        },
+        aaData: null,
+        aoColumnDefs: [
+            { aTargets: [0], mData: function(item){
+                    return "<input type='radio' name='import[id]' id='import_id_"+item.id+"' value='"+item.id+"' checked=''>";
+            }},
+            { aTargets: [1], mData: 'name' },
+            { aTargets: [2], mData: 'created' },
+            { aTargets: [3], mData: 'guid' },
+            { aTargets: [4], mData: 'rt_name' },
+            { aTargets: [5], mData: function(item){ return Joomla.JText._(item.status);} }
+        ]
+    });
+    js('#search_table_wrapper').hide();
 }
 );
 
@@ -277,7 +300,7 @@ js('document').ready(function() {
  * @returns {undefined}
  */
 function searchResource(task) {
-
+    js('#search_table_wrapper').hide();
     js('input[name="task"]').val(task);
 
     js.ajax({
@@ -287,27 +310,14 @@ function searchResource(task) {
         success: function(data) {
             var response = js.parseJSON(data);
             if (response.success) {
-                var items = '';
-                js.each(response.result, function() {
-                    items += '<tr><td><input type="radio" name="import[id]" id="import_id_' + this.id + '" value="' + this.id + '" checked=""</td><td>' + this.name + '</td><td>' + this.created + '</td><td>' + this.guid + '</td><td>' + this.rt_name + '</td><td>' + Joomla.JText._(this.status) + '</td></tr>';
-                });
-                js('#search_result').html(items);
                 if (response.total > 0) {
                     js('#import-btn').show();
                 } else {
                     js('#import-btn').hide();
                 }
-                js('#search_table').show();
-                js('#search_table').dataTable({
-                    "bFilter": false,
-                    "oLanguage": {
-                        "sLengthMenu": "Afficher _MENU_ resultats par page",
-                        "sZeroRecords": "Aucune réponse",
-                        "sInfo": "Afficher _START_ à _END_ de _TOTAL_ resultats",
-                        "sInfoEmpty": "Afficher 0 à 0 de 0 resultats",
-                        "sInfoFiltered": "(Filtré de _MAX_ total resultats)"
-                    }
-                });
+                js('#search_table').dataTable().fnClearTable();
+                js('#search_table').dataTable().fnAddData(response.result);
+                js('#search_table_wrapper, #search_table').show();
             }
         }
     });
