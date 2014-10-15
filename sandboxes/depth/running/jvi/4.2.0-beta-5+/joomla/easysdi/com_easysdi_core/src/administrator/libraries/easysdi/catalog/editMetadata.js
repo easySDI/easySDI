@@ -210,19 +210,27 @@ js('document').ready(function() {
                 case 'setPublishDate':
                     if (document.formvalidator.isValid(form)) {
                         js('html, body').animate({scrollTop: 0}, 'slow');
-                        
-                        js.get(currentUrl + '/?option=com_easysdi_core&task=version.getCascadeChild&version_id=' + rel, function(data) {
+                        var rel = js.parseJSON(rel);
+                        js.get(currentUrl + '?option=com_easysdi_core&task=version.getPublishRight&metadata_id='+rel.metadata, function(data){
                             var response = js.parseJSON(data);
-                            var body = buildDeletedTree(response.versions);
-                            js('#publishModalChildrenList').html(body);
-
-                            if(js(response.versions).length){
-                                js('#publishModal #viral').val(1);
+                            if(response.canPublish>0){
+                                js('#system-message-container').remove();
+                                bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN', 'COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN'));
                             }
+                            else{
+                                js.get(currentUrl + '/?option=com_easysdi_core&task=version.getCascadeChild&version_id=' + rel.version, function(data) {
+                                    var response = js.parseJSON(data);
+                                    var body = buildDeletedTree(response.versions);
+                                    js('#publishModalChildrenList').html(body);
 
-                            js('#publishModal').modal('show');
+                                    if(js(response.versions).length){
+                                        js('#publishModal #viral').val(1);
+                                    }
+
+                                    js('#publishModal').modal('show');
+                                });
+                            }
                         });
-                        
                         break;
                     }
                     else{
