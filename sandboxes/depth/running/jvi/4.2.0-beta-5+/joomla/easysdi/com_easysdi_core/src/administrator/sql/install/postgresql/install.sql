@@ -202,7 +202,7 @@ CREATE TABLE #__sdi_assignment (
     assigned timestamp(3) without time zone,
     assigned_by bigint NOT NULL,
     assigned_to bigint NOT NULL,
-    version_id bigint NOT NULL,
+    metadata_id bigint NOT NULL,
     text character varying(500)
 );
 

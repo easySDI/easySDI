@@ -693,7 +693,7 @@ var showAssignmentModal = function(element){
         }else{
             js('#assign_child_controls').show();
         }
-        showModal(version.id, 'assignmentModal');
+        showModal(version.metadata().id, 'assignmentModal');
     });
 };
 
