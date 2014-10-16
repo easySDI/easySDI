@@ -152,7 +152,7 @@ $document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/cs
 </style>
 <script type="text/javascript">
 
-  
+    var baseUrl = "<?php echo JUri::base(); ?>index.php?" ;
     js = jQuery.noConflict();
     js('document').ready(function() {
 
