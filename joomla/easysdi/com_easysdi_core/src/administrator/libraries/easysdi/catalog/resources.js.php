@@ -367,8 +367,6 @@ var buildMetadataDropDown = function(resource){
 };
 
 var buildManagementDropDown = function(resource){
-    var version = resource.currentVersion();
-    
     var div = js('<div></div>').addClass('btn-group'),
         a = js('<a></a>')
             .addClass('btn')
@@ -539,18 +537,24 @@ var resetSearch = function(){
 var getChildNumber = function(element){
     if(element.length === 0) return;
     
-    var resource_id = getResourceId(element);
-    var version = resources.get(resource_id).currentVersion();
-    js.get(Links.ajax.child_number.replace('#0#', version.id), function(data){
-        var response = js.parseJSON(data);
-        if(response.success == "true"){
-            js(element).find('span').html(response.num);
-            version.child_number = response.num;
-            
-            if(resource.rights.metadataResponsible)
-                getSynchronizationInfo(js('a#'+resource_id+'_synchronize'));
-        }
-    });
+    var resource = resources.get(getResourceId(element));
+    var version = resource.currentVersion();
+    try{
+        js.get(Links.ajax.child_number.replace('#0#', version.id), function(data){
+            var response = js.parseJSON(data);
+            if(response.success == "true"){
+                js(element).find('span').html(response.num);
+                version.child_number = response.num;
+
+                if(resource.rights.metadataResponsible)
+                    getSynchronizationInfo(js('a#'+resource.id+'_synchronize'));
+            }
+        });
+    }
+    catch(e){
+        console.warn('Catch error');
+        setTimeout(function(){getChildNumber(element)}, 50);
+    }
 };
 
 // Checks if new version link should be available for the current resource
@@ -734,20 +738,20 @@ var buildActionsCell = function(resource, reload){
     buildManagementDropDown(resource);
     
     // Performs some action on dropdowns links initialisation
-    if(!reload){ // for all lines
+    /*if(!reload){ // for all lines
         js('a[id$=_child_list]').each(function(){getChildNumber(this);});
         js('a[id$=_new_version]').each(function(){getNewVersionRight(this);});
         js('a[id$=_publish]').each(function(){getPublishRight(this);});
         js('a[id$=_inprogress]').each(function(){getSetInProgressRight(this);});
         SqueezeBox.assign(js('a[id$=_preview]'));
     }
-    else{ // for the re-generated line only
+    else{*/ // for the re-generated line only
         getChildNumber(js('a#'+resource.id+'_child_list'));
         getNewVersionRight(js('a#'+resource.id+'_new_version'));
         getPublishRight(js('a#'+resource.id+'_publish'));
         getSetInProgressRight(js('a#'+resource.id+'_inprogress'));
         SqueezeBox.assign(js('a#'+resource.id+'_preview'));
-    }
+    //}
 };
 
 js(document).ready(function(){
