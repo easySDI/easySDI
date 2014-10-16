@@ -270,11 +270,20 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * @param type $statusId
      */
     private function changeStatusAndSave($statusId, $continue = true) {
+        $viral = JFactory::getApplication()->input->get('viral', 0, 'integer');
+        
         if(isset($this->data['metadatastate_id']) && $statusId == $this->data['metadatastate_id']){
             $this->save(null, true, $continue);
         }
-        elseif(isset($this->data['viral']) && $this->data['viral'] == 1){
-            $this->changeStatusViral($this->data['id'], $statusId, $this->data['published']);
+        elseif(isset($viral) && $viral == 1){
+            if($this->changeStatusViral($this->data['id'], $statusId, $this->data['published'])){
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_OK'), 'message');
+                $this->save(null, true, $continue);
+            }
+            else{
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_ERROR'), 'error');
+                $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $this->data['id']));
+            }
         }
         elseif ($this->changeStatus($this->data['id'], $statusId, $this->data['published']) != FALSE) {
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_OK'), 'message');
@@ -305,7 +314,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             if (isset($published)) {
                 
                 if(isset($viral) && $viral == 1){
-                    $this->changeStatusViral($id, $statusId, $published);
+                    $changeStatus = $this->changeStatusViral($id, $statusId, $published);
                 }
                 else{
                     $changeStatus = $this->changeStatus($id, $statusId, $published);

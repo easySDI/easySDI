@@ -1,10 +1,8 @@
 js = jQuery.noConflict();
 var childrenTable, availablechildrenTable, parents;
+var availablechildrenData = [], childrenData = [], parentsData = [];
 
 js(document).ready(function() {
-    availablechildrenData = availablechildrenData || [];
-    childrenData = childrenData || [];
-    parentsData = parentsData || [];
     
     availablechildrenTable = js('#sdi-availablechildren').dataTable({
         "bFilter": false,
