@@ -247,14 +247,12 @@ public class WMSProxyServlet extends ProxyServlet {
                 return;
             }
         } catch (Exception e) {
-            resp.setHeader("easysdi-proxy-error-occured", "true");
             logger.error("WMSProxyServlet.requestPreTreatmentGetCapabilities : ", e);
             try {
                 owsExceptionReport.sendExceptionReport(req, resp, OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY, OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", HttpServletResponse.SC_OK);
             } catch (IOException e1) {
                 logger.error(OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
             }
-            return;
         }
     }
 
