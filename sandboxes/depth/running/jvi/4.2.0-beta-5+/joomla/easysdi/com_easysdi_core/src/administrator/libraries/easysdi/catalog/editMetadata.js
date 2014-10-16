@@ -226,6 +226,10 @@ js('document').ready(function() {
                                     if(js(response.versions).length){
                                         js('#publishModal #viral').val(1);
                                     }
+                                    
+                                    var publish_date = js('#jform_published').val().split(' ');
+                                    if(publish_date[0] !== '0000-00-00')
+                                        js('#publish_date').val(publish_date[0]);
 
                                     js('#publishModal').modal('show');
                                 });
@@ -244,6 +248,7 @@ js('document').ready(function() {
                     break;
                 case 'publishWithDate':
                     js('#jform_published').val(js('#publish_date').val());
+                    js('#jform_viral').val(js('#viral').val());
                     Joomla.submitbutton('metadata.publish');
                     break;
                 case 'replicate':
