@@ -49,6 +49,7 @@ public class SdiIncludedattribute implements java.io.Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "featuretypepolicy_id", nullable = false)
+        @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 	public SdiFeaturetypePolicy getSdiFeaturetypePolicy() {
 		return this.sdiFeaturetypePolicy;
 	}

@@ -2,11 +2,8 @@ package org.easysdi.proxy.ehcache;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Enumeration;
-import java.util.List;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -23,7 +20,6 @@ import net.sf.ehcache.constructs.blocking.LockTimeoutException;
 import net.sf.ehcache.constructs.blocking.SelfPopulatingCache;
 import net.sf.ehcache.constructs.web.AlreadyCommittedException;
 import net.sf.ehcache.constructs.web.AlreadyGzippedException;
-import net.sf.ehcache.constructs.web.HttpDateFormatter;
 import net.sf.ehcache.constructs.web.PageInfo;
 import net.sf.ehcache.constructs.web.filter.FilterNonReentrantException;
 import net.sf.ehcache.constructs.web.filter.SimpleCachingHeadersPageCachingFilter;
