@@ -64,9 +64,7 @@ if ($this->item) :
             <?php endif; ?>
         <?php endif; ?>
                 
-                <?php if($this->item->availablechildren && !$isReadonly): ?>
-        <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
-            <?php else:?>
+                <?php if(!($this->item->availablechildren && !$isReadonly)):?>
             <div>
                 <?php echo $this->getTopActionBar();?>
             </div>
@@ -78,7 +76,7 @@ if ($this->item) :
                 <!-- Criteria -->
                 <div class="span12">
                     <div class="well">
-                        <div class="sdi-searchcriteria">
+                        <div class="sdi-searchcriteria form-horizontal form-inline form-validate">
                             <h3><?php echo JText::_('COM_EASYSDI_CORE_TITLE_SEARCH_CRITERIA'); ?></h3>
                             <?php foreach ($this->form->getFieldset('details') as $field): ?>
                                 <div class="control-group" id="<?php echo $field->fieldname; ?>">
@@ -92,7 +90,9 @@ if ($this->item) :
                                     <div class="controls"><?php echo $this->form->getField('searchlast')->input; ?></div>
                                 </div>
                             <?php endif; ?>
-                            <div class=""><?php echo $this->getSearchToolbar(); ?></div>
+                            <div class="">
+                                <button id="clear-btn" class="btn btn-small"><span class="icon-clear"></span><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_CLEAR_BTN');?></button>
+                            </div>
                         </div>
                         <hr>
                         <div class="sdi-searchresult">
@@ -105,9 +105,12 @@ if ($this->item) :
                                 <thead>
                                     <tr>
                                         <th>ID</th>
+                                        <th>GUID</th>
                                         <th><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_RESOURCENAME'); ?></th>
                                         <th><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_VERSIONNAME'); ?></th>
+                                        <th>RESOURCETYPE_ID</th>
                                         <th><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_RESOURCETYPE'); ?></th>
+                                        <th>STATE_ID</th>
                                         <th><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_METADATASTATE'); ?></th>
                                         <th><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_ADD'); ?></th>
                                     </tr>
@@ -172,6 +175,7 @@ if ($this->item) :
             </div>
 
 <?php if($this->item->availablechildren && !$isReadonly): ?>
+        <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
             <div>
                 <?php echo $this->getToolbar(); ?>
             </div>
