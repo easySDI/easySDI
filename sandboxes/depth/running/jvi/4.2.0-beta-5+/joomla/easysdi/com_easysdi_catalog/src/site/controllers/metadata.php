@@ -89,7 +89,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $metadata_id = JFactory::getApplication()->input->get('id', null, 'int');
 
         $query = $this->db->getQuery(true);
-        $query->select('v.id, r.resourcetype_id, r.id AS resource_id, m.id AS metadata_id, m.guid AS fileidentifier');
+        $query->select('v.id, v.name, r.resourcetype_id, r.id AS resource_id, m.id AS metadata_id, m.guid AS fileidentifier');
         $query->from('#__sdi_metadata m');
         $query->innerJoin('#__sdi_version v ON m.version_id = v.id');
         $query->innerJoin('#__sdi_resource r ON v.resource_id = r.id');
@@ -97,7 +97,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->db->setQuery($query);
 
         $version = $this->db->loadObject();
-        $version->name = date("Y-m-d H:i:s");
+        //$version->name = date("Y-m-d H:i:s");
 
         $versions = $this->core_helpers->getViralVersionnedChild($version);
 
@@ -109,10 +109,17 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     }
 
     private function _syncronize($versions) {
-
+        $nsdao = new SdiNamespaceDao();
+        
         foreach ($versions as $version) {
             if (!empty($version->children)) {
-                $merger = new CswMerge();
+                $parent_sdimetadata = new sdiMetadata($version->metadata_id);
+                $parentDom = $parent_sdimetadata->load();
+                $parentXPath = new DOMXPath($parentDom);
+                
+                foreach ($nsdao->getAll() as $ns) {
+                    $parentXPath->registerNamespace($ns->prefix, $ns->uri);
+                }
 
                 $db = JFactory::getDbo();
                 foreach ($version->children as $children) {
@@ -127,23 +134,35 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                     $xpaths = $db->loadObjectList();
 
                     $child_sdimetadata = new sdiMetadata($children->metadata_id);
+                    $childDom = $child_sdimetadata->load();
+                    $childXPath = new DOMXpath($childDom);
+                    
+                    foreach ($nsdao->getAll() as $ns) {
+                        $childXPath->registerNamespace($ns->prefix, $ns->uri);
+                    }
+                    
+                    foreach($xpaths as $xpath){
+                        $parentNode = $parentXPath->query($xpath->xpath)->item(0);
+                        $childNode = $childXPath->query($xpath->xpath)->item(0);
+                        
+                        $childParentNode = $childNode->parentNode;
+                        $childParentNode->replaceChild($childDom->importNode($parentNode, true), $childNode);
+                    }
+                    
+                    $request = $this->CreateUpdateBody($childXPath->query('/*/*')->item(0), $children->fileidentifier);
+                    
+                    if(!$child_sdimetadata->update($request->saveXML())){
+                        return false;
+                    }
+                    else{
+                        $query = $db->getQuery(true);
+                        $query->update('#__sdi_metadata m');
+                        $query->set('lastsynchronization = ' . $query->quote(date('Y-m-d h:i:s')));
+                        $query->set('synchronized_by = ' . (int) $version->metadata_id);
+                        $query->where('id = ' . (int) $children->metadata_id);
 
-                    $merger->setOriginal($child_sdimetadata->load());
-                    if ($result = $merger->mergeImport(NULL, $version->fileidentifier, $xpaths)) {
-                        $toSave = $this->CreateUpdateBody($result->firstChild, $children->fileidentifier);
-                        $toSave->save('D:\\tmp\\tosave.xml');
-                        if (!$child_sdimetadata->update($toSave->saveXML())) {
-                            return false;
-                        } else {
-                            $query = $db->getQuery(true);
-                            $query->update('#__sdi_metadata m');
-                            $query->set('lastsynchronization = ' . $query->quote(date('Y-m-d h:i:s')));
-                            $query->set('synchronized_by = ' . (int) $version->metadata_id);
-                            $query->where('id = ' . (int) $children->metadata_id);
-
-                            $db->setQuery($query);
-                            $db->execute();
-                        }
+                        $db->setQuery($query);
+                        $db->execute();
                     }
                 }
 

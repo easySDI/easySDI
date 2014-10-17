@@ -547,7 +547,7 @@ var getChildNumber = function(element){
                 version.child_number = response.num;
 
                 if(resource.rights.metadataResponsible)
-                    getSynchronizationInfo(js('a#'+resource.id+'_synchronize'));
+                    getSynchronizationInfo(js('a#'+resource.id+'_synchronize'), response.children);
             }
         });
     }
@@ -584,14 +584,22 @@ var getNewVersionRight = function(element){
     });
 };
 
-var getSynchronizationInfo = function(element){
+var getSynchronizationInfo = function(element, children){
     if(element.length === 0) return;
+    
+    var readyForSync = true;
+    if(children.length > 0){
+        for(var i in children){
+            if(children[i].modified_by === null)
+                readyForSync = false;
+        }
+    }
     
     var resource = resources.get(getResourceId(element));
     var version = resource.currentVersion();
     var metadata = version.metadata();
     
-    if(version.child_number > 0){
+    if(readyForSync && version.child_number > 0){
         js.get(Links.ajax.synchronization.replace('#0#', metadata.id), function(data){
             var response = js.parseJSON(data);
             
@@ -609,7 +617,7 @@ var getSynchronizationInfo = function(element){
         js(element)
                 .addClass('disabled')
                 .css('color', '#cbcbcb')
-                .tooltip({title: "<?php echo JText::_('COM_EASYSDI_CORE_NOT_SYNCHRONIZABLE_CAUSE_HAS_NO_CHILDREN')?>", html: true})
+                .tooltip({title: "<?php echo JText::_('COM_EASYSDI_CORE_NOT_SYNCHRONIZABLE')?>", html: true})
                 .on('click', function(){return false;});
     }
 };

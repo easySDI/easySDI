@@ -114,7 +114,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('r.id')
+                ->select('r.id, m.modified_by')
                 ->from('#__sdi_resource r')
                 ->innerJoin('#__sdi_user_role_resource urr ON urr.resource_id=r.id')
                 ->innerJoin('#__sdi_version v ON v.resource_id=r.id')
@@ -126,11 +126,13 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         $db->setQuery($query)->execute();
         $cnt = $db->getNumRows();
+        $children = $db->loadObjectList();
 
         $response = array();
         $response['success'] = 'true';
         $response['resource_id'] = $parentId;
         $response['num'] = (int)$cnt;
+        $response['children'] = $children;
 
         echo json_encode($response);
         die();
