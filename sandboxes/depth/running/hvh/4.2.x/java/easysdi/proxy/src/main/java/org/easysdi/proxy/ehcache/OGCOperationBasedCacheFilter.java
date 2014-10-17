@@ -41,6 +41,7 @@ public final class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPage
     private final Logger logger = LoggerFactory.getLogger("EasySdiConfigFilter");
     private final ProxyCacheEntryFactory cacheFactory = new ProxyCacheEntryFactory();
     private String operationValue = null;
+//    private static final int MILLISECONDS_PER_SECOND = 1000;
     
     private final CacheManager cm;
     @Autowired
@@ -179,8 +180,8 @@ public final class OGCOperationBasedCacheFilter extends SimpleCachingHeadersPage
         return pageInfo;
     }
     
-    //Originally used to overwrite headers information in case of "easysdi-proxy-error-occured"
-    //but seems to be useless...
+//    //Originally used to overwrite headers information in case of "easysdi-proxy-error-occured"
+//    //but seems to be useless...
 //    @SuppressWarnings("unchecked")
 //    @Override
 //    protected PageInfo buildPage(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws AlreadyGzippedException, Exception {
