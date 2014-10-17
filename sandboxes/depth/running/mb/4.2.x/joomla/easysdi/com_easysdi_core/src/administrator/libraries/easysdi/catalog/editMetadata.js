@@ -119,6 +119,68 @@ js('document').ready(function() {
           toogleAll(js(this));
     });
     
+    /**
+     * Set initial state of attribute action button
+     */
+    js('.attribute-action').each(function(){
+       setAttributeAction(js(this));
+    });
+    
+    /**
+     * Add field
+     */
+    js(document).on('click', '.attribute-add-btn', function(){
+        console.log(js(this));
+        var parent = js(this).parent();
+        var relid = parent.attr('data-relid');
+        var parent_path = parent.attr('data-parentpath');
+        var uuid = getUuid('attribute-add-btn', this.id);
+        
+        
+        js.get(currentUrl + '?option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
+
+            js('.attribute-group' + uuid).last().after(data);
+            if (js(data).find('select') !== null) {
+                chosenRefresh();
+            }
+
+            js(data).find('button').each(function() {
+                var idbtn = js(this).attr('id');
+                Calendar.setup({
+                    inputField: idbtn.replace('_img', ''),
+                    ifFormat: "%Y-%m-%d",
+                    button: idbtn,
+                    align: "Tl",
+                    singleClick: true,
+                    firstDay: 1
+                });
+            });
+            
+            setAttributeAction(parent);
+        
+        });
+        
+    });
+    
+    /**
+     * remove field from form
+     */
+    js(document).on('click', '.attribute-remove-btn', function(){
+        var parent = js(this).parent();
+        var uuid = getUuid('attribute-remove-btn', this.id);
+        
+        bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING', 'COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING'), function(result) {
+            if (result) {
+                js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
+                    var response = js.parseJSON(data);
+                    if (response.success) {
+                        js('#attribute-group'+uuid).remove();
+                        setAttributeAction(parent);
+                    }
+                });
+            }
+        });
+    });
 
     /**
      * Retrieves resource types and displays or not the checkboxes versions. 
@@ -345,7 +407,6 @@ js('document').ready(function() {
 }
 );
 
-
 var buildDeletedTree = function(versions) {
     var body = '<ul>';
 
@@ -365,6 +426,26 @@ var buildDeletedTree = function(versions) {
 
     return body;
 };
+
+
+function setAttributeAction(element){
+    var upperbound = js(element).attr('data-upperbound');
+    var lowerbound = js(element).attr('data-lowerbound');
+    var buttonclass = js(element).attr('data-button-class');
+    var occurance = js('.attribute-action'+buttonclass).length;
+
+    if(occurance == 1){
+        js('.attribute-action'+buttonclass+'>a.attribute-add-btn').show();
+        js('.attribute-action'+buttonclass+'>a.attribute-remove-btn').hide();
+    }else if(occurance > lowerbound && occurance < upperbound){
+        js('.attribute-action'+buttonclass+'>a.attribute-add-btn').hide();
+        js('.attribute-action'+buttonclass+'>a.attribute-add-btn').last().show();
+        js('.attribute-action'+buttonclass+'>a.attribute-remove-btn').show();
+    }else if(occurance == upperbound){
+        js('.attribute-action'+buttonclass+'>a.attribute-add-btn').hide();
+        js('.attribute-action'+buttonclass+'>a.attribute-remove-btn').show();
+    }
+}
 
 /**
  * 
@@ -442,28 +523,6 @@ function toogleAll(button){
     } 
 }
 
-function addField(id, idwi, relid, parent_path, lowerbound, upperbound) {
-    js.get(currentUrl + '?option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
-
-        js('#attribute-group-' + idwi + ':last').after(data);
-        if (js(data).find('select') !== null) {
-            chosenRefresh();
-        }
-
-        js(data).find('button').each(function() {
-            var idbtn = js(this).attr('id');
-            Calendar.setup({
-                inputField: idbtn.replace('_img', ''),
-                ifFormat: "%Y-%m-%d",
-                button: idbtn,
-                align: "Tl",
-                singleClick: true,
-                firstDay: 1
-            });
-        });
-    });
-}
-
 function addOrRemoveCheckbox(id, relid, parent_path, path) {
     var checked = js('#' + id).is(':checked');
     if (checked) {
@@ -507,14 +566,6 @@ function confirmReplicate() {
 
 }
 
-function confirmField(id, idwi, lowerbound, upperbound) {
-    bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING', 'COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING'), function(result) {
-        if (result) {
-            removeField(id, idwi, lowerbound, upperbound);
-        }
-    });
-}
-
 function confirmReset(){
     bootbox.confirm("COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE", function(result) {
         if(result){
@@ -528,17 +579,6 @@ function removeFromStructure(id) {
     js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
         var response = js.parseJSON(data);
         return response.success;
-    });
-}
-
-function removeField(id, idwi, lowerbound, upperbound) {
-    var uuid = getUuid('remove-btn-', id);
-    js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
-        var response = js.parseJSON(data);
-        if (response.success) {
-            var toRemove = js('#attribute-group-' + uuid);
-            toRemove.remove();
-        }
     });
 }
 
