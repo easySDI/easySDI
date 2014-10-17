@@ -142,7 +142,10 @@ class FormGenerator {
                     $this->getChildTree($root);
                     break;
                 case EnumChildtype::$RELATIONTYPE:
-                    $relation = $this->getDomElement($result->classass_ns_uri, $result->classass_ns_prefix, $result->name, $result->classass_id, EnumChildtype::$RELATIONTYPE, $result->guid, 1, $result->upperbound);
+                    if(isset($result->classass_id))
+                        $relation = $this->getDomElement($result->classass_ns_uri, $result->classass_ns_prefix, $result->name, $result->classass_id, EnumChildtype::$RELATIONTYPE, $result->guid, 1, $result->upperbound);
+                    else
+                        $relation = $this->getDomElement($result->resourcetype_ns_uri, $result->resourcetype_ns_prefix, $result->name, $result->resourcetype_ns_id, EnumChildtype::$RELATIONTYPE, $result->guid, 1, $result->upperbound);
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:show', 'embed');
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:actuate', 'onLoad');
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:type', 'simple');
@@ -359,7 +362,13 @@ class FormGenerator {
 
                     break;
                 case EnumChildtype::$RELATIONTYPE:
-                    $class = $this->getDomElement($result->classass_ns_uri, $result->classass_ns_prefix, $result->name, $result->classass_id, EnumChildtype::$RELATIONTYPE, $result->guid, $result->lowerbound, $result->upperbound);
+                    
+                    if(isset($result->classass_id))
+                        $class = $this->getDomElement($result->classass_ns_uri, $result->classass_ns_prefix, $result->name, $result->classass_id, EnumChildtype::$RELATIONTYPE, $result->guid, $result->lowerbound, $result->upperbound);
+                    else
+                        $class = $this->getDomElement($result->resourcetype_ns_uri, $result->resourcetype_ns_prefix, $result->name, $result->resourcetype_ns_id, EnumChildtype::$RELATIONTYPE, $result->guid, $result->lowerbound, $result->upperbound);
+                        
+                    
                     $class->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:show', 'embed');
                     $class->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:actuate', 'onLoad');
                     $class->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:type', 'simple');

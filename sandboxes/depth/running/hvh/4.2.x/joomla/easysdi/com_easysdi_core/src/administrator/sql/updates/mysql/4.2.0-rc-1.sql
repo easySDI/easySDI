@@ -46,3 +46,13 @@ UPDATE  #__sdi_searchcriteria SET rendertype_id = 2 WHERE id = 9;
 UPDATE  #__sdi_searchcriteria SET rendertype_id = 2 WHERE id = 10;
 UPDATE  #__sdi_searchcriteria SET rendertype_id = 2 WHERE id = 11;
 UPDATE  #__sdi_searchcriteria SET rendertype_id = 2 WHERE id = 12;
+
+UPDATE `#__sdi_sys_accessscope` SET value='public' WHERE id=1;
+UPDATE `#__sdi_sys_accessscope` SET value='category' WHERE id=2;
+UPDATE `#__sdi_sys_accessscope` SET value='organism' WHERE id=3;
+UPDATE `#__sdi_sys_accessscope` SET value='user' WHERE id=4;
+
+UPDATE #__sdi_sys_accessscope SET ordering=1 WHERE value='public';
+UPDATE #__sdi_sys_accessscope SET ordering=2 WHERE value='category';
+UPDATE #__sdi_sys_accessscope SET ordering=3 WHERE value='organism';
+UPDATE #__sdi_sys_accessscope SET ordering=4 WHERE value='user';

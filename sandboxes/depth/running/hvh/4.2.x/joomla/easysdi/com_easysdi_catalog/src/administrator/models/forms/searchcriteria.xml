@@ -71,7 +71,7 @@
         <field name="boundarycategory_id" 
                type="sql" 
                onchange="onBoundaryCategoryChange()"
-               query="SELECT id, name FROM #__sdi_boundarycategory WHERE state=1 ORDER by ordering" 
+               query="SELECT id, name FROM #__sdi_boundarycategory WHERE state=1 ORDER by name" 
                key_field="id" 
                value_field="name"
                translate="true"
