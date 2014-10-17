@@ -731,24 +731,24 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $cascade = (isset($data['assign_child']) && $data['assign_child'] == 1);
 
-        $vids = array($data['id']);
+        $metadata_ids = array($data['id']);
         $date = date('Y-m-d H:i.s');
 
         if ($cascade) {
             $query = $this->db->getQuery(true);
-            $query->select('child_id as vid')
-                    ->from('#__sdi_versionlink')
+            $query->select('m.id')
+                    ->from('#__sdi_versionlink vl')
+                    ->innerJoin('#__sdi_metadata m ON m.version_id=vl.child_id')
                     ->where('parent_id=' . $data['id']);
             $this->db->setQuery($query);
-            $vids = array_merge($vids, $this->db->loadColumn());
+            $metadata_ids = array_merge($metadata_ids, $this->db->loadColumn());
         }
 
         $query = $this->db->getQuery(true);
-        $query->select('v.guid, v.id')
-                ->from('#__sdi_version v')
-                ->join('LEFT', '#__sdi_metadata m ON m.version_id=v.id')
-                ->where('m.metadatastate_id=1')
-                ->where('v.id IN (' . implode(',', $vids) . ')', 'AND')
+        $query->select('m.guid, m.id')
+                ->from('#__sdi_metadata m')
+                ->where('m.metadatastate_id='.sdiMetadata::INPROGRESS)
+                ->where('m.id IN (' . implode(',', $metadata_ids) . ')')
         ;
         $this->db->setQuery($query);
         $rows = $this->db->loadAssocList();
@@ -764,7 +764,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $assignment->assigned = $date;
             $assignment->assigned_by = $data['assigned_by'];
             $assignment->assigned_to = $data['assigned_to'];
-            $assignment->version_id = $row['id'];
+            $assignment->metadata_id = $row['id'];
             $assignment->text = $data['assign_msg'];
 
             if ($this->db->insertObject('#__sdi_assignment', $assignment, 'id'))
@@ -785,8 +785,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $toUser = new sdiUser($data['assigned_to']);
 
             $li = "";
-            foreach ($success as $vid) {
-                $link = JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $vid, true, -1);
+            foreach ($success as $metadata_id) {
+                $link = JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $metadata_id, true, -1);
                 $li .= "<li><a href='{$link}'>{$link}</a></li>";
             }
 

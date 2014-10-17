@@ -1787,7 +1787,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_assignment` (
 `assigned` DATETIME ,
 `assigned_by` INT(11) UNSIGNED  NOT NULL,
 `assigned_to` INT(11) UNSIGNED NOT NULL ,
-`version_id` INT(11) UNSIGNED NOT NULL ,
+`metadata_id` INT(11) UNSIGNED NOT NULL ,
 `text` VARCHAR (500),
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_assignment_fk1` (`assigned_by`) ,
@@ -1804,8 +1804,8 @@ INDEX `#__sdi_assignment_fk3` (`version_id`) ,
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
  CONSTRAINT `#__sdi_assignment_fk3`
-    FOREIGN KEY (`version_id` )
-    REFERENCES `#__sdi_version` (`id` )
+    FOREIGN KEY (`metadata_id` )
+    REFERENCES `#__sdi_metadata` (`id` )
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

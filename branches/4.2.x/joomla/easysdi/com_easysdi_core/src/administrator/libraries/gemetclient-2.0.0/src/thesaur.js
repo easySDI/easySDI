@@ -83,9 +83,9 @@ var ThesaurusReader = function(config){
 	    	supergroup: "http://www.eionet.europa.eu/gemet/supergroup/"
 	    },
 	   	'INSPIRE': {
-	   		url: 		"http://www.eionet.europa.eu/gemet/",
-	   		concept:    "http://inspire.ec.europa.eu/theme/",
-			theme:      "http://inspire.ec.europa.eu/theme/",        
+	   		url:"http://www.eionet.europa.eu/gemet/",
+                        concept:"http://inspire.ec.europa.eu/theme/",
+                        theme:"http://inspire.ec.europa.eu/theme/"  , 
 			group:   	null,
 			supergroup: null,
 			firstClick: true

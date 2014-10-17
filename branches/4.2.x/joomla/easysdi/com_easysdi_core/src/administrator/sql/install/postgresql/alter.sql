@@ -408,7 +408,7 @@ CREATE INDEX #__sdi_assignment_fk11 ON #__sdi_assignment USING btree (assigned_b
  
 CREATE INDEX #__sdi_assignment_fk21 ON #__sdi_assignment USING btree (assigned_to);
  
-CREATE INDEX #__sdi_assignment_fk31 ON #__sdi_assignment USING btree (version_id);
+CREATE INDEX #__sdi_assignment_fk31 ON #__sdi_assignment USING btree (metadata_id);
  
 CREATE INDEX #__sdi_attributevalue1 ON #__sdi_attributevalue USING btree (attribute_id);
  
@@ -846,7 +846,7 @@ ALTER TABLE ONLY #__sdi_assignment
 ALTER TABLE ONLY #__sdi_assignment
     ADD CONSTRAINT #__sdi_assignment_fk2 FOREIGN KEY (assigned_to) REFERENCES #__sdi_user(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY #__sdi_assignment
-    ADD CONSTRAINT #__sdi_assignment_fk3 FOREIGN KEY (version_id) REFERENCES #__sdi_version(id) MATCH FULL ON DELETE CASCADE;
+    ADD CONSTRAINT #__sdi_assignment_fk3 FOREIGN KEY (metadata_id) REFERENCES #__sdi_metadata(id) MATCH FULL ON DELETE CASCADE;
 ALTER TABLE ONLY #__sdi_attributevalue
     ADD CONSTRAINT #__sdi_attributevalue FOREIGN KEY (attribute_id) REFERENCES #__sdi_attribute(id) MATCH FULL;
 ALTER TABLE ONLY #__sdi_boundary

@@ -683,7 +683,7 @@ var showAssignmentModal = function(element){
     
     js.get(Links.ajax.get_roles.replace('#0#', version.id), function(data){
         var roles = js.parseJSON(data);
-        
+        js('#assigned_to').empty();
         for(var user_id in roles[4].users)
             js('#assigned_to').append(js('<option></option>').val(user_id).html(roles[4].users[user_id]));
         js('#assigned_to').trigger('liszt:updated');
@@ -693,7 +693,7 @@ var showAssignmentModal = function(element){
         }else{
             js('#assign_child_controls').show();
         }
-        showModal(version.id, 'assignmentModal');
+        showModal(version.metadata().id, 'assignmentModal');
     });
 };
 
