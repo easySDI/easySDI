@@ -104,7 +104,7 @@ class Easysdi_coreHelper {
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query->select('cv.id, cv.name AS version_name, cr.resourcetype_id, cr.name AS resource_name, cr.id AS resource_id, cm.guid AS fileidentifier, cm.id AS metadata_id');
+        $query->select('cv.id, cv.name AS version_name, cr.resourcetype_id, cr.name AS resource_name, cr.id AS resource_id, cm.guid AS fileidentifier, cm.id AS metadata_id, cm.metadatastate_id');
         $query->from('#__sdi_versionlink vl');
         $query->innerJoin('#__sdi_version pv ON vl.parent_id = pv.id');
         $query->innerJoin('#__sdi_resource pr ON pv.resource_id = pr.id');

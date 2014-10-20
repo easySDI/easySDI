@@ -89,8 +89,8 @@ var Links = {
             },
             assignment_history: {
                 html: "<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ASSIGNMENT_HISTORY')?>",
-                href: '<?php echo JRoute::_("index.php?option=com_easysdi_catalog&view=assignments&version=#0#")?>',
-                property: 'version'
+                href: '<?php echo JRoute::_("index.php?option=com_easysdi_catalog&view=assignments&metadata=#0#")?>',
+                property: 'metadata'
             }
         }
     },
@@ -367,8 +367,6 @@ var buildMetadataDropDown = function(resource){
 };
 
 var buildManagementDropDown = function(resource){
-    var version = resource.currentVersion();
-    
     var div = js('<div></div>').addClass('btn-group'),
         a = js('<a></a>')
             .addClass('btn')
@@ -539,18 +537,24 @@ var resetSearch = function(){
 var getChildNumber = function(element){
     if(element.length === 0) return;
     
-    var resource_id = getResourceId(element);
-    var version = resources.get(resource_id).currentVersion();
-    js.get(Links.ajax.child_number.replace('#0#', version.id), function(data){
-        var response = js.parseJSON(data);
-        if(response.success == "true"){
-            js(element).find('span').html(response.num);
-            version.child_number = response.num;
-            
-            if(resource.rights.metadataResponsible)
-                getSynchronizationInfo(js('a#'+resource_id+'_synchronize'));
-        }
-    });
+    var resource = resources.get(getResourceId(element));
+    var version = resource.currentVersion();
+    try{
+        js.get(Links.ajax.child_number.replace('#0#', version.id), function(data){
+            var response = js.parseJSON(data);
+            if(response.success == "true"){
+                js(element).find('span').html(response.num);
+                version.child_number = response.num;
+
+                if(resource.rights.metadataResponsible)
+                    getSynchronizationInfo(js('a#'+resource.id+'_synchronize'), response.children);
+            }
+        });
+    }
+    catch(e){
+        console.warn('Catch error');
+        setTimeout(function(){getChildNumber(element)}, 50);
+    }
 };
 
 // Checks if new version link should be available for the current resource
@@ -580,14 +584,22 @@ var getNewVersionRight = function(element){
     });
 };
 
-var getSynchronizationInfo = function(element){
+var getSynchronizationInfo = function(element, children){
     if(element.length === 0) return;
+    
+    var readyForSync = true;
+    if(children.length > 0){
+        for(var i in children){
+            if(children[i].modified_by === null)
+                readyForSync = false;
+        }
+    }
     
     var resource = resources.get(getResourceId(element));
     var version = resource.currentVersion();
     var metadata = version.metadata();
     
-    if(version.child_number > 0){
+    if(readyForSync && version.child_number > 0){
         js.get(Links.ajax.synchronization.replace('#0#', metadata.id), function(data){
             var response = js.parseJSON(data);
             
@@ -605,7 +617,7 @@ var getSynchronizationInfo = function(element){
         js(element)
                 .addClass('disabled')
                 .css('color', '#cbcbcb')
-                .tooltip({title: "<?php echo JText::_('COM_EASYSDI_CORE_NOT_SYNCHRONIZABLE_CAUSE_HAS_NO_CHILDREN')?>", html: true})
+                .tooltip({title: "<?php echo JText::_('COM_EASYSDI_CORE_NOT_SYNCHRONIZABLE')?>", html: true})
                 .on('click', function(){return false;});
     }
 };
@@ -679,7 +691,7 @@ var showAssignmentModal = function(element){
     
     js.get(Links.ajax.get_roles.replace('#0#', version.id), function(data){
         var roles = js.parseJSON(data);
-        
+        js('#assigned_to').empty();
         for(var user_id in roles[4].users)
             js('#assigned_to').append(js('<option></option>').val(user_id).html(roles[4].users[user_id]));
         js('#assigned_to').trigger('liszt:updated');
@@ -689,7 +701,7 @@ var showAssignmentModal = function(element){
         }else{
             js('#assign_child_controls').show();
         }
-        showModal(version.id, 'assignmentModal');
+        showModal(version.metadata().id, 'assignmentModal');
     });
 };
 
@@ -734,20 +746,20 @@ var buildActionsCell = function(resource, reload){
     buildManagementDropDown(resource);
     
     // Performs some action on dropdowns links initialisation
-    if(!reload){ // for all lines
+    /*if(!reload){ // for all lines
         js('a[id$=_child_list]').each(function(){getChildNumber(this);});
         js('a[id$=_new_version]').each(function(){getNewVersionRight(this);});
         js('a[id$=_publish]').each(function(){getPublishRight(this);});
         js('a[id$=_inprogress]').each(function(){getSetInProgressRight(this);});
         SqueezeBox.assign(js('a[id$=_preview]'));
     }
-    else{ // for the re-generated line only
+    else{*/ // for the re-generated line only
         getChildNumber(js('a#'+resource.id+'_child_list'));
         getNewVersionRight(js('a#'+resource.id+'_new_version'));
         getPublishRight(js('a#'+resource.id+'_publish'));
         getSetInProgressRight(js('a#'+resource.id+'_inprogress'));
         SqueezeBox.assign(js('a#'+resource.id+'_preview'));
-    }
+    //}
 };
 
 js(document).ready(function(){

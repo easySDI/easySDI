@@ -156,7 +156,7 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
                     $toolbar->append(JText::_('COM_EASYSDI_CATALOG_PREVIEW_ITEM'), 'previsulisation', 'btn-small', array(JText::_('COM_EASYSDI_CATALOG_PREVIEW_XML_ITEM') => 'metadata.show', JText::_('COM_EASYSDI_CATALOG_PREVIEW_XHTML_ITEM') => 'metadata.preview'), true);
                     $toolbar->append(JText::_('COM_EASYSDI_CATALOG_SAVE_ITEM'), 'enregistrer', 'btn-small', array(JText::_('COM_EASYSDI_CATALOG_SAVE_AND_CONTINUE_ITEM') => 'metadata.valid', JText::_('COM_EASYSDI_CATALOG_SAVE_AND_CLOSE_ITEM') => 'metadata.validAndClose'), true);
                     $toolbar->append(JText::_('COM_EASYSDI_CATALOG_INPROGRESS_ITEM'), 'inprogress', 'btn-small', 'metadata.inprogress');
-                    $toolbar->append(JText::_('COM_EASYSDI_CATALOG_PUBLISH_ITEM'), 'publier', 'btn-small btn-success', array(JText::_('COM_EASYSDI_CATALOG_VALIDATE_ITEM') => 'metadata.control', JText::_('COM_EASYSDI_CATALOG_PUBLISH_AND_SAVE_ITEM') => array('metadata.setPublishDate', $metadata->version_id)), true);
+                    $toolbar->append(JText::_('COM_EASYSDI_CATALOG_PUBLISH_ITEM'), 'publier', 'btn-small btn-success', array(JText::_('COM_EASYSDI_CATALOG_VALIDATE_ITEM') => 'metadata.control', JText::_('COM_EASYSDI_CATALOG_PUBLISH_AND_SAVE_ITEM') => array('metadata.setPublishDate', json_encode(array('version' => $metadata->version_id, 'metadata' => $metadata->id)))), true);
                 }
                 break;
             case sdiMetadata::PUBLISHED:
@@ -221,9 +221,9 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         $toolbar = new SdiToolbar();
 
         if ($this->params->get('editmetadatafieldsetstate') == "allopen") {
-            $toolbar->append(JText::_('COM_EASYSDI_CATALOG_CLOSE_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
+            $toolbar->append(JText::_('COM_EASYSDI_CATALOG_CLOSE_ALL'), 'btn_toggle_all', 'btn-small');
         } else {
-            $toolbar->append(JText::_('COM_EASYSDI_CATALOG_OPEN_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
+            $toolbar->append(JText::_('COM_EASYSDI_CATALOG_OPEN_ALL'), 'btn_toggle_all', 'btn-small');
         }
         if ($metadata->state == sdiMetadata::INPROGRESS) {
             $toolbar->append(JText::_('COM_EASYSDI_CATALOG_IMPORT'), 'import', 'btn-small', $importrefactions, true);

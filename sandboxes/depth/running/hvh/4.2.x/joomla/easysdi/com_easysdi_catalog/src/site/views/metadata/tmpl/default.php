@@ -158,10 +158,10 @@ $document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/cs
 
 <?php
 if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
-            Joomla.submitbutton('metadata.toggle');
-            tabIsOpen = false;
-<?php }else{ ?>
+            toogleAll(js('#btn_toggle_all'));
             tabIsOpen = true;
+<?php }else{ ?>
+            tabIsOpen = false;
 <?php
 }
 foreach ($this->validators as $validator) {
@@ -195,6 +195,7 @@ foreach ($this->validators as $validator) {
             <?php endforeach; ?>
             <input type="hidden" name="option" value="com_easysdi_catalog" />
             <input type="hidden" name="task" value="" />
+            <input type="hidden" name="viral" id="jform_viral" value="0" />
 
         </div>
 
@@ -381,7 +382,7 @@ foreach ($this->validators as $validator) {
                                 </div>
                             </div>
                         </div>
-                    <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CONFIRM'); ?>
+                    <?php echo JText::_('COM_EAYSDI_CATALOG_PUBLISH_CONFIRM'); ?>
                     <span id="publishModalChildrenList"></span>
 
                 </div>

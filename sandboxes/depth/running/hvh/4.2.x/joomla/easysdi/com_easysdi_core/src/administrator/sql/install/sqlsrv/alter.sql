@@ -111,8 +111,8 @@ ON DELETE CASCADE;
 
 ALTER TABLE [#__sdi_assignment] CHECK CONSTRAINT [#__sdi_assignment$#__sdi_assignment_fk2];
 
-ALTER TABLE [#__sdi_assignment]  WITH CHECK ADD  CONSTRAINT [#__sdi_assignment$#__sdi_assignment_fk3] FOREIGN KEY([version_id])
-REFERENCES [#__sdi_version] ([id])
+ALTER TABLE [#__sdi_assignment]  WITH CHECK ADD  CONSTRAINT [#__sdi_assignment$#__sdi_assignment_fk3] FOREIGN KEY([metadata_id])
+REFERENCES [#__sdi_metadata] ([id])
 ON DELETE CASCADE;
 
 ALTER TABLE [#__sdi_assignment] CHECK CONSTRAINT [#__sdi_assignment$#__sdi_assignment_fk3];

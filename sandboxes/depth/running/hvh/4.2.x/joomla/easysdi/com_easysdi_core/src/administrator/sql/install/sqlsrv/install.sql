@@ -316,7 +316,7 @@ CREATE TABLE [#__sdi_assignment](
 	[assigned] [datetime2](0) NULL,
 	[assigned_by] [bigint] NOT NULL,
 	[assigned_to] [bigint] NOT NULL,
-	[version_id] [bigint] NOT NULL,
+	[metadata_id] [bigint] NOT NULL,
 	[text] [nvarchar](500) NULL,
  CONSTRAINT [PK_#__sdi_assignment_id] PRIMARY KEY CLUSTERED 
 (

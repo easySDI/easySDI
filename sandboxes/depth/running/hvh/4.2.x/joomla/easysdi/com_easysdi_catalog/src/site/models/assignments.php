@@ -39,9 +39,9 @@ class Easysdi_catalogModelAssignments extends JModelList {
         // Initialise variables.
         $app = JFactory::getApplication();
         
-        // Get the version_id
-        $version_id = $app->input->getInt('version', null, 'array');
-        $this->setState('version_id', $version_id);
+        // Get the metadata_id
+        $metadata_id = $app->input->getInt('metadata', null, 'array');
+        $this->setState('metadata_id', $metadata_id);
 
         // List state information
         $limit = $app->getUserStateFromRequest('global.list.limit', 'limit', $app->getCfg('list_limit'));
@@ -49,16 +49,6 @@ class Easysdi_catalogModelAssignments extends JModelList {
 
         $limitstart = $app->input->getInt('limitstart', 0);
         $this->setState('list.start', $limitstart);
-
-        // Load the filter state.
-        /*$search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
-        $this->setState('filter.search', $search);
-        
-        $search = $app->getUserStateFromRequest($this->context . '.filter.status', 'filter_status');
-        $this->setState('filter.status', $search);
-        
-        $search = $app->getUserStateFromRequest($this->context . '.filter.resourcetype', 'filter_resourcetype');
-        $this->setState('filter.resourcetype', $search);*/
 
 
         if (empty($ordering)) {
@@ -69,11 +59,13 @@ class Easysdi_catalogModelAssignments extends JModelList {
         parent::populateState($ordering, $direction);
         
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
-        $query->select('r.id, r.name')
-                ->from('#__sdi_version v')
-                ->join('LEFT', '#__sdi_resource r ON r.id=v.resource_id')
-                ->where('v.id='.$version_id);
+        $query = $db->getQuery(true)
+                ->select('r.id, r.name')
+                ->from('#__sdi_resource r')
+                ->innerJoin('#__sdi_version v ON v.resource_id=r.id')
+                ->innerJoin('#__sdi_metadata m ON m.version_id=v.id')
+                ->where('m.id='.$metadata_id)
+                ;
         $db->setQuery($query);
         $this->setState('resource', $db->loadAssoc());
     }
@@ -101,27 +93,8 @@ class Easysdi_catalogModelAssignments extends JModelList {
                 ->join('LEFT', '#__users u1 ON u1.id=su1.user_id')
                 ->join('LEFT', '#__sdi_user su2 ON su2.id=a.assigned_to')
                 ->join('LEFT', '#__users u2 ON u2.id=su2.user_id')
-                ->where('a.version_id='.$this->getState('version_id', 0))
+                ->where('a.metadata_id='.$this->getState('metadata_id', 0))
                 ->order('a.assigned');
-        
-        
-        // Filter by resource type
-        /*$resourcetype = $this->getState('filter.resourcetype');
-        if (is_numeric($resourcetype)) {
-        	$query->where('a.resourcetype_id = ' . (int) $resourcetype);
-        }*/
-
-        // Filter by search in title
-        /*$search = $this->getState('filter.search');
-        if (!empty($search)) {
-            if (stripos($search, 'id:') === 0) {
-                $query->where('a.id = ' . (int) substr($search, 3));
-            } else {
-                $search = $db->Quote('%' . $db->escape($search, true) . '%');
-                 $query->where('( a.name LIKE '.$search.' )');
-            }
-        }*/
-        
         
         return $query;
     }
