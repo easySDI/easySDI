@@ -157,10 +157,10 @@ $document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/cs
 
 <?php
 if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
-            Joomla.submitbutton('metadata.toggle');
-            tabIsOpen = false;
-<?php }else{ ?>
+            toogleAll(js('#btn_toggle_all'));
             tabIsOpen = true;
+<?php }else{ ?>
+            tabIsOpen = false;
 <?php
 }
 foreach ($this->validators as $validator) {
