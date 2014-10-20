@@ -517,11 +517,6 @@ class FormHtmlGenerator {
                 $attributeGroup->appendChild($this->getMap($attribute, $map_id));
             }
         }
-
-        if ($occurance < $upperbound && !($rendertypeId == EnumRendertype::$LIST && $upperbound > 1) && empty($_GET['relid'])) {
-            //$outer->appendChild($this->getAttributeAction($attribute, $jfield));
-        }
-
         return $attributeGroup;
     }
 
