@@ -48,10 +48,13 @@ js('document').ready(function() {
             var occurance = js('.fds' + uuid).length;
             console.log(occurance);
             console.log(upperbound);
+            console.log('#add-btn' + uuid);
             
             if(occurance == lowerbound){
                 js('.remove-btn' + uuid).hide();
-            }else if(occurance == upperbound){
+            }
+            
+            if(occurance == upperbound){
                 js('#add-btn' + uuid).hide();
             }
         });
@@ -117,6 +120,14 @@ js('document').ready(function() {
      */
     js(document).on('click', '#btn_toggle_all', function(){
           toogleAll(js(this));
+    });
+    
+    
+    /**
+     * set initial state of relation action button
+     */
+    js('.add-btn').each(function(){
+        setRelationAction(js(this)); 
     });
     
     /**
@@ -427,6 +438,30 @@ var buildDeletedTree = function(versions) {
     return body;
 };
 
+
+function setRelationAction(element){
+    var upperbound = js(element).attr('data-upperbound');
+    var lowerbound = js(element).attr('data-lowerbound');
+    var uuid = getUuid('add-btn', js(element).attr('id'));
+
+    var occurance = js('.fds' + uuid).length;
+
+    console.log(occurance);
+    console.log(upperbound);
+
+    if(occurance == upperbound){
+        js(element).hide();
+    }
+    
+    if(occurance == lowerbound){
+        js('.fds' + uuid+' a.remove-btn').hide();
+    }
+    
+    if(occurance < upperbound && occurance > lowerbound){
+        js(element).show();
+        js('.fds' + uuid+' a.remove-btn').show();
+    }
+}
 
 function setAttributeAction(element){
     var upperbound = js(element).attr('data-upperbound');
