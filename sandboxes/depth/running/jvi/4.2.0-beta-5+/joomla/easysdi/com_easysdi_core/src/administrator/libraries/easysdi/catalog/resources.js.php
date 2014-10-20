@@ -89,8 +89,8 @@ var Links = {
             },
             assignment_history: {
                 html: "<?php echo JText::_('COM_EASYSDI_CORE_RESOURCES_ASSIGNMENT_HISTORY')?>",
-                href: '<?php echo JRoute::_("index.php?option=com_easysdi_catalog&view=assignments&version=#0#")?>',
-                property: 'version'
+                href: '<?php echo JRoute::_("index.php?option=com_easysdi_catalog&view=assignments&metadata=#0#")?>',
+                property: 'metadata'
             }
         }
     },
