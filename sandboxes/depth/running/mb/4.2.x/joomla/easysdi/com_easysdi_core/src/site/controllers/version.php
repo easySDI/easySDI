@@ -114,7 +114,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-                ->select('r.id')
+                ->select('r.id, m.modified_by')
                 ->from('#__sdi_resource r')
                 ->innerJoin('#__sdi_user_role_resource urr ON urr.resource_id=r.id')
                 ->innerJoin('#__sdi_version v ON v.resource_id=r.id')
@@ -126,11 +126,13 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         $db->setQuery($query)->execute();
         $cnt = $db->getNumRows();
+        $children = $db->loadObjectList();
 
         $response = array();
         $response['success'] = 'true';
         $response['resource_id'] = $parentId;
         $response['num'] = (int)$cnt;
+        $response['children'] = $children;
 
         echo json_encode($response);
         die();
@@ -558,16 +560,24 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
     /**
      * Get a list of cascading deleting children
-     * @deprecated since version 4.2.0 - replaced by getCascadeChild
+     * 
      */
     public function getCascadeDeleteChild() {
         return $this->getCascadeChild(true);
+    }
+
+    /**
+     * Get a list of cascading deleting children
+     * 
+     */
+    public function getCascadePublicableChild() {
+        return $this->getCascadeChild(true, true);
     }
     
     /**
      * getCascadeChild - get the list of the version's children
      */
-    public function getCascadeChild($viralVersioning = false){
+    public function getCascadeChild($viralVersioning = false, $unpublished = false){
         $model = $this->getModel('Version', 'Easysdi_coreModel');
 
         // Get the user data.
@@ -584,7 +594,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $version->version_name = $version->name;
 
         $response = array();
-        $response['versions'] = $this->core_helpers->getChildrenVersion($version, $viralVersioning);
+        $response['versions'] = $this->core_helpers->getChildrenVersion($version, $viralVersioning, $unpublished);
 
         echo json_encode($response);
         die();

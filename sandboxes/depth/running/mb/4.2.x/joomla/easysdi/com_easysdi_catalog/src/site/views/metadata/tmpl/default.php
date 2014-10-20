@@ -194,6 +194,7 @@ foreach ($this->validators as $validator) {
             <?php endforeach; ?>
             <input type="hidden" name="option" value="com_easysdi_catalog" />
             <input type="hidden" name="task" value="" />
+            <input type="hidden" name="viral" id="jform_viral" value="0" />
 
         </div>
 
@@ -380,7 +381,7 @@ foreach ($this->validators as $validator) {
                                 </div>
                             </div>
                         </div>
-                    <?php echo JText::_('COM_EAYSDI_CORE_PUBLISH_CONFIRM'); ?>
+                    <?php echo JText::_('COM_EAYSDI_CATALOG_PUBLISH_CONFIRM'); ?>
                     <span id="publishModalChildrenList"></span>
 
                 </div>

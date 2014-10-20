@@ -98,13 +98,13 @@ class Easysdi_coreHelper {
      * @param bool $viralVersioning - limit or not to the viral versionned child
      * @return array
      */
-    public function getChildrenVersion($version, $viralVersioning = false){
+    public function getChildrenVersion($version, $viralVersioning = false, $unpublished = false){
         $all_versions = array();
         $all_versions[$version->id] = $version;
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query->select('cv.id, cv.name AS version_name, cr.resourcetype_id, cr.name AS resource_name, cr.id AS resource_id, cm.guid AS fileidentifier, cm.id AS metadata_id');
+        $query->select('cv.id, cv.name AS version_name, cr.resourcetype_id, cr.name AS resource_name, cr.id AS resource_id, cm.guid AS fileidentifier, cm.id AS metadata_id, cm.metadatastate_id');
         $query->from('#__sdi_versionlink vl');
         $query->innerJoin('#__sdi_version pv ON vl.parent_id = pv.id');
         $query->innerJoin('#__sdi_resource pr ON pv.resource_id = pr.id');
@@ -114,6 +114,9 @@ class Easysdi_coreHelper {
         $query->innerJoin('#__sdi_resource cr ON cv.resource_id = cr.id AND cr.resourcetype_id = rtl.child_id');
         if($viralVersioning){
             $query->where('rtl.viralversioning = 1');
+        }
+        if($unpublished){
+            $query->where('cm.metadatastate_id NOT IN (3, 4)'); // @TODO: should be replaced by sdiMetadata::PUBLISHED/ARCHIVED
         }
         $query->where('vl.parent_id = ' . (int) $version->id);
 
@@ -128,6 +131,7 @@ class Easysdi_coreHelper {
                 $this->getViralVersionnedChild($child);
             }
         }
+        else $version->children = array();
 
         return $all_versions;
     }

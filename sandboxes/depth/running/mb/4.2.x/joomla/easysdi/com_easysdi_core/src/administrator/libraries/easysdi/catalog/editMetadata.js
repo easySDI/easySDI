@@ -360,19 +360,31 @@ js('document').ready(function() {
                 case 'setPublishDate':
                     if (document.formvalidator.isValid(form)) {
                         js('html, body').animate({scrollTop: 0}, 'slow');
-                        
-                        js.get(currentUrl + '/?option=com_easysdi_core&task=version.getCascadeChild&version_id=' + rel, function(data) {
+                        var rel = js.parseJSON(rel);
+                        js.get(currentUrl + '?option=com_easysdi_core&task=version.getPublishRight&metadata_id='+rel.metadata, function(data){
                             var response = js.parseJSON(data);
-                            var body = buildDeletedTree(response.versions);
-                            js('#publishModalChildrenList').html(body);
-
-                            if(js(response.versions).length){
-                                js('#publishModal #viral').val(1);
+                            if(response.canPublish>0){
+                                js('#system-message-container').remove();
+                                bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN', 'COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN'));
                             }
+                            else{
+                                js.get(currentUrl + '/?option=com_easysdi_core&task=version.getCascadeChild&version_id=' + rel.version, function(data) {
+                                    var response = js.parseJSON(data);
+                                    var body = buildDeletedTree(response.versions);
+                                    js('#publishModalChildrenList').html(body);
 
-                            js('#publishModal').modal('show');
+                                    if(js(response.versions).length){
+                                        js('#publishModal #viral').val(1);
+                                    }
+                                    
+                                    var publish_date = js('#jform_published').val().split(' ');
+                                    if(publish_date[0] !== '0000-00-00')
+                                        js('#publish_date').val(publish_date[0]);
+
+                                    js('#publishModal').modal('show');
+                                });
+                            }
                         });
-                        
                         break;
                     }
                     else{
@@ -386,6 +398,7 @@ js('document').ready(function() {
                     break;
                 case 'publishWithDate':
                     js('#jform_published').val(js('#publish_date').val());
+                    js('#jform_viral').val(js('#viral').val());
                     Joomla.submitbutton('metadata.publish');
                     break;
                 case 'replicate':
@@ -415,6 +428,29 @@ js('document').ready(function() {
 
         }
     };
+    
+    js('#search_table').dataTable({
+        "bFilter": false,
+        "oLanguage": {
+            "sLengthMenu": "Afficher _MENU_ resultats par page",
+            "sZeroRecords": "Aucune réponse",
+            "sInfo": "Afficher _START_ à _END_ de _TOTAL_ resultats",
+            "sInfoEmpty": "Afficher 0 à 0 de 0 resultats",
+            "sInfoFiltered": "(Filtré de _MAX_ total resultats)"
+        },
+        aaData: null,
+        aoColumnDefs: [
+            { aTargets: [0], mData: function(item){
+                    return "<input type='radio' name='import[id]' id='import_id_"+item.id+"' value='"+item.id+"' checked=''>";
+            }},
+            { aTargets: [1], mData: 'name' },
+            { aTargets: [2], mData: 'created' },
+            { aTargets: [3], mData: 'guid' },
+            { aTargets: [4], mData: 'rt_name' },
+            { aTargets: [5], mData: function(item){ return Joomla.JText._(item.status);} }
+        ]
+    });
+    js('#search_table_wrapper').hide();
 }
 );
 
@@ -488,7 +524,7 @@ function setAttributeAction(element){
  * @returns {undefined}
  */
 function searchResource(task) {
-
+    js('#search_table_wrapper').hide();
     js('input[name="task"]').val(task);
 
     js.ajax({
@@ -498,27 +534,14 @@ function searchResource(task) {
         success: function(data) {
             var response = js.parseJSON(data);
             if (response.success) {
-                var items = '';
-                js.each(response.result, function() {
-                    items += '<tr><td><input type="radio" name="import[id]" id="import_id_' + this.id + '" value="' + this.id + '" checked=""</td><td>' + this.name + '</td><td>' + this.created + '</td><td>' + this.guid + '</td><td>' + this.rt_name + '</td><td>' + Joomla.JText._(this.status) + '</td></tr>';
-                });
-                js('#search_result').html(items);
                 if (response.total > 0) {
                     js('#import-btn').show();
                 } else {
                     js('#import-btn').hide();
                 }
-                js('#search_table').show();
-                js('#search_table').dataTable({
-                    "bFilter": false,
-                    "oLanguage": {
-                        "sLengthMenu": "Afficher _MENU_ resultats par page",
-                        "sZeroRecords": "Aucune réponse",
-                        "sInfo": "Afficher _START_ à _END_ de _TOTAL_ resultats",
-                        "sInfoEmpty": "Afficher 0 à 0 de 0 resultats",
-                        "sInfoFiltered": "(Filtré de _MAX_ total resultats)"
-                    }
-                });
+                js('#search_table').dataTable().fnClearTable();
+                js('#search_table').dataTable().fnAddData(response.result);
+                js('#search_table_wrapper, #search_table').show();
             }
         }
     });
