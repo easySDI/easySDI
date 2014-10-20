@@ -221,9 +221,9 @@ class Easysdi_catalogViewMetadata extends JViewLegacy {
         $toolbar = new SdiToolbar();
 
         if ($this->params->get('editmetadatafieldsetstate') == "allopen") {
-            $toolbar->append(JText::_('COM_EASYSDI_CATALOG_CLOSE_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
+            $toolbar->append(JText::_('COM_EASYSDI_CATALOG_CLOSE_ALL'), 'btn_toggle_all', 'btn-small');
         } else {
-            $toolbar->append(JText::_('COM_EASYSDI_CATALOG_OPEN_ALL'), 'btn_toggle_all', 'btn-small', 'metadata.toggle');
+            $toolbar->append(JText::_('COM_EASYSDI_CATALOG_OPEN_ALL'), 'btn_toggle_all', 'btn-small');
         }
         if ($metadata->state == sdiMetadata::INPROGRESS) {
             $toolbar->append(JText::_('COM_EASYSDI_CATALOG_IMPORT'), 'import', 'btn-small', $importrefactions, true);
