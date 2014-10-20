@@ -127,7 +127,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 ->innerJoin('#__sdi_metadata m ON m.version_id=v.id')
                 ->innerJoin('#__sdi_versionlink vl ON v.id=vl.child_id')
                 ->where('vl.parent_id='.(int)$parentId.' AND urr.user_id='.(int)$user->id)
-                ->group('r.id')
+                ->group('r.id, m.modified_by')
                 ;
 
         $db->setQuery($query)->execute();
@@ -371,7 +371,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 'option' => 'com_easysdi_core',
                 'view' => 'resources',
                 'parentid' => JFactory::getApplication()->getUserState('com_easysdi_core.parent.resource.version.id'));
-            $this->setRedirect(JRoute::_($back_url, false));
+            $this->setRedirect(JRoute::_(Easysdi_coreHelper::array2URL($back_url), false));
         }
     }
 

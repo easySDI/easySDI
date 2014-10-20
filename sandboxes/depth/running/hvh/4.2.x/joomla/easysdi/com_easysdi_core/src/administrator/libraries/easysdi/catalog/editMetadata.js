@@ -20,7 +20,7 @@ js('document').ready(function() {
 
         console.log(uuid);
 
-        js.get(currentUrl + '?option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
+        js.get(baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
             
             if(js('.fds' + uuid).length > 0){
                 js('.fds' + uuid).last().after(data);
@@ -75,7 +75,7 @@ js('document').ready(function() {
                 console.log(this);
                 
                 var uuid = getUuid('remove-btn', id);
-                js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
+                js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
                     var response = js.parseJSON(data);
                     if (response.success) {
 
@@ -148,7 +148,7 @@ js('document').ready(function() {
         var uuid = getUuid('attribute-add-btn', this.id);
         
         
-        js.get(currentUrl + '?option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
+        js.get(baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
 
             js('.attribute-group' + uuid).last().after(data);
             if (js(data).find('select') !== null) {
@@ -182,7 +182,7 @@ js('document').ready(function() {
         
         bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING', 'COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING'), function(result) {
             if (result) {
-                js.get(currentUrl + '/?option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
+                js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
                     var response = js.parseJSON(data);
                     if (response.success) {
                         js('#attribute-group'+uuid).remove();
@@ -368,7 +368,7 @@ js('document').ready(function() {
                                 bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN', 'COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN'));
                             }
                             else{
-                                js.get(currentUrl + '/?option=com_easysdi_core&task=version.getCascadeChild&version_id=' + rel.version, function(data) {
+                                js.get(baseUrl + 'option=com_easysdi_core&task=version.getCascadeChild&version_id=' + rel.version, function(data) {
                                     var response = js.parseJSON(data);
                             var body = buildDeletedTree(response.versions);
                             js('#publishModalChildrenList').html(body);

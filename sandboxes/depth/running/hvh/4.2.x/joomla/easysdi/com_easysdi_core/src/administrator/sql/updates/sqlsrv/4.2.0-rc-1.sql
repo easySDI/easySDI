@@ -8,6 +8,15 @@ ALTER TABLE #__sdi_resourcetypelink DROP COLUMN class_id;
 ALTER TABLE #__sdi_resourcetypelink DROP CONSTRAINT #__sdi_resourcetypelink$#__sdi_resourcetypelink_fk4;
 ALTER TABLE #__sdi_resourcetypelink DROP COLUMN attribute_id;
 
+ALTER TABLE #__sdi_assignment DROP CONSTRAINT #__sdi_assignment$#__sdi_assignment_fk3;
+EXEC sp_rename '#__sdi_assignment.version_id', 'metadata_id', 'COLUMN';
+TRUNCATE TABLE #__sdi_assignment;
+ALTER TABLE #__sdi_assignment ADD CONSTRAINT #__sdi_assignment$#__sdi_assignment_fk3
+    FOREIGN KEY ([metadata_id])
+    REFERENCES [#__sdi_metadata] ([id])
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
 ALTER TABLE #__sdi_resourcetype ALTER COLUMN modified_by int NULL;
 
 ALTER TABLE #__sdi_resourcetype ALTER COLUMN modified datetime2 NULL;
