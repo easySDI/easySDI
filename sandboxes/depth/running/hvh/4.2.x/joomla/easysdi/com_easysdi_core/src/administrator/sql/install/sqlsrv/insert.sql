@@ -158,6 +158,7 @@ INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (18, 12, 5);
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (19, 13, 5);
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (20, 14, 5);
+INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (21, 11, 4);
 SET IDENTITY_INSERT [#__sdi_sys_rendertype_stereotype] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_accessscope] ON;
 

@@ -94,3 +94,7 @@ UPDATE [#__sdi_sys_accessscope] SET [ordering] = 1 WHERE [value] = 'public';
 UPDATE [#__sdi_sys_accessscope] SET [ordering] = 2 WHERE [value] = 'category';
 UPDATE [#__sdi_sys_accessscope] SET [ordering] = 3 WHERE [value] = 'organism';
 UPDATE [#__sdi_sys_accessscope] SET [ordering] = 4 WHERE [value] = 'user';
+
+SET IDENTITY_INSERT [#__sdi_sys_rendertype_stereotype] ON;
+INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (21, 11, 4);
+SET IDENTITY_INSERT [#__sdi_sys_rendertype_stereotype] OFF;

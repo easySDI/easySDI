@@ -641,6 +641,7 @@ INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('17', '10', '4');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('18', '12', '5');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('19', '13', '5');
 INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('20', '14', '5');
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('21', '11', '4');
 
 INSERT INTO `#__sdi_sys_rendertype_criteriatype` VALUES ('1', '3', '5');
 INSERT INTO `#__sdi_sys_rendertype_criteriatype` VALUES ('2', '3', '6');
