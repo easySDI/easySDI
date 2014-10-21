@@ -162,10 +162,9 @@ SET IDENTITY_INSERT [#__sdi_sys_rendertype_stereotype] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_accessscope] ON;
 
 INSERT [#__sdi_sys_accessscope] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'public');
-INSERT [#__sdi_sys_accessscope] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'category');
-INSERT [#__sdi_sys_accessscope] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'organism');
-INSERT [#__sdi_sys_accessscope] ([id], [ordering], [state], [value]) VALUES (4, 4, 1, N'user');
-
+INSERT [#__sdi_sys_accessscope] ([id], [ordering], [state], [value]) VALUES (3, 2, 1, N'organism');
+INSERT [#__sdi_sys_accessscope] ([id], [ordering], [state], [value]) VALUES (4, 3, 1, N'user');
+INSERT [#__sdi_sys_accessscope] ([id], [ordering], [state], [value]) VALUES (2, 4, 1, N'category');
 SET IDENTITY_INSERT [#__sdi_sys_accessscope] OFF;
 INSERT [action_types] ([ID_ACTION_TYPE], [NAME]) VALUES (1, N'E-MAIL');
 INSERT [action_types] ([ID_ACTION_TYPE], [NAME]) VALUES (2, N'RSS');

@@ -363,7 +363,7 @@ js('document').ready(function() {
                         var rel = js.parseJSON(rel);
                         js.get(baseUrl + 'option=com_easysdi_core&task=version.getPublishRight&metadata_id='+rel.metadata, function(data){
                             var response = js.parseJSON(data);
-                            if(response.canPublish>0){
+                            if(response !== null && response.canPublish>0){ 
                                 js('#system-message-container').remove();
                                 bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN', 'COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN'));
                             }

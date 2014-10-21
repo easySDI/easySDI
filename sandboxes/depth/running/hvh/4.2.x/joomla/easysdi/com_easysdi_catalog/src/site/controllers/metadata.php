@@ -345,7 +345,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         
         if($changeStatus === false){
             JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_ERROR'), 'error');
-            $this->setRedirect(JRoute::_($redirectURL, false));
+            $this->setRedirect(JRoute::_(Easysdi_coreHelper::array2URL($redirectURL), false));            
         }
         else{
             $this->update($id);
@@ -946,7 +946,14 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $versions = $this->core_helpers->getChildrenVersion($version);
         
         try{
-            $this->db->transactionStart();
+            try{
+                $this->db->transactionStart();
+            }catch (Exception $exc){
+                $this->db->connect();                
+                $driver_begin_transaction = $this->db->name . '_begin_transaction';
+                $driver_begin_transaction($this->db->getConnection());
+            }
+            
             foreach($versions[$version->id]->children as $children){
                 if($children->metadatastate_id == sdiMetadata::VALIDATED){
                     $this->changeStatus($children->metadata_id, $metadatastate_id, $published);
@@ -956,7 +963,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $this->db->transactionCommit();
             return true;
         } catch (Exception $ex) {
-            $db->transactionRollback();
+            $this->db->transactionRollback();
             return false;
         }
     }
