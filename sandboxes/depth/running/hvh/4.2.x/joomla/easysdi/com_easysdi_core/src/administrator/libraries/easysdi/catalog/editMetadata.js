@@ -18,8 +18,6 @@ js('document').ready(function() {
         var uuid = getUuid('add-btn', this.id);
         var button = js(this);
 
-        console.log(uuid);
-
         js.get(baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
             
             if(js('.fds' + uuid).length > 0){
@@ -46,9 +44,6 @@ js('document').ready(function() {
     });
             });
             var occurance = js('.fds' + uuid).length;
-            console.log(occurance);
-            console.log(upperbound);
-            console.log('#add-btn' + uuid);
 
             if(occurance == lowerbound){
                 js('.remove-btn' + uuid).hide();
@@ -72,7 +67,6 @@ js('document').ready(function() {
         
         bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING', 'COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING'), function(result) {
             if (result) {
-                console.log(this);
                 
                 var uuid = getUuid('remove-btn', id);
                 js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
@@ -82,9 +76,6 @@ js('document').ready(function() {
                         js('#fds'+uuid).remove();
 
                         var occurance = getOccuranceCount('.fds' + xpath);
-                        console.log(occurance);
-                        console.log(lowerbound);
-                        console.log(xpath);
                         
                         if(occurance == lowerbound){
                             js('.remove-btn' + xpath).hide();
@@ -141,7 +132,6 @@ js('document').ready(function() {
      * Add field
      */
     js(document).on('click', '.attribute-add-btn', function(){
-        console.log(js(this));
         var parent = js(this).parent();
         var relid = parent.attr('data-relid');
         var parent_path = parent.attr('data-parentpath');
@@ -260,6 +250,34 @@ js('document').ready(function() {
      */
     js('#previewModal').on('show.bs.modal', function() {
         SyntaxHighlighter.highlight();
+    });
+    
+    /**
+     * Add validation on non-required multi-lingual fields
+     */
+    js(document).on('change keyup blur focus', '.i18n div.controls > input, .i18n div.controls > textarea, .i18n div.controls > select', function(){
+        var brothers = js(this).closest('.i18n').find('div.controls > input, div.controls > textarea, div.controls > select'),
+            labels = js(this).closest('.i18n').find('div.control-label > label');
+        if(this.value !== ''){
+            brothers.addClass('required');
+        }
+        else{
+            var required = false;
+            js.each(brothers, function(i, brother){ console.log(i+' / '+brothers.length);
+                if(brother.value !== '')
+                    required = true;
+                
+                if(i === brothers.length-1){
+                    if(required){
+                        brothers.addClass('required');
+                    }
+                    else{
+                        brothers.removeClass('required invalid');
+                        labels.removeClass('invalid');
+                    }
+                }
+            });
+        }
     });
 
     /**
@@ -481,9 +499,6 @@ function setRelationAction(element){
     var uuid = getUuid('add-btn', js(element).attr('id'));
 
     var occurance = js('.fds' + uuid).length;
-
-    console.log(occurance);
-    console.log(upperbound);
 
     if(occurance == upperbound){
         js(element).hide();

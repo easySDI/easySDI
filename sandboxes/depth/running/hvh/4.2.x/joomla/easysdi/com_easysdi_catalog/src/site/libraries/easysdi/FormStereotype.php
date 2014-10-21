@@ -180,12 +180,6 @@ class FormStereotype {
         $EX_Extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$CLASS);
         $EX_Extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':stereotypeId', EnumStereotype::$GEOGRAPHICEXTENT);
 
-        $extentType = $dom->createElementNS($this->namespaces['sdi'], 'sdi:extentType');
-        $extentType->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$ATTRIBUT);
-        $extentType->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':stereotypeId', EnumStereotype::$BOUNDARYCATEGORY);
-        $extentType->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':rendertypeId', EnumRendertype::$LIST);
-        $extentType->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':label', 'COM_EASYSDI_CATALOG_EXTENT_TYPE');
-
         $description = $dom->createElementNS($this->namespaces['gmd'], 'gmd:description');
         $description->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':childtypeId', EnumChildtype::$ATTRIBUT);
         $description->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':stereotypeId', EnumStereotype::$BOUNDARY);
@@ -260,7 +254,6 @@ class FormStereotype {
         $Boolean = $dom->createElementNS($this->namespaces['gco'], 'gco:Boolean', 'true');
         $Decimal = $dom->createElementNS($this->namespaces['gco'], 'gco:Decimal');
 
-        $extentType->appendChild($CharacterString->cloneNode());
         foreach ($this->getI18nStereotype($descriptions) as $element) {
             $description->appendChild($dom->importNode($element,true));
         }
@@ -288,14 +281,12 @@ class FormStereotype {
         $geographicElement1->appendChild($EX_GeographicBoundingBox);
         $geographicElement2->appendChild($EX_GeographicDescription);
 
-        $EX_Extent->appendChild($extentType);
         $EX_Extent->appendChild($description);
         $EX_Extent->appendChild($geographicElement1);
         if(!empty($descriptions)){
         $EX_Extent->appendChild($geographicElement2);
         }
 
-        $extentType->firstChild->nodeValue = $extent_type_value;
         $northBoundLatitude->firstChild->nodeValue = $northbound_value;
         $southBoundLatitude->firstChild->nodeValue = $southbound_value;
         $eastBoundLongitude->firstChild->nodeValue = $eastbound_value;

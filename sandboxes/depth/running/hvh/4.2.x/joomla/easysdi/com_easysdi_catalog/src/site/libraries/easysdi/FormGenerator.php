@@ -1254,11 +1254,7 @@ class FormGenerator {
                 switch ($attribute->getAttributeNS($this->catalog_uri, 'stereotypeId')) {
 
                     case EnumStereotype::$BOUNDARY:
-                        if ($attribute->getAttributeNS($this->catalog_uri, 'upperbound') > 1) {
-                            $query->select('b.id, b.guid, b.name as value, bc.name as cat_name');
-                        } else {
-                            $query->select('b.id, b.guid, b.name, b.name as value');
-                        }
+                        $query->select('b.id, b.guid, b.name as value, bc.guid as cat_guid, bc.name as cat_name');
                         $query->from('#__sdi_boundary b');
                         $query->innerJoin('#__sdi_boundarycategory bc ON b.category_id = bc.id');
                         $query->order('b.name ASC');
@@ -1267,26 +1263,10 @@ class FormGenerator {
                         $result = $this->db->loadObjectList();
                         
                         foreach ($result as $r) {
-                            if(!empty($r->cat_name)){
-                                $r->name = EText::_($r->guid).' ['.$r->cat_name.']';
-                            }else{
-                                $r->name = EText::_($r->guid);
-                            }
+                            $r->name = EText::_($r->guid).' ['.EText::_($r->cat_guid, 1, $r->cat_name).']';
                         }
 
                         $first = array('id' => '', 'guid' => '', 'value' => '', 'name' => '');
-                        array_unshift($result, (object) $first);
-                        break;
-
-                    case EnumStereotype::$BOUNDARYCATEGORY:
-                        $query->select('id, guid, name');
-                        $query->from('#__sdi_boundarycategory');
-                        $query->order('name ASC');
-
-                        $this->db->setQuery($query);
-                        $result = $this->db->loadObjectList();
-
-                        $first = array('id' => '', 'guid' => '', 'name' => '');
                         array_unshift($result, (object) $first);
                         break;
 

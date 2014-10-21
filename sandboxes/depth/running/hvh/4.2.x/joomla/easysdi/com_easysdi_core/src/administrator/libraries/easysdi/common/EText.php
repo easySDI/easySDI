@@ -41,7 +41,7 @@ class EText {
         $db->setQuery($query);
         $textI18n = $db->loadObject();
 
-        if ($textI18n) {
+        if ($textI18n && (!empty($textI18n->text) || empty($default))) {
             return $textI18n->text;
         } else {
             return $default;
