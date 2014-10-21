@@ -287,7 +287,7 @@ $document = JFactory::getDocument();
                         </div>
                         <div class="controls">
                             <div class="input-append">
-                                <textarea cols="150" rows="15" id="assign_msg" name="assign_msg">Type a message...</textarea>
+                                <textarea cols="150" rows="15" id="assign_msg" name="assign_msg" placeholder="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCE_ASSIGN_MESSAGE_PLACEHOLDER'); ?>"></textarea>
                             </div>
                         </div>
                         <!-- Child Checkbox field -->
