@@ -181,8 +181,6 @@ class FormHtmlGenerator {
                     }
                     break;
                 case EnumChildtype::$ATTRIBUT:
-                    $parentname = $parent->nodeName;
-                    $childName = $child->nodeName;
                     if ($child->getAttributeNS($this->catalog_uri, 'stereotypeId') == EnumStereotype::$GEMET) {
                         if ($child->getAttributeNS($this->catalog_uri, 'index') == 1) {
                             $field = $this->getAttribute($child);
@@ -202,7 +200,7 @@ class FormHtmlGenerator {
 
                     $fieldset = $this->getFieldset($child);
 
-                    if ($this->domXpathStr->query('*[@catalog:childtypeId="2"]', $child)->length > 0) {
+                    if ($this->domXpathStr->query('descendant::*[@catalog:childtypeId="2"]', $child)->length > 0) {
                         $searchField = $this->getAttribute($child);
                         $fieldset->getElementsByTagName('div')->item(0)->appendChild($searchField);
                     }
@@ -210,7 +208,7 @@ class FormHtmlGenerator {
 
                     $parentInner->appendChild($fieldset);
 
-                    if ($this->domXpathStr->query('*[@catalog:childtypeId="2"]', $child)->length > 0) {
+                    if ($this->domXpathStr->query('descendant::*[@catalog:childtypeId="2"]', $child)->length > 0) {
                         $this->recBuildForm($child, $fieldset);
                     }
                     break;
@@ -521,11 +519,6 @@ class FormHtmlGenerator {
                 $attributeGroup->appendChild($this->getMap($attribute, $map_id));
             }
         }
-
-        /*if ($occurance < $upperbound && !($rendertypeId == EnumRendertype::$LIST && $upperbound > 1) && empty($_GET['relid'])) {
-            //$outer->appendChild($this->getAttributeAction($attribute, $jfield));
-        }*/
-
         return $attributeGroup;
     }
 
