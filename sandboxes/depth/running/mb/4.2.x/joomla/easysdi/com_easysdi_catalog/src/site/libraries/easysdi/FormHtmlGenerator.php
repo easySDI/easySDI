@@ -397,6 +397,10 @@ class FormHtmlGenerator {
                 if ($stereotypeId == EnumStereotype::$GEMET) {
                     $attributeGroup->appendChild($this->getGemet($attribute));
                 }
+                elseif($stereotypeId == EnumStereotype::$LOCALE){
+                    $class = $attributeGroup->getAttribute('class').' i18n';
+                    $attributeGroup->setAttribute('class', $class);
+                }
 
                 $nodePath = $attribute->firstChild->getNodePath();
                 $jfield = $this->form->getField(FormUtils::serializeXpath($nodePath));
