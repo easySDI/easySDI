@@ -114,13 +114,13 @@ class JFormFieldFromToCalendar extends JFormField {
 
         $html = array();
         $html[] = '<div>';
-        $html[] = '<div>' . JText::_('COM_EASYSDI_CATALOGE_FROM') . '</div>';
+        $html[] = '<div>' . JText::_('COM_EASYSDI_CATALOG_FROM') . '</div>';
         if(key_exists('0', $values)){
             $html[] = JHtml::_('calendar', $values[0], $from_name, $from_id, $format, $attributes);
         }  else {
             $html[] = JHtml::_('calendar', '', $from_name, $from_id, $format, $attributes);
         }
-        $html[] = '<div>' . JText::_('COM_EASYSDI_CATALOGE_TO') . '</div>';
+        $html[] = '<div>' . JText::_('COM_EASYSDI_CATALOG_TO') . '</div>';
         if(key_exists('1', $values)){
             $html[] = JHtml::_('calendar', $values[1], $to_name, $to_id, $format, $attributes);
         }  else {

@@ -128,7 +128,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                         return false;
                     }
 
-                    if (!$user->authorizeOnMetadata($id, sdiUser::metadataeditor) || !$user->authorizeOnMetadata($id, sdiUser::metadataresponsible)) {
+                    if (!($user->authorizeOnMetadata($id, sdiUser::metadataeditor) || $user->authorizeOnMetadata($id, sdiUser::metadataresponsible))) {
                         //Try to update a resource but not its resource manager
                         JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
                         JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
@@ -186,7 +186,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                         if ($merged = $cswm->mergeImport($import['importref_id'], $import['fileidentifier'])) {
                             $this->_item->csw = $merged;
                         } else {
-                            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_NOT_FOUND_ERROR'), 'error');
+                            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_NOT_FOUND_ERROR'), 'error');
                         }
                     }
                 }
@@ -285,7 +285,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         if (empty($form)) {
             return false;
         }
-
+        //print_r($form->getXml()->saveXML());die();
         return $form;
     }
 

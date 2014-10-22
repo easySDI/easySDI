@@ -89,7 +89,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $metadata_id = JFactory::getApplication()->input->get('id', null, 'int');
 
         $query = $this->db->getQuery(true);
-        $query->select('v.id, r.resourcetype_id, r.id AS resource_id, m.id AS metadata_id, m.guid AS fileidentifier');
+        $query->select('v.id, v.name, r.resourcetype_id, r.id AS resource_id, m.id AS metadata_id, m.guid AS fileidentifier');
         $query->from('#__sdi_metadata m');
         $query->innerJoin('#__sdi_version v ON m.version_id = v.id');
         $query->innerJoin('#__sdi_resource r ON v.resource_id = r.id');
@@ -97,18 +97,29 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->db->setQuery($query);
 
         $version = $this->db->loadObject();
-        $version->name = date("Y-m-d H:i:s");
+        //$version->name = date("Y-m-d H:i:s");
 
         $versions = $this->core_helpers->getViralVersionnedChild($version);
 
         $this->_syncronize($versions);
+        
+        // Redirect to resources list
+        JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_SYNCHRONIZE_SUCCESS'), 'message');
+        $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
     }
 
     private function _syncronize($versions) {
-
+        $nsdao = new SdiNamespaceDao();
+        
         foreach ($versions as $version) {
             if (!empty($version->children)) {
-                $merger = new CswMerge();
+                $parent_sdimetadata = new sdiMetadata($version->metadata_id);
+                $parentDom = $parent_sdimetadata->load();
+                $parentXPath = new DOMXPath($parentDom);
+                
+                foreach ($nsdao->getAll() as $ns) {
+                    $parentXPath->registerNamespace($ns->prefix, $ns->uri);
+                }
 
                 $db = JFactory::getDbo();
                 foreach ($version->children as $children) {
@@ -123,23 +134,35 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                     $xpaths = $db->loadObjectList();
 
                     $child_sdimetadata = new sdiMetadata($children->metadata_id);
+                    $childDom = $child_sdimetadata->load();
+                    $childXPath = new DOMXpath($childDom);
+                    
+                    foreach ($nsdao->getAll() as $ns) {
+                        $childXPath->registerNamespace($ns->prefix, $ns->uri);
+                    }
+                    
+                    foreach($xpaths as $xpath){
+                        $parentNode = $parentXPath->query($xpath->xpath)->item(0);
+                        $childNode = $childXPath->query($xpath->xpath)->item(0);
+                        
+                        $childParentNode = $childNode->parentNode;
+                        $childParentNode->replaceChild($childDom->importNode($parentNode, true), $childNode);
+                    }
+                    
+                    $request = $this->CreateUpdateBody($childXPath->query('/*/*')->item(0), $children->fileidentifier);
+                    
+                    if(!$child_sdimetadata->update($request->saveXML())){
+                        return false;
+                    }
+                    else{
+                        $query = $db->getQuery(true);
+                        $query->update('#__sdi_metadata m');
+                        $query->set('lastsynchronization = ' . $query->quote(date('Y-m-d h:i:s')));
+                        $query->set('synchronized_by = ' . (int) $version->metadata_id);
+                        $query->where('id = ' . (int) $children->metadata_id);
 
-                    $merger->setOriginal($child_sdimetadata->load());
-                    if ($result = $merger->mergeImport(NULL, $version->fileidentifier, $xpaths)) {
-                        $toSave = $this->CreateUpdateBody($result->firstChild, $children->fileidentifier);
-                        $toSave->save('D:\\tmp\\tosave.xml');
-                        if (!$child_sdimetadata->update($toSave->saveXML())) {
-                            return false;
-                        } else {
-                            $query = $db->getQuery(true);
-                            $query->update('#__sdi_metadata m');
-                            $query->set('lastsynchronization = ' . $query->quote(date('Y-m-d h:i:s')));
-                            $query->set('synchronized_by = ' . (int) $version->metadata_id);
-                            $query->where('id = ' . (int) $children->metadata_id);
-
-                            $db->setQuery($query);
-                            $db->execute();
-                        }
+                        $db->setQuery($query);
+                        $db->execute();
                     }
                 }
 
@@ -166,7 +189,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                     $import['xml'] = $xml;
                 }
             } else {
-                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_XML_IMPORT_ERROR'), 'error');
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_XML_IMPORT_ERROR'), 'error');
             }
         }
 
@@ -238,15 +261,15 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * Change metadata status to validated and retturn to resources page
      */
     public function validAndClose() {
-        $this->changeStatusAndSave(sdiMetadata::PUBLISHED, FALSE);
+        $this->changeStatusAndSave(sdiMetadata::VALIDATED, FALSE);
     }
 
     /**
      * Change metadata status to publish
      */
-    public function publish() {//var_dump($_POST);var_dump($this->data);exit();
-        if (count($this->data) > 0) {
-            $this->changeStatusAndSave(sdiMetadata::PUBLISHED);
+    public function publish($continue = true) {
+        if (!$continue || count($this->data) > 0) {
+            $this->changeStatusAndSave(sdiMetadata::PUBLISHED, $continue);
         } else {
             $this->changeStatusAndUpdate(sdiMetadata::PUBLISHED);
         }
@@ -256,7 +279,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * Change metadata status to publish
      */
     public function publishAndClose() {
-        $this->changeStatusAndSave(sdiMetadata::PUBLISHED, FALSE);
+        $this->publish(false);
+        //$this->changeStatusAndSave(sdiMetadata::PUBLISHED, FALSE);
     }
 
     /**
@@ -265,12 +289,26 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
      * @param type $statusId
      */
     private function changeStatusAndSave($statusId, $continue = true) {
-
-        if ($this->changeStatus($this->data['id'], $statusId, $this->data['published']) != FALSE) {
-            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_CHANGE_STATUS_OK'), 'message');
+        $viral = JFactory::getApplication()->input->get('viral', 0, 'integer');
+        
+        if(isset($this->data['metadatastate_id']) && $statusId == $this->data['metadatastate_id']){
+            $this->save(null, true, $continue);
+        }
+        elseif(isset($viral) && $viral == 1){
+            if($this->changeStatusViral($this->data['id'], $statusId, $this->data['published'])){
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_OK'), 'message');
+                $this->save(null, true, $continue);
+            }
+            else{
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_ERROR'), 'error');
+                $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $this->data['id']));
+            }
+        }
+        elseif ($this->changeStatus($this->data['id'], $statusId, $this->data['published']) != FALSE) {
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_OK'), 'message');
             $this->save(null, true, $continue);
         } else {
-            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_CHANGE_STATUS_ERROR'), 'error');
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_ERROR'), 'error');
             $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $this->data['id']));
         }
 
@@ -279,21 +317,38 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     }
 
     private function changeStatusAndUpdate($statusId) {
+        
         $id = JFactory::getApplication()->input->get('id', null, 'int');
-        $published = JFactory::getApplication()->input->get('published', null, 'string');
-        if (isset($published)) {
-            $changeStatus = $this->changeStatus($id, $statusId, $published);
-        } else {
-            $changeStatus = $this->changeStatus($id, $statusId);
+        $redirectURL = JFactory::getApplication()->input->get('redirectURL', '');
+        if(empty($redirectURL)){
+            $redirectURL = 'index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $this->data['id'];
         }
-
-        if ($changeStatus != FALSE) {
+        
+        if(isset($this->data['metadatastate_id']) && $statusId == $this->data['metadatastate_id']){
+            $changeStatus = null;
+        }
+        else{
+            $published = JFactory::getApplication()->input->get('published', null, 'string');
+            $viral = JFactory::getApplication()->input->get('viral', 0, 'integer');
+            if (isset($published)) {
+                
+                if(isset($viral) && $viral == 1){
+                    $changeStatus = $this->changeStatusViral($id, $statusId, $published);
+                }
+                else{
+                    $changeStatus = $this->changeStatus($id, $statusId, $published);
+                }
+            } else {
+                $changeStatus = $this->changeStatus($id, $statusId);
+            }
+        }
+        
+        if($changeStatus === false){
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_ERROR'), 'error');
+            $this->setRedirect(JRoute::_($redirectURL, false));
+        }
+        else{
             $this->update($id);
-            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_CHANGE_STATUS_OK'), 'message');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
-        } else {
-            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_CHANGE_STATUS_ERROR'), 'error');
-            $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
         }
     }
 
@@ -305,9 +360,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
     private function update($id) {
         $smd = new sdiMetadata($id);
         if ($smd->updateSDIElement()) {
-            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_CHANGE_STATUS_OK'), 'message');
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_OK'), 'message');
         } else {
-            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_CHANGE_STATUS_ERROR'), 'error');
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_CHANGE_STATUS_ERROR'), 'error');
         }
         $this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
     }
@@ -432,18 +487,20 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $this->domXpathStr->registerNamespace($ns->prefix, $ns->uri);
         }
 
+
+
         // Multiple list decomposer
         $dataWithoutArray = array();
         foreach ($data as $xpath => $values) {
-            
+
+            // if is boundary
+            if (strpos($xpath, 'EX_Extent-sla-gmd-dp-description-sla-gco-dp-CharacterString') !== false) {
+                $this->addBoundaries($xpath, $values);
+                unset($data[$xpath]);
+            }
+
             if (is_array($values)) {
-                
-                // if is boundary
-                if (strpos($xpath, 'EX_Extent') !== false) {
-                    $this->addBoundaries($xpath, $values);
-                    unset($data[$xpath]);
-                }
-                
+
                 foreach ($values as $key => $value) {
                     $index = $key + 1;
                     $indexedXpath = str_replace('MD_Keywords-sla-gmd-dp-keyword', 'MD_Keywords-sla-gmd-dp-keyword-la-' . $index . '-ra-', $xpath, $nbrReplace);
@@ -488,11 +545,11 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                 }
             }
         }
+        
+        $keywords = $this->domXpathStr->query('descendant::*[@catalog:stereotypeId="' . EnumStereotype::$GEMET . '"]');
 
-        $keyword = $this->domXpathStr->query('descendant::*[@catalog:stereotypeId="' . EnumStereotype::$GEMET . '"]')->item(0);
-
-        if (!empty($keyword)) {
-            $this->cleanEmptyNode($keyword->parentNode);
+        if ($keywords->length) {
+            $this->cleanEmptyNode($keywords);
         }
 
         $root = $this->domXpathStr->query('/*')->item(0);
@@ -514,10 +571,15 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         if ($commit) {
             $xml = $this->CreateUpdateBody($root, $data['guid'])->saveXML();
-
-            if ($smda->update($xml)) {
+            
+            if(isset($this->data['viral']) && $this->data['viral']==1){
+                $virality = $this->changeStatusViral($this->data['id'], $this->data['metadatastate_id'], $this->data['published']);
+            }
+            
+            
+            if ($smda->update($xml) && (!isset($virality) || $virality === true)) {
                 $this->saveTitle($data['guid']);
-                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_SAVE_VALIDE'), 'message');
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_SAVE_VALIDE'), 'message');
                 if ($continue) {
                     $this->setRedirect(JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $data['id']));
                 } else {
@@ -531,7 +593,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                 }
             } else {
                 $this->changeStatus($data['id'], $data['metadatastate_id']);
-                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_SAVE_ERROR'), 'error');
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_SAVE_ERROR'), 'error');
                 $this->setRedirect(JRoute::_('index.php?view=metadata&layout=edit', false));
             }
         }
@@ -549,6 +611,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $query = FormUtils::unSerializeXpath($xpath);
         $elements = $this->domXpathStr->query($query);
         $toDeletes = array();
+        /* @var $parent DOMElement */
+        $parent;
         foreach ($elements as $element) {
             $toDeletes[] = $element->parentNode->parentNode->parentNode;
             $parent = $element->parentNode->parentNode->parentNode->parentNode;
@@ -564,30 +628,39 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
                     $parent->appendChild($this->structure->importNode($formStereotype->getMultipleExtentStereotype($boundary), true));
                 }
             }
+        } else {
+            if (!empty($boundaries)) {
+                $parent->appendChild($this->structure->importNode($formStereotype->getMultipleExtentStereotype($boundaries), true));
+            }else{
+                $northBoundLatitude = $this->domXpathStr->query($parent->getNodePath() . '/gmd:extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal')->item(0);
+                $southBoundLatitude = $this->domXpathStr->query($parent->getNodePath() . '/gmd:extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:southBoundLatitude/gco:Decimal')->item(0);
+                $eastBoundLongitude = $this->domXpathStr->query($parent->getNodePath() . '/gmd:extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:eastBoundLongitude/gco:Decimal')->item(0);
+                $westBoundLongitude = $this->domXpathStr->query($parent->getNodePath() . '/gmd:extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:westBoundLongitude/gco:Decimal')->item(0);
+
+                $parent->appendChild($this->structure->importNode($formStereotype->getExtendStereotype('', $boundaries, $northBoundLatitude, $southBoundLatitude, $eastBoundLongitude, $westBoundLongitude, '35', true), true));
+            }
+            
         }
     }
 
     /**
      * 
-     * @param DOMElement $element
+     * @param DOMNodeList $element
      */
-    private function cleanEmptyNode(DOMElement $element) {
-
-        $toRemove = array();
-        foreach ($element->childNodes as $child) {
-            if (empty($child->nodeValue)) {
-                $toRemove[] = $child;
-            }
+    private function cleanEmptyNode(DOMNodeList $keywords) {
+        $parent = false;
+        $registeredKeywords = array();
+        foreach($keywords as $keyword){
+            if($parent === false) $parent = $keyword->parentNode->parentNode;
+            $defaultChild = trim($keyword->childNodes->item(1)->nodeValue);
+            if(in_array($defaultChild, $registeredKeywords) || empty($defaultChild))
+                $keyword->parentNode->removeChild($keyword);
+            else
+                array_push($registeredKeywords, $defaultChild);
         }
-
-        foreach ($toRemove as $child) {
-            $element->removeChild($child);
-        }
-
-        if (!$element->hasChildNodes()) {
-            $parent = $element->parentNode->parentNode;
-            $parent->removeChild($element->parentNode);
-        }
+        
+        if(count($registeredKeywords) == 0)
+            $parent->parentNode->removeChild($parent);
     }
 
     /**
@@ -677,24 +750,24 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
 
         $cascade = (isset($data['assign_child']) && $data['assign_child'] == 1);
 
-        $vids = array($data['id']);
+        $metadata_ids = array($data['id']);
         $date = date('Y-m-d H:i.s');
 
         if ($cascade) {
             $query = $this->db->getQuery(true);
-            $query->select('child_id as vid')
-                    ->from('#__sdi_versionlink')
+            $query->select('m.id')
+                    ->from('#__sdi_versionlink vl')
+                    ->innerJoin('#__sdi_metadata m ON m.version_id=vl.child_id')
                     ->where('parent_id=' . $data['id']);
             $this->db->setQuery($query);
-            $vids = array_merge($vids, $this->db->loadColumn());
+            $metadata_ids = array_merge($metadata_ids, $this->db->loadColumn());
         }
 
         $query = $this->db->getQuery(true);
-        $query->select('v.guid, v.id')
-                ->from('#__sdi_version v')
-                ->join('LEFT', '#__sdi_metadata m ON m.version_id=v.id')
-                ->where('m.metadatastate_id=1')
-                ->where('v.id IN (' . implode(',', $vids) . ')', 'AND')
+        $query->select('m.guid, m.id')
+                ->from('#__sdi_metadata m')
+                ->where('m.metadatastate_id='.sdiMetadata::INPROGRESS)
+                ->where('m.id IN (' . implode(',', $metadata_ids) . ')')
         ;
         $this->db->setQuery($query);
         $rows = $this->db->loadAssocList();
@@ -710,7 +783,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $assignment->assigned = $date;
             $assignment->assigned_by = $data['assigned_by'];
             $assignment->assigned_to = $data['assigned_to'];
-            $assignment->version_id = $row['id'];
+            $assignment->metadata_id = $row['id'];
             $assignment->text = $data['assign_msg'];
 
             if ($this->db->insertObject('#__sdi_assignment', $assignment, 'id'))
@@ -731,8 +804,8 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $toUser = new sdiUser($data['assigned_to']);
 
             $li = "";
-            foreach ($success as $vid) {
-                $link = JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $vid, true, -1);
+            foreach ($success as $metadata_id) {
+                $link = JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.edit&id=' . $metadata_id, true, -1);
                 $li .= "<li><a href='{$link}'>{$link}</a></li>";
             }
 
@@ -858,6 +931,32 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->db->setQuery($query);
 
         return $this->db->execute();
+    }
+    
+    private function changeStatusViral($id, $metadatastate_id, $published = null){
+        $query = $this->db->getQuery(true)
+                ->select('version_id as id')
+                ->from('#__sdi_metadata')
+                ->where('id='.(int)$id);
+        $this->db->setQuery($query);
+        $version = $this->db->loadObject();
+        
+        $versions = $this->core_helpers->getChildrenVersion($version);
+        
+        try{
+            $this->db->transactionStart();
+            foreach($versions[$version->id]->children as $children){
+                if($children->metadatastate_id == sdiMetadata::VALIDATED){
+                    $this->changeStatus($children->metadata_id, $metadatastate_id, $published);
+                }
+            }
+            $this->changeStatus($id, $metadatastate_id, $published);
+            $this->db->transactionCommit();
+            return true;
+        } catch (Exception $ex) {
+            $db->transactionRollback();
+            return false;
+        }
     }
 
     function cancel() {
@@ -1128,8 +1227,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
             $branch->resource_id = $metadata['resource_id'];
 
             $query = $this->db->getQuery(true);
-            $query->select('child_id')
-                    ->from('#__sdi_versionlink')
+            $query->select('m.id')
+                    ->from('#__sdi_versionlink vl')
+                    ->innerJoin('#__sdi_metadata m ON m.version_id=vl.child_id')
                     ->where('parent_id=' . $branch->id);
             $this->db->setQuery($query);
 

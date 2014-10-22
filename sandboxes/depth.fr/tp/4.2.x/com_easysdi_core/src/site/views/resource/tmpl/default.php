@@ -206,7 +206,7 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
                             <div class="control-group" <?php if(isset($this->item->resourcerights[$index]) && !$this->item->resourcerights[$index]): ?>style="display:none"<?php endif; ?>>
                                 <div class="control-label">
                                     <label id="jform_<?php echo $index ?>-lbl" for="jform_<?php echo $index ?>">
-                                        <?php echo JText::_('COM_EASYSDI_CORE_FORM_DESC_RESOURCE_' . $index); ?><?php if($index==2):?><span class="star">&nbsp;*</span><?php endif;?>
+                                        <?php echo JText::_('COM_EASYSDI_CORE_FORM_DESC_RESOURCE_' . $index . '_LABEL'); ?><?php if($index==2):?><span class="star">&nbsp;*</span><?php endif;?>
                                     </label>
                                 </div>
                                 <div class="controls">

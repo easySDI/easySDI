@@ -37,6 +37,8 @@ abstract class sdiModel extends JModelAdmin {
                     $item->text1 = $rows['text1'];
                 if (isset($rows['text2']))
                     $item->text2 = $rows['text2'];
+                if (isset($rows['text3']))
+                    $item->text3 = $rows['text3'];
             }
 
             // Get the access scope

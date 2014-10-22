@@ -1521,8 +1521,9 @@ CREATE TABLE IF NOT EXISTS `#__sdi_translation` (
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `element_guid` VARCHAR(36)  NOT NULL ,
 `language_id` INT(11) UNSIGNED ,
-`text1` VARCHAR(255)   ,
+`text1` VARCHAR(255) ,
 `text2` VARCHAR(500) ,
+`text3` VARCHAR(255) ,
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_translation_fk1` (`language_id` ASC) ,
   CONSTRAINT `#__sdi_translation_fk1`
@@ -1676,8 +1677,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_resourcetypelink` (
 `parentboundupper` INT(10)  NOT NULL ,
 `childboundlower` INT(10)  NOT NULL ,
 `childboundupper` INT(10)  NOT NULL ,
-`class_id` INT(11) UNSIGNED NULL ,
-`attribute_id` INT(11) UNSIGNED  NULL ,
 `viralversioning` TINYINT(1)  NOT NULL ,
 `inheritance` TINYINT(1)  NOT NULL ,
 `asset_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
@@ -1685,8 +1684,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_resourcetypelink` (
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_resourcetypelink_fk1` (`parent_id` ASC) ,
 INDEX `#__sdi_resourcetypelink_fk2` (`child_id` ASC) ,
-INDEX `#__sdi_resourcetypelink_fk3` (`class_id` ASC) ,
-INDEX `#__sdi_resourcetypelink_fk4` (`attribute_id` ASC) ,
   CONSTRAINT `#__sdi_resourcetypelink_fk1`
     FOREIGN KEY (`parent_id` )
     REFERENCES `#__sdi_resourcetype` (`id` )
@@ -1695,16 +1692,6 @@ INDEX `#__sdi_resourcetypelink_fk4` (`attribute_id` ASC) ,
 CONSTRAINT `#__sdi_resourcetypelink_fk2`
     FOREIGN KEY (`child_id` )
     REFERENCES `#__sdi_resourcetype` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-CONSTRAINT `#__sdi_resourcetypelink_fk3`
-    FOREIGN KEY (`class_id` )
-    REFERENCES `#__sdi_class` (`id` )
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-CONSTRAINT `#__sdi_resourcetypelink_fk4`
-    FOREIGN KEY (`attribute_id` )
-    REFERENCES `#__sdi_attribute` (`id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -1800,7 +1787,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_assignment` (
 `assigned` DATETIME ,
 `assigned_by` INT(11) UNSIGNED  NOT NULL,
 `assigned_to` INT(11) UNSIGNED NOT NULL ,
-`version_id` INT(11) UNSIGNED NOT NULL ,
+`metadata_id` INT(11) UNSIGNED NOT NULL ,
 `text` VARCHAR (500),
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_assignment_fk1` (`assigned_by`) ,
@@ -1817,8 +1804,8 @@ INDEX `#__sdi_assignment_fk3` (`version_id`) ,
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
  CONSTRAINT `#__sdi_assignment_fk3`
-    FOREIGN KEY (`version_id` )
-    REFERENCES `#__sdi_version` (`id` )
+    FOREIGN KEY (`metadata_id` )
+    REFERENCES `#__sdi_metadata` (`id` )
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

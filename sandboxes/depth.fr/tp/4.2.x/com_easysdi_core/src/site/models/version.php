@@ -75,6 +75,14 @@ class Easysdi_coreModelVersion extends JModelForm {
                 $result = $db->loadObject();
                 $this->_item->versioning = $result->versioning;
                 $this->_item->resourcename = $result->name;
+                
+                //Get metadatastate
+                $query = $db->getQuery(true)
+                        ->select('m.metadatastate_id')
+                        ->from('#__sdi_metadata m')
+                        ->where('m.version_id='.(int)$this->_item->id);
+                $db->setQuery($query);
+                $this->_item->metadatastate = (int)$db->loadResult();
 
                 //Allowed resourcetype as children
                 $query = $db->getQuery(true)
@@ -116,20 +124,20 @@ class Easysdi_coreModelVersion extends JModelForm {
                 $this->_item->children = $db->loadObjectList();
 
                 //Get session
-                $app = JFactory::getApplication();
-                $data = $app->getUserState('com_easysdi_core.edit.version.data');
-                $this->_item->searchtype = (!empty($data['searchtype']))? $data['searchtype'] : null;
+                //$app = JFactory::getApplication();
+                //$data = $app->getUserState('com_easysdi_core.edit.version.data');
+                /*$this->_item->searchtype = (!empty($data['searchtype']))? $data['searchtype'] : null;
                 $this->_item->searchid = (!empty($data['searchid']))?$data['searchid'] : null;
                 $this->_item->searchname = (!empty($data['searchname']))?$data['searchname'] : null;
                 $this->_item->searchstate = (!empty($data['searchstate']))?$data['searchstate'] : null;
-                $this->_item->searchlast = (!empty($data['searchlast']))?$data['searchlast'] : null;
+                $this->_item->searchlast = (!empty($data['searchlast']))?$data['searchlast'] : null;*/
 
                 //Get search result
                 if (!empty($resourcetypechild)) {//No resourcetype can be child
-                    $run = $app->getUserState('com_easysdi_core.edit.version.runsearch');
-                    if (!empty($run)) {
+                    //$run = $app->getUserState('com_easysdi_core.edit.version.runsearch');
+                    //if (!empty($run)) {
                         $query = $db->getQuery(true)
-                                ->select('v.id as id, v.name as version, r.name as resource, rt.alias as resourcetype, ms.value as state')
+                                ->select('v.id as id, v.name as version, r.name as resource, rt.alias as resourcetype, ms.value as state, m.metadatastate_id, r.resourcetype_id, m.guid')
                                 ->from('#__sdi_version v')
                                 ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
                                 ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
@@ -138,7 +146,7 @@ class Easysdi_coreModelVersion extends JModelForm {
                                 ->where(' v.id <> ' . (int) $table->id)
                                 ->where('rt.id IN (' . implode(',', $resourcetypechild) . ')')
                         ;
-                        if (!empty($this->_item->searchtype)) {
+                        /*if (!empty($this->_item->searchtype)) {
                             $query->where('rt.id = ' . $this->_item->searchtype);
                         }
                         if (!empty($this->_item->searchid)) {
@@ -149,7 +157,7 @@ class Easysdi_coreModelVersion extends JModelForm {
                         }
                         if (!empty($this->_item->searchstate)) {
                             $query->where('m.metadatastate_id = ' . $this->_item->searchstate);
-                        }
+                        }*/
                         if (!empty($this->_item->children)) {
                             $list = array();
                             foreach ($this->_item->children as $child):
@@ -161,8 +169,9 @@ class Easysdi_coreModelVersion extends JModelForm {
                         $db->setQuery($query);
                         $result = $db->loadObjectList();
                         $this->_item->availablechildren = $result;
-                    }
+                    //}
                 }
+                else $this->_item->availablechildren = false;
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }
