@@ -51,17 +51,21 @@ $lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
 $lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 $document = JFactory::getDocument();
 
+if (JDEBUG) {
+    $document->addScript('administrator/components/com_easysdi_core/libraries/OpenLayers-2.13.1/OpenLayers.debug.js');
+    $document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base-debug.js');
+    $document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');    
+}else{
+    $document->addScript('administrator/components/com_easysdi_core/libraries/OpenLayers-2.13.1/OpenLayers.js');
+    $document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base.js');
+    $document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all.js');
+}
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/ext/resources/css/ext-all.css');
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/css/jquery.dataTables.css');
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/bootbox.min.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/OpenLayers-2.13.1/OpenLayers.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/proj4js-1.1.0/lib/proj4js.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base-debug.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');
-//$document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/thesaur.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/HS.js');
-//$document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/translations.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/js/jquery.dataTables.min.js');
 
 $document->addScript('http://maps.google.com/maps/api/js?v=3&amp;sensor=false');

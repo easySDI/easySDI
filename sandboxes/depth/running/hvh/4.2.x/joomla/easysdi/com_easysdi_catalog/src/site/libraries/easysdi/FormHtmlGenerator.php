@@ -603,19 +603,19 @@ class FormHtmlGenerator {
                     case EnumLayerName::$TERRAIN:
                         $layer_definition = "layer_$parent_path = new OpenLayers.Layer.Google(
                                                 'Google Physicial',
-                                                {type: G_PHYSICAL_MAP}
+                                                {type: google.maps.MapTypeId.TERRAIN}
                                             );";
                         break;
                     case EnumLayerName::$SATELLITE:
                         $layer_definition = "layer_$parent_path = new OpenLayers.Layer.Google(
                                                 'Google Satellite',
-                                                {type: G_SATELLITE_MAP, numZoomLevels: 22}
+                                                {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
                                             );";
                         break;
-                    case EnumLayerName::$HYBRIDE:
+                    case EnumLayerName::$HYBRID:
                         $layer_definition = "layer_$parent_path = new OpenLayers.Layer.Google(
                                                 'Google Hybrid',
-                                                {type: G_HYBRID_MAP, numZoomLevels: 20}
+                                                {type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20}
                                             );";
                         break;
                 }
