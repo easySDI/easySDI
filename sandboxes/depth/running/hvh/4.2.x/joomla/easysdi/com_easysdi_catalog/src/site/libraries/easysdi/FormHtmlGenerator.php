@@ -181,8 +181,6 @@ class FormHtmlGenerator {
                     }
                     break;
                 case EnumChildtype::$ATTRIBUT:
-                    $parentname = $parent->nodeName;
-                    $childName = $child->nodeName;
                     if ($child->getAttributeNS($this->catalog_uri, 'stereotypeId') == EnumStereotype::$GEMET) {
                         if ($child->getAttributeNS($this->catalog_uri, 'index') == 1) {
                             $field = $this->getAttribute($child);
@@ -202,7 +200,7 @@ class FormHtmlGenerator {
                     
                     $fieldset = $this->getFieldset($child);
                     
-                    if ($this->domXpathStr->query('*[@catalog:childtypeId="2"]', $child)->length > 0) {
+                    if ($this->domXpathStr->query('descendant::*[@catalog:childtypeId="2"]', $child)->length > 0) {
                         $searchField = $this->getAttribute($child);
                         $fieldset->getElementsByTagName('div')->item(0)->appendChild($searchField);
                     }
@@ -210,7 +208,7 @@ class FormHtmlGenerator {
 
                     $parentInner->appendChild($fieldset);
 
-                    if ($this->domXpathStr->query('*[@catalog:childtypeId="2"]', $child)->length > 0) {
+                    if ($this->domXpathStr->query('descendant::*[@catalog:childtypeId="2"]', $child)->length > 0) {
                         $this->recBuildForm($child, $fieldset);
                     }
                     break;
@@ -398,8 +396,7 @@ class FormHtmlGenerator {
             case EnumStereotype::$LOCALE:
                 if ($stereotypeId == EnumStereotype::$GEMET) {
                     $attributeGroup->appendChild($this->getGemet($attribute));
-                }
-                elseif($stereotypeId == EnumStereotype::$LOCALE){
+                } elseif ($stereotypeId == EnumStereotype::$LOCALE) {
                     $class = $attributeGroup->getAttribute('class').' i18n';
                     $attributeGroup->setAttribute('class', $class);
                 }
@@ -459,12 +456,15 @@ class FormHtmlGenerator {
                     $nodePath = $attribute->firstChild->getNodePath();
                 }
 
-
+                $occurance = 0;
 
                 switch ($rendertypeId) {
                     case EnumRendertype::$CHECKBOX:
                         /** @var JFormField */
                         $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath)));
+                        $fieldid = $jfield->__get('id');
+                        $query = 'descendant::*[@id="' . $fieldid . '"]';
+                        $occurance = $this->domXpathFormHtml->query($query)->length;
                         break;
                     case EnumRendertype::$LIST:
                         // Mutiple list
@@ -484,10 +484,14 @@ class FormHtmlGenerator {
                                         
                                         $nodePath = str_replace($this->ajaxXpath, $newPath, $nodePath);
                                             }
-                                    
                                     $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath)));
                                     break;
                             }
+                            $fieldid = $jfield->__get('id');
+                            $query = 'descendant::*[@id="' . $fieldid . '"]';
+                            $occurance = $this->domXpathFormHtml->query($query)->length;
+                            
+                            // Single list
                         } else {
                             $jfield = $this->form->getField(FormUtils::serializeXpath($nodePath));
                         }
@@ -499,14 +503,12 @@ class FormHtmlGenerator {
 
                 if ($jfield) {
 
-                    /* if ($occurance < 1) {
+                    if ($occurance < 1) {
                       foreach ($this->buildField($attribute, $jfield) as $element) {
                             $attributeGroup->appendChild($element);
                         }
-                      } */
-                    foreach ($this->buildField($attribute, $jfield) as $element) {
-                        $attributeGroup->appendChild($element);
                     }
+                    
                 } else {
                     JFactory::getApplication()->enqueueMessage('Field not found ' . FormUtils::serializeXpath($nodePath), 'warning');
                 }
@@ -520,11 +522,6 @@ class FormHtmlGenerator {
                 $attributeGroup->appendChild($this->getMap($attribute, $map_id));
             }
         }
-
-        /*if ($occurance < $upperbound && !($rendertypeId == EnumRendertype::$LIST && $upperbound > 1) && empty($_GET['relid'])) {
-            //$outer->appendChild($this->getAttributeAction($attribute, $jfield));
-        }*/
-
         return $attributeGroup;
     }
 

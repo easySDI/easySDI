@@ -142,10 +142,8 @@ class FormGenerator {
                     $this->getChildTree($root);
                     break;
                 case EnumChildtype::$RELATIONTYPE:
-                    if(isset($result->classass_id))
-                        $relation = $this->getDomElement($result->classass_ns_uri, $result->classass_ns_prefix, $result->name, $result->classass_id, EnumChildtype::$RELATIONTYPE, $result->guid, 1, $result->upperbound);
-                    else
-                        $relation = $this->getDomElement($result->resourcetype_ns_uri, $result->resourcetype_ns_prefix, $result->name, $result->resourcetype_ns_id, EnumChildtype::$RELATIONTYPE, $result->guid, 1, $result->upperbound);
+
+                    $relation = $this->getDomElement($result->uri, $result->prefix, $result->name, $result->id, EnumChildtype::$RELATIONTYPE, $result->guid, $result->lowerbound, $result->upperbound);
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:show', 'embed');
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:actuate', 'onLoad');
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:type', 'simple');
@@ -153,16 +151,20 @@ class FormGenerator {
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':resourcetypeId', $result->resourcetype_id);
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':relationId', $result->id);
 
+                    $class = $this->getDomElement($result->classass_ns_uri, $result->classass_ns_prefix, $result->classass_name, $result->classass_id, EnumChildtype::$CLASS, $result->guid);
+
+                    $relation->appendChild($class);
+
                     $parent->appendChild($relation);
-                    $root = $relation;
+
                     $this->ajaxXpath = $relation->getNodePath();
 
-                    $this->getChildTree($root);
+                    $this->getChildTree($class);
+                    $root = $relation;
+
                     break;
                 case EnumChildtype::$ATTRIBUT:
-                    $parentname = $parent->nodeName;
                     $attribute = $this->domXpathStr->query('descendant::*[@catalog:relid="' . $_GET['relid'] . '"]')->item(0);
-                    $attributename = $attribute->nodeName;
                     $cloned = $attribute->cloneNode(true);
                     $parent->appendChild($cloned);
                     $parent->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
@@ -288,7 +290,9 @@ class FormGenerator {
 
         $this->db->setQuery($query);
 
-        foreach ($this->db->loadObjectList() as $result) {
+        $results = $this->db->loadObjectList();
+
+        foreach ($results as $result) {
 
             switch ($result->childtype_id) {
                 case EnumChildtype::$CLASS:
@@ -362,21 +366,22 @@ class FormGenerator {
 
                     break;
                 case EnumChildtype::$RELATIONTYPE:
-                    
-                    if(isset($result->classass_id))
-                        $class = $this->getDomElement($result->classass_ns_uri, $result->classass_ns_prefix, $result->name, $result->classass_id, EnumChildtype::$RELATIONTYPE, $result->guid, $result->lowerbound, $result->upperbound);
-                    else
-                        $class = $this->getDomElement($result->resourcetype_ns_uri, $result->resourcetype_ns_prefix, $result->name, $result->resourcetype_ns_id, EnumChildtype::$RELATIONTYPE, $result->guid, $result->lowerbound, $result->upperbound);
-                        
-                    
-                    $class->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:show', 'embed');
-                    $class->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:actuate', 'onLoad');
-                    $class->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:type', 'simple');
-                    $class->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '');
-                    $class->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':resourcetypeId', $result->resourcetype_id);
-                    $class->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':relationId', $result->id);
+                    if (isset($result->classass_id)) {
+                        $relation = $this->getDomElement($result->uri, $result->prefix, $result->name, $result->id, EnumChildtype::$RELATIONTYPE, $result->guid, $result->lowerbound, $result->upperbound);
+                        $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:show', 'embed');
+                        $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:actuate', 'onLoad');
+                        $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:type', 'simple');
+                        $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '');
+                        $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':resourcetypeId', $result->resourcetype_id);
+                        $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':relationId', $result->id);
 
-                    $childs[] = $class;
+                        $class = $this->getDomElement($result->classass_ns_uri, $result->classass_ns_prefix, $result->classass_name, $result->classass_id, EnumChildtype::$CLASS, $result->guid);
+
+
+                        $relation->appendChild($class);
+
+                        $childs[] = $relation;
+                    }
                     break;
             }
         }
@@ -683,7 +688,8 @@ class FormGenerator {
         }
         
         $description = EText::_($guid, 2);
-        if(!empty($description)) $field->setAttribute('description', $description);
+        if (!empty($description))
+            $field->setAttribute('description', $description);
 
         $fields[] = $field;
 
@@ -705,7 +711,8 @@ class FormGenerator {
             $localeValue = str_replace('#', '', $i18nChild->getAttribute('locale'));
             $field->setAttribute('label', EText::_($guid) . ' (' . $this->ldao->getByIso3166($localeValue)->value . ')');//
             $description = EText::_($guid, 2);
-            if(!empty($description)) $field->setAttribute('description', $description);
+            if (!empty($description))
+                $field->setAttribute('description', $description);
 
             $fields[] = $field;
         }
@@ -880,7 +887,6 @@ class FormGenerator {
             $field->setAttribute('name', $name);
             $field->setAttribute('multiple', 'true');
             $field->setAttribute('type', 'MultipleDefaultList');
-            
         } else {
             $validator = $this->getValidatorClass($attribute);
             $field->setAttribute('class', $validator);
