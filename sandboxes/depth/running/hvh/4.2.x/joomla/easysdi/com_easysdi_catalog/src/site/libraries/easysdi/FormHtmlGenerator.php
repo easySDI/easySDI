@@ -561,7 +561,7 @@ class FormHtmlGenerator {
 
         $query = $this->db->getQuery(true);
 
-        $query->select('m.srs, m.unit_id, m.maxresolution, m.restrictedextent, m.zoom, m.maxextent, m.centercoordinates, l.layername, l.service_id, l.servicetype, l.asOLstyle, l.asOLoptions, l.asOLmatrixset, u.`alias` as unit_alias');
+        $query->select('m.srs, m.unit_id, m.maxresolution, m.restrictedextent, m.zoom, m.maxextent, m.centercoordinates, l.layername, l.service_id, l.servicetype, l.asOLstyle, l.asOLoptions, l.asOLmatrixset, u.alias as unit_alias');
         $query->from('#__sdi_map as m');
         $query->innerJoin('#__sdi_map_layergroup mlg ON m.id = mlg.map_id');
         $query->innerJoin('#__sdi_layer_layergroup llg ON llg.group_id = mlg.group_id');
