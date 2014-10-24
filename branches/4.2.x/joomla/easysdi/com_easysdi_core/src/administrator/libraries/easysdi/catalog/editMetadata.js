@@ -13,8 +13,6 @@ js('document').ready(function() {
     js(document).on('click', '.add-btn', function(){
         var relid = js(this).attr('data-relid');
         var parent_path = js(this).attr('data-parentpath');
-        var upperbound = js(this).attr('data-upperbound');
-        var lowerbound = js(this).attr('data-lowerbound');
         var uuid = getUuid('add-btn', this.id);
         var button = js(this);
 
@@ -43,15 +41,20 @@ js('document').ready(function() {
                         firstDay: 1
                     });
             });
-            var occurance = js('.fds' + uuid).length;
             
-            if(occurance == lowerbound){
-                js('.remove-btn' + uuid).hide();
-            }
+            setRelationAction(button);
             
-            if(occurance == upperbound){
-                js('#add-btn' + uuid).hide();
-            }
+            // Set bouton state in data block
+            js(data).find('.add-btn').each(function(){
+                setRelationAction(js(this));
+            });
+            
+            // Set attribute bouton state in data block
+            js(data).find('.attribute-add-btn').each(function(){
+                console.log(js(this));
+                setAttributeAction(js(this).parent());
+            });
+            
         });
 
     });
@@ -62,8 +65,6 @@ js('document').ready(function() {
     js(document).on('click', '.remove-btn', function(){
         var id = this.id;
         var xpath = js(this).attr('data-xpath');
-        var lowerbound = js(this).attr('data-lowerbound');
-        var upperbound = js(this).attr('data-upperbound');
         
         bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING', 'COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING'), function(result) {
             if (result) {
@@ -74,15 +75,7 @@ js('document').ready(function() {
                     if (response.success) {
 
                         js('#fds'+uuid).remove();
-
-                        var occurance = getOccuranceCount('.fds' + xpath);
-                        
-                        if(occurance == lowerbound){
-                            js('.remove-btn' + xpath).hide();
-                        }else{
-                            js('#add-btn' + xpath).show();
-                        }
-                        
+                        setRelationAction(js('#add-btn' + xpath));
                     }
                 });
             }
@@ -500,16 +493,24 @@ function setRelationAction(element){
 
     var occurance = js('.fds' + uuid).length;
 
+    /*console.log(js(element));
+    console.log(lowerbound);
+    console.log(upperbound);
+    console.log(occurance);*/
+
     if(occurance == upperbound){
-        js(element).hide();
+        /*console.log('hide add #add-btn'+uuid);*/
+        js('#add-btn'+uuid).hide();
     }
     
     if(occurance == lowerbound){
+        /*console.log('hide remove');*/
         js('.fds' + uuid+' a.remove-btn').hide();
     }
     
     if(occurance < upperbound && occurance > lowerbound){
-        js(element).show();
+        /*console.log('show all');*/
+        js('#add-btn'+uuid).show();
         js('.fds' + uuid+' a.remove-btn').show();
     }
 }
@@ -519,6 +520,10 @@ function setAttributeAction(element){
     var lowerbound = js(element).attr('data-lowerbound');
     var buttonclass = js(element).attr('data-button-class');
     var occurance = js('.attribute-action'+buttonclass).length;
+
+    console.log(js(element));
+    console.log(upperbound);
+    console.log(lowerbound);
 
     if(occurance == 1){
         js('.attribute-action'+buttonclass+'>a.attribute-add-btn').show();

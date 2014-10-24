@@ -200,10 +200,15 @@ class FormHtmlGenerator {
 
                     $fieldset = $this->getFieldset($child);
 
-                    if ($this->domXpathStr->query('descendant::*[@catalog:childtypeId="2"]', $child)->length > 0) {
-                        $searchField = $this->getAttribute($child);
+                    $searchField = $this->getAttribute($child);
+                    if ($fieldset->getElementsByTagName('div')->length > 0) {
                         $fieldset->getElementsByTagName('div')->item(0)->appendChild($searchField);
                     }
+
+                    /* if ($this->domXpathStr->query('descendant::*[@catalog:childtypeId="2"]', $child)->length > 0) {
+                      $searchField = $this->getAttribute($child);
+                      $fieldset->getElementsByTagName('div')->item(0)->appendChild($searchField);
+                      } */
 
 
                     $parentInner->appendChild($fieldset);
@@ -263,6 +268,13 @@ class FormHtmlGenerator {
 
         $aAdd->appendChild($iAdd);
         $divAction->appendChild($aAdd);
+
+        if (JDEBUG) {
+            $lowerboundspan = $this->formHtml->createElement('span', 'lowerbound:' . $lowerbound);
+            $upperboundspan = $this->formHtml->createElement('span', 'upperbound:' . $upperbound);
+            $divAction->appendChild($lowerboundspan);
+            $divAction->appendChild($upperboundspan);
+        }
 
         return $divAction;
     }
@@ -374,7 +386,12 @@ class FormHtmlGenerator {
         $userParams = json_decode($user->juser->params);
         $userLanguageIndex = 0;
 
-        $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
+        if ($attribute->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE) {
+            $upperbound = 1;
+        }else{
+            $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
+        }
+        
         $stereotypeId = $attribute->getAttributeNS($this->catalog_uri, 'stereotypeId');
         $rendertypeId = $attribute->getAttributeNS($this->catalog_uri, 'rendertypeId');
 
@@ -491,7 +508,7 @@ class FormHtmlGenerator {
                             $fieldid = $jfield->__get('id');
                             $query = 'descendant::*[@id="' . $fieldid . '"]';
                             $occurance = $this->domXpathFormHtml->query($query)->length;
-                            
+
                             // Single list
                         } else {
                             $jfield = $this->form->getField(FormUtils::serializeXpath($nodePath));
@@ -509,7 +526,6 @@ class FormHtmlGenerator {
                             $attributeGroup->appendChild($element);
                         }
                     }
-                    
                 } else {
                     JFactory::getApplication()->enqueueMessage('Field not found ' . FormUtils::serializeXpath($nodePath), 'warning');
                 }
@@ -1152,6 +1168,13 @@ class FormHtmlGenerator {
         $aAdd->appendChild($iAdd);
         $action->appendChild($aAdd);
         $action->appendChild($aRemove);
+
+        if (JDEBUG) {
+            $lowerboundspan = $this->formHtml->createElement('span', 'lowerbound:' . $lowerbound);
+            $upperboundspan = $this->formHtml->createElement('span', 'upperbound:' . $upperbound);
+            $action->appendChild($lowerboundspan);
+            $action->appendChild($upperboundspan);
+        }
 
         return $action;
     }
