@@ -70,6 +70,7 @@ class FormGenerator {
 
         $this->form = new DOMDocument('1.0', 'utf-8');
         $this->structure = new DOMDocument('1.0', 'utf-8');
+        $this->structure->preserveWhiteSpace = FALSE;
 
         if (isset($item)) {
             $this->item = $item;
@@ -1269,7 +1270,7 @@ class FormGenerator {
                         $result = $this->db->loadObjectList();
 
                         foreach ($result as $r) {
-                            $r->name = EText::_($r->guid).' ['.EText::_($r->cat_guid, 1, $r->cat_name).']';
+                            $r->name = EText::_($r->guid) . ' [' . EText::_($r->cat_guid, 1, $r->cat_name) . ']';
                         }
 
                         $first = array('id' => '', 'guid' => '', 'value' => '', 'name' => '');
