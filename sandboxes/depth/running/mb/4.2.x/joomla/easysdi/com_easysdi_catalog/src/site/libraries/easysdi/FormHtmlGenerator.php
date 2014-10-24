@@ -200,10 +200,15 @@ class FormHtmlGenerator {
 
                     $fieldset = $this->getFieldset($child);
 
-                    if ($this->domXpathStr->query('descendant::*[@catalog:childtypeId="2"]', $child)->length > 0) {
-                        $searchField = $this->getAttribute($child);
+                    $searchField = $this->getAttribute($child);
+                    if ($fieldset->getElementsByTagName('div')->length > 0) {
                         $fieldset->getElementsByTagName('div')->item(0)->appendChild($searchField);
                     }
+
+                    /* if ($this->domXpathStr->query('descendant::*[@catalog:childtypeId="2"]', $child)->length > 0) {
+                      $searchField = $this->getAttribute($child);
+                      $fieldset->getElementsByTagName('div')->item(0)->appendChild($searchField);
+                      } */
 
 
                     $parentInner->appendChild($fieldset);
@@ -381,7 +386,12 @@ class FormHtmlGenerator {
         $userParams = json_decode($user->juser->params);
         $userLanguageIndex = 0;
 
-        $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
+        if ($attribute->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE) {
+            $upperbound = 1;
+        }else{
+            $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
+        }
+        
         $stereotypeId = $attribute->getAttributeNS($this->catalog_uri, 'stereotypeId');
         $rendertypeId = $attribute->getAttributeNS($this->catalog_uri, 'rendertypeId');
 
