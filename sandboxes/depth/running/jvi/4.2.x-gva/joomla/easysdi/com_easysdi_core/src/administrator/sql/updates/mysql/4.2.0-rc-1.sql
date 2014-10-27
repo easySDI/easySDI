@@ -67,4 +67,8 @@ UPDATE #__sdi_sys_accessscope SET ordering=2 WHERE value='category';
 UPDATE #__sdi_sys_accessscope SET ordering=3 WHERE value='organism';
 UPDATE #__sdi_sys_accessscope SET ordering=4 WHERE value='user';
 
-INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('21', '11', '4');
+INSERT INTO `#__sdi_sys_rendertype` VALUES 
+(7, 7, 1, 'datetime'),
+(8, 8, 1, 'gemet');
+
+INSERT INTO `#__sdi_sys_rendertype_stereotype` VALUES ('21', '11', '8');

@@ -60,6 +60,8 @@ INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (3, 3
 INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (4, 4, 1, N'list');
 INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (5, 5, 1, N'textbox');
 INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (6, 6, 1, N'date');
+INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (7, 7, 1, N'datetime');
+INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (8, 8, 1, N'gemet');
 SET IDENTITY_INSERT [#__sdi_sys_rendertype] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_rendertype_criteriatype] ON;
 
@@ -158,7 +160,7 @@ INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (18, 12, 5);
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (19, 13, 5);
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (20, 14, 5);
-INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (21, 11, 4);
+INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (21, 11, 8);
 SET IDENTITY_INSERT [#__sdi_sys_rendertype_stereotype] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_accessscope] ON;
 
