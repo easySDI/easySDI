@@ -165,7 +165,7 @@ class FormHtmlGenerator {
 
         foreach ($this->domXpathStr->query($query, $parent) as $index => $child) {
             $exist = $child->getAttributeNS($this->catalog_uri, 'exist');
-            
+
             switch ($child->getAttributeNS($this->catalog_uri, 'childtypeId')) {
                 case EnumChildtype::$RELATION:
                     if ($child->getAttributeNS($this->catalog_uri, 'index') == 1) {
@@ -173,7 +173,7 @@ class FormHtmlGenerator {
                         $parentInner->appendChild($action);
                     }
                     $fieldset = $this->getFieldset($child);
-                    
+
                     $parentInner->appendChild($fieldset);
 
                     if ($this->domXpathStr->query('*/*[@catalog:childtypeId="0"]|*/*[@catalog:childtypeId="2"]|*[@catalog:childtypeId="2"]', $child)->length > 0) {
@@ -181,8 +181,6 @@ class FormHtmlGenerator {
                     }
                     break;
                 case EnumChildtype::$ATTRIBUT:
-                    $parentname = $parent->nodeName;
-                    $childName = $child->nodeName;
                     if ($child->getAttributeNS($this->catalog_uri, 'stereotypeId') == EnumStereotype::$GEMET) {
                         if ($child->getAttributeNS($this->catalog_uri, 'index') == 1) {
                             $field = $this->getAttribute($child);
@@ -202,15 +200,20 @@ class FormHtmlGenerator {
 
                     $fieldset = $this->getFieldset($child);
 
-                    if ($this->domXpathStr->query('*[@catalog:childtypeId="2"]', $child)->length > 0) {
-                        $searchField = $this->getAttribute($child);
+                    $searchField = $this->getAttribute($child);
+                    if ($fieldset->getElementsByTagName('div')->length > 0) {
                         $fieldset->getElementsByTagName('div')->item(0)->appendChild($searchField);
                     }
+
+                    /* if ($this->domXpathStr->query('descendant::*[@catalog:childtypeId="2"]', $child)->length > 0) {
+                      $searchField = $this->getAttribute($child);
+                      $fieldset->getElementsByTagName('div')->item(0)->appendChild($searchField);
+                      } */
 
 
                     $parentInner->appendChild($fieldset);
 
-                    if ($this->domXpathStr->query('*[@catalog:childtypeId="2"]', $child)->length > 0) {
+                    if ($this->domXpathStr->query('descendant::*[@catalog:childtypeId="2"]', $child)->length > 0) {
                         $this->recBuildForm($child, $fieldset);
                     }
                     break;
@@ -246,7 +249,7 @@ class FormHtmlGenerator {
         }
 
         $aAdd = $this->formHtml->createElement('a');
-        $aAdd->setAttribute('id', 'add-btn' . FormUtils::serializeXpath($this->removeIndex($relation->getNodePath())).'-'.$guid);
+        $aAdd->setAttribute('id', 'add-btn' . FormUtils::serializeXpath($this->removeIndex($relation->getNodePath())) . '-' . $guid);
         $aAdd->setAttribute('class', 'btn btn-success btn-mini add-btn');
         $aAdd->setAttribute('data-relid', $relid);
         $aAdd->setAttribute('data-parentpath', FormUtils::serializeXpath($relation->parentNode->getNodePath()));
@@ -265,6 +268,13 @@ class FormHtmlGenerator {
 
         $aAdd->appendChild($iAdd);
         $divAction->appendChild($aAdd);
+
+        if (JDEBUG) {
+            $lowerboundspan = $this->formHtml->createElement('span', 'lowerbound:' . $lowerbound);
+            $upperboundspan = $this->formHtml->createElement('span', 'upperbound:' . $upperbound);
+            $divAction->appendChild($lowerboundspan);
+            $divAction->appendChild($upperboundspan);
+        }
 
         return $divAction;
     }
@@ -302,13 +312,13 @@ class FormHtmlGenerator {
         $aRemove->setAttribute('class', 'btn btn-danger btn-mini pull-right remove-btn');
         $aRemove->setAttribute('data-lowerbound', $lowerbound);
         $aRemove->setAttribute('data-upperbound', $upperbound);
-        $aRemove->setAttribute('data-xpath', FormUtils::serializeXpath($this->removeIndex($element->getNodePath())).'-'.$guid);
+        $aRemove->setAttribute('data-xpath', FormUtils::serializeXpath($this->removeIndex($element->getNodePath())) . '-' . $guid);
 
         $iRemove = $this->formHtml->createElement('i');
         $iRemove->setAttribute('class', 'icon-white icon-cancel-2');
 
         $fieldset = $this->formHtml->createElement('fieldset');
-        
+
 
         if ($guid != '') {
             $spanLegend = $this->formHtml->createElement('span', EText::_($guid)); //
@@ -328,14 +338,14 @@ class FormHtmlGenerator {
 
         if ($exist == 1) {
             $fieldset->setAttribute('id', 'fds' . FormUtils::serializeXpath($element->getNodePath()));
-            $fieldset->setAttribute('class', 'fds' . FormUtils::serializeXpath($this->removeIndex($element->getNodePath())).'-'.$guid);
-            
+            $fieldset->setAttribute('class', 'fds' . FormUtils::serializeXpath($this->removeIndex($element->getNodePath())) . '-' . $guid);
+
             $aCollapse->appendChild($iCollapse);
             $legend->appendChild($aCollapse);
             $legend->appendChild($spanLegend);
             $aRemove->appendChild($iRemove);
             $legend->appendChild($aRemove);
-            
+
             $fieldset->appendChild($legend);
             $fieldset->appendChild($divInner);
         }
@@ -376,7 +386,12 @@ class FormHtmlGenerator {
         $userParams = json_decode($user->juser->params);
         $userLanguageIndex = 0;
 
-        $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
+        if ($attribute->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE) {
+            $upperbound = 1;
+        }else{
+            $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
+        }
+        
         $stereotypeId = $attribute->getAttributeNS($this->catalog_uri, 'stereotypeId');
         $rendertypeId = $attribute->getAttributeNS($this->catalog_uri, 'rendertypeId');
 
@@ -389,18 +404,17 @@ class FormHtmlGenerator {
 
         $attributeGroup->setAttribute('id', 'attribute-group' . FormUtils::serializeXpath($attribute->getNodePath()));
 
-        if($upperbound > 1 && !($rendertypeId == EnumRendertype::$LIST && $upperbound > 1)){
+        if ($upperbound > 1 && !($rendertypeId == EnumRendertype::$LIST && $upperbound > 1)) {
             $attributeGroup->appendChild($this->getAttributeAction($attribute));
         }
-        
+
         switch ($stereotypeId) {
             case EnumStereotype::$GEMET:
             case EnumStereotype::$LOCALE:
                 if ($stereotypeId == EnumStereotype::$GEMET) {
                     $attributeGroup->appendChild($this->getGemet($attribute));
-                }
-                elseif($stereotypeId == EnumStereotype::$LOCALE){
-                    $class = $attributeGroup->getAttribute('class').' i18n';
+                } elseif ($stereotypeId == EnumStereotype::$LOCALE) {
+                    $class = $attributeGroup->getAttribute('class') . ' i18n';
                     $attributeGroup->setAttribute('class', $class);
                 }
 
@@ -459,12 +473,15 @@ class FormHtmlGenerator {
                     $nodePath = $attribute->firstChild->getNodePath();
                 }
 
-
+                $occurance = 0;
 
                 switch ($rendertypeId) {
                     case EnumRendertype::$CHECKBOX:
                         /** @var JFormField */
                         $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath)));
+                        $fieldid = $jfield->__get('id');
+                        $query = 'descendant::*[@id="' . $fieldid . '"]';
+                        $occurance = $this->domXpathFormHtml->query($query)->length;
                         break;
                     case EnumRendertype::$LIST:
                         // Mutiple list
@@ -485,10 +502,14 @@ class FormHtmlGenerator {
 
                                         $nodePath = str_replace($this->ajaxXpath, $newPath, $nodePath);
                                     }
-
                                     $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath)));
                                     break;
                             }
+                            $fieldid = $jfield->__get('id');
+                            $query = 'descendant::*[@id="' . $fieldid . '"]';
+                            $occurance = $this->domXpathFormHtml->query($query)->length;
+
+                            // Single list
                         } else {
                             $jfield = $this->form->getField(FormUtils::serializeXpath($nodePath));
                         }
@@ -500,13 +521,10 @@ class FormHtmlGenerator {
 
                 if ($jfield) {
 
-                    /* if ($occurance < 1) {
-                      foreach ($this->buildField($attribute, $jfield) as $element) {
-                      $attributeGroup->appendChild($element);
-                      }
-                      } */
-                    foreach ($this->buildField($attribute, $jfield) as $element) {
-                        $attributeGroup->appendChild($element);
+                    if ($occurance < 1) {
+                        foreach ($this->buildField($attribute, $jfield) as $element) {
+                            $attributeGroup->appendChild($element);
+                        }
                     }
                 } else {
                     JFactory::getApplication()->enqueueMessage('Field not found ' . FormUtils::serializeXpath($nodePath), 'warning');
@@ -521,11 +539,6 @@ class FormHtmlGenerator {
                 $attributeGroup->appendChild($this->getMap($attribute, $map_id));
             }
         }
-
-        /*if ($occurance < $upperbound && !($rendertypeId == EnumRendertype::$LIST && $upperbound > 1) && empty($_GET['relid'])) {
-            //$outer->appendChild($this->getAttributeAction($attribute, $jfield));
-        }*/
-
         return $attributeGroup;
     }
 
@@ -1127,8 +1140,8 @@ class FormHtmlGenerator {
         $relid = $attribute->getAttributeNS($this->catalog_uri, 'relid');
 
         $action = $this->formHtml->createElement('div');
-        $action->setAttribute('id', 'attribute-action'.FormUtils::serializeXpath($attribute->getNodePath()));
-        $action->setAttribute('class', 'attribute-action attribute-action'.FormUtils::serializeXpath($this->removeIndex($attribute->getNodePath())));
+        $action->setAttribute('id', 'attribute-action' . FormUtils::serializeXpath($attribute->getNodePath()));
+        $action->setAttribute('class', 'attribute-action attribute-action' . FormUtils::serializeXpath($this->removeIndex($attribute->getNodePath())));
         $action->setAttribute('data-lowerbound', $lowerbound);
         $action->setAttribute('data-upperbound', $upperbound);
         $action->setAttribute('data-relid', $relid);
@@ -1139,7 +1152,7 @@ class FormHtmlGenerator {
         $aAdd->setAttribute('id', 'attribute-add-btn' . FormUtils::serializeXpath($this->removeIndex($attribute->getNodePath())));
         $aAdd->setAttribute('class', 'btn btn-success pull-right btn-mini attribute-add-btn');
         $aAdd->setAttribute('style', 'display:none');
-        
+
         $iAdd = $this->formHtml->createElement('i');
         $iAdd->setAttribute('class', 'icon-white icon-plus-2');
 
@@ -1151,11 +1164,18 @@ class FormHtmlGenerator {
         $iRemove = $this->formHtml->createElement('i');
         $iRemove->setAttribute('class', 'icon-white icon-cancel-2');
         $aRemove->appendChild($iRemove);
-        
+
         $aAdd->appendChild($iAdd);
         $action->appendChild($aAdd);
         $action->appendChild($aRemove);
-        
+
+        if (JDEBUG) {
+            $lowerboundspan = $this->formHtml->createElement('span', 'lowerbound:' . $lowerbound);
+            $upperboundspan = $this->formHtml->createElement('span', 'upperbound:' . $upperbound);
+            $action->appendChild($lowerboundspan);
+            $action->appendChild($upperboundspan);
+        }
+
         return $action;
     }
 
