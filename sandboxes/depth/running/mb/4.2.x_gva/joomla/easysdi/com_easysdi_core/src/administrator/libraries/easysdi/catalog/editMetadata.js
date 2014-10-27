@@ -66,7 +66,7 @@ js('document').ready(function() {
         var id = this.id;
         var xpath = js(this).attr('data-xpath');
         
-        bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING', 'COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING'), function(result) {
+        bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function(result) {
             if (result) {
                 
                 var uuid = getUuid('remove-btn', id);
@@ -163,7 +163,7 @@ js('document').ready(function() {
         var parent = js(this).parent();
         var uuid = getUuid('attribute-remove-btn', this.id);
         
-        bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING', 'COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING'), function(result) {
+        bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function(result) {
             if (result) {
                 js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
                     var response = js.parseJSON(data);
