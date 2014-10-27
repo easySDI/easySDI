@@ -265,7 +265,7 @@ class FormHtmlGenerator {
         $divOuter->setAttribute('class', 'outer-' . $level);
 
         $divAction = $this->formHtml->createElement('div', EText::_($relation->getAttributeNS($this->catalog_uri, 'id')));
-        $divAction->setAttribute('class', 'action-' . $level);
+        $divAction->setAttribute('class', 'action');
 
         if (!$relation->firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId') == EnumStereotype::$GEOGRAPHICEXTENT) {
             $aAdd->appendChild($iAdd);
@@ -322,7 +322,7 @@ class FormHtmlGenerator {
             $spanLegend = $this->formHtml->createElement('span', JText::_($legendAttribute));
         }
 
-        $spanLegend->setAttribute('class', 'legend-' . $level);
+        $spanLegend->setAttribute('class', 'legend');
         $legend = $this->formHtml->createElement('legend');
 
         $divInner = $this->formHtml->createElement('div');
