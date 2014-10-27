@@ -280,8 +280,6 @@ class FormGenerator {
 
                 if ($occurance == 0) {
                     $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '1');
-                } else {
-                    $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
                 }
             }
         }

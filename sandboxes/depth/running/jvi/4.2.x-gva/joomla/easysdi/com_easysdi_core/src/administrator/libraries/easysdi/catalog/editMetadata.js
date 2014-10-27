@@ -51,7 +51,7 @@ js('document').ready(function() {
             
             // Set attribute bouton state in data block
             js(data).find('.attribute-add-btn').each(function(){
-                console.log(js(this));
+                //console.log(js(this));
                 setAttributeAction(js(this).parent());
             });
             
@@ -66,7 +66,7 @@ js('document').ready(function() {
         var id = this.id;
         var xpath = js(this).attr('data-xpath');
         
-        bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING', 'COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING'), function(result) {
+        bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function(result) {
             if (result) {
                 
                 var uuid = getUuid('remove-btn', id);
@@ -163,7 +163,7 @@ js('document').ready(function() {
         var parent = js(this).parent();
         var uuid = getUuid('attribute-remove-btn', this.id);
         
-        bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING', 'COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING'), function(result) {
+        bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function(result) {
             if (result) {
                 js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
                     var response = js.parseJSON(data);
@@ -521,9 +521,9 @@ function setAttributeAction(element){
     var buttonclass = js(element).attr('data-button-class');
     var occurance = js('.attribute-action'+buttonclass).length;
 
-    console.log(js(element));
+    /*console.log(js(element));
     console.log(upperbound);
-    console.log(lowerbound);
+    console.log(lowerbound);*/
 
     if(occurance == 1){
         js('.attribute-action'+buttonclass+'>a.attribute-add-btn').show();
@@ -590,13 +590,17 @@ function importSwitch(task) {
 function toogleAll(button){
     if (tabIsOpen) {
         button.text(Joomla.JText._('COM_EASYSDI_CATALOG_OPEN_ALL'));
+        //console.log('ferme tout');
         js('.inner-fds').hide();
-        js('.collapse-btn>i').removeClass('icon-arrow-right').addClass('icon-arrow-down');
+        js('.collapse-btn>i').removeClass('icon-arrow-down');
+        js('.collapse-btn>i').addClass('icon-arrow-right');
         tabIsOpen = false;
     } else {
+        //console.log('ouvre tout');
         button.text(Joomla.JText._('COM_EASYSDI_CATALOG_CLOSE_ALL'));
         js('.inner-fds').show();
-        js('.collapse-btn>i').removeClass('icon-arrow-down').addClass('icon-arrow-right');
+        js('.collapse-btn>i').removeClass('icon-arrow-right');
+        js('.collapse-btn>i').addClass('icon-arrow-down');
         tabIsOpen = true;
     }
 }
