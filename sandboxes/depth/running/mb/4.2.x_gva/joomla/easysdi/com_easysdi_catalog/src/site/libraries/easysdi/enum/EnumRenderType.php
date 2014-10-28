@@ -7,9 +7,6 @@
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
 class EnumRendertype {
-    /** Value: 0
-     * @var int **/
-    public static $GEMET = 0;
     /** Value: 1
      * @var int **/
     public static $TEXTAREA = 1;
@@ -31,6 +28,9 @@ class EnumRendertype {
     /** Value: 7
      * @var int **/
     public static $DATETIME = 7;
+    /** Value: 8
+     * @var int **/
+    public static $GEMET = 8;
     /** Value: 1000
      * @var int **/
     public static $HIDDEN = 1000;
