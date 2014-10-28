@@ -768,7 +768,8 @@ class FormHtmlGenerator {
      */
     private function getGemet(DOMElement $attribute) {
         // predefine default language
-        $default = $this->ldao->getDefaultLanguage();
+        $defaultLanguage = $this->ldao->getDefaultLanguage();
+        $default = $defaultLanguage->gemet;
 
         // retrieve user data
         $user = new sdiUser();
