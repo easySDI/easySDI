@@ -267,7 +267,12 @@ class FormHtmlGenerator {
         $divAction = $this->formHtml->createElement('div', EText::_($relation->getAttributeNS($this->catalog_uri, 'id')));
         $divAction->setAttribute('class', 'action');
 
-        if (!$relation->firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId') == EnumStereotype::$GEOGRAPHICEXTENT) {
+        if (isset($relation->firstChild)) {
+            if (!$relation->firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId') == EnumStereotype::$GEOGRAPHICEXTENT) {
+                $aAdd->appendChild($iAdd);
+                $divAction->appendChild($aAdd);
+            }
+        }else{
             $aAdd->appendChild($iAdd);
             $divAction->appendChild($aAdd);
         }
@@ -488,21 +493,24 @@ class FormHtmlGenerator {
                                     break;
 
                                 default:
-                                    if (!empty($this->ajaxXpath)) {
-                                        $path = explode('/', $nodePath);
-                                        $lastPart = $path[count($path) - 1];
-                                        unset($path[count($path) - 1]);
-                                        $xpath = explode('[', $lastPart);
-                                        $newPath = implode('/', $path) . '/' . $xpath[0];
+                                    /* if (!empty($this->ajaxXpath)) {
+                                      $path = explode('/', $nodePath);
+                                      $lastPart = $path[count($path) - 1];
+                                      unset($path[count($path) - 1]);
+                                      $xpath = explode('[', $lastPart);
+                                      $newPath = implode('/', $path) . '/' . $xpath[0];
 
-                                        $nodePath = str_replace($this->ajaxXpath, $newPath, $nodePath);
-                                    }
+                                      $nodePath = str_replace($this->ajaxXpath, $newPath, $nodePath);
+                                      } */
                                     $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath)));
+
+                                    $fieldid = $jfield->__get('id');
+                                    $query = 'descendant::*[@id="' . $fieldid . '"]';
+                                    $occurance = $this->domXpathFormHtml->query($query)->length;
+
                                     break;
                             }
-                            $fieldid = $jfield->__get('id');
-                            $query = 'descendant::*[@id="' . $fieldid . '"]';
-                            $occurance = $this->domXpathFormHtml->query($query)->length;
+
 
                             // Single list
                         } else {
