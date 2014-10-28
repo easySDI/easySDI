@@ -493,10 +493,10 @@ function setRelationAction(element){
 
     var occurance = js('.fds' + uuid).length;
 
-    /*console.log(js(element));
+    console.log(js(element));
     console.log(lowerbound);
     console.log(upperbound);
-    console.log(occurance);*/
+    console.log(occurance);
 
     if(occurance == upperbound){
         /*console.log('hide add #add-btn'+uuid);*/
@@ -506,6 +506,10 @@ function setRelationAction(element){
     if(occurance == lowerbound){
         /*console.log('hide remove');*/
         js('.fds' + uuid+' a.remove-btn').hide();
+    }
+    
+    if(occurance < upperbound){
+        js('#add-btn'+uuid).show();
     }
     
     if(occurance < upperbound && occurance > lowerbound){

@@ -149,6 +149,7 @@ class FormGenerator {
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:actuate', 'onLoad');
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:type', 'simple');
                     $relation->setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '');
+                    $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix.':exist', '1');
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':resourcetypeId', $result->resourcetype_id);
                     $relation->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':relationId', $result->id);
                     
@@ -262,7 +263,11 @@ class FormGenerator {
 
             if (!$relationExist->hasAttributeNS($this->catalog_uri, 'exist')) {
 
-                $exist = $lowerbound + $occurance;
+                if($parent->parentNode->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE){
+                    $exist = 1;
+                }else{
+                    $exist = $lowerbound + $occurance;
+                }
 
                 if ($exist < 1) {
                     $relationExist->setAttributeNS($this->catalog_uri, $this->catalog_prefix . ':exist', '0');
