@@ -75,6 +75,7 @@ class FormHtmlGenerator {
 
     function __construct(JForm $form, DOMDocument $structure, $ajaxXpath = null) {
         $this->form = $form;
+        $structure->preserveWhiteSpace = false;
         $this->structure = $structure;
         $this->ldao = new SdiLanguageDao();
         $this->nsdao = new SdiNamespaceDao();
@@ -267,13 +268,13 @@ class FormHtmlGenerator {
         $divAction = $this->formHtml->createElement('div', EText::_($relation->getAttributeNS($this->catalog_uri, 'id')));
         $divAction->setAttribute('class', 'action');
 
-        if (isset($relation->firstChild)) {
-            if (!$relation->firstChild->nodeType == XML_TEXT_NODE) {
-                if (!$relation->firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId') == EnumStereotype::$GEOGRAPHICEXTENT) {
+        if ($firstChild = $this->getFirstNonTextChild($relation->childNodes)) {
+            
+                if (!$firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId') == EnumStereotype::$GEOGRAPHICEXTENT) {
                     $aAdd->appendChild($iAdd);
                     $divAction->appendChild($aAdd);
                 }
-            }
+            
         } else {
             $aAdd->appendChild($iAdd);
             $divAction->appendChild($aAdd);
@@ -1242,6 +1243,21 @@ class FormHtmlGenerator {
      */
     private function removeIndex($xpath) {
         return preg_replace('/[\[0-9\]*]/i', '', $xpath);
+    }
+    
+    /**
+     * 
+     * @param DOMNodeList $childNodes
+     * @return DOMElement First non text node
+     */
+    private function getFirstNonTextChild(DOMNodeList $childNodes){
+        foreach ($childNodes as $$child) {
+            if($child->nodeType != XML_TEXT_NODE){
+                return $child;
+            }
+        }
+        
+        return false;
     }
 
 }

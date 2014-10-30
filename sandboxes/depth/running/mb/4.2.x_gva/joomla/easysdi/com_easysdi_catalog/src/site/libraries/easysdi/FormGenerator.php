@@ -190,13 +190,8 @@ class FormGenerator {
         if (isset($this->csw)) {
             $this->setDomXpathCsw();
             $this->mergeCsw();
-
-            $this->csw->formatOutput = true;
         }
 
-
-
-        $this->structure->formatOutput = true;
         $this->session->set('structure', serialize($this->structure->saveXML()));
 
         $form = $this->buildForm($root);
