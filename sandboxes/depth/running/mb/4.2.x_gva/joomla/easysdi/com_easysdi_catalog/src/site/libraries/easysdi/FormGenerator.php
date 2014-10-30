@@ -1273,6 +1273,7 @@ class FormGenerator {
                         $query->select('b.id, b.guid, b.name as value, bc.guid as cat_guid, bc.name as cat_name');
                         $query->from('#__sdi_boundary b');
                         $query->innerJoin('#__sdi_boundarycategory bc ON b.category_id = bc.id');
+                        $query->where('b.state = 1');
                         $query->order('b.name ASC');
 
                         $this->db->setQuery($query);

@@ -268,11 +268,13 @@ class FormHtmlGenerator {
         $divAction->setAttribute('class', 'action');
 
         if (isset($relation->firstChild)) {
-            if (!$relation->firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId') == EnumStereotype::$GEOGRAPHICEXTENT) {
-                $aAdd->appendChild($iAdd);
-                $divAction->appendChild($aAdd);
+            if (!$relation->firstChild->nodeType == XML_TEXT_NODE) {
+                if (!$relation->firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId') == EnumStereotype::$GEOGRAPHICEXTENT) {
+                    $aAdd->appendChild($iAdd);
+                    $divAction->appendChild($aAdd);
+                }
             }
-        }else{
+        } else {
             $aAdd->appendChild($iAdd);
             $divAction->appendChild($aAdd);
         }
