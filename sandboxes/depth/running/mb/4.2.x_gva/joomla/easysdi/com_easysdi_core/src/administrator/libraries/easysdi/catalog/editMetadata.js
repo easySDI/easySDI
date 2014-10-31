@@ -10,19 +10,19 @@ js('document').ready(function() {
      * 
      * Add listner on add buttons
      */
-    js(document).on('click', '.add-btn', function(){
+    js(document).on('click', '.add-btn', function() {
         var relid = js(this).attr('data-relid');
         var parent_path = js(this).attr('data-parentpath');
         var uuid = getUuid('add-btn', this.id);
         var button = js(this);
 
         js.get(baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
-            
-            if(js('.fds' + uuid).length > 0){
+
+            if (js('.fds' + uuid).length > 0) {
                 js('.fds' + uuid).last().after(data);
-        } else {
+            } else {
                 button.parent().after(data);
-        }
+            }
 
 
             if (js(data).find('select') !== null) {
@@ -31,7 +31,7 @@ js('document').ready(function() {
 
             js(data).find('button').each(function() {
                 idbtn = js(this).attr('id');
-                if('undefined' !== typeof idbtn)
+                if ('undefined' !== typeof idbtn)
                     Calendar.setup({
                         inputField: idbtn.replace('_img', ''),
                         ifFormat: "%Y-%m-%d",
@@ -39,22 +39,26 @@ js('document').ready(function() {
                         align: "Tl",
                         singleClick: true,
                         firstDay: 1
-    });
+                    });
             });
+            
+            console.log('addTooltips');
+            
+            addTooltips();
 
             setRelationAction(button);
 
             // Set bouton state in data block
-            js(data).find('.add-btn').each(function(){
+            js(data).find('.add-btn').each(function() {
                 setRelationAction(js(this));
             });
-            
+
             // Set attribute bouton state in data block
-            js(data).find('.attribute-add-btn').each(function(){
+            js(data).find('.attribute-add-btn').each(function() {
                 //console.log(js(this));
                 setAttributeAction(js(this).parent());
             });
-            
+
         });
 
     });
@@ -62,75 +66,75 @@ js('document').ready(function() {
     /**
      * Remove fieldset from form
      */
-    js(document).on('click', '.remove-btn', function(){
+    js(document).on('click', '.remove-btn', function() {
         var id = this.id;
         var xpath = js(this).attr('data-xpath');
-        
+
         bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function(result) {
             if (result) {
-                
+
                 var uuid = getUuid('remove-btn', id);
                 js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
                     var response = js.parseJSON(data);
                     if (response.success) {
 
-                        js('#fds'+uuid).remove();
+                        js('#fds' + uuid).remove();
                         setRelationAction(js('#add-btn' + xpath));
                     }
                 });
             }
         });
     });
-    
+
     /**
      * Collapse inner-fieldset
      */
-    js(document).on('click', '.collapse-btn', function(){
+    js(document).on('click', '.collapse-btn', function() {
         var uuid = getUuid('collapse-btn', this.id);
         var button = js(this);
         js('#inner-fds' + uuid).toggle('fast', function() {
-            if(js('#inner-fds' + uuid).is(':visible')) {
+            if (js('#inner-fds' + uuid).is(':visible')) {
                 button.children().first().removeClass('icon-arrow-right').addClass('icon-arrow-down');
             } else {
                 button.children().first().removeClass('icon-arrow-down').addClass('icon-arrow-right');
             }
         });
-        
+
     });
-    
-    
+
+
     /**
      * Open or close all fieldset
      */
-    js(document).on('click', '#btn_toggle_all', function(){
-          toogleAll(js(this));
+    js(document).on('click', '#btn_toggle_all', function() {
+        toogleAll(js(this));
     });
-    
-    
+
+
     /**
      * set initial state of relation action button
      */
-    js('.add-btn').each(function(){
-        setRelationAction(js(this)); 
+    js('.add-btn').each(function() {
+        setRelationAction(js(this));
     });
-    
+
     /**
      * Set initial state of attribute action button
      */
-    js('.attribute-action').each(function(){
-       setAttributeAction(js(this));
+    js('.attribute-action').each(function() {
+        setAttributeAction(js(this));
     });
-    
+
     /**
      * Add field
      */
-    js(document).on('click', '.attribute-add-btn', function(){
+    js(document).on('click', '.attribute-add-btn', function() {
         var parent = js(this).parent();
         var relid = parent.attr('data-relid');
         var parent_path = parent.attr('data-parentpath');
         var uuid = getUuid('attribute-add-btn', this.id);
-        
-        
+
+
         js.get(baseUrl + 'option=com_easysdi_catalog&view=ajax&parent_path=' + parent_path + '&relid=' + relid, function(data) {
 
             js('.attribute-group' + uuid).last().after(data);
@@ -149,26 +153,26 @@ js('document').ready(function() {
                     firstDay: 1
                 });
             });
-            
+
             setAttributeAction(parent);
-        
+
         });
-        
+
     });
-    
+
     /**
      * remove field from form
      */
-    js(document).on('click', '.attribute-remove-btn', function(){
+    js(document).on('click', '.attribute-remove-btn', function() {
         var parent = js(this).parent();
         var uuid = getUuid('attribute-remove-btn', this.id);
-        
+
         bootbox.confirm(Joomla.JText._('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM', 'COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM'), function(result) {
             if (result) {
                 js.get(baseUrl + 'option=com_easysdi_catalog&task=ajax.removeNode&uuid=' + uuid, function(data) {
                     var response = js.parseJSON(data);
                     if (response.success) {
-                        js('#attribute-group'+uuid).remove();
+                        js('#attribute-group' + uuid).remove();
                         setAttributeAction(parent);
                     }
                 });
@@ -189,18 +193,18 @@ js('document').ready(function() {
         }
 
     });
-    
+
     /**
      * Boundaries NEW inputs events
      */
-    js('input[id$=_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal]').each(function(){
-        var parentPath = js(this).attr('id').replace('jform_','').replace('_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal','');
-        
-        js('input[id^=jform_'+parentPath+'_sla_gmd_dp_][id$=_sla_gco_dp_Decimal]').on('change', function(){
-            clearbbselect(parentPath.replace('_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox',''));
+    js('input[id$=_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal]').each(function() {
+        var parentPath = js(this).attr('id').replace('jform_', '').replace('_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal', '');
+
+        js('input[id^=jform_' + parentPath + '_sla_gmd_dp_][id$=_sla_gco_dp_Decimal]').on('change', function() {
+            clearbbselect(parentPath.replace('_sla_gmd_dp_geographicElement_sla_gmd_dp_EX_GeographicBoundingBox', ''));
             drawBB(parentPath);
         });
-        
+
     });
 
     /**
@@ -244,27 +248,28 @@ js('document').ready(function() {
     js('#previewModal').on('show.bs.modal', function() {
         SyntaxHighlighter.highlight();
     });
-    
+
     /**
      * Add validation on non-required multi-lingual fields
      */
-    js(document).on('change keyup blur focus', '.i18n div.controls > input, .i18n div.controls > textarea, .i18n div.controls > select', function(){
+    js(document).on('change keyup blur focus', '.i18n div.controls > input, .i18n div.controls > textarea, .i18n div.controls > select', function() {
         var brothers = js(this).closest('.i18n').find('div.controls > input, div.controls > textarea, div.controls > select'),
-            labels = js(this).closest('.i18n').find('div.control-label > label');
-        if(this.value !== ''){
+                labels = js(this).closest('.i18n').find('div.control-label > label');
+        if (this.value !== '') {
             brothers.addClass('required');
         }
-        else{
+        else {
             var required = false;
-            js.each(brothers, function(i, brother){ console.log(i+' / '+brothers.length);
-                if(brother.value !== '')
+            js.each(brothers, function(i, brother) {
+                console.log(i + ' / ' + brothers.length);
+                if (brother.value !== '')
                     required = true;
-                
-                if(i === brothers.length-1){
-                    if(required){
+
+                if (i === brothers.length - 1) {
+                    if (required) {
                         brothers.addClass('required');
                     }
-                    else{
+                    else {
                         brothers.removeClass('required invalid');
                         labels.removeClass('invalid');
                     }
@@ -280,7 +285,7 @@ js('document').ready(function() {
      * @returns {Boolean}
      */
     Joomla.submitbutton = function(task, rel) {
-        
+
         if (task == '') {
             return false;
         } else {
@@ -372,33 +377,33 @@ js('document').ready(function() {
                     if (document.formvalidator.isValid(form)) {
                         js('html, body').animate({scrollTop: 0}, 'slow');
                         var rel = js.parseJSON(rel);
-                        js.get(baseUrl + 'option=com_easysdi_core&task=version.getPublishRight&metadata_id='+rel.metadata, function(data){
+                        js.get(baseUrl + 'option=com_easysdi_core&task=version.getPublishRight&metadata_id=' + rel.metadata, function(data) {
                             var response = js.parseJSON(data);
-                            if(response !== null && response.canPublish>0){ 
+                            if (response !== null && response.canPublish > 0) {
                                 js('#system-message-container').remove();
                                 bootbox.alert(Joomla.JText._('COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN', 'COM_EASYSDI_CATALOG_UNPUBLISHED_OR_UNVALIDATED_CHILDREN'));
                             }
-                            else{
+                            else {
                                 js.get(baseUrl + 'option=com_easysdi_core&task=version.getCascadeChild&version_id=' + rel.version, function(data) {
                                     var response = js.parseJSON(data);
-                            var body = buildDeletedTree(response.versions);
-                            js('#publishModalChildrenList').html(body);
+                                    var body = buildDeletedTree(response.versions);
+                                    js('#publishModalChildrenList').html(body);
 
-                            if(js(response.versions).length){
-                                js('#publishModal #viral').val(1);
-                            }
+                                    if (js(response.versions).length) {
+                                        js('#publishModal #viral').val(1);
+                                    }
 
                                     var publish_date = js('#jform_published').val().split(' ');
-                                    if(publish_date[0] !== '0000-00-00')
+                                    if (publish_date[0] !== '0000-00-00')
                                         js('#publish_date').val(publish_date[0]);
 
-                            js('#publishModal').modal('show');
-                        });
+                                    js('#publishModal').modal('show');
+                                });
                             }
                         });
                         break;
                     }
-                    else{
+                    else {
                         js('html, body').animate({scrollTop: 0}, 'slow');
                     }
                     break;
@@ -434,12 +439,12 @@ js('document').ready(function() {
                         Joomla.submitform('metadata.edit', form_csw_import);
                     }
                     break;
-                
+
             }
 
         }
     };
-    
+
     js('#search_table').dataTable({
         "bFilter": false,
         "oLanguage": {
@@ -451,14 +456,16 @@ js('document').ready(function() {
         },
         aaData: null,
         aoColumnDefs: [
-            { aTargets: [0], mData: function(item){
-                    return "<input type='radio' name='import[id]' id='import_id_"+item.id+"' value='"+item.id+"' checked=''>";
-            }},
-            { aTargets: [1], mData: 'name' },
-            { aTargets: [2], mData: 'created' },
-            { aTargets: [3], mData: 'guid' },
-            { aTargets: [4], mData: 'rt_name' },
-            { aTargets: [5], mData: function(item){ return Joomla.JText._(item.status);} }
+            {aTargets: [0], mData: function(item) {
+                    return "<input type='radio' name='import[id]' id='import_id_" + item.id + "' value='" + item.id + "' checked=''>";
+                }},
+            {aTargets: [1], mData: 'name'},
+            {aTargets: [2], mData: 'created'},
+            {aTargets: [3], mData: 'guid'},
+            {aTargets: [4], mData: 'rt_name'},
+            {aTargets: [5], mData: function(item) {
+                    return Joomla.JText._(item.status);
+                }}
         ]
     });
     js('#search_table_wrapper').hide();
@@ -485,8 +492,26 @@ var buildDeletedTree = function(versions) {
     return body;
 };
 
+/**
+ * AddTooltips on label and field
+ * Warning $$ = motools
+ * 
+ * @returns void
+ */
+function addTooltips() {
+    $$('.hasTip').each(function(el) {
+        var title = el.get('title');
+        if (title) {
+            var parts = title.split('::', 2);
+            el.store('tip:title', parts[0]);
+            el.store('tip:text', parts[1]);
+        }
+    });
+    
+    new Tips($$('.hasTip'), {"maxTitleChars": 50, "fixed": false});
+}
 
-function setRelationAction(element){
+function setRelationAction(element) {
     var upperbound = js(element).attr('data-upperbound');
     var lowerbound = js(element).attr('data-lowerbound');
     var uuid = getUuid('add-btn', js(element).attr('id'));
@@ -498,47 +523,47 @@ function setRelationAction(element){
     console.log(upperbound);
     console.log(occurance);
 
-    if(occurance == upperbound){
+    if (occurance == upperbound) {
         /*console.log('hide add #add-btn'+uuid);*/
-        js('#add-btn'+uuid).hide();
+        js('#add-btn' + uuid).hide();
     }
-    
-    if(occurance == lowerbound){
+
+    if (occurance == lowerbound) {
         /*console.log('hide remove');*/
-        js('.fds' + uuid+' a.remove-btn').hide();
+        js('.fds' + uuid + ' a.remove-btn').hide();
     }
-    
-    if(occurance < upperbound){
-        js('#add-btn'+uuid).show();
+
+    if (occurance < upperbound) {
+        js('#add-btn' + uuid).show();
     }
-    
-    if(occurance < upperbound && occurance > lowerbound){
+
+    if (occurance < upperbound && occurance > lowerbound) {
         /*console.log('show all');*/
-        js('#add-btn'+uuid).show();
-        js('.fds' + uuid+' a.remove-btn').show();
+        js('#add-btn' + uuid).show();
+        js('.fds' + uuid + ' a.remove-btn').show();
     }
 }
 
-function setAttributeAction(element){
+function setAttributeAction(element) {
     var upperbound = js(element).attr('data-upperbound');
     var lowerbound = js(element).attr('data-lowerbound');
     var buttonclass = js(element).attr('data-button-class');
-    var occurance = js('.attribute-action'+buttonclass).length;
+    var occurance = js('.attribute-action' + buttonclass).length;
 
     /*console.log(js(element));
-    console.log(upperbound);
-    console.log(lowerbound);*/
+     console.log(upperbound);
+     console.log(lowerbound);*/
 
-    if(occurance == 1){
-        js('.attribute-action'+buttonclass+'>a.attribute-add-btn').show();
-        js('.attribute-action'+buttonclass+'>a.attribute-remove-btn').hide();
-    }else if(occurance > lowerbound && occurance < upperbound){
-        js('.attribute-action'+buttonclass+'>a.attribute-add-btn').hide();
-        js('.attribute-action'+buttonclass+'>a.attribute-add-btn').last().show();
-        js('.attribute-action'+buttonclass+'>a.attribute-remove-btn').show();
-    }else if(occurance == upperbound){
-        js('.attribute-action'+buttonclass+'>a.attribute-add-btn').hide();
-        js('.attribute-action'+buttonclass+'>a.attribute-remove-btn').show();
+    if (occurance == 1) {
+        js('.attribute-action' + buttonclass + '>a.attribute-add-btn').show();
+        js('.attribute-action' + buttonclass + '>a.attribute-remove-btn').hide();
+    } else if (occurance > lowerbound && occurance < upperbound) {
+        js('.attribute-action' + buttonclass + '>a.attribute-add-btn').hide();
+        js('.attribute-action' + buttonclass + '>a.attribute-add-btn').last().show();
+        js('.attribute-action' + buttonclass + '>a.attribute-remove-btn').show();
+    } else if (occurance == upperbound) {
+        js('.attribute-action' + buttonclass + '>a.attribute-add-btn').hide();
+        js('.attribute-action' + buttonclass + '>a.attribute-remove-btn').show();
     }
 }
 
@@ -566,8 +591,8 @@ function searchResource(task) {
                 js('#search_table').dataTable().fnClearTable();
                 js('#search_table').dataTable().fnAddData(response.result);
                 js('#search_table_wrapper, #search_table').show();
-                    }
             }
+        }
     });
 }
 
@@ -591,7 +616,7 @@ function importSwitch(task) {
 /**
  * Toogle all fieldset
  */
-function toogleAll(button){
+function toogleAll(button) {
     if (tabIsOpen) {
         button.text(Joomla.JText._('COM_EASYSDI_CATALOG_OPEN_ALL'));
         //console.log('ferme tout');
@@ -652,12 +677,12 @@ function confirmReplicate() {
 
 }
 
-function confirmReset(){
+function confirmReset() {
     bootbox.confirm("COM_EASYSDI_CATALOG_METADATA_ARE_YOU_SURE", function(result) {
-        if(result){
-            
+        if (result) {
+
         }
-    }); 
+    });
 }
 
 function removeFromStructure(id) {
@@ -776,7 +801,7 @@ function drawBB(parent_path) {
         var box = new OpenLayers.Feature.Vector(bounds.toGeometry());
         var layer = window['polygonLayer_' + parent_path];
         layer.addFeatures([box]);
-        
+
         // re-set NSEW input values to avoid any projection changes
         js('#jform_' + parent_path + '_sla_gmd_dp_northBoundLatitude_sla_gco_dp_Decimal').val(top);
         js('#jform_' + parent_path + '_sla_gmd_dp_southBoundLatitude_sla_gco_dp_Decimal').val(bottom);

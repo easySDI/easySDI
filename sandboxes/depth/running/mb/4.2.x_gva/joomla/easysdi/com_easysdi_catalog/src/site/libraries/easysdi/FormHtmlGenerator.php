@@ -1011,7 +1011,7 @@ class FormHtmlGenerator {
 
         $elements[] = $controlGroup;
 
-        $elements[] = $this->getInputScript($field, $guid);
+        //$elements[] = $this->getInputScript($field, $guid);
 
         if ($rendertypeId == EnumRendertype::$LIST && $upperbound > 1 && $stereotypeId != EnumStereotype::$BOUNDARY) {
             $elements[] = $this->getMultiSelectScript($field, $attribute);
