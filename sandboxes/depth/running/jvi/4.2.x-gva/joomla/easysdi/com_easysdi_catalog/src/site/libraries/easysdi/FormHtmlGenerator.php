@@ -1251,7 +1251,7 @@ class FormHtmlGenerator {
      * @return DOMElement First non text node
      */
     private function getFirstNonTextChild(DOMNodeList $childNodes){
-        foreach ($childNodes as $$child) {
+        foreach ($childNodes as $child) {
             if($child->nodeType != XML_TEXT_NODE){
                 return $child;
             }
