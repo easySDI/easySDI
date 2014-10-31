@@ -31,8 +31,7 @@
             <extension version="3.0" type="plugin" group="easysdi_admin_info" method="upgrade">
                 <name>${getordersaresptime.plugin.language.file}</name>
                 <author>EasySDI Community</author>
-                <creationDate>15 Septemeber 2013</creationDate>
-                <releaseDate>${xml.releaseDate}</releaseDate>
+                <creationDate>${xml.releaseDate}</creationDate>
                 <copyright>${xml.copyright}</copyright>
                 <license>${xml.license}</license>
                 <author>${xml.author}</author>

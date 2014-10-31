@@ -72,7 +72,7 @@
         
         
               required="true" 
-              query="SELECT 0 AS `id`, '- Please select -' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_resource`" key_field="id" value_field="name"
+              query="SELECT 0 AS id, '- Please select -' AS name UNION SELECT id, name FROM #__sdi_resource" key_field="id" value_field="name"
         /> 
 
         <field name="access" type="accesslevel"

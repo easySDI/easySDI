@@ -55,6 +55,7 @@ class Easysdi_catalogTablesearchsort extends JTable {
                     $this->catalog_id = $catalog_id;
                     $this->language_id = $language_id;
                     $this->ogcsearchsorting = $value;
+                    $this->state = 1;
                 }
                 
                 if (!$this->store())
@@ -82,18 +83,13 @@ class Easysdi_catalogTablesearchsort extends JTable {
 	  * @throws  RuntimeException
 	 * @throws  UnexpectedValueException
 	 */
-	public function loadAll($id = null, $reset = true)
+	public function loadAll($id = null)
 	{
 		if (empty($id))
 		{
 			return false;
 		}
 		
-		if ($reset)
-		{
-			$this->reset();
-		}
-
 		// Initialise the query.
 		$query = $this->_db->getQuery(true)
 			->select('*')

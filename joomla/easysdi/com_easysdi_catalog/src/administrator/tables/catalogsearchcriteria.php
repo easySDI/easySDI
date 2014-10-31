@@ -27,13 +27,8 @@ class Easysdi_catalogTablecatalogsearchcriteria extends sdiTable {
     }
 
     
-    public function loadBySearchCriteriaID($id = null, $reset = true)
+    public function loadBySearchCriteriaID($id = null)
     {
-    	if ($reset)
-    	{
-    		$this->reset();
-    	}
-    
     	// Initialise the query.
     	$query = $this->_db->getQuery(true);
     	$query->select('catalog_id');

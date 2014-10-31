@@ -43,6 +43,8 @@ function onChangeChildType() {
             js("#resourcetypedefinition").show();
             break;
     }
+    
+    onChangeRenderType();
 }
 
 

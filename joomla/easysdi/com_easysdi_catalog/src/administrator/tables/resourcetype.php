@@ -42,7 +42,10 @@ class Easysdi_catalogTableresourcetype extends sdiTable {
         if (($task == 'save' || $task == 'apply') && (!JFactory::getUser()->authorise('core.edit.state', 'com_easysdi_catalog.resourcetype.' . $array['id']) && $array['state'] == 1)) {
             $array['state'] = 0;
         }
-
+        
+        if(!isset($array['monitoring'])){
+            $array['monitoring'] = 0;
+        }
 
         if (!JFactory::getUser()->authorise('core.admin', 'com_easysdi_catalog.resourcetype.' . $array['id'])) {
             $actions = JFactory::getACL()->getActions('com_easysdi_catalog', 'resourcetype');

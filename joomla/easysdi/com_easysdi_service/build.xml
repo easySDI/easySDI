@@ -63,8 +63,7 @@
         <echoxml file="${service.src.out.dir}/easysdi_service.xml">
             <extension type="component" version="3.0.0" method="upgrade">
                 <name>com_easysdi_service</name>
-                <creationDate>15 August 2012</creationDate>
-                <releaseDate>${xml.releaseDate}</releaseDate>
+                <creationDate>${xml.releaseDate}</creationDate>
                 <copyright>${xml.copyright}</copyright>
                 <license>${xml.license}</license>
                 <author>${xml.author}</author>

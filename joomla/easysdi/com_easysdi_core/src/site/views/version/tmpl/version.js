@@ -1,5 +1,5 @@
 js = jQuery.noConflict();
-var childrenTable, availablechildrenTable, parents;
+var childrenTable, availablechildrenTable, parents, availablechildrenData, childrenData;
 var availablechildrenData = [], childrenData = [], parentsData = [];
 
 var lastCriteria = {length: 0};
@@ -213,5 +213,7 @@ Joomla.submitbutton = function(task)
 
         js('#jform_selectedchildren').val(r);
     }
+    
+    var form = document.getElementById('adminForm');
     Joomla.submitform(task, document.getElementById('adminForm'));
-}
+};

@@ -90,24 +90,11 @@ class Easysdi_coreModelResources extends JModelList {
         $parentId = JFactory::getApplication()->input->getInt('parentid', null);
 
         // Select the required fields from the table.
-        $query->select(
-                $this->getState(
-                        'list.select', 'a.*'
-                )
-        );
-
+        $query->select('a.id, a.guid, a.alias, a.name');
         $query->from('#__sdi_resource AS a');
 
-        // Join over the users for the checked out user.
-        $query->select('uc.name AS editor');
-        $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
-
-        // Join over the created by field 'created_by'
-        $query->select('created_by.name AS created_by');
-        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
-
         // Join over the foreign key 'resourcetype_id'
-        $query->select('trans.text1 AS resourcetype_name, rt.versioning as versioning, rt.view as supportview, rt.diffusion as supportdiffusion, rt.application as supportapplication');
+        $query->select('trans.text1 AS resourcetype_name, rt.versioning as versioning,'. $query->quoteName('rt.view') .' as supportview, rt.diffusion as supportdiffusion, rt.application as supportapplication');
         $query->join('LEFT', '#__sdi_resourcetype AS rt ON rt.id = a.resourcetype_id');
         $query->join('LEFT', '#__sdi_translation AS trans ON trans.element_guid = rt.guid');
         $query->join('LEFT', '#__sdi_language AS lang ON lang.id = trans.language_id');
@@ -116,16 +103,26 @@ class Easysdi_coreModelResources extends JModelList {
 
         //join over resourcetypelink to know if some relations are possible
         $query->select('rtl.state as supportrelation');
-        $query->join('LEFT', '(SELECT n.parent_id, state FROM #__sdi_resourcetypelink n GROUP BY n.parent_id) rtl ON rtl.parent_id = rt.id');
+        $query->join('LEFT', '(SELECT n.parent_id, n.state FROM #__sdi_resourcetypelink n ) rtl ON rtl.parent_id = rt.id');
         $query->select('rtl2.state as canbechild');
-        $query->join('LEFT', '(SELECT child_id, state FROM #__sdi_resourcetypelink GROUP BY child_id) rtl2 ON rtl2.child_id=rt.id');
+        $query->join('LEFT', '(SELECT child_id, state FROM #__sdi_resourcetypelink GROUP BY child_id, state) rtl2 ON rtl2.child_id=rt.id');
 
         //join over rights table, check if user have any right on resource
         $query->innerJoin('#__sdi_user_role_resource AS urr ON urr.resource_id = a.id');
         $query->where('urr.user_id = ' . $this->user->id);
 
-
         $query->group('a.id');
+	$query->group('a.guid');
+        $query->group('a.alias');
+        $query->group('a.name');
+        $query->group('trans.text1');
+        $query->group('rt.versioning');
+        $query->group('rt.diffusion');
+        $query->group($query->quoteName('rt.view'));
+        $query->group('rt.application');
+        $query->group('rtl.state');
+        $query->group('rtl2.state');
+ 	
         $query->innerJoin('#__sdi_version v ON v.resource_id = a.id');
         $query->innerJoin('#__sdi_metadata md ON md.version_id = v.id');
         
@@ -157,8 +154,8 @@ class Easysdi_coreModelResources extends JModelList {
                 $query->where('md.metadatastate_id = ' . $status);
             }
         }
-        else{
-            // Filter by resource type
+        else{            
+           // Filter by resource type
             $resourcetype = $this->getState('filter.resourcetype');
             if (is_numeric($resourcetype)) {
                 $query->where('a.resourcetype_id = ' . (int) $resourcetype);
@@ -181,10 +178,7 @@ class Easysdi_coreModelResources extends JModelList {
                 $query->where('md.metadatastate_id = ' . $status);
             }
         }
-        
-        
-        
-        
+             
         $query->order('a.name');
 
         return $query;

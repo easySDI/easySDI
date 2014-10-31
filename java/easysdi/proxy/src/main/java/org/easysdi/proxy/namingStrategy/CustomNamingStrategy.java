@@ -27,12 +27,12 @@ public class CustomNamingStrategy extends ImprovedNamingStrategy {
 
     @Override
     public String propertyToColumnName(String propertyName) {
-        return StringHelper.unqualify(propertyName);
+        return StringHelper.unqualify(propertyName).toLowerCase();
     }
 
     @Override
     public String columnName(String columnName) {
-        return  columnName;
+        return  columnName.toLowerCase();
     }
 
     @Override
