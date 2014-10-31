@@ -654,7 +654,7 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $registeredKeywords = array();
         foreach($keywords as $keyword){
             if($parent === false) $parent = $keyword->parentNode->parentNode;
-            $defaultChild = trim($keyword->childNodes->item(1)->nodeValue);
+            $defaultChild = trim($keyword->childNodes->item(0)->nodeValue);
             if(in_array($defaultChild, $registeredKeywords) || empty($defaultChild))
                 $keyword->parentNode->removeChild($keyword);
             else
