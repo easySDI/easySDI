@@ -198,7 +198,8 @@ svg {
 #form-metadata fieldset .search-choice>span,
 #form-metadata fieldset .tooltip *,
 #form-metadata .btn,
-#form-metadata fieldset .icon-white{
+#form-metadata fieldset .icon-white,
+#form-metadata li a{
     font-size: 0.8em;
 }
 
