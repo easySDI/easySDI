@@ -190,13 +190,8 @@ class FormGenerator {
         if (isset($this->csw)) {
             $this->setDomXpathCsw();
             $this->mergeCsw();
-
-            $this->csw->formatOutput = true;
         }
 
-
-
-        $this->structure->formatOutput = true;
         $this->session->set('structure', serialize($this->structure->saveXML()));
 
         $form = $this->buildForm($root);
@@ -1186,7 +1181,7 @@ class FormGenerator {
         $field->setAttribute('class', $validator);
         $field->setAttribute('name', FormUtils::serializeXpath($relationtype->getNodePath()));
         $field->setAttribute('type', 'list');
-        $field->setAttribute('label', 'Name');
+        $field->setAttribute('label', '');
 
         foreach ($this->getAttributOptions($relationtype) as $opt) {
             $option = $this->form->createElement('option', $opt->name);
@@ -1273,6 +1268,7 @@ class FormGenerator {
                         $query->select('b.id, b.guid, b.name as value, bc.guid as cat_guid, bc.name as cat_name');
                         $query->from('#__sdi_boundary b');
                         $query->innerJoin('#__sdi_boundarycategory bc ON b.category_id = bc.id');
+                        $query->where('b.state = 1');
                         $query->order('b.name ASC');
 
                         $this->db->setQuery($query);

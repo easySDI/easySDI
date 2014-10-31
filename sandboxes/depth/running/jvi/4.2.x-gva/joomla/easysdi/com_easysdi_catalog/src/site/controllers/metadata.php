@@ -70,7 +70,9 @@ class Easysdi_catalogControllerMetadata extends Easysdi_catalogController {
         $this->nsdao = new SdiNamespaceDao();
         $this->ldao = new SdiLanguageDao();
         $this->structure = new DOMDocument('1.0', 'utf-8');
+        $this->structure->preserveWhiteSpace = false;
         $_structure = $this->session->get('structure');
+        
         if (!empty($_structure))
             $this->structure->loadXML(unserialize($_structure));
         $this->structure->normalizeDocument();
