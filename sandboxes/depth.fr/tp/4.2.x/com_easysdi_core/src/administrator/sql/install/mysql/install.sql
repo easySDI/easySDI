@@ -1792,7 +1792,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_assignment` (
 PRIMARY KEY (`id`) ,
   INDEX `#__sdi_assignment_fk1` (`assigned_by`) ,
 INDEX `#__sdi_assignment_fk2` (`assigned_to`) ,
-INDEX `#__sdi_assignment_fk3` (`version_id`) ,
+INDEX `#__sdi_assignment_fk3` (`metadata_id`) ,
   CONSTRAINT `#__sdi_assignment_fk1`
     FOREIGN KEY (`assigned_by` )
     REFERENCES `#__sdi_user` (`id` )

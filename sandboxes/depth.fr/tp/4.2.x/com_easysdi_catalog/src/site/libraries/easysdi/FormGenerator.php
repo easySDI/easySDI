@@ -1161,7 +1161,7 @@ class FormGenerator {
         $field->setAttribute('class', $validator);
         $field->setAttribute('name', FormUtils::serializeXpath($relationtype->getNodePath()));
         $field->setAttribute('type', 'list');
-        $field->setAttribute('label', 'Name');
+        $field->setAttribute('label', '');
 
         foreach ($this->getAttributOptions($relationtype) as $opt) {
             $option = $this->form->createElement('option', $opt->name);

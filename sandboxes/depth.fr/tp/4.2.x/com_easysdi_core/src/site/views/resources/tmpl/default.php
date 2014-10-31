@@ -19,8 +19,6 @@ JHtml::_('behavior.modal');
 JHtml::_('behavior.calendar');
 
 $document = JFactory::getDocument();
-//$document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/resources.js.php');
-//$document->addStyleSheet('components/com_easysdi_core/assets/css/resources.css');
 ?>
 <style> 
     .tooltip{
