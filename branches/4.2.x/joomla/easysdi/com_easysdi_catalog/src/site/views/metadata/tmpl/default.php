@@ -19,6 +19,7 @@ JHtml::_('behavior.modal');
 JText::script('COM_EASYSDI_CATALOG_METADATA_CONTROL_OK');
 JText::script('COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING');
 JText::script('COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING');
+JText::script('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM');
 JText::script('ARCHIVED');
 JText::script('INPROGRESS');
 JText::script('PUBLISHED');
@@ -48,19 +49,24 @@ JText::script('COM_EASYSDI_CATALOG_CLOSE_ALL');
 //Load admin language file
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
+$lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 $document = JFactory::getDocument();
 
+if (JDEBUG) {
+    $document->addScript('administrator/components/com_easysdi_core/libraries/OpenLayers-2.13.1/OpenLayers.debug.js');
+    $document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base-debug.js');
+    $document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');    
+}else{
+    $document->addScript('administrator/components/com_easysdi_core/libraries/OpenLayers-2.13.1/OpenLayers.js');
+    $document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base.js');
+    $document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all.js');
+}
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/ext/resources/css/ext-all.css');
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/css/jquery.dataTables.css');
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/bootbox.min.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/OpenLayers-2.13.1/OpenLayers.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/proj4js-1.1.0/lib/proj4js.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base-debug.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');
-//$document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/thesaur.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/HS.js');
-//$document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/translations.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/js/jquery.dataTables.min.js');
 
 $document->addScript('http://maps.google.com/maps/api/js?v=3&amp;sensor=false');
@@ -75,83 +81,9 @@ $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/sy
 $document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/css/easysdi_catalog.css');
 ?>
 
-<style>
-
-    .action-1{
-        font-size: 15px;
-    }
-    .legend-1{
-        font-size: 16px;
-    }
-
-    .action-2, .action-3{
-        font-size: 13px;
-    }
-    .legend-2, .legend-3{
-        font-size: 14px;
-    }
-
-    .inner-fds{
-        padding-left:15px;
-        border-left: 1px solid #BDBDBD;
-    }
-
-    .collapse-btn, .neutral-btn{
-        margin-right: 10px;
-    }
-
-    .add-btn, .empty-btn, .preview-btn{
-        margin-left: 10px;
-    }
-    
-    .hidden {
-        display: none;
-        visibility: hidden;
-    }
-
-    legend{
-        font-size: 12px;
-    }
-
-    img.olTileImage{
-        max-width: none;
-    }
-
-    svg {
-        max-width :none !important;
-    }
-
-    .syntaxhighlighter{
-        overflow: visible !important;
-    }
-
-    #previewModal{
-        width: 900px;
-        left: 40%;
-    }
-
-    #search_table{
-        display: none;
-    }
-
-    #searchModal{
-        width: 900px;
-        left: 40%;
-    }
-    
-    .sdi-multi-extent-select.chzn-container-multi .chzn-choices li.search-choice {
-        min-width: 89%;
-    }
-    
-    .sdi-multi-extent-select.chzn-container-multi .chzn-choices {
-        max-height: 200px;
-        max-height: 200px;
-        overflow:auto;
-    }
-</style>
-
 <script type="text/javascript">
 
+    var baseUrl = "<?php echo JUri::base(); ?>index.php?" ;
     js = jQuery.noConflict();
     js('document').ready(function() {
 

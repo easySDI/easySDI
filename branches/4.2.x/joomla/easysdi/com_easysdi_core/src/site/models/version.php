@@ -94,6 +94,7 @@ class Easysdi_coreModelVersion extends JModelForm {
                         ->where('r.id = ' . (int) $table->resource_id);
                 $db->setQuery($query);
                 $resourcetypechild = $db->loadRow();
+                $this->_item->resourcetypechild = !empty($resourcetypechild);
 
                 //Get parents
                 $query = $db->getQuery(true)
@@ -171,7 +172,10 @@ class Easysdi_coreModelVersion extends JModelForm {
                         $this->_item->availablechildren = $result;
                     //}
                 }
-                else $this->_item->availablechildren = false;
+                else 
+                    $this->_item->availablechildren = false;
+                    
+                
             } elseif ($error = $table->getError()) {
                 $this->setError($error);
             }

@@ -84,7 +84,7 @@ $document->addStyleSheet('components/com_easysdi_catalog/assets/css/easysdi_cata
                         </div>
                     </div>
                     <div class="well">
-                        <div class="control-group">
+                    <div class="control-group">
                             <div class="control-label"><?php echo $this->form->getLabel('text3'); ?></div>
                             <div class="controls"><?php echo $this->form->getInput('text3'); ?></div>
                         </div>

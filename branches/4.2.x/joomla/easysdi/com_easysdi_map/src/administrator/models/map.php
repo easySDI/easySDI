@@ -144,7 +144,7 @@ class Easysdi_mapModelmap extends JModelAdmin {
                 $tools = $db->loadObjectList();
                 foreach ($tools as $tool):
                     $n = 'tool' . $tool->tool_id;
-                    (empty($tool->params))?$item->$n = "1" : $item->$n = $tool->params;
+                    (empty($tool->params) || $tool->params == 'NULL')?$item->$n = "1" : $item->$n = $tool->params;
                 endforeach;
                 
                 //Search Catalog
@@ -193,20 +193,28 @@ class Easysdi_mapModelmap extends JModelAdmin {
                     }                    
                 }
                 
+                $item->services = array();
+                
                 $query = $db->getQuery(true);
-                $query->select($query->concatenate(array('"physical_"','ps.physicalservice_id')));
+                $query->select('ps.physicalservice_id');
                 $query->from('#__sdi_map_physicalservice ps');
                 $query->where('map_id = ' . $item->id);
+                $db->setQuery($query);
+                $physicalservices = $db->loadColumn();
+                foreach($physicalservices as $physicalservice){
+                    array_push ($item->services, "physical_" . $physicalservice);
+                }
                 
                 $query2 = $db->getQuery(true);
-                $query2->select($query->concatenate(array('"virtual_"','vs.virtualservice_id')));
+                $query2->select('vs.virtualservice_id');
                 $query2->from('#__sdi_map_virtualservice vs');
                 $query2->where('map_id = ' . $item->id);
-                $query->union($query2);
+                $db->setQuery($query2);
+                $virtualservices = $db->loadColumn();
+                foreach($virtualservices as $virtualservice){
+                    array_push ($item->services, "virtual_" . $virtualservice);                    
+                }
                 
-                
-                $db->setQuery($query);
-                $item->services = $db->loadColumn();
             }
         }
 

@@ -212,6 +212,12 @@
             <artifactId>hibernate-tools</artifactId>
             <version>4.0.0-CR1</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hibernate-commons-annotations</artifactId>
+                    <groupId>org.hibernate</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Mysql -->

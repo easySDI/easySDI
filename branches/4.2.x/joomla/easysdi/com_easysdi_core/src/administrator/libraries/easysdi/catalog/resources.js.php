@@ -628,7 +628,7 @@ var getPublishRight = function(element){
     var metadata_id = getMetadataId(element);
     js.get(Links.ajax.publish_right.replace('#0#', metadata_id), function(data){
         var response = js.parseJSON(data);
-        if(response.canPublish>0)
+        if(response !== null && response.canPublish>0)
             js(element)
                 .addClass('disabled')
                 .css('color', '#cbcbcb')

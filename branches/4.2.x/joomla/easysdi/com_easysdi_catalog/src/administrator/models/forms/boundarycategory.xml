@@ -48,7 +48,9 @@
                 class="inputbox"
                 label="COM_EASYSDI_CATALOG_FORM_LBL_BOUNDARYCATEGORY_PARENT_ID"
                 description="COM_EASYSDI_CATALOG_FORM_DESC_BOUNDARYCATEGORY_PARENT_ID" 
-                query=" SELECT NULL AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_boundarycategory WHERE state=1 ORDER BY ordering" 
+                query=" SELECT NULL AS id, '' AS name 
+                        UNION SELECT id, name FROM #__sdi_boundarycategory 
+                        WHERE state=1 ORDER BY name" 
                 key_field="id" 
                 value_field="name"
         /> 

@@ -45,7 +45,13 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $versions = $this->core_helpers->getViralVersionnedChild($version);
 
         try {
-            $db->transactionStart();
+            try{
+                $db->transactionStart();
+            }catch (Exception $exc){
+                $db->connect();                
+                $driver_begin_transaction = $db->name . '_begin_transaction';
+                $driver_begin_transaction($db->getConnection());
+            }
             $this->deleteMetadatas($versions);
             $this->deleteVersions($versions);
             $db->transactionCommit();
@@ -121,7 +127,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 ->innerJoin('#__sdi_metadata m ON m.version_id=v.id')
                 ->innerJoin('#__sdi_versionlink vl ON v.id=vl.child_id')
                 ->where('vl.parent_id='.(int)$parentId.' AND urr.user_id='.(int)$user->id)
-                ->group('r.id')
+                ->group('r.id, m.modified_by')
                 ;
 
         $db->setQuery($query)->execute();
@@ -239,7 +245,13 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         // try to create the new versions
         try {
-            $dbo->transactionStart();
+            try{
+                $dbo->transactionStart();
+            }catch (Exception $exc){
+                $dbo->connect();                
+                $driver_begin_transaction = $dbo->name . '_begin_transaction';
+                $driver_begin_transaction($dbo->getConnection());
+            }
             $this->saveVersions($new_versions);
 
             //Create the linked metadata
@@ -359,7 +371,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 'option' => 'com_easysdi_core',
                 'view' => 'resources',
                 'parentid' => JFactory::getApplication()->getUserState('com_easysdi_core.parent.resource.version.id'));
-            $this->setRedirect(JRoute::_($back_url, false));
+            $this->setRedirect(JRoute::_(Easysdi_coreHelper::array2URL($back_url), false));
         }
     }
 
@@ -474,20 +486,18 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             $metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
             $keys = array("version_id" => $version->id);
 
-            try {
-                $metadata->load($keys);
-                //Delete the csw metadata in the remote catalog
-                $csw = new sdiMetadata($metadata->id);
-                $this->md_rollback[$metadata->id] = $csw->load();
-                if (!$csw->delete()) {
-                    unset($this->md_rollback[$metadata->id]);
-                    throw new Exception(JText::_('Metadata can not be deleted from the remote catalog.'));
-                }
-
-                $metadata->delete($metadata->id);
-            } catch (Exception $exc) {
-                echo $exc->getTraceAsString();
+           
+            $metadata->load($keys);
+            //Delete the csw metadata in the remote catalog
+            $csw = new sdiMetadata($metadata->id);
+            $this->md_rollback[$metadata->id] = $csw->load();
+            if (!$csw->delete()) {
+                unset($this->md_rollback[$metadata->id]);
+                throw new Exception(JText::_('Metadata can not be deleted from the remote catalog.'));
             }
+
+            $metadata->delete($metadata->id);
+            
         }
 
         return $md_rollback;
@@ -681,8 +691,9 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 ->innerJoin('#__sdi_versionlink vl ON v.id=vl.parent_id')
                 ->innerJoin('#__sdi_metadata md ON vl.child_id=md.version_id')
                 ->where('m.id = ' . $metadata_id.' AND md.metadatastate_id != '.sdiMetadata::PUBLISHED.' AND md.metadatastate_id != '.sdiMetadata::VALIDATED)
+                ->group('v.id')
                 ;
-        
+        $v = $query->__toString();
         $result = $db->setQuery($query)->loadAssoc();
         
         echo json_encode($result);

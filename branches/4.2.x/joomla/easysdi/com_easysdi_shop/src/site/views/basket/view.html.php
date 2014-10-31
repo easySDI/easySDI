@@ -42,7 +42,7 @@ class Easysdi_shopViewBasket extends JViewLegacy {
                 $this->mapscript = Easysdi_mapHelper::getMapScript($this->paramsarray['ordermap']);
             }
             else{
-                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_MAP_PREVIEW_NOT_FOUND'), 'error');
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_MAP_PREVIEW_NOT_FOUND'), 'error');
                 return;
             }
         }

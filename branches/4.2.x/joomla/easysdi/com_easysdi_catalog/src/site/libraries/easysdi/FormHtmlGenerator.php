@@ -75,6 +75,7 @@ class FormHtmlGenerator {
 
     function __construct(JForm $form, DOMDocument $structure, $ajaxXpath = null) {
         $this->form = $form;
+        $structure->preserveWhiteSpace = false;
         $this->structure = $structure;
         $this->ldao = new SdiLanguageDao();
         $this->nsdao = new SdiNamespaceDao();
@@ -232,6 +233,7 @@ class FormHtmlGenerator {
      */
     private function getAction(DOMElement $relation) {
 
+
         $lowerbound = $relation->getAttributeNS($this->catalog_uri, 'lowerbound');
         $upperbound = $relation->getAttributeNS($this->catalog_uri, 'upperbound');
         $exist = $relation->getAttributeNS($this->catalog_uri, 'exist');
@@ -264,16 +266,18 @@ class FormHtmlGenerator {
         $divOuter->setAttribute('class', 'outer-' . $level);
 
         $divAction = $this->formHtml->createElement('div', EText::_($relation->getAttributeNS($this->catalog_uri, 'id')));
-        $divAction->setAttribute('class', 'action-' . $level);
+        $divAction->setAttribute('class', 'action');
 
-        $aAdd->appendChild($iAdd);
-        $divAction->appendChild($aAdd);
-
-        if (JDEBUG) {
-            $lowerboundspan = $this->formHtml->createElement('span', 'lowerbound:' . $lowerbound);
-            $upperboundspan = $this->formHtml->createElement('span', 'upperbound:' . $upperbound);
-            $divAction->appendChild($lowerboundspan);
-            $divAction->appendChild($upperboundspan);
+        if ($firstChild = $this->getFirstNonTextChild($relation->childNodes)) {
+            
+                if (!$firstChild->getAttributeNS($this->catalog_uri, 'stereotypeId') == EnumStereotype::$GEOGRAPHICEXTENT) {
+                    $aAdd->appendChild($iAdd);
+                    $divAction->appendChild($aAdd);
+                }
+            
+        } else {
+            $aAdd->appendChild($iAdd);
+            $divAction->appendChild($aAdd);
         }
 
         return $divAction;
@@ -326,7 +330,7 @@ class FormHtmlGenerator {
             $spanLegend = $this->formHtml->createElement('span', JText::_($legendAttribute));
         }
 
-        $spanLegend->setAttribute('class', 'legend-' . $level);
+        $spanLegend->setAttribute('class', 'legend');
         $legend = $this->formHtml->createElement('legend');
 
         $divInner = $this->formHtml->createElement('div');
@@ -388,10 +392,10 @@ class FormHtmlGenerator {
 
         if ($attribute->getAttributeNS($this->catalog_uri, 'childtypeId') == EnumChildtype::$RELATIONTYPE) {
             $upperbound = 1;
-        }else{
+        } else {
             $upperbound = $attribute->getAttributeNS($this->catalog_uri, 'upperbound');
         }
-        
+
         $stereotypeId = $attribute->getAttributeNS($this->catalog_uri, 'stereotypeId');
         $rendertypeId = $attribute->getAttributeNS($this->catalog_uri, 'rendertypeId');
 
@@ -489,25 +493,27 @@ class FormHtmlGenerator {
                             switch ($stereotypeId) {
                                 case EnumStereotype::$BOUNDARY:
                                     $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath), 12, 15));
-                                    $jfield->__set('class', 'sdi-extent-multiselect');
                                     break;
 
                                 default:
-                                    if (!empty($this->ajaxXpath)) {
-                                        $path = explode('/', $nodePath);
-                                        $lastPart = $path[count($path) - 1];
-                                        unset($path[count($path) - 1]);
-                                        $xpath = explode('[', $lastPart);
-                                        $newPath = implode('/', $path) . '/' . $xpath[0];
+                                    /* if (!empty($this->ajaxXpath)) {
+                                      $path = explode('/', $nodePath);
+                                      $lastPart = $path[count($path) - 1];
+                                      unset($path[count($path) - 1]);
+                                      $xpath = explode('[', $lastPart);
+                                      $newPath = implode('/', $path) . '/' . $xpath[0];
 
-                                        $nodePath = str_replace($this->ajaxXpath, $newPath, $nodePath);
-                                    }
+                                      $nodePath = str_replace($this->ajaxXpath, $newPath, $nodePath);
+                                      } */
                                     $jfield = $this->form->getField(FormUtils::removeIndexToXpath(FormUtils::serializeXpath($nodePath)));
+
+                                    $fieldid = $jfield->__get('id');
+                                    $query = 'descendant::*[@id="' . $fieldid . '"]';
+                                    $occurance = $this->domXpathFormHtml->query($query)->length;
+
                                     break;
                             }
-                            $fieldid = $jfield->__get('id');
-                            $query = 'descendant::*[@id="' . $fieldid . '"]';
-                            $occurance = $this->domXpathFormHtml->query($query)->length;
+
 
                             // Single list
                         } else {
@@ -575,7 +581,7 @@ class FormHtmlGenerator {
 
         $query = $this->db->getQuery(true);
 
-        $query->select('m.srs, m.unit_id, m.maxresolution, m.restrictedextent, m.zoom, m.maxextent, m.centercoordinates, l.layername, l.service_id, l.servicetype, l.asOLstyle, l.asOLoptions, l.asOLmatrixset, u.`alias` as unit_alias');
+        $query->select('m.srs, m.unit_id, m.maxresolution, m.restrictedextent, m.zoom, m.maxextent, m.centercoordinates, l.layername, l.service_id, l.servicetype, l.asOLstyle, l.asOLoptions, l.asOLmatrixset, u.alias as unit_alias');
         $query->from('#__sdi_map as m');
         $query->innerJoin('#__sdi_map_layergroup mlg ON m.id = mlg.map_id');
         $query->innerJoin('#__sdi_layer_layergroup llg ON llg.group_id = mlg.group_id');
@@ -620,19 +626,19 @@ class FormHtmlGenerator {
                     case EnumLayerName::$TERRAIN:
                         $layer_definition = "layer_$parent_path = new OpenLayers.Layer.Google(
                                                 'Google Physicial',
-                                                {type: G_PHYSICAL_MAP}
+                                                {type: google.maps.MapTypeId.TERRAIN}
                                             );";
                         break;
                     case EnumLayerName::$SATELLITE:
                         $layer_definition = "layer_$parent_path = new OpenLayers.Layer.Google(
                                                 'Google Satellite',
-                                                {type: G_SATELLITE_MAP, numZoomLevels: 22}
+                                                {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
                                             );";
                         break;
-                    case EnumLayerName::$HYBRIDE:
+                    case EnumLayerName::$HYBRID:
                         $layer_definition = "layer_$parent_path = new OpenLayers.Layer.Google(
                                                 'Google Hybrid',
-                                                {type: G_HYBRID_MAP, numZoomLevels: 20}
+                                                {type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20}
                                             );";
                         break;
                 }
@@ -1005,7 +1011,7 @@ class FormHtmlGenerator {
 
         $elements[] = $controlGroup;
 
-        $elements[] = $this->getInputScript($field, $guid);
+        //$elements[] = $this->getInputScript($field, $guid);
 
         if ($rendertypeId == EnumRendertype::$LIST && $upperbound > 1 && $stereotypeId != EnumStereotype::$BOUNDARY) {
             $elements[] = $this->getMultiSelectScript($field, $attribute);
@@ -1237,6 +1243,21 @@ class FormHtmlGenerator {
      */
     private function removeIndex($xpath) {
         return preg_replace('/[\[0-9\]*]/i', '', $xpath);
+    }
+    
+    /**
+     * 
+     * @param DOMNodeList $childNodes
+     * @return DOMElement First non text node
+     */
+    private function getFirstNonTextChild(DOMNodeList $childNodes){
+        foreach ($childNodes as $child) {
+            if($child->nodeType != XML_TEXT_NODE){
+                return $child;
+            }
+        }
+        
+        return false;
     }
 
 }

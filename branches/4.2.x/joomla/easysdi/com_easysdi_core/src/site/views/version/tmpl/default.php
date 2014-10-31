@@ -64,15 +64,16 @@ if ($this->item) :
             <?php endif; ?>
         <?php endif; ?>
                 
-                <?php if(!($this->item->availablechildren && !$isReadonly)):?>
+                <?php if($this->item->resourcetypechild): ?>
+        <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+            <?php else:?>
             <div>
                 <?php echo $this->getTopActionBar();?>
             </div>
             <?php endif;?>
 
             <div class="row-fluid">
-                <?php if($this->item->availablechildren):
-                    if(!$isReadonly):?>
+                <?php if($this->item->resourcetypechild): ?>
                 <!-- Criteria -->
                 <div class="span12">
                     <div class="well">
@@ -92,7 +93,7 @@ if ($this->item) :
                             <?php endif; ?>
                             <div class="">
                                 <button id="clear-btn" class="btn btn-small"><span class="icon-clear"></span><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_CLEAR_BTN');?></button>
-                            </div>
+                        </div>
                         </div>
                         <hr>
                         <div class="sdi-searchresult">
@@ -120,7 +121,7 @@ if ($this->item) :
                         </div>
                     </div>
                 </div>
-                <?php endif; ?>
+                
                 
                 <!-- Child -->
                 <div class="row-fluid">
@@ -174,7 +175,7 @@ if ($this->item) :
                 </div>
             </div>
 
-<?php if($this->item->availablechildren && !$isReadonly): ?>
+<?php if($this->item->resourcetypechild): ?>
         <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
             <div>
                 <?php echo $this->getToolbar(); ?>

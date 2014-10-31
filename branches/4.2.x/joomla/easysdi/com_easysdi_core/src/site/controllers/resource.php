@@ -223,12 +223,12 @@ class Easysdi_coreControllerResource extends Easysdi_coreController {
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query->select('uro.role_id, u.id, user.name');
+        $query->select('uro.role_id, u.id, s.name');
         $query->from('#__sdi_user_role_organism uro');
         $query->innerJoin('#__sdi_user u ON u.id = uro.user_id');
-        $query->innerJoin('#__users user ON u.user_id = user.id');
+        $query->innerJoin('#__users s ON u.user_id = s.id');
         $query->where('organism_id=' . (int)$organism_id);
-        $query->order('user.name');
+        $query->order('s.name');
         
         $db->setQuery($query);
         $users = $db->loadObjectList();

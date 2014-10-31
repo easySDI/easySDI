@@ -35,8 +35,57 @@ class Easysdi_shopTablediffusion extends sdiTable {
      * @since	1.5
      */
     public function bind($array, $ignore = '') {
-        $input = JFactory::getApplication()->input;
-        $task = $input->getString('task', '');
+        
+        //Clean and prepare data
+        $jinput = JFactory::getApplication()->input;
+        $form = $jinput->get('jform', 'null', 'ARRAY');
+        (empty($array['hasdownload'])) ? $array['hasdownload'] = "0" : $array['hasdownload'] = "1";
+        (empty($array['hasextraction'])) ? $array['hasextraction'] = "0" : $array['hasextraction'] = "1";
+        if(empty($array['surfacemin']))  $array['surfacemin'] = null;
+        if(empty($array['surfacemax']))  $array['surfacemax'] = null;
+        if ($array['hasdownload'] == 0) {
+            $array['productstorage_id'] = null;
+            $array['file'] = null;
+            $array['file_hidden'] = null;
+            $array['fileurl'] = null;
+            $array['perimeter_id'] = null;
+        } else {
+            switch ($array['productstorage_id']) {
+                case 1:
+                    $array['fileurl'] = null;
+                    $array['perimeter_id'] = null;
+                    break;
+                case 2:
+                    $array['file'] = null;
+                    $array['file_hidden'] = null;
+                    $array['perimeter_id'] = null;
+                    break;
+                case 3:
+                    $array['file'] = null;
+                    $array['file_hidden'] = null;
+                    $array['fileurl'] = null;
+                    break;
+            }
+        }
+        if ($array['hasextraction'] == 0) {
+            $array['surfacemin'] = null;
+            $array['surfacemax'] = null;
+            $array['productmining_id'] = null;
+            $array['deposit'] = null;
+            $array['deposit_hidden'] = null;
+            $array['notifieduser_id'] = null;
+        } else {
+            $array['perimeter'] = $form['perimeter'];
+            $array['property'] = $form['property'];
+        }
+        if ($array['pricing_id'] == 2) {
+            $array['hasdownload'] = "0";
+            $array['productstorage_id'] = null;
+            $array['file'] = null;
+            $array['file_hidden'] = null;
+            $array['fileurl'] = null;
+            $array['perimeter_id'] = null;
+        }
 
         $params = JFactory::getApplication()->getParams('com_easysdi_shop');
         $fileFolder = $params->get('fileFolder');
@@ -147,7 +196,7 @@ class Easysdi_shopTablediffusion extends sdiTable {
                     if (isset($array['id'])) {
                         $db = JFactory::getDbo();
                         $query = $db->getQuery(true)
-                                ->select('file')
+                                ->select($db->quoteName('file'))
                                 ->from('#__sdi_diffusion')
                                 ->where('id = ' . (int) $array['id']);
                         $db->setQuery($query);

@@ -361,7 +361,7 @@ class sdiMetadata extends cswmetadata {
 
         // Get the metadatastate
         $query = $this->db->getQuery(true);
-        $query->select('ms.`value`')
+        $query->select('ms.value')
                 ->from('#__sdi_metadata m')
                 ->innerJoin('#__sdi_sys_metadatastate ms on ms.id = m.metadatastate_id')
                 ->where('m.id  = ' . (int) $this->metadata->id);

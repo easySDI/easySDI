@@ -63,8 +63,7 @@
         <echoxml file="${monitor.src.out.dir}/easysdi_monitor.xml">
             <extension type="component" version="3.0.0" method="upgrade">
                 <name>com_easysdi_monitor</name>
-                <creationDate>2013-04-08</creationDate>
-                <releaseDate>${xml.releaseDate}</releaseDate>
+                <creationDate>${xml.releaseDate}</creationDate>
                 <copyright>${xml.copyright}</copyright>
                 <license>${xml.license}</license>
                 <author>${xml.author}</author>
