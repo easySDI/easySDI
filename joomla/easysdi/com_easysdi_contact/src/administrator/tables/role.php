@@ -65,13 +65,8 @@ class Easysdi_contactTablerole extends JTable
      * @param unknown_type $id : identifier of the object where the role belonged
      * @param unknown_type $reset : reset
      */
-    private function loadBy($by, $id = null, $type = null, $reset = true)
+    private function loadBy($by, $id = null, $type = null)
     {
-    	if ($reset)
-    	{
-    		$this->reset();
-    	}
-    
     	// Initialise the query.
     	$query = $this->_db->getQuery(true);
     	$query->select('organism_id');

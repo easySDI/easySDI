@@ -13,8 +13,8 @@ public class ReverseEngineeringStrategy extends DelegatingReverseEngineeringStra
 	@Override
 	public String tableToClassName(TableIdentifier tableIdentifier) {
 		String className = super.tableToClassName(tableIdentifier);
-		
-		return className.replace("gh0jl", "");
+                
+		return className.replace("jos", "");
 	}
 	
 	@Override

@@ -66,7 +66,17 @@ class Easysdi_catalogControllerAjax extends Easysdi_catalogController {
             $this->domXpathStr->registerNamespace($ns->prefix, $ns->uri);
         }
         $query = FormUtils::unSerializeXpath($_GET['uuid']);
-        $element = $this->domXpathStr->query($query)->item(0);
+        
+        $elements = $this->domXpathStr->query($query);//->item(0);
+        
+        if($elements->length)
+            $element = $elements->item(0);
+        else{ // HACK TO ALLOW FIRST KEYWORD REMOVAL
+            $tabQuery = explode('/', $query);
+            array_pop($tabQuery);
+            $query = implode('/', $tabQuery);
+            $element = $this->domXpathStr->query($query)->item(0)->childNodes->item(1);
+        }
 
         $response = array();
         try {

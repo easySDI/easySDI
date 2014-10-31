@@ -32,21 +32,34 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         //check if the user has the right to download
         $sdiUser = sdiFactory::getSdiUser();
         if ($diffusion->accessscope_id != 1):
-            if (!$sdiUser->isEasySDI)
-                if ($diffusion->accessscope_id == 2):
-                    $organisms = sdiModel::getAccessScopeOrganism($diffusion->guid);
-                    $organism = sdiFactory::getSdiUser()->getMemberOrganisms();
-                    if (!in_array($organism[0]->id, $organisms)):
-                        $this->setMessage(JText::_('Not authorized to access this resource'), 'warning');
-                        $this->setRedirect(JRoute::_('index.php?', false));
-                        return false;
-                    endif;
+            if (!$sdiUser->isEasySDI):
+                $this->setMessage(JText::_('Not authorized to access this resource'), 'warning');
+                $this->setRedirect(JURI::base());
+                return false;
+            endif;
+            if ($diffusion->accessscope_id == 2):
+                $organisms = sdiModel::getAccessScopeOrganism($diffusion->guid);
+                $organism = $sdiUser->getMemberOrganisms();
+                if (!in_array($organism[0]->id, $organisms)):
+                    $this->setMessage(JText::_('Not authorized to access this resource'), 'warning');
+                    $this->setRedirect(JURI::base());
+                    return false;
+                endif;
             endif;
             if ($diffusion->accessscope_id == 3):
                 $users = sdiModel::getAccessScopeUser($diffusion->guid);
                 if (!in_array($sdiUser->id, $users)):
                     $this->setMessage(JText::_('Not authorized to access this resource'), 'warning');
-                    $this->setRedirect(JRoute::_('index.php?', false));
+                    $this->setRedirect(JURI::base());
+                    return false;
+                endif;
+            endif;
+            if ($diffusion->accessscope_id == 4):
+                $orgCategoriesIdList = $sdiUser->getMemberOrganismsCategoriesIds();
+                $allowedCategories = sdiModel::getAccessScopeCategory($diffusion->guid);
+                if (count(array_intersect($orgCategoriesIdList, $allowedCategories)) < 1):
+                    $this->setMessage(JText::_('Not authorized to access this resource'), 'warning');
+                    $this->setRedirect(JURI::base());
                     return false;
                 endif;
             endif;
@@ -80,17 +93,25 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         //check if the user has the right to download
         $sdiUser = sdiFactory::getSdiUser();
         if ($diffusion->accessscope_id != 1):
-            if (!$sdiUser->isEasySDI)
-                if ($diffusion->accessscope_id == 2):
-                    $organisms = sdiModel::getAccessScopeOrganism($diffusion->guid);
-                    $organism = sdiFactory::getSdiUser()->getMemberOrganisms();
-                    if (!in_array($organism[0]->id, $organisms)):
-                        return null;
-                    endif;
+            if (!$sdiUser->isEasySDI):
+                return null;
+            endif;
+            if ($diffusion->accessscope_id == 2):
+                $organisms = sdiModel::getAccessScopeOrganism($diffusion->guid);
+                $organism = $sdiUser->getMemberOrganisms();
+                if (!in_array($organism[0]->id, $organisms)):
+                    return null;
+                endif;
             endif;
             if ($diffusion->accessscope_id == 3):
                 $users = sdiModel::getAccessScopeUser($diffusion->guid);
                 if (!in_array($sdiUser->id, $users)):
+                    return null;
+                endif;
+            endif;
+            if ($diffusion->accessscope_id == 4):
+                $orgCategoriesIdList = $sdiUser->getMemberOrganismsCategoriesIds();
+                if (count(array_intersect($orgCategoriesIdList, $allowedCategories)) < 1):
                     return null;
                 endif;
             endif;
@@ -131,9 +152,9 @@ class Easysdi_shopControllerDownload extends Easysdi_shopController {
         }
 
         error_reporting(0);
-        
+
         $pos = strrpos($diffusion->file, '.');
-        $extension = substr($diffusion->file, $pos+1);
+        $extension = substr($diffusion->file, $pos + 1);
 
         ini_set('zlib.output_compression', 0);
         header('Pragma: public');
