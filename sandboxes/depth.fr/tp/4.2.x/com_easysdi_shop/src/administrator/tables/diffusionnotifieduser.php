@@ -24,11 +24,7 @@ class Easysdi_shopTablediffusionnotifieduser extends JTable {
         parent::__construct('#__sdi_diffusion_notifieduser', 'id', $db);
     }
 
-    public function loadByDiffusionID($id = null, $reset = true) {
-        if ($reset) {
-            $this->reset();
-        }
-
+    public function loadByDiffusionID($id = null) {
         // Initialise the query.
         $query = $this->_db->getQuery(true);
         $query->select('user_id');
@@ -93,4 +89,24 @@ class Easysdi_shopTablediffusionnotifieduser extends JTable {
         return $assetParentId;
     }
 
+    /**
+	 * Method to perform sanity checks on the JTable instance properties to ensure
+	 * they are safe to store in the database. 
+	 *
+	 * @return  boolean  True if the instance is sane and able to be stored in the database.
+	 *
+	 * @link    http://docs.joomla.org/JTable/check
+	 * @since   11.1
+	 */
+    public function check() {
+        //Always set state published to avoid problem with sqlsrv driver on default value handling
+        $this->state = 1;
+        
+        //If this is a new row then get the next ordering value
+        if ($this->id == 0) {
+            $this->ordering = $this->getNextOrder();
+        }
+        
+        return parent::check();
+    }
 }

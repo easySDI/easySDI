@@ -149,12 +149,13 @@ class FormStereotype {
         $boundary = $this->getBoundaryByName($name);
 
         $extent = $dom->createElementNS($this->namespaces['gmd'], 'gmd:extent');
+        $extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':exist', '1');
         $extent->appendChild($dom->importNode($this->getExtendStereotype($boundary->extent_type, $boundary->descriptions, $boundary->northbound, $boundary->southbound, $boundary->eastbound, $boundary->westbound, $boundary->codes), true));
     
         return $extent;
         
     }
-    
+
     /**
      * 
      * Returns the structure of the stereotype "Extent"
@@ -172,8 +173,9 @@ class FormStereotype {
      */
     public function getExtendStereotype($extent_type_value = '', $descriptions = '', $northbound_value = '', $southbound_value = '', $eastbound_value = '', $westbound_value = '', $codes = '', $wrap_extent = false) {
         $dom = new DOMDocument('1.0', 'utf-8');
-        
+
         $extent = $dom->createElementNS($this->namespaces['gmd'], 'gmd:extent');
+        $extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':exist', '1');
         
         $EX_Extent = $dom->createElementNS($this->namespaces['gmd'], 'gmd:EX_Extent');
         $EX_Extent->setAttributeNS(CatalogNs::URI, CatalogNs::PREFIX . ':dbid', '0');
@@ -284,7 +286,7 @@ class FormStereotype {
         $EX_Extent->appendChild($description);
         $EX_Extent->appendChild($geographicElement1);
         if(!empty($descriptions)){
-            $EX_Extent->appendChild($geographicElement2);
+        $EX_Extent->appendChild($geographicElement2);
         }
 
         $northBoundLatitude->firstChild->nodeValue = $northbound_value;
@@ -296,9 +298,9 @@ class FormStereotype {
              $extent->appendChild($EX_Extent);
              return $extent;
         }else{
-            return $EX_Extent;
-        }
-        
+        return $EX_Extent;
+    }
+
     }
 
     /**
@@ -308,9 +310,9 @@ class FormStereotype {
      */
     private function getBoundaryByName($name) {
         $db = JFactory::getDbo();
-        
+
         $query = $db->getQuery(true);
-        $query->select('b.guid, b.id AS code, b.`name` AS description, b.northbound, b.southbound, b.eastbound,b.westbound, bc.`name` AS extent_type')
+        $query->select('b.guid, b.id AS code, b.name AS description, b.northbound, b.southbound, b.eastbound,b.westbound, bc.name AS extent_type')
                 ->from('#__sdi_boundary b')
                 ->innerJoin('#__sdi_translation t ON b.guid=t.element_guid')
                 ->innerJoin('#__sdi_boundarycategory bc ON bc.id=b.category_id')

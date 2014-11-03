@@ -18,6 +18,7 @@ JHtml::_('formbehavior.chosen', 'select');
 JHtml::_('behavior.modal');
 JHtml::_('behavior.calendar');
 
+
 $document = JFactory::getDocument();
 ?>
 <style> 
@@ -30,6 +31,9 @@ $document = JFactory::getDocument();
     }
     
 </style>
+ <script type="text/javascript">
+      var baseUrl = "<?php echo JUri::base(); ?>index.php?" ;
+    </script>
 <div class="core front-end-edit">
     <?php if (!empty($this->parent)): ?>
         <h1><?php echo $this->parent->name; ?>: <?php echo $this->parent->version_name; ?></h1>
@@ -281,7 +285,7 @@ $document = JFactory::getDocument();
                         </div>
                         <div class="controls">
                             <div class="input-append">
-                                <textarea cols="150" rows="15" id="assign_msg" name="assign_msg">Type a message...</textarea>
+                                <textarea cols="150" rows="15" id="assign_msg" name="assign_msg" placeholder="<?php echo JText::_('COM_EASYSDI_CORE_RESOURCE_ASSIGN_MESSAGE_PLACEHOLDER'); ?>"></textarea>
                             </div>
                         </div>
                         <!-- Child Checkbox field -->

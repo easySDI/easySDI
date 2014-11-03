@@ -73,11 +73,8 @@ class Easysdi_catalogTablerelationdefaultvalue extends JTable {
         return true;
     }
     
-    public function loadByRelationID($id = null, $reset = true) {
-        if ($reset) {
-            $this->reset();
-        }
-
+    public function loadByRelationID($id = null) {
+        
         // Initialise the query.
         $query = $this->_db->getQuery(true);
         $query->select('attributevalue_id, value, language_id');

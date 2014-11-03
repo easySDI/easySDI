@@ -73,7 +73,7 @@ class Easysdi_coreModelVersions extends JModelList {
                 )
         );
         
-        $query->from('`#__sdi_version` AS a');
+        $query->from('#__sdi_version AS a');
         
 
     // Join over the users for the checked out user.

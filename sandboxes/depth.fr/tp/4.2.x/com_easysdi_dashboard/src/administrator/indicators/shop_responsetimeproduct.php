@@ -12,7 +12,9 @@ class Indicator {
         $db = JFactory::getDbo();
 
         $query = $db->getQuery(true);
-        $query  ->select($query->concatenate(array('\'<1h (\'','count(odif.id)','\')\'')).' as timerange, count(odif.id) as count')
+        
+        //$query  ->select($concat.' as timerange, count(odif.id) as count')
+        $query  ->select($query->concatenate(array('\'<1h (\'',$query->castAsChar('count(odif.id)'),'\')\'')).' as timerange, count(odif.id) as count')
                 ->from($db->quoteName('#__sdi_order', 'o'))
                 ->join('INNER', $db->quoteName('#__sdi_order_diffusion', 'odif') . ' ON (' . $db->quoteName('o.id') . ' = ' . $db->quoteName('odif.order_id') . ')')
                 ->join('INNER', $db->quoteName('#__sdi_diffusion', 'dif') . ' ON (' . $db->quoteName('odif.diffusion_id') . ' = ' . $db->quoteName('dif.id') . ')')
@@ -21,18 +23,21 @@ class Indicator {
                 ->join('INNER', $db->quoteName('#__sdi_organism', 'org') . ' ON (' . $db->quoteName('r.organism_id') . ' = ' . $db->quoteName('org.id') . ')')
                 ->where($db->quoteName('odif.productstate_id') . ' = 1')
                 ->where('o.ordertype_id = 1')
-                ->where('UNIX_TIMESTAMP(' . $db->quoteName('odif.completed') . ') -  UNIX_TIMESTAMP(' . $db->quoteName('o.sent') . ')  < 3600')
+                //->where('UNIX_TIMESTAMP(' . $db->quoteName('odif.completed') . ') -  UNIX_TIMESTAMP(' . $db->quoteName('o.sent') . ')  < 3600')
+                ->where('DATEDIFF(second,' . $db->quoteName('odif.completed') . ',' . $db->quoteName('o.sent') . ')  < 3600')
                 ->where('odif.completed between \'' . date("c", $timestart) . '\' and  \'' . date("c", $timeend) . '\' ');
         if ($organism != 'all') {
             $query->where($db->quoteName('org.id') . ' = ' . $organism);
         }
 
+        print_r($query->__toString()); die();
         $db->setQuery($query, 0, $limit);
         $res_lt1h = $db->loadRowList();
 
 
         $query = $db->getQuery(true);
-        $query  ->select($query->concatenate(array('\'1h-48h (\'','count(odif.id)','\')\'')).' as timerange, count(odif.id) as count')
+        
+        $query  ->select($query->concatenate(array('\'1h-48h (\'',$query->castAsChar('count(odif.id)'),'\')\'')).' as timerange, count(odif.id) as count')
                 ->from($db->quoteName('#__sdi_order', 'o'))
                 ->join('INNER', $db->quoteName('#__sdi_order_diffusion', 'odif') . ' ON (' . $db->quoteName('o.id') . ' = ' . $db->quoteName('odif.order_id') . ')')
                 ->join('INNER', $db->quoteName('#__sdi_diffusion', 'dif') . ' ON (' . $db->quoteName('odif.diffusion_id') . ' = ' . $db->quoteName('dif.id') . ')')
@@ -41,8 +46,10 @@ class Indicator {
                 ->join('INNER', $db->quoteName('#__sdi_organism', 'org') . ' ON (' . $db->quoteName('r.organism_id') . ' = ' . $db->quoteName('org.id') . ')')
                 ->where($db->quoteName('odif.productstate_id') . ' = 1')
                 ->where('o.ordertype_id = 1')
-                ->where('UNIX_TIMESTAMP(' . $db->quoteName('odif.completed') . ') -  UNIX_TIMESTAMP(' . $db->quoteName('o.sent') . ') <= 172800')
-                ->where('UNIX_TIMESTAMP(' . $db->quoteName('odif.completed') . ') -  UNIX_TIMESTAMP(' . $db->quoteName('o.sent') . ') >= 3600')
+                //->where('UNIX_TIMESTAMP(' . $db->quoteName('odif.completed') . ') -  UNIX_TIMESTAMP(' . $db->quoteName('o.sent') . ') <= 172800')
+                ->where('DATEDIFF(second, ' . $db->quoteName('odif.completed') . ',' . $db->quoteName('o.sent') . ') <= 172800')
+                //->where('UNIX_TIMESTAMP(' . $db->quoteName('odif.completed') . ') -  UNIX_TIMESTAMP(' . $db->quoteName('o.sent') . ') >= 3600')
+                ->where('DATEDIFF(second,' . $db->quoteName('odif.completed') . ',' . $db->quoteName('o.sent') . ') >= 3600')
                 ->where('odif.completed between \'' . date("c", $timestart) . '\' and  \'' . date("c", $timeend) . '\' ');
         if ($organism != 'all') {
             $query->where($db->quoteName('org.id') . ' = ' . $organism);
@@ -53,7 +60,7 @@ class Indicator {
 
 
         $query = $db->getQuery(true);
-        $query  ->select($query->concatenate(array('\'>48h (\'','count(odif.id)','\')\'')).' as timerange, count(odif.id) as count')
+        $query  ->select($query->concatenate(array('\'>48h (\'',$query->castAsChar('count(odif.id)'),'\')\'')).' as timerange, count(odif.id) as count')
                 ->from($db->quoteName('#__sdi_order', 'o'))
                 ->join('INNER', $db->quoteName('#__sdi_order_diffusion', 'odif') . ' ON (' . $db->quoteName('o.id') . ' = ' . $db->quoteName('odif.order_id') . ')')
                 ->join('INNER', $db->quoteName('#__sdi_diffusion', 'dif') . ' ON (' . $db->quoteName('odif.diffusion_id') . ' = ' . $db->quoteName('dif.id') . ')')
@@ -62,7 +69,8 @@ class Indicator {
                 ->join('INNER', $db->quoteName('#__sdi_organism', 'org') . ' ON (' . $db->quoteName('r.organism_id') . ' = ' . $db->quoteName('org.id') . ')')
                 ->where($db->quoteName('odif.productstate_id') . ' = 1')
                 ->where('o.ordertype_id = 1')
-                ->where('UNIX_TIMESTAMP(' . $db->quoteName('odif.completed') . ') -  UNIX_TIMESTAMP(' . $db->quoteName('o.sent') . ') > 172800')
+                //->where('UNIX_TIMESTAMP(' . $db->quoteName('odif.completed') . ') -  UNIX_TIMESTAMP(' . $db->quoteName('o.sent') . ') > 172800')
+                ->where('DATEDIFF(second, ' . $db->quoteName('odif.completed') . ',' . $db->quoteName('o.sent') . ') <= 172800')
                 ->where('odif.completed between \'' . date("c", $timestart) . '\' and  \'' . date("c", $timeend) . '\' ');
         if ($organism != 'all') {
             $query->where($db->quoteName('org.id') . ' = ' . $organism);
