@@ -1,1 +1,0 @@
-ALTER TABLE #__sdi_attribute DROP COLUMN issystem;
