@@ -42,6 +42,23 @@ abstract class PhysicalService {
     public function getCapabilities($rawXML = null) {
         $this->rawXml = $rawXML;
         if (!isset($rawXML)) {
+
+            //try to set compliance
+            try {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+                $query->select('sv.value as value');
+                $query->from('#__sdi_physicalservice_servicecompliance ssc');
+                $query->join('INNER', '#__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id ');
+                $query->join('INNER', '#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id ');
+                $query->where('ssc.service_id = ' . (int) $this->id);
+                $query->order('sv.ordering DESC');
+                $db->setQuery($query);
+                $this->compliance = $db->loadResult();
+            } catch (Exception $e) {
+                $this->setError($e->getMessage());
+            }
+
             $completeUrl = $this->url . "?REQUEST=GetCapabilities&SERVICE=" . $this->connector;
             if (isset($this->compliance)) {
                 $completeUrl .= "&version=" . $this->compliance;
