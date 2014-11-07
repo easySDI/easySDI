@@ -45,7 +45,13 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
         $versions = $this->core_helpers->getViralVersionnedChild($version);
 
         try {
-            $db->transactionStart();
+            try{
+                $db->transactionStart();
+            }catch (Exception $exc){
+                $db->connect();                
+                $driver_begin_transaction = $db->name . '_begin_transaction';
+                $driver_begin_transaction($db->getConnection());
+            }
             $this->deleteMetadatas($versions);
             $this->deleteVersions($versions);
             $db->transactionCommit();
@@ -108,30 +114,65 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
      * Get children of a metadata
      */
     public function getChildren() {
+        $user = new sdiUser();
+        
         $parentId = JFactory::getApplication()->input->getInt('parentId', null);
+        
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        $query->select('v.resource_id');
-        $query->from('#__sdi_version v');
-        $query->innerJoin('#__sdi_metadata m on m.version_id = v.id');
-        $query->where('m.id = ' . (int) $parentId);
+        $query = $db->getQuery(true)
+                ->select('r.id, m.modified_by')
+                ->from('#__sdi_resource r')
+                ->innerJoin('#__sdi_user_role_resource urr ON urr.resource_id=r.id')
+                ->innerJoin('#__sdi_version v ON v.resource_id=r.id')
+                ->innerJoin('#__sdi_metadata m ON m.version_id=v.id')
+                ->innerJoin('#__sdi_versionlink vl ON v.id=vl.child_id')
+                ->where('vl.parent_id='.(int)$parentId.' AND urr.user_id='.(int)$user->id)
+                ->group('r.id, m.modified_by')
+                ;
 
-        $db->setQuery($query);
-        $resource = $db->loadObject();
-
-        $query = $db->getQuery(true);
-        $query->select('vl.id');
-        $query->from('#__sdi_versionlink vl');
-        $query->innerJoin('#__sdi_metadata m on vl.parent_id = m.version_id');
-        $query->where('m.id = ' . $parentId);
-
-        $db->setQuery($query);
-        $childs = $db->loadObjectList();
+        $db->setQuery($query)->execute();
+        $cnt = $db->getNumRows();
+        $children = $db->loadObjectList();
 
         $response = array();
         $response['success'] = 'true';
-        $response['resource_id'] = $resource->resource_id;
-        $response['num'] = count($childs);
+        $response['resource_id'] = $parentId;
+        $response['num'] = (int)$cnt;
+        $response['children'] = $children;
+
+        echo json_encode($response);
+        die();
+    }
+    
+    public function getParent(){
+        $user = new sdiUser();
+        
+        $versionId = JFactory::getApplication()->input->getInt('versionId', null);
+        $parentState = JFactory::getApplication()->input->getInt('parentState', null);
+        
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('r.id')
+                ->from('#__sdi_resource r')
+                ->innerJoin('#__sdi_user_role_resource urr ON urr.resource_id=r.id')
+                ->innerJoin('#__sdi_version v ON v.resource_id=r.id')
+                ->innerJoin('#__sdi_metadata m ON m.version_id=v.id')
+                ->innerJoin('#__sdi_versionlink vl ON v.id=vl.parent_id')
+                ->where('vl.child_id='.(int)$versionId.' AND urr.user_id='.(int)$user->id)
+                ->group('r.id')
+                ;
+        
+        if(!empty($parentState)){
+            $query->where('m.metadatastate_id='.(int)$parentState);
+        }
+
+        $db->setQuery($query)->execute();
+        $cnt = $db->getNumRows();
+
+        $response = array();
+        $response['success'] = 'true';
+        $response['resource_id'] = $versionId;
+        $response['num'] = (int)$cnt;
 
         echo json_encode($response);
         die();
@@ -204,7 +245,13 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
         // try to create the new versions
         try {
-            $dbo->transactionStart();
+            try{
+                $dbo->transactionStart();
+            }catch (Exception $exc){
+                $dbo->connect();                
+                $driver_begin_transaction = $dbo->name . '_begin_transaction';
+                $driver_begin_transaction($dbo->getConnection());
+            }
             $this->saveVersions($new_versions);
 
             //Create the linked metadata
@@ -324,7 +371,7 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
                 'option' => 'com_easysdi_core',
                 'view' => 'resources',
                 'parentid' => JFactory::getApplication()->getUserState('com_easysdi_core.parent.resource.version.id'));
-            $this->setRedirect(JRoute::_($back_url, false));
+            $this->setRedirect(JRoute::_(Easysdi_coreHelper::array2URL($back_url), false));
         }
     }
 
@@ -439,20 +486,18 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
             $metadata = JTable::getInstance('metadata', 'Easysdi_catalogTable');
             $keys = array("version_id" => $version->id);
 
-            try {
-                $metadata->load($keys);
-                //Delete the csw metadata in the remote catalog
-                $csw = new sdiMetadata($metadata->id);
-                $this->md_rollback[$metadata->id] = $csw->load();
-                if (!$csw->delete()) {
-                    unset($this->md_rollback[$metadata->id]);
-                    throw new Exception(JText::_('Metadata can not be deleted from the remote catalog.'));
-                }
-
-                $metadata->delete($metadata->id);
-            } catch (Exception $exc) {
-                echo $exc->getTraceAsString();
+           
+            $metadata->load($keys);
+            //Delete the csw metadata in the remote catalog
+            $csw = new sdiMetadata($metadata->id);
+            $this->md_rollback[$metadata->id] = $csw->load();
+            if (!$csw->delete()) {
+                unset($this->md_rollback[$metadata->id]);
+                throw new Exception(JText::_('Metadata can not be deleted from the remote catalog.'));
             }
+
+            $metadata->delete($metadata->id);
+            
         }
 
         return $md_rollback;
@@ -525,20 +570,41 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 
     /**
      * Get a list of cascading deleting children
+     * 
      */
     public function getCascadeDeleteChild() {
+        return $this->getCascadeChild(true);
+    }
+
+    /**
+     * Get a list of cascading deleting children
+     * 
+     */
+    public function getCascadePublicableChild() {
+        return $this->getCascadeChild(true, true);
+    }
+    
+    /**
+     * getCascadeChild - get the list of the version's children
+     */
+    public function getCascadeChild($viralVersioning = false, $unpublished = false){
         $model = $this->getModel('Version', 'Easysdi_coreModel');
 
         // Get the user data.
+        $id = JFactory::getApplication()->input->get('version_id', null, 'int');
+        if(empty($id)){
+            $jform = JFactory::getApplication()->input->get('jform', array(), 'array');
+            $id = $jform['id'];
+        }
         $data = array();
-        $data['id'] = JFactory::getApplication()->input->get('version_id', null, 'int');
+        $data['id'] = $id;
 
         $version = $model->getData($data['id']);
         $version->resource_name = $version->resourcename;
         $version->version_name = $version->name;
 
         $response = array();
-        $response['versions'] = $this->core_helpers->getViralVersionnedChild($version);
+        $response['versions'] = $this->core_helpers->getChildrenVersion($version, $viralVersioning, $unpublished);
 
         echo json_encode($response);
         die();
@@ -609,6 +675,28 @@ class Easysdi_coreControllerVersion extends Easysdi_coreController {
 		
 		
         echo json_encode($response);
+        die();
+    }
+    
+    public function getPublishRight(){
+        $metadata_id = JFactory::getApplication()->input->get('metadata_id', null, 'int');
+
+        // Check if metadata has parent viral versionned version
+        $db = JFactory::getDbo();
+        
+        $query = $db->getQuery(true)
+                ->select('v.id, COUNT(md.id) as canPublish')
+                ->from('#__sdi_metadata m')
+                ->innerJoin('#__sdi_version v ON m.version_id = v.id')
+                ->innerJoin('#__sdi_versionlink vl ON v.id=vl.parent_id')
+                ->innerJoin('#__sdi_metadata md ON vl.child_id=md.version_id')
+                ->where('m.id = ' . $metadata_id.' AND md.metadatastate_id != '.sdiMetadata::PUBLISHED.' AND md.metadatastate_id != '.sdiMetadata::VALIDATED)
+                ->group('v.id')
+                ;
+        $v = $query->__toString();
+        $result = $db->setQuery($query)->loadAssoc();
+        
+        echo json_encode($result);
         die();
     }
 

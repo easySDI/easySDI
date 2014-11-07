@@ -16,32 +16,57 @@ JHtml::_('formbehavior.chosen', 'select');
 JHtml::_('behavior.calendar');
 JHtml::_('behavior.modal');
 
-JText::script('COM_EASYSDI_CATALOGE_METADATA_CONTROL_OK');
-JText::script('COM_EASYSDI_CATALOGE_METADATA_SAVE_WARNING');
-JText::script('COM_EASYSDI_CATALOGE_METADATA_EMPTY_WARNING');
+JText::script('COM_EASYSDI_CATALOG_METADATA_CONTROL_OK');
+JText::script('COM_EASYSDI_CATALOG_METADATA_SAVE_WARNING');
+JText::script('COM_EASYSDI_CATALOG_METADATA_EMPTY_WARNING');
+JText::script('COM_EASYSDI_CATALOG_DELETE_RELATION_CONFIRM');
 JText::script('ARCHIVED');
 JText::script('INPROGRESS');
 JText::script('PUBLISHED');
 JText::script('TRASHED');
 JText::script('VALIDATED');
 
+JText::script('COM_EASYSDI_CATALOG_GEMET_HOME');
+JText::script('COM_EASYSDI_CATALOG_GEMET_SEARCH');
+JText::script('COM_EASYSDI_CATALOG_GEMET_BT');
+JText::script('COM_EASYSDI_CATALOG_GEMET_NT');
+JText::script('COM_EASYSDI_CATALOG_GEMET_RT');
+JText::script('COM_EASYSDI_CATALOG_GEMET_TH');
+JText::script('COM_EASYSDI_CATALOG_GEMET_USE');
+JText::script('COM_EASYSDI_CATALOG_GEMET_THEMES');
+JText::script('COM_EASYSDI_CATALOG_GEMET_GROUPS');
+JText::script('COM_EASYSDI_CATALOG_GEMET_WARNING');
+JText::script('COM_EASYSDI_CATALOG_GEMET_CHARACTERS_REQUIRED');
+JText::script('COM_EASYSDI_CATALOG_GEMET_TOP_CONCEPTS');
+JText::script('COM_EASYSDI_CATALOG_GEMET_FOUND');
+JText::script('COM_EASYSDI_CATALOG_GEMET_INSPIRE_THEMES');
+JText::script('COM_EASYSDI_CATALOG_GEMET_GEMET_TOP_CONCEPTS');
+
+JText::script('COM_EASYSDI_CATALOG_OPEN_ALL');
+JText::script('COM_EASYSDI_CATALOG_CLOSE_ALL');
+
 
 //Load admin language file
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
+$lang->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 $document = JFactory::getDocument();
 
+if (JDEBUG) {
+    $document->addScript('administrator/components/com_easysdi_core/libraries/OpenLayers-2.13.1/OpenLayers.debug.js');
+    $document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base-debug.js');
+    $document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');    
+}else{
+    $document->addScript('administrator/components/com_easysdi_core/libraries/OpenLayers-2.13.1/OpenLayers.js');
+    $document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base.js');
+    $document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all.js');
+}
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/ext/resources/css/ext-all.css');
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/css/jquery.dataTables.css');
 $document->addScript('administrator/components/com_easysdi_core/libraries/easysdi/catalog/bootbox.min.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/openlayers/OpenLayers.debug.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/proj4js-1.4.1/dist/proj4.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base-debug.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/ext/ext-all-debug.js');
+$document->addScript('administrator/components/com_easysdi_core/libraries/proj4js-1.1.0/lib/proj4js.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/thesaur.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/HS.js');
-$document->addScript('administrator/components/com_easysdi_core/libraries/gemetclient-2.0.0/src/translations.js');
 $document->addScript('administrator/components/com_easysdi_core/libraries/DataTables-1.9.4/media/js/jquery.dataTables.min.js');
 
 $document->addScript('http://maps.google.com/maps/api/js?v=3&amp;sensor=false');
@@ -53,94 +78,21 @@ $document->addScript('administrator/components/com_easysdi_core/libraries/easysd
 
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/syntaxhighlighter/styles/shCore.css');
 $document->addStyleSheet('administrator/components/com_easysdi_core/libraries/syntaxhighlighter/styles/shThemeDefault.css');
+$document->addStyleSheet('administrator/components/com_easysdi_catalog/assets/css/easysdi_catalog.css');
 ?>
-
-<style>
-
-    .action-1{
-        font-size: 15px;
-    }
-    .legend-1{
-        font-size: 16px;
-    }
-
-    .action-2, .action-3{
-        font-size: 13px;
-    }
-    .legend-2, .legend-3{
-        font-size: 14px;
-    }
-
-    .inner-fds{
-        padding-left:15px;
-        border-left: 1px solid #BDBDBD;
-    }
-
-    .collapse-btn, .neutral-btn{
-        margin-right: 10px;
-    }
-
-    .add-btn, .empty-btn, .preview-btn{
-        margin-left: 10px;
-    }
-    
-    .hidden {
-        display: none;
-        visibility: hidden;
-    }
-
-    legend{
-        font-size: 12px;
-    }
-
-    img.olTileImage{
-        max-width: none;
-    }
-
-    svg {
-        max-width :none !important;
-    }
-
-    .syntaxhighlighter{
-        overflow: visible !important;
-    }
-
-    #previewModal{
-        width: 900px;
-        left: 40%;
-    }
-
-    #search_table{
-        display: none;
-    }
-
-    #searchModal{
-        width: 900px;
-        left: 40%;
-    }
-    
-    .sdi-multi-extent-select.chzn-container-multi .chzn-choices li.search-choice {
-        min-width: 89%;
-    }
-    
-    .sdi-multi-extent-select.chzn-container-multi .chzn-choices {
-        max-height: 200px;
-        max-height: 200px;
-        overflow:auto;
-    }
-</style>
 
 <script type="text/javascript">
 
+    var baseUrl = "<?php echo JUri::base(); ?>index.php?" ;
     js = jQuery.noConflict();
     js('document').ready(function() {
 
 <?php
 if ($this->params->get('editmetadatafieldsetstate') == "allopen"){ ?>
-            Joomla.submitbutton('metadata.toggle');
-            tabIsOpen = false;
-<?php }else{ ?>
+            toogleAll(js('#btn_toggle_all'));
             tabIsOpen = true;
+<?php }else{ ?>
+            tabIsOpen = false;
 <?php
 }
 foreach ($this->validators as $validator) {
@@ -159,7 +111,7 @@ foreach ($this->validators as $validator) {
     ?>
 
     <div>
-        <h2><?php echo JText::_('COM_EASYSDI_CATALOGE_TITLE_EDIT_METADATA') . ' ' . $title->resource_name ?></h2>
+        <h2><?php echo JText::_('COM_EASYSDI_CATALOG_TITLE_EDIT_METADATA') . ' ' . $title->resource_name ?></h2>
         <h5><?php echo $title->name . ': ' . JText::_($title->value); ?></h5>
     </div>
 
@@ -174,6 +126,7 @@ foreach ($this->validators as $validator) {
             <?php endforeach; ?>
             <input type="hidden" name="option" value="com_easysdi_catalog" />
             <input type="hidden" name="task" value="" />
+            <input type="hidden" name="viral" id="jform_viral" value="0" />
 
         </div>
 
@@ -209,24 +162,24 @@ foreach ($this->validators as $validator) {
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="searchModalLabel"><?php echo JText::_('COM_EASYSDI_CATALOGE_TITLE_IMPORT_METADATA') ; ?></h4>
+                    <h4 class="modal-title" id="searchModalLabel"><?php echo JText::_('COM_EASYSDI_CATALOG_TITLE_IMPORT_METADATA') ; ?></h4>
                 </div>
                 <div class="modal-body">
                     <div>
                         <form id="form_search_resource" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal">
                             <input type="hidden" name="task" value="">
                             <div class="control-group">
-                                <label class="control-label" for="inputEmail"><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_TYPE') ; ?></label>
+                                <label class="control-label" for="inputEmail"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE') ; ?></label>
                                 <div class="controls">
                                     <select id="resourcetype_id" name="resourcetype_id">
                                         <?php foreach ($this->getResourceType() as $resource) { ?>
-                                        <option value="<?php echo $resource->id; ?>"><?php echo EText::_($resource->guid,1,  JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_TYPE_ALL')); ?></option>
+                                        <option value="<?php echo $resource->id; ?>"><?php echo EText::_($resource->guid,1,  JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE_ALL')); ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
                             </div>
                             <div id="resource_name_group" class="control-group">
-                                <label class="control-label" for="inputEmail"><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_NOM') ; ?></label>
+                                <label class="control-label" for="inputEmail"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_NAME') ; ?></label>
                                 <div class="controls">
                                     <input id="resource_name" name="resource_name" type="text" value="">
                                 </div>
@@ -245,12 +198,12 @@ foreach ($this->validators as $validator) {
                                 <label class="control-label" for="version">Version</label>
                                 <div class="controls">
                                     <select id="version" name="version">
-                                       <option value="all"><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_VERSION_ALL') ; ?></option>
-                                       <option value="last" selected="selected"><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_VERSION_LAST') ; ?></option>
+                                       <option value="all"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_VERSION_ALL') ; ?></option>
+                                       <option value="last" selected="selected"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_VERSION_LAST') ; ?></option>
                                     </select>
                                 </div>
                             </div>
-                            <button onclick="Joomla.submitbutton('metadata.searchresource')" type="button" class="btn btn-success btn-small pull-right"><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_SEARCH') ; ?></button>
+                            <button onclick="Joomla.submitbutton('metadata.searchresource')" type="button" class="btn btn-success btn-small pull-right"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_SEARCH') ; ?></button>
                         </form>
 
                         <!-- Select replicate form -->
@@ -260,7 +213,7 @@ foreach ($this->validators as $validator) {
 
                             <table id="search_table" class="table table-bordered">
                                 <thead>
-                                    <tr><th></th><th><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_NOM') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_VERSION') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_GUID') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_TYPE') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_STATUS') ; ?></th></tr>
+                                    <tr><th></th><th><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_NAME') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_VERSION') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_GUID') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_TYPE') ; ?></th><th><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_STATUS') ; ?></th></tr>
                                 </thead>
                                 <tbody id="search_result">
 
@@ -271,7 +224,7 @@ foreach ($this->validators as $validator) {
                 </div>
                 <div class="modal-footer">
                     <button id="import-btn" style="display: none" type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.edit')">Importer</button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_CLOSE') ; ?></button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_CLOSE') ; ?></button>
                 </div>
             </div>
         </div>
@@ -292,7 +245,7 @@ foreach ($this->validators as $validator) {
                         <input type="hidden" name="import[importref_id]" class="import_importref_id" value=""/>
 
                         <div class="control-group">
-                            <div class="control-label"><label id="xml_file-lbl" for="xml_file" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_XML_FILE') ; ?></label></div>
+                            <div class="control-label"><label id="xml_file-lbl" for="xml_file" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_XML_FILE') ; ?></label></div>
                             <div class="controls">
                                 <div class="input-append">
                                     <input type="file" name="xml_file" id="xml_file"/>
@@ -302,7 +255,7 @@ foreach ($this->validators as $validator) {
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.importxml')" ><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_IMPORT') ; ?></button>
+                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.importxml')" ><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_IMPORT') ; ?></button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
                 </div>
             </div>
@@ -324,7 +277,7 @@ foreach ($this->validators as $validator) {
                         <input type="hidden" name="import[importref_id]" class="import_importref_id" value=""/>
 
                         <div class="control-group">
-                            <div class="control-label"><label id="import_fileidentifier-lbl" for="import_fileidentifier" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_FILEIDENTIFIER') ; ?></label></div>
+                            <div class="control-label"><label id="import_fileidentifier-lbl" for="import_fileidentifier" class="" aria-invalid="false"><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_FILEIDENTIFIER') ; ?></label></div>
                             <div class="controls">
                                 <div class="input-append">
                                     <input class="required" type="text" name="import[fileidentifier]" id="import_fileidentifier"/>
@@ -334,7 +287,7 @@ foreach ($this->validators as $validator) {
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.importcsw')" ><?php echo JText::_('COM_EASYSDI_CATALOGE_IMPORT_METADATA_IMPORT') ; ?></button>
+                    <button type="button" class="btn btn-success" onclick="Joomla.submitbutton('metadata.importcsw')" ><?php echo JText::_('COM_EASYSDI_CATALOG_IMPORT_METADATA_IMPORT') ; ?></button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('JCANCEL'); ?></button>
                 </div>
             </div>
@@ -344,6 +297,7 @@ foreach ($this->validators as $validator) {
     <!-- Publish Modal -->
     <div class="modal fade hide" id="publishModal" tabindex="-1" role="dialog" aria-labelledby="publishModalLabel" aria-hidden="true">
         <form id="form_publish" action="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=metadata.save'); ?>" method="post" class="form-validate form-horizontal">
+            <input type="hidden" id="viral" name="viral" value="0"/>
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -359,6 +313,8 @@ foreach ($this->validators as $validator) {
                                 </div>
                             </div>
                         </div>
+                    <?php echo JText::_('COM_EAYSDI_CATALOG_PUBLISH_CONFIRM'); ?>
+                    <span id="publishModalChildrenList"></span>
 
                 </div>
                 <div class="modal-footer">

@@ -111,8 +111,8 @@ ON DELETE CASCADE;
 
 ALTER TABLE [#__sdi_assignment] CHECK CONSTRAINT [#__sdi_assignment$#__sdi_assignment_fk2];
 
-ALTER TABLE [#__sdi_assignment]  WITH CHECK ADD  CONSTRAINT [#__sdi_assignment$#__sdi_assignment_fk3] FOREIGN KEY([version_id])
-REFERENCES [#__sdi_version] ([id])
+ALTER TABLE [#__sdi_assignment]  WITH CHECK ADD  CONSTRAINT [#__sdi_assignment$#__sdi_assignment_fk3] FOREIGN KEY([metadata_id])
+REFERENCES [#__sdi_metadata] ([id])
 ON DELETE CASCADE;
 
 ALTER TABLE [#__sdi_assignment] CHECK CONSTRAINT [#__sdi_assignment$#__sdi_assignment_fk3];
@@ -424,30 +424,36 @@ ALTER TABLE [#__sdi_order] CHECK CONSTRAINT [#__sdi_order$#__sdi_order_fk4];
 
 ALTER TABLE [#__sdi_order_diffusion]  WITH CHECK ADD  CONSTRAINT [#__sdi_order_diffusion$#__sdi_order_diffusion_fk1] FOREIGN KEY([order_id])
 REFERENCES [#__sdi_order] ([id])
-ON DELETE CASCADE;
+ON DELETE CASCADE
+ON UPDATE NO ACTION;
 
 ALTER TABLE [#__sdi_order_diffusion] CHECK CONSTRAINT [#__sdi_order_diffusion$#__sdi_order_diffusion_fk1];
 
 ALTER TABLE [#__sdi_order_diffusion]  WITH CHECK ADD  CONSTRAINT [#__sdi_order_diffusion$#__sdi_order_diffusion_fk2] FOREIGN KEY([diffusion_id])
 REFERENCES [#__sdi_diffusion] ([id])
-ON DELETE CASCADE;
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
 
 ALTER TABLE [#__sdi_order_diffusion] CHECK CONSTRAINT [#__sdi_order_diffusion$#__sdi_order_diffusion_fk2];
 
 ALTER TABLE [#__sdi_order_diffusion]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_order_diffusion$#__sdi_order_diffusion_fk3] FOREIGN KEY([productstate_id])
-REFERENCES [#__sdi_sys_productstate] ([id]);
+REFERENCES [#__sdi_sys_productstate] ([id])
+ON DELETE NO ACTION
+ON UPDATE NO ACTION;
 
 ALTER TABLE [#__sdi_order_diffusion] CHECK CONSTRAINT [#__sdi_order_diffusion$#__sdi_order_diffusion_fk3];
 
 ALTER TABLE [#__sdi_order_perimeter]  WITH CHECK ADD  CONSTRAINT [#__sdi_order_perimeter$#__sdi_order_perimeter_fk1] FOREIGN KEY([order_id])
 REFERENCES [#__sdi_order] ([id])
-ON DELETE CASCADE;
+ON DELETE CASCADE
+ON UPDATE NO ACTION;
 
 ALTER TABLE [#__sdi_order_perimeter] CHECK CONSTRAINT [#__sdi_order_perimeter$#__sdi_order_perimeter_fk1];
 
 ALTER TABLE [#__sdi_order_perimeter]  WITH NOCHECK ADD  CONSTRAINT [#__sdi_order_perimeter$#__sdi_order_perimeter_fk2] FOREIGN KEY([perimeter_id])
 REFERENCES [#__sdi_perimeter] ([id])
-ON DELETE CASCADE;
+ON DELETE CASCADE
+ON UPDATE NO ACTION;
 
 ALTER TABLE [#__sdi_order_perimeter] CHECK CONSTRAINT [#__sdi_order_perimeter$#__sdi_order_perimeter_fk2];
 
@@ -465,18 +471,22 @@ ALTER TABLE [#__sdi_organism_category_pricing_rebate] CHECK CONSTRAINT [#__sdi_o
 
 ALTER TABLE [#__sdi_order_propertyvalue]  WITH CHECK ADD  CONSTRAINT [#__sdi_order_propertyvalue$#__sdi_order_propertyvalue_fk1] FOREIGN KEY([orderdiffusion_id])
 REFERENCES [#__sdi_order_diffusion] ([id])
-ON DELETE CASCADE;
+ON DELETE CASCADE
+ON UPDATE NO ACTION;
 
 ALTER TABLE [#__sdi_order_propertyvalue] CHECK CONSTRAINT [#__sdi_order_propertyvalue$#__sdi_order_propertyvalue_fk1];
 
 ALTER TABLE [#__sdi_order_propertyvalue]  WITH CHECK ADD  CONSTRAINT [#__sdi_order_propertyvalue$#__sdi_order_propertyvalue_fk2] FOREIGN KEY([property_id])
 REFERENCES [#__sdi_property] ([id])
-ON DELETE CASCADE;
+ON DELETE CASCADE
+ON UPDATE NO ACTION;
 
 ALTER TABLE [#__sdi_order_propertyvalue] CHECK CONSTRAINT [#__sdi_order_propertyvalue$#__sdi_order_propertyvalue_fk2];
 
 ALTER TABLE [#__sdi_order_propertyvalue]  WITH CHECK ADD  CONSTRAINT [#__sdi_order_propertyvalue$#__sdi_order_propertyvalue_fk3] FOREIGN KEY([propertyvalue_id])
-REFERENCES [#__sdi_propertyvalue] ([id]);
+REFERENCES [#__sdi_propertyvalue] ([id])
+ON DELETE CASCADE
+ON UPDATE NO ACTION;
 
 ALTER TABLE [#__sdi_order_propertyvalue] CHECK CONSTRAINT [#__sdi_order_propertyvalue$#__sdi_order_propertyvalue_fk3];
 
@@ -661,16 +671,6 @@ ALTER TABLE [#__sdi_resourcetypelink]  WITH CHECK ADD  CONSTRAINT [#__sdi_resour
 REFERENCES [#__sdi_resourcetype] ([id]);
 
 ALTER TABLE [#__sdi_resourcetypelink] CHECK CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk2];
-
-ALTER TABLE [#__sdi_resourcetypelink]  WITH CHECK ADD  CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk3] FOREIGN KEY([class_id])
-REFERENCES [#__sdi_class] ([id]);
-
-ALTER TABLE [#__sdi_resourcetypelink] CHECK CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk3];
-
-ALTER TABLE [#__sdi_resourcetypelink]  WITH CHECK ADD  CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk4] FOREIGN KEY([attribute_id])
-REFERENCES [#__sdi_attribute] ([id]);
-
-ALTER TABLE [#__sdi_resourcetypelink] CHECK CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk4];
 
 ALTER TABLE [#__sdi_resourcetypelinkinheritance]  WITH CHECK ADD  CONSTRAINT [#__sdi_resourcetypelinkinheritance$#__sdi_resourcetypelinkinheritance_fk1] FOREIGN KEY([resourcetypelink_id])
 REFERENCES [#__sdi_resourcetypelink] ([id]);
@@ -914,3 +914,21 @@ ALTER TABLE [users] CHECK CONSTRAINT [users$FK_USERS_ROLE];
 ALTER TABLE [#__sdi_wmts_spatialpolicy] WITH CHECK ADD CONSTRAINT [#__sdi_wmts_spatialpolicy#__sdi_wmts_spatialpolicy_fk1] FOREIGN KEY ([spatialoperator_id])
 REFERENCES [#__sdi_sys_spatialoperator] ([id]);
 ALTER TABLE [#__sdi_wmts_spatialpolicy] CHECK CONSTRAINT [#__sdi_wmts_spatialpolicy#__sdi_wmts_spatialpolicy_fk1];
+ALTER TABLE [#__sdi_virtualmetadata] WITH NOCHECK ADD CONSTRAINT [#__sdi_virtualmetadata$#__sdi_virtualservice_fk1] FOREIGN KEY ([virtualservice_id])
+REFERENCES [#__sdi_virtualservice] ([id])
+ON DELETE CASCADE;
+
+ALTER TABLE [#__sdi_virtualmetadata] CHECK CONSTRAINT [#__sdi_virtualmetadata$#__sdi_virtualservice_fk1];
+
+ALTER TABLE [#__sdi_virtualmetadata] WITH NOCHECK ADD CONSTRAINT [#__sdi_virtualmetadata$#__sdi_sys_country_fk2] FOREIGN KEY ([country_id])
+REFERENCES [#__sdi_sys_country] ([id])
+ON DELETE SET NULL;
+
+ALTER TABLE [#__sdi_virtualmetadata] CHECK CONSTRAINT [#__sdi_virtualmetadata$#__sdi_sys_country_fk2];
+
+ALTER TABLE [#__sdi_wmts_spatialpolicy] WITH NOCHECK ADD CONSTRAINT [#__sdi_wmts_spatialpolicy$#__sdi_sys_spatialoperator_fk1] FOREIGN KEY ([spatialoperator_id])
+REFERENCES [#__sdi_sys_spatialoperator] ([id])
+ON DELETE NO ACTION;
+
+ALTER TABLE [#__sdi_wmts_spatialpolicy] CHECK CONSTRAINT [#__sdi_wmts_spatialpolicy$#__sdi_sys_spatialoperator_fk1];
+

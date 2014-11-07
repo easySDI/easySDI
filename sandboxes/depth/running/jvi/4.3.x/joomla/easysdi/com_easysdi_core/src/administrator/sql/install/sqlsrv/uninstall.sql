@@ -74,10 +74,6 @@ IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[#__sdi
 ALTER TABLE [#__sdi_searchcriteria] DROP CONSTRAINT [#__sdi_searchcriteria$#__sdi_searchcriteria_fk1];
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[#__sdi_resourcetypelinkinheritance$#__sdi_resourcetypelinkinheritance_fk1]') AND parent_object_id = OBJECT_ID(N'[#__sdi_resourcetypelinkinheritance]'))
 ALTER TABLE [#__sdi_resourcetypelinkinheritance] DROP CONSTRAINT [#__sdi_resourcetypelinkinheritance$#__sdi_resourcetypelinkinheritance_fk1];
-IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk4]') AND parent_object_id = OBJECT_ID(N'[#__sdi_resourcetypelink]'))
-ALTER TABLE [#__sdi_resourcetypelink] DROP CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk4];
-IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk3]') AND parent_object_id = OBJECT_ID(N'[#__sdi_resourcetypelink]'))
-ALTER TABLE [#__sdi_resourcetypelink] DROP CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk3];
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk2]') AND parent_object_id = OBJECT_ID(N'[#__sdi_resourcetypelink]'))
 ALTER TABLE [#__sdi_resourcetypelink] DROP CONSTRAINT [#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk2];
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[#__sdi_resourcetypelink$#__sdi_resourcetypelink_fk1]') AND parent_object_id = OBJECT_ID(N'[#__sdi_resourcetypelink]'))

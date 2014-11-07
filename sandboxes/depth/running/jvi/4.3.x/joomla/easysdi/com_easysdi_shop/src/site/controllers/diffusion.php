@@ -99,7 +99,7 @@ class Easysdi_shopControllerDiffusion extends Easysdi_shopController {
         }
         
         // Validate the posted data.
-        $data = $model->validate($form, $data);
+   //     $data = $model->validate($form, $data);
 
         // Check for errors.
         if ($data === false) {

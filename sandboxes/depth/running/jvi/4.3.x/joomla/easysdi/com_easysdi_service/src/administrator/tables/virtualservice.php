@@ -88,13 +88,8 @@ class Easysdi_serviceTablevirtualservice extends sdiTable {
 	 * @link    http://docs.joomla.org/JTable/load
 	 * @since   EasySDI 3.0.0
 	 */
-	public function loadByAlias($alias, $reset = true)
+	public function loadByAlias($alias)
 	{
-		if ($reset)
-		{
-			$this->reset();
-		}
-	
 		// Initialise the query.
 		$query = $this->_db->getQuery(true);
 		$query->select('*');
@@ -146,13 +141,8 @@ class Easysdi_serviceTablevirtualservice extends sdiTable {
 	 * @link    http://docs.joomla.org/JTable/load
 	 * @since   EasySDI 3.0.0
 	 */
-	public function loadIdsByMapId($map_id = null, $reset = true)
+	public function loadIdsByMapId($map_id = null)
 	{
-		if ($reset)
-		{
-			$this->reset();
-		}
-		
 		if(empty($map_id))
 			return false;
 	

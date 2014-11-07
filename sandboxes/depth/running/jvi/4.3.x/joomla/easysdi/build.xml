@@ -335,8 +335,7 @@
                 <name>EasySDI</name> 
                 <packager>${xml.packager}</packager> 
                 <packagename>easysdi</packagename>
-                <creationDate>15 August 2012</creationDate>
-                <releaseDate>${xml.releaseDate}</releaseDate>
+                <creationDate>${xml.releaseDate}</creationDate>
                 <copyright>${xml.copyright}</copyright>
                 <license>${xml.license}</license>
                 <author>${xml.author}</author>

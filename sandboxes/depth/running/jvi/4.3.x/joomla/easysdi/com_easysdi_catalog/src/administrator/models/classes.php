@@ -148,6 +148,7 @@ class Easysdi_catalogModelclasses extends JModelList {
         $orderCol = $this->state->get('list.ordering');
         $orderDirn = $this->state->get('list.direction');
         if ($orderCol && $orderDirn) {
+            if($orderCol == 'namespace')$orderCol='ns.prefix,a.isocode';
             $query->order($db->escape($orderCol . ' ' . $orderDirn));
         }
         return $query;

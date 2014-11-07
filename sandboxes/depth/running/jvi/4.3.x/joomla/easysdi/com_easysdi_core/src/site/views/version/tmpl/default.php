@@ -21,8 +21,23 @@ $document->addScript('components/com_easysdi_core/views/version/tmpl/version.js'
 ?>
 <?php
 if ($this->item) :
+    //METADATASTATES
+    JText::script('INPROGRESS');
+    JText::script('VALIDATED');
+    JText::script('PUBLISHED');
+    JText::script('ARCHIVED');
+    JText::script('TRASHED');
+    
+    $METADATASTATE_INPROGRESS = 1;
+    $METADATASTATE_VALIDATED = 2;
+    $METADATASTATE_PUBLISHED = 3;
+    $METADATASTATE_ARCHIVED = 4;
+    $METADATASTATE_TRASHED = 5;
+    
     $versioning = ($this->item->versioning == 1) ? 'true' : 'false';
     $document->addScriptDeclaration('var versioning=' . $versioning . ';');
+    $isReadonly = !in_array($this->item->metadatastate, array($METADATASTATE_INPROGRESS, $METADATASTATE_VALIDATED));
+    $document->addScriptDeclaration("var isReadonly = '{$isReadonly}';");
     JText::script('COM_EASYSDI_CORE_DATATABLES_DISPLAY');
     JText::script('COM_EASYSDI_CORE_DATATABLES_RECORDSPERPAGE');
     JText::script('COM_EASYSDI_CORE_DATATABLES_SHOWING');
@@ -35,6 +50,11 @@ if ($this->item) :
     JText::script('COM_EASYSDI_CORE_DATATABLES_SEARCH');
     ?>
 
+<style type="text/css">
+    #searchlast > div.controls > fieldset > *{float:left;}
+    #searchlast > div.controls > fieldset > label{margin-right: 1em;}
+</style>
+
     <div class="version-edit front-end-edit">
         <?php if (!empty($this->item->id)): ?>
             <?php if ($this->item->versioning): ?>
@@ -43,12 +63,21 @@ if ($this->item) :
                 <h1><?php echo JText::_('COM_EASYSDI_CORE_TITLE_EDIT_VERSION') . ' ' . $this->item->resourcename; ?></h1>
             <?php endif; ?>
         <?php endif; ?>
+                
+                <?php if($this->item->resourcetypechild): ?>
         <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+            <?php else:?>
+            <div>
+                <?php echo $this->getTopActionBar();?>
+            </div>
+            <?php endif;?>
 
             <div class="row-fluid">
+                <?php if($this->item->resourcetypechild): ?>
+                <!-- Criteria -->
                 <div class="span12">
                     <div class="well">
-                        <div class="sdi-searchcriteria">
+                        <div class="sdi-searchcriteria form-horizontal form-inline form-validate">
                             <h3><?php echo JText::_('COM_EASYSDI_CORE_TITLE_SEARCH_CRITERIA'); ?></h3>
                             <?php foreach ($this->form->getFieldset('details') as $field): ?>
                                 <div class="control-group" id="<?php echo $field->fieldname; ?>">
@@ -62,50 +91,46 @@ if ($this->item) :
                                     <div class="controls"><?php echo $this->form->getField('searchlast')->input; ?></div>
                                 </div>
                             <?php endif; ?>
-                            <div class=""><?php echo $this->getSearchToolbar(); ?></div>
+                            <div class="">
+                                <button id="clear-btn" class="btn btn-small"><span class="icon-clear"></span><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_CLEAR_BTN');?></button>
+                        </div>
                         </div>
                         <hr>
                         <div class="sdi-searchresult">
+                            <script type="text/javascript">
+                                availablechildrenData = <?php echo json_encode($this->item->availablechildren); ?>;
+                            </script>
+                            
                             <h3><?php echo JText::_('COM_EASYSDI_CORE_TITLE_SEARCH_RESULTS'); ?></h3>
                             <table cellpadding="0" cellspacing="0" border="0" class="display" id="sdi-availablechildren" width="100%">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
+                                        <th>GUID</th>
                                         <th><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_RESOURCENAME'); ?></th>
                                         <th><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_VERSIONNAME'); ?></th>
+                                        <th>RESOURCETYPE_ID</th>
                                         <th><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_RESOURCETYPE'); ?></th>
+                                        <th>STATE_ID</th>
                                         <th><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_METADATASTATE'); ?></th>
                                         <th><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_ADD'); ?></th>
                                     </tr>
                                 </thead>
-                                <tbody>
-
-                                    <?php
-                                    if (!empty($this->item->availablechildren)):
-                                        foreach ($this->item->availablechildren as $child):
-                                            JText::script($child->state);
-                                            ?>
-                                            <tr>
-                                                <td><?php echo $child->id; ?></td>
-                                                <td><?php echo $child->resource; ?></td>
-                                                <td><?php echo $child->version; ?></td>
-                                                <td><?php echo $child->resourcetype; ?></td>
-                                                <td><?php echo JText::_($child->state); ?></td>
-                                                <td class="center"><button type="button" onClick='addChild(<?php echo htmlspecialchars(json_encode($child),ENT_QUOTES); ?>);' class="btn btn-success btn-mini"><i class="icon-white icon-new"></i></button></td> 
-                                            </tr>
-                                            <?php
-                                        endforeach;
-                                    endif;
-                                    ?>
-                                </tbody>
+                                <tbody></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-
+                
+                
+                <!-- Child -->
                 <div class="row-fluid">
                     <div class="span12">
                         <div class="well">
+                            <script type="text/javascript">
+                                childrenData = <?php echo json_encode($this->item->children); ?>;
+                            </script>
+                            
                             <h3><?php echo JText::_('COM_EASYSDI_CORE_TITLE_VERSION_CHILDREN'); ?></h3>
                             <table cellpadding="0" cellspacing="0" border="0" class="display" id="sdi-children" width="100%">
                                 <thead>
@@ -118,34 +143,20 @@ if ($this->item) :
                                         <th><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_REMOVE'); ?></th>
                                     </tr>
                                 </thead>
-                                <tbody>
-
-                                    <?php
-                                    if (!empty($this->item->children)):
-                                        foreach ($this->item->children as $child):
-                                            JText::script($child->state);
-                                            ?>
-                                            <tr class="sdi-child-<?php echo $child->id; ?>">
-                                                <td><?php echo $child->id; ?></td>
-                                                <td><?php echo $child->resource; ?></td>
-                                                <td><?php echo $child->version; ?></td>
-                                                <td><?php echo $child->resourcetype; ?></td>
-                                                <td><?php echo JText::_($child->state); ?></td> 
-                                                <td class="center"><button type="button" id="sdi-childbutton-<?php echo $child->id; ?>" onClick="deleteChild('<?php echo $child->id; ?>');" class="btn btn-danger btn-mini"><i class="icon-white icon-minus"></i></button></td>                                                 
-                                            </tr>
-                                            <?php
-                                        endforeach;
-                                    endif;
-                                    ?>
-                                </tbody>
+                                <tbody></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-
+                <?php endif;?>
+                
+                <!-- Parents -->
                 <div class="row-fluid">
                     <div class="span12">
                         <div class="well">
+                            <script type="text/javascript">
+                                parentsData = <?php echo json_encode($this->item->parents); ?>;
+                            </script>
                             <h3><?php echo JText::_('COM_EASYSDI_CORE_TITLE_VERSION_PARENT'); ?></h3>
                             <table cellpadding="0" cellspacing="0" border="0" class="display" id="sdi-parents" width="100%">
                                 <thead>
@@ -157,31 +168,15 @@ if ($this->item) :
                                         <th><?php echo JText::_('COM_EASYSDI_CORE_FORM_LBL_VERSION_METADATASTATE'); ?></th>
                                     </tr>
                                 </thead>
-                                <tbody>
-
-                                    <?php
-                                    if (!empty($this->item->parents)):
-                                        foreach ($this->item->parents as $parent):
-                                            ?>
-                                            <tr>
-                                                <td><?php echo $parent->id; ?></td>
-                                                <td><?php echo $parent->resource; ?></td>
-                                                <td><?php echo $parent->version; ?></td>
-                                                <td><?php echo $parent->resourcetype; ?></td>
-                                                <td><?php echo JText::_($parent->state); ?></td> 
-                                            </tr>
-                                            <?php
-                                        endforeach;
-                                    endif;
-                                    ?>
-                                </tbody>
+                                <tbody></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
 
-
+<?php if($this->item->resourcetypechild): ?>
+        <form class="form-horizontal form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=version.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
             <div>
                 <?php echo $this->getToolbar(); ?>
             </div>
@@ -193,7 +188,7 @@ if ($this->item) :
             <input type = "hidden" name = "option" value = "com_easysdi_core" />
             <?php echo JHtml::_('form.token'); ?>
         </form>
-
+<?php endif;?>
 
 
     </div>

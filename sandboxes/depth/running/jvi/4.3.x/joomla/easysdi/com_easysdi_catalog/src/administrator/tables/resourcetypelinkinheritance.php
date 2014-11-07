@@ -80,13 +80,8 @@ class Easysdi_catalogTableresourcetypelinkinheritance extends JTable {
     	return true;
     }
     
-    public function loadByResourceTypeLinkID($id = null, $reset = true)
+    public function loadByResourceTypeLinkID($id = null)
     {
-    	if ($reset)
-    	{
-    		$this->reset();
-    	}
-    
     	// Initialise the query.
     	$query = $this->_db->getQuery(true);
     	$query->select('xpath');

@@ -487,6 +487,8 @@ INSERT INTO #__sdi_sys_rendertype (ordering, state, value) VALUES (3, 1, 'radiob
 INSERT INTO #__sdi_sys_rendertype (ordering, state, value) VALUES (4, 1, 'list');
 INSERT INTO #__sdi_sys_rendertype (ordering, state, value) VALUES (5, 1, 'textbox');
 INSERT INTO #__sdi_sys_rendertype (ordering, state, value) VALUES (6, 1, 'date');
+INSERT INTO #__sdi_sys_rendertype (ordering, state, value) VALUES (7, 1, 'datetime');
+INSERT INTO #__sdi_sys_rendertype (ordering, state, value) VALUES (8, 1, 'gemet');
 
 INSERT INTO #__sdi_sys_rendertype_criteriatype (criteriatype_id, rendertype_id) VALUES (3, 5);
 INSERT INTO #__sdi_sys_rendertype_criteriatype (criteriatype_id, rendertype_id) VALUES (3, 6);
@@ -510,6 +512,13 @@ INSERT INTO #__sdi_sys_rendertype_stereotype (stereotype_id, rendertype_id) VALU
 INSERT INTO #__sdi_sys_rendertype_stereotype (stereotype_id, rendertype_id) VALUES (12, 5);
 INSERT INTO #__sdi_sys_rendertype_stereotype (stereotype_id, rendertype_id) VALUES (13, 5);
 INSERT INTO #__sdi_sys_rendertype_stereotype (stereotype_id, rendertype_id) VALUES (14, 5);
+
+INSERT INTO #__sdi_sys_rendertype_stereotype (stereotype_id, rendertype_id) VALUES (9, 4);
+INSERT INTO #__sdi_sys_rendertype_stereotype (stereotype_id, rendertype_id) VALUES (10, 4);
+INSERT INTO #__sdi_sys_rendertype_stereotype (stereotype_id, rendertype_id) VALUES (12, 5);
+INSERT INTO #__sdi_sys_rendertype_stereotype (stereotype_id, rendertype_id) VALUES (13, 5);
+INSERT INTO #__sdi_sys_rendertype_stereotype (stereotype_id, rendertype_id) VALUES (14, 5);
+INSERT INTO #__sdi_sys_rendertype_stereotype (stereotype_id, rendertype_id) VALUES (11, 8);
 
 INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (1, 1, 'member');
 INSERT INTO #__sdi_sys_role (ordering, state, value) VALUES (2, 1, 'resourcemanager');

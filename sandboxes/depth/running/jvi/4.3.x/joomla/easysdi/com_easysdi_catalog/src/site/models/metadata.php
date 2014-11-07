@@ -128,7 +128,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                         return false;
                     }
 
-                    if (!$user->authorizeOnMetadata($id, sdiUser::metadataeditor) || !$user->authorizeOnMetadata($id, sdiUser::metadataresponsible)) {
+                    if (!($user->authorizeOnMetadata($id, sdiUser::metadataeditor) || $user->authorizeOnMetadata($id, sdiUser::metadataresponsible))) {
                         //Try to update a resource but not its resource manager
                         JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
                         JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
@@ -186,7 +186,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
                         if ($merged = $cswm->mergeImport($import['importref_id'], $import['fileidentifier'])) {
                             $this->_item->csw = $merged;
                         } else {
-                            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOGE_METADATA_NOT_FOUND_ERROR'), 'error');
+                            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_CATALOG_METADATA_NOT_FOUND_ERROR'), 'error');
                         }
                     }
                 }
@@ -285,7 +285,7 @@ class Easysdi_catalogModelMetadata extends JModelForm {
         if (empty($form)) {
             return false;
         }
-
+        //print_r($form->getXml()->saveXML());die();
         return $form;
     }
 
@@ -503,11 +503,11 @@ class Easysdi_catalogModelMetadata extends JModelForm {
     private function getPatterns() {
         $query = $this->db->getQuery(true);
 
-        $query->select('a.id, a.guid, a.pattern as attribute_pattern, s.defaultpattern as stereotype_pattern, s.`value` as stereotype_name');
+        $query->select('a.id, a.guid, a.pattern as attribute_pattern, s.defaultpattern as stereotype_pattern, s.value as stereotype_name');
         $query->from('#__sdi_relation as r');
         $query->innerJoin('#__sdi_attribute as a on r.attributechild_id = a.id');
         $query->leftJoin('#__sdi_sys_stereotype as s on a.stereotype_id = s.id');
-        $query->where('r.`state` = 1');
+        $query->where($query->quoteName('r.state') . ' = 1');
 
         $this->db->setQuery($query);
         return $this->db->loadObjectList('guid');

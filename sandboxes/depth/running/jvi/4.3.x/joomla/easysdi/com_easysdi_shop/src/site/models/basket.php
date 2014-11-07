@@ -164,6 +164,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                 $od['diffusion_id'] = $diffusion->id;
                 $od['productstate_id'] = ($table->orderstate_id == self::ORDERSTATE_VALIDATION) ? self::PRODUCT_VALIDATION : self::PRODUCT_SENT;
                 
+                $od['created_by'] = JFactory::getUser()->id;
                 $orderdiffusion->save($od);
                 array_push($basketData['diffusions'], $orderdiffusion->diffusion_id);
                 
@@ -176,6 +177,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                         $v['property_id'] = $property->id;
                         $v['propertyvalue_id'] = $value->id;
                         $v['propertyvalue'] = $value->value;
+                        $v['created_by'] = JFactory::getUser()->id;
                         $orderpropertyvalue->save($v);
                     endforeach;
                 endforeach;
@@ -201,6 +203,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                 $op['order_id'] = $table->id;
                 $op['perimeter_id'] = $basket->extent->id;
                 $op['value'] = $basket->extent->features;
+                $op['created_by'] = JFactory::getUser()->id;
                 $orderperimeter->save($op);
             endif;
             

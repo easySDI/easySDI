@@ -25,6 +25,32 @@ class Easysdi_catalogModelrelation extends sdiModel {
      * @since	1.6
      */
     protected $text_prefix = 'COM_EASYSDI_CATALOG';
+    
+    /** Value: 0
+     * @var int **/
+    const GEMET = 0;
+    /** Value: 1
+     * @var int **/
+    const TEXTAREA = 1;
+    /** Value: 2
+     * @var int **/
+    const CHECKBOX = 2;
+    /** Value: 3
+     * @var int **/
+    const RADIOBUTTON = 3;
+    /** Value: 4
+     * @var int **/
+    const LISTRT = 4;
+    /** Value: 5
+     * @var int **/
+    const TEXTBOX = 5;
+    /** Value: 6
+     * @var int **/
+    const DATE = 6;
+    /** Value: 7
+     * @var int **/
+    const DATETIME = 7;
+
 
     /**
      * Returns a reference to the a Table object, always creating it.
@@ -98,15 +124,15 @@ class Easysdi_catalogModelrelation extends sdiModel {
             $relationdefaultvaluet = JTable::getInstance('relationdefaultvalue', 'Easysdi_catalogTable');
             $relationdefaultvalue = $relationdefaultvaluet->loadByRelationID($item->id);
             if (!empty($relationdefaultvalue)) {
-                if ($item->rendertype_id == '1') { //Textarea
+                if ($item->rendertype_id == self::TEXTAREA) { //Textarea
                     if (is_array($relationdefaultvalue)) {
                         foreach ($relationdefaultvalue as $value) {
                             $item->defaultlocaletextarea[$value->language_id] = $value->value;
                         }
                     } else {
-                        $item->defaulttextarea = $relationdefaultvalue->value;
+                        $item->defaultlocaletextarea[$relationdefaultvalue->language_id] = $relationdefaultvalue->value;
                     }
-                } else if (in_array($item->rendertype_id, array('2', '3', '4'))) { //Checkbox, radiobutton, list
+                } else if (in_array($item->rendertype_id, array(self::CHECKBOX, self::RADIOBUTTON, self::LISTRT))) { 
                     if (is_array($relationdefaultvalue)) {
                         foreach ($relationdefaultvalue as $value) {
                             $item->defaultmultiplelist[] = $value->attributevalue_id;                            
@@ -116,15 +142,15 @@ class Easysdi_catalogModelrelation extends sdiModel {
                         $item->defaultlist = $relationdefaultvalue->attributevalue_id;
                         $item->hiddendefaultlist = $relationdefaultvalue->attributevalue_id;
                     }
-                } else if ($item->rendertype_id == '5') { //Textbox
+                } else if ($item->rendertype_id == self::TEXTBOX) { 
                     if (is_array($relationdefaultvalue)) {
                         foreach ($relationdefaultvalue as $value) {
                             $item->defaultlocaletextbox[$value->language_id] = $value->value;
                         }
                     } else {
-                        $item->defaulttextbox = $relationdefaultvalue->value;
+                        $item->defaultlocaletextbox[$relationdefaultvalue->language_id] = $relationdefaultvalue->value;
                     }
-                } else if ($item->rendertype_id == '6') { //Date
+                } else if ($item->rendertype_id == self::DATE) { 
                     $item->defaultdate = $relationdefaultvalue->value;
                 }
             }

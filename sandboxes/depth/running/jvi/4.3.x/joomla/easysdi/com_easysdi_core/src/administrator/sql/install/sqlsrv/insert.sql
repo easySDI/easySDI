@@ -62,6 +62,8 @@ INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (3, 3
 INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (4, 4, 1, N'list');
 INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (5, 5, 1, N'textbox');
 INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (6, 6, 1, N'date');
+INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (7, 7, 1, N'datetime');
+INSERT [#__sdi_sys_rendertype] ([id], [ordering], [state], [value]) VALUES (8, 8, 1, N'gemet');
 SET IDENTITY_INSERT [#__sdi_sys_rendertype] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_rendertype_criteriatype] ON;
 
@@ -160,6 +162,7 @@ INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (18, 12, 5);
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (19, 13, 5);
 INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (20, 14, 5);
+INSERT [#__sdi_sys_rendertype_stereotype] ([id], [stereotype_id], [rendertype_id]) VALUES (21, 11, 8);
 SET IDENTITY_INSERT [#__sdi_sys_rendertype_stereotype] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_accessscope] ON;
 
@@ -596,13 +599,25 @@ INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (4,
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (5, 5, 1, N'rejected by thirdparty');
 INSERT [#__sdi_sys_productstate] ([id], [ordering], [state], [value]) VALUES (6, 6, 1, N'rejected by supplier');
 SET IDENTITY_INSERT [#__sdi_sys_productstate] OFF;
+
+SET IDENTITY_INSERT [#__sdi_sys_productstorage] ON;
+
+INSERT [#__sdi_sys_productstorage] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'upload');
+INSERT [#__sdi_sys_productstorage] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'url');
+INSERT [#__sdi_sys_productstorage] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'zoning');
+SET IDENTITY_INSERT [#__sdi_sys_productstorage] OFF;
+
+SET IDENTITY_INSERT [#__sdi_sys_productmining] ON;
+INSERT [#__sdi_sys_productmining] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'automatic');
+INSERT [#__sdi_sys_productmining] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'manual');
+SET IDENTITY_INSERT [#__sdi_sys_productmining] OFF;
+
 SET IDENTITY_INSERT [#__sdi_sys_extractstorage] ON;
 
 INSERT [#__sdi_sys_extractstorage] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'local');
 INSERT [#__sdi_sys_extractstorage] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'remote');
 SET IDENTITY_INSERT [#__sdi_sys_extractstorage] OFF;
 SET IDENTITY_INSERT [#__sdi_sys_propertytype] ON;
-
 INSERT [#__sdi_sys_propertytype] ([id], [ordering], [state], [value]) VALUES (1, 1, 1, N'list');
 INSERT [#__sdi_sys_propertytype] ([id], [ordering], [state], [value]) VALUES (2, 2, 1, N'multiplelist');
 INSERT [#__sdi_sys_propertytype] ([id], [ordering], [state], [value]) VALUES (3, 3, 1, N'checkbox');
@@ -810,7 +825,16 @@ INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], 
 INSERT [#__sdi_searchcriteria] ([id], [guid], [alias], [created_by], [created], [modified_by], [modified], [ordering], [state], [checked_out], [checked_out_time], [name], [issystem], [criteriatype_id], [rendertype_id], [relation_id], [access], [asset_id]) VALUES (12, N'a9a44261-05da-4ee8-a3f2-4ec1c53bcb00', N'isViewable', 356, CAST(0x00FC9F003B370B0000 AS DateTime2), NULL, NULL, 0, 1, 0, CAST(0x00FC9F003B370B0000 AS DateTime2), N'isViewable', 1, 1, 2, NULL, 0, 0);
 SET IDENTITY_INSERT [#__sdi_searchcriteria] OFF;
 
+SET IDENTITY_INSERT [#__sdi_sys_perimetertype] ON;
+INSERT [#__sdi_sys_perimetertype] ([ordering], [state], [value]) VALUES (1,1,'extraction');
+INSERT [#__sdi_sys_perimetertype] ([ordering], [state], [value]) VALUES (2,1,'download');
+INSERT [#__sdi_sys_perimetertype] ([ordering], [state], [value]) VALUES (3,1,'both');
+SET IDENTITY_INSERT [#__sdi_sys_perimetertype] OFF;
 
+SET IDENTITY_INSERT [#__sdi_perimeter] ON;
+INSERT [#__sdi_perimeter] ([id], [guid], [alias], [created_by], [created], [ordering], [state], [name], [description], [accessscope_id], [perimetertype_id]) VALUES (1, N'1a9f342c-bb1e-9bc4-dd19-38910dff0f59', N'freeperimeter', 356, CAST(0x00FC9F003B370B0000 AS DateTime2),1, 1, N'Free perimeter', '',1,1);
+INSERT [#__sdi_perimeter] ([id], [guid], [alias], [created_by], [created], [ordering], [state], [name], [description], [accessscope_id], [perimetertype_id]) VALUES (2, N'9adc6d4e-262a-d6e4-e152-6de437ba80ed', N'myperimeter', 356, CAST(0x00FC9F003B370B0000 AS DateTime2),1, 1, N'My perimeter', '',1,1);
+SET IDENTITY_INSERT [#__sdi_perimeter] OFF;
 INSERT [#__sdi_sys_pricing] ([id], [ordering], [state], [value]) VALUES ('1', '1', '1', 'free');
 INSERT [#__sdi_sys_pricing] ([id], [ordering], [state], [value]) VALUES ('2', '2', '1', 'fee without a pricing profile');
 INSERT [#__sdi_sys_pricing] ([id], [ordering], [state], [value]) VALUES ('3', '3', '1', 'fee with a pricing profile');

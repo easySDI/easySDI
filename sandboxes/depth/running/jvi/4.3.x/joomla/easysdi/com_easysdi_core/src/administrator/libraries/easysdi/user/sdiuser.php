@@ -408,6 +408,14 @@ class sdiUser {
                 $cls .= $organism->id . ' in (select a.organism_id from #__sdi_accessscope a where a.entity_guid = v.guid)';
                 $cls .= '))';
             endforeach;
+
+            $categories = $this->getMemberOrganismsCategoriesIds();
+            foreach ($categories as $cat):
+                $cls .= 'OR ((v.accessscope_id = 4) AND (';
+                $cls .= $cat . ' in (select a.category_id from #__sdi_accessscope a where a.entity_guid = v.guid)';
+                $cls .= '))';
+            endforeach;
+
             $cls .= ')';
         }
 

@@ -426,7 +426,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
         $query = $this->db->getQuery(true);
 
         $query->select('a.firstname, a.lastname, a.address, a.addresscomplement, a.postalcode, a.postalbox, a.locality, a.email, a.phone, a.mobile, a.fax');
-        $query->select('o.acronym name1, o.`name` name2');
+        $query->select('o.acronym name1, o.name name2');
         $query->select('c.iso2 country_iso');
         $query->leftJoin('#__sdi_organism o on a.organism_id = o.id');
         $query->leftJoin('#__sdi_sys_country c on c.id = a.country_id');
@@ -593,7 +593,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
 
         $query = $this->db->getQuery(true);
 
-        $query->select('d.id, m.guid, d.`name`, od.id orderdiffusion_id');
+        $query->select('d.id, m.guid, d.name, od.id orderdiffusion_id');
         $query->from('#__sdi_order o');
         $query->innerJoin('#__sdi_sys_ordertype ot on ot.id = o.ordertype_id');
         $query->innerJoin('#__sdi_order_diffusion od on o.id = od.order_id');
@@ -654,7 +654,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
 
         $query = $this->db->getQuery(true);
 
-        $query->select('p.`alias` as palias, pv.`alias` as pvalias');
+        $query->select('p.alias as palias, pv.alias as pvalias');
         $query->from('#__sdi_order_diffusion od');
         $query->innerJoin('#__sdi_order_propertyvalue opv on opv.orderdiffusion_id = od.id');
         $query->innerJoin('#__sdi_propertyvalue pv on pv.id = opv.propertyvalue_id');
@@ -688,7 +688,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
 
         $query = $this->db->getQuery(true);
 
-        $query->select('p.`name` perimeter_name, p.alias, op.`value` perimeter_value');
+        $query->select('p.name perimeter_name, p.alias, op.value perimeter_value');
         $query->from('#__sdi_order_perimeter op');
         $query->innerJoin('#__sdi_perimeter p on p.id = op.perimeter_id');
         $query->where('op.order_id = ' . (int)$order->id);

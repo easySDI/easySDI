@@ -52,11 +52,11 @@ class Easysdi_catalogControllerSearchcriteria extends JControllerForm {
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $query->select('r.id, r.`name`');
+        $query->select('r.id, r.name');
         $query->from('#__sdi_catalog_resourcetype cr');
         $query->innerJoin('#__sdi_resourcetype r on r.id = cr.resourcetype_id');
         $query->where('cr.catalog_id = '.(int)$catalogId);
-        $query->order('r.`name` ASC');
+        $query->order('r.name ASC');
         
         $db->setQuery($query);
         

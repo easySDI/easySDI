@@ -82,7 +82,7 @@ class Easysdi_catalogViewAssignments extends JViewLegacy {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
 
-        $this->backUrl = JRoute::_('index.php?option=com_easysdi_core&view=resources&limitstart=' . $app->input->getInt('limitstart', 0, 'int'));
+        $this->backUrl = $_SERVER['HTTP_REFERER'];//JRoute::_('index.php?option=com_easysdi_core&view=resources');
     }
 
 }

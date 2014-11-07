@@ -70,7 +70,7 @@ class Easysdi_coreModelVersionrelations extends JModelList {
                 )
         );
         
-        $query->from('`#__sdi_versionlink` AS a');
+        $query->from('#__sdi_versionlink AS a');
         
 
 
