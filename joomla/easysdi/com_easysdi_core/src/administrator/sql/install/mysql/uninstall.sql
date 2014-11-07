@@ -50,6 +50,7 @@ DROP TABLE IF EXISTS `#__sdi_sys_isolanguage`;
 DROP TABLE IF EXISTS `#__sdi_sys_perimetertype`;
 DROP TABLE IF EXISTS `#__sdi_sys_propertytype`;
 DROP TABLE IF EXISTS `#__sdi_sys_servicetype`;
+DROP TABLE IF EXISTS `#__sdi_sys_extractstorage`;
 
 -- com_easysdi_contact
 
@@ -150,6 +151,13 @@ DROP TABLE IF EXISTS `#__sdi_order`;
 DROP TABLE IF EXISTS `#__sdi_order_diffusion`;
 DROP TABLE IF EXISTS `#__sdi_order_propertyvalue`;
 DROP TABLE IF EXISTS `#__sdi_order_perimeter`;
+DROP TABLE IF EXISTS `#__sdi_organism_category_pricing_rebate`;
+DROP TABLE IF EXISTS `#__sdi_pricing_profile`;
+DROP TABLE IF EXISTS `#__sdi_pricing_profile_category_pricing_rebate`;
+DROP TABLE IF EXISTS `#__sdi_pricing_order`;
+DROP TABLE IF EXISTS `#__sdi_pricing_order_supplier`;
+DROP TABLE IF EXISTS `#__sdi_pricing_order_supplier_product`;
+DROP TABLE IF EXISTS `#__sdi_pricing_order_supplier_product_profile`;
 
 -- com_easysdi_monitor
 

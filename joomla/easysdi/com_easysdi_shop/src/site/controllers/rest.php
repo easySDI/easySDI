@@ -105,7 +105,7 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
     private function getOrders() {
         $query = $this->db->getQuery(true);
 
-        $query->select('o.id, o.name, o.user_id, o.thirdparty_id, ot.value ordertype');
+        $query->select('o.id, o.`name`, o.user_id, o.surface, o.thirdparty_id, ot.`value` ordertype');
         $query->from('#__sdi_order o');
         $query->innerJoin('#__sdi_sys_ordertype ot on ot.id = o.ordertype_id');
         $query->innerJoin('#__sdi_order_diffusion od on o.id = od.order_id');
@@ -683,6 +683,8 @@ class Easysdi_shopControllerRest extends Easysdi_shopController {
      */
     private function getPerimeter($order) {
         $perimeter = $this->response->createElementNS($this->nsEasysdi, 'easysdi:PERIMETER');
+        
+        $perimeter->appendChild($this->response->createElementNS($this->nsEasysdi, 'easysdi:SURFACE', $order->surface));
 
         $query = $this->db->getQuery(true);
 

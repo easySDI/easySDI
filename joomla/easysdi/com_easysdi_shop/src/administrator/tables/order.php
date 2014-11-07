@@ -24,6 +24,8 @@ class Easysdi_shopTableorder extends sdiTable {
     const orderstate_5 = 'progress';
     const orderstate_6 = 'sent';
     const orderstate_7 = 'saved';
+    const orderstate_8 = 'validation';
+    const orderstate_9 = 'rejected';
         
     const ordertype_1 = 'order';
     const ordertype_2 = 'estimate';

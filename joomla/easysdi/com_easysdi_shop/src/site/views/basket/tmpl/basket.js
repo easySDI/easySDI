@@ -163,10 +163,10 @@ function savePerimeter() {
         jQuery.ajax({
             type: "POST",
             url: "index.php?option=com_easysdi_shop&task=addExtentToBasket" ,
-            data :"item="+ JSON.stringify(extent),
-            success: function(data) {
-                displayExtentRecap();
-            }
+            data :"item="+ JSON.stringify(extent)
+        }).done(function(data) {
+            //reload page to recalculate pricing
+            location.reload();
         });
     }
 }

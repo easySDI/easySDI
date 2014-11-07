@@ -104,6 +104,24 @@
                 description="com_easysdi_contact_FORM_DESC_USER_ORGANISMS_ER" 
                 translate="true" 
                 query="SELECT id, name as value FROM #__sdi_organism WHERE state=1 ORDER BY name" key_field="id" value_field="value"
+        /> 
+        <field 	name="organismsPM" 
+                type="sql" 
+                class="multiselect input-xxlarge"
+                multiple="true"
+                label="com_easysdi_contact_FORM_LBL_USER_ORGANISMS_PM"
+                description="com_easysdi_contact_FORM_DESC_USER_ORGANISMS_PM" 
+                translate="true" 
+                query="SELECT id, name as value FROM #__sdi_organism WHERE state=1 ORDER BY name" key_field="id" value_field="value"
+        />
+        <field 	name="organismsTM" 
+                type="sql" 
+                class="multiselect input-xxlarge"
+                multiple="true"
+                label="com_easysdi_contact_FORM_LBL_USER_ORGANISMS_TM"
+                description="com_easysdi_contact_FORM_DESC_USER_ORGANISMS_TM" 
+                translate="true" 
+                query="SELECT id, name as value FROM #__sdi_organism WHERE state=1 ORDER BY name" key_field="id" value_field="value"
         />
     </fieldset>
                 

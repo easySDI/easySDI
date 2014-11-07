@@ -92,14 +92,3 @@ JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
                         </dl>
                     </div>
                 </div>
-
-
-
-<?php
-
-    // DEBUG
-    echo "<div style='position:absolute; left:5px; top:1500px'>";
-    var_dump($this->item);
-    echo "</div>";
-
-?>
