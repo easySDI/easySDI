@@ -44,7 +44,6 @@ js(document).ready(function() {
                 },
                 sClass: 'center'
             }
-            
         ],
         aaSorting: [[3, 'desc']]
     });
@@ -121,6 +120,24 @@ js(document).ready(function() {
         aaData: childrenData,
         aoColumnDefs: [
             { bVisible: false, aTargets: [0], mData: 'id' },
+            { bVisible: false, aTargets: [1], mData: 'guid' },
+            { aTargets: [2], mData: 'resource' },
+            { bVisible: versioning, aTargets: [3], mData: 'version' },
+            { aTargets: [4], mData: 'resourcetype_id', bVisible: false },
+            { aTargets: [5], mData: 'resourcetype' },
+            { aTargets: [6], mData: 'metadatastate_id', bVisible: false },
+            { aTargets: [7], mData: function(child){
+                    return Joomla.JText._(child.state, child.state);
+            }},
+            {
+                aTargets: [8],
+                mData: function(child){
+                    return "<button type='button' id='sdi-childbutton-"+child.id+"' class='btn btn-warning btn-mini' onclick='deleteChild("+JSON.stringify(child)+");'><i class='icon-white icon-minus'></i></button>";
+                },
+                sClass: 'center'
+            }
+            
+            /*{ bVisible: false, aTargets: [0], mData: 'id' },
             { aTargets: [1], mData: 'resource' },
             { bVisible: versioning, aTargets: [2], mData: 'version' },
             { aTargets: [3], mData: 'resourcetype' },
@@ -134,7 +151,7 @@ js(document).ready(function() {
                     return "<button type='button' id='sdi-childbutton-"+child.id+"' class='btn btn-warning btn-mini' onclick='deleteChild("+JSON.stringify(child)+");'><i class='icon-white icon-minus'></i></button>";
                 },
                 sClass: 'center'
-            }
+            }*/
             
         ]
     });
@@ -214,6 +231,5 @@ Joomla.submitbutton = function(task)
         js('#jform_selectedchildren').val(r);
     }
     
-    var form = document.getElementById('adminForm');
     Joomla.submitform(task, document.getElementById('adminForm'));
 };

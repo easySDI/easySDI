@@ -112,7 +112,7 @@ class Easysdi_coreModelVersion extends JModelForm {
 
                 //Get children
                 $query = $db->getQuery(true)
-                        ->select('v.id as id, v.name as version,r.name as resource, rt.alias as resourcetype, ms.value as state')
+                        ->select('v.id as id, v.name as version,r.name as resource, rt.alias as resourcetype, ms.value as state, m.metadatastate_id, r.resourcetype_id, m.guid')
                         ->from('#__sdi_version v')
                         ->innerJoin('#__sdi_versionlink vl ON vl.child_id = v.id')
                         ->innerJoin('#__sdi_metadata m ON m.version_id = v.id')
