@@ -24,7 +24,8 @@
             class="inputbox"
             label="COM_EASYSDI_CATALOG_FORM_LBL_ACCESSSCOPE"
             description="COM_EASYSDI_CATALOG_FORM_DESC_ACCESSSCOPE" 
-            query="SELECT id, value FROM #__sdi_sys_accessscope WHERE state=1 AND `value`!='category' ORDER BY ordering" 
+            query="SELECT id, value, ordering FROM #__sdi_sys_accessscope 
+                    WHERE state=1 AND value!='category' ORDER BY ordering" 
             key_field="id" 
             value_field="value"
             translate="true"
@@ -48,7 +49,9 @@
             multiple="true"
             label=""
             description="" 
-            query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi INNER JOIN #__users u ON u.id=sdi.user_id WHERE state=1 ORDER BY ordering" 
+            query="SELECT sdi.id as id, u.name as name FROM #__sdi_user sdi 
+                    INNER JOIN #__users u ON u.id=sdi.user_id 
+                    WHERE state=1 ORDER BY u.name" 
             key_field="id" 
             value_field="name"
             translate="true"
@@ -115,7 +118,8 @@
         <field name="profile_id"  required="true"
                type="sql" 
                class="inputbox"
-               query=" SELECT NULL AS id, '' AS name, 0 as ordering UNION SELECT id, name, ordering FROM #__sdi_profile WHERE state=1 ORDER BY ordering" 
+               query=" SELECT NULL AS id, '' AS name 
+                UNION SELECT id, name FROM #__sdi_profile WHERE state=1 ORDER BY name" 
                key_field="id" 
                value_field="name"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_PROFILE"
@@ -191,7 +195,8 @@
     <field name="fragmentnamespace_id"  
                type="sql" 
                class="inputbox input-mini"
-               query=" SELECT NULL AS id, '' AS prefix, 0 as ordering UNION SELECT id, prefix, ordering FROM #__sdi_namespace WHERE state=1 ORDER BY ordering" 
+               query=" SELECT NULL AS id, '' AS prefix 
+                UNION SELECT id, prefix FROM #__sdi_namespace WHERE state=1 ORDER BY prefix" 
                key_field="id" 
                value_field="prefix"
                label="COM_EASYSDI_CATALOG_FORM_LBL_RESOURCETYPE_NAMESPACE"

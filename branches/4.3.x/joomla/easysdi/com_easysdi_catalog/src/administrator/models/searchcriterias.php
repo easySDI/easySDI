@@ -123,8 +123,8 @@ class Easysdi_catalogModelsearchcriterias extends JModelList {
         
 
         // Join over the user field 'created_by'
-        $query->select('created_by.name AS created_by');
-        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
+//        $query->select('created_by.name AS created_by_name');
+//        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
 
 
         // Filter by published state

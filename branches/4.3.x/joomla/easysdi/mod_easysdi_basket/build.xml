@@ -31,8 +31,7 @@
             <extension type="module" version="3.1.0" client="site" method="upgrade">
                 <name>mod_easysdi_basket</name>
                 <author>EasySDI Community</author>
-                <creationDate>15 August 2012</creationDate>
-                <releaseDate>${xml.releaseDate}</releaseDate>
+                <creationDate>${xml.releaseDate}</creationDate>
                 <copyright>${xml.copyright}</copyright>
                 <license>${xml.license}</license>
                 <author>${xml.author}</author>

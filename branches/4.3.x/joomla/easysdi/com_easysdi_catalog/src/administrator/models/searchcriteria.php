@@ -255,11 +255,11 @@ class Easysdi_catalogModelsearchcriteria extends sdiModel {
             else
                  $catalogsearchcriteria->defaultvalue = null;
             
-            if (isset($data['from']))
+            if (isset($data['from']) && strlen($data['from']) > 0)
                 $catalogsearchcriteria->defaultvaluefrom = $data['from'];
             else
                 $catalogsearchcriteria->defaultvaluefrom = null;
-            if (isset($data['to']))
+            if (isset($data['to'])&& strlen($data['to']) > 0)
                $catalogsearchcriteria->defaultvalueto = $data['to'];
             else
                 $catalogsearchcriteria->defaultvalueto = null;

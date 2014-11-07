@@ -65,7 +65,6 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
         try {
             operation = req.getParameter("operation");
             entityClass = req.getParameter("entityclass");
-            id = Integer.parseInt(req.getParameter("id"));
             complete = req.getParameter("complete");
             context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
             cacheManager = (CacheManager) context.getBean("cacheManager");
@@ -92,15 +91,18 @@ public class ProxyCacheInvalidationServlet extends HttpServlet {
                 jsonresponse = "{\"status\": \"OK\", \"message\": \"Complete cache invalidation done.\"}";
             } //Invalidate a specific entity
             else if (entityClass != null && id != null) {
-                Method invalidateMethod = this.getClass().getMethod("requestInvalidate" + entityClass, new Class[]{});
-                invalidateMethod.invoke(this, new Object[]{});
+                id = Integer.parseInt(req.getParameter("id"));
+                if(id != null){
+                    Method invalidateMethod = this.getClass().getMethod("requestInvalidate" + entityClass, new Class[]{});
+                    invalidateMethod.invoke(this, new Object[]{});
 
-                //whatever the case, clear the operationBasedCache
-                if (cacheManager.cacheExists("operationBasedCache")) {
-                    cacheManager.getEhcache("operationBasedCache").removeAll();
+                    //whatever the case, clear the operationBasedCache
+                    if (cacheManager.cacheExists("operationBasedCache")) {
+                        cacheManager.getEhcache("operationBasedCache").removeAll();
+                    }
+
+                    jsonresponse = "{\"status\": \"OK\", \"message\": \"" + entityClass + "#" + id + " cache invalidation done.\"}";
                 }
-
-                jsonresponse = "{\"status\": \"OK\", \"message\": \"" + entityClass + "#" + id + " cache invalidation done.\"}";
             }
 
         } catch (Exception e) {

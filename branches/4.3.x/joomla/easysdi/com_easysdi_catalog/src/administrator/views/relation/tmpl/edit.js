@@ -43,6 +43,8 @@ function onChangeChildType() {
             js("#resourcetypedefinition").show();
             break;
     }
+    
+    onChangeRenderType();
 }
 
 
@@ -74,7 +76,10 @@ function onChangeRenderType() {
                         .trigger("liszt:updated")
                         ;
             });
-            js('#jform_defaultlist option[value=' + selected + ']').attr('selected', 'selected').trigger("liszt:updated");
+            
+            if(selected.length > 0){
+                js('#jform_defaultlist option[value=' + selected + ']').attr('selected', 'selected').trigger("liszt:updated");
+            }
             js('#jform_defaultlist').trigger("change");
             js('#defaultvalue-list').show();
         } else {
@@ -132,7 +137,10 @@ function onChangeAttributeChild() {
                         .trigger("liszt:updated")
                         ;
             });
-            js('#jform_rendertype_id option[value=' + rendertype_id + ']').attr('selected', 'selected').trigger("liszt:updated");
+            
+            if(rendertype_id.length > 0){
+                js('#jform_rendertype_id option[value=' + rendertype_id + ']').attr('selected', 'selected').trigger("liszt:updated");
+            }
             
             onChangeRenderType();
             js('#loader').hide();

@@ -218,7 +218,7 @@ class Easysdi_serviceHelper {
                 }
                 foreach ($xmlCapa->attributes() as $key => $value) {
                     if ($key == 'version') {
-                        if ($value == $version->value)
+                        if ($value[0] == $version->value)
                             $supported_versions[$version->id] = $version->value;
                     }
                 }

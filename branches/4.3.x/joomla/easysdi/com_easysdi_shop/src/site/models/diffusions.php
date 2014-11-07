@@ -73,7 +73,7 @@ class Easysdi_shopModelDiffusions extends JModelList {
                 )
         );
 
-        $query->from('`#__sdi_diffusion` AS a');
+        $query->from('#__sdi_diffusion AS a');
 
         
     // Join over the users for the checked out user.

@@ -45,14 +45,18 @@ class Easysdi_coreModelResources extends JModelList {
 
         // Initialise variables.
         $app = JFactory::getApplication();
-
+        
+        // Try to get parentId input
+        $parentid = $app->input->getInt('parentid', NULL);
+        $app->setUserState('com_easysdi_core.parent.resource.version.id', $parentid);
+        
         // List state information
         $limit = $app->getUserStateFromRequest('global.list.limit', 'limit', $app->getCfg('list_limit'));
         $this->setState('list.limit', $limit);
 
         $limitstart = $app->input->getInt('limitstart', 0);
         $this->setState('list.start', $limitstart);
-
+        
         // Load the filter state.
         $search = $app->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
@@ -62,10 +66,7 @@ class Easysdi_coreModelResources extends JModelList {
 
         $search = $app->getUserStateFromRequest($this->context . '.filter.resourcetype', 'filter_resourcetype');
         $this->setState('filter.resourcetype', $search);
-
-        $parentid = $app->input->getInt('parentid', NULL);
-        $app->setUserState('com_easysdi_core.parent.resource.version.id', $parentid);
-
+        
         if (empty($ordering)) {
             $ordering = 'a.ordering';
         }
@@ -89,24 +90,11 @@ class Easysdi_coreModelResources extends JModelList {
         $parentId = JFactory::getApplication()->input->getInt('parentid', null);
 
         // Select the required fields from the table.
-        $query->select(
-                $this->getState(
-                        'list.select', 'a.*'
-                )
-        );
-
+        $query->select('a.id, a.guid, a.alias, a.name');
         $query->from('#__sdi_resource AS a');
 
-        // Join over the users for the checked out user.
-        $query->select('uc.name AS editor');
-        $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
-
-        // Join over the created by field 'created_by'
-        $query->select('created_by.name AS created_by');
-        $query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
-
         // Join over the foreign key 'resourcetype_id'
-        $query->select('trans.text1 AS resourcetype_name, rt.versioning as versioning, rt.view as supportview, rt.diffusion as supportdiffusion, rt.application as supportapplication');
+        $query->select('trans.text1 AS resourcetype_name, rt.versioning as versioning,'. $query->quoteName('rt.view') .' as supportview, rt.diffusion as supportdiffusion, rt.application as supportapplication');
         $query->join('LEFT', '#__sdi_resourcetype AS rt ON rt.id = a.resourcetype_id');
         $query->join('LEFT', '#__sdi_translation AS trans ON trans.element_guid = rt.guid');
         $query->join('LEFT', '#__sdi_language AS lang ON lang.id = trans.language_id');
@@ -115,46 +103,82 @@ class Easysdi_coreModelResources extends JModelList {
 
         //join over resourcetypelink to know if some relations are possible
         $query->select('rtl.state as supportrelation');
-        $query->join('LEFT', '(SELECT n.parent_id, state FROM #__sdi_resourcetypelink n GROUP BY n.parent_id) rtl ON rtl.parent_id = rt.id');
+        $query->join('LEFT', '(SELECT n.parent_id, n.state FROM #__sdi_resourcetypelink n ) rtl ON rtl.parent_id = rt.id');
+        $query->select('rtl2.state as canbechild');
+        $query->join('LEFT', '(SELECT child_id, state FROM #__sdi_resourcetypelink GROUP BY child_id, state) rtl2 ON rtl2.child_id=rt.id');
 
         //join over rights table, check if user have any right on resource
         $query->innerJoin('#__sdi_user_role_resource AS urr ON urr.resource_id = a.id');
         $query->where('urr.user_id = ' . $this->user->id);
 
-
         $query->group('a.id');
-
-        // Filter by resource type
-        $resourcetype = $this->getState('filter.resourcetype');
-        if (is_numeric($resourcetype)) {
-            $query->where('a.resourcetype_id = ' . (int) $resourcetype);
-        }
-
-        // Filter by search in title
-        $search = $this->getState('filter.search');
-        if (!empty($search)) {
-            if (stripos($search, 'id:') === 0) {
-                $query->where('a.id = ' . (int) substr($search, 3));
-            } else {
-                $search = $db->Quote('%' . $db->escape($search, true) . '%');
-                $query->where('( a.name LIKE ' . $search . ' )');
-            }
-        }
-
-        //Controls whether a version of the metadata has a status matching the filter.
-        $status = $this->getState('filter.status');
+	$query->group('a.guid');
+        $query->group('a.alias');
+        $query->group('a.name');
+        $query->group('trans.text1');
+        $query->group('rt.versioning');
+        $query->group('rt.diffusion');
+        $query->group($query->quoteName('rt.view'));
+        $query->group('rt.application');
+        $query->group('rtl.state');
+        $query->group('rtl2.state');
+ 	
         $query->innerJoin('#__sdi_version v ON v.resource_id = a.id');
         $query->innerJoin('#__sdi_metadata md ON md.version_id = v.id');
-        if (!empty($status)) {
-            $query->where('md.metadatastate_id = ' . $status);
-        }
-
-        if (!empty($parentId)) {
+        
+        if(!empty($parentId)){
             $query->innerJoin('#__sdi_versionlink vl on v.id = vl.child_id');
             $query->where('vl.parent_id = ' . (int) $parentId);
             $this->setState('parentid',$parentId);
-        }
+            
+            // Filter by resource type
+            $resourcetype = $this->getState('filter.resourcetype.children');
+            if (is_numeric($resourcetype)) {
+                $query->where('a.resourcetype_id = ' . (int) $resourcetype);
+            }
 
+            // Filter by search in title
+            $search = $this->getState('filter.search.children');
+            if (!empty($search)) {
+                if (stripos($search, 'id:') === 0) {
+                    $query->where('a.id = ' . (int) substr($search, 3));
+                } else {
+                    $search = $db->Quote('%' . $db->escape($search, true) . '%');
+                    $query->where('( a.name LIKE ' . $search . ' )');
+                }
+            }
+
+            //Controls whether a version of the metadata has a status matching the filter.
+            $status = $this->getState('filter.status.children');
+            if (!empty($status)) {
+                $query->where('md.metadatastate_id = ' . $status);
+            }
+        }
+        else{            
+           // Filter by resource type
+            $resourcetype = $this->getState('filter.resourcetype');
+            if (is_numeric($resourcetype)) {
+                $query->where('a.resourcetype_id = ' . (int) $resourcetype);
+            }
+
+            // Filter by search in title
+            $search = $this->getState('filter.search');
+            if (!empty($search)) {
+                if (stripos($search, 'id:') === 0) {
+                    $query->where('a.id = ' . (int) substr($search, 3));
+                } else {
+                    $search = $db->Quote('%' . $db->escape($search, true) . '%');
+                    $query->where('( a.name LIKE ' . $search . ' )');
+                }
+            }
+
+            //Controls whether a version of the metadata has a status matching the filter.
+            $status = $this->getState('filter.status');
+            if (!empty($status)) {
+                $query->where('md.metadatastate_id = ' . $status);
+            }
+        }
+             
         $query->order('a.name');
 
         return $query;

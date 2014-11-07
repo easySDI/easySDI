@@ -178,8 +178,8 @@ CREATE TABLE #__sdi_application (
     id serial NOT NULL ,
     guid character varying(36) NOT NULL,
     alias character varying(50) NOT NULL,
-    created_by integer NOT NULL,
-    created timestamp(3) without time zone NOT NULL,
+    created_by integer,
+    created timestamp(3) without time zone ,
     modified_by integer NOT NULL,
     modified timestamp(3) without time zone NOT NULL,
     ordering integer NOT NULL,
@@ -202,7 +202,7 @@ CREATE TABLE #__sdi_assignment (
     assigned timestamp(3) without time zone,
     assigned_by bigint NOT NULL,
     assigned_to bigint NOT NULL,
-    version_id bigint NOT NULL,
+    metadata_id bigint NOT NULL,
     text character varying(500)
 );
 
@@ -398,14 +398,14 @@ CREATE TABLE #__sdi_diffusion (
     created_by integer NOT NULL,
     created timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     modified_by integer,
-    modified timestamp(3) without time zone NOT NULL,
+    modified timestamp(3) without time zone ,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
     checked_out integer DEFAULT 0 NOT NULL,
     checked_out_time timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     version_id bigint NOT NULL,
     name character varying(255) NOT NULL,
-    description character varying(500) NOT NULL,
+    description character varying(500),
     accessscope_id bigint NOT NULL,
     pricing_id bigint NOT NULL,
     deposit character varying(255),
@@ -716,7 +716,7 @@ CREATE TABLE #__sdi_order (
     created_by integer NOT NULL,
     created timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     modified_by integer,
-    modified timestamp(3) without time zone NOT NULL,
+    modified timestamp(3) without time zone,
     ordering integer DEFAULT 1 NOT NULL,
     state integer DEFAULT 1 NOT NULL,
     checked_out integer DEFAULT 0 NOT NULL,
@@ -728,7 +728,7 @@ CREATE TABLE #__sdi_order (
     thirdparty_id bigint,
     buffer double precision,
     surface double precision,
-    remark character varying(500) NOT NULL,
+    remark character varying(500),
     sent timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     completed timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
     access integer DEFAULT 1 NOT NULL,
@@ -741,11 +741,11 @@ CREATE TABLE #__sdi_order_diffusion (
     order_id bigint NOT NULL,
     diffusion_id bigint NOT NULL,
     productstate_id bigint NOT NULL,
-    remark character varying(500) NOT NULL,
-    fee numeric(10,0) NOT NULL,
-    completed timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone NOT NULL,
-    file character varying(500) NOT NULL,
-    size numeric(10,0) NOT NULL,
+    remark character varying(500) ,
+    fee numeric(10,0) ,
+    completed timestamp(3) without time zone DEFAULT '0002-11-30 00:00:00'::timestamp without time zone ,
+    file character varying(500) ,
+    size numeric(10,0) ,
     created_by integer NOT NULL
 );
 
@@ -1149,8 +1149,8 @@ CREATE TABLE #__sdi_resourcetype (
     alias character varying(50) NOT NULL,
     created_by integer NOT NULL,
     created timestamp(3) without time zone NOT NULL,
-    modified_by integer NOT NULL,
-    modified timestamp(3) without time zone NOT NULL,
+    modified_by integer ,
+    modified timestamp(3) without time zone ,
     ordering integer NOT NULL,
     state integer DEFAULT 1 NOT NULL,
     checked_out integer NOT NULL,
@@ -1179,8 +1179,8 @@ CREATE TABLE #__sdi_resourcetypelink (
     alias character varying(50) NOT NULL,
     created_by integer NOT NULL,
     created timestamp(3) without time zone NOT NULL,
-    modified_by integer NOT NULL,
-    modified timestamp(3) without time zone NOT NULL,
+    modified_by integer ,
+    modified timestamp(3) without time zone ,
     ordering integer NOT NULL,
     state integer DEFAULT 1 NOT NULL,
     checked_out integer NOT NULL,
@@ -1191,8 +1191,6 @@ CREATE TABLE #__sdi_resourcetypelink (
     parentboundupper integer NOT NULL,
     childboundlower integer NOT NULL,
     childboundupper integer NOT NULL,
-    class_id bigint,
-    attribute_id bigint,
     viralversioning integer NOT NULL,
     inheritance integer NOT NULL,
     asset_id bigint DEFAULT 0::bigint NOT NULL
@@ -1700,7 +1698,8 @@ CREATE TABLE #__sdi_translation (
     element_guid character varying(36) NOT NULL,
     language_id bigint,
     text1 character varying(255),
-    text2 character varying(500)
+    text2 character varying(500),
+    text3 character varying(255)
 );
 
 
