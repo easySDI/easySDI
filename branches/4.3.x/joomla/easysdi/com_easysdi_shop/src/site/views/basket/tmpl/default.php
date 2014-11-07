@@ -25,7 +25,18 @@ $document->addScript('components/com_easysdi_shop/views/basket/tmpl/myperimeter.
 $document->addScript('components/com_easysdi_shop/helpers/helper.js');
 
 ?>
-<?php if ($this->item && $this->item->extractions) : ?>
+
+<style type="text/css">
+    div.shop-product .table td{ width: 75%; word-break: break-all}
+    div.shop-product .table td.price_column{ width: 10%; text-align: right}
+    div.shop-product .table td.action_column{ width: 5%}
+    
+    div.shop-product .table tfoot td{ text-align: right}
+</style>
+
+<?php if ($this->item /*&& $this->item->extractions*/) : 
+    $currency = $this->item->prices->cfg_currency;
+?>
     <script>
         var request;
         var current_id;
@@ -40,9 +51,102 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
             jQuery('#id').val(current_id);
             jQuery('#adminForm').submit();
         }
+        
+        var checkTouState = function(){
+            jQuery('#toolbar-edit>button, #toolbar-publish>button').attr('disabled', !jQuery('#termsofuse').prop('checked'));
+        };
+        
+        
+        var processProgress = function(txt, rate){
+            jQuery('#processProgressText').text(txt);
+            if(rate)
+                jQuery('#processProgress').css('width', rate + '%');
+        };
+        
+        var sendBasket = function(){
+            jQuery('#myModalProcess').modal('show');
+            processProgress('Initialisation');
+            jQuery.ajax({
+                url: jQuery('#adminForm').attr('action'),
+                type: 'POST',
+                data: jQuery('#adminForm').serialize()
+            }).done(function(data){
+                var text = '<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PROCESS_PROGRESSING'); ?>'.replace('%1', data.treated).replace('%2', data.total);
+                processProgress(text, data.rate);
+                setTimeout(sendProduct, 500);
+            });
+            return false;
+        };
+        
+        var sendProduct = function(){
+            jQuery.ajax({
+                url: '<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=basket.saveProduct');?>',
+                type: 'POST',
+                cache: false,
+                data: '<?php echo JSession::getFormToken()?>=1'
+            }).done(function(data){
+                if('undefined' !== typeof data.total){
+                    var text = '<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PROCESS_PROGRESSING'); ?>'.replace('%1', data.treated).replace('%2', data.total);
+                    processProgress(text, data.rate);
+
+                    if(data.rate<100)
+                        setTimeout(sendProduct, 100);
+                    else
+                        setTimeout(closeBasket, 1000);
+                }
+                else{
+                    for(var el in data){
+                        Joomla.renderMessages({el: data[el]});
+                        jQuery('#myModalProcess').modal('hide');
+                    }
+                }
+                
+            });
+            return false;
+        };
+        
+        var closeBasket = function(){
+            processProgress('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PROCESS_ENDING'); ?>');
+            jQuery.ajax({
+                url: '<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=basket.finalizeSave');?>',
+                type: 'POST',
+                cache: false,
+                data: '<?php echo JSession::getFormToken()?>=1'
+            }).done(function(data){
+                document.location = data.redirect;
+            });
+            return false;
+        };
 
 
         jQuery(document).ready(function() {
+            var form = jQuery('#adminForm');
+            jQuery(form).on('submit', function(){return false});
+            
+            jQuery('#btn-login').on('click', function(){
+                document.location.href = 'index.php?option=com_users&view=login&return='+btoa(document.location.href);
+                return false;
+            });
+            
+            jQuery('#btn-create-account').on('click', function(){
+                document.location.href = 'index.php?option=com_users&view=registration&return='+btoa(document.location.href);
+                return false;
+            });
+            
+            jQuery(document).on('change', 'select#thirdparty', function(e){
+                jQuery.ajax({
+                    type: "POST",
+                    url: "index.php?option=com_easysdi_shop&task=basket.saveBasketToSession" ,
+                    data :"thirdparty="+jQuery(e.target).val()
+                }).done(function(data) {
+                    //reload page to recalculate pricing
+                    location.reload();
+                });
+            });
+            
+            jQuery('#termsofuse').on('change', checkTouState);
+            checkTouState();
+            
             Joomla.submitbutton = function(task)
             {
                 if (jQuery('#features').val() === '') {
@@ -55,93 +159,26 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                     var format = new OpenLayers.Format.WMC({'layerOptions': {buffer: 0}});
                     var text = format.write(minimap);
                     jQuery('#wmc').val(text);
-                    Joomla.submitform(task, document.getElementById('adminForm'));
+                    
+                    var taskArray = task.split('.');
+                    jQuery('input[name=action]').val(taskArray[1]);
+                    
+                    jQuery('input[name=task]').val('basket.save');
+                    jQuery('input[name=option]').val('com_easysdi_shop');
+                    
+                    sendBasket();
+                    return false;
                 }
-
             }
         })
 
     </script>
     
-    <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&view=basket'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
+    <form class="form-inline form-validate" action="<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=basket.save'); ?>" method="post" id="adminForm" name="adminForm" enctype="multipart/form-data">
         <div class="basket-edit front-end-edit">
             <h1><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TITLE'); ?></h1>
             <div class="well">
-                <div class="row-fluid shop-product">
-                    <div class="row-fluid" >
-                        <div class="span6" >
-                            <h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_EXTRACTION_NAME'); ?></h3>
-                        </div>
-                        <div class="span6" >
-                            <?php if (!empty($this->item->visualization)): ?>
-                                <div class="pull-right">
-                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_map&view=preview') . '&id=' . $this->item->visualization; ?>" target="_blank"
-                                       title="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TOOLTIP_PREVIEW'); ?>"
-                                       class="btn btn-success btn-mini pull-right" >
-                                        <i class="icon-eye"></i>
-                                    </a>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <div class="row-fluid" >
-                        <hr>
-                        <table id="table-extractions" class="table table-striped">
-                            <tfoot>
-                            </tfoot>
-                            <tbody>
-                                <?php foreach ($this->item->extractions as $extraction) : ?>
-                                    <tr id="<?php echo $extraction->id; ?>">
-                                        <td>
-                                            <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=sheet&guid=' . $extraction->metadataguid); ?>"><?php echo $extraction->name; ?></a>
-                                            <div class="small"><?php echo $extraction->organism; ?></div>
-                                            <div class="accordion" id="accordion_<?php echo $extraction->id; ?>_properties">
-                                                <div class="accordion-group">
-                                                    <div class="accordion-heading">
-                                                        <!--a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_<?php echo $extraction->id; ?>_properties" href="#<?php echo $extraction->id; ?>_collapse"-->
-
-                                                        <span style='display: block; padding: 5px 15px;'>
-                                                            <?php echo JText::_("COM_EASYSDI_SHOP_BASKET_EXTRACTION_PROPERTIES"); ?>
-                                                        </span>
-                                                        <!--/a-->
-                                                    </div>
-                                                    <div id="<?php echo $extraction->id; ?>_collapse" class="accordion-body collapse in">
-                                                        <div class="accordion-inner">
-                                                            <?php
-                                                            foreach ($extraction->properties as $property):
-                                                                ?>
-                                                                <div class="small"><?php echo $property->name; ?> : 
-                                                                    <?php
-                                                                    foreach ($property->values as $value) :
-                                                                        if (!empty($value->value)) :
-                                                                            echo $value->value;
-                                                                        else :
-                                                                            echo $value->name;
-                                                                        endif;
-                                                                        echo', ';
-                                                                    endforeach;
-                                                                    ?>
-                                                                </div>
-                                                                <?php
-                                                            endforeach;
-                                                            ?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <a href="#" class="btn btn-danger btn-mini pull-right" title="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REMOVE'); ?>" onClick="removeFromBasket(<?php echo $extraction->id; ?>);
-                                                    return false;"><i class="icon-white icon-remove"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <!-- PERIMETER -->
                 <div class="row-fluid shop-perimeter" >
                     <div class="row-fluid" ><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PERIMETER'); ?></h3></div>
                     <hr>
@@ -205,6 +242,9 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                          
                         </div>
                 </div>
+                <!-- ENDOF PERIMETER -->
+                
+                <!-- THIRD PARTY -->
                 <?php if (!empty($this->thirdParties)): ?>
                     <div class="row-fluid shop-third-party" >
                         <div class="row-fluid" ><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_THIRD_PARTY'); ?></h3>
@@ -217,22 +257,163 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                        </select></div>
                     </div>
                 <?php endif; ?>
-                <?php if (!empty($this->paramsarray['shopinfomessage'])): ?>
+                <!-- ENDOF THIRD PARTY -->
+                
+                <!-- PRODUCTS -->
+                <div class="row-fluid shop-product">
+                    <div class="row-fluid" >
+                        <div class="span6" >
+                            <h3><?php //echo JText::_('COM_EASYSDI_SHOP_BASKET_EXTRACTION_NAME'); ?></h3>
+                        </div>
+                        <div class="span6" >
+                            <?php if (!empty($this->item->visualization)): ?>
+                                <div class="pull-right">
+                                    <a href="<?php echo JRoute::_('index.php?option=com_easysdi_map&view=preview') . '&id=' . $this->item->visualization; ?>" target="_blank"
+                                       title="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TOOLTIP_PREVIEW'); ?>"
+                                       class="btn btn-success btn-mini pull-right" >
+                                        <i class="icon-eye"></i>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="row-fluid" >
+                        <hr>
+                        <h3><?php
+                        echo $this->item->extractionsNb." ".JText::_('COM_EASYSDI_SHOP_BASKET_SELECTED_DATA'); 
+                        if(isset($this->item->pricing)):
+                        ?> ( <?php echo Easysdi_shopHelper::priceFormatter($this->item->pricing->cal_total_amount_ti);?> )
+                        <?php endif;?></h3>
+                        
+                        <?php foreach($this->item->extractions as $supplier_id => $supplier): ?>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <td><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_DATA_SUPPLIER') . ' : ' . $supplier->name; ?></h4></td>
+                                    <?php if(isset($this->item->pricing)): ?>
+                                        <td class="price_column"><?php echo JText::_('COM_EASYSDI_SHOP_PRICES_TTC'); ?></td>
+                                    <?php endif; ?>
+                                    <td class="action_column">&nbsp;</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach($supplier->items as $item): ?>
+                                <tr>
+                                    <td>
+                                        <a href="<?php echo JRoute::_('index.php?option=com_easysdi_catalog&view=sheet&guid=' . $item->metadataguid); ?>"><?php echo $item->name; ?></a>
+                                        <ul>
+                                            <?php foreach($item->properties as $property): ?>
+                                            <li><?php echo $property->name; ?> : 
+                                                <?php 
+                                                $c=count($property->values);
+                                                $i=0;
+                                                foreach($property->values as $value): 
+                                                    echo empty($value->value) ? $value->name : $value->value;
+                                                    $i++;
+                                                    if($i<$c) echo ', ';
+                                                endforeach;
+                                                ?></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </td>
+                                    <?php if(isset($this->item->pricing)): ?>
+                                        <td class="price_column"><?php echo isset($this->item->pricing->suppliers[$supplier_id]->products[$item->id]->cal_total_amount_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->suppliers[$supplier_id]->products[$item->id]->cal_total_amount_ti) : '-';?></td>
+                                    <?php endif; ?>
+                                    <td class="action_column">
+                                        <a href="#" class="btn btn-danger btn-mini pull-right" title="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TOOLTIP_REMOVE'); ?>" 
+                                           onClick="removeFromBasket(<?php echo $item->id; ?>);return false;"><i class="icon-white icon-remove"></i></a>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                            <?php if(isset($this->item->pricing)): ?>
+                                <tfoot>
+                                    <tr>
+                                        <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TAX'); ?></td>
+                                        <td class="price_column"><?php echo isset($this->item->pricing->suppliers[$supplier_id]->cal_fee_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->suppliers[$supplier_id]->cal_fee_ti) : '-';?></td>
+                                        <td class="action_column">&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_SUBTOTAL'); ?></td>
+                                        <td class="price_column"><?php echo isset($this->item->pricing->suppliers[$supplier_id]->cal_total_amount_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->suppliers[$supplier_id]->cal_total_amount_ti) : '-';?></td>
+                                        <td class="action_column">&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_SUPPLIER_REBATE'); ?></td>
+                                        <td class="price_column"><?php echo isset($this->item->pricing->suppliers[$supplier_id]->cal_total_rebate_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->suppliers[$supplier_id]->cal_total_rebate_ti) : '-';?></td>
+                                        <td class="action_column">&nbsp;</td>
+                                    </tr>
+                                </tfoot>
+                            <?php endif;?>
+                        </table>
+                        <?php endforeach; ?>
+                        
+                        <?php if(isset($this->item->pricing)): ?>
+                        <!-- TOTAL -->
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <td><h4><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PLATFORM'); ?></h4></td>
+                                    <td class="price_column">&nbsp;</td>
+                                    <td class="action_column">&nbsp;</td>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_FEE'); ?></td>
+                                    <td class="price_column"><?php echo isset($this->item->pricing->cal_fee_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->cal_fee_ti) : '-';?></td>
+                                    <td class="action_column">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_TOTAL'); ?></td>
+                                    <td class="price_column"><?php echo isset($this->item->pricing->cal_total_amount_ti) ? Easysdi_shopHelper::priceFormatter($this->item->pricing->cal_total_amount_ti) : '-';?></td>
+                                    <td class="action_column">&nbsp;</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <!-- ENDOF TOTAL -->
+                        <?php endif; ?>
+                        
+                    </div>
+                </div>
+                <!-- ENDOF PRODUCTS -->
+                
+                <!-- INFORMATIONS -->
+                <?php if (empty($this->paramsarray['shopinfomessage'])): ?>
                     <div class="row-fluid shop-info" >
                         <div class="row-fluid" ><h3><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_MESSAGE'); ?></h3>
                         <hr>
                         <div class="shop-information"><?php echo $this->paramsarray['shopinfomessage']; ?></div></div>
                     </div>
                 <?php endif; ?>
+                <!-- ENDOF INFORMATIONS -->
+                
+                <!-- TOOLBAR -->
                 <div class="row-fluid " >
                     <hr>
-                    <div  class="span5 pull-right" >
-                        <?php echo $this->getToolbar(); ?>
-                    </div>
-                    <div class="pull-right">
-                        <input class="btn-toolbar" id="ordername" name="ordername" type="text" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ORDER_NAME'); ?>" value="<?php if (!empty($this->item->name)) echo $this->item->name; ?>">
-                    </div>
+                    <?php if($this->get('user')->isEasySDI):?>
+                        <div>
+                            <label class="checkbox">
+                                    <input type="checkbox" id="termsofuse" > <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_I_ACCEPT') ?> <a href="<?php echo $this->paramsarray['termsofuse'] ; ?>" target="_blank"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_TERMS') ?></a> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_CONFIRM_OF_USE') ?>
+                                </label>
+                        </div>
+                        <div  class="span5 pull-right" >
+                            <?php echo $this->getToolbar(); ?>
+                            <input type="hidden" name="action" value="" />
+                        </div>
+                        <div class="pull-right">
+                            <input class="btn-toolbar" id="ordername" name="ordername" type="text" placeholder="<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_ORDER_NAME'); ?>" value="<?php if (!empty($this->item->name)) echo $this->item->name; ?>">
+                        </div>
+                    <?php else:?>
+                        <div  class="span5 pull-right" >
+                            <button class="btn btn-small" id="btn-login" name="btn-login"><?php echo JText::_('COM_EASYSDI_CORE_LOGIN');?></button>
+                            <button class="btn btn-small" id="btn-create-account" name="btn-create-account"><?php echo JText::_('COM_EASYSDI_CORE_CREATE_ACCOUNT');?></button>
+                        </div>
+                    <?php endif; ?>
                 </div>
+                <!-- ENDOF TOOLBAR -->
+                
             </div>
         </div>
 
@@ -268,7 +449,7 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                                         <a href="#" id="btn-pan" class="btn btn-perimeter-selection <?php if (!isset($this->item->extent->id) || $this->item->extent->id===''){echo "active";};?>"  onClick="toggleSelectControl('pan');jQuery('#help-perimeter').html('<?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PAN_HELP'); ?>'); return false;"><i class="icon-move"></i> <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PAN'); ?></a><br>
                                                     <br>
                                         <?php
-                                        foreach ($this->item->perimeters as $perimeter):
+                                        foreach ($item->perimeters as $perimeter):
                                             if ($perimeter->id == 1):
                                                 if (!$this->item->isrestrictedbyperimeter):
                                                     ?>
@@ -375,6 +556,22 @@ $document->addScript('components/com_easysdi_shop/helpers/helper.js');
                 <!--<div class="modal-footer">
                     <button type="button" class="btn btn-primary"><?php echo JText::_('OK'); ?></button>
                 </div>              -->
+            </div>
+        </div>
+        
+        <div id="myModalProcess" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabelProcess" aria-hidden="true">
+            <div class="modal-header">
+                <h3 id="myModalLabelProcess"><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PROCESSING'); ?></h3>
+            </div>
+            <div class="modal-body" style="max-height: 500px;">
+                <span><?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PROCESSING_TO_SUPPLIERS'); ?></span>
+                <div class="progress progress-striped active" style="position:relative;">
+                    <div  id="processProgress" class="bar"></div>
+                    <div  id="processProgressText" style="position:absolute;text-align:center;width:100%"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <?php echo JText::_('COM_EASYSDI_SHOP_BASKET_PROCESS_TAKE_A_WHILE'); ?>
             </div>
         </div>
 

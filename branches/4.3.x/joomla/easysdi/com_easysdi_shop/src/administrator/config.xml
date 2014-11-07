@@ -54,7 +54,17 @@
                    size="500"
                    label="COM_EASYSDI_SHOP_CONFIG_LBL_ORDERRESPONSEFOLDER"
                    description="COM_EASYSDI_SHOP_CONFIG_DESC_ORDERRESPONSEFOLDER">
-           </field>         
+           </field> 
+           
+            <field name="orderrequestFolder"
+                   type="text"
+                   default=""
+                   class="inputbox input-xxlarge"
+                   required ="true"
+                   size="500"
+                   label="COM_EASYSDI_SHOP_CONFIG_LBL_ORDERREQUESTFOLDER"
+                   description="COM_EASYSDI_SHOP_CONFIG_DESC_ORDERREQUESTFOLDER">
+           </field>        
            
            <field name="archiveorderdelay"
                    type="text"
@@ -129,6 +139,89 @@
 			validate="rules"
 			label="JCONFIG_PERMISSIONS_LABEL"
 			section="component" />
+	</fieldset>
+        
+        <fieldset name="pricing" description="COM_EASYSDI_SHOP_CONFIG_PRICING_DESC" label="COM_EASYSDI_SHOP_CONFIG_PRICING_LABEL" >
+
+		<field name="is_activated" 
+                    type="radio" 
+                    class="radio btn-group btn-group-yesno"
+                    label="COM_EASYSDI_SHOP_CONFIG_LBL_PRICING_IS_ACTIVATED"
+                    description="COM_EASYSDI_SHOP_CONFIG_DESC_PRICING_IS_ACTIVATED"
+                    default="0">
+                 <option value="0">JNO</option>
+                 <option value="1">JYES</option>
+             </field> 
+
+             <field name="vat" 
+                    type="text" 
+                    size="6" 
+                    class="inputbox"
+                    label="COM_EASYSDI_SHOP_CONFIG_LBL_PRICING_VAT"
+                    description="COM_EASYSDI_SHOP_CONFIG_DESC_PRICING_VAT"
+                    default="8" /> 
+
+             <field name="currency" 
+                    type="text"
+                    size="3"
+                    class="inputbox"
+                    label="COM_EASYSDI_SHOP_CONFIG_LBL_PRICING_CURRENCY"
+                    description="COM_EASYSDI_SHOP_CONFIG_DESC_PRICING_CURRENCY"
+                    default="CHF"             /> 
+
+             <field name="decimal_symbol" 
+                    type="text"
+                    size="1"
+                    class="inputbox"
+                    label="COM_EASYSDI_SHOP_CONFIG_LBL_PRICING_DECIMAL_SYMBOL"
+                    description="COM_EASYSDI_SHOP_CONFIG_DESC_PRICING_DECIMAL_SYMBOL"
+                    default="."             /> 
+
+             <field name="digit_after_decimal" 
+                    type="text"
+                    size="2"
+                    class="inputbox"
+                    label="COM_EASYSDI_SHOP_CONFIG_LBL_PRICING_DIGIT_AFTER_DECIMAL"
+                    description="COM_EASYSDI_SHOP_CONFIG_DESC_PRICING_DIGIT_AFTER_DECIMAL"
+                    default="2"             /> 
+
+             <field name="digit_grouping_symbol" 
+                    type="text"
+                    size="1"
+                    class="inputbox"
+                    label="COM_EASYSDI_SHOP_CONFIG_LBL_PRICING_DIGIT_GROUPING_SYMBOL"
+                    description="COM_EASYSDI_SHOP_CONFIG_DESC_PRICING_DIGIT_GROUPING_SYMBOL"
+                    default="'"             /> 
+
+             <field name="rounding" 
+                    type="text"
+                    size="4"
+                    class="inputbox"
+                    label="COM_EASYSDI_SHOP_CONFIG_LBL_PRICING_ROUNDING"
+                    description="COM_EASYSDI_SHOP_CONFIG_DESC_PRICING_ROUNDING"
+                    default="0.05"             /> 
+
+             <field name="overall_fee" type="note" label="COM_EASYSDI_SHOP_CONFIG_LBL_PRICING_OVERALL_FEE" />
+
+             <field name="overall_default_fee" 
+                    type="text" 
+                    size="6" 
+                    class="inputbox"
+                    label="COM_EASYSDI_SHOP_CONFIG_LBL_PRICING_OVERALL_DEFAULT_FEE"
+                    description="COM_EASYSDI_SHOP_CONFIG_DESC_PRICING_OVERALL_DEFAULT_FEE"
+                    default="0" /> 
+             
+             <field name="free_data_fee"  
+                    type="radio" 
+                    class="radio btn-group btn-group-yesno"
+                    label="COM_EASYSDI_SHOP_CONFIG_LBL_PRICING_FREE_DATA_FEE"
+                    description="COM_EASYSDI_SHOP_CONFIG_DESC_PRICING_FREE_DATA_FEE"
+                    default="0" >
+                 <option value="0">JNO</option>
+                 <option value="1">JYES</option>
+             </field> 
+             
+             <field name="pricing_by_category" type="note" class="alert alert-info" description="COM_EASYSDI_SHOP_CONFIG_DESC_PRICING_BY_CATEGORY" />
 	</fieldset>
 
 </config>

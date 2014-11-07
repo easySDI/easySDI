@@ -408,6 +408,7 @@ CREATE TABLE #__sdi_diffusion (
     description character varying(500),
     accessscope_id bigint NOT NULL,
     pricing_id bigint NOT NULL,
+    pricing_profile_id int(11) UNSIGNED,
     deposit character varying(255),
     productmining_id bigint,
     surfacemin character varying(50),
@@ -726,6 +727,9 @@ CREATE TABLE #__sdi_order (
     orderstate_id bigint NOT NULL,
     user_id bigint NOT NULL,
     thirdparty_id bigint,
+    validated smallint DEFAULT NULL,
+    validated_date timestamp(3) without time zone DEFAULT NULL,
+    validated_reason character varying(255),
     buffer double precision,
     surface double precision,
     remark character varying(500),
@@ -787,10 +791,15 @@ CREATE TABLE #__sdi_organism (
     name character varying(255) NOT NULL,
     website character varying(500),
     perimeter text,
+    selectable_as_thirdparty TINYINT(1) DEFAULT 0,
     access integer NOT NULL,
     asset_id integer NOT NULL,
     username character varying(150),
-    password character varying(65)
+    password character varying(65),
+    internal_free smallint DEFAULT 0,
+    fixed_fee_ti decimal(6,2) UNSIGNED DEFAULT 0,
+    data_free_fixed_fee smallint DEFAULT 0,
+
 );
 
 CREATE TABLE IF NOT EXISTS #__sdi_category (
@@ -808,7 +817,8 @@ CREATE TABLE IF NOT EXISTS #__sdi_category (
     description character varying(500),
     name character varying(255) NOT NULL,
     access integer NOT NULL,
-    asset_id integer NOT NULL
+    asset_id integer NOT NULL,
+    overall_fee DECIMAL(6,2) UNSIGNED DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS #__sdi_organism_category (

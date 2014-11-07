@@ -14,6 +14,8 @@ jimport('joomla.application.component.modelform');
 jimport('joomla.event.dispatcher');
 
 require_once JPATH_COMPONENT . "/libraries/easysdi/sdiBasket.php";
+require_once JPATH_COMPONENT . '/helpers/easysdi_shop.php';
+require_once JPATH_BASE . '/components/com_easysdi_catalog/controllers/sheet.php';
 
 /**
  * Easysdi_shop model.
@@ -21,6 +23,42 @@ require_once JPATH_COMPONENT . "/libraries/easysdi/sdiBasket.php";
 class Easysdi_shopModelBasket extends JModelLegacy {
 
     var $_item = null;
+    
+    // ORDERSTATE
+    const ORDERSTATE_ARCHIVED           = 1;
+    const ORDERSTATE_HISTORIZED         = 2;
+    const ORDERSTATE_FINISH             = 3;
+    const ORDERSTATE_AWAIT              = 4;
+    const ORDERSTATE_PROGRESS           = 5;
+    const ORDERSTATE_SENT               = 6;
+    const ORDERSTATE_SAVED              = 7;
+    const ORDERSTATE_VALIDATION         = 8;
+    const ORDERSTATE_REJECTED           = 9; // rejected by thirdparty
+    const ORDERSTATE_REJECTED_SUPPLIER  = 10; // rejected by supplier
+    
+    // ORDERTYPE
+    const ORDERTYPE_ORDER       = 1;
+    const ORDERTYPE_ESTIMATE    = 2;
+    const ORDERTYPE_DRAFT       = 3;
+    
+    // ROLE
+    const ROLE_MEMBER                   = 1;
+    const ROLE_RESOURCEMANAGER          = 2;
+    const ROLE_METADATARESPONSIBLE      = 3;
+    const ROLE_METADATAEDITOR           = 4;
+    const ROLE_DIFFUSIONMANAGER         = 5;
+    const ROLE_PREVIEWMANAGER           = 6;
+    const ROLE_EXTRACTIONRESPONSIBLE    = 7;
+    const ROLE_PRICINGMANAGER           = 9;
+    const ROLE_VALIDATIONMANAGER        = 10;
+    
+    // PRODUCTSTATE
+    const PRODUCT_AVAILABLE         = 1;
+    const PRODUCT_AWAIT             = 2;
+    const PRODUCT_SENT              = 3;
+    const PRODUCT_VALIDATION        = 4;
+    const PRODUCT_REJECTED          = 5; // rejected by thirdparty
+    const PRODUCT_REJECTED_SUPPLIER = 6; // rejected by supplier
 
     /**
      * Method to auto-populate the model state.
@@ -67,7 +105,7 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             return false;
 
         $data = array();
-
+        
         //Save order object
         if (empty($basket->id))
             $data['id'] = 0;
@@ -80,10 +118,6 @@ class Easysdi_shopModelBasket extends JModelLegacy {
             $data['name'] = $basket->name;
         endif;
         
-//        if(!empty($basket->wmc)):
-//            $data['wmc'] = $basket->wmc;
-//        endif;
-        
         $data['sent'] = date('Y-m-d H:i:s');
 
         $data['created'] = $basket->created;
@@ -93,16 +127,16 @@ class Easysdi_shopModelBasket extends JModelLegacy {
         $data['thirdparty_id'] = (($basket->thirdparty != -1)&&($basket->thirdparty != ""))? $basket->thirdparty : NULL;
         switch (JFactory::getApplication()->input->get('action', 'save', 'string')) {
             case 'order':
-                $data['ordertype_id'] = 1;
-                $data['orderstate_id'] = 6;
+                $data['ordertype_id'] = self::ORDERTYPE_ORDER;
+                $data['orderstate_id'] = ($data['thirdparty_id'] !== NULL) ? self::ORDERSTATE_VALIDATION : self::ORDERSTATE_SENT;
                 break;
             case 'estimate':
-                $data['ordertype_id'] = 2;
-                $data['orderstate_id'] = 6;
+                $data['ordertype_id'] = self::ORDERTYPE_ESTIMATE;
+                $data['orderstate_id'] = self::ORDERSTATE_SENT;
                 break;
             case 'draft':
-                $data['ordertype_id'] = 3;
-                $data['orderstate_id'] = 7;
+                $data['ordertype_id'] = self::ORDERTYPE_DRAFT;
+                $data['orderstate_id'] = self::ORDERSTATE_SAVED;
                 break;
         }
         $data['user_id'] = sdiFactory::getSdiUser()->id;
@@ -110,6 +144,14 @@ class Easysdi_shopModelBasket extends JModelLegacy {
 
         $table = $this->getTable();
         if ($table->save($data) === true) {
+            $basketData = array(
+                'orderstate_id' => $table->orderstate_id,
+                'diffusions'    => array(),
+                'order_id'      => $table->id,
+                'thirdparty_id' => $table->thirdparty_id,
+                'order_name'    => $table->name
+            );
+            
             if (!empty($basket->id)) {
                 $this->cleanTables($basket->id);
             }
@@ -120,10 +162,12 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                 $od = array();
                 $od['order_id'] = $table->id;
                 $od['diffusion_id'] = $diffusion->id;
-                $od['productstate_id'] = 3;
+                $od['productstate_id'] = ($table->orderstate_id == self::ORDERSTATE_VALIDATION) ? self::PRODUCT_VALIDATION : self::PRODUCT_SENT;
+                
                 $od['created_by'] = JFactory::getUser()->id;
                 $orderdiffusion->save($od);
-
+                array_push($basketData['diffusions'], $orderdiffusion->diffusion_id);
+                
                 //Save properties
                 foreach ($diffusion->properties as $property):
                     foreach ($property->values as $value):
@@ -137,44 +181,10 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                         $orderpropertyvalue->save($v);
                     endforeach;
                 endforeach;
-
-                //If the basket is not a draft
-                if ($data['orderstate_id'] != 7):
-                    //Get the user to notified when the order is saved
-                    $db = JFactory::getDbo();
-                    $query = $db->getQuery(true);
-                    $query->select('user_id')
-                            ->from('#__sdi_diffusion_notifieduser')
-                            ->where('diffusion_id = ' . (int)$diffusion->id);
-                    $db->setQuery($query);
-                    $notifiedusers = $db->loadColumn();
-
-                    $diffusiontable = JTable::getInstance('diffusion', 'Easysdi_shopTable');
-                    $diffusiontable->load($diffusion->id);
-
-                    //Send mail to notifieduser
-                    foreach ($notifiedusers as $notifieduser):
-                        $user = sdiFactory::getSdiUser($notifieduser);
-                        if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_BODY', $diffusiontable->name))):
-                            JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
-                        endif;
-                    endforeach;
-
-                    //Send mail to the responsible of extraction
-                    $query = $db->getQuery(true);
-                    $query->select('rr.user_id')
-                            ->from('#__sdi_user_role_resource rr')
-                            ->where('rr.role_id = 7')
-                            ->where('rr.resource_id = (SELECT r.id FROM #__sdi_resource r INNER JOIN #__sdi_version v ON v.resource_id = r.id WHERE v.id = ' . (int)$diffusiontable->version_id . ')');
-                    $db->setQuery($query);
-                    $responsible = $db->loadResult();
-                    $user = sdiFactory::getSdiUser($responsible);
-                    if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_NOTIFIEDUSER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_RESPONSIBLE_BODY', $diffusiontable->name))):
-                        JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
-                    endif;
-                endif;
             endforeach;
-
+            
+            $session =& JFactory::getSession();
+            $session->set('basketData', $basketData);
 
             //Save perimeters
             if (is_array($basket->extent->features)):
@@ -196,18 +206,178 @@ class Easysdi_shopModelBasket extends JModelLegacy {
                 $op['created_by'] = JFactory::getUser()->id;
                 $orderperimeter->save($op);
             endif;
+            
+            // PRICING
+            // rebuild extractions array to allow by supplier grouping
+            Easysdi_shopHelper::extractionsBySupplierGrouping($basket);
+
+            // calculate price for the current basket (only if surface is defined)
+            Easysdi_shopHelper::basketPriceCalculation($basket);
+            
+            $pricing = $basket->pricing;
+            
+            // sdi_pricing_order
+            $pricingOrder = $this->getTable('PricingOrder', 'Easysdi_shopTable');
+            $pricingOrderData = array(
+                'order_id'                      => $table->id,
+                'cfg_vat'                       => $pricing->cfg_vat,
+                'cfg_currency'                  => $pricing->cfg_currency,
+                'cfg_rounding'                  => $pricing->cfg_rounding,
+                'cfg_overall_default_fee'       => $pricing->cfg_overall_default_fee,
+                'cfg_free_data_fee'             => $pricing->cfg_free_data_fee,
+                'cal_total_amount_ti'           => $pricing->cal_total_amount_ti,
+                'cal_fee_ti'                    => $pricing->cal_fee_ti,
+                'ind_lbl_category_order_fee'    => $pricing->ind_lbl_category_order_fee
+            );
+            
+            if($pricingOrder->save($pricingOrderData) === true){
+                $this->saveSuppliers($basket, $pricing, $pricingOrder);
+            }
+            // ENDOF PRICING
+        }
+        
+        return true;
+    }
+    
+    /**
+     * saveSuppliers - save the suppliers of a basket
+     * 
+     * @param sdiBasket $basket
+     * @param stdClass $pricing
+     * @param sdiPricingOrder $pricingOrder
+     * 
+     * @return void
+     * @since 4.3.0
+     */
+    private function saveSuppliers($basket, $pricing, $pricingOrder){
+        $session =& JFactory::getSession();
+        $basketProcess = array(
+            'treated'   => 0,
+            'total'     => $basket->extractionsNb,
+            'rate'      => 0
+        );
+        $session->set('basketProcess', $basketProcess);
+        $session->set('basketProducts', array());
+
+        // sdi_pricing_order_supplier
+        foreach($pricing->suppliers as $supplierId => $supplier){
+            $this->saveSupplier($supplierId, $supplier, $pricingOrder);
+        }
+    }
+    
+    /**
+     * saveSupplier - save one supplier
+     * 
+     * @param integer $supplierId
+     * @param stdClass $supplier
+     * @param sdiPricingOrder $pricingOrder
+     * 
+     * @return void
+     * @since 4.3.0
+     */
+    private function saveSupplier($supplierId, $supplier, $pricingOrder){
+        $pricingOrderSupplier = $this->getTable('PricingOrderSupplier', 'Easysdi_shopTable');
+        $pricingOrderSupplierData = array(
+            'pricing_order_id'          => $pricingOrder->id,
+            'supplier_id'               => $supplierId,
+            'supplier_name'             => $supplier->name,
+            'cfg_internal_free'         => $supplier->cfg_internal_free,
+            'cfg_fixed_fee_ti'          => $supplier->cfg_fixed_fee_ti,
+            'cfg_data_free_fixed_fee'   => $supplier->cfg_data_free_fixed_fee,
+            'cal_total_amount_ti'       => $supplier->cal_total_amount_ti,
+            'cal_fee_ti'                => $supplier->cal_fee_ti,
+            'cal_total_rebate_ti'       => $supplier->cal_total_rebate_ti
+        );
+
+        if($pricingOrderSupplier->save($pricingOrderSupplierData) === true){
+            $session =& JFactory::getSession();
+            $basketProducts = $session->get('basketProducts');
+            // sdi_pricing_order_supplier_product
+            foreach($supplier->products as $productId => $product){
+                array_push($basketProducts, array(
+                    'productId'             => $productId,
+                    'product'               => $product,
+                    'pricingOrderSupplier_id'  => $pricingOrderSupplier->id
+                ));
+            }
+            $session->set('basketProducts', $basketProducts);
+        }
+    }
+    
+    /**
+     * saveProduct - save a product
+     * 
+     * @return void
+     * @since 4.3.0
+     */
+    public function saveProduct(){
+        $session =& JFactory::getSession();
+        $basketProducts = $session->get('basketProducts');
+        $basketProcess = $session->get('basketProcess');
+        $currentProduct = $basketProducts[$basketProcess['treated']];
+        extract($currentProduct);
+        
+        // reset time limit to avoid crash - files creation can take a while
+        set_time_limit(30);
+
+        $pricingOrderSupplierProduct = $this->getTable('PricingOrderSupplierProduct', 'Easysdi_shopTable');
+        $pricingOrderSupplierProductData = array(
+            'pricing_order_supplier_id'             => $pricingOrderSupplier_id,
+            'product_id'                            => $productId,
+            'pricing_id'                            => $product->cfg_pricing_type,
+            'cfg_pct_category_supplier_discount'    => $product->cfg_pct_category_supplier_discount,
+            'ind_lbl_category_supplier_discount'    => $product->ind_lbl_category_supplier_discount,
+            'cal_amount_data_te'                    => $product->cal_amount_data_te,
+            'cal_total_amount_te'                   => $product->cal_total_amount_te,
+            'cal_total_amount_ti'                   => $product->cal_total_amount_ti,
+            'cal_total_rebate_ti'                   => $product->cal_total_rebate_ti
+        );
+
+        if($pricingOrderSupplierProduct->save($pricingOrderSupplierProductData) === true && $pricingOrderSupplierProduct->pricing_id == 3){
+
+            // sdi_pricing_order_supplier_product_profile
+            $pricingOrderSupplierProductProfile = $this->getTable('PricingOrderSupplierProductProfile', 'Easysdi_shopTable');
+            $pricingOrderSupplierProductProfileData = array(
+                'pricing_order_supplier_product_id' => $pricingOrderSupplierProduct->id,
+                'pricing_profile_id'                => $product->cfg_profile_id,
+                'pricing_profile_name'              => $product->cfg_profile_name,
+                'cfg_fixed_fee'                     => $product->cfg_fixed_fee,
+                'cfg_surface_rate'                  => $product->cfg_surface_rate,
+                'cfg_min_fee'                       => $product->cfg_min_fee,
+                'cfg_max_fee'                       => $product->cfg_max_fee,
+                'cfg_pct_category_profile_discount' => $product->cfg_pct_category_profile_discount,
+                'ind_lbl_category_profile_discount'  => $product->ind_lbl_category_profile_discount
+            );
+
+            $pricingOrderSupplierProductProfile->save($pricingOrderSupplierProductProfileData);
+            $pricingOrderSupplierProductProfile = false;
         }
 
-        //If the basket is not a draft
-        if ($data['orderstate_id'] != 7):
-            //Send an email to the user to confirm his order
-            $user = sdiFactory::getSdiUser();
-            if (!$user->sendMail(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_CONFIRM_ORDER_SUBJECT'), JText::sprintf('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_CONFIRM_ORDER_BODY', $data['name']))):
-                JFactory::getApplication()->enqueueMessage(JText::_('COM_EASYSDI_SHOP_BASKET_SEND_MAIL_ERROR_MESSAGE'));
-            endif;        
-        endif;
+        // Generate XML and PDF files
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true)
+                ->select('m.guid')
+                ->from('#__sdi_diffusion d')
+                ->innerJoin('#__sdi_version v on d.version_id = v.id')
+                ->innerJoin('#__sdi_resource r on r.id = v.resource_id')
+                ->innerJoin('#__sdi_metadata m on m.version_id = v.id')
+                ->where('d.id='.(int)$productId);
+        $db->setQuery($query);
+        $guid = $db->loadResult();
 
-        return true;
+        // Sheet used to generate XML and PDF files
+        $sheet = new Easysdi_catalogControllerSheet();
+        $requestFolder = JPATH_BASE . JComponentHelper::getParams('com_easysdi_shop')->get('orderrequestFolder').'/';
+        if(!file_exists($requestFolder))
+            mkdir($requestFolder, 0755, true);
+        
+        file_put_contents($requestFolder.$pricingOrderSupplierProduct->guid.'.xml', $sheet->exportXML($guid, FALSE));
+        file_put_contents($requestFolder.$pricingOrderSupplierProduct->guid.'.pdf', $sheet->exportPDF($guid, FALSE));
+        
+        // Update session data
+        $basketProcess['treated']++;
+        $basketProcess['rate'] = intval($basketProcess['treated']/$basketProcess['total']*100);
+        $session->set('basketProcess', $basketProcess);
     }
 
     private function cleanTables($order_id) {
