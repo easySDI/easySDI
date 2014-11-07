@@ -35,10 +35,19 @@ class SdiToolbar{
             $ul->setAttribute('role', 'menu');
 
             foreach ($action as $menuLabel => $menuAction) {
+                if(is_array($menuAction)){
+                    $menuRel = $menuAction[1];
+                    $menuAction = $menuAction[0];
+                }
+                
+                
                 $li = $this->dom->createElement('li');
                 $a = $this->dom->createElement('a', $menuLabel);
-                $a->setAttribute('onclick', 'Joomla.submitbutton(\'' . $menuAction . '\')');
+                $a->setAttribute('onclick', 'Joomla.submitbutton(\'' . $menuAction . '\', this.rel)');
                 $a->setAttribute('style', 'cursor:pointer');
+                if(isset($menuRel)){
+                    $a->setAttribute('rel', $menuRel);
+                }
                 $li->appendChild($a);
                 $ul->appendChild($li);
             }

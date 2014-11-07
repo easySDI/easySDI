@@ -107,13 +107,8 @@ class Easysdi_mapTablegroup extends sdiTable {
 	 * @link    http://docs.joomla.org/JTable/load
 	 * @since   EasySDI 3.0.0
 	 */
-	public function loadIdsByMapId($map_id = null, $reset = true)
+	public function loadIdsByMapId($map_id = null)
 	{
-		if ($reset)
-		{
-			$this->reset();
-		}
-		
 		if(empty($map_id))
 			return false;
 		

@@ -29,8 +29,7 @@
         <echoxml file="${module.adminbutton.src.out.dir}/mod_easysdi_adminbutton.xml">
             <extension version="3.0" type="module" client="administrator" method="upgrade">
                 <name>mod_easysdi_adminbutton</name>
-                <creationDate>15 September 2013</creationDate>
-                <releaseDate>${xml.releaseDate}</releaseDate>
+                <creationDate>${xml.releaseDate}</creationDate>
                 <copyright>${xml.copyright}</copyright>
                 <license>${xml.license}</license>
                 <author>${xml.author}</author>

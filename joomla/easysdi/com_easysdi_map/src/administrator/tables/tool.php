@@ -82,13 +82,8 @@ class Easysdi_mapTabletool extends sdiTable {
 	 * @link    http://docs.joomla.org/JTable/load
 	 * @since   EasySDI 3.0.0
 	 */
-	public function loadByMapId($map_id = null, $reset = true)
+	public function loadByMapId($map_id = null)
 	{
-		if ($reset)
-		{
-			$this->reset();
-		}
-		
 		// Initialise the query.
 		$query = $this->_db->getQuery(true);
 		$query->select('t.id, t.alias, ct.params');

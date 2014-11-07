@@ -9,8 +9,8 @@
 class EnumLayerName {
     public static $ROADMAP = 'ROADMAP';
     public static $TERRAIN = 'TERRAIN';
-    public static $SATELLITE = 'SETELLITE';
-    public static $HYBRIDE = 'HYBRIDE';
+    public static $SATELLITE = 'SATELLITE';
+    public static $HYBRID = 'HYBRID';
 }
 
 ?>

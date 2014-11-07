@@ -228,7 +228,6 @@ class Easysdi_shopModelDiffusion extends JModelForm {
      */
     public function save($data) {
         $id = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('diffusion.id');
-        $state = (!empty($data['state'])) ? 1 : 0;
 
         //Check the user right
         $user = sdiFactory::getSdiUser();
@@ -237,57 +236,6 @@ class Easysdi_shopModelDiffusion extends JModelForm {
             JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             JFactory::getApplication()->redirect(JRoute::_('index.php?option=com_easysdi_core&view=resources', false));
             return false;
-        }
-
-        //Clean and prepare data
-        $jinput = JFactory::getApplication()->input;
-        $form = $jinput->get('jform', 'null', 'ARRAY');
-        (empty($data['hasdownload'])) ? $data['hasdownload'] = "0" : $data['hasdownload'] = "1";
-        (empty($data['hasextraction'])) ? $data['hasextraction'] = "0" : $data['hasextraction'] = "1";
-        if(empty($data['surfacemin']))  $data['surfacemin'] = null;
-        if(empty($data['surfacemax']))  $data['surfacemax'] = null;
-        if ($data['hasdownload'] == 0) {
-            $data['productstorage_id'] = null;
-            $data['file'] = null;
-            $data['file_hidden'] = null;
-            $data['fileurl'] = null;
-            $data['perimeter_id'] = null;
-        } else {
-            switch ($data['productstorage_id']) {
-                case 1:
-                    $data['fileurl'] = null;
-                    $data['perimeter_id'] = null;
-                    break;
-                case 2:
-                    $data['file'] = null;
-                    $data['file_hidden'] = null;
-                    $data['perimeter_id'] = null;
-                    break;
-                case 3:
-                    $data['file'] = null;
-                    $data['file_hidden'] = null;
-                    $data['fileurl'] = null;
-                    break;
-            }
-        }
-        if ($data['hasextraction'] == 0) {
-            $data['surfacemin'] = null;
-            $data['surfacemax'] = null;
-            $data['productmining_id'] = null;
-            $data['deposit'] = null;
-            $data['deposit_hidden'] = null;
-            $data['notifieduser_id'] = null;
-        } else {
-            $data['perimeter'] = $form['perimeter'];
-            $data['property'] = $form['property'];
-        }
-        if ($data['pricing_id'] == 2) {
-            $data['hasdownload'] = "0";
-            $data['productstorage_id'] = null;
-            $data['file'] = null;
-            $data['file_hidden'] = null;
-            $data['fileurl'] = null;
-            $data['perimeter_id'] = null;
         }
 
         //Save

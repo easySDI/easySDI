@@ -524,7 +524,7 @@ class cswmetadata {
                         ->innerJoin('#__sdi_resource r ON r.id = v.resource_id')
                         ->innerJoin('#__sdi_resourcetype rt ON rt.id = r.resourcetype_id')
                         ->leftJoin('#__sdi_translation t on t.element_guid = m.guid')
-                        ->leftJoin('#__sdi_language l ON l.id = t.language_id AND l.code = "' . $lang . '"')
+                        ->leftJoin('#__sdi_language l ON l.id = t.language_id AND l.code = \'' . $lang . '\'')
                         ->where('vl.child_id = ' . (int) $this->version->id)
                 ;
                 $this->db->setQuery($query);
@@ -715,7 +715,7 @@ class cswmetadata {
         $language = JFactory::getLanguage();
 
         $query = $this->db->getQuery(true)
-                ->select('DISTINCT p.id as property_id, t.text1 as propertyname, p.mandatory, p.propertytype_id, p.accessscope_id')
+                ->select('p.id as property_id, t.text1 as propertyname, p.mandatory, p.propertytype_id, p.accessscope_id')
                 ->from('#__sdi_diffusion_propertyvalue dpv')
                 ->innerJoin('#__sdi_propertyvalue pv ON pv.id = dpv.propertyvalue_id')
                 ->innerJoin('#__sdi_property p ON p.id = pv.property_id')
@@ -723,6 +723,7 @@ class cswmetadata {
                 ->innerJoin('#__sdi_language l ON l.id = t.language_id')
                 ->where('dpv.diffusion_id = ' . $this->diffusion->id)
                 ->where('l.code = ' . $this->db->quote($language->getTag()))
+                ->group('p.id , t.text1 , p.mandatory, p.propertytype_id, p.accessscope_id, p.ordering')
                 ->order('p.ordering');
         $this->db->setQuery($query);
         $properties = $this->db->loadObjectList();

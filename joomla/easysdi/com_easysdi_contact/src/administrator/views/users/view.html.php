@@ -117,7 +117,7 @@ class Easysdi_contactViewUsers extends JViewLegacy {
                 '<select name="filter_organism[]" id="filter_organism" class="span12 small" multiple onchange="this.form.submit()" data-placeholder="'.JText::_('JOPTION_SELECT_ORGANISM').'">'
                 .JHtml::_('select.options', $organismsOptions, 'value', 'text', $this->state->get('filter.organism'))
                 .'</select>';
-
+        
         JHtmlSidebar::addFilter(
                 JText::_('JOPTION_SELECT_PUBLISHED'), 'filter_published', JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), "value", "text", $this->state->get('filter.state'), true)
         );

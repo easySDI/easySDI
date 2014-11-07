@@ -296,7 +296,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                 $query->leftJoin('#__sdi_tilematrix_policy tmp ON tmp.tilematrixsetpolicy_id = tmsp.id');
                 $query->where('p.id = ' . $pk);
                 $query->where('psp.physicalservice_id = ' . $ps->id);
-                $query->group('wlp.identifier');
+              //  $query->group('wlp.identifier');
 
                 $db->setQuery($query);
 
@@ -1102,8 +1102,8 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
         foreach ($_POST['inherit_server'] as $physicalServiceID => $spatialPolicy) {
             $physicalServicePolicyUpdates = Array(
                 'anyitem = ' . ((isset($spatialPolicy['anyitem'])) ? 1 : 0),
-                'prefix = ' . ((isset($spatialPolicy['prefix'])) ? '"' . $spatialPolicy['prefix'] . '"' : NULL),
-                'namespace = ' . ((isset($spatialPolicy['namespace'])) ? '"' . $spatialPolicy['namespace'] . '"' : NULL),
+                'prefix = ' . ((isset($spatialPolicy['prefix'])) ? '\'' . $spatialPolicy['prefix'] . '\'' : NULL),
+                'namespace = ' . ((isset($spatialPolicy['namespace'])) ? '\'' . $spatialPolicy['namespace'] . '\'' : NULL),
             );
 
             //check if a spatial policy exists for that physicalservice_policy
@@ -1908,7 +1908,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin {
                     //create Wmts Layer Policy if don't exist
                     $query = $db->getQuery(true);
                     $columns = array('identifier', 'enabled', 'physicalservicepolicy_id');
-                    $values = array($layerID, 1, $physicalservice_policy_id);
+                    $values = array($query->quote($layerID), 1, $physicalservice_policy_id);
                     $query->insert('#__sdi_wmtslayer_policy')
                             ->columns($query->quoteName($columns))
                             ->values(implode(',', $values));

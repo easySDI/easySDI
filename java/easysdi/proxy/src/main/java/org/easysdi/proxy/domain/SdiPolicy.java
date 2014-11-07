@@ -141,6 +141,7 @@ public class SdiPolicy implements java.io.Serializable {
             Integer Asset_id,
             Set<SdiPhysicalservicePolicy> sdiPhysicalservicePolicies,
             Set<SdiOrganism> sdiOrganisms,
+            Set<SdiCategory> sdiCategories,
             Set<SdiAllowedoperation> sdiAllowedoperations,
             Set<SdiUser> sdiUsers,
             Set<SdiExcludedattribute> sdiExcludedattributes,
@@ -185,6 +186,7 @@ public class SdiPolicy implements java.io.Serializable {
         this.Asset_id = Asset_id;
         this.sdiPhysicalservicePolicies = sdiPhysicalservicePolicies;
         this.sdiOrganisms = sdiOrganisms;
+        this.sdiCategories = sdiCategories;
         this.sdiAllowedoperations = sdiAllowedoperations;
         this.sdiUsers = sdiUsers;
         this.sdiPolicyMetadatastates = sdiPolicyMetadatastates;
@@ -206,6 +208,7 @@ public class SdiPolicy implements java.io.Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wms_spatialpolicy_id")
+    @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
     public SdiWmsSpatialpolicy getSdiWmsSpatialpolicy() {
         return this.sdiWmsSpatialpolicy;
     }
@@ -237,6 +240,7 @@ public class SdiPolicy implements java.io.Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wmts_spatialpolicy_id")
+    @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
     public SdiWmtsSpatialpolicy getSdiWmtsSpatialpolicy() {
         return this.sdiWmtsSpatialpolicy;
     }
@@ -248,6 +252,7 @@ public class SdiPolicy implements java.io.Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "csw_spatialpolicy_id")
+    @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
     public SdiCswSpatialpolicy getSdiCswSpatialpolicy() {
         return this.sdiCswSpatialpolicy;
     }
@@ -258,6 +263,7 @@ public class SdiPolicy implements java.io.Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wfs_spatialpolicy_id")
+    @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
     public SdiWfsSpatialpolicy getSdiWfsSpatialpolicy() {
         return this.sdiWfsSpatialpolicy;
     }

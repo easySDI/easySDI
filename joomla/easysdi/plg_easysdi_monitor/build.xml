@@ -29,8 +29,7 @@
         <echoxml file="${plg.monitor.src.out.dir}/sdimonitor.xml">
             <extension version="3.0" type="plugin" group="content" method="upgrade">       
                 <name>EasySDI Monitor Plugin</name>
-                <creationDate>10 January 2011</creationDate>
-                <releaseDate>${xml.releaseDate}</releaseDate>
+                <creationDate>${xml.releaseDate}</creationDate>
                 <author>asitvd.ch</author>
                 <authorEmail></authorEmail>
                 <authorUrl>http://www.asitvd.ch</authorUrl>
