@@ -621,15 +621,13 @@ function toogleAll(button) {
         button.text(Joomla.JText._('COM_EASYSDI_CATALOG_OPEN_ALL'));
         //console.log('ferme tout');
         js('.inner-fds').hide();
-        js('.collapse-btn>i').removeClass('icon-arrow-down');
-        js('.collapse-btn>i').addClass('icon-arrow-right');
+        js('.collapse-btn>i').removeClass('icon-arrow-down').addClass('icon-arrow-right');        
         tabIsOpen = false;
     } else {
         //console.log('ouvre tout');
         button.text(Joomla.JText._('COM_EASYSDI_CATALOG_CLOSE_ALL'));
         js('.inner-fds').show();
-        js('.collapse-btn>i').removeClass('icon-arrow-right');
-        js('.collapse-btn>i').addClass('icon-arrow-down');
+        js('.collapse-btn>i').removeClass('icon-arrow-right').addClass('icon-arrow-down');        
         tabIsOpen = true;
     }
 }
