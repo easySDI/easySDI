@@ -59,7 +59,6 @@ abstract class PhysicalService {
                 $this->setError($e->getMessage());
             }
 
-
             $completeUrl = $this->url . "?REQUEST=GetCapabilities&SERVICE=" . $this->connector;
             if (isset($this->compliance)) {
                 $completeUrl .= "&version=" . $this->compliance;
