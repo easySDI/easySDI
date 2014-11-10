@@ -24,7 +24,6 @@ abstract class Easysdi_mapHelper {
             $item->urlwfslocator = null;
         }
 
-        $config = Easysdi_mapHelper::getMapConfig($item, $cleared, $renderto);
 
         //Load admin language file
         $lang = JFactory::getLanguage();
@@ -44,9 +43,6 @@ abstract class Easysdi_mapHelper {
         $doc->addStyleSheet($base_url . '/gxp/theme/all.css');
         $doc->addStyleSheet(Juri::base(true) . '/components/com_easysdi_map/views/map/tmpl/easysdi.css');
 
-        $output = '';
-
-        $doc->addScript(Juri::base(true) . '/components/com_easysdi_map/helpers/map.js');
         //Loadind js files
         if (JDEBUG) {
             $doc->addScript(Juri::base(true) . '/media/jui/js/jquery.js');
@@ -101,24 +97,26 @@ abstract class Easysdi_mapHelper {
             $doc->addScript(str_replace(JPATH_BASE, '', $file));
         }
 
+        $doc->addScript(Juri::base(true) . '/components/com_easysdi_map/helpers/map.js');
+        
         $app = JFactory::getApplication();
         $params = $app->getParams('com_easysdi_map');
         $proxyhost = $params->get('proxyhost');
         if (empty($proxyhost)) :
             $proxyhost = JURI::base() . "administrator/components/com_easysdi_core/libraries/proxy/proxy.php?=&=";
         endif;
-        
+
         //Default group
         foreach ($item->groups as $group) :
             if ($group->isdefault) {
                 //Acces not allowed
                 if (!in_array($group->access, $user->getAuthorisedViewLevels()))
                     break;
-                $defaultgroup =  $group->alias ;
+                $defaultgroup = $group->alias;
                 break;
             }
         endforeach;
-        
+
         //Groups are added in the order saved in the database
         $groups = array();
         foreach ($item->groups as $group) :
@@ -127,22 +125,22 @@ abstract class Easysdi_mapHelper {
                 continue;
 
             if ($group->isbackground) {
-                $backgroundname = $group->name;                
+                $backgroundname = $group->name;
                 if ($group->isdefaultopen) :
-                    $expanded = true;
+                    $backgroundexpanded = "true";
                 else :
-                    $expanded = false;
+                    $backgroundexpanded = "false";
                 endif;
             }
             else {
-                $group = new stdClass();
-                $group->alias = $group->alias;
-                $group->title = $group->name;
-                $group->expanded = ($group->isdefaultopen)? true : false;
-                array_push($groups, $group);
+                $g = new stdClass();
+                $g->alias = $group->alias;
+                $g->title = $group->name;
+                $g->expanded = ($group->isdefaultopen) ? true : false;
+                array_push($groups, $g);
             }
         endforeach;
-        
+
         //Services
         $services = array();
         if (isset($item->physicalservices)) :
@@ -150,17 +148,18 @@ abstract class Easysdi_mapHelper {
                 //Acces not allowed
                 if (!in_array($service->access, $user->getAuthorisedViewLevels()))
                     continue;
-                array_push ($services, Easysdi_mapHelper::getServiceDescriptionObject($service));
+                array_push($services, Easysdi_mapHelper::getServiceDescriptionObject($service));
             endforeach;
         endif;
 
         if (isset($item->virtualservices)) :
             foreach ($item->virtualservices as $service) {
-                array_push ($services, Easysdi_mapHelper::getServiceDescriptionObject($service));
+                array_push($services, Easysdi_mapHelper::getServiceDescriptionObject($service));
             }
         endif;
-        
+
         //Layers
+        $layers = array();
         //Layers have to be added the lowest before the highest
         //To do that, the groups have to be looped in reverse order
         $groups_reverse = array_reverse($item->groups);
@@ -174,646 +173,78 @@ abstract class Easysdi_mapHelper {
                     //Acces not allowed
                     if (!in_array($layer->access, $user->getAuthorisedViewLevels()))
                         continue;
-
-                    $config .= Easysdi_mapHelper::getLayerDescription($layer, $group);
+                    array_push($layers, Easysdi_mapHelper::getLayerDescriptionObject($layer, $group));
                 }
             }
         }
+
+        //Mouseposition
+        foreach ($item->tools as $tool) {
+            if ($tool->alias == 'mouseposition') {
+                $mouseposition = true;                
+                break;
+            }
+        }
+
+        //Build object with params needed by the javascript map object
+        $data = new stdClass();
+        $data->bottomInUnits = $item->bottomInUnits;
+        $data->bottomOutUnits = $item->bottomOutUnits;
+        $data->topInUnits = $item->topInUnits;
+        $data->topOutUnits = $item->topOutUnits;
+        $data->title = $item->title;
+        $data->abstract = $item->abstract;
+        $data->tools = $item->tools;
+        $data->rootnodetext = $item->rootnodetext;
+        $data->srs = $item->srs;
+        $data->maxextent = $item->maxextent;
+        $data->maxresolution = $item->maxresolution;
+        $data->units = $item->units;
+        $data->centercoordinates = $item->centercoordinates;
+        $data->restrictedextent = $item->restrictedextent;
+        $data->zoom = $item->zoom;
+        $data->urlwfslocator = $item->urlwfslocator;
+        $data->fieldname = $item->fieldname;
+        $data->featuretype = $item->featuretype;
+        $data->featureprefix = $item->featureprefix;
+        $data->fieldname = $item->fieldname;
+        $data->geometryname = $item->geometryname;
         
-        $output .= '<div id="' . $renderto . '" class="cls-' . $renderto . '"></div>';
-        $output .= '<script>';
+        $c = ($cleared)? 'true' : 'false';
         
-        $output .= '
+        $output = '<script>
             var msg = "' . JText::_('COM_EASYSDI_MAP_MAP_LOAD_MESSAGE') . '";
-            var data = ' . json_encode((array)$item) . ';
+            var layermsg = "' . JText::_('COM_EASYSDI_MAP_LAYER_LOAD_MESSAGE') . '";
+            var cleared = "' . $c . '";
+            var data = ' . json_encode((array) $data) . ';
             var renderto = "' . $renderto . '";
             var proxyhost = "' . $proxyhost . '" ;
-            var mwidth = "' . $params->get('iframewidth') .'";
-            var mheight = "' . $params->get('iframeheight') .'";
-            var langtag  = "' . $lang->getTag() .'";
+            var params = ' . json_encode($params) . ';
+            var mwidth = "' . $params->get('iframewidth') . '";
+            var mheight = "' . $params->get('iframeheight') . '";
+            var langtag  = "' . $lang->getTag() . '";
             var appname = "' . $appname . '";
-            var  defaultgroup = "' . $defaultgroup . '";
-            var groups = ' . json_encode($groups). ';
-            var backgroundname = "'. $backgroundname . '";
-            var expanded = "' . $expanded . '";
+            var defaultgroup = "' . $defaultgroup . '";
+            var groups = ' . json_encode($groups) . ';
+            var backgroundname = "' . $backgroundname . '";
+            var backgroundexpanded = ' . $backgroundexpanded . ';
             var loadingMask;
             var width;
             var heigth;
             var services = ' . json_encode($services) . ';
-            
-
-
-            Ext.Container.prototype.bufferResize = false;
-            Ext.onReady(function(){
-
-                loadingMask = new Ext.LoadMask(Ext.getBody(), {msg:msg});
-                loadingMask.show();
-                height = Ext.get(renderto).getHeight();
-                if(!height)  height = Ext.get(renderto).getWidth() * 1/2;
-                width = Ext.get(renderto).getWidth();
-                OpenLayers.ImgPath = "administrator/components/com_easysdi_core/libraries/openlayers/img/";
-                GeoExt.Lang.set(langtag);
-                window.appname = new gxp.Viewer(getMapConfig());
-  
-        ';
-
-        //Add the mouseposition control if activated in the map configuration
-        //Can not be done in the gxp.Viewer instanciation because it has to be done on the openlayers map object
-        foreach ($item->tools as $tool) {
-            if ($tool->alias == 'mouseposition') {
-                $output .= 'window.appname.mapPanel.map.addControl(new OpenLayers.Control.MousePosition());';
-                break;
-            }
-        }
-
-        $output .= '
-            var locator = null ;
-            window.appname.on("ready", function (){window.appname.portalConfig.renderTo = "sdiNewContainer";';
-                
-        if (!empty($item->urlwfslocator)):
-            //Only add a wfslocator if it doesn't exist already
-            $output .= '
-               
-            if(locator == null){
-                locator = { xtype: "gxp_autocompletecombo",
-                                        listeners:{
-                                                    select: function(list, record) {
-                                                            var extent = new OpenLayers.Bounds();
-                                                            extent.extend(record.data.feature.geometry.getBounds());
-                                                            window.appname.mapPanel.map.zoomToExtent(extent);
-                                                            }
-                                                   },
-                                        url: "' . $item->urlwfslocator . '",
-                                        fieldName: "' . $item->fieldname . '",
-                                        featureType: "' . $item->featuretype . '",
-                                        featurePrefix: "' . $item->featureprefix . '",
-                                        fieldLabel: "' . $item->fieldname . '",
-                                        geometryName:"' . $item->geometryname . '",
-                                        maxFeatures:"10",
-                                        emptyText: "Search..."};
-                window.appname.portal.items.items[0].items.items[0].toolbars[0].add(locator);
-                window.appname.portal.items.items[0].items.items[0].toolbars[0].doLayout();
-            }';
-        endif;
-
-        $output .= '      loadingMask.hide(); 
-                });';
-        if (!$cleared) {
-            $output .= '        SdiScaleLineParams= { 
-                            bottomInUnits :data.bottomInUnits,
-                            bottomOutUnits :data.bottomOutUnits ,
-                            topInUnits :data.topInUnits,
-                            topOutUnits :data.topOutUnits
-                    }; ';
-        }
-        $output .= '
-                    Ext.QuickTips.init();
-                    Ext.apply(Ext.QuickTips.getQuickTip(), {maxWidth: 1000 });
-                    Ext.EventManager.onWindowResize(function() {
-                        window.appname.portal.setWidth(Ext.get(renderto).getWidth());
-                        window.appname.portal.setHeight(Ext.get(renderto).getWidth() * 1/2);
-                    });
-
-});';
-        $output .= '</script>';
-
+            var layers = ' . json_encode($layers) . ';
+            var mouseposition = ' . $mouseposition . ';
+        </script>
+        <div id="' . $renderto . '" class="cls-' . $renderto . '"></div>';
+        
         return $output;
     }
 
     /**
-     * @param Object        Complete map object (with all linked objects embedded)
      * 
-     * @return string       Config JSON object to initialize map
+     * @param type $service
+     * @return \stdClass
      */
-    public static function getMapConfig($item, $cleared, $renderto) {
-        $user = JFactory::getUser();
-        $app = JFactory::getApplication();
-        $params = $app->getParams('com_easysdi_map');
-        
-        
-        //Load admin language file
-        $lang = JFactory::getLanguage();
-        $lang->load('com_easysdi_map', JPATH_ADMINISTRATOR);       
-        
-
-        $config = '{
-                proxy : proxyhost, 
-                about: 
-                        { 
-                            title: data.title, 
-                            "abstract": data.abstract
-                         },
-                    portalConfig: 
-                        {
-                        renderTo:renderto,
-                        width: width, 
-                        height: height,
-                        layout: "border",
-                        region: "center",
-                        items: [
-                            {
-                                id: "centerpanel",
-                                xtype: "panel",
-                                layout: "card",
-                                region: "center",
-                                border: false,
-                                activeItem: 0, 
-                                items: [
-                                    "sdimap",
-                                    {
-                                        xtype: "gxp_googleearthpanel",
-                                        id: "globe",
-                                        tbar: [],
-                                        mapPanel: "sdimap"
-                                    }
-                                ]
-                            },';
-
-        $layertreeactivated = false;
-        foreach ($item->tools as $tool) :
-            if ($tool->alias == 'layertree') :
-                $layertreeactivated = true;
-                $config .= '{
-                        id: "westpanel",
-                        xtype: "panel",
-                        header: false,
-                        split: true,
-                        collapsible: true,
-                        collapseMode: "mini",
-                        hideCollapseTool: true,
-                        layout: "fit",
-                        region: "west",
-                        width: 200, 
-                        items:[ ]
-                    },';
-                break;
-            endif;
-        endforeach;
-
-        if (!$layertreeactivated) :
-            $config .= '{
-                        id: "westpanel",
-                        xtype: "panel",
-                        header: false,
-                        split: false,
-                        layout: "fit",
-                        region: "west",
-                        width: 0
-                    },';
-        endif;
-
-        foreach ($item->tools as $tool) :
-            if ($tool->alias == 'getfeatureinfo') {
-                $config .= '{
-                                id:"hiddentbar",
-                                xtype:"panel",
-                                split: false,
-                                layout: "fit",
-                                height:0,
-                                region:"south",
-                                items:[]
-                            },';
-                break;
-            }
-        endforeach;
-
-        $config .= '
-                            ]
-                    },                        
-                    tools: [';
-
-
-        $config .= '{
-                            ptype: "sdi_gxp_layermanager",
-                            rootNodeText: data.rootnodetext,';
-
-        foreach ($item->groups as $group) :
-            if ($group->isdefault) {
-                //Acces not allowed
-                if (!in_array($group->access, $user->getAuthorisedViewLevels()))
-                    break;
-                $config .= 'defaultGroup: "' . $group->alias . '",';
-                break;
-            }
-        endforeach;
-
-        $config .= 'outputConfig: {
-                            id: "tree",
-                            border: true,
-                            tbar: [] 
-                            },
-                            groups: {';
-
-
-        //Groups are added in the order saved in the database
-        foreach ($item->groups as $group) :
-            //Acces not allowed
-            if (!in_array($group->access, $user->getAuthorisedViewLevels()))
-                continue;
-
-            if ($group->isbackground) {
-                $config .= '
-                                    "background": {
-                                    title: "' . $group->name . '", 
-                                    exclusive: true,';
-                if ($group->isdefaultopen) :
-                    $config .= 'expanded: true},';
-                else :
-                    $config .= 'expanded: false},';
-                endif;
-            }
-            else {
-                $config .= '"' . $group->alias . '" : {
-                                        title : "' . $group->name . '",';
-                if ($group->isdefaultopen) :
-                    $config .= 'expanded: true},';
-                else :
-                    $config .= 'expanded: false},';
-                endif;
-            }
-        endforeach;
-
-        $config .= '},';
-        $config .= ' outputTarget: "westpanel"
-                        },';
-
-        
-
-        foreach ($item->tools as $tool) :
-            switch ($tool->alias) :
-                case 'googleearth':
-                    $config .= '
-                    {
-                    ptype: "gxp_googleearth",
-                    actionTarget: ["map.tbar", "globe.tbar"]
-                    },
-                    {
-                    actions: ["-"],
-                    actionTarget: "map.tbar"
-                    },
-                    ';
-                    break;
-                case 'navigationhistory':
-                    $config .= '
-                    {
-                    ptype: "gxp_navigationhistory",
-                    actionTarget: "map.tbar"
-                    },
-                    ';
-                    break;
-                case 'navigation':
-                    $config .= '
-                    {
-                    ptype: "gxp_navigation",
-                    actionTarget: "map.tbar", 
-                    toggleGroup: "navigation"
-                    },
-                    ';
-                    break;
-                case 'zoom':
-                    $config .= '
-                    {
-                    ptype: "gxp_zoom",
-                    actionTarget: "map.tbar",
-                    toggleGroup: "navigation",
-                    showZoomBoxAction: true,
-                    controlOptions: {zoomOnClick: false}
-                    },
-                    ';
-                    break;
-                case 'zoomtoextent':
-                    if ($layertreeactivated) {
-                        $config .= '
-                        {
-                        ptype: "gxp_zoomtoextent",
-                        actionTarget: "map.tbar"
-                        },
-                        {
-                        ptype: "gxp_zoomtolayerextent",
-                        actionTarget: {target: "tree.contextMenu", index: 0}
-                        },
-                        ';
-                    }
-                    break;
-                case 'measure':
-                    $config .= '
-                    {
-                    actions: ["-"],
-                    actionTarget: "map.tbar"
-                    },
-                    {
-                    ptype: "gxp_measure",
-                    toggleGroup: "navigation",
-                    actionTarget: "map.tbar"
-                    },
-                    ';
-                    break;
-                case 'addlayer':
-                    if ($layertreeactivated) {
-                        $config .= '
-                        {
-                        ptype: "gxp_addlayers",
-                        actionTarget: "tree.tbar"
-                        },
-                        ';
-                    }
-                    break;
-                case 'searchcatalog':
-                    if ($layertreeactivated) {
-                        $config .= '
-                        {
-                        ptype: "sdi_searchcatalog",
-                        actionTarget: "tree.tbar",
-                        url: "' . JURI::root() . 'index.php?option=com_easysdi_catalog&view=catalog&id=' . $tool->params . '&preview=map&tmpl=component",
-                        iwidth : mwidth,
-                        iheight : mheight
-                        },
-                        ';
-                    }
-                    break;
-                case 'layerdetailsheet':
-                    if ($layertreeactivated) {
-                        $config .= '
-                        {
-                        ptype: "sdi_layerdetailsheet",
-                        actionTarget: ["tree.contextMenu"],
-                        iwidth : mwidth,
-                        iheight : mheight
-                        },';
-                    }
-                    break;
-                case 'layerdownload':
-                    if ($layertreeactivated) {
-                        $config .= '
-                        {
-                        ptype: "sdi_layerdownload",
-                        actionTarget: ["tree.contextMenu"],
-                        iwidth : mwidth,
-                        iheight : mheight
-                        },';
-                    }
-                    break;
-                case 'layerorder':
-                    if ($layertreeactivated) {
-                        $config .= '
-                        {
-                        ptype: "sdi_layerorder",
-                        actionTarget: ["tree.contextMenu"],
-                        iwidth : mwidth,
-                        iheight : mheight
-                        },';
-                    }
-                    break;
-                case 'removelayer':
-                    if ($layertreeactivated) {
-                        $config .= '
-                        {
-                        ptype: "gxp_removelayer",
-                        actionTarget: ["tree.contextMenu"]
-                        },
-                        ';
-                    }
-                    break;
-
-                case 'layerproperties':
-                    if ($layertreeactivated) {
-                        $config .= '
-                        {
-                        ptype: "gxp_layerproperties",
-                        id: "layerproperties",
-                        actionTarget: ["tree.contextMenu"]
-                        },
-                        ';
-                    }
-                    break;
-
-                case 'getfeatureinfo':
-                    $config .= '
-                    {
-                    ptype: "gxp_wmsgetfeatureinfo",
-                    popupTitle: "Feature Info", 
-                    toggleGroup: "interaction", 
-                    format: "' . $tool->params . '", 
-                    actionTarget: "hiddentbar",
-                    defaultAction: 0
-                    },
-
-                    ';
-                    break;
-                case 'googlegeocoder':
-                    $config .= '
-                    {
-                    actions: ["-"],
-                    actionTarget: "map.tbar"
-                    },
-                    {
-                    ptype: "gxp_googlegeocoder",
-                    outputTarget: "map.tbar"
-                    },
-                    ';
-                    break;
-                case 'print':
-                    if (!$params->get('printserviceurl'))
-                        continue;
-                    else
-                        $config .= '
-                    {
-                    actions: ["-"],
-                    actionTarget: "map.tbar"
-                    },
-                    {
-                    ptype: "sdi_gxp_print",
-                    customParams: {outputFilename: "GeoExplorer-print"},
-                    printService: "' . $params->get('printserviceurl') . '",';
-                    if ($params->get('printserviceprinturl') == '')
-                        $config .= 'printURL : "' . $params->get('printserviceurl') . 'print.pdf",';
-                    else
-                        $config .= 'printURL : "' . $params->get('printserviceprinturl') . '",';
-                    if ($params->get('printservicecreateurl') == '')
-                        $config .= ' createURL : "' . $params->get('printserviceurl') . 'create.json",';
-                    else
-                        $config .= ' createURL : "' . $params->get('printservicecreateurl') . '",';
-
-                    $config .= 'includeLegend: true, 
-                    actionTarget: "map.tbar",
-                    showButtonText: false
-                    },
-                    ';
-                    break;
-            endswitch;
-        endforeach;
-        $config .= '
-                        
-        ],';
-
-        // layer sources
-        //Default service is always wms
-        $config .= '
-                defaultSourceType: "sdi_gxp_wmssource",
-                ';
-
-
-        $config .= '
-        sources: 
-        {
-        "ol": { ptype: "sdi_gxp_olsource" }, ';
-
-        if (isset($item->physicalservices)) :
-            foreach ($item->physicalservices as $service) :
-                //Acces not allowed
-                if (!in_array($service->access, $user->getAuthorisedViewLevels()))
-                    continue;
-                $config .= Easysdi_mapHelper::getServiceDescription($service);
-            endforeach;
-        endif;
-
-        if (isset($item->virtualservices)) :
-            foreach ($item->virtualservices as $service) {
-                $config .= Easysdi_mapHelper::getServiceDescription($service);
-            }
-        endif;
-
-        $config .= ' 
-            },
-
-            // map and layers
-            map: 
-            {';
-        if ($cleared):
-            $config .= 'controls : [],';
-        endif;
-        $config .= 'id: "sdimap",
-            title: "Map",
-            header:false,
-            projection: data.srs,        
-            maxExtent : [' . $item->maxextent . '],';
-        if (!empty($item->centercoordinates)):
-            $config .= '  center: [' . $item->centercoordinates . '],';
-        endif;
-        if (!empty($item->restrictedextent)):
-            $config .= '  restrictedExtent: [' . $item->restrictedextent . '],';
-        endif;
-        if (!empty($item->zoom)):
-            $config .= '  zoom : ' . $item->zoom . ',';
-        endif;
-        $config .= ' maxResolution: ' . $item->maxresolution . ',
-            units: "' . $item->unit . '",
-            layers: 
-            [
-            ';
-
-        //Layers have to be added the lowest before the highest
-        //To do that, the groups have to be looped in reverse order
-        $groups_reverse = array_reverse($item->groups);
-        foreach ($groups_reverse as $group) {
-            //Acces not allowed
-            if (!in_array($group->access, $user->getAuthorisedViewLevels()))
-                continue;
-
-            if (!empty($group->layers)) {
-                foreach ($group->layers as $layer) {
-                    //Acces not allowed
-                    if (!in_array($layer->access, $user->getAuthorisedViewLevels()))
-                        continue;
-
-                    $config .= Easysdi_mapHelper::getLayerDescription($layer, $group);
-                }
-            }
-        }
-        $config .= '
-        ],
-        //stateId : "map",
-        //prettyStateKeys : true
-        }
-        ,';
-
-
-        if (!$cleared) {
-            $config .= ' 
-        mapItems: 
-        [            
-            {
-                xtype: "gx_zoomslider",
-                vertical: true,
-                height: 100
-            }        
-            ,
-            {
-                xtype: "sdi_gxp_scaleoverlay"
-            }
-        ],
-        ';
-        }
-        $config .= '
-        mapPlugins:
-        [
-            {
-                ptype: "sdi_gxp_loadingindicator",
-                loadingMapMessage: "' . JText::_('COM_EASYSDI_MAP_LAYER_LOAD_MESSAGE') . '"
-            }
-        ]
-';
-        $config .='}';
-
-        return $config;
-    }
-
-    public static function getServiceDescription($service) {
-        $url = '';
-        //Initilization of the service url if the service is physic or virtual
-        if (isset($service->resourceurl)) {
-            $url = $service->resourceurl;
-        } elseif (isset($service->url)) {
-            $url = $service->url;
-        }
-        $config = '';
-        switch ($service->serviceconnector_id) :
-            case 2 :
-                $config = ' 
-                    "' . $service->alias . '":
-                    {
-                    ptype: "sdi_gxp_wmssource",
-                    url: "' . $url . '"
-                    },
-                    ';
-                break;
-            case 11 :
-                $config = ' 
-                    "' . $service->alias . '":
-                    {
-                    ptype: "gxp_wmscsource",
-                     url: "' . $url . '"
-                    },
-                    ';
-                break;
-            case 12 :
-                $config = ' 
-                    "' . $service->alias . '":
-                    {
-                    ptype: "sdi_gxp_bingsource"
-                    },
-                    ';
-                break;
-            case 13 :
-                $config = ' 
-                    "' . $service->alias . '":
-                    {
-                    ptype: "sdi_gxp_googlesource"
-                    },
-                    ';
-                break;
-            case 14 :
-                $config = ' 
-                    "' . $service->alias . '":
-                    {
-                    ptype: "sdi_gxp_osmsource"
-                    },
-                    ';
-                break;
-        endswitch;
-        return $config;
-    }
-    
     public static function getServiceDescriptionObject($service) {
         $url = '';
         //Initilization of the service url if the service is physic or virtual
@@ -827,12 +258,12 @@ abstract class Easysdi_mapHelper {
             case 2 :
                 $obj->alias = $service->alias;
                 $obj->ptype = "sdi_gxp_wmssource";
-                $obj->url = $url;                
+                $obj->url = $url;
                 break;
             case 11 :
                 $obj->alias = $service->alias;
                 $obj->ptype = "gxp_wmscsource";
-                $obj->url = $url;  
+                $obj->url = $url;
                 break;
             case 12 :
                 $obj->alias = $service->alias;
@@ -914,36 +345,26 @@ abstract class Easysdi_mapHelper {
     }
 
     public static function getLayerDescriptionObject($layer, $group) {
-        $config = ' { ';
-
         $obj = new stdClass();
         if ($layer->asOL) {
             $obj->source = "ol";
-            
+
             switch ($layer->serviceconnector) {
                 case 'WMTS' :
                     $obj->type = "OpenLayers.Layer.WMTS";
                     $obj->name = $layer->name;
                     $obj->url = $layer->serviceurl;
                     $obj->layer = $layer->layername;
-                    
-                    $config .= ' 
-                    type: "OpenLayers.Layer.WMTS",
-                    args: [
-                    {
-                    name:"' . $layer->name . '", 
-                    url : "' . $layer->serviceurl . '", 
-                    layer: "' . $layer->layername . '", ';
 
                     if ($layer->isdefaultvisible == 1)
-                        $obj->visibility =  true;
+                        $obj->visibility = true;
                     else
-                         $obj->visibility =  false;
+                        $obj->visibility = false;
 
                     if ($layer->istiled == 1)
-                         $obj->singleTile =  true;
+                        $obj->singleTile = true;
                     else
-                        $obj->singleTile =  false;
+                        $obj->singleTile = false;
 
                     $obj->transitionEffect = "resize";
                     $obj->opacity = $layer->opacity;
@@ -958,7 +379,7 @@ abstract class Easysdi_mapHelper {
                     $obj->url = $layer->serviceurl;
                     $obj->layers = $layer->layername;
                     $obj->version = $layer->version;
-                    
+
                     if ($layer->serviceconnector == 'WMSC'):
                         $obj->tiled = true;
                     endif;
@@ -966,226 +387,79 @@ abstract class Easysdi_mapHelper {
                     if ($layer->isdefaultvisible == 1)
                         $obj->visibility = true;
                     else
-                        $config .= 'visibility :  false';
-                    $config .= ',';
+                        $obj->visibility = false;
 
                     if ($layer->istiled == 1)
-                        $config .= 'singleTile :  true';
+                        $obj->singleTile = true;
                     else
-                        $config .= 'singleTile :  false';
-                    $config .=',
-                    opacity: ' . $layer->opacity . ',
-                    transitionEffect: "resize",
-                    style: "' . $layer->asOLstyle . '",';
+                        $obj->singleTile = false;
 
+                    $obj->opacity = $layer->opacity;
+                    $obj->transitionEffect = "resize";
+                    $obj->style = $layer->asOLstyle;
 
-                    $config .= $layer->asOLoptions;
-                    $config .= '}
-                    ],';
+                    $obj->asOLoptions = $layer->asOLoptions;
+
                     break;
             }
             if ($group->isbackground)
-                $config .= 'group: "background",';
+                $obj->group = "background";
             else
-                $config .= 'group: "' . $group->alias . '",';
+                $obj->group = $group->alias;
         }
         else {
             switch ($layer->serviceconnector) {
                 case 'WMTS':
                     break;
                 default :
-                    $config .= '
-                    source: "' . $layer->servicealias . '",';
-
+                    $obj->source = $layer->servicealias;
                     if ($layer->istiled == 1)
-                        $config .= 'tiled :  true,';
+                        $obj->tiled = true;
                     else
-                        $config .= 'tiled :  false,';
+                        $obj->tiled = false;
 
                     if (!empty($layer->version)) {
-                        $config .= 'version: "' . $layer->version . '",';
+                        $obj->version = $layer->version;
                     }
 
                     if (!empty($layer->attribution)) {
-                        $config .= "attribution: '" . $layer->attribution . "',";
+                        $obj->attribution = $layer->attribution;
                     }
-                    $config .= 'name: "' . $layer->layername . '",
-                    title: "' . $layer->name . '",';
+                    $obj->name = $layer->layername;
+                    $obj->title = $layer->name;
+
                     if ($group->isbackground)
-                        $config .= ' group : "background",';
+                        $obj->group = "background";
                     else
-                        $config .= ' group : "' . $group->alias . '",';
+                        $obj->group = $group->alias;
+
+
                     if ($group->alias == "background")
-                        $config .= 'fixed: true,';
+                        $obj->fixed = true;
 
                     if ($layer->isdefaultvisible == 1)
-                        $config .= 'visibility :  true,';
+                        $obj->visibility = true;
                     else
-                        $config .= 'visibility :  false,';
+                        $obj->visibility = false;
 
-                    $config .= 'opacity: ' . $layer->opacity . ',
-
-                    ';
+                    $obj->opacity = $layer->opacity;
                     break;
             }
         }
 
         if (!empty($layer->metadata_guid)):
-            $config .= 'href: "' . Easysdi_mapHelper::getLayerDetailSheetToolUrl($layer->metadata_guid, JFactory::getLanguage()->getTag(), '', 'map') . '",';
+            $obj->href = Easysdi_mapHelper::getLayerDetailSheetToolUrl($layer->metadata_guid, JFactory::getLanguage()->getTag(), '', 'map');
         elseif (!empty($layer->metadatalink)):
-            $config .= 'href: "' . $layer->metadatalink . '",';
+            $obj->href = $layer->metadatalink;
         endif;
         if (!empty($layer->hasdownload)):
-            $config .= 'download: "' . Easysdi_mapHelper::getLayerDownloadToolUrl($layer->diffusion_id) . '",';
+            $obj->download = Easysdi_mapHelper::getLayerDownloadToolUrl($layer->diffusion_id);
         endif;
         if (!empty($layer->hasextraction)):
-            $config .= 'order: "' . Easysdi_mapHelper::getLayerOrderToolUrl($layer->metadata_guid, JFactory::getLanguage()->getTag(), '') . '",';
+            $obj->order = Easysdi_mapHelper::getLayerOrderToolUrl($layer->metadata_guid, JFactory::getLanguage()->getTag(), '');
         endif;
 
-        $config .= ' }, ';
-
-        return $config;
-    }
-
-    public static function getLayerDescription($layer, $group) {
-        $config = ' { ';
-
-        if ($layer->asOL) {
-            $config .= 'source : "ol", ';
-
-            switch ($layer->serviceconnector) {
-                case 'WMTS' :
-                    $config .= ' 
-                    type: "OpenLayers.Layer.WMTS",
-                    args: [
-                    {
-                    name:"' . $layer->name . '", 
-                    url : "' . $layer->serviceurl . '", 
-                    layer: "' . $layer->layername . '", ';
-
-                    if ($layer->isdefaultvisible == 1)
-                        $config .= 'visibility: true,';
-                    else
-                        $config .= 'visibility: false,';
-
-                    if ($layer->istiled == 1)
-                        $config .= 'singleTile: true,';
-                    else
-                        $config .= 'singleTile: false,';
-
-                    $config .= 'transitionEffect: "resize",
-                    opacity: ' . $layer->opacity . ',
-                    style: "' . $layer->asOLstyle . '",
-                    matrixSet: "' . $layer->asOLmatrixset . '",';
-
-                    $config .= $layer->asOLoptions;
-
-                    $config .=' }
-                    ],';
-
-                    break;
-                case 'WMS' :
-                case 'WMSC' :
-                    $config .= ' 
-
-                    type : "OpenLayers.Layer.WMS",
-                    args: 
-                    [
-                    "' . $layer->name . '",
-                    "' . $layer->serviceurl . '",
-                    {
-                    layers: "' . $layer->layername . '", 
-                    version: "' . $layer->version . '"';
-                    if ($layer->serviceconnector == 'WMSC'):
-                        $config .= ', tiled: true';
-                    endif;
-
-                    $config .= '
-                    },
-                    {';
-
-                    if ($layer->isdefaultvisible == 1)
-                        $config .= 'visibility :  true';
-                    else
-                        $config .= 'visibility :  false';
-                    $config .= ',';
-
-                    if ($layer->istiled == 1)
-                        $config .= 'singleTile :  true';
-                    else
-                        $config .= 'singleTile :  false';
-                    $config .=',
-                    opacity: ' . $layer->opacity . ',
-                    transitionEffect: "resize",
-                    style: "' . $layer->asOLstyle . '",';
-
-
-                    $config .= $layer->asOLoptions;
-                    $config .= '}
-                    ],';
-                    break;
-            }
-            if ($group->isbackground)
-                $config .= 'group: "background",';
-            else
-                $config .= 'group: "' . $group->alias . '",';
-        }
-        else {
-            switch ($layer->serviceconnector) {
-                case 'WMTS':
-                    break;
-                default :
-                    $config .= '
-                    source: "' . $layer->servicealias . '",';
-
-                    if ($layer->istiled == 1)
-                        $config .= 'tiled :  true,';
-                    else
-                        $config .= 'tiled :  false,';
-
-                    if (!empty($layer->version)) {
-                        $config .= 'version: "' . $layer->version . '",';
-                    }
-
-                    if (!empty($layer->attribution)) {
-                        $config .= "attribution: '" . $layer->attribution . "',";
-                    }
-                    $config .= 'name: "' . $layer->layername . '",
-                    title: "' . $layer->name . '",';
-                    if ($group->isbackground)
-                        $config .= ' group : "background",';
-                    else
-                        $config .= ' group : "' . $group->alias . '",';
-                    if ($group->alias == "background")
-                        $config .= 'fixed: true,';
-
-                    if ($layer->isdefaultvisible == 1)
-                        $config .= 'visibility :  true,';
-                    else
-                        $config .= 'visibility :  false,';
-
-                    $config .= 'opacity: ' . $layer->opacity . ',
-
-                    ';
-                    break;
-            }
-        }
-
-        if (!empty($layer->metadata_guid)):
-            $config .= 'href: "' . Easysdi_mapHelper::getLayerDetailSheetToolUrl($layer->metadata_guid, JFactory::getLanguage()->getTag(), '', 'map') . '",';
-        elseif (!empty($layer->metadatalink)):
-            $config .= 'href: "' . $layer->metadatalink . '",';
-        endif;
-        if (!empty($layer->hasdownload)):
-            $config .= 'download: "' . Easysdi_mapHelper::getLayerDownloadToolUrl($layer->diffusion_id) . '",';
-        endif;
-        if (!empty($layer->hasextraction)):
-            $config .= 'order: "' . Easysdi_mapHelper::getLayerOrderToolUrl($layer->metadata_guid, JFactory::getLanguage()->getTag(), '') . '",';
-        endif;
-
-        $config .= ' }, ';
-
-        return $config;
+        return $obj;
     }
 
     public static function getLayerDownloadToolUrl($diffusion_id) {
