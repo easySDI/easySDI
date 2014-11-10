@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name ="details">
+        <field name="name" type="text" size="40" class="inputbox" required="true"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_NAME"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_NAME" 
+               filter="safehtml" /> 
+        
+        <field name="alias" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_ALIAS"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_ALIAS" 
+               filter="safehtml" /> 
+        
+        <field name="description" type="textarea" rows="5" cols="10" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_DESCRIPTION"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_DESCRIPTION" 
+               filter="safehtml" /> 
+
+        <field name="importtype_id" 
+               required="true"
+               type="sql" 
+               onchange="onTypeChange()"
+               class="inputbox"
+               translate="true"
+               query=" SELECT NULL AS id, '' AS value 
+                        UNION SELECT id, value FROM #__sdi_sys_importtype 
+                        WHERE state=1 ORDER BY value" 
+               key_field="id" 
+               value_field="value"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_IMPORTTYPE_ID"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_IMPORTTYPE_ID" 
+        />
+        
+        <field name="xsl4sdi" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_XSL4SDI"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_XSL4SDI" 
+               filter="safehtml" /> 
+
+        <field name="xsl4ext" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_XSL4EXT"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_XSL4EXT" 
+               filter="safehtml" /> 
+ 
+        <field name="cswservice_id" 
+               type="sql" 
+               onchange="onServiceChange()"
+               class="inputbox"
+               query=" SELECT NULL AS id, '' AS name 
+                        UNION SELECT id, name FROM #__sdi_physicalservice 
+                        WHERE state=1 AND serviceconnector_id = 1 ORDER BY name" 
+               key_field="id" 
+               value_field="name"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_CSWURL"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_CSWURL" 
+        /> 
+        
+        <field name="cswversion_id" 
+               type="sql" 
+               class="inputbox"
+               query=" SELECT NULL AS id, '' AS name, 0 as ordering" 
+               key_field="id" 
+               value_field="name"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_CSWVERSION"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_CSWVERSION" 
+        /> 
+
+
+        <field name="cswoutputschema" type="text" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_CSWOUTPUTSCHEMA"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_CSWOUTPUTSCHEMA" 
+               filter="safehtml" /> 
+
+        <field name="id" type="text" default="0" label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_ID"
+               readonly="true" class="readonly"
+               description="JGLOBAL_FIELD_ID_DESC" /> 
+    </fieldset> 
+    
+    <field name="text1" type="multilingual" cols="20" rows="1" class="inputbox input-xlarge"  required="true"
+           label="COM_EASYSDI_CATALOG_FORM_LBL_LABEL_LABEL"
+           description="COM_EASYSDI_CATALOG_FORM_DESC_LABEL_LABEL" 
+           filter="ARRAY" />
+
+    <fieldset 
+        name="accesscontrol">
+        <field name="asset_id" type="hidden" filter="unset" />
+        <field name="rules"
+               type="rules"
+               label="JFIELD_RULES_LABEL"
+               translate_label="false"
+               filter="rules"
+               validate="rules"
+               class="inputbox"
+               component="com_easysdi_catalog"
+               section="importref"
+        />
+
+    </fieldset>
+
+    <fieldset name="hidden">
+        <field name="asset_id" type="hidden" filter="SAFEHTML" />
+        <field name="guid" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out_time" type="hidden" filter="SAFEHTML" /> 
+    </fieldset>
+    
+    <field name="access"
+           type="accesslevel"
+           label="JFIELD_ACCESS_LABEL"
+           description="JFIELD_ACCESS_DESC"
+           class="inputbox span12 small"
+           size="1"
+    />
+ 
+    <field
+        name="state"
+        type="list"
+        label="JSTATUS"
+        description="JFIELD_PUBLISHED_DESC"
+        class="inputbox"
+        size="1"
+        default="1">
+        <option value="1">JPUBLISHED</option>
+        <option value="0">JUNPUBLISHED</option>
+    </field>
+    
+    <field name="created_by" type="createdby" default="" 
+            label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_CREATED_BY"
+            description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_CREATED_BY"  /> 
+
+    <field name="created" type="timecreated" default="" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_CREATED"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_CREATED"  /> 
+
+    <field name="modified_by" type="createdby" size="40" class="inputbox"
+               label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_MODIFIED_BY"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_MODIFIED_BY" 
+               default="0" 
+               filter="safehtml" /> 
+
+    <field name="modified" type="timeupdated" default="" 
+               label="COM_EASYSDI_CATALOG_FORM_LBL_IMPORTREF_MODIFIED"
+               description="COM_EASYSDI_CATALOG_FORM_DESC_IMPORTREF_MODIFIED"  /> 
+</form>
